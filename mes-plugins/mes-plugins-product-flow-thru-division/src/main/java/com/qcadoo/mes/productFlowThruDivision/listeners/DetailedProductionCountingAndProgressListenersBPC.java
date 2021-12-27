@@ -1,6 +1,8 @@
 package com.qcadoo.mes.productFlowThruDivision.listeners;
 
+import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.basicProductionCounting.constants.BasicProductionCountingConstants;
+import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityFields;
 import com.qcadoo.mes.materialFlowResources.exceptions.DocumentBuildException;
 import com.qcadoo.mes.productFlowThruDivision.service.ProductionCountingDocumentService;
 import com.qcadoo.mes.productFlowThruDivision.states.ProductionTrackingListenerServicePFTD;
@@ -45,6 +47,10 @@ public class DetailedProductionCountingAndProgressListenersBPC {
                         BasicProductionCountingConstants.MODEL_PRODUCTION_COUNTING_QUANTITY)
                 .find().add(SearchRestrictions.in("id", ids)).list().getEntities();
 
+        if (!canIssueMaterials(order, pcqs)) {
+            formComponent.setEntity(order);
+            return;
+        }
         try {
             productionCountingDocumentService.createInternalOutboundDocument(order, pcqs, false);
             if (order.isValid()) {
@@ -71,5 +77,18 @@ public class DetailedProductionCountingAndProgressListenersBPC {
             formComponent.setEntity(order);
         }
 
+    }
+
+    private boolean canIssueMaterials(Entity order, List<Entity> pcqs) {
+        boolean canIssue = true;
+        for (Entity pcq : pcqs) {
+            if (pcq.getHasManyField(ProductionCountingQuantityFields.BATCHES).size() > 1) {
+                order.addGlobalError(
+                        "productFlowThruDivision.productionCountingQuantity.createInternalOutboundDocument.toManyBatchesError", false,
+                        pcq.getBelongsToField(ProductionCountingQuantityFields.PRODUCT).getStringField(ProductFields.NUMBER));
+                canIssue = false;
+            }
+        }
+        return canIssue;
     }
 }
