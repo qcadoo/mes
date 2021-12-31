@@ -241,7 +241,7 @@ public class OrderMaterialAvailability {
         materialAvailability.setField(MaterialAvailabilityFields.LOCATION, location);
         String batches = batchesList.stream()
                 .map(n -> n.getStringField(BatchFields.NUMBER))
-                .collect(Collectors.joining( "," ));
+                .collect(Collectors.joining( ", " ));
         String batchesId = batchesList.stream()
                 .map(n -> n.getId().toString())
                 .collect(Collectors.joining( "," ));
