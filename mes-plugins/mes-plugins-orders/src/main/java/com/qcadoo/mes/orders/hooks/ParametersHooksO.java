@@ -53,12 +53,15 @@ public class ParametersHooksO {
 
     private static final String L_COMPLETE_STATION_AND_EMPLOYEE_IN_GENERATED_TASKS = "completeStationAndEmployeeInGeneratedTasks";
 
+    public static final String L_CONSIDER_MINIMUM_STOCK_LEVEL_WHEN_CREATING_PRODUCTION_ORDERS = "considerMinimumStockLevelWhenCreatingProductionOrders";
+
     @Autowired
     private OrderService orderService;
 
     public void onSave(final DataDefinition parameterDD, final Entity parameter) {
         if (!parameter.getBooleanField(ParameterFieldsO.REALIZATION_FROM_STOCK)) {
             parameter.setField(ParameterFieldsO.REALIZATION_LOCATIONS, Lists.newArrayList());
+            parameter.setField(L_CONSIDER_MINIMUM_STOCK_LEVEL_WHEN_CREATING_PRODUCTION_ORDERS, false);
         }
     }
 
@@ -93,7 +96,8 @@ public class ParametersHooksO {
         if (parameter.getDecimalField(OPTIMAL_PACK_SIZE) != null && parameter.getDecimalField(REST_FEEDING_LAST_PACK) != null
                 && parameter.getDecimalField(REST_FEEDING_LAST_PACK)
                         .compareTo(parameter.getDecimalField(OPTIMAL_PACK_SIZE)) >= 0) {
-            parameter.addError(parameterDD.getField(REST_FEEDING_LAST_PACK), "basic.parameter.restFeedingLastPackBiggerThanOptimalPackSize.error");
+            parameter.addError(parameterDD.getField(REST_FEEDING_LAST_PACK),
+                    "basic.parameter.restFeedingLastPackBiggerThanOptimalPackSize.error");
             isValid = false;
         }
 
@@ -119,11 +123,11 @@ public class ParametersHooksO {
     }
 
     public void onPlanningParametersBeforeRender(final ViewDefinitionState view) {
-        CheckBoxComponent automaticallyGenerateTasksForOrder = (CheckBoxComponent) view.getComponentByReference(
-                L_AUTOMATICALLY_GENERATE_TASKS_FOR_ORDER);
-        CheckBoxComponent completeStationAndEmployeeInGeneratedTasks = (CheckBoxComponent) view.getComponentByReference(
-                L_COMPLETE_STATION_AND_EMPLOYEE_IN_GENERATED_TASKS);
-        if(automaticallyGenerateTasksForOrder.isChecked()) {
+        CheckBoxComponent automaticallyGenerateTasksForOrder = (CheckBoxComponent) view
+                .getComponentByReference(L_AUTOMATICALLY_GENERATE_TASKS_FOR_ORDER);
+        CheckBoxComponent completeStationAndEmployeeInGeneratedTasks = (CheckBoxComponent) view
+                .getComponentByReference(L_COMPLETE_STATION_AND_EMPLOYEE_IN_GENERATED_TASKS);
+        if (automaticallyGenerateTasksForOrder.isChecked()) {
             completeStationAndEmployeeInGeneratedTasks.setEnabled(true);
         } else {
             completeStationAndEmployeeInGeneratedTasks.setEnabled(false);
