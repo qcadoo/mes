@@ -190,7 +190,7 @@ public class OrderHooks {
             String orderDescription = Optional.ofNullable(order.getStringField(OrderFields.DESCRIPTION)).orElse("");
             Optional.ofNullable(order.getBelongsToField(OrderFields.PRODUCT))
                     .flatMap(p -> Optional.ofNullable(p.getStringField(ProductFields.DESCRIPTION)))
-                    .ifPresent(e -> order.setField(OrderFields.DESCRIPTION, orderDescription + " " + e));
+                    .ifPresent(e -> order.setField(OrderFields.DESCRIPTION, orderDescription + "\n" + e));
 
         }
     }
