@@ -71,8 +71,8 @@ public class OperationProductInComponentHooks {
 
     private void copyQuantityToProductsBySize(final DataDefinition operationProductInComponentDD,
             final Entity operationProductInComponent) {
-        if (Objects.isNull(operationProductInComponent
-                .getField(OperationProductInComponentFields.VARIOUS_QUANTITIES_IN_PRODUCTS_BY_SIZE))) {
+        if (Objects.isNull(
+                operationProductInComponent.getField(OperationProductInComponentFields.VARIOUS_QUANTITIES_IN_PRODUCTS_BY_SIZE))) {
             operationProductInComponent.setField(OperationProductInComponentFields.VARIOUS_QUANTITIES_IN_PRODUCTS_BY_SIZE, false);
         }
 
@@ -82,37 +82,38 @@ public class OperationProductInComponentHooks {
                 && Objects.nonNull(operationProductInComponent.getId())) {
             Entity operationProductInComponentDb = operationProductInComponentDD.get(operationProductInComponent.getId());
             if (Objects.isNull(operationProductInComponentDb.getDecimalField(OperationProductInComponentFields.QUANTITY))
-                    || !operationProductInComponentDb.getDecimalField(OperationProductInComponentFields.QUANTITY).equals(
-                            operationProductInComponent.getDecimalField(OperationProductInComponentFields.QUANTITY))) {
+                    || !operationProductInComponentDb.getDecimalField(OperationProductInComponentFields.QUANTITY)
+                            .equals(operationProductInComponent.getDecimalField(OperationProductInComponentFields.QUANTITY))) {
 
                 operationProductInComponent.getHasManyField(OperationProductInComponentFields.PRODUCT_BY_SIZE_GROUPS)
-                        .forEach(
-                                pbs -> {
-                                    String opicUnit = operationProductInComponent
-                                            .getStringField(OperationProductInComponentFields.GIVEN_UNIT);
-                                    String productBySizeGroupUnit = pbs.getStringField(ProductBySizeGroupFields.GIVEN_UNIT);
-                                    if (opicUnit.equals(productBySizeGroupUnit)) {
-                                        pbs.setField(ProductBySizeGroupFields.GIVEN_QUANTITY, operationProductInComponent
-                                                .getDecimalField(OperationProductInComponentFields.GIVEN_QUANTITY));
-                                        pbs.setField(ProductBySizeGroupFields.GIVEN_UNIT, operationProductInComponent
-                                                .getStringField(OperationProductInComponentFields.GIVEN_UNIT));
-                                        calculateQuantityForPBSG(pbs);
-                                    } else {
-                                        PossibleUnitConversions unitConversions = unitConversionService.getPossibleConversions(
-                                                opicUnit, searchCriteriaBuilder -> searchCriteriaBuilder.add(SearchRestrictions
-                                                        .belongsTo(UnitConversionItemFieldsB.PRODUCT,
-                                                                pbs.getBelongsToField(ProductBySizeGroupFields.PRODUCT))));
-                                        if (unitConversions.isDefinedFor(productBySizeGroupUnit)) {
-                                            BigDecimal convertedQuantity = unitConversions.convertTo(operationProductInComponent
-                                                    .getDecimalField(OperationProductInComponentFields.GIVEN_QUANTITY),
+                        .forEach(pbs -> {
+                            String opicUnit = operationProductInComponent
+                                    .getStringField(OperationProductInComponentFields.GIVEN_UNIT);
+                            String productBySizeGroupUnit = pbs.getStringField(ProductBySizeGroupFields.GIVEN_UNIT);
+                            if (opicUnit.equals(productBySizeGroupUnit)) {
+                                pbs.setField(ProductBySizeGroupFields.GIVEN_QUANTITY, operationProductInComponent
+                                        .getDecimalField(OperationProductInComponentFields.GIVEN_QUANTITY));
+                                pbs.setField(ProductBySizeGroupFields.GIVEN_UNIT,
+                                        operationProductInComponent.getStringField(OperationProductInComponentFields.GIVEN_UNIT));
+                                calculateQuantityForPBSG(pbs);
+                            } else {
+                                PossibleUnitConversions unitConversions = unitConversionService.getPossibleConversions(opicUnit,
+                                        searchCriteriaBuilder -> searchCriteriaBuilder
+                                                .add(SearchRestrictions.belongsTo(UnitConversionItemFieldsB.PRODUCT,
+                                                        pbs.getBelongsToField(ProductBySizeGroupFields.PRODUCT))));
+                                if (unitConversions.isDefinedFor(productBySizeGroupUnit)) {
+                                    BigDecimal convertedQuantity = unitConversions
+                                            .convertTo(
+                                                    operationProductInComponent
+                                                            .getDecimalField(OperationProductInComponentFields.GIVEN_QUANTITY),
                                                     productBySizeGroupUnit);
-                                            pbs.setField(ProductBySizeGroupFields.GIVEN_QUANTITY, convertedQuantity);
-                                            calculateQuantityForPBSG(pbs);
-                                        }
-                                    }
-                                    pbs.getDataDefinition().save(pbs);
+                                    pbs.setField(ProductBySizeGroupFields.GIVEN_QUANTITY, convertedQuantity);
+                                    calculateQuantityForPBSG(pbs);
+                                }
+                            }
+                            pbs.getDataDefinition().save(pbs);
 
-                                });
+                        });
             }
         }
     }
@@ -130,8 +131,8 @@ public class OperationProductInComponentHooks {
                 productBySizeGroup.setField(ProductBySizeGroupFields.QUANTITY, givenQuantity);
             } else {
                 PossibleUnitConversions unitConversions = unitConversionService.getPossibleConversions(givenUnit,
-                        searchCriteriaBuilder -> searchCriteriaBuilder.add(SearchRestrictions.belongsTo(
-                                UnitConversionItemFieldsB.PRODUCT, product)));
+                        searchCriteriaBuilder -> searchCriteriaBuilder
+                                .add(SearchRestrictions.belongsTo(UnitConversionItemFieldsB.PRODUCT, product)));
 
                 if (unitConversions.isDefinedFor(baseUnit)) {
                     BigDecimal convertedQuantity = unitConversions.convertTo(givenQuantity, baseUnit);
@@ -153,8 +154,8 @@ public class OperationProductInComponentHooks {
     }
 
     private void setDifferentProductsInDifferentSizes(final Entity operationProductInComponent) {
-        if (Objects.isNull(operationProductInComponent
-                .getField(OperationProductInComponentFields.DIFFERENT_PRODUCTS_IN_DIFFERENT_SIZES))) {
+        if (Objects.isNull(
+                operationProductInComponent.getField(OperationProductInComponentFields.DIFFERENT_PRODUCTS_IN_DIFFERENT_SIZES))) {
             operationProductInComponent.setField(OperationProductInComponentFields.DIFFERENT_PRODUCTS_IN_DIFFERENT_SIZES, false);
         }
     }
@@ -173,22 +174,33 @@ public class OperationProductInComponentHooks {
     public boolean validatesWith(final DataDefinition operationProductInComponentDD, final Entity operationProductInComponent) {
         boolean isValid = true;
 
-        isValid = isValid
-                && checkIfTechnologyInputProductTypeOrProductIsSelected(operationProductInComponentDD,
-                        operationProductInComponent);
-        isValid = isValid
-                && checkIfOperationInputProductTypeIsUnique(operationProductInComponentDD, operationProductInComponent);
-        isValid = isValid
-                && technologyTreeValidators.invalidateIfBelongsToAcceptedTechnology(operationProductInComponentDD,
-                        operationProductInComponent);
+        isValid = isValid && checkIfTechnologyInputProductTypeOrProductIsSelected(operationProductInComponentDD,
+                operationProductInComponent);
+        isValid = isValid && checkIfOperationInputProductTypeIsUnique(operationProductInComponentDD, operationProductInComponent);
+        isValid = isValid && technologyTreeValidators.invalidateIfBelongsToAcceptedTechnology(operationProductInComponentDD,
+                operationProductInComponent);
         isValid = isValid
                 && technologyTreeValidators.invalidateIfWrongFormula(operationProductInComponentDD, operationProductInComponent);
-        isValid = isValid
-                && technologyService.invalidateIfAlreadyInTheSameOperation(operationProductInComponentDD,
-                        operationProductInComponent);
+        isValid = isValid && technologyService.invalidateIfAlreadyInTheSameOperation(operationProductInComponentDD,
+                operationProductInComponent);
+        isValid = isValid && checkIfProductBySizeFilled(operationProductInComponentDD, operationProductInComponent);
         isValid = isValid && checkIfGivenUnitChanged(operationProductInComponentDD, operationProductInComponent);
 
         return isValid;
+    }
+
+    private boolean checkIfProductBySizeFilled(DataDefinition operationProductInComponentDD, Entity operationProductInComponent) {
+        if (!operationProductInComponent.getBooleanField(OperationProductInComponentFields.VARIOUS_QUANTITIES_IN_PRODUCTS_BY_SIZE)
+                && !operationProductInComponent.getHasManyField(OperationProductInComponentFields.PRODUCT_BY_SIZE_GROUPS)
+                        .isEmpty()
+                && (Objects.isNull(operationProductInComponent.getDecimalField(OperationProductInComponentFields.GIVEN_QUANTITY))
+                        || StringUtils.isEmpty(
+                                operationProductInComponent.getStringField(OperationProductInComponentFields.GIVEN_UNIT)))) {
+            operationProductInComponent
+                    .addGlobalError("technologies.operationProductInComponent.error.productBySizeFilledAndQuantityIsNull");
+            return false;
+        }
+        return true;
     }
 
     private boolean checkIfGivenUnitChanged(DataDefinition operationProductInComponentDD, Entity operationProductInComponent) {
@@ -199,23 +211,31 @@ public class OperationProductInComponentHooks {
             Entity operationProductInComponentDb = operationProductInComponentDD.get(operationProductInComponent.getId());
 
             if (StringUtils.isEmpty(operationProductInComponentDb.getStringField(OperationProductInComponentFields.GIVEN_UNIT))
-                    || !operationProductInComponentDb.getStringField(OperationProductInComponentFields.GIVEN_UNIT).equals(
-                            operationProductInComponent.getStringField(OperationProductInComponentFields.GIVEN_UNIT))) {
+                    || !operationProductInComponentDb.getStringField(OperationProductInComponentFields.GIVEN_UNIT)
+                            .equals(operationProductInComponent.getStringField(OperationProductInComponentFields.GIVEN_UNIT))) {
 
                 String opicUnit = operationProductInComponent.getStringField(OperationProductInComponentFields.GIVEN_UNIT);
 
                 for (Entity pbsg : operationProductInComponent
                         .getHasManyField(OperationProductInComponentFields.PRODUCT_BY_SIZE_GROUPS)) {
-                    String productBySizeGroupUnit = pbsg.getBelongsToField(ProductBySizeGroupFields.PRODUCT).getStringField(ProductFields.UNIT);
+                    String productBySizeGroupUnit = pbsg.getBelongsToField(ProductBySizeGroupFields.PRODUCT)
+                            .getStringField(ProductFields.UNIT);
+                    if(StringUtils.isEmpty(opicUnit)) {
+                        operationProductInComponent.addGlobalError(
+                                "technologies.operationProductInComponent.error.unitChangedRemoveProductsBySizeGroup");
 
+                        return false;
+                    }
                     if (!opicUnit.equals(productBySizeGroupUnit)) {
-                        PossibleUnitConversions unitConversions = unitConversionService.getPossibleConversions(productBySizeGroupUnit,
-                                searchCriteriaBuilder -> searchCriteriaBuilder.add(SearchRestrictions
-                                        .belongsTo(UnitConversionItemFieldsB.PRODUCT, pbsg.getBelongsToField(ProductBySizeGroupFields.PRODUCT))));
+                        PossibleUnitConversions unitConversions = unitConversionService.getPossibleConversions(
+                                productBySizeGroupUnit,
+                                searchCriteriaBuilder -> searchCriteriaBuilder
+                                        .add(SearchRestrictions.belongsTo(UnitConversionItemFieldsB.PRODUCT,
+                                                pbsg.getBelongsToField(ProductBySizeGroupFields.PRODUCT))));
 
                         if (!unitConversions.isDefinedFor(opicUnit)) {
-                            operationProductInComponent
-                                    .addGlobalError("technologies.operationProductInComponent.error.unitChangedRemoveProductsBySizeGroup");
+                            operationProductInComponent.addGlobalError(
+                                    "technologies.operationProductInComponent.error.unitChangedRemoveProductsBySizeGroup");
 
                             return false;
                         }
@@ -236,7 +256,7 @@ public class OperationProductInComponentHooks {
         Entity technologyInputProductType = operationProductInComponent
                 .getBelongsToField(OperationProductInComponentFields.TECHNOLOGY_INPUT_PRODUCT_TYPE);
 
-        if(Objects.isNull(technologyInputProductType)) {
+        if (Objects.isNull(technologyInputProductType)) {
             return true;
         }
 
@@ -244,11 +264,10 @@ public class OperationProductInComponentHooks {
 
         SearchCriteriaBuilder searchCriteriaBuilder = operationProductInComponentDD.find();
 
-        searchCriteriaBuilder.add(SearchRestrictions.belongsTo(OperationProductInComponentFields.OPERATION_COMPONENT,
-                operationComponent));
+        searchCriteriaBuilder
+                .add(SearchRestrictions.belongsTo(OperationProductInComponentFields.OPERATION_COMPONENT, operationComponent));
         searchCriteriaBuilder.add(SearchRestrictions.belongsTo(OperationProductInComponentFields.TECHNOLOGY_INPUT_PRODUCT_TYPE,
                 technologyInputProductType));
-
 
         if (Objects.nonNull(operationProductInComponentId)) {
             searchCriteriaBuilder.add(SearchRestrictions.idNe(operationProductInComponentId));
@@ -259,7 +278,8 @@ public class OperationProductInComponentHooks {
         List<Entity> operationProductInComponents = searchCriteriaBuilder.list().getEntities();
 
         if (!operationProductInComponents.isEmpty()) {
-            operationProductInComponent.addGlobalError("technologies.operationProductInComponent.error.inputProductTypeNotUnique");
+            operationProductInComponent
+                    .addGlobalError("technologies.operationProductInComponent.error.inputProductTypeNotUnique");
 
             return false;
         }

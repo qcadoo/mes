@@ -5,20 +5,37 @@ import com.qcadoo.model.api.BigDecimalUtils;
 import com.qcadoo.model.api.Entity;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Objects;
 
 public class ProductionCountingQuantityHolder {
 
     private Long productId;
+    private Long batchId;
     private Entity product;
+    private Entity batch;
     private BigDecimal usedQuantity;
+    private BigDecimal conversion;
+    private BigDecimal givenQuantity;
+    private String givenUnit;
     private BigDecimal plannedQuantity;
 
-    public ProductionCountingQuantityHolder(Entity pcq) {
+    public ProductionCountingQuantityHolder(Entity pcq, boolean useUsedQuantity) {
         this.productId = pcq.getBelongsToField(ProductionCountingQuantityFields.PRODUCT).getId();
         this.product = pcq.getBelongsToField(ProductionCountingQuantityFields.PRODUCT);
         this.usedQuantity = BigDecimalUtils.convertNullToZero(pcq.getDecimalField(ProductionCountingQuantityFields.USED_QUANTITY));
         this.plannedQuantity = pcq.getDecimalField(ProductionCountingQuantityFields.PLANNED_QUANTITY);
+        if(!useUsedQuantity) {
+            List<Entity> batches = pcq.getHasManyField(ProductionCountingQuantityFields.BATCHES);
+            if(batches.size() == 1) {
+                this.batch = batches.get(0);
+                this.batchId = getBatch().getId();
+            }
+        }
+    }
+
+    public ProductionCountingQuantityHolder() {
+
     }
 
     public Long getProductId() {
@@ -53,16 +70,56 @@ public class ProductionCountingQuantityHolder {
         this.plannedQuantity = plannedQuantity;
     }
 
+    public Long getBatchId() {
+        return batchId;
+    }
+
+    public void setBatchId(Long batchId) {
+        this.batchId = batchId;
+    }
+
+    public Entity getBatch() {
+        return batch;
+    }
+
+    public void setBatch(Entity batch) {
+        this.batch = batch;
+    }
+
+    public BigDecimal getConversion() {
+        return conversion;
+    }
+
+    public void setConversion(BigDecimal conversion) {
+        this.conversion = conversion;
+    }
+
+    public BigDecimal getGivenQuantity() {
+        return givenQuantity;
+    }
+
+    public void setGivenQuantity(BigDecimal givenQuantity) {
+        this.givenQuantity = givenQuantity;
+    }
+
+    public String getGivenUnit() {
+        return givenUnit;
+    }
+
+    public void setGivenUnit(String givenUnit) {
+        this.givenUnit = givenUnit;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         ProductionCountingQuantityHolder that = (ProductionCountingQuantityHolder) o;
-        return Objects.equals(productId, that.productId);
+        return Objects.equals(productId, that.productId) && Objects.equals(batchId, that.batchId);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(productId);
+        return Objects.hash(productId, batchId);
     }
 }

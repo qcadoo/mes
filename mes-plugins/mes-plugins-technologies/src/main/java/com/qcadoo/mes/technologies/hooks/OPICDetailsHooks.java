@@ -39,8 +39,11 @@ import com.qcadoo.view.api.components.GridComponent;
 import com.qcadoo.view.api.components.LookupComponent;
 import com.qcadoo.view.constants.QcadooViewConstants;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.Objects;
 
 @Service
 public class OPICDetailsHooks {
@@ -61,14 +64,18 @@ public class OPICDetailsHooks {
         CheckBoxComponent variousQuantitiesInProductsBySizeCheckBox = (CheckBoxComponent) view
                 .getComponentByReference(OperationProductInComponentFields.VARIOUS_QUANTITIES_IN_PRODUCTS_BY_SIZE);
 
-        if(differentProductsInDifferentSizesCheckBox.isChecked()) {
+        if (differentProductsInDifferentSizesCheckBox.isChecked()) {
             variousQuantitiesInProductsBySizeCheckBox.setEnabled(Boolean.TRUE);
-            FieldComponent quantityField = (FieldComponent) view.getComponentByReference(OperationProductInComponentFields.QUANTITY);
+            FieldComponent quantityField = (FieldComponent) view
+                    .getComponentByReference(OperationProductInComponentFields.QUANTITY);
             FieldComponent unitField = (FieldComponent) view.getComponentByReference(OperationProductInComponentFields.UNIT);
-            FieldComponent quantityFormulaField = (FieldComponent) view.getComponentByReference(OperationProductInComponentFields.QUANTITY_FORMULA);
-            FieldComponent givenQuantityField = (FieldComponent) view.getComponentByReference(OperationProductInComponentFields.GIVEN_QUANTITY);
-            FieldComponent givenUnitField = (FieldComponent) view.getComponentByReference(OperationProductInComponentFields.GIVEN_UNIT);
-            if(variousQuantitiesInProductsBySizeCheckBox.isChecked()) {
+            FieldComponent quantityFormulaField = (FieldComponent) view
+                    .getComponentByReference(OperationProductInComponentFields.QUANTITY_FORMULA);
+            FieldComponent givenQuantityField = (FieldComponent) view
+                    .getComponentByReference(OperationProductInComponentFields.GIVEN_QUANTITY);
+            FieldComponent givenUnitField = (FieldComponent) view
+                    .getComponentByReference(OperationProductInComponentFields.GIVEN_UNIT);
+            if (variousQuantitiesInProductsBySizeCheckBox.isChecked()) {
                 quantityField.setFieldValue(null);
                 unitField.setFieldValue(null);
                 quantityFormulaField.setFieldValue(null);
@@ -97,6 +104,13 @@ public class OPICDetailsHooks {
         FormComponent operationProductInComponentForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         CheckBoxComponent differentProductsInDifferentSizesCheckBox = (CheckBoxComponent) view
                 .getComponentByReference(OperationProductInComponentFields.DIFFERENT_PRODUCTS_IN_DIFFERENT_SIZES);
+        CheckBoxComponent variousQuantitiesInProductsBySize = (CheckBoxComponent) view
+                .getComponentByReference(OperationProductInComponentFields.VARIOUS_QUANTITIES_IN_PRODUCTS_BY_SIZE);
+        FieldComponent givenQuantity = (FieldComponent) view
+                .getComponentByReference(OperationProductInComponentFields.GIVEN_QUANTITY);
+        FieldComponent givenQuantityUnit = (FieldComponent) view
+                .getComponentByReference(OperationProductInComponentFields.GIVEN_UNIT);
+
         LookupComponent productLookup = (LookupComponent) view.getComponentByReference(OperationProductInComponentFields.PRODUCT);
         GridComponent productBySizeGroupsGrid = (GridComponent) view
                 .getComponentByReference(OperationProductInComponentFields.PRODUCT_BY_SIZE_GROUPS);
@@ -122,6 +136,13 @@ public class OPICDetailsHooks {
         productLookup.setEnabled(!isChecked);
         productLookup.requestComponentUpdateState();
         productBySizeGroupsGrid.setEnabled(isChecked);
+
+        String givenQuantityValue = (String) givenQuantity.getFieldValue();
+        String givenQuantityUnitValue = (String) givenQuantityUnit.getFieldValue();
+        if (!variousQuantitiesInProductsBySize.isChecked() && (StringUtils.isEmpty(givenQuantityValue)
+                || StringUtils.isEmpty(givenQuantityUnitValue))) {
+            productBySizeGroupsGrid.setEnabled(false);
+        }
     }
 
 }
