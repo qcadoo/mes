@@ -23,10 +23,7 @@ import com.qcadoo.model.api.EntityList;
 import com.qcadoo.model.api.NumberService;
 
 import java.math.BigDecimal;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -195,6 +192,7 @@ public class OrderMaterialAvailability {
                         && material.getStringField(ProductionCountingQuantityFields.TYPE_OF_MATERIAL).equals(
                                 ProductionCountingQuantityTypeOfMaterial.COMPONENT.getStringValue()))
                 .collect(Collectors.toList());
+
         Map<Long, Map<Long, List<Entity>>> groupedMaterials = usedMaterials.stream().collect(
                 Collectors.groupingBy(
                         u -> ((Entity) u).getBelongsToField(ProductionCountingQuantityFields.PRODUCT).getId(),
@@ -214,9 +212,17 @@ public class OrderMaterialAvailability {
                     Entity location = baseUsedMaterial
                             .getBelongsToField(ProductionCountingQuantityFieldsPFTD.COMPONENTS_LOCATION);
 
+                    Map<Long, Entity> batchesById = Maps.newHashMap();
+                    for (Entity pcq : warehouseEntry.getValue()) {
+                        for (Entity batch : pcq.getHasManyField(ProductionCountingQuantityFields.BATCHES)) {
+                            batchesById.put(batch.getId(), batch);
+                        }
+                    }
+
+
 
                     newOrderMaterialAvailability.add(createMaterialAvailabilityEntity(orderMaterialAvailabilityDD, product,
-                            order, totalQuantity, location, baseUsedMaterial.getHasManyField(ProductionCountingQuantityFields.BATCHES)));
+                            order, totalQuantity, location, batchesById.values()));
                 }
             }
         }
@@ -225,7 +231,7 @@ public class OrderMaterialAvailability {
     }
 
     private Entity createMaterialAvailabilityEntity(final DataDefinition orderMaterialAvailabilityDD, final Entity product,
-                                                    final Entity order, final BigDecimal value, final Entity location, EntityList batchesList) {
+                                                    final Entity order, final BigDecimal value, final Entity location, Collection<Entity> batchesList) {
         Entity materialAvailability = orderMaterialAvailabilityDD.create();
 
         List<Entity> replacements = product.getDataDefinition().get(product.getId())
