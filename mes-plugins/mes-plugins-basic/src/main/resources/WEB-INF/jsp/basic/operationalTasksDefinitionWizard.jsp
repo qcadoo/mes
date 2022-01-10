@@ -121,7 +121,7 @@
                                  <div class="input-group-prepend">
                                     <label class="form-label required " for="otStartDate">${translationsMap['basic.dashboard.orderDefinitionWizard.form.startDate']}</label>
                                  </div>
-                                 <input type="text" class="form-control" id="otStartDate" autocomplete="off"//>
+                                 <input type="text" class="form-control" id="otStartDate" autocomplete="off"/>
                                  <div class="input-group-append">
                                     <button class="btn btn-outline-secondary bg-primary text-white " id="otStartDatePicker" type="button">
                                     <span class="glyphicon glyphicon-calendar"></span>
@@ -141,7 +141,7 @@
                                  <div class="input-group-prepend">
                                     <label class="form-label required " for="otFinishDate">${translationsMap['basic.dashboard.orderDefinitionWizard.form.finishDate']}</label>
                                  </div>
-                                 <input type="text" class="form-control" id="otFinishDate" autocomplete="off"//>
+                                 <input type="text" class="form-control" id="otFinishDate" autocomplete="off"/>
                                  <div class="input-group-append">
                                     <button class="btn btn-outline-secondary bg-primary text-white " id="otFinishDatePicker" type="button">
                                     <span class="glyphicon glyphicon-calendar"></span>

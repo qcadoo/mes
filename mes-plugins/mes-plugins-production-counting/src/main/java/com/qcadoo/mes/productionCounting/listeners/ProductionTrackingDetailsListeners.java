@@ -477,25 +477,14 @@ public class ProductionTrackingDetailsListeners {
         }
     }
 
-    public void fillShiftAndDivisionField(final ViewDefinitionState view, final ComponentState component, final String[] args) {
+    public void onStaffChange(final ViewDefinitionState view, final ComponentState component, final String[] args) {
         LookupComponent staffLookup = (LookupComponent) view.getComponentByReference(ProductionTrackingFields.STAFF);
-        LookupComponent shiftLookup = (LookupComponent) view.getComponentByReference(ProductionTrackingFields.SHIFT);
         LookupComponent divisionLookup = (LookupComponent) view.getComponentByReference(ProductionTrackingFields.DIVISION);
 
         Entity staff = staffLookup.getEntity();
 
         if (Objects.isNull(staff)) {
-            shiftLookup.setFieldValue(null);
-
             return;
-        }
-
-        Entity shift = staff.getBelongsToField(StaffFields.SHIFT);
-
-        if (Objects.isNull(shift)) {
-            shiftLookup.setFieldValue(null);
-        } else {
-            shiftLookup.setFieldValue(shift.getId());
         }
 
         Entity division = staff.getBelongsToField(StaffFields.DIVISION);

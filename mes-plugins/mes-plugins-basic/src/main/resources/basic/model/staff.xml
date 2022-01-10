@@ -46,7 +46,6 @@
         </string>
         <string name="post"/>
         <belongsTo name="workFor" model="company"/>
-        <belongsTo name="shift" model="shift"/>
         <belongsTo name="division" model="division"/>
         <belongsTo name="crew" model="crew"/>
         <belongsTo name="workstation" model="workstation"/>

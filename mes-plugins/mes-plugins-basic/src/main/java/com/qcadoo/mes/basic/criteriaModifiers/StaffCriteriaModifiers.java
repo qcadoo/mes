@@ -26,8 +26,10 @@ package com.qcadoo.mes.basic.criteriaModifiers;
 import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.basic.constants.DivisionFields;
 import com.qcadoo.mes.basic.constants.StaffFields;
+import com.qcadoo.mes.basic.constants.WorkstationFields;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.search.JoinType;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.view.api.components.lookup.FilterValueHolder;
@@ -43,6 +45,12 @@ public class StaffCriteriaModifiers {
 
     private static final String DIVISION_ID = "division_id";
 
+    private static final String L_PRODUCTION_LINE_ID = "productionLine_id";
+
+    private static final String L_PRODUCTION_LINES = "productionLines";
+
+    private static final String L_PRODUCTION_LINE = "productionLine";
+
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
@@ -50,19 +58,39 @@ public class StaffCriteriaModifiers {
         scb.add(SearchRestrictions.isNull(StaffFields.CREW));
     }
 
-    public void filterByDivision(final SearchCriteriaBuilder scb, final FilterValueHolder filterValueHolder) {
+    public void selectWorkstation(final SearchCriteriaBuilder scb, final FilterValueHolder filterValueHolder) {
 
         if (filterValueHolder.has(DIVISION_ID)) {
+            Long divisionId = filterValueHolder.getLong(DIVISION_ID);
+
+            scb.createAlias(WorkstationFields.DIVISION, WorkstationFields.DIVISION, JoinType.INNER).add(
+                    SearchRestrictions.eq(WorkstationFields.DIVISION + ".id", divisionId));
+        }
+
+        if (filterValueHolder.has(L_PRODUCTION_LINE_ID)) {
+            Long productionLineId = filterValueHolder.getLong(L_PRODUCTION_LINE_ID);
+
+            scb.createAlias(L_PRODUCTION_LINE, L_PRODUCTION_LINE,
+                    JoinType.INNER).add(SearchRestrictions.eq(L_PRODUCTION_LINE + ".id", productionLineId));
+
+        }
+    }
+
+    public void selectProductionLine(final SearchCriteriaBuilder scb, final FilterValueHolder filterValueHolder) {
+        if (filterValueHolder.has(DIVISION_ID)) {
+            Long divisionId = filterValueHolder.getLong(DIVISION_ID);
 
             Entity division = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_DIVISION).get(
-                    filterValueHolder.getLong(DIVISION_ID));
-            List<Long> ids = division.getHasManyField(DivisionFields.WORKSTATIONS).stream().map(w -> w.getId())
-                    .collect(Collectors.toList());
-            if (!ids.isEmpty()) {
-                scb.add(SearchRestrictions.in("id", ids));
-            } else {
-                scb.add(SearchRestrictions.idEq(-1l));
+                    divisionId);
+
+            List<Long> productionLinesIds = division.getHasManyField(L_PRODUCTION_LINES).stream()
+                    .map(Entity::getId).collect(Collectors.toList());
+
+            if (productionLinesIds.isEmpty()) {
+                return;
             }
+
+            scb.add(SearchRestrictions.in("id", productionLinesIds));
         }
     }
 }

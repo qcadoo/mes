@@ -437,7 +437,7 @@
 
                             <listener event="onSelectedEntityChange"
                                       class="com.qcadoo.mes.productionCounting.listeners.ProductionTrackingDetailsListeners"
-                                      method="fillShiftAndDivisionField"/>
+                                      method="onStaffChange"/>
                         </component>
                         <component type="lookup" name="workstation"
                                    reference="workstation" field="workstation">
