@@ -458,6 +458,7 @@
 
         <menu:menu-category name="orders" defaultAuthorizationRole="ROLE_PLANNING_MENU"/>
         <menu:menu-category name="ordersTracking" defaultAuthorizationRole="ROLE_ORDERS_TRACKING"/>
+        <menu:menu-category name="analysis" defaultAuthorizationRole="ROLE_ANALYSIS_VIEWER"/>
 
         <menu:menu-item name="productionOrders" category="orders"
                         view="ordersList" defaultAuthorizationRole="ROLE_PLANNING"/>
