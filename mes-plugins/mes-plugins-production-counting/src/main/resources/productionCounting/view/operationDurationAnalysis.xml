@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    ***************************************************************************
+    Copyright (c) 2010 Qcadoo Limited
+    Project: Qcadoo Framework
+    Version: 1.4
+
+    This file is part of Qcadoo.
+
+    Qcadoo is free software; you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as published
+    by the Free Software Foundation; either version 3 of the License,
+    or (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty
+    of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+    See the GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+    ***************************************************************************
+
+-->
+<view defaultAuthorizationRole="ROLE_ANALYSIS_VIEWER" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns="http://schema.qcadoo.org/view"
+      xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
+      name="operationDurationAnalysis" menuAccessible="true" modelPlugin="technologies" modelName="technologyOperationComponent">
+
+    <component type="window" name="window" reference="window">
+        <ribbon>
+            <group name="actions">
+                <bigButton name="loadData" icon="startIcon24.png" state="enabled">
+                    <script>
+                        <![CDATA[
+                                this.addOnChangeListener({
+                                    onClick: function() {
+                                        QCD.operationDurationAnalysis.loadData();
+                                    }
+                                });
+                            ]]>
+                    </script>
+                </bigButton>
+            </group>
+
+            <group name="genericExport">
+                <smallButton name="csv" state="enabled" icon="exportToCsvIcon16.png">
+                    <script>
+                        <![CDATA[
+                            this.addOnChangeListener({
+                                onClick: function() {
+                                    QCD.operationDurationAnalysis.exportToCsv();
+                                }
+                            });
+                        ]]>
+                    </script>
+                </smallButton>
+            </group>
+        </ribbon>
+
+        <windowTab name="mainTab">
+            <component type="form" name="form" reference="form">
+                <component type="gridLayout" name="gridLayout"
+                           reference="gridLayout" columns="3" rows="2">
+                    <layoutElement column="1" row="1">
+                        <component type="calendar" name="dateFrom" reference="dateFrom"
+                                   hasDescription="true"/>
+                    </layoutElement>
+                    <layoutElement column="1" row="2">
+                        <component type="calendar" name="dateTo" reference="dateTo"/>
+                    </layoutElement>
+                </component>
+            </component>
+        </windowTab>
+
+        <windowTab name="dataTab">
+            <component type="form" name="dataForm" reference="dataForm">
+                <component type="flowLayout" name="layout">
+                    <component type="staticPage" name="operationDurationAnalysis" reference="operationDurationAnalysis">
+                        <option type="page" value="productionCounting/operationDurationAnalysis.jsp"/>
+                    </component>
+                </component>
+            </component>
+        </windowTab>
+
+        <option type="header" value="false"/>
+        <option type="fixedHeight" value="true"/>
+    </component>
+</view>

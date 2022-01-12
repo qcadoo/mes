@@ -128,8 +128,8 @@ public class OrderTechnologicalProcessesAnalysisDataProvider {
 
         appendBaseQuery(query);
 
-        query.append("WHERE ((ordertechnologicalprocessdto.date IS NOT NULL AND ordertechnologicalprocessdto.date BETWEEN '").append(dateFrom).append("' AND '").append(dateTo + L_TIME_PART).append("') ");
-        query.append("OR (ordertechnologicalprocessdto.date IS NULL AND ordertechnologicalprocessdto.orderstartdate BETWEEN '").append(dateFrom).append("' AND '").append(dateTo + L_TIME_PART).append("')) ");
+        query.append("WHERE ((ordertechnologicalprocessdto.date IS NOT NULL AND ordertechnologicalprocessdto.date BETWEEN '").append(dateFrom).append("' AND '").append(dateTo).append(L_TIME_PART).append("') ");
+        query.append("OR (ordertechnologicalprocessdto.date IS NULL AND ordertechnologicalprocessdto.orderstartdate BETWEEN '").append(dateFrom).append("' AND '").append(dateTo).append(L_TIME_PART).append("')) ");
 
         appendFilters(filters, query);
 

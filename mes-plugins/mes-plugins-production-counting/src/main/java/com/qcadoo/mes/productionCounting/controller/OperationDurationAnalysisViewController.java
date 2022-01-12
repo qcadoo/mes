@@ -14,7 +14,7 @@ import com.qcadoo.mes.productionCounting.constants.ProductionCountingConstants;
 import com.qcadoo.view.api.crud.CrudService;
 
 @Controller
-public class EmployeeWorkingTimeSettlementViewController {
+public class OperationDurationAnalysisViewController {
 
     @Autowired
     private CrudService crudService;
@@ -22,14 +22,19 @@ public class EmployeeWorkingTimeSettlementViewController {
     @Autowired
     private TranslationService translationService;
 
-    @RequestMapping("/employeeWorkingTimeSettlement")
-    public ModelAndView getAnalysisView(final Locale locale) {
+    @RequestMapping("/operationDurationAnalysis")
+    public ModelAndView getOperationDurationAnalysisView(final Locale locale) {
         ModelAndView mav = crudService.prepareView(ProductionCountingConstants.PLUGIN_IDENTIFIER,
-                ProductionCountingConstants.VIEW_EMPLOYEE_WORKING_TIME_SETTLEMENT, Collections.emptyMap(), locale);
+                ProductionCountingConstants.VIEW_OPERATION_DURATION_ANALYSIS, Collections.emptyMap(), locale);
+
         Map<String, String> slickGridTranslations = translationService.getMessagesGroup("slickGrid", locale);
+
         slickGridTranslations.putAll(translationService.getMessagesGroup("commons", locale));
-        slickGridTranslations.putAll(translationService.getMessagesGroup("employeeWorkingTimeSettlement", locale));
+        slickGridTranslations.putAll(translationService.getMessagesGroup("operationDurationAnalysis", locale));
+
         mav.addObject("slickGridTranslations", slickGridTranslations);
+
         return mav;
     }
+
 }

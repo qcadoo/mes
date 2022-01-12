@@ -23,7 +23,7 @@ public class OrderTechnologicalProcessesAnalysisViewController {
     private TranslationService translationService;
 
     @RequestMapping("/orderTechnologicalProcessesAnalysis")
-    public ModelAndView getGenealogyAnalysisView(final Locale locale) {
+    public ModelAndView getAnalysisView(final Locale locale) {
         ModelAndView mav = crudService.prepareView(OrdersConstants.PLUGIN_IDENTIFIER,
                 OrdersConstants.VIEW_ORDER_TECHNOLOGICAL_PROCESSES_ANALYSIS, Collections.emptyMap(), locale);
 
