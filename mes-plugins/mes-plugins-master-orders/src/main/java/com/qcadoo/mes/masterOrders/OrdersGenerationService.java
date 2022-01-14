@@ -1,5 +1,23 @@
 package com.qcadoo.mes.masterOrders;
 
+import static com.qcadoo.mes.orders.constants.OrderFields.PRODUCTION_LINE;
+
+import java.math.BigDecimal;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
+
+import org.apache.commons.lang3.StringUtils;
+import org.joda.time.DateTime;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.basic.ShiftsService;
 import com.qcadoo.mes.basic.constants.BasicConstants;
@@ -23,23 +41,6 @@ import com.qcadoo.model.api.exception.EntityRuntimeException;
 import com.qcadoo.model.api.search.SearchOrders;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
-
-import java.math.BigDecimal;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
-
-import org.apache.commons.lang3.StringUtils;
-import org.joda.time.DateTime;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
-import static com.qcadoo.mes.orders.constants.OrderFields.PRODUCTION_LINE;
 
 @Service
 public class OrdersGenerationService {
@@ -80,13 +81,14 @@ public class OrdersGenerationService {
     @Autowired
     private NumberGeneratorService numberGeneratorService;
 
-    public void createOrders(GenerationOrderResult result, Set<Long> ids, BigDecimal plannedQuantity, Date dateFrom, Date dateTo) {
+    public void createOrders(GenerationOrderResult result, Set<Long> ids, BigDecimal plannedQuantity, Date dateFrom,
+            Date dateTo) {
         Entity parameters = parameterService.getParameter();
         boolean automaticPps = parameters.getBooleanField(L_PPS_IS_AUTOMATIC);
 
         ids.forEach(productId -> {
-            Entity product = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PRODUCT).get(
-                    productId);
+            Entity product = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PRODUCT)
+                    .get(productId);
             Entity order = createOrder(parameters, null, product, plannedQuantity, null, dateFrom, dateTo);
             if (!order.isValid()) {
                 result.addGeneratedOrderNumber(product.getStringField(ProductFields.NUMBER));
@@ -175,12 +177,12 @@ public class OrdersGenerationService {
     }
 
     @Transactional
-    public Entity createOrder(Entity parameters, Entity technology, final Entity product, final BigDecimal plannedQuantity, Entity salesPlan,
-            final Date dateFrom, final Date dateTo) {
+    public Entity createOrder(Entity parameters, Entity technology, final Entity product, final BigDecimal plannedQuantity,
+            Entity salesPlan, final Date dateFrom, final Date dateTo) {
 
         Entity order = getOrderDD().create();
 
-        if(Objects.isNull(technology)) {
+        if (Objects.isNull(technology)) {
             technology = technologyServiceO.getDefaultTechnology(product);
         }
 
@@ -199,7 +201,7 @@ public class OrdersGenerationService {
         order.setField(OrderFields.PLANNED_QUANTITY, plannedQuantity);
 
         order.setField(IGNORE_MISSING_COMPONENTS, parameters.getBooleanField(IGNORE_MISSING_COMPONENTS));
-        order.setField(OrderFields.DESCRIPTION, buildDescription(parameters, technology));
+        order.setField(OrderFields.DESCRIPTION, buildDescription(parameters, technology, product));
         order.setField(OrderFieldsMO.SALES_PLAN, salesPlan);
         return order.getDataDefinition().save(order);
 
@@ -308,9 +310,13 @@ public class OrdersGenerationService {
         return 0;
     }
 
-    private String buildDescription(Entity parameters, Entity technology) {
+    private String buildDescription(Entity parameters, Entity technology, Entity product) {
         boolean fillOrderDescriptionBasedOnTechnology = parameters
                 .getBooleanField(ParameterFieldsO.FILL_ORDER_DESCRIPTION_BASED_ON_TECHNOLOGY_DESCRIPTION);
+
+        boolean fillOrderDescriptionBasedOnProductDescription = parameters
+                .getBooleanField(ParameterFieldsO.FILL_ORDER_DESCRIPTION_BASED_ON_PRODUCT_DESCRIPTION);
+
         StringBuilder descriptionBuilder = new StringBuilder();
         if (fillOrderDescriptionBasedOnTechnology && Objects.nonNull(technology)
                 && StringUtils.isNoneBlank(technology.getStringField(TechnologyFields.DESCRIPTION))) {
@@ -319,6 +325,16 @@ public class OrdersGenerationService {
             }
             descriptionBuilder.append(technology.getStringField(TechnologyFields.DESCRIPTION));
 
+        }
+
+        if (fillOrderDescriptionBasedOnProductDescription && Objects.nonNull(product)) {
+            String productDescription = product.getStringField(ProductFields.DESCRIPTION);
+            if (StringUtils.isNoneBlank(productDescription)) {
+                if (StringUtils.isNoneBlank(descriptionBuilder.toString())) {
+                    descriptionBuilder.append("\n");
+                }
+                descriptionBuilder.append(productDescription);
+            }
         }
         return descriptionBuilder.toString();
     }

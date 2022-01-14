@@ -181,18 +181,6 @@ public class OrderHooks {
         }
 
         fillStartDateFromParameters(order);
-        fillDescriptionFromProduct(order);
-    }
-
-    private void fillDescriptionFromProduct(Entity order) {
-        if (parameterService.getParameter()
-                .getBooleanField(ParameterFieldsO.FILL_ORDER_DESCRIPTION_BASED_ON_PRODUCT_DESCRIPTION)) {
-            String orderDescription = Optional.ofNullable(order.getStringField(OrderFields.DESCRIPTION)).orElse("");
-            Optional.ofNullable(order.getBelongsToField(OrderFields.PRODUCT))
-                    .flatMap(p -> Optional.ofNullable(p.getStringField(ProductFields.DESCRIPTION)))
-                    .ifPresent(e -> order.setField(OrderFields.DESCRIPTION, orderDescription + "\n" + e));
-
-        }
     }
 
     private void fillStartDateFromParameters(final Entity order) {

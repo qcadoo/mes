@@ -116,14 +116,15 @@ public class OrderDetailsHooksMO {
             Date masterOrderStartDate = masterOrder.getDateField(MasterOrderFields.START_DATE);
             Date masterOrderFinishDate = masterOrder.getDateField(MasterOrderFields.FINISH_DATE);
             Entity masterOrderAddress = masterOrder.getBelongsToField(MasterOrderFields.ADDRESS);
-            Entity masterOrderProductDto = dataDefinitionService.get(MasterOrdersConstants.PLUGIN_IDENTIFIER,
-                    MasterOrdersConstants.MODEL_MASTER_ORDER_POSITION_DTO).get(productComponent.getId());
+            Entity masterOrderProductDto = dataDefinitionService
+                    .get(MasterOrdersConstants.PLUGIN_IDENTIFIER, MasterOrdersConstants.MODEL_MASTER_ORDER_POSITION_DTO)
+                    .get(productComponent.getId());
 
-            BigDecimal masterOrderQuantity = BigDecimalUtils.convertNullToZero(productComponent
-                    .getDecimalField(MasterOrderProductFields.MASTER_ORDER_QUANTITY));
+            BigDecimal masterOrderQuantity = BigDecimalUtils
+                    .convertNullToZero(productComponent.getDecimalField(MasterOrderProductFields.MASTER_ORDER_QUANTITY));
 
-            BigDecimal cumulatedOrderQuantity = BigDecimalUtils.convertNullToZero(masterOrderProductDto
-                    .getDecimalField(MasterOrderPositionDtoFields.CUMULATED_MASTER_ORDER_QUANTITY));
+            BigDecimal cumulatedOrderQuantity = BigDecimalUtils.convertNullToZero(
+                    masterOrderProductDto.getDecimalField(MasterOrderPositionDtoFields.CUMULATED_MASTER_ORDER_QUANTITY));
 
             BigDecimal plannedQuantity = masterOrderQuantity.subtract(cumulatedOrderQuantity, numberService.getMathContext());
 
@@ -164,8 +165,8 @@ public class OrderDetailsHooksMO {
                 dateToField.requestComponentUpdateState();
             }
 
-            if (StringUtils.isEmpty((String) plannedQuantityField.getFieldValue()) && (plannedQuantity != null)
-                    && (BigDecimal.ZERO.compareTo(plannedQuantity) < 0)) {
+            if (StringUtils.isEmpty((String) plannedQuantityField.getFieldValue())
+                    && BigDecimal.ZERO.compareTo(plannedQuantity) < 0) {
                 plannedQuantityField.setFieldValue(numberService.format(plannedQuantity));
                 plannedQuantityField.requestComponentUpdateState();
             }
@@ -183,7 +184,7 @@ public class OrderDetailsHooksMO {
                 technologyPrototypeLookup.performEvent(view, "onSelectedEntityChange", "");
             }
             String orderDescription = ordersFromMOProductsGenerationService.buildDescription(parameter, masterOrder,
-                    productComponentDB, masterOrderTechnology);
+                    productComponentDB, masterOrderTechnology, product);
 
             if ((Strings.nullToEmpty((String) descriptionField.getFieldValue())).isEmpty()) {
                 descriptionField.setFieldValue("");
@@ -195,8 +196,8 @@ public class OrderDetailsHooksMO {
     }
 
     private Entity getMasterOrder(final Long masterOrderId) {
-        return dataDefinitionService.get(MasterOrdersConstants.PLUGIN_IDENTIFIER, MasterOrdersConstants.MODEL_MASTER_ORDER).get(
-                masterOrderId);
+        return dataDefinitionService.get(MasterOrdersConstants.PLUGIN_IDENTIFIER, MasterOrdersConstants.MODEL_MASTER_ORDER)
+                .get(masterOrderId);
     }
 
 }
