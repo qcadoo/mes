@@ -28,6 +28,7 @@ import java.util.Date;
 import java.util.Objects;
 import java.util.Set;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Service;
@@ -181,14 +182,31 @@ public class OrderXlsxImportService extends XlsxImportService {
     private void validateDescription(final Entity order, final DataDefinition orderDD) {
         String description = order.getStringField(OrderFields.DESCRIPTION);
         Entity technology = order.getBelongsToField(OrderFields.TECHNOLOGY);
+        Entity product = order.getBelongsToField(OrderFields.PRODUCT);
 
-        boolean fillOrderDescriptionBasedOnTechnology = parameterService.getParameter()
+        Entity parameter = parameterService.getParameter();
+
+        boolean fillOrderDescriptionBasedOnTechnology = parameter
                 .getBooleanField(ParameterFieldsO.FILL_ORDER_DESCRIPTION_BASED_ON_TECHNOLOGY_DESCRIPTION);
 
-        if (Objects.isNull(description) && Objects.nonNull(technology) && fillOrderDescriptionBasedOnTechnology) {
-            description = technology.getStringField(TechnologyFields.DESCRIPTION);
+        boolean fillOrderDescriptionBasedOnProductDescription = parameter
+                .getBooleanField(ParameterFieldsO.FILL_ORDER_DESCRIPTION_BASED_ON_PRODUCT_DESCRIPTION);
 
-            order.setField(OrderFields.DESCRIPTION, description);
+        if(Objects.isNull(description)) {
+            StringBuilder descriptionBuilder = new StringBuilder();
+            if (fillOrderDescriptionBasedOnTechnology && Objects.nonNull(technology)){
+                descriptionBuilder.append(technology.getStringField(TechnologyFields.DESCRIPTION));
+            }
+            if (fillOrderDescriptionBasedOnProductDescription && Objects.nonNull(product)) {
+                String productDescription = product.getStringField(ProductFields.DESCRIPTION);
+                if (StringUtils.isNoneBlank(productDescription)) {
+                    if (StringUtils.isNoneBlank(descriptionBuilder.toString())) {
+                        descriptionBuilder.append("\n");
+                    }
+                    descriptionBuilder.append(productDescription);
+                }
+            }
+            order.setField(OrderFields.DESCRIPTION, descriptionBuilder);
         }
     }
 

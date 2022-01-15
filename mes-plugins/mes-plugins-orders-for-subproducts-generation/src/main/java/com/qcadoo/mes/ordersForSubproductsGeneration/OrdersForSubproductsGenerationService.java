@@ -23,7 +23,23 @@
  */
 package com.qcadoo.mes.ordersForSubproductsGeneration;
 
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.Locale;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.google.common.collect.Lists;
+import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.materialRequirementCoverageForOrder.MaterialRequirementCoverageForOrderService;
@@ -40,6 +56,7 @@ import com.qcadoo.mes.orders.OrderService;
 import com.qcadoo.mes.orders.TechnologyServiceO;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
+import com.qcadoo.mes.orders.constants.ParameterFieldsO;
 import com.qcadoo.mes.ordersForSubproductsGeneration.constants.CoverageForOrderFieldsOFSPG;
 import com.qcadoo.mes.ordersForSubproductsGeneration.constants.OrderFieldsOFSPG;
 import com.qcadoo.mes.productFlowThruDivision.constants.OrderFieldsPFTD;
@@ -64,20 +81,6 @@ import com.qcadoo.model.api.search.SearchOrders;
 import com.qcadoo.model.api.search.SearchProjections;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.view.api.ViewDefinitionState;
-
-import java.math.BigDecimal;
-import java.util.List;
-import java.util.Locale;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.stream.Collectors;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class OrdersForSubproductsGenerationService {
@@ -113,6 +116,9 @@ public class OrdersForSubproductsGenerationService {
 
     @Autowired
     private MaterialRequirementCoverageHelper materialRequirementCoverageHelper;
+
+    @Autowired
+    private ParameterService parameterService;
 
     private static final Integer START_LEVEL = 1;
 
@@ -176,8 +182,8 @@ public class OrdersForSubproductsGenerationService {
     public void generateSimpleOrderForSubProduct(final Entity entry, final Entity parentOrder, final Locale locale,
             final int index) {
         Entity order = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).create();
-        Entity product = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PRODUCT).get(
-                Long.valueOf(entry.getIntegerField("productId")));
+        Entity product = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PRODUCT)
+                .get(Long.valueOf(entry.getIntegerField("productId")));
 
         LOG.info(String.format("Start generation order for order : %s , product %s",
                 parentOrder.getStringField(OrderFields.NUMBER), product.getStringField(ProductFields.NUMBER)));
@@ -212,7 +218,8 @@ public class OrdersForSubproductsGenerationService {
         order.setField(OrderFieldsPFTD.IGNORE_MISSING_COMPONENTS,
                 parentOrder.getBooleanField(OrderFieldsPFTD.IGNORE_MISSING_COMPONENTS));
         setOrderWithDefaultProductionCountingValues(order, technology);
-        order.setField(OrderFields.DESCRIPTION, parentOrder.getStringField(OrderFields.DESCRIPTION));
+        order.setField(OrderFields.DESCRIPTION,
+                buildDescription(parentOrder.getStringField(OrderFields.DESCRIPTION), technology, product));
 
         order = order.getDataDefinition().save(order);
 
@@ -271,12 +278,45 @@ public class OrdersForSubproductsGenerationService {
         order.setField(OrderFieldsPFTD.IGNORE_MISSING_COMPONENTS,
                 parentOrder.getBooleanField(OrderFieldsPFTD.IGNORE_MISSING_COMPONENTS));
         setOrderWithDefaultProductionCountingValues(order, technology);
-        order.setField(OrderFields.DESCRIPTION, parentOrder.getStringField(OrderFields.DESCRIPTION));
+        order.setField(OrderFields.DESCRIPTION,
+                buildDescription(parentOrder.getStringField(OrderFields.DESCRIPTION), technology, product));
 
         order = order.getDataDefinition().save(order);
 
         LOG.info(String.format("Finish generation order for order : %s , product %s",
                 parentOrder.getStringField(OrderFields.NUMBER), product.getStringField(ProductFields.NUMBER)));
+    }
+
+    private String buildDescription(String parentOrderDescription, Entity technology, Entity product) {
+        Entity parameter = parameterService.getParameter();
+        boolean fillOrderDescriptionBasedOnTechnology = parameter
+                .getBooleanField(ParameterFieldsO.FILL_ORDER_DESCRIPTION_BASED_ON_TECHNOLOGY_DESCRIPTION);
+
+        boolean fillOrderDescriptionBasedOnProductDescription = parameter
+                .getBooleanField(ParameterFieldsO.FILL_ORDER_DESCRIPTION_BASED_ON_PRODUCT_DESCRIPTION);
+
+        if (fillOrderDescriptionBasedOnTechnology || fillOrderDescriptionBasedOnProductDescription) {
+            StringBuilder descriptionBuilder = new StringBuilder();
+
+            if (fillOrderDescriptionBasedOnTechnology && Objects.nonNull(technology)
+                    && StringUtils.isNoneBlank(technology.getStringField(TechnologyFields.DESCRIPTION))) {
+                descriptionBuilder.append(technology.getStringField(TechnologyFields.DESCRIPTION));
+            }
+
+            if (fillOrderDescriptionBasedOnProductDescription && Objects.nonNull(product)) {
+                String productDescription = product.getStringField(ProductFields.DESCRIPTION);
+                if (StringUtils.isNoneBlank(productDescription)) {
+                    if (StringUtils.isNoneBlank(descriptionBuilder.toString())) {
+                        descriptionBuilder.append("\n");
+                    }
+                    descriptionBuilder.append(productDescription);
+                }
+            }
+
+            return descriptionBuilder.toString();
+        } else {
+            return parentOrderDescription;
+        }
     }
 
     private void getProductionLine(final Entity parentOrder, final Entity order, final Entity technology) {
@@ -366,8 +406,7 @@ public class OrdersForSubproductsGenerationService {
         return componentsForOrder;
     }
 
-    private void addComponent(final Entity component, final List<Entity> componentsForOrder,
-            final List<Long> productsIds) {
+    private void addComponent(final Entity component, final List<Entity> componentsForOrder, final List<Long> productsIds) {
         if (productsIds.contains(component.getBelongsToField(CoverageProductFields.PRODUCT).getId())) {
             componentsForOrder.add(component);
         }

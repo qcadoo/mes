@@ -67,7 +67,7 @@
 
             <component type="form" name="shiftTimetableException"
                        reference="form">
-                <component type="gridLayout" name="gridLayout" columns="1"
+                <component type="gridLayout" name="gridLayout" columns="2"
                            rows="5">
                     <layoutElement column="1" row="1">
                         <component type="input" name="name" field="name"/>

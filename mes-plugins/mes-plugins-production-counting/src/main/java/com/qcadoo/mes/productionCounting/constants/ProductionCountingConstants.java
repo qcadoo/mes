@@ -67,6 +67,8 @@ public final class ProductionCountingConstants {
 
     public static final String VIEW_EMPLOYEE_WORKING_TIME_SETTLEMENT = "employeeWorkingTimeSettlement";
 
+    public static final String VIEW_OPERATION_DURATION_ANALYSIS = "operationDurationAnalysis";
+
     public static String productionTrackingDetailsUrl(final Long id) {
         return "#page/" + PLUGIN_IDENTIFIER + "/" + MODEL_PRODUCTION_TRACKING + "Details.html?context=%7B%22form.id%22%3A%22" + id
                 + "%22%2C%22form.undefined%22%3Anull%7D";

@@ -23,12 +23,12 @@
  */
 package com.qcadoo.mes.orders;
 
+import java.util.Locale;
+import java.util.Optional;
+
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ViewDefinitionState;
-
-import java.util.Locale;
-import java.util.Optional;
 
 public interface OrderService {
 
@@ -87,7 +87,8 @@ public interface OrderService {
      * @param fieldComponentName
      *            field component name
      */
-    void changeFieldState(final ViewDefinitionState view, final String booleanFieldComponentName, final String fieldComponentName);
+    void changeFieldState(final ViewDefinitionState view, final String booleanFieldComponentName,
+            final String fieldComponentName);
 
     /**
      * Checks component order has technology
@@ -128,12 +129,15 @@ public interface OrderService {
      * @param technology
      *            technology entity
      *
+     * @param product
      * @param fillOrderDescriptionBasedOnTechnology
      *            boolean parameter value
      *
+     * @param fillOrderDescriptionBasedOnProductDescription
      * @return String
      */
-    String buildOrderDescription(Entity masterOrder, Entity technology, boolean fillOrderDescriptionBasedOnTechnology);
+    String buildOrderDescription(Entity masterOrder, Entity technology, Entity product,
+            boolean fillOrderDescriptionBasedOnTechnology, boolean fillOrderDescriptionBasedOnProductDescription);
 
     Optional<Entity> findLastOrder(Entity order);
 }
