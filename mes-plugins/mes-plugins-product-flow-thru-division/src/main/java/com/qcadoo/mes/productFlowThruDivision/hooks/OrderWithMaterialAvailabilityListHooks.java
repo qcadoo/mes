@@ -85,7 +85,7 @@ public class OrderWithMaterialAvailabilityListHooks {
                 "orderWithMaterialAvailabilityList.materialAvailability.ribbon.message.selectOneRecordWithReplacements");
         showWarehouseResources
                 .setMessage("orderWithMaterialAvailabilityList.resources.ribbon.showWarehouseResources.message");
-        //if (obj.has(FROM_TERMINAL)) {
+        if (obj.has(FROM_TERMINAL)) {
             showAvailability.setEnabled(false);
             showAvailability.setMessage(null);
             showReplacementsAvailability.setEnabled(false);
@@ -93,7 +93,7 @@ public class OrderWithMaterialAvailabilityListHooks {
             showWarehouseResources.setEnabled(false);
             showWarehouseResources.setMessage(null);
 
-        //}
+        }
         showAvailability.requestUpdate(true);
         showReplacementsAvailability.requestUpdate(true);
         showWarehouseResources.requestUpdate(true);
