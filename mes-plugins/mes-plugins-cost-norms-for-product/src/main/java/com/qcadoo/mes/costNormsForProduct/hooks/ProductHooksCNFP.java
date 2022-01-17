@@ -23,6 +23,29 @@ public class ProductHooksCNFP {
         if (Objects.isNull(costForNumber)) {
             product.setField(ProductFieldsCNFP.COST_FOR_NUMBER, BigDecimal.ONE);
         }
+
+        if(Objects.isNull(product.getId())) {
+            if (product.getDecimalField(ProductFieldsCNFP.AVERAGE_COST) == null) {
+                product.setField(ProductFieldsCNFP.AVERAGE_COST, BigDecimal.ZERO);
+            }
+
+            if (product.getDecimalField(ProductFieldsCNFP.AVERAGE_OFFER_COST) == null) {
+                product.setField(ProductFieldsCNFP.AVERAGE_OFFER_COST, BigDecimal.ZERO);
+            }
+
+            if (product.getDecimalField(ProductFieldsCNFP.NOMINAL_COST) == null) {
+                product.setField(ProductFieldsCNFP.NOMINAL_COST, BigDecimal.ZERO);
+            }
+
+            if (product.getDecimalField(ProductFieldsCNFP.LAST_OFFER_COST) == null) {
+                product.setField(ProductFieldsCNFP.LAST_OFFER_COST, BigDecimal.ZERO);
+            }
+
+            if (product.getDecimalField(ProductFieldsCNFP.LAST_PURCHASE_COST) == null) {
+                product.setField(ProductFieldsCNFP.LAST_PURCHASE_COST, BigDecimal.ZERO);
+            }
+        }
+
     }
 
     public void onCreate(final DataDefinition productDD, final Entity product) {
@@ -36,5 +59,6 @@ public class ProductHooksCNFP {
         if (product.getBelongsToField(ProductFieldsCNFP.AVERAGE_COST_CURRENCY) == null) {
             product.setField(ProductFieldsCNFP.AVERAGE_COST_CURRENCY, currentCurrency);
         }
+
     }
 }
