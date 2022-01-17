@@ -444,6 +444,7 @@
         <view:view resource="view/reportColumnWidthDetails.xml"/>
         <view:view resource="view/companiesList.xml"/>
         <view:view resource="view/companyDetails.xml"/>
+        <view:view resource="view/companiesImport.xml"/>
         <view:view resource="view/addressDetails.xml"/>
         <view:view resource="view/countriesList.xml"/>
         <view:view resource="view/countryDetails.xml"/>
