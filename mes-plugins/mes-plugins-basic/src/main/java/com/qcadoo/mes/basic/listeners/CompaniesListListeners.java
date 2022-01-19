@@ -23,6 +23,13 @@
  */
 package com.qcadoo.mes.basic.listeners;
 
+import java.util.List;
+import java.util.Objects;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.qcadoo.mes.basic.CompanyService;
 import com.qcadoo.mes.basic.constants.CompanyFields;
 import com.qcadoo.model.api.Entity;
@@ -30,16 +37,9 @@ import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.GridComponent;
 import com.qcadoo.view.constants.QcadooViewConstants;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 public class CompaniesListListeners {
-
-
 
     private static final String L_ACTIONS = "actions";
 
@@ -47,6 +47,12 @@ public class CompaniesListListeners {
 
     @Autowired
     private CompanyService companyService;
+
+    public void openCompaniesImportPage(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        StringBuilder url = new StringBuilder("../page/basic/companiesImport.html");
+
+        view.openModal(url.toString());
+    }
 
     public void disabledRibbonForOwnerOrExternal(final ViewDefinitionState view, final ComponentState state,
             final String[] args) {
@@ -61,7 +67,7 @@ public class CompaniesListListeners {
         for (Entity company : companies) {
             Entity companyFromDB = companyService.getCompany(company.getId());
 
-            if (companyFromDB != null) {
+            if (Objects.nonNull(companyFromDB)) {
                 isEnabled = !companyService.isCompanyOwner(companyFromDB);
 
                 if (!StringUtils.isEmpty(company.getStringField(CompanyFields.EXTERNAL_NUMBER))) {

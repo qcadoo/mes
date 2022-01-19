@@ -32,6 +32,10 @@
 
 		<ribbon>
 			<template name="standardGridTemplate" />
+			<group name="import">
+				<bigButton name="openCompaniesImportPage" state="enabled" icon="xlsIcon24.png"
+						   action="#{window}.fireEvent(openCompaniesImportPage);"/>
+			</group>
 		</ribbon>
 
 		<component type="grid" name="companies" reference="grid">
@@ -73,6 +77,10 @@
 				class="com.qcadoo.mes.basic.listeners.CompaniesListListeners"
 				method="disabledRibbonForOwnerOrExternal" />
 		</component>
+
+		<listener event="openCompaniesImportPage"
+				  class="com.qcadoo.mes.basic.listeners.CompaniesListListeners"
+				  method="openCompaniesImportPage"/>
 
 		<option type="fixedHeight" value="true" />
 		<option type="header" value="false" />
