@@ -14,7 +14,7 @@ public class ProductNameReportColumn extends AbstractReportColumn {
     private final PPSReportXlsHelper ppsReportXlsHelper;
 
     @Autowired
-    public ProductNameReportColumn(TranslationService translationService, PPSReportXlsHelper ppsReportXlsHelper) {
+    public ProductNameReportColumn(final TranslationService translationService, final PPSReportXlsHelper ppsReportXlsHelper) {
         super(translationService);
         this.ppsReportXlsHelper = ppsReportXlsHelper;
     }
@@ -25,17 +25,18 @@ public class ProductNameReportColumn extends AbstractReportColumn {
     }
 
     @Override
-    public String getValue(Entity pps) {
-        return ppsReportXlsHelper.getProduct(pps).getStringField(ProductFields.NAME);
+    public Object getValue(final Entity productionPerShift) {
+        return ppsReportXlsHelper.getProduct(productionPerShift).getStringField(ProductFields.NAME);
     }
 
     @Override
-    public String getFirstRowValue(Entity pps) {
-        return getValue(pps);
+    public Object getFirstRowValue(final Entity productionPerShift) {
+        return getValue(productionPerShift);
     }
 
     @Override
     public int getColumnWidth() {
         return 10 * 256;
     }
+
 }

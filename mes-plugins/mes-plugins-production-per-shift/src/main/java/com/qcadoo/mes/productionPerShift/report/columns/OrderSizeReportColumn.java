@@ -17,8 +17,8 @@ public class OrderSizeReportColumn extends AbstractReportColumn {
     private NumberService numberService;
 
     @Autowired
-    public OrderSizeReportColumn(TranslationService translationService, PPSReportXlsHelper ppsReportXlsHelper,
-            NumberService numberService) {
+    public OrderSizeReportColumn(final TranslationService translationService, final PPSReportXlsHelper ppsReportXlsHelper,
+            final NumberService numberService) {
         super(translationService);
         this.ppsReportXlsHelper = ppsReportXlsHelper;
         this.numberService = numberService;
@@ -30,13 +30,13 @@ public class OrderSizeReportColumn extends AbstractReportColumn {
     }
 
     @Override
-    public String getValue(Entity productionPerShift) {
-        return numberService.formatWithMinimumFractionDigits(
-                ppsReportXlsHelper.getOrder(productionPerShift).getDecimalField(OrderFields.PLANNED_QUANTITY), 0);
+    public Object getValue(final Entity productionPerShift) {
+        return ppsReportXlsHelper.getOrder(productionPerShift).getDecimalField(OrderFields.PLANNED_QUANTITY).setScale(5)
+                .doubleValue();
     }
 
     @Override
-    public String getFirstRowValue(Entity productionPerShift) {
+    public Object getFirstRowValue(final Entity productionPerShift) {
         return getValue(productionPerShift);
     }
 
@@ -44,4 +44,5 @@ public class OrderSizeReportColumn extends AbstractReportColumn {
     public int getColumnWidth() {
         return 7 * 256;
     }
+
 }

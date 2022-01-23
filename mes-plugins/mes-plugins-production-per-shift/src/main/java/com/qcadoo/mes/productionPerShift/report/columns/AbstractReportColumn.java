@@ -13,12 +13,12 @@ public abstract class AbstractReportColumn implements ReportColumn {
 
     private TranslationService translationService;
 
-    public AbstractReportColumn(TranslationService translationService) {
+    public AbstractReportColumn(final TranslationService translationService) {
         this.translationService = translationService;
     }
 
     @Override
-    public String getHeader(Locale locale) {
+    public String getHeader(final Locale locale) {
         return translationService.translate("productionPerShift.report.xls.header." + getIdentifier(), locale);
     }
 
@@ -48,12 +48,13 @@ public abstract class AbstractReportColumn implements ReportColumn {
     }
 
     @Override
-    public String getChangeoverValue(Entity pps) {
+    public String getChangeoverValue(final Entity productionPerShift) {
         return StringUtils.EMPTY;
     }
 
     @Override
-    public String getFirstRowChangeoverValue(Entity pps) {
+    public String getFirstRowChangeoverValue(final Entity productionPerShift) {
         return StringUtils.EMPTY;
     }
+
 }

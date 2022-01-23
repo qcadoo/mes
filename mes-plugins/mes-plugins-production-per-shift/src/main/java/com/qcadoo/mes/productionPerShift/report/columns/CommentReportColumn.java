@@ -1,5 +1,7 @@
 package com.qcadoo.mes.productionPerShift.report.columns;
 
+import java.util.Objects;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFRow;
@@ -18,7 +20,7 @@ public class CommentReportColumn extends AbstractReportColumn {
     private final PPSReportXlsHelper ppsReportXlsHelper;
 
     @Autowired
-    public CommentReportColumn(TranslationService translationService, PPSReportXlsHelper ppsReportXlsHelper) {
+    public CommentReportColumn(final TranslationService translationService, final PPSReportXlsHelper ppsReportXlsHelper) {
         super(translationService);
         this.ppsReportXlsHelper = ppsReportXlsHelper;
     }
@@ -29,21 +31,23 @@ public class CommentReportColumn extends AbstractReportColumn {
     }
 
     @Override
-    public String getValue(Entity pps) {
-        return ppsReportXlsHelper.getOrder(pps).getStringField(OrderFields.DESCRIPTION);
+    public Object getValue(final Entity productionPerShift) {
+        return ppsReportXlsHelper.getOrder(productionPerShift).getStringField(OrderFields.DESCRIPTION);
     }
 
     @Override
-    public String getFirstRowValue(Entity pps) {
-        return getValue(pps);
+    public Object getFirstRowValue(final Entity productionPerShift) {
+        return getValue(productionPerShift);
     }
 
     @Override
-    public String getChangeoverValue(Entity pps) {
-        Entity changeover = ppsReportXlsHelper.getChangeover(ppsReportXlsHelper.getOrder(pps));
-        if (changeover == null) {
+    public String getChangeoverValue(final Entity productionPerShift) {
+        Entity changeover = ppsReportXlsHelper.getChangeover(ppsReportXlsHelper.getOrder(productionPerShift));
+
+        if (Objects.isNull(changeover)) {
             return StringUtils.EMPTY;
         }
+
         if (StringUtils.isEmpty(changeover.getStringField("name"))) {
             return changeover.getStringField("number");
         } else {
@@ -52,8 +56,8 @@ public class CommentReportColumn extends AbstractReportColumn {
     }
 
     @Override
-    public String getFirstRowChangeoverValue(Entity pps) {
-        return getChangeoverValue(pps);
+    public String getFirstRowChangeoverValue(final Entity productionPerShift) {
+        return getChangeoverValue(productionPerShift);
     }
 
     @Override
