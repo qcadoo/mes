@@ -50,11 +50,12 @@ public class CompanyXlsxImportService extends XlsxImportService {
     private void validateCountry(final Entity company, final DataDefinition companyDD) {
         Entity country = company.getBelongsToField(CompanyFields.COUNTRY);
 
-        if (Objects.nonNull(country)) {
-            company.setField(CompanyFields.TAX_COUNTRY_CODE, country);
-        } else {
-            company.setField(CompanyFields.TAX_COUNTRY_CODE, getDefaultCountry());
+        if (!Objects.nonNull(country)) {
+            country = getDefaultCountry();
         }
+
+        company.setField(CompanyFields.COUNTRY, country);
+        company.setField(CompanyFields.TAX_COUNTRY_CODE, country);
     }
 
     private Entity getDefaultCountry() {
