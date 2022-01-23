@@ -23,6 +23,18 @@
  */
 package com.qcadoo.mes.orders;
 
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.google.common.collect.Sets;
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.basic.ParameterService;
@@ -43,18 +55,6 @@ import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.CheckBoxComponent;
 import com.qcadoo.view.api.components.FieldComponent;
 
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 @Service
 public class OrderServiceImpl implements OrderService {
 
@@ -62,9 +62,9 @@ public class OrderServiceImpl implements OrderService {
 
     public static final String L_DIVISION = "division";
 
-    private static final Set<String> L_ORDER_STARTED_STATES = Collections.unmodifiableSet(Sets.newHashSet(
-            OrderState.IN_PROGRESS.getStringValue(), OrderState.COMPLETED.getStringValue(),
-            OrderState.INTERRUPTED.getStringValue()));
+    private static final Set<String> L_ORDER_STARTED_STATES = Collections
+            .unmodifiableSet(Sets.newHashSet(OrderState.IN_PROGRESS.getStringValue(), OrderState.COMPLETED.getStringValue(),
+                    OrderState.INTERRUPTED.getStringValue()));
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
@@ -141,7 +141,7 @@ public class OrderServiceImpl implements OrderService {
         }
         if (Objects.isNull(division)) {
             Entity defaultProductionLine = getDefaultProductionLine();
-            if(Objects.nonNull(defaultProductionLine)) {
+            if (Objects.nonNull(defaultProductionLine)) {
                 List<Entity> divisions = defaultProductionLine.getManyToManyField(ProductionLineFields.DIVISIONS);
                 if (divisions.size() == 1) {
                     division = divisions.get(0);
@@ -150,7 +150,6 @@ public class OrderServiceImpl implements OrderService {
         }
         return division;
     }
-
 
     // FIXME - this method doesn't have anything in common with production orders..
     @Override
@@ -271,9 +270,9 @@ public class OrderServiceImpl implements OrderService {
         return true;
     }
 
-
     @Override
-    public String buildOrderDescription(Entity masterOrder, Entity technology, boolean fillOrderDescriptionBasedOnTechnology) {
+    public String buildOrderDescription(Entity masterOrder, Entity technology, Entity product,
+            boolean fillOrderDescriptionBasedOnTechnology, boolean fillOrderDescriptionBasedOnProductDescription) {
         StringBuilder builder = new StringBuilder();
         if (masterOrder != null) {
             String poNumber = "";
@@ -299,30 +298,43 @@ public class OrderServiceImpl implements OrderService {
                 builder.append("\n");
             }
 
-            if (technology == null && masterOrder.getBelongsToField("technology") != null) {
-                if (fillOrderDescriptionBasedOnTechnology) {
-                    String technologyDescription = masterOrder.getBelongsToField("technology").getStringField(
-                            TechnologyFields.DESCRIPTION);
-                    if (technologyDescription != null) {
-                        builder.append(technologyDescription);
-                    }
-                }
-            }
-
-        }
-        if (technology != null) {
-            if (fillOrderDescriptionBasedOnTechnology) {
-                String technologyDescription = technology.getStringField(TechnologyFields.DESCRIPTION);
+            if (fillOrderDescriptionBasedOnTechnology && technology == null
+                    && masterOrder.getBelongsToField("technology") != null) {
+                String technologyDescription = masterOrder.getBelongsToField("technology")
+                        .getStringField(TechnologyFields.DESCRIPTION);
                 if (technologyDescription != null) {
                     builder.append(technologyDescription);
                 }
             }
+            if (fillOrderDescriptionBasedOnProductDescription && product == null
+                    && masterOrder.getBelongsToField("product") != null) {
+                String productDescription = masterOrder.getBelongsToField("product").getStringField(ProductFields.DESCRIPTION);
+                if (productDescription != null) {
+                    if (builder.length() > 0) {
+                        builder.append("\n");
+                    }
+                    builder.append(productDescription);
+                }
+            }
+        }
+        if (fillOrderDescriptionBasedOnTechnology && technology != null) {
+            String technologyDescription = technology.getStringField(TechnologyFields.DESCRIPTION);
+            if (technologyDescription != null) {
+                builder.append(technologyDescription);
+            }
+        }
+        if (fillOrderDescriptionBasedOnProductDescription && product != null) {
+            String productDescription = product.getStringField(ProductFields.DESCRIPTION);
+            if (productDescription != null) {
+                if (builder.length() > 0) {
+                    builder.append("\n");
+                }
+                builder.append(productDescription);
+            }
         }
 
         return builder.toString();
-
     }
-
 
     @Override
     public Optional<Entity> findLastOrder(final Entity order) {

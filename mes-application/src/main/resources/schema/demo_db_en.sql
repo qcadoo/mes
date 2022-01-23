@@ -6183,7 +6183,6 @@ CREATE TABLE basic_staff (
     phone character varying(255),
     workfor_id bigint,
     post character varying(255),
-    shift_id bigint,
     division_id bigint,
     individuallaborcost numeric(12,5),
     determinedindividual boolean,
@@ -6193,7 +6192,8 @@ CREATE TABLE basic_staff (
     parameter_id bigint,
     entityversion bigint DEFAULT 0,
     crew_id bigint,
-    workstation_id bigint
+    workstation_id bigint,
+    productionline_id bigint
 );
 
 
@@ -35190,7 +35190,7 @@ SELECT pg_catalog.setval('basic_skill_id_seq', 1, false);
 -- Data for Name: basic_staff; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY basic_staff (id, number, name, surname, email, phone, workfor_id, post, shift_id, division_id, individuallaborcost, determinedindividual, laborhourlycost, wagegroup_id, active, parameter_id, entityversion, crew_id, workstation_id) FROM stdin;
+COPY basic_staff (id, number, name, surname, email, phone, workfor_id, post, division_id, individuallaborcost, determinedindividual, laborhourlycost, wagegroup_id, active, parameter_id, entityversion, crew_id, workstation_id, productionline_id) FROM stdin;
 \.
 
 
@@ -41471,6 +41471,7 @@ COPY qcadooview_item (id, pluginidentifier, name, active, category_id, view_id, 
 62	deliveries	deliveries	t	9	62	6	ROLE_DELIVERIES	0
 61	deliveries	supplyItems	t	9	61	7	ROLE_DELIVERIES	0
 197	ordersGroups	ordersGroupsProductionBalancesList	t	15	196	12	ROLE_ANALYSIS_VIEWER	0
+198	productionCounting	operationDurationAnalysis	t	15	197	13	ROLE_ANALYSIS_VIEWER	0
 \.
 
 
@@ -41478,7 +41479,7 @@ COPY qcadooview_item (id, pluginidentifier, name, active, category_id, view_id, 
 -- Name: qcadooview_item_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('qcadooview_item_id_seq', 197, true);
+SELECT pg_catalog.setval('qcadooview_item_id_seq', 198, true);
 
 
 --
@@ -41668,6 +41669,7 @@ COPY qcadooview_view (id, pluginidentifier, name, view, url, entityversion) FROM
 194	integrationBarTender	printedPalletLabelsList	printedPalletLabelsList	\N	0
 195	technologies	productionLineTechnologyGroupList	productionLineTechnologyGroupList	\N	0
 196	ordersGroups	ordersGroupsProductionBalancesList	ordersGroupsProductionBalancesList	\N	0
+197	productionCounting	operationDurationAnalysis	\N	/operationDurationAnalysis.html	0
 \.
 
 
@@ -41675,7 +41677,7 @@ COPY qcadooview_view (id, pluginidentifier, name, view, url, entityversion) FROM
 -- Name: qcadooview_view_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('qcadooview_view_id_seq', 196, true);
+SELECT pg_catalog.setval('qcadooview_view_id_seq', 197, true);
 
 
 --
@@ -50928,14 +50930,6 @@ ALTER TABLE ONLY arch_goodfood_extrusionsouse
 
 
 --
--- Name: basic_staff_shift_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY basic_staff
-    ADD CONSTRAINT basic_staff_shift_fkey FOREIGN KEY (shift_id) REFERENCES basic_shift(id) DEFERRABLE;
-
-
---
 -- Name: basic_staff_workstation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -59845,6 +59839,14 @@ ALTER TABLE ONLY jointable_multiassignmenttoshift_staff
 
 ALTER TABLE ONLY basic_staff
     ADD CONSTRAINT staff_parameter_fkey FOREIGN KEY (parameter_id) REFERENCES basic_parameter(id) DEFERRABLE;
+
+
+--
+-- Name: staff_productionline_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY basic_staff
+    ADD CONSTRAINT staff_productionline_fkey FOREIGN KEY (productionline_id) REFERENCES productionlines_productionline(id) DEFERRABLE;
 
 
 --

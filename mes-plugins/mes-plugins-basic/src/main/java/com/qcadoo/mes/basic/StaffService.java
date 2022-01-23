@@ -43,13 +43,13 @@ public class StaffService {
 
     private static final String DIVISION_ID = "division_id";
 
+    private static final String L_PRODUCTION_LINE_ID = "productionLine_id";
+
     @Autowired
     private CompanyService companyService;
 
     @Autowired
     private NumberGeneratorService numberGeneratorService;
-
-
 
     public void onBeforeRender(final ViewDefinitionState view) {
         generateStaffNumber(view);
@@ -60,17 +60,38 @@ public class StaffService {
     private void setFilters(final ViewDefinitionState view) {
         LookupComponent division = (LookupComponent) view.getComponentByReference(StaffFields.DIVISION);
         LookupComponent workstation = (LookupComponent) view.getComponentByReference(StaffFields.WORKSTATION);
+        LookupComponent productionLine = (LookupComponent) view.getComponentByReference(StaffFields.PRODUCTION_LINE);
+        Entity divisionEntity = division.getEntity();
+        Entity productionLineEntity = productionLine.getEntity();
+
+        FilterValueHolder productionLineFilterValueHolder = productionLine.getFilterValue();
+        if (Objects.nonNull(division.getEntity())) {
+            productionLineFilterValueHolder.put(DIVISION_ID, divisionEntity.getId());
+        } else {
+            if (productionLineFilterValueHolder.has(DIVISION_ID)) {
+                productionLineFilterValueHolder.remove(DIVISION_ID);
+            }
+        }
+        productionLine.setFilterValue(productionLineFilterValueHolder);
 
         FilterValueHolder workstationFilterValueHolder = workstation.getFilterValue();
-        Entity divisionEntity = division.getEntity();
-        if(Objects.nonNull(division.getEntity())) {
+        if (Objects.nonNull(division.getEntity())) {
             workstationFilterValueHolder.put(DIVISION_ID, divisionEntity.getId());
         } else {
-            if(workstationFilterValueHolder.has(DIVISION_ID)){
+            if (workstationFilterValueHolder.has(DIVISION_ID)) {
                 workstationFilterValueHolder.remove(DIVISION_ID);
             }
         }
+
+        if (Objects.nonNull(productionLineEntity)) {
+            workstationFilterValueHolder.put(L_PRODUCTION_LINE_ID, productionLineEntity.getId());
+        } else {
+            if (workstationFilterValueHolder.has(L_PRODUCTION_LINE_ID)) {
+                workstationFilterValueHolder.remove(L_PRODUCTION_LINE_ID);
+            }
+        }
         workstation.setFilterValue(workstationFilterValueHolder);
+
     }
 
     public void setOwnerCompany(final ViewDefinitionState view) {

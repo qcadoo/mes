@@ -78,6 +78,10 @@
                               plugin="productionLines" cascade="nullify"/>
         </model:model-field>
 
+        <model:model-field model="staff" plugin="basic">
+            <model:belongsTo name="productionLine" model="productionLine" plugin="productionLines"/>
+        </model:model-field>
+
         <model:model-field model="workstation" plugin="basic">
             <model:belongsTo name="productionLine" model="productionLine" plugin="productionLines"/>
         </model:model-field>

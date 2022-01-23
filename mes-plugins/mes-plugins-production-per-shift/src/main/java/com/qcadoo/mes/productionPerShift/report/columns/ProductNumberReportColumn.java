@@ -16,7 +16,7 @@ public class ProductNumberReportColumn extends AbstractReportColumn {
     private final PPSReportXlsHelper ppsReportXlsHelper;
 
     @Autowired
-    public ProductNumberReportColumn(TranslationService translationService, PPSReportXlsHelper ppsReportXlsHelper) {
+    public ProductNumberReportColumn(final TranslationService translationService, final PPSReportXlsHelper ppsReportXlsHelper) {
         super(translationService);
         this.ppsReportXlsHelper = ppsReportXlsHelper;
     }
@@ -27,13 +27,13 @@ public class ProductNumberReportColumn extends AbstractReportColumn {
     }
 
     @Override
-    public String getValue(Entity pps) {
-        return ppsReportXlsHelper.getProduct(pps).getStringField(ProductFields.NUMBER);
+    public Object getValue(final Entity productionPerShift) {
+        return ppsReportXlsHelper.getProduct(productionPerShift).getStringField(ProductFields.NUMBER);
     }
 
     @Override
-    public String getFirstRowValue(Entity pps) {
-        return getValue(pps);
+    public Object getFirstRowValue(final Entity productionPerShift) {
+        return getValue(productionPerShift);
     }
 
     @Override
@@ -55,4 +55,5 @@ public class ProductNumberReportColumn extends AbstractReportColumn {
     public void setHeaderStyle(final HSSFCell cell, final PPSReportXlsStyleContainer styleContainer) {
         cell.setCellStyle(styleContainer.getStyles().get(PPSReportXlsStyleContainer.I_HeaderStyle2Red));
     }
+
 }

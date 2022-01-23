@@ -32,6 +32,10 @@
 
 		<ribbon>
 			<template name="standardGridTemplate" />
+			<group name="import">
+				<bigButton name="openCompaniesImportPage" state="enabled" icon="xlsIcon24.png"
+						   action="#{window}.fireEvent(openCompaniesImportPage);"/>
+			</group>
 		</ribbon>
 
 		<component type="grid" name="companies" reference="grid">
@@ -49,6 +53,10 @@
 				width="70" />
 			<option type="column" name="contractorCategory" fields="contractorCategory" link="true"
 				width="70" />
+			<option type="column" name="phone" fields="phone" link="true"
+				width="70" />
+			<option type="column" name="contactPerson" fields="contactPerson" link="true"
+					width="70"/>
 			<option type="column" name="isSupplier" fields="isSupplier" link="true"
 					width="50" />
 			<option type="column" name="isReceiver" fields="isReceiver" link="true"
@@ -56,8 +64,8 @@
 
 			<option type="order" column="number" direction="asc" />
 
-			<option type="searchable" value="number,name,city,state,country,tax,contractorCategory,isSupplier,isReceiver" />
-			<option type="orderable" value="number,name,city,state,country,tax,contractorCategory,isSupplier,isReceiver" />
+			<option type="searchable" value="number,name,city,state,country,tax,contractorCategory,phone,contactPerson,isSupplier,isReceiver" />
+			<option type="orderable" value="number,name,city,state,country,tax,contractorCategory,phone,contactPerson,isSupplier,isReceiver" />
 
 			<option type="correspondingView" value="basic/companyDetails" />
 			<option type="correspondingComponent" value="form" />
@@ -69,6 +77,10 @@
 				class="com.qcadoo.mes.basic.listeners.CompaniesListListeners"
 				method="disabledRibbonForOwnerOrExternal" />
 		</component>
+
+		<listener event="openCompaniesImportPage"
+				  class="com.qcadoo.mes.basic.listeners.CompaniesListListeners"
+				  method="openCompaniesImportPage"/>
 
 		<option type="fixedHeight" value="true" />
 		<option type="header" value="false" />

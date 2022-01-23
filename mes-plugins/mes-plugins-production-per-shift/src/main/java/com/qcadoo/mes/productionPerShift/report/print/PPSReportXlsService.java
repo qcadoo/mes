@@ -29,6 +29,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 
 import org.apache.commons.lang3.time.DurationFormatUtils;
@@ -36,6 +37,7 @@ import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFPrintSetup;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
+import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.CreationHelper;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.joda.time.DateTime;
@@ -316,9 +318,23 @@ public class PPSReportXlsService extends XlsDocumentService {
                 HSSFCell cell = row.createCell(colIndex);
 
                 if (isFirstRow) {
-                    cell.setCellValue(column.getFirstRowValue(productionPerShift));
+                    Object firstRowValue = column.getFirstRowValue(productionPerShift);
+
+                    if (firstRowValue instanceof Double) {
+                        cell.setCellValue((Double) firstRowValue);
+                        cell.setCellType(CellType.NUMERIC);
+                    } else {
+                        cell.setCellValue((String) firstRowValue);
+                    }
                 } else {
-                    cell.setCellValue(column.getValue(productionPerShift));
+                    Object value = column.getValue(productionPerShift);
+
+                    if (value instanceof Double) {
+                        cell.setCellValue((Double) value);
+                        cell.setCellType(CellType.NUMERIC);
+                    } else {
+                        cell.setCellValue((String) value);
+                    }
                 }
 
                 if (greyBg) {
@@ -328,7 +344,6 @@ public class PPSReportXlsService extends XlsDocumentService {
                         column.setGreyDataStyle(cell, styleContainer);
                     }
                 } else {
-
                     if (columns.size() == colIndex - 1) {
                         column.setWhiteDataStyleEnd(cell, styleContainer);
                     } else {
@@ -372,11 +387,11 @@ public class PPSReportXlsService extends XlsDocumentService {
 
                 Entity dailyProgress = ppsReportXlsHelper.getDailyProgress(productionPerShift, day.toDate(), shift);
 
-                if (dailyProgress == null) {
+                if (Objects.isNull(dailyProgress)) {
                     cellDailyProgress.setCellValue("");
                 } else {
-                    cellDailyProgress.setCellValue(numberService
-                            .formatWithMinimumFractionDigits(dailyProgress.getDecimalField(DailyProgressFields.QUANTITY), 0));
+                    cellDailyProgress.setCellValue(dailyProgress.getDecimalField(DailyProgressFields.QUANTITY).setScale(5).doubleValue());
+                    cellDailyProgress.setCellType(CellType.NUMERIC);
                 }
 
                 if (rowNumberIsEven) {

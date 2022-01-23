@@ -31,6 +31,8 @@ public final class LineChangeoverNormsFields {
 
     public static final String NUMBER = "number";
 
+    public static final String NAME = "name";
+
     public static final String CHANGEOVER_TYPE = "changeoverType";
 
     public static final String FROM_TECHNOLOGY = "fromTechnology";

@@ -118,7 +118,12 @@ public class OPICDetailsHooks {
         Entity operationProductInComponent = operationProductInComponentForm.getEntity();
         Entity operationComponent = operationProductInComponent
                 .getBelongsToField(OperationProductInComponentFields.OPERATION_COMPONENT);
-        Entity technology = operationComponent.getBelongsToField(TechnologyOperationComponentFields.TECHNOLOGY);
+        Entity technology = null;
+        if(Objects.isNull(operationComponent)) {
+            technology = operationProductInComponent.getBelongsToField(OperationProductInComponentFields.TECHNOLOGY);
+        } else {
+            technology = operationComponent.getBelongsToField(TechnologyOperationComponentFields.TECHNOLOGY);
+        }
         Entity product = technology.getBelongsToField(TechnologyFields.PRODUCT);
         String entityType = product.getStringField(ProductFields.ENTITY_TYPE);
 

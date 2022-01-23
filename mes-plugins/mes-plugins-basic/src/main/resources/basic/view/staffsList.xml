@@ -58,7 +58,7 @@
 			<option type="column" name="name" fields="name" link="true" />
 			<option type="column" name="surname" fields="surname" link="true" />
 			<option type="column" name="post" fields="post" link="true" />
-			<option type="column" name="shift" fields="shift" expression="#shift['name']"
+			<option type="column" name="productionLine" fields="productionLine" expression="#productionLine['number']"
 					link="true" />
 			<option type="column" name="division_number" fields="division"
 					expression="#division['number']" link="true" width="120" />
@@ -74,9 +74,9 @@
 			<option type="order" column="number" direction="desc" />
 			
 			<option type="searchable"
-					value="name,number,surname,post,shift,division_name,division_number.workstation_name,workstation_name,workstation_number" />
+					value="name,number,surname,post,productionLine,division_name,division_number.workstation_name,workstation_name,workstation_number" />
 			<option type="orderable"
-					value="name,number,surname,post,shift,division_name,division_number,workstation_name,workstation_number" />
+					value="name,number,surname,post,productionLine,division_name,division_number,workstation_name,workstation_number" />
 				
 			<option type="correspondingView" value="basic/staffDetails" />
 			<option type="correspondingComponent" value="form" />

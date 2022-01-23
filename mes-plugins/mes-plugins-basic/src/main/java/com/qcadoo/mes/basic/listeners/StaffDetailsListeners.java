@@ -10,10 +10,18 @@ import org.springframework.stereotype.Service;
 @Service
 public class StaffDetailsListeners {
 
-    //to fire beforeRenders
-    public final void onOnDivisionChange(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        LookupComponent workstation = (LookupComponent) view.getComponentByReference(StaffFields.WORKSTATION);
-        workstation.setFieldValue(null);
-        workstation.requestComponentUpdateState();
+    public final void onProductionLineChange(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        clearLookup(view, StaffFields.WORKSTATION);
+    }
+
+    public final void onDivisionChange(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        clearLookup(view, StaffFields.WORKSTATION);
+        clearLookup(view, StaffFields.PRODUCTION_LINE);
+    }
+
+    private void clearLookup(ViewDefinitionState view, String reference) {
+        LookupComponent lookupComponent = (LookupComponent) view.getComponentByReference(reference);
+        lookupComponent.setFieldValue(null);
+        lookupComponent.requestComponentUpdateState();
     }
 }

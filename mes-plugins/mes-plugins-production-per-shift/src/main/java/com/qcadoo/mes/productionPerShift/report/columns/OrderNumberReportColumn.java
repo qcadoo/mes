@@ -14,7 +14,7 @@ public class OrderNumberReportColumn extends AbstractReportColumn {
     private final PPSReportXlsHelper ppsReportXlsHelper;
 
     @Autowired
-    public OrderNumberReportColumn(TranslationService translationService, PPSReportXlsHelper ppsReportXlsHelper) {
+    public OrderNumberReportColumn(final TranslationService translationService, final PPSReportXlsHelper ppsReportXlsHelper) {
         super(translationService);
         this.ppsReportXlsHelper = ppsReportXlsHelper;
     }
@@ -25,17 +25,18 @@ public class OrderNumberReportColumn extends AbstractReportColumn {
     }
 
     @Override
-    public String getValue(Entity pps) {
-        return ppsReportXlsHelper.getOrder(pps).getStringField(OrderFields.NUMBER);
+    public Object getValue(final Entity productionPerShift) {
+        return ppsReportXlsHelper.getOrder(productionPerShift).getStringField(OrderFields.NUMBER);
     }
 
     @Override
-    public String getFirstRowValue(Entity pps) {
-        return getValue(pps);
+    public Object getFirstRowValue(final Entity productionPerShift) {
+        return getValue(productionPerShift);
     }
 
     @Override
     public int getColumnWidth() {
         return 8 * 256;
     }
+
 }

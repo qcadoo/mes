@@ -77,16 +77,6 @@
                             <component type="gridLayout" name="gridLayout" columns="1"
                                        rows="4">
                                 <layoutElement column="1" row="1">
-                                    <component type="lookup" name="shift" field="shift"
-                                               reference="shift" hasDescription="true">
-                                        <option type="searchable" value="name"/>
-                                        <option type="orderable" value="name"/>
-
-                                        <option type="expression" value="#name"/>
-                                        <option type="fieldCode" value="name"/>
-                                    </component>
-                                </layoutElement>
-                                <layoutElement column="1" row="2">
                                     <component type="lookup" name="division" field="division"
                                                reference="division" hasDescription="true">
                                         <option type="column" name="name" fields="name"/>
@@ -98,11 +88,30 @@
                                         <option type="fieldCode" value="number"/>
                                         <listener event="onSelectedEntityChange"
                                                   class="com.qcadoo.mes.basic.listeners.StaffDetailsListeners"
-                                                  method="onOnDivisionChange" />
+                                                  method="onDivisionChange" />
 
                                     </component>
                                 </layoutElement>
+                                <layoutElement column="1" row="2">
+                                    <component type="lookup" name="productionLine" reference="productionLine"
+                                               field="productionLine">
 
+                                        <option type="column" name="name" fields="name"/>
+
+                                        <option type="searchable" value="name,number"/>
+                                        <option type="orderable" value="name,number"/>
+
+                                        <option type="expression"
+                                                value="#number + ' - ' + #name"/>
+                                        <option type="fieldCode" value="number"/>
+                                        <listener event="onSelectedEntityChange"
+                                                  class="com.qcadoo.mes.basic.listeners.StaffDetailsListeners"
+                                                  method="onProductionLineChange" />
+                                        <criteriaModifier
+                                                class="com.qcadoo.mes.basic.criteriaModifiers.StaffCriteriaModifiers"
+                                                method="selectProductionLine"/>
+                                    </component>
+                                </layoutElement>
                                 <layoutElement column="1" row="3">
                                     <component type="lookup" name="workstation" field="workstation"
                                                reference="workstation" hasDescription="true">
@@ -116,7 +125,7 @@
 
                                         <criteriaModifier
                                                 class="com.qcadoo.mes.basic.criteriaModifiers.StaffCriteriaModifiers"
-                                                method="filterByDivision"/>
+                                                method="selectWorkstation"/>
 
                                     </component>
                                 </layoutElement>

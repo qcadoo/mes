@@ -11,15 +11,15 @@ public interface ReportColumn {
 
     String getIdentifier();
 
-    String getHeader(Locale locale);
+    String getHeader(final Locale locale);
 
-    String getValue(Entity pps);
+    Object getValue(final Entity productionPerShift);
 
-    String getFirstRowValue(Entity pps);
+    Object getFirstRowValue(final Entity productionPerShift);
 
-    String getFirstRowChangeoverValue(Entity pps);
+    String getFirstRowChangeoverValue(final Entity productionPerShift);
 
-    String getChangeoverValue(Entity pps);
+    String getChangeoverValue(final Entity productionPerShift);
 
     int getColumnWidth();
 
@@ -32,4 +32,5 @@ public interface ReportColumn {
     void setWhiteDataStyleEnd(final HSSFCell cell, final PPSReportXlsStyleContainer styleContainer);
 
     void setHeaderStyle(final HSSFCell cell, final PPSReportXlsStyleContainer styleContainer);
+
 }

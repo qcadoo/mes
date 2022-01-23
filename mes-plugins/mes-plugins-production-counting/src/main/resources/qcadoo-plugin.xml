@@ -83,6 +83,8 @@
         <localization:translation path="locales"/>
         <localization:translation-group name="employeeWorkingTimeSettlement"
                                         prefix="productionCounting.validate.global.error.employeeWorkingTimeSettlement"/>
+        <localization:translation-group name="operationDurationAnalysis"
+                                        prefix="productionCounting.validate.global.error.operationDurationAnalysis"/>
 
         <model:model model="productionTracking" resource="model/productionTracking.xml"/>
         <model:model model="productionTrackingStateChange" resource="model/productionTrackingStateChange.xml"/>
@@ -432,8 +434,6 @@
                                  method="validatesWith"/>
         </model:model-hook>
 
-        <menu:menu-category name="analysis" defaultAuthorizationRole="ROLE_ANALYSIS_VIEWER"/>
-
         <menu:menu-item name="performanceAnalysis" category="analysis"
                         view="performanceAnalysisList" defaultAuthorizationRole="ROLE_ANALYSIS_VIEWER"/>
 
@@ -447,9 +447,8 @@
                         view="beforeAdditionalActionsAnalysisGenerator"
                         defaultAuthorizationRole="ROLE_ANALYSIS_VIEWER"/>
 
-        <menu:menu-item name="employeeWorkingTimeSettlement" category="analysis"
-                        view="employeeWorkingTimeSettlement"
-                        defaultAuthorizationRole="ROLE_ANALYSIS_VIEWER"/>
+        <menu:menu-item-url name="employeeWorkingTimeSettlement" category="analysis"
+                            url="/employeeWorkingTimeSettlement.html" defaultAuthorizationRole="ROLE_ANALYSIS_VIEWER"/>
 
         <menu:menu-item name="productionBalance" category="analysis"
                         view="productionBalancesList" defaultAuthorizationRole="ROLE_PRODUCTION_COUNTING"/>
@@ -479,6 +478,9 @@
                             defaultAuthorizationRole="ROLE_PARAMETERS"/>
         <menu:menu-item-url name="productionAnalysisParameters" category="parameters" url="/productionAnalysisParameters.html"
                             defaultAuthorizationRole="ROLE_PARAMETERS"/>
+
+        <menu:menu-item-url name="operationDurationAnalysis" category="analysis"
+                            url="/operationDurationAnalysis.html" defaultAuthorizationRole="ROLE_ANALYSIS_VIEWER"/>
 
         <view:view resource="view/productionTrackingsList.xml"/>
         <view:view resource="view/productionTrackingDetails.xml"/>
@@ -521,6 +523,7 @@
 
         <view:view resource="view/productionCountingParameters.xml"/>
         <view:view resource="view/productionAnalysisParameters.xml"/>
+        <view:view resource="view/operationDurationAnalysis.xml"/>
 
         <view:view-tab resource="view/tabExtensions/orderDetails.xml"/>
         <view:view-tab resource="view/tabExtensions/technologyDetails.xml"/>

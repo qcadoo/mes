@@ -1,11 +1,30 @@
 package com.qcadoo.mes.orders.controllers;
 
+import java.math.BigDecimal;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.stereotype.Service;
+
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.qcadoo.commons.functional.Either;
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.basic.ParameterService;
-import com.qcadoo.mes.basic.constants.*;
+import com.qcadoo.mes.basic.constants.BasicConstants;
+import com.qcadoo.mes.basic.constants.GlobalTypeOfMaterial;
+import com.qcadoo.mes.basic.constants.ParameterFields;
+import com.qcadoo.mes.basic.constants.ProductFamilyElementType;
+import com.qcadoo.mes.basic.constants.ProductFields;
+import com.qcadoo.mes.basic.constants.WorkstationFields;
 import com.qcadoo.mes.orders.OrderService;
 import com.qcadoo.mes.orders.constants.OperationalTaskFields;
 import com.qcadoo.mes.orders.constants.OrderFields;
@@ -43,20 +62,6 @@ import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.model.api.validators.GlobalMessage;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
-
-import java.math.BigDecimal;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
-
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.stereotype.Service;
 
 @Service
 public class OrderCreationService {
@@ -192,7 +197,8 @@ public class OrderCreationService {
         order.setField(IS_SUBCONTRACTED, false);
         order.setField(OrderFields.STATE, OrderStateStringValues.PENDING);
         order.setField(OrderFields.PLANNED_QUANTITY, orderCreationRequest.getQuantity());
-        order.setField(OrderFields.DESCRIPTION, buildDescription(parameter, orderCreationRequest.getDescription(), technology));
+        order.setField(OrderFields.DESCRIPTION,
+                buildDescription(parameter, orderCreationRequest.getDescription(), technology, product));
 
         order.setField(IGNORE_MISSING_COMPONENTS, parameter.getBooleanField(IGNORE_MISSING_COMPONENTS));
 
@@ -254,7 +260,8 @@ public class OrderCreationService {
                 Entity workstationEntity = dataDefinitionService
                         .get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_WORKSTATION).get(workstation);
                 if (Objects.nonNull(workstationEntity.getBelongsToField(WorkstationFields.STAFF))) {
-                    operationalTask.setField(OperationalTaskFields.STAFF, workstationEntity.getBelongsToField(WorkstationFields.STAFF));
+                    operationalTask.setField(OperationalTaskFields.STAFF,
+                            workstationEntity.getBelongsToField(WorkstationFields.STAFF));
                 }
                 operationalTask.getDataDefinition().save(operationalTask);
             }
@@ -262,8 +269,6 @@ public class OrderCreationService {
     }
 
     private void modifyProductionCountingQuantityForEach(Entity order, List<TechnologyOperationDto> technologyOperations) {
-        Entity parameter = parameterService.getParameter();
-
         for (TechnologyOperationDto technologyOperation : technologyOperations) {
             Entity toc = dataDefinitionService
                     .get(TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_TECHNOLOGY_OPERATION_COMPONENT)
@@ -372,9 +377,12 @@ public class OrderCreationService {
         }
     }
 
-    private String buildDescription(Entity parameter, String description, Entity technology) {
+    private String buildDescription(Entity parameter, String description, Entity technology, Entity product) {
         boolean fillOrderDescriptionBasedOnTechnology = parameter
                 .getBooleanField(ParameterFieldsO.FILL_ORDER_DESCRIPTION_BASED_ON_TECHNOLOGY_DESCRIPTION);
+
+        boolean fillOrderDescriptionBasedOnProductDescription = parameter
+                .getBooleanField(ParameterFieldsO.FILL_ORDER_DESCRIPTION_BASED_ON_PRODUCT_DESCRIPTION);
 
         StringBuilder descriptionBuilder = new StringBuilder();
 
@@ -386,7 +394,16 @@ public class OrderCreationService {
                 descriptionBuilder.append("\n");
             }
             descriptionBuilder.append(technology.getStringField(TechnologyFields.DESCRIPTION));
+        }
 
+        if (fillOrderDescriptionBasedOnProductDescription && Objects.nonNull(product)) {
+            String productDescription = product.getStringField(ProductFields.DESCRIPTION);
+            if (StringUtils.isNoneBlank(productDescription)) {
+                if (StringUtils.isNoneBlank(descriptionBuilder.toString())) {
+                    descriptionBuilder.append("\n");
+                }
+                descriptionBuilder.append(productDescription);
+            }
         }
 
         return descriptionBuilder.toString();

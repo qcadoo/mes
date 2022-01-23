@@ -23,6 +23,18 @@
  */
 package com.qcadoo.mes.productionPerShift.report;
 
+import static com.qcadoo.mes.orders.constants.OrderFields.PRODUCTION_LINE;
+
+import java.util.Date;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+
+import org.joda.time.DateTime;
+import org.joda.time.LocalTime;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.qcadoo.commons.dateTime.DateRange;
 import com.qcadoo.commons.dateTime.TimeRange;
 import com.qcadoo.mes.basic.ShiftsService;
@@ -30,24 +42,16 @@ import com.qcadoo.mes.basic.shift.Shift;
 import com.qcadoo.mes.lineChangeoverNorms.ChangeoverNormsService;
 import com.qcadoo.mes.lineChangeoverNormsForOrders.LineChangeoverNormsForOrdersService;
 import com.qcadoo.mes.orders.constants.OrderFields;
-import com.qcadoo.mes.productionPerShift.constants.*;
-import com.qcadoo.mes.technologies.constants.TechnologyFields;
+import com.qcadoo.mes.productionPerShift.constants.DailyProgressFields;
+import com.qcadoo.mes.productionPerShift.constants.PPSReportFields;
+import com.qcadoo.mes.productionPerShift.constants.ProductionPerShiftConstants;
+import com.qcadoo.mes.productionPerShift.constants.ProductionPerShiftFields;
+import com.qcadoo.mes.productionPerShift.constants.ProgressForDayFields;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.security.api.UserService;
-import org.joda.time.DateTime;
-import org.joda.time.LocalTime;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-
-import static com.qcadoo.mes.orders.constants.OrderFields.PRODUCTION_LINE;
 
 @Service
 public class PPSReportXlsHelper {
@@ -70,9 +74,9 @@ public class PPSReportXlsHelper {
     private ShiftsService shiftsService;
 
     public List<Entity> getProductionPerShiftForReport(final Entity goodFoodReport) {
-        DateTime dateFrom = new DateTime(goodFoodReport.getDateField(PPSReportFields.DATE_FROM));
-
         List<Entity> shifts = shiftsService.getShifts();
+
+        DateTime dateFrom = new DateTime(goodFoodReport.getDateField(PPSReportFields.DATE_FROM));
         Shift shiftFirst = new Shift(shifts.get(0), dateFrom, false);
         List<TimeRange> ranges = shiftFirst.findWorkTimeAt(dateFrom.toLocalDate());
         LocalTime startTime = ranges.get(0).getFrom();
@@ -136,10 +140,6 @@ public class PPSReportXlsHelper {
     }
 
     public Entity getDailyProgress(final Entity productionPerShift, final Date day, final Entity shift) {
-        Entity order = getOrder(productionPerShift);
-        Entity technology = order.getBelongsToField(OrderFields.TECHNOLOGY);
-        Entity toc = technology.getTreeField(TechnologyFields.OPERATION_COMPONENTS).getRoot();
-
         DataDefinition progressForDayDD = dataDefinitionService.get(ProductionPerShiftConstants.PLUGIN_IDENTIFIER,
                 ProductionPerShiftConstants.MODEL_PROGRESS_FOR_DAY);
 

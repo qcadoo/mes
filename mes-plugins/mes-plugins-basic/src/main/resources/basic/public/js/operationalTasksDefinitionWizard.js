@@ -369,6 +369,15 @@ QCD.operationalTasksDefinitionWizard = (function () {
 					}
 					return !invalid;
 				} else if (currentIndex == 4) {
+					var techOperations = QCD.operationalTasksDefinitionWizardContext.technologyOperations;
+					$.each(techOperations, function (i, op) {
+						if ($('#workstation-' + op.index).val() == '') {
+							op.workstationId = null;
+							op.workstation = null;
+						}
+
+
+					});
 					preparePreview();
 					return true;
 				} else if (currentIndex == 5) {

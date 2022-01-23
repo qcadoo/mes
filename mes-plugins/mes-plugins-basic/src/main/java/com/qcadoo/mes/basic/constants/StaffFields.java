@@ -43,8 +43,6 @@ public final class StaffFields {
 
     public static final String WORK_FOR = "workFor";
 
-    public static final String SHIFT = "shift";
-
     public static final String DIVISION = "division";
 
     public static final String CREW = "crew";
@@ -54,5 +52,7 @@ public final class StaffFields {
     public static final String STAFF_SKILLS = "staffSkills";
 
     public static final String WORKSTATION = "workstation";
+
+    public static final String PRODUCTION_LINE = "productionLine";
 
 }

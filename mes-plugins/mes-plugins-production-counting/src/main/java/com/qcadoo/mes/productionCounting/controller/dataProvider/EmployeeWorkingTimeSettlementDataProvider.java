@@ -1,4 +1,4 @@
-package com.qcadoo.mes.productionCounting.controller;
+package com.qcadoo.mes.productionCounting.controller.dataProvider;
 
 import java.util.List;
 import java.util.Locale;

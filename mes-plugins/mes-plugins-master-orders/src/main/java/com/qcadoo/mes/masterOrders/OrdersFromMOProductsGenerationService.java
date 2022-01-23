@@ -507,7 +507,7 @@ public class OrdersFromMOProductsGenerationService {
 
         order.setField(L_IGNORE_MISSING_COMPONENTS, parameter.getBooleanField(L_IGNORE_MISSING_COMPONENTS));
 
-        String orderDescription = buildDescription(parameter, masterOrderProduct, technology);
+        String orderDescription = buildDescription(parameter, masterOrderProduct, technology, product);
 
         order.setField(OrderFields.DESCRIPTION, orderDescription);
 
@@ -525,11 +525,15 @@ public class OrdersFromMOProductsGenerationService {
         }
     }
 
-    public String buildDescription(final Entity parameter, final MasterOrderProduct masterOrderProduct, final Entity technology) {
+    public String buildDescription(final Entity parameter, final MasterOrderProduct masterOrderProduct, final Entity technology,
+            Entity product) {
         boolean copyDescription = parameter.getBooleanField(ParameterFieldsMO.COPY_DESCRIPTION);
         boolean copyNotesFromMasterOrderPosition = parameter.getBooleanField(L_COPY_NOTES_FROM_MASTER_ORDER_POSITION);
         boolean fillOrderDescriptionBasedOnTechnology = parameter
                 .getBooleanField(ParameterFieldsO.FILL_ORDER_DESCRIPTION_BASED_ON_TECHNOLOGY_DESCRIPTION);
+
+        boolean fillOrderDescriptionBasedOnProductDescription = parameter
+                .getBooleanField(ParameterFieldsO.FILL_ORDER_DESCRIPTION_BASED_ON_PRODUCT_DESCRIPTION);
 
         StringBuilder descriptionBuilder = new StringBuilder();
 
@@ -560,6 +564,16 @@ public class OrdersFromMOProductsGenerationService {
             descriptionBuilder.append(technology.getStringField(TechnologyFields.DESCRIPTION));
         }
 
+        if (fillOrderDescriptionBasedOnProductDescription && Objects.nonNull(product)) {
+            String productDescription = product.getStringField(ProductFields.DESCRIPTION);
+            if (StringUtils.isNoneBlank(productDescription)) {
+                if (StringUtils.isNoneBlank(descriptionBuilder.toString())) {
+                    descriptionBuilder.append("\n");
+                }
+                descriptionBuilder.append(productDescription);
+            }
+        }
+
         return descriptionBuilder.toString();
     }
 
@@ -570,11 +584,14 @@ public class OrdersFromMOProductsGenerationService {
     }
 
     public String buildDescription(final Entity parameter, final Entity masterOrder, final Entity masterOrderProduct,
-            final Entity technology) {
+            final Entity technology, Entity product) {
         boolean copyDescription = parameter.getBooleanField(ParameterFieldsMO.COPY_DESCRIPTION);
         boolean copyNotesFromMasterOrderPosition = parameter.getBooleanField(L_COPY_NOTES_FROM_MASTER_ORDER_POSITION);
         boolean fillOrderDescriptionBasedOnTechnology = parameter
                 .getBooleanField(ParameterFieldsO.FILL_ORDER_DESCRIPTION_BASED_ON_TECHNOLOGY_DESCRIPTION);
+
+        boolean fillOrderDescriptionBasedOnProductDescription = parameter
+                .getBooleanField(ParameterFieldsO.FILL_ORDER_DESCRIPTION_BASED_ON_PRODUCT_DESCRIPTION);
 
         StringBuilder descriptionBuilder = new StringBuilder();
 
@@ -598,6 +615,16 @@ public class OrdersFromMOProductsGenerationService {
             }
 
             descriptionBuilder.append(technology.getStringField(TechnologyFields.DESCRIPTION));
+        }
+
+        if (fillOrderDescriptionBasedOnProductDescription && Objects.nonNull(product)) {
+            String productDescription = product.getStringField(ProductFields.DESCRIPTION);
+            if (StringUtils.isNoneBlank(productDescription)) {
+                if (StringUtils.isNoneBlank(descriptionBuilder.toString())) {
+                    descriptionBuilder.append("\n");
+                }
+                descriptionBuilder.append(productDescription);
+            }
         }
 
         return descriptionBuilder.toString();

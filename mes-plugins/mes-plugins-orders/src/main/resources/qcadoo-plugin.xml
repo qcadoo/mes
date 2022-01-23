@@ -458,6 +458,7 @@
 
         <menu:menu-category name="orders" defaultAuthorizationRole="ROLE_PLANNING_MENU"/>
         <menu:menu-category name="ordersTracking" defaultAuthorizationRole="ROLE_ORDERS_TRACKING"/>
+        <menu:menu-category name="analysis" defaultAuthorizationRole="ROLE_ANALYSIS_VIEWER"/>
 
         <menu:menu-item name="productionOrders" category="orders"
                         view="ordersList" defaultAuthorizationRole="ROLE_PLANNING"/>
@@ -479,8 +480,8 @@
         <menu:menu-item name="orderTechnologicalProcessWastesList" category="ordersTracking"
                         view="orderTechnologicalProcessWastesList" defaultAuthorizationRole="ROLE_PLANNING"/>
 
-        <menu:menu-item name="orderTechnologicalProcessesAnalysis" category="ordersTracking"
-                        view="orderTechnologicalProcessesAnalysis" defaultAuthorizationRole="ROLE_ANALYSIS_VIEWER"/>
+        <menu:menu-item-url name="orderTechnologicalProcessesAnalysis" category="analysis"
+                        url="/orderTechnologicalProcessesAnalysis.html" defaultAuthorizationRole="ROLE_ANALYSIS_VIEWER"/>
 
         <menu:menu-item-url name="planningParameters" category="parameters" url="/planningParameters.html"
                             defaultAuthorizationRole="ROLE_PARAMETERS"/>
