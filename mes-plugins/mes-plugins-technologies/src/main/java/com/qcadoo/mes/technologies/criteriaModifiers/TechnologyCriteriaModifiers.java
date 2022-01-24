@@ -27,7 +27,9 @@ import org.springframework.stereotype.Service;
 
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
+import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
 import com.qcadoo.mes.technologies.states.constants.TechnologyStateStringValues;
+import com.qcadoo.model.api.search.JoinType;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
 
@@ -39,8 +41,14 @@ public class TechnologyCriteriaModifiers {
     }
 
     public void showPatternTechnologyFromOperationProductInComponent(final SearchCriteriaBuilder scb) {
-        scb.add(SearchRestrictions.isNull("technology_a." + TechnologyFields.TECHNOLOGY_TYPE))
-                .add(SearchRestrictions.eq("technology_a." + TechnologyFields.ACTIVE, true));
+        if (!scb.existsAliasForAssociation(TechnologyOperationComponentFields.TECHNOLOGY)) {
+            scb.createAlias(TechnologyOperationComponentFields.TECHNOLOGY, TechnologyOperationComponentFields.TECHNOLOGY + "_a",
+                    JoinType.INNER);
+        }
+        scb.add(SearchRestrictions
+                .isNull(TechnologyOperationComponentFields.TECHNOLOGY + "_a." + TechnologyFields.TECHNOLOGY_TYPE))
+                .add(SearchRestrictions.eq(TechnologyOperationComponentFields.TECHNOLOGY + "_a." + TechnologyFields.ACTIVE,
+                        true));
     }
 
     public void showPatternTechnologyFromOperationProductInComponentDto(final SearchCriteriaBuilder scb) {
