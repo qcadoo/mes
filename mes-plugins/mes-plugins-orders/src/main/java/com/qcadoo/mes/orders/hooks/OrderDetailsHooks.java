@@ -763,9 +763,6 @@ public class OrderDetailsHooks {
         LookupComponent masterOrderLookup = (LookupComponent) view.getComponentByReference("masterOrder");
         FieldComponent oldTechnologyField = (FieldComponent) view.getComponentByReference("oldTechnologyId");
 
-        boolean technologyChanged = false;
-        boolean productChanged = false;
-
         Entity masterOrder = masterOrderLookup.getEntity();
         Entity technology = technologyLookup.getEntity();
         Entity product = productLookup.getEntity();
@@ -784,32 +781,9 @@ public class OrderDetailsHooks {
             oldProduct = getOrderDD().get(orderId);
         }
 
-        if (Objects.nonNull(technology)) {
-            oldTechnologyField.setFieldValue(technology.getId());
-            oldTechnologyField.requestComponentUpdateState();
+        boolean technologyChanged = isTechnologyChanged(oldTechnologyField, technology, oldTechnology);
+        boolean productChanged = isProductChanged(product, oldProduct);
 
-            if (Objects.nonNull(oldTechnology)) {
-                if (!oldTechnology.getId().equals(technology.getId())) {
-                    technologyChanged = true;
-                }
-            }
-        } else {
-            if (Objects.nonNull(oldTechnology)) {
-                technologyChanged = true;
-            }
-        }
-
-        if (Objects.nonNull(product)) {
-            if (Objects.nonNull(oldProduct)) {
-                if (!oldProduct.getId().equals(product.getId())) {
-                    productChanged = true;
-                }
-            }
-        } else {
-            if (Objects.nonNull(oldProduct)) {
-                productChanged = true;
-            }
-        }
         Entity parameter = parameterService.getParameter();
 
         boolean fillOrderDescriptionBasedOnTechnology = parameter
@@ -841,6 +815,33 @@ public class OrderDetailsHooks {
         }
 
         descriptionField.requestComponentUpdateState();
+    }
+
+    private boolean isTechnologyChanged(FieldComponent oldTechnologyField, Entity technology, Entity oldTechnology) {
+        boolean technologyChanged = false;
+        if (Objects.nonNull(technology)) {
+            oldTechnologyField.setFieldValue(technology.getId());
+            oldTechnologyField.requestComponentUpdateState();
+
+            if (Objects.nonNull(oldTechnology) && !oldTechnology.getId().equals(technology.getId())) {
+                technologyChanged = true;
+            }
+        } else if (Objects.nonNull(oldTechnology)) {
+            technologyChanged = true;
+        }
+        return technologyChanged;
+    }
+
+    private boolean isProductChanged(Entity product, Entity oldProduct) {
+        boolean productChanged = false;
+        if (Objects.nonNull(product)) {
+            if (Objects.nonNull(oldProduct) && !oldProduct.getId().equals(product.getId())) {
+                productChanged = true;
+            }
+        } else if (Objects.nonNull(oldProduct)) {
+            productChanged = true;
+        }
+        return productChanged;
     }
 
     private DataDefinition getTechnologyDD() {

@@ -564,6 +564,13 @@ public class OrdersFromMOProductsGenerationService {
             descriptionBuilder.append(technology.getStringField(TechnologyFields.DESCRIPTION));
         }
 
+        buildProductDescription(product, fillOrderDescriptionBasedOnProductDescription, descriptionBuilder);
+
+        return descriptionBuilder.toString();
+    }
+
+    private void buildProductDescription(Entity product, boolean fillOrderDescriptionBasedOnProductDescription,
+            StringBuilder descriptionBuilder) {
         if (fillOrderDescriptionBasedOnProductDescription && Objects.nonNull(product)) {
             String productDescription = product.getStringField(ProductFields.DESCRIPTION);
             if (StringUtils.isNoneBlank(productDescription)) {
@@ -573,8 +580,6 @@ public class OrdersFromMOProductsGenerationService {
                 descriptionBuilder.append(productDescription);
             }
         }
-
-        return descriptionBuilder.toString();
     }
 
     private String extractMasterOrdersNumbers(final MasterOrderProduct masterOrderProduct) {
@@ -617,15 +622,7 @@ public class OrdersFromMOProductsGenerationService {
             descriptionBuilder.append(technology.getStringField(TechnologyFields.DESCRIPTION));
         }
 
-        if (fillOrderDescriptionBasedOnProductDescription && Objects.nonNull(product)) {
-            String productDescription = product.getStringField(ProductFields.DESCRIPTION);
-            if (StringUtils.isNoneBlank(productDescription)) {
-                if (StringUtils.isNoneBlank(descriptionBuilder.toString())) {
-                    descriptionBuilder.append("\n");
-                }
-                descriptionBuilder.append(productDescription);
-            }
-        }
+        buildProductDescription(product, fillOrderDescriptionBasedOnProductDescription, descriptionBuilder);
 
         return descriptionBuilder.toString();
     }
