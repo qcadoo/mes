@@ -36,6 +36,7 @@
         <string name="locationTo"/>
         <string name="productNumber"/>
         <string name="productName"/>
+        <string name="productCategory"/>
         <decimal name="quantity"/>
         <decimal name="givenQuantity"/>
         <string name="givenUnit"/>
