@@ -82,7 +82,8 @@ public class SalesPlanDetailsListeners {
                 salesPlanOrdersGroupEntry.setField(SalesPlanOrdersGroupEntryHelperFields.PRODUCT_FAMILY,
                         product.getBelongsToField(ProductFields.PARENT));
                 salesPlanOrdersGroupEntry.setField(SalesPlanOrdersGroupEntryHelperFields.ORDERED_QUANTITY,
-                        salesPlanProduct.getDecimalField(SalesPlanProductFields.ORDERED_QUANTITY));
+                        salesPlanProduct.getDecimalField(SalesPlanProductFields.ORDERED_QUANTITY)
+                                .add(salesPlanProduct.getDecimalField(SalesPlanProductFields.ORDERED_TO_WAREHOUSE)));
                 salesPlanOrdersGroupEntry.setField(SalesPlanOrdersGroupEntryHelperFields.PLANNED_QUANTITY,
                         salesPlanProduct.getDecimalField(SalesPlanProductFields.PLANNED_QUANTITY));
                 BigDecimal orderQuantity = salesPlanProductDto.getDecimalField("plannedQuantity")
@@ -192,7 +193,8 @@ public class SalesPlanDetailsListeners {
                 salesPlanOrdersGroupEntry.setField(SalesPlanOrdersGroupEntryHelperFields.PRODUCT_FAMILY,
                         product.getBelongsToField(ProductFields.PARENT));
                 salesPlanOrdersGroupEntry.setField(SalesPlanOrdersGroupEntryHelperFields.ORDERED_QUANTITY,
-                        salesPlanProduct.getDecimalField(SalesPlanProductFields.ORDERED_QUANTITY));
+                        salesPlanProduct.getDecimalField(SalesPlanProductFields.ORDERED_QUANTITY)
+                                .add(salesPlanProduct.getDecimalField(SalesPlanProductFields.ORDERED_TO_WAREHOUSE)));
                 salesPlanOrdersGroupEntry.setField(SalesPlanOrdersGroupEntryHelperFields.PLANNED_QUANTITY,
                         salesPlanProduct.getDecimalField(SalesPlanProductFields.PLANNED_QUANTITY));
 
@@ -250,9 +252,8 @@ public class SalesPlanDetailsListeners {
     private BigDecimal getOrderedQuantity(Entity salesPlan, Entity child) {
         BigDecimal orderedQuantity = BigDecimal.ZERO;
 
-        String hql = "SELECT o.plannedQuantity as orderedQuantity " +
-                "FROM #orders_order o " +
-                "WHERE o.salesPlan.id = :salesPlanId AND o.product.id = :productId ";
+        String hql = "SELECT o.plannedQuantity as orderedQuantity " + "FROM #orders_order o "
+                + "WHERE o.salesPlan.id = :salesPlanId AND o.product.id = :productId ";
 
         List<Entity> orderedQuantityEntity = dataDefinitionService
                 .get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).find(hql)
@@ -318,8 +319,8 @@ public class SalesPlanDetailsListeners {
                 salesPlanProduct.setField(SalesPlanProductFields.ORDERED_QUANTITY, orderedQuantity);
                 salesPlanProduct.setField(SalesPlanProductFields.ORDERED_TO_WAREHOUSE, orderedToWarehouse);
                 salesPlanProduct.setField(SalesPlanProductFields.SURPLUS_FROM_PLAN,
-                        salesPlanProduct.getDecimalField(SalesPlanProductFields.PLANNED_QUANTITY)
-                                .subtract(orderedQuantity).subtract(orderedToWarehouse));
+                        salesPlanProduct.getDecimalField(SalesPlanProductFields.PLANNED_QUANTITY).subtract(orderedQuantity)
+                                .subtract(orderedToWarehouse));
 
                 salesPlanProductDD.save(salesPlanProduct);
             }
@@ -350,7 +351,7 @@ public class SalesPlanDetailsListeners {
     }
 
     private BigDecimal getQuantityForFamily(final Entity product, BigDecimal orderedQuantity,
-                                            final List<Entity> masterOrderProducts, final BigDecimal productQuantity) {
+            final List<Entity> masterOrderProducts, final BigDecimal productQuantity) {
         if (ProductFamilyElementType.PRODUCTS_FAMILY.getStringValue().equals(product.getField(ProductFields.ENTITY_TYPE))
                 && productQuantity.compareTo(BigDecimal.ZERO) == 0) {
             for (Entity child : product.getHasManyField(ProductFields.CHILDREN)) {
@@ -426,7 +427,7 @@ public class SalesPlanDetailsListeners {
     }
 
     public void createSalesPlanMaterialRequirement(final ViewDefinitionState view, final ComponentState state,
-                                                   final String[] args) {
+            final String[] args) {
         FormComponent salesPlanForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
         Long salesPlanId = salesPlanForm.getEntityId();
