@@ -38,24 +38,21 @@
 		</ribbon>
 
 		<component type="form" name="form" reference="form">
-			<component type="grid" name="operationComponents" reference="grid" source="operationComponents">
-				<option type="column" name="technologyName" fields="technology" expression="#technology['name']"
+			<component type="grid" name="operationTechnologies" reference="grid" source="operationTechnologiesDto">
+				<option type="column" name="technologyName" fields="technologyName"
 				        link="true" correspondingView="technologies/technologyDetails"
 				        correspondingField="technologyId"/>
-				<option type="column" name="technologyNumber" fields="technology" expression="#technology['number']"
+				<option type="column" name="technologyNumber" fields="technologyNumber"
 				        link="true" correspondingView="technologies/technologyDetails"
 				        correspondingField="technologyId"/>
-				<option type="column" name="technologyId" fields="technology" expression="#technology.get('id')"
+				<option type="column" name="technologyId" fields="technologyId"
 				        hidden="true"/>
 
 				<option type="column" name="nodeNumber" fields="nodeNumber" width="50"/>
 				<option type="column" name="comment" fields="comment"/>
-				<option type="column" name="technologyProductNumber" fields="technology"
-				        expression="#technology['product'].get('number')"/>
-				<option type="column" name="technologyState" fields="technology" expression="#technology['state']"
-				        width="50"/>
-				<option type="column" name="masterTechnology" fields="technology" expression="#technology['master']"
-				        width="50"/>
+				<option type="column" name="technologyProductNumber" fields="technologyProductNumber"/>
+				<option type="column" name="technologyState" fields="technologyState" width="50"/>
+				<option type="column" name="masterTechnology" fields="masterTechnology" width="50"/>
 
 				<option type="order" column="technologyNumber" direction="asc"/>
 				<option type="orderable"
@@ -68,7 +65,7 @@
 				<option type="prioritizable" value="false"/>
 
 				<criteriaModifier class="com.qcadoo.mes.technologies.criteriaModifiers.TechnologyCriteriaModifiers"
-				                  method="showPatternTechnologyFromOperationProductInComponent"/>
+				                  method="showPatternTechnologyFromOperationProductInComponentDto"/>
 			</component>
 
 			<option type="header" value="true"/>
