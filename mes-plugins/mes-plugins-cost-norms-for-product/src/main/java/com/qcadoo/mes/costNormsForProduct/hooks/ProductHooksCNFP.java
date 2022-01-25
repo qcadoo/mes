@@ -45,7 +45,6 @@ public class ProductHooksCNFP {
                 product.setField(ProductFieldsCNFP.LAST_PURCHASE_COST, BigDecimal.ZERO);
             }
         }
-
     }
 
     public void onCreate(final DataDefinition productDD, final Entity product) {
@@ -59,6 +58,5 @@ public class ProductHooksCNFP {
         if (product.getBelongsToField(ProductFieldsCNFP.AVERAGE_COST_CURRENCY) == null) {
             product.setField(ProductFieldsCNFP.AVERAGE_COST_CURRENCY, currentCurrency);
         }
-
     }
 }
