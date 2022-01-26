@@ -24,7 +24,7 @@ public class ProductHooksCNFP {
             product.setField(ProductFieldsCNFP.COST_FOR_NUMBER, BigDecimal.ONE);
         }
 
-        if(Objects.isNull(product.getId())) {
+        if (Objects.isNull(product.getId())) {
             if (product.getDecimalField(ProductFieldsCNFP.AVERAGE_COST) == null) {
                 product.setField(ProductFieldsCNFP.AVERAGE_COST, BigDecimal.ZERO);
             }
@@ -59,4 +59,14 @@ public class ProductHooksCNFP {
             product.setField(ProductFieldsCNFP.AVERAGE_COST_CURRENCY, currentCurrency);
         }
     }
+
+    public boolean validatesWith(final DataDefinition productDD, final Entity product) {
+        if (product.getBelongsToField(ProductFieldsCNFP.NOMINAL_COST_CURRENCY) == null) {
+            product.addError(productDD.getField(ProductFieldsCNFP.NOMINAL_COST_CURRENCY),
+                    "qcadooView.validate.field.error.missing");
+            return false;
+        }
+        return true;
+    }
+
 }

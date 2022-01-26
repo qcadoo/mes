@@ -162,6 +162,11 @@
 					class="com.qcadoo.mes.costNormsForProduct.hooks.ProductHooksCNFP"
 					method="onCreate"/>
 		</model:model-hook>
+		<model:model-hook plugin="basic" model="product" >
+			<model:validatesWith
+					class="com.qcadoo.mes.costNormsForProduct.hooks.ProductHooksCNFP"
+					method="validatesWith"/>
+		</model:model-hook>
 	</modules>
 	
 	<features>
