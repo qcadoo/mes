@@ -105,11 +105,13 @@ class ProductionBalanceRepository {
     }
 
     private void appendForEachPlannedQuantities(StringBuilder query) {
-        query.append("(WITH planned_quantity (order_id, operation_id, product_id, quantity, childsQuantity) AS (SELECT ");
+        query.append(
+                "(WITH planned_quantity (order_id, operation_id, product_id, plannedQuantity, usedQuantity, childsQuantity, replacementTo) AS (SELECT ");
         query.append("o.id AS orderId, ");
         query.append("toc.operation_id AS operationId, ");
         query.append("p.id AS productId, ");
         query.append("COALESCE(SUM(pcq.plannedquantity), 0) AS plannedQuantity, ");
+        query.append("COALESCE(SUM(pcq.usedquantity), 0) AS usedQuantity, ");
         query.append("0 AS childsQuantity, ");
         query.append("replacementto.number AS replacementTo ");
         query.append("FROM orders_order o ");
@@ -126,10 +128,12 @@ class ProductionBalanceRepository {
     }
 
     private void appendCumulatedPlannedQuantities(StringBuilder query) {
-        query.append("(WITH planned_quantity (order_id, product_id, quantity, childsQuantity) AS (SELECT ");
+        query.append(
+                "(WITH planned_quantity (order_id, product_id, plannedQuantity, usedQuantity, childsQuantity, replacementTo) AS (SELECT ");
         query.append("o.id AS orderId, ");
         query.append("p.id AS productId, ");
         query.append("COALESCE(SUM(pcq.plannedquantity), 0) AS plannedQuantity, ");
+        query.append("COALESCE(SUM(pcq.usedquantity), 0) AS usedQuantity, ");
         query.append("0 AS childsQuantity, ");
         query.append("replacementto.number AS replacementTo ");
         query.append("FROM orders_order o ");
@@ -146,6 +150,7 @@ class ProductionBalanceRepository {
         query.append("o.id AS orderId, ");
         query.append("p.id AS productId, ");
         query.append("COALESCE(SUM(pcq.plannedquantity), 0) AS plannedQuantity, ");
+        query.append("COALESCE(SUM(pcq.usedquantity), 0) AS usedQuantity, ");
         query.append("COALESCE(SUM(och.plannedquantity), 0) AS childsQuantity, ");
         query.append("replacementto.number AS replacementTo ");
         query.append("FROM orders_order o ");
@@ -208,9 +213,7 @@ class ProductionBalanceRepository {
             appendUsedQuantity(query);
             query.append("<> 0 THEN ");
             appendPlannedQuantity(query);
-            query.append("* ");
-            appendRealCost(query, entity);
-            query.append("/ ");
+            query.append("* COALESCE(MIN(tiopic.costfororder), 0) / ");
             appendUsedQuantity(query);
             query.append("ELSE 0 END ");
         } else {
@@ -264,11 +267,11 @@ class ProductionBalanceRepository {
     }
 
     private void appendPlannedQuantity(StringBuilder query) {
-        query.append("MIN(q.quantity - q.childsQuantity) ");
+        query.append("MIN(q.plannedQuantity - q.childsQuantity) ");
     }
 
     private void appendUsedQuantity(StringBuilder query) {
-        query.append("(COALESCE(SUM(topic.usedquantity), 0) - MIN(q.childsQuantity)) ");
+        query.append("MIN(q.usedQuantity - q.childsQuantity) ");
     }
 
     List<PieceworkDetails> getPieceworkDetails(List<Long> ordersIds) {
