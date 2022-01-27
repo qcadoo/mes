@@ -177,9 +177,7 @@ public class DocumentsListListeners {
                 document.getGlobalErrors().forEach(gridComponent::addMessage);
                 document.getErrors().values().forEach(gridComponent::addMessage);
             } else {
-                if (receiptDocumentForReleaseHelper.buildConnectedDocument(document)) {
-                    receiptDocumentForReleaseHelper.tryBuildConnectedDocument(document, view);
-                }
+                receiptDocumentForReleaseHelper.tryBuildConnectedDocument(document, view);
 
                 documentService.updateOrdersGroupIssuedMaterials(
                         document.getBelongsToField(OrdersGroupIssuedMaterialFields.ORDERS_GROUP), null);

@@ -220,13 +220,11 @@ public class DocumentService {
             LOG.info(translationService.translate("materialFlowResources.success.documentAccepted",
                     LocaleContextHolder.getLocale()));
 
-            if (receiptDocumentForReleaseHelper.buildConnectedDocument(document)) {
-                boolean created = receiptDocumentForReleaseHelper.tryBuildConnectedDocument(document, true);
+            boolean created = receiptDocumentForReleaseHelper.tryBuildConnectedDocument(document, true);
 
-                if (created) {
-                    LOG.info(translationService.translate("materialFlow.document.info.createdConnected",
-                            LocaleContextHolder.getLocale()));
-                }
+            if (created) {
+                LOG.info(translationService.translate("materialFlow.document.info.createdConnected",
+                        LocaleContextHolder.getLocale()));
             }
 
             updateOrdersGroupIssuedMaterials(document.getBelongsToField(OrdersGroupIssuedMaterialFields.ORDERS_GROUP), null);

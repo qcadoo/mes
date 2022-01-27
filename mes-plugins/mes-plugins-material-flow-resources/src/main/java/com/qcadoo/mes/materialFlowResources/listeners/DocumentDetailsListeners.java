@@ -345,9 +345,7 @@ public class DocumentDetailsListeners {
         } else {
             documentForm.addMessage("materialFlowResources.success.documentAccepted", MessageType.SUCCESS);
 
-            if (receiptDocumentForReleaseHelper.buildConnectedDocument(document)) {
-                receiptDocumentForReleaseHelper.tryBuildConnectedDocument(document, view);
-            }
+            receiptDocumentForReleaseHelper.tryBuildConnectedDocument(document, view);
 
             documentService.updateOrdersGroupIssuedMaterials(
                     document.getBelongsToField(OrdersGroupIssuedMaterialFields.ORDERS_GROUP), null);

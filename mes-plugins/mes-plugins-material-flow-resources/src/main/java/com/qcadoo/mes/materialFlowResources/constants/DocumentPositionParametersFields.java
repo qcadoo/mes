@@ -31,6 +31,8 @@ public final class DocumentPositionParametersFields {
 
     public static final String FILL_RESOURCE_IRRESPECTIVE_OF_CONVERSION = "fillResourceIrrespectiveOfConversion";
 
+    public static final String TRANSFER_PALLET_TO_RECEIVING_WAREHOUSE = "transferPalletToReceivingWarehouse";
+
     public static final String PALLET_TO_SHIFT = "palletToShift";
 
     public static final String PALLET_WITH_FREE_PLACE = "palletWithFreePlace";
