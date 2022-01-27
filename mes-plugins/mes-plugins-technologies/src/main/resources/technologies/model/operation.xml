@@ -48,6 +48,9 @@
         <hasMany name="operationComponents" model="technologyOperationComponent"
                  joinField="operation"/>
 
+        <hasMany name="operationTechnologiesDto" model="operationTechnologyDto"
+                 joinField="operation"/>
+
         <hasMany name="productInComponents" model="productComponent"
                  joinField="operationIn" cascade="delete" copyable="true"/>
         <hasMany name="productOutComponents" model="productComponent"

@@ -298,31 +298,52 @@ public class OrderServiceImpl implements OrderService {
                 builder.append("\n");
             }
 
-            if (fillOrderDescriptionBasedOnTechnology && technology == null
-                    && masterOrder.getBelongsToField("technology") != null) {
-                String technologyDescription = masterOrder.getBelongsToField("technology")
-                        .getStringField(TechnologyFields.DESCRIPTION);
-                if (technologyDescription != null) {
-                    builder.append(technologyDescription);
-                }
-            }
-            if (fillOrderDescriptionBasedOnProductDescription && product == null
-                    && masterOrder.getBelongsToField("product") != null) {
-                String productDescription = masterOrder.getBelongsToField("product").getStringField(ProductFields.DESCRIPTION);
-                if (productDescription != null) {
-                    if (builder.length() > 0) {
-                        builder.append("\n");
-                    }
-                    builder.append(productDescription);
-                }
+            buildMOTechnologyDescription(masterOrder, technology, fillOrderDescriptionBasedOnTechnology, builder);
+            buildMOProductDescription(masterOrder, product, fillOrderDescriptionBasedOnProductDescription, builder);
+        }
+        buildTechnologyDescription(technology, fillOrderDescriptionBasedOnTechnology, builder);
+        buildProductDescription(product, fillOrderDescriptionBasedOnProductDescription, builder);
+
+        return builder.toString();
+    }
+
+    private void buildMOTechnologyDescription(Entity masterOrder, Entity technology,
+            boolean fillOrderDescriptionBasedOnTechnology, StringBuilder builder) {
+        if (fillOrderDescriptionBasedOnTechnology && technology == null && masterOrder.getBelongsToField("technology") != null) {
+            String technologyDescription = masterOrder.getBelongsToField("technology")
+                    .getStringField(TechnologyFields.DESCRIPTION);
+            if (technologyDescription != null) {
+                builder.append(technologyDescription);
             }
         }
+    }
+
+    private void buildMOProductDescription(Entity masterOrder, Entity product,
+            boolean fillOrderDescriptionBasedOnProductDescription, StringBuilder builder) {
+        if (fillOrderDescriptionBasedOnProductDescription && product == null
+                && masterOrder.getBelongsToField("product") != null) {
+            String productDescription = masterOrder.getBelongsToField("product").getStringField(ProductFields.DESCRIPTION);
+            if (productDescription != null) {
+                if (builder.length() > 0) {
+                    builder.append("\n");
+                }
+                builder.append(productDescription);
+            }
+        }
+    }
+
+    private void buildTechnologyDescription(Entity technology, boolean fillOrderDescriptionBasedOnTechnology,
+            StringBuilder builder) {
         if (fillOrderDescriptionBasedOnTechnology && technology != null) {
             String technologyDescription = technology.getStringField(TechnologyFields.DESCRIPTION);
             if (technologyDescription != null) {
                 builder.append(technologyDescription);
             }
         }
+    }
+
+    private void buildProductDescription(Entity product, boolean fillOrderDescriptionBasedOnProductDescription,
+            StringBuilder builder) {
         if (fillOrderDescriptionBasedOnProductDescription && product != null) {
             String productDescription = product.getStringField(ProductFields.DESCRIPTION);
             if (productDescription != null) {
@@ -332,8 +353,6 @@ public class OrderServiceImpl implements OrderService {
                 builder.append(productDescription);
             }
         }
-
-        return builder.toString();
     }
 
     @Override
