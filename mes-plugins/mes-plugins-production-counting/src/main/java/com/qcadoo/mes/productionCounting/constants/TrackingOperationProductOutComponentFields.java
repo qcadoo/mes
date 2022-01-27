@@ -59,6 +59,8 @@ public final class TrackingOperationProductOutComponentFields {
 
     public static final String STORAGE_LOCATION = "storageLocation";
 
+    public static final String PALLET_NUMBER = "palletNumber";
+
     public static final String CAUSE_OF_WASTES = "causeOfWastes";
 
 }

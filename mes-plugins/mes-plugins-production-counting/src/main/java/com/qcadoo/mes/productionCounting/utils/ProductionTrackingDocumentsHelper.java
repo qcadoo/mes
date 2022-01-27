@@ -189,8 +189,7 @@ public class ProductionTrackingDocumentsHelper {
             if (withWaste && ProductionCountingQuantityTypeOfMaterial.WASTE.getStringValue()
                     .equals(productionCountingQuantity.getStringField(ProductionCountingQuantityFields.TYPE_OF_MATERIAL))) {
                 warehouse = productionCountingQuantity
-                        .getBelongsToField(ProductionCountingQuantityFields.PRODUCTS_INPUT_LOCATION);
-
+                        .getBelongsToField(ProductionCountingQuantityFields.WASTE_RECEPTION_WAREHOUSE);
                 if (Objects.isNull(warehouse)) {
                     continue;
                 }

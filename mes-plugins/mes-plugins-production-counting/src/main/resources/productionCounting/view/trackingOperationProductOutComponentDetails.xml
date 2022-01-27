@@ -243,6 +243,17 @@
                                 method="filter"/>
                     </component>
                 </layoutElement>
+                <layoutElement column="1" row="2">
+                    <component type="lookup" name="palletNumber" reference="palletNumber"
+                               field="#{form}.palletNumber">
+                        <option type="searchable" value="number"/>
+                        <option type="orderable" value="number"/>
+
+                        <option type="expression"
+                                value="#number"/>
+                        <option type="fieldCode" value="number"/>
+                    </component>
+                </layoutElement>
             </component>
         </windowTab>
     </component>
