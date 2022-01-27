@@ -166,7 +166,7 @@
     </windowTab>
     <windowTab name="flowTab" reference="flowTab">
         <component type="gridLayout" name="flowLayout" columns="4"
-                   rows="6">
+                   rows="7">
 
             <layoutElement column="1" row="1" width="2">
                 <component type="lookup" name="componentsLocation"
@@ -217,6 +217,18 @@
                 </component>
             </layoutElement>
             <layoutElement column="1" row="5" width="2">
+                <component type="lookup" name="wasteReceptionWarehouse"
+                           field="#{form}.wasteReceptionWarehouse" reference="wasteReceptionWarehouse">
+                    <option type="column" name="name" fields="name"/>
+
+                    <option type="searchable" value="number,name"/>
+                    <option type="orderable" value="number,name"/>
+
+                    <option type="expression" value="#number + ' - ' + #name"/>
+                    <option type="fieldCode" value="number"/>
+                </component>
+            </layoutElement>
+            <layoutElement column="1" row="6" width="2">
                 <component type="lookup" name="productsInputLocation"
                            field="#{form}.productsInputLocation" reference="productsInputLocation">
                     <option type="column" name="name" fields="name"/>
@@ -228,9 +240,9 @@
                     <option type="fieldCode" value="number"/>
                 </component>
             </layoutElement>
-            <layoutElement column="1" row="6" width="4">
+            <layoutElement column="1" row="7" width="4">
                 <component type="gridLayout" name="productsFlowLayout"
-                           columns="1" rows="4" reference="productsFlowLayout">
+                           columns="1" rows="5" reference="productsFlowLayout">
                     <layoutElement column="1" row="1">
                         <component type="grid" name="productsFlowComponent"
                                    model="operationProductInComponent" reference="productsFlowComponent">
@@ -323,7 +335,35 @@
                                     method="showIntermediateOut"/>
                         </component>
                     </layoutElement>
+
                     <layoutElement column="1" row="4">
+                        <component type="grid" name="productsFlowWasteReceptionWarehouse"
+                                   model="operationProductOutComponent" reference="productsFlowWasteReceptionWarehouse">
+                            <option type="column" name="productName" fields="product"
+                                    expression="#product['name']" link="true" width="150"/>
+                            <option type="column" name="operationComponent" fields="operationComponent"
+                                    expression="#operationComponent['operation'].get('name')"
+                                    width="100" link="true"/>
+                            <option type="column" name="wasteReceptionWarehouse"
+                                    fields="wasteReceptionWarehouse" expression="#wasteReceptionWarehouse['name']"/>
+                            <option type="order" column="productNumber" direction="desc"/>
+
+                            <option type="correspondingView"
+                                    value="productFlowThruDivision/wasteFlowDetails"/>
+                            <option type="correspondingComponent" value="form"/>
+                            <option type="correspondingViewInModal" value="true"/>
+                            <option type="searchable"
+                                    value="productName,wasteReceptionWarehouse,operationComponent"/>
+                            <option type="orderable"
+                                    value="productName,wasteReceptionWarehouse,operationComponent"/>
+
+                            <criteriaModifier
+                                    class="com.qcadoo.mes.productFlowThruDivision.criteriaModifiers.ProductsFlowInCriteriaModifiers"
+                                    method="showWaste"/>
+                        </component>
+                    </layoutElement>
+
+                    <layoutElement column="1" row="5">
                         <component type="grid" name="productsFinal"
                                    model="operationProductOutComponent" reference="productsFinal">
                             <option type="column" name="productName" fields="product"

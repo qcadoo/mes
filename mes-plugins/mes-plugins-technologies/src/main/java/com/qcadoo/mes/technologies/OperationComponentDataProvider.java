@@ -85,14 +85,21 @@ public class OperationComponentDataProvider {
             + "                   left join opoc.operationComponent toc                               \n"
             + "                   left join toc.technology tech                                       \n"
             + "                   left join toc.parent as parentToc                                   \n"
-            + "         where tech.id = :technologyID and parentToc IS NOT NULL";
+            + "         where tech.id = :technologyID and parentToc IS NOT NULL AND opoc.waste = false ";
+
+    private static final String wasteHQL = "select  opoc.id as opocId                       \n"
+            + "         from  #technologies_operationProductOutComponent opoc                         \n"
+            + "                   left join opoc.operationComponent toc                               \n"
+            + "                   left join toc.technology tech                                       \n"
+            + "                   left join toc.parent as parentToc                                   \n"
+            + "         where tech.id = :technologyID AND opoc.waste = true ";
 
     private static final String finalHQL = "select  opoc.id as opocId                       \n"
             + "         from  #technologies_operationProductOutComponent opoc                         \n"
             + "                   left join opoc.operationComponent toc                               \n"
             + "                   left join toc.technology tech                                       \n"
             + "                   left join toc.parent as parentToc                                   \n"
-            + "         where tech.id = :technologyID and parentToc IS NULL";
+            + "         where tech.id = :technologyID and parentToc IS NULL AND opoc.waste = false ";
 
     private List<Entity> findInProductsForTechnology(final Long technologyId) {
         return dataDefinitionService
@@ -169,6 +176,20 @@ public class OperationComponentDataProvider {
 
     public List<Long> getFinalProductsForTechnology(final Long technologyId) {
         List<Entity> components = findFinalProductsForTechnology(technologyId);
+        Collection<Long> componentsIds = CollectionUtils
+                .collect(components, o -> ((Entity) o).getField(L_OPOC_ID));
+        return Lists.newArrayList(componentsIds);
+    }
+
+    public List<Entity> findWasteProductsForTechnology(final Long technologyId) {
+        return dataDefinitionService
+                .get(TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_OPERATION_PRODUCT_OUT_COMPONENT)
+                .find(wasteHQL)
+                .setLong(L_TECHNOLOGY_ID, technologyId).list().getEntities();
+    }
+
+    public List<Long> getWasteProductsForTechnology(final Long technologyId) {
+        List<Entity> components = findWasteProductsForTechnology(technologyId);
         Collection<Long> componentsIds = CollectionUtils
                 .collect(components, o -> ((Entity) o).getField(L_OPOC_ID));
         return Lists.newArrayList(componentsIds);

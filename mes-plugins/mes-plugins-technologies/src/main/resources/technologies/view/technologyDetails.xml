@@ -468,11 +468,12 @@
                                 width="100"/>
                         <option type="column" name="unit" fields="product"
                                 expression="#product['unit']" link="false" width="70"/>
+                        <option type="column" name="waste" fields="waste" link="false" width="70"/>
 
                         <option type="order" column="number" direction="desc"/>
 
-                        <option type="searchable" value="number,name,quantity,unit"/>
-                        <option type="orderable" value="number,name,quantity,unit"/>
+                        <option type="searchable" value="number,name,quantity,unit,waste"/>
+                        <option type="orderable" value="number,name,quantity,unit,waste"/>
 
                         <option type="correspondingView"
                                 value="technologies/operationProductOutComponentDetails"/>

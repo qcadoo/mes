@@ -38,6 +38,9 @@
             <validatesUnscaledValue max="9"/>
             <validatesScale max="5"/>
         </decimal>
+
+        <boolean name="waste" default="false"/>
+
     </fields>
 
     <hooks>

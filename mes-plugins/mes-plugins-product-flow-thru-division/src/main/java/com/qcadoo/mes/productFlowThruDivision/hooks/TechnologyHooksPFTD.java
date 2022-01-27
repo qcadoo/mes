@@ -28,17 +28,12 @@ import static com.qcadoo.model.api.search.SearchRestrictions.eq;
 import java.util.List;
 import java.util.Objects;
 
+import com.qcadoo.mes.productFlowThruDivision.constants.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import com.qcadoo.mes.basic.ParameterService;
-import com.qcadoo.mes.productFlowThruDivision.constants.OperationProductInComponentFieldsPFTD;
-import com.qcadoo.mes.productFlowThruDivision.constants.ParameterFieldsPFTD;
-import com.qcadoo.mes.productFlowThruDivision.constants.ProductionFlowComponent;
-import com.qcadoo.mes.productFlowThruDivision.constants.Range;
-import com.qcadoo.mes.productFlowThruDivision.constants.TechnologyFieldsPFTD;
-import com.qcadoo.mes.productFlowThruDivision.constants.TechnologyOperationComponentFieldsPFTD;
 import com.qcadoo.mes.productionCounting.constants.TechnologyFieldsPC;
 import com.qcadoo.mes.productionCounting.constants.TypeOfProductionRecording;
 import com.qcadoo.mes.technologies.constants.OperationProductOutComponentFields;
@@ -194,6 +189,7 @@ public class TechnologyHooksPFTD {
                 technology.setField(TechnologyFieldsPFTD.PRODUCTS_INPUT_LOCATION, null);
                 technology.setField(TechnologyFieldsPFTD.PRODUCTION_FLOW, null);
                 technology.setField(TechnologyFieldsPFTD.PRODUCTS_FLOW_LOCATION, null);
+                technology.setField(TechnologyFieldsPFTD.WASTE_RECEPTION_WAREHOUSE, null);
             }
         }
     }
@@ -202,13 +198,13 @@ public class TechnologyHooksPFTD {
         List<Entity> opocs = findOPOCs(technology.getId());
 
         for (Entity opoc : opocs) {
-            cleanOperationProduct(opoc);
+            cleanOperationProductOut(opoc);
         }
 
         List<Entity> opics = findOPICs(technology.getId());
 
         for (Entity opic : opics) {
-            cleanOperationProduct(opic);
+            cleanOperationProductIn(opic);
         }
     }
 
@@ -234,13 +230,25 @@ public class TechnologyHooksPFTD {
         return scb.list().getEntities();
     }
 
-    private void cleanOperationProduct(final Entity operationProduct) {
+    private void cleanOperationProductIn(final Entity operationProduct) {
         operationProduct.setField(OperationProductInComponentFieldsPFTD.PRODUCTION_FLOW,
                 ProductionFlowComponent.WITHIN_THE_PROCESS.getStringValue());
         operationProduct.setField(OperationProductInComponentFieldsPFTD.PRODUCTS_FLOW_LOCATION, null);
         operationProduct.setField(OperationProductInComponentFieldsPFTD.COMPONENTS_LOCATION, null);
         operationProduct.setField(OperationProductInComponentFieldsPFTD.COMPONENTS_OUTPUT_LOCATION, null);
         operationProduct.setField(OperationProductInComponentFieldsPFTD.PRODUCTS_INPUT_LOCATION, null);
+
+        operationProduct.getDataDefinition().fastSave(operationProduct);
+    }
+
+    private void cleanOperationProductOut(final Entity operationProduct) {
+        operationProduct.setField(OperationProductOutComponentFieldsPFTD.PRODUCTION_FLOW,
+                ProductionFlowComponent.WITHIN_THE_PROCESS.getStringValue());
+        operationProduct.setField(OperationProductOutComponentFieldsPFTD.PRODUCTS_FLOW_LOCATION, null);
+        operationProduct.setField(OperationProductOutComponentFieldsPFTD.COMPONENTS_LOCATION, null);
+        operationProduct.setField(OperationProductOutComponentFieldsPFTD.COMPONENTS_OUTPUT_LOCATION, null);
+        operationProduct.setField(OperationProductOutComponentFieldsPFTD.PRODUCTS_INPUT_LOCATION, null);
+        operationProduct.setField(OperationProductOutComponentFieldsPFTD.WASTE_RECEPTION_WAREHOUSE, null);
 
         operationProduct.getDataDefinition().fastSave(operationProduct);
     }

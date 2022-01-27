@@ -105,6 +105,27 @@ public class ProductsFlowInCriteriaModifiers {
                 SearchRestrictions.eq("c.technology.id", technologyId));
     }
 
+    public void showWaste(final SearchCriteriaBuilder scb, final FilterValueHolder filterValue) {
+        Long technologyId = null;
+        if (filterValue.has(TECHNOLOGY_PARAMETER)) {
+            technologyId = filterValue.getLong(TECHNOLOGY_PARAMETER);
+
+            List<Long> ids = operationComponentDataProvider.getWasteProductsForTechnology(technologyId);
+
+            if (!ids.isEmpty()) {
+                scb.add(SearchRestrictions
+                        .in("id", ids));
+                return;
+            }
+
+        }
+
+        technologyId = 0L;
+
+        scb.createAlias(OperationProductInComponentFields.OPERATION_COMPONENT, "c").add(
+                SearchRestrictions.eq("c.technology.id", technologyId));
+    }
+
     public void showFinal(final SearchCriteriaBuilder scb, final FilterValueHolder filterValue) {
         Long technologyId = null;
         if (filterValue.has(TECHNOLOGY_PARAMETER)) {

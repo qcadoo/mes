@@ -59,6 +59,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import org.bouncycastle.crypto.engines.ISAACEngine;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -144,7 +145,7 @@ public class TechnologyDetailsListeners {
                 }
                 inProduct.setField(OperationProductInComponentFields.OPERATION_COMPONENT, parent);
                 inProduct = operationProductInComponentDD.save(inProduct);
-                if(!inProduct.isValid()){
+                if (!inProduct.isValid()) {
                     invalidProducts = true;
                 }
             } else {
@@ -152,7 +153,7 @@ public class TechnologyDetailsListeners {
                 return;
             }
         }
-        if(invalidProducts){
+        if (invalidProducts) {
             state.addMessage("technologies.technologyDetails.window.moveProducts.info", MessageType.INFO);
         } else {
             state.addMessage("technologies.technologyDetails.window.moveProducts.success", MessageType.SUCCESS);
@@ -181,9 +182,15 @@ public class TechnologyDetailsListeners {
             List<Entity> operationProductOutComponents = technologyOperationComponent
                     .getHasManyField(TechnologyOperationComponentFields.OPERATION_PRODUCT_OUT_COMPONENTS);
             Entity parent = technologyOperationComponent.getBelongsToField(TechnologyOperationComponentFields.PARENT);
+            long notWasteCount = operationProductOutComponents.stream()
+                    .filter(opoc -> !opoc.getBooleanField(OperationProductOutComponentFields.WASTE)).count();
 
-            if (operationProductOutComponents.size() == 1 && Objects.nonNull(parent)) {
-                Entity operationProductOutComponent = operationProductOutComponents.get(0);
+            if (notWasteCount == 1 && Objects.nonNull(parent)) {
+                Entity operationProductOutComponent = operationProductOutComponents.stream()
+                        .filter(opoc -> !opoc.getBooleanField(OperationProductOutComponentFields.WASTE))
+                        .collect(Collectors.toList()).stream().findFirst()
+                        .orElseThrow(() -> new IllegalStateException("No operation component"));
+                
                 Entity operationProductInComponent = getOperationProductInComponentDD().create();
 
                 operationProductInComponent.setField(OperationProductInComponentFields.QUANTITY,
@@ -231,7 +238,7 @@ public class TechnologyDetailsListeners {
                     .add(SearchRestrictions.eq(QualityCardFields.STATE, "02accepted"))
                     .createAlias(QualityCardFields.PRODUCTS, QualityCardFields.PRODUCTS, JoinType.INNER)
                     .add(SearchRestrictions.eq(QualityCardFields.PRODUCTS + ".id", product.getId())).list().getEntities();
-            if(entities.size() == 1) {
+            if (entities.size() == 1) {
                 qualityCardLookup.setFieldValue(entities.get(0).getId());
             } else {
                 qualityCardLookup.setFieldValue(null);

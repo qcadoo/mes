@@ -35,4 +35,5 @@ public final class OperationProductOutComponentFields {
 
     public static final String QUANTITY = "quantity";
 
+    public static final String WASTE = "waste";
 }

@@ -29,6 +29,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
+import com.qcadoo.mes.productFlowThruDivision.constants.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -36,10 +37,6 @@ import com.google.common.collect.Sets;
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.basic.constants.WorkstationFields;
 import com.qcadoo.mes.materialFlowResources.constants.DivisionFieldsMFR;
-import com.qcadoo.mes.productFlowThruDivision.constants.ParameterFieldsPFTD;
-import com.qcadoo.mes.productFlowThruDivision.constants.ProductionFlowComponent;
-import com.qcadoo.mes.productFlowThruDivision.constants.Range;
-import com.qcadoo.mes.productFlowThruDivision.constants.TechnologyFieldsPFTD;
 import com.qcadoo.mes.productFlowThruDivision.criteriaModifiers.ProductionLineCriteriaModifiersPFTD;
 import com.qcadoo.mes.productFlowThruDivision.criteriaModifiers.ProductsFlowInCriteriaModifiers;
 import com.qcadoo.mes.productionCounting.constants.TechnologyFieldsPC;
@@ -77,6 +74,7 @@ public class TechnologyDetailsHooksPFTD {
     private static final String L_PRODUCTS_FLOW = "productsFlow";
 
     private static final String L_FILL_LOCATIONS_IN_COMPONENTS = "fillLocationsInComponents";
+    public static final String L_PRODUCTS_FLOW_WASTE_RECEPTION_WAREHOUSE = "productsFlowWasteReceptionWarehouse";
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
@@ -129,12 +127,14 @@ public class TechnologyDetailsHooksPFTD {
 
                 LookupComponent productsFlowLocationLookup = (LookupComponent) view
                         .getComponentByReference(TechnologyFieldsPFTD.PRODUCTS_FLOW_LOCATION);
+                LookupComponent wasteFlowLocationLookup = (LookupComponent) view
+                        .getComponentByReference(TechnologyFieldsPFTD.WASTE_RECEPTION_WAREHOUSE);
 
                 componentsLocationLookup.setEnabled(true);
                 componentsOutputLocationLookup.setEnabled(true);
                 productsInputLocationLookup.setEnabled(true);
                 productsFlowLocationLookup.setEnabled(true);
-
+                wasteFlowLocationLookup.setEnabled(true);
                 FieldComponent rangeField = (FieldComponent) view.getComponentByReference(TechnologyFieldsPFTD.RANGE);
                 rangeField.setEnabled(false);
 
@@ -151,15 +151,18 @@ public class TechnologyDetailsHooksPFTD {
         GridComponent gridProductsIntermediateOut = (GridComponent) view
                 .getComponentByReference(L_PRODUCTS_FLOW_INTERMEDIATE_OUT);
         GridComponent gridProductsFinal = (GridComponent) view.getComponentByReference(L_PRODUCTS_FINAL);
+        GridComponent gridProductsWaste = (GridComponent) view.getComponentByReference(L_PRODUCTS_FLOW_WASTE_RECEPTION_WAREHOUSE);
 
         gridProductsComponent.setEnabled(isEnabled);
         gridProductsIntermediateIn.setEnabled(isEnabled);
         gridProductsIntermediateOut.setEnabled(isEnabled);
         gridProductsFinal.setEnabled(isEnabled);
+        gridProductsWaste.setEnabled(isEnabled);
         gridProductsComponent.setEditable(isEditable);
         gridProductsIntermediateIn.setEditable(isEditable);
         gridProductsIntermediateOut.setEditable(isEditable);
         gridProductsFinal.setEditable(isEditable);
+        gridProductsWaste.setEditable(isEditable);
     }
 
     private void fillRangeAndDivision(final ViewDefinitionState view) {
@@ -295,6 +298,7 @@ public class TechnologyDetailsHooksPFTD {
         GridComponent gridProductsIntermediateOut = (GridComponent) view
                 .getComponentByReference(L_PRODUCTS_FLOW_INTERMEDIATE_OUT);
         GridComponent gridProductsFinal = (GridComponent) view.getComponentByReference(L_PRODUCTS_FINAL);
+        GridComponent gridProductsWaste = (GridComponent) view.getComponentByReference(L_PRODUCTS_FLOW_WASTE_RECEPTION_WAREHOUSE);
 
         FilterValueHolder gridProductsComponentInHolder = gridProductsComponent.getFilterValue();
         gridProductsComponentInHolder.put(ProductsFlowInCriteriaModifiers.TECHNOLOGY_PARAMETER, technologyId);
@@ -311,6 +315,10 @@ public class TechnologyDetailsHooksPFTD {
         FilterValueHolder gridProductsFinalOutHolder = gridProductsFinal.getFilterValue();
         gridProductsFinalOutHolder.put(ProductsFlowInCriteriaModifiers.TECHNOLOGY_PARAMETER, technologyId);
         gridProductsFinal.setFilterValue(gridProductsFinalOutHolder);
+
+        FilterValueHolder gridProductsWasteOutHolder = gridProductsWaste.getFilterValue();
+        gridProductsWasteOutHolder.put(ProductsFlowInCriteriaModifiers.TECHNOLOGY_PARAMETER, technologyId);
+        gridProductsWaste.setFilterValue(gridProductsWasteOutHolder);
     }
 
     private void setFieldsRequiredOnFlowTab(final ViewDefinitionState view) {
@@ -344,12 +352,15 @@ public class TechnologyDetailsHooksPFTD {
                 .getComponentByReference(TechnologyFieldsPFTD.PRODUCTS_FLOW_LOCATION);
         LookupComponent productsInputLocationLookup = (LookupComponent) view
                 .getComponentByReference(TechnologyFieldsPFTD.PRODUCTS_INPUT_LOCATION);
+        LookupComponent productsWasteLocationLookup = (LookupComponent) view
+                .getComponentByReference(TechnologyFieldsPFTD.WASTE_RECEPTION_WAREHOUSE);
         FieldComponent productionFlow = (FieldComponent) view.getComponentByReference(TechnologyFieldsPFTD.PRODUCTION_FLOW);
 
         componentsLocationLookup.setEnabled(isEnabled);
         componentsOutputLocationLookup.setEnabled(isEnabled);
         productsFlowLocationLookup.setEnabled(isEnabled);
         productsInputLocationLookup.setEnabled(isEnabled);
+        productsWasteLocationLookup.setEnabled(isEnabled);
         productionFlow.setEnabled(isEnabled);
 
         FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
@@ -389,6 +400,8 @@ public class TechnologyDetailsHooksPFTD {
                 .getComponentByReference(TechnologyFieldsPFTD.PRODUCTS_INPUT_LOCATION);
         LookupComponent productsFlowLocationLookup = (LookupComponent) view
                 .getComponentByReference(TechnologyFieldsPFTD.PRODUCTS_FLOW_LOCATION);
+        LookupComponent productsWasteLocationLookup = (LookupComponent) view
+                .getComponentByReference(TechnologyFieldsPFTD.WASTE_RECEPTION_WAREHOUSE);
 
         Entity componentsLocation = division.getBelongsToField(DivisionFieldsMFR.COMPONENTS_LOCATION);
 
@@ -419,6 +432,16 @@ public class TechnologyDetailsHooksPFTD {
         }
 
         productsInputLocationLookup.requestComponentUpdateState();
+
+        Entity productsWaste = division.getBelongsToField(DivisionFieldsPFTD.WASTE_RECEPTION_WAREHOUSE);
+
+        if (Objects.isNull(productsWaste)) {
+            productsWasteLocationLookup.setFieldValue(null);
+        } else {
+            productsWasteLocationLookup.setFieldValue(productsWaste.getId());
+        }
+
+        productsWasteLocationLookup.requestComponentUpdateState();
 
         Entity productsFlow = division.getBelongsToField(TechnologyFieldsPFTD.PRODUCTS_FLOW_LOCATION);
 
@@ -526,11 +549,14 @@ public class TechnologyDetailsHooksPFTD {
                         .getComponentByReference(TechnologyFieldsPFTD.PRODUCTS_INPUT_LOCATION);
                 LookupComponent productsFlowLocationLookup = (LookupComponent) view
                         .getComponentByReference(TechnologyFieldsPFTD.PRODUCTS_FLOW_LOCATION);
+                LookupComponent wasteReceptionWarehouseLookup = (LookupComponent) view
+                        .getComponentByReference(TechnologyFieldsPFTD.WASTE_RECEPTION_WAREHOUSE);
 
                 componentsLocationLookup.setEnabled(false);
                 componentsOutputLocationLookup.setEnabled(false);
                 productsInputLocationLookup.setEnabled(false);
                 productsFlowLocationLookup.setEnabled(false);
+                wasteReceptionWarehouseLookup.setEnabled(false);
 
                 FieldComponent rangeField = (FieldComponent) view.getComponentByReference(TechnologyFieldsPFTD.RANGE);
                 rangeField.setEnabled(false);
