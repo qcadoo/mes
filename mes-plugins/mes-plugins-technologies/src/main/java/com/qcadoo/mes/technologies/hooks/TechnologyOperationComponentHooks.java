@@ -204,11 +204,17 @@ public class TechnologyOperationComponentHooks {
 
             if (value instanceof EntityList) {
                 EntityList entities = (EntityList) value;
-
                 List<Entity> copies = Lists.newArrayList();
-
-                for (Entity entity : entities) {
-                    copies.add(copyReferencedTechnologyOperations(entity, technology));
+                if (entry.getKey().equals(TechnologyOperationComponentFields.CHILDREN)) {
+                    for (Entity entity : entities) {
+                        copies.add(copyReferencedTechnologyOperations(entity, technology));
+                    }
+                } else {
+                    for (Entity entity : entities) {
+                        Entity fieldCopy = entity.copy();
+                        fieldCopy.setId(null);
+                        copies.add(fieldCopy);
+                    }
                 }
 
                 copy.setField(entry.getKey(), copies);
@@ -259,8 +265,8 @@ public class TechnologyOperationComponentHooks {
 
         if (Objects.nonNull(technologicalProcessList)) {
             if (Objects.isNull(technologicalProcessListAssignmentDate) || !areSame) {
-                technologyOperationComponent.setField(TechnologyOperationComponentFields.TECHNOLOGICAL_PROCESS_LIST_ASSIGNMENT_DATE,
-                        DateTime.now().toDate());
+                technologyOperationComponent.setField(
+                        TechnologyOperationComponentFields.TECHNOLOGICAL_PROCESS_LIST_ASSIGNMENT_DATE, DateTime.now().toDate());
             }
         } else {
             technologyOperationComponent.setField(TechnologyOperationComponentFields.TECHNOLOGICAL_PROCESS_LIST_ASSIGNMENT_DATE,
