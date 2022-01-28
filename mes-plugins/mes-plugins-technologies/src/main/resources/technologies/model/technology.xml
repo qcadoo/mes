@@ -62,7 +62,7 @@
         <hasMany name="stateChanges" joinField="technology" model="technologyStateChange"
                  cascade="delete"/>
 
-        <hasMany name="technologyAttachments" joinField="technology" model="technologyAttachment" cascade="delete"/>
+        <hasMany name="technologyAttachments" joinField="technology" model="technologyAttachment" cascade="delete" copyable="true"/>
 
         <tree name="productStructureTree" model="productStructureTreeNode"
               joinField="mainTechnology" cascade="delete"/>

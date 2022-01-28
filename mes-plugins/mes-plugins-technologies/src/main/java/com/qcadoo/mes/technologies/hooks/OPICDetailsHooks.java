@@ -87,7 +87,9 @@ public class OPICDetailsHooks {
                 givenQuantityField.setEnabled(false);
                 givenUnitField.setEnabled(false);
             } else {
-                quantityFormulaField.setEnabled(true);
+                if(Objects.nonNull(quantityFormulaField)) {
+                    quantityFormulaField.setEnabled(true);
+                }
                 givenQuantityField.setEnabled(true);
                 givenUnitField.setEnabled(true);
             }

@@ -190,7 +190,7 @@ public class TechnologyDetailsListeners {
                         .filter(opoc -> !opoc.getBooleanField(OperationProductOutComponentFields.WASTE))
                         .collect(Collectors.toList()).stream().findFirst()
                         .orElseThrow(() -> new IllegalStateException("No operation component"));
-                
+
                 Entity operationProductInComponent = getOperationProductInComponentDD().create();
 
                 operationProductInComponent.setField(OperationProductInComponentFields.QUANTITY,
