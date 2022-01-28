@@ -338,10 +338,7 @@ public class DocumentBuilder {
         if (savedDocument.isValid()) {
             if (DocumentState.ACCEPTED.getStringValue().equals(savedDocument.getStringField(DocumentFields.STATE))) {
                 resourceManagementService.createResources(savedDocument);
-
-                if (receiptDocumentForReleaseHelper.buildConnectedDocument(savedDocument)) {
-                    receiptDocumentForReleaseHelper.tryBuildConnectedDocument(savedDocument, false);
-                }
+                receiptDocumentForReleaseHelper.tryBuildConnectedDocument(savedDocument, false);
             } else {
                 positions.forEach(p -> {
                     p = p.getDataDefinition().save(p);
