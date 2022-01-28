@@ -44,6 +44,8 @@ public final class TimeNormsConstants {
     // MODEL
     public static final String MODEL_TECH_OPER_COMP_TIME_CALCULATION = "techOperCompTimeCalculation";
 
+    public static final String OPERATION_WORKSTATION_TIME = "operationWorkstationTime";
+
     public static final String TECH_OPER_COMP_WORKSTATION_TIME = "techOperCompWorkstationTime";
 
     public static final Set<String> FIELDS_OPERATION = Sets.newHashSet("tpz", "tj", "productionInOneCycle",

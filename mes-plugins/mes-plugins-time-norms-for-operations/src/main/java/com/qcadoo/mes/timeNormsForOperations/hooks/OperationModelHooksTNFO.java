@@ -23,23 +23,64 @@
  */
 package com.qcadoo.mes.timeNormsForOperations.hooks;
 
-import java.util.Objects;
+import static com.qcadoo.mes.timeNormsForOperations.constants.OperationFieldsTFNO.OPERATION_WORKSTATION_TIMES;
 
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.beust.jcommander.internal.Lists;
+import com.google.common.collect.Sets;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.technologies.constants.OperationFields;
+import com.qcadoo.mes.timeNormsForOperations.constants.OperationWorkstationTimeFields;
 import com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperationComponentFieldsTNFO;
+import com.qcadoo.mes.timeNormsForOperations.constants.TimeNormsConstants;
 import com.qcadoo.model.api.DataDefinition;
+import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 
 @Service
 public class OperationModelHooksTNFO {
 
+    @Autowired
+    private DataDefinitionService dataDefinitionService;
+
     public void setProductionInOneCycleUNIT(final DataDefinition dataDefinition, final Entity operation) {
         Entity product = operation.getBelongsToField(OperationFields.PRODUCT);
-        if(!Objects.isNull(product)){
-            operation.setField(TechnologyOperationComponentFieldsTNFO.PRODUCTION_IN_ONE_CYCLE_UNIT, product.getField(ProductFields.UNIT));
+        if (!Objects.isNull(product)) {
+            operation.setField(TechnologyOperationComponentFieldsTNFO.PRODUCTION_IN_ONE_CYCLE_UNIT,
+                    product.getField(ProductFields.UNIT));
+        }
+    }
+
+    public void onSave(final DataDefinition dataDefinition, final Entity operation) {
+        if (operation.getId() != null) {
+            Set<Long> tocWorkstationsIds = operation.getManyToManyField(OperationFields.WORKSTATIONS).stream().map(Entity::getId)
+                    .collect(Collectors.toSet());
+            Set<Long> oldTocWorkstationsIds = dataDefinition.get(operation.getId())
+                    .getManyToManyField(OperationFields.WORKSTATIONS).stream().map(Entity::getId).collect(Collectors.toSet());
+
+            Set<Long> removedWorkstationsIds = Sets.difference(oldTocWorkstationsIds, tocWorkstationsIds);
+            List<Long> operWorkstationTimesIdsToRemove = Lists.newArrayList();
+            for (Long id : removedWorkstationsIds) {
+                for (Entity operWorkstationTime : operation.getHasManyField(OPERATION_WORKSTATION_TIMES)) {
+                    if (operWorkstationTime.getBelongsToField(OperationWorkstationTimeFields.WORKSTATION).getId().equals(id)) {
+                        operWorkstationTimesIdsToRemove.add(operWorkstationTime.getId());
+                        break;
+                    }
+                }
+            }
+
+            if (!operWorkstationTimesIdsToRemove.isEmpty()) {
+                DataDefinition operWorkstationTimeDD = dataDefinitionService.get(TimeNormsConstants.PLUGIN_IDENTIFIER,
+                        TimeNormsConstants.OPERATION_WORKSTATION_TIME);
+                operWorkstationTimeDD.delete(operWorkstationTimesIdsToRemove.toArray(new Long[0]));
+            }
         }
     }
 }
