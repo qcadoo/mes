@@ -174,8 +174,6 @@ public class TechnologyOperationComponentHooksTNFO {
                 DataDefinition techOperCompWorkstationTimeDD = dataDefinitionService.get(TimeNormsConstants.PLUGIN_IDENTIFIER,
                         TimeNormsConstants.TECH_OPER_COMP_WORKSTATION_TIME);
                 techOperCompWorkstationTimeDD.delete(techOperCompWorkstationTimesIdsToRemove.toArray(new Long[0]));
-                technologyOperationComponent
-                        .addGlobalMessage("productionTimeNorms.messages.removeWorkstationsForTOC.removeWorkstationsTimesForTOC");
             }
         }
     }
