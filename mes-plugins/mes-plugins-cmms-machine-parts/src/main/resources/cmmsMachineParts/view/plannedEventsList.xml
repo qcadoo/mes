@@ -115,7 +115,7 @@
 					]]>
                 </script>
 
-                <component type="gridLayout" name="gridLayout" columns="3" rows="2" hasBorders="false">
+                <component type="gridLayout" name="gridLayout" columns="3" rows="4" hasBorders="false">
                     <layoutElement column="1" row="1">
                         <component type="lookup" name="factory" field="factory" reference="factory">
                             <option type="column" name="name" fields="name"/>
@@ -153,7 +153,16 @@
                                     method="selectDivision"/>
                         </component>
                     </layoutElement>
-
+                    <layoutElement column="1" row="3">
+                        <component type="calendar" name="dateFrom" field="dateFrom"
+                                   reference="dateFrom">
+                        </component>
+                    </layoutElement>
+                    <layoutElement column="1" row="4">
+                        <component type="calendar" name="dateTo" field="dateTo"
+                                   reference="dateTo">
+                        </component>
+                    </layoutElement>
                     <layoutElement column="2" row="1">
                         <component type="hidden" name="confirmed" field="confirmed"
                                    reference="confirmed"/>

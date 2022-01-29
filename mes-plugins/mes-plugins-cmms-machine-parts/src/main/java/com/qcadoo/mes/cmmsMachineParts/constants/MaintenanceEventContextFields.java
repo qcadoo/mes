@@ -33,6 +33,10 @@ public final class MaintenanceEventContextFields {
 
     public static final String DIVISION = "division";
 
+    public static final String DATE_FROM = "dateFrom";
+
+    public static final String DATE_TO = "dateTo";
+
     public static final String EVENTS = "events";
 
     public static final String GENERATED = "generated";

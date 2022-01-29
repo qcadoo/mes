@@ -25,22 +25,25 @@
 
 -->
 <model name="maintenanceEventContext"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
-	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
-	<fields>
-		<belongsTo name="factory" model="factory" plugin="basic" />
-		<belongsTo name="division" model="division" plugin="basic" />
-		<hasMany name="events" model="maintenanceEvent"
-				 joinField="maintenanceEventContext" plugin="cmmsMachineParts" />
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
+       xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
+    <fields>
+        <belongsTo name="factory" model="factory" plugin="basic"/>
+        <belongsTo name="division" model="division" plugin="basic"/>
+        <hasMany name="events" model="maintenanceEvent"
+                 joinField="maintenanceEventContext" plugin="cmmsMachineParts"/>
 
         <hasMany name="maintenanceEventListDtos" model="maintenanceEventListDto"
-                 joinField="maintenanceEventContext" plugin="cmmsMachineParts" />
-		<boolean name="generated" default="false" />
-		<boolean name="confirmed" default="false" />
+                 joinField="maintenanceEventContext" plugin="cmmsMachineParts"/>
+        <boolean name="generated" default="false"/>
+        <boolean name="confirmed" default="false"/>
         <boolean name="acceptanceEvents" default="false" persistent="false"/>
 
-    </fields>
-	<hooks>
+        <date name="dateFrom"/>
+        <date name="dateTo"/>
 
-	</hooks>
+    </fields>
+    <hooks>
+
+    </hooks>
 </model>

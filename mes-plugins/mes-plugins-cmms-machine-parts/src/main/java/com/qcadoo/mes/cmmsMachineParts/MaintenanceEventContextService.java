@@ -23,10 +23,9 @@
  */
 package com.qcadoo.mes.cmmsMachineParts;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
+import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -58,10 +57,6 @@ import com.qcadoo.view.internal.components.form.FormComponentState;
 @Service
 public class MaintenanceEventContextService {
 
-    
-
-
-
     private static final String L_PLANNED_EVENT = "plannedEvent";
 
     @Autowired
@@ -77,6 +72,12 @@ public class MaintenanceEventContextService {
         if (maintenanceEventContextEntity.getBooleanField(MaintenanceEventContextFields.CONFIRMED)) {
             maintenanceEventContextEntity = changeContext(view, maintenanceEventContextEntity);
         } else {
+            Date dateFrom = maintenanceEventContextEntity.getDateField(MaintenanceEventContextFields.DATE_FROM);
+            Date dateTo = maintenanceEventContextEntity.getDateField(MaintenanceEventContextFields.DATE_TO);
+            if(Objects.nonNull(dateFrom) && Objects.nonNull(dateTo) && dateTo.before(dateFrom)) {
+                view.addMessage("cmmsMachineParts.plannedEventsList.window.contextTab.error.datesOrder", ComponentState.MessageType.FAILURE);
+                return;
+            }
             maintenanceEventContextEntity = confirmContext(maintenanceEventContextEntity, args);
         }
 
@@ -125,11 +126,26 @@ public class MaintenanceEventContextService {
                 maintenanceEventContextEntity.getBelongsToField(MaintenanceEventContextFields.DIVISION)));
         searchCriteriaBuilder.add(SearchRestrictions.belongsTo(MaintenanceEventContextFields.FACTORY,
                 maintenanceEventContextEntity.getBelongsToField(MaintenanceEventContextFields.FACTORY)));
+        Date dateFrom = maintenanceEventContextEntity.getDateField(MaintenanceEventContextFields.DATE_FROM);
+        Date dateTo = maintenanceEventContextEntity.getDateField(MaintenanceEventContextFields.DATE_TO);
+
+        if(Objects.nonNull(dateFrom)) {
+            searchCriteriaBuilder.add(SearchRestrictions.eq(MaintenanceEventContextFields.DATE_FROM, dateFrom));
+        } else {
+            searchCriteriaBuilder.add(SearchRestrictions.isNull(MaintenanceEventContextFields.DATE_FROM));
+        }
+        if(Objects.nonNull(dateTo)) {
+            searchCriteriaBuilder.add(SearchRestrictions.eq(MaintenanceEventContextFields.DATE_TO, dateTo));
+        } else {
+            searchCriteriaBuilder.add(SearchRestrictions.isNull(MaintenanceEventContextFields.DATE_TO));
+        }
 
         Entity maintenanceEventContextEntityFromDb = searchCriteriaBuilder.uniqueResult();
 
         if (maintenanceEventContextEntityFromDb == null) {
             maintenanceEventContextEntity.setField(MaintenanceEventContextFields.CONFIRMED, false);
+            maintenanceEventContextEntity.setField(MaintenanceEventContextFields.DATE_FROM, dateFrom);
+            maintenanceEventContextEntity.setField(MaintenanceEventContextFields.DATE_TO, dateTo);
             maintenanceEventContextEntity = maintenanceEventContextEntity.getDataDefinition().save(maintenanceEventContextEntity);
         } else {
             Long id = maintenanceEventContextEntity.getId();
@@ -174,6 +190,8 @@ public class MaintenanceEventContextService {
     private void setEnableOfContextTab(ViewDefinitionState view, boolean enabled) {
         view.<FieldComponent> tryFindComponentByReference(MaintenanceEventContextFields.FACTORY).orNull().setEnabled(enabled);
         view.<FieldComponent> tryFindComponentByReference(MaintenanceEventContextFields.DIVISION).orNull().setEnabled(enabled);
+        view.<FieldComponent> tryFindComponentByReference("dateFrom").orNull().setEnabled(enabled);
+        view.<FieldComponent> tryFindComponentByReference("dateTo").orNull().setEnabled(enabled);
     }
 
     private void setEnableOfMainTab(ViewDefinitionState view, boolean enabled) {
@@ -215,6 +233,16 @@ public class MaintenanceEventContextService {
                     Math.toIntExact(divisionEntity.getId()));
         }
 
+        Date dateFrom = maintenanceEventContext.getDateField("dateFrom");
+        if (Objects.nonNull(dateFrom)) {
+            filterValueHolder.put(EventCriteriaModifiersCMP.L_MAINTENANCE_EVENT_CONTEXT_DATE_FROM, dateFrom.getTime());
+        }
+
+        Date dateTo = maintenanceEventContext.getDateField("dateTo");
+        if (Objects.nonNull(dateTo)) {
+            filterValueHolder.put(EventCriteriaModifiersCMP.L_MAINTENANCE_EVENT_CONTEXT_DATE_TO, dateTo.getTime());
+        }
+
         gridComponent.setFilterValue(filterValueHolder);
     }
 
@@ -232,7 +260,8 @@ public class MaintenanceEventContextService {
     }
 
     public Entity getCurrentContext(ViewDefinitionState viewDefinitionState, ComponentState triggerState, String[] args) {
-        FormComponent formComponent = (FormComponentState) viewDefinitionState.getComponentByReference(QcadooViewConstants.L_FORM);
+        FormComponent formComponent = (FormComponentState) viewDefinitionState
+                .getComponentByReference(QcadooViewConstants.L_FORM);
 
         return prepareContextEntity(formComponent.getEntity());
     }
