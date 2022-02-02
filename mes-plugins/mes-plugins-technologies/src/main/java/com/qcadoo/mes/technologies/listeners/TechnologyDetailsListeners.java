@@ -185,24 +185,25 @@ public class TechnologyDetailsListeners {
             long notWasteCount = operationProductOutComponents.stream()
                     .filter(opoc -> !opoc.getBooleanField(OperationProductOutComponentFields.WASTE)).count();
 
-            if (notWasteCount == 1 && Objects.nonNull(parent)) {
-                Entity operationProductOutComponent = operationProductOutComponents.stream()
-                        .filter(opoc -> !opoc.getBooleanField(OperationProductOutComponentFields.WASTE))
-                        .collect(Collectors.toList()).stream().findFirst()
-                        .orElseThrow(() -> new IllegalStateException("No operation component"));
+            if (Objects.nonNull(parent)) {
+                if (notWasteCount == 1) {
+                    Entity operationProductOutComponent = operationProductOutComponents.stream()
+                            .filter(opoc -> !opoc.getBooleanField(OperationProductOutComponentFields.WASTE))
+                            .collect(Collectors.toList()).stream().findFirst()
+                            .orElseThrow(() -> new IllegalStateException("No operation component"));
+                    Entity operationProductInComponent = getOperationProductInComponentDD().create();
 
-                Entity operationProductInComponent = getOperationProductInComponentDD().create();
+                    operationProductInComponent.setField(OperationProductInComponentFields.QUANTITY,
+                            operationProductOutComponent.getField(OperationProductOutComponentFields.QUANTITY));
+                    operationProductInComponent.setField(OperationProductInComponentFields.PRODUCT,
+                            operationProductOutComponent.getBelongsToField(OperationProductOutComponentFields.PRODUCT));
+                    operationProductInComponent.setField(OperationProductInComponentFields.OPERATION_COMPONENT, parent);
 
-                operationProductInComponent.setField(OperationProductInComponentFields.QUANTITY,
-                        operationProductOutComponent.getField(OperationProductOutComponentFields.QUANTITY));
-                operationProductInComponent.setField(OperationProductInComponentFields.PRODUCT,
-                        operationProductOutComponent.getBelongsToField(OperationProductOutComponentFields.PRODUCT));
-                operationProductInComponent.setField(OperationProductInComponentFields.OPERATION_COMPONENT, parent);
-
-                operationProductInComponent.getDataDefinition().save(operationProductInComponent);
-            } else if (operationProductOutComponents.size() > 1) {
-                operationsWithManyOutProducts
-                        .add(technologyOperationComponent.getBelongsToField(TechnologyOperationComponentFields.OPERATION));
+                    operationProductInComponent.getDataDefinition().save(operationProductInComponent);
+                } else if (operationProductOutComponents.size() > 1) {
+                    operationsWithManyOutProducts
+                            .add(technologyOperationComponent.getBelongsToField(TechnologyOperationComponentFields.OPERATION));
+                }
             }
         }
         return operationsWithManyOutProducts;

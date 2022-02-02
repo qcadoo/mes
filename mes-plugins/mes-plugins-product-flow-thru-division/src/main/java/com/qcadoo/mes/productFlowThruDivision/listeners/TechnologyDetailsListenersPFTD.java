@@ -213,9 +213,9 @@ public class TechnologyDetailsListenersPFTD {
 
             if (Objects.nonNull(division)) {
                 Entity wasteLocation = division.getBelongsToField(DivisionFieldsPFTD.WASTE_RECEPTION_WAREHOUSE);
-                op.setField(OperationProductOutComponentFieldsPFTD.PRODUCTS_INPUT_LOCATION, wasteLocation);
+                op.setField(OperationProductOutComponentFieldsPFTD.WASTE_RECEPTION_WAREHOUSE, wasteLocation);
             } else {
-                op.setField(OperationProductOutComponentFieldsPFTD.PRODUCTS_INPUT_LOCATION, null);
+                op.setField(OperationProductOutComponentFieldsPFTD.WASTE_RECEPTION_WAREHOUSE, null);
             }
 
             op.getDataDefinition().fastSave(op);

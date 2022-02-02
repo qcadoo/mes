@@ -15,4 +15,6 @@ public final class ParameterFieldsT {
 
     public static final String ACCEPTED_TECHNOLOGY_MARKED_AS_DEFAULT = "acceptedTechnologyMarkedAsDefault";
 
+    public static final String CHECK_FOR_THE_EXISTENCE_OF_INPUT_PRODUCT_PRICES = "checkForTheExistenceOfInputProductPrices";
+
 }

@@ -262,6 +262,10 @@
             <model:boolean name="acceptedTechnologyMarkedAsDefault" default="false"/>
         </model:model-field>
 
+        <model:model-field model="parameter" plugin="basic">
+            <model:boolean name="checkForTheExistenceOfInputProductPrices" default="false"/>
+        </model:model-field>
+
         <model:model-field plugin="basic" model="product">
             <model:manyToMany name="qualityCards" plugin="technologies" model="qualityCard" joinField="products"/>
         </model:model-field>

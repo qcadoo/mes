@@ -59,26 +59,4 @@ public class TechnologyDetailsListenersCNFM {
         viewState.redirectTo(url, false, true, parameters);
     }
 
-    public void checkTechnologyProductsInNorms(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        FormComponent technologyForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
-
-        Long technologyId = technologyForm.getEntityId();
-
-        if (technologyId == null) {
-            return;
-        }
-
-        List<Entity> products = technologyService.getComponentsWithProductWithSizes(technologyId);
-
-        for (Entity product : products) {
-            if ((product.getField(ProductFieldsCNFP.COST_FOR_NUMBER) == null)
-                    || (product.getField(ProductFieldsCNFP.NOMINAL_COST) == null)
-                    || (product.getField(ProductFieldsCNFP.LAST_PURCHASE_COST) == null)
-                    || (product.getField(ProductFieldsCNFP.AVERAGE_COST) == null)) {
-                technologyForm.addMessage("technologies.technologyDetails.error.inputProductsWithoutCostNorms", MessageType.INFO,
-                        false);
-                break;
-            }
-        }
-    }
 }
