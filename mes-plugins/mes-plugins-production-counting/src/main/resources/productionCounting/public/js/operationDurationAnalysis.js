@@ -101,9 +101,9 @@ QCD.operationDurationAnalysis = (function() {
         let workersWorkingTimeSumInSecondsSum = CalculateTotalByAggregator(new Slick.Data.Aggregators.Sum("workersWorkingTimeSumInSeconds"), dataView);
         let machinesWorkingTimeSumInSecondsSum = CalculateTotalByAggregator(new Slick.Data.Aggregators.Sum("machinesWorkingTimeSumInSeconds"), dataView);
 
-        updateTotalRowValue(grid, "quantity", formatValue(quantitySum));
-        updateTotalRowValue(grid, "workersWorkingTimeSum", formatTime(workersWorkingTimeSumInSecondsSum));
-        updateTotalRowValue(grid, "machinesWorkingTimeSum", formatTime(machinesWorkingTimeSumInSecondsSum));
+        updateTotalRowValue(grid, "quantity", numberFormatter(null, null, quantitySum));
+        updateTotalRowValue(grid, "workersWorkingTimeSum", numberFormatter(null, null, formatTime(workersWorkingTimeSumInSecondsSum)));
+        updateTotalRowValue(grid, "machinesWorkingTimeSum", numberFormatter(null, null, formatTime(machinesWorkingTimeSumInSecondsSum)));
     }
 
     function formatTime(seconds) {
@@ -116,14 +116,6 @@ QCD.operationDurationAnalysis = (function() {
             m > 9 ? m : (h ? '0' + m : m || '0'),
             s > 9 ? s : '0' + s
         ].filter(Boolean).join(':');
-    }
-
-    function formatValue(value) {
-        if (value == null) {
-            value = 0;
-        }
-
-        return value.toFixed(2);
     }
 
     function updateTotalRowValue(grid, columnId, total) {
