@@ -365,15 +365,24 @@ public class ScheduleDetailsListenersPS {
         Map<String, Object> parameters = Maps.newHashMap();
         parameters.put("scheduleId", scheduleId);
         StringBuilder query = new StringBuilder();
-        query.append("SELECT sp.id FROM orders_scheduleposition sp JOIN technologies_technologyoperationcomponent toc ");
+        query.append("SELECT id FROM ");
+        query.append("(SELECT sp.id, sp.machineworktime, ");
+        query.append("string_to_array(regexp_replace(REVERSE(SPLIT_PART(REVERSE(o.number), '-', 1)), '[^0-9.]', '0', 'g'), '.')::int[] AS osort, ");
+        query.append("string_to_array(regexp_replace(rtrim(toc.nodenumber, '.'), '[^0-9.]', '0', 'g'), '.')::int[] AS opsort ");
+        query.append("FROM orders_scheduleposition sp JOIN technologies_technologyoperationcomponent toc ");
         query.append("ON sp.technologyoperationcomponent_id = toc.id JOIN orders_order o ON sp.order_id = o.id ");
-        query.append("WHERE sp.schedule_id = :scheduleId ORDER BY ");
-        query.append("string_to_array(regexp_replace(SPLIT_PART(o.number, '-', 2), '[^0-9.]', '0', 'g'), '.')::int[] desc, ");
-        query.append("string_to_array(regexp_replace(rtrim(toc.nodenumber, '.'), '[^0-9.]', '0', 'g'), '.')::int[] desc, ");
+        query.append("WHERE sp.schedule_id = :scheduleId AND o.parent_id IS NOT NULL ");
+        query.append("UNION ");
+        query.append("SELECT sp.id, sp.machineworktime, ARRAY[]::int[] AS osort, ");
+        query.append("string_to_array(regexp_replace(rtrim(toc.nodenumber, '.'), '[^0-9.]', '0', 'g'), '.')::int[] AS opsort ");
+        query.append("FROM orders_scheduleposition sp JOIN technologies_technologyoperationcomponent toc ");
+        query.append("ON sp.technologyoperationcomponent_id = toc.id JOIN orders_order o ON sp.order_id = o.id ");
+        query.append("WHERE sp.schedule_id = :scheduleId AND o.parent_id IS NULL) AS positions ");
+        query.append("ORDER BY osort desc, opsort desc, ");
         if (ScheduleSortOrder.DESCENDING.getStringValue().equals(schedule.getStringField(ScheduleFields.SORT_ORDER))) {
-            query.append("sp.machineworktime desc");
+            query.append("machineworktime desc");
         } else {
-            query.append("sp.machineworktime asc");
+            query.append("machineworktime asc");
         }
         return jdbcTemplate.queryForList(query.toString(), parameters, Long.class);
     }
