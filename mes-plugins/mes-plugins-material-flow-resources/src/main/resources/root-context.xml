@@ -48,4 +48,15 @@
         <property name="targetObject" ref="reservationsService"/>
         <property name="targetMethod" value="cleanReservationsTrigger"/>
     </bean>
+
+    <bean id="automaticCostNormsTrigger" class="org.springframework.scheduling.quartz.CronTriggerBean">
+        <property name="jobDetail" ref="automaticCostNorms"/>
+        <property name="cronExpression" value="0 0 3 * * ?"/>
+    </bean>
+
+    <bean id="automaticCostNorms"
+          class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+        <property name="targetObject" ref="costNormsServiceImpl"/>
+        <property name="targetMethod" value="automaticCostNormsTrigger"/>
+    </bean>
 </beans>

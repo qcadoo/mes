@@ -30,9 +30,10 @@ import com.qcadoo.mes.materialFlowResources.costNorms.dao.model.CostNorm;
 
 public interface CostNormsDao {
 
-    public List<CostNorm> getLastPurchaseCostsForProducts(List<Long> productIds, List<Long> warehousesIds);
+    List<CostNorm> getLastPurchaseCostsForProducts(final List<Long> productIds, final List<Long> warehousesIds);
 
-    public List<CostNorm> getAverageCostForProducts(List<Long> productIds, List<Long> warehousesIds);
+    List<CostNorm> getAverageCostForProducts(final List<Long> productIds, final List<Long> warehousesIds);
 
-    public void updateCostNormsForProducts(Collection<CostNorm> costNorms);
+    void updateCostNormsForProducts(final Collection<CostNorm> costNorms);
+
 }

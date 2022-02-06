@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    ***************************************************************************
+    Copyright (c) 2010 Qcadoo Limited
+    Project: Qcadoo MES
+    Version: 1.4
+
+    This file is part of Qcadoo.
+
+    Qcadoo is free software; you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as published
+    by the Free Software Foundation; either version 3 of the License,
+    or (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty
+    of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+    See the GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+    ***************************************************************************
+
+-->
+<windowTabExtension xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns="http://schema.qcadoo.org/view"
+      xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
+      plugin="basic" view="generalParameters">
+
+    <windowTab name="productsTab" reference="productsTab">
+        <component type="gridLayout" name="productsGridLayout" columns="3" rows="3">
+            <layoutElement column="1" row="1">
+                <component type="checkbox" name="copyAttributesToSizeProducts" hasDescription="true"
+                    reference="copyAttributesToSizeProducts" field="#{form}.copyAttributesToSizeProducts">
+                    <option type="labelWidth" value="80"/>
+                </component>
+            </layoutElement>
+            <layoutElement column="1" row="2">
+                <component type="checkbox" name="copyNominalCostFamilyOfProductsSizes" hasDescription="true"
+                    reference="copyNominalCostFamilyOfProductsSizes" field="#{form}.copyNominalCostFamilyOfProductsSizes">
+                    <option type="labelWidth" value="80"/>
+                </component>
+            </layoutElement>
+            <layoutElement column="1" row="3">
+                <component type="borderLayout" name="costNormsBorderLayout">
+                    <component type="gridLayout" name="costNormsGridLayout"
+                           columns="1" rows="3">
+                        <layoutElement column="1" row="1">
+                            <component type="checkbox" name="automaticUpdateCostNorms" hasDescription="true"
+                                       reference="automaticUpdateCostNorms" field="#{form}.automaticUpdateCostNorms">
+                                <option type="labelWidth" value="80"/>
+
+                                <listener event="onChange"
+                                          class="com.qcadoo.view.api.listeners.RerenderListener"
+                                          method="onChangeRerender"/>
+                            </component>
+                        </layoutElement>
+                        <layoutElement column="1" row="2">
+                            <component type="select" name="costsSource" field="#{form}.costsSource"
+                                       reference="costsSource"/>
+                        </layoutElement>
+                        <layoutElement column="1" row="3">
+                            <component type="borderLayout" name="locationBorderLayout">
+                                <component type="awesomeDynamicList" name="warehouses"
+                                           source="#{form}.warehouses" reference="warehouses">
+                                    <components>
+                                        <component type="gridLayout" name="warehousesLayout"
+                                                   columns="1" rows="1">
+                                            <layoutElement column="1" row="1">
+                                                <component type="lookup" name="location" field="location"
+                                                           reference="location" hasLabel="false">
+                                                    <option type="column" fields="name" name="name" link="true"/>
+
+                                                    <option type="searchable" value="number,name"/>
+                                                    <option type="orderable" value="number,name"/>
+
+                                                    <option type="expression" value="#number + ' - ' + #name"/>
+                                                    <option type="fieldCode" value="number"/>
+
+                                                    <criteriaModifier
+                                                            class="com.qcadoo.mes.materialFlowResources.criteriaModifiers.LocationCriteriaModifiersMFR"
+                                                            method="showWarehousesWithoutExternalNumber"/>
+                                                </component>
+                                            </layoutElement>
+                                        </component>
+                                    </components>
+
+                                    <option type="hasBorder" value="false"/>
+                                    <option type="hasButtons" value="true"/>
+                                </component>
+
+                                <option type="label" value="warehousesLabel"/>
+                            </component>
+                        </layoutElement>
+                    </component>
+
+                    <option type="label" value="costNormsLabel"/>
+                </component>
+            </layoutElement>
+
+        </component>
+    </windowTab>
+
+</windowTabExtension>

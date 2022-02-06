@@ -79,4 +79,5 @@ public class CostNorm {
     public void setCostForNumber(BigDecimal costForNumber) {
         this.costForNumber = costForNumber;
     }
+
 }

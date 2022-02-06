@@ -26,44 +26,91 @@ package com.qcadoo.mes.materialFlowResources.costNorms;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.google.common.collect.Lists;
+import com.qcadoo.mes.basic.ParameterService;
+import com.qcadoo.mes.materialFlowResources.constants.CostNormsLocationFields;
+import com.qcadoo.mes.materialFlowResources.constants.ParameterFieldsMFR;
 import com.qcadoo.mes.materialFlowResources.costNorms.dao.CostNormsDao;
 import com.qcadoo.mes.materialFlowResources.costNorms.dao.model.CostNorm;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.tenant.api.MultiTenantCallback;
+import com.qcadoo.tenant.api.MultiTenantService;
 
 @Service
 public class CostNormsServiceImpl implements CostNormsService {
 
     @Autowired
+    private MultiTenantService multiTenantService;
+
+    @Autowired
     private CostNormsDao costNormsDao;
+
+    @Autowired
+    private ParameterService parameterService;
 
     @Override
     public void updateCostNormsForProductsFromWarehouses(final List<Entity> products, final List<Entity> warehouses) {
-        List<Long> productIds = products.stream().map(product -> product.getId()).collect(Collectors.toList());
-        List<Long> warehousesIds = warehouses.stream().filter(warehouse -> warehouse != null).map(warehouse -> warehouse.getId())
-                .collect(Collectors.toList());
+        List<Long> productIds = products.stream().map(Entity::getId).collect(Collectors.toList());
+        List<Long> warehousesIds = warehouses.stream().filter(Objects::nonNull).map(Entity::getId).collect(Collectors.toList());
+
         List<CostNorm> lastPurchases = costNormsDao.getLastPurchaseCostsForProducts(productIds, warehousesIds);
         List<CostNorm> averageCosts = costNormsDao.getAverageCostForProducts(productIds, warehousesIds);
+
         costNormsDao.updateCostNormsForProducts(mergeCostNorms(lastPurchases, averageCosts));
     }
 
-    private Collection<CostNorm> mergeCostNorms(List<CostNorm> lastPurchases, List<CostNorm> averageCosts) {
-        Map<Long, CostNorm> costNormMap = lastPurchases.stream().collect(
-                Collectors.toMap(CostNorm::getProductId, purchase -> purchase, (p, q) -> p));
+    private Collection<CostNorm> mergeCostNorms(final List<CostNorm> lastPurchases, final List<CostNorm> averageCosts) {
+        Map<Long, CostNorm> costNormMap = lastPurchases.stream()
+                .collect(Collectors.toMap(CostNorm::getProductId, purchase -> purchase, (p, q) -> p));
+
         for (CostNorm averageCost : averageCosts) {
             CostNorm purchase = costNormMap.get(averageCost.getProductId());
-            if (purchase != null) {
+
+            if (Objects.nonNull(purchase)) {
                 purchase.setAverageCost(averageCost.getAverageCost());
                 costNormMap.put(averageCost.getProductId(), purchase);
             } else {
                 costNormMap.put(averageCost.getProductId(), averageCost);
             }
         }
+
         return costNormMap.values();
+    }
+
+    public void automaticCostNormsTrigger() {
+        multiTenantService.doInMultiTenantContext(new MultiTenantCallback() {
+
+            @Override
+            public void invoke() {
+                updateCostNorms();
+            }
+
+        });
+    }
+
+    private void updateCostNorms() {
+        Entity parameter = parameterService.getParameter();
+
+        if (parameter.getBooleanField(ParameterFieldsMFR.AUTOMATIC_UPDATE_COST_NORMS)) {
+            String costsSource = parameter.getStringField(ParameterFieldsMFR.COSTS_SOURCE);
+
+            List<Entity> products = Lists.newArrayList();
+            List<Entity> warehouses = Lists.newArrayList();
+
+            if ("01mes".equals(costsSource)) {
+                warehouses = parameter.getHasManyField(ParameterFieldsMFR.WAREHOUSES).stream()
+                        .map(warehouse -> warehouse.getBelongsToField(CostNormsLocationFields.LOCATION))
+                        .collect(Collectors.toList());
+            }
+
+            updateCostNormsForProductsFromWarehouses(products, warehouses);
+        }
     }
 
 }

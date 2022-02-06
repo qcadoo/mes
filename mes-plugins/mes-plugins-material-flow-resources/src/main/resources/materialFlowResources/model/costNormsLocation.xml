@@ -26,10 +26,12 @@
 <model name="costNormsLocation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns="http://schema.qcadoo.org/model"
        xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
+
     <fields>
         <belongsTo name="costNormsGenerator" model="costNormsGenerator"/>
+        <belongsTo name="parameter" model="parameter" plugin="basic"/>
         <belongsTo name="location" model="location" plugin="materialFlow"/>
     </fields>
-    <hooks>
-    </hooks>
+
+    <hooks />
 </model>
