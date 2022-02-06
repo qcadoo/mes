@@ -24,32 +24,26 @@
     ***************************************************************************
 
 -->
-<model name="documentPositionParameters"
+<model name="operationTechnologyDto" activable="false" auditable="false" deletable="false" insertable="false" updatable="false"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
        xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
+
     <fields>
-        <hasMany name="items" model="documentPositionParametersItem" joinField="parameters"/>
-        <boolean name="suggestResource" default="false"/>
-        <boolean name="acceptanceOfDocumentBeforePrinting" default="false"/>
-        <boolean name="notShowPrices" default="false"/>
-        <boolean name="presentTotalAmountAndRest" default="false"/>
-        <integer name="palletToShift">
-            <validatesRange from="0" exclusively="true"/>
-            <validatesUnscaledValue max="7" />
-        </integer>
-        <integer name="palletWithFreePlace">
-            <validatesRange from="0" exclusively="true"/>
-            <validatesUnscaledValue max="7" />
-        </integer>
-        <integer name="numberOfMonthsForPositionsData" default="1">
-            <validatesRange from="0" exclusively="true"/>
-        </integer>
-        <boolean name="fillResourceIrrespectiveOfConversion" default="false"/>
-        <boolean name="transferPalletToReceivingWarehouse" default="false"/>
-        <boolean name="colorResourcesAfterDeadline" default="false"/>
-        <integer name="shortExpiryDate" default="14">
-            <validatesRange from="0"/>
-        </integer>
+        <belongsTo name="operation" model="operation"/>
+        <string name="technologyName"/>
+        <string name="technologyNumber"/>
+        <integer name="technologyId"/>
+        <integer name="operationId"/>
+        <string name="nodeNumber"/>
+        <string name="comment"/>
+        <string name="technologyProductNumber"/>
+        <enum name="technologyState" values="01draft,02accepted,03declined,04outdated,05checked"/>
+        <boolean name="masterTechnology"/>
+        <boolean name="activeTechnology"/>
+        <string name="technologyType"/>
     </fields>
+
     <hooks/>
+
+    <masterModel plugin="technologies" model="technologyOperationComponent"/>
 </model>

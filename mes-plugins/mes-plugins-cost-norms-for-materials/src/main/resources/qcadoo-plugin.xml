@@ -105,11 +105,6 @@
         <view:view-ribbon-group resource="view/ribbonExtensions/orderDetails.xml"/>
 
         <view:view-listener plugin="technologies" view="technologyDetails"
-                            component="form" event="save"
-                            class="com.qcadoo.mes.costNormsForMaterials.listeners.TechnologyDetailsListenersCNFM"
-                            method="checkTechnologyProductsInNorms"/>
-
-        <view:view-listener plugin="technologies" view="technologyDetails"
                             component="form" event="showInputProductsCost"
                             class="com.qcadoo.mes.costNormsForMaterials.listeners.TechnologyDetailsListenersCNFM"
                             method="showInputProductsCostInTechnology"/>

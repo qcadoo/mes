@@ -29,6 +29,7 @@ import com.qcadoo.mes.states.annotation.RunForStateTransition;
 import com.qcadoo.mes.states.annotation.RunForStateTransitions;
 import com.qcadoo.mes.states.annotation.RunInPhase;
 import com.qcadoo.mes.states.aop.AbstractStateListenerAspect;
+import com.qcadoo.mes.states.messages.constants.StateMessageType;
 import com.qcadoo.mes.technologies.constants.ParameterFieldsT;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.mes.technologies.listeners.TechnologyDetailsListeners;
@@ -82,6 +83,10 @@ public class TechnologyValidationAspect extends AbstractStateListenerAspect {
             return;
         }
 
+        if (!technologyValidationService.checkIfWasteProductsIsRightMarked(stateChangeContext)) {
+            return;
+        }
+
         Entity technology = stateChangeContext.getOwner();
         String targetState = stateChangeContext.getStateChangeEntity().getStringField(TechnologyStateChangeFields.TARGET_STATE);
         Entity parameter = parameterService.getParameter();
@@ -109,6 +114,11 @@ public class TechnologyValidationAspect extends AbstractStateListenerAspect {
 
         if (PluginUtils.isEnabled("timeNormsForOperations")) {
             technologyValidationService.checkIfTreeOperationIsValid(stateChangeContext);
+        }
+
+        if(parameter.getBooleanField(ParameterFieldsT.CHECK_FOR_THE_EXISTENCE_OF_INPUT_PRODUCT_PRICES)) {
+            technologyValidationService.checkIfInputProductPricesSet(stateChangeContext);
+
         }
     }
 

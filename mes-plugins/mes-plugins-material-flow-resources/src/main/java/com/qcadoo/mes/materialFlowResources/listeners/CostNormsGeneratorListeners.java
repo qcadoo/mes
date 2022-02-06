@@ -31,6 +31,7 @@ import org.springframework.stereotype.Service;
 
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.materialFlowResources.constants.CostNormsGeneratorFields;
+import com.qcadoo.mes.materialFlowResources.constants.CostNormsLocationFields;
 import com.qcadoo.mes.materialFlowResources.constants.ProductsToUpdate;
 import com.qcadoo.mes.materialFlowResources.costNorms.CostNormsService;
 import com.qcadoo.model.api.Entity;
@@ -46,50 +47,54 @@ public class CostNormsGeneratorListeners {
     @Autowired
     private CostNormsService costNormsService;
 
-    
+    public void updateCostNorms(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        FormComponent generatorForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
-    private static final String L_PRODUCTS = "products";
+        Entity generator = generatorForm.getPersistedEntityWithIncludedFormValues();
 
-    private static final String L_LOCATION = "location";
+        String costsSource = generator.getStringField(CostNormsGeneratorFields.COSTS_SOURCE);
 
-    public void updateCostNorms(final ViewDefinitionState view, final ComponentState componentState, final String[] args) {
-
-        Entity generator = getFormEntity(view);
         boolean allProducts = ProductsToUpdate.of(generator).compareTo(ProductsToUpdate.ALL) == 0;
+
         List<Entity> products = Lists.newArrayList();
+
         if (!allProducts) {
             products = generator.getHasManyField(CostNormsGeneratorFields.PRODUCTS);
+
             if (products.isEmpty()) {
                 view.addMessage("materialFlowResources.info.costNormsNotUpdated", ComponentState.MessageType.INFO);
+
                 return;
             }
         }
+
         List<Entity> warehouses = Lists.newArrayList();
-        String costSource = generator.getStringField(CostNormsGeneratorFields.COSTS_SOURCE);
-        if ("01mes".equals(costSource)) {
+
+        if ("01mes".equals(costsSource)) {
             warehouses = generator.getHasManyField(CostNormsGeneratorFields.WAREHOUSES).stream()
-                    .map(warehouse -> warehouse.getBelongsToField(L_LOCATION)).collect(Collectors.toList());
+                    .map(warehouse -> warehouse.getBelongsToField(CostNormsLocationFields.LOCATION)).collect(Collectors.toList());
         }
+
         costNormsService.updateCostNormsForProductsFromWarehouses(products, warehouses);
+
         view.addMessage("materialFlowResources.success.costNormsUpdated", ComponentState.MessageType.SUCCESS);
     }
 
-    public void toggleProductsGrid(final ViewDefinitionState view, final ComponentState componentState, final String[] args) {
+    public void toggleProductsGrid(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        FormComponent generatorForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
+        GridComponent productsGrid = (GridComponent) view.getComponentByReference(CostNormsGeneratorFields.PRODUCTS);
 
-        Entity generator = getFormEntity(view);
-        FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
+        Entity generator = generatorForm.getPersistedEntityWithIncludedFormValues();
+
         boolean gridVisible = ProductsToUpdate.of(generator).compareTo(ProductsToUpdate.SELECTED) == 0;
-        GridComponent grid = (GridComponent) view.getComponentByReference(L_PRODUCTS);
-        grid.setVisible(gridVisible);
+
+        productsGrid.setVisible(gridVisible);
+
         if (!gridVisible) {
             generator.setField(CostNormsGeneratorFields.PRODUCTS, null);
-            form.setEntity(generator);
+
+            generatorForm.setEntity(generator);
         }
-
     }
 
-    private Entity getFormEntity(final ViewDefinitionState view) {
-        FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
-        return form.getPersistedEntityWithIncludedFormValues();
-    }
 }

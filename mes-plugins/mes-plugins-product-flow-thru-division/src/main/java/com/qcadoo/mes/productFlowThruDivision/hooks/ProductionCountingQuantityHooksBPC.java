@@ -50,8 +50,7 @@ public class ProductionCountingQuantityHooksBPC {
             String role = productionCountingQuantity.getStringField(ProductionCountingQuantityFields.ROLE);
             String type = productionCountingQuantity.getStringField(ProductionCountingQuantityFields.TYPE_OF_MATERIAL);
 
-            if (ProductionCountingQuantityTypeOfMaterial.FINAL_PRODUCT.getStringValue().equals(type)
-                    || ProductionCountingQuantityTypeOfMaterial.WASTE.getStringValue().equals(type)) {
+            if (ProductionCountingQuantityTypeOfMaterial.FINAL_PRODUCT.getStringValue().equals(type)) {
                 Entity opoc = getOperationProduct(TechnologiesConstants.MODEL_OPERATION_PRODUCT_OUT_COMPONENT,
                         productionCountingQuantity
                                 .getBelongsToField(ProductionCountingQuantityFields.TECHNOLOGY_OPERATION_COMPONENT),
@@ -59,6 +58,15 @@ public class ProductionCountingQuantityHooksBPC {
                 if (opoc != null) {
                     productionCountingQuantity.setField(ProductionCountingQuantityFieldsPFTD.PRODUCTS_INPUT_LOCATION,
                             opoc.getField(OperationProductOutComponentFieldsPFTD.PRODUCTS_INPUT_LOCATION));
+                }
+            } else if (ProductionCountingQuantityTypeOfMaterial.WASTE.getStringValue().equals(type)) {
+                Entity opoc = getOperationProduct(TechnologiesConstants.MODEL_OPERATION_PRODUCT_OUT_COMPONENT,
+                        productionCountingQuantity
+                                .getBelongsToField(ProductionCountingQuantityFields.TECHNOLOGY_OPERATION_COMPONENT),
+                        productionCountingQuantity.getBelongsToField(ProductionCountingQuantityFields.PRODUCT));
+                if (opoc != null) {
+                    productionCountingQuantity.setField(ProductionCountingQuantityFieldsPFTD.WASTE_RECEPTION_WAREHOUSE,
+                            opoc.getField(OperationProductOutComponentFieldsPFTD.WASTE_RECEPTION_WAREHOUSE));
                 }
             } else {
                 if (ProductionCountingQuantityRole.USED.getStringValue().equals(role)) {

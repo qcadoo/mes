@@ -39,4 +39,6 @@ public final class ProductionCountingQuantityFieldsPFTD {
 
     public static final String PRODUCTION_FLOW = "productionFlow";
 
+    public static final String WASTE_RECEPTION_WAREHOUSE = "wasteReceptionWarehouse";
+
 }

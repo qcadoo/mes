@@ -346,7 +346,7 @@ public class OrderHooks {
 
                 return false;
             }
-            if (!order.getBelongsToField(OrderFields.TECHNOLOGY_PROTOTYPE)
+            if (!order.getBooleanField(OrderFields.NEW_VERSION_TECHNOLOGY_SET) && !order.getBelongsToField(OrderFields.TECHNOLOGY_PROTOTYPE)
                     .equals(orderFromDB.getBelongsToField(OrderFields.TECHNOLOGY_PROTOTYPE))) {
                 order.addError(orderDD.getField(OrderFields.TECHNOLOGY_PROTOTYPE),
                         "orders.validate.global.error.operationalTasks.technologyChange");

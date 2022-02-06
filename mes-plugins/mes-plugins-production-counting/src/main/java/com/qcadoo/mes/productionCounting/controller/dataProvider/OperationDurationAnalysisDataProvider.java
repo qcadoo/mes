@@ -36,6 +36,8 @@ public class OperationDurationAnalysisDataProvider {
 
     private static final String LABOR_UTILIZATION = "laborUtilization";
 
+    private static final String L_OUT_PRODUCT_NUMBER = "outProductNumber";
+
     private static final String L_QUANTITY = "quantity";
 
     private static final String L_PRODUCT_UNIT = "productUnit";
@@ -83,6 +85,8 @@ public class OperationDurationAnalysisDataProvider {
                 translationService.translate(
                         "productionCounting.operationDurationAnalysis.window.mainTab.grid.column.machineUtilization", locale),
                 NUMERIC_DATA_TYPE));
+        columns.add(new ColumnDTO(L_OUT_PRODUCT_NUMBER, translationService
+                .translate("productionCounting.operationDurationAnalysis.window.mainTab.grid.column.outProductNumber", locale)));
         columns.add(new ColumnDTO(
                 L_QUANTITY, translationService
                         .translate("productionCounting.operationDurationAnalysis.window.mainTab.grid.column.quantity", locale),
@@ -135,7 +139,7 @@ public class OperationDurationAnalysisDataProvider {
         appendFilters(filters, query);
 
         query.append("GROUP BY op.number, p.number, p.name, toc.tj, toc.tpz, toc.machineUtilization, ");
-        query.append("toc.laborUtilization, toc.productionInOneCycle, topocp.id, topocp.unit ");
+        query.append("toc.laborUtilization, toc.productionInOneCycle, opocp.number, opocp.unit ");
 
         appendSort(sortColumn, sortAsc, query);
 
@@ -152,8 +156,9 @@ public class OperationDurationAnalysisDataProvider {
         query.append("TO_CHAR((toc.tpz || ' second')::interval, 'HH24:MI:SS') AS \"tpz\", ");
         query.append("toc.machineUtilization AS \"machineUtilization\", ");
         query.append("toc.laborUtilization AS \"laborUtilization\", ");
+        query.append("opocp.number AS \"outProductNumber\", ");
         query.append("SUM(topoc.usedquantity) AS \"quantity\", ");
-        query.append("topocp.unit AS \"productUnit\", ");
+        query.append("opocp.unit AS \"productUnit\", ");
         query.append("TO_CHAR((SUM(pt.laborTime)  || ' second')::interval, 'HH24:MI:SS') AS \"workersWorkingTimeSum\", ");
         query.append("SUM(pt.laborTime) AS \"workersWorkingTimeSumInSeconds\", ");
         query.append("TO_CHAR((SUM(pt.laborTime)/(SUM(topoc.usedquantity) * toc.productionInOneCycle) || ' second')::interval, 'HH24:MI:SS') AS \"workerUnitTime\", ");
@@ -164,12 +169,13 @@ public class OperationDurationAnalysisDataProvider {
         query.append("JOIN technologies_technology t ON o.technology_id = t.id ");
         query.append("JOIN technologies_technologyoperationcomponent toc ON toc.technology_id = t.id ");
         query.append("JOIN technologies_operation op ON toc.operation_id = op.id ");
+        query.append("JOIN technologies_operationproductoutcomponent opoc ON opoc.operationcomponent_id = toc.id AND waste = FALSE ");
         query.append("JOIN basic_product p ON o.product_id = p.id ");
+        query.append("JOIN basic_product opocp ON opoc.product_id = opocp.id ");
         query.append("LEFT JOIN productioncounting_productiontracking pt ON pt.order_id = o.id ");
         query.append("AND pt.technologyoperationcomponent_id = toc.id AND pt.state = '02accepted' ");
         query.append("LEFT JOIN productioncounting_trackingoperationproductoutcomponent topoc ON topoc.productiontracking_id = pt.id ");
         query.append("AND topoc.typeOfMaterial IN ('02intermediate','03finalProduct') ");
-        query.append("LEFT JOIN basic_product topocp ON topoc.product_id = topocp.id ");
     }
 
     private void appendFilters(final JSONObject filters, final StringBuilder query) throws JSONException {
@@ -215,12 +221,16 @@ public class OperationDurationAnalysisDataProvider {
                         query.append("AND toc.laborUtilization = ").append(value).append(" ");
                         break;
 
+                    case L_OUT_PRODUCT_NUMBER:
+                        query.append("AND UPPER(opocp.number) LIKE '%").append(value).append("%' ");
+                        break;
+
                     case L_QUANTITY:
                         query.append("AND SUM(topoc.usedquantity) = ").append(value).append(" ");
                         break;
 
                     case L_PRODUCT_UNIT:
-                        query.append("AND UPPER(topocp.unit) LIKE '%").append(value).append("%' ");
+                        query.append("AND UPPER(opocp.unit) LIKE '%").append(value).append("%' ");
                         break;
 
                     case WORKERS_WORKING_TIME_SUM:

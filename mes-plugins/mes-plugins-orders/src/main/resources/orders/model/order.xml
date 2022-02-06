@@ -166,6 +166,8 @@
 
         <boolean name="generatePPS" persistent="false" default="false"/>
 
+        <boolean name="newVersionTechnologySet" persistent="false" default="false"/>
+
         <hasMany name="barcodeOperationComponents" joinField="order" model="barcodeOperationComponent" plugin="technologies"
                  cascade="delete" copyable="false"/>
 

@@ -31,7 +31,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
-import com.qcadoo.mes.productionCounting.constants.*;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -62,6 +61,7 @@ import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.states.constants.OrderState;
 import com.qcadoo.mes.productFlowThruDivision.constants.DocumentFieldsPFTD;
 import com.qcadoo.mes.productionCounting.ProductionTrackingService;
+import com.qcadoo.mes.productionCounting.constants.*;
 import com.qcadoo.mes.productionCounting.states.constants.ProductionTrackingStateStringValues;
 import com.qcadoo.mes.productionCounting.utils.OrderClosingHelper;
 import com.qcadoo.mes.productionCounting.utils.ProductionTrackingDocumentsHelper;
@@ -374,6 +374,8 @@ public final class ProductionTrackingListenerServicePFTD {
                     .getBelongsToField(ProductionTrackingFields.BATCH);
             Entity storageLocation = outProductRecord
                     .getBelongsToField(TrackingOperationProductOutComponentFields.STORAGE_LOCATION);
+            Entity palletNumber = outProductRecord
+                    .getBelongsToField(TrackingOperationProductOutComponentFields.PALLET_NUMBER);
 
             java.util.Optional<BigDecimal> usedQuantity = Optional
                     .ofNullable(outProductRecord.getDecimalField(TrackingOperationProductInComponentFields.USED_QUANTITY));
@@ -382,7 +384,7 @@ public final class ProductionTrackingListenerServicePFTD {
             java.util.Optional<String> givenUnit = Optional
                     .ofNullable(outProductRecord.getStringField(TrackingOperationProductInComponentFields.GIVEN_UNIT));
 
-            Entity existingPosition = filterPosition(positions, outProduct, givenUnit.orElse(null), outBatch, storageLocation);
+            Entity existingPosition = filterPosition(positions, outProduct, givenUnit.orElse(null), outBatch, storageLocation, palletNumber);
 
             if (Objects.nonNull(existingPosition)) {
                 java.util.Optional<BigDecimal> quantity = Optional
@@ -450,6 +452,12 @@ public final class ProductionTrackingListenerServicePFTD {
                             .getBelongsToField(TrackingOperationProductOutComponentFields.STORAGE_LOCATION).getId());
                 }
 
+                if (Objects.nonNull(
+                        outProductRecord.getBelongsToField(TrackingOperationProductOutComponentFields.PALLET_NUMBER))) {
+                    position.setField(PositionFields.PALLET_NUMBER, outProductRecord
+                            .getBelongsToField(TrackingOperationProductOutComponentFields.PALLET_NUMBER).getId());
+                }
+
                 if (order.getBelongsToField(OrderFields.PRODUCT).getId().equals(outProduct.getId())) {
                     position.setField(PositionFields.EXPIRATION_DATE,
                             productionTracking.getDateField(ProductionTrackingFields.EXPIRATION_DATE));
@@ -490,9 +498,9 @@ public final class ProductionTrackingListenerServicePFTD {
     }
 
     private Entity filterPosition(final List<Entity> existingPositions, final Entity outProduct, final String givenUnit,
-            final Entity outBatch, final Entity storageLocation) {
+                                  final Entity outBatch, final Entity storageLocation, Entity palletNumber) {
         for (Entity position : existingPositions) {
-            if (checkPositionConditions(position, outProduct, givenUnit, outBatch, storageLocation)) {
+            if (checkPositionConditions(position, outProduct, givenUnit, outBatch, storageLocation, palletNumber)) {
                 return position;
             }
         }
@@ -501,7 +509,7 @@ public final class ProductionTrackingListenerServicePFTD {
     }
 
     private boolean checkPositionConditions(final Entity position, final Entity outProduct, final String givenUnit,
-            final Entity outBatch, final Entity storageLocation) {
+            final Entity outBatch, final Entity storageLocation, final Entity palletNumber) {
         boolean isPosition = true;
 
         if (!position.getBelongsToField(PositionFields.PRODUCT).getId().equals(outProduct.getId())) {
@@ -529,6 +537,17 @@ public final class ProductionTrackingListenerServicePFTD {
                 && Objects.nonNull(position.getBelongsToField(PositionFields.STORAGE_LOCATION)))
                 || (Objects.nonNull(storageLocation)
                         && Objects.isNull(position.getBelongsToField(PositionFields.STORAGE_LOCATION)))) {
+            isPosition = false;
+        }
+
+        if (Objects.nonNull(palletNumber) && Objects.nonNull(position.getBelongsToField(PositionFields.PALLET_NUMBER))) {
+            if (!position.getBelongsToField(PositionFields.PALLET_NUMBER).getId().equals(palletNumber.getId())) {
+                isPosition = false;
+            }
+        } else if ((Objects.isNull(palletNumber)
+                && Objects.nonNull(position.getBelongsToField(PositionFields.PALLET_NUMBER)))
+                || (Objects.nonNull(palletNumber)
+                        && Objects.isNull(position.getBelongsToField(PositionFields.PALLET_NUMBER)))) {
             isPosition = false;
         }
 
@@ -614,6 +633,12 @@ public final class ProductionTrackingListenerServicePFTD {
                         outProductRecord.getBelongsToField(TrackingOperationProductOutComponentFields.STORAGE_LOCATION).getId());
             }
 
+            if (Objects
+                    .nonNull(outProductRecord.getBelongsToField(TrackingOperationProductOutComponentFields.PALLET_NUMBER))) {
+                position.setField(PositionFields.PALLET_NUMBER,
+                        outProductRecord.getBelongsToField(TrackingOperationProductOutComponentFields.PALLET_NUMBER).getId());
+            }
+
             if (order.getBelongsToField(OrderFields.PRODUCT).getId().equals(outProduct.getId())) {
                 position.setField(PositionFields.EXPIRATION_DATE,
                         productionTracking.getDateField(ProductionTrackingFields.EXPIRATION_DATE));
@@ -641,10 +666,9 @@ public final class ProductionTrackingListenerServicePFTD {
     private BigDecimal getNominalCost(final Entity outProduct) {
         BigDecimal nominalCost = BigDecimalUtils.convertNullToZero(outProduct.getDecimalField("nominalCost"));
         Entity currency = outProduct.getBelongsToField("nominalCostCurrency");
-        String currencyAlphabeticCode = Optional.ofNullable(currency.getStringField(CurrencyFields.ALPHABETIC_CODE)).orElse("");
 
-        if (CurrencyService.PLN.equals(currencyService.getCurrencyAlphabeticCode())
-                && !CurrencyService.PLN.equals(currencyAlphabeticCode)) {
+        if (currency != null && CurrencyService.PLN.equals(currencyService.getCurrencyAlphabeticCode())
+                && !CurrencyService.PLN.equals(currency.getStringField(CurrencyFields.ALPHABETIC_CODE))) {
             nominalCost = currencyService.getConvertedValue(nominalCost, currency);
         }
 

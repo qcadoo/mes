@@ -38,10 +38,15 @@
             <validatesUnscaledValue max="9"/>
             <validatesScale max="5"/>
         </decimal>
+
+        <boolean name="waste" default="false"/>
+
     </fields>
 
     <hooks>
         <validatesWith class="com.qcadoo.mes.technologies.hooks.OperationProductOutComponentHooks"
                        method="validatesWith"/>
+        <onSave class="com.qcadoo.mes.technologies.hooks.OperationProductOutComponentHooks"
+                method="onSave"/>
     </hooks>
 </model>

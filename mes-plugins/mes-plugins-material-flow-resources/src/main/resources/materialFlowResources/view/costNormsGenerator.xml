@@ -30,7 +30,6 @@
 
     <component type="window" name="window" reference="window">
         <ribbon>
-
             <group name="actions" hasLabel="false">
                 <bigButton name="save" icon="saveIcon24.png" action="#{form}.performSave;"/>
                 <bigButton name="update" icon="startIcon24.png" state="enabled"
@@ -67,7 +66,6 @@
                                             <criteriaModifier
                                                     class="com.qcadoo.mes.materialFlowResources.criteriaModifiers.LocationCriteriaModifiersMFR"
                                                     method="showWarehousesWithoutExternalNumber"/>
-
                                         </component>
                                     </layoutElement>
                                 </component>
@@ -80,7 +78,6 @@
                         <option type="label" value="warehousesLabel"/>
                     </component>
                 </layoutElement>
-
                 <layoutElement column="2" row="1">
                     <component type="select" name="productsToUpdate" field="productsToUpdate"
                                reference="productsToUpdate">
@@ -89,8 +86,6 @@
                                   method="toggleProductsGrid"/>
                     </component>
                 </layoutElement>
-
-
                 <layoutElement column="2" row="2" height="6" width="2">
                     <component type="lookup" name="productsLookup" reference="productsLookup"
                                field="#{form}.products" defaultVisible="false" persistent="false"
@@ -106,8 +101,9 @@
                         <option type="fieldCode" value="number"/>
 
                         <option type="multiselect" value="true"/>
+
 						<criteriaModifier class="com.qcadoo.mes.materialFlowResources.criteriaModifiers.ProductsCriteriaModifiers"
-							method="filterProducts" />
+                                          method="filterProducts" />
                     </component>
                     <component type="grid" name="products" reference="products"
                                source="#{form}.products" defaultVisible="false">
@@ -133,13 +129,13 @@
                 </layoutElement>
             </component>
             <option type="header" value="false"/>
+
             <listener event="updateCostNorms" method="updateCostNorms"
                       class="com.qcadoo.mes.materialFlowResources.listeners.CostNormsGeneratorListeners"/>
         </component>
     </component>
 
     <hooks>
-
         <beforeRender
             class="com.qcadoo.mes.materialFlowResources.hooks.CostNormsGeneratorHooks"
             method="onBeforeRender"/>

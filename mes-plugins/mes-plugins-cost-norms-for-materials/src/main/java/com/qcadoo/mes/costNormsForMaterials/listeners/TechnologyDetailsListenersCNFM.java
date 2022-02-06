@@ -23,20 +23,15 @@
  */
 package com.qcadoo.mes.costNormsForMaterials.listeners;
 
-import com.google.common.collect.Maps;
-import com.qcadoo.mes.costNormsForProduct.constants.ProductFieldsCNFP;
-import com.qcadoo.mes.technologies.TechnologyService;
-import com.qcadoo.model.api.Entity;
-import com.qcadoo.view.api.ComponentState;
-import com.qcadoo.view.api.ComponentState.MessageType;
-import com.qcadoo.view.api.ViewDefinitionState;
-import com.qcadoo.view.api.components.FormComponent;
-import com.qcadoo.view.constants.QcadooViewConstants;
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Map;
+import com.google.common.collect.Maps;
+import com.qcadoo.mes.technologies.TechnologyService;
+import com.qcadoo.view.api.ComponentState;
+import com.qcadoo.view.api.ViewDefinitionState;
 
 @Service
 public class TechnologyDetailsListenersCNFM {
@@ -59,26 +54,4 @@ public class TechnologyDetailsListenersCNFM {
         viewState.redirectTo(url, false, true, parameters);
     }
 
-    public void checkTechnologyProductsInNorms(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        FormComponent technologyForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
-
-        Long technologyId = technologyForm.getEntityId();
-
-        if (technologyId == null) {
-            return;
-        }
-
-        List<Entity> products = technologyService.getComponentsWithProductWithSizes(technologyId);
-
-        for (Entity product : products) {
-            if ((product.getField(ProductFieldsCNFP.COST_FOR_NUMBER) == null)
-                    || (product.getField(ProductFieldsCNFP.NOMINAL_COST) == null)
-                    || (product.getField(ProductFieldsCNFP.LAST_PURCHASE_COST) == null)
-                    || (product.getField(ProductFieldsCNFP.AVERAGE_COST) == null)) {
-                technologyForm.addMessage("technologies.technologyDetails.error.inputProductsWithoutCostNorms", MessageType.INFO,
-                        false);
-                break;
-            }
-        }
-    }
 }

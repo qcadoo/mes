@@ -77,15 +77,19 @@ public class OPICDetailsHooks {
                     .getComponentByReference(OperationProductInComponentFields.GIVEN_UNIT);
             if (variousQuantitiesInProductsBySizeCheckBox.isChecked()) {
                 quantityField.setFieldValue(null);
+                if(Objects.nonNull(quantityFormulaField)) {
+                    quantityFormulaField.setFieldValue(null);
+                    quantityFormulaField.setEnabled(false);
+                }
                 unitField.setFieldValue(null);
-                quantityFormulaField.setFieldValue(null);
                 givenQuantityField.setFieldValue(null);
                 givenUnitField.setFieldValue(null);
-                quantityFormulaField.setEnabled(false);
                 givenQuantityField.setEnabled(false);
                 givenUnitField.setEnabled(false);
             } else {
-                quantityFormulaField.setEnabled(true);
+                if(Objects.nonNull(quantityFormulaField)) {
+                    quantityFormulaField.setEnabled(true);
+                }
                 givenQuantityField.setEnabled(true);
                 givenUnitField.setEnabled(true);
             }

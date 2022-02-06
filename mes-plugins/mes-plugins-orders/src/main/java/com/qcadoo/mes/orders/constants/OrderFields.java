@@ -157,4 +157,6 @@ public final class OrderFields {
 
     public static final String ORDER_TECHNOLOGICAL_PROCESS_WASTES = "orderTechnologicalProcessWastes";
 
+    public static final String NEW_VERSION_TECHNOLOGY_SET = "newVersionTechnologySet";
+
 }

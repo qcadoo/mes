@@ -23,6 +23,7 @@
  */
 package com.qcadoo.mes.technologies.hooks;
 
+import com.qcadoo.mes.technologies.constants.OperationProductOutComponentFields;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -31,6 +32,8 @@ import com.qcadoo.mes.technologies.TechnologyService;
 import com.qcadoo.mes.technologies.validators.TechnologyTreeValidators;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
+
+import java.util.Objects;
 
 @Service
 public class OperationProductOutComponentHooks {
@@ -55,4 +58,9 @@ public class OperationProductOutComponentHooks {
         return isValid;
     }
 
+    public void onSave(final DataDefinition operationProductOutComponentDD, final Entity operationProductOutComponent) {
+        if(Objects.isNull(operationProductOutComponent.getField(OperationProductOutComponentFields.WASTE))) {
+            operationProductOutComponent.setField(OperationProductOutComponentFields.WASTE, false);
+        }
+    }
 }

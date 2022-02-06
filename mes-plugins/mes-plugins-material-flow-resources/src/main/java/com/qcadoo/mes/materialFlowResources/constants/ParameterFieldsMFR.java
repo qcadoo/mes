@@ -31,4 +31,10 @@ public final class ParameterFieldsMFR {
 
     public static final String DOCUMENT_POSITION_PARAMETERS = "documentPositionParameters";
 
+    public static final String AUTOMATIC_UPDATE_COST_NORMS = "automaticUpdateCostNorms";
+
+    public static final String COSTS_SOURCE = "costsSource";
+
+    public static final String WAREHOUSES = "warehouses";
+
 }

@@ -21,15 +21,18 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.materialFlowResources.costNorms;
+package com.qcadoo.mes.materialFlowResources.constants;
 
-import java.util.List;
+public final class CostNormsLocationFields {
 
-import com.qcadoo.model.api.Entity;
+    private CostNormsLocationFields() {
 
-public interface CostNormsService {
+    }
 
-    void updateCostNormsForProductsFromWarehouses(final List<Entity> products, final List<Entity> warehouses);
+    public static final String COST_NORMS_GENERATOR = "costNormsGenerator";
 
-    void automaticCostNormsTrigger();
+    public static final String PARAMETER = "parameter";
+
+    public static final String LOCATION = "location";
+
 }

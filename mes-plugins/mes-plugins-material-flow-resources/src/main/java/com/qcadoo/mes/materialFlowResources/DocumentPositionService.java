@@ -379,7 +379,7 @@ public class DocumentPositionService {
                 + "	LEFT JOIN basic_product product ON (p.product_id = product.id)\n"
                 + "	LEFT JOIN basic_additionalcode additionalcode ON (p.additionalcode_id = additionalcode.id)\n"
                 + "	LEFT JOIN basic_palletnumber palletnumber ON (p.palletnumber_id = palletnumber.id)\n"
-                + "	LEFT JOIN materialflowresources_storagelocation location ON (p.storagelocation_id = location.id) WHERE p.document_id = :documentId ORDER BY p.number";
+                + "	LEFT JOIN materialflowresources_storagelocation location ON (p.storagelocation_id = location.id) WHERE p.document_id = :documentId ORDER BY p.id";
 
         List<DocumentPositionDTO> list = jdbcTemplate.query(query, Collections.singletonMap(DOCUMENT_ID, documentId),
                 new BeanPropertyRowMapper(DocumentPositionDTO.class));

@@ -32,11 +32,7 @@ import com.qcadoo.mes.states.StateChangeContext;
 import com.qcadoo.mes.states.messages.constants.StateMessageType;
 import com.qcadoo.mes.technologies.ProductQuantitiesService;
 import com.qcadoo.mes.technologies.TechnologyService;
-import com.qcadoo.mes.technologies.constants.OperationFields;
-import com.qcadoo.mes.technologies.constants.OperationProductInComponentFields;
-import com.qcadoo.mes.technologies.constants.OperationProductOutComponentFields;
-import com.qcadoo.mes.technologies.constants.TechnologyFields;
-import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
+import com.qcadoo.mes.technologies.constants.*;
 import com.qcadoo.mes.technologies.tree.ProductStructureTreeService;
 import com.qcadoo.mes.technologies.tree.TechnologyTreeValidationService;
 import com.qcadoo.model.api.DataDefinition;
@@ -48,6 +44,7 @@ import com.qcadoo.model.api.validators.ErrorMessage;
 import com.qcadoo.view.api.ComponentState.MessageType;
 import com.qcadoo.view.api.components.FormComponent;
 
+import java.math.BigDecimal;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
@@ -92,7 +89,6 @@ public class TechnologyValidationService {
 
         final Entity savedTechnology = technology.getDataDefinition().get(technology.getId());
         final EntityTree operationComponents = savedTechnology.getTreeField(TechnologyFields.OPERATION_COMPONENTS);
-        boolean isValid = true;
 
         for (Entity operationComponent : operationComponents) {
             List<Entity> operationProductInComponents = operationComponent
@@ -101,19 +97,67 @@ public class TechnologyValidationService {
                 boolean differentProductsInDifferentSizes = operationProductInComponent
                         .getBooleanField(OperationProductInComponentFields.DIFFERENT_PRODUCTS_IN_DIFFERENT_SIZES);
 
-                if (!differentProductsInDifferentSizes
-                        && Objects
-                                .isNull(operationProductInComponent.getDecimalField(OperationProductInComponentFields.QUANTITY))) {
+                boolean variousQuantitiesInProductsBySize = operationProductInComponent
+                        .getBooleanField(OperationProductInComponentFields.VARIOUS_QUANTITIES_IN_PRODUCTS_BY_SIZE);
+
+                if (!differentProductsInDifferentSizes && Objects
+                        .isNull(operationProductInComponent.getDecimalField(OperationProductInComponentFields.QUANTITY))) {
                     stateChangeContext.addValidationError(
                             "technologies.technology.validate.global.error.inComponentsQuantitiesNotFilled",
-                            operationComponent.getBelongsToField(TechnologyOperationComponentFields.OPERATION).getStringField(
-                                    OperationFields.NUMBER),
+                            operationComponent.getBelongsToField(TechnologyOperationComponentFields.OPERATION)
+                                    .getStringField(OperationFields.NUMBER),
                             operationComponent.getStringField(TechnologyOperationComponentFields.NODE_NUMBER));
                     return false;
 
                 }
+
+                if (differentProductsInDifferentSizes && variousQuantitiesInProductsBySize) {
+                    boolean quantitiesOrProductsNotSet = false;
+                    if (operationProductInComponent.getHasManyField(OperationProductInComponentFields.PRODUCT_BY_SIZE_GROUPS)
+                            .isEmpty()) {
+                        quantitiesOrProductsNotSet = true;
+                    } else if (operationProductInComponent
+                            .getHasManyField(OperationProductInComponentFields.PRODUCT_BY_SIZE_GROUPS).stream()
+                            .anyMatch(pbs -> Objects.isNull(pbs.getDecimalField(ProductBySizeGroupFields.QUANTITY)))) {
+                        quantitiesOrProductsNotSet = true;
+                    }
+                    if (quantitiesOrProductsNotSet) {
+                        stateChangeContext.addValidationError(
+                                "technologies.technology.validate.global.error.variousQuantitiesInProductsBySizeNotFilled",
+                                operationComponent.getBelongsToField(TechnologyOperationComponentFields.OPERATION)
+                                        .getStringField(OperationFields.NUMBER),
+                                operationComponent.getStringField(TechnologyOperationComponentFields.NODE_NUMBER));
+                        return false;
+                    }
+                }
             }
         }
+        return true;
+    }
+
+    public boolean checkIfWasteProductsIsRightMarked(final StateChangeContext stateChangeContext) {
+        Entity technology = stateChangeContext.getOwner();
+
+        final Entity savedTechnology = technology.getDataDefinition().get(technology.getId());
+        final EntityTree operationComponents = savedTechnology.getTreeField(TechnologyFields.OPERATION_COMPONENTS);
+
+        for (Entity operationComponent : operationComponents) {
+            List<Entity> operationProductOutComponents = operationComponent
+                    .getHasManyField(TechnologyOperationComponentFields.OPERATION_PRODUCT_OUT_COMPONENTS);
+            long notWasteCount = operationProductOutComponents.stream()
+                    .filter(opoc -> !opoc.getBooleanField(OperationProductOutComponentFields.WASTE)).count();
+
+            if (notWasteCount > 1 || notWasteCount == 0) {
+                stateChangeContext.addValidationError(
+                        "technologies.technology.validate.global.error.noProductsWithWasteFlagNotMarked",
+                        operationComponent.getBelongsToField(TechnologyOperationComponentFields.OPERATION)
+                                .getStringField(OperationFields.NUMBER),
+                        operationComponent.getStringField(TechnologyOperationComponentFields.NODE_NUMBER));
+                return false;
+            }
+
+        }
+
         return true;
     }
 
@@ -150,10 +194,9 @@ public class TechnologyValidationService {
             }
 
             if (!isValid) {
-                stateChangeContext.addValidationError(
-                        "technologies.technology.validate.global.error.noInputComponents",
-                        operationComponent.getBelongsToField(TechnologyOperationComponentFields.OPERATION).getStringField(
-                                OperationFields.NUMBER),
+                stateChangeContext.addValidationError("technologies.technology.validate.global.error.noInputComponents",
+                        operationComponent.getBelongsToField(TechnologyOperationComponentFields.OPERATION)
+                                .getStringField(OperationFields.NUMBER),
                         operationComponent.getStringField(TechnologyOperationComponentFields.NODE_NUMBER));
 
                 return;
@@ -285,17 +328,15 @@ public class TechnologyValidationService {
                 if (Objects.nonNull(technologyForm)) {
                     technologyForm.addMessage(L_TECHNOLOGIES_TECHNOLOGY_VALIDATE_GLOBAL_ERROR_TREE_IS_NOT_VALID,
                             MessageType.FAILURE);
-                    technologyForm
-                            .addMessage(
-                                    L_TECHNOLOGIES_TECHNOLOGY_VALIDATE_GLOBAL_ERROR_OPERATION_DONT_CONSUME_SUB_OPERATIONS_PRODUCTS_PLURAL,
-                                    MessageType.FAILURE, false, levels.toString());
+                    technologyForm.addMessage(
+                            L_TECHNOLOGIES_TECHNOLOGY_VALIDATE_GLOBAL_ERROR_OPERATION_DONT_CONSUME_SUB_OPERATIONS_PRODUCTS_PLURAL,
+                            MessageType.FAILURE, false, levels.toString());
                 } else {
                     stateChangeContext.addFieldValidationError(TechnologyFields.OPERATION_COMPONENTS,
                             L_TECHNOLOGIES_TECHNOLOGY_VALIDATE_GLOBAL_ERROR_TREE_IS_NOT_VALID);
-                    stateChangeContext
-                            .addMessage(
-                                    L_TECHNOLOGIES_TECHNOLOGY_VALIDATE_GLOBAL_ERROR_OPERATION_DONT_CONSUME_SUB_OPERATIONS_PRODUCTS_PLURAL,
-                                    StateMessageType.FAILURE, false, levels.toString());
+                    stateChangeContext.addMessage(
+                            L_TECHNOLOGIES_TECHNOLOGY_VALIDATE_GLOBAL_ERROR_OPERATION_DONT_CONSUME_SUB_OPERATIONS_PRODUCTS_PLURAL,
+                            StateMessageType.FAILURE, false, levels.toString());
                 }
             }
 
@@ -358,10 +399,8 @@ public class TechnologyValidationService {
             for (Entity operationProductInComponent : operationProductInComponents) {
                 Entity product = operationProductInComponent.getBelongsToField(OperationProductInComponentFields.PRODUCT);
 
-                if (Objects.nonNull(product)
-                        && product.getId().equals(
-                                operationProductOutComponent.getBelongsToField(OperationProductOutComponentFields.PRODUCT)
-                                        .getId())) {
+                if (Objects.nonNull(product) && product.getId().equals(
+                        operationProductOutComponent.getBelongsToField(OperationProductOutComponentFields.PRODUCT).getId())) {
                     return true;
                 }
             }
@@ -561,11 +600,9 @@ public class TechnologyValidationService {
 
             if (Objects.nonNull(subTechnology)) {
                 if (copyUsedTechnologies.contains(subTechnology.getId())) {
-                    stateChangeContext
-                            .addValidationError(
-                                    "technologies.technologyDetails.window.productStructure.productStructureForm.duplicateProductForTechnology",
-                                    product.getStringField(ProductFields.NUMBER) + " "
-                                            + product.getStringField(ProductFields.NAME));
+                    stateChangeContext.addValidationError(
+                            "technologies.technologyDetails.window.productStructure.productStructureForm.duplicateProductForTechnology",
+                            product.getStringField(ProductFields.NUMBER) + " " + product.getStringField(ProductFields.NAME));
 
                     return false;
                 } else {
@@ -629,8 +666,8 @@ public class TechnologyValidationService {
                             .getBooleanField(OperationProductInComponentFields.DIFFERENT_PRODUCTS_IN_DIFFERENT_SIZES);
 
                     if (differentProductsInDifferentSizes) {
-                        stateChangeContext
-                                .addValidationError("technologies.technology.validate.global.error.differentProductsInDifferentSizes");
+                        stateChangeContext.addValidationError(
+                                "technologies.technology.validate.global.error.differentProductsInDifferentSizes");
 
                         return false;
                     }
@@ -641,4 +678,20 @@ public class TechnologyValidationService {
         return true;
     }
 
+    public void checkIfInputProductPricesSet(StateChangeContext stateChangeContext) {
+        Entity technology = stateChangeContext.getOwner();
+        List<Entity> products = technologyService.getComponentsWithProductWithSizes(technology.getId());
+
+        for (Entity product : products) {
+            if (Objects.nonNull(product)
+                    && (Objects.isNull(product.getDecimalField("nominalCost"))
+                            || BigDecimal.ZERO.compareTo(product.getDecimalField("nominalCost")) == 0)
+                    && (Objects.isNull(product.getDecimalField("lastPurchaseCost"))
+                            || BigDecimal.ZERO.compareTo(product.getDecimalField("lastPurchaseCost")) == 0)) {
+                stateChangeContext.addMessage("technologies.technology.validate.info.inputProductPricesNotSet",
+                        StateMessageType.INFO, product.getStringField(ProductFields.NUMBER));
+            }
+
+        }
+    }
 }

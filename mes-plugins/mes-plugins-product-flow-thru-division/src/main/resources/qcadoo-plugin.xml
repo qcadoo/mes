@@ -100,6 +100,11 @@
         </model:model-field>
 
         <model:model-field plugin="basic" model="division">
+            <model:belongsTo name="wasteReceptionWarehouse" model="location"
+                             plugin="materialFlow"/>
+        </model:model-field>
+
+        <model:model-field plugin="basic" model="division">
             <model:belongsTo name="productsFlowLocation" model="location"
                              plugin="materialFlow"/>
         </model:model-field>
@@ -177,6 +182,11 @@
                              plugin="materialFlow"/>
         </model:model-field>
 
+        <model:model-field plugin="technologies" model="technology">
+            <model:belongsTo name="wasteReceptionWarehouse" model="location"
+                             plugin="materialFlow"/>
+        </model:model-field>
+
         <!-- operationProductInComponent -->
 
         <model:model-field plugin="technologies"
@@ -196,6 +206,12 @@
         <model:model-field plugin="technologies"
                            model="operationProductOutComponent">
             <model:belongsTo name="productsInputLocation" model="location"
+                             plugin="materialFlow"/>
+        </model:model-field>
+
+        <model:model-field plugin="technologies"
+                           model="operationProductOutComponent">
+            <model:belongsTo name="wasteReceptionWarehouse" model="location"
                              plugin="materialFlow"/>
         </model:model-field>
 
@@ -354,6 +370,12 @@
         <model:model-field plugin="basicProductionCounting"
                            model="productionCountingQuantity">
             <model:belongsTo name="productsInputLocation" model="location"
+                             plugin="materialFlow"/>
+        </model:model-field>
+
+        <model:model-field plugin="basicProductionCounting"
+                           model="productionCountingQuantity">
+            <model:belongsTo name="wasteReceptionWarehouse" model="location"
                              plugin="materialFlow"/>
         </model:model-field>
 
@@ -707,6 +729,7 @@
         <view:view resource="view/productsFinalDetails.xml"/>
         <view:view resource="view/productToIssueDetails.xml"/>
         <view:view resource="view/issueList.xml"/>
+        <view:view resource="view/wasteFlowDetails.xml"/>
 
         <!--  warehouseIssue -->
 

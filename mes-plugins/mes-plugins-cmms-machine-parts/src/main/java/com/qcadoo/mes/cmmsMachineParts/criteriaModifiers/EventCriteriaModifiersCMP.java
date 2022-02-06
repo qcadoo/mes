@@ -23,6 +23,7 @@
  */
 package com.qcadoo.mes.cmmsMachineParts.criteriaModifiers;
 
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -60,6 +61,10 @@ public class EventCriteriaModifiersCMP {
 
     public static final String L_MAINTENANCE_EVENT_CONTEXT_DIVISION = "maintenanceEventContextDivision";
 
+    public static final String L_MAINTENANCE_EVENT_CONTEXT_DATE_FROM = "dateFrom";
+
+    public static final String L_MAINTENANCE_EVENT_CONTEXT_DATE_TO = "dateTo";
+
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
@@ -68,9 +73,9 @@ public class EventCriteriaModifiersCMP {
     }
 
     public void filterRevokedAndPlannedEvents(final SearchCriteriaBuilder searchCriteriaBuilder) {
-        searchCriteriaBuilder.add(
-                SearchRestrictions.ne(MaintenanceEventFields.STATE, MaintenanceEventState.REVOKED.getStringValue())).add(
-                SearchRestrictions.ne(MaintenanceEventFields.STATE, MaintenanceEventState.PLANNED.getStringValue()));
+        searchCriteriaBuilder
+                .add(SearchRestrictions.ne(MaintenanceEventFields.STATE, MaintenanceEventState.REVOKED.getStringValue()))
+                .add(SearchRestrictions.ne(MaintenanceEventFields.STATE, MaintenanceEventState.PLANNED.getStringValue()));
     }
 
     public void filterCanceledEvents(final SearchCriteriaBuilder searchCriteriaBuilder) {
@@ -97,23 +102,25 @@ public class EventCriteriaModifiersCMP {
         if (filterValueHolder.has(MaintenanceEventFields.DIVISION)) {
             Long divisionId = filterValueHolder.getLong(MaintenanceEventFields.DIVISION);
 
-            searchCriteriaBuilder.createAlias(WorkstationFields.DIVISION, WorkstationFields.DIVISION, JoinType.INNER).add(
-                    SearchRestrictions.eq(WorkstationFields.DIVISION + ".id", divisionId));
+            searchCriteriaBuilder.createAlias(WorkstationFields.DIVISION, WorkstationFields.DIVISION, JoinType.INNER)
+                    .add(SearchRestrictions.eq(WorkstationFields.DIVISION + ".id", divisionId));
         }
         if (filterValueHolder.has(MaintenanceEventFields.PRODUCTION_LINE)) {
             Long productionLineId = filterValueHolder.getLong(MaintenanceEventFields.PRODUCTION_LINE);
 
-            searchCriteriaBuilder.createAlias(WorkstationFieldsPL.PRODUCTION_LINE, WorkstationFieldsPL.PRODUCTION_LINE,
-                    JoinType.INNER).add(SearchRestrictions.eq(WorkstationFieldsPL.PRODUCTION_LINE + ".id", productionLineId));
+            searchCriteriaBuilder
+                    .createAlias(WorkstationFieldsPL.PRODUCTION_LINE, WorkstationFieldsPL.PRODUCTION_LINE, JoinType.INNER)
+                    .add(SearchRestrictions.eq(WorkstationFieldsPL.PRODUCTION_LINE + ".id", productionLineId));
         }
     }
 
-    public void selectProductionLine(final SearchCriteriaBuilder searchCriteriaBuilder, final FilterValueHolder filterValueHolder) {
+    public void selectProductionLine(final SearchCriteriaBuilder searchCriteriaBuilder,
+            final FilterValueHolder filterValueHolder) {
         if (filterValueHolder.has(MaintenanceEventFields.DIVISION)) {
             Long divisionId = filterValueHolder.getLong(MaintenanceEventFields.DIVISION);
 
-            Entity division = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_DIVISION).get(
-                    divisionId);
+            Entity division = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_DIVISION)
+                    .get(divisionId);
 
             List<Long> productionLinesIds = division.getHasManyField(DivisionFieldsPL.PRODUCTION_LINES).stream()
                     .map(Entity::getId).collect(Collectors.toList());
@@ -180,17 +187,16 @@ public class EventCriteriaModifiersCMP {
                 searchCriterion = SearchRestrictions.eq(alias + ".id", elementId);
             }
 
-            searchCriteriaBuilder
-                    .createAlias(FaultTypeFields.WORKSTATION_TYPES, FaultTypeFields.WORKSTATION_TYPES, JoinType.LEFT)
+            searchCriteriaBuilder.createAlias(FaultTypeFields.WORKSTATION_TYPES, FaultTypeFields.WORKSTATION_TYPES, JoinType.LEFT)
                     .createAlias(alias, alias, JoinType.LEFT)
                     .add(SearchRestrictions.or(SearchRestrictions.and(
                             SearchRestrictions.in(FaultTypeFields.APPLIES_TO, getFaultTypeAppliesToStringValues()),
                             searchCriterion), SearchRestrictions.eq(FaultTypeFields.IS_DEFAULT, true)));
         } else {
-            searchCriteriaBuilder.add(SearchRestrictions.or(
-                    SearchRestrictions.in(FaultTypeFields.APPLIES_TO, getFaultTypeAppliesToStringValues()),
-                    SearchRestrictions.isNull(FaultTypeFields.APPLIES_TO),
-                    SearchRestrictions.eq(FaultTypeFields.IS_DEFAULT, true)));
+            searchCriteriaBuilder.add(
+                    SearchRestrictions.or(SearchRestrictions.in(FaultTypeFields.APPLIES_TO, getFaultTypeAppliesToStringValues()),
+                            SearchRestrictions.isNull(FaultTypeFields.APPLIES_TO),
+                            SearchRestrictions.eq(FaultTypeFields.IS_DEFAULT, true)));
         }
     }
 
@@ -198,7 +204,8 @@ public class EventCriteriaModifiersCMP {
         return Stream.of(FaultTypeAppliesTo.values()).map(FaultTypeAppliesTo::getStringValue).collect(Collectors.toList());
     }
 
-    public void showEventsFromContext(final SearchCriteriaBuilder searchCriteriaBuilder, final FilterValueHolder filterValueHolder) {
+    public void showEventsFromContext(final SearchCriteriaBuilder searchCriteriaBuilder,
+            final FilterValueHolder filterValueHolder) {
         if (filterValueHolder.has(L_MAINTENANCE_EVENT_CONTEXT_FACTORY)) {
             searchCriteriaBuilder.add(SearchRestrictions.eq(MaintenanceEventFields.FACTORY + "_id",
                     filterValueHolder.getInteger(L_MAINTENANCE_EVENT_CONTEXT_FACTORY)));
@@ -222,6 +229,17 @@ public class EventCriteriaModifiersCMP {
             searchCriteriaBuilder.add(SearchRestrictions.eq(MaintenanceEventFields.DIVISION + "_id",
                     filterValueHolder.getInteger(L_MAINTENANCE_EVENT_CONTEXT_DIVISION)));
         }
+
+        if (filterValueHolder.has(L_MAINTENANCE_EVENT_CONTEXT_DATE_FROM)) {
+            searchCriteriaBuilder.add(SearchRestrictions.ge(PlannedEventFields.DATE,
+                    new Date(filterValueHolder.getLong(L_MAINTENANCE_EVENT_CONTEXT_DATE_FROM))));
+        }
+
+        if (filterValueHolder.has(L_MAINTENANCE_EVENT_CONTEXT_DATE_TO)) {
+            searchCriteriaBuilder.add(SearchRestrictions.le(PlannedEventFields.DATE,
+                    new Date(filterValueHolder.getLong(L_MAINTENANCE_EVENT_CONTEXT_DATE_TO))));
+        }
+
     }
 
 }

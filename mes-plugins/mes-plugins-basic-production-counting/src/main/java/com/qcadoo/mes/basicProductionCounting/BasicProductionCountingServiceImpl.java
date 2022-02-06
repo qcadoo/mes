@@ -94,6 +94,8 @@ public class BasicProductionCountingServiceImpl implements BasicProductionCounti
 
     private static final String PRODUCTS_INPUT_LOCATION = "productsInputLocation";
 
+    public static final String WASTE_RECEPTION_WAREHOUSE = "wasteReceptionWarehouse";
+
     private static final String PRODUCTS_FLOW_LOCATION = "productsFlowLocation";
 
     private static final String PRODUCTION_FLOW = "productionFlow";
@@ -663,14 +665,21 @@ public class BasicProductionCountingServiceImpl implements BasicProductionCounti
             String role = productionCountingQuantity.getStringField(ProductionCountingQuantityFields.ROLE);
             String type = productionCountingQuantity.getStringField(ProductionCountingQuantityFields.TYPE_OF_MATERIAL);
 
-            if (ProductionCountingQuantityTypeOfMaterial.FINAL_PRODUCT.getStringValue().equals(type)
-                    || ProductionCountingQuantityTypeOfMaterial.WASTE.getStringValue().equals(type)) {
+            if (ProductionCountingQuantityTypeOfMaterial.FINAL_PRODUCT.getStringValue().equals(type)) {
                 Entity opoc = getOperationProduct(opocs,
                         productionCountingQuantity
                                 .getBelongsToField(ProductionCountingQuantityFields.TECHNOLOGY_OPERATION_COMPONENT),
                         productionCountingQuantity.getBelongsToField(ProductionCountingQuantityFields.PRODUCT));
                 if (opoc != null) {
                     productionCountingQuantity.setField(PRODUCTS_INPUT_LOCATION, opoc.getField(PRODUCTS_INPUT_LOCATION));
+                }
+            }  else if (ProductionCountingQuantityTypeOfMaterial.WASTE.getStringValue().equals(type)) {
+                Entity opoc = getOperationProduct(opocs,
+                        productionCountingQuantity
+                                .getBelongsToField(ProductionCountingQuantityFields.TECHNOLOGY_OPERATION_COMPONENT),
+                        productionCountingQuantity.getBelongsToField(ProductionCountingQuantityFields.PRODUCT));
+                if (opoc != null) {
+                    productionCountingQuantity.setField(WASTE_RECEPTION_WAREHOUSE, opoc.getField(WASTE_RECEPTION_WAREHOUSE));
                 }
             } else if (ProductionCountingQuantityRole.USED.getStringValue().equals(role)) {
                 Entity opic = getOperationProduct(opics,

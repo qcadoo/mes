@@ -40,6 +40,9 @@
         <boolean name="confirmed" default="false"/>
         <boolean name="acceptanceEvents" default="false" persistent="false"/>
 
+        <date name="dateFrom"/>
+        <date name="dateTo"/>
+
     </fields>
     <hooks>
 

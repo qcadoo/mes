@@ -110,6 +110,7 @@
         <model:model model="technologyInputProductType" resource="model/technologyInputProductType.xml"/>
         <model:model model="productBySizeGroup" resource="model/productBySizeGroup.xml"/>
         <model:model model="productionLineTechnologyGroup" resource="model/productionLineTechnologyGroup.xml"/>
+        <model:model model="operationTechnologyDto" resource="model/operationTechnologyDto.xml"/>
 
         <model:model-field plugin="basic" model="workstationType">
             <model:hasMany name="technologicalProcesses" plugin="technologies"
@@ -259,6 +260,10 @@
 
         <model:model-field model="parameter" plugin="basic">
             <model:boolean name="acceptedTechnologyMarkedAsDefault" default="false"/>
+        </model:model-field>
+
+        <model:model-field model="parameter" plugin="basic">
+            <model:boolean name="checkForTheExistenceOfInputProductPrices" default="false"/>
         </model:model-field>
 
         <model:model-field plugin="basic" model="product">

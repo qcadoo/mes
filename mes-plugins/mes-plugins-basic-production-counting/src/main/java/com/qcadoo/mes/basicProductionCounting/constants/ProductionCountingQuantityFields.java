@@ -73,4 +73,5 @@ public final class ProductionCountingQuantityFields {
 
     public static final String BATCHES = "batches";
 
+    public static final String WASTE_RECEPTION_WAREHOUSE = "wasteReceptionWarehouse";
 }

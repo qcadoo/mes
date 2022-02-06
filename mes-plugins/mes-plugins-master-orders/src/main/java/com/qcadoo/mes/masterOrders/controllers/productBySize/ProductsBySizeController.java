@@ -1,17 +1,5 @@
 package com.qcadoo.mes.masterOrders.controllers.productBySize;
 
-import com.qcadoo.localization.api.TranslationService;
-import com.qcadoo.mes.basic.constants.ProductFields;
-import com.qcadoo.mes.basic.constants.SizeFields;
-import com.qcadoo.mes.masterOrders.constants.MasterOrderProductFields;
-import com.qcadoo.mes.masterOrders.constants.MasterOrdersConstants;
-import com.qcadoo.mes.masterOrders.constants.ProductsBySizeHelperFields;
-import com.qcadoo.mes.masterOrders.constants.SalesPlanProductFields;
-import com.qcadoo.mes.orders.TechnologyServiceO;
-import com.qcadoo.model.api.DataDefinitionService;
-import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.exception.EntityRuntimeException;
-
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +11,18 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.qcadoo.localization.api.TranslationService;
+import com.qcadoo.mes.basic.constants.ProductFields;
+import com.qcadoo.mes.basic.constants.SizeFields;
+import com.qcadoo.mes.masterOrders.constants.MasterOrderProductFields;
+import com.qcadoo.mes.masterOrders.constants.MasterOrdersConstants;
+import com.qcadoo.mes.masterOrders.constants.ProductsBySizeHelperFields;
+import com.qcadoo.mes.masterOrders.constants.SalesPlanProductFields;
+import com.qcadoo.mes.orders.TechnologyServiceO;
+import com.qcadoo.model.api.DataDefinitionService;
+import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.exception.EntityRuntimeException;
 
 @Controller
 public class ProductsBySizeController {
@@ -84,6 +84,7 @@ public class ProductsBySizeController {
 
             spProduct.setField(SalesPlanProductFields.PLANNED_QUANTITY, position.getValue());
             spProduct.setField(SalesPlanProductFields.ORDERED_QUANTITY, 0);
+            spProduct.setField(SalesPlanProductFields.ORDERED_TO_WAREHOUSE, 0);
             spProduct.setField(SalesPlanProductFields.SURPLUS_FROM_PLAN, position.getValue());
             spProduct = spProduct.getDataDefinition().save(spProduct);
             if (!spProduct.isValid()) {

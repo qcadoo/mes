@@ -7,6 +7,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import com.qcadoo.commons.functional.Either;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.materialFlowResources.exceptions.DocumentBuildException;
 import com.qcadoo.mes.materialFlowResources.service.DocumentBuilder;
@@ -42,6 +43,7 @@ public class ProductionTrackingDocumentsHelper {
     private static final String L_PRODUCT = "product";
 
     private static final String L_WAREHOUSE = "01warehouse";
+    public static final String L_WITHIN_THE_PROCESS = "02withinTheProcess";
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
@@ -66,25 +68,28 @@ public class ProductionTrackingDocumentsHelper {
                 Entity product = topic.getBelongsToField(TrackingOperationProductInComponentFields.PRODUCT);
                 Entity productionTracking = topic.getBelongsToField(TrackingOperationProductInComponentFields.PRODUCTION_TRACKING);
                 Entity toc = productionTracking.getBelongsToField(ProductionTrackingFields.TECHNOLOGY_OPERATION_COMPONENT);
-                Entity warehouse = getWarehouseForProduct(productionCountingQuantities, toc, product);
-                if (Objects.isNull(warehouse)) {
-                    DocumentBuilder documentBuilder = documentManagementService.getDocumentBuilder();
-                    Entity emptyDocumentForErrorHandling = documentBuilder.createDocument(userService.getCurrentUserEntity());
-                    emptyDocumentForErrorHandling.setNotValid();
-                    emptyDocumentForErrorHandling.addGlobalError(
-                            "productFlowThruDivision.productionCountingQuantity.productionCountingQuantityError.warehouseNotSet",
-                            product.getStringField(ProductFields.NUMBER));
+                Either<Boolean, Entity> eitherWarehouse = getWarehouseForProduct(productionCountingQuantities, toc, product);
+                if(eitherWarehouse.isRight()) {
+                    Entity warehouse = eitherWarehouse.getRight();
+                    if (Objects.isNull(warehouse)) {
+                        DocumentBuilder documentBuilder = documentManagementService.getDocumentBuilder();
+                        Entity emptyDocumentForErrorHandling = documentBuilder.createDocument(userService.getCurrentUserEntity());
+                        emptyDocumentForErrorHandling.setNotValid();
+                        emptyDocumentForErrorHandling.addGlobalError(
+                                "productFlowThruDivision.productionCountingQuantity.productionCountingQuantityError.warehouseNotSet",
+                                product.getStringField(ProductFields.NUMBER));
 
-                    throw new DocumentBuildException(emptyDocumentForErrorHandling, Lists.newArrayList());
+                        throw new DocumentBuildException(emptyDocumentForErrorHandling, Lists.newArrayList());
 
+                    }
+                    groupedRecordInProducts.put(warehouse.getId(), topic);
                 }
-                groupedRecordInProducts.put(warehouse.getId(), topic);
             }
         }
         return groupedRecordInProducts;
     }
 
-    private Entity getWarehouseForProduct(List<Entity> productionCountingQuantities, Entity toc, Entity product) {
+    private Either<Boolean, Entity> getWarehouseForProduct(List<Entity> productionCountingQuantities, Entity toc, Entity product) {
         if (Objects.nonNull(toc)) {
             Optional<Entity> maybeProductionCountingQuantity = productionCountingQuantities.stream().filter(
                     pcq -> Objects.nonNull(pcq.getBelongsToField(ProductionCountingQuantityFields.TECHNOLOGY_OPERATION_COMPONENT))
@@ -107,20 +112,25 @@ public class ProductionTrackingDocumentsHelper {
                 return getWarehouseFromPCQ(productionCountingQuantity);
             }
         }
-        return null;
+        return Either.right(null);
     }
 
-    private Entity getWarehouseFromPCQ(Entity productionCountingQuantity) {
+    private Either<Boolean, Entity> getWarehouseFromPCQ(Entity productionCountingQuantity) {
         if (ProductionCountingQuantityTypeOfMaterial.COMPONENT.getStringValue()
                 .equals(productionCountingQuantity.getStringField(ProductionCountingQuantityFields.TYPE_OF_MATERIAL))) {
-            return productionCountingQuantity.getBelongsToField(ProductionCountingQuantityFields.COMPONENTS_LOCATION);
+            return Either.right(productionCountingQuantity.getBelongsToField(ProductionCountingQuantityFields.COMPONENTS_LOCATION));
         } else if (ProductionCountingQuantityTypeOfMaterial.INTERMEDIATE.getStringValue()
                 .equals(productionCountingQuantity.getStringField(ProductionCountingQuantityFields.TYPE_OF_MATERIAL))
                 && L_WAREHOUSE
                         .equals(productionCountingQuantity.getStringField(ProductionCountingQuantityFields.PRODUCTION_FLOW))) {
-            return productionCountingQuantity.getBelongsToField(ProductionCountingQuantityFields.PRODUCTS_FLOW_LOCATION);
+            return Either.right(productionCountingQuantity.getBelongsToField(ProductionCountingQuantityFields.PRODUCTS_FLOW_LOCATION));
+        } else if (ProductionCountingQuantityTypeOfMaterial.INTERMEDIATE.getStringValue()
+                .equals(productionCountingQuantity.getStringField(ProductionCountingQuantityFields.TYPE_OF_MATERIAL))
+                && L_WITHIN_THE_PROCESS
+                        .equals(productionCountingQuantity.getStringField(ProductionCountingQuantityFields.PRODUCTION_FLOW))) {
+            return Either.left(Boolean.TRUE);
         }
-        return null;
+        return Either.right(null);
     }
 
     public final Multimap<Long, Entity> fillFromBPCProductIn(final List<Entity> trackingOperationProductInComponents,
@@ -189,8 +199,7 @@ public class ProductionTrackingDocumentsHelper {
             if (withWaste && ProductionCountingQuantityTypeOfMaterial.WASTE.getStringValue()
                     .equals(productionCountingQuantity.getStringField(ProductionCountingQuantityFields.TYPE_OF_MATERIAL))) {
                 warehouse = productionCountingQuantity
-                        .getBelongsToField(ProductionCountingQuantityFields.PRODUCTS_INPUT_LOCATION);
-
+                        .getBelongsToField(ProductionCountingQuantityFields.WASTE_RECEPTION_WAREHOUSE);
                 if (Objects.isNull(warehouse)) {
                     continue;
                 }

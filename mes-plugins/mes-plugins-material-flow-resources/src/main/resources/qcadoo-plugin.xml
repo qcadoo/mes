@@ -124,6 +124,19 @@
                              plugin="materialFlowResources"/>
         </model:model-field>
 
+        <model:model-field plugin="basic" model="parameter">
+            <model:boolean name="automaticUpdateCostNorms" default="false"/>
+        </model:model-field>
+
+        <model:model-field plugin="basic" model="parameter">
+            <model:enum name="costsSource" values="01mes" default="01mes"/>
+        </model:model-field>
+
+        <model:model-field plugin="basic" model="parameter">
+            <model:hasMany name="warehouses" model="costNormsLocation" plugin="materialFlowResources" joinField="parameter"
+                     cascade="delete" copyable="false"/>
+        </model:model-field>
+
         <model:model-field plugin="advancedGenealogy" model="batch">
             <model:hasMany name="positions" model="position"
                            plugin="materialFlowResources" joinField="batch" cascade="nullify"/>
@@ -374,6 +387,7 @@
         <view:view resource="view/productAttributesForPositionList.xml"/>
 
         <view:view-tab resource="view/tabExtensions/locationDetails.xml"/>
+        <view:view-tab resource="view/tabExtensions/generalParameters.xml"/>
 
         <view:view-ribbon-group resource="view/ribbonExtensions/productsList.xml"/>
         <view:view-ribbon-group resource="view/ribbonExtensions/productDetails.xml"/>
@@ -390,6 +404,11 @@
                         type="beforeRender"
                         class="com.qcadoo.mes.materialFlowResources.hooks.ProductDetailsHooksMFR"
                         method="setEnabledForStorageLocationHistory"/>
+
+        <view:view-hook plugin="basic" view="generalParameters"
+                        type="beforeRender"
+                        class="com.qcadoo.mes.materialFlowResources.hooks.GeneralParametersHooksMFR"
+                        method="onBeforeRender"/>
 
         <view:resource uri="public/**/*"/>
 

@@ -134,6 +134,7 @@ public class TechnologyDetailsListenersPFTD {
         fillForProductsIntermediateInOne(technology);
         fillForProductsIntermediateOutOne(technology);
         fillForFinalOne(technology);
+        fillForWasteOne(technology);
     }
 
     private void fillForManyDivision(final Entity technology) {
@@ -141,6 +142,7 @@ public class TechnologyDetailsListenersPFTD {
         fillForProductsIntermediateInMany(technology);
         fillForProductsIntermediateOutMany(technology);
         fillForFinalMany(technology);
+        fillForWasteMany(technology);
     }
 
     private void fillForComponentsMany(final Entity technology) {
@@ -188,6 +190,32 @@ public class TechnologyDetailsListenersPFTD {
                 op.setField(OperationProductOutComponentFieldsPFTD.PRODUCTS_INPUT_LOCATION, productsInputLocation);
             } else {
                 op.setField(OperationProductOutComponentFieldsPFTD.PRODUCTS_INPUT_LOCATION, null);
+            }
+
+            op.getDataDefinition().fastSave(op);
+        }
+    }
+
+    private void fillForWasteMany(final Entity technology) {
+        List<Long> ids = operationComponentDataProvider.getWasteProductsForTechnology(technology.getId());
+
+        if (ids.isEmpty()) {
+            return;
+        }
+
+        List<Entity> opocs = getOperationProductOutComponent().find().add(SearchRestrictions.in("id", ids)).list().getEntities();
+
+        for (Entity op : opocs) {
+            cleanOperationProduct(op);
+
+            Entity division = op.getBelongsToField(OperationProductOutComponentFields.OPERATION_COMPONENT)
+                    .getBelongsToField(TechnologyOperationComponentFields.DIVISION);
+
+            if (Objects.nonNull(division)) {
+                Entity wasteLocation = division.getBelongsToField(DivisionFieldsPFTD.WASTE_RECEPTION_WAREHOUSE);
+                op.setField(OperationProductOutComponentFieldsPFTD.WASTE_RECEPTION_WAREHOUSE, wasteLocation);
+            } else {
+                op.setField(OperationProductOutComponentFieldsPFTD.WASTE_RECEPTION_WAREHOUSE, null);
             }
 
             op.getDataDefinition().fastSave(op);
@@ -273,6 +301,27 @@ public class TechnologyDetailsListenersPFTD {
             cleanOperationProduct(op);
 
             op.setField(OperationProductOutComponentFieldsPFTD.PRODUCTS_INPUT_LOCATION, productsInputLocation);
+
+            op.getDataDefinition().fastSave(op);
+        }
+    }
+
+    private void fillForWasteOne(final Entity technology) {
+        List<Long> ids = operationComponentDataProvider.getWasteProductsForTechnology(technology.getId());
+
+        if (ids.isEmpty()) {
+            return;
+        }
+
+        List<Entity> opocs = getOperationProductOutComponent().find().add(SearchRestrictions.in("id", ids)).list().getEntities();
+
+        Entity productsWasteLocation = technology
+                .getBelongsToField(OperationProductOutComponentFieldsPFTD.WASTE_RECEPTION_WAREHOUSE);
+
+        for (Entity op : opocs) {
+            cleanOperationProduct(op);
+
+            op.setField(OperationProductOutComponentFieldsPFTD.WASTE_RECEPTION_WAREHOUSE, productsWasteLocation);
 
             op.getDataDefinition().fastSave(op);
         }
@@ -371,6 +420,9 @@ public class TechnologyDetailsListenersPFTD {
         operationProduct.setField(OperationProductInComponentFieldsPFTD.COMPONENTS_LOCATION, null);
         operationProduct.setField(OperationProductInComponentFieldsPFTD.COMPONENTS_OUTPUT_LOCATION, null);
         operationProduct.setField(OperationProductInComponentFieldsPFTD.PRODUCTS_INPUT_LOCATION, null);
+        if(operationProduct.getDataDefinition().getName().equals(TechnologiesConstants.MODEL_OPERATION_PRODUCT_OUT_COMPONENT)) {
+            operationProduct.setField(OperationProductOutComponentFieldsPFTD.WASTE_RECEPTION_WAREHOUSE, null);
+        }
     }
 
     private DataDefinition getOperationProductOutComponent() {

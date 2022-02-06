@@ -31,7 +31,7 @@
 
  <windowTab name="flowTab" reference="flowTab">
         <component type="gridLayout" name="flowLayout" columns="4"
-                   rows="5">
+                   rows="6">
 
             <layoutElement column="1" row="1" width="2">
                 <component type="lookup" name="componentsLocation"
@@ -83,6 +83,19 @@
             </layoutElement>
 
             <layoutElement column="1" row="5" width="2">
+                <component type="lookup" name="wasteReceptionWarehouse"
+                           field="#{form}.wasteReceptionWarehouse" reference="wasteReceptionWarehouse">
+                    <option type="column" name="name" fields="name"/>
+
+                    <option type="searchable" value="number,name"/>
+                    <option type="orderable" value="number,name"/>
+
+                    <option type="expression" value="#number + ' - ' + #name"/>
+                    <option type="fieldCode" value="number"/>
+                </component>
+            </layoutElement>
+
+            <layoutElement column="1" row="6" width="2">
                 <component type="lookup" name="productsInputLocation"
                            field="#{form}.productsInputLocation" reference="productsInputLocation">
                     <option type="column" name="name" fields="name"/>

@@ -36,5 +36,7 @@ public final class DivisionFieldsPFTD {
 
     public static final String PRODUCTS_FLOW_LOCATION = "productsFlowLocation";
 
+    public static final String WASTE_RECEPTION_WAREHOUSE = "wasteReceptionWarehouse";
+
     public static final String PRODUCTION_FLOW = "productionFlow";
 }

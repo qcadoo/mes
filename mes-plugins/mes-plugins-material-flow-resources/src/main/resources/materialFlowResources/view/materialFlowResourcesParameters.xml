@@ -74,6 +74,13 @@
                             <option type="labelWidth" value="60" />
                         </component>
                     </layoutElement>
+                    <layoutElement column="3" row="2">
+                        <component type="checkbox" name="transferPalletToReceivingWarehouse"
+                                   field="transferPalletToReceivingWarehouse" reference="transferPalletToReceivingWarehouse"
+                                   hasDescription="true">
+                            <option type="labelWidth" value="60" />
+                        </component>
+                    </layoutElement>
                     <layoutElement column="1" row="3" width="3" height="9">
                         <component type="grid" name="grid" reference="grid" source="#{form}.items">
                             <option type="column" name="name" fields="name" link="true"/>

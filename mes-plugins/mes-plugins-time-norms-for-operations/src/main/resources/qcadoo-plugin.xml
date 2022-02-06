@@ -266,6 +266,12 @@
 					class="com.qcadoo.mes.timeNormsForOperations.hooks.TechnologyOperationComponentHooksTNFO"
 					method="onSave" />
 		</model:model-hook>
+		<model:model-hook plugin="technologies"
+            model="operation">
+			<model:onSave
+					class="com.qcadoo.mes.timeNormsForOperations.hooks.OperationModelHooksTNFO"
+					method="onSave" />
+		</model:model-hook>
 
 		<view:view resource="view/operationWorkstationTimeDetails.xml"/>
 		<view:view resource="view/techOperCompWorkstationTimeDetails.xml"/>
