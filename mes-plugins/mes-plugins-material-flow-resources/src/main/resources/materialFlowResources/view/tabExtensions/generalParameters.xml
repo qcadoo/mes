@@ -70,7 +70,7 @@
                                                    columns="1" rows="1">
                                             <layoutElement column="1" row="1">
                                                 <component type="lookup" name="location" field="location"
-                                                           reference="location" hasLabel="false">
+                                                           reference="costNormsLocation" hasLabel="false">
                                                     <option type="column" fields="name" name="name" link="true"/>
 
                                                     <option type="searchable" value="number,name"/>
