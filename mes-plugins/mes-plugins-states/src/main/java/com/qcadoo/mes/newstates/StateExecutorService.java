@@ -251,15 +251,19 @@ public class StateExecutorService {
     private Entity saveStateChangeEntity(final Entity stateChangeEntity, final StateChangeStatus stateChangeStatus) {
         stateChangeEntity.setField("status", stateChangeStatus.getStringValue());
 
-        Entity savedStateChangeEntity = saveAndValidate(stateChangeEntity);
-
-        return savedStateChangeEntity;
+        return saveAndValidate(stateChangeEntity);
     }
 
     public Entity buildStateChangeEntity(final StateChangeEntityDescriber describer, final Entity owner, String userName,
             final String sourceState, final String targetState) {
-        final Entity stateChangeEntity = describer.getDataDefinition().create();
         final Entity shift = shiftsService.getShiftFromDateWithTime(new Date());
+
+        return buildStateChangeEntity(describer, owner, userName, sourceState, targetState, shift);
+    }
+
+    public Entity buildStateChangeEntity(final StateChangeEntityDescriber describer, final Entity owner, String userName,
+            final String sourceState, final String targetState, final Entity shift) {
+        final Entity stateChangeEntity = describer.getDataDefinition().create();
 
         if (StringUtils.isEmpty(userName)) {
             userName = securityService.getCurrentUserOrQcadooBotName();
