@@ -59,7 +59,11 @@
 
         <enum name="state" values="01pending,02started,03finished,04rejected" default="01pending"/>
         <hasMany name="stateChanges" model="operationalTaskStateChange" joinField="operationalTask" cascade="delete"/>
-
+        <integer name="actualStaff">
+            <validatesRange from="1"/>
+        </integer>
+        <manyToMany name="workers" plugin="basic" model="staff"
+                    joinField="operationalTasksStaff" copyable="true"/>
     </fields>
 
     <hooks>

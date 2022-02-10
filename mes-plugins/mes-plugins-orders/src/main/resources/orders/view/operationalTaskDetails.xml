@@ -356,6 +356,64 @@
 				</layoutElement>
 			</component>
 		</windowTab>
+		<windowTab name="staffTab" reference="staffTab">
+			<component type="gridLayout" name="gridsLayout" columns="2"
+			           rows="8" hasBorders="false">
+				<layoutElement column="1" row="1">
+					<component type="input" name="plannedStaff"
+					           reference="plannedStaff" defaultEnabled="false">
+						<option type="labelWidth" value="55"/>
+						<option type="alignment" value="right"/>
+					</component>
+				</layoutElement>
+				<layoutElement column="1" row="2">
+					<component type="input" name="actualStaff" field="#{form}.actualStaff"
+					           reference="actualStaff">
+						<option type="labelWidth" value="55"/>
+						<option type="alignment" value="right"/>
+						<listener event="onInputChange"
+						          class="com.qcadoo.view.api.listeners.RerenderListener"
+						          method="onChangeRerender"/>
+					</component>
+				</layoutElement>
+				<layoutElement column="1" row="3" height="6">
+					<component type="lookup" name="staffLookup"
+					           reference="staffLookup" field="#{form}.workers"
+					           defaultVisible="false" persistent="false" hasLabel="false">
+
+						<option type="column" name="name" fields="name" link="true" width="100"/>
+						<option type="column" name="surname" fields="surname" link="true" width="50"/>
+
+						<option type="searchable" value="number,name,surname"/>
+						<option type="orderable" value="number,name,surname"/>
+
+						<option type="expression" value="#name + ' - ' + #surname"/>
+						<option type="fieldCode" value="number"/>
+
+						<option type="multiselect" value="true"/>
+					</component>
+					<component type="grid" name="workers" reference="workers"
+					           source="#{form}.workers">
+						<option type="column" name="number" fields="number" width="50"/>
+						<option type="column" name="name" fields="name" width="100"/>
+						<option type="column" name="surname" fields="surname" width="100"/>
+
+						<option type="order" column="number" direction="asc"/>
+
+						<option type="searchable" value="number,name,surname"/>
+						<option type="orderable" value="number,name,surname"/>
+
+						<option type="weakRelation" value="true"/>
+						<option type="correspondingLookup" value="staffLookup"/>
+
+						<option type="creatable" value="true"/>
+						<option type="deletable" value="true"/>
+						<option type="fullscreen" value="true"/>
+						<option type="multiselect" value="true"/>
+					</component>
+				</layoutElement>
+			</component>
+		</windowTab>
 	</component>
 
 	<hooks>

@@ -33,14 +33,14 @@ import com.qcadoo.model.api.Entity;
 public interface OperationWorkTimeService {
 
     BigDecimal estimateAbstractOperationWorkTime(final Entity operationComponent, final BigDecimal neededNumberOfCycles,
-            final boolean includeTpz, final boolean includeAdditionalTime);
+            final boolean includeTpz, final boolean includeAdditionalTime, final BigDecimal staffFactor);
 
     OperationWorkTime estimateTechOperationWorkTimeForWorkstation(final Entity operationComponent,
             final BigDecimal neededNumberOfCycles, final boolean includeTpz, final boolean includeAdditionalTime,
-            Entity techOperCompWorkstationTime);
+            Entity techOperCompWorkstationTime, BigDecimal staffFactor);
 
     OperationWorkTime estimateTechOperationWorkTime(final Entity operationComponent, final BigDecimal neededNumberOfCycles,
-            final boolean includeTpz, final boolean includeAdditionalTime, final boolean saved);
+            final boolean includeTpz, final boolean includeAdditionalTime, final boolean saved, final BigDecimal staffFactor);
 
     OperationTimesContainer estimateOperationsWorkTimes(final List<Entity> operationComponents,
             Map<Long, BigDecimal> operationRuns, final boolean includeTpz, final boolean includeAdditionalTime,

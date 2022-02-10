@@ -55,6 +55,7 @@
 		<decimal name="doneInPercentage"/>
 		<decimal name="operTaskFlagPercentExecutionWithColor"/>
 		<string name="percentageOfExecutionCellColor"/>
+		<integer name="actualStaff"/>
 	</fields>
 
 	<hooks />

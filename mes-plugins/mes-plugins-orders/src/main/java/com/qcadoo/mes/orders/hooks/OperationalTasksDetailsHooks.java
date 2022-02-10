@@ -41,6 +41,7 @@ import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.mes.technologies.constants.OperationFields;
 import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
+import com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperationComponentFieldsTNFO;
 import com.qcadoo.model.api.BigDecimalUtils;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -88,9 +89,30 @@ public class OperationalTasksDetailsHooks {
         filterDivisionLookup(view);
         setTechnology(view);
         setQuantities(view);
+        setStaff(view);
 
         disableFieldsWhenOrderTypeIsSelected(view);
         disableButtons(view);
+    }
+
+    private void setStaff(ViewDefinitionState view) {
+        FieldComponent plannedStaffField = (FieldComponent) view.getComponentByReference("plannedStaff");
+        FieldComponent actualStaffField = (FieldComponent) view.getComponentByReference(OperationalTaskFields.ACTUAL_STAFF);
+        LookupComponent technologyOperationComponentLookup = (LookupComponent) view
+                .getComponentByReference(OperationalTaskFields.TECHNOLOGY_OPERATION_COMPONENT);
+        Entity technologyOperationComponent = technologyOperationComponentLookup.getEntity();
+        int plannedStaff;
+        if (!Objects.isNull(technologyOperationComponent)) {
+            plannedStaff = technologyOperationComponent.getIntegerField(TechnologyOperationComponentFieldsTNFO.MIN_STAFF);
+        } else {
+            plannedStaff = 1;
+        }
+        plannedStaffField.setFieldValue(plannedStaff);
+        if (actualStaffField.getFieldValue() == null && actualStaffField.getFieldValue().toString().equals("")) {
+            actualStaffField.setFieldValue(plannedStaff);
+        }
+        FieldComponent staff = (FieldComponent) view.getComponentByReference(OperationalTaskFields.STAFF);
+        staff.setEnabled(actualStaffField.getFieldValue() != null && Integer.parseInt((String)actualStaffField.getFieldValue()) == 1);
     }
 
     private void setQuantities(final ViewDefinitionState view) {
@@ -139,8 +161,7 @@ public class OperationalTasksDetailsHooks {
     }
 
     private void filterDivisionLookup(final ViewDefinitionState view) {
-        LookupComponent divisionLookup = (LookupComponent) view
-                .getComponentByReference(OperationalTaskFields.DIVISION);
+        LookupComponent divisionLookup = (LookupComponent) view.getComponentByReference(OperationalTaskFields.DIVISION);
         LookupComponent workstationLookup = (LookupComponent) view.getComponentByReference(OperationalTaskFields.WORKSTATION);
 
         Entity division = divisionLookup.getEntity();

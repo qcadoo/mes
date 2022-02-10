@@ -130,7 +130,7 @@ public class ScheduleDetailsListenersPS {
                 BigDecimal operationComponentRuns = BigDecimalUtils
                         .convertNullToZero(operationRuns.get(operationComponent.getId()));
                 OperationWorkTime operationWorkTime = operationWorkTimeService.estimateTechOperationWorkTime(operationComponent,
-                        operationComponentRuns, includeTpz, false, false);
+                        operationComponentRuns, includeTpz, false, false, BigDecimal.ONE);
                 Entity schedulePosition = createSchedulePosition(schedule, schedulePositionDD, order, operationComponent,
                         operationWorkTime, operationProductComponentWithQuantityContainer, operationComponentRuns);
                 positions.add(schedulePosition);
@@ -252,7 +252,8 @@ public class ScheduleDetailsListenersPS {
                 OperationWorkTime operationWorkTime = operationWorkTimeService.estimateTechOperationWorkTimeForWorkstation(
                         position.getBelongsToField(SchedulePositionFields.TECHNOLOGY_OPERATION_COMPONENT),
                         position.getDecimalField(SchedulePositionFields.OPERATION_RUNS),
-                        schedule.getBooleanField(ScheduleFields.INCLUDE_TPZ), false, techOperCompWorkstationTime.get());
+                        schedule.getBooleanField(ScheduleFields.INCLUDE_TPZ), false, techOperCompWorkstationTime.get(),
+                        BigDecimal.ONE);
                 laborWorkTime = operationWorkTime.getLaborWorkTime();
                 machineWorkTime = operationWorkTime.getMachineWorkTime();
                 additionalTime = techOperCompWorkstationTime.get()
@@ -367,7 +368,8 @@ public class ScheduleDetailsListenersPS {
         StringBuilder query = new StringBuilder();
         query.append("SELECT id FROM ");
         query.append("(SELECT sp.id, sp.machineworktime, ");
-        query.append("string_to_array(regexp_replace(REVERSE(SPLIT_PART(REVERSE(o.number), '-', 1)), '[^0-9.]', '0', 'g'), '.')::int[] AS osort, ");
+        query.append(
+                "string_to_array(regexp_replace(REVERSE(SPLIT_PART(REVERSE(o.number), '-', 1)), '[^0-9.]', '0', 'g'), '.')::int[] AS osort, ");
         query.append("string_to_array(regexp_replace(rtrim(toc.nodenumber, '.'), '[^0-9.]', '0', 'g'), '.')::int[] AS opsort ");
         query.append("FROM orders_scheduleposition sp JOIN technologies_technologyoperationcomponent toc ");
         query.append("ON sp.technologyoperationcomponent_id = toc.id JOIN orders_order o ON sp.order_id = o.id ");

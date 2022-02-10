@@ -63,4 +63,8 @@ public final class OperationalTaskFields {
 
     public static final String STATE = "state";
 
+    public static final String ACTUAL_STAFF = "actualStaff";
+
+    public static final String WORKERS = "workers";
+
 }

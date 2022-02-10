@@ -1,5 +1,20 @@
 package com.qcadoo.mes.technologies.controller;
 
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.Objects;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.http.MediaType;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.basic.controllers.dataProvider.responses.WorkstationTypesGridResponse;
 import com.qcadoo.mes.basic.controllers.dataProvider.responses.WorkstationTypesResponse;
@@ -20,21 +35,6 @@ import com.qcadoo.mes.technologies.controller.dataProvider.TechnologiesResponse;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.validators.ErrorMessage;
-
-import java.math.BigDecimal;
-import java.util.List;
-import java.util.Objects;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.http.MediaType;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller
 public final class TechnologyApiController {
@@ -57,8 +57,8 @@ public final class TechnologyApiController {
     @ResponseBody
     @RequestMapping(value = "/technologies", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public TechnologiesResponse getTechnologies(@RequestParam("query") String query, @RequestParam("productId") Long productId,
-        @RequestParam(value = "master", required = false, defaultValue = "false") Boolean master,
-        @RequestParam(value = "forEach", required = false, defaultValue = "false") Boolean forEach) {
+            @RequestParam(value = "master", required = false, defaultValue = "false") Boolean master,
+            @RequestParam(value = "forEach", required = false, defaultValue = "false") Boolean forEach) {
         return dataProvider.getTechnologies(query, productId, master, forEach);
     }
 
@@ -77,15 +77,13 @@ public final class TechnologyApiController {
 
     @ResponseBody
     @RequestMapping(value = "/workstationsByPage", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public WorkstationsGridResponse getWorkstations(@RequestParam(value = "limit") int limit, @RequestParam(value = "offset") int offset,
-            @RequestParam(value = "sort", required = false) String sort,
+    public WorkstationsGridResponse getWorkstations(@RequestParam(value = "limit") int limit,
+            @RequestParam(value = "offset") int offset, @RequestParam(value = "sort", required = false) String sort,
             @RequestParam(value = "order", required = false) String order,
             @RequestParam(value = "search", required = false) String search,
             @RequestParam(value = "tocId", required = false) Long tocId) {
         return dataProvider.getWorkstations(limit, offset, sort, order, search, tocId);
     }
-
-
 
     @ResponseBody
     @RequestMapping(value = "/workstationTypesByQuery", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -95,13 +93,12 @@ public final class TechnologyApiController {
 
     @ResponseBody
     @RequestMapping(value = "/workstationTypesByPage", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public WorkstationTypesGridResponse getWorkstations(@RequestParam(value = "limit") int limit, @RequestParam(value = "offset") int offset,
-            @RequestParam(value = "sort", required = false) String sort,
+    public WorkstationTypesGridResponse getWorkstations(@RequestParam(value = "limit") int limit,
+            @RequestParam(value = "offset") int offset, @RequestParam(value = "sort", required = false) String sort,
             @RequestParam(value = "order", required = false) String order,
             @RequestParam(value = "search", required = false) String search) {
         return dataProvider.getWorkstationTypes(limit, offset, sort, order, search);
     }
-
 
     @ResponseBody
     @RequestMapping(value = "/technology/{technologyId}/operationMaterials", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -117,11 +114,10 @@ public final class TechnologyApiController {
 
     @ResponseBody
     @RequestMapping(value = "/technologiesByPage", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public TechnologiesGridResponse getProducts(@RequestParam(value = "limit") int limit, @RequestParam(value = "offset") int offset,
-            @RequestParam(value = "sort", required = false) String sort,
+    public TechnologiesGridResponse getProducts(@RequestParam(value = "limit") int limit,
+            @RequestParam(value = "offset") int offset, @RequestParam(value = "sort", required = false) String sort,
             @RequestParam(value = "order", required = false) String order,
-            @RequestParam(value = "search", required = false) String search,
-            @RequestParam(value = "productId") Long productId,
+            @RequestParam(value = "search", required = false) String search, @RequestParam(value = "productId") Long productId,
             @RequestParam(value = "forEach", required = false, defaultValue = "false") Boolean forEach) {
         return dataProvider.getTechnologiesResponse(limit, offset, sort, order, search, productId, forEach);
     }
@@ -130,7 +126,8 @@ public final class TechnologyApiController {
     @RequestMapping(value = "/operation", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
     public OperationResponse saveOperation(@RequestBody OperationRequest operation) {
 
-        Entity operationEntity = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_OPERATION).create();
+        Entity operationEntity = dataDefinitionService
+                .get(TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_OPERATION).create();
         operationEntity.setField(OperationFields.NUMBER, operation.getNumber());
         operationEntity.setField(OperationFields.NAME, operation.getName());
         operationEntity.setField(OperationFields.QUANTITY_OF_WORKSTATIONS, 1);
@@ -150,8 +147,12 @@ public final class TechnologyApiController {
 
         operationEntity.setField("nextOperationAfterProducedQuantity", BigDecimal.ZERO);
 
+        operationEntity.setField("minStaff", 1);
+
+        operationEntity.setField("tjDecreasesForEnlargedStaff", false);
+
         operationEntity = operationEntity.getDataDefinition().save(operationEntity);
-        if(operationEntity.isValid()) {
+        if (operationEntity.isValid()) {
             OperationResponse operationResponse = new OperationResponse(OperationResponse.StatusCode.OK);
             operationResponse.setId(operationEntity.getId());
             operationResponse.setNumber(operation.getNumber());
@@ -159,17 +160,18 @@ public final class TechnologyApiController {
         } else {
             //
             ErrorMessage numberError = operationEntity.getError(ProductionLineFields.NUMBER);
-            if(Objects.nonNull(numberError) && numberError.getMessage().equals("qcadooView.validate.field.error.duplicated")) {
+            if (Objects.nonNull(numberError) && numberError.getMessage().equals("qcadooView.validate.field.error.duplicated")) {
                 OperationResponse response = new OperationResponse(OperationResponse.StatusCode.ERROR);
-                response.setMessage(translationService.translate("basic.dashboard.orderDefinitionWizard.error.validationError.operationDuplicated",
+                response.setMessage(translationService.translate(
+                        "basic.dashboard.orderDefinitionWizard.error.validationError.operationDuplicated",
                         LocaleContextHolder.getLocale()));
                 return response;
             }
 
         }
         OperationResponse response = new OperationResponse(OperationResponse.StatusCode.ERROR);
-        response.setMessage(translationService.translate("basic.dashboard.orderDefinitionWizard.error.validationError.operationErrors",
-                LocaleContextHolder.getLocale()));
+        response.setMessage(translationService.translate(
+                "basic.dashboard.orderDefinitionWizard.error.validationError.operationErrors", LocaleContextHolder.getLocale()));
         return response;
     }
 

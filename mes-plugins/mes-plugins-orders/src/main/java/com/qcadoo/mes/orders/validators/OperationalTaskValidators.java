@@ -43,6 +43,7 @@ import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.mes.orders.states.constants.OperationalTaskStateStringValues;
 import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
+import com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperationComponentFieldsTNFO;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -72,8 +73,32 @@ public class OperationalTaskValidators {
         isValid = checkIfFieldSet(operationalTaskDD, operationalTask) && isValid;
         isValid = checkIfAlreadyExists(operationalTaskDD, operationalTask) && isValid;
         isValid = checkWorkstationIsCorrect(operationalTaskDD, operationalTask) && isValid;
+        isValid = checkStaff(operationalTaskDD, operationalTask) && isValid;
 
         return isValid;
+    }
+
+    private boolean checkStaff(DataDefinition operationalTaskDD, Entity operationalTask) {
+        Entity technologyOperationComponent = operationalTask
+                .getBelongsToField(OperationalTaskFields.TECHNOLOGY_OPERATION_COMPONENT);
+        int actualStaff = operationalTask.getIntegerField(OperationalTaskFields.ACTUAL_STAFF);
+        int plannedStaff;
+        if (!Objects.isNull(technologyOperationComponent)) {
+            plannedStaff = technologyOperationComponent.getIntegerField(TechnologyOperationComponentFieldsTNFO.MIN_STAFF);
+        } else {
+            plannedStaff = 1;
+        }
+        if (plannedStaff > actualStaff) {
+            operationalTask.addError(operationalTaskDD.getField(OperationalTaskFields.ACTUAL_STAFF),
+                    "orders.operationalTask.error.plannedStaffBiggerThanActualStaff");
+            return false;
+        }
+        if (!(actualStaff % plannedStaff == 0)) {
+            operationalTask.addError(operationalTaskDD.getField(OperationalTaskFields.ACTUAL_STAFF),
+                    "orders.operationalTask.error.actualStaffMustBeMultiplePlannedStaff");
+            return false;
+        }
+        return true;
     }
 
     private boolean checkIfAlreadyExists(DataDefinition operationalTaskDD, Entity operationalTask) {
