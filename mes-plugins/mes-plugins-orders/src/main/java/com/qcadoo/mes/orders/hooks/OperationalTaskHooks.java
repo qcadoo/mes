@@ -71,7 +71,7 @@ public class OperationalTaskHooks {
         setStaff(operationalTask);
     }
 
-    private void setStaff(Entity operationalTask) {
+    private void setStaff(final Entity operationalTask) {
         Entity technologyOperationComponent = operationalTask
                 .getBelongsToField(OperationalTaskFields.TECHNOLOGY_OPERATION_COMPONENT);
         int plannedStaff;
@@ -91,13 +91,17 @@ public class OperationalTaskHooks {
             operationalTask.setField(OperationalTaskFields.STAFF, null);
         } else if (staff != null && actualStaff == 1) {
             operationalTask.setField(OperationalTaskFields.WORKERS, Collections.singletonList(staff));
-        } else {
+        } else if (staff == null && actualStaff == 1) {
             operationalTask.setField(OperationalTaskFields.WORKERS, Collections.emptyList());
         }
         if (!Objects.isNull(technologyOperationComponent) && actualStaff != plannedStaff && technologyOperationComponent
                 .getBooleanField(TechnologyOperationComponentFieldsTNFO.TJ_DECREASES_FOR_ENLARGED_STAFF)) {
             operationalTask.setField(OperationalTaskFields.FINISH_DATE,
                     getFinishDate(operationalTask, technologyOperationComponent));
+        }
+        if (actualStaff != operationalTask.getManyToManyField(OperationalTaskFields.WORKERS).size()) {
+            operationalTask.addGlobalMessage(
+                    "orders.operationalTask.error.workersQuantityDifferentThanActualStaff");
         }
     }
 
