@@ -3,19 +3,19 @@
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
  * Version: 1.4
- *
+ * <p>
  * This file is part of Qcadoo.
- *
+ * <p>
  * Qcadoo is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation; either version 3 of the License,
  * or (at your option) any later version.
- *
+ * <p>
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty
  * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU Affero General Public License for more details.
- *
+ * <p>
  * You should have received a copy of the GNU Affero General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
@@ -43,6 +43,7 @@ import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.mes.orders.states.constants.OperationalTaskStateStringValues;
 import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
+import com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperationComponentFieldsTNFO;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -72,8 +73,32 @@ public class OperationalTaskValidators {
         isValid = checkIfFieldSet(operationalTaskDD, operationalTask) && isValid;
         isValid = checkIfAlreadyExists(operationalTaskDD, operationalTask) && isValid;
         isValid = checkWorkstationIsCorrect(operationalTaskDD, operationalTask) && isValid;
+        isValid = checkStaff(operationalTaskDD, operationalTask) && isValid;
 
         return isValid;
+    }
+
+    private boolean checkStaff(DataDefinition operationalTaskDD, Entity operationalTask) {
+        Entity technologyOperationComponent = operationalTask
+                .getBelongsToField(OperationalTaskFields.TECHNOLOGY_OPERATION_COMPONENT);
+        int actualStaff = operationalTask.getIntegerField(OperationalTaskFields.ACTUAL_STAFF);
+        int plannedStaff;
+        if (!Objects.isNull(technologyOperationComponent)) {
+            plannedStaff = technologyOperationComponent.getIntegerField(TechnologyOperationComponentFieldsTNFO.MIN_STAFF);
+        } else {
+            plannedStaff = 1;
+        }
+        if (plannedStaff > actualStaff) {
+            operationalTask.addError(operationalTaskDD.getField(OperationalTaskFields.ACTUAL_STAFF),
+                    "orders.operationalTask.error.plannedStaffBiggerThanActualStaff");
+            return false;
+        }
+        if (actualStaff % plannedStaff != 0) {
+            operationalTask.addError(operationalTaskDD.getField(OperationalTaskFields.ACTUAL_STAFF),
+                    "orders.operationalTask.error.actualStaffMustBeMultiplePlannedStaff");
+            return false;
+        }
+        return true;
     }
 
     private boolean checkIfAlreadyExists(DataDefinition operationalTaskDD, Entity operationalTask) {

@@ -60,7 +60,7 @@ public class ChangeTechnologyParametersListeners {
     private static final Set<String> FIELDS_OPERATION = Sets.newHashSet(TPZ, TJ, PRODUCTION_IN_ONE_CYCLE,
             NEXT_OPERATION_AFTER_PRODUCED_TYPE, NEXT_OPERATION_AFTER_PRODUCED_QUANTITY, "nextOperationAfterProducedQuantityUNIT",
             TIME_NEXT_OPERATION, "machineUtilization", "laborUtilization", "productionInOneCycleUNIT",
-            "areProductQuantitiesDivisible", "isTjDivisible");
+            "areProductQuantitiesDivisible", "isTjDivisible", "minStaff", "tjDecreasesForEnlargedStaff");
 
     @Autowired
     private DataDefinitionService dataDefinitionService;

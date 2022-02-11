@@ -41,6 +41,8 @@ public class OperationalTaskOrderStateService {
 
     public static final String L_TYPE_OF_PRODUCTION_RECORDING = "typeOfProductionRecording";
 
+    public static final String ORDER_ID = "orderId";
+
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
@@ -64,18 +66,21 @@ public class OperationalTaskOrderStateService {
 
     public void startOperationalTask(StateChangeContext stateChangeContext) {
         try {
-            Entity order = stateChangeContext.getOwner();
-            Session currentSession = getCurrentSession();
-            String updateOTHQL = "UPDATE com.qcadoo.model.beans.orders.OrdersOperationalTask SET state = '02started' "
-                    + "WHERE order_id = :orderId";
-            Query updateOTQuery = currentSession.createQuery(updateOTHQL);
-            updateOTQuery.setLong("orderId", order.getId());
-            updateOTQuery.executeUpdate();
+            changeOperationalTaskState(stateChangeContext,
+                    "UPDATE com.qcadoo.model.beans.orders.OrdersOperationalTask SET state = '02started' WHERE order_id = :orderId");
         } catch (Exception exc) {
             stateChangeContext.addMessage("orders.operationalTask.error.startOperationalTask", StateMessageType.FAILURE);
             stateChangeContext.setStatus(StateChangeStatus.FAILURE);
             LOG.error("Error when start operational task.", exc);
         }
+    }
+
+    private void changeOperationalTaskState(StateChangeContext stateChangeContext, String updateOTHQL) {
+        Entity order = stateChangeContext.getOwner();
+        Session currentSession = getCurrentSession();
+        Query updateOTQuery = currentSession.createQuery(updateOTHQL);
+        updateOTQuery.setLong(ORDER_ID, order.getId());
+        updateOTQuery.executeUpdate();
     }
 
     private Session getCurrentSession() {
@@ -102,9 +107,13 @@ public class OperationalTaskOrderStateService {
                         .add(SearchRestrictions.belongsTo(OperationalTaskFields.SCHEDULE_POSITION, pos)).setMaxResults(1)
                         .uniqueResult();
                 if (Objects.nonNull(operationalTask)) {
-                    changeOperationalTaskState(userLogin, operationalTask,
-                            operationalTask.getStringField(OperationalTaskFields.STATE),
+                    Entity context = stateExecutorService.buildStateChangeEntity(operationalTaskStateChangeDescriber,
+                            operationalTask, userLogin, operationalTask.getStringField(OperationalTaskFields.STATE),
                             OperationalTaskStateStringValues.REJECTED, shift);
+                    context.setField("status", StateChangeStatus.SUCCESSFUL.getStringValue());
+                    context.getDataDefinition().fastSave(context);
+                    operationalTask.setField(OperationalTaskFields.STATE, OperationalTaskStateStringValues.REJECTED);
+                    operationalTask.getDataDefinition().fastSave(operationalTask);
                 }
             }
         } catch (Exception exc) {
@@ -114,24 +123,10 @@ public class OperationalTaskOrderStateService {
         }
     }
 
-    private void changeOperationalTaskState(String userLogin, Entity ot, String sourceState, String targetState, Entity shift) {
-        Entity context = stateExecutorService.buildStateChangeEntity(operationalTaskStateChangeDescriber, ot, userLogin,
-                sourceState, targetState, shift);
-        context.setField("status", StateChangeStatus.SUCCESSFUL.getStringValue());
-        context.getDataDefinition().fastSave(context);
-        ot.setField(OperationalTaskFields.STATE, targetState);
-        ot.getDataDefinition().fastSave(ot);
-    }
-
     public void rejectOperationalTask(StateChangeContext stateChangeContext) {
         try {
-            Entity order = stateChangeContext.getOwner();
-            Session currentSession = getCurrentSession();
-            String updateOTHQL = "UPDATE com.qcadoo.model.beans.orders.OrdersOperationalTask SET state = '04rejected' "
-                    + "WHERE order_id = :orderId";
-            Query updateOTQuery = currentSession.createQuery(updateOTHQL);
-            updateOTQuery.setLong("orderId", order.getId());
-            updateOTQuery.executeUpdate();
+            changeOperationalTaskState(stateChangeContext,
+                    "UPDATE com.qcadoo.model.beans.orders.OrdersOperationalTask SET state = '04rejected' WHERE order_id = :orderId");
         } catch (Exception exc) {
             stateChangeContext.addMessage("orders.operationalTask.error.rejectOperationalTask", StateMessageType.FAILURE);
             stateChangeContext.setStatus(StateChangeStatus.FAILURE);
@@ -142,13 +137,8 @@ public class OperationalTaskOrderStateService {
 
     public void finishOperationalTask(StateChangeContext stateChangeContext) {
         try {
-            Entity order = stateChangeContext.getOwner();
-            Session currentSession = getCurrentSession();
-            String updateOTHQL = "UPDATE com.qcadoo.model.beans.orders.OrdersOperationalTask SET state = '03finished' "
-                    + "WHERE order_id = :orderId AND state = '02started'";
-            Query updateOTQuery = currentSession.createQuery(updateOTHQL);
-            updateOTQuery.setLong("orderId", order.getId());
-            updateOTQuery.executeUpdate();
+            changeOperationalTaskState(stateChangeContext,
+                    "UPDATE com.qcadoo.model.beans.orders.OrdersOperationalTask SET state = '03finished' WHERE order_id = :orderId AND state = '02started'");
         } catch (Exception exc) {
             stateChangeContext.addMessage("orders.operationalTask.error.finishOperationalTask", StateMessageType.FAILURE);
             stateChangeContext.setStatus(StateChangeStatus.FAILURE);

@@ -31,6 +31,7 @@ import com.qcadoo.mes.orders.states.ScheduleServiceMarker;
 import com.qcadoo.mes.technologies.constants.OperationFields;
 import com.qcadoo.mes.technologies.constants.OperationSkillFields;
 import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
+import com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperationComponentFieldsTNFO;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.JoinType;
@@ -62,7 +63,10 @@ public class ScheduleDetailsListeners {
         Date scheduleStartTime = schedule.getDateField(ScheduleFields.START_TIME);
         for (Entity position : positions) {
             Entity workstation = position.getBelongsToField(SchedulePositionFields.WORKSTATION);
-            if (position.getIntegerField(SchedulePositionFields.MACHINE_WORK_TIME) == 0 || workstation == null) {
+            Entity technologyOperationComponent = position
+                    .getBelongsToField(SchedulePositionFields.TECHNOLOGY_OPERATION_COMPONENT);
+            if (position.getIntegerField(SchedulePositionFields.MACHINE_WORK_TIME) == 0 || workstation == null
+                    || technologyOperationComponent.getIntegerField(TechnologyOperationComponentFieldsTNFO.MIN_STAFF) > 1) {
                 continue;
             }
             if (ScheduleWorkerAssignCriterion.WORKSTATION_DEFAULT_OPERATOR.getStringValue()

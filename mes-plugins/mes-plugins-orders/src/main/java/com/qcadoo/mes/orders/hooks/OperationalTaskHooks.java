@@ -1,8 +1,12 @@
 package com.qcadoo.mes.orders.hooks;
 
+import java.math.BigDecimal;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
@@ -11,15 +15,24 @@ import org.springframework.stereotype.Service;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.qcadoo.mes.basic.ParameterService;
+import com.qcadoo.mes.basic.ShiftsService;
 import com.qcadoo.mes.newstates.StateExecutorService;
+import com.qcadoo.mes.operationTimeCalculations.OperationWorkTime;
+import com.qcadoo.mes.operationTimeCalculations.OperationWorkTimeService;
 import com.qcadoo.mes.orders.OperationalTasksService;
 import com.qcadoo.mes.orders.constants.OperationalTaskFields;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.states.OperationalTasksServiceMarker;
 import com.qcadoo.mes.orders.states.constants.OperationalTaskStateStringValues;
+import com.qcadoo.mes.productionLines.constants.WorkstationFieldsPL;
+import com.qcadoo.mes.technologies.ProductQuantitiesService;
 import com.qcadoo.mes.technologies.constants.OperationFields;
 import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
+import com.qcadoo.mes.timeNormsForOperations.constants.TechOperCompWorkstationTimeFields;
+import com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperationComponentFieldsTNFO;
+import com.qcadoo.model.api.BigDecimalUtils;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 
@@ -35,6 +48,15 @@ public class OperationalTaskHooks {
     @Autowired
     private ParameterService parameterService;
 
+    @Autowired
+    private ProductQuantitiesService productQuantitiesService;
+
+    @Autowired
+    private OperationWorkTimeService operationWorkTimeService;
+
+    @Autowired
+    private ShiftsService shiftsService;
+
     public void onCopy(final DataDefinition operationalTaskDD, final Entity operationalTask) {
         setInitialState(operationalTask);
     }
@@ -46,6 +68,97 @@ public class OperationalTaskHooks {
     public void onSave(final DataDefinition operationalTaskDD, final Entity operationalTask) {
         fillNameAndDescription(operationalTask);
         changeDateInOrder(operationalTask);
+        setStaff(operationalTask);
+    }
+
+    private void setStaff(final Entity operationalTask) {
+        Entity technologyOperationComponent = operationalTask
+                .getBelongsToField(OperationalTaskFields.TECHNOLOGY_OPERATION_COMPONENT);
+        int plannedStaff;
+        if (!Objects.isNull(technologyOperationComponent)) {
+            plannedStaff = technologyOperationComponent.getIntegerField(TechnologyOperationComponentFieldsTNFO.MIN_STAFF);
+        } else {
+            plannedStaff = 1;
+        }
+        Integer actualStaff = operationalTask.getIntegerField(OperationalTaskFields.ACTUAL_STAFF);
+        if (actualStaff == null) {
+            actualStaff = plannedStaff;
+            operationalTask.setField(OperationalTaskFields.ACTUAL_STAFF, plannedStaff);
+        }
+        List<Entity> workers = operationalTask.getManyToManyField(OperationalTaskFields.WORKERS);
+        Entity staff = operationalTask.getBelongsToField(OperationalTaskFields.STAFF);
+        if (workers.size() > 1 || actualStaff > 1 && workers.size() == 1) {
+            operationalTask.setField(OperationalTaskFields.STAFF, null);
+        } else if (staff != null && actualStaff == 1) {
+            operationalTask.setField(OperationalTaskFields.WORKERS, Collections.singletonList(staff));
+        } else if (staff == null && actualStaff == 1) {
+            operationalTask.setField(OperationalTaskFields.WORKERS, Collections.emptyList());
+        }
+        if (!Objects.isNull(technologyOperationComponent) && actualStaff != plannedStaff && technologyOperationComponent
+                .getBooleanField(TechnologyOperationComponentFieldsTNFO.TJ_DECREASES_FOR_ENLARGED_STAFF)) {
+            operationalTask.setField(OperationalTaskFields.FINISH_DATE,
+                    getFinishDate(operationalTask, technologyOperationComponent));
+        }
+        if (actualStaff != operationalTask.getManyToManyField(OperationalTaskFields.WORKERS).size()) {
+            operationalTask.addGlobalMessage(
+                    "orders.operationalTask.error.workersQuantityDifferentThanActualStaff");
+        }
+    }
+
+    private Date getFinishDate(Entity task, Entity technologyOperationComponent) {
+        Entity order = task.getBelongsToField(OperationalTaskFields.ORDER);
+        Entity workstation = task.getBelongsToField(OperationalTaskFields.WORKSTATION);
+        Date startDate = task.getDateField(OperationalTaskFields.START_DATE);
+        Entity parameter = parameterService.getParameter();
+        boolean includeTpz = parameter.getBooleanField("includeTpzSG");
+        Entity technology = technologyOperationComponent.getBelongsToField(TechnologyOperationComponentFields.TECHNOLOGY);
+        final Map<Long, BigDecimal> operationRuns = Maps.newHashMap();
+
+        productQuantitiesService.getProductComponentQuantities(technology, order.getDecimalField(OrderFields.PLANNED_QUANTITY),
+                operationRuns);
+
+        Optional<Entity> techOperCompWorkstationTime = getTechOperCompWorkstationTime(technologyOperationComponent, workstation);
+        Integer machineWorkTime;
+        Integer additionalTime;
+        Integer actualStaff = task.getIntegerField(OperationalTaskFields.ACTUAL_STAFF);
+        int plannedStaff = technologyOperationComponent.getIntegerField(TechnologyOperationComponentFieldsTNFO.MIN_STAFF);
+        BigDecimal staffFactor = BigDecimal.valueOf(actualStaff / plannedStaff);
+        if (techOperCompWorkstationTime.isPresent()) {
+            OperationWorkTime operationWorkTime = operationWorkTimeService.estimateTechOperationWorkTimeForWorkstation(
+                    technologyOperationComponent,
+                    BigDecimalUtils.convertNullToZero(operationRuns.get(technologyOperationComponent.getId())), includeTpz, false,
+                    techOperCompWorkstationTime.get(), staffFactor);
+            machineWorkTime = operationWorkTime.getMachineWorkTime();
+            additionalTime = techOperCompWorkstationTime.get()
+                    .getIntegerField(TechOperCompWorkstationTimeFields.TIME_NEXT_OPERATION);
+        } else {
+            OperationWorkTime operationWorkTime = operationWorkTimeService.estimateTechOperationWorkTime(
+                    technologyOperationComponent,
+                    BigDecimalUtils.convertNullToZero(operationRuns.get(technologyOperationComponent.getId())), includeTpz, false,
+                    false, staffFactor);
+            machineWorkTime = operationWorkTime.getMachineWorkTime();
+            additionalTime = technologyOperationComponent
+                    .getIntegerField(TechnologyOperationComponentFieldsTNFO.TIME_NEXT_OPERATION);
+        }
+
+        Entity productionLine = workstation.getBelongsToField(WorkstationFieldsPL.PRODUCTION_LINE);
+        Date finishDate = shiftsService.findDateToForProductionLine(startDate, machineWorkTime, productionLine);
+        if (parameter.getBooleanField("includeAdditionalTimeSG")) {
+            finishDate = Date.from(finishDate.toInstant().plusSeconds(additionalTime));
+        }
+        return finishDate;
+    }
+
+    private Optional<Entity> getTechOperCompWorkstationTime(Entity technologyOperationComponent, Entity workstation) {
+        List<Entity> techOperCompWorkstationTimes = technologyOperationComponent
+                .getHasManyField(TechnologyOperationComponentFieldsTNFO.TECH_OPER_COMP_WORKSTATION_TIMES);
+        for (Entity techOperCompWorkstationTime : techOperCompWorkstationTimes) {
+            if (techOperCompWorkstationTime.getBelongsToField(TechOperCompWorkstationTimeFields.WORKSTATION).getId()
+                    .equals(workstation.getId())) {
+                return Optional.of(techOperCompWorkstationTime);
+            }
+        }
+        return Optional.empty();
     }
 
     public void changeDateInOrder(Entity operationalTask) {
@@ -101,12 +214,12 @@ public class OperationalTaskHooks {
                 operationalTask.setField(OperationalTaskFields.NAME, operation.getStringField(OperationFields.NAME));
 
                 if (Objects.isNull(operationalTask.getId())) {
-                    boolean copyDescriptionFromProductionOrder = parameterService.getParameter().getBooleanField(
-                            "otCopyDescriptionFromProductionOrder");
+                    boolean copyDescriptionFromProductionOrder = parameterService.getParameter()
+                            .getBooleanField("otCopyDescriptionFromProductionOrder");
                     if (copyDescriptionFromProductionOrder) {
                         StringBuilder descriptionBuilder = new StringBuilder();
-                        descriptionBuilder.append(Strings.nullToEmpty(technologyOperationComponent
-                                .getStringField(TechnologyOperationComponentFields.COMMENT)));
+                        descriptionBuilder.append(Strings.nullToEmpty(
+                                technologyOperationComponent.getStringField(TechnologyOperationComponentFields.COMMENT)));
                         if (StringUtils.isNoneBlank(descriptionBuilder.toString())) {
                             descriptionBuilder.append("\n");
                         }
