@@ -139,7 +139,14 @@ public class OrdersFromMOProductsGenerationService {
 
                 Entity quantityRemainingToOrderResult = scb.setMaxResults(1).uniqueResult();
 
+                Entity positionDto = dataDefinitionService
+                        .get(MasterOrdersConstants.PLUGIN_IDENTIFIER, MasterOrdersConstants.MODEL_MASTER_ORDER_POSITION_DTO)
+                        .get(entry.getValue().get(0).getId());
+
+                BigDecimal minStateQuantity = positionDto.getDecimalField(MasterOrderPositionDtoFields.WAREHOUSE_MINIMUM_STATE_QUANTITY);
+
                 MasterOrderProduct masterOrderProduct = MasterOrderProduct.newMasterOrderProduct()
+                        .minStateQuantity(minStateQuantity)
                         .createCollectiveOrders(createCollectiveOrders).product(entry.getKey().getProduct())
                         .technology(entry.getKey().getTechnology()).groupedMasterOrderProduct(entry.getValue())
                         .quantityRemainingToOrder(quantityRemainingToOrderResult.getDecimalField("quantityRemainingToOrder"))
@@ -152,9 +159,14 @@ public class OrdersFromMOProductsGenerationService {
                 BigDecimal quantityRemainingToOrder = dataDefinitionService
                         .get(MasterOrdersConstants.PLUGIN_IDENTIFIER, MasterOrdersConstants.MODEL_MASTER_ORDER_POSITION_DTO)
                         .get(mop.getId()).getDecimalField(MasterOrderPositionDtoFields.QUANTITY_REMAINING_TO_ORDER_WITHOUT_STOCK);
+                Entity positionDto = dataDefinitionService
+                        .get(MasterOrdersConstants.PLUGIN_IDENTIFIER, MasterOrdersConstants.MODEL_MASTER_ORDER_POSITION_DTO)
+                        .get(mop.getId());
+                BigDecimal minStateQuantity = positionDto.getDecimalField(MasterOrderPositionDtoFields.WAREHOUSE_MINIMUM_STATE_QUANTITY);
 
                 MasterOrderProduct masterOrderProduct = MasterOrderProduct.newMasterOrderProduct()
                         .createCollectiveOrders(createCollectiveOrders)
+                        .minStateQuantity(minStateQuantity)
                         .product(mop.getBelongsToField(MasterOrderProductFields.PRODUCT))
                         .technology(mop.getBelongsToField(MasterOrderProductFields.TECHNOLOGY))
                         .masterOrder(mop.getBelongsToField(MasterOrderProductFields.MASTER_ORDER))
@@ -216,10 +228,7 @@ public class OrdersFromMOProductsGenerationService {
         }
 
         BigDecimal stockQuantity = BigDecimal.ZERO;
-        Entity positionDto = dataDefinitionService
-                .get(MasterOrdersConstants.PLUGIN_IDENTIFIER, MasterOrdersConstants.MODEL_MASTER_ORDER_POSITION_DTO)
-                .get(masterOrderProduct.getMasterOrderProduct().getId());
-        BigDecimal minStateQuantity = positionDto.getDecimalField(MasterOrderPositionDtoFields.WAREHOUSE_MINIMUM_STATE_QUANTITY);
+
 
         BigDecimal quantityRemainingToOrder = masterOrderProduct.getQuantityRemainingToOrder();
 
@@ -236,6 +245,8 @@ public class OrdersFromMOProductsGenerationService {
                 }
             }
         }
+
+        BigDecimal minStateQuantity = masterOrderProduct.getMinStateQuantity();
 
         if (onlyUpdateMasterOrderPosition(realizationFromStock, considerMinimumStockLevelWhenCreatingProductionOrders,
                 stockQuantity, minStateQuantity, quantityRemainingToOrder)) {
