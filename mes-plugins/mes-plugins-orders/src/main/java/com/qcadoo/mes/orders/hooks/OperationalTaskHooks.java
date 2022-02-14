@@ -141,7 +141,10 @@ public class OperationalTaskHooks {
                     .getIntegerField(TechnologyOperationComponentFieldsTNFO.TIME_NEXT_OPERATION);
         }
 
-        Entity productionLine = workstation.getBelongsToField(WorkstationFieldsPL.PRODUCTION_LINE);
+        Entity productionLine = null;
+        if (workstation != null) {
+            productionLine = workstation.getBelongsToField(WorkstationFieldsPL.PRODUCTION_LINE);
+        }
         Date finishDate = shiftsService.findDateToForProductionLine(startDate, machineWorkTime, productionLine);
         if (parameter.getBooleanField("includeAdditionalTimeSG")) {
             finishDate = Date.from(finishDate.toInstant().plusSeconds(additionalTime));
