@@ -280,6 +280,16 @@
                            plugin="materialFlowResources"/>
         </model:model-field>
 
+        <model:model-hook plugin="basic" model="parameter">
+            <model:onCreate class="com.qcadoo.mes.materialFlowResources.hooks.ParametersHooksMFR"
+                                 method="onCreate"/>
+        </model:model-hook>
+
+        <model:model-hook plugin="basic" model="parameter">
+            <model:validatesWith class="com.qcadoo.mes.materialFlowResources.hooks.ParametersHooksMFR"
+                            method="validatesWith"/>
+        </model:model-hook>
+
         <model:model-hook plugin="materialFlow" model="location">
             <model:validatesWith class="com.qcadoo.mes.materialFlowResources.validators.LocationValidators"
                                  method="validatesWith"/>
@@ -297,6 +307,7 @@
 
         <model:model-enum-value plugin="basic" model="log" enum="logType" value="document"/>
         <model:model-enum-value plugin="basic" model="log" enum="logType" value="positionImport"/>
+        <model:model-enum-value plugin="basic" model="log" enum="logType" value="costNorms"/>
 
         <menu:menu-item name="resources" category="materialFlow"
                         view="resourcesList" defaultAuthorizationRole="ROLE_RESOURCES"/>

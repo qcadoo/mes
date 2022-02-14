@@ -48,18 +48,18 @@ public class CostNormsGeneratorListeners {
     private CostNormsService costNormsService;
 
     public void updateCostNorms(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        FormComponent generatorForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
+        FormComponent costNormsGeneratorForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
-        Entity generator = generatorForm.getPersistedEntityWithIncludedFormValues();
+        Entity costNormsGenerator = costNormsGeneratorForm.getPersistedEntityWithIncludedFormValues();
 
-        String costsSource = generator.getStringField(CostNormsGeneratorFields.COSTS_SOURCE);
+        String costsSource = costNormsGenerator.getStringField(CostNormsGeneratorFields.COSTS_SOURCE);
 
-        boolean allProducts = ProductsToUpdate.of(generator).compareTo(ProductsToUpdate.ALL) == 0;
+        boolean allProducts = ProductsToUpdate.of(costNormsGenerator).compareTo(ProductsToUpdate.ALL) == 0;
 
         List<Entity> products = Lists.newArrayList();
 
         if (!allProducts) {
-            products = generator.getHasManyField(CostNormsGeneratorFields.PRODUCTS);
+            products = costNormsGenerator.getHasManyField(CostNormsGeneratorFields.PRODUCTS);
 
             if (products.isEmpty()) {
                 view.addMessage("materialFlowResources.info.costNormsNotUpdated", ComponentState.MessageType.INFO);
@@ -71,7 +71,7 @@ public class CostNormsGeneratorListeners {
         List<Entity> warehouses = Lists.newArrayList();
 
         if ("01mes".equals(costsSource)) {
-            warehouses = generator.getHasManyField(CostNormsGeneratorFields.WAREHOUSES).stream()
+            warehouses = costNormsGenerator.getHasManyField(CostNormsGeneratorFields.WAREHOUSES).stream()
                     .map(warehouse -> warehouse.getBelongsToField(CostNormsLocationFields.LOCATION)).collect(Collectors.toList());
         }
 
@@ -81,19 +81,19 @@ public class CostNormsGeneratorListeners {
     }
 
     public void toggleProductsGrid(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        FormComponent generatorForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
+        FormComponent costNormsGeneratorForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         GridComponent productsGrid = (GridComponent) view.getComponentByReference(CostNormsGeneratorFields.PRODUCTS);
 
-        Entity generator = generatorForm.getPersistedEntityWithIncludedFormValues();
+        Entity costNormsGenerator = costNormsGeneratorForm.getPersistedEntityWithIncludedFormValues();
 
-        boolean gridVisible = ProductsToUpdate.of(generator).compareTo(ProductsToUpdate.SELECTED) == 0;
+        boolean gridVisible = ProductsToUpdate.of(costNormsGenerator).compareTo(ProductsToUpdate.SELECTED) == 0;
 
         productsGrid.setVisible(gridVisible);
 
         if (!gridVisible) {
-            generator.setField(CostNormsGeneratorFields.PRODUCTS, null);
+            costNormsGenerator.setField(CostNormsGeneratorFields.PRODUCTS, null);
 
-            generatorForm.setEntity(generator);
+            costNormsGeneratorForm.setEntity(costNormsGenerator);
         }
     }
 
