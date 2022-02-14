@@ -122,11 +122,9 @@ public class OperationalTasksDetailsHooks {
         }
         staff.setEnabled(actualStaff == 1);
         workersGrid.setEnabled(actualStaff != 1);
-        if (view.isViewAfterRedirect()) {
-            if (actualStaff != workersGrid.getEntities().size()) {
-                view.addMessage(
-                        "orders.operationalTask.error.workersQuantityDifferentThanActualStaff", ComponentState.MessageType.INFO);
-            }
+        if (view.isViewAfterRedirect() && actualStaff != workersGrid.getEntities().size()) {
+            view.addMessage(
+                    "orders.operationalTask.error.workersQuantityDifferentThanActualStaff", ComponentState.MessageType.INFO);
         }
     }
 

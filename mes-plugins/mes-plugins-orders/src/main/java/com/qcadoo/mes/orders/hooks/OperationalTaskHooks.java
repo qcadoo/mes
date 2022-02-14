@@ -122,7 +122,7 @@ public class OperationalTaskHooks {
         Integer additionalTime;
         Integer actualStaff = task.getIntegerField(OperationalTaskFields.ACTUAL_STAFF);
         int plannedStaff = technologyOperationComponent.getIntegerField(TechnologyOperationComponentFieldsTNFO.MIN_STAFF);
-        BigDecimal staffFactor = BigDecimal.valueOf(actualStaff / plannedStaff);
+        BigDecimal staffFactor = BigDecimal.valueOf(plannedStaff / actualStaff);
         if (techOperCompWorkstationTime.isPresent()) {
             OperationWorkTime operationWorkTime = operationWorkTimeService.estimateTechOperationWorkTimeForWorkstation(
                     technologyOperationComponent,

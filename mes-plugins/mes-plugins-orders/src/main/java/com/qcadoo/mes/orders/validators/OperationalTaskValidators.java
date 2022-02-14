@@ -81,19 +81,19 @@ public class OperationalTaskValidators {
     private boolean checkStaff(DataDefinition operationalTaskDD, Entity operationalTask) {
         Entity technologyOperationComponent = operationalTask
                 .getBelongsToField(OperationalTaskFields.TECHNOLOGY_OPERATION_COMPONENT);
-        int actualStaff = operationalTask.getIntegerField(OperationalTaskFields.ACTUAL_STAFF);
+        Integer actualStaff = operationalTask.getIntegerField(OperationalTaskFields.ACTUAL_STAFF);
         int plannedStaff;
         if (!Objects.isNull(technologyOperationComponent)) {
             plannedStaff = technologyOperationComponent.getIntegerField(TechnologyOperationComponentFieldsTNFO.MIN_STAFF);
         } else {
             plannedStaff = 1;
         }
-        if (plannedStaff > actualStaff) {
+        if (actualStaff != null && plannedStaff > actualStaff) {
             operationalTask.addError(operationalTaskDD.getField(OperationalTaskFields.ACTUAL_STAFF),
                     "orders.operationalTask.error.plannedStaffBiggerThanActualStaff");
             return false;
         }
-        if (actualStaff % plannedStaff != 0) {
+        if (actualStaff != null && actualStaff % plannedStaff != 0) {
             operationalTask.addError(operationalTaskDD.getField(OperationalTaskFields.ACTUAL_STAFF),
                     "orders.operationalTask.error.actualStaffMustBeMultiplePlannedStaff");
             return false;
