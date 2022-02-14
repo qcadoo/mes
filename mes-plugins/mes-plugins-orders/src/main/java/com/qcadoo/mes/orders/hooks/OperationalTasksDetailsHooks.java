@@ -121,7 +121,6 @@ public class OperationalTasksDetailsHooks {
             staff.setFieldValue(null);
         }
         staff.setEnabled(actualStaff == 1);
-        workersGrid.setEnabled(actualStaff != 1);
         if (view.isViewAfterRedirect() && actualStaff != workersGrid.getEntities().size()) {
             view.addMessage(
                     "orders.operationalTask.error.workersQuantityDifferentThanActualStaff", ComponentState.MessageType.INFO);
