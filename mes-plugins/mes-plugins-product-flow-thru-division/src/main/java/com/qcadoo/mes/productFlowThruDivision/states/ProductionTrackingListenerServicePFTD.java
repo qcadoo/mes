@@ -335,14 +335,12 @@ public final class ProductionTrackingListenerServicePFTD {
                     .setMaxResults(1).uniqueResult();
 
             if (Objects.nonNull(existingInboundDocument)) {
-                if (Objects.nonNull(finalProductRecord)) {
-                    Entity inboundForFinalProduct = updateInternalInboundDocumentForFinalProducts(order, existingInboundDocument,
-                            finalProductRecord);
-
-                    if (Objects.nonNull(inboundForFinalProduct) && !inboundForFinalProduct.isValid()
-                            || intermediateRecords.isEmpty()) {
-                        return inboundForFinalProduct;
-                    }
+                if(Objects.nonNull(finalProductRecord)) {
+                    return updateInternalInboundDocumentForFinalProducts(order, existingInboundDocument,
+                            finalProductRecord, true);
+                } else {
+                    return updateInternalInboundDocumentForFinalProducts(order, existingInboundDocument,
+                            intermediateRecords, false);
                 }
             } else {
                 if (Objects.nonNull(finalProductRecord)) {
@@ -363,7 +361,7 @@ public final class ProductionTrackingListenerServicePFTD {
     }
 
     private Entity updateInternalInboundDocumentForFinalProducts(final Entity order, final Entity existingInboundDocument,
-            final Collection<Entity> outProductsRecords) {
+            final Collection<Entity> outProductsRecords, boolean isFinalProduct) {
         DataDefinition positionDD = getPositionDD();
 
         List<Entity> positions = Lists.newArrayList(existingInboundDocument.getHasManyField(DocumentFields.POSITIONS));
@@ -372,6 +370,10 @@ public final class ProductionTrackingListenerServicePFTD {
             Entity outProduct = outProductRecord.getBelongsToField(TrackingOperationProductOutComponentFields.PRODUCT);
             Entity outBatch = outProductRecord.getBelongsToField(TrackingOperationProductOutComponentFields.PRODUCTION_TRACKING)
                     .getBelongsToField(ProductionTrackingFields.BATCH);
+            if(!isFinalProduct) {
+                outBatch = null;
+            }
+
             Entity storageLocation = outProductRecord
                     .getBelongsToField(TrackingOperationProductOutComponentFields.STORAGE_LOCATION);
             Entity palletNumber = outProductRecord
