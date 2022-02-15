@@ -35,6 +35,7 @@ import com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperationCompon
 import com.qcadoo.model.api.BigDecimalUtils;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.NumberService;
 
 @Service
 public class OperationalTaskHooks {
@@ -56,6 +57,9 @@ public class OperationalTaskHooks {
 
     @Autowired
     private ShiftsService shiftsService;
+
+    @Autowired
+    private NumberService numberService;
 
     public void onCopy(final DataDefinition operationalTaskDD, final Entity operationalTask) {
         setInitialState(operationalTask);
@@ -122,7 +126,7 @@ public class OperationalTaskHooks {
         Integer additionalTime;
         Integer actualStaff = task.getIntegerField(OperationalTaskFields.ACTUAL_STAFF);
         int plannedStaff = technologyOperationComponent.getIntegerField(TechnologyOperationComponentFieldsTNFO.MIN_STAFF);
-        BigDecimal staffFactor = BigDecimal.valueOf(actualStaff / plannedStaff);
+        BigDecimal staffFactor = BigDecimal.valueOf(plannedStaff).divide(BigDecimal.valueOf(actualStaff), numberService.getMathContext());
         if (techOperCompWorkstationTime.isPresent()) {
             OperationWorkTime operationWorkTime = operationWorkTimeService.estimateTechOperationWorkTimeForWorkstation(
                     technologyOperationComponent,
@@ -141,7 +145,10 @@ public class OperationalTaskHooks {
                     .getIntegerField(TechnologyOperationComponentFieldsTNFO.TIME_NEXT_OPERATION);
         }
 
-        Entity productionLine = workstation.getBelongsToField(WorkstationFieldsPL.PRODUCTION_LINE);
+        Entity productionLine = null;
+        if (workstation != null) {
+            productionLine = workstation.getBelongsToField(WorkstationFieldsPL.PRODUCTION_LINE);
+        }
         Date finishDate = shiftsService.findDateToForProductionLine(startDate, machineWorkTime, productionLine);
         if (parameter.getBooleanField("includeAdditionalTimeSG")) {
             finishDate = Date.from(finishDate.toInstant().plusSeconds(additionalTime));

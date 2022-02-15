@@ -25,38 +25,38 @@
 
 -->
 <beans xmlns="http://www.springframework.org/schema/beans"
-       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xmlns:context="http://www.springframework.org/schema/context"
-       xsi:schemaLocation="
+	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	   xmlns:context="http://www.springframework.org/schema/context"
+	   xsi:schemaLocation="
 		http://www.springframework.org/schema/beans 
 		http://www.springframework.org/schema/beans/spring-beans-3.0.xsd 
 		http://www.springframework.org/schema/context 
 		http://www.springframework.org/schema/context/spring-context-3.0.xsd">
 
-    <context:component-scan base-package="com.qcadoo.mes.materialFlowResources">
-        <context:exclude-filter type="annotation"
-                                expression="org.springframework.stereotype.Controller"/>
-    </context:component-scan>
+	<context:component-scan base-package="com.qcadoo.mes.materialFlowResources">
+		<context:exclude-filter type="annotation"
+								expression="org.springframework.stereotype.Controller"/>
+	</context:component-scan>
 
-    <bean id="cleanReservationsTrigger" class="org.springframework.scheduling.quartz.CronTriggerBean">
-        <property name="jobDetail" ref="cleanReservations"/>
-        <property name="cronExpression" value="0 0 2 * * ?"/>
-    </bean>
+	<bean id="cleanReservationsTrigger" class="org.springframework.scheduling.quartz.CronTriggerBean">
+		<property name="jobDetail" ref="cleanReservations"/>
+		<property name="cronExpression" value="0 0 2 * * ?"/>
+	</bean>
 
-    <bean id="cleanReservations"
-          class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
-        <property name="targetObject" ref="reservationsService"/>
-        <property name="targetMethod" value="cleanReservationsTrigger"/>
-    </bean>
+	<bean id="cleanReservations"
+		  class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<property name="targetObject" ref="reservationsService"/>
+		<property name="targetMethod" value="cleanReservationsTrigger"/>
+	</bean>
 
-    <bean id="automaticCostNormsTrigger" class="org.springframework.scheduling.quartz.CronTriggerBean">
-        <property name="jobDetail" ref="automaticCostNorms"/>
-        <property name="cronExpression" value="0 0 3 * * ?"/>
-    </bean>
+	<bean id="automaticCostNormsTrigger" class="org.springframework.scheduling.quartz.CronTriggerBean">
+		<property name="jobDetail" ref="automaticCostNorms"/>
+		<property name="cronExpression" value="0 0 3 * * ?"/>
+	</bean>
 
-    <bean id="automaticCostNorms"
-          class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
-        <property name="targetObject" ref="costNormsServiceImpl"/>
-        <property name="targetMethod" value="automaticCostNormsTrigger"/>
-    </bean>
+	<bean id="automaticCostNorms"
+		  class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<property name="targetObject" ref="costNormsServiceImpl"/>
+		<property name="targetMethod" value="automaticCostNormsTrigger"/>
+	</bean>
 </beans>

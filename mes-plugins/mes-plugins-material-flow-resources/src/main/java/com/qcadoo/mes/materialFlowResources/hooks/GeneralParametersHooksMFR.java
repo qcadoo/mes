@@ -48,11 +48,14 @@ public class GeneralParametersHooksMFR {
 
         Entity parameter = parameterForm.getPersistedEntityWithIncludedFormValues();
 
+        String costsSource = parameter.getStringField(ParameterFieldsMFR.COSTS_SOURCE);
+
         boolean automaticUpdateCostNorms = parameter.getBooleanField(ParameterFieldsMFR.AUTOMATIC_UPDATE_COST_NORMS);
+        boolean costsSourceIsMes = "01mes".equals(costsSource);
 
         costsSourceField.setEnabled(automaticUpdateCostNorms);
         costsSourceField.requestComponentUpdateState();
-        warehousesADL.setEnabled(automaticUpdateCostNorms);
+        warehousesADL.setEnabled(automaticUpdateCostNorms && costsSourceIsMes);
         warehousesADL.requestComponentUpdateState();
         warehousesADL.getFormComponents().forEach(formComponent -> formComponent.setFormEnabled(automaticUpdateCostNorms));
     }
