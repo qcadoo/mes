@@ -184,12 +184,14 @@
 
             <option type="column" name="salesPlanName" fields="salesPlanName" width="100"/>
 
+            <option type="column" name="warehouseOrder" fields="warehouseOrder" width="50"/>
+
             <option type="order" column="name" direction="asc"/>
 
             <option type="searchable"
-                    value="masterOrderDefinitionNumber,number,name,externalNumber,deadline,company,companyCategory,description,companyPayer,masterOrderState,orderedPositionQuantity,commissionedPositionQuantity,quantityForCommission,state,salesPlanName"/>
+                    value="masterOrderDefinitionNumber,number,name,externalNumber,deadline,company,companyCategory,description,companyPayer,masterOrderState,orderedPositionQuantity,commissionedPositionQuantity,quantityForCommission,state,salesPlanName,warehouseOrder"/>
             <option type="orderable"
-                    value="masterOrderDefinitionNumber,number,name,externalNumber,deadline,company,companyCategory,description,companyPayer,masterOrderState,state,salesPlanName"/>
+                    value="masterOrderDefinitionNumber,number,name,externalNumber,deadline,company,companyCategory,description,companyPayer,masterOrderState,state,salesPlanName,warehouseOrder"/>
 
             <option type="footerRow" value="true"/>
             <option type="columnsToSummary"
