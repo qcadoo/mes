@@ -24,6 +24,7 @@ import com.qcadoo.mes.operationTimeCalculations.OperationWorkTimeService;
 import com.qcadoo.mes.orders.OperationalTasksService;
 import com.qcadoo.mes.orders.constants.OperationalTaskFields;
 import com.qcadoo.mes.orders.constants.OrderFields;
+import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.mes.orders.states.OperationalTasksServiceMarker;
 import com.qcadoo.mes.orders.states.constants.OperationalTaskStateStringValues;
 import com.qcadoo.mes.productionLines.constants.WorkstationFieldsPL;
@@ -34,6 +35,7 @@ import com.qcadoo.mes.timeNormsForOperations.constants.TechOperCompWorkstationTi
 import com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperationComponentFieldsTNFO;
 import com.qcadoo.model.api.BigDecimalUtils;
 import com.qcadoo.model.api.DataDefinition;
+import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
 
@@ -60,6 +62,9 @@ public class OperationalTaskHooks {
 
     @Autowired
     private NumberService numberService;
+
+    @Autowired
+    private DataDefinitionService dataDefinitionService;
 
     public void onCopy(final DataDefinition operationalTaskDD, final Entity operationalTask) {
         setInitialState(operationalTask);
@@ -98,10 +103,19 @@ public class OperationalTaskHooks {
         } else if (staff == null && actualStaff == 1) {
             operationalTask.setField(OperationalTaskFields.WORKERS, Collections.emptyList());
         }
-        if (!Objects.isNull(technologyOperationComponent) && actualStaff != plannedStaff && technologyOperationComponent
+
+        if (!Objects.isNull(technologyOperationComponent) && technologyOperationComponent
                 .getBooleanField(TechnologyOperationComponentFieldsTNFO.TJ_DECREASES_FOR_ENLARGED_STAFF)) {
-            operationalTask.setField(OperationalTaskFields.FINISH_DATE,
-                    getFinishDate(operationalTask, technologyOperationComponent));
+            Entity operationalTaskDB = null;
+            if (operationalTask.getId() != null) {
+                operationalTaskDB = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER,
+                        OrdersConstants.MODEL_OPERATIONAL_TASK).get(operationalTask.getId());
+            }
+            if (operationalTask.getId() == null && actualStaff != plannedStaff || operationalTaskDB != null
+                    && actualStaff != operationalTaskDB.getIntegerField(OperationalTaskFields.ACTUAL_STAFF).intValue()) {
+                operationalTask.setField(OperationalTaskFields.FINISH_DATE,
+                        getFinishDate(operationalTask, technologyOperationComponent));
+            }
         }
         if (actualStaff != operationalTask.getManyToManyField(OperationalTaskFields.WORKERS).size()) {
             operationalTask.addGlobalMessage(
