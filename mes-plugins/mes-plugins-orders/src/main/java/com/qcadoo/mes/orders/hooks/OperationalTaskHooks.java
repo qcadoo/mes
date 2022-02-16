@@ -96,21 +96,21 @@ public class OperationalTaskHooks {
         }
         List<Entity> workers = operationalTask.getManyToManyField(OperationalTaskFields.WORKERS);
         Entity staff = operationalTask.getBelongsToField(OperationalTaskFields.STAFF);
-        if (workers.size() > 1 || actualStaff > 1 && workers.size() == 1) {
+        Entity operationalTaskDB = null;
+        if (operationalTask.getId() != null) {
+            operationalTaskDB = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER,
+                    OrdersConstants.MODEL_OPERATIONAL_TASK).get(operationalTask.getId());
+        }
+        if (workers.size() > 1 || workers.size() == 0 && operationalTaskDB != null && operationalTaskDB.getManyToManyField(OperationalTaskFields.WORKERS).size() > 0) {
             operationalTask.setField(OperationalTaskFields.STAFF, null);
-        } else if (staff != null && actualStaff == 1) {
+        } else if (staff != null && workers.size() <= 1) {
             operationalTask.setField(OperationalTaskFields.WORKERS, Collections.singletonList(staff));
-        } else if (staff == null && actualStaff == 1) {
-            operationalTask.setField(OperationalTaskFields.WORKERS, Collections.emptyList());
+        } else if (staff == null && workers.size() == 1) {
+            operationalTask.setField(OperationalTaskFields.STAFF, workers.get(0));
         }
 
         if (!Objects.isNull(technologyOperationComponent) && technologyOperationComponent
                 .getBooleanField(TechnologyOperationComponentFieldsTNFO.TJ_DECREASES_FOR_ENLARGED_STAFF)) {
-            Entity operationalTaskDB = null;
-            if (operationalTask.getId() != null) {
-                operationalTaskDB = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER,
-                        OrdersConstants.MODEL_OPERATIONAL_TASK).get(operationalTask.getId());
-            }
             if (operationalTask.getId() == null && actualStaff != plannedStaff || operationalTaskDB != null
                     && actualStaff != operationalTaskDB.getIntegerField(OperationalTaskFields.ACTUAL_STAFF).intValue()) {
                 operationalTask.setField(OperationalTaskFields.FINISH_DATE,

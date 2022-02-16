@@ -117,10 +117,12 @@ public class OperationalTasksDetailsHooks {
         }
         int actualStaff = Integer.parseInt((String) actualStaffField.getFieldValue());
         FieldComponent staff = (FieldComponent) view.getComponentByReference(OperationalTaskFields.STAFF);
-        if (actualStaff != 1) {
+        if (workersGrid.getEntities().size() != 1) {
             staff.setFieldValue(null);
+        } else {
+            staff.setFieldValue(workersGrid.getEntities().get(0).getId());
         }
-        staff.setEnabled(actualStaff == 1);
+        staff.setEnabled(workersGrid.getEntities().size() <= 1);
         if (view.isViewAfterRedirect() && actualStaff != workersGrid.getEntities().size()) {
             view.addMessage(
                     "orders.operationalTask.error.workersQuantityDifferentThanActualStaff", ComponentState.MessageType.INFO);
