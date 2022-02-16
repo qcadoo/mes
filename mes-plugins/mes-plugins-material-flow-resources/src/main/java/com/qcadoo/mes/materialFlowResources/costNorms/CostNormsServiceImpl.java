@@ -105,38 +105,40 @@ public class CostNormsServiceImpl implements CostNormsService {
 
 			@Override
 			public void invoke() {
-				logService.add(LogService.Builder
-						.info(L_COST_NORMS, translationService.translate(L_MATERIAL_FLOW_RESOURCES_UPDATE_COST_NORMS_INFO,
-								LocaleContextHolder.getLocale())).withMessage(
-								translationService.translate(L_MATERIAL_FLOW_RESOURCES_UPDATE_COST_NORMS_START_UPDATE,
-										LocaleContextHolder.getLocale())));
-
-				updateCostNorms();
-
-				logService.add(LogService.Builder
-						.info(L_COST_NORMS, translationService.translate(L_MATERIAL_FLOW_RESOURCES_UPDATE_COST_NORMS_INFO,
-								LocaleContextHolder.getLocale())).withMessage(
-								translationService.translate(L_MATERIAL_FLOW_RESOURCES_UPDATE_COST_NORMS_STOP_UPDATE,
-										LocaleContextHolder.getLocale())));
+				automaticCostNorms();
 			}
 
 		});
 	}
 
-	private void updateCostNorms() {
+	private void automaticCostNorms() {
 		Entity parameter = parameterService.getParameter();
 
 		if (parameter.getBooleanField(ParameterFieldsMFR.AUTOMATIC_UPDATE_COST_NORMS)) {
-			String costsSource = parameter.getStringField(ParameterFieldsMFR.COSTS_SOURCE);
+			logService.add(LogService.Builder
+					.info(L_COST_NORMS, translationService.translate(L_MATERIAL_FLOW_RESOURCES_UPDATE_COST_NORMS_INFO,
+							LocaleContextHolder.getLocale())).withMessage(
+							translationService.translate(L_MATERIAL_FLOW_RESOURCES_UPDATE_COST_NORMS_START_UPDATE,
+									LocaleContextHolder.getLocale())));
 
+			updateCostNorms(parameter);
+
+			logService.add(LogService.Builder
+					.info(L_COST_NORMS, translationService.translate(L_MATERIAL_FLOW_RESOURCES_UPDATE_COST_NORMS_INFO,
+							LocaleContextHolder.getLocale())).withMessage(
+							translationService.translate(L_MATERIAL_FLOW_RESOURCES_UPDATE_COST_NORMS_STOP_UPDATE,
+									LocaleContextHolder.getLocale())));
+		}
+	}
+
+	private void updateCostNorms(final Entity parameter) {
+		String costsSource = parameter.getStringField(ParameterFieldsMFR.COSTS_SOURCE);
+
+		if ("01mes".equals(costsSource)) {
 			List<Entity> products = Lists.newArrayList();
-			List<Entity> warehouses = Lists.newArrayList();
-
-			if ("01mes".equals(costsSource)) {
-				warehouses = parameter.getHasManyField(ParameterFieldsMFR.WAREHOUSES).stream()
-						.map(warehouse -> warehouse.getBelongsToField(CostNormsLocationFields.LOCATION))
-						.collect(Collectors.toList());
-			}
+			List<Entity> warehouses = parameter.getHasManyField(ParameterFieldsMFR.WAREHOUSES).stream()
+					.map(warehouse -> warehouse.getBelongsToField(CostNormsLocationFields.LOCATION))
+					.collect(Collectors.toList());
 
 			updateCostNormsForProductsFromWarehouses(products, warehouses);
 		}

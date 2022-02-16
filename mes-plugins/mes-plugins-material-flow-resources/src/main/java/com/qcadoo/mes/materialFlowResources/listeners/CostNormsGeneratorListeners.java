@@ -54,28 +54,26 @@ public class CostNormsGeneratorListeners {
 
         String costsSource = costNormsGenerator.getStringField(CostNormsGeneratorFields.COSTS_SOURCE);
 
-        boolean allProducts = ProductsToUpdate.of(costNormsGenerator).compareTo(ProductsToUpdate.ALL) == 0;
-
-        List<Entity> products = Lists.newArrayList();
-
-        if (!allProducts) {
-            products = costNormsGenerator.getHasManyField(CostNormsGeneratorFields.PRODUCTS);
-
-            if (products.isEmpty()) {
-                view.addMessage("materialFlowResources.info.costNormsNotUpdated", ComponentState.MessageType.INFO);
-
-                return;
-            }
-        }
-
-        List<Entity> warehouses = Lists.newArrayList();
-
         if ("01mes".equals(costsSource)) {
-            warehouses = costNormsGenerator.getHasManyField(CostNormsGeneratorFields.WAREHOUSES).stream()
-                    .map(warehouse -> warehouse.getBelongsToField(CostNormsLocationFields.LOCATION)).collect(Collectors.toList());
-        }
+            boolean allProducts = ProductsToUpdate.of(costNormsGenerator).compareTo(ProductsToUpdate.ALL) == 0;
 
-        costNormsService.updateCostNormsForProductsFromWarehouses(products, warehouses);
+            List<Entity> products = Lists.newArrayList();
+
+            if (!allProducts) {
+                products = costNormsGenerator.getHasManyField(CostNormsGeneratorFields.PRODUCTS);
+
+                if (products.isEmpty()) {
+                    view.addMessage("materialFlowResources.info.costNormsNotUpdated", ComponentState.MessageType.INFO);
+
+                    return;
+                }
+            }
+
+            List<Entity> warehouses = costNormsGenerator.getHasManyField(CostNormsGeneratorFields.WAREHOUSES).stream()
+                    .map(warehouse -> warehouse.getBelongsToField(CostNormsLocationFields.LOCATION)).collect(Collectors.toList());
+
+            costNormsService.updateCostNormsForProductsFromWarehouses(products, warehouses);
+        }
 
         view.addMessage("materialFlowResources.success.costNormsUpdated", ComponentState.MessageType.SUCCESS);
     }
