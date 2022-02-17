@@ -80,7 +80,7 @@ public class OperationalTaskHooks {
         setStaff(operationalTask);
     }
 
-    private void setStaff(final Entity operationalTask) {
+    public void setStaff(final Entity operationalTask) {
         Entity technologyOperationComponent = operationalTask
                 .getBelongsToField(OperationalTaskFields.TECHNOLOGY_OPERATION_COMPONENT);
         int plannedStaff;
