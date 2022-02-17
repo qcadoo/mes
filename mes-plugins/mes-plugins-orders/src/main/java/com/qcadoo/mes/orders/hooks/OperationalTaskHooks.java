@@ -101,7 +101,8 @@ public class OperationalTaskHooks {
             operationalTaskDB = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER,
                     OrdersConstants.MODEL_OPERATIONAL_TASK).get(operationalTask.getId());
         }
-        if (workers.size() > 1 || workers.size() == 0 && operationalTaskDB != null && operationalTaskDB.getManyToManyField(OperationalTaskFields.WORKERS).size() > 0) {
+        if (workers.size() > 1 || workers.isEmpty() && operationalTaskDB != null
+                && !operationalTaskDB.getManyToManyField(OperationalTaskFields.WORKERS).isEmpty()) {
             operationalTask.setField(OperationalTaskFields.STAFF, null);
         } else if (staff != null && workers.size() <= 1) {
             operationalTask.setField(OperationalTaskFields.WORKERS, Collections.singletonList(staff));
@@ -110,12 +111,13 @@ public class OperationalTaskHooks {
         }
 
         if (!Objects.isNull(technologyOperationComponent) && technologyOperationComponent
-                .getBooleanField(TechnologyOperationComponentFieldsTNFO.TJ_DECREASES_FOR_ENLARGED_STAFF)) {
-            if (operationalTask.getId() == null && actualStaff != plannedStaff || operationalTaskDB != null
-                    && actualStaff != operationalTaskDB.getIntegerField(OperationalTaskFields.ACTUAL_STAFF).intValue()) {
-                operationalTask.setField(OperationalTaskFields.FINISH_DATE,
-                        getFinishDate(operationalTask, technologyOperationComponent));
-            }
+                .getBooleanField(TechnologyOperationComponentFieldsTNFO.TJ_DECREASES_FOR_ENLARGED_STAFF) &&
+                (operationalTask.getId() == null && actualStaff != plannedStaff || operationalTaskDB != null &&
+                        (operationalTaskDB.getIntegerField(OperationalTaskFields.ACTUAL_STAFF) == null && actualStaff != plannedStaff
+                                || operationalTaskDB.getIntegerField(OperationalTaskFields.ACTUAL_STAFF) != null
+                                && actualStaff != operationalTaskDB.getIntegerField(OperationalTaskFields.ACTUAL_STAFF).intValue()))) {
+            operationalTask.setField(OperationalTaskFields.FINISH_DATE,
+                    getFinishDate(operationalTask, technologyOperationComponent));
         }
         if (actualStaff != operationalTask.getManyToManyField(OperationalTaskFields.WORKERS).size()) {
             operationalTask.addGlobalMessage(
