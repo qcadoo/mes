@@ -30,6 +30,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
+import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -112,10 +113,9 @@ public class OperationalTasksDetailsHooks {
             plannedStaff = 1;
         }
         plannedStaffField.setFieldValue(plannedStaff);
-        if (actualStaffField.getFieldValue() == null || actualStaffField.getFieldValue().toString().equals("")) {
+        if (actualStaffField.getFieldValue() == null || !NumberUtils.isNumber(actualStaffField.getFieldValue().toString())) {
             actualStaffField.setFieldValue(plannedStaff);
         }
-        int actualStaff = Integer.parseInt((String) actualStaffField.getFieldValue());
         FieldComponent staff = (FieldComponent) view.getComponentByReference(OperationalTaskFields.STAFF);
         if (workersGrid.getEntities().size() != 1) {
             staff.setFieldValue(null);
@@ -123,6 +123,7 @@ public class OperationalTasksDetailsHooks {
             staff.setFieldValue(workersGrid.getEntities().get(0).getId());
         }
         staff.setEnabled(workersGrid.getEntities().size() <= 1);
+        int actualStaff = Integer.parseInt((String) actualStaffField.getFieldValue());
         if (view.isViewAfterRedirect() && actualStaff != workersGrid.getEntities().size()) {
             view.addMessage(
                     "orders.operationalTask.error.workersQuantityDifferentThanActualStaff", ComponentState.MessageType.INFO);
