@@ -53,11 +53,18 @@ public class GeneralParametersHooksMFR {
         boolean automaticUpdateCostNorms = parameter.getBooleanField(ParameterFieldsMFR.AUTOMATIC_UPDATE_COST_NORMS);
         boolean costsSourceIsMes = "01mes".equals(costsSource);
 
-        costsSourceField.setEnabled(automaticUpdateCostNorms);
+        if (automaticUpdateCostNorms) {
+            costsSourceField.setEnabled(true);
+            warehousesADL.setEnabled(costsSourceIsMes);
+            warehousesADL.getFormComponents().forEach(formComponent -> formComponent.setFormEnabled(costsSourceIsMes));
+        } else {
+            costsSourceField.setFieldValue(null);
+            costsSourceField.setEnabled(false);
+            warehousesADL.setFieldValue(null);
+            warehousesADL.setEnabled(false);
+        }
         costsSourceField.requestComponentUpdateState();
-        warehousesADL.setEnabled(automaticUpdateCostNorms && costsSourceIsMes);
         warehousesADL.requestComponentUpdateState();
-        warehousesADL.getFormComponents().forEach(formComponent -> formComponent.setFormEnabled(automaticUpdateCostNorms));
     }
 
 }

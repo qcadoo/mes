@@ -59,7 +59,11 @@
                         </layoutElement>
                         <layoutElement column="1" row="2">
                             <component type="select" name="costsSource" field="#{form}.costsSource"
-                                       reference="costsSource"/>
+                                       reference="costsSource">
+                                <listener event="onSelectedEntityChange"
+                                          class="com.qcadoo.mes.materialFlowResources.listeners.GeneralParametersListeners"
+                                          method="costsSourceChanged"/>
+                            </component>
                         </layoutElement>
                         <layoutElement column="1" row="3">
                             <component type="borderLayout" name="locationBorderLayout">
