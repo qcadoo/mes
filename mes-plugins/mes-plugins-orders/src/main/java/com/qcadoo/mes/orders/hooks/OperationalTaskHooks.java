@@ -121,9 +121,7 @@ public class OperationalTaskHooks {
         if (!Objects.isNull(technologyOperationComponent) && technologyOperationComponent
                 .getBooleanField(TechnologyOperationComponentFieldsTNFO.TJ_DECREASES_FOR_ENLARGED_STAFF) &&
                 (operationalTask.getId() == null && actualStaff != plannedStaff || operationalTaskDB != null &&
-                        (operationalTaskDB.getIntegerField(OperationalTaskFields.ACTUAL_STAFF) == null && actualStaff != plannedStaff
-                                || operationalTaskDB.getIntegerField(OperationalTaskFields.ACTUAL_STAFF) != null
-                                && actualStaff != operationalTaskDB.getIntegerField(OperationalTaskFields.ACTUAL_STAFF).intValue()))) {
+                        actualStaff != operationalTaskDB.getIntegerField(OperationalTaskFields.ACTUAL_STAFF).intValue())) {
             operationalTask.setField(OperationalTaskFields.FINISH_DATE,
                     getFinishDate(operationalTask, technologyOperationComponent));
         }

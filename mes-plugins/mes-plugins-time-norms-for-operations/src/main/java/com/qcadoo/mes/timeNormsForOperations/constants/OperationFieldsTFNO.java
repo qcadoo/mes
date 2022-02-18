@@ -31,4 +31,6 @@ public final class OperationFieldsTFNO {
 
     public static final String OPERATION_WORKSTATION_TIMES = "operationWorkstationTimes";
 
+    public static final String MIN_STAFF = "minStaff";
+
 }
