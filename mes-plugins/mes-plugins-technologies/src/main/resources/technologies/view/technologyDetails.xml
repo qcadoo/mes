@@ -414,11 +414,7 @@
                                     + (#tpz != null ? (T(com.qcadoo.view.api.utils.TimeConverterService).convertTimeToString(#tpz) + '/') : '')
                                     + (#tj != null ? (T(com.qcadoo.view.api.utils.TimeConverterService).convertTimeToString(#tj)) : '')
                                     + ')'
-                                    + (#operationProductOutComponents.size() > 0 ? ' - &lt;b&gt;' +
-                                        #operationProductOutComponents.get(0).getBelongsToField('product').getStringField('name') + ' &lt;span style=&quot;color: #68bb25&quot;&gt;(' + #operationProductOutComponents.get(0).getBelongsToField('product').getStringField('number') + ')&lt;/span&gt; - '
-                                        + '&lt;/b&gt;'
-                                        + #operationProductOutComponents.get(0).getDecimalField('quantity').stripTrailingZeros().toPlainString() + ' ' + #operationProductOutComponents.get(0).getBelongsToField('product').getStringField('unit')
-                                        : ''
+                                    + (T(com.qcadoo.mes.technologies.TechnologyService).prepareProductOutInfo(#operationProductOutComponents)
                                     )"/>
                             <option type="correspondingView"
                                     value="technologies/technologyOperationComponentDetails"/>

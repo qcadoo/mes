@@ -16,8 +16,10 @@ thatObject.copy = #{window}.getRibbonItem("actions.copy");
 thatObject.changeState = function (eventPerformer, ribbonItemName, entityId) {
     var ribbonItem = thatObject.getRibbonItem("status." + ribbonItemName);
     var newState = ribbonItem.forState;
-    if (window.confirm(ribbonItem.confirmMessage)) {
-        this.fireEvent(eventPerformer, 'changeState', [newState]);
+    if (window.canClose()) {
+        if (window.confirm(ribbonItem.confirmMessage)) {
+            this.fireEvent(eventPerformer, 'changeState', [newState]);
+        }
     }
 }
 

@@ -689,7 +689,7 @@ public class TechnologyValidationService {
                     && (Objects.isNull(product.getDecimalField("lastPurchaseCost"))
                             || BigDecimal.ZERO.compareTo(product.getDecimalField("lastPurchaseCost")) == 0)) {
                 stateChangeContext.addMessage("technologies.technology.validate.info.inputProductPricesNotSet",
-                        StateMessageType.INFO, product.getStringField(ProductFields.NUMBER));
+                        StateMessageType.INFO, product.getStringField(ProductFields.NUMBER), product.getStringField(ProductFields.NAME));
             }
 
         }

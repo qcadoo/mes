@@ -55,6 +55,7 @@ import com.qcadoo.mes.technologies.controller.dataProvider.MaterialDto;
 import com.qcadoo.mes.technologies.states.aop.TechnologyStateChangeAspect;
 import com.qcadoo.mes.technologies.states.constants.TechnologyState;
 import com.qcadoo.mes.technologies.states.constants.TechnologyStateStringValues;
+import com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperationComponentFieldsTNFO;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
@@ -77,7 +78,8 @@ public class OrderCreationService {
     private static final Set<String> FIELDS_OPERATION = Sets.newHashSet("tpz", "tj", "productionInOneCycle",
             "nextOperationAfterProducedType", "nextOperationAfterProducedQuantity", "nextOperationAfterProducedQuantityUNIT",
             "timeNextOperation", "machineUtilization", "laborUtilization", "productionInOneCycleUNIT",
-            "areProductQuantitiesDivisible", "isTjDivisible");
+            "areProductQuantitiesDivisible", "isTjDivisible", TechnologyOperationComponentFieldsTNFO.MIN_STAFF,
+            TechnologyOperationComponentFieldsTNFO.TJ_DECREASES_FOR_ENLARGED_STAFF);
 
     private static final String NEXT_OPERATION_AFTER_PRODUCED_TYPE = "nextOperationAfterProducedType";
 

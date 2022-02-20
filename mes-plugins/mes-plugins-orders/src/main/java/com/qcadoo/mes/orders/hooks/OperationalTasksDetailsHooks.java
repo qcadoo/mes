@@ -3,19 +3,19 @@
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
  * Version: 1.4
- *
+ * <p>
  * This file is part of Qcadoo.
- *
+ * <p>
  * Qcadoo is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation; either version 3 of the License,
  * or (at your option) any later version.
- *
+ * <p>
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty
  * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU Affero General Public License for more details.
- *
+ * <p>
  * You should have received a copy of the GNU Affero General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
@@ -28,7 +28,9 @@ import java.math.MathContext;
 import java.math.RoundingMode;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
+import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -41,13 +43,16 @@ import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.mes.technologies.constants.OperationFields;
 import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
+import com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperationComponentFieldsTNFO;
 import com.qcadoo.model.api.BigDecimalUtils;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
+import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
+import com.qcadoo.view.api.components.GridComponent;
 import com.qcadoo.view.api.components.LookupComponent;
 import com.qcadoo.view.api.components.WindowComponent;
 import com.qcadoo.view.api.components.lookup.FilterValueHolder;
@@ -88,9 +93,41 @@ public class OperationalTasksDetailsHooks {
         filterDivisionLookup(view);
         setTechnology(view);
         setQuantities(view);
+        setStaff(view);
 
         disableFieldsWhenOrderTypeIsSelected(view);
         disableButtons(view);
+    }
+
+    private void setStaff(ViewDefinitionState view) {
+        FieldComponent plannedStaffField = (FieldComponent) view.getComponentByReference("plannedStaff");
+        FieldComponent actualStaffField = (FieldComponent) view.getComponentByReference(OperationalTaskFields.ACTUAL_STAFF);
+        GridComponent workersGrid = (GridComponent) view.getComponentByReference(OperationalTaskFields.WORKERS);
+        LookupComponent technologyOperationComponentLookup = (LookupComponent) view
+                .getComponentByReference(OperationalTaskFields.TECHNOLOGY_OPERATION_COMPONENT);
+        Entity technologyOperationComponent = technologyOperationComponentLookup.getEntity();
+        int plannedStaff;
+        if (!Objects.isNull(technologyOperationComponent)) {
+            plannedStaff = technologyOperationComponent.getIntegerField(TechnologyOperationComponentFieldsTNFO.MIN_STAFF);
+        } else {
+            plannedStaff = 1;
+        }
+        plannedStaffField.setFieldValue(plannedStaff);
+        if (actualStaffField.getFieldValue() == null || !NumberUtils.isNumber(actualStaffField.getFieldValue().toString())) {
+            actualStaffField.setFieldValue(plannedStaff);
+        }
+        FieldComponent staff = (FieldComponent) view.getComponentByReference(OperationalTaskFields.STAFF);
+        if (workersGrid.getEntities().size() != 1) {
+            staff.setFieldValue(null);
+        } else {
+            staff.setFieldValue(workersGrid.getEntities().get(0).getId());
+        }
+        staff.setEnabled(workersGrid.getEntities().size() <= 1);
+        int actualStaff = Integer.parseInt((String) actualStaffField.getFieldValue());
+        if (view.isViewAfterRedirect() && actualStaff != workersGrid.getEntities().size()) {
+            view.addMessage(
+                    "orders.operationalTask.error.workersQuantityDifferentThanActualStaff", ComponentState.MessageType.INFO);
+        }
     }
 
     private void setQuantities(final ViewDefinitionState view) {
@@ -139,8 +176,7 @@ public class OperationalTasksDetailsHooks {
     }
 
     private void filterDivisionLookup(final ViewDefinitionState view) {
-        LookupComponent divisionLookup = (LookupComponent) view
-                .getComponentByReference(OperationalTaskFields.DIVISION);
+        LookupComponent divisionLookup = (LookupComponent) view.getComponentByReference(OperationalTaskFields.DIVISION);
         LookupComponent workstationLookup = (LookupComponent) view.getComponentByReference(OperationalTaskFields.WORKSTATION);
 
         Entity division = divisionLookup.getEntity();

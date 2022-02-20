@@ -23,6 +23,8 @@ public class MasterOrderProduct {
 
     private BigDecimal quantityRemainingToOrder;
 
+    private BigDecimal minStateQuantity;
+
     private MasterOrderProduct(Builder builder) {
         this.createCollectiveOrders = builder.createCollectiveOrders;
         this.masterOrderProduct = builder.masterOrderProduct;
@@ -32,6 +34,7 @@ public class MasterOrderProduct {
         this.quantityRemainingToOrder = builder.quantityRemainingToOrder;
         this.masterOrder = builder.masterOrder;
         this.comments = builder.comments;
+        this.minStateQuantity = builder.minStateQuantity;
     }
 
     public static Builder newMasterOrderProduct() {
@@ -102,6 +105,14 @@ public class MasterOrderProduct {
         this.comments = comments;
     }
 
+    public BigDecimal getMinStateQuantity() {
+        return minStateQuantity;
+    }
+
+    public void setMinStateQuantity(BigDecimal minStateQuantity) {
+        this.minStateQuantity = minStateQuantity;
+    }
+
     public static final class Builder {
 
         private boolean createCollectiveOrders;
@@ -115,6 +126,8 @@ public class MasterOrderProduct {
         private Entity technology;
 
         private BigDecimal quantityRemainingToOrder;
+
+        private BigDecimal minStateQuantity;
 
         private Entity masterOrder;
 
@@ -154,6 +167,11 @@ public class MasterOrderProduct {
 
         public Builder quantityRemainingToOrder(BigDecimal quantityRemainingToOrder) {
             this.quantityRemainingToOrder = quantityRemainingToOrder;
+            return this;
+        }
+
+        public Builder minStateQuantity(BigDecimal minStateQuantity) {
+            this.minStateQuantity = minStateQuantity;
             return this;
         }
 

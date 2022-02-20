@@ -114,7 +114,15 @@
 			<model:dictionary name="nextOperationAfterProducedQuantityUNIT"
 				dictionary="units" required="true" />
 		</model:model-field>
-	
+		<model:model-field plugin="technologies" model="operation">
+			<model:integer name="minStaff" default="1" required="true">
+				<model:validatesRange from="1"/>
+			</model:integer>
+		</model:model-field>
+		<model:model-field plugin="technologies" model="operation">
+			<model:boolean name="tjDecreasesForEnlargedStaff" default="false"/>
+		</model:model-field>
+
 		<model:model-field plugin="technologies"
 			model="technologyOperationComponent">
 			<model:integer name="tpz" required="true" default="0" />
@@ -188,6 +196,14 @@
 			model="technologyOperationComponent">
 			<model:dictionary name="nextOperationAfterProducedQuantityUNIT"
 				dictionary="units" required="true" />
+		</model:model-field>
+		<model:model-field plugin="technologies" model="technologyOperationComponent">
+			<model:integer name="minStaff" default="1" required="true">
+				<model:validatesRange from="1"/>
+			</model:integer>
+		</model:model-field>
+		<model:model-field plugin="technologies" model="technologyOperationComponent">
+			<model:boolean name="tjDecreasesForEnlargedStaff" default="false"/>
 		</model:model-field>
 	
 		<model:model-field plugin="technologies"
@@ -266,11 +282,21 @@
 					class="com.qcadoo.mes.timeNormsForOperations.hooks.TechnologyOperationComponentHooksTNFO"
 					method="onSave" />
 		</model:model-hook>
+		<model:model-hook model="technologyOperationComponent" plugin="technologies">
+			<model:validatesWith
+					class="com.qcadoo.mes.timeNormsForOperations.hooks.TechnologyOperationComponentHooksTNFO"
+					method="validatesWith"/>
+		</model:model-hook>
 		<model:model-hook plugin="technologies"
             model="operation">
 			<model:onSave
 					class="com.qcadoo.mes.timeNormsForOperations.hooks.OperationModelHooksTNFO"
 					method="onSave" />
+		</model:model-hook>
+		<model:model-hook model="operation" plugin="technologies">
+			<model:validatesWith
+					class="com.qcadoo.mes.timeNormsForOperations.hooks.OperationModelHooksTNFO"
+					method="validatesWith"/>
 		</model:model-hook>
 
 		<view:view resource="view/operationWorkstationTimeDetails.xml"/>

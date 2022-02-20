@@ -73,7 +73,7 @@ public class ScheduleStateService extends BasicStateService implements ScheduleS
 
     @Override
     public Entity onValidate(Entity entity, String sourceState, String targetState, Entity stateChangeEntity,
-            StateChangeEntityDescriber describer) {
+                             StateChangeEntityDescriber describer) {
         switch (targetState) {
             case ScheduleStateStringValues.APPROVED:
                 checkIfScheduleHasNotPositions(entity);
@@ -194,7 +194,7 @@ public class ScheduleStateService extends BasicStateService implements ScheduleS
 
     @Override
     public Entity onBeforeSave(Entity entity, String sourceState, String targetState, Entity stateChangeEntity,
-            StateChangeEntityDescriber describer) {
+                               StateChangeEntityDescriber describer) {
         if (ScheduleStateStringValues.APPROVED.equals(targetState)) {
             entity.setField(ScheduleFields.APPROVE_TIME, stateChangeEntity.getDateField(ScheduleStateChangeFields.DATE_AND_TIME));
         }
@@ -204,7 +204,7 @@ public class ScheduleStateService extends BasicStateService implements ScheduleS
 
     @Override
     public Entity onAfterSave(Entity entity, String sourceState, String targetState, Entity stateChangeEntity,
-            StateChangeEntityDescriber describer) {
+                              StateChangeEntityDescriber describer) {
         switch (targetState) {
             case ScheduleStateStringValues.APPROVED:
                 generateOperationalTasks(entity);
@@ -308,6 +308,7 @@ public class ScheduleStateService extends BasicStateService implements ScheduleS
             maybeDivision.ifPresent(d -> operationalTask.setField(OperationalTaskFields.DIVISION, d));
             operationalTaskHooks.setInitialState(operationalTask);
             operationalTaskHooks.fillNameAndDescription(operationalTask);
+            operationalTaskHooks.setStaff(operationalTask);
             operationalTaskDD.fastSave(operationalTask);
         }
         schedule.addGlobalMessage("productionScheduling.operationDurationDetailsInOrder.info.operationalTasksCreated");

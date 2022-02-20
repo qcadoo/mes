@@ -46,6 +46,7 @@
         <string name="description"/>
         <string name="salesPlanNumber"/>
         <string name="salesPlanName"/>
+        <boolean name="warehouseOrder"/>
     </fields>
 
     <masterModel plugin="masterOrders" model="masterOrder"/>

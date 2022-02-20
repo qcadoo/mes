@@ -57,4 +57,8 @@ public final class TechnologyOperationComponentFieldsTNFO {
 
     public static final String TECH_OPER_COMP_WORKSTATION_TIMES = "techOperCompWorkstationTimes";
 
+    public static final String MIN_STAFF = "minStaff";
+
+    public static final String TJ_DECREASES_FOR_ENLARGED_STAFF = "tjDecreasesForEnlargedStaff";
+
 }

@@ -111,17 +111,23 @@ public class TechnologyService {
     @Autowired
     private OperationComponentDataProvider operationComponentDataProvider;
 
-    public String prepareProductOutInfo(Object list) {
-        List<Entity> opocs  = (List<Entity>) list;
-        if(opocs.isEmpty()) {
+    public static String prepareProductOutInfo(Object list) {
+        if (Objects.isNull(list)) {
+            return "";
+        }
+        List<Entity> opocs = (List<Entity>) list;
+        if (opocs.isEmpty()) {
             return "";
         } else {
-            Optional<Entity> maybeOpoc = opocs.stream().filter(opoc -> !opoc.getBooleanField(OperationProductOutComponentFields.WASTE)).findFirst();
-            if(maybeOpoc.isPresent()) {
+            Optional<Entity> maybeOpoc = opocs.stream()
+                    .filter(opoc -> !opoc.getBooleanField(OperationProductOutComponentFields.WASTE)).findFirst();
+            if (maybeOpoc.isPresent()) {
                 Entity opoc = maybeOpoc.get();
-                return opoc.getBelongsToField("product").getStringField("name") + "' &lt;span style=&quot;color: #68bb25&quot;&gt;('" + opoc.getBelongsToField("product").getStringField("number") + "')&lt;/span&gt; - '";
-                        //+ '&lt;/b&gt;'
-                        //+ #operationProductOutComponents.get(0).getDecimalField('quantity').stripTrailingZeros().toPlainString() + ' ' + #operationProductOutComponents.get(0).getBelongsToField('product').getStringField('unit')
+                Entity product = opoc.getBelongsToField(OperationProductOutComponentFields.PRODUCT);
+                return "- <b>"+ product.getStringField(ProductFields.NAME) +" <span style=color:#68bb25>("
+                        + product.getStringField(ProductFields.NAME) +")</span> - </b> "
+                        + opoc.getDecimalField(OperationProductOutComponentFields.QUANTITY).stripTrailingZeros().toPlainString() + " "
+                        + product.getStringField(ProductFields.UNIT);
             } else {
                 return "";
             }

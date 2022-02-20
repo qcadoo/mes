@@ -365,6 +365,11 @@
             <model:hasMany name="operationalTasks" plugin="orders" model="operationalTask"
                            joinField="staff"/>
         </model:model-field>
+        <model:model-field plugin="basic" model="staff">
+            <model:manyToMany name="operationalTasksStaff" plugin="orders"
+                              model="operationalTask" joinField="workers" copyable="true" cascade="nullify"/>
+        </model:model-field>
+
         <model:model-field plugin="basic" model="workstation">
             <model:hasMany name="operationalTasks" plugin="orders" model="operationalTask"
                            joinField="workstation"/>

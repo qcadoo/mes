@@ -174,7 +174,7 @@
 
     <hooks>
         <beforeRender
-                class="com.qcadoo.mes.materialFlowResources.hooks.ParametersMFRHooks"
+                class="com.qcadoo.mes.materialFlowResources.hooks.ParametersHooksMFR"
                 method="onBeforeRender"/>
     </hooks>
 </view>

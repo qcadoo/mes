@@ -99,7 +99,7 @@
                     <option type="multiselect" value="true"/>
                 </component>
             </layoutElement>
-            <layoutElement column="2" row="1" height="3">
+            <layoutElement column="2" row="1" height="2">
                 <component type="borderLayout" name="borderLayoutDivisibleCostNorms"
                            reference="borderLayoutDivisibleCostNorms">
                     <component type="gridLayout" name="gridLayout"
@@ -125,6 +125,16 @@
                     </component>
 
                     <option type="label" value="divisibleCostNormsBorderLabel"/>
+                </component>
+            </layoutElement>
+            <layoutElement column="2" row="3">
+                <component type="input" name="minStaff" field="#{form}.minStaff" reference="minStaff"
+                           hasDescription="true"/>
+            </layoutElement>
+            <layoutElement column="2" row="4">
+                <component type="checkbox" name="tjDecreasesForEnlargedStaff" field="#{form}.tjDecreasesForEnlargedStaff"
+                           reference="tjDecreasesForEnlargedStaff" hasDescription="true">
+                    <option type="labelWidth" value="80"/>
                 </component>
             </layoutElement>
             <layoutElement column="3" row="1" height="2">

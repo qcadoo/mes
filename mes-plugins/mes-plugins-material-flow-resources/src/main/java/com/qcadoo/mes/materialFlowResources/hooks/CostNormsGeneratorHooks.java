@@ -13,18 +13,18 @@ import com.qcadoo.view.constants.QcadooViewConstants;
 @Service
 public class CostNormsGeneratorHooks {
 
-    public void onBeforeRender(final ViewDefinitionState view) {
-        FormComponent generatorForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
-        LookupComponent productLookup = (LookupComponent) view.getComponentByReference("productsLookup");
+	public void onBeforeRender(final ViewDefinitionState view) {
+		FormComponent costNormsGeneratorForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
+		LookupComponent productLookup = (LookupComponent) view.getComponentByReference("productsLookup");
 
-        Entity generator = generatorForm.getEntity();
+		Entity costNormsGenerator = costNormsGeneratorForm.getEntity();
 
-        String costSource = generator.getStringField(CostNormsGeneratorFields.COSTS_SOURCE);
+		String costsSource = costNormsGenerator.getStringField(CostNormsGeneratorFields.COSTS_SOURCE);
 
-        FilterValueHolder filterValueHolder = productLookup.getFilterValue();
-        filterValueHolder.put("costSource", costSource);
+		FilterValueHolder filterValueHolder = productLookup.getFilterValue();
+		filterValueHolder.put("costsSource", costsSource);
 
-        productLookup.setFilterValue(filterValueHolder);
-    }
+		productLookup.setFilterValue(filterValueHolder);
+	}
 
 }
