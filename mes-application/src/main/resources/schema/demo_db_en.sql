@@ -6294,7 +6294,9 @@ CREATE TABLE technologies_operation (
     productionline_id bigint,
     entityversion bigint DEFAULT 0,
     product_id bigint,
-    createoperationoutput boolean DEFAULT false
+    createoperationoutput boolean DEFAULT false,
+    tjdecreasesforenlargedstaff boolean DEFAULT false,
+    minstaff integer DEFAULT 1
 );
 
 
@@ -6348,7 +6350,9 @@ CREATE TABLE technologies_technologyoperationcomponent (
     productionline_id bigint,
     entityversion bigint DEFAULT 0,
     technologicalprocesslist_id bigint,
-    technologicalprocesslistassignmentdate timestamp without time zone
+    technologicalprocesslistassignmentdate timestamp without time zone,
+    tjdecreasesforenlargedstaff boolean DEFAULT false,
+    minstaff integer DEFAULT 1
 );
 
 
@@ -11207,7 +11211,8 @@ CREATE TABLE orders_operationaltask (
     technologyoperationcomponent_id bigint,
     product_id bigint,
     scheduleposition_id bigint,
-    division_id bigint
+    division_id bigint,
+    actualstaff integer
 );
 
 
@@ -16402,6 +16407,16 @@ CREATE TABLE jointable_operation_workstation (
 
 
 --
+-- Name: jointable_operationaltask_staff; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE jointable_operationaltask_staff (
+    staff_id bigint NOT NULL,
+    operationaltask_id bigint NOT NULL
+);
+
+
+--
 -- Name: jointable_order_productionbalance; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -16860,7 +16875,8 @@ CREATE TABLE masterorders_masterorderposition_manyproducts (
     companycategory character varying(255),
     salesplannumber character varying(255),
     salesplanname character varying(255),
-    warehouseminimumstatequantity numeric
+    warehouseminimumstatequantity numeric,
+    warehouseorder boolean
 );
 
 ALTER TABLE ONLY masterorders_masterorderposition_manyproducts REPLICA IDENTITY NOTHING;
@@ -16903,7 +16919,8 @@ CREATE VIEW masterorders_masterorderpositiondto AS
     masterorders_masterorderposition_manyproducts.companycategory,
     masterorders_masterorderposition_manyproducts.salesplannumber,
     masterorders_masterorderposition_manyproducts.salesplanname,
-    COALESCE(masterorders_masterorderposition_manyproducts.warehouseminimumstatequantity, (0)::numeric) AS warehouseminimumstatequantity
+    COALESCE(masterorders_masterorderposition_manyproducts.warehouseminimumstatequantity, (0)::numeric) AS warehouseminimumstatequantity,
+    masterorders_masterorderposition_manyproducts.warehouseorder
    FROM masterorders_masterorderposition_manyproducts;
 
 
@@ -16946,7 +16963,8 @@ CREATE VIEW masterorders_masterorderdto AS
     masterorder.description,
     salesplan.number AS salesplannumber,
     salesplan.name AS salesplanname,
-    company.contractorcategory AS companycategory
+    company.contractorcategory AS companycategory,
+    masterorder.warehouseorder
    FROM ((((((masterorders_masterorder masterorder
      LEFT JOIN masterorders_salesplan salesplan ON ((salesplan.id = masterorder.salesplan_id)))
      LEFT JOIN masterorders_masterorderdefinition masterorderdefinition ON ((masterorderdefinition.id = masterorder.masterorderdefinition_id)))
@@ -19925,6 +19943,13 @@ ALTER SEQUENCE orders_operationaltaskstatechange_id_seq OWNED BY orders_operatio
 --
 
 CREATE VIEW orders_operationaltaskwithcolordto AS
+ WITH operational_task_staff AS (
+         SELECT jos.operationaltask_id,
+            string_agg((((staff.surname)::text || ' '::text) || (staff.name)::text), ', '::text) AS staffname
+           FROM (jointable_operationaltask_staff jos
+             JOIN basic_staff staff ON ((jos.staff_id = staff.id)))
+          GROUP BY jos.operationaltask_id
+        )
  SELECT operationaltask.id,
     operationaltask.number,
     operationaltask.name,
@@ -19933,7 +19958,7 @@ CREATE VIEW orders_operationaltaskwithcolordto AS
     operationaltask.state,
     operationaltask.startdate,
     operationaltask.finishdate,
-    (((staff.surname)::text || ' '::text) || (staff.name)::text) AS staffname,
+    ots.staffname,
     division.number AS divisionnumber,
     workstation.number AS workstationnumber,
     (workstation.id)::integer AS workstationid,
@@ -19952,9 +19977,10 @@ CREATE VIEW orders_operationaltaskwithcolordto AS
     NULL::numeric AS opertaskflagpercentexecutionwithcolor,
     NULL::character varying AS percentageofexecutioncellcolor,
     (orderproduct.number)::text AS orderproductnumber,
-    (orderproduct.name)::text AS orderproductname
+    (orderproduct.name)::text AS orderproductname,
+    operationaltask.actualstaff
    FROM (((((((orders_operationaltask operationaltask
-     LEFT JOIN basic_staff staff ON ((staff.id = operationaltask.staff_id)))
+     LEFT JOIN operational_task_staff ots ON ((operationaltask.id = ots.operationaltask_id)))
      LEFT JOIN basic_division division ON ((operationaltask.division_id = division.id)))
      LEFT JOIN basic_workstation workstation ON ((workstation.id = operationaltask.workstation_id)))
      LEFT JOIN orders_order ordersorder ON ((ordersorder.id = operationaltask.order_id)))
@@ -19971,7 +19997,7 @@ UNION ALL
     operationaltask.state,
     operationaltask.startdate,
     operationaltask.finishdate,
-    (((staff.surname)::text || ' '::text) || (staff.name)::text) AS staffname,
+    ots.staffname,
     division.number AS divisionnumber,
     workstation.number AS workstationnumber,
     (workstation.id)::integer AS workstationid,
@@ -19999,9 +20025,10 @@ UNION ALL
             ELSE 'yellow-cell'::character varying(255)
         END AS percentageofexecutioncellcolor,
     (orderproduct.number)::text AS orderproductnumber,
-    (orderproduct.name)::text AS orderproductname
+    (orderproduct.name)::text AS orderproductname,
+    operationaltask.actualstaff
    FROM ((((((((orders_operationaltask operationaltask
-     LEFT JOIN basic_staff staff ON ((staff.id = operationaltask.staff_id)))
+     LEFT JOIN operational_task_staff ots ON ((operationaltask.id = ots.operationaltask_id)))
      LEFT JOIN basic_division division ON ((operationaltask.division_id = division.id)))
      LEFT JOIN basic_workstation workstation ON ((workstation.id = operationaltask.workstation_id)))
      LEFT JOIN orders_order ordersorder ON ((ordersorder.id = operationaltask.order_id)))
@@ -37893,6 +37920,14 @@ COPY jointable_operation_workstation (workstation_id, operation_id) FROM stdin;
 
 
 --
+-- Data for Name: jointable_operationaltask_staff; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY jointable_operationaltask_staff (staff_id, operationaltask_id) FROM stdin;
+\.
+
+
+--
 -- Data for Name: jointable_order_printlabelshelper; Type: TABLE DATA; Schema: public; Owner: -
 --
 
@@ -39262,7 +39297,7 @@ SELECT pg_catalog.setval('orders_group_production_balance_number_seq', 1, false)
 -- Data for Name: orders_operationaltask; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY orders_operationaltask (id, number, name, description, type, startdate, finishdate, order_id, entityversion, staff_id, workstation_id, state, technologyoperationcomponent_id, product_id, scheduleposition_id, division_id) FROM stdin;
+COPY orders_operationaltask (id, number, name, description, type, startdate, finishdate, order_id, entityversion, staff_id, workstation_id, state, technologyoperationcomponent_id, product_id, scheduleposition_id, division_id, actualstaff) FROM stdin;
 \.
 
 
@@ -42604,7 +42639,7 @@ SELECT pg_catalog.setval('technologies_modifytechnologyhelper_id_seq', 1, false)
 -- Data for Name: technologies_operation; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY technologies_operation (id, number, name, comment, workstationtype_id, attachment, areproductquantitiesdivisible, istjdivisible, operationgroup_id, imageurlinworkplan, pieceworkcost, productioninonecycle, laborhourlycost, numberofoperations, laborutilization, nextoperationafterproducedtype, nextoperationafterproducedquantityunit, machinehourlycost, tj, nextoperationafterproducedquantity, machineutilization, timenextoperation, tpz, productioninonecycleunit, active, issubcontracting, assignedtooperation, quantityofworkstations, division_id, showinproductdata, productdatanumber, productionline_id, entityversion, product_id, createoperationoutput) FROM stdin;
+COPY technologies_operation (id, number, name, comment, workstationtype_id, attachment, areproductquantitiesdivisible, istjdivisible, operationgroup_id, imageurlinworkplan, pieceworkcost, productioninonecycle, laborhourlycost, numberofoperations, laborutilization, nextoperationafterproducedtype, nextoperationafterproducedquantityunit, machinehourlycost, tj, nextoperationafterproducedquantity, machineutilization, timenextoperation, tpz, productioninonecycleunit, active, issubcontracting, assignedtooperation, quantityofworkstations, division_id, showinproductdata, productdatanumber, productionline_id, entityversion, product_id, createoperationoutput, tjdecreasesforenlargedstaff, minstaff) FROM stdin;
 \.
 
 
@@ -42924,7 +42959,7 @@ SELECT pg_catalog.setval('technologies_technologyinputproducttype_id_seq', 1, fa
 -- Data for Name: technologies_technologyoperationcomponent; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY technologies_technologyoperationcomponent (id, technology_id, operation_id, parent_id, entitytype, priority, nodenumber, comment, attachment, areproductquantitiesdivisible, istjdivisible, tpz, laborworktime, productioninonecycleunit, nextoperationafterproducedquantityunit, nextoperationafterproducedquantity, nextoperationafterproducedtype, machineutilization, timenextoperation, pieceworkcost, machineworktime, productioninonecycle, laborutilization, duration, numberofoperations, tj, machinehourlycost, laborhourlycost, issubcontracting, assignedtooperation, workstationtype_id, quantityofworkstations, createdate, updatedate, createuser, updateuser, techopercomptimecalculation_id, hascorrections, division_id, showinproductdata, productdatanumber, productionlinechange, productionline_id, entityversion, technologicalprocesslist_id, technologicalprocesslistassignmentdate) FROM stdin;
+COPY technologies_technologyoperationcomponent (id, technology_id, operation_id, parent_id, entitytype, priority, nodenumber, comment, attachment, areproductquantitiesdivisible, istjdivisible, tpz, laborworktime, productioninonecycleunit, nextoperationafterproducedquantityunit, nextoperationafterproducedquantity, nextoperationafterproducedtype, machineutilization, timenextoperation, pieceworkcost, machineworktime, productioninonecycle, laborutilization, duration, numberofoperations, tj, machinehourlycost, laborhourlycost, issubcontracting, assignedtooperation, workstationtype_id, quantityofworkstations, createdate, updatedate, createuser, updateuser, techopercomptimecalculation_id, hascorrections, division_id, showinproductdata, productdatanumber, productionlinechange, productionline_id, entityversion, technologicalprocesslist_id, technologicalprocesslistassignmentdate, tjdecreasesforenlargedstaff, minstaff) FROM stdin;
 \.
 
 
@@ -45775,6 +45810,14 @@ ALTER TABLE ONLY jointable_oee_workstation
 
 ALTER TABLE ONLY jointable_operation_workstation
     ADD CONSTRAINT jointable_operation_workstation_pkey PRIMARY KEY (operation_id, workstation_id);
+
+
+--
+-- Name: jointable_operationaltask_staff_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY jointable_operationaltask_staff
+    ADD CONSTRAINT jointable_operationaltask_staff_pkey PRIMARY KEY (staff_id, operationaltask_id);
 
 
 --
@@ -49848,7 +49891,8 @@ CREATE RULE "_RETURN" AS
     salesplan.name AS salesplanname,
     ( SELECT sum(warehouseminimumstate.minimumstate) AS sum
            FROM warehouseminimalstate_warehouseminimumstate warehouseminimumstate
-          WHERE (warehouseminimumstate.product_id = masterorderproduct.product_id)) AS warehouseminimumstatequantity
+          WHERE (warehouseminimumstate.product_id = masterorderproduct.product_id)) AS warehouseminimumstatequantity,
+    masterorder.warehouseorder
    FROM ((((((((((masterorders_masterorderproduct masterorderproduct
      LEFT JOIN masterorders_masterorder masterorder ON ((masterorderproduct.masterorder_id = masterorder.id)))
      LEFT JOIN masterorders_masterorderdefinition masterorderdefinition ON ((masterorderdefinition.id = masterorder.masterorderdefinition_id)))
@@ -49860,7 +49904,7 @@ CREATE RULE "_RETURN" AS
      LEFT JOIN basic_company companypayer ON ((companypayer.id = masterorder.companypayer_id)))
      LEFT JOIN basic_assortment assortment ON ((assortment.id = _product.assortment_id)))
      LEFT JOIN masterorders_salesplan salesplan ON ((salesplan.id = masterorder.salesplan_id)))
-  GROUP BY masterorderdefinition.number, masterorder.id, masterorderproduct.product_id, masterorderproduct.id, masterorder.name, masterorder.deadline, masterorder.masterorderstate, masterorderproduct.masterorderpositionstatus, masterorderproduct.comments, _product.number, _product.name, _product.unit, technology.number, company.name, masterorder.active, companypayer.name, assortment.name, model.name, company.contractorcategory, salesplan.number, salesplan.name;
+  GROUP BY masterorderdefinition.number, masterorder.id, masterorderproduct.product_id, masterorderproduct.id, masterorder.name, masterorder.deadline, masterorder.masterorderstate, masterorderproduct.masterorderpositionstatus, masterorderproduct.comments, _product.number, _product.name, _product.unit, technology.number, company.name, masterorder.active, companypayer.name, assortment.name, model.name, company.contractorcategory, salesplan.number, salesplan.name, masterorder.warehouseorder;
 
 
 --
@@ -55211,6 +55255,22 @@ ALTER TABLE ONLY orders_operationaltask
 
 ALTER TABLE ONLY orders_operationaltask
     ADD CONSTRAINT operationaltask_staff_fkey FOREIGN KEY (staff_id) REFERENCES basic_staff(id) DEFERRABLE;
+
+
+--
+-- Name: operationaltask_staff_operationaltask; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY jointable_operationaltask_staff
+    ADD CONSTRAINT operationaltask_staff_operationaltask FOREIGN KEY (operationaltask_id) REFERENCES orders_operationaltask(id) DEFERRABLE;
+
+
+--
+-- Name: operationaltask_staff_staff; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY jointable_operationaltask_staff
+    ADD CONSTRAINT operationaltask_staff_staff FOREIGN KEY (staff_id) REFERENCES basic_staff(id) DEFERRABLE;
 
 
 --
