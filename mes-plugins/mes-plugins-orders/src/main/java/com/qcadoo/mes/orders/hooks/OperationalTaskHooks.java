@@ -107,7 +107,11 @@ public class OperationalTaskHooks {
         } else if (staff != null && workers.size() <= 1) {
             operationalTask.setField(OperationalTaskFields.WORKERS, Collections.singletonList(staff));
         } else if (staff == null && workers.size() == 1) {
-            operationalTask.setField(OperationalTaskFields.STAFF, workers.get(0));
+            if (operationalTaskDB != null && operationalTaskDB.getManyToManyField(OperationalTaskFields.WORKERS).size() != 1) {
+                operationalTask.setField(OperationalTaskFields.STAFF, workers.get(0));
+            } else {
+                operationalTask.setField(OperationalTaskFields.WORKERS, Collections.emptyList());
+            }
         }
 
         updateFinishDate(operationalTask, technologyOperationComponent, plannedStaff, actualStaff, operationalTaskDB);
