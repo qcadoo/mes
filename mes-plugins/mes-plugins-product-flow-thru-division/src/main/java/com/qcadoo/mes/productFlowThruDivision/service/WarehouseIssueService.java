@@ -159,6 +159,61 @@ public class WarehouseIssueService {
         return null;
     }
 
+    public void copyProductsToIssue(final Entity warehouseIssue) {
+        for (Entity productToIssue : warehouseIssue.getHasManyField(WarehouseIssueFields.PRODUCTS_TO_ISSUES)) {
+            createIssue(warehouseIssue, productToIssue);
+        }
+    }
+
+    public void createIssue(final Entity warehouseIssue, final Entity productToIssue) {
+        Entity issue = getIssueDD().create();
+
+        issue.setField(IssueFields.WAREHOUSE_ISSUE, productToIssue.getBelongsToField(ProductsToIssueFields.WAREHOUSE_ISSUE));
+        issue.setField(IssueFields.PRODUCT, productToIssue.getBelongsToField(ProductsToIssueFields.PRODUCT));
+        issue.setField(IssueFields.DEMAND_QUANTITY, productToIssue.getDecimalField(ProductsToIssueFields.DEMAND_QUANTITY));
+        issue.setField(IssueFields.ADDITIONAL_DEMAND_QUANTITY,
+                productToIssue.getDecimalField(ProductsToIssueFields.ADDITIONAL_DEMAND_QUANTITY));
+        issue.setField(IssueFields.CONVERSION, productToIssue.getDecimalField(ProductsToIssueFields.CONVERSION));
+        issue.setField(IssueFields.LOCATIONS_QUANTITY, productToIssue.getDecimalField(ProductsToIssueFields.LOCATIONS_QUANTITY));
+        issue.setField(IssueFields.LOCATION, productToIssue.getBelongsToField(ProductsToIssueFields.LOCATION));
+        issue.setField(IssueFields.PRODUCT_IN_COMPONENT,
+                productToIssue.getBelongsToField(ProductsToIssueFields.PRODUCT_IN_COMPONENT));
+        issue.setField(IssueFields.ISSUED, false);
+        issue.setField(IssueFields.ADDITIONAL_CODE, productToIssue.getBelongsToField(ProductsToIssueFields.ADDITIONAL_CODE));
+        issue.setField(IssueFields.STORAGE_LOCATION, productToIssue.getBelongsToField(ProductsToIssueFields.STORAGE_LOCATION));
+
+        BigDecimal demandQuantity = productToIssue.getDecimalField(ProductsToIssueFields.DEMAND_QUANTITY);
+        BigDecimal issueQuantity = productToIssue.getDecimalField(ProductsToIssueFields.ISSUE_QUANTITY);
+        BigDecimal correctionQuantity = Optional.ofNullable(productToIssue.getDecimalField(ProductsToIssueFields.CORRECTION))
+                .orElse(BigDecimal.ZERO);
+
+        if (issueQuantity == null) {
+            issueQuantity = BigDecimal.ZERO;
+        }
+
+        BigDecimal toIssueQuantity = demandQuantity.subtract(issueQuantity, numberService.getMathContext()).subtract(
+                correctionQuantity);
+
+        if (toIssueQuantity.compareTo(BigDecimal.ZERO) == 1) {
+            issue.setField(IssueFields.ISSUE_QUANTITY, toIssueQuantity);
+        } else {
+            issue.setField(IssueFields.ISSUE_QUANTITY, BigDecimal.ZERO);
+        }
+
+        if (warehouseIssueParameterService.issueForOrder()) {
+            Entity order = getOrderDD().get(warehouseIssue.getBelongsToField(WarehouseIssueFields.ORDER).getId());
+
+            if (order != null) {
+                BigDecimal quantityPerUnit = productToIssue.getDecimalField(ProductsToIssueFields.DEMAND_QUANTITY).divide(
+                        order.getDecimalField(OrderFields.PLANNED_QUANTITY), numberService.getMathContext());
+
+                issue.setField(IssueFields.QUANTITY_PER_UNIT, quantityPerUnit);
+            }
+        }
+
+        issue.getDataDefinition().save(issue);
+    }
+
     private List<Entity> createProductIssueEntryForOperation(final Entity toc, final Entity warehouseIssue, final Entity order) {
         if (Objects.nonNull(toc)) {
             List<Entity> coverageProducts = getProductionCountingQuantityDD().find()
@@ -705,6 +760,10 @@ public class WarehouseIssueService {
 
             entity.getDataDefinition().save(entity);
         });
+    }
+
+    private DataDefinition getOrderDD() {
+        return dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER);
     }
 
 }

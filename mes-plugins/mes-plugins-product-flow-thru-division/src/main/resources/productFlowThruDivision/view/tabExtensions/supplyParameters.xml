@@ -31,7 +31,7 @@
 
     <windowTab name="warehouseIssue">
         <component type="gridLayout" name="gridLayout" columns="3"
-                   rows="6">
+                   rows="7">
          	<layoutElement column="1" row="1">
 				<component type="select" name="warehouseIssueProductsSource" field="#{form}.warehouseIssueProductsSource"
 					reference="warehouseIssueProductsSource">
@@ -55,7 +55,7 @@
             <layoutElement column="1" row="4">
                 <component type="checkbox" name="generateWarehouseIssuesToOrders"
                            reference="generateWarehouseIssuesToOrders" field="#{form}.generateWarehouseIssuesToOrders" hasDescription="true" >
-                           <listener event="onInputChange" method="lockOrdersComponents"
+                           <listener event="onInputChange" method="onGenerateWarehouseIssuesToOrdersChange"
                                           class="com.qcadoo.mes.productFlowThruDivision.listeners.SupplyParametersListenersPFTD"/>
                             <option type="labelWidth" value="60"/>
                 </component>
@@ -81,7 +81,12 @@
                             <option type="labelWidth" value="60"/>
                         </component>
             </layoutElement>
-
+            <layoutElement column="1" row="7">
+                <component type="checkbox" name="automaticReleaseAfterGeneration"
+                           reference="automaticReleaseAfterGeneration" field="#{form}.automaticReleaseAfterGeneration" hasDescription="true" >
+                    <option type="labelWidth" value="60"/>
+                </component>
+            </layoutElement>
             <layoutElement column="2" row="1">
 					<component type="select" name="drawnDocuments" field="#{form}.drawnDocuments"
 						reference="drawnDocuments" hasDescription="true">

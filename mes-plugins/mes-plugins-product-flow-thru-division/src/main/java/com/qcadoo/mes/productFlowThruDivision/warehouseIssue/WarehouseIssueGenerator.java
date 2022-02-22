@@ -6,6 +6,11 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
+import com.qcadoo.mes.productFlowThruDivision.warehouseIssue.states.aop.WarehouseIssueStateChangeAspect;
+import com.qcadoo.mes.productFlowThruDivision.warehouseIssue.states.client.WarehouseIssueStateChangeViewClient;
+import com.qcadoo.mes.productFlowThruDivision.warehouseIssue.states.constants.WarehouseIssueStringValues;
+import com.qcadoo.mes.states.StateChangeContext;
+import com.qcadoo.mes.states.service.StateChangeContextBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Service;
@@ -62,6 +67,12 @@ public class WarehouseIssueGenerator {
     @Autowired
     private WarehouseIssueParameterService warehouseIssueParameterService;
 
+    @Autowired
+    private WarehouseIssueStateChangeAspect warehouseIssueStateChangeAspect;
+
+    @Autowired
+    private StateChangeContextBuilder stateChangeContextBuilder;
+
     public void generateWarehouseIssuesTrigger() {
         multiTenantService.doInMultiTenantContext(this::generateWarehouseIssues);
     }
@@ -81,19 +92,38 @@ public class WarehouseIssueGenerator {
 
             for (Entity orderDto : orderDtos) {
                 if (checkIfCanGenerateIssue(orderDto)) {
-                    Entity newWarehouseIssue = createNewWarehouseIssue(orderDto, issueLocation);
+                    generateIssue(parameter, issueLocation, orderDto);
 
-                    newWarehouseIssue = getWarehouseIssueDD().save(newWarehouseIssue);
-
-                    warehouseIssueService.fillProductsToIssue(newWarehouseIssue.getId(), CollectionProducts.ON_ORDER, orderDto,
-                            issueLocation);
-                    newWarehouseIssue = getWarehouseIssueDD().get(newWarehouseIssue.getId());
-
-                    if (newWarehouseIssue.getHasManyField(WarehouseIssueFields.PRODUCTS_TO_ISSUES).isEmpty()) {
-                        getWarehouseIssueDD().delete(newWarehouseIssue.getId());
-                    }
                 }
             }
+        }
+    }
+
+    public void generateWarehouseIssue(final Entity order) {
+        Entity parameter = parameterService.getParameter();
+        Entity issueLocation = parameter.getBelongsToField(ParameterFieldsPFTD.ISSUE_LOCATION);
+        generateIssue(parameter, issueLocation, order);
+    }
+
+    private void generateIssue(Entity parameter, Entity issueLocation, Entity orderDto) {
+        Entity newWarehouseIssue = createNewWarehouseIssue(orderDto, issueLocation);
+
+        newWarehouseIssue = getWarehouseIssueDD().save(newWarehouseIssue);
+
+        warehouseIssueService.fillProductsToIssue(newWarehouseIssue.getId(), CollectionProducts.ON_ORDER, orderDto,
+                issueLocation);
+        newWarehouseIssue = getWarehouseIssueDD().get(newWarehouseIssue.getId());
+
+        if (newWarehouseIssue.getHasManyField(WarehouseIssueFields.PRODUCTS_TO_ISSUES).isEmpty()) {
+            getWarehouseIssueDD().delete(newWarehouseIssue.getId());
+        } else if (parameter.getBooleanField(ParameterFieldsPFTD.AUTOMATIC_RELEASE_AFTER_GENERATION)) {
+            warehouseIssueService.copyProductsToIssue(newWarehouseIssue);
+
+            newWarehouseIssue = getWarehouseIssueDD().get(newWarehouseIssue.getId());
+
+            final StateChangeContext stateChangeContext = stateChangeContextBuilder.build(
+                    warehouseIssueStateChangeAspect.getChangeEntityDescriber(), newWarehouseIssue, WarehouseIssueStringValues.IN_PROGRESS);
+            warehouseIssueStateChangeAspect.changeState(stateChangeContext);
         }
     }
 

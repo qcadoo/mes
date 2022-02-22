@@ -36,10 +36,11 @@ import com.qcadoo.view.api.components.FieldComponent;
 @Service
 public class SupplyParametersListenersPFTD {
 
-    public void lockOrdersComponents(final ViewDefinitionState view, final ComponentState componentState, final String[] args) {
+    public void onGenerateWarehouseIssuesToOrdersChange(final ViewDefinitionState view, final ComponentState componentState, final String[] args) {
         CheckBoxComponent generateWarehouseIssues = (CheckBoxComponent) componentState;
         toggleDaysBeforeOrderStart(generateWarehouseIssues.isChecked(), view);
         toggleIssueLocation(generateWarehouseIssues.isChecked(), view);
+        toggleAutomaticReleaseAfterGeneration(generateWarehouseIssues.isChecked(), view);
     }
 
     public void lockDeliveriesComponents(final ViewDefinitionState view, final ComponentState componentState, final String[] args) {
@@ -57,6 +58,17 @@ public class SupplyParametersListenersPFTD {
             issueLocation.setFieldValue(null);
         }
         issueLocation.requestComponentUpdateState();
+    }
+
+    private void toggleAutomaticReleaseAfterGeneration(boolean checked, ViewDefinitionState view) {
+        CheckBoxComponent automaticReleaseAfterGeneration = (CheckBoxComponent) view.getComponentByReference("automaticReleaseAfterGeneration");
+        if(checked) {
+            automaticReleaseAfterGeneration.setEnabled(true);
+        } else {
+            automaticReleaseAfterGeneration.setChecked(Boolean.FALSE);
+            automaticReleaseAfterGeneration.setEnabled(false);
+        }
+        automaticReleaseAfterGeneration.requestComponentUpdateState();
     }
 
     private void toggleDaysBeforeOrderStart(final boolean lock, final ViewDefinitionState view) {
@@ -86,7 +98,7 @@ public class SupplyParametersListenersPFTD {
             } else if (WarehouseIssueProductsSource.ORDER.equals(warehouseIssueProductsSource)) {
                 generateWarehouseIssuesToOrders.setEnabled(true);
                 uncheckAndDisable(generateWarehouseIssuesToDeliveries);
-                lockOrdersComponents(view, generateWarehouseIssuesToOrders, args);
+                onGenerateWarehouseIssuesToOrdersChange(view, generateWarehouseIssuesToOrders, args);
             }
         }
     }

@@ -259,6 +259,10 @@
         </model:model-field>
 
         <model:model-field plugin="basic" model="parameter">
+            <model:boolean name="automaticReleaseAfterGeneration" default="false"/>
+        </model:model-field>
+
+        <model:model-field plugin="basic" model="parameter">
             <model:boolean name="ignoreMissingComponents" default="true"/>
         </model:model-field>
 
@@ -778,6 +782,11 @@
                             component="form" event="showWarehouseIssuesForOrder"
                             class="com.qcadoo.mes.productFlowThruDivision.listeners.OrderDetailsListenersPFTD"
                             method="showWarehouseIssuesForOrder"/>
+
+        <view:view-listener plugin="orders" view="orderDetails"
+                            component="form" event="issueForOrder"
+                            class="com.qcadoo.mes.productFlowThruDivision.listeners.OrderDetailsListenersPFTD"
+                            method="issueForOrder"/>
 
     </modules>
 
