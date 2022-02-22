@@ -41,6 +41,7 @@ import com.qcadoo.mes.orders.constants.OperationalTaskDtoFields;
 import com.qcadoo.mes.orders.constants.OperationalTaskFields;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
+import com.qcadoo.mes.orders.criteriaModifiers.OperationalTaskDetailsCriteriaModifiers;
 import com.qcadoo.mes.orders.states.constants.OperationalTaskStateStringValues;
 import com.qcadoo.mes.technologies.constants.OperationFields;
 import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
@@ -49,6 +50,7 @@ import com.qcadoo.model.api.BigDecimalUtils;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
+import com.qcadoo.plugins.users.constants.GroupDetailsConstants;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
@@ -98,6 +100,18 @@ public class OperationalTasksDetailsHooks {
 
         disableFieldsWhenOrderTypeIsSelected(view);
         disableButtons(view);
+        fillCriteriaModifiers(view);
+    }
+
+    public void fillCriteriaModifiers(final ViewDefinitionState viewDefinitionState) {
+        LookupComponent staffLookup = (LookupComponent) viewDefinitionState.getComponentByReference("staffLookup");
+        FormComponent form = (FormComponent) viewDefinitionState.getComponentByReference(QcadooViewConstants.L_FORM);
+        if (form.getEntityId() != null) {
+            FilterValueHolder filter = staffLookup.getFilterValue();
+            filter.put(OperationalTaskDetailsCriteriaModifiers.OPERATIONAL_TASK_ID, form.getEntityId());
+            staffLookup.setFilterValue(filter);
+        }
+        staffLookup.requestComponentUpdateState();
     }
 
     private void setStaff(ViewDefinitionState view) {

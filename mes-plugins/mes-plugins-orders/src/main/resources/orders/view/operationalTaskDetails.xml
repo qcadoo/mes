@@ -391,6 +391,9 @@
 						<option type="fieldCode" value="number"/>
 
 						<option type="multiselect" value="true"/>
+						<criteriaModifier
+								class="com.qcadoo.mes.orders.criteriaModifiers.OperationalTaskDetailsCriteriaModifiers"
+								method="criteriaForOperationalTasks"/>
 					</component>
 					<component type="grid" name="workers" reference="workers"
 					           source="#{form}.workers">
