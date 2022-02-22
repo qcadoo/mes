@@ -254,14 +254,15 @@ public class OrderCreationService {
         order = order.getDataDefinition().get(order.getId());
         List<Entity> operationalTasks = order.getHasManyField(OrderFields.OPERATIONAL_TASKS);
         for (Entity operationalTask : operationalTasks) {
+            Entity technologyOperationComponent = operationalTask.getBelongsToField(OperationalTaskFields.TECHNOLOGY_OPERATION_COMPONENT);
             Long workstation = operationsById
-                    .get(operationalTask.getBelongsToField(OperationalTaskFields.TECHNOLOGY_OPERATION_COMPONENT).getId())
-                    .getWorkstationId();
+                    .get(technologyOperationComponent.getId()).getWorkstationId();
             if (Objects.nonNull(workstation)) {
                 operationalTask.setField(OperationalTaskFields.WORKSTATION, workstation);
                 Entity workstationEntity = dataDefinitionService
                         .get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_WORKSTATION).get(workstation);
-                if (Objects.nonNull(workstationEntity.getBelongsToField(WorkstationFields.STAFF))) {
+                if (Objects.nonNull(workstationEntity.getBelongsToField(WorkstationFields.STAFF))
+                        && technologyOperationComponent.getIntegerField(TechnologyOperationComponentFieldsTNFO.MIN_STAFF) == 1) {
                     operationalTask.setField(OperationalTaskFields.STAFF,
                             workstationEntity.getBelongsToField(WorkstationFields.STAFF));
                 }
