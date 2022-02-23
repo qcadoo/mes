@@ -60,11 +60,11 @@ public class OrderMaterialAvailability {
         return materialsAvailability;
     }
 
-    public void generateAndSaveMaterialAvailabilityForOrder(Entity order) {
+    public List<Entity> generateAndSaveMaterialAvailabilityForOrder(Entity order) {
         Entity technology = order.getBelongsToField(OrderFields.TECHNOLOGY);
 
         if (order.getId() == null || technology == null) {
-            return;
+            return Lists.newArrayList();
         }
 
         deleteMaterialAvailability(order);
@@ -74,6 +74,8 @@ public class OrderMaterialAvailability {
         updateQuantityAndAvailability(materialsAvailability);
 
         saveMaterialAvailability(materialsAvailability);
+
+        return materialsAvailability;
     }
 
     private void saveMaterialAvailability(List<Entity> materialsAvailability) {
