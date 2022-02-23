@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.StringJoiner;
 
+import com.qcadoo.security.api.SecurityService;
+import com.qcadoo.security.api.UserService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.i18n.LocaleContextHolder;
@@ -69,6 +71,12 @@ public class WarehouseIssueDocumentsService {
     @Autowired
     private CalculationQuantityService calculationQuantityService;
 
+    @Autowired
+    private UserService userService;
+
+    @Autowired
+    private SecurityService securityService;
+
     public CreationDocumentResponse createWarehouseDocument(final Entity locationFrom, final Entity locationTo,
             final Collection positions) {
         return createWarehouseDocument(locationFrom, locationTo, positions, null);
@@ -120,7 +128,11 @@ public class WarehouseIssueDocumentsService {
 
     private CreationDocumentResponse buildReleaseDocument(final Entity locationFrom, final Entity locationTo,
             final Collection positions, final DocumentsStatus documentsStatus, final String additionalInfo) {
-        DocumentBuilder documentBuilder = documentManagementService.getDocumentBuilder();
+
+        Long id = securityService.getCurrentUserOrQcadooBotId();
+        Entity user = userService.find(id);
+
+        DocumentBuilder documentBuilder = documentManagementService.getDocumentBuilder(user);
 
         documentBuilder.setField(DocumentFields.TYPE, DocumentType.RELEASE.getStringValue());
         documentBuilder.setField(DocumentFields.LOCATION_FROM, locationFrom);
@@ -161,7 +173,11 @@ public class WarehouseIssueDocumentsService {
 
     private CreationDocumentResponse buildTransferDocument(final Entity locationFrom, final Entity locationTo,
             final Collection positions, final DocumentsStatus documentsStatus, final String additionalInfo) {
-        DocumentBuilder documentBuilder = documentManagementService.getDocumentBuilder();
+
+        Long id = securityService.getCurrentUserOrQcadooBotId();
+        Entity user = userService.find(id);
+
+        DocumentBuilder documentBuilder = documentManagementService.getDocumentBuilder(user);
 
         documentBuilder.setField(DocumentFields.TYPE, DocumentType.TRANSFER.getStringValue());
         documentBuilder.setField(DocumentFields.LOCATION_FROM, locationFrom);
