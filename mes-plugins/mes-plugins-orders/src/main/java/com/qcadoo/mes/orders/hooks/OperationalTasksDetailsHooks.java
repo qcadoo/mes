@@ -120,11 +120,6 @@ public class OperationalTasksDetailsHooks {
         GridComponent workersGrid = (GridComponent) view.getComponentByReference(OperationalTaskFields.WORKERS);
         LookupComponent technologyOperationComponentLookup = (LookupComponent) view
                 .getComponentByReference(OperationalTaskFields.TECHNOLOGY_OPERATION_COMPONENT);
-        FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
-        Entity operationalTaskDB = null;
-        if (form.getEntityId() != null) {
-            operationalTaskDB = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_OPERATIONAL_TASK).get(form.getEntityId());
-        }
         Entity technologyOperationComponent = technologyOperationComponentLookup.getEntity();
         int plannedStaff;
         if (!Objects.isNull(technologyOperationComponent)) {
@@ -140,9 +135,7 @@ public class OperationalTasksDetailsHooks {
         List<Entity> workers = workersGrid.getEntities();
         if (staff.getEntity() != null && workers.size() != 1) {
             staff.setFieldValue(null);
-        }
-        if (workers.size() == 1 && !(staff.getEntity() == null && operationalTaskDB != null
-                && operationalTaskDB.getBelongsToField(OperationalTaskFields.STAFF) != null && staff.isEnabled())) {
+        } else if (workers.size() == 1 && !staff.isClearCurrentCode() && "".equals(staff.getCurrentCode())) {
             staff.setFieldValue(workers.get(0).getId());
         }
         staff.setEnabled(workers.size() <= 1);
