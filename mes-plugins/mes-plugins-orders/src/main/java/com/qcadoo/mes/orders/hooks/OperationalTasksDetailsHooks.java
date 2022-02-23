@@ -110,8 +110,8 @@ public class OperationalTasksDetailsHooks {
             FilterValueHolder filter = staffLookup.getFilterValue();
             filter.put(OperationalTaskDetailsCriteriaModifiers.OPERATIONAL_TASK_ID, form.getEntityId());
             staffLookup.setFilterValue(filter);
+            staffLookup.requestComponentUpdateState();
         }
-        staffLookup.requestComponentUpdateState();
     }
 
     private void setStaff(ViewDefinitionState view) {
@@ -207,6 +207,7 @@ public class OperationalTasksDetailsHooks {
     }
 
     public void disableFieldsWhenOrderTypeIsSelected(final ViewDefinitionState view) {
+        FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         FieldComponent typeField = (FieldComponent) view.getComponentByReference(OperationalTaskFields.TYPE);
         FieldComponent stateField = (FieldComponent) view.getComponentByReference(OperationalTaskFields.STATE);
 
@@ -229,7 +230,7 @@ public class OperationalTasksDetailsHooks {
         GridComponent workers = (GridComponent) view.getComponentByReference(OperationalTaskFields.WORKERS);
         boolean staffTabEnabled = !OperationalTaskStateStringValues.FINISHED.equals(state) && !OperationalTaskStateStringValues.REJECTED.equals(state);
         actualStaff.setEnabled(staffTabEnabled);
-        workers.setEnabled(staffTabEnabled);
+        workers.setEnabled(staffTabEnabled && form.getEntityId() != null);
     }
 
     private void changedStateField(final ViewDefinitionState view, final List<String> references, final boolean enabled) {
