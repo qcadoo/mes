@@ -65,7 +65,7 @@ public class ReceiptDocumentForReleaseHelper {
             Long id = securityService.getCurrentUserOrQcadooBotId();
             Entity user = userService.find(id);
 
-            DocumentBuilder documentBuilder = documentManagementService.getDocumentBuilder();
+            DocumentBuilder documentBuilder = documentManagementService.getDocumentBuilder(user);
             Entity documentFromDB = document.getDataDefinition().get(document.getId());
             Entity linkedDocumentLocation = document.getBelongsToField(DocumentFields.LINKED_DOCUMENT_LOCATION);
 
