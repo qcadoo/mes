@@ -137,7 +137,7 @@ public final class ProductionTrackingListenerServicePFTD {
         Multimap<Long, Entity> groupedRecordInProducts = productionTrackingDocumentsHelper
                 .fillFromBPCProductIn(trackingOperationProductInComponents, order, technologyOperationComponent, true);
 
-        if (!checkIfProductsAvailableInStock(productionTracking, groupedRecordInProducts)) {
+        if (!groupedRecordInProducts.isEmpty() && !checkIfProductsAvailableInStock(productionTracking, groupedRecordInProducts)) {
             return;
         }
 
