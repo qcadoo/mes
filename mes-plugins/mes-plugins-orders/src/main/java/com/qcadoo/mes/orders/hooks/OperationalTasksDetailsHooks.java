@@ -128,7 +128,7 @@ public class OperationalTasksDetailsHooks {
             plannedStaff = 1;
         }
         plannedStaffField.setFieldValue(plannedStaff);
-        if (actualStaffField.getFieldValue() == null || !NumberUtils.isNumber(actualStaffField.getFieldValue().toString())) {
+        if (actualStaffField.getFieldValue() == null || !NumberUtils.isDigits(actualStaffField.getFieldValue().toString())) {
             actualStaffField.setFieldValue(plannedStaff);
         }
         LookupComponent staff = (LookupComponent) view.getComponentByReference(OperationalTaskFields.STAFF);
