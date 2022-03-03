@@ -95,7 +95,7 @@ public class OperationalTaskValidators {
         }
         if (actualStaff != null && actualStaff % minStaff != 0) {
             operationalTask.addError(operationalTaskDD.getField(OperationalTaskFields.ACTUAL_STAFF),
-                    "orders.operationalTask.error.actualStaffMustBeMultipleMinStaff");
+                    "orders.operationalTask.error.actualStaffMustBeMultipleMinStaff", String.valueOf(minStaff));
             return false;
         }
         return true;
