@@ -59,6 +59,8 @@ public final class TechnologyOperationComponentFieldsTNFO {
 
     public static final String MIN_STAFF = "minStaff";
 
+    public static final String OPTIMAL_STAFF = "optimalStaff";
+
     public static final String TJ_DECREASES_FOR_ENLARGED_STAFF = "tjDecreasesForEnlargedStaff";
 
 }

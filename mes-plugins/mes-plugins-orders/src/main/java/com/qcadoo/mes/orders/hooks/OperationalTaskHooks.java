@@ -83,16 +83,16 @@ public class OperationalTaskHooks {
     public void setStaff(final Entity operationalTask) {
         Entity technologyOperationComponent = operationalTask
                 .getBelongsToField(OperationalTaskFields.TECHNOLOGY_OPERATION_COMPONENT);
-        int plannedStaff;
+        int minStaff;
         if (!Objects.isNull(technologyOperationComponent)) {
-            plannedStaff = technologyOperationComponent.getIntegerField(TechnologyOperationComponentFieldsTNFO.MIN_STAFF);
+            minStaff = technologyOperationComponent.getIntegerField(TechnologyOperationComponentFieldsTNFO.MIN_STAFF);
         } else {
-            plannedStaff = 1;
+            minStaff = 1;
         }
         Integer actualStaff = operationalTask.getIntegerField(OperationalTaskFields.ACTUAL_STAFF);
         if (actualStaff == null) {
-            actualStaff = plannedStaff;
-            operationalTask.setField(OperationalTaskFields.ACTUAL_STAFF, plannedStaff);
+            actualStaff = minStaff;
+            operationalTask.setField(OperationalTaskFields.ACTUAL_STAFF, minStaff);
         }
         List<Entity> workers = operationalTask.getManyToManyField(OperationalTaskFields.WORKERS);
         Entity staff = operationalTask.getBelongsToField(OperationalTaskFields.STAFF);
@@ -114,17 +114,17 @@ public class OperationalTaskHooks {
             }
         }
 
-        updateFinishDate(operationalTask, technologyOperationComponent, plannedStaff, actualStaff, operationalTaskDB);
+        updateFinishDate(operationalTask, technologyOperationComponent, minStaff, actualStaff, operationalTaskDB);
         if (actualStaff != operationalTask.getManyToManyField(OperationalTaskFields.WORKERS).size()) {
             operationalTask.addGlobalMessage(
                     "orders.operationalTask.error.workersQuantityDifferentThanActualStaff");
         }
     }
 
-    private void updateFinishDate(Entity operationalTask, Entity technologyOperationComponent, int plannedStaff, Integer actualStaff, Entity operationalTaskDB) {
+    private void updateFinishDate(Entity operationalTask, Entity technologyOperationComponent, int minStaff, Integer actualStaff, Entity operationalTaskDB) {
         if (!Objects.isNull(technologyOperationComponent) && technologyOperationComponent
                 .getBooleanField(TechnologyOperationComponentFieldsTNFO.TJ_DECREASES_FOR_ENLARGED_STAFF) &&
-                (operationalTask.getId() == null && actualStaff != plannedStaff || operationalTaskDB != null &&
+                (operationalTask.getId() == null && actualStaff != minStaff || operationalTaskDB != null &&
                         actualStaff != operationalTaskDB.getIntegerField(OperationalTaskFields.ACTUAL_STAFF).intValue())) {
             operationalTask.setField(OperationalTaskFields.FINISH_DATE,
                     getFinishDate(operationalTask, technologyOperationComponent));
@@ -147,8 +147,8 @@ public class OperationalTaskHooks {
         Integer machineWorkTime;
         Integer additionalTime;
         Integer actualStaff = task.getIntegerField(OperationalTaskFields.ACTUAL_STAFF);
-        int plannedStaff = technologyOperationComponent.getIntegerField(TechnologyOperationComponentFieldsTNFO.MIN_STAFF);
-        BigDecimal staffFactor = BigDecimal.valueOf(plannedStaff).divide(BigDecimal.valueOf(actualStaff), numberService.getMathContext());
+        int minStaff = technologyOperationComponent.getIntegerField(TechnologyOperationComponentFieldsTNFO.MIN_STAFF);
+        BigDecimal staffFactor = BigDecimal.valueOf(minStaff).divide(BigDecimal.valueOf(actualStaff), numberService.getMathContext());
         if (techOperCompWorkstationTime.isPresent()) {
             OperationWorkTime operationWorkTime = operationWorkTimeService.estimateTechOperationWorkTimeForWorkstation(
                     technologyOperationComponent,

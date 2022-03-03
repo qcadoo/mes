@@ -115,21 +115,29 @@ public class OperationalTasksDetailsHooks {
     }
 
     private void setStaff(ViewDefinitionState view) {
-        FieldComponent plannedStaffField = (FieldComponent) view.getComponentByReference("plannedStaff");
+        FieldComponent minStaffField = (FieldComponent) view.getComponentByReference(TechnologyOperationComponentFieldsTNFO.MIN_STAFF);
+        FieldComponent optimalStaffField = (FieldComponent) view.getComponentByReference(TechnologyOperationComponentFieldsTNFO.OPTIMAL_STAFF);
         FieldComponent actualStaffField = (FieldComponent) view.getComponentByReference(OperationalTaskFields.ACTUAL_STAFF);
         GridComponent workersGrid = (GridComponent) view.getComponentByReference(OperationalTaskFields.WORKERS);
         LookupComponent technologyOperationComponentLookup = (LookupComponent) view
                 .getComponentByReference(OperationalTaskFields.TECHNOLOGY_OPERATION_COMPONENT);
         Entity technologyOperationComponent = technologyOperationComponentLookup.getEntity();
-        int plannedStaff;
+        int minStaff;
         if (!Objects.isNull(technologyOperationComponent)) {
-            plannedStaff = technologyOperationComponent.getIntegerField(TechnologyOperationComponentFieldsTNFO.MIN_STAFF);
+            minStaff = technologyOperationComponent.getIntegerField(TechnologyOperationComponentFieldsTNFO.MIN_STAFF);
         } else {
-            plannedStaff = 1;
+            minStaff = 1;
         }
-        plannedStaffField.setFieldValue(plannedStaff);
+        minStaffField.setFieldValue(minStaff);
+        int optimalStaff;
+        if (!Objects.isNull(technologyOperationComponent)) {
+            optimalStaff = technologyOperationComponent.getIntegerField(TechnologyOperationComponentFieldsTNFO.OPTIMAL_STAFF);
+        } else {
+            optimalStaff = 1;
+        }
+        optimalStaffField.setFieldValue(optimalStaff);
         if (actualStaffField.getFieldValue() == null || !NumberUtils.isDigits(actualStaffField.getFieldValue().toString())) {
-            actualStaffField.setFieldValue(plannedStaff);
+            actualStaffField.setFieldValue(minStaff);
         }
         LookupComponent staff = (LookupComponent) view.getComponentByReference(OperationalTaskFields.STAFF);
         List<Entity> workers = workersGrid.getEntities();
