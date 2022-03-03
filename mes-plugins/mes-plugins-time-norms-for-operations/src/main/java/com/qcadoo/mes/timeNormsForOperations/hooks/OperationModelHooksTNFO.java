@@ -91,6 +91,16 @@ public class OperationModelHooksTNFO {
                     "qcadooView.validate.field.error.missing");
             return false;
         }
+        if (entity.getIntegerField(OperationFieldsTFNO.OPTIMAL_STAFF) == null) {
+            entity.addError(dataDefinition.getField(OperationFieldsTFNO.OPTIMAL_STAFF),
+                    "qcadooView.validate.field.error.missing");
+            return false;
+        }
+        if (entity.getIntegerField(OperationFieldsTFNO.MIN_STAFF) > entity.getIntegerField(OperationFieldsTFNO.OPTIMAL_STAFF)) {
+            entity.addError(dataDefinition.getField(OperationFieldsTFNO.OPTIMAL_STAFF),
+                    "technologies.technologyOperationComponent.validation.error.optimalStaffMustNotBeLessThanMinimumStaff");
+            return false;
+        }
         return true;
     }
 }

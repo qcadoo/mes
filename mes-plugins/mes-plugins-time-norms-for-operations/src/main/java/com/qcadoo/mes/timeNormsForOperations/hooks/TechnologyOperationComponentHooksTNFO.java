@@ -184,6 +184,16 @@ public class TechnologyOperationComponentHooksTNFO {
                     "qcadooView.validate.field.error.missing");
             return false;
         }
+        if (entity.getIntegerField(TechnologyOperationComponentFieldsTNFO.OPTIMAL_STAFF) == null) {
+            entity.addError(dataDefinition.getField(TechnologyOperationComponentFieldsTNFO.OPTIMAL_STAFF),
+                    "qcadooView.validate.field.error.missing");
+            return false;
+        }
+        if (entity.getIntegerField(TechnologyOperationComponentFieldsTNFO.MIN_STAFF) > entity.getIntegerField(TechnologyOperationComponentFieldsTNFO.OPTIMAL_STAFF)) {
+            entity.addError(dataDefinition.getField(TechnologyOperationComponentFieldsTNFO.OPTIMAL_STAFF),
+                    "technologies.technologyOperationComponent.validation.error.optimalStaffMustNotBeLessThanMinimumStaff");
+            return false;
+        }
         return true;
     }
 }

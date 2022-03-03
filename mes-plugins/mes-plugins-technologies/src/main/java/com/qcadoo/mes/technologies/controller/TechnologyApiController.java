@@ -57,8 +57,8 @@ public final class TechnologyApiController {
     @ResponseBody
     @RequestMapping(value = "/technologies", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public TechnologiesResponse getTechnologies(@RequestParam("query") String query, @RequestParam("productId") Long productId,
-            @RequestParam(value = "master", required = false, defaultValue = "false") Boolean master,
-            @RequestParam(value = "forEach", required = false, defaultValue = "false") Boolean forEach) {
+                                                @RequestParam(value = "master", required = false, defaultValue = "false") Boolean master,
+                                                @RequestParam(value = "forEach", required = false, defaultValue = "false") Boolean forEach) {
         return dataProvider.getTechnologies(query, productId, master, forEach);
     }
 
@@ -71,17 +71,17 @@ public final class TechnologyApiController {
     @ResponseBody
     @RequestMapping(value = "/workstations", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public WorkstationsResponse getWorkstations(@RequestParam("query") String query,
-            @RequestParam(value = "tocId", required = false) Long tocId) {
+                                                @RequestParam(value = "tocId", required = false) Long tocId) {
         return dataProvider.getWorkstations(query, tocId);
     }
 
     @ResponseBody
     @RequestMapping(value = "/workstationsByPage", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public WorkstationsGridResponse getWorkstations(@RequestParam(value = "limit") int limit,
-            @RequestParam(value = "offset") int offset, @RequestParam(value = "sort", required = false) String sort,
-            @RequestParam(value = "order", required = false) String order,
-            @RequestParam(value = "search", required = false) String search,
-            @RequestParam(value = "tocId", required = false) Long tocId) {
+                                                    @RequestParam(value = "offset") int offset, @RequestParam(value = "sort", required = false) String sort,
+                                                    @RequestParam(value = "order", required = false) String order,
+                                                    @RequestParam(value = "search", required = false) String search,
+                                                    @RequestParam(value = "tocId", required = false) Long tocId) {
         return dataProvider.getWorkstations(limit, offset, sort, order, search, tocId);
     }
 
@@ -94,9 +94,9 @@ public final class TechnologyApiController {
     @ResponseBody
     @RequestMapping(value = "/workstationTypesByPage", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public WorkstationTypesGridResponse getWorkstations(@RequestParam(value = "limit") int limit,
-            @RequestParam(value = "offset") int offset, @RequestParam(value = "sort", required = false) String sort,
-            @RequestParam(value = "order", required = false) String order,
-            @RequestParam(value = "search", required = false) String search) {
+                                                        @RequestParam(value = "offset") int offset, @RequestParam(value = "sort", required = false) String sort,
+                                                        @RequestParam(value = "order", required = false) String order,
+                                                        @RequestParam(value = "search", required = false) String search) {
         return dataProvider.getWorkstationTypes(limit, offset, sort, order, search);
     }
 
@@ -115,10 +115,10 @@ public final class TechnologyApiController {
     @ResponseBody
     @RequestMapping(value = "/technologiesByPage", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public TechnologiesGridResponse getProducts(@RequestParam(value = "limit") int limit,
-            @RequestParam(value = "offset") int offset, @RequestParam(value = "sort", required = false) String sort,
-            @RequestParam(value = "order", required = false) String order,
-            @RequestParam(value = "search", required = false) String search, @RequestParam(value = "productId") Long productId,
-            @RequestParam(value = "forEach", required = false, defaultValue = "false") Boolean forEach) {
+                                                @RequestParam(value = "offset") int offset, @RequestParam(value = "sort", required = false) String sort,
+                                                @RequestParam(value = "order", required = false) String order,
+                                                @RequestParam(value = "search", required = false) String search, @RequestParam(value = "productId") Long productId,
+                                                @RequestParam(value = "forEach", required = false, defaultValue = "false") Boolean forEach) {
         return dataProvider.getTechnologiesResponse(limit, offset, sort, order, search, productId, forEach);
     }
 
@@ -150,6 +150,8 @@ public final class TechnologyApiController {
         operationEntity.setField("minStaff", 1);
 
         operationEntity.setField("tjDecreasesForEnlargedStaff", false);
+
+        operationEntity.setField("optimalStaff", 1);
 
         operationEntity = operationEntity.getDataDefinition().save(operationEntity);
         if (operationEntity.isValid()) {
