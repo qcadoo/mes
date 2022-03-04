@@ -179,19 +179,26 @@ public class TechnologyOperationComponentHooksTNFO {
     }
 
     public boolean validatesWith(final DataDefinition dataDefinition, final Entity entity) {
-        if (entity.getIntegerField(TechnologyOperationComponentFieldsTNFO.MIN_STAFF) == null) {
+        Integer minStaff = entity.getIntegerField(TechnologyOperationComponentFieldsTNFO.MIN_STAFF);
+        Integer optimalStaff = entity.getIntegerField(TechnologyOperationComponentFieldsTNFO.OPTIMAL_STAFF);
+        if (minStaff == null) {
             entity.addError(dataDefinition.getField(TechnologyOperationComponentFieldsTNFO.MIN_STAFF),
                     "qcadooView.validate.field.error.missing");
             return false;
         }
-        if (entity.getIntegerField(TechnologyOperationComponentFieldsTNFO.OPTIMAL_STAFF) == null) {
+        if (optimalStaff == null) {
             entity.addError(dataDefinition.getField(TechnologyOperationComponentFieldsTNFO.OPTIMAL_STAFF),
                     "qcadooView.validate.field.error.missing");
             return false;
         }
-        if (entity.getIntegerField(TechnologyOperationComponentFieldsTNFO.MIN_STAFF) > entity.getIntegerField(TechnologyOperationComponentFieldsTNFO.OPTIMAL_STAFF)) {
+        if (minStaff > optimalStaff) {
             entity.addError(dataDefinition.getField(TechnologyOperationComponentFieldsTNFO.OPTIMAL_STAFF),
                     "technologies.technologyOperationComponent.validation.error.optimalStaffMustNotBeLessThanMinimumStaff");
+            return false;
+        }
+        if (optimalStaff % minStaff != 0) {
+            entity.addError(dataDefinition.getField(OperationFieldsTFNO.OPTIMAL_STAFF),
+                    "technologies.technologyOperationComponent.validation.error.optimalStaffMustBeMultipleMinStaff", String.valueOf(minStaff));
             return false;
         }
         return true;
