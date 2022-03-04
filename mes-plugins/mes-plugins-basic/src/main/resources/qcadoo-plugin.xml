@@ -271,6 +271,7 @@
 
         <model:model model="company" resource="model/company.xml"/>
         <model:model model="staff" resource="model/staff.xml"/>
+        <model:model model="staffDto" resource="model/staffDto.xml"/>
         <model:model model="crew" resource="model/crew.xml"/>
         <model:model model="shift" resource="model/shift.xml"/>
         <model:model model="shiftTimetableException" resource="model/shiftTimetableException.xml"/>

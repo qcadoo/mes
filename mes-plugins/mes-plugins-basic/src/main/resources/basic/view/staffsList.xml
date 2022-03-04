@@ -26,7 +26,7 @@
 -->
 <view defaultAuthorizationRole="ROLE_STAFF_WAGES" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
 	xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
-	name="staffsList" modelName="staff" menuAccessible="true">
+	name="staffsList" modelName="staffDto" menuAccessible="true">
 
 	<component type="window" name="window">
 	
@@ -58,25 +58,25 @@
 			<option type="column" name="name" fields="name" link="true" />
 			<option type="column" name="surname" fields="surname" link="true" />
 			<option type="column" name="post" fields="post" link="true" />
-			<option type="column" name="productionLine" fields="productionLine" expression="#productionLine['number']"
+			<option type="column" name="productionLineNumber" fields="productionLineNumber"
 					link="true" />
-			<option type="column" name="division_number" fields="division"
-					expression="#division['number']" link="true" width="120" />
-			<option type="column" name="division_name" fields="division"
-					expression="#division['name']" link="true" width="120" />
-			<option type="column" name="workstation_number" fields="workstation"
-					expression="#workstation['number']" link="true" width="120" />
-			<option type="column" name="workstation_name" fields="workstation"
-					expression="#workstation['name']" link="true" width="120" />
-			<option type="column" name="workFor" fields="workFor"
-					expression="#workFor['name']" width="250"/>
+			<option type="column" name="divisionNumber" fields="divisionNumber"
+					link="true" width="120" />
+			<option type="column" name="divisionName" fields="divisionName"
+					link="true" width="120" />
+			<option type="column" name="workstationNumber" fields="workstationNumber"
+					link="true" width="120" />
+			<option type="column" name="workstationName" fields="workstationName"
+					link="true" width="120" />
+			<option type="column" name="workForName" fields="workForName"
+					width="250"/>
 				
 			<option type="order" column="number" direction="desc" />
 			
 			<option type="searchable"
-					value="name,number,surname,post,productionLine,division_name,division_number.workstation_name,workstation_name,workstation_number" />
+					value="name,number,surname,post,productionLineNumber,divisionName,divisionNumber,workstationNumber,workstationName,workForName" />
 			<option type="orderable"
-					value="name,number,surname,post,productionLine,division_name,division_number,workstation_name,workstation_number" />
+					value="name,number,surname,post,productionLineNumber,divisionName,divisionNumber,workstationNumber,workstationName,workForName" />
 				
 			<option type="correspondingView" value="basic/staffDetails" />
 			<option type="correspondingComponent" value="form" />
