@@ -33,4 +33,6 @@ public final class OperationFieldsTFNO {
 
     public static final String MIN_STAFF = "minStaff";
 
+    public static final String OPTIMAL_STAFF = "optimalStaff";
+
 }

@@ -35,6 +35,8 @@ public final class ParameterFieldsPFTD {
 
     public static final String GENERATE_WAREHOUSE_ISSUES_TO_ORDERS = "generateWarehouseIssuesToOrders";
 
+    public static final String AUTOMATIC_RELEASE_AFTER_GENERATION = "automaticReleaseAfterGeneration";
+
     public static final String DAYS_BEFORE_ORDER_START = "daysBeforeOrderStart";
 
     public static final String ISSUE_LOCATION = "issueLocation";

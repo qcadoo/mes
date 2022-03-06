@@ -3,7 +3,7 @@
 
     ***************************************************************************
     Copyright (c) 2010 Qcadoo Limited
-    Project: Qcadoo Framework
+    Project: Qcadoo MES
     Version: 1.4
 
     This file is part of Qcadoo.
@@ -24,20 +24,25 @@
     ***************************************************************************
 
 -->
-<ribbonExtension xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-                 xmlns="http://schema.qcadoo.org/modules/ribbonExtension"
-                 xsi:schemaLocation="http://schema.qcadoo.org/modules/ribbonExtension http://schema.qcadoo.org/modules/ribbonExtension.xsd"
-                 plugin="orders" view="orderDetails">
+<model name="staffDto" activable="true" auditable="false" deletable="false" insertable="false"
+       updatable="false"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
+       xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
 
-    <group name="materialFlow">
-        <smallButton name="componentAvailability" icon="iconProducts16.png"
-                   action="#{form}.fireEvent(showMaterialAvailabilityForOrder);"/>
-        <smallButton name="warehouseIssues" icon="genealogyIcon16.png"
-                   action="#{form}.fireEvent(showWarehouseIssuesForOrder);"/>
-    </group>
+    <fields>
+        <string name="number"/>
+        <string name="name"/>
+        <string name="surname"/>
+        <string name="post"/>
+        <string name="productionLineNumber"/>
+        <string name="divisionNumber"/>
+        <string name="divisionName"/>
+        <string name="workstationNumber"/>
+        <string name="workstationName"/>
+        <string name="workForName"/>
+    </fields>
 
-    <group name="issues" defaultAuthorizationRole="ROLE_SUPERADMIN">
-        <smallButton name="issueForOrder" icon="iconProducts16.png"
-                     action="#{form}.fireEvent(issueForOrder);"/>
-    </group>
-</ribbonExtension>
+    <identifier expression="#number + ' - ' + #name"/>
+
+    <masterModel plugin="basic" model="staff"/>
+</model>

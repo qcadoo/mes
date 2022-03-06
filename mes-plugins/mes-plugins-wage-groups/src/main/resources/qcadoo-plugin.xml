@@ -79,6 +79,9 @@
 			<model:belongsTo name="wageGroup" model="wageGroup"
 				plugin="wageGroups" />
 		</model:model-field>
+		<model:model-field model="staffDto" plugin="basic">
+			<model:string name="wageGroupNumber"/>
+		</model:model-field>
 		<model:model-field model="staff" plugin="basic">
 			<model:decimal name="laborHourlyCost" />
 		</model:model-field>
@@ -110,9 +113,8 @@
 			method="setCurrency" />
 
 		<view:view-grid-column view="staffsList" component="grid" plugin="basic">
-			<view:column name="wageGroup" fields="wageGroup"
-						 orderable="true" searchable="true" width="80"
-						 expression="#wageGroup['number']"/>
+			<view:column name="wageGroupNumber" fields="wageGroupNumber"
+						 orderable="true" searchable="true" width="80"/>
 		</view:view-grid-column>
 
 	</modules>

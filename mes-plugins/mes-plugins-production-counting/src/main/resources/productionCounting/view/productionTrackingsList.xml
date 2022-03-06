@@ -185,8 +185,7 @@
                     width="90"/>
             <option type="column" name="createDate" fields="createDate"
                     width="100"/>
-            <option type="column" name="lastTracking" fields="lastTracking"
-                    expression="#lastTracking" width="40"/>
+            <option type="column" name="lastTracking" fields="lastTracking"  width="40"/>
             <option type="column" name="timeRangeFrom" fields="timeRangeFrom"
                     width="100"/>
             <option type="column" name="timeRangeTo" fields="timeRangeTo"

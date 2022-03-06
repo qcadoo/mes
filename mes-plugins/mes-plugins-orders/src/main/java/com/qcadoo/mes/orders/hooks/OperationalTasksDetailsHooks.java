@@ -41,6 +41,8 @@ import com.qcadoo.mes.orders.constants.OperationalTaskDtoFields;
 import com.qcadoo.mes.orders.constants.OperationalTaskFields;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
+import com.qcadoo.mes.orders.criteriaModifiers.OperationalTaskDetailsCriteriaModifiers;
+import com.qcadoo.mes.orders.states.constants.OperationalTaskStateStringValues;
 import com.qcadoo.mes.technologies.constants.OperationFields;
 import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
 import com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperationComponentFieldsTNFO;
@@ -48,6 +50,7 @@ import com.qcadoo.model.api.BigDecimalUtils;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
+import com.qcadoo.plugins.users.constants.GroupDetailsConstants;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
@@ -97,34 +100,55 @@ public class OperationalTasksDetailsHooks {
 
         disableFieldsWhenOrderTypeIsSelected(view);
         disableButtons(view);
+        fillCriteriaModifiers(view);
+    }
+
+    public void fillCriteriaModifiers(final ViewDefinitionState viewDefinitionState) {
+        LookupComponent staffLookup = (LookupComponent) viewDefinitionState.getComponentByReference("staffLookup");
+        FormComponent form = (FormComponent) viewDefinitionState.getComponentByReference(QcadooViewConstants.L_FORM);
+        if (form.getEntityId() != null) {
+            FilterValueHolder filter = staffLookup.getFilterValue();
+            filter.put(OperationalTaskDetailsCriteriaModifiers.OPERATIONAL_TASK_ID, form.getEntityId());
+            staffLookup.setFilterValue(filter);
+            staffLookup.requestComponentUpdateState();
+        }
     }
 
     private void setStaff(ViewDefinitionState view) {
-        FieldComponent plannedStaffField = (FieldComponent) view.getComponentByReference("plannedStaff");
+        FieldComponent minStaffField = (FieldComponent) view.getComponentByReference(TechnologyOperationComponentFieldsTNFO.MIN_STAFF);
+        FieldComponent optimalStaffField = (FieldComponent) view.getComponentByReference(TechnologyOperationComponentFieldsTNFO.OPTIMAL_STAFF);
         FieldComponent actualStaffField = (FieldComponent) view.getComponentByReference(OperationalTaskFields.ACTUAL_STAFF);
         GridComponent workersGrid = (GridComponent) view.getComponentByReference(OperationalTaskFields.WORKERS);
         LookupComponent technologyOperationComponentLookup = (LookupComponent) view
                 .getComponentByReference(OperationalTaskFields.TECHNOLOGY_OPERATION_COMPONENT);
         Entity technologyOperationComponent = technologyOperationComponentLookup.getEntity();
-        int plannedStaff;
+        int minStaff;
         if (!Objects.isNull(technologyOperationComponent)) {
-            plannedStaff = technologyOperationComponent.getIntegerField(TechnologyOperationComponentFieldsTNFO.MIN_STAFF);
+            minStaff = technologyOperationComponent.getIntegerField(TechnologyOperationComponentFieldsTNFO.MIN_STAFF);
         } else {
-            plannedStaff = 1;
+            minStaff = 1;
         }
-        plannedStaffField.setFieldValue(plannedStaff);
-        if (actualStaffField.getFieldValue() == null || !NumberUtils.isNumber(actualStaffField.getFieldValue().toString())) {
-            actualStaffField.setFieldValue(plannedStaff);
+        minStaffField.setFieldValue(minStaff);
+        int optimalStaff;
+        if (!Objects.isNull(technologyOperationComponent)) {
+            optimalStaff = technologyOperationComponent.getIntegerField(TechnologyOperationComponentFieldsTNFO.OPTIMAL_STAFF);
+        } else {
+            optimalStaff = 1;
         }
-        FieldComponent staff = (FieldComponent) view.getComponentByReference(OperationalTaskFields.STAFF);
-        if (workersGrid.getEntities().size() != 1) {
+        optimalStaffField.setFieldValue(optimalStaff);
+        if (actualStaffField.getFieldValue() == null || !NumberUtils.isDigits(actualStaffField.getFieldValue().toString())) {
+            actualStaffField.setFieldValue(minStaff);
+        }
+        LookupComponent staff = (LookupComponent) view.getComponentByReference(OperationalTaskFields.STAFF);
+        List<Entity> workers = workersGrid.getEntities();
+        if (staff.getEntity() != null && workers.size() != 1) {
             staff.setFieldValue(null);
-        } else {
-            staff.setFieldValue(workersGrid.getEntities().get(0).getId());
+        } else if (workers.size() == 1 && !staff.isClearCurrentCode() && "".equals(staff.getCurrentCode())) {
+            staff.setFieldValue(workers.get(0).getId());
         }
-        staff.setEnabled(workersGrid.getEntities().size() <= 1);
+        staff.setEnabled(workers.size() <= 1);
         int actualStaff = Integer.parseInt((String) actualStaffField.getFieldValue());
-        if (view.isViewAfterRedirect() && actualStaff != workersGrid.getEntities().size()) {
+        if (view.isViewAfterRedirect() && actualStaff != workers.size()) {
             view.addMessage(
                     "orders.operationalTask.error.workersQuantityDifferentThanActualStaff", ComponentState.MessageType.INFO);
         }
@@ -191,9 +215,12 @@ public class OperationalTasksDetailsHooks {
     }
 
     public void disableFieldsWhenOrderTypeIsSelected(final ViewDefinitionState view) {
+        FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         FieldComponent typeField = (FieldComponent) view.getComponentByReference(OperationalTaskFields.TYPE);
+        FieldComponent stateField = (FieldComponent) view.getComponentByReference(OperationalTaskFields.STATE);
 
         String type = (String) typeField.getFieldValue();
+        String state = (String) stateField.getFieldValue();
 
         List<String> referenceBasicFields = Lists.newArrayList(OperationalTaskFields.NAME);
         List<String> extendFields = Lists.newArrayList(OperationalTaskFields.ORDER,
@@ -207,6 +234,11 @@ public class OperationalTasksDetailsHooks {
             changedStateField(view, referenceBasicFields, false);
             changedStateField(view, extendFields, true);
         }
+        FieldComponent actualStaff = (FieldComponent) view.getComponentByReference(OperationalTaskFields.ACTUAL_STAFF);
+        GridComponent workers = (GridComponent) view.getComponentByReference(OperationalTaskFields.WORKERS);
+        boolean staffTabEnabled = !OperationalTaskStateStringValues.FINISHED.equals(state) && !OperationalTaskStateStringValues.REJECTED.equals(state);
+        actualStaff.setEnabled(staffTabEnabled);
+        workers.setEnabled(staffTabEnabled && form.getEntityId() != null);
     }
 
     private void changedStateField(final ViewDefinitionState view, final List<String> references, final boolean enabled) {

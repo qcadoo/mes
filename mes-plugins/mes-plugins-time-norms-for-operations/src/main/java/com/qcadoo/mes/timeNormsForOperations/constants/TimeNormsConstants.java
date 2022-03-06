@@ -51,6 +51,6 @@ public final class TimeNormsConstants {
     public static final Set<String> FIELDS_OPERATION = Sets.newHashSet("tpz", "tj", "productionInOneCycle",
             "nextOperationAfterProducedType", "nextOperationAfterProducedQuantity", "nextOperationAfterProducedQuantityUNIT",
             "timeNextOperation", "machineUtilization", "laborUtilization", "productionInOneCycleUNIT",
-            "areProductQuantitiesDivisible", "isTjDivisible", "minStaff", "tjDecreasesForEnlargedStaff");
+            "areProductQuantitiesDivisible", "isTjDivisible", "minStaff", "optimalStaff", "tjDecreasesForEnlargedStaff");
 
 }

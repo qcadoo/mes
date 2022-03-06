@@ -3,6 +3,8 @@ package com.qcadoo.mes.materialFlowResources.service;
 import java.util.List;
 import java.util.Optional;
 
+import com.qcadoo.security.api.SecurityService;
+import com.qcadoo.security.api.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Component;
@@ -42,6 +44,12 @@ public class ReceiptDocumentForReleaseHelper {
     @Autowired
     private ParameterService parameterService;
 
+    @Autowired
+    private UserService userService;
+
+    @Autowired
+    private SecurityService securityService;
+
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void tryBuildConnectedDocument(final Entity document, final ViewDefinitionState view) {
         boolean created = tryBuildConnectedDocument(document, true);
@@ -53,7 +61,11 @@ public class ReceiptDocumentForReleaseHelper {
 
     protected boolean tryBuildConnectedDocument(final Entity document, final boolean fillDescription) {
         if (buildConnectedDocument(document)) {
-            DocumentBuilder documentBuilder = documentManagementService.getDocumentBuilder();
+
+            Long id = securityService.getCurrentUserOrQcadooBotId();
+            Entity user = userService.find(id);
+
+            DocumentBuilder documentBuilder = documentManagementService.getDocumentBuilder(user);
             Entity documentFromDB = document.getDataDefinition().get(document.getId());
             Entity linkedDocumentLocation = document.getBelongsToField(DocumentFields.LINKED_DOCUMENT_LOCATION);
 

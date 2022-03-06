@@ -86,9 +86,26 @@ public class OperationModelHooksTNFO {
     }
 
     public boolean validatesWith(final DataDefinition dataDefinition, final Entity entity) {
-        if (entity.getIntegerField(OperationFieldsTFNO.MIN_STAFF) == null) {
+        Integer minStaff = entity.getIntegerField(OperationFieldsTFNO.MIN_STAFF);
+        Integer optimalStaff = entity.getIntegerField(OperationFieldsTFNO.OPTIMAL_STAFF);
+        if (minStaff == null) {
             entity.addError(dataDefinition.getField(OperationFieldsTFNO.MIN_STAFF),
                     "qcadooView.validate.field.error.missing");
+            return false;
+        }
+        if (optimalStaff == null) {
+            entity.addError(dataDefinition.getField(OperationFieldsTFNO.OPTIMAL_STAFF),
+                    "qcadooView.validate.field.error.missing");
+            return false;
+        }
+        if (minStaff > optimalStaff) {
+            entity.addError(dataDefinition.getField(OperationFieldsTFNO.OPTIMAL_STAFF),
+                    "technologies.technologyOperationComponent.validation.error.optimalStaffMustNotBeLessThanMinimumStaff");
+            return false;
+        }
+        if (optimalStaff % minStaff != 0) {
+            entity.addError(dataDefinition.getField(OperationFieldsTFNO.OPTIMAL_STAFF),
+                    "technologies.technologyOperationComponent.validation.error.optimalStaffMustBeMultipleMinStaff", String.valueOf(minStaff));
             return false;
         }
         return true;

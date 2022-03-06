@@ -360,13 +360,20 @@
 			<component type="gridLayout" name="gridsLayout" columns="2"
 			           rows="8" hasBorders="false">
 				<layoutElement column="1" row="1">
-					<component type="input" name="plannedStaff"
-					           reference="plannedStaff" defaultEnabled="false">
+					<component type="input" name="minStaff"
+					           reference="minStaff" defaultEnabled="false">
 						<option type="labelWidth" value="55"/>
 						<option type="alignment" value="right"/>
 					</component>
 				</layoutElement>
 				<layoutElement column="1" row="2">
+					<component type="input" name="optimalStaff"
+					           reference="optimalStaff" defaultEnabled="false">
+						<option type="labelWidth" value="55"/>
+						<option type="alignment" value="right"/>
+					</component>
+				</layoutElement>
+				<layoutElement column="1" row="3">
 					<component type="input" name="actualStaff" field="#{form}.actualStaff"
 					           reference="actualStaff">
 						<option type="labelWidth" value="55"/>
@@ -376,7 +383,7 @@
 						          method="onChangeRerender"/>
 					</component>
 				</layoutElement>
-				<layoutElement column="1" row="3" height="6">
+				<layoutElement column="1" row="4" height="5">
 					<component type="lookup" name="staffLookup"
 					           reference="staffLookup" field="#{form}.workers"
 					           defaultVisible="false" persistent="false" hasLabel="false">
@@ -391,6 +398,9 @@
 						<option type="fieldCode" value="number"/>
 
 						<option type="multiselect" value="true"/>
+						<criteriaModifier
+								class="com.qcadoo.mes.orders.criteriaModifiers.OperationalTaskDetailsCriteriaModifiers"
+								method="criteriaForOperationalTasks"/>
 					</component>
 					<component type="grid" name="workers" reference="workers"
 					           source="#{form}.workers">
