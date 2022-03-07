@@ -24,7 +24,8 @@
     ***************************************************************************
 
 -->
-<view defaultAuthorizationRole="ROLE_TECHNOLOGIES" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
+<view defaultAuthorizationRole="ROLE_TECHNOLOGIES" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns="http://schema.qcadoo.org/view"
       xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
       name="operationProductInComponentDetails"
       modelName="operationProductInComponent">
@@ -51,7 +52,8 @@
                         </component>
                     </layoutElement>
                     <layoutElement column="1" row="2" width="5">
-                        <component type="checkbox" name="differentProductsInDifferentSizes" reference="differentProductsInDifferentSizes"
+                        <component type="checkbox" name="differentProductsInDifferentSizes"
+                                   reference="differentProductsInDifferentSizes"
                                    field="#{form}.differentProductsInDifferentSizes" hasDescription="true">
 
                             <listener event="onChange"
@@ -60,7 +62,8 @@
                         </component>
                     </layoutElement>
                     <layoutElement column="1" row="3" width="5">
-                        <component type="checkbox" name="variousQuantitiesInProductsBySize" reference="variousQuantitiesInProductsBySize"
+                        <component type="checkbox" name="variousQuantitiesInProductsBySize"
+                                   reference="variousQuantitiesInProductsBySize"
                                    field="#{form}.variousQuantitiesInProductsBySize" hasDescription="true">
 
                             <listener event="onChange"
@@ -75,7 +78,8 @@
                                     width="200"/>
                             <option type="column" name="ean" fields="ean"/>
                             <option type="column" name="globalTypeOfMaterial" fields="globalTypeOfMaterial"/>
-                            <option type="column" name="supplier" fields="supplier" expression="#supplier['number']" width="150"/>
+                            <option type="column" name="supplier" fields="supplier" expression="#supplier['number']"
+                                    width="150"/>
 
                             <option type="searchable" value="name,ean,globalTypeOfMaterial,supplier"/>
                             <option type="orderable" value="name,ean,globalTypeOfMaterial,supplier"/>
@@ -85,7 +89,8 @@
                             <option type="fieldCode" value="number"/>
 
                             <listener event="onSelectedEntityChange"
-                                      class="com.qcadoo.mes.technologies.listeners.OPICDetailsListeners" method="onProductChange"/>
+                                      class="com.qcadoo.mes.technologies.listeners.OPICDetailsListeners"
+                                      method="onProductChange"/>
                         </component>
                     </layoutElement>
                     <layoutElement column="1" row="5" width="5">
@@ -99,7 +104,8 @@
                                    defaultEnabled="false" hasLabel="false"/>
                     </layoutElement>
                     <layoutElement column="1" row="6" width="5">
-                        <component type="input" name="quantityFormula" field="quantityFormula" reference="quantityFormula"
+                        <component type="input" name="quantityFormula" field="quantityFormula"
+                                   reference="quantityFormula"
                                    hasDescription="true">
                             <option type="alignment" value="right"/>
 
@@ -135,9 +141,11 @@
         <windowTab name="productsBySizeGroups">
             <component type="grid" name="productBySizeGroups" source="#{form}.productBySizeGroups"
                        reference="productBySizeGroups">
-                <option type="column" name="sizeGroupNumber" fields="sizeGroup" expression="#sizeGroup.get('number')" width="150"
+                <option type="column" name="sizeGroupNumber" fields="sizeGroup" expression="#sizeGroup.get('number')"
+                        width="150"
                         link="true"/>
-                <option type="column" name="productNumber" fields="product" expression="#product.get('number')" width="150"
+                <option type="column" name="productNumber" fields="product" expression="#product.get('number')"
+                        width="150"
                         link="true"/>
                 <option type="column" name="productName" fields="product" expression="#product.get('name')" width="150"
                         link="true"/>
@@ -160,6 +168,29 @@
                 <option type="multiselect" value="true"/>
                 <option type="fullscreen" value="true"/>
                 <option type="fixedHeight" value="true"/>
+            </component>
+        </windowTab>
+        <windowTab name="attributeTab">
+            <component type="gridLayout" name="gridLayout" columns="1"
+                       rows="1">
+                <layoutElement column="1" row="1">
+                    <component type="lookup" name="attribute" reference="attribute"
+                               field="#{form}.attribute"  hasDescription="true">
+                        <option type="column" name="name" fields="name" link="true"
+                                width="200"/>
+
+                        <option type="searchable" value="name,number"/>
+                        <option type="orderable" value="name,number"/>
+
+                        <option type="expression"
+                                value="'&lt;b&gt;' + #number"/>
+                        <option type="fieldCode" value="number"/>
+
+                        <criteriaModifier
+                                class="com.qcadoo.mes.basic.criteriaModifiers.AttributeCriteriaModifiers"
+                                method="showForProductCalculatedType"/>
+                    </component>
+                </layoutElement>
             </component>
         </windowTab>
     </component>

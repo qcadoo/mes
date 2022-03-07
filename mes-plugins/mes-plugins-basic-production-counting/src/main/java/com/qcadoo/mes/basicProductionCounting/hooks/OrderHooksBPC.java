@@ -3,19 +3,19 @@
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
  * Version: 1.4
- *
+ * <p>
  * This file is part of Qcadoo.
- *
+ * <p>
  * Qcadoo is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation; either version 3 of the License,
  * or (at your option) any later version.
- *
+ * <p>
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty
  * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU Affero General Public License for more details.
- *
+ * <p>
  * You should have received a copy of the GNU Affero General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
@@ -28,6 +28,7 @@ import com.qcadoo.mes.basicProductionCounting.BasicProductionCountingService;
 import com.qcadoo.mes.basicProductionCounting.constants.OrderFieldsBPC;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.states.constants.OrderStateStringValues;
+import com.qcadoo.mes.technologies.dto.OperationProductComponentWithQuantityContainer;
 import com.qcadoo.model.api.BigDecimalUtils;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
@@ -41,6 +42,10 @@ import org.springframework.stereotype.Service;
 @Service
 public class OrderHooksBPC {
 
+    private static final String MESSAGE_NOT_FIND_SPECIFIC_PRODUCT = "basicProductionCounting.productionCountingQuantity.error.couldNotFindSpecificProductWithMatchingAttributeValue";
+    private static final String MESSAGE_TO_MANY_PRODUCTS = "basicProductionCounting.productionCountingQuantity.error.toManyProductsWithMatchingAttributeValue";
+    private static final String MESSAGE_NOT_HAVE_ATTRIBUTE = "basicProductionCounting.productionCountingQuantity.error.orderedProductDoesNotHaveAttribute";
+
     @Autowired
     private BasicProductionCountingService basicProductionCountingService;
 
@@ -48,11 +53,9 @@ public class OrderHooksBPC {
         if (Objects.nonNull(order.getBelongsToField(OrderFields.TECHNOLOGY))) {
             boolean shouldCreateProductionCounting = checkIfShouldCreateProductionCounting(order);
             if (shouldCreateProductionCounting) {
-                boolean productToProductGroupTechnologyDoesntExists = basicProductionCountingService
+                OperationProductComponentWithQuantityContainer operationProductComponentWithQuantityContainer = basicProductionCountingService
                         .createProductionCounting(order);
-                if (productToProductGroupTechnologyDoesntExists) {
-                    order.addGlobalMessage("basicProductionCounting.productionCountingQuantity.error.productToProductGroupTechnologyDoesntExists");
-                }
+                addMessagesIfExists(order, operationProductComponentWithQuantityContainer);
             } else if (checkIfShouldReCreateProductionCounting(order)) {
                 for (Entity pcq : order.getHasManyField(OrderFieldsBPC.PRODUCTION_COUNTING_QUANTITIES)) {
                     pcq.getDataDefinition().delete(pcq.getId());
@@ -64,11 +67,9 @@ public class OrderHooksBPC {
                     pqor.getDataDefinition().delete(pqor.getId());
                 }
 
-                boolean productToProductGroupTechnologyDoesntExists = basicProductionCountingService
+                OperationProductComponentWithQuantityContainer operationProductComponentWithQuantityContainer = basicProductionCountingService
                         .createProductionCounting(order);
-                if (productToProductGroupTechnologyDoesntExists) {
-                    order.addGlobalMessage("basicProductionCounting.productionCountingQuantity.error.productToProductGroupTechnologyDoesntExists");
-                }
+                addMessagesIfExists(order, operationProductComponentWithQuantityContainer);
             } else {
 
                 updateProductionCountingQuantitiesAndOperationRuns(order);
@@ -79,6 +80,18 @@ public class OrderHooksBPC {
             order.setField(OrderFieldsBPC.PRODUCTION_COUNTING_OPERATION_RUNS, Lists.newArrayList());
             order.setField(OrderFieldsBPC.PRODUCTION_COUNTING_QUANTITIES, Lists.newArrayList());
         }
+    }
+
+    private void addMessagesIfExists(Entity order, OperationProductComponentWithQuantityContainer operationProductComponentWithQuantityContainer) {
+        operationProductComponentWithQuantityContainer.getMessages().forEach(message -> {
+            if (MESSAGE_NOT_FIND_SPECIFIC_PRODUCT.equals(message.getMessage())) {
+                order.addGlobalMessage(message.getMessage(), message.getProductNumber(), message.getAttributeNumber());
+            } else if (MESSAGE_TO_MANY_PRODUCTS.equals(message.getMessage())) {
+                order.addGlobalMessage(message.getMessage(), message.getAttributeValue(), message.getAttributeNumber());
+            } else if (MESSAGE_NOT_HAVE_ATTRIBUTE.equals(message.getMessage())) {
+                order.addGlobalMessage(message.getMessage(), message.getAttributeNumber());
+            }
+        });
     }
 
     private boolean checkIfShouldReCreateProductionCounting(Entity order) {

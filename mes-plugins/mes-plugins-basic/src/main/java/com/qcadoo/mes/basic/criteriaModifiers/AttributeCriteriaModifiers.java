@@ -9,6 +9,11 @@ import org.springframework.stereotype.Service;
 @Service
 public class AttributeCriteriaModifiers {
 
+    public void showForProductCalculatedType(final SearchCriteriaBuilder scb) {
+        scb.add(SearchRestrictions.eq(AttributeFields.FOR_PRODUCT, Boolean.TRUE));
+        scb.add(SearchRestrictions.eq(AttributeFields.DATA_TYPE, "01calculated"));
+    }
+
     public void showForProduct(final SearchCriteriaBuilder scb) {
         scb.add(SearchRestrictions.eq(AttributeFields.FOR_PRODUCT, Boolean.TRUE));
     }

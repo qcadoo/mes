@@ -59,4 +59,6 @@ public final class OperationProductInComponentFields {
 
     public static final String DESCRIPTION = "description";
 
+    public static final String ATTRIBUTE = "attribute";
+
 }

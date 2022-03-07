@@ -54,6 +54,9 @@
         <string name="description">
             <validatesLength max="2048"/>
         </string>
+
+        <belongsTo name="attribute" model="attribute" plugin="basic"/>
+
     </fields>
 
     <hooks>

@@ -24,6 +24,7 @@
 package com.qcadoo.mes.basicProductionCounting;
 
 import com.qcadoo.mes.technologies.constants.MrpAlgorithm;
+import com.qcadoo.mes.technologies.dto.OperationProductComponentWithQuantityContainer;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ViewDefinitionState;
@@ -50,7 +51,7 @@ public interface BasicProductionCountingService {
      * @param order
      *            order
      */
-    boolean createProductionCounting(final Entity order);
+    OperationProductComponentWithQuantityContainer createProductionCounting(final Entity order);
 
     /**
      * Creates basic production counting
