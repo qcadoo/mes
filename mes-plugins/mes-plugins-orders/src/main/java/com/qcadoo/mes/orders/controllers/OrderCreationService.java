@@ -79,7 +79,7 @@ public class OrderCreationService {
             "nextOperationAfterProducedType", "nextOperationAfterProducedQuantity", "nextOperationAfterProducedQuantityUNIT",
             "timeNextOperation", "machineUtilization", "laborUtilization", "productionInOneCycleUNIT",
             "areProductQuantitiesDivisible", "isTjDivisible", TechnologyOperationComponentFieldsTNFO.MIN_STAFF,
-            TechnologyOperationComponentFieldsTNFO.TJ_DECREASES_FOR_ENLARGED_STAFF);
+            TechnologyOperationComponentFieldsTNFO.TJ_DECREASES_FOR_ENLARGED_STAFF, TechnologyOperationComponentFieldsTNFO.OPTIMAL_STAFF);
 
     private static final String NEXT_OPERATION_AFTER_PRODUCED_TYPE = "nextOperationAfterProducedType";
 
@@ -262,7 +262,7 @@ public class OrderCreationService {
                 Entity workstationEntity = dataDefinitionService
                         .get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_WORKSTATION).get(workstation);
                 if (Objects.nonNull(workstationEntity.getBelongsToField(WorkstationFields.STAFF))
-                        && technologyOperationComponent.getIntegerField(TechnologyOperationComponentFieldsTNFO.MIN_STAFF) == 1) {
+                        && technologyOperationComponent.getIntegerField(TechnologyOperationComponentFieldsTNFO.OPTIMAL_STAFF) == 1) {
                     operationalTask.setField(OperationalTaskFields.STAFF,
                             workstationEntity.getBelongsToField(WorkstationFields.STAFF));
                 }
@@ -281,7 +281,7 @@ public class OrderCreationService {
             List<MaterialDto> addedMaterials = materials.stream().filter(m -> Objects.isNull(m.getProductInId()))
                     .collect(Collectors.toList());
             List<Long> technologyMaterials = materials.stream().filter(m -> Objects.nonNull(m.getProductInId()))
-                    .map(m -> m.getProductId()).collect(Collectors.toList());
+                    .map(MaterialDto::getProductId).collect(Collectors.toList());
             Map<Long, Entity> pacqByProductId = materialsFromOrderPCQ.stream()
                     .collect(Collectors.toMap(pcq -> pcq.getBelongsToField(L_PRODUCT).getId(), pcq -> pcq));
             for (Map.Entry<Long, Entity> entry : pacqByProductId.entrySet()) {
@@ -307,7 +307,7 @@ public class OrderCreationService {
         List<MaterialDto> addedMaterials = materials.stream().filter(m -> Objects.isNull(m.getProductInId()))
                 .collect(Collectors.toList());
         List<Long> technologyMaterials = materials.stream().filter(m -> Objects.nonNull(m.getProductInId()))
-                .map(m -> m.getProductId()).collect(Collectors.toList());
+                .map(MaterialDto::getProductId).collect(Collectors.toList());
         List<Entity> materialsFromOrderPCQ = getMaterialsFromOrder(order, null);
 
         Map<Long, Entity> pacqByProductId = materialsFromOrderPCQ.stream()

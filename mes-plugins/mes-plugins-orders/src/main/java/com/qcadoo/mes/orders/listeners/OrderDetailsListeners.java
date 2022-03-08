@@ -494,7 +494,7 @@ public class OrderDetailsListeners {
             Entity workstation = workstations.get(0);
             operationalTask.setField(OperationalTaskFields.WORKSTATION, workstation);
             if (Objects.nonNull(workstation.getBelongsToField(WorkstationFields.STAFF))
-                    && technologyOperationComponent.getIntegerField(TechnologyOperationComponentFieldsTNFO.MIN_STAFF) == 1) {
+                    && technologyOperationComponent.getIntegerField(TechnologyOperationComponentFieldsTNFO.OPTIMAL_STAFF) == 1) {
                 operationalTask.setField(OperationalTaskFields.STAFF, workstation.getBelongsToField(WorkstationFields.STAFF));
             }
         }

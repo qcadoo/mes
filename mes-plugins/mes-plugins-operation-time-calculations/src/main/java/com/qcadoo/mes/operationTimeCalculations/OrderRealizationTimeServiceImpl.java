@@ -24,6 +24,7 @@
 package com.qcadoo.mes.operationTimeCalculations;
 
 import static com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields.TECHNOLOGY;
+import static com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperationComponentFieldsTNFO.NEXT_OPERATION_AFTER_PRODUCED_TYPE;
 
 import java.math.BigDecimal;
 import java.math.MathContext;
@@ -51,6 +52,7 @@ import com.qcadoo.mes.technologies.constants.TechnologyFields;
 import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
 import com.qcadoo.mes.technologies.dto.OperationProductComponentWithQuantityContainer;
 import com.qcadoo.mes.timeNormsForOperations.constants.OperCompTimeCalculationsFields;
+import com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperationComponentFieldsTNFO;
 import com.qcadoo.model.api.BigDecimalUtils;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.EntityTreeNode;
@@ -82,7 +84,7 @@ public class OrderRealizationTimeServiceImpl implements OrderRealizationTimeServ
     @Override
     @Transactional
     public int estimateOperationTimeConsumption(final EntityTreeNode operationComponent, final BigDecimal plannedQuantity,
-            final boolean includeTpz, final boolean includeAdditionalTime, final Entity productionLine) {
+                                                final boolean includeTpz, final boolean includeAdditionalTime, final Entity productionLine) {
         Entity technology = operationComponent.getBelongsToField(TECHNOLOGY);
 
         Map<Long, BigDecimal> operationRunsFromProductionQuantities = Maps.newHashMap();
@@ -97,8 +99,8 @@ public class OrderRealizationTimeServiceImpl implements OrderRealizationTimeServ
     @Override
     @Transactional
     public int estimateMaxOperationTimeConsumptionForWorkstation(final Entity order, final EntityTreeNode operationComponent,
-            final BigDecimal plannedQuantity, final boolean includeTpz, final boolean includeAdditionalTime,
-            final Entity productionLine) {
+                                                                 final BigDecimal plannedQuantity, final boolean includeTpz, final boolean includeAdditionalTime,
+                                                                 final Entity productionLine) {
         Entity technology = operationComponent.getBelongsToField(TECHNOLOGY);
 
         Map<Long, BigDecimal> operationRunsFromProductionQuantities = Maps.newHashMap();
@@ -111,19 +113,19 @@ public class OrderRealizationTimeServiceImpl implements OrderRealizationTimeServ
     }
 
     private int evaluateOperationTime(final Entity order, final Entity operationComponent, final boolean includeTpz,
-            final boolean includeAdditionalTime, final Map<Long, BigDecimal> operationRuns, final Entity productionLine,
-            final boolean maxForWorkstation, final OperationProductComponentWithQuantityContainer productComponentQuantities) {
+                                      final boolean includeAdditionalTime, final Map<Long, BigDecimal> operationRuns, final Entity productionLine,
+                                      final boolean maxForWorkstation, final OperationProductComponentWithQuantityContainer productComponentQuantities) {
 
         int operationTime = evaluateSingleOperationTime(operationComponent, includeTpz, includeAdditionalTime, operationRuns,
                 productionLine, maxForWorkstation);
         int offset = 0;
 
-        List<Entity> childs = Lists.newArrayList(operationComponent.getHasManyField("children"));
-        for (Entity child : childs) {
+        List<Entity> children = Lists.newArrayList(operationComponent.getHasManyField(TechnologyOperationComponentFields.CHILDREN));
+        for (Entity child : children) {
             int childTime = evaluateOperationTime(order, child, includeTpz, includeAdditionalTime, operationRuns, productionLine,
                     maxForWorkstation, productComponentQuantities);
 
-            if ("02specified".equals(child.getStringField("nextOperationAfterProducedType"))) {
+            if ("02specified".equals(child.getStringField(NEXT_OPERATION_AFTER_PRODUCED_TYPE))) {
 
                 int childTimeTotal = evaluateSingleOperationTime(child, includeTpz, includeAdditionalTime, operationRuns,
                         productionLine, true);
@@ -168,8 +170,8 @@ public class OrderRealizationTimeServiceImpl implements OrderRealizationTimeServ
     }
 
     private int evaluateSingleOperationTime(Entity operationComponent, final boolean includeTpz,
-            final boolean includeAdditionalTime, final Map<Long, BigDecimal> operationRuns, final Entity productionLine,
-            final boolean maxForWorkstation) {
+                                            final boolean includeAdditionalTime, final Map<Long, BigDecimal> operationRuns, final Entity productionLine,
+                                            final boolean maxForWorkstation) {
         operationComponent = operationComponent.getDataDefinition().get(operationComponent.getId());
 
         BigDecimal cycles = operationRuns.get(operationComponent.getId());
@@ -186,11 +188,11 @@ public class OrderRealizationTimeServiceImpl implements OrderRealizationTimeServ
     }
 
     private int evaluateSingleOperationTimeIncludedNextOperationAfterProducedQuantity(Entity operationComponent,
-            final boolean includeTpz, final Map<Long, BigDecimal> operationRuns, final Entity productionLine,
-            final OperationProductComponentWithQuantityContainer productComponentQuantities) {
+                                                                                      final boolean includeTpz, final Map<Long, BigDecimal> operationRuns, final Entity productionLine,
+                                                                                      final OperationProductComponentWithQuantityContainer productComponentQuantities) {
         operationComponent = operationComponent.getDataDefinition().get(operationComponent.getId());
         BigDecimal nextOperationAfterProducedQuantity = BigDecimalUtils
-                .convertNullToZero(operationComponent.getDecimalField("nextOperationAfterProducedQuantity"));
+                .convertNullToZero(operationComponent.getDecimalField(TechnologyOperationComponentFieldsTNFO.NEXT_OPERATION_AFTER_PRODUCED_QUANTITY));
         BigDecimal productComponentQuantity = productComponentQuantities.get(getOutputProduct(operationComponent));
         Entity technologyOperationComponent = getTechnologyOperationComponent(operationComponent);
         BigDecimal cycles;
@@ -213,9 +215,9 @@ public class OrderRealizationTimeServiceImpl implements OrderRealizationTimeServ
     }
 
     private BigDecimal getQuantityCyclesNeededToProducedNextOperationAfterProducedQuantity(final Entity operationComponent,
-            final BigDecimal nextOperationAfterProducedQuantity) {
+                                                                                           final BigDecimal nextOperationAfterProducedQuantity) {
         MathContext mc = numberService.getMathContext();
-        Entity technology = operationComponent.getBelongsToField("technology");
+        Entity technology = operationComponent.getBelongsToField(TECHNOLOGY);
 
         Map<Long, BigDecimal> operationRunsFromProductionQuantities = Maps.newHashMap();
 
@@ -231,31 +233,38 @@ public class OrderRealizationTimeServiceImpl implements OrderRealizationTimeServ
     }
 
     private int evaluateOperationDurationOutOfCycles(final BigDecimal cycles, final Entity operationComponent,
-            final Entity productionLine, final boolean maxForWorkstation, final boolean includeTpz,
-            final boolean includeAdditionalTime) {
-        boolean isTjDivisable = operationComponent.getBooleanField("isTjDivisible");
+                                                     final Entity productionLine, final boolean maxForWorkstation, final boolean includeTpz,
+                                                     final boolean includeAdditionalTime) {
+        MathContext mc = numberService.getMathContext();
+        boolean isTjDivisible = operationComponent.getBooleanField(TechnologyOperationComponentFieldsTNFO.IS_TJ_DIVISIBLE);
 
         Integer workstationsCount = retrieveWorkstationTypesCount(operationComponent, productionLine);
         BigDecimal cyclesPerOperation = cycles;
 
         if (maxForWorkstation) {
-            cyclesPerOperation = cycles.divide(BigDecimal.valueOf(workstationsCount), numberService.getMathContext());
+            cyclesPerOperation = cycles.divide(BigDecimal.valueOf(workstationsCount), mc);
 
-            if (!isTjDivisable) {
+            if (!isTjDivisible) {
                 cyclesPerOperation = cyclesPerOperation.setScale(0, RoundingMode.CEILING);
             }
         }
-
-        int tj = getIntegerValue(operationComponent.getField("tj"));
-        int operationTime = cyclesPerOperation.multiply(BigDecimal.valueOf(tj), numberService.getMathContext()).intValue();
+        BigDecimal staffFactor = BigDecimal.ONE;
+        if (operationComponent
+                .getBooleanField(TechnologyOperationComponentFieldsTNFO.TJ_DECREASES_FOR_ENLARGED_STAFF)) {
+            Integer optimalStaff = operationComponent.getIntegerField(TechnologyOperationComponentFieldsTNFO.OPTIMAL_STAFF);
+            int minStaff = operationComponent.getIntegerField(TechnologyOperationComponentFieldsTNFO.MIN_STAFF);
+            staffFactor = BigDecimal.valueOf(minStaff).divide(BigDecimal.valueOf(optimalStaff), mc);
+        }
+        int tj = getIntegerValue(operationComponent.getField(TechnologyOperationComponentFieldsTNFO.TJ));
+        int operationTime = cyclesPerOperation.multiply(BigDecimal.valueOf(tj), mc).multiply(staffFactor, mc).intValue();
 
         if (includeTpz) {
-            int tpz = getIntegerValue(operationComponent.getField("tpz"));
+            int tpz = getIntegerValue(operationComponent.getField(TechnologyOperationComponentFieldsTNFO.TPZ));
             operationTime += (maxForWorkstation ? tpz : (tpz * workstationsCount));
         }
 
         if (includeAdditionalTime) {
-            int additionalTime = getIntegerValue(operationComponent.getField("timeNextOperation"));
+            int additionalTime = getIntegerValue(operationComponent.getField(TechnologyOperationComponentFieldsTNFO.TIME_NEXT_OPERATION));
             operationTime += (maxForWorkstation ? additionalTime : (additionalTime * workstationsCount));
         }
 

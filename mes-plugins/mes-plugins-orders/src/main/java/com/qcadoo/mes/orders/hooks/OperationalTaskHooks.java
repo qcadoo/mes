@@ -83,16 +83,11 @@ public class OperationalTaskHooks {
     public void setStaff(final Entity operationalTask) {
         Entity technologyOperationComponent = operationalTask
                 .getBelongsToField(OperationalTaskFields.TECHNOLOGY_OPERATION_COMPONENT);
-        int minStaff;
-        if (!Objects.isNull(technologyOperationComponent)) {
-            minStaff = technologyOperationComponent.getIntegerField(TechnologyOperationComponentFieldsTNFO.MIN_STAFF);
-        } else {
-            minStaff = 1;
-        }
+        int optimalStaff = getOptimalStaff(technologyOperationComponent);
         Integer actualStaff = operationalTask.getIntegerField(OperationalTaskFields.ACTUAL_STAFF);
         if (actualStaff == null) {
-            actualStaff = minStaff;
-            operationalTask.setField(OperationalTaskFields.ACTUAL_STAFF, minStaff);
+            actualStaff = optimalStaff;
+            operationalTask.setField(OperationalTaskFields.ACTUAL_STAFF, actualStaff);
         }
         List<Entity> workers = operationalTask.getManyToManyField(OperationalTaskFields.WORKERS);
         Entity staff = operationalTask.getBelongsToField(OperationalTaskFields.STAFF);
@@ -114,18 +109,26 @@ public class OperationalTaskHooks {
             }
         }
 
-        updateFinishDate(operationalTask, technologyOperationComponent, minStaff, actualStaff, operationalTaskDB);
+        updateFinishDate(operationalTask, technologyOperationComponent, actualStaff, operationalTaskDB);
         if (actualStaff != operationalTask.getManyToManyField(OperationalTaskFields.WORKERS).size()) {
             operationalTask.addGlobalMessage(
                     "orders.operationalTask.error.workersQuantityDifferentThanActualStaff");
         }
     }
 
-    private void updateFinishDate(Entity operationalTask, Entity technologyOperationComponent, int minStaff, Integer actualStaff, Entity operationalTaskDB) {
+    private int getOptimalStaff(Entity technologyOperationComponent) {
+        if (!Objects.isNull(technologyOperationComponent)) {
+            return technologyOperationComponent.getIntegerField(TechnologyOperationComponentFieldsTNFO.OPTIMAL_STAFF);
+        } else {
+            return 1;
+        }
+    }
+
+    private void updateFinishDate(Entity operationalTask, Entity technologyOperationComponent, Integer actualStaff, Entity operationalTaskDB) {
         if (!Objects.isNull(technologyOperationComponent) && technologyOperationComponent
                 .getBooleanField(TechnologyOperationComponentFieldsTNFO.TJ_DECREASES_FOR_ENLARGED_STAFF) &&
-                (operationalTask.getId() == null && actualStaff != minStaff || operationalTaskDB != null &&
-                        actualStaff != operationalTaskDB.getIntegerField(OperationalTaskFields.ACTUAL_STAFF).intValue())) {
+                (operationalTask.getId() == null && !actualStaff.equals(technologyOperationComponent.getIntegerField(TechnologyOperationComponentFieldsTNFO.MIN_STAFF))
+                        || operationalTaskDB != null && actualStaff != operationalTaskDB.getIntegerField(OperationalTaskFields.ACTUAL_STAFF).intValue())) {
             operationalTask.setField(OperationalTaskFields.FINISH_DATE,
                     getFinishDate(operationalTask, technologyOperationComponent));
         }

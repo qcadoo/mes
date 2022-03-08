@@ -197,7 +197,7 @@ public class OperationalTaskDetailsListeners {
             usedQuantityField.setFieldValue(null);
             usedQuantityUnitField.setFieldValue(null);
         } else {
-            actualStaffField.setFieldValue(technologyOperationComponent.getIntegerField(TechnologyOperationComponentFieldsTNFO.MIN_STAFF));
+            actualStaffField.setFieldValue(technologyOperationComponent.getIntegerField(TechnologyOperationComponentFieldsTNFO.OPTIMAL_STAFF));
             Entity mainOutputProductComponent = technologyService.getMainOutputProductComponent(technologyOperationComponent);
             Entity product = mainOutputProductComponent.getBelongsToField(OperationProductOutComponentFields.PRODUCT);
             productLookup.setFieldValue(product.getId());

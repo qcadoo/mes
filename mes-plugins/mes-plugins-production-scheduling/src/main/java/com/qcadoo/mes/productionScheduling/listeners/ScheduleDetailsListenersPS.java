@@ -55,6 +55,7 @@ import com.qcadoo.model.api.BigDecimalUtils;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.NumberService;
 import com.qcadoo.model.api.search.SearchOrders;
 import com.qcadoo.model.api.search.SearchProjections;
 import com.qcadoo.model.api.search.SearchRestrictions;
@@ -98,6 +99,9 @@ public class ScheduleDetailsListenersPS {
     @Autowired
     private SchedulePositionValidators schedulePositionValidators;
 
+    @Autowired
+    private NumberService numberService;
+
     @Transactional
     public void generatePlan(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         getOperations(view, state, args);
@@ -129,8 +133,9 @@ public class ScheduleDetailsListenersPS {
             for (Entity operationComponent : operationComponents) {
                 BigDecimal operationComponentRuns = BigDecimalUtils
                         .convertNullToZero(operationRuns.get(operationComponent.getId()));
+                BigDecimal staffFactor = getStaffFactor(operationComponent);
                 OperationWorkTime operationWorkTime = operationWorkTimeService.estimateTechOperationWorkTime(operationComponent,
-                        operationComponentRuns, includeTpz, false, false, BigDecimal.ONE);
+                        operationComponentRuns, includeTpz, false, false, staffFactor);
                 Entity schedulePosition = createSchedulePosition(schedule, schedulePositionDD, order, operationComponent,
                         operationWorkTime, operationProductComponentWithQuantityContainer, operationComponentRuns);
                 positions.add(schedulePosition);
@@ -143,10 +148,20 @@ public class ScheduleDetailsListenersPS {
         view.addMessage("productionScheduling.info.schedulePositionsGenerated", ComponentState.MessageType.SUCCESS);
     }
 
+    private BigDecimal getStaffFactor(Entity operationComponent) {
+        if (operationComponent
+                .getBooleanField(TechnologyOperationComponentFieldsTNFO.TJ_DECREASES_FOR_ENLARGED_STAFF)) {
+            Integer optimalStaff = operationComponent.getIntegerField(TechnologyOperationComponentFieldsTNFO.OPTIMAL_STAFF);
+            int minStaff = operationComponent.getIntegerField(TechnologyOperationComponentFieldsTNFO.MIN_STAFF);
+            return BigDecimal.valueOf(minStaff).divide(BigDecimal.valueOf(optimalStaff), numberService.getMathContext());
+        }
+        return BigDecimal.ONE;
+    }
+
     private Entity createSchedulePosition(Entity schedule, DataDefinition schedulePositionDD, Entity order,
-            Entity technologyOperationComponent, OperationWorkTime operationWorkTime,
-            OperationProductComponentWithQuantityContainer operationProductComponentWithQuantityContainer,
-            BigDecimal operationComponentRuns) {
+                                          Entity technologyOperationComponent, OperationWorkTime operationWorkTime,
+                                          OperationProductComponentWithQuantityContainer operationProductComponentWithQuantityContainer,
+                                          BigDecimal operationComponentRuns) {
         Entity schedulePosition = schedulePositionDD.create();
         schedulePosition.setField(SchedulePositionFields.SCHEDULE, schedule);
         schedulePosition.setField(OrdersConstants.MODEL_ORDER, order);
@@ -240,7 +255,7 @@ public class ScheduleDetailsListenersPS {
     }
 
     private boolean getWorkstationsNewFinishDate(Map<Long, Date> workstationsFinishDates, Date scheduleStartTime, Entity position,
-            List<Entity> workstations, Map<Long, PositionNewData> operationWorkstationsPositionNewData) {
+                                                 List<Entity> workstations, Map<Long, PositionNewData> operationWorkstationsPositionNewData) {
         Entity schedule = position.getBelongsToField(SchedulePositionFields.SCHEDULE);
         boolean allMachineWorkTimesEqualsZero = true;
         for (Entity workstation : workstations) {
@@ -249,11 +264,13 @@ public class ScheduleDetailsListenersPS {
             Integer additionalTime = position.getIntegerField(SchedulePositionFields.ADDITIONAL_TIME);
             Optional<Entity> techOperCompWorkstationTime = getTechOperCompWorkstationTime(position, workstation);
             if (techOperCompWorkstationTime.isPresent()) {
+                Entity technologyOperationComponent = position.getBelongsToField(SchedulePositionFields.TECHNOLOGY_OPERATION_COMPONENT);
+                BigDecimal staffFactor = getStaffFactor(technologyOperationComponent);
                 OperationWorkTime operationWorkTime = operationWorkTimeService.estimateTechOperationWorkTimeForWorkstation(
-                        position.getBelongsToField(SchedulePositionFields.TECHNOLOGY_OPERATION_COMPONENT),
+                        technologyOperationComponent,
                         position.getDecimalField(SchedulePositionFields.OPERATION_RUNS),
                         schedule.getBooleanField(ScheduleFields.INCLUDE_TPZ), false, techOperCompWorkstationTime.get(),
-                        BigDecimal.ONE);
+                        staffFactor);
                 laborWorkTime = operationWorkTime.getLaborWorkTime();
                 machineWorkTime = operationWorkTime.getMachineWorkTime();
                 additionalTime = techOperCompWorkstationTime.get()
@@ -311,7 +328,7 @@ public class ScheduleDetailsListenersPS {
     }
 
     private Date getFinishDate(Map<Long, Date> workstationsFinishDates, Date scheduleStartTime, Entity schedule,
-            Entity workstation) {
+                               Entity workstation) {
         Date finishDate;
         if (schedule.getBooleanField(ScheduleFields.SCHEDULE_FOR_BUFFER)
                 && workstation.getBooleanField(WorkstationFields.BUFFER)) {
@@ -347,7 +364,7 @@ public class ScheduleDetailsListenersPS {
     }
 
     private void updatePositionWorkstationAndDates(Map.Entry<Long, PositionNewData> entry,
-            Map<Long, Date> workstationsFinishDates, Entity position) {
+                                                   Map<Long, Date> workstationsFinishDates, Entity position) {
         PositionNewData positionNewData = entry.getValue();
         workstationsFinishDates.put(entry.getKey(), positionNewData.getFinishDate());
         position.setField(SchedulePositionFields.WORKSTATION, entry.getKey());

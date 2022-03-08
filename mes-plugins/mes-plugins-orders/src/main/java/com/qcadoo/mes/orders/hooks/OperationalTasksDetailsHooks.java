@@ -137,7 +137,7 @@ public class OperationalTasksDetailsHooks {
         }
         optimalStaffField.setFieldValue(optimalStaff);
         if (actualStaffField.getFieldValue() == null || !NumberUtils.isDigits(actualStaffField.getFieldValue().toString())) {
-            actualStaffField.setFieldValue(minStaff);
+            actualStaffField.setFieldValue(optimalStaff);
         }
         LookupComponent staff = (LookupComponent) view.getComponentByReference(OperationalTaskFields.STAFF);
         List<Entity> workers = workersGrid.getEntities();
