@@ -65,7 +65,7 @@ public class OrderDetailsHooksCNFM {
             if ((order != null) && orderStateService.isSynchronized(order)) {
                 Entity technology = order.getBelongsToField(TECHNOLOGY);
 
-                if ((technology != null) && isTechnologyAccepted(technology)) {
+                if ((technology != null)) {
                     viewCosts.setEnabled(true);
                     viewCosts.requestUpdate(true);
 
@@ -76,10 +76,6 @@ public class OrderDetailsHooksCNFM {
 
         viewCosts.setEnabled(false);
         viewCosts.requestUpdate(true);
-    }
-
-    private boolean isTechnologyAccepted(final Entity technology) {
-        return TechnologyState.ACCEPTED.getStringValue().equals(technology.getStringField(STATE));
     }
 
 }
