@@ -279,9 +279,16 @@ public class OperationWorkTimeServiceImpl implements OperationWorkTimeService {
         Integer duration = 0;
 
         for (Entity operationComponent : operationComponents) {
+            BigDecimal staffFactor = BigDecimal.ONE;
+            if (operationComponent
+                    .getBooleanField(TechnologyOperationComponentFieldsTNFO.TJ_DECREASES_FOR_ENLARGED_STAFF)) {
+                Integer optimalStaff = operationComponent.getIntegerField(TechnologyOperationComponentFieldsTNFO.OPTIMAL_STAFF);
+                int minStaff = operationComponent.getIntegerField(TechnologyOperationComponentFieldsTNFO.MIN_STAFF);
+                staffFactor = BigDecimal.valueOf(minStaff).divide(BigDecimal.valueOf(optimalStaff), numberService.getMathContext());
+            }
             OperationWorkTime abstractOperationWorkTime = estimateOperationWorkTime(order, operationComponent,
                     BigDecimalUtils.convertNullToZero(operationRuns.get(operationComponent.getId())), includeTpz,
-                    includeAdditionalTime, saved, BigDecimal.ONE);
+                    includeAdditionalTime, saved, staffFactor);
             totalLaborWorkTime += abstractOperationWorkTime.getLaborWorkTime();
             totalMachineWorkTime += abstractOperationWorkTime.getMachineWorkTime();
             duration += abstractOperationWorkTime.getDuration();

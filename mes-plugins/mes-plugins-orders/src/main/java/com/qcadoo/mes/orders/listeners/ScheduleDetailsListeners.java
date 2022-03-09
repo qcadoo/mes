@@ -66,7 +66,7 @@ public class ScheduleDetailsListeners {
             Entity technologyOperationComponent = position
                     .getBelongsToField(SchedulePositionFields.TECHNOLOGY_OPERATION_COMPONENT);
             if (position.getIntegerField(SchedulePositionFields.MACHINE_WORK_TIME) == 0 || workstation == null
-                    || technologyOperationComponent.getIntegerField(TechnologyOperationComponentFieldsTNFO.MIN_STAFF) > 1) {
+                    || technologyOperationComponent.getIntegerField(TechnologyOperationComponentFieldsTNFO.OPTIMAL_STAFF) > 1) {
                 continue;
             }
             if (ScheduleWorkerAssignCriterion.WORKSTATION_DEFAULT_OPERATOR.getStringValue()
