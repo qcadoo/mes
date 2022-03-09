@@ -38,10 +38,16 @@ import java.util.Set;
 @Service
 public class PalletNumbersListListeners {
 
-
-
     @Autowired
     private PalletNumbersService palletNumbersService;
+
+    public final void printPalletCards(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        view.redirectTo("/basic/KARTA_PALETY.pdf", true, false);
+    }
+
+    public final void printPalletMix(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        view.redirectTo("/basic/PALETA_MIX.pdf", true, false);
+    }
 
     public void createPalletNumbers(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         String url = "../page/basic/palletNumberHelperDetails.html";
