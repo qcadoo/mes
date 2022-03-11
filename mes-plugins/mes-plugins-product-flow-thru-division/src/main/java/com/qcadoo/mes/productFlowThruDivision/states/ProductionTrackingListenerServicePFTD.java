@@ -203,6 +203,7 @@ public final class ProductionTrackingListenerServicePFTD {
     private boolean checkIfProductsAvailableInStock(Entity productionTracking, Multimap<Long, Entity> groupedRecordInProducts) {
         DataDefinition warehouseDD = dataDefinitionService.get(MaterialFlowConstants.PLUGIN_IDENTIFIER,
                 MaterialFlowConstants.MODEL_LOCATION);
+        boolean available = true;
         for (Long warehouseId : groupedRecordInProducts.keySet()) {
             Collection<Entity> inProductsRecords = groupedRecordInProducts.get(warehouseId);
             Entity warehouse = warehouseDD.get(warehouseId);
@@ -211,10 +212,10 @@ public final class ProductionTrackingListenerServicePFTD {
                     .collect(Collectors.toList());
             Map<Long, BigDecimal> productAndQuantities =
                     productionTrackingDocumentsHelper.getQuantitiesForProductsAndLocation(products, warehouse);
-            return checkIfResourcesAreSufficient(productionTracking, productAndQuantities, inProductsRecords, warehouse);
+            available = available && checkIfResourcesAreSufficient(productionTracking, productAndQuantities, inProductsRecords, warehouse);
         }
 
-        return false;
+        return available;
     }
 
     private boolean checkIfResourcesAreSufficient(final Entity productionTracking, Map<Long, BigDecimal> quantitiesInWarehouse,
