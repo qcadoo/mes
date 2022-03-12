@@ -105,8 +105,8 @@ public class WarehouseMinimalStateAspectOS {
     private BigDecimal getPlannedQuantity(long productId, int daysForward) {
         DateTime today = DateTime.now();
         DateTime endDate = today.plusDays(daysForward);
-        String requirementQuery = "select COALESCE(sum(o.quantity),0) as required from #ordersupplies_productioncountingquantityinput o where o.productid = :productId "
-                + "and eventType in ('03operationInput', '04orderInput') and o.startdate <= :endTimestamp group by o.productid";
+        String requirementQuery = "select COALESCE(sum(o.quantity),0) as required from #orderSupplies_productionCountingQuantityInput o where o.productId = :productId "
+                + "and eventType in ('03operationInput', '04orderInput') and o.startDate <= :endTimestamp group by o.productId";
         DataDefinition ordersDataDefinition = dataDefinitionService.get(OrderSuppliesConstants.PLUGIN_IDENTIFIER,
                 "productionCountingQuantityInput");
         Entity entity = ordersDataDefinition.find(requirementQuery).setParameter("endTimestamp", endDate.toDate())
