@@ -179,7 +179,7 @@
         </model:model-field>
 
         <model:model-field plugin="deliveries" model="delivery">
-            <model:belongsTo name="salesPlan" model="salesPlan" plugin="masterOrders"/>
+            <model:belongsTo name="salesPlan" model="salesPlan" plugin="masterOrders" copyable="false"/>
         </model:model-field>
 
         <model:model-field plugin="basic" model="attribute">
