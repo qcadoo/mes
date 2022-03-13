@@ -54,25 +54,25 @@
             <validatesScale max="5"/>
         </decimal>
 
-        <decimal name="producedOrderQuantity">
+        <decimal name="producedOrderQuantity" copyable="false">
             <validatesRange from="0"/>
             <validatesUnscaledValue max="9"/>
             <validatesScale max="5"/>
         </decimal>
 
-        <decimal name="leftToRelease">
+        <decimal name="leftToRelease" copyable="false">
             <validatesRange from="0"/>
             <validatesUnscaledValue max="9"/>
             <validatesScale max="5"/>
         </decimal>
 
-        <decimal name="quantityTakenFromWarehouse">
+        <decimal name="quantityTakenFromWarehouse" copyable="false">
             <validatesRange from="0"/>
             <validatesUnscaledValue max="9"/>
             <validatesScale max="5"/>
         </decimal>
 
-        <decimal name="quantityRemainingToOrder">
+        <decimal name="quantityRemainingToOrder" copyable="false">
             <validatesRange from="0"/>
             <validatesUnscaledValue max="9"/>
             <validatesScale max="5"/>
