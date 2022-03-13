@@ -36,6 +36,23 @@
             </group>
 
 			<template name="standardGridTemplate" excludeItems="actions.new,actions.copy,actions.delete" />
+
+			<group name="replacements">
+				<bigButton name="useReplacement" icon="copyIcon24.png"
+						   state="disabled">
+					<script>
+						<![CDATA[
+							this.addOnChangeListener({
+								onClick: function() {
+									if (window.canClose()) {
+									#{form}.performEvent('useReplacement', []);
+									}
+								}
+							});
+						]]>
+					</script>
+				</bigButton>
+			</group>
 		</ribbon>
 
 		<component type="form" name="order" reference="order">
@@ -51,9 +68,17 @@
 				<script>
 					<![CDATA[
 					var resourceIssueButton = #{window}.getRibbonItemOrNull("issue.resourceIssue");
+					var useReplacementBtn = #{window}.getRibbonItemOrNull("replacements.useReplacement");
 
 					var listener = {
 						onChange: function(selectedEntitiesArray) {
+
+						 if (useReplacementBtn && selectedEntitiesArray.length == 1 && selectedEntitiesArray[0].fields.replacement == 1) {
+                                            useReplacementBtn.enable("#{translate(productionCounting.productionTrackingDetails.window.ribbon.useReplacement.label)}");
+                                        } else {
+                                            useReplacementBtn.disable("#{translate(productionCounting.productionTrackingDetails.window.ribbon.useReplacement.label)}");
+                                        }
+
 							 var state = #{state}.getValue().content.value;
 							 if(state == '01pending' || state == '04completed' || state == '05declined' || state == '07abandoned') {
 							 	if (resourceIssueButton) {
@@ -138,12 +163,13 @@
 				<option type="column" name="producedQuantity" fields="producedQuantity" width="30"/>
 				<option type="column" name="productUnit" fields="productUnit"
 					width="20"/>
+				<option type="column" name="replacement" fields="replacement" width="100"/>
 				<option type="column" name="replacementTo" fields="replacementTo" width="100"/>
 				<option type="order" column="productNumber" direction="asc" />
 
-				<option type="searchable" value="productNumber,productName,technologyInputProductTypeName,replacementTo,nodeNumber,operationNumber,operationName,role,
+				<option type="searchable" value="replacement,productNumber,productName,technologyInputProductTypeName,replacementTo,nodeNumber,operationNumber,operationName,role,
 					typeOfMaterial,plannedQuantity,usedQuantity,producedQuantity,productUnit" />
-				<option type="orderable" value="productNumber,productName,technologyInputProductTypeName,replacementTo,nodeNumber,operationNumber,operationName,role,
+				<option type="orderable" value="replacement,productNumber,productName,technologyInputProductTypeName,replacementTo,nodeNumber,operationNumber,operationName,role,
 					typeOfMaterial,plannedQuantity,usedQuantity,producedQuantity,productUnit" />
 				
 				<option type="correspondingView"
@@ -171,6 +197,7 @@
 		</component>
 		<listener event="performActionOnBack" method="performActionOnBack"
 				  class="com.qcadoo.mes.basicProductionCounting.hooks.DetailedProductionCountingAndProgressListHooks"/>
+
 		<option type="fixedHeight" value="true" />
 		<option type="header" value="false" />
 		

@@ -24,28 +24,24 @@
     ***************************************************************************
 
 -->
-<model name="qualityCard"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
-	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
-	<fields>
-		<string name="number" required="true" unique="true">
-			<validatesLength max="255" />
-		</string>
-		<string name="name" required="true">
-			<validatesLength max="2048" />
-		</string>
-		<string name="description">
-			<validatesLength max="2048"/>
-		</string>
-		<enum name="state" values="01new,02accepted,03rejected" default="01new" required="true"/>
+<model name="productionCountingReplacementHelper"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
+       xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
+    <fields>
 
-		<manyToMany name="products" model="product" plugin="basic" joinField="qualityCards"/>
-		<hasMany name="stateChanges" model="qualityCardStateChange" joinField="qualityCard" cascade="delete"/>
-
-		<hasMany name="technologies" model="technology" joinField="qualityCard"/>
-
-		<dictionary name="sampling" dictionary="sampling"/>
-	</fields>
-	<hooks/>
-	<identifier expression="#number + ' - ' + #name" />
+        <belongsTo name="productionCountingQuantity" model="productionCountingQuantity"/>
+        <belongsTo name="product" model="product" plugin="basic" required="true" />
+        <belongsTo name="basicProduct" model="product" plugin="basic" required="true" />
+        <decimal name="plannedQuantity" required="true">
+            <validatesRange from="0" exclusively="true"/>
+            <validatesUnscaledValue max="9"/>
+            <validatesScale max="5"/>
+        </decimal>
+        <decimal name="replacesQuantity" required="true">
+            <validatesRange from="0" exclusively="false"/>
+            <validatesUnscaledValue max="9"/>
+            <validatesScale max="5"/>
+        </decimal>
+    </fields>
+    <hooks/>
 </model>
