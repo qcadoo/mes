@@ -56,6 +56,7 @@
             <option type="column" name="productNumber" fields="productNumber" width="75"/>
             <option type="column" name="productName" fields="productName" width="75"/>
             <option type="column" name="plannedQuantity" fields="plannedQuantity" width="50"/>
+            <option type="column" name="wastesQuantity" fields="wastesQuantity" width="55"/>
             <option type="column" name="usedQuantity" fields="usedQuantity" width="50"/>
             <option type="column" name="productUnit" fields="productUnit" width="30"/>
             <option type="column" name="remainingQuantity" fields="remainingQuantity" width="50"/>
@@ -72,9 +73,9 @@
             <option type="order" column="startDate" direction="desc"/>
 
             <option type="searchable" value="name,number,description,startDate,finishDate,staffName,divisionNumber,workstationNumber,orderNumber,state,type,
-							technologyOperationComponentNodeNumber,productNumber,productName,plannedQuantity,usedQuantity,remainingQuantity,doneInPercentage,productUnit,orderProductName,orderProductNumber,actualStaff"/>
+							technologyOperationComponentNodeNumber,productNumber,productName,plannedQuantity,wastesQuantity,usedQuantity,remainingQuantity,doneInPercentage,productUnit,orderProductName,orderProductNumber,actualStaff"/>
             <option type="orderable" value="name,number,description,startDate,finishDate,staffName,divisionNumber,workstationNumber,orderNumber,state,type,
-							technologyOperationComponentNodeNumber,productNumber,productName,plannedQuantity,usedQuantity,remainingQuantity,doneInPercentage,productUnit,orderProductName,orderProductNumber,actualStaff"/>
+							technologyOperationComponentNodeNumber,productNumber,productName,plannedQuantity,wastesQuantity,usedQuantity,remainingQuantity,doneInPercentage,productUnit,orderProductName,orderProductNumber,actualStaff"/>
 
             <option type="correspondingView" value="orders/operationalTaskDetails"/>
             <option type="correspondingComponent" value="form"/>

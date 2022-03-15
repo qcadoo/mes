@@ -48,17 +48,17 @@
         <string name="sizeNumber"/>
 
         <decimal name="usedQuantity">
-            <validatesRange from="0" exclusively="false"/>
+            <validatesRange from="0"/>
             <validatesUnscaledValue max="9"/>
             <validatesScale max="5"/>
         </decimal>
         <decimal name="wastesQuantity">
-            <validatesRange from="0" exclusively="false"/>
+            <validatesRange from="0"/>
             <validatesUnscaledValue max="9"/>
             <validatesScale max="5"/>
         </decimal>
         <decimal name="doneQuantity">
-            <validatesRange from="0" exclusively="false"/>
+            <validatesRange from="0"/>
             <validatesUnscaledValue max="9"/>
             <validatesScale max="5"/>
         </decimal>
