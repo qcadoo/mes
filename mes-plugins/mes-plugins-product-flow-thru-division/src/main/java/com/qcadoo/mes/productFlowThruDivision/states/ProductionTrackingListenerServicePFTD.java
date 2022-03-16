@@ -137,7 +137,11 @@ public final class ProductionTrackingListenerServicePFTD {
         Multimap<Long, Entity> groupedRecordInProducts = productionTrackingDocumentsHelper
                 .fillFromBPCProductIn(trackingOperationProductInComponents, order, technologyOperationComponent, true);
 
-        if (!groupedRecordInProducts.isEmpty() && !checkIfProductsAvailableInStock(productionTracking, groupedRecordInProducts)) {
+        boolean releaseMaterials = ReleaseOfMaterials.ON_ACCEPTANCE_REGISTRATION_RECORD.getStringValue()
+                .equals(parameterService.getParameter().getStringField(ParameterFieldsPC.RELEASE_OF_MATERIALS));
+
+        if (!groupedRecordInProducts.isEmpty() && releaseMaterials &&
+                !checkIfProductsAvailableInStock(productionTracking, groupedRecordInProducts)) {
             return;
         }
 

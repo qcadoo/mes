@@ -383,7 +383,7 @@ public class StateExecutorService {
 
     private void copyMessages(final Entity entity, final Entity mainEntity) {
         if (Objects.nonNull(mainEntity) && mainEntity.equals(entity)
-                && entity.getGlobalErrors() == mainEntity.getGlobalErrors()) {
+                && entity.getGlobalErrors().size() == mainEntity.getGlobalErrors().size()) {
             return;
         }
 
@@ -399,7 +399,7 @@ public class StateExecutorService {
         }
 
         for (GlobalMessage globalMessage : entity.getGlobalMessages()) {
-            componentMessagesHolder.addMessage(globalMessage);
+             componentMessagesHolder.addMessage(globalMessage);
         }
     }
 
