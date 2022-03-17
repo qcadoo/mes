@@ -222,7 +222,7 @@
                         view="salesPlansList" defaultAuthorizationRole="ROLE_PLANNING"/>
 
         <menu:menu-item name="salesPlanMaterialRequirementsList" category="requirements"
-                        view="salesPlanMaterialRequirementsList" defaultAuthorizationRole="ROLE_PLANNING"/>
+                        view="salesPlanMaterialRequirementsList" defaultAuthorizationRole="ROLE_REQUIREMENTS"/>
 
         <view:view resource="view/masterOrdersList.xml"/>
         <view:view resource="view/masterOrderDetails.xml"/>
