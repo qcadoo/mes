@@ -40,16 +40,14 @@ public class OperationProductComponentWithQuantityContainer {
 
     private final Map<OperationProductComponentHolder, BigDecimal> operationProductComponentWithQuantities;
 
-    private final List<Entity> sizeGroups;
+    private List<OperationProductComponentMessage> messages = Lists.newArrayList();
+
+    private List<Entity> sizeGroups = Lists.newArrayList();
+
+    private Entity orderedProduct;
 
     public OperationProductComponentWithQuantityContainer() {
         this.operationProductComponentWithQuantities = Maps.newHashMap();
-        this.sizeGroups = Lists.newArrayList();
-    }
-
-    public OperationProductComponentWithQuantityContainer(List<Entity> sizeGroups) {
-        this.operationProductComponentWithQuantities = Maps.newHashMap();
-        this.sizeGroups = sizeGroups;
     }
 
     public void put(final OperationProductComponentHolder operationProductComponentHolder, BigDecimal quantity) {
@@ -125,6 +123,10 @@ public class OperationProductComponentWithQuantityContainer {
         return containsKey(operationProductComponentHolder);
     }
 
+    public void addMessage(OperationProductComponentMessage message) {
+        messages.add(message);
+    }
+
     public Map<OperationProductComponentHolder, BigDecimal> asMap() {
         return Collections.unmodifiableMap(operationProductComponentWithQuantities);
     }
@@ -153,6 +155,22 @@ public class OperationProductComponentWithQuantityContainer {
 
     public List<Entity> getSizeGroups() {
         return sizeGroups;
+    }
+
+    public void setSizeGroups(List<Entity> sizeGroups) {
+        this.sizeGroups = sizeGroups;
+    }
+
+    public Entity getOrderedProduct() {
+        return orderedProduct;
+    }
+
+    public void setOrderedProduct(Entity orderedProduct) {
+        this.orderedProduct = orderedProduct;
+    }
+
+    public List<OperationProductComponentMessage> getMessages() {
+        return messages;
     }
 
     @Override

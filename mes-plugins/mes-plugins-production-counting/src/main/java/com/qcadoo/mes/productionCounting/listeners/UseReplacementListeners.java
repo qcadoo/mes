@@ -29,8 +29,6 @@ public class UseReplacementListeners {
 
     public static final String QUANTITY = "quantity";
 
-    
-
     private static final String PRODUCT = "product";
 
     private static final String WINDOW_MAIN_TAB_FORM_PRODUCTION_TRACKING = "window.mainTab.form.productionTracking";

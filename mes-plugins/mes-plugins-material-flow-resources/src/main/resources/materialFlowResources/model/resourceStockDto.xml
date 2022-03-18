@@ -41,7 +41,6 @@
         <decimal name="minimumState"/>
         <decimal name="quantity"/>
         <decimal name="quantityInAdditionalUnit"/>
-        <decimal name="totalValue"/>
         <decimal name="orderedQuantity"/>
         <decimal name="reservedQuantity"/>
         <decimal name="availableQuantity"/>

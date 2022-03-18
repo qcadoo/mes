@@ -43,6 +43,8 @@
 		<hasMany name="stateChanges" model="qualityCardStateChange" joinField="qualityCard" cascade="delete"/>
 
 		<hasMany name="technologies" model="technology" joinField="qualityCard"/>
+
+		<dictionary name="sampling" dictionary="sampling"/>
 	</fields>
 	<hooks/>
 	<identifier expression="#number + ' - ' + #name" />

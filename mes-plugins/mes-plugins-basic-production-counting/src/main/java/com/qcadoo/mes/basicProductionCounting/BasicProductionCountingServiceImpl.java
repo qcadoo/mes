@@ -142,7 +142,7 @@ public class BasicProductionCountingServiceImpl implements BasicProductionCounti
     }
 
     @Override
-    public boolean createProductionCounting(final Entity order) {
+    public OperationProductComponentWithQuantityContainer createProductionCounting(final Entity order) {
         Map<Long, BigDecimal> operationRuns = Maps.newHashMap();
         Set<OperationProductComponentHolder> nonComponents = Sets.newHashSet();
 
@@ -157,8 +157,10 @@ public class BasicProductionCountingServiceImpl implements BasicProductionCounti
 
         prepareBasicProductionCounting(order, productionCountingQuantities, basicProductionCounting);
 
-        return saveBasicProductionCounting(order, productionCountingQuantities, basicProductionCounting,
+        saveBasicProductionCounting(order, productionCountingQuantities, basicProductionCounting,
                 order.getBelongsToField(OrderFields.PRODUCT));
+
+        return productComponentQuantities;
     }
 
     private boolean saveBasicProductionCounting(Entity order, final List<Entity> productionCountingQuantities,
@@ -179,15 +181,6 @@ public class BasicProductionCountingServiceImpl implements BasicProductionCounti
             if (pCountingQuantities.isEmpty() && product.getId().equals(orderProduct.getId())) {
                 pCountingQuantities = productionCountingQuantitiesByProduct.get(product.getBelongsToField(ProductFields.PARENT)
                         .getId());
-            } else if (ProductFamilyElementType.PRODUCTS_FAMILY.getStringValue().equals(
-                    product.getField(ProductFields.ENTITY_TYPE))) {
-                Entity productToProductGroupTechnology = technologyService.getProductToProductGroupTechnology(orderProduct,
-                        product.getId());
-                if (productToProductGroupTechnology != null) {
-                    product = productToProductGroupTechnology.getBelongsToField(ProductToProductGroupFields.ORDER_PRODUCT);
-                } else {
-                    productToProductGroupTechnologyDoesntExists = true;
-                }
             }
 
             bpc.setField(BasicProductionCountingFields.PRODUCT, product);
@@ -198,7 +191,7 @@ public class BasicProductionCountingServiceImpl implements BasicProductionCounti
             bpc.setField(BasicProductionCountingFields.PRODUCTION_COUNTING_QUANTITIES, pCountingQuantities);
         }
         order.setField(OrderFieldsBPC.BASIC_PRODUCTION_COUNTINGS, basicProductionCounting);
-        return productToProductGroupTechnologyDoesntExists;
+        return true;
     }
 
     private void prepareBasicProductionCounting(final Entity order, final List<Entity> productionCountingQuantities,
@@ -244,12 +237,13 @@ public class BasicProductionCountingServiceImpl implements BasicProductionCounti
             Entity technologyOperationComponent = operationProductComponentHolder.getTechnologyOperationComponent();
             Entity operationProductComponent = operationProductComponentHolder.getOperationProductComponent();
             Entity technologyInputProductType = operationProductComponentHolder.getTechnologyInputProductType();
+            Entity attribute = operationProductComponentHolder.getAttribute();
 
             String role = getRole(operationProductComponentHolder);
 
             boolean isNonComponent = nonComponents.contains(operationProductComponentHolder);
 
-            Entity productionCountingQuantity = prepareProductionCountingQuantity(order, technologyOperationComponent,
+            Entity productionCountingQuantity = prepareProductionCountingQuantity(order, technologyOperationComponent, attribute,
                     technologyInputProductType, operationProductComponent, product, role, isNonComponent, plannedQuantity);
             productionCountingQuantities.add(productionCountingQuantity);
         }
@@ -287,7 +281,7 @@ public class BasicProductionCountingServiceImpl implements BasicProductionCounti
         order.setField(OrderFieldsBPC.PRODUCTION_COUNTING_OPERATION_RUNS, productionCountingOperationRuns);
     }
 
-    private Entity prepareProductionCountingQuantity(final Entity order, final Entity technologyOperationComponent,
+    private Entity prepareProductionCountingQuantity(final Entity order, final Entity technologyOperationComponent, final Entity attribute,
             final Entity technologyInputProductType, final Entity operationProductComponent, Entity product, final String role,
             final boolean isNonComponent, final BigDecimal plannedQuantity) {
         Entity productionCountingQuantity = getProductionCountingQuantityDD().create();
@@ -297,6 +291,7 @@ public class BasicProductionCountingServiceImpl implements BasicProductionCounti
         productionCountingQuantity.setField(ProductionCountingQuantityFields.TECHNOLOGY_INPUT_PRODUCT_TYPE,
                 technologyInputProductType);
         productionCountingQuantity.setField(ProductionCountingQuantityFields.PRODUCT, product);
+        productionCountingQuantity.setField(ProductionCountingQuantityFields.ATTRIBUTE, attribute);
         productionCountingQuantity.setField(ProductionCountingQuantityFields.ROLE, role);
         productionCountingQuantity.setField(ProductionCountingQuantityFields.TYPE_OF_MATERIAL,
                 getTypeOfMaterial(order, technologyOperationComponent, product, role, isNonComponent));

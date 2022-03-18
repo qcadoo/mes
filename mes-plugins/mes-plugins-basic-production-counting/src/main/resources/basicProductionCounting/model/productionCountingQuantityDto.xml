@@ -60,6 +60,9 @@
         <decimal name="usedQuantity"/>
 
         <decimal name="producedQuantity"/>
+
+        <boolean name="replacement"/>
+
     </fields>
 
     <masterModel plugin="basicProductionCounting" model="productionCountingQuantity"/>

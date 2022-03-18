@@ -83,14 +83,14 @@
                             <option type="column" name="batch" fields="batchNumber"/>
                             <option type="column" name="storageLocation" fields="storageLocationNumber"/>
 
-                            <option type="column" name="deliveryNumber" fields="deliveryNumber" width="100"/>
+                            <option type="column" name="palletNumber" fields="palletNumber" width="100"/>
 
                             <option type="order" column="productNumber" direction="asc"/>
 
                             <option type="searchable"
-                                    value="number,productNumber,productName,availableQuantity,productUnit,price,storageLocation,deliveryNumber,batch"/>
+                                    value="number,productNumber,productName,availableQuantity,productUnit,price,storageLocation,palletNumber,batch"/>
                             <option type="orderable"
-                                    value="number,productNumber,productName,availableQuantity,productUnit,price,storageLocation,deliveryNumber,batch"/>
+                                    value="number,productNumber,productName,availableQuantity,productUnit,price,storageLocation,palletNumber,batch"/>
 
                             <option type="fullscreen" value="true"/>
                             <option type="fixedHeight" value="true"/>

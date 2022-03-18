@@ -78,6 +78,8 @@
         <model:model model="productionCountingQuantityListDto" resource="model/productionCountingQuantityListDto.xml"/>
         <model:model model="productionCountingOperationRun"
                      resource="model/productionCountingOperationRun.xml"/>
+        <model:model model="productionCountingReplacementHelper"
+                     resource="model/productionCountingReplacementHelper.xml"/>
 
         <model:model-field model="batch" plugin="advancedGenealogy">
             <model:manyToMany name="productionCountingQuantities" model="productionCountingQuantity"
@@ -188,12 +190,18 @@
                             class="com.qcadoo.mes.basicProductionCounting.listeners.OrderParametersListenersBPC"
                             method="onChangeLockOrderPlannedQuantity"/>
 
+        <view:view-listener plugin="basicProductionCounting" view="detailedProductionCountingAndProgressList"
+                            component="form" event="useReplacement"
+                            class="com.qcadoo.mes.basicProductionCounting.hooks.DetailedProductionCountingAndProgressListHooks"
+                            method="useReplacement"/>
+
         <view:view resource="view/basicProductionCountingList.xml"/>
         <view:view resource="view/basicProductionCountingDetails.xml"/>
         <view:view resource="view/detailedProductionCountingAndProgressList.xml"/>
         <view:view resource="view/productionCountingQuantityAdvancedDetails.xml"/>
         <view:view resource="view/productionCountingQuantityList.xml"/>
         <view:view resource="view/productionCountingAttributeValueDetails.xml"/>
+        <view:view resource="view/useReplacement.xml"/>
 
         <menu:menu-category name="requirements"/>
 

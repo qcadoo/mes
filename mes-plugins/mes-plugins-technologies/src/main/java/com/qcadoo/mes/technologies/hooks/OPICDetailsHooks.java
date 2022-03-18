@@ -55,6 +55,33 @@ public class OPICDetailsHooks {
         fillUnitBeforeRender(view);
         setProductBySizeGroupsGridEnabledAndClear(view);
         setStateForVariousQuantitiesInProductsBySize(view);
+        setAttributeTabState(view);
+    }
+
+    private void setAttributeTabState(ViewDefinitionState view) {
+        FormComponent operationProductInComponentForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
+        LookupComponent attributeLookup = (LookupComponent) view.getComponentByReference(OperationProductInComponentFields.ATTRIBUTE);
+        LookupComponent productLookup = (LookupComponent) view.getComponentByReference(OperationProductInComponentFields.PRODUCT);
+
+        Entity operationProductInComponent = operationProductInComponentForm.getEntity();
+        Entity operationComponent = operationProductInComponent
+                .getBelongsToField(OperationProductInComponentFields.OPERATION_COMPONENT);
+        Entity technology = null;
+        if(Objects.isNull(operationComponent)) {
+            technology = operationProductInComponent.getBelongsToField(OperationProductInComponentFields.TECHNOLOGY);
+        } else {
+            technology = operationComponent.getBelongsToField(TechnologyOperationComponentFields.TECHNOLOGY);
+        }
+        Entity technologyProduct = technology.getBelongsToField(TechnologyFields.PRODUCT);
+        if(ProductFamilyElementType.PRODUCTS_FAMILY.getStringValue().equals(
+                technologyProduct.getField(ProductFields.ENTITY_TYPE)) && Objects.nonNull(productLookup.getEntity())
+                && ProductFamilyElementType.PRODUCTS_FAMILY.getStringValue()
+                .equals(productLookup.getEntity().getField(ProductFields.ENTITY_TYPE))) {
+            attributeLookup.setEnabled(true);
+        } else {
+            attributeLookup.setFieldValue(null);
+            attributeLookup.setEnabled(false);
+        }
     }
 
     private void setStateForVariousQuantitiesInProductsBySize(ViewDefinitionState view) {

@@ -24,60 +24,24 @@
     ***************************************************************************
 
 -->
-<model name="productionAnalysisDto" activable="true" auditable="false" deletable="false" insertable="false" updatable="false"
+<model name="productionCountingReplacementHelper"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
        xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
-
     <fields>
-        <integer name="productionline_id"/>
-        <string name="productionLineNumber"/>
 
-        <integer name="company_id"/>
-        <string name="companyNumber"/>
-
-        <integer name="staff_id"/>
-        <string name="staffName"/>
-
-        <integer name="assortment_id"/>
-        <string name="assortmentName"/>
-
-        <integer name="product_id"/>
-        <string name="productNumber"/>
-        <string name="productName"/>
-        <string name="productUnit"/>
-        <string name="sizeNumber"/>
-
-        <decimal name="usedQuantity">
-            <validatesRange from="0"/>
+        <belongsTo name="productionCountingQuantity" model="productionCountingQuantity"/>
+        <belongsTo name="product" model="product" plugin="basic" required="true" />
+        <belongsTo name="basicProduct" model="product" plugin="basic" required="true" />
+        <decimal name="plannedQuantity" required="true">
+            <validatesRange from="0" exclusively="true"/>
             <validatesUnscaledValue max="9"/>
             <validatesScale max="5"/>
         </decimal>
-        <decimal name="wastesQuantity">
-            <validatesRange from="0"/>
+        <decimal name="replacesQuantity" required="true">
+            <validatesRange from="0" exclusively="false"/>
             <validatesUnscaledValue max="9"/>
             <validatesScale max="5"/>
         </decimal>
-        <decimal name="doneQuantity">
-            <validatesRange from="0"/>
-            <validatesUnscaledValue max="9"/>
-            <validatesScale max="5"/>
-        </decimal>
-        <string name="causeOfWastes"/>
-
-        <integer name="shift_id"/>
-        <string name="shiftName"/>
-
-        <date name="timeRangeFrom"/>
-        <date name="timeRangeTo"/>
-
-        <integer name="generator_id"/>
-        <string name="generatorName"/>
-
-        <integer name="order_id"/>
-        <string name="orderNumber"/>
-
-        <string name="obtainedMasterOrderNumber"/>
-        <string name="technologyGroupNumber"/>
     </fields>
-
+    <hooks/>
 </model>

@@ -24,14 +24,12 @@
 package com.qcadoo.mes.costNormsForMaterials.hooks;
 
 import static com.qcadoo.mes.orders.constants.OrderFields.TECHNOLOGY;
-import static com.qcadoo.mes.technologies.constants.TechnologyFields.STATE;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.mes.orders.states.OrderStateService;
-import com.qcadoo.mes.technologies.states.constants.TechnologyState;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ViewDefinitionState;
@@ -65,7 +63,7 @@ public class OrderDetailsHooksCNFM {
             if ((order != null) && orderStateService.isSynchronized(order)) {
                 Entity technology = order.getBelongsToField(TECHNOLOGY);
 
-                if ((technology != null) && isTechnologyAccepted(technology)) {
+                if ((technology != null)) {
                     viewCosts.setEnabled(true);
                     viewCosts.requestUpdate(true);
 
@@ -76,10 +74,6 @@ public class OrderDetailsHooksCNFM {
 
         viewCosts.setEnabled(false);
         viewCosts.requestUpdate(true);
-    }
-
-    private boolean isTechnologyAccepted(final Entity technology) {
-        return TechnologyState.ACCEPTED.getStringValue().equals(technology.getStringField(STATE));
     }
 
 }

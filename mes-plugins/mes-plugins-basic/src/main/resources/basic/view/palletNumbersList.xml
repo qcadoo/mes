@@ -43,6 +43,10 @@
 				<bigButton name="printPalletNumbersReport" icon="pdfIcon24.png"
 						   state="enabled" action="#{grid}.fireEvent(printPalletNumbersReport);"/>
 			</group>
+			<group name="prints">
+				<bigButton name="printPalletCards" icon="pdfIcon24.png" action="#{grid}.fireEvent(printPalletCards);" state="enabled"/>
+				<bigButton name="printPalletMix" icon="pdfIcon24.png" action="#{grid}.fireEvent(printPalletMix);" state="enabled"/>
+			</group>
 		</ribbon>
 
 		<component type="grid" name="palletNumbers" reference="grid">
@@ -67,6 +71,12 @@
 
 			<listener event="printPalletNumbersReport" class="com.qcadoo.mes.basic.listeners.PalletNumbersListListeners"
 					  method="printPalletNumbersReport"/>
+			<listener event="printPalletCards"
+					  class="com.qcadoo.mes.basic.listeners.PalletNumbersListListeners"
+					  method="printPalletCards" />
+			<listener event="printPalletMix"
+					  class="com.qcadoo.mes.basic.listeners.PalletNumbersListListeners"
+					  method="printPalletMix" />
 		</component>
 
 		<option type="fixedHeight" value="true"/>

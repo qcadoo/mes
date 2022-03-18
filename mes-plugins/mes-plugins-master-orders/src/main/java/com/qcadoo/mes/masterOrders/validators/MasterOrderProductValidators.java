@@ -3,19 +3,19 @@
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
  * Version: 1.4
- *
+ * <p>
  * This file is part of Qcadoo.
- *
+ * <p>
  * Qcadoo is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation; either version 3 of the License,
  * or (at your option) any later version.
- *
+ * <p>
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty
  * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU Affero General Public License for more details.
- *
+ * <p>
  * You should have received a copy of the GNU Affero General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
@@ -23,10 +23,14 @@
  */
 package com.qcadoo.mes.masterOrders.validators;
 
+import com.qcadoo.mes.basic.constants.ProductFamilyElementType;
+import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.masterOrders.constants.MasterOrderProductFields;
 import com.qcadoo.mes.masterOrders.util.MasterOrderOrdersDataProvider;
 import com.qcadoo.mes.orders.constants.OrderFields;
+import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.model.api.DataDefinition;
+import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.FieldDefinition;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
@@ -38,6 +42,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Collection;
+import java.util.List;
+import java.util.Objects;
 
 import static com.qcadoo.model.api.search.SearchRestrictions.*;
 
@@ -45,13 +51,27 @@ import static com.qcadoo.model.api.search.SearchRestrictions.*;
 public class MasterOrderProductValidators {
 
     @Autowired
+    private DataDefinitionService dataDefinitionService;
+
+    @Autowired
     private MasterOrderOrdersDataProvider masterOrderOrdersDataProvider;
 
     public boolean onValidate(final DataDefinition masterOrderProductDD, final Entity masterOrderProduct) {
         boolean isValid = checkIfEntityAlreadyExistsForProductAndMasterOrder(masterOrderProductDD, masterOrderProduct);
         isValid = checkIfOrdersAssignedToMasterOrder(masterOrderProduct) && isValid;
+        isValid = checkIfParticularProduct(masterOrderProduct) && isValid;
 
         return isValid;
+    }
+
+
+    private boolean checkIfParticularProduct(final Entity masterOrderProduct) {
+        Entity product = masterOrderProduct.getBelongsToField(MasterOrderProductFields.PRODUCT);
+        if (ProductFamilyElementType.PRODUCTS_FAMILY.getStringValue().equals(product.getStringField(ProductFields.ENTITY_TYPE))) {
+            masterOrderProduct.addGlobalError("orders.validate.global.error.product.differentProductsInDifferentSizes");
+            return false;
+        }
+        return true;
     }
 
     private boolean checkIfEntityAlreadyExistsForProductAndMasterOrder(final DataDefinition masterOrderProductDD,
@@ -102,7 +122,7 @@ public class MasterOrderProductValidators {
     }
 
     public boolean checkIfCanChangeTechnology(final DataDefinition masterOrderProductDD, final FieldDefinition fieldDefinition,
-            final Entity masterOrderProduct, final Object fieldOldValue, final Object fieldNewValue) {
+                                              final Entity masterOrderProduct, final Object fieldOldValue, final Object fieldNewValue) {
         if (masterOrderProduct.getId() == null) {
             return true;
         }
@@ -132,7 +152,7 @@ public class MasterOrderProductValidators {
     }
 
     public boolean checkIfCanChangeProduct(final DataDefinition masterOrderProductDD, final FieldDefinition fieldDefinition,
-            final Entity masterOrderProduct, final Object fieldOldValue, final Object fieldNewValue) {
+                                           final Entity masterOrderProduct, final Object fieldOldValue, final Object fieldNewValue) {
         if (masterOrderProduct.getId() == null) {
             return true;
         }

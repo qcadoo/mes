@@ -269,6 +269,8 @@
 
         <security:role identifier="ROLE_OPERATIONAL_TASKS_GANTT_EDIT"/>
 
+        <security:role identifier="ROLE_ATTRIBUTES"/>
+
         <model:model model="company" resource="model/company.xml"/>
         <model:model model="staff" resource="model/staff.xml"/>
         <model:model model="staffDto" resource="model/staffDto.xml"/>
@@ -389,7 +391,7 @@
         <menu:menu-item-url name="productsAttributes" category="products" url="/productsAttributes.html"
                             defaultAuthorizationRole="ROLE_PRODUCTS"/>
 
-        <menu:menu-item name="attributesList" category="basic" view="attributesList" defaultAuthorizationRole="ROLE_PRODUCTS_ADDITIONAL"/>
+        <menu:menu-item name="attributesList" category="basic" view="attributesList" defaultAuthorizationRole="ROLE_ATTRIBUTES"/>
 
         <menu:menu-item name="palletNumbers" category="basic" view="palletNumbersList"
                         defaultAuthorizationRole="ROLE_PALLET_NUMBERS"/>

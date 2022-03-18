@@ -3,19 +3,19 @@
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
  * Version: 1.4
- *
+ * <p>
  * This file is part of Qcadoo.
- *
+ * <p>
  * Qcadoo is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation; either version 3 of the License,
  * or (at your option) any later version.
- *
+ * <p>
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty
  * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU Affero General Public License for more details.
- *
+ * <p>
  * You should have received a copy of the GNU Affero General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
@@ -48,6 +48,8 @@ public class OperationProductComponentHolder {
 
     private final Long technologyInputProductTypeId;
 
+    private final Long attributeId;
+
     private final DataDefinition productDD;
 
     private final DataDefinition technologyOperationComponentDD;
@@ -55,6 +57,8 @@ public class OperationProductComponentHolder {
     private final DataDefinition operationProductComponentDD;
 
     private final DataDefinition technologyInputProductTypeDD;
+
+    private final DataDefinition attributeDD;
 
     private final OperationProductComponentEntityType entityType;
 
@@ -85,9 +89,20 @@ public class OperationProductComponentHolder {
                 this.technologyInputProductTypeId = null;
                 this.technologyInputProductTypeDD = null;
             }
+            Entity attribute = operationProductComponent
+                    .getBelongsToField(OperationProductInComponentFields.ATTRIBUTE);
+            if (Objects.nonNull(attribute)) {
+                this.attributeId = attribute.getId();
+                this.attributeDD = attribute.getDataDefinition();
+            } else {
+                this.attributeId = null;
+                this.attributeDD = null;
+            }
         } else {
             this.technologyInputProductTypeId = null;
             this.technologyInputProductTypeDD = null;
+            this.attributeId = null;
+            this.attributeDD = null;
         }
         this.operationProductComponentId = operationProductComponent.getId();
         this.operationProductComponentDD = operationProductComponent.getDataDefinition();
@@ -117,17 +132,29 @@ public class OperationProductComponentHolder {
                 this.technologyInputProductTypeId = null;
                 this.technologyInputProductTypeDD = null;
             }
+            Entity attribute = operationProductComponent
+                    .getBelongsToField(OperationProductInComponentFields.ATTRIBUTE);
+            if (Objects.nonNull(attribute)) {
+                this.attributeId = attribute.getId();
+                this.attributeDD = attribute.getDataDefinition();
+            } else {
+                this.attributeId = null;
+                this.attributeDD = null;
+            }
         } else {
             this.technologyInputProductTypeId = null;
             this.technologyInputProductTypeDD = null;
+            this.attributeId = null;
+            this.attributeDD = null;
         }
         this.operationProductComponentId = operationProductComponent.getId();
         this.operationProductComponentDD = operationProductComponent.getDataDefinition();
     }
 
-    public OperationProductComponentHolder(final Entity product, final Entity technologyOperationComponent,  final Entity productInputType,
-            final Entity productionCountingQuantity, final OperationProductComponentEntityType entityType,
-            final ProductMaterialType productMaterialType) {
+    public OperationProductComponentHolder(final Entity product, final Entity technologyOperationComponent, final Entity productInputType,
+                                           final Entity attribute,
+                                           final Entity productionCountingQuantity, final OperationProductComponentEntityType entityType,
+                                           final ProductMaterialType productMaterialType) {
 
         Long productId = product.getId();
         Long technologyOperationComponentId = (technologyOperationComponent == null) ? null : technologyOperationComponent
@@ -147,13 +174,16 @@ public class OperationProductComponentHolder {
         this.technologyInputProductTypeId = Objects.isNull(productInputType) ? null : productInputType.getId();
         this.technologyInputProductTypeDD = Objects.isNull(productInputType) ? null : productInputType.getDataDefinition();
 
+        this.attributeId =  Objects.isNull(attribute) ? null : attribute.getId();
+        this.attributeDD = Objects.isNull(attribute) ? null : attribute.getDataDefinition();
+
         this.operationProductComponentId = null;
         this.operationProductComponentDD = null;
     }
 
     public OperationProductComponentHolder(final Long productId, final Long technologyOperationComponentId,
-            final DataDefinition productDD, final DataDefinition technologyOperationComponentDD,
-            final OperationProductComponentEntityType entityType) {
+                                           final DataDefinition productDD, final DataDefinition technologyOperationComponentDD,
+                                           final OperationProductComponentEntityType entityType) {
         this.productId = productId;
         this.technologyOperationComponentId = technologyOperationComponentId;
         this.productDD = productDD;
@@ -165,6 +195,8 @@ public class OperationProductComponentHolder {
         this.operationProductComponentDD = null;
         this.technologyInputProductTypeId = null;
         this.technologyInputProductTypeDD = null;
+        this.attributeId = null;
+        this.attributeDD = null;
     }
 
     public Long getProductId() {
@@ -192,6 +224,14 @@ public class OperationProductComponentHolder {
             return null;
         } else {
             return getProductDD().get(getProductId());
+        }
+    }
+
+    public Entity getAttribute() {
+        if ((attributeId == null) || (attributeDD == null)) {
+            return null;
+        } else {
+            return attributeDD.get(attributeId);
         }
     }
 

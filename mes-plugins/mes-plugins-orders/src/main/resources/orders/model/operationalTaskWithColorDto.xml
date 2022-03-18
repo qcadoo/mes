@@ -50,6 +50,7 @@
 		<string name="orderProductName"/>
 		<string name="productUnit"/>
 		<decimal name="plannedQuantity"/>
+		<decimal name="wastesQuantity"/>
 		<decimal name="usedQuantity"/>
 		<decimal name="remainingQuantity"/>
 		<decimal name="doneInPercentage"/>

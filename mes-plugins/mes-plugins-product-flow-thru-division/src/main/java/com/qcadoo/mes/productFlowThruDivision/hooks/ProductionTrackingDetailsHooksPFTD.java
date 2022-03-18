@@ -16,10 +16,6 @@ import com.qcadoo.view.constants.QcadooViewConstants;
 @Service
 public class ProductionTrackingDetailsHooksPFTD {
 
-
-
-
-
     private static final String L_MATERIAL_FLOW = "materialFlow";
 
     private static final String L_COMPONENT_AVAILABILITY = "componentAvailability";

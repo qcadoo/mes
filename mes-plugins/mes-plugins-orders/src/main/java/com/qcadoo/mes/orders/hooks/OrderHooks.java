@@ -3,19 +3,19 @@
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
  * Version: 1.4
- *
+ * <p>
  * This file is part of Qcadoo.
- *
+ * <p>
  * Qcadoo is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation; either version 3 of the License,
  * or (at your option) any later version.
- *
+ * <p>
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty
  * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU Affero General Public License for more details.
- *
+ * <p>
  * You should have received a copy of the GNU Affero General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
@@ -143,30 +143,10 @@ public class OrderHooks {
 
     private boolean checkOrderProduct(final DataDefinition orderDD, final Entity order) {
         Entity product = order.getBelongsToField(OrderFields.PRODUCT);
-
         if (ProductFamilyElementType.PRODUCTS_FAMILY.getStringValue().equals(product.getStringField(ProductFields.ENTITY_TYPE))) {
-            Entity technology = order.getBelongsToField(OrderFields.TECHNOLOGY);
-
-            if (Objects.nonNull(technology)) {
-                StringBuilder query = new StringBuilder();
-
-                query.append("select inComponent from #technologies_operationProductInComponent inComponent ");
-                query.append("JOIN inComponent.operationComponent operationComponent ");
-                query.append("JOIN operationComponent.technology technology ");
-                query.append("WHERE technology.id = :technologyId AND inComponent.differentProductsInDifferentSizes = true ");
-
-                List<Entity> entities = dataDefinitionService
-                        .get(TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_OPERATION_PRODUCT_IN_COMPONENT)
-                        .find(query.toString()).setLong("technologyId", technology.getId()).list().getEntities();
-
-                if (!entities.isEmpty()) {
-                    order.addGlobalError("orders.validate.global.error.product.differentProductsInDifferentSizes");
-
-                    return false;
-                }
-            }
+            order.addGlobalError("orders.validate.global.error.product.differentProductsInDifferentSizes");
+            return false;
         }
-
         return true;
     }
 
@@ -253,7 +233,7 @@ public class OrderHooks {
     }
 
     public boolean setDateChanged(final DataDefinition dataDefinition, final FieldDefinition fieldDefinition, final Entity order,
-            final Object fieldOldValue, final Object fieldNewValue) {
+                                  final Object fieldOldValue, final Object fieldNewValue) {
         OrderState orderState = OrderState.of(order);
 
         if (Objects.nonNull(fieldOldValue) && Objects.nonNull(fieldNewValue) && !orderState.equals(OrderState.PENDING)) {
@@ -442,7 +422,7 @@ public class OrderHooks {
     }
 
     private boolean checkProductQuantitiesForOrderPacks(final DataDefinition orderDD, final Entity order,
-            final BigDecimal sumQuantityOrderPacks) {
+                                                        final BigDecimal sumQuantityOrderPacks) {
         Long orderId = order.getId();
 
         if (Objects.nonNull(orderId)) {
@@ -514,7 +494,7 @@ public class OrderHooks {
         if (OrderState.ACCEPTED.getStringValue().equals(state)) {
             return !parameter.getBooleanField(ParameterFieldsO.REASON_NEEDED_WHEN_CORRECTING_DATE_FROM)
                     || checkReasonNeeded(order, OrderFields.CORRECTED_DATE_FROM, OrderFields.REASON_TYPES_CORRECTION_DATE_FROM,
-                            "orders.order.commentReasonTypeCorrectionDateFrom.isRequired");
+                    "orders.order.commentReasonTypeCorrectionDateFrom.isRequired");
         }
 
         return true;
@@ -527,14 +507,14 @@ public class OrderHooks {
                 || OrderState.INTERRUPTED.getStringValue().equals(orderState)) {
             return !parameter.getBooleanField(ParameterFieldsO.REASON_NEEDED_WHEN_CORRECTING_DATE_TO)
                     || checkReasonNeeded(order, OrderFields.CORRECTED_DATE_TO, OrderFields.REASON_TYPES_CORRECTION_DATE_TO,
-                            "orders.order.commentReasonTypeCorrectionDateTo.isRequired");
+                    "orders.order.commentReasonTypeCorrectionDateTo.isRequired");
         }
 
         return true;
     }
 
     private boolean checkReasonNeeded(final Entity order, final String dateFieldName, final String reasonTypeFieldName,
-            final String messageTranslationKey) {
+                                      final String messageTranslationKey) {
         if (Objects.nonNull(order.getField(dateFieldName)) && order.getHasManyField(reasonTypeFieldName).isEmpty()) {
             order.addError(order.getDataDefinition().getField(reasonTypeFieldName), messageTranslationKey);
 
@@ -600,7 +580,7 @@ public class OrderHooks {
     }
 
     private boolean checkEffectiveDeviationNeeded(final Entity order, final String dateFieldName,
-            final String reasonTypeFieldName, final String messageTranslationKey, final String differenceAsString) {
+                                                  final String reasonTypeFieldName, final String messageTranslationKey, final String differenceAsString) {
         if (Objects.nonNull(order.getField(dateFieldName)) && order.getHasManyField(reasonTypeFieldName).isEmpty()) {
             order.addError(order.getDataDefinition().getField(reasonTypeFieldName), messageTranslationKey, differenceAsString);
 
