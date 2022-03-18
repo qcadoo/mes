@@ -49886,25 +49886,6 @@ CREATE RULE "_RETURN" AS
 --
 
 CREATE RULE "_RETURN" AS
-    ON SELECT TO goodfood_extrusionusedbatchingredientdto DO INSTEAD  SELECT row_number() OVER () AS id,
-    extrusionpouring.extrusionprotocol_id,
-    p.number AS productnumber,
-    p.unit,
-    b.number AS batchnumber,
-    extrusionpouring.priority,
-    sum(COALESCE(extrusionpouringingredient.quantity, (0)::numeric)) AS quantity
-   FROM (((goodfood_extrusionpouringingredient extrusionpouringingredient
-     JOIN goodfood_extrusionpouring extrusionpouring ON ((extrusionpouringingredient.extrusionpouring_id = extrusionpouring.id)))
-     JOIN basic_product p ON ((p.id = extrusionpouringingredient.product_id)))
-     LEFT JOIN advancedgenealogy_batch b ON ((b.id = extrusionpouringingredient.batch_id)))
-  GROUP BY extrusionpouring.extrusionprotocol_id, extrusionpouring.priority, p.id, b.number, b.product_id;
-
-
---
--- Name: _RETURN; Type: RULE; Schema: public; Owner: -
---
-
-CREATE RULE "_RETURN" AS
     ON SELECT TO integrationscales_scaledto DO INSTEAD  SELECT scale.id,
     scale.name,
     scale.comment,
@@ -50099,39 +50080,6 @@ UNION ALL
 --
 
 CREATE RULE "_RETURN" AS
-    ON SELECT TO productioncounting_trackingoperationproductincomponenthelper DO INSTEAD  SELECT trackingoperationproductincomponent.id,
-    (productiontracking.id)::integer AS productiontracking_id,
-    (product.id)::integer AS product_id,
-    product.number AS productnumber,
-    product.name AS productname,
-    product.unit AS productunit,
-    sum(productioncountingquantity.plannedquantity) AS plannedquantity,
-        CASE
-            WHEN (usedbatch.id IS NULL) THEN trackingoperationproductincomponent.usedquantity
-            ELSE usedbatch.quantity
-        END AS usedquantity,
-    batch.number AS batchnumber,
-    producedbatch.number AS producedbatchnumber
-   FROM ((((((productioncounting_trackingoperationproductincomponent trackingoperationproductincomponent
-     LEFT JOIN productioncounting_productiontracking productiontracking ON ((productiontracking.id = trackingoperationproductincomponent.productiontracking_id)))
-     LEFT JOIN basic_product product ON ((product.id = trackingoperationproductincomponent.product_id)))
-     LEFT JOIN advancedgenealogy_batch producedbatch ON ((producedbatch.id = productiontracking.batch_id)))
-     LEFT JOIN productioncounting_usedbatch usedbatch ON ((usedbatch.trackingoperationproductincomponent_id = trackingoperationproductincomponent.id)))
-     LEFT JOIN advancedgenealogy_batch batch ON ((batch.id = usedbatch.batch_id)))
-     LEFT JOIN basicproductioncounting_productioncountingquantity productioncountingquantity ON (((productioncountingquantity.order_id = productiontracking.order_id) AND (productioncountingquantity.product_id = trackingoperationproductincomponent.product_id) AND ((productioncountingquantity.role)::text = '01used'::text) AND
-        CASE
-            WHEN (productiontracking.technologyoperationcomponent_id IS NOT NULL) THEN (productioncountingquantity.technologyoperationcomponent_id = productiontracking.technologyoperationcomponent_id)
-            ELSE (1 = 1)
-        END)))
-  WHERE ((productiontracking.state)::text <> ALL (ARRAY[(('03declined'::text)::character varying)::text, (('04corrected'::text)::character varying)::text]))
-  GROUP BY trackingoperationproductincomponent.id, productiontracking.id, product.id, product.number, producedbatch.number, product.unit, trackingoperationproductincomponent.usedquantity, productiontracking.technologyoperationcomponent_id, usedbatch.id, usedbatch.quantity, batch.number;
-
-
---
--- Name: _RETURN; Type: RULE; Schema: public; Owner: -
---
-
-CREATE RULE "_RETURN" AS
     ON SELECT TO productioncounting_trackingoperationproductoutcomponenthelper DO INSTEAD  SELECT trackingoperationproductoutcomponent.id,
     (productiontracking.id)::integer AS productiontracking_id,
     (product.id)::integer AS product_id,
@@ -50209,6 +50157,78 @@ CREATE RULE "_RETURN" AS
 --
 
 CREATE RULE "_RETURN" AS
+    ON SELECT TO technologies_technologydto DO INSTEAD  SELECT technology.id,
+    technology.name,
+    technology.number,
+    technology.externalsynchronized,
+    technology.master,
+    technology.state,
+    product.number AS productnumber,
+    product.globaltypeofmaterial AS productglobaltypeofmaterial,
+    technologygroup.number AS technologygroupnumber,
+    division.name AS divisionname,
+    product.name AS productname,
+    technology.technologytype,
+    technology.active,
+    technology.standardperformancetechnology,
+    generatorcontext.number AS generatorname,
+    (count(technologyattachment.id) <> 0) AS attachmentsexists,
+    technologystatechange.dateandtime,
+    productionline.number AS productionlinenumber,
+    assortment.name AS assortmentname,
+    qualitycard.number AS qualitycardnumber,
+    technology.istemplateaccepted
+   FROM (((((((((technologies_technology technology
+     LEFT JOIN basic_product product ON ((product.id = technology.product_id)))
+     LEFT JOIN basic_assortment assortment ON ((assortment.id = product.assortment_id)))
+     LEFT JOIN basic_division division ON ((division.id = technology.division_id)))
+     LEFT JOIN technologies_technologygroup technologygroup ON ((technologygroup.id = technology.technologygroup_id)))
+     LEFT JOIN technologies_technologyattachment technologyattachment ON ((technologyattachment.technology_id = technology.id)))
+     LEFT JOIN technologiesgenerator_generatorcontext generatorcontext ON ((generatorcontext.id = technology.generatorcontext_id)))
+     LEFT JOIN technologies_technologystatechange technologystatechange ON (((technologystatechange.technology_id = technology.id) AND ((technologystatechange.status)::text = '03successful'::text) AND (technologystatechange.sourcestate IS NULL) AND ((technologystatechange.targetstate)::text = '01draft'::text))))
+     LEFT JOIN productionlines_productionline productionline ON ((productionline.id = technology.productionline_id)))
+     LEFT JOIN technologies_qualitycard qualitycard ON ((qualitycard.id = technology.qualitycard_id)))
+  GROUP BY technology.id, product.number, product.globaltypeofmaterial, technologygroup.number, division.name, product.name, generatorcontext.number, technologystatechange.dateandtime, productionline.number, assortment.name, qualitycard.number;
+
+
+--
+-- Name: _RETURN; Type: RULE; Schema: public; Owner: -
+--
+
+CREATE RULE "_RETURN" AS
+    ON SELECT TO productioncounting_trackingoperationproductincomponenthelper DO INSTEAD  SELECT trackingoperationproductincomponent.id,
+    (productiontracking.id)::integer AS productiontracking_id,
+    (product.id)::integer AS product_id,
+    product.number AS productnumber,
+    product.name AS productname,
+    product.unit AS productunit,
+    sum(productioncountingquantity.plannedquantity) AS plannedquantity,
+        CASE
+            WHEN (usedbatch.id IS NULL) THEN trackingoperationproductincomponent.usedquantity
+            ELSE usedbatch.quantity
+        END AS usedquantity,
+    batch.number AS batchnumber,
+    producedbatch.number AS producedbatchnumber
+   FROM ((((((productioncounting_trackingoperationproductincomponent trackingoperationproductincomponent
+     LEFT JOIN productioncounting_productiontracking productiontracking ON ((productiontracking.id = trackingoperationproductincomponent.productiontracking_id)))
+     LEFT JOIN basic_product product ON ((product.id = trackingoperationproductincomponent.product_id)))
+     LEFT JOIN advancedgenealogy_batch producedbatch ON ((producedbatch.id = productiontracking.batch_id)))
+     LEFT JOIN productioncounting_usedbatch usedbatch ON ((usedbatch.trackingoperationproductincomponent_id = trackingoperationproductincomponent.id)))
+     LEFT JOIN advancedgenealogy_batch batch ON ((batch.id = usedbatch.batch_id)))
+     LEFT JOIN basicproductioncounting_productioncountingquantity productioncountingquantity ON (((productioncountingquantity.order_id = productiontracking.order_id) AND (productioncountingquantity.product_id = trackingoperationproductincomponent.product_id) AND ((productioncountingquantity.role)::text = '01used'::text) AND
+        CASE
+            WHEN (productiontracking.technologyoperationcomponent_id IS NOT NULL) THEN (productioncountingquantity.technologyoperationcomponent_id = productiontracking.technologyoperationcomponent_id)
+            ELSE (1 = 1)
+        END)))
+  WHERE ((productiontracking.state)::text <> ALL (ARRAY[(('03declined'::text)::character varying)::text, (('04corrected'::text)::character varying)::text]))
+  GROUP BY trackingoperationproductincomponent.id, productiontracking.id, product.id, product.number, producedbatch.number, product.unit, trackingoperationproductincomponent.usedquantity, productiontracking.technologyoperationcomponent_id, usedbatch.id, usedbatch.quantity, batch.number;
+
+
+--
+-- Name: _RETURN; Type: RULE; Schema: public; Owner: -
+--
+
+CREATE RULE "_RETURN" AS
     ON SELECT TO technologies_operationproductinproductdto DO INSTEAD  SELECT technologies_operationproductincomponentdto.id,
     (technologies_operationproductincomponentdto.id)::integer AS operationproductincomponentid,
     technologies_operationproductincomponentdto.product_id,
@@ -50271,38 +50291,67 @@ UNION ALL
 --
 
 CREATE RULE "_RETURN" AS
-    ON SELECT TO technologies_technologydto DO INSTEAD  SELECT technology.id,
-    technology.name,
-    technology.number,
-    technology.externalsynchronized,
-    technology.master,
-    technology.state,
-    product.number AS productnumber,
-    product.globaltypeofmaterial AS productglobaltypeofmaterial,
-    technologygroup.number AS technologygroupnumber,
-    division.name AS divisionname,
-    product.name AS productname,
-    technology.technologytype,
-    technology.active,
-    technology.standardperformancetechnology,
-    generatorcontext.number AS generatorname,
-    (count(technologyattachment.id) <> 0) AS attachmentsexists,
-    technologystatechange.dateandtime,
-    productionline.number AS productionlinenumber,
-    assortment.name AS assortmentname,
-    qualitycard.number AS qualitycardnumber,
-    technology.istemplateaccepted
-   FROM (((((((((technologies_technology technology
-     LEFT JOIN basic_product product ON ((product.id = technology.product_id)))
-     LEFT JOIN basic_assortment assortment ON ((assortment.id = product.assortment_id)))
-     LEFT JOIN basic_division division ON ((division.id = technology.division_id)))
-     LEFT JOIN technologies_technologygroup technologygroup ON ((technologygroup.id = technology.technologygroup_id)))
-     LEFT JOIN technologies_technologyattachment technologyattachment ON ((technologyattachment.technology_id = technology.id)))
-     LEFT JOIN technologiesgenerator_generatorcontext generatorcontext ON ((generatorcontext.id = technology.generatorcontext_id)))
-     LEFT JOIN technologies_technologystatechange technologystatechange ON (((technologystatechange.technology_id = technology.id) AND ((technologystatechange.status)::text = '03successful'::text) AND (technologystatechange.sourcestate IS NULL) AND ((technologystatechange.targetstate)::text = '01draft'::text))))
-     LEFT JOIN productionlines_productionline productionline ON ((productionline.id = technology.productionline_id)))
-     LEFT JOIN technologies_qualitycard qualitycard ON ((qualitycard.id = technology.qualitycard_id)))
-  GROUP BY technology.id, product.number, product.globaltypeofmaterial, technologygroup.number, division.name, product.name, generatorcontext.number, technologystatechange.dateandtime, productionline.number, assortment.name, qualitycard.number;
+    ON SELECT TO goodfood_extrusionusedbatchingredientdto DO INSTEAD  SELECT row_number() OVER () AS id,
+    extrusionpouring.extrusionprotocol_id,
+    p.number AS productnumber,
+    p.unit,
+    b.number AS batchnumber,
+    extrusionpouring.priority,
+    sum(COALESCE(extrusionpouringingredient.quantity, (0)::numeric)) AS quantity
+   FROM (((goodfood_extrusionpouringingredient extrusionpouringingredient
+     JOIN goodfood_extrusionpouring extrusionpouring ON ((extrusionpouringingredient.extrusionpouring_id = extrusionpouring.id)))
+     JOIN basic_product p ON ((p.id = extrusionpouringingredient.product_id)))
+     LEFT JOIN advancedgenealogy_batch b ON ((b.id = extrusionpouringingredient.batch_id)))
+  GROUP BY extrusionpouring.extrusionprotocol_id, extrusionpouring.priority, p.id, b.number, b.product_id;
+
+
+--
+-- Name: assignmenttoshift_assignmenttoshift_trigger_externalnumber; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER assignmenttoshift_assignmenttoshift_trigger_externalnumber BEFORE INSERT ON assignmenttoshift_assignmenttoshift FOR EACH ROW EXECUTE PROCEDURE generate_and_set_assignmenttoshift_externalnumber_trigger();
+
+
+--
+-- Name: cmmsmachineparts_maintenanceevent_trigger_number; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER cmmsmachineparts_maintenanceevent_trigger_number BEFORE INSERT ON cmmsmachineparts_maintenanceevent FOR EACH ROW EXECUTE PROCEDURE generate_and_set_maintenanceevent_number_trigger();
+
+
+--
+-- Name: goodfood_confectionprotocol_trigger_externalnumber; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER goodfood_confectionprotocol_trigger_externalnumber BEFORE INSERT ON goodfood_confectionprotocol FOR EACH ROW EXECUTE PROCEDURE generate_and_set_confectionprotocol_externalnumber_trigger();
+
+
+--
+-- Name: goodfood_extrusionprotocol_trigger_externalnumber; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER goodfood_extrusionprotocol_trigger_externalnumber BEFORE INSERT ON goodfood_extrusionprotocol FOR EACH ROW EXECUTE PROCEDURE generate_and_set_extrusionprotocol_externalnumber_trigger();
+
+
+--
+-- Name: goodfood_pallet_trigger_externalnumber; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER goodfood_pallet_trigger_externalnumber BEFORE INSERT ON goodfood_pallet FOR EACH ROW EXECUTE PROCEDURE generate_and_set_pallet_externalnumber_trigger();
+
+
+--
+-- Name: materialflowresources_document_trigger_number; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER materialflowresources_document_trigger_number BEFORE INSERT ON materialflowresources_document FOR EACH ROW EXECUTE PROCEDURE generate_and_set_document_number_trigger();
+
+
+--
+-- Name: repairs_repairorder_trigger_number; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER repairs_repairorder_trigger_number BEFORE INSERT ON repairs_repairorder FOR EACH ROW EXECUTE PROCEDURE generate_and_set_repairorder_number_trigger();
 
 
 --
