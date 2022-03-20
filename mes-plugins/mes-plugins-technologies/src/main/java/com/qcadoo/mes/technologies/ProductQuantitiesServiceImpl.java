@@ -431,6 +431,7 @@ public class ProductQuantitiesServiceImpl implements ProductQuantitiesService {
                         message.setProductNumber(opicProduct.getStringField(ProductFields.NUMBER));
                         message.setNodeNumber(toc.getStringField(TechnologyOperationComponentFields.NODE_NUMBER));
                         message.setAttributeNumber(attribute.getStringField(AttributeFields.NUMBER));
+                        message.setAttributeValue(attributeValue.getStringField(ProductAttributeValueFields.VALUE));
                         operationProductComponentWithQuantityContainer.addMessage(message);
                     } else {
                         Entity productAttributeValue = productAttributeValues.get(0);
@@ -651,17 +652,17 @@ public class ProductQuantitiesServiceImpl implements ProductQuantitiesService {
                     Entity attributeValue = maybeAttributeValue.get();
                     Entity opicProduct = operationProductComponent.getBelongsToField(OperationProductInComponentFields.PRODUCT);
 
-                    Optional<Entity> maybeProductAttributeValue =dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.PRODUCT_ATTRIBUTE_VALUE)
+                    List<Entity> productAttributeValueList = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.PRODUCT_ATTRIBUTE_VALUE)
                             .find()
                             .createAlias(ProductAttributeValueFields.PRODUCT, "prod", JoinType.LEFT)
                             .createAlias("prod.parent", "parentProduct", JoinType.LEFT)
                             .add(SearchRestrictions.eq("parentProduct.id", opicProduct.getId()))
                             .add(SearchRestrictions.belongsTo(ProductAttributeValueFields.ATTRIBUTE, attribute))
                             .add(SearchRestrictions.belongsTo(ProductAttributeValueFields.ATTRIBUTE_VALUE, attributeValue.getBelongsToField(ProductAttributeValueFields.ATTRIBUTE_VALUE)))
-                            .list().getEntities().stream().findFirst();
+                            .list().getEntities();
 
-                    if(maybeProductAttributeValue.isPresent()) {
-                        Entity productAttributeValue = maybeProductAttributeValue.get();
+                    if(productAttributeValueList.size() == 1) {
+                        Entity productAttributeValue = productAttributeValueList.get(0);
 
 
                         BigDecimal addedQuantity = operationProductComponentWithQuantityContainer.get(operationProductComponent, productAttributeValue.getBelongsToField(ProductAttributeValueFields.PRODUCT));
