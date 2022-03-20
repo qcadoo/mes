@@ -120,6 +120,10 @@
         <model:dictionary name="orderCategory"/>
 
         <model:model-field model="parameter" plugin="basic">
+            <model:boolean name="setMasterOrderDateBasedOnOrderDates" default="false"/>
+        </model:model-field>
+
+        <model:model-field model="parameter" plugin="basic">
             <model:hasMany name="orderCategoryColors" plugin="orders" model="orderCategoryColor" joinField="parameter"
                            cascade="delete"/>
         </model:model-field>
