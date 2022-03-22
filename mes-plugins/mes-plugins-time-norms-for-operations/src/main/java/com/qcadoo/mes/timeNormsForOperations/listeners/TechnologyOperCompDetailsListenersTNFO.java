@@ -33,10 +33,14 @@ import static com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperatio
 import static com.qcadoo.mes.timeNormsForOperations.constants.TimeNormsConstants.FIELDS_OPERATION;
 import static com.qcadoo.view.api.ComponentState.MessageType.INFO;
 
+import java.math.BigDecimal;
+import java.util.Set;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
+import com.qcadoo.mes.technologies.constants.TechnologyFields;
 import com.qcadoo.mes.timeNormsForOperations.constants.OperationFieldsTFNO;
 import com.qcadoo.mes.timeNormsForOperations.constants.OperationWorkstationTimeFields;
 import com.qcadoo.mes.timeNormsForOperations.constants.TechOperCompWorkstationTimeFields;
@@ -47,6 +51,7 @@ import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
+import com.qcadoo.view.api.components.GridComponent;
 import com.qcadoo.view.constants.QcadooViewConstants;
 
 @Service
@@ -56,7 +61,7 @@ public class TechnologyOperCompDetailsListenersTNFO {
     private DataDefinitionService dataDefinitionService;
 
     public void copyTimeNormsFromOperation(final ViewDefinitionState view, final ComponentState operationLookupState,
-            final String[] args) {
+                                           final String[] args) {
 
         ComponentState operationLookup = view.getComponentByReference(OPERATION);
         if (operationLookup.getFieldValue() == null) {
@@ -82,6 +87,21 @@ public class TechnologyOperCompDetailsListenersTNFO {
         applyTimeNormsFromGivenSource(view, operation, FIELDS_OPERATION);
     }
 
+    public void copyTimeNormsFromOperationForTechnologies(final ViewDefinitionState view, final ComponentState componentState,
+                                                          final String[] args) {
+        GridComponent grid = (GridComponent) view.getComponentByReference(QcadooViewConstants.L_GRID);
+        Set<Long> selectedEntities = grid.getSelectedEntitiesIds();
+        selectedEntities.forEach(techId -> {
+            Entity technology = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_TECHNOLOGY).get(techId);
+
+            for (Entity toc : technology.getHasManyField(TechnologyFields.OPERATION_COMPONENTS)) {
+                Entity operation = toc.getBelongsToField(OPERATION);
+                copyOperationWorkstationTimes(toc, operation);
+                applyTimeNormsFromGivenSource(toc, operation);
+            }
+        });
+    }
+
     private void copyOperationWorkstationTimes(Entity toc, Entity operation) {
         for (Entity operationWorkstationTime : operation.getHasManyField(OperationFieldsTFNO.OPERATION_WORKSTATION_TIMES)) {
             for (Entity techOperCompWorkstationTime : toc
@@ -99,6 +119,27 @@ public class TechnologyOperCompDetailsListenersTNFO {
                 }
             }
         }
+    }
+
+    void applyTimeNormsFromGivenSource(Entity toc, final Entity source) {
+        checkArgument(source != null, "source entity is null");
+
+        for (String fieldName : com.qcadoo.mes.timeNormsForOperations.constants.TimeNormsConstants.FIELDS_OPERATION) {
+            toc.setField(fieldName, source.getField(fieldName));
+        }
+
+        if (source.getField(NEXT_OPERATION_AFTER_PRODUCED_TYPE) == null) {
+            toc.setField(NEXT_OPERATION_AFTER_PRODUCED_TYPE, "01all");
+        }
+
+        if (source.getField(PRODUCTION_IN_ONE_CYCLE) == null) {
+            toc.setField(PRODUCTION_IN_ONE_CYCLE, BigDecimal.ONE);
+        }
+
+        if (source.getField(NEXT_OPERATION_AFTER_PRODUCED_QUANTITY) == null) {
+            toc.setField(NEXT_OPERATION_AFTER_PRODUCED_QUANTITY, BigDecimal.ZERO);
+        }
+        toc.getDataDefinition().save(toc);
     }
 
     void applyTimeNormsFromGivenSource(final ViewDefinitionState view, final Entity source, final Iterable<String> fields) {
@@ -121,16 +162,15 @@ public class TechnologyOperCompDetailsListenersTNFO {
         if (source.getField(NEXT_OPERATION_AFTER_PRODUCED_QUANTITY) == null) {
             view.getComponentByReference(NEXT_OPERATION_AFTER_PRODUCED_QUANTITY).setFieldValue("0");
         }
-
     }
 
     public void inheritOperationNormValues(final ViewDefinitionState viewDefinitionState, final ComponentState componentState,
-            final String[] args) {
+                                           final String[] args) {
         copyTimeNormsFromOperation(viewDefinitionState, componentState, args);
     }
 
     public void changeNextOperationAfterProducedTypeNorm(final ViewDefinitionState viewDefinitionState,
-            final ComponentState state, final String[] args) {
+                                                         final ComponentState state, final String[] args) {
         FieldComponent nextOperationAfterProducedType = (FieldComponent) viewDefinitionState
                 .getComponentByReference(NEXT_OPERATION_AFTER_PRODUCED_TYPE);
         FieldComponent nextOperationAfterProducedQuantity = (FieldComponent) viewDefinitionState
@@ -146,7 +186,7 @@ public class TechnologyOperCompDetailsListenersTNFO {
     }
 
     public void changeNextOperationAfterProducedTypeNormOperation(final ViewDefinitionState viewDefinitionState,
-            final ComponentState state, final String[] args) {
+                                                                  final ComponentState state, final String[] args) {
         FieldComponent nextOperationAfterProducedType = (FieldComponent) viewDefinitionState
                 .getComponentByReference(NEXT_OPERATION_AFTER_PRODUCED_TYPE);
         FieldComponent nextOperationAfterProducedQuantity = (FieldComponent) viewDefinitionState
@@ -162,7 +202,7 @@ public class TechnologyOperCompDetailsListenersTNFO {
     }
 
     public void onProductionInOneCycleCheckboxChange(final ViewDefinitionState viewDefinitionState, final ComponentState state,
-            final String[] args) {
+                                                     final String[] args) {
         FieldComponent areProductQuantitiesDivisible = (FieldComponent) viewDefinitionState
                 .getComponentByReference(ARE_PRODUCT_QUANTITIES_DIVISIBLE);
         FieldComponent isTjDivisible = (FieldComponent) viewDefinitionState.getComponentByReference(IS_TJ_DIVISIBLE);
