@@ -62,7 +62,7 @@
                            state="enabled" action="#{form}.fireEvent(createOrders);">
                 </bigButton>
             </group>
-            <group name="salesPlanMaterialRequirement">
+            <group name="salesPlanMaterialRequirement" defaultAuthorizationRole="ROLE_REQUIREMENTS">
                 <bigButton name="createSalesPlanMaterialRequirement" icon="genealogyIcon24.png"
                            state="disabled" action="#{form}.fireEvent(createSalesPlanMaterialRequirement);">
                 </bigButton>
