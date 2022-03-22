@@ -30,7 +30,9 @@ import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.GridComponent;
 import com.qcadoo.view.constants.QcadooViewConstants;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import java.util.List;
 import java.util.Set;
@@ -42,11 +44,11 @@ public class PalletNumbersListListeners {
     private PalletNumbersService palletNumbersService;
 
     public final void printPalletCards(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        view.redirectTo("/basic/KARTA_PALETY.pdf", true, false);
+        view.redirectTo("/basic/resources/KARTA_PALETY.pdf", true, false);
     }
 
     public final void printPalletMix(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        view.redirectTo("/basic/PALETA_MIX.pdf", true, false);
+        view.redirectTo("/basic/resources/PALETA_MIX.pdf", true, false);
     }
 
     public void createPalletNumbers(final ViewDefinitionState view, final ComponentState state, final String[] args) {
