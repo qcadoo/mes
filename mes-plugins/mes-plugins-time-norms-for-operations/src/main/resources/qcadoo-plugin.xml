@@ -392,6 +392,10 @@
 	        event="copyTimeNormsFromOperationForTechnologies"
 	        class="com.qcadoo.mes.timeNormsForOperations.listeners.TechnologyOperCompDetailsListenersTNFO"
 	        method="copyTimeNormsFromOperationForTechnologies" />
+
+		<view:view-hook plugin="technologies" view="technologiesList"
+		                type="beforeRender" class="com.qcadoo.mes.timeNormsForOperations.hooks.TechnologiesListHooksTNFO"
+		                method="toggleCopyTimeNormsFromOperationForTechnologiesButton"/>
 	</modules>
 
 	<features>

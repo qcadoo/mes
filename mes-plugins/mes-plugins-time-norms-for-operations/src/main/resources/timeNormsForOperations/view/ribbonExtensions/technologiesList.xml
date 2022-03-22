@@ -30,7 +30,7 @@
 	view="technologiesList">
 	
 	<group name="norm">
-		<bigButton name="copyTimeNormsFromOperationForTechnologies" icon="copyIcon24.png" state="enabled" action="#{grid}.fireEvent(copyTimeNormsFromOperationForTechnologies);"  />
+		<bigButton name="copyTimeNormsFromOperationForTechnologies" icon="copyIcon24.png" state="disabled" action="#{grid}.fireEvent(copyTimeNormsFromOperationForTechnologies);"  />
 	</group>
 	
 </ribbonExtension>
