@@ -35,6 +35,23 @@
 				<extensions>true</extensions>
 			</plugin>
 		</plugins>
+		<resources>
+			<resource>
+				<directory>src/main/resources</directory>
+				<filtering>true</filtering>
+				<includes>
+					<include>**/*.properties</include>
+					<include>**/*.xml</include>
+				</includes>
+			</resource>
+			<resource>
+				<directory>src/main/resources/basic/public/files</directory>
+				<filtering>false</filtering>
+				<includes>
+					<include>**/*.pdf</include>
+				</includes>
+			</resource>
+		</resources>
 	</build>
 
 </project>
