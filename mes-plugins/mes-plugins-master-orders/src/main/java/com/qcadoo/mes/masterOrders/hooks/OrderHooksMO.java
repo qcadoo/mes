@@ -49,6 +49,11 @@ public class OrderHooksMO {
     private void setMasterOrderDateBasedOnOrderDates(DataDefinition orderDD, Entity order) {
         if (parameterService.getParameter().getBooleanField("setMasterOrderDateBasedOnOrderDates")) {
             Entity masterOrder = order.getBelongsToField(OrderFieldsMO.MASTER_ORDER);
+
+            if(Objects.isNull(masterOrder)) {
+                return;
+            }
+
             List<Entity> orders = Lists.newArrayList(masterOrder.getHasManyField(MasterOrderFields.ORDERS));
             if (Objects.nonNull(order.getId())) {
                 orders = orders.stream().filter(op -> !op.getId().equals(order.getId()))
