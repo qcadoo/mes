@@ -112,6 +112,8 @@
         <model:model model="productionLineTechnologyGroup" resource="model/productionLineTechnologyGroup.xml"/>
         <model:model model="operationTechnologyDto" resource="model/operationTechnologyDto.xml"/>
 
+        <model:model model="technologyToCreationHelper" resource="model/technologyToCreationHelper.xml"/>
+
         <model:dictionary name="sampling"/>
 
         <model:model-field plugin="basic" model="workstationType">
