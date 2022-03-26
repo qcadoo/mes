@@ -70,7 +70,7 @@ public class OperationDurationAnalysisDataProvider {
         columns.add(
                 new ColumnDTO(
                         L_TJ, translationService
-                                .translate("productionCounting.operationDurationAnalysis.window.mainTab.grid.column.tj", locale),
+                        .translate("productionCounting.operationDurationAnalysis.window.mainTab.grid.column.tj", locale),
                         NUMERIC_DATA_TYPE));
         columns.add(
                 new ColumnDTO(L_TPZ,
@@ -89,7 +89,7 @@ public class OperationDurationAnalysisDataProvider {
                 .translate("productionCounting.operationDurationAnalysis.window.mainTab.grid.column.outProductNumber", locale)));
         columns.add(new ColumnDTO(
                 L_QUANTITY, translationService
-                        .translate("productionCounting.operationDurationAnalysis.window.mainTab.grid.column.quantity", locale),
+                .translate("productionCounting.operationDurationAnalysis.window.mainTab.grid.column.quantity", locale),
                 NUMERIC_DATA_TYPE));
         columns.add(new ColumnDTO(L_PRODUCT_UNIT, translationService
                 .translate("productionCounting.operationDurationAnalysis.window.mainTab.grid.column.productUnit", locale)));
@@ -127,7 +127,7 @@ public class OperationDurationAnalysisDataProvider {
     }
 
     public List<Map<String, Object>> getRecords(final String dateFrom, final String dateTo, final JSONObject filters,
-            final String sortColumn, final boolean sortAsc) throws JSONException {
+                                                final String sortColumn, final boolean sortAsc) throws JSONException {
         StringBuilder query = new StringBuilder();
 
         appendBaseQuery(query);
@@ -203,13 +203,13 @@ public class OperationDurationAnalysisDataProvider {
 
                     case L_TJ:
                         query.append(
-                                "AND TO_CHAR((toc.tj || ' second')::interval, 'HH24:MI:SS') LIKE '%")
+                                        "AND TO_CHAR((toc.tj || ' second')::interval, 'HH24:MI:SS') LIKE '%")
                                 .append(value).append("%' ");
                         break;
 
                     case L_TPZ:
                         query.append(
-                                "AND TO_CHAR((toc.tpz || ' second')::interval, 'HH24:MI:SS') LIKE '%")
+                                        "AND TO_CHAR((toc.tpz || ' second')::interval, 'HH24:MI:SS') LIKE '%")
                                 .append(value).append("%' ");
                         break;
 
@@ -235,28 +235,27 @@ public class OperationDurationAnalysisDataProvider {
 
                     case WORKERS_WORKING_TIME_SUM:
                         query.append(
-                                "AND TO_CHAR((SUM(pt.laborTime) || ' second')::interval, 'HH24:MI:SS') LIKE '%")
+                                        "AND TO_CHAR((SUM(pt.laborTime) || ' second')::interval, 'HH24:MI:SS') LIKE '%")
                                 .append(value).append("%' ");
                         break;
 
                     case WORKER_UNIT_TIME:
                         query.append(
-                                "AND TO_CHAR((SUM(pt.laborTime)/(SUM(topoc.usedquantity) * toc.productionInOneCycle) || ' second')::interval, 'HH24:MI:SS') LIKE '%")
+                                        "AND TO_CHAR((SUM(pt.laborTime)/(SUM(topoc.usedquantity) * toc.productionInOneCycle) || ' second')::interval, 'HH24:MI:SS') LIKE '%")
                                 .append(value).append("%' ");
                         break;
 
                     case MACHINES_WORKING_TIME_SUM:
                         query.append(
-                                "AND TO_CHAR((SUM(pt.machineTime) || ' second')::interval, 'HH24:MI:SS') LIKE '%")
+                                        "AND TO_CHAR((SUM(pt.machineTime) || ' second')::interval, 'HH24:MI:SS') LIKE '%")
                                 .append(value).append("%' ");
                         break;
 
                     case MACHINE_UNIT_TIME:
                         query.append(
-                                "AND TO_CHAR((SUM(pt.machineTime)/(SUM(topoc.usedquantity) * toc.productionInOneCycle) || ' second')::interval, 'HH24:MI:SS') LIKE '%")
+                                        "AND TO_CHAR((SUM(pt.machineTime)/(SUM(topoc.usedquantity) * toc.productionInOneCycle) || ' second')::interval, 'HH24:MI:SS') LIKE '%")
                                 .append(value).append("%' ");
                         break;
-
                 }
             }
         }
