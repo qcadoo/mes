@@ -61,29 +61,45 @@ public class OrderHooksMO {
             }
             orders.add(order);
 
-            Optional<Date> start = orders.stream().filter(o -> Objects.nonNull(o.getDateField(OrderFields.START_DATE)))
-                    .map(o -> o.getDateField(OrderFields.START_DATE))
-                    .min(Date::compareTo);
+            boolean anyStartDatesEmpty = orders.stream().anyMatch(o -> Objects.isNull(o.getDateField(OrderFields.START_DATE)));
+            boolean anyFinishDatesEmpty = orders.stream().anyMatch(o -> Objects.isNull(o.getDateField(OrderFields.FINISH_DATE)));
 
-            Optional<Date> finish = orders.stream()
-                    .filter(o -> Objects.nonNull(o.getDateField(OrderFields.FINISH_DATE)))
-                    .map(o -> o.getDateField(OrderFields.FINISH_DATE))
-                    .max(Date::compareTo);
+            boolean allStartDatesFilled = orders.stream().allMatch(o -> Objects.nonNull(o.getDateField(OrderFields.START_DATE)));
+            boolean allFinishDatesFilled = orders.stream().allMatch(o -> Objects.nonNull(o.getDateField(OrderFields.FINISH_DATE)));
 
-            boolean changed = false;
-            if (start.isPresent() && (Objects.isNull(masterOrder.getDateField(MasterOrderFields.START_DATE))
-                    || !masterOrder.getDateField(MasterOrderFields.START_DATE).equals(start.get()))) {
-                changed = true;
-                masterOrder.setField(MasterOrderFields.START_DATE, start.get());
-            }
-
-            if (finish.isPresent() && (Objects.isNull(masterOrder.getDateField(MasterOrderFields.FINISH_DATE))
-                    || !masterOrder.getDateField(MasterOrderFields.FINISH_DATE).equals(finish.get()))) {
-                changed = true;
-                masterOrder.setField(MasterOrderFields.FINISH_DATE, finish.get());
-            }
-            if (changed) {
+            if(anyStartDatesEmpty && anyFinishDatesEmpty
+                    && (Objects.nonNull(masterOrder.getDateField(MasterOrderFields.START_DATE))
+                    || Objects.nonNull(masterOrder.getDateField(MasterOrderFields.FINISH_DATE)))) {
+                masterOrder.setField(MasterOrderFields.START_DATE, null);
+                masterOrder.setField(MasterOrderFields.FINISH_DATE, null);
                 masterOrder.getDataDefinition().fastSave(masterOrder);
+            } else if (allStartDatesFilled && allFinishDatesFilled) {
+
+                Optional<Date> start = orders.stream().filter(o -> Objects.nonNull(o.getDateField(OrderFields.START_DATE)))
+                        .map(o -> o.getDateField(OrderFields.START_DATE))
+                        .min(Date::compareTo);
+
+                Optional<Date> finish = orders.stream()
+                        .filter(o -> Objects.nonNull(o.getDateField(OrderFields.FINISH_DATE)))
+                        .map(o -> o.getDateField(OrderFields.FINISH_DATE))
+                        .max(Date::compareTo);
+
+                boolean changed = false;
+                if (start.isPresent() && (Objects.isNull(masterOrder.getDateField(MasterOrderFields.START_DATE))
+                        || !masterOrder.getDateField(MasterOrderFields.START_DATE).equals(start.get()))) {
+                    changed = true;
+                    masterOrder.setField(MasterOrderFields.START_DATE, start.get());
+                }
+
+                if (finish.isPresent() && (Objects.isNull(masterOrder.getDateField(MasterOrderFields.FINISH_DATE))
+                        || !masterOrder.getDateField(MasterOrderFields.FINISH_DATE).equals(finish.get()))) {
+                    changed = true;
+                    masterOrder.setField(MasterOrderFields.FINISH_DATE, finish.get());
+                }
+
+                if (changed) {
+                    masterOrder.getDataDefinition().fastSave(masterOrder);
+                }
             }
         }
     }
