@@ -246,34 +246,6 @@
                 </smallButton>
             </group>
 
-            <group name="orderCopyOfTechnology">
-                <bigButton name="orderCopyOfTechnology" icon="settingsIcon24.png"
-                           state="disabled">
-                    <script>
-                        <![CDATA[
-							this.addOnChangeListener({
-								onClick: function() {
-									if (window.canClose()) {
-										#{form}.performEvent('showCopyOfTechnology', []);
-									}
-								}
-							});		
-							#{form}.addOnChangeListener({
-								onSetValue: function(value) {
-									if (!value || !value.content) {
-										return;
-									}
-									if (!value.content.entityId) {
-										this.disable();
-									} else {
-										this.enable();
-									}
-								}
-							});					
-						]]>
-                    </script>
-                </bigButton>
-            </group>
             <group name="operationalTasks">
                 <smallButton name="generateOperationalTasks" icon="generateIcon16.png">
                     <script>
