@@ -23,6 +23,7 @@
  */
 package com.qcadoo.mes.technologies.controller;
 
+import com.google.common.collect.Lists;
 import com.google.common.io.Files;
 import com.qcadoo.mes.basic.MultiUploadHelper;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
@@ -32,6 +33,7 @@ import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
 import com.qcadoo.model.api.file.FileService;
+
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,7 +49,11 @@ import org.springframework.web.multipart.MultipartHttpServletRequest;
 import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Iterator;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import javax.servlet.http.HttpServletResponse;
 
 @Controller
@@ -89,18 +95,23 @@ public class TechnologyMultiUploadController {
             } catch (IOException e) {
                 logger.error("Unable to upload attachment.", e);
             }
-            if (MultiUploadHelper.EXTS.contains(Files.getFileExtension(path).toUpperCase())) {
-                Entity atchment = attachmentDD.create();
-                atchment.setField(TechnologyAttachmentFields.ATTACHMENT, path);
-                atchment.setField(TechnologyAttachmentFields.NAME, mpf.getOriginalFilename());
-                atchment.setField(TechnologyAttachmentFields.TECHNOLOGY, technology);
-                atchment.setField(TechnologyAttachmentFields.EXT, Files.getFileExtension(path));
-                BigDecimal fileSize = new BigDecimal(mpf.getSize(), numberService.getMathContext());
-                BigDecimal divider = new BigDecimal(1024, numberService.getMathContext());
-                BigDecimal size = fileSize.divide(divider, L_SCALE, BigDecimal.ROUND_HALF_UP);
-                atchment.setField(TechnologyAttachmentFields.SIZE, size);
-                attachmentDD.save(atchment);
-            }
+            createAttachment(technology, attachmentDD, mpf, path);
+        }
+    }
+
+    private void createAttachment(Entity technology, DataDefinition attachmentDD, MultipartFile mpf, String path) {
+        String extension = Files.getFileExtension(path);
+        if (MultiUploadHelper.EXTS.contains(extension.toUpperCase())) {
+            Entity attachment = attachmentDD.create();
+            attachment.setField(TechnologyAttachmentFields.ATTACHMENT, path);
+            attachment.setField(TechnologyAttachmentFields.NAME, mpf.getOriginalFilename());
+            attachment.setField(TechnologyAttachmentFields.TECHNOLOGY, technology);
+            attachment.setField(TechnologyAttachmentFields.EXT, extension);
+            BigDecimal fileSize = new BigDecimal(mpf.getSize(), numberService.getMathContext());
+            BigDecimal divider = new BigDecimal(1024, numberService.getMathContext());
+            BigDecimal size = fileSize.divide(divider, L_SCALE, RoundingMode.HALF_UP);
+            attachment.setField(TechnologyAttachmentFields.SIZE, size);
+            attachmentDD.save(attachment);
         }
     }
 
@@ -130,4 +141,35 @@ public class TechnologyMultiUploadController {
             logger.error("Unable to copy attachment file to response stream.", e);
         }
     }
+
+    @ResponseBody
+    @RequestMapping(value = "/technologiesMultiUploadFiles", method = RequestMethod.POST)
+    public void technologiesUpload(
+            MultipartHttpServletRequest request, HttpServletResponse response) {
+        List<Long> technologiesIds = Lists.newArrayList(request.getParameter("technologiesIds").split(",")).stream().map(Long::valueOf)
+                .collect(Collectors.toList());
+        DataDefinition technologyDD = dataDefinitionService
+                .get(TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_TECHNOLOGY);
+        DataDefinition attachmentDD = dataDefinitionService
+                .get(TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_TECHNOLOGY_ATTACHMENT);
+
+        for (Long technologyId : technologiesIds) {
+            Entity technology = technologyDD.get(technologyId);
+            Iterator<String> itr = request.getFileNames();
+            MultipartFile mpf;
+            while (itr.hasNext()) {
+                mpf = request.getFile(itr.next());
+
+                String path = "";
+                try {
+                    path = fileService.upload(mpf);
+                } catch (IOException e) {
+                    logger.error("Unable to upload attachment.", e);
+                }
+
+                createAttachment(technology, attachmentDD, mpf, path);
+            }
+        }
+    }
+
 }
