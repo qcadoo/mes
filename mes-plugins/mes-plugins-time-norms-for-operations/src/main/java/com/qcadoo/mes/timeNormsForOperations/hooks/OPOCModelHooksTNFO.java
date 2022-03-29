@@ -36,8 +36,10 @@ public class OPOCModelHooksTNFO {
 
     public void setProductionInOneCycleUNIT(final DataDefinition dataDefinition, final Entity opoc) {
         Entity toc = opoc.getBelongsToField(OperationProductOutComponentFields.OPERATION_COMPONENT);
-        Entity product = opoc.getBelongsToField(OperationProductOutComponentFields.PRODUCT);
-        toc.setField(TechnologyOperationComponentFieldsTNFO.PRODUCTION_IN_ONE_CYCLE_UNIT, product.getField(ProductFields.UNIT));
-        toc.getDataDefinition().save(toc);
+        if (!opoc.getBooleanField(OperationProductOutComponentFields.WASTE)) {
+            Entity product = opoc.getBelongsToField(OperationProductOutComponentFields.PRODUCT);
+            toc.setField(TechnologyOperationComponentFieldsTNFO.PRODUCTION_IN_ONE_CYCLE_UNIT, product.getField(ProductFields.UNIT));
+            toc.getDataDefinition().save(toc);
+        }
     }
 }
