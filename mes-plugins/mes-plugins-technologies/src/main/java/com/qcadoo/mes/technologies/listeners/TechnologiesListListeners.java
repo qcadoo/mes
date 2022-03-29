@@ -13,9 +13,11 @@ import com.qcadoo.view.constants.QcadooViewConstants;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -50,17 +52,23 @@ public class TechnologiesListListeners {
     }
 
     public void changeParameters(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-
         GridComponent grid = (GridComponent) view.getComponentByReference(QcadooViewConstants.L_GRID);
         Set<Long> selectedEntities = grid.getSelectedEntitiesIds();
         final Map<String, Object> parameters = new HashMap<>();
         parameters.put("selectedEntities", selectedEntities);
         JSONObject context = new JSONObject(parameters);
-        StringBuilder url = new StringBuilder("../page/technologies/changeTechnologyParameters.html");
-        url.append("?context=");
-        url.append(context.toString());
+        String url = "../page/technologies/changeTechnologyParameters.html?context=" + context;
 
-        view.openModal(url.toString());
+        view.openModal(url);
+    }
+
+    public void addAttachments(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        GridComponent grid = (GridComponent) view.getComponentByReference(QcadooViewConstants.L_GRID);
+        final Map<String, Object> parameters = new HashMap<>();
+        parameters.put("technologiesIds", grid.getSelectedEntitiesIds().stream().map(String::valueOf).collect(Collectors.joining(",")));
+        String url = "../page/technologies/technologiesAttachments.html";
+
+        view.openModal(url, parameters);
     }
 
 }

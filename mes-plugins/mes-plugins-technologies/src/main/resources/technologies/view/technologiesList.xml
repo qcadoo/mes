@@ -65,6 +65,20 @@
                     </script>
                 </bigButton>
             </group>
+            <group name="attachments">
+                <bigButton name="addAttachments" icon="generateIcon24.png"
+                           state="disabled">
+                    <script>
+                        <![CDATA[
+							this.addOnChangeListener({
+								onClick: function() {
+									#{grid}.performEvent('addAttachments', []);
+								}
+							});
+						]]>
+                    </script>
+                </bigButton>
+            </group>
         </ribbon>
 
         <component type="grid" name="technologies" reference="grid">
@@ -100,6 +114,7 @@
 						getRibbonItem("status.cancelTechnology").disable();
 						getRibbonItem("status.checkTechnology").disable();
 						getRibbonItem("action.changeParameters").disable();
+						getRibbonItem("attachments.addAttachments").disable();
 					}
 
 					function updateRibbon(selectedEntitiesArray) {
@@ -139,8 +154,10 @@
 						var cancelState = getRibbonItem("status.cancelTechnology");
 						var checkState = getRibbonItem("status.checkTechnology");
 						var changeParameters = getRibbonItem("action.changeParameters");
+						var addAttachments = getRibbonItem("attachments.addAttachments");
 						var setAsDefault = getRibbonItem("action.setAsDefault");
                         changeParameters.disable();
+                        addAttachments.disable();
                         setAsDefault.disable();
 						acceptState.disable();
 						acceptState.confirmMessage = "#{translate(technologies.technologyDetails.window.ribbon.status.confirm.accepted)}";
@@ -176,6 +193,7 @@
 							acceptState.enable();
 							cancelState.enable();
 							checkState.enable();
+							addAttachments.enable();
 						} else if (state == "02accepted") {
 							acceptState.confirmMessage = "#{translate(technologies.technologyDetails.window.ribbon.status.confirm.accepted)}";
 							acceptState.setLabel("#{translate(technologies.technologyDetails.window.ribbon.status.acceptTechnology)}");
@@ -194,6 +212,7 @@
 							checkState.confirmMessage = "#{translate(technologies.technologyDetails.window.ribbon.status.confirm.draft)}";
 							checkState.setLabel("#{translate(technologies.technologyDetails.window.ribbon.status.draftTechnology)}");
 							acceptState.enable();
+							addAttachments.enable();
 						}else{
 							cancelState.enable();
 						}
@@ -267,6 +286,8 @@
                       method="changeParameters"/>
             <listener event="setAsDefault" class="com.qcadoo.mes.technologies.listeners.TechnologiesListListeners"
                       method="setAsDefault"/>
+            <listener event="addAttachments" class="com.qcadoo.mes.technologies.listeners.TechnologiesListListeners"
+                      method="addAttachments"/>
 
             <option type="column" name="number" fields="number" link="true"
                     width="100"/>

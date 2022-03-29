@@ -254,7 +254,7 @@ public final class ProductionTrackingListenerServicePFTD {
 				if (usedBatches.isEmpty()) {
 					BigDecimal quantity = trackingOperationProductInComponent.getDecimalField(TrackingOperationProductInComponentFields.USED_QUANTITY);
 
-					BigDecimal availableQuantity = batchQuantities.get("");
+					BigDecimal availableQuantity = batchQuantities.values().stream().reduce(BigDecimal.ZERO, BigDecimal::add);
 
 					if (Objects.isNull(availableQuantity) || quantity.compareTo(availableQuantity) > 0) {
 						errorProducts.add(product.getStringField(ProductFields.NUMBER));
@@ -264,7 +264,7 @@ public final class ProductionTrackingListenerServicePFTD {
 						String batchNumber = usedBatch.getBelongsToField(UsedBatchFields.BATCH).getStringField(BatchFields.NUMBER);
 						BigDecimal quantity = usedBatch.getDecimalField(UsedBatchFields.QUANTITY);
 
-						BigDecimal availableQuantity = availableQuantity = batchQuantities.get(batchNumber);
+						BigDecimal availableQuantity = batchQuantities.get(batchNumber);
 
 						if (Objects.isNull(availableQuantity) || quantity.compareTo(availableQuantity) > 0) {
 							errorProducts.add(product.getStringField(ProductFields.NUMBER));
