@@ -68,12 +68,9 @@ public class TechnologiesAttachmentsHooks {
         String technologiesIds = view.getJsonContext().get("window.mainTab.technology.gridLayout.technologiesIds")
                 .toString();
 
-        String technologyMultiUploadLocale = view.getJsonContext().get("window.mainTab.technology.gridLayout.technologyMultiUploadLocale")
-                .toString();
-
         FieldComponent technologyMultiUploadLocaleField = (FieldComponent) view.getComponentByReference("technologyMultiUploadLocale");
         FieldComponent technologiesIdsField = (FieldComponent) view.getComponentByReference("technologiesIds");
-        technologyMultiUploadLocaleField.setFieldValue(technologyMultiUploadLocale);
+        technologyMultiUploadLocaleField.setFieldValue(LocaleContextHolder.getLocale());
         technologiesIdsField.setFieldValue(technologiesIds);
     }
 

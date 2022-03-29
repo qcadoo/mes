@@ -66,7 +66,6 @@ public class TechnologiesListListeners {
         GridComponent grid = (GridComponent) view.getComponentByReference(QcadooViewConstants.L_GRID);
         final Map<String, Object> parameters = new HashMap<>();
         parameters.put("technologiesIds", grid.getSelectedEntitiesIds().stream().map(String::valueOf).collect(Collectors.joining(",")));
-        parameters.put("technologyMultiUploadLocale", LocaleContextHolder.getLocale());
         String url = "../page/technologies/technologiesAttachments.html";
 
         view.openModal(url, parameters);
