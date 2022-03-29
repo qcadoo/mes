@@ -381,13 +381,14 @@ public class ProductionTrackingDocumentsHelper {
 			List<Entity> productsAndQuantities = sqb.list().getEntities();
 
 			productsAndQuantities.forEach(productAndQuantity -> {
+				Long productId = (Long) productAndQuantity.getField("productId");
 				String batchNumber = productAndQuantity.getStringField("batchNumber");
 
 				if (Objects.isNull(batchNumber)) {
 					batchNumber = "";
 				}
 
-				Map<String, BigDecimal> batchQuantities = quantities.get(batchNumber);
+				Map<String, BigDecimal> batchQuantities = quantities.get(productId);
 
 				if (Objects.isNull(batchQuantities)) {
 					batchQuantities = Maps.newHashMap();
@@ -395,7 +396,7 @@ public class ProductionTrackingDocumentsHelper {
 
 				batchQuantities.put(batchNumber, productAndQuantity.getDecimalField("quantity"));
 
-				quantities.put((Long) productAndQuantity.getField("productId"), batchQuantities);
+				quantities.put(productId, batchQuantities);
 			});
 		}
 
