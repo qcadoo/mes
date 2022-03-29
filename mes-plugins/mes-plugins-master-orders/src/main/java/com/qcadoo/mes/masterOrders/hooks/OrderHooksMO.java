@@ -61,25 +61,24 @@ public class OrderHooksMO {
             }
             orders.add(order);
 
-            boolean anyStartDatesEmpty = orders.stream().anyMatch(o -> Objects.isNull(o.getDateField(OrderFields.START_DATE)));
-            boolean anyFinishDatesEmpty = orders.stream().anyMatch(o -> Objects.isNull(o.getDateField(OrderFields.FINISH_DATE)));
-
-            boolean allStartDatesFilled = orders.stream().allMatch(o -> Objects.nonNull(o.getDateField(OrderFields.START_DATE)));
-            boolean allFinishDatesFilled = orders.stream().allMatch(o -> Objects.nonNull(o.getDateField(OrderFields.FINISH_DATE)));
-
-            if(anyStartDatesEmpty && anyFinishDatesEmpty
-                    && (Objects.nonNull(masterOrder.getDateField(MasterOrderFields.START_DATE))
+            boolean anyDatesEmpty = orders.stream().allMatch(o -> Objects.isNull(o.getDateField(OrderFields.START_DATE))
+                    || Objects.isNull(o.getDateField(OrderFields.FINISH_DATE)));
+            
+            if(anyDatesEmpty && (Objects.nonNull(masterOrder.getDateField(MasterOrderFields.START_DATE))
                     || Objects.nonNull(masterOrder.getDateField(MasterOrderFields.FINISH_DATE)))) {
                 masterOrder.setField(MasterOrderFields.START_DATE, null);
                 masterOrder.setField(MasterOrderFields.FINISH_DATE, null);
                 masterOrder.getDataDefinition().fastSave(masterOrder);
-            } else if (allStartDatesFilled && allFinishDatesFilled) {
+            } else {
 
-                Optional<Date> start = orders.stream().filter(o -> Objects.nonNull(o.getDateField(OrderFields.START_DATE)))
+                List<Entity> ordersToCalculate = orders.stream().filter(o -> Objects.nonNull(o.getDateField(OrderFields.START_DATE))
+                        && Objects.nonNull(o.getDateField(OrderFields.FINISH_DATE))).collect(Collectors.toList());
+
+                Optional<Date> start = ordersToCalculate.stream().filter(o -> Objects.nonNull(o.getDateField(OrderFields.START_DATE)))
                         .map(o -> o.getDateField(OrderFields.START_DATE))
                         .min(Date::compareTo);
 
-                Optional<Date> finish = orders.stream()
+                Optional<Date> finish = ordersToCalculate.stream()
                         .filter(o -> Objects.nonNull(o.getDateField(OrderFields.FINISH_DATE)))
                         .map(o -> o.getDateField(OrderFields.FINISH_DATE))
                         .max(Date::compareTo);
