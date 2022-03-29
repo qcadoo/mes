@@ -315,7 +315,7 @@ public class ProductionTrackingDocumentsHelper {
 					productsNotInStockQuantities.put(trackingOperationProductInComponent, BigDecimal.ZERO);
 				} else {
 					if (usedBatches.isEmpty()) {
-						BigDecimal productStock = batchQuantities.get("");
+						BigDecimal productStock = batchQuantities.values().stream().reduce(BigDecimal.ZERO, BigDecimal::add);
 
 						if (productStock.compareTo(
 								trackingOperationProductInComponent.getDecimalField(TrackingOperationProductInComponentFields.USED_QUANTITY)) < 0) {
