@@ -105,6 +105,9 @@
         <dictionary name="companyCategory" dictionary="contractorCategory" persistent="false"/>
 
         <boolean name="warehouseOrder" default="false"/>
+
+        <manyToMany name="masterOrdersMaterialRequirements" model="masterOrdersMaterialRequirement"
+                    plugin="masterOrders" joinField="masterOrders" />
     </fields>
 
     <hooks>
