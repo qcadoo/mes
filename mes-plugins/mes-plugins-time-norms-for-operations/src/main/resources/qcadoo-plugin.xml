@@ -336,6 +336,9 @@
 	
 		<view:view-ribbon-group
 			resource="view/ribbonExtensions/technologyOperationComponentDetails.xml" />
+
+		<view:view-ribbon-group
+				resource="view/ribbonExtensions/technologiesList.xml" />
 	
 		<view:view-hook plugin="technologies" view="operationDetails"
 			type="beforeRender"
@@ -383,6 +386,16 @@
 			event="copyTimeNormsFromOperation"
 			class="com.qcadoo.mes.timeNormsForOperations.listeners.TechnologyOperCompDetailsListenersTNFO"
 			method="copyTimeNormsFromOperation" />
+
+		<view:view-listener plugin="technologies"
+	        view="technologiesList" component="grid"
+	        event="copyTimeNormsFromOperationForTechnologies"
+	        class="com.qcadoo.mes.timeNormsForOperations.listeners.TechnologyOperCompDetailsListenersTNFO"
+	        method="copyTimeNormsFromOperationForTechnologies" />
+
+		<view:view-hook plugin="technologies" view="technologiesList"
+		                type="beforeRender" class="com.qcadoo.mes.timeNormsForOperations.hooks.TechnologiesListHooksTNFO"
+		                method="toggleCopyTimeNormsFromOperationForTechnologiesButton"/>
 	</modules>
 
 	<features>

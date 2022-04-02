@@ -147,7 +147,7 @@
                                    reference="creatingOrdersForMasterOrder">
                             <option type="label" value="creatingOrdersForMasterOrder"/>
                             <component type="gridLayout" name="gridLayout" columns="1"
-                                       rows="9">
+                                       rows="10">
                                 <layoutElement column="1" row="1">
                                     <component type="checkbox" name="copyDescription" field="#{form}.copyDescription"
                                                reference="copyDescription" hasDescription="true">
@@ -163,13 +163,20 @@
                                     </component>
                                 </layoutElement>
                                 <layoutElement column="1" row="3">
+                                    <component type="checkbox" name="setMasterOrderDateBasedOnOrderDates"
+                                               field="#{form}.setMasterOrderDateBasedOnOrderDates"
+                                               reference="setMasterOrderDateBasedOnOrderDates" hasDescription="true">
+                                        <option type="labelWidth" value="80"/>
+                                    </component>
+                                </layoutElement>
+                                <layoutElement column="1" row="4">
                                     <component type="checkbox" name="createCollectiveOrders"
                                                field="#{form}.createCollectiveOrders"
                                                reference="createCollectiveOrders" hasDescription="true">
                                         <option type="labelWidth" value="80"/>
                                     </component>
                                 </layoutElement>
-                                <layoutElement column="1" row="4">
+                                <layoutElement column="1" row="5">
                                     <component type="checkbox" name="realizationFromStock"
                                                field="#{form}.realizationFromStock"
                                                reference="realizationFromStock" hasDescription="true">
@@ -179,7 +186,7 @@
                                                   method="onRealizationFromStock"/>
                                     </component>
                                 </layoutElement>
-                                <layoutElement column="1" row="5">
+                                <layoutElement column="1" row="6">
                                     <component type="checkbox" name="alwaysOrderItemsWithPersonalization"
                                                field="#{form}.alwaysOrderItemsWithPersonalization"
                                                reference="alwaysOrderItemsWithPersonalization" hasDescription="true">
@@ -189,7 +196,7 @@
                                         <option type="labelWidth" value="80"/>
                                     </component>
                                 </layoutElement>
-                                <layoutElement column="1" row="6" height="4">
+                                <layoutElement column="1" row="7" height="4">
                                     <component type="lookup" name="locationsLookup" reference="locationsLookup"
                                                field="#{form}.realizationLocations" defaultVisible="false" persistent="false"
                                                hasLabel="false">

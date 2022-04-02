@@ -65,6 +65,10 @@ public final class MasterOrdersConstants {
 
     public static final String MODEL_SALES_PLAN_ORDERS_GROUP_ENTRY_HELPER = "salesPlanOrdersGroupEntryHelper";
 
+    public static final String MODEL_MASTER_ORDERS_MATERIAL_REQUIREMENT = "masterOrdersMaterialRequirement";
+
+    public static final String MODEL_MASTER_ORDERS_MATERIAL_REQUIREMENT_PRODUCT = "masterOrdersMaterialRequirementProduct";
+
     public static String masterOrderDetailsUrl(Long id) {
 
         return "#page/" + PLUGIN_IDENTIFIER + "/" + MODEL_MASTER_ORDER + "Details.html?context=%7B%22form.id%22%3A%22" + id

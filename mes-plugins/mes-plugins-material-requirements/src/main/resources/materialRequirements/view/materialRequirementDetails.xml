@@ -204,7 +204,6 @@
 						<option type="fieldCode" value="number" />
 						<option type="multiselect" value="true" />
 					</component>
-
 					<component type="grid" name="orders"
 						reference="orders" source="#{form}.orders"
 						defaultEnabled="false">

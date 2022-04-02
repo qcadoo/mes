@@ -21,25 +21,23 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.timeNormsForOperations.hooks;
+package com.qcadoo.mes.masterOrders.criteriaModifier;
 
 import org.springframework.stereotype.Service;
 
-import com.qcadoo.mes.basic.constants.ProductFields;
-import com.qcadoo.mes.technologies.constants.OperationProductOutComponentFields;
-import com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperationComponentFieldsTNFO;
-import com.qcadoo.model.api.DataDefinition;
-import com.qcadoo.model.api.Entity;
+import com.google.common.collect.Lists;
+import com.qcadoo.mes.masterOrders.constants.MasterOrderFields;
+import com.qcadoo.mes.masterOrders.constants.MasterOrderState;
+import com.qcadoo.model.api.search.SearchCriteriaBuilder;
+import com.qcadoo.model.api.search.SearchRestrictions;
+import com.qcadoo.view.api.components.lookup.FilterValueHolder;
 
 @Service
-public class OPOCModelHooksTNFO {
+public class MasterOrderCriteriaModifier {
 
-    public void setProductionInOneCycleUNIT(final DataDefinition dataDefinition, final Entity opoc) {
-        Entity toc = opoc.getBelongsToField(OperationProductOutComponentFields.OPERATION_COMPONENT);
-        if (!opoc.getBooleanField(OperationProductOutComponentFields.WASTE)) {
-            Entity product = opoc.getBelongsToField(OperationProductOutComponentFields.PRODUCT);
-            toc.setField(TechnologyOperationComponentFieldsTNFO.PRODUCTION_IN_ONE_CYCLE_UNIT, product.getField(ProductFields.UNIT));
-            toc.getDataDefinition().save(toc);
-        }
-    }
+	public void showOnlyNotCompletedAndDeclined(final SearchCriteriaBuilder scb, final FilterValueHolder filterValueHolder) {
+		scb.add(SearchRestrictions.not(SearchRestrictions.in(MasterOrderFields.STATE,
+				Lists.newArrayList(MasterOrderState.COMPLETED.getStringValue(), MasterOrderState.DECLINED.getStringValue()))));
+	}
+
 }

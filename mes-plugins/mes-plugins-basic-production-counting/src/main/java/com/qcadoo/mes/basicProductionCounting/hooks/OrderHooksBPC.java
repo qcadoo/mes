@@ -85,11 +85,11 @@ public class OrderHooksBPC {
     private void addMessagesIfExists(Entity order, OperationProductComponentWithQuantityContainer operationProductComponentWithQuantityContainer) {
         operationProductComponentWithQuantityContainer.getMessages().forEach(message -> {
             if (MESSAGE_NOT_FIND_SPECIFIC_PRODUCT.equals(message.getMessage())) {
-                order.addGlobalMessage(message.getMessage(), message.getProductNumber(), message.getAttributeNumber());
+                order.addGlobalMessage(message.getMessage(),false, false, message.getProductNumber(),message.getAttributeNumber());
             } else if (MESSAGE_TO_MANY_PRODUCTS.equals(message.getMessage())) {
-                order.addGlobalMessage(message.getMessage(), message.getAttributeValue(), message.getAttributeNumber());
+                order.addGlobalMessage(message.getMessage(),false, false, message.getAttributeValue(), message.getAttributeNumber());
             } else if (MESSAGE_NOT_HAVE_ATTRIBUTE.equals(message.getMessage())) {
-                order.addGlobalMessage(message.getMessage(), message.getAttributeNumber());
+                order.addGlobalMessage(message.getMessage(),false, false, message.getAttributeNumber());
             }
         });
     }
