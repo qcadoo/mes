@@ -32,6 +32,7 @@ import static com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperatio
 import static com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperationComponentFieldsTNFO.PRODUCTION_IN_ONE_CYCLE;
 import static com.qcadoo.mes.timeNormsForOperations.constants.TimeNormsConstants.FIELDS_OPERATION;
 import static com.qcadoo.view.api.ComponentState.MessageType.INFO;
+import static com.qcadoo.view.api.ComponentState.MessageType.SUCCESS;
 
 import java.math.BigDecimal;
 import java.util.Set;
@@ -100,6 +101,7 @@ public class TechnologyOperCompDetailsListenersTNFO {
                 applyTimeNormsFromGivenSource(toc, operation);
             }
         });
+        view.addMessage("qcadooView.notification.success", SUCCESS);
     }
 
     private void copyOperationWorkstationTimes(Entity toc, Entity operation) {
