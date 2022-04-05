@@ -99,6 +99,7 @@
 
         <security:role identifier="ROLE_PLANNING"/>
         <security:role identifier="ROLE_PLANNING_MENU"/>
+        <security:role identifier="ROLE_ORDERS_VIEW"/>
         <security:role identifier="ROLE_PLANNING_ORDERS"/>
         <security:role identifier="ROLE_PLANNING_MASTER_ORDERS"/>
 
