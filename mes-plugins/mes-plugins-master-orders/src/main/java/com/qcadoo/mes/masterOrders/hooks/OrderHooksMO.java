@@ -63,7 +63,7 @@ public class OrderHooksMO {
 
             boolean anyDatesEmpty = orders.stream().allMatch(o -> Objects.isNull(o.getDateField(OrderFields.START_DATE))
                     || Objects.isNull(o.getDateField(OrderFields.FINISH_DATE)));
-            
+
             if(anyDatesEmpty && (Objects.nonNull(masterOrder.getDateField(MasterOrderFields.START_DATE))
                     || Objects.nonNull(masterOrder.getDateField(MasterOrderFields.FINISH_DATE)))) {
                 masterOrder.setField(MasterOrderFields.START_DATE, null);

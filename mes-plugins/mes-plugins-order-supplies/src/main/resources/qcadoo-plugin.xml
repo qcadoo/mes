@@ -114,6 +114,9 @@
         <model:model model="productionCountingQuantityInput" resource="model/productionCountingQuantityInput.xml"/>
         <model:model model="productionCountingQuantityOutput" resource="model/productionCountingQuantityOutput.xml"/>
 
+        <model:model model="coverageAnalysisForOrder" resource="model/coverageAnalysisForOrder.xml"/>
+        <model:model model="coverageAnalysisForOrderDto" resource="model/coverageAnalysisForOrderDto.xml"/>
+
         <model:model-field plugin="basic" model="parameter">
             <model:integer name="defaultCoverageFromDays"/>
         </model:model-field>

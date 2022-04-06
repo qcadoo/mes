@@ -63,4 +63,6 @@ public final class MaterialRequirementCoverageFields {
 
     public static final String COVERAGE_ORDER_STATES = "coverageOrderStates";
 
+    public static final String COVERAGE_ANALYSIS_FOR_ORDERS = "coverageAnalysisForOrders";
+
 }
