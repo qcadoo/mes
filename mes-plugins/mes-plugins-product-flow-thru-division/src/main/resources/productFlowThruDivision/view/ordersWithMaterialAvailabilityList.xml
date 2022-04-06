@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    ***************************************************************************
+    Copyright (c) 2010 Qcadoo Limited
+    Project: Qcadoo Framework
+    Version: 1.4
+
+    This file is part of Qcadoo.
+
+    Qcadoo is free software; you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as published
+    by the Free Software Foundation; either version 3 of the License,
+    or (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty
+    of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+    See the GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+    ***************************************************************************
+
+-->
+<view defaultAuthorizationRole="ROLE_ORDER_MATERIAL_AVAILABILITY" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns="http://schema.qcadoo.org/view"
+      xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
+      name="ordersWithMaterialAvailabilityList" modelName="orderPlanningListDto"
+      modelPlugin="orders" menuAccessible="true">
+
+    <component type="window" name="window" reference="window">
+
+        <ribbon>
+        </ribbon>
+
+        <component type="hidden" name="ordersIds" persistent="false"
+                   reference="ordersIds">
+        </component>
+        <component type="grid" name="orders" reference="grid">
+            <option type="column" name="number" fields="number" width="60"/>
+            <option type="column" name="name" fields="name" width="80"/>
+            <option type="column" name="description" fields="description" width="80"/>
+            <option type="column" name="state" fields="state" width="35"/>
+            <option type="column" name="dateFrom" fields="startDate" width="60" classesNames="wrap-date"/>
+            <option type="column" name="dateTo" fields="finishDate" width="60" classesNames="wrap-date"/>
+            <option type="column" name="deadline" fields="deadline" width="60" classesNames="wrap-date"/>
+            <option type="column" name="daysToDeadline" fields="daysToDeadline" width="20"/>
+            <option type="column" name="productNumber" fields="productNumber" width="50"/>
+            <option type="column" name="plannedQuantity" fields="plannedQuantity" width="20"/>
+            <option type="column" name="amountOfProductProduced" fields="amountOfProductProduced" width="20"/>
+            <option type="column" name="wastesQuantity" fields="wastesQuantity" width="20"/>
+            <option type="column" name="remainingAmountOfProductToProduce" fields="remainingAmountOfProductToProduce" width="20"/>
+            <option type="column" name="unit" fields="unit" width="15"/>
+            <option type="column" name="doneInPercentage" fields="doneInPercentage" width="50"
+                    classesCondition="rowObject['flagPercentageOfExecutionWithColor']>0"
+                    classesNames="rowObject['percentageOfExecutionCellColor']"/>
+            <option type="column" name="percentageOfExecutionCellColor" fields="percentageOfExecutionCellColor" hidden="true"/>
+            <option type="column" name="flagPercentageOfExecutionWithColor" fields="flagPercentageOfExecutionWithColor"
+                    hidden="true"/>
+            <option type="column" name="plannedQuantityForAdditionalUnit" fields="plannedQuantityForAdditionalUnit" width="35"/>
+            <option type="column" name="unitForAdditionalUnit" fields="unitForAdditionalUnit" width="15"/>
+            <option type="column" name="productionLineNumber" fields="productionLineNumber" width="40"/>
+            <option type="column" name="orderCategory" fields="orderCategory" width="40"/>
+            <option type="column" name="company" fields="company" width="40"/>
+            <option type="column" name="salesPlanNumber" fields="salesPlanNumber" width="50"/>
+            <option type="column" name="hasPacks" fields="hasPacks" width="40"/>
+            <option type="column" name="availability" fields="availability" width="50"
+                    classesNames="rowObject['availabilityCellColor']"/>
+            <option type="column" name="availabilityCellColor" fields="availabilityCellColor" hidden="true"/>
+
+            <option type="order" column="dateFrom" direction="desc"/>
+
+            <option type="footerRow" value="true"/>
+            <option type="columnsToSummary"
+                    value="plannedQuantity,amountOfProductProduced,wastesQuantity,remainingAmountOfProductToProduce,plannedQuantityForAdditionalUnit"/>
+
+            <option type="fullscreen" value="true"/>
+        </component>
+
+        <option type="fixedHeight" value="true"/>
+        <option type="header" value="false"/>
+    </component>
+
+    <hooks>
+        <beforeRender
+                class="com.qcadoo.mes.productFlowThruDivision.hooks.OrdersWithMaterialAvailabilityListHooks"
+                method="onBeforeRender"/>
+    </hooks>
+
+</view>

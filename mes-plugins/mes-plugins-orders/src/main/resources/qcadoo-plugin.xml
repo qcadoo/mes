@@ -470,9 +470,9 @@
         <menu:menu-category name="analysis" defaultAuthorizationRole="ROLE_ANALYSIS_VIEWER"/>
 
         <menu:menu-item name="productionOrders" category="orders"
-                        view="ordersList" defaultAuthorizationRole="ROLE_PLANNING"/>
+                        view="ordersList" defaultAuthorizationRole="ROLE_ORDERS_VIEW"/>
         <menu:menu-item name="productionOrdersPlanning" category="orders"
-                        view="ordersPlanningList" defaultAuthorizationRole="ROLE_PLANNING"/>
+                        view="ordersPlanningList" defaultAuthorizationRole="ROLE_ORDERS_VIEW"/>
 
         <menu:menu-item name="schedulesList" category="orders"
                         view="schedulesList" defaultAuthorizationRole="ROLE_PLANNING"/>
