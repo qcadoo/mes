@@ -115,7 +115,7 @@ public class StateChangeViewClientValidationUtilTest {
 
         // then
         verify(entity, Mockito.never()).addError(Mockito.any(FieldDefinition.class), Mockito.eq(TRANSLATION_KEY));
-        verify(formComponent).addTranslatedMessage(Mockito.any(String.class), Mockito.eq(convertViewMessageType(VALIDATION_ERROR)));
+        verify(formComponent).addTranslatedMessage(Mockito.any(String.class), Mockito.eq(convertViewMessageType(VALIDATION_ERROR)), Mockito.any(Boolean.class));
     }
 
     @Test
@@ -133,7 +133,7 @@ public class StateChangeViewClientValidationUtilTest {
 
         // then
         verify(entity, Mockito.never()).addError(Mockito.any(FieldDefinition.class), Mockito.eq(TRANSLATION_KEY));
-        verify(formComponent).addTranslatedMessage(Mockito.any(String.class), Mockito.eq(convertViewMessageType(VALIDATION_ERROR)));
+        verify(formComponent).addTranslatedMessage(Mockito.any(String.class), Mockito.eq(convertViewMessageType(VALIDATION_ERROR)), Mockito.any(Boolean.class));
     }
 
     @Test
@@ -151,7 +151,7 @@ public class StateChangeViewClientValidationUtilTest {
 
         // then
         verify(entity, Mockito.never()).addError(Mockito.any(FieldDefinition.class), Mockito.eq(TRANSLATION_KEY));
-        verify(formComponent).addTranslatedMessage(Mockito.any(String.class), Mockito.eq(convertViewMessageType(VALIDATION_ERROR)));
+        verify(formComponent).addTranslatedMessage(Mockito.any(String.class), Mockito.eq(convertViewMessageType(VALIDATION_ERROR)), Mockito.any(Boolean.class));
     }
 
     private DataDefinition mockDataDefinition(final Iterable<FieldDefinition> fieldDefinitions) {
