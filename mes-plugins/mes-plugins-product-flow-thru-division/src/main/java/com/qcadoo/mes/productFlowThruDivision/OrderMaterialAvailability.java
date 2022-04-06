@@ -90,80 +90,57 @@ public class OrderMaterialAvailability {
                 continue;
             }
 
-            Map<Long, Map<Long, List<Entity>>> groupedMaterials = basicProductionCountingService.getUsedMaterialsFromProductionCountingQuantities(order)
-                    .stream()
-                    .filter(material -> material.getStringField(ProductionCountingQuantityFields.ROLE).equals(
-                            ProductionCountingQuantityRole.USED.getStringValue())
-                            && material.getStringField(ProductionCountingQuantityFields.TYPE_OF_MATERIAL).equals(
-                            ProductionCountingQuantityTypeOfMaterial.COMPONENT.getStringValue())).collect(
-                            Collectors.groupingBy(
-                                    u -> ((Entity) u).getBelongsToField(ProductionCountingQuantityFields.PRODUCT).getId(),
-                                    Collectors.groupingBy(u -> ((Entity) u).getBelongsToField(
-                                            ProductionCountingQuantityFieldsPFTD.COMPONENTS_LOCATION).getId())));
+            Map<Long, Map<Long, List<Entity>>> groupedMaterials = getGroupedMaterials(order);
 
             for (Map.Entry<Long, Map<Long, List<Entity>>> productEntry : groupedMaterials.entrySet()) {
                 Map<Long, List<Entity>> materialsForProduct = productEntry.getValue();
 
-                for (Map.Entry<Long, List<Entity>> warehouseEntry : materialsForProduct.entrySet()) {
-                    if (!warehouseEntry.getValue().isEmpty()) {
-                        Entity baseUsedMaterial = warehouseEntry.getValue().get(0);
-                        BigDecimal totalQuantity = numberService.setScaleWithDefaultMathContext(warehouseEntry.getValue().stream()
-                                .map(m -> m.getDecimalField(ProductionCountingQuantityFields.PLANNED_QUANTITY))
-                                .reduce(BigDecimal.ZERO, BigDecimal::add), REQUIRED_QUANTITY_SCALE);
-                        Entity product = baseUsedMaterial.getBelongsToField(ProductionCountingQuantityFields.PRODUCT);
-                        Entity location = baseUsedMaterial
-                                .getBelongsToField(ProductionCountingQuantityFieldsPFTD.COMPONENTS_LOCATION);
+                prepareLocationsProductsQuantitiesForOrder(ordersLocationsProducts, locationsProductsQuantities, order, materialsForProduct);
+            }
+        }
+        Map<Long, Map<Long, BigDecimal>> availableComponents = prepareAvailableComponents(ordersLocationsProducts);
 
-                        Map<Entity, Set<Entity>> locationProducts = ordersLocationsProducts.get(order.getId());
-                        if (locationProducts != null) {
-                            Set<Entity> products = locationProducts.get(location);
-                            if (products != null) {
-                                products.add(product);
-                            } else {
-                                locationProducts.put(location, Sets.newHashSet(product));
-                            }
-                        } else {
-                            locationProducts = Maps.newHashMap();
-                            locationProducts.put(location, Sets.newHashSet(product));
-                            ordersLocationsProducts.put(order.getId(), locationProducts);
-                        }
+        return prepareOrdersAvailabilities(ordersLocationsProducts, locationsProductsQuantities, ordersAvailabilities, availableComponents);
+    }
 
-                        Map<Long, BigDecimal> productQuantities = locationsProductsQuantities.get(location.getId());
-                        if (productQuantities != null) {
-                            productQuantities.merge(product.getId(), totalQuantity, BigDecimal::add);
-                        } else {
-                            productQuantities = Maps.newHashMap();
-                            productQuantities.put(product.getId(), totalQuantity);
-                            locationsProductsQuantities.put(location.getId(), productQuantities);
-                        }
+    private void prepareLocationsProductsQuantitiesForOrder(Map<Long, Map<Entity, Set<Entity>>> ordersLocationsProducts, Map<Long, Map<Long, BigDecimal>> locationsProductsQuantities, Entity order, Map<Long, List<Entity>> materialsForProduct) {
+        for (Map.Entry<Long, List<Entity>> warehouseEntry : materialsForProduct.entrySet()) {
+            if (!warehouseEntry.getValue().isEmpty()) {
+                Entity baseUsedMaterial = warehouseEntry.getValue().get(0);
+                BigDecimal totalQuantity = numberService.setScaleWithDefaultMathContext(warehouseEntry.getValue().stream()
+                        .map(m -> m.getDecimalField(ProductionCountingQuantityFields.PLANNED_QUANTITY))
+                        .reduce(BigDecimal.ZERO, BigDecimal::add), REQUIRED_QUANTITY_SCALE);
+                Entity product = baseUsedMaterial.getBelongsToField(ProductionCountingQuantityFields.PRODUCT);
+                Entity location = baseUsedMaterial
+                        .getBelongsToField(ProductionCountingQuantityFieldsPFTD.COMPONENTS_LOCATION);
+
+                Map<Entity, Set<Entity>> locationProducts = ordersLocationsProducts.get(order.getId());
+                if (locationProducts != null) {
+                    Set<Entity> products = locationProducts.get(location);
+                    if (products != null) {
+                        products.add(product);
+                    } else {
+                        locationProducts.put(location, Sets.newHashSet(product));
                     }
-                }
-            }
-        }
-        Map<Entity, Set<Entity>> groupedMaterialAvailabilities = Maps.newHashMap();
-
-        for (Map<Entity, Set<Entity>> lps : ordersLocationsProducts.values()) {
-            for (Map.Entry<Entity, Set<Entity>> lp : lps.entrySet()) {
-                Entity location = lp.getKey();
-
-                if (groupedMaterialAvailabilities.containsKey(location)) {
-                    groupedMaterialAvailabilities.get(location).addAll(lp.getValue());
                 } else {
-                    groupedMaterialAvailabilities.put(location, Sets.newHashSet(lp.getValue()));
+                    locationProducts = Maps.newHashMap();
+                    locationProducts.put(location, Sets.newHashSet(product));
+                    ordersLocationsProducts.put(order.getId(), locationProducts);
+                }
+
+                Map<Long, BigDecimal> productQuantities = locationsProductsQuantities.get(location.getId());
+                if (productQuantities != null) {
+                    productQuantities.merge(product.getId(), totalQuantity, BigDecimal::add);
+                } else {
+                    productQuantities = Maps.newHashMap();
+                    productQuantities.put(product.getId(), totalQuantity);
+                    locationsProductsQuantities.put(location.getId(), productQuantities);
                 }
             }
         }
-        Map<Long, Map<Long, BigDecimal>> availableComponents = Maps.newHashMap();
+    }
 
-        for (Map.Entry<Entity, Set<Entity>> entry : groupedMaterialAvailabilities.entrySet()) {
-            if (entry.getKey() != null) {
-                Map<Long, BigDecimal> availableQuantities = materialFlowResourcesService.getQuantitiesForProductsAndLocation(
-                        Lists.newArrayList(entry.getValue()), entry.getKey());
-
-                availableComponents.put(entry.getKey().getId(), availableQuantities);
-            }
-        }
-
+    private Map<Long, String> prepareOrdersAvailabilities(Map<Long, Map<Entity, Set<Entity>>> ordersLocationsProducts, Map<Long, Map<Long, BigDecimal>> locationsProductsQuantities, Map<Long, String> ordersAvailabilities, Map<Long, Map<Long, BigDecimal>> availableComponents) {
         for (Map.Entry<Long, Map<Entity, Set<Entity>>> olp : ordersLocationsProducts.entrySet()) {
             Long orderId = olp.getKey();
             boolean fullExists = false;
@@ -202,6 +179,46 @@ public class OrderMaterialAvailability {
             }
         }
         return ordersAvailabilities;
+    }
+
+    private Map<Long, Map<Long, BigDecimal>> prepareAvailableComponents(Map<Long, Map<Entity, Set<Entity>>> ordersLocationsProducts) {
+        Map<Entity, Set<Entity>> groupedMaterialAvailabilities = Maps.newHashMap();
+
+        for (Map<Entity, Set<Entity>> lps : ordersLocationsProducts.values()) {
+            for (Map.Entry<Entity, Set<Entity>> lp : lps.entrySet()) {
+                Entity location = lp.getKey();
+
+                if (groupedMaterialAvailabilities.containsKey(location)) {
+                    groupedMaterialAvailabilities.get(location).addAll(lp.getValue());
+                } else {
+                    groupedMaterialAvailabilities.put(location, Sets.newHashSet(lp.getValue()));
+                }
+            }
+        }
+        Map<Long, Map<Long, BigDecimal>> availableComponents = Maps.newHashMap();
+
+        for (Map.Entry<Entity, Set<Entity>> entry : groupedMaterialAvailabilities.entrySet()) {
+            if (entry.getKey() != null) {
+                Map<Long, BigDecimal> availableQuantities = materialFlowResourcesService.getQuantitiesForProductsAndLocation(
+                        Lists.newArrayList(entry.getValue()), entry.getKey());
+
+                availableComponents.put(entry.getKey().getId(), availableQuantities);
+            }
+        }
+        return availableComponents;
+    }
+
+    private Map<Long, Map<Long, List<Entity>>> getGroupedMaterials(Entity order) {
+        return basicProductionCountingService.getUsedMaterialsFromProductionCountingQuantities(order)
+                .stream()
+                .filter(material -> material.getStringField(ProductionCountingQuantityFields.ROLE).equals(
+                        ProductionCountingQuantityRole.USED.getStringValue())
+                        && material.getStringField(ProductionCountingQuantityFields.TYPE_OF_MATERIAL).equals(
+                        ProductionCountingQuantityTypeOfMaterial.COMPONENT.getStringValue())).collect(
+                        Collectors.groupingBy(
+                                u -> ((Entity) u).getBelongsToField(ProductionCountingQuantityFields.PRODUCT).getId(),
+                                Collectors.groupingBy(u -> ((Entity) u).getBelongsToField(
+                                        ProductionCountingQuantityFieldsPFTD.COMPONENTS_LOCATION).getId())));
     }
 
     public List<Entity> generateAndSaveMaterialAvailabilityForOrder(final Entity order) {
@@ -245,23 +262,9 @@ public class OrderMaterialAvailability {
     private List<Entity> createMaterialAvailabilityFromProductionCountingQuantities(final Entity order) {
         List<Entity> newOrderMaterialAvailability = Lists.newArrayList();
 
-        List<Entity> usedMaterials = basicProductionCountingService.getUsedMaterialsFromProductionCountingQuantities(order);
-
         DataDefinition orderMaterialAvailabilityDD = getOrderMaterialAvailabilityDD();
 
-        usedMaterials = usedMaterials
-                .stream()
-                .filter(productionCountingQuantity -> productionCountingQuantity.getStringField(ProductionCountingQuantityFields.ROLE).equals(
-                        ProductionCountingQuantityRole.USED.getStringValue())
-                        && productionCountingQuantity.getStringField(ProductionCountingQuantityFields.TYPE_OF_MATERIAL).equals(
-                        ProductionCountingQuantityTypeOfMaterial.COMPONENT.getStringValue()))
-                .collect(Collectors.toList());
-
-        Map<Long, Map<Long, List<Entity>>> groupedMaterials = usedMaterials.stream().collect(
-                Collectors.groupingBy(
-                        productionCountingQuantity -> ((Entity) productionCountingQuantity).getBelongsToField(ProductionCountingQuantityFields.PRODUCT).getId(),
-                        Collectors.groupingBy(productionCountingQuantity -> ((Entity) productionCountingQuantity).getBelongsToField(
-                                ProductionCountingQuantityFieldsPFTD.COMPONENTS_LOCATION).getId())));
+        Map<Long, Map<Long, List<Entity>>> groupedMaterials = getGroupedMaterials(order);
 
         for (Map.Entry<Long, Map<Long, List<Entity>>> productEntry : groupedMaterials.entrySet()) {
             Map<Long, List<Entity>> materialsForProduct = productEntry.getValue();
