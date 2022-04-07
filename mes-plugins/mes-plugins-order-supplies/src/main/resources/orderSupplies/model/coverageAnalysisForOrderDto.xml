@@ -60,5 +60,6 @@
     </fields>
 
     <hooks/>
+    <masterModel plugin="orderSupplies" model="coverageAnalysisForOrder"/>
 
 </model>
