@@ -114,71 +114,87 @@ public class OrderMaterialAvailability {
                 Entity location = baseUsedMaterial
                         .getBelongsToField(ProductionCountingQuantityFieldsPFTD.COMPONENTS_LOCATION);
 
-                Map<Entity, Set<Entity>> locationProducts = ordersLocationsProducts.get(order.getId());
-                if (locationProducts != null) {
-                    Set<Entity> products = locationProducts.get(location);
-                    if (products != null) {
-                        products.add(product);
-                    } else {
-                        locationProducts.put(location, Sets.newHashSet(product));
-                    }
-                } else {
-                    locationProducts = Maps.newHashMap();
-                    locationProducts.put(location, Sets.newHashSet(product));
-                    ordersLocationsProducts.put(order.getId(), locationProducts);
-                }
+                prepareLocationProducts(ordersLocationsProducts, order, product, location);
 
-                Map<Long, BigDecimal> productQuantities = locationsProductsQuantities.get(location.getId());
-                if (productQuantities != null) {
-                    productQuantities.merge(product.getId(), totalQuantity, BigDecimal::add);
-                } else {
-                    productQuantities = Maps.newHashMap();
-                    productQuantities.put(product.getId(), totalQuantity);
-                    locationsProductsQuantities.put(location.getId(), productQuantities);
-                }
+                prepareProductQuantities(locationsProductsQuantities, totalQuantity, product, location);
             }
+        }
+    }
+
+    private void prepareLocationProducts(Map<Long, Map<Entity, Set<Entity>>> ordersLocationsProducts, Entity order, Entity product, Entity location) {
+        Map<Entity, Set<Entity>> locationProducts = ordersLocationsProducts.get(order.getId());
+        if (locationProducts != null) {
+            Set<Entity> products = locationProducts.get(location);
+            if (products != null) {
+                products.add(product);
+            } else {
+                locationProducts.put(location, Sets.newHashSet(product));
+            }
+        } else {
+            locationProducts = Maps.newHashMap();
+            locationProducts.put(location, Sets.newHashSet(product));
+            ordersLocationsProducts.put(order.getId(), locationProducts);
+        }
+    }
+
+    private void prepareProductQuantities(Map<Long, Map<Long, BigDecimal>> locationsProductsQuantities, BigDecimal totalQuantity, Entity product, Entity location) {
+        Map<Long, BigDecimal> productQuantities = locationsProductsQuantities.get(location.getId());
+        if (productQuantities != null) {
+            productQuantities.merge(product.getId(), totalQuantity, BigDecimal::add);
+        } else {
+            productQuantities = Maps.newHashMap();
+            productQuantities.put(product.getId(), totalQuantity);
+            locationsProductsQuantities.put(location.getId(), productQuantities);
         }
     }
 
     private Map<Long, String> prepareOrdersAvailabilities(Map<Long, Map<Entity, Set<Entity>>> ordersLocationsProducts, Map<Long, Map<Long, BigDecimal>> locationsProductsQuantities, Map<Long, String> ordersAvailabilities, Map<Long, Map<Long, BigDecimal>> availableComponents) {
         for (Map.Entry<Long, Map<Entity, Set<Entity>>> olp : ordersLocationsProducts.entrySet()) {
             Long orderId = olp.getKey();
-            boolean fullExists = false;
-            boolean partialExists = false;
-            boolean noneExists = false;
-            for (Map.Entry<Entity, Set<Entity>> lps : olp.getValue().entrySet()) {
-                Entity location = lps.getKey();
-
-                if (availableComponents.containsKey(location.getId())) {
-                    Map<Long, BigDecimal> availableComponentsInLocation = availableComponents.get(location.getId());
-                    for (Entity product : lps.getValue()) {
-                        if (availableComponentsInLocation.containsKey(product.getId())) {
-                            BigDecimal availableQuantity = availableComponentsInLocation.get(product.getId());
-                            if (availableQuantity.compareTo(locationsProductsQuantities.get(location.getId()).get(product.getId())) >= 0) {
-                                fullExists = true;
-                            } else if (availableQuantity.compareTo(BigDecimal.ZERO) == 0) {
-                                noneExists = true;
-                            } else {
-                                partialExists = true;
-                                break;
-                            }
-                        } else {
-                            noneExists = true;
-                        }
-                    }
-                } else {
-                    noneExists = true;
-                }
-            }
-            if (partialExists || fullExists && noneExists) {
-                ordersAvailabilities.put(orderId, AvailabilityOfMaterialAvailability.PARTIAL.getStrValue());
-            } else if (fullExists) {
-                ordersAvailabilities.put(orderId, AvailabilityOfMaterialAvailability.FULL.getStrValue());
-            } else if (noneExists) {
-                ordersAvailabilities.put(orderId, AvailabilityOfMaterialAvailability.NONE.getStrValue());
-            }
+            prepareOrderAvailability(locationsProductsQuantities, ordersAvailabilities, availableComponents, olp, orderId);
         }
         return ordersAvailabilities;
+    }
+
+    private void prepareOrderAvailability(Map<Long, Map<Long, BigDecimal>> locationsProductsQuantities, Map<Long, String> ordersAvailabilities, Map<Long, Map<Long, BigDecimal>> availableComponents, Map.Entry<Long, Map<Entity, Set<Entity>>> olp, Long orderId) {
+        boolean fullExists = false;
+        boolean partialExists = false;
+        boolean noneExists = false;
+        for (Map.Entry<Entity, Set<Entity>> lps : olp.getValue().entrySet()) {
+            Entity location = lps.getKey();
+
+            if (availableComponents.containsKey(location.getId())) {
+                Map<Long, BigDecimal> availableComponentsInLocation = availableComponents.get(location.getId());
+                for (Entity product : lps.getValue()) {
+                    if (availableComponentsInLocation.containsKey(product.getId())) {
+                        BigDecimal availableQuantity = availableComponentsInLocation.get(product.getId());
+                        if (availableQuantity.compareTo(locationsProductsQuantities.get(location.getId()).get(product.getId())) >= 0) {
+                            fullExists = true;
+                        } else if (availableQuantity.compareTo(BigDecimal.ZERO) == 0) {
+                            noneExists = true;
+                        } else {
+                            partialExists = true;
+                            break;
+                        }
+                    } else {
+                        noneExists = true;
+                    }
+                }
+            } else {
+                noneExists = true;
+            }
+        }
+        evaluateOrderAvailability(ordersAvailabilities, orderId, fullExists, partialExists, noneExists);
+    }
+
+    private void evaluateOrderAvailability(Map<Long, String> ordersAvailabilities, Long orderId, boolean fullExists, boolean partialExists, boolean noneExists) {
+        if (partialExists || fullExists && noneExists) {
+            ordersAvailabilities.put(orderId, AvailabilityOfMaterialAvailability.PARTIAL.getStrValue());
+        } else if (fullExists) {
+            ordersAvailabilities.put(orderId, AvailabilityOfMaterialAvailability.FULL.getStrValue());
+        } else if (noneExists) {
+            ordersAvailabilities.put(orderId, AvailabilityOfMaterialAvailability.NONE.getStrValue());
+        }
     }
 
     private Map<Long, Map<Long, BigDecimal>> prepareAvailableComponents(Map<Long, Map<Entity, Set<Entity>>> ordersLocationsProducts) {
