@@ -45,6 +45,7 @@ import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.CustomRestriction;
+import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.CheckBoxComponent;
 import com.qcadoo.view.api.components.FieldComponent;
@@ -108,12 +109,15 @@ public class TechnologyDetailsHooks {
         final boolean treeTabShouldBeEnabled = !isTemplateAccepted(view) && TechnologyState.DRAFT.equals(getTechnologyState(view))
                 && technologyIsAlreadySaved(view);
 
+        ComponentState technologyTree = view.getComponentByReference(TECHNOLOGY_TREE_REFERENCE);
+        technologyTree.setEnabled(treeTabShouldBeEnabled);
+
+        Long selectedEntity = ((TreeComponent) technologyTree).getSelectedEntityId();
+
         for (String componentReference : Sets.newHashSet(OUT_PRODUCTS_REFERENCE, IN_PRODUCTS_REFERENCE)) {
             GridComponent grid = (GridComponent) view.getComponentByReference(componentReference);
-            grid.setEnabled(treeTabShouldBeEnabled);
+            grid.setEnabled(treeTabShouldBeEnabled && Objects.nonNull(selectedEntity));
         }
-
-        view.getComponentByReference(TECHNOLOGY_TREE_REFERENCE).setEnabled(treeTabShouldBeEnabled);
     }
 
     private boolean isTemplateAccepted(final ViewDefinitionState view) {

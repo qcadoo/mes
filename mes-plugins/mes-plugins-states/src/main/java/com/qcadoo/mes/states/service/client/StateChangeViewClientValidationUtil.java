@@ -69,7 +69,7 @@ public class StateChangeViewClientValidationUtil {
     }
 
     public void addValidationErrorMessages(final ComponentState component, final Entity entity,
-            final MessagesHolder messagesHolder) {
+                                           final MessagesHolder messagesHolder) {
         if (component instanceof FormComponent) {
             addValidationErrorsToForm((FormComponent) component, entity, messagesHolder.getAllMessages());
         } else {
@@ -88,7 +88,7 @@ public class StateChangeViewClientValidationUtil {
         if (!errorMessages.isEmpty()) {
             String msg = translationService.translate("states.messages.change.failure.validationErrors", getLocale(),
                     join(errorMessages, ' '));
-            form.addTranslatedMessage(msg, convertViewMessageType(VALIDATION_ERROR));
+            form.addTranslatedMessage(msg, convertViewMessageType(VALIDATION_ERROR), false);
         }
         if (!formEntity.isValid()) {
             form.addMessage("qcadooView.message.saveFailedMessage", MessageType.FAILURE);
@@ -97,7 +97,7 @@ public class StateChangeViewClientValidationUtil {
     }
 
     private void assignMessageToEntity(final Entity formEntity, final Entity entity, final Entity message,
-            List<String> errorMessages) {
+                                       List<String> errorMessages) {
         DataDefinition formDataDefinition = formEntity.getDataDefinition();
         DataDefinition dataDefinition = entity.getDataDefinition();
         String correspondFieldName = MessagesUtil.getCorrespondFieldName(message);
@@ -145,7 +145,7 @@ public class StateChangeViewClientValidationUtil {
         if (!errorMessages.isEmpty()) {
             String msg = translationService.translate("states.messages.change.failure.validationErrors", getLocale(),
                     join(errorMessages, ' '));
-            component.addTranslatedMessage(msg, convertViewMessageType(VALIDATION_ERROR));
+            component.addTranslatedMessage(msg, convertViewMessageType(VALIDATION_ERROR), false);
         }
     }
 
