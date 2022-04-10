@@ -1,5 +1,6 @@
 package com.qcadoo.mes.productionCounting.hooks;
 
+import com.google.common.collect.Lists;
 import com.qcadoo.mes.productionCounting.ProductionTrackingService;
 import com.qcadoo.mes.productionCounting.constants.TrackingOperationProductInComponentFields;
 import com.qcadoo.mes.productionCounting.constants.UsedBatchFields;
@@ -24,6 +25,31 @@ public class UsedBatchHooks {
 
     @Autowired
     private NumberService numberService;
+
+    public boolean validatesWith(final DataDefinition usedBatchDD, final Entity usedBatch) {
+        Entity trackingOperationProductInComponent = usedBatch
+                .getBelongsToField(UsedBatchFields.TRACKING_OPERATION_PRODUCT_IN_COMPONENT);
+
+
+        List<Entity> usedBathes = Lists.newArrayList(trackingOperationProductInComponent
+                .getHasManyField(TrackingOperationProductInComponentFields.USED_BATCHES));
+        if (Objects.nonNull(usedBatch.getId())) {
+            usedBathes = usedBathes.stream().filter(op -> !op.getId().equals(usedBatch.getId()))
+                    .collect(Collectors.toList());
+        }
+
+        boolean anyMatch = usedBathes.stream()
+                .anyMatch(ub -> ub.getBelongsToField(UsedBatchFields.BATCH).getId()
+                        .equals(usedBatch.getBelongsToField(UsedBatchFields.BATCH).getId()));
+
+        if(anyMatch) {
+            usedBatch.addError(usedBatchDD.getField(UsedBatchFields.BATCH),
+                    "productionCounting.usedBatch.error.batchAlreadyUsed");
+            return false;
+        }
+
+        return true;
+    }
 
     public void onSave(final DataDefinition usedBatchDD, final Entity usedBatch) {
 

@@ -20,6 +20,8 @@
         <onDelete
                 class="com.qcadoo.mes.productionCounting.hooks.UsedBatchHooks"
                 method="onDelete"/>
+        <validatesWith class="com.qcadoo.mes.productionCounting.hooks.UsedBatchHooks"
+                       method="validatesWith"/>
     </hooks>
 
     <identifier expression="#quantity"/>
