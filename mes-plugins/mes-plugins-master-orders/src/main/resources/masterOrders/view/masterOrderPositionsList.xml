@@ -65,6 +65,34 @@
                 <bigButton name="openMasterOrdersImportPage" state="enabled" icon="xlsIcon24.png"
                            action="#{window}.fireEvent(openMasterOrdersImportPage);"/>
             </group>
+            <group name="grouping">
+                <bigButton name="showGroupedByProduct" icon="generateIcon24.png" state="enabled">
+                    <script>
+                        <![CDATA[
+                            this.addOnChangeListener({
+                                onClick: function() {
+                                    if(window.canClose()) {
+                                         #{grid}.performEvent('showGroupedByProduct', []);
+                                    }
+                                }
+                            });
+                        ]]>
+                    </script>
+                </bigButton>
+                <bigButton name="showGroupedByProductAndDate" icon="generateIcon24.png" state="enabled">
+                    <script>
+                        <![CDATA[
+                            this.addOnChangeListener({
+                                onClick: function() {
+                                    if(window.canClose()) {
+                                         #{grid}.performEvent('showGroupedByProductAndDate', []);
+                                    }
+                                }
+                            });
+                        ]]>
+                    </script>
+                </bigButton>
+            </group>
         </ribbon>
 
         <component type="grid" name="masterOrderPositions" reference="grid">
@@ -166,6 +194,12 @@
             <listener event="goToGenerateOrders"
                       class="com.qcadoo.mes.masterOrders.listeners.MasterOrderPositionsListListeners"
                       method="goToGenerateOrders"/>
+            <listener event="showGroupedByProduct"
+                      class="com.qcadoo.mes.masterOrders.listeners.MasterOrderPositionsListListeners"
+                      method="showGroupedByProduct"/>
+            <listener event="showGroupedByProductAndDate"
+                      class="com.qcadoo.mes.masterOrders.listeners.MasterOrderPositionsListListeners"
+                      method="showGroupedByProductAndDate"/>
         </component>
 
         <option type="fixedHeight" value="true"/>
