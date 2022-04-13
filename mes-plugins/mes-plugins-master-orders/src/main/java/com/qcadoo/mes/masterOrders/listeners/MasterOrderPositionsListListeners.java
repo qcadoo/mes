@@ -74,13 +74,13 @@ public class MasterOrderPositionsListListeners {
 
         List<Entity> selectedEntity = masterOrderPositionGrid.getSelectedEntities();
 
-        if (selectedEntity.size() != 1) {
-            state.addMessage("masterOrders.masterOrder.masterOrdersPosition.moreEntitiesSelectedThanAllowed",
+        if (selectedEntity.size() == 0) {
+            state.addMessage("masterOrders.masterOrder.masterOrdersPosition.lessEntitiesSelectedThanAllowed",
                     ComponentState.MessageType.INFO);
 
             return;
-        } else if (selectedEntity.size() == 0) {
-            state.addMessage("masterOrders.masterOrder.masterOrdersPosition.lessEntitiesSelectedThanAllowed",
+        } else if (selectedEntity.size() != 1) {
+            state.addMessage("masterOrders.masterOrder.masterOrdersPosition.moreEntitiesSelectedThanAllowed",
                     ComponentState.MessageType.INFO);
 
             return;
@@ -139,6 +139,30 @@ public class MasterOrderPositionsListListeners {
         }
     }
 
+    public void showGroupedByProduct(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        GridComponent masterOrderPositionGrid = (GridComponent) view.getComponentByReference(QcadooViewConstants.L_GRID);
+
+        Map<String, Object> parameters = Maps.newHashMap();
+
+        parameters.put("positionsIds", masterOrderPositionGrid.getSelectedEntitiesIds().stream().map(String::valueOf).collect(Collectors.joining(",")));
+
+        String url = "../page/masterOrders/masterOrderPositionsGroupedByProductList.html";
+        view.redirectTo(url, false, true, parameters);
+
+    }
+
+    public void showGroupedByProductAndDate(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        GridComponent masterOrderPositionGrid = (GridComponent) view.getComponentByReference(QcadooViewConstants.L_GRID);
+
+        Map<String, Object> parameters = Maps.newHashMap();
+
+        parameters.put("positionsIds", masterOrderPositionGrid.getSelectedEntitiesIds().stream().map(String::valueOf).collect(Collectors.joining(",")));
+
+        String url = "../page/masterOrders/masterOrderPositionsGroupedByProductAndDateList.html";
+        view.redirectTo(url, false, true, parameters);
+
+    }
+
     public void generateOrders(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         FormComponent masterOrderForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         CheckBoxComponent generatedCheckBox = (CheckBoxComponent) view.getComponentByReference(L_GENERATED);
@@ -160,7 +184,7 @@ public class MasterOrderPositionsListListeners {
     }
 
     public void openMasterOrdersImportPage(final ViewDefinitionState view, final ComponentState state,
-            final String[] args) {
+                                           final String[] args) {
         view.openModal("../page/masterOrders/masterOrdersImport.html");
     }
 
