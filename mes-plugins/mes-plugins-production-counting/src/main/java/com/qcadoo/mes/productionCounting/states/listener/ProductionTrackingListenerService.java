@@ -640,8 +640,9 @@ public final class ProductionTrackingListenerService {
                 .find()
                 .add(SearchRestrictions.eq(ProductionCountingQuantityFields.ROLE,
                         ProductionCountingQuantityRole.USED.getStringValue()))
-                .add(SearchRestrictions.eq(ProductionCountingQuantityFields.TYPE_OF_MATERIAL,
-                        ProductionCountingQuantityTypeOfMaterial.COMPONENT.getStringValue()))
+                .add(SearchRestrictions.in(ProductionCountingQuantityFields.TYPE_OF_MATERIAL,
+                        Lists.newArrayList(ProductionCountingQuantityTypeOfMaterial.COMPONENT.getStringValue(),
+                                ProductionCountingQuantityTypeOfMaterial.INTERMEDIATE.getStringValue())))
                 .add(SearchRestrictions.belongsTo(ProductionCountingQuantityFields.PRODUCT, product));
 
         if (isForEach && Objects.nonNull(technologyOperationComponent)) {
