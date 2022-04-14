@@ -53,6 +53,9 @@
             <option type="column" name="quantityTakenFromWarehouse" fields="quantityTakenFromWarehouse" width="45"/>
             <option type="column" name="quantityRemainingToOrder" fields="quantityRemainingToOrder" width="45"/>
             <option type="column" name="leftToRelease" fields="leftToRelease" width="45"/>
+            <option type="column" name="warehouseState" fields="warehouseState" width="45"/>
+            <option type="column" name="deliveredQuantity" fields="deliveredQuantity" width="45"/>
+            <option type="column" name="produceQuantity" fields="produceQuantity" width="45"/>
             <option type="column" name="unit" fields="unit"
                     width="35"/>
 

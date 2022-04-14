@@ -55,6 +55,9 @@
         <decimal name="quantityRemainingToOrder"/>
         <decimal name="quantityRemainingToOrderWithoutStock"/>
         <decimal name="warehouseMinimumStateQuantity"/>
+        <decimal name="warehouseState"/>
+        <decimal name="deliveredQuantity"/>
+        <decimal name="produceQuantity"/>
         <string name="unit"/>
         <string name="assortmentName"/>
         <string name="modelName"/>
