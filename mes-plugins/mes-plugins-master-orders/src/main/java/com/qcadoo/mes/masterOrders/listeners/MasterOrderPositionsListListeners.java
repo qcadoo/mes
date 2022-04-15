@@ -40,6 +40,7 @@ import com.qcadoo.mes.masterOrders.OrdersFromMOProductsGenerationService;
 import com.qcadoo.mes.masterOrders.constants.GeneratingOrdersHelperFields;
 import com.qcadoo.mes.masterOrders.constants.MasterOrderPositionDtoFields;
 import com.qcadoo.mes.masterOrders.constants.MasterOrdersConstants;
+import com.qcadoo.mes.masterOrders.helpers.MasterOrderPositionsHelper;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -69,12 +70,15 @@ public class MasterOrderPositionsListListeners {
     @Autowired
     private OrdersFromMOProductsGenerationService ordersGenerationService;
 
+    @Autowired
+    private MasterOrderPositionsHelper masterOrderPositionsHelper;
+
     public void createOrder(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         GridComponent masterOrderPositionGrid = (GridComponent) view.getComponentByReference(QcadooViewConstants.L_GRID);
 
         List<Entity> selectedEntity = masterOrderPositionGrid.getSelectedEntities();
 
-        if (selectedEntity.size() == 0) {
+        if (selectedEntity.isEmpty()) {
             state.addMessage("masterOrders.masterOrder.masterOrdersPosition.lessEntitiesSelectedThanAllowed",
                     ComponentState.MessageType.INFO);
 
@@ -161,6 +165,19 @@ public class MasterOrderPositionsListListeners {
         String url = "../page/masterOrders/masterOrderPositionsGroupedByProductAndDateList.html";
         view.redirectTo(url, false, true, parameters);
 
+    }
+
+    public void updateWarehouseStateAndDelivery(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        List<Entity> masterOrderProducts = dataDefinitionService.get(MasterOrdersConstants.PLUGIN_IDENTIFIER,
+                MasterOrdersConstants.MODEL_MASTER_ORDER_PRODUCT).find().list().getEntities();
+        if (!masterOrderProducts.isEmpty()) {
+            Entity parameter = parameterService.getParameter();
+            masterOrderPositionsHelper.updateDeliveriesProductQuantities(masterOrderProducts, parameter);
+            masterOrderPositionsHelper.updateWarehouseStates(masterOrderProducts, parameter);
+
+            view.addMessage("masterOrders.masterOrderPositionsList.updateWarehouseStateAndDelivery.success",
+                    ComponentState.MessageType.SUCCESS);
+        }
     }
 
     public void generateOrders(final ViewDefinitionState view, final ComponentState state, final String[] args) {

@@ -133,28 +133,7 @@ public class MasterOrderPositionsListHooks {
         for (Entity position : positionDtos) {
             Integer productId = position.getIntegerField(MasterOrderPositionDtoFields.PRODUCT_ID);
             Date deadline = position.getDateField(MasterOrderPositionDtoFields.DEADLINE);
-            if (deadline != null) {
-                if (positions.containsKey(productId)) {
-                    Map<Date, Entity> productPositions = positions.get(productId);
-                    if (productPositions.containsKey(deadline)) {
-                        Entity existingPosition = productPositions.get(deadline);
-                        sumPositionsValues(position, existingPosition);
-                    } else {
-                        productPositions.put(deadline, position);
-                    }
-                } else {
-                    Map<Date, Entity> productPositions = Maps.newHashMap();
-                    productPositions.put(deadline, position);
-                    positions.put(productId, productPositions);
-                }
-            } else {
-                if (positionsWithoutDeadline.containsKey(productId)) {
-                    Entity existingPosition = positionsWithoutDeadline.get(productId);
-                    sumPositionsValues(position, existingPosition);
-                } else {
-                    positionsWithoutDeadline.put(productId, position);
-                }
-            }
+            groupPosition(positions, positionsWithoutDeadline, position, productId, deadline);
         }
         List<Entity> summedPositions = positions.values().stream().map(Map::values).flatMap(Collection::stream).collect(Collectors.toList());
         summedPositions.addAll(positionsWithoutDeadline.values());
@@ -162,6 +141,31 @@ public class MasterOrderPositionsListHooks {
         grid.setEntities(summedPositions.stream().sorted(Comparator
                 .comparing((Entity e) -> e.getStringField(MasterOrderPositionDtoFields.PRODUCT_NUMBER))
                 .thenComparing((Entity e) -> e.getDateField(MasterOrderPositionDtoFields.DEADLINE), nullsFirst(naturalOrder()))).collect(Collectors.toList()));
+    }
+
+    private void groupPosition(Map<Integer, Map<Date, Entity>> positions, Map<Integer, Entity> positionsWithoutDeadline, Entity position, Integer productId, Date deadline) {
+        if (deadline != null) {
+            if (positions.containsKey(productId)) {
+                Map<Date, Entity> productPositions = positions.get(productId);
+                if (productPositions.containsKey(deadline)) {
+                    Entity existingPosition = productPositions.get(deadline);
+                    sumPositionsValues(position, existingPosition);
+                } else {
+                    productPositions.put(deadline, position);
+                }
+            } else {
+                Map<Date, Entity> productPositions = Maps.newHashMap();
+                productPositions.put(deadline, position);
+                positions.put(productId, productPositions);
+            }
+        } else {
+            if (positionsWithoutDeadline.containsKey(productId)) {
+                Entity existingPosition = positionsWithoutDeadline.get(productId);
+                sumPositionsValues(position, existingPosition);
+            } else {
+                positionsWithoutDeadline.put(productId, position);
+            }
+        }
     }
 
     private void sumPositionsValues(Entity position, Entity existingPosition) {
