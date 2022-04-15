@@ -131,7 +131,7 @@ public class MasterOrderPositionsHelper {
     }
 
     private void estimateProductDeliveries(ViewDefinitionState view, Set<Long> positionsProductIds, Map<Long, BigDecimal> productAndQuantities,
-                                           List<Entity> coverageLocations, boolean includeDraftDeliveries) {
+                                           List<Entity> coverageLocations, Boolean includeDraftDeliveries) {
         List<Entity> includedDeliveries = getDeliveriesFromDB(coverageLocations, includeDraftDeliveries);
         for (Entity delivery : includedDeliveries) {
             List<Entity> deliveryProducts;
