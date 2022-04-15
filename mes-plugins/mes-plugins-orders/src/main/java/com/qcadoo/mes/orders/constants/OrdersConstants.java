@@ -37,6 +37,8 @@ public final class OrdersConstants {
 
     public static final String MODEL_ORDER_DTO = "orderDto";
 
+    public static final String MODEL_ORDER_PLANNING_LIST_DTO = "orderPlanningListDto";
+
     public static final String MODEL_ORDER_STATE_CHANGE = "orderStateChange";
 
     public static final String MODEL_REASON_TYPE_CORRECTION_DATE_TO = "reasonTypeCorrectionDateTo";

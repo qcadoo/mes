@@ -254,6 +254,8 @@
         <view:view resource="view/masterOrderDefinitionDetails.xml"/>
 
         <view:view resource="view/masterOrderPositionsList.xml"/>
+        <view:view resource="view/masterOrderPositionsGroupedByProductList.xml"/>
+        <view:view resource="view/masterOrderPositionsGroupedByProductAndDateList.xml"/>
         <view:view resource="view/generatingOrders.xml"/>
 
         <view:view resource="view/productsBySize.xml"/>

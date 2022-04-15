@@ -24,7 +24,7 @@
     ***************************************************************************
 
 -->
-<view defaultAuthorizationRole="ROLE_PLANNING" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<view defaultAuthorizationRole="ROLE_ORDERS_VIEW" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
       xmlns="http://schema.qcadoo.org/view"
       xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
       name="orderDetails" modelName="order">
@@ -246,7 +246,7 @@
                 </smallButton>
             </group>
 
-            <group name="operationalTasks">
+            <group name="operationalTasks" defaultAuthorizationRole="ROLE_PLANNING">
                 <smallButton name="generateOperationalTasks" icon="generateIcon16.png">
                     <script>
                         <![CDATA[
@@ -274,7 +274,7 @@
                     </script>
                 </smallButton>
             </group>
-            <group name="orderPacks">
+            <group name="orderPacks" defaultAuthorizationRole="ROLE_PLANNING">
                 <bigButton name="showOrderPacks" icon="genealogyIcon24.png">
                     <script>
                         <![CDATA[
@@ -289,7 +289,7 @@
                     </script>
                 </bigButton>
             </group>
-            <group name="orderTechnologicalProcesses">
+            <group name="orderTechnologicalProcesses" defaultAuthorizationRole="ROLE_PLANNING">
                 <bigButton name="showOrderTechnologicalProcesses" icon="genealogyIcon24.png">
                     <script>
                         <![CDATA[

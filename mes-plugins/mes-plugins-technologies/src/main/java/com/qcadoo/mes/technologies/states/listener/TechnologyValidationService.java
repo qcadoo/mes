@@ -54,6 +54,7 @@ import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 import static com.qcadoo.mes.basic.constants.ProductFields.UNIT;
 import static com.qcadoo.mes.technologies.constants.TechnologyFields.OPERATION_COMPONENTS;
 import static com.qcadoo.mes.technologies.constants.TechnologyFields.PRODUCT;
@@ -237,7 +238,7 @@ public class TechnologyValidationService {
     }
 
     private boolean checkTopComponentsProducesProductForTechnology(final StateChangeContext stateChangeContext,
-            final FormComponent technologyForm, final Entity technology) {
+                                                                   final FormComponent technologyForm, final Entity technology) {
         final Entity savedTechnology = technology.getDataDefinition().get(technology.getId());
         final Entity product = savedTechnology.getBelongsToField(TechnologyFields.PRODUCT);
         final EntityTree operationComponents = savedTechnology.getTreeField(TechnologyFields.OPERATION_COMPONENTS);
@@ -294,7 +295,7 @@ public class TechnologyValidationService {
     }
 
     private boolean checkIfOperationsUsesSubOperationsProds(final StateChangeContext stateChangeContext,
-            final FormComponent technologyForm, final Entity technology) {
+                                                            final FormComponent technologyForm, final Entity technology) {
         final EntityTree operationComponents = technology.getTreeField(TechnologyFields.OPERATION_COMPONENTS);
 
         Set<Entity> operations = checkIfConsumesSubOpsProds(operationComponents);
@@ -307,7 +308,7 @@ public class TechnologyValidationService {
                     levels.append(", ");
                 }
 
-                levels.append(operation.getStringField("nodeNumber"));
+                levels.append(operation.getStringField(TechnologyOperationComponentFields.NODE_NUMBER));
             }
 
             if (operations.size() == 1) {
@@ -394,7 +395,7 @@ public class TechnologyValidationService {
     }
 
     private boolean checkIfAtLeastOneCommonElement(final List<Entity> operationProductOutComponents,
-            final List<Entity> operationProductInComponents) {
+                                                   final List<Entity> operationProductInComponents) {
         for (Entity operationProductOutComponent : operationProductOutComponents) {
             for (Entity operationProductInComponent : operationProductInComponents) {
                 Entity product = operationProductInComponent.getBelongsToField(OperationProductInComponentFields.PRODUCT);
@@ -512,7 +513,8 @@ public class TechnologyValidationService {
 
         if (Objects.isNull(productionInOneCycleUNIT)) {
             technologyOperationComponent.addError(dataDefinition.getField(L_PRODUCTION_IN_ONE_CYCLE_UNIT),
-                    "technologies.operationDetails.validate.error.OutputUnitsNotMatch");
+                    "technologies.operationDetails.validate.error.OutputUnitsNotMatch",
+                    technologyOperationComponent.getStringField(TechnologyOperationComponentFields.NODE_NUMBER));
 
             return false;
         }
@@ -529,7 +531,8 @@ public class TechnologyValidationService {
 
             if (!productionInOneCycleUNIT.equals(outputProductionUnit)) {
                 technologyOperationComponent.addError(dataDefinition.getField(L_PRODUCTION_IN_ONE_CYCLE_UNIT),
-                        "technologies.operationDetails.validate.error.OutputUnitsNotMatch");
+                        "technologies.operationDetails.validate.error.OutputUnitsNotMatch",
+                        technologyOperationComponent.getStringField(TechnologyOperationComponentFields.NODE_NUMBER));
 
                 return false;
             }
@@ -549,7 +552,7 @@ public class TechnologyValidationService {
     }
 
     public boolean checkIfTechnologyTreeIsSet(final StateChangeContext stateChangeContext, final FormComponent technologyForm,
-            final Entity technology) {
+                                              final Entity technology) {
         final EntityTree operations = technology.getTreeField(TechnologyFields.OPERATION_COMPONENTS);
 
         if (operations.isEmpty()) {
@@ -580,7 +583,7 @@ public class TechnologyValidationService {
     }
 
     private boolean checkCycleForSubProducts(final StateChangeContext stateChangeContext, final Entity operation,
-            final Set<Long> usedTechnologies) {
+                                             final Set<Long> usedTechnologies) {
         if (Objects.isNull(operation)) {
             return true;
         }
@@ -639,7 +642,7 @@ public class TechnologyValidationService {
     }
 
     private Entity useChangingTechnologyInCheckingCycle(final StateChangeContext stateChangeContext, final Entity product,
-            final Entity subTechnology) {
+                                                        final Entity subTechnology) {
         if (Objects.isNull(subTechnology) && Objects.nonNull(product)
                 && stateChangeContext.getOwner().getBelongsToField(TechnologyFields.PRODUCT).getId().equals(product.getId())) {
             return stateChangeContext.getOwner();
@@ -685,9 +688,9 @@ public class TechnologyValidationService {
         for (Entity product : products) {
             if (Objects.nonNull(product)
                     && (Objects.isNull(product.getDecimalField("nominalCost"))
-                            || BigDecimal.ZERO.compareTo(product.getDecimalField("nominalCost")) == 0)
+                    || BigDecimal.ZERO.compareTo(product.getDecimalField("nominalCost")) == 0)
                     && (Objects.isNull(product.getDecimalField("lastPurchaseCost"))
-                            || BigDecimal.ZERO.compareTo(product.getDecimalField("lastPurchaseCost")) == 0)) {
+                    || BigDecimal.ZERO.compareTo(product.getDecimalField("lastPurchaseCost")) == 0)) {
                 stateChangeContext.addMessage("technologies.technology.validate.info.inputProductPricesNotSet",
                         StateMessageType.INFO, product.getStringField(ProductFields.NUMBER), product.getStringField(ProductFields.NAME));
             }

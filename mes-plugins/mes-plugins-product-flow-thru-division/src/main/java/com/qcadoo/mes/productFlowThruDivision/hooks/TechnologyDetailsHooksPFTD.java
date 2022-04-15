@@ -30,6 +30,7 @@ import java.util.Objects;
 import java.util.Set;
 
 import com.qcadoo.mes.productFlowThruDivision.constants.*;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -135,8 +136,6 @@ public class TechnologyDetailsHooksPFTD {
                 productsInputLocationLookup.setEnabled(true);
                 productsFlowLocationLookup.setEnabled(true);
                 wasteFlowLocationLookup.setEnabled(true);
-                FieldComponent rangeField = (FieldComponent) view.getComponentByReference(TechnologyFieldsPFTD.RANGE);
-                rangeField.setEnabled(false);
 
                 FieldComponent productionFlowFieldComponent = (FieldComponent) view
                         .getComponentByReference(TechnologyFieldsPFTD.PRODUCTION_FLOW);
@@ -245,23 +244,13 @@ public class TechnologyDetailsHooksPFTD {
         Set<Entity> divisions = Sets.newHashSet();
 
         for (Entity technologyOperationComponent : technologyOperationComponents) {
-            List<Entity> workstations = technologyOperationComponent
-                    .getManyToManyField(TechnologyOperationComponentFields.WORKSTATIONS);
-
-            for (Entity workstation : workstations) {
-                divisions.add(workstation.getBelongsToField(WorkstationFields.DIVISION));
-            }
+            divisions.add(technologyOperationComponent.getBelongsToField(TechnologyOperationComponentFields.DIVISION));
         }
 
         if (divisions.size() > 1) {
             FieldComponent divisionField = (FieldComponent) view.getComponentByReference(TechnologyFieldsPFTD.DIVISION);
 
             showField(divisionField, false);
-
-            rangeField.setFieldValue(Range.MANY_DIVISIONS.getStringValue());
-            rangeField.setEnabled(false);
-        } else {
-            rangeField.setEnabled(true);
         }
 
         rangeField.requestComponentUpdateState();
@@ -482,7 +471,7 @@ public class TechnologyDetailsHooksPFTD {
         fillLocationsInComponents.setEnabled(!isTemplateAccepted && TechnologyState.DRAFT.getStringValue().equals(state));
         fillLocationsInComponents.requestUpdate(true);
 
-        if(Objects.nonNull(modelCard)) {
+        if (Objects.nonNull(modelCard)) {
             RibbonActionItem createModelCard = modelCard.getItemByName("createModelCard");
             createModelCard.setEnabled(TechnologyState.CHECKED.getStringValue().equals(state)
                     || TechnologyState.ACCEPTED.getStringValue().equals(state));

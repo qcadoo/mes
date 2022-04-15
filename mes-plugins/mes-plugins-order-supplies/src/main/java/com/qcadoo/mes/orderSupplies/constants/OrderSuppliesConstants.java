@@ -47,4 +47,6 @@ public final class OrderSuppliesConstants {
 
     public static final String MODEL_COVERAGE_REGISTER = "coverageRegister";
 
+    public static final String MODEL_COVERAGE_ANALYSIS_FOR_ORDER = "coverageAnalysisForOrder";
+
 }

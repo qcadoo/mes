@@ -59,6 +59,10 @@
                 <bigButton name="showReplacementsAvailability" icon="generateIcon24.png"
                            action="#{form}.fireEvent(showReplacementsAvailability);"/>
             </group>
+            <group name="analysis">
+                <bigButton name="generateCoverageAnalysis" icon="generateIcon24.png"
+                           action="#{form}.fireEvent(generateCoverageAnalysis);"/>
+            </group>
         </ribbon>
 
         <windowTab name="mainTab">
@@ -184,6 +188,9 @@
                 <listener event="showReplacementsAvailability"
                           class="com.qcadoo.mes.orderSupplies.listeners.GenerateMaterialRequirementCoverageListeners"
                           method="showReplacementsAvailability"/>
+                <listener event="generateCoverageAnalysis"
+                          class="com.qcadoo.mes.orderSupplies.listeners.GenerateMaterialRequirementCoverageListeners"
+                          method="generateCoverageAnalysis"/>
             </component>
 
         </windowTab>
@@ -332,7 +339,46 @@
 
             </component>
         </windowTab>
+        <windowTab name="analysisForOrdersTab">
+            <component type="grid" name="coverageAnalysisForOrders" useDto="true"
+                       source="#{form}.coverageAnalysisForOrdersDto"
+                       model="coverageAnalysisForOrderDto" reference="coverageAnalysisForOrders">
 
+                <option type="column" name="orderNumber" fields="orderNumber"
+                        width="100"/>
+                <option type="column" name="orderedProductNumber" fields="orderedProductNumber"
+                        width="100"/>
+                <option type="column" name="plannedQuantity" fields="plannedQuantity"
+                        width="50"/>
+                <option type="column" name="orderedProductUnit" fields="orderedProductUnit"
+                        width="30"/>
+                <option type="column" name="orderStartDate" fields="orderStartDate"
+                        width="50"/>
+                <option type="column" name="orderFinishDate" fields="orderFinishDate"
+                        width="50"/>
+                <option type="column" name="coverageDegree" fields="coverageDegree"
+                        width="50"/>
+                <option type="column" name="coveredFromTheDay" fields="coveredFromTheDay"
+                        width="50"/>
+                <option type="column" name="deliveryTime" fields="deliveryTime"
+                        width="50"/>
+                <option type="column" name="componentsProductionDate" fields="componentsProductionDate"
+                        width="50"/>
+
+                <option type="order" column="orderNumber" direction="desc"/>
+
+                <option type="searchable"
+                        value="orderNumber,orderedProductNumber,plannedQuantity,orderedProductUnit,orderStartDate,orderFinishDate,coverageDegree,coveredFromTheDay,deliveryTime,componentsProductionDate"/>
+                <option type="orderable"
+                        value="orderNumber,orderedProductNumber,plannedQuantity,orderedProductUnit,orderStartDate,orderFinishDate,coverageDegree,coveredFromTheDay,deliveryTime,componentsProductionDate"/>
+
+                <option type="fullscreen" value="true"/>
+                <option type="multiselect" value="true"/>
+                <option type="fixedHeight" value="true"/>
+
+
+            </component>
+        </windowTab>
     </component>
 
     <hooks>

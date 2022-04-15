@@ -681,6 +681,18 @@ public class BasicProductionCountingServiceImpl implements BasicProductionCounti
                         productionCountingQuantity
                                 .getBelongsToField(ProductionCountingQuantityFields.TECHNOLOGY_OPERATION_COMPONENT),
                         productionCountingQuantity.getBelongsToField(ProductionCountingQuantityFields.PRODUCT));
+
+                if (Objects.isNull(opic)) {
+                    Entity parent = productionCountingQuantity.getBelongsToField(ProductionCountingQuantityFields.PRODUCT)
+                            .getBelongsToField(ProductFields.PARENT);
+                    if(Objects.nonNull(parent)) {
+                        opic = getOperationProduct(opics,
+                                productionCountingQuantity
+                                        .getBelongsToField(ProductionCountingQuantityFields.TECHNOLOGY_OPERATION_COMPONENT),
+                                parent);
+                    }
+                }
+
                 if (opic != null) {
                     if (ProductionCountingQuantityTypeOfMaterial.COMPONENT.getStringValue().equals(type)) {
                         productionCountingQuantity.setField(COMPONENTS_LOCATION, opic.getField(COMPONENTS_LOCATION));

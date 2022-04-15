@@ -53,10 +53,16 @@
 
         <hasMany name="coverageLocations" joinField="materialRequirementCoverage"
                  model="coverageLocation" cascade="delete" copyable="true"/>
+
+        <hasMany name="coverageAnalysisForOrders" joinField="materialRequirementCoverage"
+                 model="coverageAnalysisForOrder" cascade="delete" copyable="true"/>
+        <hasMany name="coverageAnalysisForOrdersDto" joinField="materialRequirementCoverage"
+                 model="coverageAnalysisForOrderDto" cascade="delete" copyable="true" persistent="false"/>
+
         <hasMany name="coverageProducts" joinField="materialRequirementCoverage"
                  model="coverageProduct" cascade="delete" copyable="true"/>
         <hasMany name="coverageProductsDto" joinField="materialRequirementCoverage" model="coverageProductDto"
-                 persistent="false" />
+                 persistent="false"/>
 
         <manyToMany name="coverageOrders" joinField="materialRequirementCoverages" model="order"
                     plugin="orders"/>

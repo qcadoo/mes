@@ -58,10 +58,6 @@ public class GenerateMaterialRequirementCoverageHooks {
 
     private static final Logger LOG = LoggerFactory.getLogger(GenerateMaterialRequirementCoverageHooks.class);
 
-    
-
-
-
     private static final String L_COVERAGE = "coverage";
 
     private static final String L_REPORTS = "reports";
@@ -85,6 +81,8 @@ public class GenerateMaterialRequirementCoverageHooks {
     public static final String L_SHOW_REPLACEMENTS_AVAILABILITY = "showReplacementsAvailability";
 
     public static final String L_REPLACEMENT = "replacement";
+    public static final String L_ANALYSIS = "analysis";
+    public static final String L_GENERATE_COVERAGE_ANALYSIS = "generateCoverageAnalysis";
 
     @Autowired
     private OrderSuppliesService orderSuppliesService;
@@ -191,6 +189,7 @@ public class GenerateMaterialRequirementCoverageHooks {
         RibbonGroup coverage = (RibbonGroup) window.getRibbon().getGroupByName(L_COVERAGE);
         RibbonGroup reports = (RibbonGroup) window.getRibbon().getGroupByName(L_REPORTS);
         RibbonGroup materialAvailability = (RibbonGroup) window.getRibbon().getGroupByName(L_MATERIAL_AVAILABILITY);
+        RibbonGroup analysis = (RibbonGroup) window.getRibbon().getGroupByName(L_ANALYSIS);
 
         RibbonActionItem generateMaterialRequirementCoverage = (RibbonActionItem) coverage
                 .getItemByName(L_GENERATE_MATERIAL_REQUIREMENT_COVERAGE);
@@ -202,6 +201,10 @@ public class GenerateMaterialRequirementCoverageHooks {
                 .getItemByName(L_SHOW_MATERIAL_REQUIREMENT_COVERAGES);
         RibbonActionItem showReplacementsAvailability = (RibbonActionItem) materialAvailability
                 .getItemByName(L_SHOW_REPLACEMENTS_AVAILABILITY);
+
+        RibbonActionItem generateCoverageAnalysis = (RibbonActionItem) analysis
+                .getItemByName(L_GENERATE_COVERAGE_ANALYSIS);
+
         showReplacementsAvailability
                 .setMessage("orderWithMaterialAvailabilityList.materialAvailability.ribbon.message.selectOneRecordWithReplacements");
         boolean areSaved = checkIfThereAreSavedMaterialRequirementCoverages();
@@ -219,6 +222,13 @@ public class GenerateMaterialRequirementCoverageHooks {
             showReplacementsAvailability.setEnabled(false);
         }
         showReplacementsAvailability.requestUpdate(true);
+
+        if(generated) {
+            generateCoverageAnalysis.setEnabled(true);
+        } else {
+            generateCoverageAnalysis.setEnabled(false);
+        }
+        generateCoverageAnalysis.requestUpdate(true);
     }
 
     private boolean isReplacement(Long coverageProductId) {

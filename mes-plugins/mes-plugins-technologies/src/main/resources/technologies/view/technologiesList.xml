@@ -123,6 +123,7 @@
 						var differentStatesMessage = "#{translate(technologies.technologiesList.window.ribbon.status.differentStates)}";
 						var externalMessage = "#{translate(technologies.technology.ribbon.message.technologyIsSynchronized)}";
 						var differentStates = statesAreDifferent(selectedEntitiesArray);
+						var statesDraftOrChecked = statesAreDraftOrChecked(selectedEntitiesArray);
 						var isSynchronized = isSomeSynchronized(selectedEntitiesArray);
 						var allMaster = isAllMaster(selectedEntitiesArray);
 						var allNotMaster = isAllNotMaster(selectedEntitiesArray);
@@ -166,6 +167,10 @@
 						cancelState.setLabel("#{translate(technologies.technologyDetails.window.ribbon.status.cancelTechnology)}");
 						checkState.setLabel("#{translate(technologies.technologyDetails.window.ribbon.status.checkTechnology)}");
 
+						if(statesDraftOrChecked) {
+						    addAttachments.enable();
+						}
+
 						if (!state) {
 							acceptState.disable(differentStatesMessage);
 							cancelState.disable(differentStatesMessage);
@@ -193,7 +198,6 @@
 							acceptState.enable();
 							cancelState.enable();
 							checkState.enable();
-							addAttachments.enable();
 						} else if (state == "02accepted") {
 							acceptState.confirmMessage = "#{translate(technologies.technologyDetails.window.ribbon.status.confirm.accepted)}";
 							acceptState.setLabel("#{translate(technologies.technologyDetails.window.ribbon.status.acceptTechnology)}");
@@ -212,7 +216,6 @@
 							checkState.confirmMessage = "#{translate(technologies.technologyDetails.window.ribbon.status.confirm.draft)}";
 							checkState.setLabel("#{translate(technologies.technologyDetails.window.ribbon.status.draftTechnology)}");
 							acceptState.enable();
-							addAttachments.enable();
 						}else{
 							cancelState.enable();
 						}
@@ -249,6 +252,15 @@
 							}
 						}
 						return false;
+					}
+
+                    function statesAreDraftOrChecked(selectedEntitiesArray) {
+						for (var i = 0; i < selectedEntitiesArray.length; i++) {
+							if (selectedEntitiesArray[i].fields.state != '01draft' && selectedEntitiesArray[i].fields.state != '05checked') {
+								return false;
+							}
+						}
+						return true;
 					}
 
 					function isAllMaster(selectedEntitiesArray) {

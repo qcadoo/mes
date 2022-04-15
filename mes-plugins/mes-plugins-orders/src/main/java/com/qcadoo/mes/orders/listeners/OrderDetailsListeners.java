@@ -29,7 +29,6 @@ import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.basic.constants.ProductFamilyElementType;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.basic.constants.WorkstationFields;
-import com.qcadoo.mes.orders.OperationalTasksService;
 import com.qcadoo.mes.orders.OrderService;
 import com.qcadoo.mes.orders.TechnologyServiceO;
 import com.qcadoo.mes.orders.constants.OperationalTaskFields;
@@ -122,9 +121,6 @@ public class OrderDetailsListeners {
 
     @Autowired
     private TechnologyService technologyService;
-
-    @Autowired
-    private OperationalTasksService operationalTasksService;
 
     public void clearAddress(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         LookupComponent addressLookup = (LookupComponent) view.getComponentByReference(OrderFields.ADDRESS);

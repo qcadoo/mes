@@ -183,6 +183,7 @@ public class OrderSuppliesServiceImpl implements OrderSuppliesService {
                 + "DELETE FROM orderSupplies_coverageProductLogging logging USING orderSupplies_coverageProduct coverageProduct"
                 + " WHERE logging.coverageproduct_id = coverageProduct.id AND coverageProduct.materialrequirementcoverage_id = :id;\n"
                 + "DELETE FROM orderSupplies_coverageProduct WHERE materialrequirementcoverage_id = :id;\n"
+                + "DELETE FROM ordersupplies_coverageAnalysisForOrder WHERE materialrequirementcoverage_id = :id;\n"
                 + "DELETE FROM orderSupplies_materialRequirementCoverage WHERE id = :id;\n"
 
                 + "SET CONSTRAINTS ALL IMMEDIATE;\n"

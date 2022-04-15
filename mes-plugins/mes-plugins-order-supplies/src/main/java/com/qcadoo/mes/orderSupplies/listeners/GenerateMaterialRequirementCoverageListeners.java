@@ -39,6 +39,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import com.qcadoo.mes.orderSupplies.coverage.coverageAnalysis.CoverageAnalysisForOrderService;
 import org.apache.commons.lang3.StringUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -136,6 +137,9 @@ public class GenerateMaterialRequirementCoverageListeners {
     @Autowired
     private NumberService numberService;
 
+    @Autowired
+    private CoverageAnalysisForOrderService coverageAnalysisForOrderService;
+
     public void init() {
         coverageProductSelectedDataDefinition = dataDefinitionService.get(OrderSuppliesConstants.PLUGIN_IDENTIFIER,
                 CoverageProductSelectedFields.ENTITY_NAME);
@@ -145,6 +149,16 @@ public class GenerateMaterialRequirementCoverageListeners {
                 DeliveriesConstants.MODEL_ORDERED_PRODUCT);
     }
 
+    public final void generateCoverageAnalysis(final ViewDefinitionState view, final ComponentState state,
+            final String[] args) {
+        FormComponent materialRequirementCoverageForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
+
+        Long materialRequirementCoverageId = materialRequirementCoverageForm.getEntityId();
+        if (materialRequirementCoverageId != null) {
+            coverageAnalysisForOrderService.coverageAnalysis(materialRequirementCoverageId);
+            state.addMessage("orderSupplies.materialRequirementCoverage.report.generateCoverageAnalysis", MessageType.SUCCESS);
+        }
+    }
     public final void generateMaterialRequirementCoverage(final ViewDefinitionState view, final ComponentState state,
             final String[] args) {
         state.performEvent(view, "save", args);

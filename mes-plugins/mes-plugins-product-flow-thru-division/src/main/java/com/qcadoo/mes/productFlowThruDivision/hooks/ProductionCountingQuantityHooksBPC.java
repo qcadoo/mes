@@ -3,19 +3,19 @@
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo Framework
  * Version: 1.4
- *
+ * <p>
  * This file is part of Qcadoo.
- *
+ * <p>
  * Qcadoo is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation; either version 3 of the License,
  * or (at your option) any later version.
- *
+ * <p>
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty
  * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU Affero General Public License for more details.
- *
+ * <p>
  * You should have received a copy of the GNU Affero General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
@@ -23,6 +23,7 @@
  */
 package com.qcadoo.mes.productFlowThruDivision.hooks;
 
+import com.qcadoo.mes.basic.constants.ProductFields;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -38,6 +39,8 @@ import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchRestrictions;
+
+import java.util.Objects;
 
 @Service
 public class ProductionCountingQuantityHooksBPC {
@@ -74,6 +77,16 @@ public class ProductionCountingQuantityHooksBPC {
                             productionCountingQuantity
                                     .getBelongsToField(ProductionCountingQuantityFields.TECHNOLOGY_OPERATION_COMPONENT),
                             productionCountingQuantity.getBelongsToField(ProductionCountingQuantityFields.PRODUCT));
+                    if (Objects.isNull(opic)) {
+                        Entity parent = productionCountingQuantity.getBelongsToField(ProductionCountingQuantityFields.PRODUCT)
+                                .getBelongsToField(ProductFields.PARENT);
+                        if(Objects.nonNull(parent)) {
+                            opic = getOperationProduct(TechnologiesConstants.MODEL_OPERATION_PRODUCT_IN_COMPONENT,
+                                    productionCountingQuantity
+                                            .getBelongsToField(ProductionCountingQuantityFields.TECHNOLOGY_OPERATION_COMPONENT),
+                                    parent);
+                        }
+                    }
                     if (opic != null) {
                         if (ProductionCountingQuantityTypeOfMaterial.COMPONENT.getStringValue().equals(type)) {
                             productionCountingQuantity.setField(ProductionCountingQuantityFieldsPFTD.COMPONENTS_LOCATION,
