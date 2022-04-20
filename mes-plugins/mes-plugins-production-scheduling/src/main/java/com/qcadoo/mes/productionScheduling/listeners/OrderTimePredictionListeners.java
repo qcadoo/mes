@@ -173,16 +173,18 @@ public class OrderTimePredictionListeners {
 
         if (value instanceof BigDecimal) {
             quantity = (BigDecimal) value;
+        } else if (value.toString().matches(".*[a-zA-Z].*")) {
+            plannedQuantityField.addMessage("qcadooView.validate.field.error.invalidNumericFormat", MessageType.FAILURE);
+            return;
         } else {
             try {
                 ParsePosition parsePosition = new ParsePosition(0);
-                String trimedValue = value.toString().replaceAll(" ", "");
+                String trimmedValue = value.toString().replaceAll(" ", "");
                 DecimalFormat formatter = (DecimalFormat) NumberFormat.getNumberInstance(view.getLocale());
                 formatter.setParseBigDecimal(true);
-                quantity = new BigDecimal(String.valueOf(formatter.parseObject(trimedValue, parsePosition)));
+                quantity = new BigDecimal(String.valueOf(formatter.parseObject(trimmedValue, parsePosition)));
             } catch (NumberFormatException e) {
                 plannedQuantityField.addMessage("qcadooView.validate.field.error.invalidNumericFormat", MessageType.FAILURE);
-
                 return;
             }
         }
