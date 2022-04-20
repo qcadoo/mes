@@ -46,59 +46,92 @@ public class OrderHooksMO {
         setMasterOrderDateBasedOnOrderDates(orderDD, order);
     }
 
-    private void setMasterOrderDateBasedOnOrderDates(DataDefinition orderDD, Entity order) {
+    public boolean onDelete(final DataDefinition orderDD, final Entity order) {
+
         if (parameterService.getParameter().getBooleanField("setMasterOrderDateBasedOnOrderDates")) {
             Entity masterOrder = order.getBelongsToField(OrderFieldsMO.MASTER_ORDER);
 
-            if(Objects.isNull(masterOrder)) {
-                return;
+            if (Objects.isNull(masterOrder)) {
+                return true;
             }
-
             List<Entity> orders = Lists.newArrayList(masterOrder.getHasManyField(MasterOrderFields.ORDERS));
             if (Objects.nonNull(order.getId())) {
                 orders = orders.stream().filter(op -> !op.getId().equals(order.getId()))
                         .collect(Collectors.toList());
             }
-            orders.add(order);
+            setMasterOrderDates(masterOrder, orders);
+        }
+        return true;
+    }
 
-            boolean anyDatesEmpty = orders.stream().allMatch(o -> Objects.isNull(o.getDateField(OrderFields.START_DATE))
-                    || Objects.isNull(o.getDateField(OrderFields.FINISH_DATE)));
+    private void setMasterOrderDateBasedOnOrderDates(DataDefinition orderDD, Entity order) {
+        if (parameterService.getParameter().getBooleanField("setMasterOrderDateBasedOnOrderDates")) {
 
-            if(anyDatesEmpty && (Objects.nonNull(masterOrder.getDateField(MasterOrderFields.START_DATE))
-                    || Objects.nonNull(masterOrder.getDateField(MasterOrderFields.FINISH_DATE)))) {
-                masterOrder.setField(MasterOrderFields.START_DATE, null);
-                masterOrder.setField(MasterOrderFields.FINISH_DATE, null);
+            Entity orderDb = null;
+            Entity masterOrderDb = null;
+
+            if (Objects.nonNull(order.getId())) {
+                orderDb = orderDD.get(order.getId());
+                masterOrderDb = orderDb.getBelongsToField(OrderFieldsMO.MASTER_ORDER);
+            }
+
+            Entity masterOrder = order.getBelongsToField(OrderFieldsMO.MASTER_ORDER);
+
+            if (Objects.nonNull(masterOrder)) {
+                List<Entity> orders = Lists.newArrayList(masterOrder.getHasManyField(MasterOrderFields.ORDERS));
+                if (Objects.nonNull(order.getId())) {
+                    orders = orders.stream().filter(op -> !op.getId().equals(order.getId()))
+                            .collect(Collectors.toList());
+                }
+                orders.add(order);
+                setMasterOrderDates(masterOrder, orders);
+            } else if (Objects.nonNull(masterOrderDb)) {
+                List<Entity> orders = Lists.newArrayList(masterOrderDb.getHasManyField(MasterOrderFields.ORDERS));
+                orders = orders.stream().filter(op -> !op.getId().equals(order.getId()))
+                        .collect(Collectors.toList());
+                setMasterOrderDates(masterOrderDb, orders);
+            }
+        }
+    }
+
+    private void setMasterOrderDates(Entity masterOrder, List<Entity> orders) {
+        boolean anyDatesEmpty = orders.stream().allMatch(o -> Objects.isNull(o.getDateField(OrderFields.START_DATE))
+                || Objects.isNull(o.getDateField(OrderFields.FINISH_DATE)));
+
+        if (anyDatesEmpty && (Objects.nonNull(masterOrder.getDateField(MasterOrderFields.START_DATE))
+                || Objects.nonNull(masterOrder.getDateField(MasterOrderFields.FINISH_DATE)))) {
+            masterOrder.setField(MasterOrderFields.START_DATE, null);
+            masterOrder.setField(MasterOrderFields.FINISH_DATE, null);
+            masterOrder.getDataDefinition().fastSave(masterOrder);
+        } else {
+
+            List<Entity> ordersToCalculate = orders.stream().filter(o -> Objects.nonNull(o.getDateField(OrderFields.START_DATE))
+                    && Objects.nonNull(o.getDateField(OrderFields.FINISH_DATE))).collect(Collectors.toList());
+
+            Optional<Date> start = ordersToCalculate.stream().filter(o -> Objects.nonNull(o.getDateField(OrderFields.START_DATE)))
+                    .map(o -> o.getDateField(OrderFields.START_DATE))
+                    .min(Date::compareTo);
+
+            Optional<Date> finish = ordersToCalculate.stream()
+                    .filter(o -> Objects.nonNull(o.getDateField(OrderFields.FINISH_DATE)))
+                    .map(o -> o.getDateField(OrderFields.FINISH_DATE))
+                    .max(Date::compareTo);
+
+            boolean changed = false;
+            if (start.isPresent() && (Objects.isNull(masterOrder.getDateField(MasterOrderFields.START_DATE))
+                    || !masterOrder.getDateField(MasterOrderFields.START_DATE).equals(start.get()))) {
+                changed = true;
+                masterOrder.setField(MasterOrderFields.START_DATE, start.get());
+            }
+
+            if (finish.isPresent() && (Objects.isNull(masterOrder.getDateField(MasterOrderFields.FINISH_DATE))
+                    || !masterOrder.getDateField(MasterOrderFields.FINISH_DATE).equals(finish.get()))) {
+                changed = true;
+                masterOrder.setField(MasterOrderFields.FINISH_DATE, finish.get());
+            }
+
+            if (changed) {
                 masterOrder.getDataDefinition().fastSave(masterOrder);
-            } else {
-
-                List<Entity> ordersToCalculate = orders.stream().filter(o -> Objects.nonNull(o.getDateField(OrderFields.START_DATE))
-                        && Objects.nonNull(o.getDateField(OrderFields.FINISH_DATE))).collect(Collectors.toList());
-
-                Optional<Date> start = ordersToCalculate.stream().filter(o -> Objects.nonNull(o.getDateField(OrderFields.START_DATE)))
-                        .map(o -> o.getDateField(OrderFields.START_DATE))
-                        .min(Date::compareTo);
-
-                Optional<Date> finish = ordersToCalculate.stream()
-                        .filter(o -> Objects.nonNull(o.getDateField(OrderFields.FINISH_DATE)))
-                        .map(o -> o.getDateField(OrderFields.FINISH_DATE))
-                        .max(Date::compareTo);
-
-                boolean changed = false;
-                if (start.isPresent() && (Objects.isNull(masterOrder.getDateField(MasterOrderFields.START_DATE))
-                        || !masterOrder.getDateField(MasterOrderFields.START_DATE).equals(start.get()))) {
-                    changed = true;
-                    masterOrder.setField(MasterOrderFields.START_DATE, start.get());
-                }
-
-                if (finish.isPresent() && (Objects.isNull(masterOrder.getDateField(MasterOrderFields.FINISH_DATE))
-                        || !masterOrder.getDateField(MasterOrderFields.FINISH_DATE).equals(finish.get()))) {
-                    changed = true;
-                    masterOrder.setField(MasterOrderFields.FINISH_DATE, finish.get());
-                }
-
-                if (changed) {
-                    masterOrder.getDataDefinition().fastSave(masterOrder);
-                }
             }
         }
     }
@@ -114,7 +147,7 @@ public class OrderHooksMO {
 
         if (Objects.nonNull(masterOrder)
                 && (MasterOrderState.IN_EXECUTION.getStringValue().equals(masterOrder.getStringField(MasterOrderFields.STATE)) || MasterOrderState.NEW
-                        .getStringValue().equals(masterOrder.getStringField(MasterOrderFields.STATE)))
+                .getStringValue().equals(masterOrder.getStringField(MasterOrderFields.STATE)))
                 && canChangeToCompleted(order, orderDb)) {
             changeToCompleted(order);
         } else if (canChangeMasterOrderStateToInExecution(order, orderDb)) {
@@ -128,7 +161,7 @@ public class OrderHooksMO {
             Entity masterOrderProduct = getMasterOrderProduct(masterOrder, order.getBelongsToField(OrderFields.PRODUCT));
             if (Objects.nonNull(masterOrderProduct)
                     && !MasterOrderPositionStatus.ORDERED.getStringValue().equals(
-                            masterOrderProduct.getStringField(MasterOrderProductFields.MASTER_ORDER_POSITION_STATUS))) {
+                    masterOrderProduct.getStringField(MasterOrderProductFields.MASTER_ORDER_POSITION_STATUS))) {
                 BigDecimal masterOrderQuantity = BigDecimalUtils.convertNullToZero(masterOrderProduct
                         .getDecimalField(MasterOrderProductFields.MASTER_ORDER_QUANTITY));
                 BigDecimal planned = masterOrder
