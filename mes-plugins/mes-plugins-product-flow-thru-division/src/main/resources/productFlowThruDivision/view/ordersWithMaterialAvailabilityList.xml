@@ -77,6 +77,8 @@
                     value="plannedQuantity,amountOfProductProduced,wastesQuantity,remainingAmountOfProductToProduce,plannedQuantityForAdditionalUnit"/>
 
             <option type="fullscreen" value="true"/>
+            <option type="multiselect" value="true" />
+            <option type="paginable" value="false"/>
         </component>
 
         <option type="fixedHeight" value="true"/>
