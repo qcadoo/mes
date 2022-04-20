@@ -75,7 +75,14 @@ public class UsedBatchHooks {
                 trackingOperationProductInComponent, sumUsedBatchesQuantity);
         givenQuantity.ifPresent(gq -> trackingOperationProductInComponent.setField(
                 TrackingOperationProductInComponentFields.GIVEN_QUANTITY, gq));
-        trackingOperationProductInComponent.getDataDefinition().save(trackingOperationProductInComponent);
+        Entity trackingOperationProductInComponentDb = trackingOperationProductInComponent.getDataDefinition()
+                .save(trackingOperationProductInComponent);
+
+        if(!trackingOperationProductInComponentDb.isValid()) {
+            usedBatch.addGlobalError("productionCounting.usedBatch.error.sumUsedBatchesQuantityToBig",false);
+        }
+
+
     }
 
     public void onDelete(final DataDefinition usedBatchDD, final Entity usedBatch) {
