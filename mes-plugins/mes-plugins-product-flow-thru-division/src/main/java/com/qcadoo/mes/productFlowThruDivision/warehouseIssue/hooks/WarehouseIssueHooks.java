@@ -26,6 +26,8 @@ package com.qcadoo.mes.productFlowThruDivision.warehouseIssue.hooks;
 import java.util.Date;
 import java.util.Objects;
 
+import com.qcadoo.mes.materialFlowResources.constants.DocumentFields;
+import com.qcadoo.mes.productFlowThruDivision.warehouseIssue.states.constants.WarehouseIssueStringValues;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -79,6 +81,14 @@ public class WarehouseIssueHooks {
         if (warehouseIssueParameterService.issueForOrder()) {
             fillOrderFields(warehouseIssue);
         }
+    }
+
+    public boolean onDelete(final DataDefinition warehouseIssueDD, final Entity warehouseIssue) {
+        if (WarehouseIssueStringValues.IN_PROGRESS.equals(warehouseIssue.getStringField(WarehouseIssueFields.STATE))) {
+            warehouseIssue.addGlobalError("productFlowThruDivision.warehouseIssue.error.issueInProgress");
+            return false;
+        }
+        return true;
     }
 
     private void fillOrderFields(Entity warehouseIssue) {
