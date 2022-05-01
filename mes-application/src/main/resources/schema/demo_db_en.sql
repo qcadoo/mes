@@ -4691,7 +4691,8 @@ CREATE TABLE basic_company (
     isreceiver boolean DEFAULT false,
     logoimage character varying(255),
     currency_id bigint,
-    contractorcategory character varying(255)
+    contractorcategory character varying(255),
+    abcanalysis character varying(255)
 );
 
 
@@ -17363,6 +17364,25 @@ CREATE TABLE masterorders_position_deliveryproductquantityhelper (
 
 
 --
+-- Name: masterorders_position_deliveryproductquantityhelper_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE masterorders_position_deliveryproductquantityhelper_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: masterorders_position_deliveryproductquantityhelper_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE masterorders_position_deliveryproductquantityhelper_id_seq OWNED BY masterorders_position_deliveryproductquantityhelper.id;
+
+
+--
 -- Name: masterorders_position_warehousestatehelper; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -17372,6 +17392,25 @@ CREATE TABLE masterorders_position_warehousestatehelper (
     location_id bigint,
     quantity numeric(12,5)
 );
+
+
+--
+-- Name: masterorders_position_warehousestatehelper_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE masterorders_position_warehousestatehelper_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: masterorders_position_warehousestatehelper_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE masterorders_position_warehousestatehelper_id_seq OWNED BY masterorders_position_warehousestatehelper.id;
 
 
 --
@@ -31213,6 +31252,20 @@ ALTER TABLE ONLY masterorders_ordersgenerationhelper ALTER COLUMN id SET DEFAULT
 -- Name: id; Type: DEFAULT; Schema: public; Owner: -
 --
 
+ALTER TABLE ONLY masterorders_position_deliveryproductquantityhelper ALTER COLUMN id SET DEFAULT nextval('masterorders_position_deliveryproductquantityhelper_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY masterorders_position_warehousestatehelper ALTER COLUMN id SET DEFAULT nextval('masterorders_position_warehousestatehelper_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
+--
+
 ALTER TABLE ONLY masterorders_productsbysizeentryhelper ALTER COLUMN id SET DEFAULT nextval('masterorders_productsbysizeentryhelper_id_seq'::regclass);
 
 
@@ -34860,8 +34913,8 @@ SELECT pg_catalog.setval('basic_attributevalue_id_seq', 1, false);
 -- Data for Name: basic_company; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY basic_company (id, number, name, taxcountrycode_id, tax, street, house, flat, zipcode, city, state, country_id, email, website, phone, externalnumber, buffer, active, paymentform, country, entityversion, contactperson, issupplier, isreceiver, logoimage, currency_id, contractorcategory) FROM stdin;
-1	1	Qcadoo Limited Sp. z o.o.	\N	676-241-35-25	Walerego Sławka	3A	\N	30-633	Kraków	małopolskie	167	welcome@qcadoo.com	http://www.qcadoo.com/	+48 881 501 347	\N	\N	t	\N	\N	0	\N	f	f	\N	5	\N
+COPY basic_company (id, number, name, taxcountrycode_id, tax, street, house, flat, zipcode, city, state, country_id, email, website, phone, externalnumber, buffer, active, paymentform, country, entityversion, contactperson, issupplier, isreceiver, logoimage, currency_id, contractorcategory, abcanalysis) FROM stdin;
+1	1	Qcadoo Limited Sp. z o.o.	\N	676-241-35-25	Walerego Sławka	3A	\N	30-633	Kraków	małopolskie	167	welcome@qcadoo.com	http://www.qcadoo.com/	+48 881 501 347	\N	\N	t	\N	\N	0	\N	f	f	\N	5	\N	\N
 \.
 
 
@@ -38748,11 +38801,25 @@ COPY masterorders_position_deliveryproductquantityhelper (id, product_id, quanti
 
 
 --
+-- Name: masterorders_position_deliveryproductquantityhelper_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('masterorders_position_deliveryproductquantityhelper_id_seq', 1, false);
+
+
+--
 -- Data for Name: masterorders_position_warehousestatehelper; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY masterorders_position_warehousestatehelper (id, product_id, location_id, quantity) FROM stdin;
 \.
+
+
+--
+-- Name: masterorders_position_warehousestatehelper_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('masterorders_position_warehousestatehelper_id_seq', 1, false);
 
 
 --
