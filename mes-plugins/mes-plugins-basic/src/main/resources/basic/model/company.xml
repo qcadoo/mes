@@ -77,6 +77,9 @@
         <dictionary name="contractorCategory" dictionary="contractorCategory"/>
         <boolean name="isSetFieldsFromParameter"
                  persistent="false"/>
+
+        <enum name="abcAnalysis" values="01groupA,02groupB,03groupC"/>
+
     </fields>
 
     <hooks>

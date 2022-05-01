@@ -16,7 +16,6 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.stereotype.Service;
 
-import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.qcadoo.mes.deliveries.constants.DeliveredProductFields;
@@ -26,12 +25,9 @@ import com.qcadoo.mes.deliveries.constants.OrderedProductFields;
 import com.qcadoo.mes.deliveries.states.constants.DeliveryStateStringValues;
 import com.qcadoo.mes.masterOrders.constants.MasterOrderProductFields;
 import com.qcadoo.mes.materialFlowResources.MaterialFlowResourcesService;
-import com.qcadoo.mes.materialFlowResources.MaterialFlowResourcesServiceImpl;
 import com.qcadoo.mes.orders.TechnologyServiceO;
 import com.qcadoo.mes.technologies.TechnologyService;
-import com.qcadoo.mes.technologies.constants.OperationProductOutComponentFields;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
-import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -39,6 +35,7 @@ import com.qcadoo.model.api.NumberService;
 import com.qcadoo.model.api.search.JoinType;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
+import com.qcadoo.view.api.ViewDefinitionState;
 
 @Service
 public class MasterOrderPositionsHelper {
@@ -122,11 +119,20 @@ public class MasterOrderPositionsHelper {
         return true;
     }
 
-    public void updateDeliveriesProductQuantities(final List<Entity> masterOrderProducts, Entity parameter) {
+    public void updateDeliveriesProductQuantities(ViewDefinitionState view, final List<Entity> masterOrderProducts, Entity parameter) {
         deleteDeliveriesProductQuantitiesFromTable();
-        Set<Long> positionsProductIds = masterOrderProducts.stream().map(e -> e.getBelongsToField(MasterOrderProductFields.PRODUCT).getId()).collect(Collectors.toSet());
+        Set<Long> positionsProductIds = masterOrderProducts.stream()
+                .map(e -> e.getBelongsToField(MasterOrderProductFields.PRODUCT).getId()).collect(Collectors.toSet());
         Map<Long, BigDecimal> productAndQuantities = Maps.newHashMap();
-        List<Entity> includedDeliveries = getDeliveriesFromDB(parameter);
+        boolean includeDraftDeliveries = parameter.getBooleanField("includeDraftDeliveries");
+        List<Entity> coverageLocations = parameter.getHasManyField("coverageLocations");
+        estimateProductDeliveries(view, positionsProductIds, productAndQuantities, coverageLocations, includeDraftDeliveries);
+        storeDeliveriesProductQuantities(productAndQuantities);
+    }
+
+    private void estimateProductDeliveries(ViewDefinitionState view, Set<Long> positionsProductIds, Map<Long, BigDecimal> productAndQuantities,
+                                           List<Entity> coverageLocations, Boolean includeDraftDeliveries) {
+        List<Entity> includedDeliveries = getDeliveriesFromDB(coverageLocations, includeDraftDeliveries);
         for (Entity delivery : includedDeliveries) {
             List<Entity> deliveryProducts;
 
@@ -147,7 +153,6 @@ public class MasterOrderPositionsHelper {
                 }
             }
         }
-        storeDeliveriesProductQuantities(productAndQuantities);
     }
 
     private void deleteDeliveriesProductQuantitiesFromTable() {
@@ -177,10 +182,7 @@ public class MasterOrderPositionsHelper {
         return true;
     }
 
-    private List<Entity> getDeliveriesFromDB(Entity parameter) {
-        boolean includeDraftDeliveries = parameter.getBooleanField("includeDraftDeliveries");
-
-        List<Entity> coverageLocations = parameter.getHasManyField("coverageLocations");
+    private List<Entity> getDeliveriesFromDB(List<Entity> coverageLocations, boolean includeDraftDeliveries) {
         if (includeDraftDeliveries) {
             SearchCriteriaBuilder scb = getDeliveryDD()
                     .find()

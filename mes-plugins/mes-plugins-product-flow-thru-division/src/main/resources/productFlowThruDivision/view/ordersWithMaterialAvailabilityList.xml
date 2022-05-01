@@ -70,13 +70,15 @@
                     classesNames="rowObject['availabilityCellColor']"/>
             <option type="column" name="availabilityCellColor" fields="availabilityCellColor" hidden="true"/>
 
-            <option type="order" column="dateFrom" direction="desc"/>
+            <option type="order" column="dateFrom" direction="asc"/>
 
             <option type="footerRow" value="true"/>
             <option type="columnsToSummary"
                     value="plannedQuantity,amountOfProductProduced,wastesQuantity,remainingAmountOfProductToProduce,plannedQuantityForAdditionalUnit"/>
 
             <option type="fullscreen" value="true"/>
+            <option type="multiselect" value="true" />
+            <option type="paginable" value="false"/>
         </component>
 
         <option type="fixedHeight" value="true"/>

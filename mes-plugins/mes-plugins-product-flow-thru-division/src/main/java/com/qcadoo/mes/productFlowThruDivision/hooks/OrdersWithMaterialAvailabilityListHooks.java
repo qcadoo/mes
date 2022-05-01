@@ -23,6 +23,7 @@
  */
 package com.qcadoo.mes.productFlowThruDivision.hooks;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -33,6 +34,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.google.common.collect.Lists;
+import com.qcadoo.mes.orders.constants.OrderFields;
+import com.qcadoo.mes.orders.constants.OrderPlanningListDtoFields;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.mes.productFlowThruDivision.OrderMaterialAvailability;
 import com.qcadoo.mes.productFlowThruDivision.constants.AvailabilityOfMaterialAvailability;
@@ -58,7 +61,8 @@ public class OrdersWithMaterialAvailabilityListHooks {
 
         Map<Long, String> ordersAvailabilities = orderMaterialAvailability.generateMaterialAvailabilityForOrders(ids);
         List<Entity> orderPlanningListDtos = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER_PLANNING_LIST_DTO)
-                .find().add(SearchRestrictions.in("id", ids)).list().getEntities();
+                .find().add(SearchRestrictions.in("id", ids)).list().getEntities().stream()
+                .sorted(Comparator.comparing(e -> e.getDateField(OrderPlanningListDtoFields.DATE_FROM))).collect(Collectors.toList());
         for (Entity orderPlanningListDto : orderPlanningListDtos) {
             String availability = ordersAvailabilities.get(orderPlanningListDto.getId());
             orderPlanningListDto.setField("availability", availability);

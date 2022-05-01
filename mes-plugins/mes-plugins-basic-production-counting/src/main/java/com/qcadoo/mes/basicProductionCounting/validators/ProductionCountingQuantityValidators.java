@@ -119,6 +119,13 @@ public class ProductionCountingQuantityValidators {
     public boolean validatePlannedQuantity(final DataDefinition productionCountingQuantityDD,
             final FieldDefinition plannedQuantityFieldDefinition, final Entity productionCountingQuantity, final Object oldValue,
             final Object newValue) {
+        if(!ProductionCountingQuantityTypeOfMaterial.COMPONENT.getStringValue()
+                .equals(productionCountingQuantity.getStringField(ProductionCountingQuantityFields.TYPE_OF_MATERIAL))
+                && BigDecimalUtils.valueEquals(BigDecimal.ZERO, (BigDecimal) newValue)) {
+            productionCountingQuantity.addError(plannedQuantityFieldDefinition,
+                    "qcadooView.validate.field.error.outOfRange.toSmall");
+            return false;
+        }
         // I don't check if entity is updated or created (check null on id) because we should disallow also creating
         // of new ones if editing production progresses for accepted orders is locked.
         if (Objects.isNull(oldValue) || BigDecimalUtils.valueEquals((BigDecimal) oldValue, (BigDecimal) newValue)) {
@@ -130,6 +137,7 @@ public class ProductionCountingQuantityValidators {
                     "basicProductionCounting.productionCountingQuantity.plannedQuantity.error.valueChangeIsNotAllowedForAcceptetOrder");
             return false;
         }
+
         return true;
     }
 

@@ -194,6 +194,10 @@
                         <component type="select" name="contractorCategory" hasDescription="true"
                                    field="contractorCategory"/>
                     </layoutElement>
+                    <layoutElement column="2" row="9">
+                        <component type="select" name="abcAnalysis" hasDescription="true"
+                                   field="abcAnalysis"/>
+                    </layoutElement>
                 </component>
 
                 <option type="header" value="true"/>

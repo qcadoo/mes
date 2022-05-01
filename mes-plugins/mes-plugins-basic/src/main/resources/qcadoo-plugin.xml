@@ -554,6 +554,8 @@
 
         <view:view resource="view/companyDefaultProducts.xml"/>
 
+        <view:view resource="view/assignCompanyToGroupABC.xml"/>
+
         <menu:menu-item name="technologicalProcessRateList" category="staff"
                         view="technologicalProcessRateList" defaultAuthorizationRole="ROLE_TECHNOLOGICAL_PROCESSES"/>
 

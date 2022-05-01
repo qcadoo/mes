@@ -36,9 +36,31 @@
 				<bigButton name="openCompaniesImportPage" state="enabled" icon="xlsIcon24.png"
 						   action="#{window}.fireEvent(openCompaniesImportPage);"/>
 			</group>
+			<group name="analysis">
+				<bigButton name="assignToGroupABC" state="enabled" icon="genealogyIcon24.png"
+						   action="#{grid}.fireEvent(assignToGroupABC)"/>
+			</group>
 		</ribbon>
 
 		<component type="grid" name="companies" reference="grid">
+
+			<script>
+				<![CDATA[
+					var assignToGroupABC = #{window}.getRibbonItemOrNull("analysis.assignToGroupABC");
+
+					var listener = {
+						onChange: function(selectedEntitiesArray) {
+							if (!selectedEntitiesArray || selectedEntitiesArray.length == 0) {
+								assignToGroupABC.disable();
+							} else {
+								assignToGroupABC.enable();
+							}
+						}
+					}
+					this.addOnChangeListener(listener);
+				]]>
+			</script>
+
 			<option type="column" name="number" fields="number" link="true"
 				width="50" />
 			<option type="column" name="name" fields="name" link="true"
@@ -61,11 +83,12 @@
 					width="50" />
 			<option type="column" name="isReceiver" fields="isReceiver" link="true"
 					width="50" />
-
+			<option type="column" name="abcAnalysis" fields="abcAnalysis" link="true"
+					width="70" />
 			<option type="order" column="number" direction="asc" />
 
-			<option type="searchable" value="number,name,city,state,country,tax,contractorCategory,phone,contactPerson,isSupplier,isReceiver" />
-			<option type="orderable" value="number,name,city,state,country,tax,contractorCategory,phone,contactPerson,isSupplier,isReceiver" />
+			<option type="searchable" value="number,name,city,state,country,tax,contractorCategory,phone,contactPerson,isSupplier,isReceiver,abcAnalysis" />
+			<option type="orderable" value="number,name,city,state,country,tax,contractorCategory,phone,contactPerson,isSupplier,isReceiver,abcAnalysis" />
 
 			<option type="correspondingView" value="basic/companyDetails" />
 			<option type="correspondingComponent" value="form" />
@@ -76,11 +99,16 @@
 			<listener event="select"
 				class="com.qcadoo.mes.basic.listeners.CompaniesListListeners"
 				method="disabledRibbonForOwnerOrExternal" />
+
+			<listener event="assignToGroupABC"
+					  class="com.qcadoo.mes.basic.listeners.CompaniesListListeners"
+					  method="assignToGroupABC"/>
 		</component>
 
 		<listener event="openCompaniesImportPage"
 				  class="com.qcadoo.mes.basic.listeners.CompaniesListListeners"
 				  method="openCompaniesImportPage"/>
+
 
 		<option type="fixedHeight" value="true" />
 		<option type="header" value="false" />

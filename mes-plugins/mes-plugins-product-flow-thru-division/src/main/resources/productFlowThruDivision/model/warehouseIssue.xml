@@ -87,5 +87,7 @@
                 method="onSave"/>
         <onCopy class="com.qcadoo.mes.productFlowThruDivision.warehouseIssue.hooks.WarehouseIssueHooks"
                 method="onCopy"/>
+        <onDelete class="com.qcadoo.mes.productFlowThruDivision.warehouseIssue.hooks.WarehouseIssueHooks"
+                method="onDelete"/>
     </hooks>
 </model>

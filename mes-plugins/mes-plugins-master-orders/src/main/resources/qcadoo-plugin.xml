@@ -228,6 +228,11 @@
                                  method="onSave"/>
         </model:model-hook>
 
+        <model:model-hook model="order" plugin="orders">
+            <model:onDelete class="com.qcadoo.mes.masterOrders.hooks.OrderHooksMO"
+                                 method="onDelete"/>
+        </model:model-hook>
+
         <model:model-enum-value plugin="basic" model="log" enum="logType" value="masterOrderImport"/>
 
         <menu:menu-item name="masterOrders" category="orders"

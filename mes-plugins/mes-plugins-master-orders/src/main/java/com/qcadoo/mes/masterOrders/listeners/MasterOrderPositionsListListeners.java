@@ -172,7 +172,7 @@ public class MasterOrderPositionsListListeners {
                 MasterOrdersConstants.MODEL_MASTER_ORDER_PRODUCT).find().list().getEntities();
         if (!masterOrderProducts.isEmpty()) {
             Entity parameter = parameterService.getParameter();
-            masterOrderPositionsHelper.updateDeliveriesProductQuantities(masterOrderProducts, parameter);
+            masterOrderPositionsHelper.updateDeliveriesProductQuantities(view, masterOrderProducts, parameter);
             masterOrderPositionsHelper.updateWarehouseStates(masterOrderProducts, parameter);
 
             view.addMessage("masterOrders.masterOrderPositionsList.updateWarehouseStateAndDelivery.success",
