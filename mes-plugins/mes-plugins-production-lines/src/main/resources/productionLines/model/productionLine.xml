@@ -35,12 +35,9 @@
         <string name="name" required="true">
             <validatesLength max="2048"/>
         </string>
-        <!--<belongsTo name="division" plugin="basic" model="division"/>-->
-        <manyToMany name="divisions" model="division" plugin="basic" cascade="nullify" joinField="productionLines"/>
-        <dictionary name="place" dictionary="productionLinePlaces"
-                    required="false"/>
-        <dictionary name="placeInSCADA" dictionary="productionLinePlacesForSCADA"
-                    required="false"/>
+        <manyToMany name="divisions" model="division" plugin="basic" joinField="productionLines"/>
+        <dictionary name="place" dictionary="productionLinePlaces"/>
+        <dictionary name="placeInSCADA" dictionary="productionLinePlacesForSCADA"/>
         <string name="description">
             <validatesLength max="2048"/>
         </string>
@@ -49,8 +46,8 @@
         <hasMany name="workstationTypeComponents" model="workstationTypeComponent"
                  joinField="productionLine" cascade="delete"/>
 
-        <hasMany name="workstations" joinField="productionLine" model="workstation" cascade="nullify" plugin="basic" />
-        <manyToMany name="shifts" joinField="productionLines" model="shift" cascade="nullify" plugin="basic" />
+        <hasMany name="workstations" joinField="productionLine" model="workstation" plugin="basic" />
+        <manyToMany name="shifts" joinField="productionLines" model="shift" plugin="basic" />
 
         <boolean name="supportsOtherTechnologiesWorkstationTypes"
                  default="true"/>
@@ -65,7 +62,7 @@
             joinField="productionLine" cascade="delete" plugin="productionLines"/>
 
         <hasMany plugin="qcadooSecurity" model="user"
-            joinField="productionLine" name="users" cascade="nullify"/>
+            joinField="productionLine" name="users"/>
     </fields>
 
     <hooks>

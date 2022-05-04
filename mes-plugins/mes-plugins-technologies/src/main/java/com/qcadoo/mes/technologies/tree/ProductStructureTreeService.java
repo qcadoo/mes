@@ -34,6 +34,7 @@ import org.springframework.stereotype.Service;
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.states.constants.StateChangeStatus;
+import com.qcadoo.mes.technologies.TechnologyService;
 import com.qcadoo.mes.technologies.constants.OperationProductInComponentFields;
 import com.qcadoo.mes.technologies.constants.OperationProductOutComponentFields;
 import com.qcadoo.mes.technologies.constants.ProductBySizeGroupFields;
@@ -71,6 +72,9 @@ public class ProductStructureTreeService {
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
+
+    @Autowired
+    private TechnologyService technologyService;
 
     private Entity addChild(final List<Entity> tree, final Entity child, final Entity parent, final String entityType) {
         child.setField(ProductStructureTreeNodeFields.PARENT, parent);
@@ -177,7 +181,7 @@ public class ProductStructureTreeService {
 
         BigDecimal quantity = findQuantityOfProductInOperation(null, product, operation);
         Entity technologyGroup = technology.getBelongsToField(TechnologyFields.TECHNOLOGY_GROUP);
-        BigDecimal standardPerformanceTechnology = technology.getDecimalField(TechnologyFields.STANDARD_PERFORMANCE_TECHNOLOGY);
+        BigDecimal standardPerformance = technologyService.getStandardPerformance(technology).orElse(null);
 
         root.setField(ProductStructureTreeNodeFields.TECHNOLOGY, technology);
         root.setField(ProductStructureTreeNodeFields.MAIN_TECHNOLOGY, technology);
@@ -187,7 +191,7 @@ public class ProductStructureTreeService {
         root.setField(ProductStructureTreeNodeFields.DIVISION,
                 operation.getBelongsToField(TechnologyOperationComponentFields.DIVISION));
         root.setField(ProductStructureTreeNodeFields.TECHNOLOGY_GROUP, technologyGroup);
-        root.setField(ProductStructureTreeNodeFields.STANDARD_PERFORMANCE_TECHNOLOGY, standardPerformanceTechnology);
+        root.setField(ProductStructureTreeNodeFields.STANDARD_PERFORMANCE, standardPerformance);
 
         List<Entity> productStructureList = Lists.newArrayList();
 
@@ -295,8 +299,7 @@ public class ProductStructureTreeService {
                 if (Objects.isNull(subOperation)) {
                     Entity operationForTechnology = findOperationForProductAndTechnology(product, subTechnology);
                     Entity technologyGroup = subTechnology.getBelongsToField(TechnologyFields.TECHNOLOGY_GROUP);
-                    BigDecimal standardPerformanceTechnology = subTechnology
-                            .getDecimalField(TechnologyFields.STANDARD_PERFORMANCE_TECHNOLOGY);
+                    BigDecimal standardPerformance =technologyService.getStandardPerformance(subTechnology).orElse(null);
 
                     child.setField(ProductStructureTreeNodeFields.TECHNOLOGY, subTechnology);
                     child.setField(ProductStructureTreeNodeFields.MAIN_TECHNOLOGY, mainTechnology);
@@ -306,7 +309,7 @@ public class ProductStructureTreeService {
                     child.setField(ProductStructureTreeNodeFields.DIVISION,
                             operationForTechnology.getBelongsToField(TechnologyOperationComponentFields.DIVISION));
                     child.setField(ProductStructureTreeNodeFields.TECHNOLOGY_GROUP, technologyGroup);
-                    child.setField(ProductStructureTreeNodeFields.STANDARD_PERFORMANCE_TECHNOLOGY, standardPerformanceTechnology);
+                    child.setField(ProductStructureTreeNodeFields.STANDARD_PERFORMANCE, standardPerformance);
 
                     child = addChild(tree, child, parent, L_COMPONENT);
 
@@ -337,15 +340,14 @@ public class ProductStructureTreeService {
                 }
             } else {
                 Entity technologyGroup = technology.getBelongsToField(TechnologyFields.TECHNOLOGY_GROUP);
-                BigDecimal standardPerformanceTechnology = technology
-                        .getDecimalField(TechnologyFields.STANDARD_PERFORMANCE_TECHNOLOGY);
+                BigDecimal standardPerformance = technologyService.getStandardPerformance(technology).orElse(null);
 
                 child.setField(ProductStructureTreeNodeFields.TECHNOLOGY, technology);
                 child.setField(ProductStructureTreeNodeFields.MAIN_TECHNOLOGY, mainTechnology);
                 child.setField(ProductStructureTreeNodeFields.PRODUCT, product);
                 child.setField(ProductStructureTreeNodeFields.QUANTITY, quantity);
                 child.setField(ProductStructureTreeNodeFields.TECHNOLOGY_GROUP, technologyGroup);
-                child.setField(ProductStructureTreeNodeFields.STANDARD_PERFORMANCE_TECHNOLOGY, standardPerformanceTechnology);
+                child.setField(ProductStructureTreeNodeFields.STANDARD_PERFORMANCE, standardPerformance);
                 child.setField(ProductStructureTreeNodeFields.UNIT, unit);
 
                 if (Objects.nonNull(subOperation)) {

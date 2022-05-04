@@ -236,16 +236,6 @@
                            model="operationSkill" joinField="skill" cascade="delete"/>
         </model:model-field>
 
-        <model:model-field plugin="productionLines" model="productionLine">
-            <model:hasMany name="operations" plugin="technologies"
-                           model="operation" joinField="productionLine"/>
-        </model:model-field>
-
-        <model:model-field plugin="productionLines" model="productionLine">
-            <model:hasMany name="technologyOperationComponents" plugin="technologies"
-                           model="technologyOperationComponent" joinField="productionLine"/>
-        </model:model-field>
-
         <model:model-field model="parameter" plugin="basic">
             <model:boolean name="completeWarehousesFlowWhileChecking" default="false"/>
         </model:model-field>

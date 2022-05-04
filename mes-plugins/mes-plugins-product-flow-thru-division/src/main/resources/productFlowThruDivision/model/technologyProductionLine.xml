@@ -24,22 +24,23 @@
     ***************************************************************************
 
 -->
-<model name="changeTechnologyParameters" auditable="true"
-       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
-       xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
-    <fields>
-        <boolean name="changePerformanceNorm" default="false"/>
-        <boolean name="updateOperationTimeNorms" default="false"/>
-        <decimal name="standardPerformance">
-            <validatesRange from="0" exclusively="true"/>
-            <validatesUnscaledValue max="7"/>
-            <validatesScale max="5"/>
-        </decimal>
-        <boolean name="changeGroup" default="false"/>
-        <belongsTo name="technologyGroup" plugin="technologies"
-                   model="technologyGroup" lazy="false"/>
-        <string name="selectedEntities" persistent="false"/>
-
-    </fields>
-    <hooks/>
+<model name="technologyProductionLine" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://schema.qcadoo.org/model"
+	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
+	<fields>
+		<belongsTo name="productionLine" plugin="productionLines" model="productionLine" required="true"/>
+		<belongsTo name="technology" plugin="technologies" model="technology" required="true"/>
+		<boolean name="master" default="false" copyable="false"/>
+		<decimal name="standardPerformance">
+			<validatesRange from="0" exclusively="true"/>
+			<validatesUnscaledValue max="7"/>
+			<validatesScale max="5"/>
+		</decimal>
+	</fields>
+	<hooks>
+		<validatesWith class="com.qcadoo.mes.productFlowThruDivision.validators.TechnologyProductionLineModelValidators"
+		               method="validatesWith"/>
+		<onSave class="com.qcadoo.mes.productFlowThruDivision.hooks.TechnologyProductionLineModelHooks"
+		        method="onSave"/>
+	</hooks>
 </model>

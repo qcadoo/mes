@@ -45,6 +45,4 @@ public final class TechnologyFieldsPFTD {
 
     public static final String DIVISION = "division";
 
-    public static final String PRODUCTION_LINE = "productionLine";
-
 }

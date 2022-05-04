@@ -84,8 +84,6 @@ public class TechnologyOperationComponentHooks {
                     operation.getManyToManyField(OperationFields.WORKSTATIONS));
             technologyOperationComponent.setField(TechnologyOperationComponentFields.DIVISION,
                     operation.getBelongsToField(OperationFields.DIVISION));
-            technologyOperationComponent.setField(TechnologyOperationComponentFields.PRODUCTION_LINE,
-                    operation.getBelongsToField(OperationFields.PRODUCTION_LINE));
         }
     }
 
@@ -116,7 +114,7 @@ public class TechnologyOperationComponentHooks {
         if (Objects.nonNull(
                 technologyOperationComponent.getHasManyField(TechnologyOperationComponentFields.OPERATION_PRODUCT_OUT_COMPONENTS))
                 && technologyOperationComponent
-                        .getHasManyField(TechnologyOperationComponentFields.OPERATION_PRODUCT_OUT_COMPONENTS).isEmpty()) {
+                .getHasManyField(TechnologyOperationComponentFields.OPERATION_PRODUCT_OUT_COMPONENTS).isEmpty()) {
             Entity technology = technologyOperationComponent.getBelongsToField(TechnologyOperationComponentFields.TECHNOLOGY);
             EntityTree tree = technology.getTreeField(TechnologyFields.OPERATION_COMPONENTS);
 
@@ -148,7 +146,7 @@ public class TechnologyOperationComponentHooks {
     }
 
     private void copyReferencedTechnology(final DataDefinition technologyOperationComponentDD,
-            final Entity technologyOperationComponent) {
+                                          final Entity technologyOperationComponent) {
         if (Objects.isNull(technologyOperationComponent.getField(TechnologyOperationComponentFields.REFERENCE_TECHNOLOGY))) {
             return;
         }
@@ -236,7 +234,7 @@ public class TechnologyOperationComponentHooks {
     }
 
     public void onSave(final DataDefinition technologyOperationComponentDD, final Entity technologyOperationComponent) {
-        clearField(technologyOperationComponent);
+        clearField(technologyOperationComponentDD, technologyOperationComponent);
 
         Long technologyOperationComponentId = technologyOperationComponent.getId();
 
@@ -249,7 +247,7 @@ public class TechnologyOperationComponentHooks {
     }
 
     private void setTechnologicalProcessListAssignDate(final DataDefinition technologyOperationComponentDD,
-            final Entity technologyOperationComponent, final Long technologyOperationComponentId) {
+                                                       final Entity technologyOperationComponent, final Long technologyOperationComponentId) {
         Entity technologyOperationComponentFromDB = technologyOperationComponentDD.get(technologyOperationComponentId);
 
         Date technologicalProcessListAssignmentDate = technologyOperationComponent
@@ -261,7 +259,7 @@ public class TechnologyOperationComponentHooks {
 
         boolean areSame = (Objects.isNull(technologicalProcessList) ? Objects.isNull(technologicalProcessListFromDB)
                 : (Objects.nonNull(technologicalProcessListFromDB)
-                        && technologicalProcessList.getId().equals(technologicalProcessListFromDB.getId())));
+                && technologicalProcessList.getId().equals(technologicalProcessListFromDB.getId())));
 
         if (Objects.nonNull(technologicalProcessList)) {
             if (Objects.isNull(technologicalProcessListAssignmentDate) || !areSame) {
@@ -275,24 +273,39 @@ public class TechnologyOperationComponentHooks {
     }
 
     private void copyWorkstations(final DataDefinition technologyOperationComponentDD,
-            final Entity technologyOperationComponent) {
+                                  final Entity technologyOperationComponent) {
         Entity oldToc = technologyOperationComponentDD.get(technologyOperationComponent.getId());
         Entity operation = technologyOperationComponent.getBelongsToField(TechnologyOperationComponentFields.OPERATION);
 
         if (Objects.nonNull(operation)
                 && !operation.getId().equals(oldToc.getBelongsToField(TechnologyOperationComponentFields.OPERATION).getId())) {
 
+            technologyOperationComponent.setField(TechnologyOperationComponentFields.DIVISION,
+                    operation.getBelongsToField(OperationFields.DIVISION));
             technologyOperationComponent.setField(TechnologyOperationComponentFields.WORKSTATIONS,
                     operation.getManyToManyField(TechnologyOperationComponentFields.WORKSTATIONS));
         }
     }
 
-    private void clearField(final Entity technologyOperationComponent) {
+    private void clearField(final DataDefinition technologyOperationComponentDD, final Entity technologyOperationComponent) {
         String assignedToOperation = technologyOperationComponent
                 .getStringField(TechnologyOperationComponentFields.ASSIGNED_TO_OPERATION);
 
         if (AssignedToOperation.WORKSTATIONS_TYPE.getStringValue().equals(assignedToOperation)) {
             technologyOperationComponent.setField(TechnologyOperationComponentFields.WORKSTATIONS, null);
+        }
+        Long technologyOperationComponentId = technologyOperationComponent.getId();
+
+        if (Objects.nonNull(technologyOperationComponentId)) {
+            Entity technologyOperationComponentDB = technologyOperationComponentDD.get(technologyOperationComponentId);
+            if (technologyOperationComponent.getBelongsToField(TechnologyOperationComponentFields.DIVISION) != null
+                    && technologyOperationComponentDB.getBelongsToField(TechnologyOperationComponentFields.DIVISION) == null
+                    || technologyOperationComponent.getBelongsToField(TechnologyOperationComponentFields.DIVISION) == null
+                    && technologyOperationComponentDB.getBelongsToField(TechnologyOperationComponentFields.DIVISION) != null
+                    || technologyOperationComponent.getBelongsToField(TechnologyOperationComponentFields.DIVISION) != null
+                    && !technologyOperationComponent.getBelongsToField(TechnologyOperationComponentFields.DIVISION).equals(technologyOperationComponentDB.getBelongsToField(TechnologyOperationComponentFields.DIVISION))) {
+                technologyOperationComponent.setField(TechnologyOperationComponentFields.WORKSTATIONS, null);
+            }
         }
     }
 

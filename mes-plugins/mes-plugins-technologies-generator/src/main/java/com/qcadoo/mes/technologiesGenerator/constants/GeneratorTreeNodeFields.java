@@ -60,7 +60,7 @@ public final class GeneratorTreeNodeFields {
 
     public static final String TECHNOLOGY_GROUP = "technologyGroup";
 
-    public static final String STANDARD_PERFORMANCE_TECHNOLOGY = "standardPerformanceTechnology";
+    public static final String STANDARD_PERFORMANCE = "standardPerformance";
 
     public static final String UNIT = "unit";
 

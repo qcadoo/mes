@@ -39,10 +39,6 @@ public final class OperationFields {
 
     public static final String ATTACHMENT = "attachment";
 
-    public static final String ARE_PRODUCT_QUANTITIES_DIVISIBLE = "areProductQuantitiesDivisible";
-
-    public static final String IS_TJ_DIVISIBLE = "isTjDivisible";
-
     public static final String PRODUCT_IN_COMPONENTS = "productInComponents";
 
     public static final String PRODUCT_OUT_COMPONENTS = "productOutComponents";
@@ -60,8 +56,6 @@ public final class OperationFields {
     public static final String QUANTITY_OF_WORKSTATIONS = "quantityOfWorkstations";
 
     public static final String DIVISION = "division";
-
-    public static final String PRODUCTION_LINE = "productionLine";
 
     public static final String PRODUCT = "product";
 

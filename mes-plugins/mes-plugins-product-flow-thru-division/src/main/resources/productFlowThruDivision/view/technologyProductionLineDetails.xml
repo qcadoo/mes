@@ -26,20 +26,20 @@
 -->
 <view defaultAuthorizationRole="ROLE_BASE_FUNCTIONALITY" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
       xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
-      name="operationComponentDetails" modelName="technologyOperationComponent"
-      modelPlugin="technologies">
+      name="technologyProductionLineDetails" modelName="technologyProductionLine"
+      modelPlugin="productFlowThruDivision">
 
     <component type="window" name="window">
         <ribbon>
-            <template name="standardFormTemplate" excludeItems="actions.copy, actions.saveNew, actions.delete"/>
+            <template name="standardFormTemplate" excludeItems="actions.copy"/>
         </ribbon>
         <windowTab name="mainTab">
             <component type="form" name="form" reference="form">
-                <component type="gridLayout" name="gridLayout" columns="1"
-                           rows="1">
-                    <layoutElement column="1" row="1">
-                        <component type="lookup" name="division" field="#{form}.division"
-                                   reference="division">
+                <component type="gridLayout" name="gridLayout" columns="5"
+                           rows="3" hasBorders="false">
+                    <layoutElement column="1" row="1" width="5">
+                        <component type="lookup" name="productionLine" field="#{form}.productionLine"
+                                   reference="productionLine">
                             <option type="column" name="name" fields="name" link="true"/>
 
                             <option type="searchable" value="name,number"/>
@@ -47,20 +47,39 @@
 
                             <option type="expression" value="#number + ' - ' + #name"/>
                             <option type="fieldCode" value="number"/>
+
+                            <criteriaModifier
+                                    class="com.qcadoo.mes.productFlowThruDivision.criteriaModifiers.TechnologyProductionLineCriteriaModifiers"
+                                    method="filterByTechnologyAndDivision"/>
                         </component>
+                    </layoutElement>
+                    <layoutElement column="1" row="2" width="3">
+                        <component type="input" name="standardPerformance"
+                                   field="#{form}.standardPerformance" reference="standardPerformance"
+                                   hasDescription="true">
+                            <option type="alignment" value="right"/>
+                            <option type="labelWidth" value="50"/>
+                        </component>
+                    </layoutElement>
+                    <layoutElement column="4" row="2" width="2">
+                        <component type="label" name="standardPerformanceLabel">
+                            <option type="labelStyle" value="text"/>
+                        </component>
+                    </layoutElement>
+                    <layoutElement column="1" row="3" width="5">
+                        <component type="checkbox" name="master" field="#{form}.master"
+                                   reference="master"/>
                     </layoutElement>
                 </component>
                 <option type="header" value="true"/>
-                <option type="expression"
-                        value="#nodeNumber + ' ' + #operation['name']"/>
-
+                <option type="expression" value="#productionLine['number'] + ' ' + #productionLine['name']"/>
             </component>
         </windowTab>
 
     </component>
 
     <hooks>
-        <beforeRender class="com.qcadoo.mes.productFlowThruDivision.hooks.TOCDetailsHooksPFTD"
+        <beforeRender class="com.qcadoo.mes.productFlowThruDivision.hooks.TechnologyProductionLineDetailsHooks"
                       method="onBeforeRender"/>
     </hooks>
 

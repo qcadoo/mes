@@ -7,7 +7,8 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.qcadoo.mes.technologies.constants.OperationFields;
+import com.qcadoo.mes.technologies.TechnologyService;
+
 import org.apache.commons.lang3.StringUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -21,6 +22,7 @@ import com.qcadoo.mes.technologies.TechnologyNameAndNumberGenerator;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
 import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
+import com.qcadoo.mes.technologies.constants.TechnologyProductionLineFields;
 import com.qcadoo.mes.technologies.states.TechnologyStateChangeViewClient;
 import com.qcadoo.mes.technologies.states.constants.TechnologyStateStringValues;
 import com.qcadoo.model.api.DataDefinitionService;
@@ -40,7 +42,7 @@ public class ChangeTechnologyParametersListeners {
 
     private static final String L_CHANGE_PERFORMANCE_NORM = "changePerformanceNorm";
 
-    private static final String L_STANDARD_PERFORMANCE_TECHNOLOGY = "standardPerformanceTechnology";
+    private static final String L_STANDARD_PERFORMANCE = "standardPerformance";
 
     private static final String L_TECHNOLOGY_GROUP = "technologyGroup";
 
@@ -72,6 +74,9 @@ public class ChangeTechnologyParametersListeners {
     @Autowired
     private TechnologyStateChangeViewClient technologyStateChangeViewClient;
 
+    @Autowired
+    private TechnologyService technologyService;
+
     public void changeTechnologyParameters(final ViewDefinitionState view, final ComponentState state, final String[] args)
             throws JSONException {
         FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
@@ -102,23 +107,23 @@ public class ChangeTechnologyParametersListeners {
                 return;
             }
         } catch (IllegalArgumentException e) {
-            form.findFieldComponentByName(L_STANDARD_PERFORMANCE_TECHNOLOGY)
+            form.findFieldComponentByName(L_STANDARD_PERFORMANCE)
                     .addMessage("qcadooView.validate.field.error.invalidNumericFormat", ComponentState.MessageType.FAILURE);
             generated.setChecked(false);
             return;
         }
         JSONObject context = view.getJsonContext();
         Set<Long> ids = Arrays.stream(
-                context.getString("window.mainTab.form.gridLayout.selectedEntities").replaceAll("[\\[\\]]", "").split(","))
+                        context.getString("window.mainTab.form.gridLayout.selectedEntities").replaceAll("[\\[\\]]", "").split(","))
                 .map(Long::valueOf).collect(Collectors.toSet());
 
-        BigDecimal standardPerformanceTechnology = null;
+        BigDecimal standardPerformance = null;
         if (entity.getBooleanField(L_CHANGE_PERFORMANCE_NORM)) {
-            standardPerformanceTechnology = entity.getDecimalField(L_STANDARD_PERFORMANCE_TECHNOLOGY);
+            standardPerformance = entity.getDecimalField(L_STANDARD_PERFORMANCE);
         }
 
         try {
-            createCustomizedTechnologies(view, state, ids, entity, group, standardPerformanceTechnology);
+            createCustomizedTechnologies(view, state, ids, entity, group, standardPerformance);
         } catch (Exception exc) {
             view.addMessage("technologies.changeTechnologyParameters.error.technologiesNotCreated",
                     ComponentState.MessageType.FAILURE);
@@ -128,7 +133,7 @@ public class ChangeTechnologyParametersListeners {
 
     @Transactional
     private void createCustomizedTechnologies(ViewDefinitionState view, ComponentState state, Set<Long> ids, Entity entity,
-            Entity finalGroup, BigDecimal finalStandardPerformanceTechnology) {
+                                              Entity finalGroup, BigDecimal finalStandardPerformance) {
         boolean updateOperationTimeNorms = entity.getBooleanField(L_UPDATE_OPERATION_TIME_NORMS);
         ids.forEach(techId -> {
             Entity technology = dataDefinitionService
@@ -147,7 +152,12 @@ public class ChangeTechnologyParametersListeners {
                 }
 
                 if (entity.getBooleanField(L_CHANGE_PERFORMANCE_NORM)) {
-                    copyTechnology.setField(TechnologyFields.STANDARD_PERFORMANCE_TECHNOLOGY, finalStandardPerformanceTechnology);
+                    technologyService.getMasterTechnologyProductionLine(technology).ifPresent(
+                            e -> {
+                                e.setField(TechnologyProductionLineFields.STANDARD_PERFORMANCE, finalStandardPerformance);
+                                e.getDataDefinition().save(e);
+                            }
+                    );
                 }
                 copyTechnology = copyTechnology.getDataDefinition().save(copyTechnology);
                 Entity copyTechnologyDb = copyTechnology.getDataDefinition().get(copyTechnology.getId());
@@ -210,13 +220,13 @@ public class ChangeTechnologyParametersListeners {
 
     public void onChangePerformanceNorm(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         CheckBoxComponent changePerformanceNorm = (CheckBoxComponent) state;
-        FieldComponent standardPerformanceTechnology = (FieldComponent) view
-                .getComponentByReference(L_STANDARD_PERFORMANCE_TECHNOLOGY);
+        FieldComponent standardPerformance = (FieldComponent) view
+                .getComponentByReference(L_STANDARD_PERFORMANCE);
         if (changePerformanceNorm.isChecked()) {
-            standardPerformanceTechnology.setEnabled(true);
+            standardPerformance.setEnabled(true);
         } else {
-            standardPerformanceTechnology.setEnabled(false);
-            standardPerformanceTechnology.setFieldValue(null);
+            standardPerformance.setEnabled(false);
+            standardPerformance.setFieldValue(null);
         }
 
     }

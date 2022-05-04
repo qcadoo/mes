@@ -1,19 +1,22 @@
 package com.qcadoo.mes.productionPerShift.services;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.util.Optional;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.qcadoo.mes.basic.shift.Shift;
 import com.qcadoo.mes.basic.util.DateTimeRange;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.productionLines.constants.ProductionLineFields;
 import com.qcadoo.mes.productionPerShift.domain.ProgressForDaysContainer;
 import com.qcadoo.mes.productionPerShift.domain.ShiftEfficiencyCalculationHolder;
+import com.qcadoo.mes.technologies.TechnologyService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
 import com.qcadoo.model.api.validators.ErrorMessage;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import java.math.BigDecimal;
-import java.math.RoundingMode;
 
 @Service
 public class PpsTechNormAndWorkersAlgorithmService extends PpsBaseAlgorithmService {
@@ -24,10 +27,13 @@ public class PpsTechNormAndWorkersAlgorithmService extends PpsBaseAlgorithmServi
     @Autowired
     private WorkersOnLineService workersOnLineService;
 
+    @Autowired
+    private TechnologyService technologyService;
+
     @Override
     protected ShiftEfficiencyCalculationHolder calculateShiftEfficiency(ProgressForDaysContainer progressForDaysContainer,
-            Entity productionPerShift, Shift shift, Entity order, DateTimeRange range, BigDecimal shiftEfficiency,
-            int progressForDayQuantity, boolean allowIncompleteUnits) {
+                                                                        Entity productionPerShift, Shift shift, Entity order, DateTimeRange range, BigDecimal shiftEfficiency,
+                                                                        int progressForDayQuantity, boolean allowIncompleteUnits) {
         ShiftEfficiencyCalculationHolder calculationHolder = new ShiftEfficiencyCalculationHolder();
         int workersOnLine = workersOnLineService.getWorkersOnLine(order.getBelongsToField(OrderFields.PRODUCTION_LINE),
                 shift.getEntity(), range.getFrom());
@@ -50,7 +56,7 @@ public class PpsTechNormAndWorkersAlgorithmService extends PpsBaseAlgorithmServi
     }
 
     protected void calculateEfficiencyTime(ShiftEfficiencyCalculationHolder calculationHolder, BigDecimal shiftEfficiency,
-            int workersOnLine, BigDecimal scaledNorm) {
+                                           int workersOnLine, BigDecimal scaledNorm) {
         BigDecimal ratio = scaledNorm.multiply(new BigDecimal(workersOnLine), numberService.getMathContext());
         int time = shiftEfficiency.divide(ratio, numberService.getMathContext()).setScale(0, RoundingMode.HALF_UP).intValue();
         calculationHolder.addEfficiencyTime(time);
@@ -60,7 +66,7 @@ public class PpsTechNormAndWorkersAlgorithmService extends PpsBaseAlgorithmServi
         BigDecimal value = BigDecimal.ZERO;
         value = scaledNorm.multiply(new BigDecimal(workersOnLine), numberService.getMathContext());
         value = value.multiply(new BigDecimal(minuets), numberService.getMathContext());
-        if(allowIncompleteUnits) {
+        if (allowIncompleteUnits) {
             return value;
         } else {
             return value.setScale(0, RoundingMode.HALF_UP);
@@ -68,15 +74,19 @@ public class PpsTechNormAndWorkersAlgorithmService extends PpsBaseAlgorithmServi
     }
 
     protected BigDecimal getStandardPerformanceNorm(ProgressForDaysContainer progressForDaysContainer, Entity order) {
-        Entity technology = order.getBelongsToField(OrderFields.TECHNOLOGY).getDataDefinition()
-                .get(order.getBelongsToField(OrderFields.TECHNOLOGY).getId());
-        BigDecimal norm = technology.getDecimalField("standardPerformanceTechnology");
-        if (norm == null) {
+        Optional<BigDecimal> norm = Optional.empty();
+        Entity productionLine = order.getBelongsToField(OrderFields.PRODUCTION_LINE);
+        if (productionLine != null) {
+            Entity technology = order.getBelongsToField(OrderFields.TECHNOLOGY).getDataDefinition()
+                    .get(order.getBelongsToField(OrderFields.TECHNOLOGY).getId());
+            norm = technologyService.getStandardPerformance(technology, productionLine);
+        }
+        if (!norm.isPresent()) {
             progressForDaysContainer.addError(new ErrorMessage(
                     "productionPerShift.automaticAlgorithm.technology.standardPerformanceTechnologyRequired", false));
             throw new IllegalStateException("No standard performance norm in technology");
         }
-        return norm;
+        return norm.get();
     }
 
 }

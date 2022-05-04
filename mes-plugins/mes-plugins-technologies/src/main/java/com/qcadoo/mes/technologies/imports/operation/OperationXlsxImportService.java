@@ -46,12 +46,6 @@ import com.qcadoo.model.api.Entity;
 @Service
 public class OperationXlsxImportService extends XlsxImportService {
 
-    private static final String L_QCADOO_VIEW_VALIDATE_FIELD_ERROR_MISSING = "qcadooView.validate.field.error.missing";
-
-    private static final String L_QCADOO_VIEW_VALIDATE_FIELD_ERROR_CUSTOM = "qcadooView.validate.field.error.custom";
-
-    private static final String L_TECHNOLOGIES_OPERATIONS_IMPORT_WORKSTATION_PRODUCTION_LINE_NOT_SAME = "technologies.operationsImport.workstation.productionLine.notSame";
-
     private static final String L_PRODUCTION_IN_ONE_CYCLE = "productionInOneCycle";
 
     public static final String L_PRODUCTION_IN_ONE_CYCLE_UNIT = "productionInOneCycleUNIT";
@@ -75,50 +69,14 @@ public class OperationXlsxImportService extends XlsxImportService {
 
     @Override
     public void validateEntity(final Entity operation, final DataDefinition operationDD) {
-        validateProductionLine(operation, operationDD);
         validateWorkstation(operation, operationDD);
         validateProductionInOneCycle(operation, operationDD);
     }
 
-    private void validateProductionLine(final Entity operation, final DataDefinition operationDD) {
-        Entity productionLine = operation.getBelongsToField(OperationFields.PRODUCTION_LINE);
-        Entity division = operation.getBelongsToField(OperationFields.DIVISION);
-
-        if (Objects.nonNull(productionLine)) {
-            if (Objects.isNull(division)) {
-                operation.addError(operationDD.getField(OperationFields.DIVISION), L_QCADOO_VIEW_VALIDATE_FIELD_ERROR_MISSING);
-            } else {
-                List<Entity> divisionProductionLines = division.getHasManyField(DivisionFieldsPL.PRODUCTION_LINES);
-
-                Optional<Entity> mayBeProductionLine = divisionProductionLines.stream()
-                        .filter(divisionProductionLine -> divisionProductionLine.getId().equals(productionLine.getId()))
-                        .findAny();
-
-                if (!mayBeProductionLine.isPresent()) {
-                    operation.addError(operationDD.getField(OperationFields.PRODUCTION_LINE),
-                            L_QCADOO_VIEW_VALIDATE_FIELD_ERROR_CUSTOM);
-                }
-            }
-        }
-    }
-
     private void validateWorkstation(final Entity operation, final DataDefinition operationDD) {
         Entity workstation = operation.getBelongsToField(OperationFields.WORKSTATION);
-        Entity productionLine = operation.getBelongsToField(OperationFields.PRODUCTION_LINE);
 
         if (Objects.nonNull(workstation)) {
-            if (Objects.isNull(productionLine)) {
-                operation.addError(operationDD.getField(OperationFields.PRODUCTION_LINE),
-                        L_QCADOO_VIEW_VALIDATE_FIELD_ERROR_MISSING);
-            } else {
-                Entity workstationProductionLine = workstation.getBelongsToField(WorkstationFieldsPL.PRODUCTION_LINE);
-
-                if (Objects.isNull(workstationProductionLine) || !workstationProductionLine.getId().equals(productionLine.getId())) {
-                    operation.addError(operationDD.getField(OperationFields.WORKSTATION),
-                            L_TECHNOLOGIES_OPERATIONS_IMPORT_WORKSTATION_PRODUCTION_LINE_NOT_SAME);
-                }
-            }
-
             operation.setField(OperationFields.WORKSTATIONS, Lists.newArrayList(workstation));
         }
     }

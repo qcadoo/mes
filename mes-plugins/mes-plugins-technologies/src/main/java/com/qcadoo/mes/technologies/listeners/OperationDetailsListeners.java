@@ -45,15 +45,6 @@ public class OperationDetailsListeners {
     @Autowired
     private OperationDetailsHooks operationDetailsHooks;
 
-    public void setProductionLineLookup(final ViewDefinitionState view, final ComponentState componentState,
-            final String[] args) {
-        operationDetailsHooks.setProductionLineLookup(view);
-    }
-
-    public void setWorkstationsLookup(final ViewDefinitionState view, final ComponentState componentState, final String[] args) {
-        operationDetailsHooks.setWorkstationsLookup(view);
-    }
-
     public void setWorkstationsTabFields(final ViewDefinitionState view, final ComponentState componentState,
             final String[] args) {
         operationDetailsHooks.setWorkstationsTabFields(view);
@@ -64,11 +55,9 @@ public class OperationDetailsListeners {
         if (AssignedToOperation.WORKSTATIONS.getStringValue().equals(assignedToOperationValue)) {
             operationDetailsHooks.clearLookupField(view, OperationFields.WORKSTATION_TYPE);
             operationDetailsHooks.clearLookupField(view, OperationFields.DIVISION);
-            operationDetailsHooks.clearLookupField(view, OperationFields.PRODUCTION_LINE);
         } else if (AssignedToOperation.WORKSTATIONS_TYPE.getStringValue().equals(assignedToOperationValue)) {
             operationDetailsHooks.clearWorkstationsField(view);
             operationDetailsHooks.clearLookupField(view, OperationFields.DIVISION);
-            operationDetailsHooks.clearLookupField(view, OperationFields.PRODUCTION_LINE);
         }
     }
 

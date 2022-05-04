@@ -35,23 +35,27 @@ import com.qcadoo.view.api.components.lookup.FilterValueHolder;
 @Service
 public class WorkstationCriteriaModifiers {
 
+    private static final String L_DOT = ".";
+
+    private static final String L_ID = "id";
+
     public void showWorkstationsWithoutProductionLineOnly(final SearchCriteriaBuilder scb) {
         scb.add(SearchRestrictions.isNull(WorkstationFieldsPL.PRODUCTION_LINE));
     }
 
     public void showWorkstationsForCurrentProductionLine(final SearchCriteriaBuilder scb, final FilterValueHolder filterValue) {
-        if (filterValue.has("productionLine")) {
-            Long productionLineId = filterValue.getLong("productionLine");
+        if (filterValue.has(WorkstationFieldsPL.PRODUCTION_LINE)) {
+            Long productionLineId = filterValue.getLong(WorkstationFieldsPL.PRODUCTION_LINE);
             scb.createAlias(WorkstationFieldsPL.PRODUCTION_LINE, WorkstationFieldsPL.PRODUCTION_LINE, JoinType.INNER).add(
-                    SearchRestrictions.eq(WorkstationFieldsPL.PRODUCTION_LINE + ".id", productionLineId));
+                    SearchRestrictions.eq(WorkstationFieldsPL.PRODUCTION_LINE + L_DOT + L_ID, productionLineId));
         }
     }
 
     public void showWorkstationsForCurrentDivision(final SearchCriteriaBuilder scb, final FilterValueHolder filterValue) {
-        if (filterValue.has("division")) {
-            Long divisionId = filterValue.getLong("division");
+        if (filterValue.has(WorkstationFields.DIVISION)) {
+            Long divisionId = filterValue.getLong(WorkstationFields.DIVISION);
             scb.createAlias(WorkstationFields.DIVISION, WorkstationFields.DIVISION, JoinType.INNER).add(
-                    SearchRestrictions.eq(WorkstationFields.DIVISION + ".id", divisionId));
+                    SearchRestrictions.eq(WorkstationFields.DIVISION + L_DOT + L_ID, divisionId));
         }
     }
 }

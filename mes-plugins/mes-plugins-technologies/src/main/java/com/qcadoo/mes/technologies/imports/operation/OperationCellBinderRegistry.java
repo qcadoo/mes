@@ -55,9 +55,6 @@ public class OperationCellBinderRegistry {
     private CellParser divisionCellParser;
 
     @Autowired
-    private CellParser productionLineCellParser;
-
-    @Autowired
     private CellParser workstationCellParser;
 
     @Autowired
@@ -73,7 +70,6 @@ public class OperationCellBinderRegistry {
         cellBinderRegistry.setCellBinder(optional(OperationFields.PRODUCT, productCellParser));
         cellBinderRegistry.setCellBinder(optional(OperationFields.COMMENT));
         cellBinderRegistry.setCellBinder(optional(OperationFields.DIVISION, divisionCellParser));
-        cellBinderRegistry.setCellBinder(optional(OperationFields.PRODUCTION_LINE, productionLineCellParser));
         cellBinderRegistry.setCellBinder(optional(OperationFields.WORKSTATION, workstationCellParser));
         cellBinderRegistry.setCellBinder(optional(L_TPZ, integerCellParser));
         cellBinderRegistry.setCellBinder(optional(L_TJ, integerCellParser));

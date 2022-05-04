@@ -31,10 +31,10 @@
 
     <windowTab name="rangeTab" reference="rangeTab">
         <component type="gridLayout" name="rangeLayout" columns="1"
-                   rows="3">
+                   rows="2">
             <layoutElement column="1" row="1">
                 <component type="gridLayout" name="basicRangeLayout"
-                           columns="3" rows="3" reference="basicRangeLayout">
+                           columns="3" rows="1" reference="basicRangeLayout" hasBorders="false">
                     <layoutElement column="1" row="1">
                         <component type="select" name="range" field="#{form}.range"
                                    reference="range">
@@ -44,7 +44,7 @@
                                       method="onChangeRerender"/>
                         </component>
                     </layoutElement>
-                    <layoutElement column="1" row="2">
+                    <layoutElement column="2" row="1">
                         <component type="lookup" name="division" field="#{form}.division"
                                    reference="division">
                             <option type="column" name="name" fields="name" link="true"/>
@@ -60,69 +60,112 @@
                                       method="onDivisionChange"/>
                         </component>
                     </layoutElement>
-                    <layoutElement column="1" row="3">
-                        <component type="lookup" name="productionLine"
-                                   reference="productionLine" field="#{form}.productionLine">
-                            <option type="column" name="name" fields="name" link="true"
-                                    width="300"/>
-
-                            <option type="searchable" value="name,number"/>
-                            <option type="orderable" value="name,number"/>
-
-                            <option type="expression"
-                                    value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name"/>
-                            <option type="fieldCode" value="number"/>
-
-                            <criteriaModifier
-                                    class="com.qcadoo.mes.productFlowThruDivision.criteriaModifiers.ProductionLineCriteriaModifiersPFTD"
-                                    method="showLinesForDivision"/>
-
-                        </component>
-                    </layoutElement>
                 </component>
             </layoutElement>
             <layoutElement column="1" row="2">
                 <component type="gridLayout" name="operationRangeLayout"
                            columns="1" rows="2" reference="operationRangeLayout">
                     <layoutElement column="1" row="1">
-                        <component type="label" name="operationRangeDescription">
+                        <component type="label" name="operationRangeDescription" reference="operationRangeDescription">
                             <option type="labelStyle" value="text"/>
                         </component>
                     </layoutElement>
                     <layoutElement column="1" row="2">
                         <component type="gridLayout" name="operationLayout"
-                                   columns="2" rows="1" reference="operationLayout">
+                                   columns="1" rows="1" reference="operationLayout">
                             <layoutElement column="1" row="1">
                                 <component type="grid" name="rangeTechnologyOperationComponent"
-                                           source="#{form}.operationComponents" reference="rangeTechnologyOperationComponent">
+                                           plugin="technologies" model="technologyOperationComponent"
+                                           reference="rangeTechnologyOperationComponent">
                                     <option type="column" name="nodeNumber" fields="nodeNumber"
                                             link="true" width="100"/>
                                     <option type="column" name="operationName" fields="operation"
                                             expression="#operation['name']" link="true" width="100"/>
                                     <option type="column" name="divisionNumber" fields="division"
                                             expression="#division['number']" width="100"/>
-                                    <option type="column" name="productionLineNumber" fields="productionLine"
-                                            expression="#productionLine['number']" width="100"/>
                                     <option type="order" column="nodeNumber" direction="desc"/>
 
                                     <option type="searchable"
-                                            value="nodeNumber,operationName,divisionNumber,productionLineNumber"/>
+                                            value="nodeNumber,operationName,divisionNumber"/>
                                     <option type="orderable"
-                                            value="nodeNumber,operationName,divisionNumber,productionLineNumber"/>
+                                            value="nodeNumber,operationName,divisionNumber"/>
                                     <option type="correspondingView"
                                             value="productFlowThruDivision/operationComponentDetails"/>
                                     <option type="correspondingComponent" value="form"/>
                                     <option type="correspondingViewInModal" value="true"/>
                                     <option type="prioritizable" value="false"/>
                                     <option type="paginable" value="false"/>
-                                    <listener event="select"
-                                              class="com.qcadoo.mes.productFlowThruDivision.listeners.TechnologyDetailsListenersPFTD"
-                                              method="setWorkstationsLookup"/>
+
+	                                <criteriaModifier
+			                                class="com.qcadoo.mes.technologies.criteriaModifiers.TechnologyDetailsCriteriaModifiers"
+			                                method="showTOCAssignedToTechnology"/>
+                                </component>
+                            </layoutElement>
+                        </component>
+                    </layoutElement>
+                </component>
+            </layoutElement>
+        </component>
+    </windowTab>
+    <windowTab name="linesAndWorkstationsTab" reference="linesAndWorkstationsTab">
+        <component type="gridLayout" name="linesAndWorkstationsLayout" columns="1"
+                   rows="2">
+            <layoutElement column="1" row="1">
+                <component type="grid" name="productionLines" reference="productionLines"
+                           source="#{form}.productionLines">
+                    <option type="column" name="productionLineNumber" fields="productionLine"
+                            expression="#productionLine['number']" link="true"/>
+                    <option type="column" name="productionLineName" fields="productionLine"
+                            expression="#productionLine['name']" link="true"/>
+                    <option type="column" name="master" fields="master"/>
+                    <option type="column" name="standardPerformance" fields="standardPerformance"/>
+
+                    <option type="order" column="number" direction="asc"/>
+
+                    <option type="searchable" value="productionLineNumber,productionLineName,master,standardPerformance"/>
+                    <option type="orderable" value="productionLineNumber,productionLineName,master,standardPerformance"/>
+
+                    <option type="correspondingView"
+                            value="productFlowThruDivision/technologyProductionLineDetails"/>
+                    <option type="correspondingComponent" value="form"/>
+                    <option type="correspondingViewInModal" value="true"/>
+
+                    <option type="creatable" value="true"/>
+                    <option type="deletable" value="true"/>
+                    <option type="multiselect" value="true"/>
+                    <option type="paginable" value="false"/>
+                </component>
+            </layoutElement>
+            <layoutElement column="1" row="2">
+                <component type="gridLayout" name="operationWorkstationsLayout"
+                           columns="1" rows="2" reference="operationWorkstationsLayout">
+                    <layoutElement column="1" row="1">
+                        <component type="label" name="operationWorkstationsDescription" reference="operationWorkstationsDescription">
+                            <option type="labelStyle" value="text"/>
+                        </component>
+                    </layoutElement>
+                    <layoutElement column="1" row="2">
+                        <component type="gridLayout" name="technologyOperationComponentLayout"
+                                   columns="2" rows="1" reference="technologyOperationComponentLayout" hasBorders="false">
+                            <layoutElement column="1" row="1">
+                                <component type="grid" name="workstationsTechnologyOperationComponent"
+                                           source="#{form}.operationComponents" reference="workstationsTechnologyOperationComponent">
+                                    <option type="column" name="nodeNumber" fields="nodeNumber" width="100"/>
+                                    <option type="column" name="operationName" fields="operation"
+                                            expression="#operation['name']" width="100"/>
+                                    <option type="order" column="nodeNumber" direction="desc"/>
+
+                                    <option type="searchable"
+                                            value="nodeNumber,operationName"/>
+                                    <option type="orderable"
+                                            value="nodeNumber,operationName"/>
+                                    <option type="prioritizable" value="false"/>
+                                    <option type="paginable" value="false"/>
                                 </component>
                             </layoutElement>
                             <layoutElement column="2" row="1">
                                 <component type="lookup" name="workstationsForTOClookup" reference="workstationsForTOClookup"
-                                           field="#{rangeTechnologyOperationComponent}.workstations" defaultVisible="false"
+                                           field="#{workstationsTechnologyOperationComponent}.workstations" defaultVisible="false"
                                            persistent="false"
                                            hasLabel="false">
                                     <option type="column" name="name" fields="name" link="true"/>
@@ -136,18 +179,22 @@
                                     <option type="multiselect" value="true"/>
 
                                     <criteriaModifier
-                                            class="com.qcadoo.mes.technologies.criteriaModifiers.TOCDetailsCriteriaModifiers"
-                                            method="showWorkstationsForProductionLine"/>
+                                            class="com.qcadoo.mes.productionLines.criteriaModifiers.WorkstationCriteriaModifiers"
+                                            method="showWorkstationsForCurrentDivision"/>
                                 </component>
                                 <component type="grid" name="workstations" reference="workstations"
-                                           source="#{rangeTechnologyOperationComponent}.workstations">
+                                           source="#{workstationsTechnologyOperationComponent}.workstations">
                                     <option type="column" name="number" fields="number"/>
                                     <option type="column" name="name" fields="name"/>
+                                    <option type="column" name="divisionNumber" fields="division"
+                                            expression="#division['number']" width="100"/>
+                                    <option type="column" name="productionLineNumber" fields="productionLine"
+                                            expression="#productionLine['number']" width="100"/>
 
                                     <option type="order" column="number" direction="asc"/>
 
-                                    <option type="searchable" value="number,name"/>
-                                    <option type="orderable" value="number,name"/>
+                                    <option type="searchable" value="number,name,divisionNumber,productionLineNumber"/>
+                                    <option type="orderable" value="number,name,divisionNumber,productionLineNumber"/>
 
                                     <option type="weakRelation" value="true"/>
                                     <option type="correspondingLookup" value="workstationsForTOClookup"/>

@@ -37,6 +37,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.google.common.collect.Maps;
 import com.qcadoo.commons.functional.Either;
+import com.qcadoo.mes.technologies.TechnologyService;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
 import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
@@ -78,6 +79,9 @@ public class TreeGenerator {
 
     @Autowired
     private GeneratorContextDataProvider generatorContextDataProvider;
+
+    @Autowired
+    private TechnologyService technologyService;
 
     @Transactional
     public Either<String, ContextId> generate(final Entity context, final GeneratorSettings settings, boolean applyCustomized) {
@@ -302,8 +306,8 @@ public class TreeGenerator {
             if (Objects.nonNull(tech)) {
                 setBelongsToField(entity, GeneratorTreeNodeFields.TECHNOLOGY_GROUP,
                         tech.getBelongsToField(TechnologyFields.TECHNOLOGY_GROUP));
-                entity.setField(GeneratorTreeNodeFields.STANDARD_PERFORMANCE_TECHNOLOGY,
-                        tech.getDecimalField(TechnologyFields.STANDARD_PERFORMANCE_TECHNOLOGY));
+                entity.setField(GeneratorTreeNodeFields.STANDARD_PERFORMANCE,
+                        technologyService.getStandardPerformance(tech).orElse(null));
             }
         }
     }

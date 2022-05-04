@@ -59,7 +59,7 @@ public class OperationDetailsHooks {
     private static final List<String> L_WORKSTATIONS_TAB_FIELDS = Arrays.asList(OperationFields.ASSIGNED_TO_OPERATION,
             OperationFields.QUANTITY_OF_WORKSTATIONS);
 
-    private static final List<String> L_WORKSTATIONS_TAB_LOOKUPS = Arrays.asList(OperationFields.PRODUCTION_LINE,
+    private static final List<String> L_WORKSTATIONS_TAB_LOOKUPS = Arrays.asList(
             OperationFields.DIVISION, OperationFields.WORKSTATION_TYPE);
 
     public static final String L_CREATE_OPERATION_OUTPUT = "createOperationOutput";
@@ -76,11 +76,7 @@ public class OperationDetailsHooks {
     private void disableCreateOperationOutput(final ViewDefinitionState view) {
         CheckBoxComponent createOperationOutput = (CheckBoxComponent) view.getComponentByReference(L_CREATE_OPERATION_OUTPUT);
         LookupComponent productLookupComponent = (LookupComponent) view.getComponentByReference(L_PRODUCT);
-        if(!productLookupComponent.isEmpty() && Objects.nonNull(productLookupComponent.getEntity())) {
-            createOperationOutput.setEnabled(false);
-        } else {
-            createOperationOutput.setEnabled(true);
-        }
+        createOperationOutput.setEnabled(productLookupComponent.isEmpty() || !Objects.nonNull(productLookupComponent.getEntity()));
     }
 
     private void hideProductInOutComponents(final ViewDefinitionState view) {
@@ -91,47 +87,23 @@ public class OperationDetailsHooks {
         }
     }
 
-    private void setProductionLineCriteriaModifiers(final ViewDefinitionState view) {
-        LookupComponent productionLineLookup = (LookupComponent) view.getComponentByReference(OperationFields.PRODUCTION_LINE);
+    private void setWorkstationsCriteriaModifiers(final ViewDefinitionState view) {
         LookupComponent divisionLookup = (LookupComponent) view.getComponentByReference(OperationFields.DIVISION);
+        LookupComponent workstationLookup = (LookupComponent) view.getComponentByReference(L_WORKSTATION_LOOKUP);
+        GridComponent workstations = (GridComponent) view.getComponentByReference(OperationFields.WORKSTATIONS);
 
         Entity division = divisionLookup.getEntity();
-        FilterValueHolder filter = productionLineLookup.getFilterValue();
+        FilterValueHolder filter = workstationLookup.getFilterValue();
 
         if (division != null) {
             filter.put(OperationFields.DIVISION, division.getId());
+            workstations.setEditable(true);
         } else {
             filter.remove(OperationFields.DIVISION);
-        }
-
-        productionLineLookup.setFilterValue(filter);
-    }
-
-    public void setProductionLineLookup(final ViewDefinitionState view) {
-        clearLookupField(view, OperationFields.PRODUCTION_LINE);
-        clearWorkstationsField(view);
-        setProductionLineCriteriaModifiers(view);
-    }
-
-    private void setWorkstationsCriteriaModifiers(final ViewDefinitionState view) {
-        LookupComponent productionLineLookup = (LookupComponent) view.getComponentByReference(OperationFields.PRODUCTION_LINE);
-        LookupComponent workstationLookup = (LookupComponent) view.getComponentByReference(L_WORKSTATION_LOOKUP);
-
-        Entity productionLine = productionLineLookup.getEntity();
-        FilterValueHolder filter = workstationLookup.getFilterValue();
-
-        if (productionLine != null) {
-            filter.put(OperationFields.PRODUCTION_LINE, productionLine.getId());
-        } else {
-            filter.remove(OperationFields.PRODUCTION_LINE);
+            workstations.setEditable(false);
         }
 
         workstationLookup.setFilterValue(filter);
-    }
-
-    public void setWorkstationsLookup(final ViewDefinitionState view) {
-        clearWorkstationsField(view);
-        setWorkstationsCriteriaModifiers(view);
     }
 
     public void clearWorkstationsField(final ViewDefinitionState view) {
@@ -187,7 +159,7 @@ public class OperationDetailsHooks {
 
         if (AssignedToOperation.WORKSTATIONS.getStringValue().equals(assignedToOperationValue)) {
             changeEnabledLookups(view, L_WORKSTATIONS_TAB_LOOKUPS,
-                    Lists.newArrayList(OperationFields.DIVISION, OperationFields.PRODUCTION_LINE));
+                    Lists.newArrayList(OperationFields.DIVISION));
             workstations.setEnabled(true);
             enableRibbonItem(view, !workstations.getEntities().isEmpty());
         } else if (AssignedToOperation.WORKSTATIONS_TYPE.getStringValue().equals(assignedToOperationValue)) {
@@ -198,7 +170,7 @@ public class OperationDetailsHooks {
     }
 
     private void changeEnabledLookups(final ViewDefinitionState view, final List<String> fields,
-            final List<String> enabledFields) {
+                                      final List<String> enabledFields) {
         for (String field : fields) {
             LookupComponent lookupComponent = (LookupComponent) view.getComponentByReference(field);
             lookupComponent.setEnabled(enabledFields.contains(field));

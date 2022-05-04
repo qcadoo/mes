@@ -99,8 +99,8 @@
                         </component>
                     </layoutElement>
                     <layoutElement column="1" row="2">
-                        <component type="input" name="standardPerformanceTechnology" defaultEnabled="false"
-                                   field="standardPerformanceTechnology" reference="standardPerformanceTechnology">
+                        <component type="input" name="standardPerformance" defaultEnabled="false"
+                                   field="standardPerformance" reference="standardPerformance">
                             <option type="alignment" value="right"/>
                             <option type="labelWidth" value="35" />
 

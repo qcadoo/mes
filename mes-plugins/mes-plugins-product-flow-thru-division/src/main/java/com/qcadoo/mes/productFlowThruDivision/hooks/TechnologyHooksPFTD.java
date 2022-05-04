@@ -25,10 +25,13 @@ package com.qcadoo.mes.productFlowThruDivision.hooks;
 
 import static com.qcadoo.model.api.search.SearchRestrictions.eq;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
+import com.google.common.collect.Lists;
 import com.qcadoo.mes.productFlowThruDivision.constants.*;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -38,6 +41,7 @@ import com.qcadoo.mes.productionCounting.constants.TechnologyFieldsPC;
 import com.qcadoo.mes.productionCounting.constants.TypeOfProductionRecording;
 import com.qcadoo.mes.technologies.constants.OperationProductOutComponentFields;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
+import com.qcadoo.mes.technologies.constants.TechnologyFields;
 import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
@@ -88,22 +92,29 @@ public class TechnologyHooksPFTD {
 
     public void onSave(final DataDefinition technologyDD, final Entity technology) {
         cleanUpOnRangeChange(technologyDD, technology);
-        cleanUpOnProductionRecordingTypeChangeToCumulated(technologyDD, technology);
+        cleanUpOnProductionRecordingTypeChange(technologyDD, technology);
         fillDivision(technologyDD, technology);
-        fillProductionLine(technologyDD, technology);
     }
 
-    private void cleanUpOnProductionRecordingTypeChangeToCumulated(final DataDefinition technologyDD, final Entity technology) {
+    private void cleanUpOnProductionRecordingTypeChange(final DataDefinition technologyDD, final Entity technology) {
         if (Objects.isNull(technology.getId())) {
             return;
         }
 
         Entity technologyDB = technologyDD.get(technology.getId());
 
-        if (TypeOfProductionRecording.CUMULATED.getStringValue()
-                .equals(technology.getStringField(TechnologyFieldsPC.TYPE_OF_PRODUCTION_RECORDING))
-                && !technology.getStringField(TechnologyFieldsPC.TYPE_OF_PRODUCTION_RECORDING)
-                        .equals(technologyDB.getStringField(TechnologyFieldsPC.TYPE_OF_PRODUCTION_RECORDING))) {
+        String typeOfProductionRecording = technology.getStringField(TechnologyFieldsPC.TYPE_OF_PRODUCTION_RECORDING);
+        String typeOfProductionRecordingDB = technologyDB.getStringField(TechnologyFieldsPC.TYPE_OF_PRODUCTION_RECORDING);
+        if (Objects.isNull(typeOfProductionRecordingDB) && Objects.nonNull(typeOfProductionRecording)
+                || Objects.nonNull(typeOfProductionRecordingDB) && Objects.isNull(typeOfProductionRecording)
+                || Objects.nonNull(typeOfProductionRecording) && !typeOfProductionRecording.equals(typeOfProductionRecordingDB)) {
+            List<Entity> tocs = getTechnologyOperationComponents(technology);
+
+            clearWorkstations(tocs);
+        }
+
+        if (TypeOfProductionRecording.CUMULATED.getStringValue().equals(typeOfProductionRecording)
+                && !typeOfProductionRecording.equals(typeOfProductionRecordingDB)) {
             List<Entity> opocs = findOPOCs(technology.getId());
 
             for (Entity opoc : opocs) {
@@ -118,43 +129,19 @@ public class TechnologyHooksPFTD {
         }
     }
 
+    private void clearWorkstations(List<Entity> tocs) {
+        for (Entity toc : tocs) {
+            toc.setField(TechnologyOperationComponentFields.WORKSTATIONS, null);
+            toc.getDataDefinition().save(toc);
+        }
+    }
+
     private void cleanOperationProductProductionFlow(final Entity operationProduct) {
         operationProduct.setField(OperationProductInComponentFieldsPFTD.PRODUCTION_FLOW,
                 ProductionFlowComponent.WITHIN_THE_PROCESS.getStringValue());
         operationProduct.setField(OperationProductInComponentFieldsPFTD.PRODUCTS_FLOW_LOCATION, null);
 
         operationProduct.getDataDefinition().fastSave(operationProduct);
-    }
-
-    private void fillProductionLine(final DataDefinition technologyDD, final Entity technology) {
-        if (Objects.nonNull(technology.getId())) {
-            if (technology.getField(TechnologyFieldsPFTD.RANGE).equals(Range.ONE_DIVISION.getStringValue())) {
-                Entity technologyDB = technologyDD.get(technology.getId());
-                Entity productionLineDb = technologyDB.getBelongsToField(TechnologyFieldsPFTD.PRODUCTION_LINE);
-
-                if (Objects.isNull(technology.getBelongsToField(TechnologyFieldsPFTD.PRODUCTION_LINE))) {
-                    List<Entity> tocs = getTechnologyOperationComponents(technology);
-
-                    for (Entity toc : tocs) {
-                        if (!toc.getBooleanField(TechnologyOperationComponentFieldsPFTD.PRODUCTION_LINE_CHANGE)) {
-                            toc.setField(TechnologyOperationComponentFields.PRODUCTION_LINE, null);
-                            toc.getDataDefinition().save(toc);
-                        }
-                    }
-                } else if (Objects.isNull(productionLineDb) || !technology.getBelongsToField(TechnologyFieldsPFTD.PRODUCTION_LINE)
-                        .getId().equals(productionLineDb.getId())) {
-                    List<Entity> tocs = getTechnologyOperationComponents(technology);
-
-                    for (Entity toc : tocs) {
-                        toc.setField(TechnologyFieldsPFTD.PRODUCTION_LINE,
-                                technology.getBelongsToField(TechnologyFieldsPFTD.PRODUCTION_LINE));
-                        toc.getDataDefinition().save(toc);
-                    }
-                }
-            } else {
-                technology.setField(TechnologyFieldsPFTD.PRODUCTION_LINE, null);
-            }
-        }
     }
 
     private void fillDivision(final DataDefinition technologyDD, final Entity technology) {
@@ -168,6 +155,21 @@ public class TechnologyHooksPFTD {
                 }
             } else {
                 technology.setField(TechnologyFieldsPFTD.DIVISION, null);
+            }
+            Entity technologyDB = technologyDD.get(technology.getId());
+            if (technology.getBelongsToField(TechnologyFieldsPFTD.DIVISION) != null
+                    && technologyDB.getBelongsToField(TechnologyFieldsPFTD.DIVISION) == null
+                    || technology.getBelongsToField(TechnologyFieldsPFTD.DIVISION) == null
+                    && technologyDB.getBelongsToField(TechnologyFieldsPFTD.DIVISION) != null
+                    || technology.getBelongsToField(TechnologyFieldsPFTD.DIVISION) != null
+                    && !technology.getBelongsToField(TechnologyFieldsPFTD.DIVISION).equals(technologyDB.getBelongsToField(TechnologyFieldsPFTD.DIVISION))) {
+                Long[] productionLinesIds = technology.getHasManyField(TechnologyFields.PRODUCTION_LINES).stream().map(Entity::getId).toArray(Long[]::new);
+                if (productionLinesIds.length > 0) {
+                    getTechnologyProductionLineDD().delete(productionLinesIds);
+                }
+                List<Entity> tocs = getTechnologyOperationComponents(technology);
+
+                clearWorkstations(tocs);
             }
         }
     }
@@ -276,6 +278,11 @@ public class TechnologyHooksPFTD {
     private DataDefinition getOpocDD() {
         return dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
                 TechnologiesConstants.MODEL_OPERATION_PRODUCT_OUT_COMPONENT);
+    }
+
+    private DataDefinition getTechnologyProductionLineDD() {
+        return dataDefinitionService.get(ProductFlowThruDivisionConstants.PLUGIN_IDENTIFIER,
+                ProductFlowThruDivisionConstants.MODEL_TECHNOLOGY_PRODUCTION_LINE);
     }
 
 }

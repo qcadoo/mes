@@ -65,8 +65,6 @@
 
         <belongsTo name="division" model="division" plugin="basic"/>
 
-        <belongsTo name="productionLine" model="productionLine" plugin="productionLines"/>
-
         <integer name="quantityOfWorkstations" default="1" required="true">
             <validatesRange from="1"/>
         </integer>

@@ -36,6 +36,7 @@ import com.qcadoo.mes.technologies.constants.ProductToProductGroupFields;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
 import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
+import com.qcadoo.mes.technologies.constants.TechnologyProductionLineFields;
 import com.qcadoo.mes.technologies.states.constants.TechnologyState;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
@@ -124,8 +125,8 @@ public class TechnologyService {
             if (maybeOpoc.isPresent()) {
                 Entity opoc = maybeOpoc.get();
                 Entity product = opoc.getBelongsToField(OperationProductOutComponentFields.PRODUCT);
-                return "- <b>"+ product.getStringField(ProductFields.NAME) +" <span style=color:#68bb25>("
-                        + product.getStringField(ProductFields.NAME) +")</span> - </b> "
+                return "- <b>" + product.getStringField(ProductFields.NAME) + " <span style=color:#68bb25>("
+                        + product.getStringField(ProductFields.NAME) + ")</span> - </b> "
                         + opoc.getDecimalField(OperationProductOutComponentFields.QUANTITY).stripTrailingZeros().toPlainString() + " "
                         + product.getStringField(ProductFields.UNIT);
             } else {
@@ -242,7 +243,7 @@ public class TechnologyService {
     }
 
     private SearchCriteriaBuilder createSearchCriteria(final Entity product, final Entity technology,
-            final ProductDirection direction) {
+                                                       final ProductDirection direction) {
         String model = direction.equals(ProductDirection.IN) ? TechnologiesConstants.MODEL_OPERATION_PRODUCT_IN_COMPONENT
                 : TechnologiesConstants.MODEL_OPERATION_PRODUCT_OUT_COMPONENT;
 
@@ -292,7 +293,7 @@ public class TechnologyService {
     }
 
     public boolean invalidateIfAlreadyInTheSameOperation(final DataDefinition operationProductComponentDD,
-            final Entity operationProductComponent) {
+                                                         final Entity operationProductComponent) {
         Entity technologyInputProductType = operationProductComponent
                 .getBelongsToField(OperationProductInComponentFields.TECHNOLOGY_INPUT_PRODUCT_TYPE);
         Entity product = operationProductComponent.getBelongsToField(L_PRODUCT);
@@ -413,7 +414,7 @@ public class TechnologyService {
     /**
      * @param operationComponent
      * @return Quantity of the output product associated with this operationComponent. Assuming operation can have only one
-     *         product/intermediate.
+     * product/intermediate.
      */
     public BigDecimal getProductCountForOperationComponent(final Entity operationComponent) {
         return getMainOutputProductComponent(operationComponent).getDecimalField(L_QUANTITY);
@@ -421,9 +422,8 @@ public class TechnologyService {
 
     /**
      * Check if technology with given id is external synchronized.
-     * 
-     * @param technologyId
-     *            identifier of the queried technology
+     *
+     * @param technologyId identifier of the queried technology
      * @return true if technology is external synchronized
      */
     public boolean isExternalSynchronized(final Long technologyId) {
@@ -524,6 +524,29 @@ public class TechnologyService {
         }
         return products.stream().sorted(Comparator.comparing(e -> e.getStringField(ProductFields.NAME)))
                 .collect(Collectors.toList());
+    }
+
+    public Optional<BigDecimal> getStandardPerformance(Entity technology) {
+        return technology.getHasManyField(TechnologyFields.PRODUCTION_LINES).stream()
+                .filter(e -> e.getBooleanField(TechnologyProductionLineFields.MASTER))
+                .map(e -> e.getDecimalField(TechnologyProductionLineFields.STANDARD_PERFORMANCE)).findFirst();
+    }
+
+    public Optional<BigDecimal> getStandardPerformance(Entity technology, Entity productionLine) {
+        return technology.getHasManyField(TechnologyFields.PRODUCTION_LINES).stream()
+                .filter(e -> e.getBelongsToField(TechnologyProductionLineFields.PRODUCTION_LINE).getId().equals(productionLine.getId()))
+                .map(e -> e.getDecimalField(TechnologyProductionLineFields.STANDARD_PERFORMANCE)).findFirst();
+    }
+
+    public Optional<Entity> getProductionLine(Entity technology) {
+        return technology.getHasManyField(TechnologyFields.PRODUCTION_LINES).stream()
+                .filter(e -> e.getBooleanField(TechnologyProductionLineFields.MASTER))
+                .map(e -> e.getBelongsToField(TechnologyProductionLineFields.PRODUCTION_LINE)).findFirst();
+    }
+
+    public Optional<Entity> getMasterTechnologyProductionLine(Entity technology) {
+        return technology.getHasManyField(TechnologyFields.PRODUCTION_LINES).stream()
+                .filter(e -> e.getBooleanField(TechnologyProductionLineFields.MASTER)).findFirst();
     }
 
     private DataDefinition getProductBySizeGroupDD() {

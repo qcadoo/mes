@@ -39,7 +39,7 @@
         <string name="technologyGroupNumber" />
         <string name="divisionName" />
         <string name="generatorName" />
-        <decimal name="standardPerformanceTechnology">
+        <decimal name="standardPerformance">
             <validatesRange from="0" exclusively="true"/>
             <validatesUnscaledValue max="7"/>
             <validatesScale max="5"/>

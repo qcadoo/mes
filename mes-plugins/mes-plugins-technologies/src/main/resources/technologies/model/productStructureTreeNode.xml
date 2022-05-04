@@ -46,7 +46,7 @@
 		<belongsTo name="mainTechnology" model="technology" />
 		<belongsTo name="division" model="division" plugin="basic"/>
 		<belongsTo name="technologyGroup" plugin="technologies" model="technologyGroup"/>
-		<decimal name="standardPerformanceTechnology">
+		<decimal name="standardPerformance">
 			<validatesRange from="0" exclusively="true"/>
 			<validatesUnscaledValue max="7"/>
 			<validatesScale max="5"/>
