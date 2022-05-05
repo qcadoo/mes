@@ -97,4 +97,6 @@ public final class ParameterFieldsO {
 
     public static final String INCLUDE_TPZ_S = "includeTpzS";
 
+    public static final String PROMPT_DEFAULT_LINE_FROM_TECHNOLOGY = "promptDefaultLineFromTechnology";
+
 }

@@ -128,6 +128,9 @@
                            cascade="delete"/>
         </model:model-field>
         <model:model-field plugin="basic" model="parameter">
+            <model:boolean name="promptDefaultLineFromTechnology" default="false"/>
+        </model:model-field>
+        <model:model-field plugin="basic" model="parameter">
             <model:boolean name="canChangeProdLineForAcceptedOrders" default="false"/>
         </model:model-field>
 

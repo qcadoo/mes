@@ -44,6 +44,7 @@ import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.mes.orders.constants.ParameterFieldsO;
 import com.qcadoo.mes.orders.util.AdditionalUnitService;
 import com.qcadoo.mes.productionLines.constants.ParameterFieldsPL;
+import com.qcadoo.mes.technologies.TechnologyService;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
 import com.qcadoo.mes.technologies.states.constants.TechnologyStateStringValues;
 import com.qcadoo.model.api.DataDefinition;
@@ -56,8 +57,6 @@ public class OrderXlsxImportService extends XlsxImportService {
     private static final String L_QCADOO_VIEW_VALIDATE_FIELD_ERROR_CUSTOM = "qcadooView.validate.field.error.custom";
 
     private static final String L_DIVISION = "division";
-
-    private static final String L_PRODUCTION_LINE = "productionLine";
 
     private static final String L_RANGE = "range";
 
@@ -192,9 +191,9 @@ public class OrderXlsxImportService extends XlsxImportService {
         boolean fillOrderDescriptionBasedOnProductDescription = parameter
                 .getBooleanField(ParameterFieldsO.FILL_ORDER_DESCRIPTION_BASED_ON_PRODUCT_DESCRIPTION);
 
-        if(Objects.isNull(description)) {
+        if (Objects.isNull(description)) {
             StringBuilder descriptionBuilder = new StringBuilder();
-            if (fillOrderDescriptionBasedOnTechnology && Objects.nonNull(technology)){
+            if (fillOrderDescriptionBasedOnTechnology && Objects.nonNull(technology)) {
                 descriptionBuilder.append(technology.getStringField(TechnologyFields.DESCRIPTION));
             }
             if (fillOrderDescriptionBasedOnProductDescription && Objects.nonNull(product)) {
@@ -246,18 +245,9 @@ public class OrderXlsxImportService extends XlsxImportService {
 
     private void validateProductionLine(final Entity order, final DataDefinition orderDD) {
         Entity productionLine = order.getBelongsToField(OrderFields.PRODUCTION_LINE);
-        Entity technology = order.getBelongsToField(OrderFields.TECHNOLOGY);
 
         if (Objects.isNull(productionLine)) {
-            if (Objects.isNull(technology)) {
-                productionLine = parameterService.getParameter().getBelongsToField(ParameterFieldsPL.DEFAULT_PRODUCTION_LINE);
-            } else {
-                productionLine = technology.getBelongsToField(L_PRODUCTION_LINE);
-
-                if (Objects.isNull(productionLine)) {
-                    productionLine = parameterService.getParameter().getBelongsToField(ParameterFieldsPL.DEFAULT_PRODUCTION_LINE);
-                }
-            }
+            productionLine = orderService.getProductionLine(order.getBelongsToField(OrderFields.TECHNOLOGY));
 
             order.setField(OrderFields.PRODUCTION_LINE, productionLine);
         }

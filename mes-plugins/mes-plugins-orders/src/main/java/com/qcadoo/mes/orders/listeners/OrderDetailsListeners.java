@@ -131,16 +131,15 @@ public class OrderDetailsListeners {
     public void onTechnologyChange(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         setDefaultNameUsingTechnology(view, state, args);
 
-        LookupComponent productionLineLookup = (LookupComponent) view.getComponentByReference(OrderFields.PRODUCTION_LINE);
         LookupComponent technologyLookup = (LookupComponent) view.getComponentByReference(OrderFields.TECHNOLOGY_PROTOTYPE);
-        LookupComponent divisionLookup = (LookupComponent) view.getComponentByReference(OrderFields.DIVISION);
-
         Entity technology = technologyLookup.getEntity();
-        Entity defaultProductionLine = orderService.getDefaultProductionLine();
 
         if (Objects.nonNull(technology)) {
-            orderDetailsHooks.fillProductionLine(productionLineLookup, technology, defaultProductionLine);
-            orderDetailsHooks.fillDivision(divisionLookup, technology, defaultProductionLine);
+            LookupComponent productionLineLookup = (LookupComponent) view.getComponentByReference(OrderFields.PRODUCTION_LINE);
+            LookupComponent divisionLookup = (LookupComponent) view.getComponentByReference(OrderFields.DIVISION);
+            Entity productionLine = orderService.getProductionLine(technology);
+            orderDetailsHooks.fillProductionLine(productionLineLookup, productionLine);
+            orderDetailsHooks.fillDivision(divisionLookup, technology, productionLine);
         }
     }
 
@@ -178,10 +177,6 @@ public class OrderDetailsListeners {
 
         Locale locale = state.getLocale();
         nameField.setFieldValue(orderService.makeDefaultName(product, technology, locale));
-    }
-
-    public final void fillProductionLine(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        orderDetailsHooks.fillProductionLine(view);
     }
 
     public void showCopyOfTechnology(final ViewDefinitionState view, final ComponentState state, final String[] args) {

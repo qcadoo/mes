@@ -101,8 +101,6 @@ public class OrderDetailsHooks {
 
     private static final String L_RANGE = "range";
 
-    private static final String L_PRODUCT_FLOW_THRU_DIVISION = "productFlowThruDivision";
-
     private static final String L_ONE_DIVISION = "01oneDivision";
 
     private static final String L_ORDER_DETAILS_ACTIONS = "orderDetailsActions";
@@ -235,34 +233,28 @@ public class OrderDetailsHooks {
 
     public final void fillProductionLine(final ViewDefinitionState view) {
         FormComponent orderForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
-        LookupComponent productionLineLookup = (LookupComponent) view.getComponentByReference(OrderFields.PRODUCTION_LINE);
-        LookupComponent defaultTechnologyLookup = (LookupComponent) view
-                .getComponentByReference(OrderFields.TECHNOLOGY_PROTOTYPE);
 
-        Entity technology = defaultTechnologyLookup.getEntity();
+        if (Objects.isNull(orderForm.getEntityId()) && view.isViewAfterRedirect()) {
+            LookupComponent productionLineLookup = (LookupComponent) view.getComponentByReference(OrderFields.PRODUCTION_LINE);
+            LookupComponent technologyLookup = (LookupComponent) view
+                    .getComponentByReference(OrderFields.TECHNOLOGY_PROTOTYPE);
+            Entity technology = technologyLookup.getEntity();
+            Entity productionLine = orderService.getProductionLine(technology);
 
-        if (Objects.isNull(orderForm.getEntityId()) && Objects.isNull(productionLineLookup.getFieldValue())) {
-            Entity defaultProductionLine = orderService.getDefaultProductionLine();
-
-            fillProductionLine(productionLineLookup, technology, defaultProductionLine);
+            fillProductionLine(productionLineLookup, productionLine);
         }
     }
 
-    public void fillProductionLine(final LookupComponent productionLineLookup, final Entity technology,
-            final Entity defaultProductionLine) {
-        if (Objects.nonNull(technology) && PluginUtils.isEnabled(L_PRODUCT_FLOW_THRU_DIVISION)
-                && L_ONE_DIVISION.equals(technology.getField(L_RANGE))
-                && Objects.nonNull(technology.getBelongsToField(OrderFields.PRODUCTION_LINE))) {
-            productionLineLookup.setFieldValue(technology.getBelongsToField(OrderFields.PRODUCTION_LINE).getId());
-            productionLineLookup.requestComponentUpdateState();
-        } else if (Objects.nonNull(defaultProductionLine)) {
+    public void fillProductionLine(final LookupComponent productionLineLookup,
+                                   final Entity defaultProductionLine) {
+        if (Objects.nonNull(defaultProductionLine)) {
             productionLineLookup.setFieldValue(defaultProductionLine.getId());
             productionLineLookup.requestComponentUpdateState();
         }
     }
 
     public void fillDivision(final LookupComponent divisionLookup, final Entity technology, final Entity defaultProductionLine) {
-        if (Objects.nonNull(technology) && PluginUtils.isEnabled(L_PRODUCT_FLOW_THRU_DIVISION)
+        if (Objects.nonNull(technology) && PluginUtils.isEnabled(OrderService.L_PRODUCT_FLOW_THRU_DIVISION)
                 && L_ONE_DIVISION.equals(technology.getField(L_RANGE))
                 && Objects.nonNull(technology.getBelongsToField(L_DIVISION))) {
             divisionLookup.setFieldValue(technology.getBelongsToField(L_DIVISION).getId());
@@ -494,7 +486,7 @@ public class OrderDetailsHooks {
     }
 
     private void changedEnabledAwesomeDynamicListComponents(final ViewDefinitionState view, final List<String> references,
-            final boolean enabled) {
+                                                            final boolean enabled) {
         for (String reference : references) {
             AwesomeDynamicListComponent awesomeDynamicListComponent = (AwesomeDynamicListComponent) view
                     .getComponentByReference(reference);

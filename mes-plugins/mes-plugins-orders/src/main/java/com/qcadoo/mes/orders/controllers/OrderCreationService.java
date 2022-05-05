@@ -111,10 +111,6 @@ public class OrderCreationService {
 
     private static final String L_FLOW_FILLED = "flowFilled";
 
-    private static final String L_PRODUCTS_INPUT_LOCATION = "productsInputLocation";
-
-    private static final String L_COMPONENTS_LOCATION = "componentsLocation";
-
     private static final String L_PRODUCTION_COUNTING_QUANTITIES = "productionCountingQuantities";
 
     private static final String L_OPERATION = "operation";
@@ -148,9 +144,6 @@ public class OrderCreationService {
     private TechnologyNameAndNumberGenerator technologyNameAndNumberGenerator;
 
     @Autowired
-    private TechnologyService technologyService;
-
-    @Autowired
     private TranslationService translationService;
 
     @Autowired
@@ -173,12 +166,12 @@ public class OrderCreationService {
             }
         }
         Entity product = getProduct(orderCreationRequest.getProductId());
-        Entity productionLine = getProductionLine(orderCreationRequest.getProductionLineId());
         Either<String, Entity> isTechnology = getOrCreateTechnology(orderCreationRequest);
         if (isTechnology.isLeft()) {
             return new OrderCreationResponse(isTechnology.getLeft());
         }
         Entity technology = isTechnology.getRight();
+        Entity productionLine = getProductionLine(orderCreationRequest.getProductionLineId(), technology);
         OrderCreationResponse response = new OrderCreationResponse(OrderCreationResponse.StatusCode.OK);
 
         Entity order = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).create();
@@ -625,13 +618,13 @@ public class OrderCreationService {
         return Either.right(technology);
     }
 
-    private Entity getProductionLine(Long productionLineId) {
+    private Entity getProductionLine(Long productionLineId, Entity technology) {
         if (Objects.nonNull(productionLineId)) {
             return dataDefinitionService
                     .get(ProductionLinesConstants.PLUGIN_IDENTIFIER, ProductionLinesConstants.MODEL_PRODUCTION_LINE)
                     .get(productionLineId);
         } else {
-            return parameterService.getParameter().getBelongsToField(ParameterFieldsPL.DEFAULT_PRODUCTION_LINE);
+            return orderService.getProductionLine(technology);
         }
     }
 

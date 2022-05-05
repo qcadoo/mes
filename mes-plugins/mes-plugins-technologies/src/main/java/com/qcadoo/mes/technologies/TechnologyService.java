@@ -46,6 +46,7 @@ import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchQueryBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.plugin.api.PluginAccessor;
+import com.qcadoo.plugin.api.PluginUtils;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
@@ -91,6 +92,8 @@ public class TechnologyService {
     private static final String L_DOT = ".";
 
     private static final String L_ID = "id";
+
+    private static final String L_PRODUCT_FLOW_THRU_DIVISION = "productFlowThruDivision";
 
     private static final String IS_SYNCHRONIZED_QUERY = String.format(
             "SELECT t.id as id, t.%s as %s from #%s_%s t where t.id = :technologyId", TechnologyFields.EXTERNAL_SYNCHRONIZED,
@@ -281,11 +284,11 @@ public class TechnologyService {
             return L_01_COMPONENT;
         }
 
-        if (goesIn && goesOut) {
+        if (goesIn) {
             return L_02_INTERMEDIATE;
         }
 
-        if (!goesIn && goesOut) {
+        if (goesOut) {
             return L_04_WASTE;
         }
 
@@ -527,26 +530,38 @@ public class TechnologyService {
     }
 
     public Optional<BigDecimal> getStandardPerformance(Entity technology) {
-        return technology.getHasManyField(TechnologyFields.PRODUCTION_LINES).stream()
-                .filter(e -> e.getBooleanField(TechnologyProductionLineFields.MASTER))
-                .map(e -> e.getDecimalField(TechnologyProductionLineFields.STANDARD_PERFORMANCE)).findFirst();
+        if (PluginUtils.isEnabled(L_PRODUCT_FLOW_THRU_DIVISION)) {
+            return technology.getHasManyField(TechnologyFields.PRODUCTION_LINES).stream()
+                    .filter(e -> e.getBooleanField(TechnologyProductionLineFields.MASTER))
+                    .map(e -> e.getDecimalField(TechnologyProductionLineFields.STANDARD_PERFORMANCE)).findFirst();
+        }
+        return Optional.empty();
     }
 
     public Optional<BigDecimal> getStandardPerformance(Entity technology, Entity productionLine) {
-        return technology.getHasManyField(TechnologyFields.PRODUCTION_LINES).stream()
-                .filter(e -> e.getBelongsToField(TechnologyProductionLineFields.PRODUCTION_LINE).getId().equals(productionLine.getId()))
-                .map(e -> e.getDecimalField(TechnologyProductionLineFields.STANDARD_PERFORMANCE)).findFirst();
+        if (PluginUtils.isEnabled(L_PRODUCT_FLOW_THRU_DIVISION)) {
+            return technology.getHasManyField(TechnologyFields.PRODUCTION_LINES).stream()
+                    .filter(e -> e.getBelongsToField(TechnologyProductionLineFields.PRODUCTION_LINE).getId().equals(productionLine.getId()))
+                    .map(e -> e.getDecimalField(TechnologyProductionLineFields.STANDARD_PERFORMANCE)).findFirst();
+        }
+        return Optional.empty();
     }
 
     public Optional<Entity> getProductionLine(Entity technology) {
-        return technology.getHasManyField(TechnologyFields.PRODUCTION_LINES).stream()
-                .filter(e -> e.getBooleanField(TechnologyProductionLineFields.MASTER))
-                .map(e -> e.getBelongsToField(TechnologyProductionLineFields.PRODUCTION_LINE)).findFirst();
+        if (PluginUtils.isEnabled(L_PRODUCT_FLOW_THRU_DIVISION)) {
+            return technology.getHasManyField(TechnologyFields.PRODUCTION_LINES).stream()
+                    .filter(e -> e.getBooleanField(TechnologyProductionLineFields.MASTER))
+                    .map(e -> e.getBelongsToField(TechnologyProductionLineFields.PRODUCTION_LINE)).findFirst();
+        }
+        return Optional.empty();
     }
 
     public Optional<Entity> getMasterTechnologyProductionLine(Entity technology) {
-        return technology.getHasManyField(TechnologyFields.PRODUCTION_LINES).stream()
-                .filter(e -> e.getBooleanField(TechnologyProductionLineFields.MASTER)).findFirst();
+        if (PluginUtils.isEnabled(L_PRODUCT_FLOW_THRU_DIVISION)) {
+            return technology.getHasManyField(TechnologyFields.PRODUCTION_LINES).stream()
+                    .filter(e -> e.getBooleanField(TechnologyProductionLineFields.MASTER)).findFirst();
+        }
+        return Optional.empty();
     }
 
     private DataDefinition getProductBySizeGroupDD() {

@@ -41,9 +41,11 @@ import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
+import com.qcadoo.mes.orders.constants.ParameterFieldsO;
 import com.qcadoo.mes.orders.states.constants.OrderState;
 import com.qcadoo.mes.productionLines.constants.ParameterFieldsPL;
 import com.qcadoo.mes.productionLines.constants.ProductionLineFields;
+import com.qcadoo.mes.technologies.TechnologyService;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
 import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
 import com.qcadoo.model.api.DataDefinition;
@@ -51,6 +53,7 @@ import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchOrders;
 import com.qcadoo.model.api.search.SearchRestrictions;
+import com.qcadoo.plugin.api.PluginUtils;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.CheckBoxComponent;
 import com.qcadoo.view.api.components.FieldComponent;
@@ -78,6 +81,9 @@ public class OrderServiceImpl implements OrderService {
     @Autowired
     private TechnologyServiceO technologyServiceO;
 
+    @Autowired
+    private TechnologyService technologyService;
+
     @Override
     public Entity getOrder(final Long orderId) {
         return getOrderDataDefinition().get(orderId);
@@ -90,11 +96,6 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public boolean isOrderStarted(final String state) {
         return L_ORDER_STARTED_STATES.contains(state);
-    }
-
-    @Override
-    public Entity getDefaultProductionLine() {
-        return parameterService.getParameter().getBelongsToField(ParameterFieldsPL.DEFAULT_PRODUCTION_LINE);
     }
 
     @Override
@@ -123,12 +124,12 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public Entity getProductionLine(final Entity technology) {
-        Entity productionLine = null;
-        if (Objects.nonNull(technology)) {
-            productionLine = technology.getBelongsToField("productionLine");
-        }
-        if (Objects.isNull(productionLine)) {
-            productionLine = getDefaultProductionLine();
+        Entity parameter = parameterService.getParameter();
+        Entity defaultProductionLine = parameter.getBelongsToField(ParameterFieldsPL.DEFAULT_PRODUCTION_LINE);
+        Entity productionLine = defaultProductionLine;
+        if (Objects.nonNull(technology) && parameter.getBooleanField(ParameterFieldsO.PROMPT_DEFAULT_LINE_FROM_TECHNOLOGY)
+                && PluginUtils.isEnabled(L_PRODUCT_FLOW_THRU_DIVISION)) {
+            productionLine = technologyService.getProductionLine(technology).orElse(defaultProductionLine);
         }
         return productionLine;
     }
@@ -140,9 +141,9 @@ public class OrderServiceImpl implements OrderService {
             division = technology.getBelongsToField(L_DIVISION);
         }
         if (Objects.isNull(division)) {
-            Entity defaultProductionLine = getDefaultProductionLine();
-            if (Objects.nonNull(defaultProductionLine)) {
-                List<Entity> divisions = defaultProductionLine.getManyToManyField(ProductionLineFields.DIVISIONS);
+            Entity productionLine = getProductionLine(technology);
+            if (Objects.nonNull(productionLine)) {
+                List<Entity> divisions = productionLine.getManyToManyField(ProductionLineFields.DIVISIONS);
                 if (divisions.size() == 1) {
                     division = divisions.get(0);
                 }
@@ -154,7 +155,7 @@ public class OrderServiceImpl implements OrderService {
     // FIXME - this method doesn't have anything in common with production orders..
     @Override
     public void changeFieldState(final ViewDefinitionState view, final String booleanFieldComponentName,
-            final String fieldComponentName) {
+                                 final String fieldComponentName) {
         CheckBoxComponent booleanCheckBox = (CheckBoxComponent) view.getComponentByReference(booleanFieldComponentName);
 
         FieldComponent fieldComponent = (FieldComponent) view.getComponentByReference(fieldComponentName);
@@ -272,7 +273,7 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public String buildOrderDescription(Entity masterOrder, Entity technology, Entity product,
-            boolean fillOrderDescriptionBasedOnTechnology, boolean fillOrderDescriptionBasedOnProductDescription) {
+                                        boolean fillOrderDescriptionBasedOnTechnology, boolean fillOrderDescriptionBasedOnProductDescription) {
         StringBuilder builder = new StringBuilder();
         if (masterOrder != null) {
             String poNumber = "";
@@ -308,7 +309,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     private void buildMOTechnologyDescription(Entity masterOrder, Entity technology,
-            boolean fillOrderDescriptionBasedOnTechnology, StringBuilder builder) {
+                                              boolean fillOrderDescriptionBasedOnTechnology, StringBuilder builder) {
         if (fillOrderDescriptionBasedOnTechnology && technology == null && masterOrder.getBelongsToField("technology") != null) {
             String technologyDescription = masterOrder.getBelongsToField("technology")
                     .getStringField(TechnologyFields.DESCRIPTION);
@@ -319,7 +320,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     private void buildMOProductDescription(Entity masterOrder, Entity product,
-            boolean fillOrderDescriptionBasedOnProductDescription, StringBuilder builder) {
+                                           boolean fillOrderDescriptionBasedOnProductDescription, StringBuilder builder) {
         if (fillOrderDescriptionBasedOnProductDescription && product == null
                 && masterOrder.getBelongsToField("product") != null) {
             String productDescription = masterOrder.getBelongsToField("product").getStringField(ProductFields.DESCRIPTION);
@@ -333,7 +334,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     private void buildTechnologyDescription(Entity technology, boolean fillOrderDescriptionBasedOnTechnology,
-            StringBuilder builder) {
+                                            StringBuilder builder) {
         if (fillOrderDescriptionBasedOnTechnology && technology != null) {
             String technologyDescription = technology.getStringField(TechnologyFields.DESCRIPTION);
             if (technologyDescription != null) {
@@ -343,7 +344,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     private void buildProductDescription(Entity product, boolean fillOrderDescriptionBasedOnProductDescription,
-            StringBuilder builder) {
+                                         StringBuilder builder) {
         if (fillOrderDescriptionBasedOnProductDescription && product != null) {
             String productDescription = product.getStringField(ProductFields.DESCRIPTION);
             if (productDescription != null) {

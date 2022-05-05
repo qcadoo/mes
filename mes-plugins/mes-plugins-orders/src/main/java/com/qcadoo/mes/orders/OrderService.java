@@ -32,6 +32,8 @@ import com.qcadoo.view.api.ViewDefinitionState;
 
 public interface OrderService {
 
+    String L_PRODUCT_FLOW_THRU_DIVISION = "productFlowThruDivision";
+
     /**
      * Gets order
      * 
@@ -51,13 +53,6 @@ public interface OrderService {
      * @return boolean
      */
     boolean isOrderStarted(final String state);
-
-    /**
-     * Gets default production line
-     * 
-     * @return defaultProductionLine
-     */
-    Entity getDefaultProductionLine();
 
     /**
      * Makes default name
