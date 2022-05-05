@@ -157,12 +157,7 @@ public class TechnologyHooksPFTD {
                 technology.setField(TechnologyFieldsPFTD.DIVISION, null);
             }
             Entity technologyDB = technologyDD.get(technology.getId());
-            if (technology.getBelongsToField(TechnologyFieldsPFTD.DIVISION) != null
-                    && technologyDB.getBelongsToField(TechnologyFieldsPFTD.DIVISION) == null
-                    || technology.getBelongsToField(TechnologyFieldsPFTD.DIVISION) == null
-                    && technologyDB.getBelongsToField(TechnologyFieldsPFTD.DIVISION) != null
-                    || technology.getBelongsToField(TechnologyFieldsPFTD.DIVISION) != null
-                    && !technology.getBelongsToField(TechnologyFieldsPFTD.DIVISION).equals(technologyDB.getBelongsToField(TechnologyFieldsPFTD.DIVISION))) {
+            if (isDivisionChanged(technology, technologyDB)) {
                 Long[] productionLinesIds = technology.getHasManyField(TechnologyFields.PRODUCTION_LINES).stream().map(Entity::getId).toArray(Long[]::new);
                 if (productionLinesIds.length > 0) {
                     getTechnologyProductionLineDD().delete(productionLinesIds);
@@ -172,6 +167,15 @@ public class TechnologyHooksPFTD {
                 clearWorkstations(tocs);
             }
         }
+    }
+
+    private boolean isDivisionChanged(Entity technology, Entity technologyDB) {
+        return technology.getBelongsToField(TechnologyFieldsPFTD.DIVISION) != null
+                && technologyDB.getBelongsToField(TechnologyFieldsPFTD.DIVISION) == null
+                || technology.getBelongsToField(TechnologyFieldsPFTD.DIVISION) == null
+                && technologyDB.getBelongsToField(TechnologyFieldsPFTD.DIVISION) != null
+                || technology.getBelongsToField(TechnologyFieldsPFTD.DIVISION) != null
+                && !technology.getBelongsToField(TechnologyFieldsPFTD.DIVISION).equals(technologyDB.getBelongsToField(TechnologyFieldsPFTD.DIVISION));
     }
 
     private void cleanUpOnRangeChange(final DataDefinition technologyDD, final Entity technology) {

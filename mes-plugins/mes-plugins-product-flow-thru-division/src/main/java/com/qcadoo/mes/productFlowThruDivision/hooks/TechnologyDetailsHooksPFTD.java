@@ -32,7 +32,6 @@ import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.google.common.collect.Sets;
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.basic.constants.WorkstationFields;
 import com.qcadoo.mes.materialFlowResources.constants.DivisionFieldsMFR;
@@ -52,7 +51,6 @@ import com.qcadoo.mes.technologies.states.constants.TechnologyState;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
@@ -80,6 +78,14 @@ public class TechnologyDetailsHooksPFTD {
 
     private static final String L_FILL_LOCATIONS_IN_COMPONENTS = "fillLocationsInComponents";
     public static final String L_PRODUCTS_FLOW_WASTE_RECEPTION_WAREHOUSE = "productsFlowWasteReceptionWarehouse";
+    public static final String RANGE_TECHNOLOGY_OPERATION_COMPONENT = "rangeTechnologyOperationComponent";
+    public static final String WORKSTATIONS = "workstations";
+    public static final String WORKSTATIONS_TECHNOLOGY_OPERATION_COMPONENT = "workstationsTechnologyOperationComponent";
+    public static final String OPERATION_WORKSTATIONS_DESCRIPTION = "operationWorkstationsDescription";
+    public static final String WORKSTATIONS_FOR_TOC_LOOKUP = "workstationsForTOClookup";
+    public static final String MODEL_CARD = "modelCard";
+    public static final String CREATE_MODEL_CARD = "createModelCard";
+    public static final String OPERATION_RANGE_DESCRIPTION = "operationRangeDescription";
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
@@ -214,8 +220,8 @@ public class TechnologyDetailsHooksPFTD {
 
         String range = (String) rangeField.getFieldValue();
         GridComponent rangeTechnologyOperationComponent = (GridComponent) view
-                .getComponentByReference("rangeTechnologyOperationComponent");
-        ComponentState operationRangeDescriptionLabel = view.getComponentByReference("operationRangeDescription");
+                .getComponentByReference(RANGE_TECHNOLOGY_OPERATION_COMPONENT);
+        ComponentState operationRangeDescriptionLabel = view.getComponentByReference(OPERATION_RANGE_DESCRIPTION);
         if (Range.ONE_DIVISION.getStringValue().equals(range)) {
             showField(divisionField, true);
             rangeTechnologyOperationComponent.setVisible(false);
@@ -240,7 +246,7 @@ public class TechnologyDetailsHooksPFTD {
             return;
         }
 
-        GridComponent rangeTechnologyOperationComponent = (GridComponent) view.getComponentByReference("rangeTechnologyOperationComponent");
+        GridComponent rangeTechnologyOperationComponent = (GridComponent) view.getComponentByReference(RANGE_TECHNOLOGY_OPERATION_COMPONENT);
         FilterValueHolder rangeTechnologyOperationComponentFilterValueHolder = rangeTechnologyOperationComponent.getFilterValue();
 
         rangeTechnologyOperationComponentFilterValueHolder.put(TechnologyDetailsCriteriaModifiers.L_TECHNOLOGY_ID,
@@ -257,7 +263,7 @@ public class TechnologyDetailsHooksPFTD {
             division = techEntity.getBelongsToField(TechnologyFieldsPFTD.DIVISION);
         } else {
             GridComponent workstationsTechnologyOperationComponent = (GridComponent) view
-                    .getComponentByReference("workstationsTechnologyOperationComponent");
+                    .getComponentByReference(WORKSTATIONS_TECHNOLOGY_OPERATION_COMPONENT);
             Set<Long> selectedEntitiesIds = workstationsTechnologyOperationComponent.getSelectedEntitiesIds();
             if (!selectedEntitiesIds.isEmpty()) {
                 Entity toc = getTechnologyOperationComponentDD().get(selectedEntitiesIds.stream().findFirst().get());
@@ -266,7 +272,7 @@ public class TechnologyDetailsHooksPFTD {
         }
 
         LookupComponent workstationsForTOCLookupComponent = (LookupComponent) view
-                .getComponentByReference("workstationsForTOClookup");
+                .getComponentByReference(WORKSTATIONS_FOR_TOC_LOOKUP);
 
         FilterValueHolder workstationsForTOCLookupComponentHolder = workstationsForTOCLookupComponent.getFilterValue();
 
@@ -459,7 +465,7 @@ public class TechnologyDetailsHooksPFTD {
 
         RibbonActionItem fillLocationsInComponents = flow.getItemByName(L_FILL_LOCATIONS_IN_COMPONENTS);
 
-        RibbonGroup modelCard = window.getRibbon().getGroupByName("modelCard");
+        RibbonGroup modelCard = window.getRibbon().getGroupByName(MODEL_CARD);
 
         String state = technology.getStringField(TechnologyFields.STATE);
         boolean isTemplateAccepted = technology.getBooleanField(TechnologyFields.IS_TEMPLATE_ACCEPTED);
@@ -468,7 +474,7 @@ public class TechnologyDetailsHooksPFTD {
         fillLocationsInComponents.requestUpdate(true);
 
         if (Objects.nonNull(modelCard)) {
-            RibbonActionItem createModelCard = modelCard.getItemByName("createModelCard");
+            RibbonActionItem createModelCard = modelCard.getItemByName(CREATE_MODEL_CARD);
             createModelCard.setEnabled(TechnologyState.CHECKED.getStringValue().equals(state)
                     || TechnologyState.ACCEPTED.getStringValue().equals(state));
             createModelCard.requestUpdate(true);
@@ -558,10 +564,10 @@ public class TechnologyDetailsHooksPFTD {
                 .getComponentByReference(TechnologyFieldsPC.TYPE_OF_PRODUCTION_RECORDING);
 
         GridComponent workstationsTechnologyOperationComponent = (GridComponent) view
-                .getComponentByReference("workstationsTechnologyOperationComponent");
+                .getComponentByReference(WORKSTATIONS_TECHNOLOGY_OPERATION_COMPONENT);
         GridComponent workstations = (GridComponent) view
-                .getComponentByReference("workstations");
-        ComponentState operationWorkstationsDescriptionLabel = view.getComponentByReference("operationWorkstationsDescription");
+                .getComponentByReference(WORKSTATIONS);
+        ComponentState operationWorkstationsDescriptionLabel = view.getComponentByReference(OPERATION_WORKSTATIONS_DESCRIPTION);
 
         if (Objects.nonNull(typeOfProductionRecordingFieldComponent) && TypeOfProductionRecording.FOR_EACH.getStringValue()
                 .equals(typeOfProductionRecordingFieldComponent.getFieldValue())) {
@@ -577,8 +583,14 @@ public class TechnologyDetailsHooksPFTD {
 
     private void enableRangeGrids(final ViewDefinitionState view, final boolean editable) {
         GridComponent rangeTechnologyOperationComponent = (GridComponent) view
-                .getComponentByReference("rangeTechnologyOperationComponent");
+                .getComponentByReference(RANGE_TECHNOLOGY_OPERATION_COMPONENT);
+        GridComponent productionLines = (GridComponent) view
+                .getComponentByReference(TechnologyFields.PRODUCTION_LINES);
+        GridComponent workstations = (GridComponent) view
+                .getComponentByReference(WORKSTATIONS);
 
+        productionLines.setEnabled(editable);
+        workstations.setEnabled(editable);
         rangeTechnologyOperationComponent.setEnabled(true);
 
         rangeTechnologyOperationComponent.setEditable(editable);
