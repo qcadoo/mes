@@ -105,9 +105,7 @@ public class RemoveTOCService {
         if (productToDelete.isPresent()) {
             Optional<Entity> originalProductToDelete = getInProductComponentFromProductComponent(originalInProducts,
                     productToDelete.get());
-            if (originalProductToDelete.isPresent()) {
-                originalInProducts.remove(originalProductToDelete.get());
-            }
+            originalProductToDelete.ifPresent(originalInProducts::remove);
         }
 
         for (Entity productComponentToAdd : productComponentsToAdd) {
@@ -129,7 +127,7 @@ public class RemoveTOCService {
         Entity savedToc = toc.getDataDefinition().save(toc);
         if (savedToc.isValid() && !addedProducts.isEmpty()) {
             view.addMessage("technologies.technologyDetails.window.treeTab.technologyTree.success.productsRewrote",
-                    ComponentState.MessageType.INFO, addedProducts.stream().collect(Collectors.joining(", ")),
+                    ComponentState.MessageType.INFO, String.join(", ", addedProducts),
                     toc.getBelongsToField(TechnologyOperationComponentFields.OPERATION).getStringField(OperationFields.NUMBER));
         }
         return savedToc.isValid();
