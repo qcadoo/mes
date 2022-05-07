@@ -261,7 +261,7 @@
         </model:model-field>
 
         <model:model-field plugin="basic" model="product">
-            <model:manyToMany name="qualityCards" plugin="technologies" model="qualityCard" joinField="products"/>
+            <model:manyToMany name="qualityCards" plugin="technologies" model="qualityCard" joinField="products" lazy="true"/>
         </model:model-field>
 
         <model:model-hook model="division" plugin="basic">
