@@ -169,9 +169,13 @@
                                            persistent="false"
                                            hasLabel="false">
                                     <option type="column" name="name" fields="name" link="true"/>
+                                    <option type="column" name="division" fields="division"
+                                            expression="#division['number']" width="100"/>
+                                    <option type="column" name="productionLine" fields="productionLine"
+                                            expression="#productionLine['number']" width="100"/>
 
-                                    <option type="searchable" value="number,name"/>
-                                    <option type="orderable" value="number,name"/>
+                                    <option type="searchable" value="number,name,division,productionLine"/>
+                                    <option type="orderable" value="number,name,division,productionLine"/>
 
                                     <option type="expression" value="#number + ' - ' + #name"/>
                                     <option type="fieldCode" value="number"/>
