@@ -72,15 +72,33 @@ public class PositionDataProvider {
     }
 
     public static String batch(final Entity position) {
+        StringBuilder builder = new StringBuilder();
+
         String batch = null;
         if (Objects.nonNull(position.getBelongsToField(PositionFields.BATCH))) {
             batch = position.getBelongsToField(PositionFields.BATCH).getStringField(BatchFields.NUMBER);
         }
 
+        if (Strings.isNullOrEmpty(batch)) {
+            builder.append(StringUtils.EMPTY).append("\n");
+        } else {
+            builder.append(batch).append("\n");
+        }
+
         Entity storageLocation = position.getBelongsToField(PositionFields.STORAGE_LOCATION);
-        return batch != null ? (storageLocation != null ? batch + "\n"
-                + storageLocation.getStringField(StorageLocationFields.NUMBER) : batch)
-                : (storageLocation != null ? storageLocation.getStringField(StorageLocationFields.NUMBER) : StringUtils.EMPTY);
+        if (Objects.isNull(storageLocation)) {
+            builder.append(StringUtils.EMPTY).append("\n");
+        } else {
+            builder.append(storageLocation.getStringField(StorageLocationFields.NUMBER)).append("\n");
+        }
+
+        Entity palletNumber = position.getBelongsToField(PositionFields.PALLET_NUMBER);
+        if (Objects.isNull(palletNumber)) {
+            builder.append(StringUtils.EMPTY).append("\n");
+        } else {
+            builder.append(palletNumber.getStringField(PalletNumberFields.NUMBER)).append("\n");
+        }
+        return builder.toString();
     }
 
     public static String onlyBatch(final Entity position) {
