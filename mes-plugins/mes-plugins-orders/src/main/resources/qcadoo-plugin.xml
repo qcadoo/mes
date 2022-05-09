@@ -89,6 +89,8 @@
         <model:model model="schedulePosition" resource="model/schedulePosition.xml"/>
         <model:model model="schedulePositionDto" resource="model/schedulePositionDto.xml"/>
         <model:model model="scheduleStateChange" resource="model/scheduleStateChange.xml"/>
+        <model:model model="productionLineSchedule" resource="model/productionLineSchedule.xml"/>
+        <model:model model="productionLineScheduleStateChange" resource="model/productionLineScheduleStateChange.xml"/>
 
         <model:model model="operationalTask" resource="model/operationalTask.xml"/>
         <model:model model="operationalTaskDto" resource="model/operationalTaskDto.xml"/>
@@ -152,22 +154,22 @@
 
         <model:model-field plugin="basic" model="shift">
             <model:hasMany name="orderStateChanges" plugin="orders"
-                           model="orderStateChange" joinField="shift" cascade="nullify"/>
+                           model="orderStateChange" joinField="shift"/>
         </model:model-field>
 
         <model:model-field plugin="basic" model="product">
             <model:hasMany name="orders" plugin="orders" model="order"
-                           joinField="product" cascade="nullify"/>
+                           joinField="product"/>
         </model:model-field>
 
         <model:model-field plugin="technologies" model="technology">
             <model:hasMany name="orders" plugin="orders" model="order"
-                           joinField="technology" cascade="nullify"/>
+                           joinField="technology"/>
         </model:model-field>
 
         <model:model-field plugin="technologies" model="technology">
             <model:hasMany name="ordersUsingPrototype" plugin="orders" model="order"
-                           joinField="technologyPrototype" cascade="nullify"/>
+                           joinField="technologyPrototype"/>
         </model:model-field>
 
         <model:model-field plugin="basic" model="parameter">
@@ -359,13 +361,12 @@
         </model:model-hook>
 
         <model:model-field plugin="basic" model="address">
-            <model:hasMany name="orders" model="order" plugin="orders" joinField="address"
-                           cascade="nullify"/>
+            <model:hasMany name="orders" model="order" plugin="orders" joinField="address"/>
         </model:model-field>
 
         <model:model-field plugin="basic" model="division">
             <model:hasMany name="orders" plugin="orders" model="order"
-                           joinField="division" cascade="nullify"/>
+                           joinField="division"/>
         </model:model-field>
 
         <model:model-field plugin="basic" model="staff">
@@ -374,7 +375,7 @@
         </model:model-field>
         <model:model-field plugin="basic" model="staff">
             <model:manyToMany name="operationalTasksStaff" plugin="orders"
-                              model="operationalTask" joinField="workers" copyable="true" cascade="nullify"/>
+                              model="operationalTask" joinField="workers" copyable="true"/>
         </model:model-field>
 
         <model:model-field plugin="basic" model="workstation">
@@ -480,6 +481,9 @@
         <menu:menu-item name="schedulesList" category="orders"
                         view="schedulesList" defaultAuthorizationRole="ROLE_PLANNING"/>
 
+        <menu:menu-item name="productionLineSchedulesList" category="orders"
+                        view="productionLineSchedulesList" defaultAuthorizationRole="ROLE_PRODUCTION_LINE_SCHEDULES"/>
+
         <menu:menu-item name="operationalTasks" category="orders"
                         view="operationalTasksList" defaultAuthorizationRole="ROLE_PLANNING"/>
 
@@ -507,6 +511,8 @@
         <view:view resource="view/schedulesList.xml"/>
         <view:view resource="view/scheduleDetails.xml"/>
         <view:view resource="view/schedulePositionDetails.xml"/>
+        <view:view resource="view/productionLineSchedulesList.xml"/>
+        <view:view resource="view/productionLineScheduleDetails.xml"/>
 
         <view:view resource="view/ordersParameters.xml"/>
 
