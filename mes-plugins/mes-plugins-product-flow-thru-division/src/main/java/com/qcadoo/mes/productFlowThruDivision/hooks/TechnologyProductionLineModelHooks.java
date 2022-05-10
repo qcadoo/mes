@@ -23,7 +23,6 @@
  */
 package com.qcadoo.mes.productFlowThruDivision.hooks;
 
-import static com.qcadoo.mes.technologies.constants.TechnologyFields.MASTER;
 
 import org.springframework.stereotype.Service;
 
@@ -46,20 +45,12 @@ public class TechnologyProductionLineModelHooks {
         searchCriteria.add(SearchRestrictions.belongsTo(TechnologyProductionLineFields.TECHNOLOGY, entity.getBelongsToField(TechnologyProductionLineFields.TECHNOLOGY)));
 
         Entity masterTechnologyProductionLine = searchCriteria.uniqueResult();
-        if (masterTechnologyProductionLine != null && masterTechnologyProductionLine.getId().equals(entity.getId())) {
+        if (masterTechnologyProductionLine != null && masterTechnologyProductionLine.getId().equals(entity.getId()) ||
+                masterTechnologyProductionLine == null || !entity.getBooleanField(TechnologyProductionLineFields.MASTER)) {
             return;
         }
 
-        if (masterTechnologyProductionLine == null) {
-            entity.setField(MASTER, true);
-            return;
-        }
-
-        if (!entity.getBooleanField(MASTER)) {
-            return;
-        }
-
-        masterTechnologyProductionLine.setField(MASTER, false);
+        masterTechnologyProductionLine.setField(TechnologyProductionLineFields.MASTER, false);
         dataDefinition.save(masterTechnologyProductionLine);
     }
 
