@@ -111,7 +111,7 @@ public class TechnologyHooksPFTD {
                 || Objects.nonNull(typeOfProductionRecording) && !typeOfProductionRecording.equals(typeOfProductionRecordingDB)) {
             List<Entity> tocs = getTechnologyOperationComponents(technology);
 
-            if(TypeOfProductionRecording.FOR_EACH.getStringValue().equals(typeOfProductionRecording)){
+            if (TypeOfProductionRecording.FOR_EACH.getStringValue().equals(typeOfProductionRecording)) {
                 for (Entity toc : tocs) {
                     Entity operation = toc.getBelongsToField(TechnologyOperationComponentFields.OPERATION);
                     toc.setField(TechnologyOperationComponentFields.WORKSTATIONS,
@@ -182,7 +182,8 @@ public class TechnologyHooksPFTD {
     private boolean isDivisionChanged(Entity technology, Entity technologyDB) {
         return technology.getBelongsToField(TechnologyFieldsPFTD.DIVISION) != null
                 && technologyDB.getBelongsToField(TechnologyFieldsPFTD.DIVISION) == null
-                || technology.getBelongsToField(TechnologyFieldsPFTD.DIVISION) == null
+                || technology.getField(TechnologyFieldsPFTD.RANGE).equals(Range.ONE_DIVISION.getStringValue())
+                && technology.getBelongsToField(TechnologyFieldsPFTD.DIVISION) == null
                 && technologyDB.getBelongsToField(TechnologyFieldsPFTD.DIVISION) != null
                 || technology.getBelongsToField(TechnologyFieldsPFTD.DIVISION) != null
                 && !technology.getBelongsToField(TechnologyFieldsPFTD.DIVISION).equals(technologyDB.getBelongsToField(TechnologyFieldsPFTD.DIVISION));

@@ -30,7 +30,7 @@
 	<fields>
 		<belongsTo name="productionLine" plugin="productionLines" model="productionLine" required="true"/>
 		<belongsTo name="technology" plugin="technologies" model="technology" required="true"/>
-		<boolean name="master" default="false" copyable="false"/>
+		<boolean name="master" default="false"/>
 		<decimal name="standardPerformance">
 			<validatesRange from="0" exclusively="true"/>
 			<validatesUnscaledValue max="7"/>
