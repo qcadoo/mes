@@ -39,6 +39,7 @@ import org.springframework.util.StringUtils;
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.productionCounting.constants.TechnologyFieldsPC;
 import com.qcadoo.mes.productionCounting.constants.TypeOfProductionRecording;
+import com.qcadoo.mes.technologies.constants.OperationFields;
 import com.qcadoo.mes.technologies.constants.OperationProductOutComponentFields;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
@@ -110,7 +111,16 @@ public class TechnologyHooksPFTD {
                 || Objects.nonNull(typeOfProductionRecording) && !typeOfProductionRecording.equals(typeOfProductionRecordingDB)) {
             List<Entity> tocs = getTechnologyOperationComponents(technology);
 
-            clearWorkstations(tocs);
+            if(TypeOfProductionRecording.FOR_EACH.getStringValue().equals(typeOfProductionRecording)){
+                for (Entity toc : tocs) {
+                    Entity operation = toc.getBelongsToField(TechnologyOperationComponentFields.OPERATION);
+                    toc.setField(TechnologyOperationComponentFields.WORKSTATIONS,
+                            operation.getManyToManyField(OperationFields.WORKSTATIONS));
+                    toc.getDataDefinition().save(toc);
+                }
+            } else {
+                clearWorkstations(tocs);
+            }
         }
 
         if (TypeOfProductionRecording.CUMULATED.getStringValue().equals(typeOfProductionRecording)
