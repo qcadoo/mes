@@ -169,10 +169,12 @@
         <boolean name="newVersionTechnologySet" persistent="false" default="false"/>
 
         <hasMany name="barcodeOperationComponents" joinField="order" model="barcodeOperationComponent" plugin="technologies"
-                 cascade="delete" copyable="false"/>
+                 cascade="delete"/>
 
         <manyToMany name="schedules" joinField="orders"
                     model="schedule"/>
+        <manyToMany name="productionLineSchedules" joinField="orders"
+                    model="productionLineSchedule"/>
 
         <hasMany name="schedulePositions" joinField="order" model="schedulePosition"
                  cascade="delete"/>

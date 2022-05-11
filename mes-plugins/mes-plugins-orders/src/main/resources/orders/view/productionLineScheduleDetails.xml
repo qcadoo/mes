@@ -1,0 +1,264 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    ***************************************************************************
+    Copyright (c) 2010 Qcadoo Limited
+    Project: Qcadoo MES
+    Version: 1.4
+
+    This file is part of Qcadoo.
+
+    Qcadoo is free software; you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as published
+    by the Free Software Foundation; either version 3 of the License,
+    or (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty
+    of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+    See the GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+    ***************************************************************************
+
+-->
+<view defaultAuthorizationRole="ROLE_PRODUCTION_LINE_SCHEDULES" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns="http://schema.qcadoo.org/view"
+      xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
+      name="productionLineScheduleDetails" modelName="productionLineSchedule">
+
+    <component type="window" name="window" reference="window">
+
+        <ribbon>
+            <template name="standardFormTemplate"/>
+            <group name="status">
+                <smallButton name="approveSchedule" icon="acceptIcon16.png"
+                             state="disabled">
+                    <script>
+                        <![CDATA[
+					        this.addOnChangeListener({
+						        onClick: function() {
+							        if(window.canClose()) {
+							            if (window.confirm("#{translate(orders.scheduleDetails.window.ribbon.status.approveSchedule.confirm)}")) {
+								            #{form}.performEvent('changeState', ['02approved']);
+								        }
+							        }
+						        }
+					        });
+				        ]]>
+                    </script>
+                </smallButton>
+                <smallButton name="rejectSchedule" icon="deleteIcon16.png"
+                             state="disabled">
+                    <script>
+                        <![CDATA[
+					        this.addOnChangeListener({
+						        onClick: function() {
+							        if(window.canClose()) {
+							            if (window.confirm("#{translate(orders.scheduleDetails.window.ribbon.status.rejectSchedule.confirm)}")) {
+								            #{form}.performEvent('changeState', ['03rejected']);
+								        }
+							        }
+						        }
+					        });
+				        ]]>
+                    </script>
+                </smallButton>
+            </group>
+        </ribbon>
+
+        <windowTab name="mainTab">
+            <component type="form" name="productionLineSchedule" reference="form">
+                <script>
+                    <![CDATA[
+						this.addOnChangeListener({
+							onSetValue: function() {
+                                var approveSchedule = #{window}.getRibbonItem("status.approveSchedule");
+                                var rejectSchedule = #{window}.getRibbonItem("status.rejectSchedule");
+                                var deleteButton = #{window}.getRibbonItem("actions.delete");
+								var isSaved = (#{form}.getValue().content && #{form}.getValue().content.entityId);
+								var state = #{state}.getValue().content.value;
+<!--								var generatePlan = #{scheduleTab}.getRibbonItem("setAPlan.generatePlan");-->
+								var saveActions = ["actions.save","actions.saveNew","actions.saveBack"];
+
+                                if (isSaved && state == "01draft") {
+                                    approveSchedule.enable();
+                                    rejectSchedule.enable();
+<!--                                    generatePlan.enable("#{translate(orders.scheduleDetails.window.scheduleTab.ribbon.setAPlan.generatePlan.message)}");-->
+                                } else {
+                                    approveSchedule.disable();
+                                    rejectSchedule.disable();
+<!--                                    generatePlan.disable("#{translate(orders.scheduleDetails.window.scheduleTab.ribbon.setAPlan.generatePlan.message)}");-->
+                                }
+
+   								for(var elementKey in saveActions){
+   									var ribbonItem = #{window}.getRibbonItem(saveActions[elementKey]);
+
+   									if(state != "01draft"){
+   										ribbonItem.disable();
+ 									} else {
+										ribbonItem.enable();
+ 									}
+     							}
+     							if(state != "01draft"){
+     							    this.setEnabled(false, true);
+     							    #{orders}.setEditable(false);
+<!--     							    #{positions}.setEditable(false);-->
+                                } else {
+                                    this.setEnabled(true, true);
+                                    #{orders}.setEditable(true);
+<!--     							    #{positions}.setEditable(true);-->
+                                }
+                                if (state != "01draft" || !isSaved) {
+                                    deleteButton.disable();
+                                } else {
+                                    deleteButton.enable();
+                                }
+							}
+						});
+					]]>
+                </script>
+                <component type="gridLayout" name="gridLayout" columns="3"
+                           rows="7">
+                    <layoutElement column="1" row="1">
+                        <component type="input" name="name" field="name"
+                                   reference="name"/>
+                        <component type="select" name="state" field="state"
+                                   reference="state" defaultVisible="false"/>
+                    </layoutElement>
+                    <layoutElement column="1" row="2">
+                        <component type="input" name="number" reference="number"
+                                   field="number" defaultEnabled="never">
+                            <option type="alignment" value="right"/>
+                        </component>
+                    </layoutElement>
+                    <layoutElement column="1" row="3">
+                        <component type="calendar" name="startTime" reference="startTime"
+                                   field="startTime">
+                            <option type="withTimePicker" value="true"/>
+                        </component>
+                    </layoutElement>
+                    <layoutElement column="1" row="4">
+                        <component type="select" name="durationOfOrderCalculatedOnBasis" field="durationOfOrderCalculatedOnBasis"
+                                   reference="durationOfOrderCalculatedOnBasis">
+                        </component>
+                    </layoutElement>
+                    <layoutElement column="1" row="5">
+                        <component type="select" name="sortOrder" field="sortOrder"
+                                   reference="sortOrder">
+                        </component>
+                    </layoutElement>
+                    <layoutElement column="1" row="6">
+                        <component type="select" name="productionLineAssignCriterion" field="productionLineAssignCriterion"
+                                   reference="productionLineAssignCriterion">
+                        </component>
+                    </layoutElement>
+                    <layoutElement column="1" row="7">
+                        <component type="checkbox" name="allowProductionLineChange"
+                                   reference="allowProductionLineChange"
+                                   field="allowProductionLineChange"
+                                   hasDescription="true">
+                        </component>
+                    </layoutElement>
+                </component>
+                <option type="header" value="true"/>
+                <option type="expression"
+                        value="#number + ', ' + '@orders.schedule.state.value.' + #state"/>
+
+                <listener event="changeState"
+                          class="com.qcadoo.mes.orders.listeners.ProductionLineScheduleDetailsListeners"
+                          method="changeState"/>
+            </component>
+        </windowTab>
+
+        <windowTab name="historyTab">
+            <component type="flowGridLayout" name="stateChangesLayout" columns="1" rows="3">
+                <layoutElement column="1" row="1" minHeight="3">
+                    <component type="grid" name="stateChanges" source="#{form}.stateChanges" reference="stateChanges">
+                        <option type="column" name="dateAndTime" fields="dateAndTime"/>
+                        <option type="column" name="sourceState" fields="sourceState"/>
+                        <option type="column" name="targetState" fields="targetState"/>
+                        <option type="column" name="shiftName" fields="shift"
+                                expression="#shift?.get('name')"/>
+                        <option type="column" name="worker" fields="worker"/>
+
+                        <option type="order" column="dateAndTime" direction="asc"/>
+
+                        <option type="searchable" value="dateAndTime,sourceState,targetState,shiftName,worker"/>
+                        <option type="orderable" value="dateAndTime,sourceState,targetState,shiftName,worker"/>
+                        <criteriaModifier
+                                class="com.qcadoo.mes.states.criteriaModifier.CommonCriteriaModifiers"
+                                method="filterHistory"/>
+                    </component>
+                </layoutElement>
+            </component>
+        </windowTab>
+
+        <windowTab name="inputDataTab">
+            <component type="lookup" name="ordersLookup" reference="ordersLookup"
+                       field="orders" defaultVisible="false" persistent="false"
+                       hasLabel="false">
+                <option type="column" name="name" fields="name" link="true"/>
+                <option type="column" name="productNumber" fields="product" expression="#product['number']"/>
+                <option type="column" name="productName" fields="product" expression="#product['name']"/>
+                <option type="column" name="state" fields="state"/>
+
+                <option type="searchable" value="number,name,productNumber,productName,state"/>
+                <option type="orderable" value="number,name,productNumber,productName,state"/>
+
+                <option type="expression" value="#number + ' - ' + #name"/>
+                <option type="fieldCode" value="number"/>
+
+                <option type="multiselect" value="true"/>
+                <criteriaModifier
+                        class="com.qcadoo.mes.orders.criteriaModifiers.ProductionLineScheduleOrderCriteriaModifiers"
+                        method="filterByState"/>
+            </component>
+
+            <component type="grid" name="orders" source="#{form}.orders"
+                       reference="orders">
+
+                <option type="column" name="number" fields="number" link="true" width="40"/>
+                <option type="column" name="name" fields="name" link="true" width="100"/>
+                <option type="column" name="productNumber" fields="product" expression="#product['number']"
+                        link="true" width="60"/>
+                <option type="column" name="technologyNumber" fields="technology" expression="#technology['number']"
+                        link="true" width="60"/>
+                <option type="column" name="plannedQuantity" fields="plannedQuantity" width="40"/>
+                <option type="column" name="startDate" fields="startDate" width="50"/>
+                <option type="column" name="finishDate" fields="finishDate" width="50"/>
+                <option type="column" name="state" fields="state" width="50"/>
+
+                <option type="order" column="number" direction="asc"/>
+
+                <option type="searchable"
+                        value="number,name,productNumber,technologyNumber,plannedQuantity,state,startDate,finishDate"/>
+                <option type="orderable"
+                        value="number,name,productNumber,technologyNumber,plannedQuantity,state,startDate,finishDate"/>
+
+                <option type="weakRelation" value="true"/>
+                <option type="correspondingLookup" value="ordersLookup"/>
+
+                <option type="correspondingView" value="orders/orderDetails"/>
+                <option type="correspondingComponent" value="form"/>
+                <option type="correspondingViewInModal" value="false"/>
+
+                <option type="fixedHeight" value="true"/>
+                <option type="multiselect" value="true"/>
+                <option type="deletable" value="true"/>
+                <option type="creatable" value="true"/>
+
+            </component>
+        </windowTab>
+
+    </component>
+
+    <hooks>
+        <beforeRender
+                class="com.qcadoo.mes.orders.hooks.ProductionLineScheduleDetailsHooks"
+                method="onBeforeRender"/>
+    </hooks>
+
+</view>

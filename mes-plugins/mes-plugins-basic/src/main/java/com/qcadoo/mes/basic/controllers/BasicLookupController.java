@@ -42,16 +42,17 @@ public abstract class BasicLookupController<R> {
     @ResponseBody
     @RequestMapping(value = "config", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public Map<String, Object> getConfigView(Locale locale) {
-        return lookupUtils.getConfigMap(getGridFields());
+        return getConfigMap(getGridFields());
     }
 
     @RequestMapping(value = "lookup", method = RequestMethod.GET)
     public ModelAndView getLookupView(Map<String, String> arguments, Locale locale) {
-        ModelAndView mav = lookupUtils.getModelAndView(getRecordName(), "genericLookup", locale);
-
-        return mav;
+        return lookupUtils.getModelAndView(getRecordName(), "genericLookup", locale);
     }
 
+    protected Map<String, Object> getConfigMap(List<String> columns){
+        return lookupUtils.getConfigMap(columns);
+    }
     protected abstract List<String> getGridFields();
 
     protected abstract String getRecordName();
