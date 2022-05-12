@@ -586,11 +586,13 @@ public class TechnologyDetailsHooksPFTD {
                 .getComponentByReference(RANGE_TECHNOLOGY_OPERATION_COMPONENT);
         GridComponent productionLines = (GridComponent) view
                 .getComponentByReference(TechnologyFields.PRODUCTION_LINES);
+        GridComponent workstationsTechnologyOperationComponent = (GridComponent) view
+                .getComponentByReference(WORKSTATIONS_TECHNOLOGY_OPERATION_COMPONENT);
         GridComponent workstations = (GridComponent) view
                 .getComponentByReference(WORKSTATIONS);
 
         productionLines.setEnabled(editable);
-        workstations.setEnabled(editable);
+        workstations.setEnabled(editable && !workstationsTechnologyOperationComponent.getSelectedEntities().isEmpty());
         rangeTechnologyOperationComponent.setEnabled(true);
 
         rangeTechnologyOperationComponent.setEditable(editable);
