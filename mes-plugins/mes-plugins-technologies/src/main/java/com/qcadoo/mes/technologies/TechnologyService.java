@@ -532,7 +532,8 @@ public class TechnologyService {
     public Optional<BigDecimal> getStandardPerformance(Entity technology) {
         if (PluginUtils.isEnabled(L_PRODUCT_FLOW_THRU_DIVISION)) {
             return technology.getHasManyField(TechnologyFields.PRODUCTION_LINES).stream()
-                    .filter(e -> e.getBooleanField(TechnologyProductionLineFields.MASTER))
+                    .filter(e -> e.getBooleanField(TechnologyProductionLineFields.MASTER)
+                            && e.getDecimalField(TechnologyProductionLineFields.STANDARD_PERFORMANCE) != null)
                     .map(e -> e.getDecimalField(TechnologyProductionLineFields.STANDARD_PERFORMANCE)).findFirst();
         }
         return Optional.empty();
@@ -541,7 +542,8 @@ public class TechnologyService {
     public Optional<BigDecimal> getStandardPerformance(Entity technology, Entity productionLine) {
         if (PluginUtils.isEnabled(L_PRODUCT_FLOW_THRU_DIVISION)) {
             return technology.getHasManyField(TechnologyFields.PRODUCTION_LINES).stream()
-                    .filter(e -> e.getBelongsToField(TechnologyProductionLineFields.PRODUCTION_LINE).getId().equals(productionLine.getId()))
+                    .filter(e -> e.getBelongsToField(TechnologyProductionLineFields.PRODUCTION_LINE).getId().equals(productionLine.getId())
+                            && e.getDecimalField(TechnologyProductionLineFields.STANDARD_PERFORMANCE) != null)
                     .map(e -> e.getDecimalField(TechnologyProductionLineFields.STANDARD_PERFORMANCE)).findFirst();
         }
         return Optional.empty();
