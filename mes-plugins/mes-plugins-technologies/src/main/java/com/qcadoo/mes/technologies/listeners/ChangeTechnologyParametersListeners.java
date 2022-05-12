@@ -152,7 +152,7 @@ public class ChangeTechnologyParametersListeners {
                 }
 
                 if (entity.getBooleanField(L_CHANGE_PERFORMANCE_NORM)) {
-                    technologyService.getMasterTechnologyProductionLine(technology).ifPresent(
+                    technologyService.getMasterTechnologyProductionLine(copyTechnology).ifPresent(
                             e -> {
                                 e.setField(TechnologyProductionLineFields.STANDARD_PERFORMANCE, finalStandardPerformance);
                                 e.getDataDefinition().save(e);
