@@ -25,21 +25,23 @@ package com.qcadoo.mes.productFlowThruDivision.hooks;
 
 import static com.qcadoo.model.api.search.SearchRestrictions.eq;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
-
-import com.google.common.collect.Lists;
-import com.qcadoo.mes.productFlowThruDivision.constants.*;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import com.qcadoo.mes.basic.ParameterService;
+import com.qcadoo.mes.productFlowThruDivision.constants.OperationProductInComponentFieldsPFTD;
+import com.qcadoo.mes.productFlowThruDivision.constants.OperationProductOutComponentFieldsPFTD;
+import com.qcadoo.mes.productFlowThruDivision.constants.ParameterFieldsPFTD;
+import com.qcadoo.mes.productFlowThruDivision.constants.ProductFlowThruDivisionConstants;
+import com.qcadoo.mes.productFlowThruDivision.constants.ProductionFlowComponent;
+import com.qcadoo.mes.productFlowThruDivision.constants.Range;
+import com.qcadoo.mes.productFlowThruDivision.constants.TechnologyFieldsPFTD;
 import com.qcadoo.mes.productionCounting.constants.TechnologyFieldsPC;
 import com.qcadoo.mes.productionCounting.constants.TypeOfProductionRecording;
-import com.qcadoo.mes.technologies.constants.OperationFields;
 import com.qcadoo.mes.technologies.constants.OperationProductOutComponentFields;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
@@ -111,16 +113,7 @@ public class TechnologyHooksPFTD {
                 || Objects.nonNull(typeOfProductionRecording) && !typeOfProductionRecording.equals(typeOfProductionRecordingDB)) {
             List<Entity> tocs = getTechnologyOperationComponents(technology);
 
-            if (TypeOfProductionRecording.FOR_EACH.getStringValue().equals(typeOfProductionRecording)) {
-                for (Entity toc : tocs) {
-                    Entity operation = toc.getBelongsToField(TechnologyOperationComponentFields.OPERATION);
-                    toc.setField(TechnologyOperationComponentFields.WORKSTATIONS,
-                            operation.getManyToManyField(OperationFields.WORKSTATIONS));
-                    toc.getDataDefinition().save(toc);
-                }
-            } else {
-                clearWorkstations(tocs);
-            }
+            clearWorkstations(tocs);
         }
 
         if (TypeOfProductionRecording.CUMULATED.getStringValue().equals(typeOfProductionRecording)
