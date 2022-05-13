@@ -3,6 +3,7 @@ package com.qcadoo.mes.technologies.export;
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.technologies.ProductQuantitiesWithComponentsService;
+import com.qcadoo.mes.technologies.TechnologyService;
 import com.qcadoo.mes.technologies.constants.MrpAlgorithm;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
@@ -90,14 +91,13 @@ public class TechnologyExportService {
     @Autowired
     private ProductQuantitiesWithComponentsService productQuantitiesWithComponentsService;
 
-    public void exportTechnologiesTrigger() {
-        multiTenantService.doInMultiTenantContext(new MultiTenantCallback() {
+    @Autowired
+    private TechnologyService technologyService;
 
-            @Override
-            public void invoke() {
-                if (StringUtils.hasText(server)) {
-                    exportTechnologies();
-                }
+    public void exportTechnologiesTrigger() {
+        multiTenantService.doInMultiTenantContext(() -> {
+            if (StringUtils.hasText(server)) {
+                exportTechnologies();
             }
         });
     }
@@ -156,8 +156,8 @@ public class TechnologyExportService {
                     "technologies.technology.state.value." + technology.getStringField(TechnologyFields.STATE),
                     LocaleContextHolder.getLocale());
             String isDefaultTechnology = defaultTechnologyToString(technology.getBooleanField(TechnologyFields.MASTER));
-            String technologyStandardPerformance = numberService
-                    .format(technology.getDecimalField(TechnologyFields.STANDARD_PERFORMANCE_TECHNOLOGY));
+            String standardPerformance = numberService
+                    .format(technologyService.getStandardPerformance(technology).orElse(null));
             String technologyStateChange = DateFormat.getDateInstance().format(productStructureTreeService
                     .getLastTechnologyStateChange(technology).getDateField(TechnologyStateChangeFields.DATE_AND_TIME));
             String technologyAcceptStateChange = getTechnologyAcceptStateChange(technology);
@@ -180,7 +180,7 @@ public class TechnologyExportService {
                 bufferedWriter.append(exportedCsvSeparator);
                 bufferedWriter.append(BACKSLASH).append(isDefaultTechnology).append(BACKSLASH);
                 bufferedWriter.append(exportedCsvSeparator);
-                bufferedWriter.append(BACKSLASH).append(technologyStandardPerformance).append(BACKSLASH);
+                bufferedWriter.append(BACKSLASH).append(standardPerformance).append(BACKSLASH);
                 bufferedWriter.append(exportedCsvSeparator);
                 bufferedWriter.append(BACKSLASH).append(technologyStateChange).append(BACKSLASH);
                 bufferedWriter.append(exportedCsvSeparator);

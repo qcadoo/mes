@@ -75,7 +75,7 @@
 
         <model:model-field model="division" plugin="basic">
             <model:manyToMany name="productionLines" joinField="divisions" model="productionLine"
-                              plugin="productionLines" cascade="nullify"/>
+                              plugin="productionLines"/>
         </model:model-field>
 
         <model:model-field model="staff" plugin="basic">

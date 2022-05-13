@@ -57,8 +57,6 @@ public final class TechnologyFields {
 
     public static final String PRODUCT_STRUCTURE_TREE = "productStructureTree";
 
-    public static final String STANDARD_PERFORMANCE_TECHNOLOGY = "standardPerformanceTechnology";
-
     public static final String TEMPLATE = "template";
 
     public static final String IS_TEMPLATE_ACCEPTED = "isTemplateAccepted";
@@ -72,5 +70,7 @@ public final class TechnologyFields {
     public static final String OPERATION_COMPONENT_DTOS = "operationComponentDtos";
 
     public static final String ACTIVE = "active";
+
+    public static final String PRODUCTION_LINES = "productionLines";
 
 }

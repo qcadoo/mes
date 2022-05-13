@@ -27,9 +27,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 public class ProductLookupController extends BasicLookupController<ProductDTO> {
 
     @Autowired
-    private DictionaryService dictionaryService;
-
-    @Autowired
     private LookupUtils lookupUtils;
 
     @Autowired
@@ -39,8 +36,7 @@ public class ProductLookupController extends BasicLookupController<ProductDTO> {
     protected Map<String, Object> getConfigMap(List<String> columns) {
         Map<String, Object> config = lookupUtils.getConfigMap(columns);
 
-        config = prepareConfigForGlobalTypeOfMaterial(config);
-        config = prepareConfigForCategory(config);
+        prepareConfigForGlobalTypeOfMaterial(config);
 
         return config;
     }
@@ -49,27 +45,21 @@ public class ProductLookupController extends BasicLookupController<ProductDTO> {
         Map<String, String> values = getGlobalTypeOfMaterialTranslatedValues(locale);
 
         final List<String> items = new ArrayList<>();
-        values.forEach((key, value) -> {
-            items.add(String.format("map['%s'] = '%s';", key, value));
-        });
-        String valuesString = items.stream().collect(Collectors.joining());
+        values.forEach((key, value) -> items.add(String.format("map['%s'] = '%s';", key, value)));
+        String valuesString = String.join("", items);
 
-        String formatter = "function(cellValue, options, rowObject) {"
-                + "            var map = {};"
+        return "function(cellValue, options, rowObject) {"
+                + "    var map = {};"
                 + valuesString
-                + "            var newValue = map[cellValue] || '';"
-                + "            return newValue;"
-                + "        }";
-
-        return formatter;
+                + "    var newValue = map[cellValue] || '';"
+                + "    return newValue;"
+                + "}";
     }
 
     @Override
     protected String getQueryForRecords(final Long context) {
-        String query = "SELECT %s FROM (SELECT product.id, product.number as code, product.number, product.name, product.ean, product.globaltypeofmaterial, product.category "
+        return "SELECT %s FROM (SELECT product.id, product.number as code, product.number, product.name, product.ean, product.globaltypeofmaterial, product.category "
                 + "FROM basic_product product WHERE product.active = true %s) q ";
-
-        return query;
     }
 
     @Override
@@ -94,35 +84,15 @@ public class ProductLookupController extends BasicLookupController<ProductDTO> {
         return values;
     }
 
-    private Map<String, Object> prepareConfigForGlobalTypeOfMaterial(Map<String, Object> config) {
-        Map<String, Object> globaltypeofmaterial = ((Collection<Map<String, Object>>) config.get("colModel")).stream().filter(entry -> {
-            return "globaltypeofmaterial".equals(entry.get("index"));
-        }).findAny().get();
+    private void prepareConfigForGlobalTypeOfMaterial(Map<String, Object> config) {
+        Map<String, Object> globaltypeofmaterial = ((Collection<Map<String, Object>>) config.get("colModel"))
+                .stream().filter(entry -> "globaltypeofmaterial".equals(entry.get("index"))).findAny().get();
         globaltypeofmaterial.put("formatter", getGlobalTypeOfMaterialFormatter(LocaleContextHolder.getLocale()));
         globaltypeofmaterial.put("stype", "select");
 
         String searchOptionsValue = ":" + translationService.translate("documentGrid.allItem", LocaleContextHolder.getLocale()) + ";";
-        searchOptionsValue += getGlobalTypeOfMaterialTranslatedValues(LocaleContextHolder.getLocale()).entrySet().stream().map(entry -> {
-            return entry.getKey() + ":" + entry.getValue();
-        }).collect(Collectors.joining(";"));
+        searchOptionsValue += getGlobalTypeOfMaterialTranslatedValues(LocaleContextHolder.getLocale()).entrySet()
+                .stream().map(entry -> entry.getKey() + ":" + entry.getValue()).collect(Collectors.joining(";"));
         ((Map<String, Object>) globaltypeofmaterial.get("searchoptions")).put("value", searchOptionsValue);
-
-        return config;
-    }
-
-    private Map<String, Object> prepareConfigForCategory(Map<String, Object> config) {
-        Map<String, Object> category = ((Collection<Map<String, Object>>) config.get("colModel")).stream().filter(entry -> {
-            return "category".equals(entry.get("index"));
-        }).findAny().get();
-
-        category.put("stype", "select");
-
-        String categorySearchOptionsValue = ":" + translationService.translate("documentGrid.allItem", LocaleContextHolder.getLocale()) + ";";
-        categorySearchOptionsValue += dictionaryService.getKeys("categories").stream().map(item -> {
-            return item + ":" + item;
-        }).collect(Collectors.joining(";"));
-        ((Map<String, Object>) category.get("searchoptions")).put("value", categorySearchOptionsValue);
-
-        return config;
     }
 }

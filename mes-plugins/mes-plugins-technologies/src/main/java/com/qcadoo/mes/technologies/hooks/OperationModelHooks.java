@@ -23,7 +23,11 @@
  */
 package com.qcadoo.mes.technologies.hooks;
 
-import com.qcadoo.localization.api.TranslationService;
+import java.util.Objects;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.basic.constants.GlobalTypeOfMaterial;
@@ -37,11 +41,6 @@ import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.validators.ErrorMessage;
 
-import java.util.Objects;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 @Service
 public class OperationModelHooks {
 
@@ -51,11 +50,9 @@ public class OperationModelHooks {
     @Autowired
     private ParameterService parameterService;
 
-    @Autowired
-    private TranslationService translationService;
 
     public void onSave(final DataDefinition operationDD, final Entity operation) {
-        clearField(operation);
+        clearField(operationDD, operation);
         createOperationOutput(operation);
     }
 
@@ -88,10 +85,23 @@ public class OperationModelHooks {
 
     }
 
-    private void clearField(final Entity operation) {
+    private void clearField(DataDefinition operationDD, final Entity operation) {
         String assignedToOperation = operation.getStringField(OperationFields.ASSIGNED_TO_OPERATION);
         if (AssignedToOperation.WORKSTATIONS_TYPE.getStringValue().equals(assignedToOperation)) {
             operation.setField(OperationFields.WORKSTATIONS, null);
+        }
+        Long operationId = operation.getId();
+
+        if (Objects.nonNull(operationId)) {
+            Entity operationDB = operationDD.get(operationId);
+            if (operation.getBelongsToField(OperationFields.DIVISION) != null
+                    && operationDB.getBelongsToField(OperationFields.DIVISION) == null
+                    || operation.getBelongsToField(OperationFields.DIVISION) == null
+                    && operationDB.getBelongsToField(OperationFields.DIVISION) != null
+                    || operation.getBelongsToField(OperationFields.DIVISION) != null
+                    && !operation.getBelongsToField(OperationFields.DIVISION).equals(operationDB.getBelongsToField(OperationFields.DIVISION))) {
+                operation.setField(OperationFields.WORKSTATIONS, null);
+            }
         }
     }
 

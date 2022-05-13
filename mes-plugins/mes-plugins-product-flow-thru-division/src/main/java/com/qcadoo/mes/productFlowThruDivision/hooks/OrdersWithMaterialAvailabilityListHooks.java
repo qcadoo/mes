@@ -23,6 +23,9 @@
  */
 package com.qcadoo.mes.productFlowThruDivision.hooks;
 
+import static java.util.Comparator.naturalOrder;
+import static java.util.Comparator.nullsFirst;
+
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
@@ -62,7 +65,7 @@ public class OrdersWithMaterialAvailabilityListHooks {
         Map<Long, String> ordersAvailabilities = orderMaterialAvailability.generateMaterialAvailabilityForOrders(ids);
         List<Entity> orderPlanningListDtos = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER_PLANNING_LIST_DTO)
                 .find().add(SearchRestrictions.in("id", ids)).list().getEntities().stream()
-                .sorted(Comparator.comparing(e -> e.getDateField(OrderPlanningListDtoFields.DATE_FROM))).collect(Collectors.toList());
+                .sorted(Comparator.comparing(e -> e.getDateField(OrderPlanningListDtoFields.DATE_FROM), nullsFirst(naturalOrder()))).collect(Collectors.toList());
         for (Entity orderPlanningListDto : orderPlanningListDtos) {
             String availability = ordersAvailabilities.get(orderPlanningListDto.getId());
             orderPlanningListDto.setField("availability", availability);

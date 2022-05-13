@@ -63,6 +63,7 @@ import com.qcadoo.mes.productFlowThruDivision.constants.OrderFieldsPFTD;
 import com.qcadoo.mes.productFlowThruDivision.constants.TechnologyFieldsPFTD;
 import com.qcadoo.mes.productionCounting.constants.OrderFieldsPC;
 import com.qcadoo.mes.productionLines.constants.ProductionLineFields;
+import com.qcadoo.mes.technologies.TechnologyService;
 import com.qcadoo.mes.technologies.constants.OperationProductInComponentFields;
 import com.qcadoo.mes.technologies.constants.ProductStructureTreeNodeFields;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
@@ -115,6 +116,9 @@ public class OrdersForSubproductsGenerationService {
     private TechnologyServiceO technologyServiceO;
 
     @Autowired
+    private TechnologyService technologyService;
+
+    @Autowired
     private MaterialRequirementCoverageHelper materialRequirementCoverageHelper;
 
     @Autowired
@@ -130,8 +134,8 @@ public class OrdersForSubproductsGenerationService {
         return tree.stream()
                 .filter(node -> node.getStringField(ProductStructureTreeNodeFields.ENTITY_TYPE).equals(L_COMPONENT)
                         && (Objects.nonNull(node.getBelongsToField(ProductStructureTreeNodeFields.TECHNOLOGY))
-                                && node.getBelongsToField(ProductStructureTreeNodeFields.TECHNOLOGY)
-                                        .getStringField(TechnologyFields.STATE).equals(TechnologyState.CHECKED.getStringValue())))
+                        && node.getBelongsToField(ProductStructureTreeNodeFields.TECHNOLOGY)
+                        .getStringField(TechnologyFields.STATE).equals(TechnologyState.CHECKED.getStringValue())))
                 .collect(Collectors.toList());
     }
 
@@ -180,7 +184,7 @@ public class OrdersForSubproductsGenerationService {
 
     @Transactional
     public void generateSimpleOrderForSubProduct(final Entity entry, final Entity parentOrder, final Locale locale,
-            final int index) {
+                                                 final int index) {
         Entity order = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).create();
         Entity product = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PRODUCT)
                 .get(Long.valueOf(entry.getIntegerField("productId")));
@@ -229,7 +233,7 @@ public class OrdersForSubproductsGenerationService {
 
     @Transactional
     public void generateOrderForSubProduct(final Entity coverageProduct, final Entity parentOrder, final Locale locale,
-            final int index) {
+                                           final int index) {
         Entity order = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).create();
 
         Entity product = coverageProduct.getBelongsToField(CoverageProductFields.PRODUCT);
@@ -312,7 +316,7 @@ public class OrdersForSubproductsGenerationService {
     }
 
     private void buildProductDescription(Entity product, boolean fillOrderDescriptionBasedOnProductDescription,
-            StringBuilder descriptionBuilder) {
+                                         StringBuilder descriptionBuilder) {
         if (fillOrderDescriptionBasedOnProductDescription && Objects.nonNull(product)) {
             String productDescription = product.getStringField(ProductFields.DESCRIPTION);
             if (StringUtils.isNoneBlank(productDescription)) {
@@ -325,13 +329,9 @@ public class OrdersForSubproductsGenerationService {
     }
 
     private void getProductionLine(final Entity parentOrder, final Entity order, final Entity technology) {
-        Entity productionLine = technology.getBelongsToField(TechnologyFieldsPFTD.PRODUCTION_LINE);
+        Entity productionLine = technologyService.getProductionLine(technology).orElse(parentOrder.getBelongsToField(OrderFields.PRODUCTION_LINE));
 
-        if (Objects.nonNull(productionLine)) {
-            order.setField(OrderFields.PRODUCTION_LINE, productionLine);
-        } else {
-            order.setField(OrderFields.PRODUCTION_LINE, parentOrder.getBelongsToField(OrderFields.PRODUCTION_LINE));
-        }
+        order.setField(OrderFields.PRODUCTION_LINE, productionLine);
     }
 
     private void getDivision(final Entity parentOrder, final Entity order, final Entity technology) {

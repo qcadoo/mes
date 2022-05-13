@@ -328,22 +328,14 @@
                         <component type="hidden" name="externalSynchronized"
                                    field="externalSynchronized" reference="externalSynchronized"/>
                     </layoutElement>
-                    <layoutElement column="3" row="1">
-                        <component type="input" name="standardPerformanceTechnology"
-                                   field="standardPerformanceTechnology" reference="standardPerformanceTechnology"
-                                   hasDescription="true">
-                            <option type="alignment" value="right"/>
-                            <option type="labelWidth" value="40"/>
-                        </component>
-                    </layoutElement>
 
-                    <layoutElement column="3" row="2">
+                    <layoutElement column="3" row="1">
                         <component type="checkbox" name="additionalActions" field="additionalActions"
                                    reference="additionalActions" hasDescription="true">
                             <option type="labelWidth" value="40"/>
                         </component>
                     </layoutElement>
-                    <layoutElement column="3" row="3">
+                    <layoutElement column="3" row="2">
                         <component type="lookup" name="qualityCard" field="qualityCard"
                                    reference="qualityCard">
                             <option type="column" name="name" fields="name" link="true"
@@ -593,7 +585,7 @@
                             <dataType name="finalProduct">
                                 <option type="nodeLabelExpression"
                                         value="
-                                        (#division != null ? '&lt;i&gt;' + #division.get('name') + '&lt;/i&gt;' +' - ' : '') + (#operation.get('tj') != null ? (T(com.qcadoo.view.api.utils.TimeConverterService).convertTimeToString(#operation.get('tj')) + ' - ') : '') + (#standardPerformanceTechnology != null ?  #standardPerformanceTechnology  +' - ' : '') +
+                                        (#division != null ? '&lt;i&gt;' + #division.get('name') + '&lt;/i&gt;' +' - ' : '') + (#operation.get('tj') != null ? (T(com.qcadoo.view.api.utils.TimeConverterService).convertTimeToString(#operation.get('tj')) + ' - ') : '') + (#standardPerformance != null ?  #standardPerformance  +' - ' : '') +
                                         '&lt;span class=&quot;grey&quot;&gt;' + #product.get('number') + '&lt;/span&gt;' + ' - &lt;b&gt;' + #product.get('name') + '&lt;/b&gt; - ' + #quantity + ' ' + #product.get('unit') + ' - &lt;b&gt;' + '&lt;span style=&quot;color: #FFA319&quot;&gt;' + #operation.get('operation').get('name') + '&lt;/span&gt;' + '&lt;/b&gt;' +  (#technologyGroup != null ? ' - ' + #technologyGroup.get('number') : '')"/>
                                 <option type="nodeIcon" value="/technologies/public/css/icons/finalProductIcon16.png"/>
                                 <option type="newIcon" value="/technologies/public/css/icons/finalProductIcon16.png"/>
@@ -609,7 +601,7 @@
                             <dataType name="component">
                                 <option type="nodeLabelExpression"
                                         value="
-                                        (#division != null ? '&lt;i&gt;' + #division.get('name') + '&lt;/i&gt;' +' - ' : '') + (#operation.get('tj') != null ? (T(com.qcadoo.view.api.utils.TimeConverterService).convertTimeToString(#operation.get('tj')) + ' - ') : '') + (#standardPerformanceTechnology != null ?  #standardPerformanceTechnology +' - ' : '') +
+                                        (#division != null ? '&lt;i&gt;' + #division.get('name') + '&lt;/i&gt;' +' - ' : '') + (#operation.get('tj') != null ? (T(com.qcadoo.view.api.utils.TimeConverterService).convertTimeToString(#operation.get('tj')) + ' - ') : '') + (#standardPerformance != null ?  #standardPerformance +' - ' : '') +
                                         '&lt;span class=&quot;grey&quot;&gt;' + #product.get('number') + '&lt;/span&gt;' + ' - &lt;span style=&quot;color: #68bb25&quot;&gt;&lt;b&gt;' + #product.get('name') + '&lt;/b&gt; - ' + #quantity + ' ' + #product.get('unit') + ' - &lt;b&gt;' + '&lt;span style=&quot;color: #FFA319&quot;&gt;' + #operation.get('operation').get('name') + '&lt;/span&gt;' + ' (' + #technology.get('number') + ')' + '&lt;/b&gt;&lt;/span&gt;'  +  (#technologyGroup != null ? ' - ' + #technologyGroup.get('number')  : '')"/>
                                 <option type="nodeIcon" value="/technologies/public/css/icons/technologyIcon16.png"/>
                                 <option type="newIcon" value="/technologies/public/css/icons/technologyIcon16.png"/>

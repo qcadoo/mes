@@ -91,738 +91,746 @@ import com.qcadoo.model.api.validators.ErrorMessage;
 @Service
 public final class ProductionTrackingListenerServicePFTD {
 
-	private static final String L_ERROR_NOT_ENOUGH_RESOURCES = "materialFlow.error.position.quantity.notEnoughResources";
+    private static final String L_ERROR_NOT_ENOUGH_RESOURCES = "materialFlow.error.position.quantity.notEnoughResources";
 
-	private static final String L_USER = "user";
+    private static final String L_USER = "user";
 
-	private static final String L_QUALITY_RATING = "qualityRating";
+    private static final String L_QUALITY_RATING = "qualityRating";
 
-	@Autowired
-	private CostNormsForMaterialsService costNormsForMaterialsService;
+    @Autowired
+    private CostNormsForMaterialsService costNormsForMaterialsService;
 
-	@Autowired
-	private DocumentManagementService documentManagementService;
+    @Autowired
+    private DocumentManagementService documentManagementService;
 
-	@Autowired
-	private DataDefinitionService dataDefinitionService;
+    @Autowired
+    private DataDefinitionService dataDefinitionService;
 
-	@Autowired
-	private ParameterService parameterService;
+    @Autowired
+    private ParameterService parameterService;
 
-	@Autowired
-	private NumberService numberService;
+    @Autowired
+    private NumberService numberService;
 
-	@Autowired
-	private UnitConversionService unitConversionService;
+    @Autowired
+    private UnitConversionService unitConversionService;
 
-	@Autowired
-	private OrderClosingHelper orderClosingHelper;
+    @Autowired
+    private OrderClosingHelper orderClosingHelper;
 
-	@Autowired
-	private ProductionTrackingDocumentsHelper productionTrackingDocumentsHelper;
+    @Autowired
+    private ProductionTrackingDocumentsHelper productionTrackingDocumentsHelper;
 
-	@Autowired
-	private ProductionTrackingService productionTrackingService;
+    @Autowired
+    private ProductionTrackingService productionTrackingService;
 
-	@Autowired
-	private CurrencyService currencyService;
+    @Autowired
+    private CurrencyService currencyService;
 
-	public Entity onAccept(final Entity productionTracking, final String sourceState) {
-		boolean isCorrection = productionTracking.getBooleanField(ProductionTrackingFields.IS_CORRECTION);
+    public Entity onAccept(final Entity productionTracking, final String sourceState) {
+        boolean isCorrection = productionTracking.getBooleanField(ProductionTrackingFields.IS_CORRECTION);
 
-		if (!isCorrection && !ProductionTrackingStateStringValues.CORRECTED.equals(sourceState)) {
-			createWarehouseDocuments(productionTracking);
-		}
+        if (!isCorrection && !ProductionTrackingStateStringValues.CORRECTED.equals(sourceState)) {
+            createWarehouseDocuments(productionTracking);
+        }
 
-		return productionTracking;
-	}
+        return productionTracking;
+    }
 
-	public void createWarehouseDocuments(final Entity productionTracking) {
-		Entity order = productionTracking.getBelongsToField(ProductionTrackingFields.ORDER);
-		Entity technologyOperationComponent = productionTracking
-				.getBelongsToField(ProductionTrackingFields.TECHNOLOGY_OPERATION_COMPONENT);
-		List<Entity> trackingOperationProductOutComponents = productionTracking
-				.getHasManyField(ProductionTrackingFields.TRACKING_OPERATION_PRODUCT_OUT_COMPONENTS);
-		Multimap<Long, Entity> groupedRecordOutProducts = productionTrackingDocumentsHelper
-				.fillFromBPCProductOut(trackingOperationProductOutComponents, order, true);
-		List<Entity> trackingOperationProductInComponents = productionTracking
-				.getHasManyField(ProductionTrackingFields.TRACKING_OPERATION_PRODUCT_IN_COMPONENTS);
-		Multimap<Long, Entity> groupedRecordInProducts = productionTrackingDocumentsHelper
-				.fillFromBPCProductIn(trackingOperationProductInComponents, order, technologyOperationComponent, true);
+    public void createWarehouseDocuments(final Entity productionTracking) {
+        Entity order = productionTracking.getBelongsToField(ProductionTrackingFields.ORDER);
+        Entity technologyOperationComponent = productionTracking
+                .getBelongsToField(ProductionTrackingFields.TECHNOLOGY_OPERATION_COMPONENT);
+        List<Entity> trackingOperationProductOutComponents = productionTracking
+                .getHasManyField(ProductionTrackingFields.TRACKING_OPERATION_PRODUCT_OUT_COMPONENTS);
+        Multimap<Long, Entity> groupedRecordOutProducts = productionTrackingDocumentsHelper
+                .fillFromBPCProductOut(trackingOperationProductOutComponents, order, true);
+        List<Entity> trackingOperationProductInComponents = productionTracking
+                .getHasManyField(ProductionTrackingFields.TRACKING_OPERATION_PRODUCT_IN_COMPONENTS);
+        Multimap<Long, Entity> groupedRecordInProducts = productionTrackingDocumentsHelper
+                .fillFromBPCProductIn(trackingOperationProductInComponents, order, technologyOperationComponent, true);
 
-		boolean releaseMaterials = ReleaseOfMaterials.ON_ACCEPTANCE_REGISTRATION_RECORD.getStringValue()
-				.equals(parameterService.getParameter().getStringField(ParameterFieldsPC.RELEASE_OF_MATERIALS));
+        boolean releaseMaterials = ReleaseOfMaterials.ON_ACCEPTANCE_REGISTRATION_RECORD.getStringValue()
+                .equals(parameterService.getParameter().getStringField(ParameterFieldsPC.RELEASE_OF_MATERIALS));
 
-		if (!groupedRecordInProducts.isEmpty() && releaseMaterials &&
-				!checkIfProductsAvailableInStock(productionTracking, groupedRecordInProducts)) {
-			return;
-		}
+        if (!groupedRecordInProducts.isEmpty() && releaseMaterials &&
+                !checkIfProductsAvailableInStock(productionTracking, groupedRecordInProducts)) {
+            return;
+        }
 
-		String receiptOfProducts = parameterService.getParameter().getStringField(ParameterFieldsPC.RECEIPT_OF_PRODUCTS);
+        String receiptOfProducts = parameterService.getParameter().getStringField(ParameterFieldsPC.RECEIPT_OF_PRODUCTS);
 
-		if (ReceiptOfProducts.ON_ACCEPTANCE_REGISTRATION_RECORD.getStringValue().equals(receiptOfProducts)
-				|| ReceiptOfProducts.END_OF_THE_ORDER.getStringValue().equals(receiptOfProducts)) {
-			for (Long warehouseId : groupedRecordOutProducts.keySet()) {
-				Entity locationTo = getLocationDD().get(warehouseId);
-				Entity inboundDocument = createOrUpdateInternalInboundDocumentForFinalProducts(locationTo, order,
-						groupedRecordOutProducts.get(warehouseId), productionTracking.getBelongsToField(L_USER));
+        if (ReceiptOfProducts.ON_ACCEPTANCE_REGISTRATION_RECORD.getStringValue().equals(receiptOfProducts)
+                || ReceiptOfProducts.END_OF_THE_ORDER.getStringValue().equals(receiptOfProducts)) {
+            for (Long warehouseId : groupedRecordOutProducts.keySet()) {
+                Entity locationTo = getLocationDD().get(warehouseId);
+                Entity inboundDocument = createOrUpdateInternalInboundDocumentForFinalProducts(locationTo, order,
+                        groupedRecordOutProducts.get(warehouseId), productionTracking.getBelongsToField(L_USER));
 
-				if (Objects.nonNull(inboundDocument) && !inboundDocument.isValid()) {
-					for (ErrorMessage error : inboundDocument.getGlobalErrors()) {
-						productionTracking.addGlobalError(error.getMessage(), error.getVars());
-					}
+                if (Objects.nonNull(inboundDocument) && !inboundDocument.isValid()) {
+                    for (ErrorMessage error : inboundDocument.getGlobalErrors()) {
+                        productionTracking.addGlobalError(error.getMessage(), error.getVars());
+                    }
 
-					productionTracking.addGlobalError(
-							"productFlowThruDivision.productionTracking.productionTrackingError.createInternalInboundDocument");
+                    productionTracking.addGlobalError(
+                            "productFlowThruDivision.productionTracking.productionTrackingError.createInternalInboundDocument");
 
-					return;
-				}
-			}
+                    return;
+                }
+            }
 
-			TransactionAspectSupport.currentTransactionStatus().flush();
-		}
+            TransactionAspectSupport.currentTransactionStatus().flush();
+        }
 
-		String releaseOfMaterials = parameterService.getParameter().getStringField(ParameterFieldsPC.RELEASE_OF_MATERIALS);
+        String releaseOfMaterials = parameterService.getParameter().getStringField(ParameterFieldsPC.RELEASE_OF_MATERIALS);
 
-		if (ReleaseOfMaterials.ON_ACCEPTANCE_REGISTRATION_RECORD.getStringValue().equals(releaseOfMaterials)) {
-			boolean errorsDisplayed = false;
+        if (ReleaseOfMaterials.ON_ACCEPTANCE_REGISTRATION_RECORD.getStringValue().equals(releaseOfMaterials)) {
+            boolean errorsDisplayed = false;
 
-			for (Long warehouseId : groupedRecordInProducts.keySet()) {
-				Entity locationFrom = getLocationDD().get(warehouseId);
-				Entity outboundDocument = createInternalOutboundDocumentForComponents(locationFrom, order,
-						groupedRecordInProducts.get(warehouseId), productionTracking.getBelongsToField(L_USER));
+            for (Long warehouseId : groupedRecordInProducts.keySet()) {
+                Entity locationFrom = getLocationDD().get(warehouseId);
+                Entity outboundDocument = createInternalOutboundDocumentForComponents(locationFrom, order,
+                        groupedRecordInProducts.get(warehouseId), productionTracking.getBelongsToField(L_USER));
 
-				if (Objects.nonNull(outboundDocument) && !outboundDocument.isValid()) {
-					for (ErrorMessage error : outboundDocument.getGlobalErrors()) {
-						if (error.getMessage().equalsIgnoreCase(L_ERROR_NOT_ENOUGH_RESOURCES)) {
-							productionTracking.addGlobalError(error.getMessage(), false, error.getVars());
-						} else if (!errorsDisplayed) {
-							productionTracking.addGlobalError(error.getMessage(), error.getVars());
-						}
-					}
-
-					if (!errorsDisplayed) {
-						productionTracking.addGlobalError(
-								"productFlowThruDivision.productionTracking.productionTrackingError.createInternalOutboundDocument");
-
-						errorsDisplayed = true;
-					}
-				}
-			}
+                if (Objects.nonNull(outboundDocument) && !outboundDocument.isValid()) {
+                    for (ErrorMessage error : outboundDocument.getGlobalErrors()) {
+                        if (error.getMessage().equalsIgnoreCase(L_ERROR_NOT_ENOUGH_RESOURCES)) {
+                            productionTracking.addGlobalError(error.getMessage(), false, error.getVars());
+                        } else if (!errorsDisplayed) {
+                            productionTracking.addGlobalError(error.getMessage(), error.getVars());
+                        }
+                    }
+
+                    if (!errorsDisplayed) {
+                        productionTracking.addGlobalError(
+                                "productFlowThruDivision.productionTracking.productionTrackingError.createInternalOutboundDocument");
+
+                        errorsDisplayed = true;
+                    }
+                }
+            }
 
-			if (errorsDisplayed) {
-				return;
-			}
+            if (errorsDisplayed) {
+                return;
+            }
 
-			updateCostsForOrder(order);
-		}
-	}
+            updateCostsForOrder(order);
+        }
+    }
 
-	private boolean checkIfProductsAvailableInStock(final Entity productionTracking, final Multimap<Long, Entity> groupedRecordInProducts) {
-		DataDefinition warehouseDD = dataDefinitionService.get(MaterialFlowConstants.PLUGIN_IDENTIFIER,
-				MaterialFlowConstants.MODEL_LOCATION);
-
-		for (Long warehouseId : groupedRecordInProducts.keySet()) {
-			List<Entity> trackingOperationProductInComponents = (List<Entity>) groupedRecordInProducts.get(warehouseId);
-			Entity warehouse = warehouseDD.get(warehouseId);
+    private boolean checkIfProductsAvailableInStock(final Entity productionTracking, final Multimap<Long, Entity> groupedRecordInProducts) {
+        DataDefinition warehouseDD = dataDefinitionService.get(MaterialFlowConstants.PLUGIN_IDENTIFIER,
+                MaterialFlowConstants.MODEL_LOCATION);
+
+        for (Long warehouseId : groupedRecordInProducts.keySet()) {
+            List<Entity> trackingOperationProductInComponents = (List<Entity>) groupedRecordInProducts.get(warehouseId);
+            Entity warehouse = warehouseDD.get(warehouseId);
 
-			Map<Long, Map<String, BigDecimal>> productAndQuantities =
-					productionTrackingDocumentsHelper.getQuantitiesForProductsAndLocation(trackingOperationProductInComponents, warehouse);
+            Map<Long, Map<String, BigDecimal>> productAndQuantities =
+                    productionTrackingDocumentsHelper.getQuantitiesForProductsAndLocation(trackingOperationProductInComponents, warehouse);
 
-			checkIfResourcesAreSufficient(productionTracking, productAndQuantities, trackingOperationProductInComponents, warehouse);
-		}
+            checkIfResourcesAreSufficient(productionTracking, productAndQuantities, trackingOperationProductInComponents, warehouse);
+        }
 
-		return productionTracking.isValid();
-	}
+        return productionTracking.isValid();
+    }
 
-	private boolean checkIfResourcesAreSufficient(final Entity productionTracking, final Map<Long, Map<String, BigDecimal>> quantitiesInWarehouse,
-												  final Collection<Entity> trackingOperationProductInComponents, final Entity warehouse) {
-		List<String> errorProducts = Lists.newArrayList();
-		StringBuilder errorMessage = new StringBuilder();
+    private boolean checkIfResourcesAreSufficient(final Entity productionTracking, final Map<Long, Map<String, BigDecimal>> quantitiesInWarehouse,
+                                                  final Collection<Entity> trackingOperationProductInComponents, final Entity warehouse) {
+        List<String> errorProducts = Lists.newArrayList();
+        StringBuilder errorMessage = new StringBuilder();
 
-		String warehouseNumber = warehouse.getStringField(LocationFields.NUMBER);
+        String warehouseNumber = warehouse.getStringField(LocationFields.NUMBER);
 
-		for (Entity trackingOperationProductInComponent : trackingOperationProductInComponents) {
-			Entity product = trackingOperationProductInComponent.getBelongsToField(TrackingOperationProductInComponentFields.PRODUCT);
-			List<Entity> usedBatches = trackingOperationProductInComponent.getHasManyField(TrackingOperationProductInComponentFields.USED_BATCHES);
-
-			Map<String, BigDecimal> batchQuantities = quantitiesInWarehouse.get(product.getId());
+        for (Entity trackingOperationProductInComponent : trackingOperationProductInComponents) {
+            Entity product = trackingOperationProductInComponent.getBelongsToField(TrackingOperationProductInComponentFields.PRODUCT);
+            List<Entity> usedBatches = trackingOperationProductInComponent.getHasManyField(TrackingOperationProductInComponentFields.USED_BATCHES);
+
+            Map<String, BigDecimal> batchQuantities = quantitiesInWarehouse.get(product.getId());
 
-			if (Objects.isNull(batchQuantities)) {
-				errorProducts.add(product.getStringField(ProductFields.NUMBER));
-			} else {
-				if (usedBatches.isEmpty()) {
-					BigDecimal quantity = trackingOperationProductInComponent.getDecimalField(TrackingOperationProductInComponentFields.USED_QUANTITY);
-
-					BigDecimal availableQuantity = batchQuantities.values().stream().reduce(BigDecimal.ZERO, BigDecimal::add);
-
-					if (Objects.isNull(availableQuantity) || quantity.compareTo(availableQuantity) > 0) {
-						errorProducts.add(product.getStringField(ProductFields.NUMBER));
-					}
-				} else {
-					usedBatches.forEach(usedBatch -> {
-						String batchNumber = usedBatch.getBelongsToField(UsedBatchFields.BATCH).getStringField(BatchFields.NUMBER);
-						BigDecimal quantity = usedBatch.getDecimalField(UsedBatchFields.QUANTITY);
-
-						BigDecimal availableQuantity = batchQuantities.get(batchNumber);
-
-						if (Objects.isNull(availableQuantity) || quantity.compareTo(availableQuantity) > 0) {
-							errorProducts.add(product.getStringField(ProductFields.NUMBER));
-						}
-					});
-				}
-			}
-		}
-
-		if (errorProducts.isEmpty()) {
-			return true;
-		}
-
-		errorMessage.append(errorProducts.stream().distinct().collect(Collectors.joining(", ")));
-
-		if (errorMessage.length() + warehouseNumber.length() < 255) {
-			productionTracking.addGlobalError("materialFlow.error.position.quantity.notEnoughResources", false,
-					errorMessage.toString(), warehouseNumber);
-		} else {
-			errorProducts.forEach(errorProduct ->
-					productionTracking.addGlobalError("materialFlow.error.position.quantity.notEnoughResources", false,
-							errorProduct, warehouseNumber)
-			);
-		}
-
-		return false;
-	}
-
-	public Entity createInternalOutboundDocumentForComponents(final Entity locationFrom, final Entity order,
-															  final Collection<Entity> trackingOperationProductInComponents, final Entity user) {
-		DocumentBuilder internalOutboundBuilder = documentManagementService.getDocumentBuilder(user);
-
-		internalOutboundBuilder.internalOutbound(locationFrom);
-
-		HashSet<Entity> productsWithoutDuplicates = Sets.newHashSet();
-
-		DataDefinition positionDD = getPositionDD();
-
-		for (Entity trackingOperationProductInComponent : trackingOperationProductInComponents) {
-			List<Entity> usedBatches = trackingOperationProductInComponent.getHasManyField(TrackingOperationProductInComponentFields.USED_BATCHES);
-
-			Entity product = trackingOperationProductInComponent.getBelongsToField(TrackingOperationProductInComponentFields.PRODUCT);
-
-			if (!productsWithoutDuplicates.contains(product)) {
-				if (usedBatches.isEmpty()) {
-					Entity position = preparePositionForInProduct(positionDD, trackingOperationProductInComponent, product);
-
-					internalOutboundBuilder.addPosition(position);
-				} else {
-					for (Entity usedBatch : usedBatches) {
-						Entity position = preparePositionForUsedBatch(positionDD, trackingOperationProductInComponent, product, usedBatch);
-
-						internalOutboundBuilder.addPosition(position);
-					}
-				}
-			}
-
-			productsWithoutDuplicates.add(product);
-		}
-
-		internalOutboundBuilder.setField(DocumentFieldsPFTD.ORDER, order);
-
-		return internalOutboundBuilder.setAccepted().buildWithEntityRuntimeException();
-	}
-
-	private Entity preparePositionForUsedBatch(final DataDefinition positionDD, final Entity trackingOperationProductInComponent,
-											   final Entity product, final Entity usedBatch) {
-		Entity position = positionDD.create();
-
-		BigDecimal usedQuantity = usedBatch.getDecimalField(UsedBatchFields.QUANTITY);
-		BigDecimal givenQuantity = productionTrackingService.calculateGivenQuantity(trackingOperationProductInComponent, usedQuantity)
-				.orElse(usedQuantity);
-		BigDecimal conversion = BigDecimal.ONE;
-		String unit = product.getStringField(ProductFields.UNIT);
-		String givenUnit = trackingOperationProductInComponent.getStringField(TrackingOperationProductOutComponentFields.GIVEN_UNIT);
-
-		if (Objects.nonNull(usedQuantity)) {
-			PossibleUnitConversions unitConversions = unitConversionService.getPossibleConversions(unit,
-					searchCriteriaBuilder -> searchCriteriaBuilder
-							.add(SearchRestrictions.belongsTo(UnitConversionItemFieldsB.PRODUCT, product)));
-
-			if (unitConversions.isDefinedFor(givenUnit)) {
-				conversion = numberService.setScaleWithDefaultMathContext(unitConversions.asUnitToConversionMap().get(givenUnit));
-			}
-		}
-
-		position.setField(PositionFields.GIVEN_UNIT,
-				trackingOperationProductInComponent.getStringField(TrackingOperationProductInComponentFields.GIVEN_UNIT));
-		position.setField(PositionFields.PRODUCT, product);
-		position.setField(PositionFields.QUANTITY, usedQuantity);
-		position.setField(PositionFields.GIVEN_QUANTITY, givenQuantity);
-		position.setField(PositionFields.CONVERSION, conversion);
-		position.setField(PositionFields.BATCH, usedBatch.getBelongsToField(UsedBatchFields.BATCH).getId());
-
-		return position;
-	}
-
-	private Entity preparePositionForInProduct(final DataDefinition positionDD, final Entity trackingOperationProductInComponent,
-											   final Entity product) {
-		Entity position = positionDD.create();
-
-		BigDecimal usedQuantity = trackingOperationProductInComponent.getDecimalField(TrackingOperationProductInComponentFields.USED_QUANTITY);
-		BigDecimal givenQuantity = trackingOperationProductInComponent.getDecimalField(TrackingOperationProductInComponentFields.GIVEN_QUANTITY);
-		BigDecimal conversion = BigDecimal.ONE;
-		String unit = product.getStringField(ProductFields.UNIT);
-		String givenUnit = trackingOperationProductInComponent.getStringField(TrackingOperationProductOutComponentFields.GIVEN_UNIT);
-
-		if (Objects.nonNull(usedQuantity) && Objects.nonNull(givenQuantity)) {
-			PossibleUnitConversions unitConversions = unitConversionService.getPossibleConversions(unit,
-					searchCriteriaBuilder -> searchCriteriaBuilder
-							.add(SearchRestrictions.belongsTo(UnitConversionItemFieldsB.PRODUCT, product)));
-
-			if (unitConversions.isDefinedFor(givenUnit)) {
-				conversion = numberService.setScaleWithDefaultMathContext(unitConversions.asUnitToConversionMap().get(givenUnit));
-			}
-		}
-
-		position.setField(PositionFields.GIVEN_UNIT,
-				trackingOperationProductInComponent.getStringField(TrackingOperationProductInComponentFields.GIVEN_UNIT));
-		position.setField(PositionFields.PRODUCT, product);
-		position.setField(PositionFields.QUANTITY, usedQuantity);
-		position.setField(PositionFields.GIVEN_QUANTITY, givenQuantity);
-		position.setField(PositionFields.CONVERSION, conversion);
-
-		return position;
-	}
-
-	private Entity createOrUpdateInternalInboundDocumentForFinalProducts(final Entity locationTo, final Entity order,
-																		 final Collection<Entity> trackingOperationProductOutComponents, final Entity user) {
-		String receiptOfProducts = parameterService.getParameter().getStringField(ParameterFieldsPC.RECEIPT_OF_PRODUCTS);
-
-		List<Entity> finalProductRecord = null;
-
-		Collection<Entity> intermediateRecords = Lists.newArrayList();
-
-		for (Entity trackingOperationProductOutComponent : trackingOperationProductOutComponents) {
-			if (isFinalProductForOrder(order,
-					trackingOperationProductOutComponent.getBelongsToField(TrackingOperationProductOutComponentFields.PRODUCT))) {
-				finalProductRecord = Lists.newArrayList(trackingOperationProductOutComponent);
-			} else {
-				intermediateRecords.add(trackingOperationProductOutComponent);
-			}
-		}
-
-		if (ReceiptOfProducts.ON_ACCEPTANCE_REGISTRATION_RECORD.getStringValue().equals(receiptOfProducts)) {
-			if (Objects.nonNull(finalProductRecord)) {
-				Entity inboundForFinalProduct = createInternalInboundDocumentForFinalProducts(locationTo, order,
-						finalProductRecord, true, user);
-
-				if (Objects.nonNull(inboundForFinalProduct) && !inboundForFinalProduct.isValid()
-						|| intermediateRecords.isEmpty()) {
-					return inboundForFinalProduct;
-				}
-			}
-
-			return createInternalInboundDocumentForFinalProducts(locationTo, order, intermediateRecords, true, user);
-		} else if (ReceiptOfProducts.END_OF_THE_ORDER.getStringValue().equals(receiptOfProducts)) {
-			Entity existingInboundDocument = getDocumentDD().find()
-					.add(SearchRestrictions.belongsTo(DocumentFieldsPFTD.ORDER, order))
-					.add(SearchRestrictions.belongsTo(DocumentFields.LOCATION_TO, locationTo))
-					.add(SearchRestrictions.eq(DocumentFields.STATE, DocumentState.DRAFT.getStringValue()))
-					.add(SearchRestrictions.eq(DocumentFields.TYPE, DocumentType.INTERNAL_INBOUND.getStringValue()))
-					.setMaxResults(1).uniqueResult();
-
-			if (Objects.nonNull(existingInboundDocument)) {
-				if (Objects.nonNull(finalProductRecord)) {
-					return updateInternalInboundDocumentForFinalProducts(order, existingInboundDocument,
-							finalProductRecord, true);
-				} else {
-					return updateInternalInboundDocumentForFinalProducts(order, existingInboundDocument,
-							intermediateRecords, false);
-				}
-			} else {
-				if (Objects.nonNull(finalProductRecord)) {
-					Entity inboundForFinalProduct = createInternalInboundDocumentForFinalProducts(locationTo, order,
-							finalProductRecord, user);
-
-					if (Objects.nonNull(inboundForFinalProduct) && !inboundForFinalProduct.isValid()
-							|| intermediateRecords.isEmpty()) {
-						return inboundForFinalProduct;
-					}
-				}
-			}
-
-			return createInternalInboundDocumentForFinalProducts(locationTo, order, intermediateRecords, user);
-		} else {
-			return null;
-		}
-	}
-
-	private Entity updateInternalInboundDocumentForFinalProducts(final Entity order, final Entity existingInboundDocument,
-																 final Collection<Entity> trackingOperationProductOutComponents, boolean isFinalProduct) {
-		DataDefinition positionDD = getPositionDD();
-
-		List<Entity> positions = Lists.newArrayList(existingInboundDocument.getHasManyField(DocumentFields.POSITIONS));
-
-		for (Entity trackingOperationProductOutComponent : trackingOperationProductOutComponents) {
-			Entity outProduct = trackingOperationProductOutComponent.getBelongsToField(TrackingOperationProductOutComponentFields.PRODUCT);
-			Entity outBatch = trackingOperationProductOutComponent.getBelongsToField(TrackingOperationProductOutComponentFields.PRODUCTION_TRACKING)
-					.getBelongsToField(ProductionTrackingFields.BATCH);
-			if (!isFinalProduct) {
-				outBatch = null;
-			}
-
-			Entity storageLocation = trackingOperationProductOutComponent
-					.getBelongsToField(TrackingOperationProductOutComponentFields.STORAGE_LOCATION);
-			Entity palletNumber = trackingOperationProductOutComponent
-					.getBelongsToField(TrackingOperationProductOutComponentFields.PALLET_NUMBER);
-
-			java.util.Optional<BigDecimal> usedQuantity = Optional
-					.ofNullable(trackingOperationProductOutComponent.getDecimalField(TrackingOperationProductInComponentFields.USED_QUANTITY));
-			java.util.Optional<BigDecimal> givenQuantity = Optional
-					.ofNullable(trackingOperationProductOutComponent.getDecimalField(TrackingOperationProductInComponentFields.GIVEN_QUANTITY));
-			java.util.Optional<String> givenUnit = Optional
-					.ofNullable(trackingOperationProductOutComponent.getStringField(TrackingOperationProductInComponentFields.GIVEN_UNIT));
-
-			Entity existingPosition = filterPosition(positions, outProduct, givenUnit.orElse(null), outBatch, storageLocation, palletNumber);
-
-			if (Objects.nonNull(existingPosition)) {
-				java.util.Optional<BigDecimal> quantity = Optional
-						.ofNullable(existingPosition.getDecimalField(PositionFields.QUANTITY));
-				java.util.Optional<BigDecimal> givenQuantityFromPosition = Optional
-						.ofNullable(existingPosition.getDecimalField(PositionFields.GIVEN_QUANTITY));
-
-				existingPosition.setField(PositionFields.QUANTITY,
-						quantity.orElse(BigDecimal.ZERO).add(usedQuantity.orElse(BigDecimal.ZERO)));
-
-				if (givenQuantity.isPresent()) {
-					existingPosition.setField(PositionFields.GIVEN_QUANTITY,
-							givenQuantity.orElse(BigDecimal.ZERO).add(givenQuantityFromPosition.orElse(BigDecimal.ZERO)));
-				}
-
-				fillAttributes(trackingOperationProductOutComponent, existingPosition);
-				existingPosition.setField(PositionFields.GIVEN_UNIT, givenUnit.get());
-			} else {
-				Entity productionTracking = trackingOperationProductOutComponent
-						.getBelongsToField(TrackingOperationProductOutComponentFields.PRODUCTION_TRACKING);
-
-				Entity position = positionDD.create();
-
-				position.setField(PositionFields.PRODUCT, outProduct);
-				position.setField(PositionFields.QUANTITY, usedQuantity.get());
-
-				BigDecimal conversion = BigDecimal.ONE;
-				String unit = outProduct.getStringField(ProductFields.UNIT);
-
-				if (givenQuantity.isPresent()) {
-					PossibleUnitConversions unitConversions = unitConversionService.getPossibleConversions(unit,
-							searchCriteriaBuilder -> searchCriteriaBuilder
-									.add(SearchRestrictions.belongsTo(UnitConversionItemFieldsB.PRODUCT, outProduct)));
-
-					if (unitConversions.isDefinedFor(givenUnit.get())) {
-						conversion = numberService
-								.setScaleWithDefaultMathContext(unitConversions.asUnitToConversionMap().get(givenUnit.get()));
-					}
-
-					position.setField(PositionFields.GIVEN_QUANTITY, givenQuantity.get());
-				}
-
-				position.setField(PositionFields.GIVEN_UNIT, givenUnit.get());
-				position.setField(PositionFields.CONVERSION, conversion);
-				position.setField(PositionFields.PRODUCTION_DATE, new Date());
-
-				String priceBasedOn = parameterService.getParameter().getStringField(ParameterFieldsPC.PRICE_BASED_ON);
-
-				boolean isNominalProductCost = Objects.nonNull(priceBasedOn)
-						&& priceBasedOn.equals(PriceBasedOn.NOMINAL_PRODUCT_COST.getStringValue());
-
-				if (isNominalProductCost) {
-					position.setField(PositionFields.PRICE, getNominalCost(outProduct));
-				}
-
-				Entity batch = productionTracking.getBelongsToField(ProductionTrackingFields.BATCH);
-
-				if (Objects.nonNull(batch) && batch.getBelongsToField(BatchFields.PRODUCT).getId().equals(outProduct.getId())) {
-					position.setField(PositionFields.BATCH,
-							productionTracking.getBelongsToField(ProductionTrackingFields.BATCH).getId());
-					position.setField(PositionFields.QUALITY_RATING, productionTracking.getStringField(L_QUALITY_RATING));
-				} else if (order.getBelongsToField(OrderFields.PRODUCT).getId().equals(outProduct.getId())) {
-					position.setField(PositionFields.QUALITY_RATING, productionTracking.getStringField(L_QUALITY_RATING));
-				}
-
-				if (Objects.nonNull(
-						trackingOperationProductOutComponent.getBelongsToField(TrackingOperationProductOutComponentFields.STORAGE_LOCATION))) {
-					position.setField(PositionFields.STORAGE_LOCATION, trackingOperationProductOutComponent
-							.getBelongsToField(TrackingOperationProductOutComponentFields.STORAGE_LOCATION).getId());
-				}
-
-				if (Objects.nonNull(
-						trackingOperationProductOutComponent.getBelongsToField(TrackingOperationProductOutComponentFields.PALLET_NUMBER))) {
-					position.setField(PositionFields.PALLET_NUMBER, trackingOperationProductOutComponent
-							.getBelongsToField(TrackingOperationProductOutComponentFields.PALLET_NUMBER).getId());
-				}
-
-				if (order.getBelongsToField(OrderFields.PRODUCT).getId().equals(outProduct.getId())) {
-					position.setField(PositionFields.EXPIRATION_DATE,
-							productionTracking.getDateField(ProductionTrackingFields.EXPIRATION_DATE));
-				}
-
-				fillAttributes(trackingOperationProductOutComponent, position);
-
-				positions.add(position);
-			}
-		}
-
-		existingInboundDocument.setField(DocumentFields.POSITIONS, positions);
-
-		return existingInboundDocument.getDataDefinition().save(existingInboundDocument);
-	}
-
-	private void fillAttributes(final Entity trackingOperationProductOutComponent, final Entity position) {
-		List<Entity> attributes = Lists.newArrayList();
-
-		trackingOperationProductOutComponent.getHasManyField(TrackingOperationProductOutComponentFields.PROD_OUT_RESOURCE_ATTR_VALS).forEach(aVal -> {
-			Entity docPositionAtrrVal = dataDefinitionService.get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER,
-					MaterialFlowResourcesConstants.MODEL_POSITION_ATTRIBUTE_VALUE).create();
-			docPositionAtrrVal.setField(PositionAttributeValueFields.ATTRIBUTE,
-					aVal.getBelongsToField(ProdOutResourceAttrValFields.ATTRIBUTE).getId());
-
-			if (Objects.nonNull(aVal.getBelongsToField(PositionAttributeValueFields.ATTRIBUTE_VALUE))) {
-				docPositionAtrrVal.setField(PositionAttributeValueFields.ATTRIBUTE_VALUE,
-						aVal.getBelongsToField(ProdOutResourceAttrValFields.ATTRIBUTE_VALUE).getId());
-			}
-
-			docPositionAtrrVal.setField(PositionAttributeValueFields.VALUE,
-					aVal.getStringField(ProdOutResourceAttrValFields.VALUE));
-
-			attributes.add(docPositionAtrrVal);
-		});
-
-		position.setField(PositionFields.POSITION_ATTRIBUTE_VALUES, attributes);
-	}
-
-	private Entity filterPosition(final List<Entity> existingPositions, final Entity outProduct, final String givenUnit,
-								  final Entity outBatch, final Entity storageLocation, Entity palletNumber) {
-		for (Entity position : existingPositions) {
-			if (checkPositionConditions(position, outProduct, givenUnit, outBatch, storageLocation, palletNumber)) {
-				return position;
-			}
-		}
-
-		return null;
-	}
-
-	private boolean checkPositionConditions(final Entity position, final Entity outProduct, final String givenUnit,
-											final Entity outBatch, final Entity storageLocation, final Entity palletNumber) {
-		boolean isPosition = true;
-
-		if (!position.getBelongsToField(PositionFields.PRODUCT).getId().equals(outProduct.getId())) {
-			isPosition = false;
-		}
-
-		if (StringUtils.isNoneBlank(givenUnit) && !position.getStringField(PositionFields.GIVEN_UNIT).equals(givenUnit)) {
-			isPosition = false;
-		}
-
-		if (Objects.nonNull(outBatch) && Objects.nonNull(position.getBelongsToField(PositionFields.BATCH))) {
-			if (!position.getBelongsToField(PositionFields.BATCH).getId().equals(outBatch.getId())) {
-				isPosition = false;
-			}
-		} else if ((Objects.isNull(outBatch) && Objects.nonNull(position.getBelongsToField(PositionFields.BATCH)))
-				|| (Objects.nonNull(outBatch) && Objects.isNull(position.getBelongsToField(PositionFields.BATCH)))) {
-			isPosition = false;
-		}
-
-		if (Objects.nonNull(storageLocation) && Objects.nonNull(position.getBelongsToField(PositionFields.STORAGE_LOCATION))) {
-			if (!position.getBelongsToField(PositionFields.STORAGE_LOCATION).getId().equals(storageLocation.getId())) {
-				isPosition = false;
-			}
-		} else if ((Objects.isNull(storageLocation)
-				&& Objects.nonNull(position.getBelongsToField(PositionFields.STORAGE_LOCATION)))
-				|| (Objects.nonNull(storageLocation)
-				&& Objects.isNull(position.getBelongsToField(PositionFields.STORAGE_LOCATION)))) {
-			isPosition = false;
-		}
-
-		if (Objects.nonNull(palletNumber) && Objects.nonNull(position.getBelongsToField(PositionFields.PALLET_NUMBER))) {
-			if (!position.getBelongsToField(PositionFields.PALLET_NUMBER).getId().equals(palletNumber.getId())) {
-				isPosition = false;
-			}
-		} else if ((Objects.isNull(palletNumber)
-				&& Objects.nonNull(position.getBelongsToField(PositionFields.PALLET_NUMBER)))
-				|| (Objects.nonNull(palletNumber)
-				&& Objects.isNull(position.getBelongsToField(PositionFields.PALLET_NUMBER)))) {
-			isPosition = false;
-		}
-
-		return isPosition;
-	}
-
-	public Entity createInternalInboundDocumentForFinalProducts(final Entity locationTo, final Entity order,
-																final Collection<Entity> trackingOperationProductOutComponents, Entity user) {
-		String priceBasedOn = parameterService.getParameter().getStringField(ParameterFieldsPC.PRICE_BASED_ON);
-
-		boolean isNominalProductCost = Objects.nonNull(priceBasedOn)
-				&& priceBasedOn.equals(PriceBasedOn.NOMINAL_PRODUCT_COST.getStringValue());
-
-		return createInternalInboundDocumentForFinalProducts(locationTo, order, trackingOperationProductOutComponents, isNominalProductCost, user);
-	}
-
-	private Entity createInternalInboundDocumentForFinalProducts(final Entity locationTo, final Entity order,
-																 final Collection<Entity> trackingOperationProductOutComponents, final boolean isBasedOnNominalCost, Entity user) {
-		DocumentBuilder internalInboundBuilder = documentManagementService.getDocumentBuilder(user);
-
-		internalInboundBuilder.internalInbound(locationTo);
-
-		boolean isFinalProduct = false;
-
-		Entity productionTracking = null;
-
-		for (Entity trackingOperationProductOutComponent : trackingOperationProductOutComponents) {
-			Entity outProduct = trackingOperationProductOutComponent.getBelongsToField(TrackingOperationProductOutComponentFields.PRODUCT);
-
-			if (Objects.isNull(productionTracking)) {
-				productionTracking = trackingOperationProductOutComponent
-						.getBelongsToField(TrackingOperationProductOutComponentFields.PRODUCTION_TRACKING);
-			}
-
-			if (isFinalProductForOrder(order, outProduct)) {
-				isFinalProduct = true;
-			}
-
-			Entity position = getPositionDD().create();
-
-			BigDecimal usedQuantity = trackingOperationProductOutComponent.getDecimalField(TrackingOperationProductOutComponentFields.USED_QUANTITY);
-			BigDecimal givenQuantity = trackingOperationProductOutComponent
-					.getDecimalField(TrackingOperationProductOutComponentFields.GIVEN_QUANTITY);
-			BigDecimal conversion = BigDecimal.ONE;
-			String unit = outProduct.getStringField(ProductFields.UNIT);
-			String givenUnit = trackingOperationProductOutComponent.getStringField(TrackingOperationProductOutComponentFields.GIVEN_UNIT);
-
-			if (Objects.nonNull(usedQuantity) && Objects.nonNull(givenQuantity)) {
-				PossibleUnitConversions unitConversions = unitConversionService.getPossibleConversions(unit,
-						searchCriteriaBuilder -> searchCriteriaBuilder
-								.add(SearchRestrictions.belongsTo(UnitConversionItemFieldsB.PRODUCT, outProduct)));
-
-				if (unitConversions.isDefinedFor(givenUnit)) {
-					conversion = numberService
-							.setScaleWithDefaultMathContext(unitConversions.asUnitToConversionMap().get(givenUnit));
-				}
-			}
-
-			position.setField(PositionFields.PRODUCT, outProduct);
-			position.setField(PositionFields.QUANTITY, usedQuantity);
-			position.setField(PositionFields.CONVERSION, conversion);
-			position.setField(PositionFields.GIVEN_QUANTITY, givenQuantity);
-			position.setField(PositionFields.GIVEN_UNIT,
-					trackingOperationProductOutComponent.getStringField(TrackingOperationProductOutComponentFields.GIVEN_UNIT));
-
-			if (isBasedOnNominalCost) {
-				position.setField(PositionFields.PRICE, getNominalCost(outProduct));
-			}
-
-			position.setField(PositionFields.PRODUCTION_DATE, new Date());
-
-			Entity batch = productionTracking.getBelongsToField(ProductionTrackingFields.BATCH);
-
-			if (Objects.nonNull(batch) && batch.getBelongsToField(BatchFields.PRODUCT).getId().equals(outProduct.getId())) {
-				position.setField(PositionFields.BATCH,
-						productionTracking.getBelongsToField(ProductionTrackingFields.BATCH).getId());
-				position.setField(PositionFields.QUALITY_RATING, productionTracking.getStringField(L_QUALITY_RATING));
-			} else if (order.getBelongsToField(OrderFields.PRODUCT).getId().equals(outProduct.getId())) {
-				position.setField(PositionFields.QUALITY_RATING, productionTracking.getStringField(L_QUALITY_RATING));
-			}
-
-			if (Objects
-					.nonNull(trackingOperationProductOutComponent.getBelongsToField(TrackingOperationProductOutComponentFields.STORAGE_LOCATION))) {
-				position.setField(PositionFields.STORAGE_LOCATION,
-						trackingOperationProductOutComponent.getBelongsToField(TrackingOperationProductOutComponentFields.STORAGE_LOCATION).getId());
-			}
-
-			if (Objects
-					.nonNull(trackingOperationProductOutComponent.getBelongsToField(TrackingOperationProductOutComponentFields.PALLET_NUMBER))) {
-				position.setField(PositionFields.PALLET_NUMBER,
-						trackingOperationProductOutComponent.getBelongsToField(TrackingOperationProductOutComponentFields.PALLET_NUMBER).getId());
-			}
-
-			if (order.getBelongsToField(OrderFields.PRODUCT).getId().equals(outProduct.getId())) {
-				position.setField(PositionFields.EXPIRATION_DATE,
-						productionTracking.getDateField(ProductionTrackingFields.EXPIRATION_DATE));
-			}
-
-			fillAttributes(trackingOperationProductOutComponent, position);
-
-			internalInboundBuilder.addPosition(position);
-		}
-
-		internalInboundBuilder.setField(DocumentFieldsPFTD.ORDER, order);
-
-		String receiptOfProducts = parameterService.getParameter().getStringField(ParameterFieldsPC.RECEIPT_OF_PRODUCTS);
-
-		if (ReceiptOfProducts.ON_ACCEPTANCE_REGISTRATION_RECORD.getStringValue().equals(receiptOfProducts)
-				&& (OrderState.COMPLETED.equals(OrderState.of(order)) || !isFinalProduct || isBasedOnNominalCost
-				|| orderClosingHelper.orderShouldBeClosedWithRecalculate(productionTracking))
-				|| orderClosingHelper.orderShouldBeClosedWithRecalculate(productionTracking)) {
-			internalInboundBuilder.setAccepted();
-		}
-
-		return internalInboundBuilder.buildWithEntityRuntimeException();
-	}
-
-	private BigDecimal getNominalCost(final Entity product) {
-		BigDecimal nominalCost = BigDecimalUtils.convertNullToZero(product.getDecimalField("nominalCost"));
-		Entity currency = product.getBelongsToField("nominalCostCurrency");
-
-		if (Objects.nonNull(currency) && CurrencyService.PLN.equals(currencyService.getCurrencyAlphabeticCode())
-				&& !CurrencyService.PLN.equals(currency.getStringField(CurrencyFields.ALPHABETIC_CODE))) {
-			nominalCost = currencyService.getConvertedValue(nominalCost, currency);
-		}
-
-		return nominalCost;
-	}
-
-	private boolean isFinalProductForOrder(final Entity order, final Entity product) {
-		return order.getBelongsToField(OrderFields.PRODUCT).getId().equals(product.getId());
-	}
-
-	public void updateCostsForOrder(final Entity order) {
-		DataDefinition positionDD = getPositionDD();
-
-		SearchQueryBuilder searchQueryBuilder = positionDD
-				.find("SELECT pr.id AS product, SUM(p.quantity) AS quantity, SUM(p.quantity * p.price) AS price "
-						+ "FROM #materialFlowResources_position p JOIN p.document AS d join p.product AS pr "
-						+ "WHERE d.order = :order_id AND d.type = :type " + "GROUP BY d.order, d.type, pr.id");
-
-		searchQueryBuilder.setLong("order_id", order.getId());
-		searchQueryBuilder.setString("type", DocumentType.INTERNAL_OUTBOUND.getStringValue());
-
-		SearchResult result = searchQueryBuilder.list();
-
-		List<ProductWithQuantityAndCost> productsWithQuantitiesAndCosts = Lists.newArrayList();
-
-		for (Entity costsForProduct : result.getEntities()) {
-			Long product = (Long) costsForProduct.getField(PositionFields.PRODUCT);
-			BigDecimal quantity = costsForProduct.getDecimalField(PositionFields.QUANTITY);
-			BigDecimal cost = costsForProduct.getDecimalField(PositionFields.PRICE);
-
-			productsWithQuantitiesAndCosts.add(new ProductWithQuantityAndCost(product, quantity, cost));
-		}
-
-		List<Entity> updatedCosts = costNormsForMaterialsService.updateCostsForProductInOrder(order,
-				productsWithQuantitiesAndCosts);
-
-		order.setField(OrderFieldsCNFM.TECHNOLOGY_INST_OPER_PRODUCT_IN_COMPS, updatedCosts);
-	}
-
-	private DataDefinition getDocumentDD() {
-		return dataDefinitionService.get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER,
-				MaterialFlowResourcesConstants.MODEL_DOCUMENT);
-	}
-
-	private DataDefinition getPositionDD() {
-		return dataDefinitionService.get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER,
-				MaterialFlowResourcesConstants.MODEL_POSITION);
-	}
-
-	private DataDefinition getLocationDD() {
-		return dataDefinitionService.get(MaterialFlowConstants.PLUGIN_IDENTIFIER, MaterialFlowConstants.MODEL_LOCATION);
-	}
+            if (Objects.isNull(batchQuantities)) {
+                errorProducts.add(product.getStringField(ProductFields.NUMBER));
+            } else {
+                if (usedBatches.isEmpty()) {
+                    BigDecimal quantity = trackingOperationProductInComponent.getDecimalField(TrackingOperationProductInComponentFields.USED_QUANTITY);
+
+                    BigDecimal availableQuantity = batchQuantities.values().stream().reduce(BigDecimal.ZERO, BigDecimal::add);
+
+                    if (Objects.isNull(availableQuantity) || quantity.compareTo(availableQuantity) > 0) {
+                        errorProducts.add(product.getStringField(ProductFields.NUMBER));
+                    }
+                } else {
+                    usedBatches.forEach(usedBatch -> {
+                        String batchNumber = usedBatch.getBelongsToField(UsedBatchFields.BATCH).getStringField(BatchFields.NUMBER);
+                        BigDecimal quantity = usedBatch.getDecimalField(UsedBatchFields.QUANTITY);
+
+                        BigDecimal availableQuantity = batchQuantities.get(batchNumber);
+
+                        if (Objects.isNull(availableQuantity) || quantity.compareTo(availableQuantity) > 0) {
+                            errorProducts.add(product.getStringField(ProductFields.NUMBER));
+                        }
+                    });
+                }
+            }
+        }
+
+        if (errorProducts.isEmpty()) {
+            return true;
+        }
+
+        errorMessage.append(errorProducts.stream().distinct().collect(Collectors.joining(", ")));
+
+        if (errorMessage.length() + warehouseNumber.length() < 255) {
+            productionTracking.addGlobalError("materialFlow.error.position.quantity.notEnoughResources", false,
+                    errorMessage.toString(), warehouseNumber);
+        } else {
+            errorProducts.forEach(errorProduct ->
+                    productionTracking.addGlobalError("materialFlow.error.position.quantity.notEnoughResources", false,
+                            errorProduct, warehouseNumber)
+            );
+        }
+
+        return false;
+    }
+
+    public Entity createInternalOutboundDocumentForComponents(final Entity locationFrom, final Entity order,
+                                                              final Collection<Entity> trackingOperationProductInComponents, final Entity user) {
+        DocumentBuilder internalOutboundBuilder = documentManagementService.getDocumentBuilder(user);
+
+        internalOutboundBuilder.internalOutbound(locationFrom);
+
+        HashSet<Entity> productsWithoutDuplicates = Sets.newHashSet();
+
+        DataDefinition positionDD = getPositionDD();
+
+        for (Entity trackingOperationProductInComponent : trackingOperationProductInComponents) {
+            List<Entity> usedBatches = trackingOperationProductInComponent.getHasManyField(TrackingOperationProductInComponentFields.USED_BATCHES);
+
+            Entity product = trackingOperationProductInComponent.getBelongsToField(TrackingOperationProductInComponentFields.PRODUCT);
+
+            if (!productsWithoutDuplicates.contains(product)) {
+                if (usedBatches.isEmpty()) {
+                    Entity position = preparePositionForInProduct(positionDD, trackingOperationProductInComponent, product);
+
+                    internalOutboundBuilder.addPosition(position);
+                } else {
+                    for (Entity usedBatch : usedBatches) {
+                        Entity position = preparePositionForUsedBatch(positionDD, trackingOperationProductInComponent, product, usedBatch);
+
+                        internalOutboundBuilder.addPosition(position);
+                    }
+                }
+            }
+
+            productsWithoutDuplicates.add(product);
+        }
+
+        internalOutboundBuilder.setField(DocumentFieldsPFTD.ORDER, order);
+
+        return internalOutboundBuilder.setAccepted().buildWithEntityRuntimeException();
+    }
+
+    private Entity preparePositionForUsedBatch(final DataDefinition positionDD, final Entity trackingOperationProductInComponent,
+                                               final Entity product, final Entity usedBatch) {
+        Entity position = positionDD.create();
+
+        BigDecimal usedQuantity = usedBatch.getDecimalField(UsedBatchFields.QUANTITY);
+        BigDecimal givenQuantity = productionTrackingService.calculateGivenQuantity(trackingOperationProductInComponent, usedQuantity)
+                .orElse(usedQuantity);
+        BigDecimal conversion = BigDecimal.ONE;
+        String unit = product.getStringField(ProductFields.UNIT);
+        String givenUnit = trackingOperationProductInComponent.getStringField(TrackingOperationProductOutComponentFields.GIVEN_UNIT);
+
+        if (Objects.nonNull(usedQuantity)) {
+            PossibleUnitConversions unitConversions = unitConversionService.getPossibleConversions(unit,
+                    searchCriteriaBuilder -> searchCriteriaBuilder
+                            .add(SearchRestrictions.belongsTo(UnitConversionItemFieldsB.PRODUCT, product)));
+
+            if (unitConversions.isDefinedFor(givenUnit)) {
+                conversion = numberService.setScaleWithDefaultMathContext(unitConversions.asUnitToConversionMap().get(givenUnit));
+            }
+        }
+
+        position.setField(PositionFields.GIVEN_UNIT,
+                trackingOperationProductInComponent.getStringField(TrackingOperationProductInComponentFields.GIVEN_UNIT));
+        position.setField(PositionFields.PRODUCT, product);
+        position.setField(PositionFields.QUANTITY, usedQuantity);
+        position.setField(PositionFields.GIVEN_QUANTITY, givenQuantity);
+        position.setField(PositionFields.CONVERSION, conversion);
+        position.setField(PositionFields.BATCH, usedBatch.getBelongsToField(UsedBatchFields.BATCH).getId());
+
+        return position;
+    }
+
+    private Entity preparePositionForInProduct(final DataDefinition positionDD, final Entity trackingOperationProductInComponent,
+                                               final Entity product) {
+        Entity position = positionDD.create();
+
+        BigDecimal usedQuantity = trackingOperationProductInComponent.getDecimalField(TrackingOperationProductInComponentFields.USED_QUANTITY);
+        BigDecimal givenQuantity = trackingOperationProductInComponent.getDecimalField(TrackingOperationProductInComponentFields.GIVEN_QUANTITY);
+        BigDecimal conversion = BigDecimal.ONE;
+        String unit = product.getStringField(ProductFields.UNIT);
+        String givenUnit = trackingOperationProductInComponent.getStringField(TrackingOperationProductOutComponentFields.GIVEN_UNIT);
+
+        if (Objects.nonNull(usedQuantity) && Objects.nonNull(givenQuantity)) {
+            PossibleUnitConversions unitConversions = unitConversionService.getPossibleConversions(unit,
+                    searchCriteriaBuilder -> searchCriteriaBuilder
+                            .add(SearchRestrictions.belongsTo(UnitConversionItemFieldsB.PRODUCT, product)));
+
+            if (unitConversions.isDefinedFor(givenUnit)) {
+                conversion = numberService.setScaleWithDefaultMathContext(unitConversions.asUnitToConversionMap().get(givenUnit));
+            }
+        }
+
+        position.setField(PositionFields.GIVEN_UNIT,
+                trackingOperationProductInComponent.getStringField(TrackingOperationProductInComponentFields.GIVEN_UNIT));
+        position.setField(PositionFields.PRODUCT, product);
+        position.setField(PositionFields.QUANTITY, usedQuantity);
+        position.setField(PositionFields.GIVEN_QUANTITY, givenQuantity);
+        position.setField(PositionFields.CONVERSION, conversion);
+
+        return position;
+    }
+
+    private Entity createOrUpdateInternalInboundDocumentForFinalProducts(final Entity locationTo, final Entity order,
+                                                                         final Collection<Entity> trackingOperationProductOutComponents, final Entity user) {
+        String receiptOfProducts = parameterService.getParameter().getStringField(ParameterFieldsPC.RECEIPT_OF_PRODUCTS);
+
+        List<Entity> finalProductRecord = null;
+
+        Collection<Entity> intermediateRecords = Lists.newArrayList();
+
+        for (Entity trackingOperationProductOutComponent : trackingOperationProductOutComponents) {
+            if (isFinalProductForOrder(order,
+                    trackingOperationProductOutComponent.getBelongsToField(TrackingOperationProductOutComponentFields.PRODUCT))) {
+                finalProductRecord = Lists.newArrayList(trackingOperationProductOutComponent);
+            } else {
+                intermediateRecords.add(trackingOperationProductOutComponent);
+            }
+        }
+
+        if (ReceiptOfProducts.ON_ACCEPTANCE_REGISTRATION_RECORD.getStringValue().equals(receiptOfProducts)) {
+            if (Objects.nonNull(finalProductRecord)) {
+                Entity inboundForFinalProduct = createInternalInboundDocumentForFinalProducts(locationTo, order,
+                        finalProductRecord, true, user);
+
+                if (Objects.nonNull(inboundForFinalProduct) && !inboundForFinalProduct.isValid()
+                        || intermediateRecords.isEmpty()) {
+                    return inboundForFinalProduct;
+                }
+            }
+
+            return createInternalInboundDocumentForFinalProducts(locationTo, order, intermediateRecords, true, user);
+        } else if (ReceiptOfProducts.END_OF_THE_ORDER.getStringValue().equals(receiptOfProducts)) {
+            Entity existingInboundDocument = getDocumentDD().find()
+                    .add(SearchRestrictions.belongsTo(DocumentFieldsPFTD.ORDER, order))
+                    .add(SearchRestrictions.belongsTo(DocumentFields.LOCATION_TO, locationTo))
+                    .add(SearchRestrictions.eq(DocumentFields.STATE, DocumentState.DRAFT.getStringValue()))
+                    .add(SearchRestrictions.eq(DocumentFields.TYPE, DocumentType.INTERNAL_INBOUND.getStringValue()))
+                    .setMaxResults(1).uniqueResult();
+
+            if (Objects.nonNull(existingInboundDocument)) {
+                if (Objects.nonNull(finalProductRecord)) {
+                    return updateInternalInboundDocumentForFinalProducts(order, existingInboundDocument,
+                            finalProductRecord, true, false);
+                } else {
+                    return updateInternalInboundDocumentForFinalProducts(order, existingInboundDocument,
+                            intermediateRecords, false, false);
+                }
+            } else {
+                if (Objects.nonNull(finalProductRecord)) {
+                    Entity inboundForFinalProduct = createInternalInboundDocumentForFinalProducts(locationTo, order,
+                            finalProductRecord, user);
+
+                    if (Objects.nonNull(inboundForFinalProduct) && !inboundForFinalProduct.isValid()
+                            || intermediateRecords.isEmpty()) {
+                        return inboundForFinalProduct;
+                    }
+                }
+            }
+
+            return createInternalInboundDocumentForFinalProducts(locationTo, order, intermediateRecords, user);
+        } else {
+            return null;
+        }
+    }
+
+    public Entity updateInternalInboundDocumentForFinalProducts(final Entity order, final Entity existingInboundDocument,
+                                                                final Collection<Entity> trackingOperationProductOutComponents,
+                                                                boolean isFinalProduct, boolean cleanPositionsQuantity) {
+        DataDefinition positionDD = getPositionDD();
+
+        List<Entity> positions = Lists.newArrayList(existingInboundDocument.getHasManyField(DocumentFields.POSITIONS));
+
+        if(cleanPositionsQuantity) {
+            positions.forEach(position -> {
+                position.setField(PositionFields.QUANTITY, BigDecimal.ZERO);
+                position.setField(PositionFields.GIVEN_QUANTITY, BigDecimal.ZERO);
+            });
+        }
+
+        for (Entity trackingOperationProductOutComponent : trackingOperationProductOutComponents) {
+            Entity outProduct = trackingOperationProductOutComponent.getBelongsToField(TrackingOperationProductOutComponentFields.PRODUCT);
+            Entity outBatch = trackingOperationProductOutComponent.getBelongsToField(TrackingOperationProductOutComponentFields.PRODUCTION_TRACKING)
+                    .getBelongsToField(ProductionTrackingFields.BATCH);
+            if (!isFinalProduct) {
+                outBatch = null;
+            }
+
+            Entity storageLocation = trackingOperationProductOutComponent
+                    .getBelongsToField(TrackingOperationProductOutComponentFields.STORAGE_LOCATION);
+            Entity palletNumber = trackingOperationProductOutComponent
+                    .getBelongsToField(TrackingOperationProductOutComponentFields.PALLET_NUMBER);
+
+            java.util.Optional<BigDecimal> usedQuantity = Optional
+                    .ofNullable(trackingOperationProductOutComponent.getDecimalField(TrackingOperationProductInComponentFields.USED_QUANTITY));
+            java.util.Optional<BigDecimal> givenQuantity = Optional
+                    .ofNullable(trackingOperationProductOutComponent.getDecimalField(TrackingOperationProductInComponentFields.GIVEN_QUANTITY));
+            java.util.Optional<String> givenUnit = Optional
+                    .ofNullable(trackingOperationProductOutComponent.getStringField(TrackingOperationProductInComponentFields.GIVEN_UNIT));
+
+            Entity existingPosition = filterPosition(positions, outProduct, givenUnit.orElse(null), outBatch, storageLocation, palletNumber);
+
+            if (Objects.nonNull(existingPosition)) {
+                java.util.Optional<BigDecimal> quantity = Optional
+                        .ofNullable(existingPosition.getDecimalField(PositionFields.QUANTITY));
+                java.util.Optional<BigDecimal> givenQuantityFromPosition = Optional
+                        .ofNullable(existingPosition.getDecimalField(PositionFields.GIVEN_QUANTITY));
+
+                existingPosition.setField(PositionFields.QUANTITY,
+                        quantity.orElse(BigDecimal.ZERO).add(usedQuantity.orElse(BigDecimal.ZERO)));
+
+                if (givenQuantity.isPresent()) {
+                    existingPosition.setField(PositionFields.GIVEN_QUANTITY,
+                            givenQuantity.orElse(BigDecimal.ZERO).add(givenQuantityFromPosition.orElse(BigDecimal.ZERO)));
+                }
+
+                fillAttributes(trackingOperationProductOutComponent, existingPosition);
+                existingPosition.setField(PositionFields.GIVEN_UNIT, givenUnit.get());
+            } else {
+                Entity productionTracking = trackingOperationProductOutComponent
+                        .getBelongsToField(TrackingOperationProductOutComponentFields.PRODUCTION_TRACKING);
+
+                Entity position = positionDD.create();
+
+                position.setField(PositionFields.PRODUCT, outProduct);
+                position.setField(PositionFields.QUANTITY, usedQuantity.get());
+
+                BigDecimal conversion = BigDecimal.ONE;
+                String unit = outProduct.getStringField(ProductFields.UNIT);
+
+                if (givenQuantity.isPresent()) {
+                    PossibleUnitConversions unitConversions = unitConversionService.getPossibleConversions(unit,
+                            searchCriteriaBuilder -> searchCriteriaBuilder
+                                    .add(SearchRestrictions.belongsTo(UnitConversionItemFieldsB.PRODUCT, outProduct)));
+
+                    if (unitConversions.isDefinedFor(givenUnit.get())) {
+                        conversion = numberService
+                                .setScaleWithDefaultMathContext(unitConversions.asUnitToConversionMap().get(givenUnit.get()));
+                    }
+
+                    position.setField(PositionFields.GIVEN_QUANTITY, givenQuantity.get());
+                }
+
+                position.setField(PositionFields.GIVEN_UNIT, givenUnit.get());
+                position.setField(PositionFields.CONVERSION, conversion);
+                position.setField(PositionFields.PRODUCTION_DATE, new Date());
+
+                String priceBasedOn = parameterService.getParameter().getStringField(ParameterFieldsPC.PRICE_BASED_ON);
+
+                boolean isNominalProductCost = Objects.nonNull(priceBasedOn)
+                        && priceBasedOn.equals(PriceBasedOn.NOMINAL_PRODUCT_COST.getStringValue());
+
+                if (isNominalProductCost) {
+                    position.setField(PositionFields.PRICE, getNominalCost(outProduct));
+                }
+
+                Entity batch = productionTracking.getBelongsToField(ProductionTrackingFields.BATCH);
+
+                if (Objects.nonNull(batch) && batch.getBelongsToField(BatchFields.PRODUCT).getId().equals(outProduct.getId())) {
+                    position.setField(PositionFields.BATCH,
+                            productionTracking.getBelongsToField(ProductionTrackingFields.BATCH).getId());
+                    position.setField(PositionFields.QUALITY_RATING, productionTracking.getStringField(L_QUALITY_RATING));
+                } else if (order.getBelongsToField(OrderFields.PRODUCT).getId().equals(outProduct.getId())) {
+                    position.setField(PositionFields.QUALITY_RATING, productionTracking.getStringField(L_QUALITY_RATING));
+                }
+
+                if (Objects.nonNull(
+                        trackingOperationProductOutComponent.getBelongsToField(TrackingOperationProductOutComponentFields.STORAGE_LOCATION))) {
+                    position.setField(PositionFields.STORAGE_LOCATION, trackingOperationProductOutComponent
+                            .getBelongsToField(TrackingOperationProductOutComponentFields.STORAGE_LOCATION).getId());
+                }
+
+                if (Objects.nonNull(
+                        trackingOperationProductOutComponent.getBelongsToField(TrackingOperationProductOutComponentFields.PALLET_NUMBER))) {
+                    position.setField(PositionFields.PALLET_NUMBER, trackingOperationProductOutComponent
+                            .getBelongsToField(TrackingOperationProductOutComponentFields.PALLET_NUMBER).getId());
+                }
+
+                if (order.getBelongsToField(OrderFields.PRODUCT).getId().equals(outProduct.getId())) {
+                    position.setField(PositionFields.EXPIRATION_DATE,
+                            productionTracking.getDateField(ProductionTrackingFields.EXPIRATION_DATE));
+                }
+
+                fillAttributes(trackingOperationProductOutComponent, position);
+
+                positions.add(position);
+            }
+        }
+
+        existingInboundDocument.setField(DocumentFields.POSITIONS, positions);
+
+        return existingInboundDocument.getDataDefinition().save(existingInboundDocument);
+    }
+
+    private void fillAttributes(final Entity trackingOperationProductOutComponent, final Entity position) {
+        List<Entity> attributes = Lists.newArrayList();
+
+        trackingOperationProductOutComponent.getHasManyField(TrackingOperationProductOutComponentFields.PROD_OUT_RESOURCE_ATTR_VALS).forEach(aVal -> {
+            Entity docPositionAtrrVal = dataDefinitionService.get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER,
+                    MaterialFlowResourcesConstants.MODEL_POSITION_ATTRIBUTE_VALUE).create();
+            docPositionAtrrVal.setField(PositionAttributeValueFields.ATTRIBUTE,
+                    aVal.getBelongsToField(ProdOutResourceAttrValFields.ATTRIBUTE).getId());
+
+            if (Objects.nonNull(aVal.getBelongsToField(PositionAttributeValueFields.ATTRIBUTE_VALUE))) {
+                docPositionAtrrVal.setField(PositionAttributeValueFields.ATTRIBUTE_VALUE,
+                        aVal.getBelongsToField(ProdOutResourceAttrValFields.ATTRIBUTE_VALUE).getId());
+            }
+
+            docPositionAtrrVal.setField(PositionAttributeValueFields.VALUE,
+                    aVal.getStringField(ProdOutResourceAttrValFields.VALUE));
+
+            attributes.add(docPositionAtrrVal);
+        });
+
+        position.setField(PositionFields.POSITION_ATTRIBUTE_VALUES, attributes);
+    }
+
+    private Entity filterPosition(final List<Entity> existingPositions, final Entity outProduct, final String givenUnit,
+                                  final Entity outBatch, final Entity storageLocation, Entity palletNumber) {
+        for (Entity position : existingPositions) {
+            if (checkPositionConditions(position, outProduct, givenUnit, outBatch, storageLocation, palletNumber)) {
+                return position;
+            }
+        }
+
+        return null;
+    }
+
+    private boolean checkPositionConditions(final Entity position, final Entity outProduct, final String givenUnit,
+                                            final Entity outBatch, final Entity storageLocation, final Entity palletNumber) {
+        boolean isPosition = true;
+
+        if (!position.getBelongsToField(PositionFields.PRODUCT).getId().equals(outProduct.getId())) {
+            isPosition = false;
+        }
+
+        if (StringUtils.isNoneBlank(givenUnit) && !position.getStringField(PositionFields.GIVEN_UNIT).equals(givenUnit)) {
+            isPosition = false;
+        }
+
+        if (Objects.nonNull(outBatch) && Objects.nonNull(position.getBelongsToField(PositionFields.BATCH))) {
+            if (!position.getBelongsToField(PositionFields.BATCH).getId().equals(outBatch.getId())) {
+                isPosition = false;
+            }
+        } else if ((Objects.isNull(outBatch) && Objects.nonNull(position.getBelongsToField(PositionFields.BATCH)))
+                || (Objects.nonNull(outBatch) && Objects.isNull(position.getBelongsToField(PositionFields.BATCH)))) {
+            isPosition = false;
+        }
+
+        if (Objects.nonNull(storageLocation) && Objects.nonNull(position.getBelongsToField(PositionFields.STORAGE_LOCATION))) {
+            if (!position.getBelongsToField(PositionFields.STORAGE_LOCATION).getId().equals(storageLocation.getId())) {
+                isPosition = false;
+            }
+        } else if ((Objects.isNull(storageLocation)
+                && Objects.nonNull(position.getBelongsToField(PositionFields.STORAGE_LOCATION)))
+                || (Objects.nonNull(storageLocation)
+                && Objects.isNull(position.getBelongsToField(PositionFields.STORAGE_LOCATION)))) {
+            isPosition = false;
+        }
+
+        if (Objects.nonNull(palletNumber) && Objects.nonNull(position.getBelongsToField(PositionFields.PALLET_NUMBER))) {
+            if (!position.getBelongsToField(PositionFields.PALLET_NUMBER).getId().equals(palletNumber.getId())) {
+                isPosition = false;
+            }
+        } else if ((Objects.isNull(palletNumber)
+                && Objects.nonNull(position.getBelongsToField(PositionFields.PALLET_NUMBER)))
+                || (Objects.nonNull(palletNumber)
+                && Objects.isNull(position.getBelongsToField(PositionFields.PALLET_NUMBER)))) {
+            isPosition = false;
+        }
+
+        return isPosition;
+    }
+
+    public Entity createInternalInboundDocumentForFinalProducts(final Entity locationTo, final Entity order,
+                                                                final Collection<Entity> trackingOperationProductOutComponents, Entity user) {
+        String priceBasedOn = parameterService.getParameter().getStringField(ParameterFieldsPC.PRICE_BASED_ON);
+
+        boolean isNominalProductCost = Objects.nonNull(priceBasedOn)
+                && priceBasedOn.equals(PriceBasedOn.NOMINAL_PRODUCT_COST.getStringValue());
+
+        return createInternalInboundDocumentForFinalProducts(locationTo, order, trackingOperationProductOutComponents, isNominalProductCost, user);
+    }
+
+    private Entity createInternalInboundDocumentForFinalProducts(final Entity locationTo, final Entity order,
+                                                                 final Collection<Entity> trackingOperationProductOutComponents, final boolean isBasedOnNominalCost, Entity user) {
+        DocumentBuilder internalInboundBuilder = documentManagementService.getDocumentBuilder(user);
+
+        internalInboundBuilder.internalInbound(locationTo);
+
+        boolean isFinalProduct = false;
+
+        Entity productionTracking = null;
+
+        for (Entity trackingOperationProductOutComponent : trackingOperationProductOutComponents) {
+            Entity outProduct = trackingOperationProductOutComponent.getBelongsToField(TrackingOperationProductOutComponentFields.PRODUCT);
+
+            if (Objects.isNull(productionTracking)) {
+                productionTracking = trackingOperationProductOutComponent
+                        .getBelongsToField(TrackingOperationProductOutComponentFields.PRODUCTION_TRACKING);
+            }
+
+            if (isFinalProductForOrder(order, outProduct)) {
+                isFinalProduct = true;
+            }
+
+            Entity position = getPositionDD().create();
+
+            BigDecimal usedQuantity = trackingOperationProductOutComponent.getDecimalField(TrackingOperationProductOutComponentFields.USED_QUANTITY);
+            BigDecimal givenQuantity = trackingOperationProductOutComponent
+                    .getDecimalField(TrackingOperationProductOutComponentFields.GIVEN_QUANTITY);
+            BigDecimal conversion = BigDecimal.ONE;
+            String unit = outProduct.getStringField(ProductFields.UNIT);
+            String givenUnit = trackingOperationProductOutComponent.getStringField(TrackingOperationProductOutComponentFields.GIVEN_UNIT);
+
+            if (Objects.nonNull(usedQuantity) && Objects.nonNull(givenQuantity)) {
+                PossibleUnitConversions unitConversions = unitConversionService.getPossibleConversions(unit,
+                        searchCriteriaBuilder -> searchCriteriaBuilder
+                                .add(SearchRestrictions.belongsTo(UnitConversionItemFieldsB.PRODUCT, outProduct)));
+
+                if (unitConversions.isDefinedFor(givenUnit)) {
+                    conversion = numberService
+                            .setScaleWithDefaultMathContext(unitConversions.asUnitToConversionMap().get(givenUnit));
+                }
+            }
+
+            position.setField(PositionFields.PRODUCT, outProduct);
+            position.setField(PositionFields.QUANTITY, usedQuantity);
+            position.setField(PositionFields.CONVERSION, conversion);
+            position.setField(PositionFields.GIVEN_QUANTITY, givenQuantity);
+            position.setField(PositionFields.GIVEN_UNIT,
+                    trackingOperationProductOutComponent.getStringField(TrackingOperationProductOutComponentFields.GIVEN_UNIT));
+
+            if (isBasedOnNominalCost) {
+                position.setField(PositionFields.PRICE, getNominalCost(outProduct));
+            }
+
+            position.setField(PositionFields.PRODUCTION_DATE, new Date());
+
+            Entity batch = productionTracking.getBelongsToField(ProductionTrackingFields.BATCH);
+
+            if (Objects.nonNull(batch) && batch.getBelongsToField(BatchFields.PRODUCT).getId().equals(outProduct.getId())) {
+                position.setField(PositionFields.BATCH,
+                        productionTracking.getBelongsToField(ProductionTrackingFields.BATCH).getId());
+                position.setField(PositionFields.QUALITY_RATING, productionTracking.getStringField(L_QUALITY_RATING));
+            } else if (order.getBelongsToField(OrderFields.PRODUCT).getId().equals(outProduct.getId())) {
+                position.setField(PositionFields.QUALITY_RATING, productionTracking.getStringField(L_QUALITY_RATING));
+            }
+
+            if (Objects
+                    .nonNull(trackingOperationProductOutComponent.getBelongsToField(TrackingOperationProductOutComponentFields.STORAGE_LOCATION))) {
+                position.setField(PositionFields.STORAGE_LOCATION,
+                        trackingOperationProductOutComponent.getBelongsToField(TrackingOperationProductOutComponentFields.STORAGE_LOCATION).getId());
+            }
+
+            if (Objects
+                    .nonNull(trackingOperationProductOutComponent.getBelongsToField(TrackingOperationProductOutComponentFields.PALLET_NUMBER))) {
+                position.setField(PositionFields.PALLET_NUMBER,
+                        trackingOperationProductOutComponent.getBelongsToField(TrackingOperationProductOutComponentFields.PALLET_NUMBER).getId());
+            }
+
+            if (order.getBelongsToField(OrderFields.PRODUCT).getId().equals(outProduct.getId())) {
+                position.setField(PositionFields.EXPIRATION_DATE,
+                        productionTracking.getDateField(ProductionTrackingFields.EXPIRATION_DATE));
+            }
+
+            fillAttributes(trackingOperationProductOutComponent, position);
+
+            internalInboundBuilder.addPosition(position);
+        }
+
+        internalInboundBuilder.setField(DocumentFieldsPFTD.ORDER, order);
+
+        String receiptOfProducts = parameterService.getParameter().getStringField(ParameterFieldsPC.RECEIPT_OF_PRODUCTS);
+
+        if (ReceiptOfProducts.ON_ACCEPTANCE_REGISTRATION_RECORD.getStringValue().equals(receiptOfProducts)
+                && (OrderState.COMPLETED.equals(OrderState.of(order)) || !isFinalProduct || isBasedOnNominalCost
+                || orderClosingHelper.orderShouldBeClosedWithRecalculate(productionTracking))
+                || orderClosingHelper.orderShouldBeClosedWithRecalculate(productionTracking)) {
+            internalInboundBuilder.setAccepted();
+        }
+
+        return internalInboundBuilder.buildWithEntityRuntimeException();
+    }
+
+    private BigDecimal getNominalCost(final Entity product) {
+        BigDecimal nominalCost = BigDecimalUtils.convertNullToZero(product.getDecimalField("nominalCost"));
+        Entity currency = product.getBelongsToField("nominalCostCurrency");
+
+        if (Objects.nonNull(currency) && CurrencyService.PLN.equals(currencyService.getCurrencyAlphabeticCode())
+                && !CurrencyService.PLN.equals(currency.getStringField(CurrencyFields.ALPHABETIC_CODE))) {
+            nominalCost = currencyService.getConvertedValue(nominalCost, currency);
+        }
+
+        return nominalCost;
+    }
+
+    private boolean isFinalProductForOrder(final Entity order, final Entity product) {
+        return order.getBelongsToField(OrderFields.PRODUCT).getId().equals(product.getId());
+    }
+
+    public void updateCostsForOrder(final Entity order) {
+        DataDefinition positionDD = getPositionDD();
+
+        SearchQueryBuilder searchQueryBuilder = positionDD
+                .find("SELECT pr.id AS product, SUM(p.quantity) AS quantity, SUM(p.quantity * p.price) AS price "
+                        + "FROM #materialFlowResources_position p JOIN p.document AS d join p.product AS pr "
+                        + "WHERE d.order = :order_id AND d.type = :type " + "GROUP BY d.order, d.type, pr.id");
+
+        searchQueryBuilder.setLong("order_id", order.getId());
+        searchQueryBuilder.setString("type", DocumentType.INTERNAL_OUTBOUND.getStringValue());
+
+        SearchResult result = searchQueryBuilder.list();
+
+        List<ProductWithQuantityAndCost> productsWithQuantitiesAndCosts = Lists.newArrayList();
+
+        for (Entity costsForProduct : result.getEntities()) {
+            Long product = (Long) costsForProduct.getField(PositionFields.PRODUCT);
+            BigDecimal quantity = costsForProduct.getDecimalField(PositionFields.QUANTITY);
+            BigDecimal cost = costsForProduct.getDecimalField(PositionFields.PRICE);
+
+            productsWithQuantitiesAndCosts.add(new ProductWithQuantityAndCost(product, quantity, cost));
+        }
+
+        List<Entity> updatedCosts = costNormsForMaterialsService.updateCostsForProductInOrder(order,
+                productsWithQuantitiesAndCosts);
+
+        order.setField(OrderFieldsCNFM.TECHNOLOGY_INST_OPER_PRODUCT_IN_COMPS, updatedCosts);
+    }
+
+    private DataDefinition getDocumentDD() {
+        return dataDefinitionService.get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER,
+                MaterialFlowResourcesConstants.MODEL_DOCUMENT);
+    }
+
+    private DataDefinition getPositionDD() {
+        return dataDefinitionService.get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER,
+                MaterialFlowResourcesConstants.MODEL_POSITION);
+    }
+
+    private DataDefinition getLocationDD() {
+        return dataDefinitionService.get(MaterialFlowConstants.PLUGIN_IDENTIFIER, MaterialFlowConstants.MODEL_LOCATION);
+    }
 
 }

@@ -72,41 +72,48 @@
                         </component>
                     </layoutElement>
                     <layoutElement column="1" row="2">
+                        <component type="checkbox" name="promptDefaultLineFromTechnology"
+                                   field="#{form}.promptDefaultLineFromTechnology"
+                                   reference="promptDefaultLineFromTechnology" hasDescription="true">
+                            <option type="labelWidth" value="80"/>
+                        </component>
+                    </layoutElement>
+                    <layoutElement column="1" row="3">
                         <component type="checkbox" name="canChangeProdLineForAcceptedOrders"
                                    field="#{form}.canChangeProdLineForAcceptedOrders"
                                    reference="canChangeProdLineForAcceptedOrders">
                             <option type="labelWidth" value="80"/>
                         </component>
                     </layoutElement>
-                    <layoutElement column="1" row="3">
+                    <layoutElement column="1" row="4">
                         <component type="checkbox" name="allowQuantityChangeInAcceptedOrder"
                                    field="#{form}.allowQuantityChangeInAcceptedOrder"
                                    reference="allowQuantityChangeInAcceptedOrder">
                             <option type="labelWidth" value="80"/>
                         </component>
                     </layoutElement>
-                    <layoutElement column="1" row="4">
+                    <layoutElement column="1" row="5">
                         <component type="checkbox" name="allowTechnologyTreeChangeInPendingOrder"
                                    field="#{form}.allowTechnologyTreeChangeInPendingOrder"
                                    reference="allowTechnologyTreeChangeInPendingOrder">
                             <option type="labelWidth" value="80"/>
                         </component>
                     </layoutElement>
-                    <layoutElement column="1" row="5">
+                    <layoutElement column="1" row="6">
                         <component type="checkbox" name="fillOrderDescriptionBasedOnTechnologyDescription"
                                    field="#{form}.fillOrderDescriptionBasedOnTechnologyDescription"
                                    reference="fillOrderDescriptionBasedOnTechnologyDescription" hasDescription="true">
                             <option type="labelWidth" value="80"/>
                         </component>
                     </layoutElement>
-                    <layoutElement column="1" row="6">
+                    <layoutElement column="1" row="7">
                         <component type="checkbox" name="fillOrderDescriptionBasedOnProductDescription"
                                    field="#{form}.fillOrderDescriptionBasedOnProductDescription"
                                    reference="fillOrderDescriptionBasedOnProductDescription" hasDescription="true">
                             <option type="labelWidth" value="80"/>
                         </component>
                     </layoutElement>
-                    <layoutElement column="1" row="7">
+                    <layoutElement column="1" row="8">
                         <component type="checkbox" name="flagPercentageOfExecutionWithColor"
                                    field="#{form}.flagPercentageOfExecutionWithColor"
                                    reference="flagPercentageOfExecutionWithColor" hasDescription="true">

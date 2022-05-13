@@ -1,7 +1,7 @@
 /**
  * ***************************************************************************
  * Copyright (c) 2010 Qcadoo Limited
- * Project: Qcadoo Framework
+ * Project: Qcadoo MES
  * Version: 1.4
  *
  * This file is part of Qcadoo.
@@ -21,21 +21,20 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.productFlowThruDivision.listeners;
+package com.qcadoo.mes.technologies.constants;
 
-import org.springframework.stereotype.Service;
+public final class TechnologyProductionLineFields {
 
-import com.qcadoo.view.api.ComponentState;
-import com.qcadoo.view.api.ViewDefinitionState;
-import com.qcadoo.view.api.components.CheckBoxComponent;
+    private TechnologyProductionLineFields() {
 
-@Service
-public class TOCDetailsListenersPFTD {
-
-    public void onProductionLineChange(final ViewDefinitionState view, final ComponentState componentState, final String[] args) {
-        CheckBoxComponent productionLineChange = (CheckBoxComponent) view
-                .getComponentByReference("productionLineChange");
-        productionLineChange.setChecked(true);
-        productionLineChange.requestComponentUpdateState();
     }
+
+    public static final String PRODUCTION_LINE = "productionLine";
+
+    public static final String MASTER = "master";
+
+    public static final String TECHNOLOGY = "technology";
+
+    public static final String STANDARD_PERFORMANCE = "standardPerformance";
+
 }

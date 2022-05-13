@@ -36,7 +36,7 @@
         <windowTab name="mainTab">
             <component type="form" name="form" reference="form">
                 <component type="gridLayout" name="gridLayout" columns="1"
-                           rows="2">
+                           rows="1">
                     <layoutElement column="1" row="1">
                         <component type="lookup" name="division" field="#{form}.division"
                                    reference="division">
@@ -47,33 +47,7 @@
 
                             <option type="expression" value="#number + ' - ' + #name"/>
                             <option type="fieldCode" value="number"/>
-                            <listener event="onSelectedEntityChange"
-                                      class="com.qcadoo.mes.productFlowThruDivision.hooks.TOCDetailsHooksPFTD"
-                                      method="onDivisionChange"/>
                         </component>
-                    </layoutElement>
-                    <layoutElement column="1" row="2">
-                        <component type="lookup" name="productionLine"
-                                   reference="productionLine" field="#{form}.productionLine">
-                            <option type="column" name="name" fields="name" link="true"
-                                    width="300"/>
-
-                            <option type="searchable" value="name,number"/>
-                            <option type="orderable" value="name,number"/>
-
-                            <option type="expression"
-                                    value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name"/>
-                            <option type="fieldCode" value="number"/>
-                            <listener event="onSelectedEntityChange"
-                                      class="com.qcadoo.mes.productFlowThruDivision.listeners.TOCDetailsListenersPFTD"
-                                      method="onProductionLineChange"/>
-                            <criteriaModifier
-                                    class="com.qcadoo.mes.productFlowThruDivision.criteriaModifiers.ProductionLineCriteriaModifiersPFTD"
-                                    method="showLinesForDivision"/>
-                        </component>
-                        <component type="checkbox" name="productionLineChange"
-                                   field="#{form}.productionLineChange" reference="productionLineChange"
-                                   hasDescription="true" labelWidth="50" defaultVisible="false"/>
                     </layoutElement>
                 </component>
                 <option type="header" value="true"/>
@@ -82,7 +56,6 @@
 
             </component>
         </windowTab>
-
 
     </component>
 

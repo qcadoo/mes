@@ -35,6 +35,7 @@ import com.qcadoo.view.api.components.lookup.FilterValueHolder;
 import com.qcadoo.view.api.ribbon.Ribbon;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.constants.QcadooViewConstants;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -43,10 +44,6 @@ import java.util.List;
 
 @Service
 public class TOCDetailsHooks {
-
-    
-
-
 
     private static final String L_NAVIGATION = "navigation";
 
@@ -61,7 +58,7 @@ public class TOCDetailsHooks {
             TechnologyOperationComponentFields.QUANTITY_OF_WORKSTATIONS);
 
     private static final List<String> L_WORKSTATIONS_TAB_LOOKUPS = Arrays.asList(
-            TechnologyOperationComponentFields.PRODUCTION_LINE, TechnologyOperationComponentFields.DIVISION,
+            TechnologyOperationComponentFields.DIVISION,
             TechnologyOperationComponentFields.WORKSTATION_TYPE);
 
     @Autowired
@@ -98,50 +95,24 @@ public class TOCDetailsHooks {
         }
     }
 
-    public void setProductionLineLookup(final ViewDefinitionState view) {
-        clearLookupField(view, OperationFields.PRODUCTION_LINE);
-        clearWorkstationsField(view);
-        setProductionLineCriteriaModifiers(view);
-    }
-
     private void setWorkstationsCriteriaModifiers(final ViewDefinitionState view) {
-        LookupComponent productionLineLookup = (LookupComponent) view.getComponentByReference(OperationFields.PRODUCTION_LINE);
+        LookupComponent divisionLookup = (LookupComponent) view.getComponentByReference(TechnologyOperationComponentFields.DIVISION);
         LookupComponent workstationLookup = (LookupComponent) view.getComponentByReference(L_WORKSTATION_LOOKUP);
+        GridComponent workstations = (GridComponent) view.getComponentByReference(TechnologyOperationComponentFields.WORKSTATIONS);
 
-        Entity productionLine = productionLineLookup.getEntity();
+        Entity division = divisionLookup.getEntity();
 
         FilterValueHolder filter = workstationLookup.getFilterValue();
 
-        if (productionLine != null) {
-            filter.put(OperationFields.PRODUCTION_LINE, productionLine.getId());
+        if (division != null) {
+            filter.put(TechnologyOperationComponentFields.DIVISION, division.getId());
+            workstations.setEditable(true);
         } else {
-            filter.remove(OperationFields.PRODUCTION_LINE);
+            filter.remove(TechnologyOperationComponentFields.DIVISION);
+            workstations.setEditable(false);
         }
 
         workstationLookup.setFilterValue(filter);
-    }
-
-    public void setWorkstationsLookup(final ViewDefinitionState view) {
-        clearWorkstationsField(view);
-        setWorkstationsCriteriaModifiers(view);
-    }
-
-    private void setProductionLineCriteriaModifiers(final ViewDefinitionState view) {
-        LookupComponent productionLineLookup = (LookupComponent) view
-                .getComponentByReference(TechnologyOperationComponentFields.PRODUCTION_LINE);
-        LookupComponent divisionLookup = (LookupComponent) view
-                .getComponentByReference(TechnologyOperationComponentFields.DIVISION);
-
-        Entity division = divisionLookup.getEntity();
-        FilterValueHolder filter = productionLineLookup.getFilterValue();
-
-        if (division != null) {
-            filter.put(TechnologyOperationComponentFields.DIVISION, division.getId());
-        } else {
-            filter.remove(TechnologyOperationComponentFields.DIVISION);
-        }
-
-        productionLineLookup.setFilterValue(filter);
     }
 
     private void disableWorkstationsTabFieldsIfOperationIsNotSaved(ViewDefinitionState view) {
@@ -169,7 +140,7 @@ public class TOCDetailsHooks {
     }
 
     private void changeEnabledLookups(final ViewDefinitionState view, final List<String> fields,
-            final List<String> enabledFields) {
+                                      final List<String> enabledFields) {
         for (String field : fields) {
             LookupComponent lookupComponent = (LookupComponent) view.getComponentByReference(field);
             lookupComponent.setEnabled(enabledFields.contains(field));
@@ -185,7 +156,7 @@ public class TOCDetailsHooks {
 
         if (AssignedToOperation.WORKSTATIONS.getStringValue().equals(assignedToOperationValue)) {
             changeEnabledLookups(view, L_WORKSTATIONS_TAB_LOOKUPS,
-                    Lists.newArrayList(OperationFields.DIVISION, OperationFields.PRODUCTION_LINE));
+                    Lists.newArrayList(OperationFields.DIVISION));
             workstations.setEnabled(true);
             enableRibbonItem(view, !workstations.getEntities().isEmpty());
         } else if (AssignedToOperation.WORKSTATIONS_TYPE.getStringValue().equals(assignedToOperationValue)) {

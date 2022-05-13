@@ -3,19 +3,19 @@
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo Framework
  * Version: 1.4
- *
+ * <p>
  * This file is part of Qcadoo.
- *
+ * <p>
  * Qcadoo is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation; either version 3 of the License,
  * or (at your option) any later version.
- *
+ * <p>
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty
  * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU Affero General Public License for more details.
- *
+ * <p>
  * You should have received a copy of the GNU Affero General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
@@ -26,6 +26,7 @@ package com.qcadoo.mes.productFlowThruDivision.states;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Multimap;
 import com.qcadoo.commons.functional.Either;
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.basic.constants.ProductFields;
@@ -36,6 +37,7 @@ import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuanti
 import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityTypeOfMaterial;
 import com.qcadoo.mes.costNormsForMaterials.constants.OrderFieldsCNFM;
 import com.qcadoo.mes.costNormsForMaterials.orderRawMaterialCosts.OrderMaterialsCostDataGenerator;
+import com.qcadoo.mes.materialFlow.constants.MaterialFlowConstants;
 import com.qcadoo.mes.materialFlowResources.constants.*;
 import com.qcadoo.mes.materialFlowResources.service.DocumentBuilder;
 import com.qcadoo.mes.materialFlowResources.service.DocumentManagementService;
@@ -47,10 +49,9 @@ import com.qcadoo.mes.productFlowThruDivision.OrderMaterialAvailability;
 import com.qcadoo.mes.productFlowThruDivision.constants.*;
 import com.qcadoo.mes.productFlowThruDivision.realProductionCost.RealProductionCostService;
 import com.qcadoo.mes.productFlowThruDivision.service.ProductionCountingDocumentService;
-import com.qcadoo.mes.productionCounting.constants.ParameterFieldsPC;
-import com.qcadoo.mes.productionCounting.constants.PriceBasedOn;
-import com.qcadoo.mes.productionCounting.constants.ProductionCountingConstants;
-import com.qcadoo.mes.productionCounting.constants.ReceiptOfProducts;
+import com.qcadoo.mes.productionCounting.constants.*;
+import com.qcadoo.mes.productionCounting.states.constants.ProductionTrackingStateStringValues;
+import com.qcadoo.mes.productionCounting.utils.ProductionTrackingDocumentsHelper;
 import com.qcadoo.mes.states.StateChangeContext;
 import com.qcadoo.mes.states.StateEnum;
 import com.qcadoo.mes.states.messages.constants.StateMessageType;
@@ -118,6 +119,9 @@ public class OrderStatesListenerServicePFTD {
     @Autowired
     private DocumentStateChangeService documentStateChangeService;
 
+    @Autowired
+    private ProductionTrackingDocumentsHelper productionTrackingDocumentsHelper;
+
     public void acceptInboundDocumentsForOrder(final StateChangeContext stateChangeContext) {
         String receiptOfProducts = parameterService.getParameter().getStringField(ParameterFieldsPC.RECEIPT_OF_PRODUCTS);
         if (ReceiptOfProducts.END_OF_THE_ORDER.getStringValue().equals(receiptOfProducts)) {
@@ -151,6 +155,9 @@ public class OrderStatesListenerServicePFTD {
 
     @Transactional(/* isolation = Isolation.READ_UNCOMMITTED */)
     private Either<String, Void> tryAcceptInboundDocumentsFor(final Entity order) {
+
+        updateDocumentQuantities(order);
+
         DataDefinition documentDD = dataDefinitionService.get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER,
                 MaterialFlowResourcesConstants.MODEL_DOCUMENT);
 
@@ -232,7 +239,7 @@ public class OrderStatesListenerServicePFTD {
     }
 
     private Either<String, Void> createTransferDocumentsForUnusedMaterials(final Entity locationFrom, final Entity locationTo,
-            final Map<Entity, BigDecimal> products, final Entity order) {
+                                                                           final Map<Entity, BigDecimal> products, final Entity order) {
         DocumentBuilder document = documentManagementService.getDocumentBuilder().transfer(locationFrom, locationTo);
 
         if (products.isEmpty()) {
@@ -282,7 +289,7 @@ public class OrderStatesListenerServicePFTD {
     }
 
     private MultiMap groupProductionCountingQuantitiesByField(final List<Entity> productionCountingQuantities,
-            final String field) {
+                                                              final String field) {
         MultiMap map = new MultiHashMap();
         for (Entity pcq : productionCountingQuantities) {
             Entity entity = pcq.getBelongsToField(field);
@@ -376,6 +383,57 @@ public class OrderStatesListenerServicePFTD {
         return savedDocument;
     }
 
+    private void updateDocumentQuantities(Entity order) {
+
+        DataDefinition ptDD = dataDefinitionService.get(ProductionCountingConstants.PLUGIN_IDENTIFIER,
+                ProductionCountingConstants.MODEL_PRODUCTION_TRACKING);
+        List<Entity> productionTrackings = ptDD.find()
+                .add(SearchRestrictions.belongsTo(ProductionTrackingFields.ORDER, order))
+                .add(SearchRestrictions.eq(ProductionTrackingFields.STATE, ProductionTrackingStateStringValues.ACCEPTED))
+                .list().getEntities();
+
+        List<Entity> trackingOperationProductOutComponents = Lists.newArrayList();
+        for (Entity productionTracking : productionTrackings) {
+            trackingOperationProductOutComponents.addAll(Lists.newArrayList(productionTracking.getHasManyField(ProductionTrackingFields.TRACKING_OPERATION_PRODUCT_OUT_COMPONENTS)));
+        }
+        Multimap<Long, Entity> groupedRecordOutProducts = productionTrackingDocumentsHelper
+                .fillFromBPCProductOut(trackingOperationProductOutComponents, order, true);
+
+        for (Long warehouseId : groupedRecordOutProducts.keySet()) {
+            Entity locationTo = getLocationDD().get(warehouseId);
+            List<Entity> finalProductRecord = Lists.newArrayList();
+
+            Collection<Entity> intermediateRecords = Lists.newArrayList();
+
+            for (Entity trackingOperationProductOutComponent : trackingOperationProductOutComponents) {
+                if (isFinalProductForOrder(order,
+                        trackingOperationProductOutComponent.getBelongsToField(TrackingOperationProductOutComponentFields.PRODUCT))) {
+                    finalProductRecord.add(trackingOperationProductOutComponent);
+                } else {
+                    intermediateRecords.add(trackingOperationProductOutComponent);
+                }
+            }
+
+            Entity existingInboundDocument = getDocumentDD().find()
+                    .add(SearchRestrictions.belongsTo(DocumentFieldsPFTD.ORDER, order))
+                    .add(SearchRestrictions.belongsTo(DocumentFields.LOCATION_TO, locationTo))
+                    .add(SearchRestrictions.eq(DocumentFields.STATE, DocumentState.DRAFT.getStringValue()))
+                    .add(SearchRestrictions.eq(DocumentFields.TYPE, DocumentType.INTERNAL_INBOUND.getStringValue()))
+                    .setMaxResults(1).uniqueResult();
+
+            if (Objects.nonNull(existingInboundDocument)) {
+                if (Objects.nonNull(finalProductRecord)) {
+                    productionTrackingListenerServicePFTD.updateInternalInboundDocumentForFinalProducts(order, existingInboundDocument,
+                            finalProductRecord, true, true);
+                } else {
+                    productionTrackingListenerServicePFTD.updateInternalInboundDocumentForFinalProducts(order, existingInboundDocument,
+                            intermediateRecords, false, true);
+                }
+            }
+        }
+
+    }
+
     public void checkMaterialAvailability(StateChangeContext stateChangeContext) {
         Entity order = stateChangeContext.getOwner();
         StateEnum targetState = stateChangeContext.getStateEnumValue(stateChangeContext.getDescriber().getTargetStateFieldName());
@@ -393,9 +451,9 @@ public class OrderStatesListenerServicePFTD {
         if (order.getField(OrderFieldsPFTD.IGNORE_MISSING_COMPONENTS) != null
                 && !order.getBooleanField(OrderFieldsPFTD.IGNORE_MISSING_COMPONENTS) && technology != null
                 && (OrderState.ACCEPTED == targetState
-                        && MomentOfValidation.ORDER_ACCEPTANCE.getStrValue().equals(momentOfValidation)
-                        || OrderState.IN_PROGRESS == targetState
-                                && MomentOfValidation.ORDER_STARTING.getStrValue().equals(momentOfValidation))) {
+                && MomentOfValidation.ORDER_ACCEPTANCE.getStrValue().equals(momentOfValidation)
+                || OrderState.IN_PROGRESS == targetState
+                && MomentOfValidation.ORDER_STARTING.getStrValue().equals(momentOfValidation))) {
 
             List<Entity> entries = orderMaterialAvailability.generateMaterialAvailabilityForOrder(order);
             List<Entity> notAvailableProducts = entries.stream()
@@ -419,5 +477,18 @@ public class OrderStatesListenerServicePFTD {
     public void createCumulatedInternalOutboundDocument(StateChangeContext stateChangeContext) {
         Entity order = stateChangeContext.getOwner();
         productionCountingDocumentService.createCumulatedInternalOutboundDocument(order);
+    }
+
+    private boolean isFinalProductForOrder(final Entity order, final Entity product) {
+        return order.getBelongsToField(OrderFields.PRODUCT).getId().equals(product.getId());
+    }
+
+    private DataDefinition getDocumentDD() {
+        return dataDefinitionService.get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER,
+                MaterialFlowResourcesConstants.MODEL_DOCUMENT);
+    }
+
+    private DataDefinition getLocationDD() {
+        return dataDefinitionService.get(MaterialFlowConstants.PLUGIN_IDENTIFIER, MaterialFlowConstants.MODEL_LOCATION);
     }
 }

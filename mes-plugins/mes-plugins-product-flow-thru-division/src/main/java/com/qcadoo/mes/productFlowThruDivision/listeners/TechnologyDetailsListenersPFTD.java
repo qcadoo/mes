@@ -83,31 +83,6 @@ public class TechnologyDetailsListenersPFTD {
     @Autowired
     private ParameterService parameterService;
 
-    public void setWorkstationsLookup(final ViewDefinitionState view, final ComponentState componentState, final String[] args) {
-        if (!(componentState instanceof GridComponent)) {
-            return;
-        }
-
-        GridComponent grid = (GridComponent) componentState;
-
-        if (grid.getSelectedEntities().isEmpty()) {
-            return;
-        }
-
-        LookupComponent workstationLookup = (LookupComponent) view.getComponentByReference("workstationsForTOClookup");
-        Entity productionLine = grid.getSelectedEntities().get(0).getBelongsToField("productionLine");
-
-        FilterValueHolder filter = workstationLookup.getFilterValue();
-
-        if (Objects.nonNull(productionLine)) {
-            filter.put(OperationFields.PRODUCTION_LINE, productionLine.getId());
-        } else {
-            filter.remove(OperationFields.PRODUCTION_LINE);
-        }
-
-        workstationLookup.setFilterValue(filter);
-    }
-
     @Transactional
     public void fillLocationsInComponents(final ViewDefinitionState view, final ComponentState componentState,
             final String[] args) {

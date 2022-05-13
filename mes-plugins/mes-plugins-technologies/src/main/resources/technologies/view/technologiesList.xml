@@ -315,7 +315,7 @@
             <option type="column" name="externalSynchronized" fields="externalSynchronized" hidden="true"/>
 			<option type="column" name="divisionName" fields="divisionName"
 					width="55"/>
-			<option type="column" name="standardPerformanceTechnology" fields="standardPerformanceTechnology"
+			<option type="column" name="standardPerformance" fields="standardPerformance"
 					width="55"/>
             <option type="column" name="dateAndTime" fields="dateAndTime"
                     width="60"/>
@@ -330,9 +330,9 @@
 
             <option type="order" column="number" direction="desc"/>
             <option type="searchable" value="name,number,productNumber,state,technologyGroupNumber,productGlobalTypeOfMaterial,
-                divisionName,master,standardPerformanceTechnology,attachmentsExists,dateAndTime,productionLineNumber,assortmentName,isTemplateAccepted"/>
+                divisionName,master,standardPerformance,attachmentsExists,dateAndTime,productionLineNumber,assortmentName,isTemplateAccepted"/>
             <option type="orderable" value="name,number,productNumber,state,technologyGroupNumber,productGlobalTypeOfMaterial,
-                divisionName,master,standardPerformanceTechnology,attachmentsExists,dateAndTime,productionLineNumber,assortmentName,isTemplateAccepted"/>
+                divisionName,master,standardPerformance,attachmentsExists,dateAndTime,productionLineNumber,assortmentName,isTemplateAccepted"/>
 
             <option type="correspondingView" value="technologies/technologyDetails"/>
             <option type="correspondingComponent" value="form"/>

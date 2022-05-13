@@ -49,8 +49,6 @@ public final class TechnologyDtoFields {
 
     public static final String GENERATOR_NAME = "generatorName";
 
-    public static final String STANDARD_PERFORMANCE_TECHNOLOGY = "standardPerformanceTechnology";
-
     public static final String PRODUCT_GLOBAL_TYPE_OF_MATERIAL = "productGlobalTypeOfMaterial";
 
     public static final String ATTACHMENTS_EXISTS = "attachmentsExists";
