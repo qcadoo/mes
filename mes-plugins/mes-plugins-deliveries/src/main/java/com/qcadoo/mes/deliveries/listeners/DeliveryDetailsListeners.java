@@ -53,6 +53,7 @@ import com.qcadoo.view.api.components.GridComponent;
 import com.qcadoo.view.api.components.LookupComponent;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
 import com.qcadoo.view.constants.QcadooViewConstants;
+
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -145,7 +146,7 @@ public class DeliveryDetailsListeners {
     }
 
     private void fillBasedOnPricesFromLastDeliveryOffer(final ViewDefinitionState view,
-            final boolean deliveryUseNominalCostWhenPriceNotSpecified) {
+                                                        final boolean deliveryUseNominalCostWhenPriceNotSpecified) {
         GridComponent orderedProductsGrid = (GridComponent) view.getComponentByReference(DeliveryFields.ORDERED_PRODUCTS);
         FieldComponent currencyField = (FieldComponent) view.getComponentByReference(DeliveryFields.CURRENCY);
         Long deliveryCurrencyId = (Long) currencyField.getFieldValue();
@@ -223,7 +224,7 @@ public class DeliveryDetailsListeners {
     }
 
     private void fillBasedOnLastPurchasePrice(final ViewDefinitionState view,
-            final boolean deliveryUseNominalCostWhenPriceNotSpecified) {
+                                              final boolean deliveryUseNominalCostWhenPriceNotSpecified) {
         GridComponent orderedProductsGrid = (GridComponent) view.getComponentByReference(DeliveryFields.ORDERED_PRODUCTS);
         FieldComponent currencyField = (FieldComponent) view.getComponentByReference(DeliveryFields.CURRENCY);
         Long deliveryCurrencyId = (Long) currencyField.getFieldValue();
@@ -273,7 +274,7 @@ public class DeliveryDetailsListeners {
     }
 
     private BigDecimal getPricePerUnit(Long deliveryCurrencyId, Entity plnCurrency, Entity product,
-            List<Entity> productsToMessage, Entity productCurrency, BigDecimal price) {
+                                       List<Entity> productsToMessage, Entity productCurrency, BigDecimal price) {
         BigDecimal pricePerUnit = null;
         if (deliveryCurrencyId == null || productCurrency == null || deliveryCurrencyId.equals(productCurrency.getId())) {
             pricePerUnit = price;
@@ -325,10 +326,13 @@ public class DeliveryDetailsListeners {
     }
 
     public void onCurrencyChange(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        GridComponent orderedProductsGrid = (GridComponent) view.getComponentByReference(DeliveryFields.ORDERED_PRODUCTS);
         FormComponent deliveryForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
-        Entity oldCurrency = dataDefinitionService.get(DeliveriesConstants.PLUGIN_IDENTIFIER, DeliveriesConstants.MODEL_DELIVERY)
-                .get(deliveryForm.getEntityId()).getBelongsToField(DeliveryFields.CURRENCY);
+        Entity oldCurrency = null;
+        if (deliveryForm.getEntityId() != null) {
+            oldCurrency = dataDefinitionService.get(DeliveriesConstants.PLUGIN_IDENTIFIER, DeliveriesConstants.MODEL_DELIVERY)
+                    .get(deliveryForm.getEntityId()).getBelongsToField(DeliveryFields.CURRENCY);
+        }
+        GridComponent orderedProductsGrid = (GridComponent) view.getComponentByReference(DeliveryFields.ORDERED_PRODUCTS);
         Long newCurrency = (Long) state.getFieldValue();
         if (oldCurrency != null && !oldCurrency.getId().equals(newCurrency) && !orderedProductsGrid.getEntities().isEmpty()) {
             view.addMessage("deliveries.delivery.currencyChange.orderedProductsPriceVerificationRequired", MessageType.INFO,
@@ -353,14 +357,14 @@ public class DeliveryDetailsListeners {
     }
 
     public final void copyProductsWithoutQuantityAndPrice(final ViewDefinitionState view, final ComponentState state,
-            final String[] args) {
+                                                          final String[] args) {
         copyOrderedProductToDelivered(view, false);
 
         state.performEvent(view, "reset");
     }
 
     public final void copyProductsWithQuantityAndPrice(final ViewDefinitionState view, final ComponentState state,
-            final String[] args) {
+                                                       final String[] args) {
         copyOrderedProductToDelivered(view, true);
 
         state.performEvent(view, "reset");
@@ -394,7 +398,7 @@ public class DeliveryDetailsListeners {
                         .filter(deliveredProduct -> Objects
                                 .nonNull(deliveredProduct.getBelongsToField(DeliveredProductFields.PALLET_NUMBER))
                                 && deliveredProduct.getBelongsToField(DeliveredProductFields.PALLET_NUMBER)
-                                        .getStringField(PalletNumberFields.NUMBER).equals(palletNumber))
+                                .getStringField(PalletNumberFields.NUMBER).equals(palletNumber))
                         .map(Entity::getId).filter(deliveredProduct -> !selectedProductsIds.contains(deliveredProduct))
                         .collect(Collectors.toList());
 
@@ -512,7 +516,7 @@ public class DeliveryDetailsListeners {
     }
 
     private Entity createDeliveredProductMultiPosition(final Entity orderedProduct,
-            final DataDefinition deliveredProductMultiPositionDD, final List<Entity> deliveredProducts) {
+                                                       final DataDefinition deliveredProductMultiPositionDD, final List<Entity> deliveredProducts) {
         Entity deliveredProductMultiPosition = deliveredProductMultiPositionDD.create();
 
         Entity product = orderedProduct.getBelongsToField(OrderedProductFields.PRODUCT);
@@ -581,7 +585,7 @@ public class DeliveryDetailsListeners {
     }
 
     private List<Entity> createDeliveredProducts(final Entity delivery, final List<Entity> orderedProducts,
-            final boolean copyQuantityAndPrice) {
+                                                 final boolean copyQuantityAndPrice) {
         List<Entity> deliveredProducts = Lists.newArrayList();
 
         for (Entity orderedProduct : orderedProducts) {
@@ -592,7 +596,7 @@ public class DeliveryDetailsListeners {
     }
 
     private Entity createDeliveredProduct(final Entity delivery, final Entity orderedProduct,
-            final boolean copyQuantityAndPrice) {
+                                          final boolean copyQuantityAndPrice) {
         Entity deliveredProduct = deliveriesService.getDeliveredProductDD().create();
 
         Entity product = orderedProduct.getBelongsToField(OrderedProductFields.PRODUCT);
@@ -743,7 +747,7 @@ public class DeliveryDetailsListeners {
     }
 
     private Entity createOrderedProduct(final Entity orderedProduct, final BigDecimal orderedQuantity,
-            final Entity deliveredProduct) {
+                                        final Entity deliveredProduct) {
         Entity newOrderedProduct = deliveriesService.getOrderedProductDD().create();
 
         Entity product = orderedProduct.getBelongsToField(OrderedProductFields.PRODUCT);
@@ -771,7 +775,7 @@ public class DeliveryDetailsListeners {
     }
 
     private List<Entity> copyReservations(final Entity orderedProduct, final Entity newOrderedProduct,
-            final Entity deliveredProduct) {
+                                          final Entity deliveredProduct) {
         List<Entity> newReservations = Lists.newArrayList();
         List<Entity> oldReservations = orderedProduct.getHasManyField(OrderedProductFields.RESERVATIONS);
         BigDecimal availableQuantity = newOrderedProduct.getDecimalField(OrderedProductFields.ORDERED_QUANTITY);
