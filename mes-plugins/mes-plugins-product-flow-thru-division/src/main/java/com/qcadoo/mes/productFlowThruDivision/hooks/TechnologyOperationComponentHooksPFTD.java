@@ -74,7 +74,8 @@ public class TechnologyOperationComponentHooksPFTD {
                     technology.setField(TechnologyFieldsPFTD.RANGE, Range.MANY_DIVISIONS.getStringValue());
                     technology.setField(TechnologyFieldsPFTD.DIVISION, null);
                     technology.getDataDefinition().save(technology);
-                } else {
+                } else if (!Range.ONE_DIVISION.getStringValue().equals(technology.getField(TechnologyFieldsPFTD.RANGE))
+                        || !Objects.equals(technology.getField(TechnologyFieldsPFTD.DIVISION), division)) {
                     technology.setField(TechnologyFieldsPFTD.RANGE, Range.ONE_DIVISION.getStringValue());
                     technology.setField(TechnologyFieldsPFTD.DIVISION, division);
                     Long[] productionLinesIds = technology.getHasManyField(TechnologyFields.PRODUCTION_LINES).stream().map(Entity::getId).toArray(Long[]::new);
@@ -90,50 +91,12 @@ public class TechnologyOperationComponentHooksPFTD {
 
     private void fillLocationsForOneDivisionRange(Entity technology) {
         Entity division = technology.getBelongsToField(TechnologyFieldsPFTD.DIVISION);
-        if (Objects.isNull(division)
-                || !technology.getField(TechnologyFieldsPFTD.RANGE).equals(Range.ONE_DIVISION.getStringValue())) {
-            return;
-        }
-        Entity componentsLocation = division.getBelongsToField(DivisionFieldsMFR.COMPONENTS_LOCATION);
 
-        if (Objects.isNull(componentsLocation)) {
-            technology.setField(TechnologyFieldsPFTD.COMPONENTS_LOCATION, null);
-        } else {
-            technology.setField(TechnologyFieldsPFTD.COMPONENTS_LOCATION, componentsLocation);
-        }
-
-        Entity componentsOutput = division.getBelongsToField(DivisionFieldsMFR.COMPONENTS_OUTPUT_LOCATION);
-
-        if (Objects.isNull(componentsOutput)) {
-            technology.setField(TechnologyFieldsPFTD.COMPONENTS_OUTPUT_LOCATION, null);
-        } else {
-            technology.setField(TechnologyFieldsPFTD.COMPONENTS_OUTPUT_LOCATION, componentsOutput);
-        }
-
-        Entity productsInput = division.getBelongsToField(DivisionFieldsMFR.PRODUCTS_INPUT_LOCATION);
-
-        if (Objects.isNull(productsInput)) {
-            technology.setField(TechnologyFieldsPFTD.PRODUCTS_INPUT_LOCATION, null);
-        } else {
-            technology.setField(TechnologyFieldsPFTD.PRODUCTS_INPUT_LOCATION, productsInput);
-        }
-
-        Entity productsWaste = division.getBelongsToField(DivisionFieldsPFTD.WASTE_RECEPTION_WAREHOUSE);
-
-        if (Objects.isNull(productsWaste)) {
-            technology.setField(TechnologyFieldsPFTD.WASTE_RECEPTION_WAREHOUSE, null);
-        } else {
-            technology.setField(TechnologyFieldsPFTD.WASTE_RECEPTION_WAREHOUSE, productsWaste);
-        }
-
-        Entity productsFlow = division.getBelongsToField(TechnologyFieldsPFTD.PRODUCTS_FLOW_LOCATION);
-
-        if (Objects.isNull(productsFlow)) {
-            technology.setField(TechnologyFieldsPFTD.PRODUCTS_FLOW_LOCATION, null);
-        } else {
-            technology.setField(TechnologyFieldsPFTD.PRODUCTS_FLOW_LOCATION, productsFlow);
-        }
-
+        technology.setField(TechnologyFieldsPFTD.COMPONENTS_LOCATION, division.getBelongsToField(DivisionFieldsMFR.COMPONENTS_LOCATION));
+        technology.setField(TechnologyFieldsPFTD.COMPONENTS_OUTPUT_LOCATION, division.getBelongsToField(DivisionFieldsMFR.COMPONENTS_OUTPUT_LOCATION));
+        technology.setField(TechnologyFieldsPFTD.PRODUCTS_INPUT_LOCATION, division.getBelongsToField(DivisionFieldsMFR.PRODUCTS_INPUT_LOCATION));
+        technology.setField(TechnologyFieldsPFTD.WASTE_RECEPTION_WAREHOUSE, division.getBelongsToField(DivisionFieldsPFTD.WASTE_RECEPTION_WAREHOUSE));
+        technology.setField(TechnologyFieldsPFTD.PRODUCTS_FLOW_LOCATION, division.getBelongsToField(TechnologyFieldsPFTD.PRODUCTS_FLOW_LOCATION));
         technology.setField(TechnologyFieldsPFTD.PRODUCTION_FLOW, division.getStringField(TechnologyFieldsPFTD.PRODUCTION_FLOW));
     }
 
