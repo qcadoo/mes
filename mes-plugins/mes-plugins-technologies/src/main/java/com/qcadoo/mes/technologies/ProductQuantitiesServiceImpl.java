@@ -387,8 +387,9 @@ public class ProductQuantitiesServiceImpl implements ProductQuantitiesService {
                     }
                 }
             } else if (Objects.nonNull(operationProductComponentWithQuantityContainer.getOrderedProduct()) && operationProductComponent.getDataDefinition().getName().equals(TechnologiesConstants.MODEL_OPERATION_PRODUCT_IN_COMPONENT)
+                    && Objects.nonNull(getOperationProductProduct(operationProductComponent))
                     && ProductFamilyElementType.PRODUCTS_FAMILY.getStringValue().equals(
-                    operationProductComponent.getBelongsToField(OperationProductInComponentFields.PRODUCT).getField(ProductFields.ENTITY_TYPE))
+                    getOperationProductProduct(operationProductComponent).getField(ProductFields.ENTITY_TYPE))
                     && Objects.nonNull(operationProductComponent.getBelongsToField(OperationProductInComponentFields.ATTRIBUTE))) {
 
                 Entity attribute = operationProductComponent.getBelongsToField(OperationProductInComponentFields.ATTRIBUTE);
@@ -399,7 +400,7 @@ public class ProductQuantitiesServiceImpl implements ProductQuantitiesService {
                         .add(SearchRestrictions.belongsTo(ProductAttributeValueFields.ATTRIBUTE, attribute))
                         .list().getEntities();
 
-                Entity opicProduct = operationProductComponent.getBelongsToField(OperationProductInComponentFields.PRODUCT);
+                Entity opicProduct = getOperationProductProduct(operationProductComponent);
                 if (!attributeValues.isEmpty()) {
                     Collection<Long> attributeValuesId = attributeValues.stream().map(av -> av.getBelongsToField(ProductAttributeValueFields.ATTRIBUTE_VALUE).getId()).collect(Collectors.toList());
 
@@ -510,8 +511,7 @@ public class ProductQuantitiesServiceImpl implements ProductQuantitiesService {
                         .getHasManyField(TechnologyOperationComponentFields.OPERATION_PRODUCT_OUT_COMPONENTS)) {
                     if (!operationProductInComponent
                             .getBooleanField(OperationProductInComponentFields.DIFFERENT_PRODUCTS_IN_DIFFERENT_SIZES)
-                            && !Objects.isNull(operationProductInComponent
-                            .getBelongsToField(OperationProductInComponentFields.PRODUCT))
+                            && !Objects.isNull(getOperationProductProduct(operationProductInComponent))
                             && operationProductOutComponent
                             .getBelongsToField(OperationProductOutComponentFields.PRODUCT)
                             .getId()
@@ -661,7 +661,7 @@ public class ProductQuantitiesServiceImpl implements ProductQuantitiesService {
                 }
             } else if (Objects.nonNull(orderedProduct) && operationProductComponent.getDataDefinition().getName().equals(TechnologiesConstants.MODEL_OPERATION_PRODUCT_IN_COMPONENT)
                     && ProductFamilyElementType.PRODUCTS_FAMILY.getStringValue().equals(
-                    operationProductComponent.getBelongsToField(OperationProductInComponentFields.PRODUCT).getField(ProductFields.ENTITY_TYPE))
+                    getOperationProductProduct(operationProductComponent).getField(ProductFields.ENTITY_TYPE))
                     && Objects.nonNull(operationProductComponent.getBelongsToField(OperationProductInComponentFields.ATTRIBUTE))) {
 
                 Entity attribute = operationProductComponent.getBelongsToField(OperationProductInComponentFields.ATTRIBUTE);
@@ -672,7 +672,7 @@ public class ProductQuantitiesServiceImpl implements ProductQuantitiesService {
                         .add(SearchRestrictions.belongsTo(ProductAttributeValueFields.ATTRIBUTE, attribute))
                         .list().getEntities();
 
-                Entity opicProduct = operationProductComponent.getBelongsToField(OperationProductInComponentFields.PRODUCT);
+                Entity opicProduct = getOperationProductProduct(operationProductComponent);
                 if (!attributeValues.isEmpty()) {
                     Collection<Long> attributeValuesId = attributeValues.stream().map(av -> av.getBelongsToField(ProductAttributeValueFields.ATTRIBUTE_VALUE).getId()).collect(Collectors.toList());
 
@@ -868,7 +868,7 @@ public class ProductQuantitiesServiceImpl implements ProductQuantitiesService {
     private boolean findProductParentOperation(final Entity operationProductOutComponent,
                                                final List<Entity> parentOperationProductInComponents) {
         for (Entity parentOperationProductInComponent : parentOperationProductInComponents) {
-            Entity parentProduct = parentOperationProductInComponent.getBelongsToField(OperationProductInComponentFields.PRODUCT);
+            Entity parentProduct = getOperationProductProduct(parentOperationProductInComponent);
             Entity currentProduct = operationProductOutComponent.getBelongsToField(OperationProductOutComponentFields.PRODUCT);
 
             if (Objects.nonNull(parentProduct) && parentProduct.getId().equals(currentProduct.getId())) {
@@ -889,5 +889,15 @@ public class ProductQuantitiesServiceImpl implements ProductQuantitiesService {
     public Entity getProduct(final Long productId) {
         return dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PRODUCT).get(productId);
     }
+
+
+    private Entity getOperationProductProduct(Entity operationProductComponent) {
+        Entity product = operationProductComponent.getBelongsToField(OperationProductInComponentFields.PRODUCT);
+        if(Objects.isNull(product)) {
+            return null;
+        }
+        return product.getDataDefinition().get(product.getId());
+    }
+
 
 }
