@@ -90,6 +90,7 @@
         <model:model model="schedulePositionDto" resource="model/schedulePositionDto.xml"/>
         <model:model model="scheduleStateChange" resource="model/scheduleStateChange.xml"/>
         <model:model model="productionLineSchedule" resource="model/productionLineSchedule.xml"/>
+        <model:model model="productionLineSchedulePosition" resource="model/productionLineSchedulePosition.xml"/>
         <model:model model="productionLineScheduleStateChange" resource="model/productionLineScheduleStateChange.xml"/>
 
         <model:model model="operationalTask" resource="model/operationalTask.xml"/>
@@ -106,6 +107,10 @@
         <model:model model="orderTechnologicalProcessPart" resource="model/orderTechnologicalProcessPart.xml"/>
         <model:model model="orderTechnologicalProcessWaste" resource="model/orderTechnologicalProcessWaste.xml"/>
         <model:model model="orderTechnologicalProcessWasteDto" resource="model/orderTechnologicalProcessWasteDto.xml"/>
+
+        <model:model-field plugin="productionLines" model="productionLine">
+            <model:hasMany name="positions" model="productionLineSchedulePosition" plugin="orders" joinField="productionLine"/>
+        </model:model-field>
 
         <model:model-field plugin="basic" model="product">
             <model:hasMany name="positions" model="schedulePosition" plugin="orders" joinField="product"/>
@@ -513,6 +518,7 @@
         <view:view resource="view/schedulePositionDetails.xml"/>
         <view:view resource="view/productionLineSchedulesList.xml"/>
         <view:view resource="view/productionLineScheduleDetails.xml"/>
+        <view:view resource="view/productionLineSchedulePositionDetails.xml"/>
 
         <view:view resource="view/ordersParameters.xml"/>
 

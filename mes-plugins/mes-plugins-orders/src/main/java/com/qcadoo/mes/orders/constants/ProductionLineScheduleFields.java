@@ -13,4 +13,6 @@ public final class ProductionLineScheduleFields {
 
     public static final String APPROVE_TIME = "approveTime";
 
+    public static final String POSITIONS = "positions";
+
 }

@@ -67,6 +67,11 @@
                     </script>
                 </smallButton>
             </group>
+            <group name="setAPlan">
+                <bigButton name="generatePlan" icon="generateIcon24.png"
+                           action="#{form}.fireEvent(generatePlan);" state="disabled">
+                </bigButton>
+            </group>
         </ribbon>
 
         <windowTab name="mainTab">
@@ -80,17 +85,17 @@
                                 var deleteButton = #{window}.getRibbonItem("actions.delete");
 								var isSaved = (#{form}.getValue().content && #{form}.getValue().content.entityId);
 								var state = #{state}.getValue().content.value;
-<!--								var generatePlan = #{scheduleTab}.getRibbonItem("setAPlan.generatePlan");-->
+								var generatePlan = #{window}.getRibbonItem("setAPlan.generatePlan");
 								var saveActions = ["actions.save","actions.saveNew","actions.saveBack"];
 
                                 if (isSaved && state == "01draft") {
-                                    approveSchedule.enable();
-                                    rejectSchedule.enable();
-<!--                                    generatePlan.enable("#{translate(orders.scheduleDetails.window.scheduleTab.ribbon.setAPlan.generatePlan.message)}");-->
+                                    //approveSchedule.enable();
+                                    //rejectSchedule.enable();
+                                    generatePlan.enable();
                                 } else {
                                     approveSchedule.disable();
                                     rejectSchedule.disable();
-<!--                                    generatePlan.disable("#{translate(orders.scheduleDetails.window.scheduleTab.ribbon.setAPlan.generatePlan.message)}");-->
+                                    generatePlan.disable();
                                 }
 
    								for(var elementKey in saveActions){
@@ -105,11 +110,11 @@
      							if(state != "01draft"){
      							    this.setEnabled(false, true);
      							    #{orders}.setEditable(false);
-<!--     							    #{positions}.setEditable(false);-->
+     							    #{positions}.setEditable(false);
                                 } else {
                                     this.setEnabled(true, true);
                                     #{orders}.setEditable(true);
-<!--     							    #{positions}.setEditable(true);-->
+     							    #{positions}.setEditable(true);
                                 }
                                 if (state != "01draft" || !isSaved) {
                                     deleteButton.disable();
@@ -170,6 +175,10 @@
                 <listener event="changeState"
                           class="com.qcadoo.mes.orders.listeners.ProductionLineScheduleDetailsListeners"
                           method="changeState"/>
+
+                <listener event="generatePlan"
+                          class="com.qcadoo.mes.orders.listeners.ProductionLineScheduleDetailsListeners"
+                          method="generatePlan"/>
             </component>
         </windowTab>
 
@@ -250,6 +259,34 @@
                 <option type="deletable" value="true"/>
                 <option type="creatable" value="true"/>
 
+            </component>
+        </windowTab>
+        <windowTab name="scheduleTab" reference="scheduleTab">
+            <component type="grid" name="positions" source="#{form}.positions" reference="positions">
+
+                <option type="column" name="productionLine" fields="productionLine"
+                        expression="#productionLine['number']" link="true"/>
+                <option type="column" name="order" fields="order" expression="#order['number']" link="true"/>
+                <option type="column" name="productNumber" fields="order" expression="#order['product'].get('number')"/>
+                <option type="column" name="productName" fields="order" expression="#order['product'].get('name')"/>
+                <option type="column" name="plannedQuantity" fields="order" expression="#order['plannedQuantity']"/>
+                <option type="column" name="productUnit" fields="order" expression="#order['product'].get('unit')"
+                        width="40"/>
+                <option type="column" name="startTime" fields="startTime"/>
+                <option type="column" name="endTime" fields="endTime"/>
+
+                <option type="correspondingView" value="orders/productionLineSchedulePositionDetails"/>
+                <option type="correspondingComponent" value="form"/>
+                <option type="correspondingViewInModal" value="true" />
+
+                <option type="order" column="order" direction="desc"/>
+
+                <option type="searchable"
+                        value="productionLine,order,productNumber,productName,plannedQuantity,productUnit,startTime,endTime"/>
+                <option type="orderable"
+                        value="productionLine,order,productNumber,productName,plannedQuantity,productUnit,startTime,endTime"/>
+
+                <option type="fixedHeight" value="true"/>
             </component>
         </windowTab>
 

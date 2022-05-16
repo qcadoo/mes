@@ -53,9 +53,8 @@
 
         <manyToMany name="orders" joinField="productionLineSchedules" model="order"/>
 
-<!--        <hasMany name="positions" joinField="productionLineSchedule" model="productionLineSchedulePosition"-->
-<!--                 cascade="delete"/>-->
-
+        <hasMany name="positions" joinField="productionLineSchedule" model="productionLineSchedulePosition"
+                 cascade="delete"/>
     </fields>
 
     <hooks>

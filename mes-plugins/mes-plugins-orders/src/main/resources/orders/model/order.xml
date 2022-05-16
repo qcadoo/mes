@@ -179,6 +179,9 @@
         <hasMany name="schedulePositions" joinField="order" model="schedulePosition"
                  cascade="delete"/>
 
+        <hasMany name="productionLineSchedulePositions" joinField="order" model="productionLineSchedulePosition"
+                 cascade="delete"/>
+
         <belongsTo name="division" model="division" plugin="basic"/>
 
         <hasMany name="operationalTasks" model="operationalTask" joinField="order" cascade="delete"/>
