@@ -126,8 +126,9 @@
             <option type="column" name="masterOrderDefinitionNumber" fields="masterOrderDefinitionNumber" link="true"
                     width="50"/>
             <option type="column" name="number" fields="number"
-                    width="140" link="true"/>
-            <option type="column" name="name" fields="name" width="140" link="true"/>
+                    width="140" link="true" correspondingView="masterOrders/masterOrderDetails" correspondingField="masterOrderId"/>
+            <option type="column" name="masterOrderId" fields="masterOrderId" hidden="true"/>
+            <option type="column" name="name" fields="name" width="140"/>
             <option type="column" name="deadline" fields="deadline"
                     width="80" classesNames="wrap-date"/>
             <option type="column" name="companyName" fields="companyName"
@@ -139,9 +140,9 @@
                     width="55"/>
             <option type="column" name="masterOrderStatus" fields="masterOrderStatus"
                     width="55"/>
-            <option type="column" name="productNumber" fields="productNumber"
+            <option type="column" name="productNumber" fields="productNumber" link="true"
                     width="55"/>
-            <option type="column" name="productName" fields="productName"
+            <option type="column" name="productName" fields="productName" link="true"
                     width="55"/>
             <option type="column" name="modelName" fields="modelName"
                     width="55"/>
