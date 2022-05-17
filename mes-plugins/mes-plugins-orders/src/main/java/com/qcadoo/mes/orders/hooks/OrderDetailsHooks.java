@@ -770,7 +770,7 @@ public class OrderDetailsHooks {
         }
 
         if (orderId != null) {
-            oldProduct = getOrderDD().get(orderId);
+            oldProduct = getOrderDD().get(orderId).getBelongsToField(OrderFields.PRODUCT);
         }
 
         boolean technologyChanged = isTechnologyChanged(oldTechnologyField, technology, oldTechnology);

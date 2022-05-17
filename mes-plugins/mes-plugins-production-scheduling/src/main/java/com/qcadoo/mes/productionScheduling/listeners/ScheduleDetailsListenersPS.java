@@ -68,8 +68,6 @@ import com.qcadoo.view.api.components.GridComponent;
 @Service
 public class ScheduleDetailsListenersPS {
 
-    private static final String L_ORDERS = "orders";
-
     private static final String ORDERS_FOR_SUBPRODUCTS_GENERATION = "ordersForSubproductsGeneration";
 
     @Autowired
@@ -111,7 +109,7 @@ public class ScheduleDetailsListenersPS {
 
     @Transactional
     public void getOperations(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        GridComponent ordersGrid = (GridComponent) view.getComponentByReference(L_ORDERS);
+        GridComponent ordersGrid = (GridComponent) view.getComponentByReference(ScheduleFields.ORDERS);
         List<Entity> orders = ordersGrid.getEntities();
         FormComponent formComponent = (FormComponent) state;
         Entity schedule = formComponent.getEntity();
@@ -164,7 +162,7 @@ public class ScheduleDetailsListenersPS {
                                           BigDecimal operationComponentRuns) {
         Entity schedulePosition = schedulePositionDD.create();
         schedulePosition.setField(SchedulePositionFields.SCHEDULE, schedule);
-        schedulePosition.setField(OrdersConstants.MODEL_ORDER, order);
+        schedulePosition.setField(SchedulePositionFields.ORDER, order);
         schedulePosition.setField(SchedulePositionFields.TECHNOLOGY_OPERATION_COMPONENT, technologyOperationComponent);
         Entity mainOutputProductComponent = technologyService.getMainOutputProductComponent(technologyOperationComponent);
         Entity product = mainOutputProductComponent.getBelongsToField(OperationProductOutComponentFields.PRODUCT);
