@@ -38,7 +38,7 @@ public class PPSReportXlsStyleContainer {
 
     public static final String I_HeaderStyle2Red = "headerStyle2Red";
 
-    private Map<String, HSSFCellStyle> styles = Maps.newHashMap();
+    private final Map<String, HSSFCellStyle> styles = Maps.newHashMap();
 
     private Font fontNormal;
 
@@ -288,9 +288,5 @@ public class PPSReportXlsStyleContainer {
 
     public Map<String, HSSFCellStyle> getStyles() {
         return styles;
-    }
-
-    public void setStyles(Map<String, HSSFCellStyle> styles) {
-        this.styles = styles;
     }
 }

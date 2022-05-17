@@ -49,6 +49,7 @@ import java.util.Locale;
 import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
+import org.apache.poi.ss.util.CellRangeAddress;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -65,9 +66,6 @@ public class AssignmentToShiftXlsService extends XlsDocumentService {
     private AssignmentToShiftXlsHelper assignmentToShiftXlsHelper;
 
     @Autowired
-    private AssignmentToShiftXlsStyleHelper assignmentToShiftXlsStyleHelper;
-
-    @Autowired
     private DataDefinitionService dataDefinitionService;
 
     @Autowired
@@ -80,11 +78,12 @@ public class AssignmentToShiftXlsService extends XlsDocumentService {
 
     @Override
     protected void addHeader(final HSSFSheet sheet, final Locale locale, final Entity assignmentToShiftReport) {
-        createHeaderForAuthor(sheet, locale, assignmentToShiftReport);
-        createHeaderForAssignmentToShift(sheet, locale, assignmentToShiftReport);
+        AssignmentToShiftXlsStyleContainer styleContainer = new AssignmentToShiftXlsStyleContainer(sheet);
+        createHeaderForAuthor(sheet, locale, assignmentToShiftReport, styleContainer);
+        createHeaderForAssignmentToShift(sheet, locale, assignmentToShiftReport, styleContainer);
     }
 
-    private void createHeaderForAuthor(final HSSFSheet sheet, final Locale locale, final Entity assignmentToShiftReport) {
+    private void createHeaderForAuthor(final HSSFSheet sheet, final Locale locale, final Entity assignmentToShiftReport, AssignmentToShiftXlsStyleContainer styleContainer) {
         HSSFRow headerAuthorLine = sheet.createRow(1);
 
         String shift = translationService.translate(AssignmentToShiftReportConstants.COLUMN_HEADER_SHIFT, locale) + " "
@@ -95,7 +94,7 @@ public class AssignmentToShiftXlsService extends XlsDocumentService {
                 + assignmentToShiftReport.getField(AssignmentToShiftReportFields.CREATE_USER).toString();
         String date = translationService.translate(AssignmentToShiftReportConstants.COLUMN_HEADER_UPDATE_DATE, locale) + " "
                 + DateFormat.getDateInstance()
-                        .format(assignmentToShiftReport.getField(AssignmentToShiftReportFields.UPDATE_DATE));
+                .format(assignmentToShiftReport.getField(AssignmentToShiftReportFields.UPDATE_DATE));
 
         HSSFCell headerAuthorLineCell0 = headerAuthorLine.createCell(0);
         headerAuthorLineCell0.setCellValue(shift);
@@ -114,14 +113,14 @@ public class AssignmentToShiftXlsService extends XlsDocumentService {
 
         DateTime dateFrom = new DateTime(assignmentToShiftReport.getDateField(AssignmentToShiftReportFields.DATE_FROM));
         DateTime dateTo = new DateTime(assignmentToShiftReport.getDateField(AssignmentToShiftReportFields.DATE_TO));
-        assignmentToShiftXlsStyleHelper.addMarginsAndStylesForAuthor(sheet, 1,
-                shiftsService.getNumberOfDaysBetweenGivenDates(dateFrom, dateTo));
-        assignmentToShiftXlsStyleHelper.addMarginsAndStylesForAuthorFactory(sheet, 2,
-                shiftsService.getNumberOfDaysBetweenGivenDates(dateFrom, dateTo));
+        addMarginsAndStylesForAuthor(sheet, 1,
+                shiftsService.getNumberOfDaysBetweenGivenDates(dateFrom, dateTo), styleContainer);
+        addMarginsAndStylesForAuthorFactory(sheet, 2,
+                shiftsService.getNumberOfDaysBetweenGivenDates(dateFrom, dateTo), styleContainer);
     }
 
     private void createHeaderForAssignmentToShift(final HSSFSheet sheet, final Locale locale,
-            final Entity assignmentToShiftReport) {
+                                                  final Entity assignmentToShiftReport, AssignmentToShiftXlsStyleContainer styleContainer) {
         DateTime dateFrom = new DateTime(assignmentToShiftReport.getDateField(AssignmentToShiftReportFields.DATE_FROM));
         DateTime dateTo = new DateTime(assignmentToShiftReport.getDateField(AssignmentToShiftReportFields.DATE_TO));
         List<DateTime> days = shiftsService.getDaysBetweenGivenDates(dateFrom, dateTo);
@@ -147,13 +146,14 @@ public class AssignmentToShiftXlsService extends XlsDocumentService {
 
             headerAssignmentToShift.setHeightInPoints(14);
 
-            assignmentToShiftXlsStyleHelper.addMarginsAndStylesForAssignmentToShift(sheet, 4,
-                    shiftsService.getNumberOfDaysBetweenGivenDates(dateFrom, dateTo));
+            addMarginsAndStylesForAssignmentToShift(sheet, 4,
+                    shiftsService.getNumberOfDaysBetweenGivenDates(dateFrom, dateTo), styleContainer);
         }
     }
 
     @Override
     protected void addSeries(final HSSFSheet sheet, final Entity assignmentToShiftReport) {
+        AssignmentToShiftXlsStyleContainer styleContainer = new AssignmentToShiftXlsStyleContainer(sheet);
         DateTime dateFrom = new DateTime(assignmentToShiftReport.getDateField(AssignmentToShiftReportFields.DATE_FROM));
         DateTime dateTo = new DateTime(assignmentToShiftReport.getDateField(AssignmentToShiftReportFields.DATE_TO));
         List<DateTime> days = shiftsService.getDaysBetweenGivenDates(dateFrom, dateTo);
@@ -166,21 +166,21 @@ public class AssignmentToShiftXlsService extends XlsDocumentService {
 
             if (!productionlines.isEmpty()) {
                 rowNum = fillColumnWithStaffForWorkOnLine(sheet, rowNum, assignmentToShiftReport, days, productionlines,
-                        getDictionaryItemWithProductionOnLine());
+                        getDictionaryItemWithProductionOnLine(), styleContainer);
             }
 
             for (Entity dictionaryItem : occupationTypesWithoutTechnicalCode) {
-                rowNum = fillColumnWithStaffForOtherTypes(sheet, rowNum, assignmentToShiftReport, days, dictionaryItem);
+                rowNum = fillColumnWithStaffForOtherTypes(sheet, rowNum, assignmentToShiftReport, days, dictionaryItem, styleContainer);
             }
 
-            fillColumnWithStaffForOtherTypes(sheet, rowNum, assignmentToShiftReport, days, getDictionaryItemWithOtherCase());
+            fillColumnWithStaffForOtherTypes(sheet, rowNum, assignmentToShiftReport, days, getDictionaryItemWithOtherCase(), styleContainer);
 
             sheet.autoSizeColumn(0);
         }
     }
 
     private int fillColumnWithStaffForWorkOnLine(final HSSFSheet sheet, int rowNum, final Entity assignmentToShiftReport,
-            final List<DateTime> days, final List<Entity> productionLines, final Entity dictionaryItem) {
+                                                 final List<DateTime> days, final List<Entity> productionLines, final Entity dictionaryItem, AssignmentToShiftXlsStyleContainer styleContainer) {
         if ((assignmentToShiftReport != null) && (days != null) && (productionLines != null)) {
             DateTime dateFrom = new DateTime(assignmentToShiftReport.getDateField(AssignmentToShiftReportFields.DATE_FROM));
             DateTime dateTo = new DateTime(assignmentToShiftReport.getDateField(AssignmentToShiftReportFields.DATE_TO));
@@ -190,7 +190,7 @@ public class AssignmentToShiftXlsService extends XlsDocumentService {
                         dictionaryItem);
 
                 for (int i = 0; i < numberOfColumnsForWorkers; i++) {
-                    HSSFRow row = sheet.createRow(rowNum);
+                    sheet.createRow(rowNum);
                     rowNum++;
                 }
 
@@ -266,9 +266,8 @@ public class AssignmentToShiftXlsService extends XlsDocumentService {
                 }
 
                 for (int i = rowNumFromLastSection; i < rowNum; i++) {
-                    assignmentToShiftXlsStyleHelper.addMarginsAndStylesForSeries(sheet, i,
-                            shiftsService.getNumberOfDaysBetweenGivenDates(dateFrom, dateTo));
-
+                    addMarginsAndStylesForSeries(sheet, i,
+                            shiftsService.getNumberOfDaysBetweenGivenDates(dateFrom, dateTo), styleContainer);
                 }
             }
         }
@@ -277,7 +276,7 @@ public class AssignmentToShiftXlsService extends XlsDocumentService {
     }
 
     private int getNumberOfRowsForWorkers(final Entity assignmentToShiftReport, final List<DateTime> days,
-            final Entity productionLine, final Entity dictionaryItem) {
+                                          final Entity productionLine, final Entity dictionaryItem) {
         int numberOfWorkers = 0;
 
         for (DateTime day : days) {
@@ -302,7 +301,7 @@ public class AssignmentToShiftXlsService extends XlsDocumentService {
     }
 
     private int getNumberOfRowsForWorkersForOtherTypes(final Entity assignmentToShiftReport, final List<DateTime> days,
-            final Entity dictionaryItem) {
+                                                       final Entity dictionaryItem) {
         int numberOfWorkers = 0;
 
         for (DateTime day : days) {
@@ -334,7 +333,7 @@ public class AssignmentToShiftXlsService extends XlsDocumentService {
     }
 
     private int fillColumnWithStaffForOtherTypes(final HSSFSheet sheet, int rowNum, final Entity assignmentToShiftReport,
-            final List<DateTime> days, final Entity dictionaryItem) {
+                                                 final List<DateTime> days, final Entity dictionaryItem, AssignmentToShiftXlsStyleContainer styleContainer) {
         if ((assignmentToShiftReport != null) && (days != null) && (dictionaryItem != null)) {
             DateTime dateFrom = new DateTime(assignmentToShiftReport.getDateField(AssignmentToShiftReportFields.DATE_FROM));
             DateTime dateTo = new DateTime(assignmentToShiftReport.getDateField(AssignmentToShiftReportFields.DATE_TO));
@@ -343,7 +342,7 @@ public class AssignmentToShiftXlsService extends XlsDocumentService {
             int numberOfColumnsForWorkers = getNumberOfRowsForWorkersForOtherTypes(assignmentToShiftReport, days, dictionaryItem);
 
             for (int i = 0; i < numberOfColumnsForWorkers; i++) {
-                HSSFRow row = sheet.createRow(rowNum);
+                sheet.createRow(rowNum);
                 rowNum++;
             }
 
@@ -410,8 +409,8 @@ public class AssignmentToShiftXlsService extends XlsDocumentService {
             }
 
             for (int i = rowNumFromLastSection; i < rowNum; i++) {
-                assignmentToShiftXlsStyleHelper.addMarginsAndStylesForSeries(sheet, i,
-                        shiftsService.getNumberOfDaysBetweenGivenDates(dateFrom, dateTo));
+                addMarginsAndStylesForSeries(sheet, i,
+                        shiftsService.getNumberOfDaysBetweenGivenDates(dateFrom, dateTo), styleContainer);
             }
         }
 
@@ -451,4 +450,102 @@ public class AssignmentToShiftXlsService extends XlsDocumentService {
                 .uniqueResult();
     }
 
+    private void addMarginsAndStylesForAuthor(final HSSFSheet sheet, final int rowNumber, final int numberOfDays, AssignmentToShiftXlsStyleContainer styleContainer) {
+        int firstColumnNumber = 0;
+        int lastColumnNumber;
+        int margin = 3;
+
+        if (numberOfDays < 3) {
+            lastColumnNumber = 10;
+        } else {
+            lastColumnNumber = (numberOfDays + 1) * margin;
+        }
+
+        for (int columnNumber = firstColumnNumber; columnNumber <= lastColumnNumber; columnNumber++) {
+            if (sheet.getRow(rowNumber).getCell(columnNumber) == null) {
+                sheet.getRow(rowNumber).createCell(columnNumber);
+            }
+
+            if (columnNumber == firstColumnNumber) {
+                sheet.getRow(rowNumber).getCell(columnNumber).setCellStyle(styleContainer.getStyles().get(AssignmentToShiftXlsStyleContainer.GREY_DATA_STYLE_BORDER_TOP_LEFT_ALIGN_LEFT_BOLD));
+            } else if (columnNumber == lastColumnNumber) {
+                sheet.getRow(rowNumber).getCell(columnNumber).setCellStyle(styleContainer.getStyles().get(AssignmentToShiftXlsStyleContainer.GREY_DATA_STYLE_BORDER_TOP_RIGHT_ALIGN_LEFT_BOLD));
+            } else {
+                sheet.getRow(rowNumber).getCell(columnNumber).setCellStyle(styleContainer.getStyles().get(AssignmentToShiftXlsStyleContainer.GREY_DATA_STYLE_BORDER_TOP_ALIGN_LEFT_BOLD));
+            }
+        }
+
+        sheet.addMergedRegion(new CellRangeAddress(rowNumber, rowNumber, firstColumnNumber, firstColumnNumber + margin - 1));
+        sheet.addMergedRegion(new CellRangeAddress(rowNumber, rowNumber, firstColumnNumber + margin, firstColumnNumber
+                + (margin * 2) - 1));
+        sheet.addMergedRegion(new CellRangeAddress(rowNumber, rowNumber, firstColumnNumber + (margin * 2), lastColumnNumber));
+    }
+
+    private void addMarginsAndStylesForAuthorFactory(final HSSFSheet sheet, final int rowNumber, final int numberOfDays, AssignmentToShiftXlsStyleContainer styleContainer) {
+        int firstColumnNumber = 0;
+        int lastColumnNumber;
+        int margin = 3;
+
+        if (numberOfDays < 3) {
+            lastColumnNumber = 10;
+        } else {
+            lastColumnNumber = (numberOfDays + 1) * margin;
+        }
+
+        for (int columnNumber = firstColumnNumber; columnNumber <= lastColumnNumber; columnNumber++) {
+            if (sheet.getRow(rowNumber).getCell(columnNumber) == null) {
+                sheet.getRow(rowNumber).createCell(columnNumber);
+            }
+
+            if (columnNumber == firstColumnNumber) {
+                sheet.getRow(rowNumber).getCell(columnNumber).setCellStyle(styleContainer.getStyles().get(AssignmentToShiftXlsStyleContainer.GREY_DATA_STYLE_BORDER_LEFT_BOTTOM_ALIGN_LEFT_BOLD));
+            } else if (columnNumber == lastColumnNumber) {
+                sheet.getRow(rowNumber).getCell(columnNumber).setCellStyle(styleContainer.getStyles().get(AssignmentToShiftXlsStyleContainer.GREY_DATA_STYLE_BORDER_RIGHT_BOTTOM_ALIGN_LEFT_BOLD));
+            } else {
+                sheet.getRow(rowNumber).getCell(columnNumber).setCellStyle(styleContainer.getStyles().get(AssignmentToShiftXlsStyleContainer.GREY_DATA_STYLE_BORDER_BOTTOM_ALIGN_LEFT_BOLD));
+            }
+        }
+
+        sheet.addMergedRegion(new CellRangeAddress(rowNumber, rowNumber, firstColumnNumber, lastColumnNumber));
+    }
+
+    private void addMarginsAndStylesForAssignmentToShift(final HSSFSheet sheet, final int rowNumber, final int numberOfDays, AssignmentToShiftXlsStyleContainer styleContainer) {
+        int margin = 3;
+        int firstColumn = 0;
+        int lastColumn = (numberOfDays + 1) * margin;
+
+        for (int columnNumber = firstColumn; columnNumber <= lastColumn; columnNumber++) {
+            if (sheet.getRow(rowNumber).getCell(columnNumber) == null) {
+                sheet.getRow(rowNumber).createCell(columnNumber);
+            }
+
+            sheet.getRow(rowNumber).getCell(columnNumber).setCellStyle(styleContainer.getStyles().get(AssignmentToShiftXlsStyleContainer.WHITE_DATA_STYLE_BORDER_BOX_ALIGN_CENTER_BOLD));
+        }
+
+        for (int columnNumber = 1; columnNumber <= lastColumn; columnNumber += margin) {
+            sheet.addMergedRegion(new CellRangeAddress(rowNumber, rowNumber, columnNumber, columnNumber + 2));
+        }
+    }
+
+    private void addMarginsAndStylesForSeries(final HSSFSheet sheet, final int rowNumber, final int numberOfDays, AssignmentToShiftXlsStyleContainer styleContainer) {
+        int margin = 3;
+        int firstColumn = 0;
+        int lastColumn = (numberOfDays + 1) * margin;
+
+        for (int columnNumber = firstColumn; columnNumber <= lastColumn; columnNumber++) {
+            if (sheet.getRow(rowNumber).getCell(columnNumber) == null) {
+                sheet.getRow(rowNumber).createCell(columnNumber);
+            }
+
+            if (columnNumber == firstColumn) {
+                sheet.getRow(rowNumber).getCell(columnNumber).setCellStyle(styleContainer.getStyles().get(AssignmentToShiftXlsStyleContainer.WHITE_DATA_STYLE_BORDER_BOX_ALIGN_CENTER_BOLD));
+            } else {
+                sheet.getRow(rowNumber).getCell(columnNumber).setCellStyle(styleContainer.getStyles().get(AssignmentToShiftXlsStyleContainer.WHITE_DATA_STYLE_BORDER_BOX_ALIGN_LEFT));
+            }
+        }
+
+        for (int columnNumber = 1; columnNumber <= lastColumn; columnNumber += margin) {
+            sheet.addMergedRegion(new CellRangeAddress(rowNumber, rowNumber, columnNumber, columnNumber + 2));
+        }
+    }
 }

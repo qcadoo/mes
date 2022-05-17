@@ -65,27 +65,20 @@ import com.qcadoo.mes.productionPerShift.report.columns.ReportColumn;
 import com.qcadoo.mes.productionPerShift.report.print.utils.DayShiftHolder;
 import com.qcadoo.mes.productionPerShift.report.print.utils.EntityProductionPerShiftsComparator;
 import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.NumberService;
 import com.qcadoo.report.api.xls.XlsDocumentService;
 
 @Service
 public class PPSReportXlsService extends XlsDocumentService {
 
-    private DateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd", LocaleContextHolder.getLocale());
+    private final DateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd", LocaleContextHolder.getLocale());
 
-    private DateFormat UPDATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd", LocaleContextHolder.getLocale());
+    private final DateFormat UPDATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd", LocaleContextHolder.getLocale());
 
     @Autowired
     private TranslationService translationService;
 
     @Autowired
     private PPSReportXlsHelper ppsReportXlsHelper;
-
-    @Autowired
-    private PPSReportXlsStyleHelper ppsReportXlsStyleHelper;
-
-    @Autowired
-    private NumberService numberService;
 
     @Autowired
     private PPSReportColumnHelper ppsReportColumnHelper;
@@ -126,8 +119,8 @@ public class PPSReportXlsService extends XlsDocumentService {
         sheet.addMergedRegion(new CellRangeAddress(0, 0, 0, 1));
         sheet.addMergedRegion(new CellRangeAddress(0, 0, 2, 4));
 
-        ppsReportXlsStyleHelper.setGreyDataStyle(updateDateCell, styleContainer);
-        ppsReportXlsStyleHelper.setGreyDataStyle(authorCell, styleContainer);
+        updateDateCell.setCellStyle(styleContainer.getStyles().get(PPSReportXlsStyleContainer.I_GreyDataStyle));
+        authorCell.setCellStyle(styleContainer.getStyles().get(PPSReportXlsStyleContainer.I_GreyDataStyle));
     }
 
     private void createHeaderLineForProduction(final HSSFSheet sheet, final Locale locale, final HSSFRow headerMainLine,
@@ -158,7 +151,7 @@ public class PPSReportXlsService extends XlsDocumentService {
         HSSFCell cell = headerMainLine.createCell(0);
         cell.setCellValue(translationService.translate(PPSReportConstants.COLUMN_HEADER_PLANNED_PRODUCTION, locale));
 
-        ppsReportXlsStyleHelper.setHeaderStyle1(cell, styleContainer);
+        cell.setCellStyle(styleContainer.getStyles().get(PPSReportXlsStyleContainer.I_HeaderStyle1));
     }
 
     private void mergeHeaderCells(final HSSFSheet sheet, final int numberOfColumns) {
@@ -187,8 +180,8 @@ public class PPSReportXlsService extends XlsDocumentService {
 
         merge.setCellValue("");
 
-        ppsReportXlsStyleHelper.setHeaderStyle1(cell, styleContainer);
-        ppsReportXlsStyleHelper.setHeaderStyle1(merge, styleContainer);
+        cell.setCellStyle(styleContainer.getStyles().get(PPSReportXlsStyleContainer.I_HeaderStyle1));
+        merge.setCellStyle(styleContainer.getStyles().get(PPSReportXlsStyleContainer.I_HeaderStyle1));
 
         HSSFRow headerShifts = sheet.createRow(5);
 
@@ -197,7 +190,7 @@ public class PPSReportXlsService extends XlsDocumentService {
             cellDay.setCellValue(translationService.translate(PPSReportConstants.COLUMN_HEADER_DAY, locale,
                     DATE_FORMAT.format(new Date(day.getMillis()))));
 
-            ppsReportXlsStyleHelper.setHeaderStyle2(cellDay, styleContainer);
+            cellDay.setCellStyle(styleContainer.getStyles().get(PPSReportXlsStyleContainer.I_HeaderStyle2));
 
             int shiftColumnNumber = columnNumber;
 
@@ -208,7 +201,7 @@ public class PPSReportXlsService extends XlsDocumentService {
                 cellColumnNumber.setCellValue(translationService.translate(PPSReportConstants.COLUMN_HEADER_SHIFT_NUMBER, locale,
                         shift.getStringField(ShiftFields.NAME)));
 
-                ppsReportXlsStyleHelper.setHeaderStyle2(cellColumnNumber, styleContainer);
+                cellColumnNumber.setCellStyle(styleContainer.getStyles().get(PPSReportXlsStyleContainer.I_HeaderStyle2));
 
                 shiftColumnNumber++;
             }
@@ -242,8 +235,8 @@ public class PPSReportXlsService extends XlsDocumentService {
         sheet.addMergedRegion(new CellRangeAddress(1, 1, 0, 1));
         sheet.addMergedRegion(new CellRangeAddress(1, 1, 2, 4));
 
-        ppsReportXlsStyleHelper.setHeaderStyle2(updateDateCell, styleContainer);
-        ppsReportXlsStyleHelper.setHeaderStyle2(authorCell, styleContainer);
+        updateDateCell.setCellStyle(styleContainer.getStyles().get(PPSReportXlsStyleContainer.I_HeaderStyle2));
+        authorCell.setCellStyle(styleContainer.getStyles().get(PPSReportXlsStyleContainer.I_HeaderStyle2));
     }
 
     private void addSeriesOfProductionLine(final HSSFSheet sheet, final Entity report,
@@ -395,9 +388,9 @@ public class PPSReportXlsService extends XlsDocumentService {
                 }
 
                 if (rowNumberIsEven) {
-                    ppsReportXlsStyleHelper.setGreyDataStyle(cellDailyProgress, styleContainer);
+                    cellDailyProgress.setCellStyle(styleContainer.getStyles().get(PPSReportXlsStyleContainer.I_GreyDataStyle));
                 } else {
-                    ppsReportXlsStyleHelper.setWhiteDataStyle(cellDailyProgress, styleContainer);
+                    cellDailyProgress.setCellStyle(styleContainer.getStyles().get(PPSReportXlsStyleContainer.I_WhiteDataStyle));
                 }
 
                 columnNumber++;
@@ -440,7 +433,7 @@ public class PPSReportXlsService extends XlsDocumentService {
                     HSSFCell cellDailyProgress = row.createCell(columnNumber);
                     cellDailyProgress.setCellValue("");
 
-                    ppsReportXlsStyleHelper.setChangeoverDataStyle(cellDailyProgress, styleContainer);
+                    cellDailyProgress.setCellStyle(styleContainer.getStyles().get(PPSReportXlsStyleContainer.I_ChangeoverDataStyle));
 
                     columnNumber++;
 
@@ -455,7 +448,7 @@ public class PPSReportXlsService extends XlsDocumentService {
 
                     DayShiftHolder holder = new DayShiftHolder(shift, day, cell);
 
-                    ppsReportXlsStyleHelper.setChangeoverDataStyle(cell, styleContainer);
+                    cell.setCellStyle(styleContainer.getStyles().get(PPSReportXlsStyleContainer.I_ChangeoverDataStyle));
 
                     mapCells.put(columnNumber, holder);
 
@@ -554,7 +547,7 @@ public class PPSReportXlsService extends XlsDocumentService {
         }
 
         for (int i = 0; i < columnNumber; i++) {
-            ppsReportXlsStyleHelper.setChangeoverDataStyle(row.getCell(i), styleContainer);
+            row.getCell(i).setCellStyle(styleContainer.getStyles().get(PPSReportXlsStyleContainer.I_ChangeoverDataStyle));
         }
     }
 
