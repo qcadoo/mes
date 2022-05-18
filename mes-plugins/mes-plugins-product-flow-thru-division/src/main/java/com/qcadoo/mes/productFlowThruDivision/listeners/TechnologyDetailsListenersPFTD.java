@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -35,6 +36,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.google.common.collect.Maps;
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.basic.constants.ProductFields;
+import com.qcadoo.mes.materialFlowResources.constants.DocumentFields;
 import com.qcadoo.mes.productFlowThruDivision.constants.DivisionFieldsPFTD;
 import com.qcadoo.mes.productFlowThruDivision.constants.ModelCardFields;
 import com.qcadoo.mes.productFlowThruDivision.constants.ModelCardProductFields;
@@ -85,7 +87,7 @@ public class TechnologyDetailsListenersPFTD {
 
     @Transactional
     public void fillLocationsInComponents(final ViewDefinitionState view, final ComponentState componentState,
-            final String[] args) {
+                                          final String[] args) {
         FormComponent technologyForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
         Entity technology = technologyForm.getPersistedEntityWithIncludedFormValues();
@@ -357,7 +359,7 @@ public class TechnologyDetailsListenersPFTD {
     }
 
     public void onProductionFlowComponentChange(final ViewDefinitionState view, final ComponentState componentState,
-            final String[] args) {
+                                                final String[] args) {
         FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         Entity technology = form.getPersistedEntityWithIncludedFormValues();
 
@@ -395,7 +397,7 @@ public class TechnologyDetailsListenersPFTD {
         operationProduct.setField(OperationProductInComponentFieldsPFTD.COMPONENTS_LOCATION, null);
         operationProduct.setField(OperationProductInComponentFieldsPFTD.COMPONENTS_OUTPUT_LOCATION, null);
         operationProduct.setField(OperationProductInComponentFieldsPFTD.PRODUCTS_INPUT_LOCATION, null);
-        if(operationProduct.getDataDefinition().getName().equals(TechnologiesConstants.MODEL_OPERATION_PRODUCT_OUT_COMPONENT)) {
+        if (operationProduct.getDataDefinition().getName().equals(TechnologiesConstants.MODEL_OPERATION_PRODUCT_OUT_COMPONENT)) {
             operationProduct.setField(OperationProductOutComponentFieldsPFTD.WASTE_RECEPTION_WAREHOUSE, null);
         }
     }
@@ -435,4 +437,24 @@ public class TechnologyDetailsListenersPFTD {
         view.redirectTo(url, false, true, parameters);
     }
 
+    public void addMultipleProductionLines(final ViewDefinitionState view, final ComponentState componentState, final String[] args) {
+        FormComponent formComponent = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
+        Entity technology = formComponent.getPersistedEntityWithIncludedFormValues();
+        Entity division = technology.getBelongsToField(TechnologyFieldsPFTD.DIVISION);
+
+        Long technologyId = technology.getId();
+
+        Map<String, Object> parameters = Maps.newHashMap();
+
+        parameters.put("technologyId", technologyId);
+
+        if (division != null) {
+            parameters.put("divisionId", division.getId());
+        }
+
+        JSONObject context = new JSONObject(parameters);
+
+        String url = "../page/productFlowThruDivision/productionLineAddMulti.html?context=" + context;
+        view.openModal(url);
+    }
 }

@@ -23,31 +23,25 @@
  */
 package com.qcadoo.mes.productFlowThruDivision.validators;
 
-import static com.qcadoo.mes.technologies.constants.TechnologyFields.MASTER;
-
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
-import com.qcadoo.mes.technologies.constants.OperationFields;
-import com.qcadoo.mes.technologies.constants.OperationSkillFields;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
 import com.qcadoo.mes.technologies.constants.TechnologyProductionLineFields;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.search.SearchCriteriaBuilder;
-import com.qcadoo.model.api.search.SearchRestrictions;
 
 @Service
 public class TechnologyProductionLineModelValidators {
 
     public boolean validatesWith(final DataDefinition dataDefinition, final Entity entity) {
-        return checkIfSkillIsNotAlreadyAdded(dataDefinition, entity);
+        return checkIfLineIsNotAlreadyAdded(dataDefinition, entity);
     }
 
-    private boolean checkIfSkillIsNotAlreadyAdded(final DataDefinition dataDefinition, final Entity entity) {
+    private boolean checkIfLineIsNotAlreadyAdded(final DataDefinition dataDefinition, final Entity entity) {
         boolean isNotAlreadyAdded = true;
 
         Long entityId = entity.getId();
