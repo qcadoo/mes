@@ -61,6 +61,11 @@ public class OPICDetailsHooks {
     private void setAttributeTabState(ViewDefinitionState view) {
         FormComponent operationProductInComponentForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         LookupComponent attributeLookup = (LookupComponent) view.getComponentByReference(OperationProductInComponentFields.ATTRIBUTE);
+
+        if(Objects.isNull(attributeLookup)) {
+            return;
+        }
+
         LookupComponent productLookup = (LookupComponent) view.getComponentByReference(OperationProductInComponentFields.PRODUCT);
 
         Entity operationProductInComponent = operationProductInComponentForm.getEntity();
