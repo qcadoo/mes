@@ -86,6 +86,8 @@ public class TechnologyDetailsHooksPFTD {
     public static final String MODEL_CARD = "modelCard";
     public static final String CREATE_MODEL_CARD = "createModelCard";
     public static final String OPERATION_RANGE_DESCRIPTION = "operationRangeDescription";
+    public static final String PRODUCTION_LINES = "productionLines";
+    public static final String ADD_MULTIPLE_PRODUCTION_LINES = "addMultipleProductionLines";
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
@@ -467,11 +469,18 @@ public class TechnologyDetailsHooksPFTD {
 
         RibbonGroup modelCard = window.getRibbon().getGroupByName(MODEL_CARD);
 
+        RibbonGroup productionLines = window.getRibbon().getGroupByName(PRODUCTION_LINES);
+
+        RibbonActionItem addMultipleProductionLines = productionLines.getItemByName(ADD_MULTIPLE_PRODUCTION_LINES);
+
         String state = technology.getStringField(TechnologyFields.STATE);
         boolean isTemplateAccepted = technology.getBooleanField(TechnologyFields.IS_TEMPLATE_ACCEPTED);
 
         fillLocationsInComponents.setEnabled(!isTemplateAccepted && TechnologyState.DRAFT.getStringValue().equals(state));
         fillLocationsInComponents.requestUpdate(true);
+
+        addMultipleProductionLines.setEnabled(!isTemplateAccepted && TechnologyState.DRAFT.getStringValue().equals(state));
+        addMultipleProductionLines.requestUpdate(true);
 
         if (Objects.nonNull(modelCard)) {
             RibbonActionItem createModelCard = modelCard.getItemByName(CREATE_MODEL_CARD);
