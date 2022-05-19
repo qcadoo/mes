@@ -37,4 +37,6 @@ public final class TechnologyProductionLineFields {
 
     public static final String STANDARD_PERFORMANCE = "standardPerformance";
 
+    public static final String PLANNED_STAFF = "plannedStaff";
+
 }

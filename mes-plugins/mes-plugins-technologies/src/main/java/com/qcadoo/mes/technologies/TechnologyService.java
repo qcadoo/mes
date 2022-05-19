@@ -549,6 +549,16 @@ public class TechnologyService {
         return Optional.empty();
     }
 
+    public Optional<Integer> getPlannedStaff(Entity technology, Entity productionLine) {
+        if (PluginUtils.isEnabled(L_PRODUCT_FLOW_THRU_DIVISION)) {
+            return technology.getHasManyField(TechnologyFields.PRODUCTION_LINES).stream()
+                    .filter(e -> e.getBelongsToField(TechnologyProductionLineFields.PRODUCTION_LINE).getId().equals(productionLine.getId())
+                            && e.getIntegerField(TechnologyProductionLineFields.PLANNED_STAFF) != null)
+                    .map(e -> e.getIntegerField(TechnologyProductionLineFields.PLANNED_STAFF)).findFirst();
+        }
+        return Optional.empty();
+    }
+
     public Optional<Entity> getProductionLine(Entity technology) {
         if (PluginUtils.isEnabled(L_PRODUCT_FLOW_THRU_DIVISION)) {
             return technology.getHasManyField(TechnologyFields.PRODUCTION_LINES).stream()

@@ -472,6 +472,10 @@
             <model:hasMany name="orderTechnologicalProcessWastes" plugin="orders" model="orderTechnologicalProcess" joinField="technologicalProcess"/>
         </model:model-field>
 
+        <model:model-field plugin="basic" model="staff">
+            <model:manyToMany name="orders" model="order" plugin="orders" joinField="staff" cascade="nullify"/>
+        </model:model-field>
+
         <model:model-enum-value plugin="basic" model="log" enum="logType" value="orderImport"/>
 
         <menu:menu-category name="orders" defaultAuthorizationRole="ROLE_PLANNING_MENU"/>

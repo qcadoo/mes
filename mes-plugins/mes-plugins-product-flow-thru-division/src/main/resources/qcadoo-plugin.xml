@@ -534,6 +534,7 @@
         <view:view-tab resource="view/tabExtensions/productionCountingQuantityAdvancedDetails.xml"/>
         <view:view-tab resource="view/tabExtensions/technologiesParameters.xml"/>
         <view:view-tab resource="view/tabExtensions/generalParameters.xml" />
+        <view:view-tab resource="view/tabExtensions/orderDetails.xml" />
 
         <view:view-hook plugin="basic" view="divisionDetails"
                         type="beforeRender"

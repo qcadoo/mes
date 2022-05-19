@@ -159,4 +159,6 @@ public final class OrderFields {
 
     public static final String NEW_VERSION_TECHNOLOGY_SET = "newVersionTechnologySet";
 
+    public static final String STAFF = "staff";
+
 }
