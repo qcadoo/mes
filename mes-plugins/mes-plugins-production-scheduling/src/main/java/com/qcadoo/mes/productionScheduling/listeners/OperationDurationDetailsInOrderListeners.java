@@ -363,9 +363,6 @@ public class OperationDurationDetailsInOrderListeners {
 
         Entity operationalTask = operationTaskDD.create();
 
-        operationalTask.setField(OperationalTaskFields.NUMBER,
-                numberGeneratorService.generateNumber(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_OPERATIONAL_TASK));
-
         if (techOperCompTimeCalculation != null) {
             operationalTask.setField(OperationalTaskFields.START_DATE,
                     techOperCompTimeCalculation.getField(OperCompTimeCalculationsFields.EFFECTIVE_DATE_FROM));

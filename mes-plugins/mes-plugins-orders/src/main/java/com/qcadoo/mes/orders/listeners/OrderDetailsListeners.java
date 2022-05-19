@@ -445,8 +445,6 @@ public class OrderDetailsListeners {
 
         Entity operationalTask = operationalTaskDD.create();
 
-        operationalTask.setField(OperationalTaskFields.NUMBER,
-                numberGeneratorService.generateNumber(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_OPERATIONAL_TASK));
         operationalTask.setField(OperationalTaskFields.START_DATE, order.getField(OrderFields.START_DATE));
         operationalTask.setField(OperationalTaskFields.FINISH_DATE, order.getField(OrderFields.FINISH_DATE));
         operationalTask.setField(OperationalTaskFields.TYPE, OperationalTaskType.EXECUTION_OPERATION_IN_ORDER.getStringValue());
