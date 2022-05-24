@@ -15,4 +15,12 @@ public final class ProductionLineScheduleFields {
 
     public static final String POSITIONS = "positions";
 
+    public static final String SORT_ORDER = "sortOrder";
+
+    public static final String START_TIME = "startTime";
+
+    public static final String ALLOW_PRODUCTION_LINE_CHANGE = "allowProductionLineChange";
+
+    public static final String PRODUCTION_LINE_ASSIGN_CRITERION = "productionLineAssignCriterion";
+
 }

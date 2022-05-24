@@ -282,12 +282,11 @@ public class ScheduleDetailsListenersPS {
             Date finishDate = getFinishDate(workstationsFinishDates, scheduleStartTime, schedule, workstation);
             finishDate = getFinishDateWithChildren(position, finishDate);
             DateTime finishDateTime = new DateTime(finishDate);
+            Entity productionLine = workstation.getBelongsToField(WorkstationFieldsPL.PRODUCTION_LINE);
             Date newStartDate = shiftsService
-                    .getNearestWorkingDate(finishDateTime, workstation.getBelongsToField(WorkstationFieldsPL.PRODUCTION_LINE))
-                    .orElse(finishDateTime).toDate();
+                    .getNearestWorkingDate(finishDateTime, productionLine).orElse(finishDateTime).toDate();
 
-            Date newFinishDate = shiftsService.findDateToForProductionLine(newStartDate, machineWorkTime,
-                    workstation.getBelongsToField(WorkstationFieldsPL.PRODUCTION_LINE));
+            Date newFinishDate = shiftsService.findDateToForProductionLine(newStartDate, machineWorkTime, productionLine);
             if (schedule.getBooleanField(ScheduleFields.ADDITIONAL_TIME_EXTENDS_OPERATION)) {
                 newFinishDate = Date.from(newFinishDate.toInstant().plusSeconds(additionalTime));
             }
@@ -351,7 +350,7 @@ public class ScheduleDetailsListenersPS {
     private Date getOperationalTasksMaxFinishDateForWorkstation(Date scheduleStartTime, Entity workstation) {
         Entity operationalTasksMaxFinishDateEntity = dataDefinitionService
                 .get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_OPERATIONAL_TASK).find()
-                .add(SearchRestrictions.belongsTo(SchedulePositionFields.WORKSTATION, workstation))
+                .add(SearchRestrictions.belongsTo(OperationalTaskFields.WORKSTATION, workstation))
                 .add(SearchRestrictions.ne(OperationalTaskFields.STATE, REJECTED))
                 .add(SearchRestrictions.gt(OperationalTaskFields.FINISH_DATE, scheduleStartTime))
                 .setProjection(list()

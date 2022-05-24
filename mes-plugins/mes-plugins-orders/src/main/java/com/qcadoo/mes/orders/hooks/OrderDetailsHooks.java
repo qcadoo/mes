@@ -417,7 +417,7 @@ public class OrderDetailsHooks {
                     OrderFields.DATE_FROM, OrderFields.DATE_TO);
 
             boolean canChangeProdLineForAcceptedOrders = parameterService.getParameter()
-                    .getBooleanField("canChangeProdLineForAcceptedOrders");
+                    .getBooleanField(ParameterFieldsO.CAN_CHANGE_PROD_LINE_FOR_ACCEPTED_ORDERS);
 
             if (canChangeProdLineForAcceptedOrders) {
                 LookupComponent productionLineLookup = (LookupComponent) view

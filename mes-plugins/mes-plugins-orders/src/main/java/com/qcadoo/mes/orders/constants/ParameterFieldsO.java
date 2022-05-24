@@ -99,4 +99,6 @@ public final class ParameterFieldsO {
 
     public static final String PROMPT_DEFAULT_LINE_FROM_TECHNOLOGY = "promptDefaultLineFromTechnology";
 
+    public static final String CAN_CHANGE_PROD_LINE_FOR_ACCEPTED_ORDERS = "canChangeProdLineForAcceptedOrders";
+
 }
