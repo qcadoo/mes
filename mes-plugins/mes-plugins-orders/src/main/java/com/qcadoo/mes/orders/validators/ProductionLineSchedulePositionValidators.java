@@ -187,8 +187,7 @@ public class ProductionLineSchedulePositionValidators {
         Map<String, Object> parameters = Maps.newHashMap();
         parameters.put(SCHEDULE_ID, schedule.getId());
         parameters.put(ORDER_ID, position.getBelongsToField(ProductionLineSchedulePositionFields.ORDER).getId());
-        //            query.append("SELECT MAX(sp.endtime + (interval '1 second' * sp.additionaltime)) ");
-        String query = "SELECT MAX(sp.endtime) " +
+        String query = "SELECT MAX(sp.endtime + (interval '1 second' * sp.additionaltime)) " +
                 "FROM orders_productionlinescheduleposition sp JOIN orders_order o ON sp.order_id = o.id " +
                 "WHERE sp.productionlineschedule_id = :scheduleId AND o.parent_id = :orderId AND sp.endtime IS NOT NULL ";
 
@@ -213,8 +212,7 @@ public class ProductionLineSchedulePositionValidators {
         parameters.put(SCHEDULE_ID, schedule.getId());
         parameters.put(ORDER_ID, position.getBelongsToField(ProductionLineSchedulePositionFields.ORDER)
                 .getBelongsToField(TechnologyOperationComponentFields.PARENT).getId());
-        //            query.append("SELECT MIN(sp.endtime + (interval '1 second' * sp.additionaltime)) ");
-        String query = "SELECT MIN(sp.endtime) " +
+        String query = "SELECT MAX(sp.endtime + (interval '1 second' * sp.additionaltime)) " +
                 "FROM orders_productionlinescheduleposition sp " +
                 "WHERE sp.productionlineschedule_id = :scheduleId AND sp.order_id = :orderId " +
                 "AND sp.endtime IS NOT NULL ";

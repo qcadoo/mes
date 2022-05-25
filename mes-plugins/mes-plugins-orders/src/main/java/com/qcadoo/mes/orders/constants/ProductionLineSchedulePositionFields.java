@@ -15,5 +15,5 @@ public class ProductionLineSchedulePositionFields {
 
     public static final String PRODUCTION_LINE_SCHEDULE = "productionLineSchedule";
 
-    public static final String DURATION = "duration";
+    public static final String ADDITIONAL_TIME = "additionalTime";
 }

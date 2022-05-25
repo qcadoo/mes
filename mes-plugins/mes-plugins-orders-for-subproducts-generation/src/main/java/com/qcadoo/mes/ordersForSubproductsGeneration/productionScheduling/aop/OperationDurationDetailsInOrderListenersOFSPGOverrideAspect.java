@@ -3,19 +3,19 @@
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo Framework
  * Version: 1.4
- *
+ * <p>
  * This file is part of Qcadoo.
- *
+ * <p>
  * Qcadoo is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation; either version 3 of the License,
  * or (at your option) any later version.
- *
+ * <p>
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty
  * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU Affero General Public License for more details.
- *
+ * <p>
  * You should have received a copy of the GNU Affero General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
@@ -106,12 +106,12 @@ public class OperationDurationDetailsInOrderListenersOFSPGOverrideAspect {
     @Pointcut("execution(public void com.qcadoo.mes.productionScheduling.listeners.OperationDurationDetailsInOrderListeners.copyRealizationTime(..)) "
             + "&& args(viewDefinitionState, state, args)")
     public void copyRealizationTimeE(final ViewDefinitionState viewDefinitionState, final ComponentState state,
-            final String[] args) {
+                                     final String[] args) {
     }
 
     @Around("copyRealizationTimeE(viewDefinitionState, state, args)")
     public void aroundCopyRealizationTime(final ProceedingJoinPoint pjp, final ViewDefinitionState viewDefinitionState,
-            final ComponentState state, final String[] args) throws Throwable {
+                                          final ComponentState state, final String[] args) throws Throwable {
         CheckBoxComponent component = (CheckBoxComponent) viewDefinitionState
                 .getComponentByReference("includeOrdersForComponent");
 
@@ -143,12 +143,12 @@ public class OperationDurationDetailsInOrderListenersOFSPGOverrideAspect {
     @Pointcut("execution(public void com.qcadoo.mes.productionScheduling.listeners.OperationDurationDetailsInOrderListeners.generateRealizationTime(..)) "
             + "&& args(viewDefinitionState, state, args)")
     public void generateRealizationTimeE(final ViewDefinitionState viewDefinitionState, final ComponentState state,
-            final String[] args) {
+                                         final String[] args) {
     }
 
     @Around("generateRealizationTimeE(viewDefinitionState, state, args)")
     public void aroundGenerateRealizationTime(final ProceedingJoinPoint pjp, final ViewDefinitionState viewDefinitionState,
-            final ComponentState state, final String[] args) throws Throwable {
+                                              final ComponentState state, final String[] args) throws Throwable {
         CheckBoxComponent component = (CheckBoxComponent) viewDefinitionState
                 .getComponentByReference("includeOrdersForComponent");
 
@@ -374,13 +374,13 @@ public class OperationDurationDetailsInOrderListenersOFSPGOverrideAspect {
                 duration = duration + 1;
             }
 
-            Date dateFrom = productionSchedulingService.getStartDate(order, currentDateTo, offset);
+            Date dateFrom = productionSchedulingService.getStartDate(order.getBelongsToField(OrderFields.PRODUCTION_LINE), currentDateTo, offset);
 
             if (dateFrom == null) {
                 continue;
             }
 
-            Date dateTo = productionSchedulingService.getFinishDate(order, currentDateTo, (long) offset + duration);
+            Date dateTo = productionSchedulingService.getFinishDate(order.getBelongsToField(OrderFields.PRODUCTION_LINE), currentDateTo, (long) offset + duration);
 
             operCompTimeCalculation.setField(OperCompTimeCalculationsFields.EFFECTIVE_DATE_FROM, dateFrom);
             operCompTimeCalculation.setField(OperCompTimeCalculationsFields.EFFECTIVE_DATE_TO, dateTo);

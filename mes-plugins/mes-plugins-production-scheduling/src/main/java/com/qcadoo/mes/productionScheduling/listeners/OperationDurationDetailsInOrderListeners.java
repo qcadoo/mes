@@ -3,19 +3,19 @@
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
  * Version: 1.4
- *
+ * <p>
  * This file is part of Qcadoo.
- *
+ * <p>
  * Qcadoo is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation; either version 3 of the License,
  * or (at your option) any later version.
- *
+ * <p>
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty
  * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU Affero General Public License for more details.
- *
+ * <p>
  * You should have received a copy of the GNU Affero General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
@@ -127,7 +127,7 @@ public class OperationDurationDetailsInOrderListeners {
 
     @Transactional
     public void generateRealizationTime(final ViewDefinitionState viewDefinitionState, final ComponentState state,
-            final String[] args) {
+                                        final String[] args) {
         FormComponent orderForm = (FormComponent) viewDefinitionState.getComponentByReference(QcadooViewConstants.L_FORM);
         FieldComponent startTimeField = (FieldComponent) viewDefinitionState.getComponentByReference(L_START_TIME);
         LookupComponent prodLine = (LookupComponent) viewDefinitionState.getComponentByReference(OrderFields.PRODUCTION_LINE);
@@ -204,7 +204,7 @@ public class OperationDurationDetailsInOrderListeners {
 
                     generatedEndDateField.setFieldValue(null);
                 } else {
-                    scheduleOrder(order.getId());
+                    productionSchedulingService.scheduleOrder(order.getId());
 
                     isGenerated = true;
                 }
@@ -220,7 +220,7 @@ public class OperationDurationDetailsInOrderListeners {
             Entity orderTimeCalculation = dataDefinitionService
                     .get(TimeNormsConstants.PLUGIN_PRODUCTION_SCHEDULING_IDENTIFIER,
                             TimeNormsConstants.MODEL_ORDER_TIME_CALCULATION)
-                    .find().add(SearchRestrictions.belongsTo("order", order)).setMaxResults(1).uniqueResult();
+                    .find().add(SearchRestrictions.belongsTo(OrderTimeCalculationFields.ORDER, order)).setMaxResults(1).uniqueResult();
             order.setField(OrderFields.START_DATE, orderRealizationTimeService
                     .setDateToField(orderTimeCalculation.getDateField(OrderTimeCalculationFields.EFFECTIVE_DATE_FROM)));
             order.setField(OrderFieldsPS.GENERATED_END_DATE, orderRealizationTimeService
@@ -244,80 +244,6 @@ public class OperationDurationDetailsInOrderListeners {
 
     private Entity getActualOrderWithChanges(final Entity order) {
         return dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(order.getId());
-    }
-
-    private void scheduleOrder(final Long orderId) {
-
-        Entity order = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(orderId);
-
-        if (order == null) {
-            return;
-        }
-
-        Entity technology = order.getBelongsToField(OrderFields.TECHNOLOGY);
-
-        if (technology == null) {
-            return;
-        }
-
-        List<Date> operationStartDates = Lists.newArrayList();
-        List<Date> operationEndDates = Lists.newArrayList();
-
-        DataDefinition technologyOperationComponentDD = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
-                TechnologiesConstants.MODEL_TECHNOLOGY_OPERATION_COMPONENT);
-
-        List<Entity> operations = technologyOperationComponentDD.find()
-                .add(SearchRestrictions.belongsTo(TechnologyOperationComponentFields.TECHNOLOGY, technology)).list()
-                .getEntities();
-
-        Date orderStartDate = order.getDateField(OrderFields.START_DATE);
-
-        for (Entity operation : operations) {
-            Entity operCompTimeCalculation = operationWorkTimeService.createOrGetOperCompTimeCalculation(order, operation);
-
-            if (operCompTimeCalculation == null) {
-                continue;
-            }
-
-            Integer offset = operCompTimeCalculation.getIntegerField(OperCompTimeCalculationsFields.OPERATION_OFF_SET);
-            Integer duration = operCompTimeCalculation
-                    .getIntegerField(OperCompTimeCalculationsFields.EFFECTIVE_OPERATION_REALIZATION_TIME);
-
-            operCompTimeCalculation.setField(OperCompTimeCalculationsFields.EFFECTIVE_DATE_FROM, null);
-            operCompTimeCalculation.setField(OperCompTimeCalculationsFields.EFFECTIVE_DATE_TO, null);
-
-            if (offset == null || duration == null) {
-                continue;
-            }
-
-            if (duration.equals(0)) {
-                duration = duration + 1;
-            }
-
-            Date dateFrom = productionSchedulingService.getStartDate(order, orderStartDate, offset);
-
-            if (dateFrom == null) {
-                continue;
-            }
-
-            Date dateTo = productionSchedulingService.getFinishDate(order, orderStartDate, (long) offset + duration);
-
-            operCompTimeCalculation.setField(OperCompTimeCalculationsFields.EFFECTIVE_DATE_FROM, dateFrom);
-            operCompTimeCalculation.setField(OperCompTimeCalculationsFields.EFFECTIVE_DATE_TO, dateTo);
-            operationStartDates.add(dateFrom);
-            operationEndDates.add(dateTo);
-            operCompTimeCalculation.getDataDefinition().save(operCompTimeCalculation);
-        }
-        Entity orderTimeCalculation = dataDefinitionService
-                .get(TimeNormsConstants.PLUGIN_PRODUCTION_SCHEDULING_IDENTIFIER, TimeNormsConstants.MODEL_ORDER_TIME_CALCULATION)
-                .find().add(SearchRestrictions.belongsTo("order", order)).setMaxResults(1).uniqueResult();
-        orderTimeCalculation.setField(OrderTimeCalculationFields.EFFECTIVE_DATE_FROM,
-                operationStartDates.stream().min(Comparator.naturalOrder()).get());
-        orderTimeCalculation.setField(OrderTimeCalculationFields.EFFECTIVE_DATE_TO,
-                operationEndDates.stream().max(Comparator.naturalOrder()).get());
-        orderTimeCalculation.getDataDefinition().save(orderTimeCalculation);
-        order.setField(OrderFieldsPS.GENERATED_END_DATE, orderRealizationTimeService
-                .setDateToField(orderTimeCalculation.getDateField(OrderTimeCalculationFields.EFFECTIVE_DATE_TO)));
     }
 
     public void copyRealizationTime(final ViewDefinitionState view, final ComponentState state, final String[] args) {

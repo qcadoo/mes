@@ -23,4 +23,6 @@ public final class ProductionLineScheduleFields {
 
     public static final String PRODUCTION_LINE_ASSIGN_CRITERION = "productionLineAssignCriterion";
 
+    public static final String DURATION_OF_ORDER_CALCULATED_ON_BASIS = "durationOfOrderCalculatedOnBasis";
+
 }

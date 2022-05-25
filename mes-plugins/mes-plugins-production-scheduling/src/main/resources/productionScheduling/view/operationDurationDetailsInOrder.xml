@@ -74,46 +74,18 @@
                     </script>
                 </bigButton>
             </group>
-            <group name="orderParameters">
-                <bigButton name="orderParameters" icon="settingsIcon24.png"
-                           state="enabled">
-                    <script>
-                        <![CDATA[
-							this.addOnChangeListener({
-								onClick: function() {
-										if(window.canClose()) {
-											#{form}.performEvent('showOrderParameters', []);
-										}
-								}
-							});		
-							#{form}.addOnChangeListener({
-								onSetValue: function(value) {
-									if (! value || ! value.content) {
-										return;
-									}
-									if (! value.content.entityId) {
-										this.disable();
-									} else {
-										this.enable();
-									}
-								}
-							});					
-						]]>
-                    </script>
-                </bigButton>
-            </group>
             <group name="operationalTasks">
                 <bigButton name="createOperationalTasks" icon="generateIcon24.png">
                     <script>
                         <![CDATA[
-					this.addOnChangeListener({
-						onClick: function() {
-							if(window.canClose()) {
-								#{form}.performEvent('createOperationalTasks', []);
-							}
-						}
-					});
-				]]>
+                            this.addOnChangeListener({
+                                onClick: function() {
+                                    if(window.canClose()) {
+                                        #{form}.performEvent('createOperationalTasks', []);
+                                    }
+                                }
+                            });
+                        ]]>
                     </script>
                 </bigButton>
             </group>
@@ -296,8 +268,6 @@
             <option type="header" value="true"/>
             <option type="expression" value="#number"/>
 
-            <listener event="showOrderParameters" method="showCopyOfTechnology"
-                      class="com.qcadoo.mes.productionScheduling.listeners.OperationDurationDetailsInOrderListeners"/>
             <listener event="generateRealizationTime" method="generateRealizationTime"
                       class="com.qcadoo.mes.productionScheduling.listeners.OperationDurationDetailsInOrderListeners"/>
             <listener event="copyRealizationTime" method="copyRealizationTime"
