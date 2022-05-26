@@ -85,7 +85,7 @@
 
                                 if (isSaved && state == "01draft") {
                                     //approveSchedule.enable();
-                                    //rejectSchedule.enable();
+                                    rejectSchedule.enable();
                                     generatePlan.enable();
                                 } else {
                                     approveSchedule.disable();

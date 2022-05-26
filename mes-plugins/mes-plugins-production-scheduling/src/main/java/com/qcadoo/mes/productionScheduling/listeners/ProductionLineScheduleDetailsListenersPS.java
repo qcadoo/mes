@@ -1,17 +1,22 @@
 package com.qcadoo.mes.productionScheduling.listeners;
 
+import static com.qcadoo.mes.orders.constants.OrderFields.PRODUCTION_LINE;
 import static com.qcadoo.model.api.search.SearchProjections.alias;
 import static com.qcadoo.model.api.search.SearchProjections.list;
 import static com.qcadoo.model.api.search.SearchProjections.rowCount;
 
 import java.math.BigDecimal;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -235,13 +240,13 @@ public class ProductionLineScheduleDetailsListenersPS {
         parameters.put("scheduleId", scheduleId);
         StringBuilder query = new StringBuilder();
         query.append("SELECT id FROM ");
-        query.append("(SELECT sp.id, sp.duration, o.plannedquantity, o.deadline, c.abcanalysis, ");
+        query.append("(SELECT sp.id, o.finishdate - o.startdate AS duration, o.plannedquantity, o.deadline, c.abcanalysis, ");
         query.append("string_to_array(regexp_replace(REVERSE(SPLIT_PART(REVERSE(o.number), '-', 1)), '[^0-9.]', '0', 'g'), '.')::int[] AS osort ");
         query.append("FROM orders_productionlinescheduleposition sp JOIN orders_order o ON sp.order_id = o.id ");
         query.append("LEFT JOIN basic_company c ON o.company_id = c.id ");
         query.append("WHERE sp.productionlineschedule_id = :scheduleId AND o.parent_id IS NOT NULL ");
         query.append("UNION ");
-        query.append("SELECT sp.id, sp.duration, o.plannedquantity, o.deadline, c.abcanalysis, ");
+        query.append("SELECT sp.id, o.finishdate - o.startdate AS duration, o.plannedquantity, o.deadline, c.abcanalysis, ");
         query.append("ARRAY[]::int[] AS osort ");
         query.append("FROM orders_productionlinescheduleposition sp JOIN orders_order o ON sp.order_id = o.id ");
         query.append("LEFT JOIN basic_company c ON o.company_id = c.id ");
