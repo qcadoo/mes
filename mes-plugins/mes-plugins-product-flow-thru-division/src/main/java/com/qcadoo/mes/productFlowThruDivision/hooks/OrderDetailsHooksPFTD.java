@@ -82,14 +82,16 @@ public class OrderDetailsHooksPFTD {
             LookupComponent productionLineLookup = (LookupComponent) view.getComponentByReference(OrderFields.PRODUCTION_LINE);
             Entity technology = technologyLookup.getEntity();
             Entity productionLine = productionLineLookup.getEntity();
+            FieldComponent plannedStaffField = (FieldComponent) view.getComponentByReference("plannedStaff");
             if (technology != null && productionLine != null) {
-                FieldComponent plannedStaffField = (FieldComponent) view.getComponentByReference("plannedStaff");
                 Optional<Integer> plannedStaff = technologyService.getPlannedStaff(technology, productionLine);
                 if (plannedStaff.isPresent()) {
                     plannedStaffField.setFieldValue(plannedStaff.get());
                 } else {
                     plannedStaffField.setFieldValue(null);
                 }
+            } else {
+                plannedStaffField.setFieldValue(null);
             }
             FieldComponent actualStaff = (FieldComponent) view.getComponentByReference("actualStaff");
             actualStaff.setFieldValue(order.getManyToManyField(OrderFields.STAFF).size());
