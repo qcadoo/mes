@@ -68,8 +68,6 @@ import com.qcadoo.view.api.components.GridComponent;
 @Service
 public class ScheduleDetailsListenersPS {
 
-    private static final String L_ORDERS = "orders";
-
     private static final String ORDERS_FOR_SUBPRODUCTS_GENERATION = "ordersForSubproductsGeneration";
 
     @Autowired
@@ -111,7 +109,7 @@ public class ScheduleDetailsListenersPS {
 
     @Transactional
     public void getOperations(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        GridComponent ordersGrid = (GridComponent) view.getComponentByReference(L_ORDERS);
+        GridComponent ordersGrid = (GridComponent) view.getComponentByReference(ScheduleFields.ORDERS);
         List<Entity> orders = ordersGrid.getEntities();
         FormComponent formComponent = (FormComponent) state;
         Entity schedule = formComponent.getEntity();
@@ -164,7 +162,7 @@ public class ScheduleDetailsListenersPS {
                                           BigDecimal operationComponentRuns) {
         Entity schedulePosition = schedulePositionDD.create();
         schedulePosition.setField(SchedulePositionFields.SCHEDULE, schedule);
-        schedulePosition.setField(OrdersConstants.MODEL_ORDER, order);
+        schedulePosition.setField(SchedulePositionFields.ORDER, order);
         schedulePosition.setField(SchedulePositionFields.TECHNOLOGY_OPERATION_COMPONENT, technologyOperationComponent);
         Entity mainOutputProductComponent = technologyService.getMainOutputProductComponent(technologyOperationComponent);
         Entity product = mainOutputProductComponent.getBelongsToField(OperationProductOutComponentFields.PRODUCT);
@@ -284,12 +282,11 @@ public class ScheduleDetailsListenersPS {
             Date finishDate = getFinishDate(workstationsFinishDates, scheduleStartTime, schedule, workstation);
             finishDate = getFinishDateWithChildren(position, finishDate);
             DateTime finishDateTime = new DateTime(finishDate);
+            Entity productionLine = workstation.getBelongsToField(WorkstationFieldsPL.PRODUCTION_LINE);
             Date newStartDate = shiftsService
-                    .getNearestWorkingDate(finishDateTime, workstation.getBelongsToField(WorkstationFieldsPL.PRODUCTION_LINE))
-                    .orElse(finishDateTime).toDate();
+                    .getNearestWorkingDate(finishDateTime, productionLine).orElse(finishDateTime).toDate();
 
-            Date newFinishDate = shiftsService.findDateToForProductionLine(newStartDate, machineWorkTime,
-                    workstation.getBelongsToField(WorkstationFieldsPL.PRODUCTION_LINE));
+            Date newFinishDate = shiftsService.findDateToForProductionLine(newStartDate, machineWorkTime, productionLine);
             if (schedule.getBooleanField(ScheduleFields.ADDITIONAL_TIME_EXTENDS_OPERATION)) {
                 newFinishDate = Date.from(newFinishDate.toInstant().plusSeconds(additionalTime));
             }
@@ -353,7 +350,7 @@ public class ScheduleDetailsListenersPS {
     private Date getOperationalTasksMaxFinishDateForWorkstation(Date scheduleStartTime, Entity workstation) {
         Entity operationalTasksMaxFinishDateEntity = dataDefinitionService
                 .get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_OPERATIONAL_TASK).find()
-                .add(SearchRestrictions.belongsTo(SchedulePositionFields.WORKSTATION, workstation))
+                .add(SearchRestrictions.belongsTo(OperationalTaskFields.WORKSTATION, workstation))
                 .add(SearchRestrictions.ne(OperationalTaskFields.STATE, REJECTED))
                 .add(SearchRestrictions.gt(OperationalTaskFields.FINISH_DATE, scheduleStartTime))
                 .setProjection(list()

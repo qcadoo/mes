@@ -179,6 +179,9 @@
         <hasMany name="schedulePositions" joinField="order" model="schedulePosition"
                  cascade="delete"/>
 
+        <hasMany name="productionLineSchedulePositions" joinField="order" model="productionLineSchedulePosition"
+                 cascade="delete"/>
+
         <belongsTo name="division" model="division" plugin="basic"/>
 
         <hasMany name="operationalTasks" model="operationalTask" joinField="order" cascade="delete"/>
@@ -189,6 +192,7 @@
         <hasMany name="orderTechnologicalProcesses" model="orderTechnologicalProcess" joinField="order" cascade="delete"/>
         <hasMany name="orderTechnologicalProcessesDto" model="orderTechnologicalProcessDto" joinField="order" persistent="false"/>
         <hasMany name="orderTechnologicalProcessWastes" model="orderTechnologicalProcessWaste" joinField="order" cascade="delete"/>
+        <manyToMany name="staff" model="staff" plugin="basic" joinField="orders" cascade="nullify" copyable="true"/>
     </fields>
 
     <hooks>

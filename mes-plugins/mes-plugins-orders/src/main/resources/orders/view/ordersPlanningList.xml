@@ -324,6 +324,11 @@
                     <filterRestriction column="state" value="02accepted"/>
                     <filterRestriction column="dateFrom" value="@{tomorrow}"/>
                 </predefinedFilter>
+                <predefinedFilter name="scheduledForToday">
+                    <filterRestriction column="dateFrom" value="&lt;= @{today}"/>
+                    <filterRestriction column="dateTo" value="&gt;= @{today}"/>
+
+                </predefinedFilter>
             </predefinedFilters>
 
             <option type="suppressSelectEvent" value="true"/>

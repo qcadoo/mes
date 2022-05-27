@@ -28,6 +28,10 @@
 <aspectj>
 	<aspects>
 		<aspect name="com.qcadoo.mes.basic.logging.aspects.ExceptionHandlingAspect" />
+		<aspect name="com.qcadoo.mes.basic.logging.aspects.AccessFailureLoggingAspect"/>
+		<aspect name="com.qcadoo.mes.basic.logging.aspects.PasswordResetLoggingAspect"/>
+		<aspect name="com.qcadoo.mes.basic.logging.aspects.PasswordChangeLoggingAspect"/>
+		<aspect name="com.qcadoo.mes.basic.logging.aspects.RegexFailedValidationLoggingAspect"/>
 	</aspects>
 </aspectj>
                 

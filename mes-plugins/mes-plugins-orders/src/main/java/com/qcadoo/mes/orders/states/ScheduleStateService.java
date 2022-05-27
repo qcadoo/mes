@@ -284,8 +284,6 @@ public class ScheduleStateService extends BasicStateService implements ScheduleS
                 OrdersConstants.MODEL_OPERATIONAL_TASK);
         for (Entity position : schedule.getHasManyField(ScheduleFields.POSITIONS)) {
             Entity operationalTask = operationalTaskDD.create();
-            operationalTask.setField(OperationalTaskFields.NUMBER, numberGeneratorService
-                    .generateNumber(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_OPERATIONAL_TASK));
             operationalTask.setField(OperationalTaskFields.START_DATE, position.getField(SchedulePositionFields.START_TIME));
             operationalTask.setField(OperationalTaskFields.FINISH_DATE, position.getField(SchedulePositionFields.END_TIME));
             operationalTask.setField(OperationalTaskFields.TYPE,

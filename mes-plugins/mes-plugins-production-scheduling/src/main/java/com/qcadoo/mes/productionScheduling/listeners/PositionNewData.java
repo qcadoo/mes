@@ -2,7 +2,7 @@ package com.qcadoo.mes.productionScheduling.listeners;
 
 import java.util.Date;
 
-public class PositionNewData {
+class PositionNewData {
 
     private Integer laborWorkTime;
 

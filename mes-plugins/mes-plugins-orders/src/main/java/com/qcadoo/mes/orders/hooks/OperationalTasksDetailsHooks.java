@@ -30,6 +30,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
+import com.google.common.base.Strings;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -92,7 +93,9 @@ public class OperationalTasksDetailsHooks {
     private NumberGeneratorService numberGeneratorService;
 
     public void beforeRender(final ViewDefinitionState view) {
-        generateOperationalTasksNumber(view);
+        FieldComponent numberField = (FieldComponent) view.getComponentByReference(OperationalTaskFields.NUMBER);
+        numberField.setEnabled(false);
+        fetchNumberFromDatabase(view);
         filterDivisionLookup(view);
         setTechnology(view);
         setQuantities(view);
@@ -101,6 +104,23 @@ public class OperationalTasksDetailsHooks {
         disableFieldsWhenOrderTypeIsSelected(view);
         disableButtons(view);
         fillCriteriaModifiers(view);
+    }
+
+    private void fetchNumberFromDatabase(final ViewDefinitionState view) {
+        FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
+
+        if (form.getEntityId() != null) {
+            ComponentState numberField = view.getComponentByReference(OperationalTaskFields.NUMBER);
+            String numberFieldValue = (String) numberField.getFieldValue();
+
+            if (Strings.isNullOrEmpty(numberFieldValue)) {
+                Entity ot = dataDefinitionService
+                        .get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_OPERATIONAL_TASK).get(form.getEntityId());
+
+                    numberField.setFieldValue(ot.getField(OperationalTaskFields.NUMBER));
+
+            }
+        }
     }
 
     public void fillCriteriaModifiers(final ViewDefinitionState viewDefinitionState) {
@@ -192,11 +212,6 @@ public class OperationalTasksDetailsHooks {
                 }
             }
         }
-    }
-
-    private void generateOperationalTasksNumber(final ViewDefinitionState view) {
-        numberGeneratorService.generateAndInsertNumber(view, OrdersConstants.PLUGIN_IDENTIFIER,
-                OrdersConstants.MODEL_OPERATIONAL_TASK, QcadooViewConstants.L_FORM, OperationalTaskFields.NUMBER);
     }
 
     private void filterDivisionLookup(final ViewDefinitionState view) {

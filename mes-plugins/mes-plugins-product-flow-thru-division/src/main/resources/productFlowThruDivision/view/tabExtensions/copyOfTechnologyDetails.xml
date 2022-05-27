@@ -66,7 +66,7 @@
                 <component type="gridLayout" name="operationRangeLayout"
                            columns="1" rows="2" reference="operationRangeLayout">
                     <layoutElement column="1" row="1">
-                        <component type="label" name="operationRangeDescription">
+                        <component type="label" name="operationRangeDescription" reference="operationRangeDescription">
                             <option type="labelStyle" value="text"/>
                         </component>
                     </layoutElement>

@@ -61,6 +61,8 @@ public final class OrdersConstants {
 
     public static final String MODEL_SCHEDULE_POSITION = "schedulePosition";
 
+    public static final String MODEL_PRODUCTION_LINE_SCHEDULE_POSITION = "productionLineSchedulePosition";
+
     public static final String MODEL_OPERATIONAL_TASK = "operationalTask";
 
     public static final String MODEL_OPERATIONAL_TASK_STATE_CHANGE = "operationalTaskStateChange";

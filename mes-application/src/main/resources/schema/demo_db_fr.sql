@@ -814,6 +814,24 @@ $$;
 
 
 --
+-- Name: generate_and_set_operational_task_number_trigger(); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION generate_and_set_operational_task_number_trigger() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+	NEW.number := generate_operational_task_number();
+	IF NEW.name is null THEN
+		NEW.name := NEW.number;
+END IF;
+
+return NEW;
+END;
+$$;
+
+
+--
 -- Name: generate_and_set_pallet_externalnumber_trigger(); Type: FUNCTION; Schema: public; Owner: -
 --
 
@@ -1267,6 +1285,37 @@ BEGIN
 
     _number := _pattern;
     _number := replace(_number, '#seq', _seq);
+
+    RETURN _number;
+END;
+$$;
+
+
+--
+-- Name: generate_operational_task_number(); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION generate_operational_task_number() RETURNS text
+    LANGUAGE plpgsql
+    AS $$
+DECLARE
+_pattern text;
+    _sequence_value numeric;
+    _seq text;
+    _number text;
+BEGIN
+_pattern := '#seq';
+
+select nextval('orders_operational_task_number_seq') into _sequence_value;
+
+_seq := to_char(_sequence_value, 'fm000000');
+
+    if _seq like '%#%' then
+        _seq := _sequence_value;
+end if;
+
+_number := _pattern;
+_number := replace(_number, '#seq', _seq);
 
     RETURN _number;
 END;
@@ -5988,7 +6037,6 @@ CREATE TABLE technologies_technology (
     productsinputlocation_id bigint,
     technologytype character varying(255),
     technologyprototype_id bigint,
-    productionline_id bigint,
     productionflow character varying(255) DEFAULT '02withinTheProcess'::character varying,
     productsflowlocation_id bigint,
     typeofproductionrecording character varying(255),
@@ -5997,7 +6045,6 @@ CREATE TABLE technologies_technology (
     registerquantityinproduct boolean,
     registerproductiontime boolean,
     entityversion bigint DEFAULT 0,
-    standardperformancetechnology numeric(12,5),
     template boolean DEFAULT false,
     additionalactions boolean DEFAULT false,
     generatorcontext_id bigint,
@@ -6091,7 +6138,8 @@ CREATE TABLE productflowthrudivision_technologyproductionline (
     productionline_id bigint,
     technology_id bigint,
     master boolean DEFAULT false,
-    standardperformance numeric(12,5)
+    standardperformance numeric(12,5),
+    plannedstaff integer
 );
 
 
@@ -16077,18 +16125,14 @@ CREATE VIEW integrationbartender_printedcartonlabeldto AS
     printlabelshelper.quantity,
     (printlabelshelper.printer_id)::integer AS printer_id,
     printer.name AS printername
-   FROM (((integrationbartender_sendtoprint sendtoprint
+   FROM ((((((integrationbartender_sendtoprint sendtoprint
      JOIN integrationbartender_printlabelshelper printlabelshelper ON ((printlabelshelper.id = sendtoprint.printlabelshelper_id)))
      JOIN masterorders_masterorder masterorder ON ((masterorder.id = printlabelshelper.masterorder_id)))
      JOIN integrationbartender_printer printer ON ((printer.id = printlabelshelper.printer_id)))
-  WHERE (NOT (printlabelshelper.id IN ( SELECT jointable_palletlabel_printlabelshelper.printlabelshelper_id
-           FROM jointable_palletlabel_printlabelshelper
-        UNION
-         SELECT jointable_printlabelshelper_printedlabel.printlabelshelper_id
-           FROM jointable_printlabelshelper_printedlabel
-        UNION
-         SELECT jointable_order_printlabelshelper.printlabelshelper_id
-           FROM jointable_order_printlabelshelper)));
+     LEFT JOIN jointable_palletlabel_printlabelshelper palletlabel_printlabelshelper ON ((palletlabel_printlabelshelper.printlabelshelper_id = printlabelshelper.id)))
+     LEFT JOIN jointable_printlabelshelper_printedlabel printlabelshelper_printedlabel ON ((printlabelshelper_printedlabel.printlabelshelper_id = printlabelshelper.id)))
+     LEFT JOIN jointable_order_printlabelshelper order_printlabelshelper ON ((order_printlabelshelper.printlabelshelper_id = printlabelshelper.id)))
+  WHERE ((palletlabel_printlabelshelper.* IS NULL) AND (printlabelshelper_printedlabel.* IS NULL) AND (order_printlabelshelper.* IS NULL));
 
 
 --
@@ -16640,6 +16684,16 @@ CREATE TABLE jointable_order_productionlineschedule (
 CREATE TABLE jointable_order_schedule (
     order_id bigint NOT NULL,
     schedule_id bigint NOT NULL
+);
+
+
+--
+-- Name: jointable_order_staff; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE jointable_order_staff (
+    order_id bigint NOT NULL,
+    staff_id bigint NOT NULL
 );
 
 
@@ -20153,6 +20207,18 @@ CREATE SEQUENCE orders_group_production_balance_number_seq
 
 
 --
+-- Name: orders_operational_task_number_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE orders_operational_task_number_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
 -- Name: orders_operationaltask_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
@@ -21116,6 +21182,41 @@ CREATE SEQUENCE orders_productionlineschedule_id_seq
 --
 
 ALTER SEQUENCE orders_productionlineschedule_id_seq OWNED BY orders_productionlineschedule.id;
+
+
+--
+-- Name: orders_productionlinescheduleposition; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE orders_productionlinescheduleposition (
+    id bigint NOT NULL,
+    productionlineschedule_id bigint,
+    order_id bigint,
+    productionline_id bigint,
+    linechangeovernorm_id bigint,
+    starttime timestamp without time zone,
+    endtime timestamp without time zone,
+    additionaltime integer DEFAULT 0
+);
+
+
+--
+-- Name: orders_productionlinescheduleposition_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE orders_productionlinescheduleposition_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: orders_productionlinescheduleposition_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE orders_productionlinescheduleposition_id_seq OWNED BY orders_productionlinescheduleposition.id;
 
 
 --
@@ -25804,6 +25905,38 @@ CREATE SEQUENCE qcadoosecurity_group_id_seq
 --
 
 ALTER SEQUENCE qcadoosecurity_group_id_seq OWNED BY qcadoosecurity_group.id;
+
+
+--
+-- Name: qcadoosecurity_passwordresettoken; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE qcadoosecurity_passwordresettoken (
+    id bigint NOT NULL,
+    user_id bigint NOT NULL,
+    token character varying(36) NOT NULL,
+    active boolean DEFAULT true,
+    expirationtime timestamp without time zone NOT NULL
+);
+
+
+--
+-- Name: qcadoosecurity_passwordresettoken_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE qcadoosecurity_passwordresettoken_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: qcadoosecurity_passwordresettoken_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE qcadoosecurity_passwordresettoken_id_seq OWNED BY qcadoosecurity_passwordresettoken.id;
 
 
 --
@@ -31856,6 +31989,13 @@ ALTER TABLE ONLY orders_productionlineschedule ALTER COLUMN id SET DEFAULT nextv
 -- Name: id; Type: DEFAULT; Schema: public; Owner: -
 --
 
+ALTER TABLE ONLY orders_productionlinescheduleposition ALTER COLUMN id SET DEFAULT nextval('orders_productionlinescheduleposition_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
+--
+
 ALTER TABLE ONLY orders_productionlineschedulestatechange ALTER COLUMN id SET DEFAULT nextval('orders_productionlineschedulestatechange_id_seq'::regclass);
 
 
@@ -32431,6 +32571,13 @@ ALTER TABLE ONLY qcadooplugin_plugin ALTER COLUMN id SET DEFAULT nextval('qcadoo
 --
 
 ALTER TABLE ONLY qcadoosecurity_group ALTER COLUMN id SET DEFAULT nextval('qcadoosecurity_group_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY qcadoosecurity_passwordresettoken ALTER COLUMN id SET DEFAULT nextval('qcadoosecurity_passwordresettoken_id_seq'::regclass);
 
 
 --
@@ -38611,6 +38758,14 @@ COPY jointable_order_schedule (order_id, schedule_id) FROM stdin;
 
 
 --
+-- Data for Name: jointable_order_staff; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY jointable_order_staff (order_id, staff_id) FROM stdin;
+\.
+
+
+--
 -- Data for Name: jointable_order_workplan; Type: TABLE DATA; Schema: public; Owner: -
 --
 
@@ -40020,6 +40175,13 @@ SELECT pg_catalog.setval('orders_group_production_balance_number_seq', 1, false)
 
 
 --
+-- Name: orders_operational_task_number_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('orders_operational_task_number_seq', 1, false);
+
+
+--
 -- Data for Name: orders_operationaltask; Type: TABLE DATA; Schema: public; Owner: -
 --
 
@@ -40266,6 +40428,21 @@ COPY orders_productionlineschedule (id, number, name, starttime, state, duration
 --
 
 SELECT pg_catalog.setval('orders_productionlineschedule_id_seq', 1, false);
+
+
+--
+-- Data for Name: orders_productionlinescheduleposition; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY orders_productionlinescheduleposition (id, productionlineschedule_id, order_id, productionline_id, linechangeovernorm_id, starttime, endtime, additionaltime) FROM stdin;
+\.
+
+
+--
+-- Name: orders_productionlinescheduleposition_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('orders_productionlinescheduleposition_id_seq', 1, false);
 
 
 --
@@ -41101,7 +41278,7 @@ SELECT pg_catalog.setval('productflowthrudivision_producttoissuedto_internal_id_
 -- Data for Name: productflowthrudivision_technologyproductionline; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY productflowthrudivision_technologyproductionline (id, productionline_id, technology_id, master, standardperformance) FROM stdin;
+COPY productflowthrudivision_technologyproductionline (id, productionline_id, technology_id, master, standardperformance, plannedstaff) FROM stdin;
 \.
 
 
@@ -41987,6 +42164,21 @@ COPY qcadoosecurity_group (id, name, description, identifier, entityversion) FRO
 --
 
 SELECT pg_catalog.setval('qcadoosecurity_group_id_seq', 7, false);
+
+
+--
+-- Data for Name: qcadoosecurity_passwordresettoken; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY qcadoosecurity_passwordresettoken (id, user_id, token, active, expirationtime) FROM stdin;
+\.
+
+
+--
+-- Name: qcadoosecurity_passwordresettoken_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('qcadoosecurity_passwordresettoken_id_seq', 1, false);
 
 
 --
@@ -43701,7 +43893,7 @@ SELECT pg_catalog.setval('technologies_technologicalprocesslist_id_seq', 1, fals
 -- Data for Name: technologies_technology; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY technologies_technology (id, number, name, product_id, technologygroup_id, externalsynchronized, master, description, state, recipeimportstatus, recipeimportmsg, formula, minimalquantity, active, isstandardgoodfoodtechnology, range, division_id, componentslocation_id, componentsoutputlocation_id, productsinputlocation_id, technologytype, technologyprototype_id, productionline_id, productionflow, productsflowlocation_id, typeofproductionrecording, registerquantityoutproduct, registerpiecework, registerquantityinproduct, registerproductiontime, entityversion, standardperformancetechnology, template, additionalactions, generatorcontext_id, qualitycard_id, istemplateaccepted, wastereceptionwarehouse_id) FROM stdin;
+COPY technologies_technology (id, number, name, product_id, technologygroup_id, externalsynchronized, master, description, state, recipeimportstatus, recipeimportmsg, formula, minimalquantity, active, isstandardgoodfoodtechnology, range, division_id, componentslocation_id, componentsoutputlocation_id, productsinputlocation_id, technologytype, technologyprototype_id, productionflow, productsflowlocation_id, typeofproductionrecording, registerquantityoutproduct, registerpiecework, registerquantityinproduct, registerproductiontime, entityversion, template, additionalactions, generatorcontext_id, qualitycard_id, istemplateaccepted, wastereceptionwarehouse_id) FROM stdin;
 \.
 
 
@@ -46693,6 +46885,14 @@ ALTER TABLE ONLY jointable_order_schedule
 
 
 --
+-- Name: jointable_order_staff_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY jointable_order_staff
+    ADD CONSTRAINT jointable_order_staff_pkey PRIMARY KEY (staff_id, order_id);
+
+
+--
 -- Name: jointable_order_workplan_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -47453,6 +47653,14 @@ ALTER TABLE ONLY orders_productionlineschedule
 
 
 --
+-- Name: orders_productionlinescheduleposition_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY orders_productionlinescheduleposition
+    ADD CONSTRAINT orders_productionlinescheduleposition_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: orders_productionlineschedulestatechange_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -48162,6 +48370,14 @@ ALTER TABLE ONLY qcadooplugin_plugin
 
 ALTER TABLE ONLY qcadoosecurity_group
     ADD CONSTRAINT qcadoosecurity_group_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: qcadoosecurity_passwordresettoken_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY qcadoosecurity_passwordresettoken
+    ADD CONSTRAINT qcadoosecurity_passwordresettoken_pkey PRIMARY KEY (id);
 
 
 --
@@ -51234,6 +51450,13 @@ CREATE TRIGGER goodfood_pallet_trigger_externalnumber BEFORE INSERT ON goodfood_
 --
 
 CREATE TRIGGER materialflowresources_document_trigger_number BEFORE INSERT ON materialflowresources_document FOR EACH ROW EXECUTE PROCEDURE generate_and_set_document_number_trigger();
+
+
+--
+-- Name: orders_operationaltask_trigger_number; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER orders_operationaltask_trigger_number BEFORE INSERT ON orders_operationaltask FOR EACH ROW EXECUTE PROCEDURE generate_and_set_operational_task_number_trigger();
 
 
 --
@@ -56636,6 +56859,22 @@ ALTER TABLE ONLY jointable_order_schedule
 
 
 --
+-- Name: order_staff_order; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY jointable_order_staff
+    ADD CONSTRAINT order_staff_order FOREIGN KEY (order_id) REFERENCES orders_order(id) DEFERRABLE;
+
+
+--
+-- Name: order_staff_staff; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY jointable_order_staff
+    ADD CONSTRAINT order_staff_staff FOREIGN KEY (staff_id) REFERENCES basic_staff(id) DEFERRABLE;
+
+
+--
 -- Name: order_technology_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -57697,6 +57936,14 @@ ALTER TABLE ONLY deliveries_parameterdeliveryordercolumn
 
 ALTER TABLE ONLY basic_parameter
     ADD CONSTRAINT parammeter_documentpositionparameters_fkey FOREIGN KEY (documentpositionparameters_id) REFERENCES materialflowresources_documentpositionparameters(id) DEFERRABLE;
+
+
+--
+-- Name: passwordresettoken_user_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY qcadoosecurity_passwordresettoken
+    ADD CONSTRAINT passwordresettoken_user_fkey FOREIGN KEY (user_id) REFERENCES qcadoosecurity_user(id) DEFERRABLE;
 
 
 --
@@ -59073,6 +59320,38 @@ ALTER TABLE ONLY productionlines_workstationtypecomponent
 
 ALTER TABLE ONLY productionlines_workstationtypecomponent
     ADD CONSTRAINT productionlines_workstationtypecomponent_wt_fkey FOREIGN KEY (workstationtype_id) REFERENCES basic_workstationtype(id) DEFERRABLE;
+
+
+--
+-- Name: productionlinescheduleposition_linechangeovernorm_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY orders_productionlinescheduleposition
+    ADD CONSTRAINT productionlinescheduleposition_linechangeovernorm_fkey FOREIGN KEY (linechangeovernorm_id) REFERENCES linechangeovernorms_linechangeovernorms(id);
+
+
+--
+-- Name: productionlinescheduleposition_order_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY orders_productionlinescheduleposition
+    ADD CONSTRAINT productionlinescheduleposition_order_fkey FOREIGN KEY (order_id) REFERENCES orders_order(id);
+
+
+--
+-- Name: productionlinescheduleposition_productionline_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY orders_productionlinescheduleposition
+    ADD CONSTRAINT productionlinescheduleposition_productionline_fkey FOREIGN KEY (productionline_id) REFERENCES productionlines_productionline(id);
+
+
+--
+-- Name: productionlinescheduleposition_productionlineschedule_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY orders_productionlinescheduleposition
+    ADD CONSTRAINT productionlinescheduleposition_productionlineschedule_fkey FOREIGN KEY (productionlineschedule_id) REFERENCES orders_productionlineschedule(id);
 
 
 --
@@ -61705,14 +61984,6 @@ ALTER TABLE ONLY technologies_technology
 
 ALTER TABLE ONLY technologies_technology
     ADD CONSTRAINT technology_product_fkey FOREIGN KEY (product_id) REFERENCES basic_product(id) DEFERRABLE;
-
-
---
--- Name: technology_productionlines_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY technologies_technology
-    ADD CONSTRAINT technology_productionlines_fkey FOREIGN KEY (productionline_id) REFERENCES productionlines_productionline(id) DEFERRABLE;
 
 
 --

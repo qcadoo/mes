@@ -28,6 +28,7 @@ import com.qcadoo.mes.orders.OrderService;
 import com.qcadoo.mes.orders.TechnologyServiceO;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
+import com.qcadoo.mes.orders.constants.ParameterFieldsO;
 import com.qcadoo.mes.orders.states.constants.OrderState;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.model.api.DataDefinition;
@@ -370,7 +371,7 @@ public class OrderDetailsHooksTest {
         // given
         given(order.getStringField(OrderFields.STATE)).willReturn(OrderState.ACCEPTED.getStringValue());
         given(parameterService.getParameter()).willReturn(parameter);
-        given(parameter.getBooleanField("canChangeProdLineForAcceptedOrders")).willReturn(false);
+        given(parameter.getBooleanField(ParameterFieldsO.CAN_CHANGE_PROD_LINE_FOR_ACCEPTED_ORDERS)).willReturn(false);
         // when
         orderDetailsHooks.changedEnabledFieldForSpecificOrderState(view);
 

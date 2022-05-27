@@ -14,8 +14,8 @@ public class ProductionLineScheduleDetailsListeners {
     @Autowired
     private StateExecutorService stateExecutorService;
 
-
     public void changeState(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         stateExecutorService.changeState(ProductionLineScheduleServiceMarker.class, view, args);
     }
+
 }

@@ -119,11 +119,12 @@
                             expression="#productionLine['name']" link="true"/>
                     <option type="column" name="master" fields="master"/>
                     <option type="column" name="standardPerformance" fields="standardPerformance"/>
+                    <option type="column" name="plannedStaff" fields="plannedStaff"/>
 
                     <option type="order" column="number" direction="asc"/>
 
-                    <option type="searchable" value="productionLineNumber,productionLineName,master,standardPerformance"/>
-                    <option type="orderable" value="productionLineNumber,productionLineName,master,standardPerformance"/>
+                    <option type="searchable" value="productionLineNumber,productionLineName,master,standardPerformance,plannedStaff"/>
+                    <option type="orderable" value="productionLineNumber,productionLineName,master,standardPerformance,plannedStaff"/>
 
                     <option type="correspondingView"
                             value="productFlowThruDivision/technologyProductionLineDetails"/>
