@@ -135,4 +135,13 @@ public class OrderDetailsListenersPFTD {
         return dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER);
     }
 
+    public void onAddStaffExistingEntity(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
+        form.performEvent(view, "reset");
+    }
+
+    public void onRemoveStaffSelectedEntity(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
+        form.performEvent(view, "reset");
+    }
 }

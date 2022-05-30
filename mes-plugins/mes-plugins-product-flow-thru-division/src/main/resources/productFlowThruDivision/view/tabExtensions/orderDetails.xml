@@ -95,6 +95,13 @@
                     <option type="deletable" value="true"/>
                     <option type="creatable" value="true"/>
                     <option type="paginable" value="false"/>
+
+                    <listener event="addExistingEntity"
+                              method="onAddStaffExistingEntity"
+                              class="com.qcadoo.mes.productFlowThruDivision.listeners.OrderDetailsListenersPFTD"/>
+                    <listener event="remove"
+                              method="onRemoveStaffSelectedEntity"
+                              class="com.qcadoo.mes.productFlowThruDivision.listeners.OrderDetailsListenersPFTD"/>
                 </component>
             </layoutElement>
         </component>

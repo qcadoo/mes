@@ -31,11 +31,11 @@ public class OrderHooksPFTD {
         }
 
         Entity orderDB = orderDD.get(order.getId());
-        cleanUpOnProductionRecordingTypeChange(orderDD, order, orderDB);
-        cleanUpOnProductionLineChange(orderDD, order, orderDB);
+        cleanUpOnProductionRecordingTypeChange(order, orderDB);
+        cleanUpOnProductionLineChange(order, orderDB);
     }
 
-    private void cleanUpOnProductionLineChange(DataDefinition orderDD, Entity order, Entity orderDB) {
+    private void cleanUpOnProductionLineChange(Entity order, Entity orderDB) {
         Entity productionLine = order.getBelongsToField(OrderFields.PRODUCTION_LINE);
         Entity productionLineDB = orderDB.getBelongsToField(OrderFields.PRODUCTION_LINE);
         if (Objects.nonNull(productionLine) && Objects.isNull(productionLineDB)
@@ -46,7 +46,7 @@ public class OrderHooksPFTD {
         }
     }
 
-    private void cleanUpOnProductionRecordingTypeChange(final DataDefinition orderDD, final Entity order, Entity orderDB) {
+    private void cleanUpOnProductionRecordingTypeChange(final Entity order, Entity orderDB) {
         String typeOfProductionRecording = order.getStringField(OrderFieldsPC.TYPE_OF_PRODUCTION_RECORDING);
         String typeOfProductionRecordingDB = orderDB.getStringField(OrderFieldsPC.TYPE_OF_PRODUCTION_RECORDING);
         if (Objects.nonNull(typeOfProductionRecordingDB) && TypeOfProductionRecording.CUMULATED.getStringValue().equals(typeOfProductionRecordingDB)
