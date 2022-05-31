@@ -1,18 +1,5 @@
 package com.qcadoo.mes.masterOrders.helpers;
 
-import java.math.BigDecimal;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
-import org.springframework.stereotype.Service;
-
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.qcadoo.mes.basic.constants.ProductFamilyElementType;
@@ -29,11 +16,15 @@ import com.qcadoo.mes.technologies.ProductQuantitiesService;
 import com.qcadoo.mes.technologies.TechnologyService;
 import com.qcadoo.mes.technologies.dto.OperationProductComponentHolder;
 import com.qcadoo.mes.technologies.tree.ProductStructureTreeService;
-import com.qcadoo.model.api.BigDecimalUtils;
-import com.qcadoo.model.api.DataDefinition;
-import com.qcadoo.model.api.DataDefinitionService;
-import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.NumberService;
+import com.qcadoo.model.api.*;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class MasterOrdersMaterialRequirementHelper {
@@ -93,8 +84,10 @@ public class MasterOrdersMaterialRequirementHelper {
 						Entity technologyInputProductType = neededProductQuantity.getKey().getTechnologyInputProductType();
 						BigDecimal neededQuantity = neededProductQuantity.getValue();
 
-						createMasterOrdersMaterialRequirementProduct(masterOrdersMaterialRequirementProducts, product, technologyInputProductType,
-								neededQuantity);
+						if (Objects.nonNull(product)) {
+							createMasterOrdersMaterialRequirementProduct(masterOrdersMaterialRequirementProducts, product, technologyInputProductType,
+									neededQuantity);
+						}
 					}
 				}
 			}
@@ -167,6 +160,7 @@ public class MasterOrdersMaterialRequirementHelper {
 
 		return Objects.nonNull(masterOrdersMaterialRequirementProductProduct)
 				&& Objects.nonNull(masterOrdersMaterialRequirementProduct.getField(fieldName))
+				&& Objects.nonNull(product)
 				&& masterOrdersMaterialRequirementProductProduct.getId().equals(product.getId());
 	}
 
@@ -176,6 +170,7 @@ public class MasterOrdersMaterialRequirementHelper {
 				.getBelongsToField(MasterOrdersMaterialRequirementProductFields.TECHNOLOGY_INPUT_PRODUCT_TYPE);
 
 		return Objects.nonNull(masterOrdersMaterialRequirementProductTechnologyInputProductType)
+				&& Objects.nonNull(technologyInputProductType)
 				&& masterOrdersMaterialRequirementProductTechnologyInputProductType.getId().equals(technologyInputProductType.getId());
 	}
 
