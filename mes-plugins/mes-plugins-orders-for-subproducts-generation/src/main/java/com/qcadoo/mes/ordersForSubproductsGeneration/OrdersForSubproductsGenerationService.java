@@ -142,12 +142,10 @@ public class OrdersForSubproductsGenerationService {
     public Entity getMainTocForOrder(final Entity order) {
         Entity technology = order.getBelongsToField(OrderFields.TECHNOLOGY);
 
-        Entity mainTOC = dataDefinitionService
+        return dataDefinitionService
                 .get(TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_TECHNOLOGY_OPERATION_COMPONENT).find()
                 .add(SearchRestrictions.belongsTo(TechnologyOperationComponentFields.TECHNOLOGY, technology))
                 .add(SearchRestrictions.isNull(TechnologyOperationComponentFields.PARENT)).setMaxResults(1).uniqueResult();
-
-        return mainTOC;
     }
 
     public List<Entity> getCoveragProductsForTOC(final Entity toc, final Entity materialRequirementCoverage) {

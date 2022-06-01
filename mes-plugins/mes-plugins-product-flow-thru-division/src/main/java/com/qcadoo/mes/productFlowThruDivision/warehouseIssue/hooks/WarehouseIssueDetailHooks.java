@@ -31,7 +31,7 @@ import org.springframework.stereotype.Service;
 
 import com.google.common.collect.Sets;
 import com.qcadoo.mes.basic.ParameterService;
-import com.qcadoo.mes.basic.constants.UserFields;
+import com.qcadoo.mes.basic.constants.UserFieldsB;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.mes.productFlowThruDivision.constants.ParameterFieldsPFTD;
@@ -250,7 +250,7 @@ public class WarehouseIssueDetailHooks {
         FieldComponent workerWhoIssued = (FieldComponent) view.getComponentByReference(WarehouseIssueFields.WORKER_WHO_ISSUED);
 
         if (Objects.isNull(workerWhoIssued.getFieldValue())) {
-            Entity currentUserStaff = userService.getCurrentUserEntity().getBelongsToField(UserFields.STAFF);
+            Entity currentUserStaff = userService.getCurrentUserEntity().getBelongsToField(UserFieldsB.STAFF);
 
             if (Objects.nonNull(currentUserStaff)) {
                 workerWhoIssued.setFieldValue(currentUserStaff.getId());

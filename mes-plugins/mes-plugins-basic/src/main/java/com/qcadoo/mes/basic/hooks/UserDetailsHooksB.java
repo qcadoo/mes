@@ -6,7 +6,7 @@ import java.util.stream.Stream;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.qcadoo.mes.basic.constants.UserFields;
+import com.qcadoo.mes.basic.constants.UserFieldsB;
 import com.qcadoo.security.api.SecurityService;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.LookupComponent;
@@ -19,7 +19,7 @@ public class UserDetailsHooksB {
 
     public void setFieldsEnabledForAdmin(final ViewDefinitionState view) {
         if (securityService.hasCurrentUserRole("ROLE_ADMIN")) {
-            Stream.of(UserFields.STAFF, UserFields.FACTORY).forEach(fieldName -> {
+            Stream.of(UserFieldsB.STAFF, UserFieldsB.FACTORY).forEach(fieldName -> {
                 LookupComponent lookupComponent = (LookupComponent) view.getComponentByReference(fieldName);
 
                 if (Objects.nonNull(lookupComponent)) {
