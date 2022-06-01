@@ -57,6 +57,10 @@ public final class ProductionCountingConstants {
 
     public static final String MODEL_ANOMALY = "anomaly";
 
+    public static final String MODEL_LACK = "lack";
+
+    public static final String MODEL_LACK_REASON = "lackReason";
+
     public static final String MODEL_ANOMALY_EXPLANATION = "anomalyExplanation";
 
     public static final String MODEL_USED_BATCH = "usedBatch";

@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    ***************************************************************************
+    Copyright (c) 2010 Qcadoo Limited
+    Project: Qcadoo MES
+    Version: 1.4
+
+    This file is part of Qcadoo.
+
+    Qcadoo is free software; you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as published
+    by the Free Software Foundation; either version 3 of the License,
+    or (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty
+    of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+    See the GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+    ***************************************************************************
+
+-->
+<view defaultAuthorizationRole="ROLE_PRODUCTION_TRACKING" name="lackDetails"
+      modelName="lack"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
+      xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd">
+
+    <component type="window" name="window" reference="window">
+
+        <ribbon>
+            <template name="standardFormTemplate"/>
+
+        </ribbon>
+
+        <windowTab name="mainTab">
+            <component type="form" name="form"
+                       reference="form">
+                <component type="gridLayout" name="mainGridLayout"
+                           columns="6" rows="2" hasBorders="false">
+                    <layoutElement column="1" row="1" width="5">
+                        <component type="input" name="lackQuantity" field="lackQuantity"
+                                   reference="lackQuantity">
+                            <option type="alignment" value="right"/>
+                        </component>
+                    </layoutElement>
+                    <layoutElement column="6" row="1">
+                        <component type="input" name="unit" reference="unit"
+                                   hasLabel="false">
+                            <option type="textRepresentationOnDisabled" value="true"/>
+                        </component>
+                    </layoutElement>
+                    <layoutElement column="1" row="2" width="6">
+                        <component type="borderLayout" name="lackReasonsBorderLayout">
+                            <component type="awesomeDynamicList" name="lackReasons" hasBorders="false"
+                                       source="#{form}.lackReasons" reference="lackReasons">
+                                <components>
+                                    <component type="gridLayout" name="lackReasonLayout"
+                                               columns="3" rows="1">
+                                        <layoutElement column="1" row="1">
+                                            <component type="select" name="causeOfWastes" reference="causeOfWastes"
+                                                       field="causeOfWastes"/>
+                                        </layoutElement>
+                                        <layoutElement column="2" row="1" width="2">
+                                            <component type="input" name="description" reference="description"
+                                                       field="description"/>
+                                        </layoutElement>
+                                    </component>
+                                </components>
+
+                                <option type="hasBorder" value="false"/>
+                                <option type="hasButtons" value="true"/>
+                            </component>
+
+                            <option type="label" value="lackReasonsLabel"/>
+                        </component>
+                    </layoutElement>
+                </component>
+                <option type="header" value="true"/>
+                <option type="expression" value="#trackingOperationProductOutComponent['product'].get('number')"/>
+            </component>
+        </windowTab>
+
+    </component>
+
+    <hooks>
+        <beforeRender class="com.qcadoo.mes.productionCounting.hooks.LackDetailsHooks"
+                      method="onBeforeRender"/>
+    </hooks>
+
+</view>
