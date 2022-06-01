@@ -23,9 +23,9 @@
  */
 package com.qcadoo.mes.basic.constants;
 
-public final class UserFields {
+public final class UserFieldsB {
 
-    private UserFields() {
+    private UserFieldsB() {
 
     }
 

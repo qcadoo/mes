@@ -116,6 +116,8 @@ public final class BasicConstants {
 
     public static final String VIEW_GENERAL_PARAMETERS = "generalParameters";
 
+    public static final String VIEW_LICENSES = "licenses";
+
     public static final String VIEW_PRODUCT_DETAILS = "productDetails";
 
     public static final String VIEW_PRODUCTS_LIST = "productsList";
@@ -123,8 +125,6 @@ public final class BasicConstants {
     public static final String VIEW_STAFF_DETAILS = "staffDetails";
 
     public static final String VIEW_COMPANY_DETAILS = "companyInAdministrationDetails";
-
-    public static final String ROLE_TERMINAL_USER = "05terminalUser";
 
     public static final String VIEW_PRODUCTS_ATTRIBUTES = "productsAttributes";
 

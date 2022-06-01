@@ -49,6 +49,13 @@
 		<hasMany name="dashboardButtons" model="dashboardButton"
 				 joinField="parameter" cascade="delete" copyable="true" />
 		<file name="logo"/>
+		<integer name="numberOfficeLicenses" required="true" default="1">
+			<validatesRange from="0" exclusively="true"/>
+		</integer>
+		<integer name="numberTerminalLicenses" required="true" default="1">
+			<validatesRange from="0"/>
+		</integer>
+		<enum name="typeTerminalLicenses" required="true" values="01upToTenEmployees,02from11to50Employees,03over51Employees" default="01upToTenEmployees"/>
 	</fields>
 
 	<hooks>

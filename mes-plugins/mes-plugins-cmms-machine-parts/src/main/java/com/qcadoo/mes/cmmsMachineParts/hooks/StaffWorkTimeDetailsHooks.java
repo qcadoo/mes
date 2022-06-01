@@ -1,7 +1,7 @@
 package com.qcadoo.mes.cmmsMachineParts.hooks;
 
 import com.qcadoo.localization.api.utils.DateUtils;
-import com.qcadoo.mes.basic.constants.UserFields;
+import com.qcadoo.mes.basic.constants.UserFieldsB;
 import com.qcadoo.mes.cmmsMachineParts.constants.CmmsMachinePartsConstants;
 import com.qcadoo.mes.cmmsMachineParts.constants.StaffWorkTimeFields;
 import com.qcadoo.mes.cmmsMachineParts.states.constants.MaintenanceEventStateChangeFields;
@@ -42,8 +42,8 @@ import java.util.Optional;
         if (lookupComponent.getFieldValue() == null) {
             Entity user = dataDefinitionService.get(QcadooSecurityConstants.PLUGIN_IDENTIFIER, QcadooSecurityConstants.MODEL_USER)
                     .get(loggedUser);
-            if (user.getBelongsToField(UserFields.STAFF) != null) {
-                lookupComponent.setFieldValue(user.getBelongsToField(UserFields.STAFF).getId());
+            if (user.getBelongsToField(UserFieldsB.STAFF) != null) {
+                lookupComponent.setFieldValue(user.getBelongsToField(UserFieldsB.STAFF).getId());
                 lookupComponent.requestComponentUpdateState();
             }
 

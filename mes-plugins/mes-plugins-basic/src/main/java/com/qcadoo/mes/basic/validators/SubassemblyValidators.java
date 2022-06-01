@@ -47,7 +47,7 @@ public class SubassemblyValidators {
                     subassembly.getStringField(SubassemblyFields.TYPE));
             SearchCriterion criterionId = subassembly.getId() == null ? null : SearchRestrictions.idNe(subassembly.getId());
 
-            Long count = criterionId == null ? subassemblyDD.count(SearchRestrictions.and(criterionWorkstation, criterionType))
+            long count = criterionId == null ? subassemblyDD.count(SearchRestrictions.and(criterionWorkstation, criterionType))
                     : subassemblyDD.count(SearchRestrictions.and(criterionWorkstation, criterionType, criterionId));
             if (count > 0) {
                 subassembly.addError(subassemblyDD.getField(SubassemblyFields.WORKSTATION),

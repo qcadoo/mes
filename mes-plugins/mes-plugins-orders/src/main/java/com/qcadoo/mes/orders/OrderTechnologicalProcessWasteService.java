@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 
 import com.qcadoo.localization.api.utils.DateUtils;
 import com.qcadoo.mes.basic.constants.ProductFields;
-import com.qcadoo.mes.basic.constants.UserFields;
+import com.qcadoo.mes.basic.constants.UserFieldsB;
 import com.qcadoo.mes.orders.constants.OrderTechnologicalProcessFields;
 import com.qcadoo.mes.orders.constants.OrderTechnologicalProcessWasteFields;
 import com.qcadoo.mes.technologies.constants.TechnologicalProcessFields;
@@ -111,7 +111,7 @@ public class OrderTechnologicalProcessWasteService {
             Entity currentUser = userService.getCurrentUserEntity();
 
             date = DateUtils.toDateTimeString(new Date());
-            worker = currentUser.getBelongsToField(UserFields.STAFF);
+            worker = currentUser.getBelongsToField(UserFieldsB.STAFF);
 
             dateField.setFieldValue(date);
 
