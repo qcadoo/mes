@@ -73,7 +73,8 @@
 					var listener = {
 						onChange: function(selectedEntitiesArray) {
 
-						 if (useReplacementBtn && selectedEntitiesArray.length == 1 && selectedEntitiesArray[0].fields.replacement == 1) {
+						 if (useReplacementBtn && selectedEntitiesArray.length == 1 && selectedEntitiesArray[0].fields.replacement == 1
+						 	&& selectedEntitiesArray[0].fields.typeOfMaterial == '01component' && selectedEntitiesArray[0].fields.role == '01used') {
                                             useReplacementBtn.enable("#{translate(productionCounting.productionTrackingDetails.window.ribbon.useReplacement.label)}");
                                         } else {
                                             useReplacementBtn.disable("#{translate(productionCounting.productionTrackingDetails.window.ribbon.useReplacement.label)}");
