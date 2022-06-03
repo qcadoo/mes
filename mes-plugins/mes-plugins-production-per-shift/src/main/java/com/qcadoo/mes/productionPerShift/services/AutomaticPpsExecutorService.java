@@ -14,7 +14,7 @@ import java.util.List;
 public class AutomaticPpsExecutorService {
 
     @Autowired
-    private List<AutomaticPpsService> ppsAlgorithmServcies;
+    private List<AutomaticPpsService> ppsAlgorithmServices;
 
     @Autowired
     private AutomaticPpsParametersService parametersService;
@@ -31,7 +31,7 @@ public class AutomaticPpsExecutorService {
     }
 
     private void callUserAlgorithm(ProgressForDaysContainer progressForDaysContainer, Entity productionPerShift) {
-        for (AutomaticPpsService service : ppsAlgorithmServcies) {
+        for (AutomaticPpsService service : ppsAlgorithmServices) {
             if (serviceEnabled(service) && isNotStandardAlgorithm(service)) {
                 service.generateProgressForDays(progressForDaysContainer, productionPerShift);
             }
@@ -40,7 +40,7 @@ public class AutomaticPpsExecutorService {
 
     private void callStandardAlgorithm(ProgressForDaysContainer progressForDaysContainer, Entity productionPerShift,
             PpsAlgorithm algorithm) {
-        for (AutomaticPpsService service : ppsAlgorithmServcies) {
+        for (AutomaticPpsService service : ppsAlgorithmServices) {
             if (serviceEnabled(service)) {
                 String aClass = service.getClass().getSimpleName();
                 if (algorithm.getAlgorithmClass().equalsIgnoreCase(aClass)) {

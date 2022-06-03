@@ -1,8 +1,8 @@
-package com.qcadoo.mes.productionScheduling.listeners;
+package com.qcadoo.mes.orders.listeners;
 
 import java.util.Date;
 
-class ProductionLinePositionNewData {
+public class ProductionLinePositionNewData {
 
     private Date startDate;
 
