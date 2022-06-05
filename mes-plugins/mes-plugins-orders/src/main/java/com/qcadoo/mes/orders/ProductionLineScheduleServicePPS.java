@@ -21,27 +21,17 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.productionPerShift.hooks;
+package com.qcadoo.mes.orders;
 
-import org.springframework.stereotype.Service;
+import java.util.Date;
+import java.util.Map;
 
-import com.google.common.base.Strings;
-import com.qcadoo.mes.orders.constants.ParameterFieldsO;
-import com.qcadoo.mes.productionPerShift.constants.ParameterFieldsPPS;
-import com.qcadoo.model.api.DataDefinition;
+import com.qcadoo.mes.orders.listeners.ProductionLinePositionNewData;
 import com.qcadoo.model.api.Entity;
 
+public interface ProductionLineScheduleServicePPS {
 
-@Service
-public class ParameterHooksPPS {
-
-
-    public void validatesWith(final DataDefinition parameterDD, final Entity parameter) {
-        boolean ppsIsAutomatic = parameter.getBooleanField(ParameterFieldsO.PPS_IS_AUTOMATIC);
-        String ppsAlgorithm = parameter.getStringField(ParameterFieldsPPS.PPS_ALGORITHM);
-        if(ppsIsAutomatic && Strings.isNullOrEmpty(ppsAlgorithm)){
-            parameter.addError(parameterDD.getField(ParameterFieldsPPS.PPS_ALGORITHM), "basic.parameter.ppsAlgorithm.isRequired");
-        }
-    }
+    void createProductionLinePositionNewData(Map<Long, ProductionLinePositionNewData> orderProductionLinesPositionNewData,
+                                             Entity productionLine, Date finishDate, Entity order);
 
 }

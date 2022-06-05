@@ -65,9 +65,6 @@ public class OrderHooksPPS {
     private BasicProductionCountingService basicProductionCountingService;
 
     @Autowired
-    private ParameterService parameterService;
-
-    @Autowired
     private ProgressDatesService progressDatesService;
 
     @Autowired
@@ -112,7 +109,7 @@ public class OrderHooksPPS {
                 .get(ProductionPerShiftConstants.PLUGIN_IDENTIFIER, ProductionPerShiftConstants.MODEL_PRODUCTION_PER_SHIFT)
                 .find().add(SearchRestrictions.belongsTo(ProductionPerShiftFields.ORDER, order)).setMaxResults(1)
                 .uniqueResult();
-        boolean generate = canGenerate(order, orderFromDB, productionPerShift);
+        boolean generate = canGenerate(order);
 
         if (isOrderFieldsChanged(order, orderFromDB) || generate) {
 
@@ -172,12 +169,8 @@ public class OrderHooksPPS {
         updateOrderData(order);
     }
 
-    private boolean canGenerate(Entity order, Entity orderFromDB, Entity productionPerShift) {
-        boolean generate = false;
-        if (order.getBooleanField("generatePPS")) {
-            generate = true;
-        }
-        return generate;
+    private boolean canGenerate(Entity order) {
+        return order.getBooleanField("generatePPS");
     }
 
     /**
@@ -217,7 +210,7 @@ public class OrderHooksPPS {
             return true;
         }
 
-        if (plannedQuantity1 != null && plannedQuantity2 != null && plannedQuantity1.compareTo(plannedQuantity2) != 0) {
+        if (plannedQuantity1 != null && plannedQuantity1.compareTo(plannedQuantity2) != 0) {
             return true;
         }
 
@@ -232,11 +225,7 @@ public class OrderHooksPPS {
             return true;
         }
 
-        if (startDate1 != null && startDate2 != null && startDate1.compareTo(startDate2) != 0) {
-            return true;
-        }
-
-        return false;
+        return startDate1 != null && startDate1.compareTo(startDate2) != 0;
     }
 
 }

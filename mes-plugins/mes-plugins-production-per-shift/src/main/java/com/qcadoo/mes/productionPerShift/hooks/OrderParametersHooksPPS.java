@@ -25,6 +25,7 @@ package com.qcadoo.mes.productionPerShift.hooks;
 
 import org.springframework.stereotype.Service;
 
+import com.qcadoo.mes.orders.constants.ParameterFieldsO;
 import com.qcadoo.mes.productionPerShift.constants.ParameterFieldsPPS;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ComponentState;
@@ -52,7 +53,7 @@ public class OrderParametersHooksPPS {
     }
     
     private void togglePpsAlgorithm(final ViewDefinitionState view, Entity parameters) {
-        boolean isPpsAutomatic = parameters.getBooleanField(ParameterFieldsPPS.PPS_IS_AUTOMATIC);
+        boolean isPpsAutomatic = parameters.getBooleanField(ParameterFieldsO.PPS_IS_AUTOMATIC);
         FieldComponent ppsAlgorithmComponent = (FieldComponent) view.getComponentByReference(ParameterFieldsPPS.PPS_ALGORITHM);
         
         if (!isPpsAutomatic) {
