@@ -62,9 +62,6 @@ public class OrderHooksPPS {
     private DataDefinitionService dataDefinitionService;
 
     @Autowired
-    private BasicProductionCountingService basicProductionCountingService;
-
-    @Autowired
     private ProgressDatesService progressDatesService;
 
     @Autowired
@@ -109,17 +106,12 @@ public class OrderHooksPPS {
                 .get(ProductionPerShiftConstants.PLUGIN_IDENTIFIER, ProductionPerShiftConstants.MODEL_PRODUCTION_PER_SHIFT)
                 .find().add(SearchRestrictions.belongsTo(ProductionPerShiftFields.ORDER, order)).setMaxResults(1)
                 .uniqueResult();
-        boolean generate = canGenerate(order);
+        boolean generate = order.getBooleanField(OrderFields.GENERATE_PPS);
 
-        if (isOrderFieldsChanged(order, orderFromDB) || generate) {
-
+        if (generate || isOrderFieldsChanged(order, orderFromDB)) {
             if (productionPerShift != null && automaticPpsParametersService.isAutomaticPlanForShiftOn()) {
                 boolean shouldBeCorrected = OrderState.of(order).compareTo(OrderState.PENDING) != 0;
-                if (!productionPerShift.getHasManyField(ProductionPerShiftFields.PROGRES_FOR_DAYS).isEmpty() || generate) {
-                    BigDecimal plannedQuantity = order.getDecimalField(OrderFields.PLANNED_QUANTITY);
-                    if (order.getBooleanField(OrderFields.FINAL_PRODUCTION_TRACKING)) {
-                        plannedQuantity = basicProductionCountingService.getProducedQuantityFromBasicProductionCountings(order);
-                    }
+                if (generate || !productionPerShift.getHasManyField(ProductionPerShiftFields.PROGRES_FOR_DAYS).isEmpty()) {
                     ProgressForDaysContainer progressForDaysContainer = new ProgressForDaysContainer();
                     progressForDaysContainer.setShouldBeCorrected(shouldBeCorrected);
                     progressForDaysContainer.setOrder(order);
@@ -167,10 +159,6 @@ public class OrderHooksPPS {
 
         }
         updateOrderData(order);
-    }
-
-    private boolean canGenerate(Entity order) {
-        return order.getBooleanField("generatePPS");
     }
 
     /**

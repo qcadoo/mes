@@ -21,29 +21,13 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.lineChangeoverNormsForOrders;
+package com.qcadoo.mes.lineChangeoverNormsForOrders.constants;
 
-import java.util.List;
+public final class ProductionLineSchedulePositionFieldsLCNFO {
 
-import org.springframework.stereotype.Service;
+    private ProductionLineSchedulePositionFieldsLCNFO() {
 
-import com.qcadoo.model.api.Entity;
-import com.qcadoo.view.api.ViewDefinitionState;
+    }
 
-@Service
-public interface LineChangeoverNormsForOrdersService {
-
-    void fillOrderForm(final ViewDefinitionState view, final List<String> orderFields);
-
-    boolean previousOrderEndsBeforeOrIsWithdrawed(final Entity previousOrder, final Entity order);
-
-    Entity getProductionLineFromDB(final Long productionLineId);
-
-    Entity getTechnologyByNumberFromDB(final String number);
-
-    Entity getTechnologyGroupByNumberFromDB(final String number);
-
-    Entity getPreviousOrderFromDB(final Entity order);
-
-    Entity getChangeover(Entity previousOrder, Entity toTechnology, Entity productionLine);
+    public static final String LINE_CHANGEOVER_NORM = "lineChangeoverNorm";
 }

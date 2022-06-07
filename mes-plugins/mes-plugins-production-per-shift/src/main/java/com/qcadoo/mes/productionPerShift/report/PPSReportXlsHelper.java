@@ -89,12 +89,12 @@ public class PPSReportXlsHelper {
         String sql = "select pps from #productionPerShift_productionPerShift as pps where (" + "(" + "('"
                 + firstStartShitTime.toDate().toString() + "' <= pps.order.finishDate and '"
                 + firstStartShitTime.toDate().toString() + "' >= pps.order.startDate) or " + "('"
-                + new Date(dateToInMills).toString().toString() + "' < pps.order.finishDate and '"
-                + new Date(dateToInMills).toString().toString() + "' > pps.order.startDate)" + ") or " + "("
+                + new Date(dateToInMills) + "' < pps.order.finishDate and '"
+                + new Date(dateToInMills) + "' > pps.order.startDate)" + ") or " + "("
                 + "(pps.order.startDate >= '" + firstStartShitTime.toDate().toString() + "' and pps.order.startDate <'"
-                + new Date(dateToInMills).toString().toString() + "') or " + "(pps.order.finishDate >= '"
+                + new Date(dateToInMills) + "') or " + "(pps.order.finishDate >= '"
                 + firstStartShitTime.toDate().toString() + "' and pps.order.finishDate < '"
-                + new Date(dateToInMills).toString().toString() + "') " + ")"
+                + new Date(dateToInMills) + "') " + ")"
                 + ") and pps.order.state <> '05declined' and pps.order.state <> '07abandoned'  "
                 + "and pps.order.state <> '04completed' and pps.order.active = true";
 
@@ -163,10 +163,8 @@ public class PPSReportXlsHelper {
         if (Objects.isNull(progressForDay)) {
             return null;
         } else {
-            Entity dailyProgress = progressForDay.getHasManyField(ProgressForDayFields.DAILY_PROGRESS).find()
+            return progressForDay.getHasManyField(ProgressForDayFields.DAILY_PROGRESS).find()
                     .add(SearchRestrictions.belongsTo(DailyProgressFields.SHIFT, shift)).setMaxResults(1).uniqueResult();
-
-            return dailyProgress;
         }
     }
 

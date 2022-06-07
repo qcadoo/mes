@@ -35,9 +35,6 @@ import com.qcadoo.model.api.Entity;
 public class ChangeoverNormsServiceImpl implements ChangeoverNormsService {
 
     @Autowired
-    private DataDefinitionService dataDefinitionService;
-
-    @Autowired
     private ChangeoverNormsSearchService changeoverNormsSearchService;
 
     @Override

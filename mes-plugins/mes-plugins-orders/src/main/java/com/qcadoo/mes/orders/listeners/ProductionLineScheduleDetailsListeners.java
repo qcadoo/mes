@@ -34,6 +34,7 @@ import com.qcadoo.mes.orders.constants.ProductionLineScheduleFields;
 import com.qcadoo.mes.orders.constants.ProductionLineSchedulePositionFields;
 import com.qcadoo.mes.orders.constants.ProductionLineScheduleSortOrder;
 import com.qcadoo.mes.orders.states.ProductionLineScheduleServiceMarker;
+import com.qcadoo.mes.orders.states.constants.OrderState;
 import com.qcadoo.mes.orders.states.constants.OrderStateStringValues;
 import com.qcadoo.mes.orders.validators.ProductionLineSchedulePositionValidators;
 import com.qcadoo.mes.productionLines.constants.ProductionLineFields;
@@ -121,6 +122,7 @@ public class ProductionLineScheduleDetailsListeners {
 
     private void assignOrdersToProductionLines(Entity schedule, List<Entity> productionLines, Entity parameter) {
         Map<Long, Date> productionLinesFinishDates = Maps.newHashMap();
+        Map<Long, Entity> productionLinesOrders = Maps.newHashMap();
         List<Long> positionsIds = sortPositionsForProductionLines(schedule.getId());
         Date scheduleStartTime = schedule.getDateField(ProductionLineScheduleFields.START_TIME);
         boolean allowProductionLineChange = schedule.getBooleanField(ProductionLineScheduleFields.ALLOW_PRODUCTION_LINE_CHANGE);
@@ -132,7 +134,7 @@ public class ProductionLineScheduleDetailsListeners {
             List<Entity> orderProductionLines = productionLineSchedulePositionValidators.getProductionLinesFromTechnology(position, productionLines,
                     allowProductionLineChange, canChangeProdLineForAcceptedOrders);
             Map<Long, ProductionLinePositionNewData> orderProductionLinesPositionNewData = Maps.newHashMap();
-            boolean skipPosition = getProductionLinesNewFinishDate(productionLinesFinishDates, scheduleStartTime,
+            boolean skipPosition = getProductionLinesNewFinishDate(productionLinesFinishDates, productionLinesOrders, scheduleStartTime,
                     position, orderProductionLines, orderProductionLinesPositionNewData, durationOfOrderCalculatedOnBasis);
 
             if (skipPosition) {
@@ -149,12 +151,12 @@ public class ProductionLineScheduleDetailsListeners {
                             .filter(entry -> productionLinesFinishDates.containsKey(entry.getKey())).findFirst()
                             .orElse(orderProductionLinesPositionNewData.entrySet().iterator().next());
                 }
-                updatePositionProductionLineAndDates(firstEntry, productionLinesFinishDates, position);
+                updatePositionProductionLineAndDates(firstEntry, productionLinesFinishDates, productionLinesOrders, position);
             } else if (ProductionLineAssignCriterion.SHORTEST_TIME.getStringValue()
                     .equals(schedule.getStringField(ProductionLineScheduleFields.PRODUCTION_LINE_ASSIGN_CRITERION))) {
                 orderProductionLinesPositionNewData.entrySet().stream()
                         .min(Comparator.comparing(e -> e.getValue().getFinishDate()))
-                        .ifPresent(entry -> updatePositionProductionLineAndDates(entry, productionLinesFinishDates, position));
+                        .ifPresent(entry -> updatePositionProductionLineAndDates(entry, productionLinesFinishDates, productionLinesOrders, position));
             } else if (ProductionLineAssignCriterion.LEAST_CHANGEOVERS.getStringValue()
                     .equals(schedule.getStringField(ProductionLineScheduleFields.PRODUCTION_LINE_ASSIGN_CRITERION))) {
             }
@@ -162,16 +164,25 @@ public class ProductionLineScheduleDetailsListeners {
     }
 
     private void updatePositionProductionLineAndDates(Map.Entry<Long, ProductionLinePositionNewData> entry,
-                                                      Map<Long, Date> productionLinesFinishDates, Entity position) {
+                                                      Map<Long, Date> productionLinesFinishDates, Map<Long, Entity> productionLinesOrders, Entity position) {
         ProductionLinePositionNewData productionLinePositionNewData = entry.getValue();
         productionLinesFinishDates.put(entry.getKey(), productionLinePositionNewData.getFinishDate());
+        productionLinesOrders.put(entry.getKey(), position.getBelongsToField(ProductionLineSchedulePositionFields.ORDER));
         position.setField(ProductionLineSchedulePositionFields.PRODUCTION_LINE, entry.getKey());
         position.setField(ProductionLineSchedulePositionFields.START_TIME, productionLinePositionNewData.getStartDate());
         position.setField(ProductionLineSchedulePositionFields.END_TIME, productionLinePositionNewData.getFinishDate());
-        position.getDataDefinition().fastSave(position);
+        String durationOfOrderCalculatedOnBasis = position.getBelongsToField(ProductionLineSchedulePositionFields.PRODUCTION_LINE_SCHEDULE)
+                .getStringField(ProductionLineScheduleFields.DURATION_OF_ORDER_CALCULATED_ON_BASIS);
+        if (DurationOfOrderCalculatedOnBasis.TIME_CONSUMING_TECHNOLOGY.getStringValue()
+                .equals(durationOfOrderCalculatedOnBasis)) {
+            productionLineScheduleServicePSExecutorService.savePosition(position, productionLinePositionNewData);
+        } else if (DurationOfOrderCalculatedOnBasis.PLAN_FOR_SHIFT.getStringValue()
+                .equals(durationOfOrderCalculatedOnBasis)) {
+            productionLineScheduleServicePPSExecutorService.savePosition(position, productionLinePositionNewData);
+        }
     }
 
-    private boolean getProductionLinesNewFinishDate(Map<Long, Date> productionLinesFinishDates, Date scheduleStartTime,
+    private boolean getProductionLinesNewFinishDate(Map<Long, Date> productionLinesFinishDates, Map<Long, Entity> productionLinesOrders, Date scheduleStartTime,
                                                     Entity position, List<Entity> orderProductionLines,
                                                     Map<Long, ProductionLinePositionNewData> orderProductionLinesPositionNewData, String durationOfOrderCalculatedOnBasis) {
         boolean skipPosition = true;
@@ -180,6 +191,7 @@ public class ProductionLineScheduleDetailsListeners {
             Entity technology = order.getBelongsToField(OrderFields.TECHNOLOGY);
             Date finishDate = getFinishDate(productionLinesFinishDates, scheduleStartTime, productionLine, order);
             finishDate = getFinishDateWithChildren(position, finishDate);
+            Entity previousOrder = getPreviousOrder(productionLinesOrders, productionLine, finishDate);
             if (DurationOfOrderCalculatedOnBasis.TIME_CONSUMING_TECHNOLOGY.getStringValue()
                     .equals(durationOfOrderCalculatedOnBasis)) {
                 BigDecimal plannedQuantity = order.getDecimalField(OrderFields.PLANNED_QUANTITY);
@@ -190,27 +202,47 @@ public class ProductionLineScheduleDetailsListeners {
                         technology.getTreeField(TechnologyFields.OPERATION_COMPONENTS).getRoot(),
                         plannedQuantity, true, true, productionLine);
 
-                if (maxPathTime > OrderRealizationTimeService.MAX_REALIZATION_TIME || maxPathTime == 0) {
-                    continue;
-                } else {
+                if (maxPathTime <= OrderRealizationTimeService.MAX_REALIZATION_TIME && maxPathTime != 0) {
                     skipPosition = false;
+                    productionLineScheduleServicePSExecutorService.createProductionLinePositionNewData(orderProductionLinesPositionNewData,
+                            productionLine, finishDate, order, technology, previousOrder);
                 }
 
-                productionLineScheduleServicePSExecutorService.createProductionLinePositionNewData(orderProductionLinesPositionNewData,
-                        productionLine, finishDate, order, technology);
             } else if (DurationOfOrderCalculatedOnBasis.PLAN_FOR_SHIFT.getStringValue()
                     .equals(durationOfOrderCalculatedOnBasis)) {
                 Optional<BigDecimal> norm = technologyService.getStandardPerformance(technology, productionLine);
-                if (!norm.isPresent()) {
-                    continue;
-                } else {
+                if (norm.isPresent()) {
                     skipPosition = false;
+                    productionLineScheduleServicePPSExecutorService.createProductionLinePositionNewData(orderProductionLinesPositionNewData,
+                            productionLine, finishDate, order.getDataDefinition().get(order.getId()), technology, previousOrder);
                 }
-                productionLineScheduleServicePPSExecutorService.createProductionLinePositionNewData(orderProductionLinesPositionNewData,
-                        productionLine, finishDate, order.getDataDefinition().get(order.getId()));
             }
         }
         return skipPosition;
+    }
+
+    private Entity getPreviousOrder(Map<Long, Entity> productionLinesOrders, Entity productionLine, final Date orderStartDate) {
+        Entity previousOrder = productionLinesOrders.get(productionLine.getId());
+        if (Objects.isNull(previousOrder)) {
+            Entity previousOrderFromDB = getPreviousOrderFromDB(productionLine, orderStartDate);
+            if (previousOrderFromDB != null) {
+                previousOrder = previousOrderFromDB;
+                productionLinesOrders.put(productionLine.getId(), previousOrder);
+            }
+        }
+        return previousOrder;
+    }
+
+    private Entity getPreviousOrderFromDB(final Entity productionLine, final Date orderStartDate) {
+        return dataDefinitionService
+                .get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER)
+                .find()
+                .add(SearchRestrictions.belongsTo(OrderFields.PRODUCTION_LINE,
+                        productionLine))
+                .add(SearchRestrictions.or(SearchRestrictions.ne(OrderFields.STATE, OrderState.DECLINED.getStringValue()),
+                        SearchRestrictions.ne(OrderFields.STATE, OrderState.ABANDONED.getStringValue())))
+                .add(SearchRestrictions.lt(OrderFields.FINISH_DATE, orderStartDate))
+                .addOrder(SearchOrders.desc(OrderFields.FINISH_DATE)).setMaxResults(1).uniqueResult();
     }
 
     private Date getFinishDateWithChildren(Entity position, Date finishDate) {
