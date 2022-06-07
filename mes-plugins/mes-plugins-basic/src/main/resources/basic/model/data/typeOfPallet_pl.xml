@@ -26,5 +26,5 @@
 -->
 <typeOfPallet>
 	<row NAME="EPAL" TECHNICALCODE="01epal" />
-	<row NAME="CHEAP EUR" TECHNICALCODE="02cheapEur" />
+	<row NAME="CHEP EUR" TECHNICALCODE="02chepEur" />
 </typeOfPallet>
