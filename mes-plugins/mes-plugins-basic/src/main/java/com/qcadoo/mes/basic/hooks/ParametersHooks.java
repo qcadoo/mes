@@ -24,11 +24,13 @@
 package com.qcadoo.mes.basic.hooks;
 
 import org.apache.commons.lang3.math.NumberUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.basic.constants.ParameterFields;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.IntegerUtils;
+import com.qcadoo.security.api.SecurityService;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
@@ -45,6 +47,9 @@ public class ParametersHooks {
     private static final String L_COMPANY = "company";
 
     private static final String L_REDIRECT_TO_COMPANY = "redirectToCompany";
+
+    @Autowired
+    private SecurityService securityService;
 
     public void onBeforeRender(final ViewDefinitionState view) {
         FormComponent parametersForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
@@ -76,7 +81,7 @@ public class ParametersHooks {
         FormComponent parametersForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         Entity parameter = parametersForm.getPersistedEntityWithIncludedFormValues();
 
-        typeTerminalLicenses.setEnabled(parameter.getField(ParameterFields.NUMBER_TERMINAL_LICENSES) != null
+        typeTerminalLicenses.setEnabled(securityService.hasCurrentUserRole("ROLE_SUPERADMIN") && parameter.getField(ParameterFields.NUMBER_TERMINAL_LICENSES) != null
                 && parameter.getLongField(ParameterFields.NUMBER_TERMINAL_LICENSES) > 0);
     }
 

@@ -60,7 +60,7 @@
                     </layoutElement>
                     <layoutElement column="1" row="3">
                         <component type="select" name="typeTerminalLicenses" field="typeTerminalLicenses"
-                                   reference="typeTerminalLicenses">
+                                   reference="typeTerminalLicenses" defaultEnabled="false">
                             <option type="labelWidth" value="55"/>
                         </component>
                     </layoutElement>
