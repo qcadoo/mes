@@ -55,16 +55,16 @@ public class UserValidators {
         Entity parameter = parameterService.getParameter();
         String permissionType = user.getBelongsToField(UserFields.GROUP).getStringField(GroupFields.PERMISSION_TYPE);
         if (PermissionType.OFFICE_LICENSE.getStringValue().equals(permissionType)
-                && !areFreeLicenses(userDD, PermissionType.OFFICE_LICENSE.getStringValue(), user.getId(), parameter.getIntegerField(ParameterFields.NUMBER_OFFICE_LICENSES))
+                && noFreeLicenses(userDD, PermissionType.OFFICE_LICENSE.getStringValue(), user.getId(), parameter.getIntegerField(ParameterFields.NUMBER_OFFICE_LICENSES))
                 || PermissionType.TERMINAL_LICENSE.getStringValue().equals(permissionType)
-                && !areFreeLicenses(userDD, PermissionType.TERMINAL_LICENSE.getStringValue(), user.getId(), parameter.getIntegerField(ParameterFields.NUMBER_TERMINAL_LICENSES))) {
+                && noFreeLicenses(userDD, PermissionType.TERMINAL_LICENSE.getStringValue(), user.getId(), parameter.getIntegerField(ParameterFields.NUMBER_TERMINAL_LICENSES))) {
             user.addError(userDD.getField(UserFields.GROUP), "basic.user.error.group.thereAreNoFreeLicenses");
             return false;
         }
         return true;
     }
 
-    private boolean areFreeLicenses(final DataDefinition userDD, final String permissionType, final Long id, final long allLicenses) {
+    private boolean noFreeLicenses(final DataDefinition userDD, final String permissionType, final Long id, final long allLicenses) {
         SearchCriteriaBuilder scb = userDD.find();
 
         if (id != null) {
@@ -79,7 +79,7 @@ public class UserValidators {
 
         Long countValue = (Long) projectionResult.getField(COUNT_ALIAS);
 
-        return countValue < allLicenses;
+        return countValue >= allLicenses;
     }
 
 }
