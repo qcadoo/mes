@@ -37,7 +37,11 @@
             <group name="navigation">
                 <bigButton name="back" icon="backIcon24.png" state="enabled" action="#{window}.performBack"/>
             </group>
-            <group template="formSaveAction"/>
+
+            <group name="actions">
+                <bigButton name="save" icon="saveIcon24.png" action="#{form}.performSave;"/>
+                <bigButton name="saveBack" icon="saveBackIcon24.png" action="#{form}.performSave; #{window}.performBack;"/>
+            </group>
         </ribbon>
 
         <windowTab name="mainTab">
@@ -140,8 +144,8 @@
                         <component type="checkbox" name="manyReasonsForLacks"
                                    reference="manyReasonsForLacks" field="#{form}.manyReasonsForLacks">
                             <listener event="onChange"
-                                      class="com.qcadoo.view.api.listeners.RerenderListener"
-                                      method="onChangeRerender"/>
+                                      class="com.qcadoo.mes.productionCounting.listeners.TrackingOperationProductComponentDetailsListeners"
+                                      method="onManyReasonsForLacks"/>
                         </component>
                     </layoutElement>
                 </component>
@@ -176,6 +180,11 @@
                 <option type="deletable" value="true"/>
                 <option type="fullscreen" value="true"/>
                 <option type="multiselect" value="true"/>
+
+                <listener event="remove"
+                          method="onRemoveLack"
+                          class="com.qcadoo.mes.productionCounting.listeners.TrackingOperationProductComponentDetailsListeners"/>
+
 
             </component>
         </windowTab>

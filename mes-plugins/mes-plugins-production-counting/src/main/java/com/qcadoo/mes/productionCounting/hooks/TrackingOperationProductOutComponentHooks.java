@@ -75,6 +75,9 @@ public class TrackingOperationProductOutComponentHooks {
     public void onSave(final DataDefinition trackingOperationProductOutComponentDD, Entity trackingOperationProductOutComponent) {
         fillTrackingOperationProductInComponentsQuantities(trackingOperationProductOutComponent);
         fillOrderReportedQuantity(trackingOperationProductOutComponent);
+        if(!trackingOperationProductOutComponent.getBooleanField(TrackingOperationProductOutComponentFields.MANY_REASONS_FOR_LACKS)) {
+            trackingOperationProductOutComponent.setField(TrackingOperationProductOutComponentFields.LACKS, Lists.newArrayList());
+        }
     }
 
     public boolean validatesWith(final DataDefinition trackingOperationProductOutComponentDD,

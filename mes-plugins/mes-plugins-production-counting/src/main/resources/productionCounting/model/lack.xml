@@ -51,6 +51,10 @@
         <validatesWith
                 class="com.qcadoo.mes.productionCounting.hooks.LackHooks"
                 method="validatesWith"/>
+
+        <onDelete
+                class="com.qcadoo.mes.productionCounting.hooks.LackHooks"
+                method="onDelete"/>
     </hooks>
 
 </model>
