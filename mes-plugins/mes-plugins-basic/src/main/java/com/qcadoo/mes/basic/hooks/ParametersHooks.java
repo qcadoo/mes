@@ -81,7 +81,9 @@ public class ParametersHooks {
         FormComponent parametersForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         Entity parameter = parametersForm.getPersistedEntityWithIncludedFormValues();
 
-        typeTerminalLicenses.setEnabled(securityService.hasCurrentUserRole("ROLE_SUPERADMIN") && parameter.getField(ParameterFields.NUMBER_TERMINAL_LICENSES) != null
+        typeTerminalLicenses.setEnabled(securityService.hasCurrentUserRole("ROLE_SUPERADMIN")
+                && parameter.getField(ParameterFields.NUMBER_TERMINAL_LICENSES) != null
+                && NumberUtils.isDigits(parameter.getField(ParameterFields.NUMBER_TERMINAL_LICENSES).toString())
                 && parameter.getLongField(ParameterFields.NUMBER_TERMINAL_LICENSES) > 0);
     }
 
