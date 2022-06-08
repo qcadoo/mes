@@ -159,6 +159,13 @@ public class ProductionLineScheduleDetailsListeners {
                         .ifPresent(entry -> updatePositionProductionLineAndDates(entry, productionLinesFinishDates, productionLinesOrders, position));
             } else if (ProductionLineAssignCriterion.LEAST_CHANGEOVERS.getStringValue()
                     .equals(schedule.getStringField(ProductionLineScheduleFields.PRODUCTION_LINE_ASSIGN_CRITERION))) {
+                Optional<Map.Entry<Long, ProductionLinePositionNewData>> optionalEntry = orderProductionLinesPositionNewData
+                        .entrySet().stream().filter(e -> e.getValue().getChangeover() == null).findFirst();
+                if (!optionalEntry.isPresent()) {
+                    optionalEntry = orderProductionLinesPositionNewData.entrySet().stream().filter(e -> e.getValue().getChangeover() != null)
+                            .min(Comparator.comparing(e -> e.getValue().getChangeover().getIntegerField("duration")));
+                }
+                optionalEntry.ifPresent(entry -> updatePositionProductionLineAndDates(entry, productionLinesFinishDates, productionLinesOrders, position));
             }
         }
     }

@@ -29,7 +29,6 @@ import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.basic.constants.ParameterFields;
 import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.IntegerUtils;
 import com.qcadoo.security.api.SecurityService;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
