@@ -21,55 +21,56 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.deliveriesMinState.notifications.mandrill;
+package com.qcadoo.mes.emailNotifications.notifications.mandrill;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.List;
 
+
 import com.google.common.collect.Lists;
 
-public class Message {
+public class TemplateEmail {
 
-    private String subject;
+    @JsonProperty("key")
+    private String apiKey;
 
-    @JsonProperty("from_email")
-    private String fromMail;
+    @JsonProperty("template_name")
+    private String templateName;
 
-    @JsonProperty("from_name")
-    private String fromName;
+    @JsonProperty("template_content")
+    private List<ContentItem> contentItems = Lists.newArrayList();
 
-    @JsonProperty("to")
-    private List<Recipient> recipients = Lists.newArrayList();
+    private Message message = new Message();
 
-    public String getSubject() {
-        return subject;
+    public void setContentItems(List<ContentItem> contentItems) {
+        this.contentItems = contentItems;
     }
 
-    public void setSubject(String subject) {
-        this.subject = subject;
+    public List<ContentItem> getContentItems() {
+        return contentItems;
     }
 
-    public String getFromMail() {
-        return fromMail;
+    public void setTemplateName(String templateName) {
+        this.templateName = templateName;
     }
 
-    public void setFromMail(String fromMail) {
-        this.fromMail = fromMail;
+    public String getApiKey() {
+        return apiKey;
     }
 
-    public String getFromName() {
-        return fromName;
+    public void setApiKey(String apiKey) {
+        this.apiKey = apiKey;
     }
 
-    public void setFromName(String fromName) {
-        this.fromName = fromName;
+    public String getTemplateName() {
+        return templateName;
     }
 
-    public List<Recipient> getRecipients() {
-        return recipients;
+    public Message getMessage() {
+        return message;
     }
 
-    public void setRecipients(List<Recipient> recipients) {
-        this.recipients = recipients;
+    public void setMessage(Message message) {
+        this.message = message;
     }
 }

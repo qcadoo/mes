@@ -21,13 +21,13 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.deliveriesMinState.notifications.constants;
+package com.qcadoo.mes.emailNotifications.notifications.service;
 
-public final class StaffNotificationFieldsMS {
+import com.qcadoo.mes.emailNotifications.notifications.constants.SendingStatus;
+import com.qcadoo.mes.emailNotifications.notifications.mandrill.TemplateEmail;
 
-    private StaffNotificationFieldsMS() {
-    }
+public interface MandrillService {
 
-    public static final String CREATE_DELIVERY_MIN_STATE = "createDeliveryMinState";
+    SendingStatus sendTemplateEmail(final TemplateEmail email);
 
 }

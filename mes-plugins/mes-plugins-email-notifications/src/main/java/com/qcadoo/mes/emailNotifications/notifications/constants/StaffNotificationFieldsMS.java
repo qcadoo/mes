@@ -21,8 +21,13 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.deliveriesMinState.notifications.constants;
+package com.qcadoo.mes.emailNotifications.notifications.constants;
 
-public enum SendingStatus {
-    sent, queued, scheduled, rejected, invalid, bounced
+public final class StaffNotificationFieldsMS {
+
+    private StaffNotificationFieldsMS() {
+    }
+
+    public static final String CREATE_DELIVERY_MIN_STATE = "createDeliveryMinState";
+
 }
