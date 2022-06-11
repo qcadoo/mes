@@ -137,6 +137,10 @@
 
         <model:model model="productionTrackingAttachment" resource="model/productionTrackingAttachment.xml"/>
 
+        <model:model model="lack" resource="model/lack.xml"/>
+        <model:model model="lackDto" resource="model/lackDto.xml"/>
+        <model:model model="lackReason" resource="model/lackReason.xml"/>
+
         <model:model-enum-value plugin="basic" model="log" enum="logType" value="productionTracking"/>
 
         <model:model-field model="parameter" plugin="basic">
@@ -524,9 +528,11 @@
         <view:view resource="view/productionCountingParameters.xml"/>
         <view:view resource="view/productionAnalysisParameters.xml"/>
         <view:view resource="view/operationDurationAnalysis.xml"/>
+        <view:view resource="view/lackDetails.xml"/>
 
         <view:view-tab resource="view/tabExtensions/orderDetails.xml"/>
         <view:view-tab resource="view/tabExtensions/technologyDetails.xml"/>
+
 
         <view:view-ribbon-group resource="view/ribbonExtensions/productDetails.xml"/>
 

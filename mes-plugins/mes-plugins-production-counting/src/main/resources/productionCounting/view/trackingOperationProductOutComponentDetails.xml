@@ -24,7 +24,8 @@
     ***************************************************************************
 
 -->
-<view defaultAuthorizationRole="ROLE_PRODUCTION_TRACKING_REGISTRATION" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<view defaultAuthorizationRole="ROLE_PRODUCTION_TRACKING_REGISTRATION"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
       xmlns="http://schema.qcadoo.org/view"
       xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
       name="trackingOperationProductOutComponentDetails" modelName="trackingOperationProductOutComponent"
@@ -34,15 +35,19 @@
 
         <ribbon>
             <group name="navigation">
-                <bigButton name="back" icon="backIcon24.png" state="enabled" action="#{window}.performBack" />
+                <bigButton name="back" icon="backIcon24.png" state="enabled" action="#{window}.performBack"/>
             </group>
-            <group template="formSaveAction"/>
+
+            <group name="actions">
+                <bigButton name="save" icon="saveIcon24.png" action="#{form}.performSave;"/>
+                <bigButton name="saveBack" icon="saveBackIcon24.png" action="#{form}.performSave; #{window}.performBack;"/>
+            </group>
         </ribbon>
 
         <windowTab name="mainTab">
             <component type="form" name="form" reference="form">
                 <component type="gridLayout" name="grid" reference="grid"
-                           columns="6" rows="10" hasBorders="false">
+                           columns="6" rows="11" hasBorders="false">
                     <layoutElement column="1" row="1" width="5">
                         <component type="input" name="number" reference="number"
                                    defaultEnabled="false">
@@ -135,13 +140,54 @@
                                    field="causeOfWastes">
                         </component>
                     </layoutElement>
+                    <layoutElement column="1" row="11" width="5">
+                        <component type="checkbox" name="manyReasonsForLacks"
+                                   reference="manyReasonsForLacks" field="#{form}.manyReasonsForLacks">
+                            <listener event="onChange"
+                                      class="com.qcadoo.mes.productionCounting.listeners.TrackingOperationProductComponentDetailsListeners"
+                                      method="onManyReasonsForLacks"/>
+                        </component>
+                    </layoutElement>
                 </component>
 
                 <option type="header" value="true"/>
                 <option type="expression" value="#product['name']"/>
             </component>
         </windowTab>
+        <windowTab name="lacks">
+            <component type="grid" name="lacks" useDto="true" source="#{form}.lacksDto"
+                       model="lackDto" reference="lacks">
 
+                <option type="column" name="lackQuantity" fields="lackQuantity"
+                        link="true" width="40"/>
+                <option type="column" name="productUnit" fields="productUnit"
+                        link="true" width="30"/>
+
+                <option type="column" name="reasons" fields="reasons"
+                        width="200"/>
+
+                <option type="order" column="lackQuantity" direction="desc"/>
+
+                <option type="orderable" value="lackQuantity,productUnit,reasons"/>
+                <option type="searchable" value="lackQuantity,productUnit,reasons"/>
+
+                <option type="correspondingView" value="productionCounting/lackDetails"/>
+                <option type="correspondingComponent" value="form"/>
+                <option type="correspondingViewInModal" value="true"/>
+
+                <option type="paginable" value="true"/>
+                <option type="creatable" value="true"/>
+                <option type="deletable" value="true"/>
+                <option type="fullscreen" value="true"/>
+                <option type="multiselect" value="true"/>
+
+                <listener event="remove"
+                          method="onRemoveLack"
+                          class="com.qcadoo.mes.productionCounting.listeners.TrackingOperationProductComponentDetailsListeners"/>
+
+
+            </component>
+        </windowTab>
         <windowTab name="resourceAttributes">
             <component type="grid" name="prodOutResourceAttrVals" reference="prodOutResourceAttrVals"
                        source="#{form}.prodOutResourceAttrVals">

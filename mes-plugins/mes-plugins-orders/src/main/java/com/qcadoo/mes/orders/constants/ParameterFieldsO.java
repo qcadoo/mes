@@ -101,4 +101,6 @@ public final class ParameterFieldsO {
 
     public static final String CAN_CHANGE_PROD_LINE_FOR_ACCEPTED_ORDERS = "canChangeProdLineForAcceptedOrders";
 
+    public static final String PPS_IS_AUTOMATIC = "ppsIsAutomatic";
+
 }

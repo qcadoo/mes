@@ -23,8 +23,7 @@
  */
 package com.qcadoo.mes.cmmsMachineParts.states;
 
-import com.qcadoo.localization.api.TranslationService;
-import com.qcadoo.mes.basic.constants.UserFields;
+import com.qcadoo.mes.basic.constants.UserFieldsB;
 import com.qcadoo.mes.cmmsMachineParts.constants.MaintenanceEventFields;
 import com.qcadoo.mes.states.StateChangeContext;
 import com.qcadoo.model.api.DataDefinitionService;
@@ -47,7 +46,7 @@ import org.springframework.stereotype.Service;
         Entity event = stateChangeContext.getOwner();
         if (event.getBelongsToField(MaintenanceEventFields.PERSON_RECEIVING) == null) {
             Entity user = dataDefinitionService.get(QCADOO_SECURITY, USER).get(securityService.getCurrentUserId());
-            Entity staff = user.getBelongsToField(UserFields.STAFF);
+            Entity staff = user.getBelongsToField(UserFieldsB.STAFF);
             if (staff != null) {
                 event.setField(MaintenanceEventFields.PERSON_RECEIVING, staff);
                 stateChangeContext.setOwner(event);

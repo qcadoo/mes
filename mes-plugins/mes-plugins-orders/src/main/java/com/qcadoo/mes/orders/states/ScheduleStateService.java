@@ -52,9 +52,6 @@ public class ScheduleStateService extends BasicStateService implements ScheduleS
     private DataDefinitionService dataDefinitionService;
 
     @Autowired
-    private NumberGeneratorService numberGeneratorService;
-
-    @Autowired
     private OperationalTaskOrderStateService operationalTaskOrderStateService;
 
     @Autowired

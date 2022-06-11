@@ -23,16 +23,14 @@
  */
 package com.qcadoo.mes.deliveriesMinState;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.deliveriesMinState.constants.DeliveriesMinStateConstants;
 import com.qcadoo.plugin.api.RunIfEnabled;
-import com.qcadoo.tenant.api.MultiTenantCallback;
 import com.qcadoo.tenant.api.MultiTenantService;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 @Service
 @RunIfEnabled(DeliveriesMinStateConstants.PLUGIN_IDENTIFIER)
@@ -45,25 +43,19 @@ public class DeliveriesMinStateService {
     private DeliveriesMinStateHelper deliveriesMinStateHelper;
 
     @Autowired
-    ParameterService parameterService;
+    private ParameterService parameterService;
 
     public void automaticDeliveriesMinStateTrigger() {
-        multiTenantService.doInMultiTenantContext(new MultiTenantCallback() {
-
-            @Override
-            public void invoke() {
-                if (parameterService.getParameter().getBooleanField("automaticDeliveriesMinState")) {
-                    deliveriesMinStateHelper.createDeliveriesFromMinimalState();
-                }
+        multiTenantService.doInMultiTenantContext(() -> {
+            if (parameterService.getParameter().getBooleanField("automaticDeliveriesMinState")) {
+                deliveriesMinStateHelper.createDeliveriesFromMinimalState();
             }
-
         });
     }
 
     public void triggerDeliveriesMinState(final ViewDefinitionState view, final ComponentState componentState, final String[] args) {
         deliveriesMinStateHelper.createDeliveriesFromMinimalState();
         componentState.addMessage("deliveriesMinState.createDeliveries.info", ComponentState.MessageType.SUCCESS);
-
     }
 
 }

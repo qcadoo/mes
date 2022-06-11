@@ -45,4 +45,5 @@ public interface LineChangeoverNormsForOrdersService {
 
     Entity getPreviousOrderFromDB(final Entity order);
 
+    Entity getChangeover(Entity previousOrder, Entity toTechnology, Entity productionLine);
 }

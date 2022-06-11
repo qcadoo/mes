@@ -67,6 +67,10 @@
         <belongsTo name="palletNumber" model="palletNumber" plugin="basic"/>
 
         <dictionary name="causeOfWastes" dictionary="causesOfWastes"/>
+        <boolean name="manyReasonsForLacks" default="false"/>
+        <hasMany name="lacks" joinField="trackingOperationProductOutComponent" model="lack" cascade="delete"/>
+        <hasMany name="lacksDto" joinField="trackingOperationProductOutComponent" model="lackDto" copyable="false" persistent="false"/>
+
     </fields>
 
     <hooks>

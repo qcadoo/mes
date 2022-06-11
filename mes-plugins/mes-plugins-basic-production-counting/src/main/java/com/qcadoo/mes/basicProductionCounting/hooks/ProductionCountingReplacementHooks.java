@@ -32,8 +32,8 @@ public class ProductionCountingReplacementHooks {
 
     public void onBeforeRender(final ViewDefinitionState view) {
         fillFields(view);
-        fillUnitField(view, BASIC_PRODUCT, UNIT);
-        fillUnitField(view, PRODUCT, REPLACES_QUANTITY_UNIT);
+        fillUnitField(view, BASIC_PRODUCT, REPLACES_QUANTITY_UNIT);
+        fillUnitField(view, PRODUCT, UNIT);
     }
 
     private void fillFields(ViewDefinitionState view) {

@@ -144,7 +144,7 @@
                     </script>
                 </smallButton>
             </group>
-            <group name="actions">
+            <group name="sizeActions">
                 <bigButton name="addProductsBySize" icon="newIcon24.png">
                     <script>
                         <![CDATA[

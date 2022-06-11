@@ -27,6 +27,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.i18n.LocaleContextHolder;
@@ -34,6 +35,7 @@ import org.springframework.stereotype.Service;
 
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.localization.api.utils.DateUtils;
+import com.qcadoo.mes.lineChangeoverNorms.ChangeoverNormsService;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.mes.orders.states.constants.OrderState;
@@ -67,6 +69,9 @@ public class LineChangeoverNormsForOrdersServiceImpl implements LineChangeoverNo
 
     @Autowired
     private TranslationService translationService;
+
+    @Autowired
+    private ChangeoverNormsService changeoverNormsService;
 
     @Override
     public void fillOrderForm(final ViewDefinitionState view, final List<String> orderFields) {
@@ -121,7 +126,7 @@ public class LineChangeoverNormsForOrdersServiceImpl implements LineChangeoverNo
             }
         }
 
-        if (dateToFrom == null || dateIs == null) {
+        if (dateToFrom == null) {
             dateToFromField.setFieldValue(null);
             dateIsField.setFieldValue(null);
         } else {
@@ -173,11 +178,7 @@ public class LineChangeoverNormsForOrdersServiceImpl implements LineChangeoverNo
     public boolean previousOrderEndsBeforeOrIsWithdrawed(final Entity previousOrder, final Entity order) {
         boolean bothOrdersAreNotNull = ((previousOrder != null) && (order != null));
 
-        if (bothOrdersAreNotNull && (isDeclinedOrAbandoned(previousOrder) || areDatesCorrect(previousOrder, order))) {
-            return false;
-        }
-
-        return true;
+        return !bothOrdersAreNotNull || (!isDeclinedOrAbandoned(previousOrder) && !areDatesCorrect(previousOrder, order));
     }
 
     private boolean isDeclinedOrAbandoned(final Entity previousOrder) {
@@ -224,4 +225,14 @@ public class LineChangeoverNormsForOrdersServiceImpl implements LineChangeoverNo
                 .addOrder(SearchOrders.desc(OrderFields.FINISH_DATE)).setMaxResults(1).uniqueResult();
     }
 
+    @Override
+    public Entity getChangeover(Entity previousOrder, final Entity toTechnology, final Entity productionLine) {
+        if (Objects.isNull(previousOrder)) {
+            return null;
+        }
+
+        Entity fromTechnology = previousOrder.getBelongsToField(OrderFields.TECHNOLOGY_PROTOTYPE);
+
+        return changeoverNormsService.getMatchingChangeoverNorms(fromTechnology, toTechnology, productionLine);
+    }
 }

@@ -59,4 +59,10 @@ public final class ParameterFields {
 
     public static final String LOGO = "logo";
 
+    public static final String NUMBER_TERMINAL_LICENSES = "numberTerminalLicenses";
+
+    public static final String TYPE_TERMINAL_LICENSES = "typeTerminalLicenses";
+
+    public static final String NUMBER_OFFICE_LICENSES = "numberOfficeLicenses";
+
 }

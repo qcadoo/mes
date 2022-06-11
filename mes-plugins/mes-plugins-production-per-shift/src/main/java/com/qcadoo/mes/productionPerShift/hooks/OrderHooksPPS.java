@@ -62,12 +62,6 @@ public class OrderHooksPPS {
     private DataDefinitionService dataDefinitionService;
 
     @Autowired
-    private BasicProductionCountingService basicProductionCountingService;
-
-    @Autowired
-    private ParameterService parameterService;
-
-    @Autowired
     private ProgressDatesService progressDatesService;
 
     @Autowired
@@ -112,17 +106,12 @@ public class OrderHooksPPS {
                 .get(ProductionPerShiftConstants.PLUGIN_IDENTIFIER, ProductionPerShiftConstants.MODEL_PRODUCTION_PER_SHIFT)
                 .find().add(SearchRestrictions.belongsTo(ProductionPerShiftFields.ORDER, order)).setMaxResults(1)
                 .uniqueResult();
-        boolean generate = canGenerate(order, orderFromDB, productionPerShift);
+        boolean generate = order.getBooleanField(OrderFields.GENERATE_PPS);
 
-        if (isOrderFieldsChanged(order, orderFromDB) || generate) {
-
+        if (generate || isOrderFieldsChanged(order, orderFromDB)) {
             if (productionPerShift != null && automaticPpsParametersService.isAutomaticPlanForShiftOn()) {
                 boolean shouldBeCorrected = OrderState.of(order).compareTo(OrderState.PENDING) != 0;
-                if (!productionPerShift.getHasManyField(ProductionPerShiftFields.PROGRES_FOR_DAYS).isEmpty() || generate) {
-                    BigDecimal plannedQuantity = order.getDecimalField(OrderFields.PLANNED_QUANTITY);
-                    if (order.getBooleanField(OrderFields.FINAL_PRODUCTION_TRACKING)) {
-                        plannedQuantity = basicProductionCountingService.getProducedQuantityFromBasicProductionCountings(order);
-                    }
+                if (generate || !productionPerShift.getHasManyField(ProductionPerShiftFields.PROGRES_FOR_DAYS).isEmpty()) {
                     ProgressForDaysContainer progressForDaysContainer = new ProgressForDaysContainer();
                     progressForDaysContainer.setShouldBeCorrected(shouldBeCorrected);
                     progressForDaysContainer.setOrder(order);
@@ -172,14 +161,6 @@ public class OrderHooksPPS {
         updateOrderData(order);
     }
 
-    private boolean canGenerate(Entity order, Entity orderFromDB, Entity productionPerShift) {
-        boolean generate = false;
-        if (order.getBooleanField("generatePPS")) {
-            generate = true;
-        }
-        return generate;
-    }
-
     /**
      * Method to additional process data - overridden by aspect
      * 
@@ -217,7 +198,7 @@ public class OrderHooksPPS {
             return true;
         }
 
-        if (plannedQuantity1 != null && plannedQuantity2 != null && plannedQuantity1.compareTo(plannedQuantity2) != 0) {
+        if (plannedQuantity1 != null && plannedQuantity1.compareTo(plannedQuantity2) != 0) {
             return true;
         }
 
@@ -232,11 +213,7 @@ public class OrderHooksPPS {
             return true;
         }
 
-        if (startDate1 != null && startDate2 != null && startDate1.compareTo(startDate2) != 0) {
-            return true;
-        }
-
-        return false;
+        return startDate1 != null && startDate1.compareTo(startDate2) != 0;
     }
 
 }

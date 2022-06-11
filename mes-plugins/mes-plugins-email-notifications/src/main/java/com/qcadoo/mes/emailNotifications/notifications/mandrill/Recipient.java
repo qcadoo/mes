@@ -21,7 +21,7 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.deliveriesMinState.notifications.mandrill;
+package com.qcadoo.mes.emailNotifications.notifications.mandrill;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 

@@ -67,6 +67,21 @@
                     </script>
                 </smallButton>
             </group>
+            <group name="setAPlan">
+                <bigButton name="generatePlan" icon="generateIcon24.png" state="disabled" >
+                    <script>
+                        <![CDATA[
+                            this.addOnChangeListener({
+                                onClick: function() {
+                                    if(window.canClose()) {
+                                        #{form}.performEvent('generatePlan', []);
+                                    }
+                                }
+                            });
+                        ]]>
+                    </script>
+                </bigButton>
+            </group>
         </ribbon>
 
         <windowTab name="mainTab">
@@ -170,6 +185,9 @@
                 <listener event="changeState"
                           class="com.qcadoo.mes.orders.listeners.ProductionLineScheduleDetailsListeners"
                           method="changeState"/>
+                <listener event="generatePlan"
+                          class="com.qcadoo.mes.orders.listeners.ProductionLineScheduleDetailsListeners"
+                          method="generatePlan" />
             </component>
         </windowTab>
 

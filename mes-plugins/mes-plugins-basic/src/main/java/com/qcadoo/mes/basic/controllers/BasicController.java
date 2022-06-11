@@ -55,4 +55,13 @@ public class BasicController {
         return crudService.prepareView(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.VIEW_GENERAL_PARAMETERS, arguments, locale);
     }
 
+    @RequestMapping(value = "licenses", method = RequestMethod.GET)
+    public ModelAndView getLicensesPageView(final Locale locale) {
+        JSONObject json = new JSONObject(ImmutableMap.of("form.id", parameterService.getParameterId().toString()));
+
+        Map<String, String> arguments = ImmutableMap.of("context", json.toString());
+
+        return crudService.prepareView(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.VIEW_LICENSES, arguments, locale);
+    }
+
 }

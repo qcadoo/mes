@@ -72,14 +72,16 @@
 
 					var listener = {
 						onChange: function(selectedEntitiesArray) {
+							 var state = #{state}.getValue().content.value;
 
-						 if (useReplacementBtn && selectedEntitiesArray.length == 1 && selectedEntitiesArray[0].fields.replacement == 1) {
+						 if (useReplacementBtn && selectedEntitiesArray.length == 1 && selectedEntitiesArray[0].fields.replacement == 1
+						 	&& selectedEntitiesArray[0].fields.typeOfMaterial == '01component' && selectedEntitiesArray[0].fields.role == '01used'
+						 	&& state != '05declined' && state != '07abandoned' && state != '04completed') {
                                             useReplacementBtn.enable("#{translate(productionCounting.productionTrackingDetails.window.ribbon.useReplacement.label)}");
                                         } else {
                                             useReplacementBtn.disable("#{translate(productionCounting.productionTrackingDetails.window.ribbon.useReplacement.label)}");
                                         }
 
-							 var state = #{state}.getValue().content.value;
 							 if(state == '01pending' || state == '04completed' || state == '05declined' || state == '07abandoned') {
 							 	if (resourceIssueButton) {
 									resourceIssueButton.disable("#{translate(basicProductionCounting.detailedProductionCountingAndProgressList.resourceIssue.description)}");

@@ -52,6 +52,8 @@ public class ParameterModelHooks {
         parameter.setField(ParameterFields.DASHBOARD_ORDER_SORTING, "01startDate");
         parameter.setField(L_RELEASE_OF_MATERIALS, "01onAcceptanceRegistrationRecord");
         parameter.setField(L_RECEIPT_OF_PRODUCTS, "01onAcceptanceRegistrationRecord");
+        parameter.setField(ParameterFields.NUMBER_TERMINAL_LICENSES, 1);
+        parameter.setField(ParameterFields.NUMBER_OFFICE_LICENSES, 1);
     }
 
 }

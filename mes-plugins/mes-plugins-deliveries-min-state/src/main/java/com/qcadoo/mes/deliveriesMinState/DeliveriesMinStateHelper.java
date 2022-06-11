@@ -39,8 +39,8 @@ import com.qcadoo.mes.deliveries.constants.DeliveriesConstants;
 import com.qcadoo.mes.deliveries.constants.DeliveryFields;
 import com.qcadoo.mes.deliveries.constants.OrderedProductFields;
 import com.qcadoo.mes.deliveries.states.constants.DeliveryState;
-import com.qcadoo.mes.deliveriesMinState.notifications.constants.StaffNotificationFieldsMS;
-import com.qcadoo.mes.deliveriesMinState.notifications.service.MailingService;
+import com.qcadoo.mes.emailNotifications.notifications.constants.StaffNotificationFieldsMS;
+import com.qcadoo.mes.emailNotifications.notifications.service.MailingService;
 import com.qcadoo.mes.emailNotifications.constants.EmailNotificationsConstants;
 import com.qcadoo.mes.emailNotifications.constants.StaffNotificationFields;
 import com.qcadoo.mes.materialFlow.constants.MaterialFlowConstants;
@@ -60,6 +60,7 @@ import java.math.BigDecimal;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -74,37 +75,123 @@ public class DeliveriesMinStateHelper {
     private NumberService numberService;
 
     @Autowired
-    private DeliveriesService deliveriesService;
+    private NumberGeneratorService numberGeneratorService;
+
+    @Autowired
+    private UnitConversionService unitConversionService;
 
     @Autowired
     private ParameterService parameterService;
 
     @Autowired
-    private NumberGeneratorService numberGeneratorService;
-
-    @Autowired
     private CompanyService companyService;
 
     @Autowired
-    private MailingService mailingService;
+    private DeliveriesService deliveriesService;
 
     @Autowired
     private WarehouseMinimalStateHelper warehouseMinimalStateHelper;
 
     @Autowired
-    private UnitConversionService unitConversionService;
+    private MailingService mailingService;
 
     private void sendEmailNotifications(final List<String> createdDeliveries) {
         if (!createdDeliveries.isEmpty()) {
-            List<String> emails = dataDefinitionService
-                    .get(EmailNotificationsConstants.PLUGIN_IDENTIFIER, EmailNotificationsConstants.MODEL_STAFF_NOTIFICATION)
-                    .find().add(SearchRestrictions.eq(StaffNotificationFieldsMS.CREATE_DELIVERY_MIN_STATE, true)).list()
-                    .getEntities().stream().map(entity -> entity.getStringField(StaffNotificationFields.EMAIL))
+            List<String> emails = getStaffNotificationDD().find().add(SearchRestrictions.eq(StaffNotificationFieldsMS.CREATE_DELIVERY_MIN_STATE, true))
+                    .list().getEntities().stream().map(entity -> entity.getStringField(StaffNotificationFields.EMAIL))
                     .collect(Collectors.toList());
 
             mailingService.sendTemplateDeliveryInfoEmailsBySendinblue(emails, createdDeliveries);
         }
+    }
 
+    public Map<Long, Multimap<Long, Entity>> createDeliveriesFromMinimalState() {
+        Map<Long, Multimap<Long, Entity>> minimalStatePerWarehousesAndSupplier = Maps.newHashMap();
+
+        List<Entity> warehouses = getWarehousesFromMinimalState();
+
+        if (LOG.isDebugEnabled()) {
+            LOG.debug(String.format("CreateDeliveriesFromMinimalState invoked with: %d warehouses.", warehouses.size()));
+        }
+
+        List<String> createdDeliveries = Lists.newArrayList();
+
+        warehouses.forEach(warehouse -> fillPositions(warehouse, minimalStatePerWarehousesAndSupplier));
+
+        minimalStatePerWarehousesAndSupplier.keySet().forEach(
+                warehouse -> createdDeliveries.addAll(createDeliveries(warehouse, minimalStatePerWarehousesAndSupplier.get(warehouse))));
+
+        sendEmailNotifications(createdDeliveries);
+
+        return minimalStatePerWarehousesAndSupplier;
+    }
+
+    private void fillPositions(final Entity warehouse,
+                               final Map<Long, Multimap<Long, Entity>> minimalStatePerWarehousesAndSupplier) {
+        List<Entity> minimalStates = getMinimalStateGreaterThanZeroForWarehouse(warehouse);
+
+        Map<Long, Entity> minimalStatesByProduct = minimalStates.stream().collect(
+                Collectors.toMap(minimalState -> minimalState.getBelongsToField("product").getId(), minimalState -> minimalState));
+
+        List<Entity> stocks = getWarehouseStockWithTooSmallMinState(warehouse,
+                minimalStates.stream().map(minimalState -> minimalState.getBelongsToField("product")).collect(Collectors.toList()));
+
+        Map<Long, Entity> stocksByProduct = stocks.stream()
+                .collect(Collectors.toMap(stock -> stock.getIntegerField("product_id").longValue(), stock -> stock));
+
+        Multimap<Long, Entity> positions = ArrayListMultimap.create();
+
+        minimalStatesByProduct.keySet().forEach(
+                productId -> createPositions(positions, warehouse.getId(), productId, minimalStatesByProduct, stocksByProduct));
+
+        minimalStatePerWarehousesAndSupplier.put(warehouse.getId(), positions);
+    }
+
+    private void createPositions(final Multimap<Long, Entity> positions, final Long warehouseId, final Long productId,
+                                 final Map<Long, Entity> minimalStatesByProduct, final Map<Long, Entity> stocksByProduct) {
+        Entity stock = stocksByProduct.get(productId);
+        Entity minimalState = minimalStatesByProduct.get(productId);
+
+        if (Objects.isNull(stock)) {
+            deliveriesService.getDefaultSupplier(productId).ifPresent(supplier -> {
+                BigDecimal ordered = warehouseMinimalStateHelper.getOrderedQuantityForProductAndLocation(warehouseId, productId);
+
+                if (warehouseMinimalStateHelper.checkIfLowerThanMinimum(productId, ordered,
+                        minimalState.getDecimalField("minimumState"))) {
+                    positions.put(supplier.getBelongsToField(CompanyProductFields.COMPANY).getId(), minimalState);
+                }
+            });
+        } else {
+            BigDecimal statePlusOrder = BigDecimalUtils.convertNullToZero(stock.getDecimalField("orderedQuantity"))
+                    .add(BigDecimalUtils.convertNullToZero(stock.getDecimalField("quantity")), numberService.getMathContext());
+
+            if (warehouseMinimalStateHelper.checkIfLowerThanMinimum(productId, statePlusOrder,
+                    stock.getDecimalField("minimumState"))) {
+                deliveriesService.getDefaultSupplier(productId).ifPresent(supplier -> positions
+                        .put(supplier.getBelongsToField(CompanyProductFields.COMPANY).getId(), minimalState));
+            }
+        }
+    }
+
+    private List<String> createDeliveries(final Long warehouseId, final Multimap<Long, Entity> minimalStatePerWarehousesAndSupplier) {
+        List<String> deliveriesNumbers = Lists.newArrayList();
+
+        minimalStatePerWarehousesAndSupplier.keySet().forEach(supplierId -> deliveriesNumbers.add(createDelivery(warehouseId, supplierId, minimalStatePerWarehousesAndSupplier.get(supplierId))));
+
+        return deliveriesNumbers;
+    }
+
+    private String createDelivery(final Long warehouseId, final Long supplierId, final Collection<Entity> minimalStates) {
+        Entity warehouse = null;
+
+        if (Objects.nonNull(warehouseId)) {
+            warehouse = getLocationDD()
+                    .get(warehouseId);
+        }
+
+        Entity supplier = companyService.getCompany(supplierId);
+
+        return createDeliveries(warehouse, supplier, Lists.newArrayList(minimalStates));
     }
 
     private String createDeliveries(final Entity location, final Entity supplier, final List<Entity> warehouseMinimumStates) {
@@ -112,6 +199,7 @@ public class DeliveriesMinStateHelper {
         Entity delivery = deliveryDataDefinition.create();
 
         String generatedNumber = getNewDeliveryNumber();
+
         delivery.setField(DeliveryFields.NUMBER, generatedNumber);
         delivery.setField(DeliveryFields.SUPPLIER, supplier);
         delivery.setField(DeliveryFields.LOCATION, location);
@@ -119,6 +207,7 @@ public class DeliveriesMinStateHelper {
         delivery.setField(DeliveryFields.CURRENCY, getNewDeliveryCurrency());
         delivery.setField(DeliveryFields.DELIVERY_ADDRESS, deliveriesService.getDeliveryAddressDefaultValue());
         delivery.setField(DeliveryFields.EXTERNAL_SYNCHRONIZED, true);
+
         delivery = deliveryDataDefinition.save(delivery);
 
         setDeliveryProducts(delivery, warehouseMinimumStates);
@@ -126,7 +215,21 @@ public class DeliveriesMinStateHelper {
         if (LOG.isDebugEnabled()) {
             LOG.debug(String.format("Delivery created with number: %s", delivery.getField(DeliveryFields.NUMBER)));
         }
+
         return generatedNumber;
+    }
+
+    private Entity getNewDeliveryCurrency() {
+        Entity parameter = parameterService.getParameter();
+
+        Entity currency = parameter.getBelongsToField(ParameterFields.CURRENCY);
+
+        return currency;
+    }
+
+    private String getNewDeliveryNumber() {
+        return numberGeneratorService.generateNumber(DeliveriesConstants.PLUGIN_IDENTIFIER,
+                DeliveriesConstants.MODEL_DELIVERY);
     }
 
     private List<Entity> setDeliveryProducts(final Entity delivery, final List<Entity> warehouseMinimumStates) {
@@ -134,6 +237,7 @@ public class DeliveriesMinStateHelper {
 
         for (Entity minimumState : warehouseMinimumStates) {
             Entity deliveredProduct = deliveriesService.getOrderedProductDD().create();
+
             Entity product = minimumState.getBelongsToField("product");
             BigDecimal orderedQuantity = BigDecimalUtils.convertNullToZero(minimumState.getField("optimalOrderQuantity"));
             BigDecimal conversion = getConversion(product);
@@ -146,20 +250,25 @@ public class DeliveriesMinStateHelper {
             deliveredProduct.setField(OrderedProductFields.CONVERSION, conversion);
             deliveredProduct.setField(OrderedProductFields.ADDITIONAL_QUANTITY,
                     orderedQuantity.multiply(conversion, numberService.getMathContext()));
+
             products.add(deliveriesService.getOrderedProductDD().save(deliveredProduct));
         }
+
         return products;
     }
 
-    private BigDecimal getConversion(Entity product) {
+    private BigDecimal getConversion(final Entity product) {
         String unit = product.getStringField(ProductFields.UNIT);
         String additionalUnit = product.getStringField(ProductFields.ADDITIONAL_UNIT);
-        if (additionalUnit == null) {
+
+        if (Objects.isNull(additionalUnit)) {
             return BigDecimal.ONE;
         }
+
         PossibleUnitConversions unitConversions = unitConversionService.getPossibleConversions(unit,
                 searchCriteriaBuilder -> searchCriteriaBuilder.add(SearchRestrictions.belongsTo(
                         UnitConversionItemFieldsB.PRODUCT, product)));
+
         if (unitConversions.isDefinedFor(additionalUnit)) {
             return unitConversions.asUnitToConversionMap().get(additionalUnit);
         } else {
@@ -167,115 +276,43 @@ public class DeliveriesMinStateHelper {
         }
     }
 
-    private Entity getNewDeliveryCurrency() {
-        Entity parameter = parameterService.getParameter();
-        Entity currency = parameter.getBelongsToField(ParameterFields.CURRENCY);
-
-        return currency;
-    }
-
-    private String getNewDeliveryNumber() {
-        String number = numberGeneratorService.generateNumber(DeliveriesConstants.PLUGIN_IDENTIFIER,
-                DeliveriesConstants.MODEL_DELIVERY);
-        return number;
-    }
-
-    public Map<Long, Multimap<Long, Entity>> createDeliveriesFromMinimalState() {
-        Map<Long, Multimap<Long, Entity>> minimalStatePerWarehousesAndSupplier = Maps.newHashMap();
-
-        List<Entity> warehouses = getWarehousesFromMinimalState();
-        if (LOG.isDebugEnabled()) {
-            LOG.debug(String.format("CreateDeliveriesFromMinimalState invoked with: %d warehouses.", warehouses.size()));
-        }
-        List<String> createdDeliveries = Lists.newArrayList();
-        warehouses.forEach(w -> fillPositions(w, minimalStatePerWarehousesAndSupplier));
-        minimalStatePerWarehousesAndSupplier.keySet().forEach(
-                p -> createdDeliveries.addAll(createDeliveries(p, minimalStatePerWarehousesAndSupplier.get(p))));
-
-        sendEmailNotifications(createdDeliveries);
-        return minimalStatePerWarehousesAndSupplier;
-    }
-
-    private List<String> createDeliveries(Long warehouse, Multimap<Long, Entity> multiMap) {
-        List<String> deliveriesNumbers = Lists.newArrayList();
-        multiMap.keySet().forEach(p -> deliveriesNumbers.add(createDelivery(warehouse, p, multiMap.get(p))));
-        return deliveriesNumbers;
-    }
-
-    private String createDelivery(Long warehouseId, Long supplierId, Collection<Entity> minimalStates) {
-        Entity warehouse = null;
-        if (warehouseId != null) {
-            warehouse = dataDefinitionService.get(MaterialFlowConstants.PLUGIN_IDENTIFIER, MaterialFlowConstants.MODEL_LOCATION)
-                    .get(warehouseId);
-        }
-        Entity supplier = companyService.getCompany(supplierId);
-        return createDeliveries(warehouse, supplier, Lists.newArrayList(minimalStates));
-    }
-
-    private void fillPositions(final Entity warehouse,
-            final Map<Long, Multimap<Long, Entity>> minimalStatePerWarehousesAndSupplier) {
-
-        List<Entity> minmialStates = getMinimalStateGreaterThanZeroForWarehouse(warehouse);
-        Map<Long, Entity> minmialStatesByProduct = minmialStates.stream().collect(
-                Collectors.toMap(res -> res.getBelongsToField("product").getId(), res -> res));
-        List<Entity> stocks = getWarehouseStockWithTooSmallMinState(warehouse,
-                minmialStates.stream().map(res -> res.getBelongsToField("product")).collect(Collectors.toList()));
-        Map<Long, Entity> stocksByProduct = stocks.stream()
-                .collect(Collectors.toMap(res -> res.getIntegerField("product_id").longValue(), res -> res));
-        Multimap<Long, Entity> positions = ArrayListMultimap.create();
-        minmialStatesByProduct.keySet().forEach(
-                productId -> createPositions(positions, warehouse.getId(), productId, minmialStatesByProduct, stocksByProduct));
-        minimalStatePerWarehousesAndSupplier.put(warehouse.getId(), positions);
-    }
-
-    private void createPositions(Multimap<Long, Entity> positions, Long warehouseId, Long productId,
-            Map<Long, Entity> minmialStatesByProduct, Map<Long, Entity> stocksByProduct) {
-
-        Entity stock = stocksByProduct.get(productId);
-        Entity minimalState = minmialStatesByProduct.get(productId);
-        if (stock == null) {
-            deliveriesService.getDefaultSupplier(productId).ifPresent(supplier -> {
-                BigDecimal ordered = warehouseMinimalStateHelper.getOrderedQuantityForProductAndLocation(warehouseId, productId);
-                if (warehouseMinimalStateHelper.checkIfLowerThanMinimum(productId, ordered,
-                        minimalState.getDecimalField("minimumState"))) {
-                    positions.put(supplier.getBelongsToField(CompanyProductFields.COMPANY).getId(), minimalState);
-                }
-            });
-        } else {
-            BigDecimal statePlusOrder = BigDecimalUtils.convertNullToZero(stock.getDecimalField("orderedQuantity"))
-                    .add(BigDecimalUtils.convertNullToZero(stock.getDecimalField("quantity")), numberService.getMathContext());
-            if (warehouseMinimalStateHelper.checkIfLowerThanMinimum(productId, statePlusOrder,
-                    stock.getDecimalField("minimumState"))) {
-                deliveriesService.getDefaultSupplier(productId).ifPresent(supplier -> positions
-                        .put(supplier.getBelongsToField(CompanyProductFields.COMPANY).getId(), minimalState));
-            }
-        }
-    }
-
     private List<Entity> getWarehousesFromMinimalState() {
-        String query = "select distinct state.location from #warehouseMinimalState_warehouseMinimumState state";
+        String query = "SELECT distinct state.location FROM #warehouseMinimalState_warehouseMinimumState state";
+
         return getWarehouseMinimumStateDD().find(query).list().getEntities();
     }
 
     public List<Entity> getMinimalStateGreaterThanZeroForWarehouse(final Entity warehouse) {
-        String query = "select state from #warehouseMinimalState_warehouseMinimumState as state where state.minimumState > 0"
+        String query = "SELECT state FROM #warehouseMinimalState_warehouseMinimumState AS state WHERE state.minimumState > 0"
                 + " and state.location.id = :warehouseId";
+
         return getWarehouseMinimumStateDD().find(query).setParameter("warehouseId", warehouse.getId()).list().getEntities();
     }
 
     // WARNING unused argument is used in aspect in plugin integration
     public List<Entity> getWarehouseStockWithTooSmallMinState(final Entity warehouse, final List<Entity> products) {
-        String query = "select stock from #materialFlowResources_resourceStockDto as stock where stock.minimumState > 0"
-                + " and stock.location_id = :warehouseId";
+        String query = "SELECT stock FROM #materialFlowResources_resourceStockDto AS stock WHERE stock.minimumState > 0"
+                + " AND stock.location_id = :warehouseId";
+
         return getResourceStockDtoDD().find(query).setParameter("warehouseId", warehouse.getId().intValue()).list().getEntities();
     }
 
-    public DataDefinition getWarehouseMinimumStateDD() {
-        return dataDefinitionService.get("warehouseMinimalState", "warehouseMinimumState");
+    private DataDefinition getStaffNotificationDD() {
+        return dataDefinitionService
+                .get(EmailNotificationsConstants.PLUGIN_IDENTIFIER, EmailNotificationsConstants.MODEL_STAFF_NOTIFICATION);
+    }
+
+    private DataDefinition getLocationDD() {
+        return dataDefinitionService.get(MaterialFlowConstants.PLUGIN_IDENTIFIER, MaterialFlowConstants.MODEL_LOCATION);
     }
 
     private DataDefinition getResourceStockDtoDD() {
         return dataDefinitionService.get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER,
                 MaterialFlowResourcesConstants.MODEL_RESOURCE_STOCK_DTO);
     }
+
+    private DataDefinition getWarehouseMinimumStateDD() {
+        return dataDefinitionService.get("warehouseMinimalState", "warehouseMinimumState");
+    }
+
 }

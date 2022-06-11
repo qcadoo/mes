@@ -21,37 +21,55 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.deliveriesMinState.notifications.mandrill;
+package com.qcadoo.mes.emailNotifications.notifications.mandrill;
 
-public class ContentItem {
 
-    private String name;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.qcadoo.mes.emailNotifications.notifications.constants.SendingStatus;
 
-    private String content;
+public class SendResponse {
 
-    public ContentItem(String name, String content) {
-        this.name = name;
-        this.content = content;
+    @JsonProperty("_id")
+    private String mailId;
+
+    @JsonProperty("email")
+    private String emailAddress;
+
+    private SendingStatus status;
+
+    @JsonProperty("reject_reason")
+    private String rejectReason;
+
+    public String getMailId() {
+        return mailId;
     }
 
-    public ContentItem() {
-
+    public void setMailId(String mailId) {
+        this.mailId = mailId;
     }
 
-    public String getName() {
-        return name;
+    public String getEmailAddress() {
+        return emailAddress;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setEmailAddress(String emailAddress) {
+        this.emailAddress = emailAddress;
     }
 
-    public String getContent() {
-        return content;
+    public SendingStatus getStatus() {
+        return status;
     }
 
-    public void setContent(String content) {
-        this.content = content;
+    public void setStatus(SendingStatus status) {
+        this.status = status;
+    }
+
+    public String getRejectReason() {
+        return rejectReason;
+    }
+
+    public void setRejectReason(String rejectReason) {
+        this.rejectReason = rejectReason;
     }
 
 }

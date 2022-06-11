@@ -438,6 +438,9 @@
         <menu:menu-item name="numberPatternsList" category="administration"
                         view="numberPatternsList" defaultAuthorizationRole="ROLE_NUMBER_PATTERN"/>
 
+        <menu:menu-item-url name="licenses" category="administration"
+                        url="/licenses.html" defaultAuthorizationRole="ROLE_ADMIN"/>
+
         <menu:menu-item name="sizesList" category="products" view="sizesList" defaultAuthorizationRole="ROLE_PRODUCTS_ADDITIONAL"/>
 
         <menu:menu-item name="sizeGroupsList" category="products" view="sizeGroupsList" defaultAuthorizationRole="ROLE_PRODUCTS_ADDITIONAL"/>
@@ -446,6 +449,7 @@
 
         <menu:menu-item name="modelsList" category="products" view="modelsList" defaultAuthorizationRole="ROLE_PRODUCTS_ADDITIONAL"/>
 
+        <view:view resource="view/licenses.xml"/>
         <view:view resource="view/reportColumnWidthDetails.xml"/>
         <view:view resource="view/companiesList.xml"/>
         <view:view resource="view/companyDetails.xml"/>

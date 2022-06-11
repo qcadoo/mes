@@ -29,6 +29,7 @@ import com.qcadoo.commons.functional.Either;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.basic.constants.UnitConversionItemFieldsB;
 import com.qcadoo.mes.productionCounting.constants.TrackingOperationProductInComponentFields;
+import com.qcadoo.mes.productionCounting.constants.TrackingOperationProductOutComponentFields;
 import com.qcadoo.model.api.BigDecimalUtils;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchRestrictions;
@@ -36,6 +37,7 @@ import com.qcadoo.model.api.units.PossibleUnitConversions;
 import com.qcadoo.model.api.units.UnitConversionService;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
+import com.qcadoo.view.api.components.CheckBoxComponent;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.constants.QcadooViewConstants;
@@ -202,6 +204,35 @@ public class TrackingOperationProductComponentDetailsListeners {
         }
         form.setEntity(productComponent);
 
+    }
+
+    public void onManyReasonsForLacks(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        FieldComponent wastesQuantity = (FieldComponent) view
+                .getComponentByReference(TrackingOperationProductOutComponentFields.WASTES_QUANTITY);
+
+        FieldComponent causeOfWastes = (FieldComponent) view
+                .getComponentByReference(TrackingOperationProductOutComponentFields.CAUSE_OF_WASTES);
+
+        CheckBoxComponent manyReasonsForLacks = (CheckBoxComponent) view.getComponentByReference(TrackingOperationProductOutComponentFields.MANY_REASONS_FOR_LACKS);
+        if(manyReasonsForLacks.isChecked()) {
+            wastesQuantity.setEnabled(false);
+            causeOfWastes.setEnabled(false);
+            wastesQuantity.setFieldValue(null);
+            causeOfWastes.setFieldValue(null);
+            causeOfWastes.requestComponentUpdateState();
+            wastesQuantity.requestComponentUpdateState();
+        } else {
+            wastesQuantity.setFieldValue(null);
+            wastesQuantity.setEnabled(true);
+            causeOfWastes.setEnabled(true);
+            causeOfWastes.requestComponentUpdateState();
+            wastesQuantity.requestComponentUpdateState();
+        }
+    }
+
+    public void onRemoveLack(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
+        form.performEvent(view, "reset");
     }
 
 }

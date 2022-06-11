@@ -24,23 +24,28 @@
     ***************************************************************************
 
 -->
-<ribbonExtension xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/modules/ribbonExtension" 
-	xsi:schemaLocation="http://schema.qcadoo.org/modules/ribbonExtension http://schema.qcadoo.org/modules/ribbonExtension.xsd" 
-	plugin="orders"
-	view="productionLineScheduleDetails">
-	<group name="setAPlan">
-		<bigButton name="generatePlan" icon="generateIcon24.png" state="disabled" >
-			<script>
-				<![CDATA[
-					this.addOnChangeListener({
-						onClick: function() {
-							if(window.canClose()) {
-								#{form}.performEvent('generatePlan', []);
-							}
-						}
-					});	
-				]]>
-			</script>	
-		</bigButton>
-	</group>
-</ribbonExtension>
+<model name="lackDto" activable="false" auditable="false" deletable="false"
+       insertable="false"
+       updatable="false"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
+       xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
+
+    <fields>
+
+        <belongsTo name="trackingOperationProductOutComponent" model="trackingOperationProductOutComponent" persistent="false"/>
+        <integer name="trackingOperationProductOutComponentId"/>
+
+        <string name="productUnit" />
+
+        <decimal name="lackQuantity">
+            <validatesRange from="0" exclusively="false"/>
+            <validatesUnscaledValue max="9"/>
+            <validatesScale max="5"/>
+        </decimal>
+
+        <string name="reasons" />
+
+    </fields>
+
+    <masterModel plugin="productionCounting" model="lack"/>
+</model>

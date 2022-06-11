@@ -32,6 +32,7 @@ import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.mes.orders.criteriaModifiers.ProductionLineScheduleOrderCriteriaModifiers;
+import com.qcadoo.mes.orders.states.constants.OrderState;
 import com.qcadoo.mes.orders.util.OrderDetailsRibbonHelper;
 import com.qcadoo.mes.productFlowThruDivision.constants.OrderFieldsPFTD;
 import com.qcadoo.mes.productFlowThruDivision.constants.ParameterFieldsPFTD;
@@ -45,6 +46,7 @@ import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
+import com.qcadoo.view.api.components.GridComponent;
 import com.qcadoo.view.api.components.LookupComponent;
 import com.qcadoo.view.api.components.lookup.FilterValueHolder;
 import com.qcadoo.view.constants.QcadooViewConstants;
@@ -80,14 +82,16 @@ public class OrderDetailsHooksPFTD {
             LookupComponent productionLineLookup = (LookupComponent) view.getComponentByReference(OrderFields.PRODUCTION_LINE);
             Entity technology = technologyLookup.getEntity();
             Entity productionLine = productionLineLookup.getEntity();
+            FieldComponent plannedStaffField = (FieldComponent) view.getComponentByReference("plannedStaff");
             if (technology != null && productionLine != null) {
-                FieldComponent plannedStaffField = (FieldComponent) view.getComponentByReference("plannedStaff");
                 Optional<Integer> plannedStaff = technologyService.getPlannedStaff(technology, productionLine);
                 if (plannedStaff.isPresent()) {
                     plannedStaffField.setFieldValue(plannedStaff.get());
                 } else {
                     plannedStaffField.setFieldValue(null);
                 }
+            } else {
+                plannedStaffField.setFieldValue(null);
             }
             FieldComponent actualStaff = (FieldComponent) view.getComponentByReference("actualStaff");
             actualStaff.setFieldValue(order.getManyToManyField(OrderFields.STAFF).size());
@@ -102,6 +106,11 @@ public class OrderDetailsHooksPFTD {
                 valueHolder.remove(StaffCriteriaModifierPFTD.L_PRODUCTION_LINE_ID);
             }
             staffLookup.setFilterValue(valueHolder);
+            String state = order.getStringField(OrderFields.STATE);
+            GridComponent staffGrid = (GridComponent) view.getComponentByReference(OrderFields.STAFF);
+            staffGrid.setEnabled(!OrderState.DECLINED.getStringValue().equals(state)
+                    && !OrderState.ABANDONED.getStringValue().equals(state)
+                    && !OrderState.COMPLETED.getStringValue().equals(state));
         } else {
             staffTab.setVisible(false);
         }

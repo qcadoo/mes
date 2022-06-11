@@ -1,16 +1,21 @@
-package com.qcadoo.mes.productionScheduling.listeners;
+package com.qcadoo.mes.orders.listeners;
 
 import java.util.Date;
 
-class ProductionLinePositionNewData {
+import com.qcadoo.model.api.Entity;
+
+public class ProductionLinePositionNewData {
 
     private Date startDate;
 
     private Date finishDate;
 
-    public ProductionLinePositionNewData(Date newStartDate, Date newFinishDate) {
+    private Entity changeover;
+
+    public ProductionLinePositionNewData(Date newStartDate, Date newFinishDate, Entity newChangeover) {
         startDate = newStartDate;
         finishDate = newFinishDate;
+        changeover = newChangeover;
     }
 
     public Date getStartDate() {
@@ -27,5 +32,13 @@ class ProductionLinePositionNewData {
 
     public void setFinishDate(Date finishDate) {
         this.finishDate = finishDate;
+    }
+
+    public Entity getChangeover() {
+        return changeover;
+    }
+
+    public void setChangeover(Entity changeover) {
+        this.changeover = changeover;
     }
 }

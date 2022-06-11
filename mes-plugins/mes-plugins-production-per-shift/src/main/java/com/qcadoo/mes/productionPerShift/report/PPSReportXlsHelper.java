@@ -30,6 +30,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
+import com.google.common.collect.Lists;
 import org.joda.time.DateTime;
 import org.joda.time.LocalTime;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -84,29 +85,35 @@ public class PPSReportXlsHelper {
         firstStartShitTime = firstStartShitTime.withHourOfDay(startTime.getHourOfDay());
         firstStartShitTime = firstStartShitTime.withMinuteOfHour(startTime.getMinuteOfHour());
 
-        long dateToInMills = getDateToInMills(goodFoodReport, shifts);
-
-        String sql = "select pps from #productionPerShift_productionPerShift as pps where (" + "(" + "('"
-                + firstStartShitTime.toDate().toString() + "' <= pps.order.finishDate and '"
-                + firstStartShitTime.toDate().toString() + "' >= pps.order.startDate) or " + "('"
-                + new Date(dateToInMills).toString().toString() + "' < pps.order.finishDate and '"
-                + new Date(dateToInMills).toString().toString() + "' > pps.order.startDate)" + ") or " + "("
-                + "(pps.order.startDate >= '" + firstStartShitTime.toDate().toString() + "' and pps.order.startDate <'"
-                + new Date(dateToInMills).toString().toString() + "') or " + "(pps.order.finishDate >= '"
-                + firstStartShitTime.toDate().toString() + "' and pps.order.finishDate < '"
-                + new Date(dateToInMills).toString().toString() + "') " + ")"
-                + ") and pps.order.state <> '05declined' and pps.order.state <> '07abandoned'  "
-                + "and pps.order.state <> '04completed' and pps.order.active = true";
-
-        return dataDefinitionService
-                .get(ProductionPerShiftConstants.PLUGIN_IDENTIFIER, ProductionPerShiftConstants.MODEL_PRODUCTION_PER_SHIFT)
-                .find(sql).list().getEntities();
+        Optional<Long> maybeDateTo = getDateToInMills(goodFoodReport, shifts);
+        if(maybeDateTo.isPresent()) {
+            long dateToInMills = maybeDateTo.get();
+            String sql = "select pps from #productionPerShift_productionPerShift as pps where (" + "(" + "('"
+                    + firstStartShitTime.toDate().toString() + "' <= pps.order.finishDate and '"
+                    + firstStartShitTime.toDate().toString() + "' >= pps.order.startDate) or " + "('"
+                    + new Date(dateToInMills).toString().toString() + "' < pps.order.finishDate and '"
+                    + new Date(dateToInMills).toString().toString() + "' > pps.order.startDate)" + ") or " + "("
+                    + "(pps.order.startDate >= '" + firstStartShitTime.toDate().toString() + "' and pps.order.startDate <'"
+                    + new Date(dateToInMills).toString().toString() + "') or " + "(pps.order.finishDate >= '"
+                    + firstStartShitTime.toDate().toString() + "' and pps.order.finishDate < '"
+                    + new Date(dateToInMills).toString().toString() + "') " + ")"
+                    + ") and pps.order.state <> '05declined' and pps.order.state <> '07abandoned'  "
+                    + "and pps.order.state <> '04completed' and pps.order.active = true";
+            return dataDefinitionService
+                    .get(ProductionPerShiftConstants.PLUGIN_IDENTIFIER, ProductionPerShiftConstants.MODEL_PRODUCTION_PER_SHIFT)
+                    .find(sql).list().getEntities();
+        } else {
+            return Lists.newArrayList();
+        }
     }
 
-    private long getDateToInMills(final Entity goodFoodReport, final List<Entity> shifts) {
+    private Optional<Long> getDateToInMills(final Entity goodFoodReport, final List<Entity> shifts) {
         DateTime dateTo = new DateTime(goodFoodReport.getDateField(PPSReportFields.DATE_TO));
         Shift shiftEnd = new Shift(shifts.get(shifts.size() - 1), dateTo, false);
         List<TimeRange> rangesEnd = shiftEnd.findWorkTimeAt(dateTo.toLocalDate());
+        if(rangesEnd.isEmpty()) {
+            return Optional.empty();
+        }
         LocalTime endTime = rangesEnd.get(0).getTo();
         dateTo = dateTo.plusDays(ONE);
         dateTo = dateTo.withHourOfDay(endTime.getHourOfDay());
@@ -122,7 +129,7 @@ public class PPSReportXlsHelper {
             }
         }
 
-        return dateTo.getMillis();
+        return Optional.of(dateTo.getMillis());
     }
 
     private Optional<DateTime> getShiftEndDate(final DateTime day, final Entity shiftEntity) {
@@ -163,10 +170,8 @@ public class PPSReportXlsHelper {
         if (Objects.isNull(progressForDay)) {
             return null;
         } else {
-            Entity dailyProgress = progressForDay.getHasManyField(ProgressForDayFields.DAILY_PROGRESS).find()
+            return progressForDay.getHasManyField(ProgressForDayFields.DAILY_PROGRESS).find()
                     .add(SearchRestrictions.belongsTo(DailyProgressFields.SHIFT, shift)).setMaxResults(1).uniqueResult();
-
-            return dailyProgress;
         }
     }
 

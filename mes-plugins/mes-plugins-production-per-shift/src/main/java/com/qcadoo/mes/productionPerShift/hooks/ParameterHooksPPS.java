@@ -26,6 +26,7 @@ package com.qcadoo.mes.productionPerShift.hooks;
 import org.springframework.stereotype.Service;
 
 import com.google.common.base.Strings;
+import com.qcadoo.mes.orders.constants.ParameterFieldsO;
 import com.qcadoo.mes.productionPerShift.constants.ParameterFieldsPPS;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
@@ -36,7 +37,7 @@ public class ParameterHooksPPS {
 
 
     public void validatesWith(final DataDefinition parameterDD, final Entity parameter) {
-        boolean ppsIsAutomatic = parameter.getBooleanField(ParameterFieldsPPS.PPS_IS_AUTOMATIC);
+        boolean ppsIsAutomatic = parameter.getBooleanField(ParameterFieldsO.PPS_IS_AUTOMATIC);
         String ppsAlgorithm = parameter.getStringField(ParameterFieldsPPS.PPS_ALGORITHM);
         if(ppsIsAutomatic && Strings.isNullOrEmpty(ppsAlgorithm)){
             parameter.addError(parameterDD.getField(ParameterFieldsPPS.PPS_ALGORITHM), "basic.parameter.ppsAlgorithm.isRequired");

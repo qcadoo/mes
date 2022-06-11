@@ -41,9 +41,7 @@ import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.view.api.ViewDefinitionState;
-import com.qcadoo.view.api.components.FieldComponent;
-import com.qcadoo.view.api.components.FormComponent;
-import com.qcadoo.view.api.components.LookupComponent;
+import com.qcadoo.view.api.components.*;
 import com.qcadoo.view.api.components.lookup.FilterValueHolder;
 import com.qcadoo.view.constants.QcadooViewConstants;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -102,6 +100,28 @@ public class TrackingOperationProductOutComponentDetailsHooks {
                 .getComponentByReference(TrackingOperationProductOutComponentDtoFields.WASTES_SUM);
         wastesSum.setFieldValue(trackingOperationProductInComponentDto
                 .getDecimalField(TrackingOperationProductOutComponentDtoFields.WASTES_SUM));
+
+        FieldComponent wastesQuantity = (FieldComponent) view
+                .getComponentByReference(TrackingOperationProductOutComponentFields.WASTES_QUANTITY);
+
+        FieldComponent causeOfWastes = (FieldComponent) view
+                .getComponentByReference(TrackingOperationProductOutComponentFields.CAUSE_OF_WASTES);
+
+        CheckBoxComponent manyReasonsForLacks = (CheckBoxComponent) view.getComponentByReference(TrackingOperationProductOutComponentFields.MANY_REASONS_FOR_LACKS);
+
+        GridComponent lacks = (GridComponent) view.getComponentByReference("lacks");
+        if(manyReasonsForLacks.isChecked()) {
+            wastesQuantity.setEnabled(false);
+            causeOfWastes.setEnabled(false);
+            causeOfWastes.setFieldValue(null);
+            causeOfWastes.requestComponentUpdateState();
+            wastesQuantity.requestComponentUpdateState();
+            lacks.setEnabled(true);
+        } else {
+            wastesQuantity.setEnabled(true);
+            causeOfWastes.setEnabled(true);
+            lacks.setEnabled(false);
+        }
     }
 
     private void fillStorageLocation(final ViewDefinitionState view) {

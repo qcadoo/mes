@@ -1,7 +1,7 @@
 /**
  * ***************************************************************************
  * Copyright (c) 2010 Qcadoo Limited
- * Project: Qcadoo Framework
+ * Project: Qcadoo MES
  * Version: 1.4
  *
  * This file is part of Qcadoo.
@@ -21,8 +21,18 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.deliveriesMinState.notifications.constants;
+package com.qcadoo.mes.orders;
 
-public enum SendingStatus {
-    sent, queued, scheduled, rejected, invalid, bounced
+import java.util.Date;
+import java.util.Map;
+
+import com.qcadoo.mes.orders.listeners.ProductionLinePositionNewData;
+import com.qcadoo.model.api.Entity;
+
+public interface ProductionLineScheduleServicePS {
+
+    void createProductionLinePositionNewData(Map<Long, ProductionLinePositionNewData> orderProductionLinesPositionNewData,
+                                             Entity productionLine, Date finishDate, Entity order, Entity technology, Entity previousOrder);
+
+    void savePosition(Entity position, ProductionLinePositionNewData productionLinePositionNewData);
 }

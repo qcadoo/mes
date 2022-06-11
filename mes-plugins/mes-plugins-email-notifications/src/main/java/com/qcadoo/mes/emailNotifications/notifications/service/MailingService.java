@@ -21,18 +21,16 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.deliveriesMinState.notifications.service;
+package com.qcadoo.mes.emailNotifications.notifications.service;
+
+import com.qcadoo.mes.emailNotifications.notifications.constants.SendingStatus;
 
 import java.util.List;
 
-import com.qcadoo.mes.deliveriesMinState.notifications.constants.SendingStatus;
-import com.qcadoo.mes.deliveriesMinState.notifications.mandrill.TemplateEmail;
-
 public interface MailingService {
 
-    SendingStatus sendTemplateEmailByMandrill(TemplateEmail email);
-
-    SendingStatus sendTemplateDeliveryInfoEmailsByMandrill(final List<String> emails, final List<String> productNumbers);
+    SendingStatus sendTemplateDeliveryInfoEmailsByMandrill(final List<String> emails, final List<String> deliveries);
 
     SendingStatus sendTemplateDeliveryInfoEmailsBySendinblue(final List<String> emails, final List<String> deliveries);
+
 }

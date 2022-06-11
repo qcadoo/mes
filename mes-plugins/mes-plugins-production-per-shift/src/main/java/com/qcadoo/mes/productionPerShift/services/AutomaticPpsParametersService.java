@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.basic.ParameterService;
+import com.qcadoo.mes.orders.constants.ParameterFieldsO;
 import com.qcadoo.mes.productionPerShift.constants.ParameterFieldsPPS;
 import com.qcadoo.mes.productionPerShift.constants.PpsAlgorithm;
 
@@ -19,6 +20,6 @@ public class AutomaticPpsParametersService {
     }
 
     public boolean isAutomaticPlanForShiftOn(){
-        return parameterService.getParameter().getBooleanField(ParameterFieldsPPS.PPS_IS_AUTOMATIC);
+        return parameterService.getParameter().getBooleanField(ParameterFieldsO.PPS_IS_AUTOMATIC);
     }
 }

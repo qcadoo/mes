@@ -21,12 +21,8 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.deliveriesMinState.notifications.service;
+package com.qcadoo.mes.emailNotifications.notifications.constants;
 
-import com.qcadoo.mes.deliveriesMinState.notifications.mandrill.SendResponse;
-import com.qcadoo.mes.deliveriesMinState.notifications.mandrill.TemplateEmail;
-
-public interface MandrillService {
-
-    public SendResponse[] sendTemplateEmail(TemplateEmail templateEmail);
+public enum SendingStatus {
+    sent, queued, scheduled, rejected, invalid, bounced
 }

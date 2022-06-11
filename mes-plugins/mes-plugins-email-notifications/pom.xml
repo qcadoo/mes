@@ -20,6 +20,12 @@
 			<artifactId>mes-plugins-basic</artifactId>
 			<version>1.5-SNAPSHOT</version>
 		</dependency>
+		<dependency>
+			<groupId>com.sendinblue</groupId>
+			<artifactId>sib-api-v3-sdk</artifactId>
+			<version>6.0.0</version>
+			<scope>compile</scope>
+		</dependency>
 	</dependencies>
 
 	<build>

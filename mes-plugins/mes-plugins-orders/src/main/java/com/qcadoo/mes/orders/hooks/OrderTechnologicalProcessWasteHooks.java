@@ -34,7 +34,7 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Service;
 
 import com.google.common.collect.Maps;
-import com.qcadoo.mes.basic.constants.UserFields;
+import com.qcadoo.mes.basic.constants.UserFieldsB;
 import com.qcadoo.mes.orders.OrderTechnologicalProcessService;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.constants.OrderTechnologicalProcessFields;
@@ -97,7 +97,7 @@ public class OrderTechnologicalProcessWasteHooks {
             Entity currentUser = userService.getCurrentUserEntity();
 
             orderTechnologicalProcessWaste.setField(OrderTechnologicalProcessWasteFields.WORKER,
-                    currentUser.getBelongsToField(UserFields.STAFF));
+                    currentUser.getBelongsToField(UserFieldsB.STAFF));
         }
     }
 
