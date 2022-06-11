@@ -92,7 +92,7 @@
                         ]]>
                     </script>
                 </bigButton>
-                <bigButton name="updateWarehouseStateAndDelivery" icon="sendIcon24.png" state="enabled">
+                <bigButton name="updateWarehouseStateAndDelivery" icon="generateIcon24.png" state="enabled">
                     <script>
                         <![CDATA[
                             this.addOnChangeListener({
