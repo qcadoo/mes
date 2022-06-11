@@ -10083,7 +10083,14 @@ CREATE TABLE basic_parameter (
     analyzegetquantityfromshiftassignment boolean DEFAULT false,
     setmasterorderdatebasedonorderdates boolean DEFAULT false,
     notshowtasksblockedbyprevious boolean DEFAULT false,
-    promptdefaultlinefromtechnology boolean DEFAULT true
+    promptdefaultlinefromtechnology boolean DEFAULT true,
+    numberofficelicenses integer DEFAULT 1,
+    numberterminallicenses integer DEFAULT 1,
+    typeterminallicenses character varying(255) DEFAULT '01upToTenEmployees'::character varying,
+    notshoworderfilters boolean DEFAULT false,
+    notincludedateswhenretrievingorders boolean DEFAULT false,
+    requirequalityrating boolean DEFAULT true,
+    synchronizeproductsize boolean DEFAULT false
 );
 
 
@@ -11177,7 +11184,8 @@ CREATE TABLE productioncounting_trackingoperationproductoutcomponent (
     typeofmaterial character varying(255) DEFAULT '01component'::character varying,
     storagelocation_id bigint,
     causeofwastes character varying(255),
-    palletnumber_id bigint
+    palletnumber_id bigint,
+    manyreasonsforlacks boolean DEFAULT false
 );
 
 
@@ -24233,6 +24241,105 @@ CREATE SEQUENCE productioncounting_finalproductanalysisentry_id_seq
 
 
 --
+-- Name: productioncounting_lack; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE productioncounting_lack (
+    id bigint NOT NULL,
+    trackingoperationproductoutcomponent_id bigint,
+    lackquantity numeric(14,5),
+    createdate timestamp without time zone,
+    updatedate timestamp without time zone,
+    createuser character varying(255),
+    updateuser character varying(255)
+);
+
+
+--
+-- Name: productioncounting_lack_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE productioncounting_lack_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: productioncounting_lack_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE productioncounting_lack_id_seq OWNED BY productioncounting_lack.id;
+
+
+--
+-- Name: productioncounting_lackreason; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE productioncounting_lackreason (
+    id bigint NOT NULL,
+    lack_id bigint,
+    causeofwastes character varying(255),
+    description character varying(1024),
+    createdate timestamp without time zone,
+    updatedate timestamp without time zone,
+    createuser character varying(255),
+    updateuser character varying(255)
+);
+
+
+--
+-- Name: productioncounting_lackdto; Type: VIEW; Schema: public; Owner: -
+--
+
+CREATE VIEW productioncounting_lackdto AS
+ SELECT lack.id,
+    (lack.trackingoperationproductoutcomponent_id)::integer AS trackingoperationproductoutcomponentid,
+    lack.lackquantity,
+    product.unit AS productunit,
+    array_to_string(ARRAY( SELECT (((lackreason.causeofwastes)::text || ' - '::text) || (COALESCE(lackreason.description, ''::character varying))::text)
+           FROM (productioncounting_lackreason lackreason
+             LEFT JOIN productioncounting_lack l ON ((lackreason.lack_id = l.id)))
+          WHERE (lackreason.lack_id = lack.id)), '</br>'::text) AS reasons
+   FROM ((productioncounting_lack lack
+     LEFT JOIN productioncounting_trackingoperationproductoutcomponent tooc ON ((tooc.id = lack.trackingoperationproductoutcomponent_id)))
+     LEFT JOIN basic_product product ON ((product.id = tooc.product_id)));
+
+
+--
+-- Name: productioncounting_lackdto_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE productioncounting_lackdto_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: productioncounting_lackreason_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE productioncounting_lackreason_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: productioncounting_lackreason_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE productioncounting_lackreason_id_seq OWNED BY productioncounting_lackreason.id;
+
+
+--
 -- Name: productioncounting_performanceanalysisdetaildto; Type: VIEW; Schema: public; Owner: -
 --
 
@@ -25884,7 +25991,8 @@ CREATE TABLE qcadoosecurity_group (
     name character varying(255),
     description text,
     identifier character varying(255),
-    entityversion bigint DEFAULT 0
+    entityversion bigint DEFAULT 0,
+    permissiontype character varying(255) DEFAULT '02officeLicense'::character varying
 );
 
 
@@ -32374,6 +32482,20 @@ ALTER TABLE ONLY productioncounting_anomalyreasoncontainer ALTER COLUMN id SET D
 -- Name: id; Type: DEFAULT; Schema: public; Owner: -
 --
 
+ALTER TABLE ONLY productioncounting_lack ALTER COLUMN id SET DEFAULT nextval('productioncounting_lack_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY productioncounting_lackreason ALTER COLUMN id SET DEFAULT nextval('productioncounting_lackreason_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
+--
+
 ALTER TABLE ONLY productioncounting_prodoutresourceattrval ALTER COLUMN id SET DEFAULT nextval('productioncounting_prodoutresourceattrval_id_seq'::regclass);
 
 
@@ -35921,8 +36043,8 @@ SELECT pg_catalog.setval('basic_palletnumberhelper_id_seq', 1, false);
 -- Data for Name: basic_parameter; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY basic_parameter (id, country_id, currency_id, unit, additionaltextinfooter, company_id, registerproductiontime, reasonneededwhendelayedeffectivedatefrom, earliereffectivedatetotime, reasonneededwhencorrectingtherequestedvolume, reasonneededwhencorrectingdateto, reasonneededwhenchangingstatetodeclined, imageurlinworkplan, hidedescriptioninworkplans, defaultproductionline_id, reasonneededwhenearliereffectivedateto, earliereffectivedatefromtime, defaultaddress, allowquantitychangeinacceptedorder, reasonneededwhendelayedeffectivedateto, justone, registerquantityinproduct, reasonneededwhenchangingstatetointerrupted, registerquantityoutproduct, dontprintordersinworkplans, location_id, typeofproductionrecording, dontprintinputproductsinworkplans, delayedeffectivedatefromtime, registerpiecework, hideemptycolumnsfororders, reasonneededwhenchangingstatetoabandoned, autocloseorder, allowtoclose, dontprintoutputproductsinworkplans, inputproductsrequiredfortype, otheraddress, reasonneededwhenearliereffectivedatefrom, defaultdescription, delayedeffectivedatetotime, hidetechnologyandorderinworkplans, reasonneededwhencorrectingdatefrom, ssccnumberprefix, lowerlimit, negativetrend, upperlimit, positivetrend, dueweight, printoperationatfirstpageinworkplans, averagelaborhourlycostpb, materialcostsusedpb, additionaloverheadpb, materialcostmarginpb, includetpzpb, productioncostmarginpb, averagemachinehourlycostpb, includeadditionaltimepb, batchnumberuniqueness, defaultcoveragefromdays, includedraftdeliveries, coveragetype, hideemptycolumnsforoffers, hideemptycolumnsforrequests, validateproductionrecordtimes, workstationsquantityfromproductionline, allowtechnologytreechangeinpendingorder, lockproductionprogress, hidebarcodeoperationcomponentinworkplans, ignoremissingcomponents, additionaloutputrows, additionalinputrows, allowmultipleregisteringtimeforworker, pricebasedon, takeactualprogressinworkplans, confectionplanrequirereasontypethreshold, confectionplancorrectionreasontype, autogeneratesuborders, automaticsavecoverage, externaldeliveriesextension, warehouse_id, documentstate, positivepurchaseprice, sameordernumber, automaticdeliveriesminstate, possibleworktimedeviation, ordersincludeperiod, includerequirements, entityversion, labelsbtpath, profitpb, registrationpriceoverheadpb, sourceofoperationcostspb, acceptanceevents, useblackbox, generatewarehouseissuestoorders, daysbeforeorderstart, issuelocation_id, consumptionofrawmaterialsbasedonstandards, documentpositionparameters_id, includecomponents, warehouseissuesreservestates, drawndocuments, generatewarehouseissuestodeliveries, issuedquantityuptoneed, documentsstatus, warehouseissueproductssource, productstoissue, trackingcorrectionrecalculatepps, deliveredbiggerthanordered, ordersganttparameters_id, additionalimage, esilcointegrationdir, autorecalculateorder, ppsisautomatic, ppsproducedamountrecalculateplan, ppsalgorithm, baselinkerparameters_id, technologiesgeneratorcopyproductsize, cartonlabelsbtpath, esilcodispositionshiftlocation_id, maxproductsquantity, allowerrorsinmasterorderpositions, companyname_id, hideassignedstaff, fillorderdescriptionbasedontechnologydescription, allowanomalycreationonacceptancerecord, esilcoaccountwithreservationlocation_id, includelevelandsuffix, orderedproductsunit, allowincompleteunits, acceptrecordsfromterminal, allowchangestousedquantityonterminal, includeadditionaltimeps, includetpzps, ordersgenerationnotcompletedates, canchangeprodlineforacceptedorders, generateeachonseparatepage, includewagegroups, ordersgeneratedbycoverage, automaticallygenerateordersforcomponents, seteffectivedatefromoninprogress, seteffectivedatetooncompleted, copydescription, exporttopdfonlyvisiblecolumns, additionalcartonlabelsquantity, maxcartonlabelsquantity, exporttocsvonlyvisiblecolumns, flagpercentageofexecutionwithcolor, opertaskflagpercentexecutionwithcolor, automaticclosingoforderwithingroups, copynotesfrommasterorderposition, manuallysendwarehousedocuments, realizationfromstock, alwaysorderitemswithpersonalization, selectorder, availabilityofrawmaterials, selectoperationaltask, stoppages, repair, employeeprogress, includeunacceptableproduction, calculateamounttimeemployeesonacceptancerecord, notshowtasksdownloadedbyanotheremployee, createcollectiveorders, completemasterorderafterorderingpositions, hideorderedproductworkplan, selectiontasksbyorderdateinterminal, showprogress, showdelays, requiresupplieridentification, numberpattern_id, generatebatchfororderedproduct, generatebatchoforderedproduct, acceptbatchtrackingwhenclosingorder, completewarehousesflowwhilechecking, qualitycontrol, finalqualitycontrolwithoutresources, terminalproductattribute_id, oeefor, oeeworktimefrom, range, division_id, showqronordersgrouppdf, advisestartdateoftheorder, orderstartdatebasedon, showchartondashboard, whattoshowondashboard, dashboardoperation_id, dashboardcomponentslocation_id, dashboardproductsinputlocation_id, momentofvalidation, moveproductstosubsequentoperations, demandcausesofwastes, wmsapk, wmsversion, applicationconfigured, materialcostsused, usenominalcostpricenotspecified, sourceofoperationcosts, standardlaborcost_id, averagemachinehourlycost, averagelaborhourlycost, includetpz, includeadditionaltime, materialcostmargin, productioncostmargin, additionaloverhead, registrationpriceoverhead, profit, applicationconfigurationfinished, generatepacksfororders, includepacksgeneratingprocessesfororder, optimalpacksize, restfeedinglastpack, deliveryusenominalcostwhenpricenotspecified, deliverypricefillbasedon, allowcheckedtechnologywithoutinproducts, requireassortment, changeorderdatesbasedonchangegroupdates, acceptedtechnologymarkedasdefault, terminalscanning, processsource, showproductdescriptiononordersgrouppdf, attributeonordersgrouppdf_id, copyattributestosizeproducts, materialcostsusedmc, usenominalcostpricenotspecifiedmc, productattribute_id, materialattribute_id, attributeonthelabel_id, requiretypeoffault, workingstationinputtype, allowchangeordeleteordertechnologicalprocess, technicalproductioncostoverhead, technicalproductioncostoverheadpb, synchronizeadditionalproductdata, processterminalplaceofperformance, emptylabelbtpath, schedulesortorder, workstationassigncriterion, workerassigncriterion, scheduleforbuffer, additionaltimeextendsoperation, synchronizeproductcategory, completenominalcostinarticleandproducts, copynominalcostfamilyofproductssizes, onlypackagesinproduction, bufferstationsshowninchart, allowtasklengthtobeedited, analyzeavailableresources, analyzeplannedquantity, analyzemaxquantity, numberpatternordergroup_id, otcopydescriptionfromproductionorder, setorderdatesbasedontaskdates, automaticallygeneratetasksfororder, automaticallygenerateprocessesfororder, includeadditionaltimesg, includetpzsg, includetpzs, dashboardshowforproduct, dashboardshowdescription, receivedeliveryinordercurrency, sortbyproducttypepriorityordersgrouppdf, attributeonordersgrouprequirementpdf_id, quantitymadeonthebasisofdashboard, producingmorethanplanned, logo, synchronizemasterorderattributes, synchronizedocumentpositionattributes, dashboardordersorting, completestationandemployeeingeneratedtasks, considerexceptionswhenpromptingcurrentshift, productionorderedquantityclosestheorder, receiptofproducts, releaseofmaterials, considerminimumstocklevelwhencreatingproductionorders, fillorderdescriptionbasedonproductdescription, ganttrunadjusterror, checkfortheexistenceofinputproductprices, automaticupdatecostnorms, costssource, automaticreleaseaftergeneration, analyzeactualstaff, analyzeactualstaffmaxquantity, analyzegetquantityfromshiftassignment, setmasterorderdatebasedonorderdates, notshowtasksblockedbyprevious, promptdefaultlinefromtechnology) FROM stdin;
-1	\N	5	pc	\N	1	t	f	0	f	f	f	\N	f	1	f	0	\N	t	f	f	t	f	t	f	\N	02cumulated	f	0	f	f	f	f	f	f	01startOrder	\N	f	\N	0	f	f	0005900125	\N	\N	\N	\N	\N	f	\N	06costForOrder	\N	\N	f	\N	\N	f	01globally	14	f	\N	f	f	f	f	f	f	f	t	\N	\N	f	01nominalProductCost	f	\N	\N	f	f	\N	\N	\N	f	f	f	\N	\N	f	0	\N	\N	\N	02parameters	f	\N	f	\N	\N	t	1	f	f	01transfer	f	f	01accepted	01order	01allInputProducts	f	t	\N	\N	\N	f	f	f	\N	\N	\N	\N	\N	150	\N	\N	f	t	f	\N	t	\N	f	f	t	f	f	f	t	f	f	f	f	f	f	t	f	50	3000	f	t	t	f	f	f	f	f	t	f	t	t	t	f	t	f	f	f	f	f	f	f	f	f	\N	\N	f	f	t	t	f	\N	01productionLine	01staffWorkTimes	01oneDivision	\N	f	t	03endDateLastOrderOnTheLine	t	01orders	\N	\N	\N	01orderAcceptance	t	f	\N	\N	f	01nominal	f	01technologyOperation	\N	\N	\N	f	f	0.00000	0.00000	0.00000	0.00000	0.00000	f	f	f	\N	\N	f	01lastPurchasePrice	f	f	f	f	01operationNumber	01orderPackages	f	\N	f	01nominal	f	\N	\N	\N	f	01scanTheNumber	f	0.00000	0.00000	f	01workstation	\N	01desc	01shortestTime	01workstationLastOperatorLatestFinished	f	t	t	f	f	f	f	f	f	f	\N	\N	f	f	f	f	\N	\N	t	01number	f	f	t	\N	01approvedProduction	t	\N	f	f	01startDate	f	f	f	01onAcceptanceRegistrationRecord	01onAcceptanceRegistrationRecord	f	f	t	f	f	01mes	f	f	\N	f	f	f	t
+COPY basic_parameter (id, country_id, currency_id, unit, additionaltextinfooter, company_id, registerproductiontime, reasonneededwhendelayedeffectivedatefrom, earliereffectivedatetotime, reasonneededwhencorrectingtherequestedvolume, reasonneededwhencorrectingdateto, reasonneededwhenchangingstatetodeclined, imageurlinworkplan, hidedescriptioninworkplans, defaultproductionline_id, reasonneededwhenearliereffectivedateto, earliereffectivedatefromtime, defaultaddress, allowquantitychangeinacceptedorder, reasonneededwhendelayedeffectivedateto, justone, registerquantityinproduct, reasonneededwhenchangingstatetointerrupted, registerquantityoutproduct, dontprintordersinworkplans, location_id, typeofproductionrecording, dontprintinputproductsinworkplans, delayedeffectivedatefromtime, registerpiecework, hideemptycolumnsfororders, reasonneededwhenchangingstatetoabandoned, autocloseorder, allowtoclose, dontprintoutputproductsinworkplans, inputproductsrequiredfortype, otheraddress, reasonneededwhenearliereffectivedatefrom, defaultdescription, delayedeffectivedatetotime, hidetechnologyandorderinworkplans, reasonneededwhencorrectingdatefrom, ssccnumberprefix, lowerlimit, negativetrend, upperlimit, positivetrend, dueweight, printoperationatfirstpageinworkplans, averagelaborhourlycostpb, materialcostsusedpb, additionaloverheadpb, materialcostmarginpb, includetpzpb, productioncostmarginpb, averagemachinehourlycostpb, includeadditionaltimepb, batchnumberuniqueness, defaultcoveragefromdays, includedraftdeliveries, coveragetype, hideemptycolumnsforoffers, hideemptycolumnsforrequests, validateproductionrecordtimes, workstationsquantityfromproductionline, allowtechnologytreechangeinpendingorder, lockproductionprogress, hidebarcodeoperationcomponentinworkplans, ignoremissingcomponents, additionaloutputrows, additionalinputrows, allowmultipleregisteringtimeforworker, pricebasedon, takeactualprogressinworkplans, confectionplanrequirereasontypethreshold, confectionplancorrectionreasontype, autogeneratesuborders, automaticsavecoverage, externaldeliveriesextension, warehouse_id, documentstate, positivepurchaseprice, sameordernumber, automaticdeliveriesminstate, possibleworktimedeviation, ordersincludeperiod, includerequirements, entityversion, labelsbtpath, profitpb, registrationpriceoverheadpb, sourceofoperationcostspb, acceptanceevents, useblackbox, generatewarehouseissuestoorders, daysbeforeorderstart, issuelocation_id, consumptionofrawmaterialsbasedonstandards, documentpositionparameters_id, includecomponents, warehouseissuesreservestates, drawndocuments, generatewarehouseissuestodeliveries, issuedquantityuptoneed, documentsstatus, warehouseissueproductssource, productstoissue, trackingcorrectionrecalculatepps, deliveredbiggerthanordered, ordersganttparameters_id, additionalimage, esilcointegrationdir, autorecalculateorder, ppsisautomatic, ppsproducedamountrecalculateplan, ppsalgorithm, baselinkerparameters_id, technologiesgeneratorcopyproductsize, cartonlabelsbtpath, esilcodispositionshiftlocation_id, maxproductsquantity, allowerrorsinmasterorderpositions, companyname_id, hideassignedstaff, fillorderdescriptionbasedontechnologydescription, allowanomalycreationonacceptancerecord, esilcoaccountwithreservationlocation_id, includelevelandsuffix, orderedproductsunit, allowincompleteunits, acceptrecordsfromterminal, allowchangestousedquantityonterminal, includeadditionaltimeps, includetpzps, ordersgenerationnotcompletedates, canchangeprodlineforacceptedorders, generateeachonseparatepage, includewagegroups, ordersgeneratedbycoverage, automaticallygenerateordersforcomponents, seteffectivedatefromoninprogress, seteffectivedatetooncompleted, copydescription, exporttopdfonlyvisiblecolumns, additionalcartonlabelsquantity, maxcartonlabelsquantity, exporttocsvonlyvisiblecolumns, flagpercentageofexecutionwithcolor, opertaskflagpercentexecutionwithcolor, automaticclosingoforderwithingroups, copynotesfrommasterorderposition, manuallysendwarehousedocuments, realizationfromstock, alwaysorderitemswithpersonalization, selectorder, availabilityofrawmaterials, selectoperationaltask, stoppages, repair, employeeprogress, includeunacceptableproduction, calculateamounttimeemployeesonacceptancerecord, notshowtasksdownloadedbyanotheremployee, createcollectiveorders, completemasterorderafterorderingpositions, hideorderedproductworkplan, selectiontasksbyorderdateinterminal, showprogress, showdelays, requiresupplieridentification, numberpattern_id, generatebatchfororderedproduct, generatebatchoforderedproduct, acceptbatchtrackingwhenclosingorder, completewarehousesflowwhilechecking, qualitycontrol, finalqualitycontrolwithoutresources, terminalproductattribute_id, oeefor, oeeworktimefrom, range, division_id, showqronordersgrouppdf, advisestartdateoftheorder, orderstartdatebasedon, showchartondashboard, whattoshowondashboard, dashboardoperation_id, dashboardcomponentslocation_id, dashboardproductsinputlocation_id, momentofvalidation, moveproductstosubsequentoperations, demandcausesofwastes, wmsapk, wmsversion, applicationconfigured, materialcostsused, usenominalcostpricenotspecified, sourceofoperationcosts, standardlaborcost_id, averagemachinehourlycost, averagelaborhourlycost, includetpz, includeadditionaltime, materialcostmargin, productioncostmargin, additionaloverhead, registrationpriceoverhead, profit, applicationconfigurationfinished, generatepacksfororders, includepacksgeneratingprocessesfororder, optimalpacksize, restfeedinglastpack, deliveryusenominalcostwhenpricenotspecified, deliverypricefillbasedon, allowcheckedtechnologywithoutinproducts, requireassortment, changeorderdatesbasedonchangegroupdates, acceptedtechnologymarkedasdefault, terminalscanning, processsource, showproductdescriptiononordersgrouppdf, attributeonordersgrouppdf_id, copyattributestosizeproducts, materialcostsusedmc, usenominalcostpricenotspecifiedmc, productattribute_id, materialattribute_id, attributeonthelabel_id, requiretypeoffault, workingstationinputtype, allowchangeordeleteordertechnologicalprocess, technicalproductioncostoverhead, technicalproductioncostoverheadpb, synchronizeadditionalproductdata, processterminalplaceofperformance, emptylabelbtpath, schedulesortorder, workstationassigncriterion, workerassigncriterion, scheduleforbuffer, additionaltimeextendsoperation, synchronizeproductcategory, completenominalcostinarticleandproducts, copynominalcostfamilyofproductssizes, onlypackagesinproduction, bufferstationsshowninchart, allowtasklengthtobeedited, analyzeavailableresources, analyzeplannedquantity, analyzemaxquantity, numberpatternordergroup_id, otcopydescriptionfromproductionorder, setorderdatesbasedontaskdates, automaticallygeneratetasksfororder, automaticallygenerateprocessesfororder, includeadditionaltimesg, includetpzsg, includetpzs, dashboardshowforproduct, dashboardshowdescription, receivedeliveryinordercurrency, sortbyproducttypepriorityordersgrouppdf, attributeonordersgrouprequirementpdf_id, quantitymadeonthebasisofdashboard, producingmorethanplanned, logo, synchronizemasterorderattributes, synchronizedocumentpositionattributes, dashboardordersorting, completestationandemployeeingeneratedtasks, considerexceptionswhenpromptingcurrentshift, productionorderedquantityclosestheorder, receiptofproducts, releaseofmaterials, considerminimumstocklevelwhencreatingproductionorders, fillorderdescriptionbasedonproductdescription, ganttrunadjusterror, checkfortheexistenceofinputproductprices, automaticupdatecostnorms, costssource, automaticreleaseaftergeneration, analyzeactualstaff, analyzeactualstaffmaxquantity, analyzegetquantityfromshiftassignment, setmasterorderdatebasedonorderdates, notshowtasksblockedbyprevious, promptdefaultlinefromtechnology, numberofficelicenses, numberterminallicenses, typeterminallicenses, notshoworderfilters, notincludedateswhenretrievingorders, requirequalityrating, synchronizeproductsize) FROM stdin;
+1	\N	5	pc	\N	1	t	f	0	f	f	f	\N	f	1	f	0	\N	t	f	f	t	f	t	f	\N	02cumulated	f	0	f	f	f	f	f	f	01startOrder	\N	f	\N	0	f	f	0005900125	\N	\N	\N	\N	\N	f	\N	06costForOrder	\N	\N	f	\N	\N	f	01globally	14	f	\N	f	f	f	f	f	f	f	t	\N	\N	f	01nominalProductCost	f	\N	\N	f	f	\N	\N	\N	f	f	f	\N	\N	f	0	\N	\N	\N	02parameters	f	\N	f	\N	\N	t	1	f	f	01transfer	f	f	01accepted	01order	01allInputProducts	f	t	\N	\N	\N	f	f	f	\N	\N	\N	\N	\N	150	\N	\N	f	t	f	\N	t	\N	f	f	t	f	f	f	t	f	f	f	f	f	f	t	f	50	3000	f	t	t	f	f	f	f	f	t	f	t	t	t	f	t	f	f	f	f	f	f	f	f	f	\N	\N	f	f	t	t	f	\N	01productionLine	01staffWorkTimes	01oneDivision	\N	f	t	03endDateLastOrderOnTheLine	t	01orders	\N	\N	\N	01orderAcceptance	t	f	\N	\N	f	01nominal	f	01technologyOperation	\N	\N	\N	f	f	0.00000	0.00000	0.00000	0.00000	0.00000	f	f	f	\N	\N	f	01lastPurchasePrice	f	f	f	f	01operationNumber	01orderPackages	f	\N	f	01nominal	f	\N	\N	\N	f	01scanTheNumber	f	0.00000	0.00000	f	01workstation	\N	01desc	01shortestTime	01workstationLastOperatorLatestFinished	f	t	t	f	f	f	f	f	f	f	\N	\N	f	f	f	f	\N	\N	t	01number	f	f	t	\N	01approvedProduction	t	\N	f	f	01startDate	f	f	f	01onAcceptanceRegistrationRecord	01onAcceptanceRegistrationRecord	f	f	t	f	f	01mes	f	f	\N	f	f	f	t	10000	10000	03over51Employees	f	f	t	f
 \.
 
 
@@ -41445,6 +41567,43 @@ SELECT pg_catalog.setval('productioncounting_finalproductanalysisentry_id_seq', 
 
 
 --
+-- Data for Name: productioncounting_lack; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY productioncounting_lack (id, trackingoperationproductoutcomponent_id, lackquantity, createdate, updatedate, createuser, updateuser) FROM stdin;
+\.
+
+
+--
+-- Name: productioncounting_lack_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('productioncounting_lack_id_seq', 1, false);
+
+
+--
+-- Name: productioncounting_lackdto_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('productioncounting_lackdto_id_seq', 1, false);
+
+
+--
+-- Data for Name: productioncounting_lackreason; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY productioncounting_lackreason (id, lack_id, causeofwastes, description, createdate, updatedate, createuser, updateuser) FROM stdin;
+\.
+
+
+--
+-- Name: productioncounting_lackreason_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('productioncounting_lackreason_id_seq', 1, false);
+
+
+--
 -- Name: productioncounting_performanceanalysisdetaildto_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
@@ -41645,7 +41804,7 @@ SELECT pg_catalog.setval('productioncounting_trackingoperationproductincomponent
 -- Data for Name: productioncounting_trackingoperationproductoutcomponent; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY productioncounting_trackingoperationproductoutcomponent (id, productiontracking_id, product_id, usedquantity, balance, batch_id, wastedquantity, givenunit, givenquantity, entityversion, wastesquantity, typeofmaterial, storagelocation_id, causeofwastes, palletnumber_id) FROM stdin;
+COPY productioncounting_trackingoperationproductoutcomponent (id, productiontracking_id, product_id, usedquantity, balance, batch_id, wastedquantity, givenunit, givenquantity, entityversion, wastesquantity, typeofmaterial, storagelocation_id, causeofwastes, palletnumber_id, manyreasonsforlacks) FROM stdin;
 \.
 
 
@@ -41923,7 +42082,6 @@ SELECT pg_catalog.setval('qcadoomodel_dictionary_id_seq', 24, true);
 
 COPY qcadoomodel_dictionaryitem (id, name, externalnumber, description, technicalcode, dictionary_id, active, entityversion, isinteger, priority) FROM stdin;
 1	EPAL	\N	\N	01epal	5	t	0	f	2
-2	CHEAP EUR	\N	\N	02cheapEur	5	t	0	f	1
 3	main	\N	\N	01main	4	t	0	f	1
 4	white	\N	#ffffff	01white	2	t	0	f	6
 5	grey	\N	#bfbfbf	02grey	2	t	0	f	3
@@ -41963,6 +42121,7 @@ COPY qcadoomodel_dictionaryitem (id, name, externalnumber, description, technica
 39	sticker printer	\N	\N	05stickerPrinter	\N	t	0	f	4
 40	new	\N	\N	01new	15	t	0	f	1
 41	ordered	\N	\N	02ordered	15	t	0	f	2
+2	CHEP EUR	\N	\N	02chepEur	5	t	0	f	1
 \.
 
 
@@ -42149,13 +42308,13 @@ SELECT pg_catalog.setval('qcadooplugin_plugin_id_seq', 158, true);
 -- Data for Name: qcadoosecurity_group; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY qcadoosecurity_group (id, name, description, identifier, entityversion) FROM stdin;
-1	API	\N	API	0
-2	Super admin	\N	SUPER_ADMIN	0
-3	User	\N	USER	0
-4	Admin	\N	ADMIN	0
-5	Subcontractor	\N	SUBCONTRACTOR	0
-6	Access denied	\N	\N	0
+COPY qcadoosecurity_group (id, name, description, identifier, entityversion, permissiontype) FROM stdin;
+3	User	\N	USER	0	02officeLicense
+4	Admin	\N	ADMIN	0	02officeLicense
+5	Subcontractor	\N	SUBCONTRACTOR	0	02officeLicense
+6	Access denied	\N	\N	0	02officeLicense
+1	API	\N	API	0	01superAdmin
+2	Super admin	\N	SUPER_ADMIN	0	01superAdmin
 \.
 
 
@@ -42615,6 +42774,7 @@ COPY qcadooview_item (id, pluginidentifier, name, active, category_id, view_id, 
 48	orders	productionOrders	t	7	48	5	ROLE_ORDERS_VIEW	0
 47	orders	productionOrdersPlanning	t	7	47	4	ROLE_ORDERS_VIEW	0
 200	orders	productionLineSchedulesList	t	7	199	21	ROLE_PRODUCTION_LINE_SCHEDULES	0
+201	basic	licenses	t	1	200	18	ROLE_ADMIN	0
 \.
 
 
@@ -42622,7 +42782,7 @@ COPY qcadooview_item (id, pluginidentifier, name, active, category_id, view_id, 
 -- Name: qcadooview_item_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('qcadooview_item_id_seq', 200, true);
+SELECT pg_catalog.setval('qcadooview_item_id_seq', 201, true);
 
 
 --
@@ -42815,6 +42975,7 @@ COPY qcadooview_view (id, pluginidentifier, name, view, url, entityversion) FROM
 197	productionCounting	operationDurationAnalysis	\N	/operationDurationAnalysis.html	0
 198	masterOrders	masterOrdersMaterialRequirementsList	masterOrdersMaterialRequirementsList	\N	0
 199	orders	productionLineSchedulesList	productionLineSchedulesList	\N	0
+200	basic	licenses	\N	/licenses.html	0
 \.
 
 
@@ -42822,7 +42983,7 @@ COPY qcadooview_view (id, pluginidentifier, name, view, url, entityversion) FROM
 -- Name: qcadooview_view_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('qcadooview_view_id_seq', 199, true);
+SELECT pg_catalog.setval('qcadooview_view_id_seq', 200, true);
 
 
 --
@@ -48130,6 +48291,22 @@ ALTER TABLE ONLY productioncounting_anomalyreason
 
 ALTER TABLE ONLY productioncounting_anomalyreasoncontainer
     ADD CONSTRAINT productioncounting_anomalyreasoncontainer_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: productioncounting_lack_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY productioncounting_lack
+    ADD CONSTRAINT productioncounting_lack_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: productioncounting_lackreason_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY productioncounting_lackreason
+    ADD CONSTRAINT productioncounting_lackreason_pkey PRIMARY KEY (id);
 
 
 --
@@ -55136,6 +55313,22 @@ ALTER TABLE ONLY arch_goodfood_labelstatechange
 
 ALTER TABLE ONLY arch_goodfood_labelstatechange
     ADD CONSTRAINT labelstatechange_shift_fkey FOREIGN KEY (shift_id) REFERENCES basic_shift(id) DEFERRABLE;
+
+
+--
+-- Name: lack_trackingoperationproductoutcomponent_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY productioncounting_lack
+    ADD CONSTRAINT lack_trackingoperationproductoutcomponent_fkey FOREIGN KEY (trackingoperationproductoutcomponent_id) REFERENCES productioncounting_trackingoperationproductoutcomponent(id) DEFERRABLE;
+
+
+--
+-- Name: lackreason_lack_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY productioncounting_lackreason
+    ADD CONSTRAINT lackreason_lack_fkey FOREIGN KEY (lack_id) REFERENCES productioncounting_lack(id) DEFERRABLE;
 
 
 --
