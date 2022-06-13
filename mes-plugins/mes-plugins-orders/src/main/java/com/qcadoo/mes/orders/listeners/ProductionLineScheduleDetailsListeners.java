@@ -100,7 +100,8 @@ public class ProductionLineScheduleDetailsListeners {
     public void generatePlan(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         List<Entity> productionLines = dataDefinitionService
                 .get(ProductionLinesConstants.PLUGIN_IDENTIFIER, ProductionLinesConstants.MODEL_PRODUCTION_LINE).find()
-                .add(SearchRestrictions.eq(ProductionLineFields.PRODUCTION, true)).list().getEntities();
+                .add(SearchRestrictions.eq(ProductionLineFields.PRODUCTION, true))
+                .add(SearchRestrictions.eq(ProductionLineFields.ACTIVE, true)).list().getEntities();
         if (productionLines.isEmpty()) {
             view.addMessage("orders.error.productionLineScheduleNoProductionLines", ComponentState.MessageType.INFO);
             return;
