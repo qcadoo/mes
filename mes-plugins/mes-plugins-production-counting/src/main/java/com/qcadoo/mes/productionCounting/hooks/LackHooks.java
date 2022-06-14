@@ -68,7 +68,7 @@ public class LackHooks {
 
         trackingOperationProductOutComponent.setField(TrackingOperationProductOutComponentFields.WASTES_QUANTITY,
                 sumOfLacks);
-        trackingOperationProductOutComponent.getDataDefinition().save(trackingOperationProductOutComponent);
+        trackingOperationProductOutComponent.getDataDefinition().fastSave(trackingOperationProductOutComponent);
     }
 
     public void onDelete(final DataDefinition lackDD, final Entity lack) {
