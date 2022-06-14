@@ -39,7 +39,7 @@
             <validatesScale max="5"/>
         </decimal>
 
-        <hasMany name="lackReasons" model="lackReason" joinField="lack" cascade="delete"/>
+        <hasMany name="lackReasons" model="lackReason" joinField="lack" cascade="delete" copyable="true"/>
 
     </fields>
 
