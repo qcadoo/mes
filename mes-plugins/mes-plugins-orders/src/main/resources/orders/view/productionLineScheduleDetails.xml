@@ -99,7 +99,7 @@
 								var saveActions = ["actions.save","actions.saveNew","actions.saveBack"];
 
                                 if (isSaved && state == "01draft") {
-                                    //approveSchedule.enable();
+                                    approveSchedule.enable();
                                     rejectSchedule.enable();
                                     generatePlan.enable();
                                 } else {
