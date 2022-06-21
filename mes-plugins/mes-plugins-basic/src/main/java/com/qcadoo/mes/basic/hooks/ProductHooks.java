@@ -24,11 +24,7 @@
 package com.qcadoo.mes.basic.hooks;
 
 import com.qcadoo.mes.basic.ProductService;
-import com.qcadoo.mes.basic.constants.AdditionalCodeFields;
-import com.qcadoo.mes.basic.constants.BasicConstants;
-import com.qcadoo.mes.basic.constants.ModelFields;
-import com.qcadoo.mes.basic.constants.ProductFamilyElementType;
-import com.qcadoo.mes.basic.constants.ProductFields;
+import com.qcadoo.mes.basic.constants.*;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -39,13 +35,12 @@ import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.LookupComponent;
 import com.qcadoo.view.api.components.lookup.FilterValueHolder;
 import com.qcadoo.view.constants.QcadooViewConstants;
-
-import java.util.List;
-import java.util.Objects;
-
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.Objects;
 
 @Service
 public class ProductHooks {
@@ -55,6 +50,22 @@ public class ProductHooks {
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
+
+    public void onCreate(final DataDefinition productDD, final Entity product) {
+        productService.fillUnit(productDD, product);
+        calculateConversionOnCreate(product);
+        fillExpiryDateValidityUnit(product);
+    }
+
+    private void calculateConversionOnCreate(final Entity product) {
+        productService.conversionForProductUnit(product);
+    }
+
+    private void fillExpiryDateValidityUnit(final Entity product) {
+        if (Objects.isNull(product.getField(ProductFields.EXPIRY_DATE_VALIDITY_UNIT))) {
+            product.setField(ProductFields.EXPIRY_DATE_VALIDITY_UNIT, ExpiryDateValidityUnit.MONTHS.getStringValue());
+        }
+    }
 
     public void onSave(final DataDefinition productDD, final Entity product) {
         updateModelAndAssortment(productDD, product);
@@ -125,13 +136,9 @@ public class ProductHooks {
         }
     }
 
-    public void clearFieldsOnCopy(final DataDefinition productDD, final Entity product) {
-        if (Objects.isNull(product)) {
-            return;
-        }
-
-        product.setField(ProductFields.ADDITIONAL_UNIT, null);
-        product.setField(ProductFields.EAN, null);
+    public void onCopy(final DataDefinition productDD, final Entity product) {
+        clearExternalIdOnCopy(productDD, product);
+        clearFieldsOnCopy(product);
     }
 
     public void clearExternalIdOnCopy(final DataDefinition productDD, final Entity product) {
@@ -142,14 +149,19 @@ public class ProductHooks {
         product.setField(ProductFields.EXTERNAL_NUMBER, null);
     }
 
+    private void clearFieldsOnCopy(final Entity product) {
+        if (Objects.isNull(product)) {
+            return;
+        }
+
+        product.setField(ProductFields.ADDITIONAL_UNIT, null);
+        product.setField(ProductFields.EAN, null);
+    }
+
     public void calculateConversionIfUnitChanged(final DataDefinition productDD, final Entity product) {
         if (productService.hasUnitChangedOnUpdate(product)) {
             productService.conversionForProductUnit(product);
         }
-    }
-
-    public void calculateConversionOnCreate(final DataDefinition productDD, final Entity product) {
-        productService.conversionForProductUnit(product);
     }
 
     public boolean validateAdditionalUnit(final DataDefinition productDD, final Entity product) {
@@ -166,7 +178,7 @@ public class ProductHooks {
 
             List<Entity> conversions = product.getHasManyField(ProductFields.CONVERSION_ITEMS);
 
-            if (!conversions.stream().anyMatch(
+            if (conversions.stream().noneMatch(
                     conversionItem -> conversionItem.getStringField(UnitConversionItemFields.UNIT_TO).equals(additionalUnit)
                             && conversionItem.getStringField(UnitConversionItemFields.UNIT_FROM).equals(defaultUnit))) {
                 product.addGlobalError("basic.product.additionalUnit.error.unitConversionMissing");
@@ -192,10 +204,6 @@ public class ProductHooks {
         return true;
     }
 
-    private DataDefinition getAdditionalCodeDD() {
-        return dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_ADDITIONAL_CODE);
-    }
-
     public void setCriteriaModifierParameters(final ViewDefinitionState view) {
         LookupComponent parentLookup = (LookupComponent) view.getComponentByReference(ProductFields.PARENT);
         FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
@@ -205,6 +213,10 @@ public class ProductHooks {
         FilterValueHolder holder = parentLookup.getFilterValue();
         holder.put(ProductFields.MACHINE_PART, product.getBooleanField(ProductFields.MACHINE_PART));
         parentLookup.setFilterValue(holder);
+    }
+
+    private DataDefinition getAdditionalCodeDD() {
+        return dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_ADDITIONAL_CODE);
     }
 
 }
