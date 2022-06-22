@@ -31,6 +31,7 @@ import com.qcadoo.mes.advancedGenealogy.constants.TrackingRecordFields;
 import com.qcadoo.mes.advancedGenealogy.constants.TrackingRecordType;
 import com.qcadoo.mes.basic.LogService;
 import com.qcadoo.mes.basic.ParameterService;
+import com.qcadoo.mes.basic.constants.ExpiryDateValidityUnit;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.basic.services.NumberPatternGeneratorService;
 import com.qcadoo.mes.orders.constants.OrderFields;
@@ -50,13 +51,6 @@ import com.qcadoo.security.api.SecurityService;
 import com.qcadoo.security.api.UserService;
 import com.qcadoo.security.constants.UserFields;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
-
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
-
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
@@ -66,6 +60,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Service;
+
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Service
 public class ProductionTrackingHooks {
@@ -204,10 +204,18 @@ public class ProductionTrackingHooks {
         if (Objects.nonNull(order) && Objects.isNull(productionTracking.getDateField(ProductionTrackingFields.EXPIRATION_DATE))) {
             Entity product = order.getBelongsToField(OrderFields.PRODUCT);
             Integer expiryDateValidity = product.getIntegerField(ProductFields.EXPIRY_DATE_VALIDITY);
+            String expiryDateValidityUnit = product.getStringField(ProductFields.EXPIRY_DATE_VALIDITY_UNIT);
 
             if (Objects.nonNull(expiryDateValidity)) {
-                productionTracking.setField(ProductionTrackingFields.EXPIRATION_DATE,
-                        new DateTime(order.getDateField(OrderFields.START_DATE)).plusMonths(expiryDateValidity).toDate());
+                Date expirationDate;
+
+                if (ExpiryDateValidityUnit.DAYS.getStringValue().equals(expiryDateValidityUnit)) {
+                    expirationDate = new DateTime(order.getDateField(OrderFields.START_DATE)).plusDays(expiryDateValidity).toDate();
+                } else {
+                    expirationDate = new DateTime(order.getDateField(OrderFields.START_DATE)).plusMonths(expiryDateValidity).toDate();
+                }
+
+                productionTracking.setField(ProductionTrackingFields.EXPIRATION_DATE, expirationDate);
             }
         }
     }
@@ -219,6 +227,7 @@ public class ProductionTrackingHooks {
     public void onDelete(final DataDefinition productionTrackingDD, final Entity productionTracking) {
         productionTrackingService.unCorrect(productionTracking);
         productionTrackingListenerService.updateOrderReportedQuantityOnRemove(productionTracking);
+        
         logPerformDelete(productionTracking);
     }
 
@@ -237,7 +246,7 @@ public class ProductionTrackingHooks {
     }
 
     private boolean willOrderAcceptOneMore(final DataDefinition productionTrackingDD, final Entity productionTracking,
-            final Entity order) {
+                                           final Entity order) {
         Entity technologyOperationComponent = productionTracking
                 .getBelongsToField(ProductionTrackingFields.TECHNOLOGY_OPERATION_COMPONENT);
 
@@ -252,7 +261,7 @@ public class ProductionTrackingHooks {
     }
 
     private boolean willOrderAcceptOneMoreValidator(final DataDefinition productionTrackingDD, final Entity productionTracking,
-            final List<Entity> productionTrackings) {
+                                                    final List<Entity> productionTrackings) {
         for (Entity tracking : productionTrackings) {
             if (Objects.nonNull(productionTracking.getId()) && productionTracking.getId().equals(tracking.getId())) {
                 if (checkLastProductionTracking(productionTrackingDD, productionTracking)) {

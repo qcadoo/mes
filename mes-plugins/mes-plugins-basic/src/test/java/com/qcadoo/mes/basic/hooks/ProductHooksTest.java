@@ -46,10 +46,10 @@ public class ProductHooksTest {
     private ProductHooks productHooks;
 
     @Mock
-    private DataDefinition dataDefinition;
+    private DataDefinition productDD;
 
     @Mock
-    private Entity entity, product;
+    private Entity product;
 
     @Mock
     private SearchCriteriaBuilder searchCriteria;
@@ -62,9 +62,8 @@ public class ProductHooksTest {
 
         PowerMockito.mockStatic(SearchRestrictions.class);
 
-        when(entity.getDataDefinition()).thenReturn(dataDefinition);
-        when(product.getDataDefinition()).thenReturn(dataDefinition);
-        when(dataDefinition.find()).thenReturn(searchCriteria);
+        when(product.getDataDefinition()).thenReturn(productDD);
+        when(productDD.find()).thenReturn(searchCriteria);
 
     }
 
@@ -73,11 +72,11 @@ public class ProductHooksTest {
         // given
 
         // when
-        productHooks.clearExternalIdOnCopy(dataDefinition, entity);
+        productHooks.clearExternalIdOnCopy(productDD, product);
 
         // then
 
-        Mockito.verify(entity).setField("externalNumber", null);
+        Mockito.verify(product).setField("externalNumber", null);
     }
 
 }
