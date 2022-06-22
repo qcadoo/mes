@@ -62,15 +62,10 @@ import com.qcadoo.view.api.components.LookupComponent;
 import com.qcadoo.view.api.components.lookup.FilterValueHolder;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
 import com.qcadoo.view.constants.QcadooViewConstants;
-
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.*;
 
 @Service
 public class OrderDetailsListeners {
@@ -369,11 +364,7 @@ public class OrderDetailsListeners {
     }
 
     public void printOrderReport(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        state.performEvent(view, "save", args);
-
-        if (!state.isHasError()) {
-            view.redirectTo("/orders/ordersOrderReport." + args[0] + "?id=" + state.getFieldValue(), true, false);
-        }
+        view.redirectTo("/orders/ordersOrderReport." + args[0] + "?id=" + state.getFieldValue(), true, false);
     }
 
     public void changeState(final ViewDefinitionState view, final ComponentState state, final String[] args) {
