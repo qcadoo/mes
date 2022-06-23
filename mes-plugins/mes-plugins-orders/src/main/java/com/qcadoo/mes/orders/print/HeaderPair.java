@@ -23,6 +23,9 @@
  */
 package com.qcadoo.mes.orders.print;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+
 public class HeaderPair {
 
     private String label;
@@ -38,7 +41,7 @@ public class HeaderPair {
         return label;
     }
 
-    public void setLabel(String label) {
+    public void setLabel(final String label) {
         this.label = label;
     }
 
@@ -46,7 +49,28 @@ public class HeaderPair {
         return value;
     }
 
-    public void setValue(String value) {
+    public void setValue(final String value) {
         this.value = value;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+
+        HeaderPair that = (HeaderPair) o;
+
+        return new EqualsBuilder().append(label, that.label).append(value, that.value).isEquals();
+    }
+
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder(17, 37).append(label).append(value).toHashCode();
+    }
+
 }
