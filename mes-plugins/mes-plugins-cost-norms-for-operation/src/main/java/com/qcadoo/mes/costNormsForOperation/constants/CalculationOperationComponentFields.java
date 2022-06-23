@@ -65,4 +65,6 @@ public final class CalculationOperationComponentFields {
 
     public static final String MACHINE_HOURLY_COST = "machineHourlyCost";
 
+    public static final String MIN_STAFF = "minStaff";
+
 }
