@@ -39,6 +39,8 @@ import com.qcadoo.mes.technologies.TechnologyService;
 import com.qcadoo.mes.technologies.constants.OperationFields;
 import com.qcadoo.mes.technologies.constants.OperationProductOutComponentFields;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
+import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
+import com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperationComponentFieldsTNFO;
 import com.qcadoo.model.api.BigDecimalUtils;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
@@ -172,7 +174,7 @@ public class CostCalculationXlsService extends XlsDocumentService {
         }
         if (includeComponents) {
             createComponentCostsSheet(componentCosts, createSheet(workbook,
-                    translationService.translate("costCalculation.costCalculation.report.xls.sheet.componentCosts", locale)),
+                            translationService.translate("costCalculation.costCalculation.report.xls.sheet.componentCosts", locale)),
                     locale);
         }
     }
@@ -190,7 +192,7 @@ public class CostCalculationXlsService extends XlsDocumentService {
     }
 
     private void createCalculationResultsSheet(HSSFSheet sheet, Entity costCalculation, List<Entity> calculationResults,
-            Map<Long, Boolean> hasComponents, StylesContainer stylesContainer, Locale locale) {
+                                               Map<Long, Boolean> hasComponents, StylesContainer stylesContainer, Locale locale) {
         int rowIndex = 1;
         for (Entity calculationResult : calculationResults) {
             HSSFRow row = sheet.createRow(rowIndex);
@@ -416,7 +418,7 @@ public class CostCalculationXlsService extends XlsDocumentService {
             createTimeCell(stylesContainer, row, 7,
                     calculationOperationComponent.getIntegerField(CalculationOperationComponentFields.LABOR_WORK_TIME));
             createNumericCell(stylesContainer, row, 8,
-                    calculationOperationComponent.getIntegerField(CalculationOperationComponentFields.MIN_STAFF));
+                    technologyOperationComponent.getIntegerField(TechnologyOperationComponentFieldsTNFO.MIN_STAFF));
             createNumericCell(stylesContainer, row, 9, calculationOperationComponent
                     .getDecimalField(CalculationOperationComponentFields.TOTAL_LABOR_OPERATION_COST));
             createNumericCell(stylesContainer, row, 10,
