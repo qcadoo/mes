@@ -438,9 +438,8 @@
                     </component>
                 </layoutElement>
                 <layoutElement column="4" row="2">
-                    <component type="label" name="expiryDateValidityMonth">
-                        <option type="labelStyle" value="text"/>
-                    </component>
+                    <component type="select" name="expiryDateValidityUnit" field="#{form}.expiryDateValidityUnit"
+                               reference="expiryDateValidityUnit" hasLabel="false"/>
                 </layoutElement>
                 <layoutElement column="1" row="3" width="3">
                     <component type="lookup" name="productForm" field="#{form}.productForm"

@@ -5270,7 +5270,8 @@ CREATE TABLE qcadoosecurity_user (
     factory_id bigint,
     ipaddress character varying,
     showonlymyregistrationrecords boolean DEFAULT false,
-    productionline_id bigint
+    productionline_id bigint,
+    groupchangedate timestamp without time zone
 );
 
 
@@ -5558,7 +5559,8 @@ CREATE TABLE basic_product (
     supplier_id bigint,
     nominalcostcurrency_id bigint,
     averagecostcurrency_id bigint,
-    lastpurchasecostcurrency_id bigint
+    lastpurchasecostcurrency_id bigint,
+    expirydatevalidityunit character varying(255) DEFAULT '01months'::character varying
 );
 
 
@@ -17568,7 +17570,8 @@ CREATE TABLE masterorders_productsbysizehelper (
     product_id bigint,
     totalquantity numeric(12,5),
     masterorder_id bigint,
-    salesplan_id bigint
+    salesplan_id bigint,
+    ordersgroup_id bigint
 );
 
 
@@ -35277,7 +35280,7 @@ SELECT pg_catalog.setval('basic_additionalcode_id_seq', 1, false);
 --
 
 COPY basic_address (id, company_id, addresstype, number, name, phone, email, website, street, house, flat, zipcode, city, state, country_id, contactperson, canbedeleted, active, externalnumber) FROM stdin;
-1	1	主要	1-01	\N	+48 881 501 347	welcome@qcadoo.com	http://www.qcadoo.com/	Walerego Sławka	3A	\N	30-633	Kraków	małopolskie	167	\N	f	t	\N
+1	1	主要	1-01	主要	+48 881 501 347	welcome@qcadoo.com	http://www.qcadoo.com/	Walerego Sławka	3A	\N	30-633	Kraków	małopolskie	167	\N	f	t	\N
 \.
 
 
@@ -35376,12 +35379,12 @@ SELECT pg_catalog.setval('basic_company_id_seq', 2, false);
 --
 
 COPY basic_country (id, country, code, entityversion) FROM stdin;
+2	阿尔巴尼亚	AL	0
 3	阿尔及利亚	DZ	0
 4	安道尔	AD	0
 5	安哥拉	AO	0
 6	安圭拉	AI	0
 7	南极洲	AQ	0
-8	安提瓜和巴布达	AG	0
 9	沙特阿拉伯	SA	0
 10	阿根廷	AR	0
 11	亚美尼亚	AM	0
@@ -35394,6 +35397,7 @@ COPY basic_country (id, country, code, entityversion) FROM stdin;
 18	孟加拉国	BD	0
 19	巴巴多斯	BB	0
 20	比利时	BE	0
+21	伯利兹	BZ	0
 22	贝宁	BJ	0
 23	百慕大	BM	0
 24	不丹	BT	0
@@ -35426,7 +35430,6 @@ COPY basic_country (id, country, code, entityversion) FROM stdin;
 52	厄瓜多尔	EC	0
 53	厄立特里亚	ER	0
 54	爱沙尼亚	EE	0
-55	埃塞俄比亚	ET	0
 57	斐济	FJ	0
 58	菲律宾	PH	0
 59	芬兰	FI	0
@@ -35443,7 +35446,6 @@ COPY basic_country (id, country, code, entityversion) FROM stdin;
 70	格鲁吉亚	GE	0
 71	关岛	GU	0
 72	根西岛	GG	0
-73	法属圭亚那	GF	0
 74	圭亚那	GY	0
 75	瓜德罗普	GP	0
 76	危地马拉	GT	0
@@ -35453,9 +35455,8 @@ COPY basic_country (id, country, code, entityversion) FROM stdin;
 80	海地	HT	0
 81	西班牙	ES	0
 83	洪都拉斯	HN	0
-84	香港	HK	0
+84	中国香港特别行政区	HK	0
 85	印度	IN	0
-86	印度尼西亚	ID	0
 87	伊拉克	IQ	0
 88	伊朗伊斯兰共和国	IR	0
 89	爱尔兰	IE	0
@@ -35472,7 +35473,6 @@ COPY basic_country (id, country, code, entityversion) FROM stdin;
 101	卡塔尔	QA	0
 102	哈萨克斯坦	KZ	0
 103	肯尼亚	KE	0
-104	吉尔吉斯斯坦	KG	0
 105	基里巴斯	KI	0
 106	哥伦比亚	CO	0
 107	科摩罗	KM	0
@@ -35490,24 +35490,27 @@ COPY basic_country (id, country, code, entityversion) FROM stdin;
 120	立陶宛	LT	0
 121	卢森堡	LU	0
 122	拉脱维亚	LV	0
-123	前南斯拉夫的马其顿共和国	MK	0
 124	马达加斯加	MG	0
 125	马约特	YT	0
-126	澳门	MO	0
+126	中国澳门特别行政区	MO	0
 127	马拉维	MW	0
 128	马尔代夫	MV	0
-1	阿富汗	AF	0
-2	阿尔巴尼亚	AL	0
-21	伯利兹	BZ	0
-27	博内尔岛，圣尤斯特歇斯岛和萨巴岛	BQ	0
 130	马里	ML	0
 131	马耳他	MT	0
 132	北马里亚纳群岛	MP	0
 133	摩洛哥	MA	0
+1	阿富汗	AF	0
+8	安提瓜和巴布达	AG	0
+27	博内尔岛，圣尤斯特歇斯岛和萨巴岛	BQ	0
+82	荷兰	NL	0
+97	开曼群岛	KY	0
+110	朝鲜民主主义人民共和国	KP	0
+129	马来西亚	MY	0
 134	马提尼克	MQ	0
 135	毛里塔尼亚	MR	0
 136	毛里求斯	MU	0
 137	墨西哥	MX	0
+138	密克罗尼西亚联邦	FM	0
 139	缅甸	MM	0
 140	摩尔多瓦共和国	MD	0
 141	摩纳哥	MC	0
@@ -35519,7 +35522,6 @@ COPY basic_country (id, country, code, entityversion) FROM stdin;
 147	尼泊尔	NP	0
 148	德国	DE	0
 149	尼日尔	NE	0
-150	尼日利亚	NG	0
 151	尼加拉瓜	NI	0
 152	纽埃	NU	0
 153	诺福克岛	NF	0
@@ -35527,10 +35529,10 @@ COPY basic_country (id, country, code, entityversion) FROM stdin;
 155	新喀里多尼亚	NC	0
 156	新西兰	NZ	0
 157	阿曼	OM	0
+158	巴基斯坦	PK	0
 159	帕劳	PW	0
 160	被占领巴勒斯坦领土	PS	0
 161	巴拿马	PA	0
-162	巴布亚新几内亚	PG	0
 163	巴拉圭	PY	0
 164	秘鲁	PE	0
 165	皮特凯恩	PN	0
@@ -35539,6 +35541,7 @@ COPY basic_country (id, country, code, entityversion) FROM stdin;
 168	波多黎各	PR	0
 169	葡萄牙	PT	0
 170	南非	ZA	0
+171	中非共和国	CF	0
 172	佛得角	CV	0
 173	工会	RE	0
 174	俄罗斯联邦	RU	0
@@ -35547,7 +35550,6 @@ COPY basic_country (id, country, code, entityversion) FROM stdin;
 177	西撒哈拉	EH	0
 178	圣基茨和尼维斯	KN	0
 179	圣卢西亚	LC	0
-180	圣文森特和格林纳丁斯	VC	0
 181	圣巴特列米	BL	0
 182	圣马丁（法国部分)	MF	0
 183	圣皮埃尔和密克隆	PM	0
@@ -35557,9 +35559,10 @@ COPY basic_country (id, country, code, entityversion) FROM stdin;
 187	圣马力诺	SM	0
 188	塞内加尔	SN	0
 189	塞尔维亚	RS	0
+190	塞舌尔	SC	0
 191	塞拉利昂	SL	0
 192	新加坡	SG	0
-193	圣马丁岛（荷兰部分)	SX	0
+193	圣马丁岛（荷兰部分	SX	0
 194	斯洛伐克	SK	0
 195	斯洛文尼亚	SI	0
 196	索马里	SO	0
@@ -35613,15 +35616,15 @@ COPY basic_country (id, country, code, entityversion) FROM stdin;
 247	赞比亚	ZM	0
 248	津巴布韦	ZW	0
 249	阿拉伯联合酋长国	AE	0
-56	福克兰群岛（马尔维纳斯)	FK	0
-82	荷兰	NL	0
-97	开曼群岛	KY	0
-110	朝鲜民主主义人民共和国	KP	0
-129	马来西亚	MY	0
-138	密克罗尼西亚联邦	FM	0
-158	巴基斯坦	PK	0
-171	中非共和国	CF	0
-190	塞舌尔	SC	0
+55	埃塞俄比亚	ET	0
+56	福克兰群岛（马尔维纳斯）	FK	0
+73	法属圭亚那	GF	0
+86	印度尼西亚	ID	0
+104	吉尔吉斯斯坦	KG	0
+123	前南斯拉夫的马其顿共和国	MK	0
+150	尼日利亚	NG	0
+162	巴布亚新几内亚	PG	0
+180	圣文森特和格林纳丁斯	VC	0
 203	斯瓦尔巴和扬·梅恩	SJ	0
 224	乌兹别克斯坦	UZ	0
 237	圣赫勒拿，阿森松和特里斯坦-达库尼亚	SH	0
@@ -35655,7 +35658,6 @@ SELECT pg_catalog.setval('basic_crew_id_seq', 1, false);
 --
 
 COPY basic_currency (id, currency, alphabeticcode, isocode, minorunit, exchangerate, entityversion) FROM stdin;
-9	Armenian Dram	AMD	51	2	0.00830	0
 2	欧元	EUR	978	2	4.35830	0
 3	列克	ALL	8	2	0.03170	0
 4	阿尔及利亚第纳尔	DZD	12	2	0.03680	0
@@ -35663,6 +35665,7 @@ COPY basic_currency (id, currency, alphabeticcode, isocode, minorunit, exchanger
 6	宽扎	AOA	973	2	0.02440	0
 7	東加勒比元	XCD	951	2	1.49490	0
 8	阿根廷比索	ARS	32	2	0.25810	0
+10	阿鲁班植物志	AWG	533	2	2.26040	0
 11	澳元	AUD	36	2	3.14310	0
 12	阿塞拜疆马纳特	AZN	944	2	2.21680	0
 13	巴哈馬元	BSD	44	2	4.05210	0
@@ -35682,7 +35685,7 @@ COPY basic_currency (id, currency, alphabeticcode, isocode, minorunit, exchanger
 27	挪威克朗	NOK	578	2	0.48960	0
 28	西雷亚尔	BRL	986	2	1.30240	0
 29	文莱元	BND	96	2	2.85420	0
-30	保加利亚列夫	BGN	975	2	2.19980	0
+31	布隆迪法郎	BIF	108	0	0.00240	0
 32	瑞尔	KHR	116	2	0.00100	0
 33	法国法郎	XAF	950	0	0.00660	0
 34	加拿大元	CAD	124	2	3.14020	0
@@ -35700,9 +35703,9 @@ COPY basic_currency (id, currency, alphabeticcode, isocode, minorunit, exchanger
 46	库纳	HRK	191	2	0.57720	0
 47	古巴比索	CUP	192	2	1.00000	0
 48	可兑换比索	CUC	931	2	1.00000	0
-49	荷兰安提列安盾	ANG	532	2	2.27290	0
 50	捷克克朗	CZK	203	2	0.16130	0
 51	丹麦克朗	DKK	208	2	0.58610	0
+52	吉布提法郎	DJF	262	0	0.02260	0
 53	多明尼加比索	DOP	214	2	0.08650	0
 54	埃及镑	EGP	818	2	0.22030	0
 55	萨尔瓦多科隆	SVC	222	2	0.46360	0
@@ -35723,8 +35726,8 @@ COPY basic_currency (id, currency, alphabeticcode, isocode, minorunit, exchanger
 70	伦皮拉	HNL	340	2	0.17220	0
 71	香港元	HKD	344	2	0.52220	0
 72	福林	HUF	348	2	0.01410	0
+73	冰岛克郎	ISK	352	0	0.03600	0
 74	卢比亚	IDR	360	2	0.00030	0
-75	特别提款权	XDR	960	0	5.55200	0
 76	伊朗里亚尔	IRR	364	2	0.00010	0
 77	伊拉克第纳尔	IQD	368	3	0.00340	0
 78	以色列新谢克尔	ILS	376	2	1.08160	0
@@ -35743,17 +35746,17 @@ COPY basic_currency (id, currency, alphabeticcode, isocode, minorunit, exchanger
 91	洛蒂	LSL	426	2	0.30080	0
 92	兰德	ZAR	710	2	0.30660	0
 93	利比里亚元	LRD	430	2	0.04300	0
-95	瑞士法郎	CHF	756	2	4.08710	0
+94	利比亚第纳尔	LYD	434	3	2.84240	0
 96	立陶宛立特	LTL	440	2	1.00000	0
 97	澳门币	MOP	446	2	0.50630	0
 98	代纳尔	MKD	807	2	0.07000	0
 99	马达加斯加阿里亚里	MGA	969	2	0.00130	0
 1	阿富汗尼	AFN	971	2	0.06070	0
-10	阿鲁班植物志	AWG	533	2	2.26040	0
-31	布隆迪法郎	BIF	108	0	0.00240	0
-52	吉布提法郎	DJF	262	0	0.02260	0
-73	冰岛克郎	ISK	352	0	0.03600	0
-94	利比亚第纳尔	LYD	434	3	2.84240	0
+9	亚美尼亚德拉姆	AMD	51	2	0.00830	0
+30	保加利亚列夫	BGN	975	2	2.19980	0
+49	荷兰安提列安盾	ANG	532	2	2.27290	0
+75	特别提款权	XDR	960	0	5.55200	0
+95	瑞士法郎	CHF	756	2	4.08710	0
 100	马拉维克瓦查	MWK	454	2	0.00560	0
 101	马来西亚吉特	MYR	458	2	0.91070	0
 102	鲁菲亚	MVR	462	2	0.26270	0
@@ -35761,7 +35764,7 @@ COPY basic_currency (id, currency, alphabeticcode, isocode, minorunit, exchanger
 104	毛里求斯卢比	MUR	480	2	0.11400	0
 105	亚行账户单位	XUA	965	0	1.00000	0
 106	墨西哥比索	MXN	484	2	0.20020	0
-107	墨西哥Unidad de Inversion（UDI)	MXV	979	2	1.00000	0
+107	墨西哥Unidad de Inversion（UDI）	MXV	979	2	1.00000	0
 108	莫尔多凡	MDL	498	2	0.20280	0
 109	图格里克	MNT	496	2	0.00160	0
 110	迪拉姆	MAD	504	2	0.40340	0
@@ -35815,10 +35818,10 @@ COPY basic_currency (id, currency, alphabeticcode, isocode, minorunit, exchanger
 158	乌干达先令	UGX	800	2	0.00110	0
 159	赫里夫尼亚	UAH	980	2	0.14910	0
 160	阿联酋迪拉姆	AED	784	2	1.10140	0
-161	美元（第二天)	USN	997	2	1.00000	0
-162	美元（同天)	USS	998	2	1.00000	0
+161	美元（第二天）	USN	997	2	1.00000	0
+162	美元（同天）	USS	998	2	1.00000	0
 163	乌拉圭比索	UYU	858	2	0.14250	0
-164	乌拉圭比索（乌拉圭)	UYI	940	0	1.00000	0
+164	乌拉圭比索（乌拉圭）	UYI	940	0	1.00000	0
 165	乌兹别克斯坦和	UZS	860	2	0.00120	0
 166	瓦图	VUV	548	0	0.03710	0
 167	玻利瓦尔	VEF	937	2	0.40510	0
@@ -36044,7 +36047,7 @@ SELECT pg_catalog.setval('basic_palletnumberhelper_id_seq', 1, false);
 --
 
 COPY basic_parameter (id, country_id, currency_id, unit, additionaltextinfooter, company_id, registerproductiontime, reasonneededwhendelayedeffectivedatefrom, earliereffectivedatetotime, reasonneededwhencorrectingtherequestedvolume, reasonneededwhencorrectingdateto, reasonneededwhenchangingstatetodeclined, imageurlinworkplan, hidedescriptioninworkplans, defaultproductionline_id, reasonneededwhenearliereffectivedateto, earliereffectivedatefromtime, defaultaddress, allowquantitychangeinacceptedorder, reasonneededwhendelayedeffectivedateto, justone, registerquantityinproduct, reasonneededwhenchangingstatetointerrupted, registerquantityoutproduct, dontprintordersinworkplans, location_id, typeofproductionrecording, dontprintinputproductsinworkplans, delayedeffectivedatefromtime, registerpiecework, hideemptycolumnsfororders, reasonneededwhenchangingstatetoabandoned, autocloseorder, allowtoclose, dontprintoutputproductsinworkplans, inputproductsrequiredfortype, otheraddress, reasonneededwhenearliereffectivedatefrom, defaultdescription, delayedeffectivedatetotime, hidetechnologyandorderinworkplans, reasonneededwhencorrectingdatefrom, ssccnumberprefix, lowerlimit, negativetrend, upperlimit, positivetrend, dueweight, printoperationatfirstpageinworkplans, averagelaborhourlycostpb, materialcostsusedpb, additionaloverheadpb, materialcostmarginpb, includetpzpb, productioncostmarginpb, averagemachinehourlycostpb, includeadditionaltimepb, batchnumberuniqueness, defaultcoveragefromdays, includedraftdeliveries, coveragetype, hideemptycolumnsforoffers, hideemptycolumnsforrequests, validateproductionrecordtimes, workstationsquantityfromproductionline, allowtechnologytreechangeinpendingorder, lockproductionprogress, hidebarcodeoperationcomponentinworkplans, ignoremissingcomponents, additionaloutputrows, additionalinputrows, allowmultipleregisteringtimeforworker, pricebasedon, takeactualprogressinworkplans, confectionplanrequirereasontypethreshold, confectionplancorrectionreasontype, autogeneratesuborders, automaticsavecoverage, externaldeliveriesextension, warehouse_id, documentstate, positivepurchaseprice, sameordernumber, automaticdeliveriesminstate, possibleworktimedeviation, ordersincludeperiod, includerequirements, entityversion, labelsbtpath, profitpb, registrationpriceoverheadpb, sourceofoperationcostspb, acceptanceevents, useblackbox, generatewarehouseissuestoorders, daysbeforeorderstart, issuelocation_id, consumptionofrawmaterialsbasedonstandards, documentpositionparameters_id, includecomponents, warehouseissuesreservestates, drawndocuments, generatewarehouseissuestodeliveries, issuedquantityuptoneed, documentsstatus, warehouseissueproductssource, productstoissue, trackingcorrectionrecalculatepps, deliveredbiggerthanordered, ordersganttparameters_id, additionalimage, esilcointegrationdir, autorecalculateorder, ppsisautomatic, ppsproducedamountrecalculateplan, ppsalgorithm, baselinkerparameters_id, technologiesgeneratorcopyproductsize, cartonlabelsbtpath, esilcodispositionshiftlocation_id, maxproductsquantity, allowerrorsinmasterorderpositions, companyname_id, hideassignedstaff, fillorderdescriptionbasedontechnologydescription, allowanomalycreationonacceptancerecord, esilcoaccountwithreservationlocation_id, includelevelandsuffix, orderedproductsunit, allowincompleteunits, acceptrecordsfromterminal, allowchangestousedquantityonterminal, includeadditionaltimeps, includetpzps, ordersgenerationnotcompletedates, canchangeprodlineforacceptedorders, generateeachonseparatepage, includewagegroups, ordersgeneratedbycoverage, automaticallygenerateordersforcomponents, seteffectivedatefromoninprogress, seteffectivedatetooncompleted, copydescription, exporttopdfonlyvisiblecolumns, additionalcartonlabelsquantity, maxcartonlabelsquantity, exporttocsvonlyvisiblecolumns, flagpercentageofexecutionwithcolor, opertaskflagpercentexecutionwithcolor, automaticclosingoforderwithingroups, copynotesfrommasterorderposition, manuallysendwarehousedocuments, realizationfromstock, alwaysorderitemswithpersonalization, selectorder, availabilityofrawmaterials, selectoperationaltask, stoppages, repair, employeeprogress, includeunacceptableproduction, calculateamounttimeemployeesonacceptancerecord, notshowtasksdownloadedbyanotheremployee, createcollectiveorders, completemasterorderafterorderingpositions, hideorderedproductworkplan, selectiontasksbyorderdateinterminal, showprogress, showdelays, requiresupplieridentification, numberpattern_id, generatebatchfororderedproduct, generatebatchoforderedproduct, acceptbatchtrackingwhenclosingorder, completewarehousesflowwhilechecking, qualitycontrol, finalqualitycontrolwithoutresources, terminalproductattribute_id, oeefor, oeeworktimefrom, range, division_id, showqronordersgrouppdf, advisestartdateoftheorder, orderstartdatebasedon, showchartondashboard, whattoshowondashboard, dashboardoperation_id, dashboardcomponentslocation_id, dashboardproductsinputlocation_id, momentofvalidation, moveproductstosubsequentoperations, demandcausesofwastes, wmsapk, wmsversion, applicationconfigured, materialcostsused, usenominalcostpricenotspecified, sourceofoperationcosts, standardlaborcost_id, averagemachinehourlycost, averagelaborhourlycost, includetpz, includeadditionaltime, materialcostmargin, productioncostmargin, additionaloverhead, registrationpriceoverhead, profit, applicationconfigurationfinished, generatepacksfororders, includepacksgeneratingprocessesfororder, optimalpacksize, restfeedinglastpack, deliveryusenominalcostwhenpricenotspecified, deliverypricefillbasedon, allowcheckedtechnologywithoutinproducts, requireassortment, changeorderdatesbasedonchangegroupdates, acceptedtechnologymarkedasdefault, terminalscanning, processsource, showproductdescriptiononordersgrouppdf, attributeonordersgrouppdf_id, copyattributestosizeproducts, materialcostsusedmc, usenominalcostpricenotspecifiedmc, productattribute_id, materialattribute_id, attributeonthelabel_id, requiretypeoffault, workingstationinputtype, allowchangeordeleteordertechnologicalprocess, technicalproductioncostoverhead, technicalproductioncostoverheadpb, synchronizeadditionalproductdata, processterminalplaceofperformance, emptylabelbtpath, schedulesortorder, workstationassigncriterion, workerassigncriterion, scheduleforbuffer, additionaltimeextendsoperation, synchronizeproductcategory, completenominalcostinarticleandproducts, copynominalcostfamilyofproductssizes, onlypackagesinproduction, bufferstationsshowninchart, allowtasklengthtobeedited, analyzeavailableresources, analyzeplannedquantity, analyzemaxquantity, numberpatternordergroup_id, otcopydescriptionfromproductionorder, setorderdatesbasedontaskdates, automaticallygeneratetasksfororder, automaticallygenerateprocessesfororder, includeadditionaltimesg, includetpzsg, includetpzs, dashboardshowforproduct, dashboardshowdescription, receivedeliveryinordercurrency, sortbyproducttypepriorityordersgrouppdf, attributeonordersgrouprequirementpdf_id, quantitymadeonthebasisofdashboard, producingmorethanplanned, logo, synchronizemasterorderattributes, synchronizedocumentpositionattributes, dashboardordersorting, completestationandemployeeingeneratedtasks, considerexceptionswhenpromptingcurrentshift, productionorderedquantityclosestheorder, receiptofproducts, releaseofmaterials, considerminimumstocklevelwhencreatingproductionorders, fillorderdescriptionbasedonproductdescription, ganttrunadjusterror, checkfortheexistenceofinputproductprices, automaticupdatecostnorms, costssource, automaticreleaseaftergeneration, analyzeactualstaff, analyzeactualstaffmaxquantity, analyzegetquantityfromshiftassignment, setmasterorderdatebasedonorderdates, notshowtasksblockedbyprevious, promptdefaultlinefromtechnology, numberofficelicenses, numberterminallicenses, typeterminallicenses, notshoworderfilters, notincludedateswhenretrievingorders, requirequalityrating, synchronizeproductsize) FROM stdin;
-1	\N	39	pc	\N	1	t	f	0	f	f	f	\N	f	1	f	0	\N	t	f	f	t	f	t	f	\N	02cumulated	f	0	f	f	f	f	f	f	01startOrder	\N	f	\N	0	f	f	0005900125	\N	\N	\N	\N	\N	f	\N	06costForOrder	\N	\N	f	\N	\N	f	01globally	14	f	\N	f	f	f	f	f	f	f	t	\N	\N	f	01nominalProductCost	f	\N	\N	f	f	\N	\N	\N	f	f	f	\N	\N	f	0	\N	\N	\N	02parameters	f	\N	f	\N	\N	t	1	f	f	01transfer	f	f	01accepted	01order	01allInputProducts	f	t	\N	\N	\N	f	f	f	\N	\N	\N	\N	\N	150	\N	\N	f	t	f	\N	t	\N	f	f	t	f	f	f	t	f	f	f	f	f	f	t	f	50	3000	f	t	t	f	f	f	f	f	t	f	t	t	t	f	t	f	f	f	f	f	f	f	f	f	\N	\N	f	f	t	t	f	\N	01productionLine	01staffWorkTimes	01oneDivision	\N	f	t	03endDateLastOrderOnTheLine	t	01orders	\N	\N	\N	01orderAcceptance	t	f	\N	\N	f	01nominal	f	01technologyOperation	\N	\N	\N	f	f	0.00000	0.00000	0.00000	0.00000	0.00000	f	f	f	\N	\N	f	01lastPurchasePrice	f	f	f	f	01operationNumber	01orderPackages	f	\N	f	01nominal	f	\N	\N	\N	f	01scanTheNumber	f	0.00000	0.00000	f	01workstation	\N	01desc	01shortestTime	01workstationLastOperatorLatestFinished	f	t	t	f	f	f	f	f	f	f	\N	\N	f	f	f	f	\N	\N	t	01number	f	f	t	\N	01approvedProduction	t	\N	f	f	01startDate	f	f	f	01onAcceptanceRegistrationRecord	01onAcceptanceRegistrationRecord	f	f	t	f	f	01mes	f	f	\N	f	f	f	t	10000	10000	03over51Employees	f	f	t	f
+1	\N	39	一块	\N	1	t	f	0	f	f	f	\N	f	1	f	0	\N	t	f	f	t	f	t	f	\N	02cumulated	f	0	f	f	f	f	f	f	01startOrder	\N	f	\N	0	f	f	0005900125	\N	\N	\N	\N	\N	f	\N	06costForOrder	\N	\N	f	\N	\N	f	01globally	14	f	\N	f	f	f	f	f	f	f	t	\N	\N	f	01nominalProductCost	f	\N	\N	f	f	\N	\N	\N	f	f	f	\N	\N	f	0	\N	\N	\N	02parameters	f	\N	f	\N	\N	t	1	f	f	01transfer	f	f	01accepted	01order	01allInputProducts	f	t	\N	\N	\N	f	f	f	\N	\N	\N	\N	\N	150	\N	\N	f	t	f	\N	t	\N	f	f	t	f	f	f	t	f	f	f	f	f	f	t	f	50	3000	f	t	t	f	f	f	f	f	t	f	t	t	t	f	t	f	f	f	f	f	f	f	f	f	\N	\N	f	f	t	t	f	\N	01productionLine	01staffWorkTimes	01oneDivision	\N	f	t	03endDateLastOrderOnTheLine	t	01orders	\N	\N	\N	01orderAcceptance	t	f	\N	\N	f	01nominal	f	01technologyOperation	\N	\N	\N	f	f	0.00000	0.00000	0.00000	0.00000	0.00000	f	f	f	\N	\N	f	01lastPurchasePrice	f	f	f	f	01operationNumber	01orderPackages	f	\N	f	01nominal	f	\N	\N	\N	f	01scanTheNumber	f	0.00000	0.00000	f	01workstation	\N	01desc	01shortestTime	01workstationLastOperatorLatestFinished	f	t	t	f	f	f	f	f	f	f	\N	\N	f	f	f	f	\N	\N	t	01number	f	f	t	\N	01approvedProduction	t	\N	f	f	01startDate	f	f	f	01onAcceptanceRegistrationRecord	01onAcceptanceRegistrationRecord	f	f	t	f	f	01mes	f	f	\N	f	f	f	t	10000	10000	03over51Employees	f	f	t	f
 \.
 
 
@@ -36059,7 +36062,7 @@ SELECT pg_catalog.setval('basic_parameter_id_seq', 2, false);
 -- Data for Name: basic_product; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY basic_product (id, number, name, globaltypeofmaterial, ean, category, unit, externalnumber, description, parent_id, entitytype, durabilityinmonths, averageoffercost, costfornumber, lastpurchasecost, lastoffercost, isglutenproduct, symbol, averagecost, goodsgroup, nominalcost, bio, isdoublepallet, technologygroup_id, active, createdate, updatedate, createuser, updateuser, quantityofextrusioningredient, norm, actualversion, hasnutritionelements, quantityfornutritions, quantityfornutritionsunit, showinproductdata, doublequantityfordoublepallet, usedquantitycontrol, automaticusedquantity, nominalweight, countusedquantityforfullpallets, quantityinpackage, synchronize, capacitynormfortwodimensionalmachines, downform_id, upform_id, downshelve_id, upshelve_id, costnormsgenerator_id, producer_id, machinepart, drawingnumber, catalognumber, isproductiondate, entityversion, ispallet, additionalunit, fromgenerator, generatorcontext_id, dateformatinqcp5code, assortment_id, isoil, isaroma, capacitynormforthreedimensionalmachines, recommendednumofheadsfortwodimensionalmachines, recommendednumofheadsforthreedimensionalmachines, iscartonlabel, isactivecartonlabelquantity, batchevidence, expirydatevalidity, productform_id, size_id, model_id, supplier_id, nominalcostcurrency_id, averagecostcurrency_id, lastpurchasecostcurrency_id) FROM stdin;
+COPY basic_product (id, number, name, globaltypeofmaterial, ean, category, unit, externalnumber, description, parent_id, entitytype, durabilityinmonths, averageoffercost, costfornumber, lastpurchasecost, lastoffercost, isglutenproduct, symbol, averagecost, goodsgroup, nominalcost, bio, isdoublepallet, technologygroup_id, active, createdate, updatedate, createuser, updateuser, quantityofextrusioningredient, norm, actualversion, hasnutritionelements, quantityfornutritions, quantityfornutritionsunit, showinproductdata, doublequantityfordoublepallet, usedquantitycontrol, automaticusedquantity, nominalweight, countusedquantityforfullpallets, quantityinpackage, synchronize, capacitynormfortwodimensionalmachines, downform_id, upform_id, downshelve_id, upshelve_id, costnormsgenerator_id, producer_id, machinepart, drawingnumber, catalognumber, isproductiondate, entityversion, ispallet, additionalunit, fromgenerator, generatorcontext_id, dateformatinqcp5code, assortment_id, isoil, isaroma, capacitynormforthreedimensionalmachines, recommendednumofheadsfortwodimensionalmachines, recommendednumofheadsforthreedimensionalmachines, iscartonlabel, isactivecartonlabelquantity, batchevidence, expirydatevalidity, productform_id, size_id, model_id, supplier_id, nominalcostcurrency_id, averagecostcurrency_id, lastpurchasecostcurrency_id, expirydatevalidityunit) FROM stdin;
 \.
 
 
@@ -38772,6 +38775,7 @@ COPY jointable_group_role (group_id, role_id) FROM stdin;
 4	146
 2	146
 3	146
+2	148
 \.
 
 
@@ -39303,7 +39307,7 @@ SELECT pg_catalog.setval('masterorders_productsbysizeentryhelper_id_seq', 1, fal
 -- Data for Name: masterorders_productsbysizehelper; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY masterorders_productsbysizehelper (id, product_id, totalquantity, masterorder_id, salesplan_id) FROM stdin;
+COPY masterorders_productsbysizehelper (id, product_id, totalquantity, masterorder_id, salesplan_id, ordersgroup_id) FROM stdin;
 \.
 
 
@@ -42081,47 +42085,47 @@ SELECT pg_catalog.setval('qcadoomodel_dictionary_id_seq', 24, true);
 --
 
 COPY qcadoomodel_dictionaryitem (id, name, externalnumber, description, technicalcode, dictionary_id, active, entityversion, isinteger, priority) FROM stdin;
-1	欧洲托盘协会	\N	\N	01epal	5	t	0	f	2
+1	欧标托盘	\N	\N	01epal	5	t	0	f	2
+2	集保欧标托盘	\N	\N	02chepEur	5	t	0	f	1
 3	主要	\N	\N	01main	4	t	0	f	1
-4	白色的	\N	#ffffff	01white	2	t	0	f	1
+4	白色	\N	#ffffff	01white	2	t	0	f	1
 5	灰色	\N	#bfbfbf	02grey	2	t	0	f	5
-6	黄色的	\N	#ffff99	03yellow	2	t	0	f	4
+6	黄色	\N	#ffff99	03yellow	2	t	0	f	4
 7	橙色	\N	#ff944d	04orange	2	t	0	f	2
-8	红色的	\N	#ff6666	05red	2	t	0	f	3
+8	红色	\N	#ff6666	05red	2	t	0	f	3
 9	绿色	\N	#85e085	06green	2	t	0	f	7
 10	蓝色	\N	#66a3ff	07blue	2	t	0	f	6
 11	在线工作	\N	\N	01workOnLine	17	t	0	f	3
 12	病假	\N	\N	\N	17	t	0	f	1
 13	其他任务	\N	\N	02otherCase	17	t	0	f	2
 14	毫米	\N	毫米	\N	1	t	0	f	2
+25	百公升	\N	百公升	\N	1	t	0	f	13
 15	厘米	\N	厘米	\N	1	t	0	f	4
 16	分米	\N	分米	\N	1	t	0	f	1
+26	一块	\N	一块	\N	1	t	0	f	15
 17	米	\N	米	\N	1	t	0	f	7
 18	立方厘米	\N	立方厘米	\N	1	t	0	f	5
-19	平方米	\N	平方米	\N	1	t	0	f	8
-20	水坝	\N	立方分米	\N	1	t	0	f	12
-21	立方米	\N	立方米	\N	1	t	0	f	6
-22	克	\N	克	\N	1	t	0	f	3
-23	千克	\N	千克	\N	1	t	0	f	9
-24	升	\N	升	\N	1	t	0	f	11
-25	一百升	\N	一百升	\N	1	t	0	f	13
-26	一块	\N	一块	\N	1	t	0	f	15
 27	一对	\N	一对	\N	1	t	0	f	14
-28	设置	\N	设置	\N	1	t	0	f	10
+19	平方米	\N	平方米	\N	1	t	0	f	8
+20	立方分米	\N	立方分米	\N	1	t	0	f	12
+28	组	\N	组	\N	1	t	0	f	10
+21	立方米	\N	立方米	\N	1	t	0	f	6
 29	雇员缺席	\N	\N	\N	7	t	0	f	2
+22	克	\N	克	\N	1	t	0	f	3
 30	材料交付延迟	\N	\N	\N	7	t	0	f	1
+23	千克	\N	千克	\N	1	t	0	f	9
 31	有缺陷的材料	\N	\N	\N	7	t	0	f	6
+24	升	\N	升	\N	1	t	0	f	11
 32	生产资源超负荷	\N	\N	\N	7	t	0	f	5
 33	机械异常	\N	\N	\N	7	t	0	f	3
 34	其他	\N	\N	\N	7	t	0	f	4
-35	通用打印機	\N	\N	01universalPrinter	\N	t	0	f	2
-36	一台打印機的一切	\N	\N	02allPrinter	\N	t	0	f	4
-37	紙板標籤打印機	\N	\N	03cartonLabelsPrinter	\N	t	0	f	5
-38	托盤標籤打印機	\N	\N	04palletLabelsPrinter	\N	t	0	f	3
-39	不干膠打印機	\N	\N	05stickerPrinter	\N	t	0	f	1
-40	新的	\N	\N	01new	15	t	0	f	2
-41	命令	\N	\N	02ordered	15	t	0	f	1
-2	CHEP EUR	\N	\N	02chepEur	5	t	0	f	1
+35	通用打印机	\N	\N	01universalPrinter	\N	t	0	f	2
+36	打印机工作内容	\N	\N	02allPrinter	\N	t	0	f	4
+37	纸箱标签打印机	\N	\N	03cartonLabelsPrinter	\N	t	0	f	5
+38	托盘标签打印机 	\N	\N	04palletLabelsPrinter	\N	t	0	f	3
+39	标签打印机	\N	\N	05stickerPrinter	\N	t	0	f	1
+40	新的订单	\N	\N	01new	15	t	0	f	2
+41	已生产的订单	\N	\N	02ordered	15	t	0	f	1
 \.
 
 
@@ -42505,6 +42509,7 @@ COPY qcadoosecurity_role (id, identifier, description, entityversion) FROM stdin
 145	ROLE_ATTRIBUTES	\N	0
 146	ROLE_ORDERS_VIEW	\N	0
 147	ROLE_PRODUCTION_LINE_SCHEDULES	\N	0
+148	ROLE_USERS_EDIT	\N	0
 \.
 
 
@@ -42512,17 +42517,17 @@ COPY qcadoosecurity_role (id, identifier, description, entityversion) FROM stdin
 -- Name: qcadoosecurity_role_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('qcadoosecurity_role_id_seq', 147, true);
+SELECT pg_catalog.setval('qcadoosecurity_role_id_seq', 148, true);
 
 
 --
 -- Data for Name: qcadoosecurity_user; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY qcadoosecurity_user (id, username, email, firstname, lastname, enabled, description, password, lastactivity, staff_id, group_id, entityversion, factory_id, ipaddress, showonlymyregistrationrecords, productionline_id) FROM stdin;
-1	superadmin	superadmin@qcadoo.com	generated superadmin	generated superadmin	t	\N	186cf774c97b60a1c106ef718d10970a6a06e06bef89553d9ae65d938a886eae	\N	\N	2	0	\N	\N	f	\N
-2	admin	admin@qcadoo.com	generated admin	generated admin	t	\N	8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918	\N	\N	4	0	\N	\N	f	\N
-3	qcadoo_bot	\N	qcadoo_bot	qcadoo_bot	t	\N	\N	\N	\N	1	0	\N	\N	f	\N
+COPY qcadoosecurity_user (id, username, email, firstname, lastname, enabled, description, password, lastactivity, staff_id, group_id, entityversion, factory_id, ipaddress, showonlymyregistrationrecords, productionline_id, groupchangedate) FROM stdin;
+1	superadmin	superadmin@qcadoo.com	generated superadmin	generated superadmin	t	\N	186cf774c97b60a1c106ef718d10970a6a06e06bef89553d9ae65d938a886eae	\N	\N	2	0	\N	\N	f	\N	2022-05-26 00:00:00
+2	admin	admin@qcadoo.com	generated admin	generated admin	t	\N	8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918	\N	\N	4	0	\N	\N	f	\N	2022-05-26 00:00:00
+3	qcadoo_bot	\N	qcadoo_bot	qcadoo_bot	t	\N	\N	\N	\N	1	0	\N	\N	f	\N	2022-05-26 00:00:00
 \.
 
 
@@ -59737,6 +59742,14 @@ ALTER TABLE ONLY masterorders_productsbysizeentryhelper
 
 ALTER TABLE ONLY masterorders_productsbysizehelper
     ADD CONSTRAINT productsbysizehelper_masterorder_fkey FOREIGN KEY (masterorder_id) REFERENCES masterorders_masterorder(id) DEFERRABLE;
+
+
+--
+-- Name: productsbysizehelper_ordersgroup_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY masterorders_productsbysizehelper
+    ADD CONSTRAINT productsbysizehelper_ordersgroup_fkey FOREIGN KEY (ordersgroup_id) REFERENCES ordersgroups_ordersgroup(id) DEFERRABLE;
 
 
 --

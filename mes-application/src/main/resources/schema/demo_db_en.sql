@@ -5270,7 +5270,8 @@ CREATE TABLE qcadoosecurity_user (
     factory_id bigint,
     ipaddress character varying,
     showonlymyregistrationrecords boolean DEFAULT false,
-    productionline_id bigint
+    productionline_id bigint,
+    groupchangedate timestamp without time zone
 );
 
 
@@ -5558,7 +5559,8 @@ CREATE TABLE basic_product (
     supplier_id bigint,
     nominalcostcurrency_id bigint,
     averagecostcurrency_id bigint,
-    lastpurchasecostcurrency_id bigint
+    lastpurchasecostcurrency_id bigint,
+    expirydatevalidityunit character varying(255) DEFAULT '01months'::character varying
 );
 
 
@@ -17568,7 +17570,8 @@ CREATE TABLE masterorders_productsbysizehelper (
     product_id bigint,
     totalquantity numeric(12,5),
     masterorder_id bigint,
-    salesplan_id bigint
+    salesplan_id bigint,
+    ordersgroup_id bigint
 );
 
 
@@ -36059,7 +36062,7 @@ SELECT pg_catalog.setval('basic_parameter_id_seq', 2, false);
 -- Data for Name: basic_product; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY basic_product (id, number, name, globaltypeofmaterial, ean, category, unit, externalnumber, description, parent_id, entitytype, durabilityinmonths, averageoffercost, costfornumber, lastpurchasecost, lastoffercost, isglutenproduct, symbol, averagecost, goodsgroup, nominalcost, bio, isdoublepallet, technologygroup_id, active, createdate, updatedate, createuser, updateuser, quantityofextrusioningredient, norm, actualversion, hasnutritionelements, quantityfornutritions, quantityfornutritionsunit, showinproductdata, doublequantityfordoublepallet, usedquantitycontrol, automaticusedquantity, nominalweight, countusedquantityforfullpallets, quantityinpackage, synchronize, capacitynormfortwodimensionalmachines, downform_id, upform_id, downshelve_id, upshelve_id, costnormsgenerator_id, producer_id, machinepart, drawingnumber, catalognumber, isproductiondate, entityversion, ispallet, additionalunit, fromgenerator, generatorcontext_id, dateformatinqcp5code, assortment_id, isoil, isaroma, capacitynormforthreedimensionalmachines, recommendednumofheadsfortwodimensionalmachines, recommendednumofheadsforthreedimensionalmachines, iscartonlabel, isactivecartonlabelquantity, batchevidence, expirydatevalidity, productform_id, size_id, model_id, supplier_id, nominalcostcurrency_id, averagecostcurrency_id, lastpurchasecostcurrency_id) FROM stdin;
+COPY basic_product (id, number, name, globaltypeofmaterial, ean, category, unit, externalnumber, description, parent_id, entitytype, durabilityinmonths, averageoffercost, costfornumber, lastpurchasecost, lastoffercost, isglutenproduct, symbol, averagecost, goodsgroup, nominalcost, bio, isdoublepallet, technologygroup_id, active, createdate, updatedate, createuser, updateuser, quantityofextrusioningredient, norm, actualversion, hasnutritionelements, quantityfornutritions, quantityfornutritionsunit, showinproductdata, doublequantityfordoublepallet, usedquantitycontrol, automaticusedquantity, nominalweight, countusedquantityforfullpallets, quantityinpackage, synchronize, capacitynormfortwodimensionalmachines, downform_id, upform_id, downshelve_id, upshelve_id, costnormsgenerator_id, producer_id, machinepart, drawingnumber, catalognumber, isproductiondate, entityversion, ispallet, additionalunit, fromgenerator, generatorcontext_id, dateformatinqcp5code, assortment_id, isoil, isaroma, capacitynormforthreedimensionalmachines, recommendednumofheadsfortwodimensionalmachines, recommendednumofheadsforthreedimensionalmachines, iscartonlabel, isactivecartonlabelquantity, batchevidence, expirydatevalidity, productform_id, size_id, model_id, supplier_id, nominalcostcurrency_id, averagecostcurrency_id, lastpurchasecostcurrency_id, expirydatevalidityunit) FROM stdin;
 \.
 
 
@@ -38772,6 +38775,8 @@ COPY jointable_group_role (group_id, role_id) FROM stdin;
 4	146
 2	146
 3	146
+4	148
+2	148
 \.
 
 
@@ -39303,7 +39308,7 @@ SELECT pg_catalog.setval('masterorders_productsbysizeentryhelper_id_seq', 1, fal
 -- Data for Name: masterorders_productsbysizehelper; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY masterorders_productsbysizehelper (id, product_id, totalquantity, masterorder_id, salesplan_id) FROM stdin;
+COPY masterorders_productsbysizehelper (id, product_id, totalquantity, masterorder_id, salesplan_id, ordersgroup_id) FROM stdin;
 \.
 
 
@@ -42505,6 +42510,7 @@ COPY qcadoosecurity_role (id, identifier, description, entityversion) FROM stdin
 145	ROLE_ATTRIBUTES	\N	0
 146	ROLE_ORDERS_VIEW	\N	0
 147	ROLE_PRODUCTION_LINE_SCHEDULES	\N	0
+148	ROLE_USERS_EDIT	\N	0
 \.
 
 
@@ -42512,17 +42518,17 @@ COPY qcadoosecurity_role (id, identifier, description, entityversion) FROM stdin
 -- Name: qcadoosecurity_role_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('qcadoosecurity_role_id_seq', 147, true);
+SELECT pg_catalog.setval('qcadoosecurity_role_id_seq', 148, true);
 
 
 --
 -- Data for Name: qcadoosecurity_user; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY qcadoosecurity_user (id, username, email, firstname, lastname, enabled, description, password, lastactivity, staff_id, group_id, entityversion, factory_id, ipaddress, showonlymyregistrationrecords, productionline_id) FROM stdin;
-1	superadmin	superadmin@qcadoo.com	generated superadmin	generated superadmin	t	\N	186cf774c97b60a1c106ef718d10970a6a06e06bef89553d9ae65d938a886eae	\N	\N	2	0	\N	\N	f	\N
-2	admin	admin@qcadoo.com	generated admin	generated admin	t	\N	8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918	\N	\N	4	0	\N	\N	f	\N
-3	qcadoo_bot	\N	qcadoo_bot	qcadoo_bot	t	\N	\N	\N	\N	1	0	\N	\N	f	\N
+COPY qcadoosecurity_user (id, username, email, firstname, lastname, enabled, description, password, lastactivity, staff_id, group_id, entityversion, factory_id, ipaddress, showonlymyregistrationrecords, productionline_id, groupchangedate) FROM stdin;
+1	superadmin	superadmin@qcadoo.com	generated superadmin	generated superadmin	t	\N	186cf774c97b60a1c106ef718d10970a6a06e06bef89553d9ae65d938a886eae	\N	\N	2	0	\N	\N	f	\N	2022-05-26 00:00:00
+2	admin	admin@qcadoo.com	generated admin	generated admin	t	\N	8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918	\N	\N	4	0	\N	\N	f	\N	2022-05-26 00:00:00
+3	qcadoo_bot	\N	qcadoo_bot	qcadoo_bot	t	\N	\N	\N	\N	1	0	\N	\N	f	\N	2022-05-26 00:00:00
 \.
 
 
@@ -59737,6 +59743,14 @@ ALTER TABLE ONLY masterorders_productsbysizeentryhelper
 
 ALTER TABLE ONLY masterorders_productsbysizehelper
     ADD CONSTRAINT productsbysizehelper_masterorder_fkey FOREIGN KEY (masterorder_id) REFERENCES masterorders_masterorder(id) DEFERRABLE;
+
+
+--
+-- Name: productsbysizehelper_ordersgroup_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY masterorders_productsbysizehelper
+    ADD CONSTRAINT productsbysizehelper_ordersgroup_fkey FOREIGN KEY (ordersgroup_id) REFERENCES ordersgroups_ordersgroup(id) DEFERRABLE;
 
 
 --

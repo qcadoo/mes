@@ -64,7 +64,7 @@
 
         <dictionary name="additionalUnit" dictionary="units"/>
         <decimal name="conversion" persistent="false">
-            <validatesRange from="0" exclusively="true" />
+            <validatesRange from="0" exclusively="true"/>
         </decimal>
         <hasMany name="additionalCodes" model="additionalCode" joinField="product" cascade="delete"/>
         <belongsTo name="assortment" model="assortment"/>
@@ -77,15 +77,14 @@
         <belongsTo name="productForm" model="forms"/>
         <belongsTo name="size" model="size"/>
         <integer name="expiryDateValidity">
-            <validatesRange from="0" exclusively="true" />
+            <validatesRange from="0" exclusively="true"/>
         </integer>
-
+        <enum name="expiryDateValidityUnit" values="01months,02days" default="01months" required="true"/>
         <belongsTo name="model" model="model"/>
         <belongsTo name="modelAssortment" model="assortment" persistent="false"/>
         <boolean name="batchEvidence" default="false"/>
         <boolean name="machinePart"/>
         <boolean name="synchronize" copyable="false"/>
-
     </fields>
 
     <hooks>
@@ -97,14 +96,11 @@
         <validatesWith class="com.qcadoo.mes.basic.hooks.ProductHooks"
                        method="validateCodeUniqueness"/>
 
-        <onCreate class="com.qcadoo.mes.basic.ProductService" method="fillUnit"/>
-        <onCreate class="com.qcadoo.mes.basic.hooks.ProductHooks"
-                  method="calculateConversionOnCreate"/>
+        <onCreate class="com.qcadoo.mes.basic.hooks.ProductHooks" method="onCreate"/>
 
         <onSave class="com.qcadoo.mes.basic.hooks.ProductHooks" method="onSave"/>
 
-        <onCopy class="com.qcadoo.mes.basic.hooks.ProductHooks" method="clearExternalIdOnCopy"/>
-        <onCopy class="com.qcadoo.mes.basic.hooks.ProductHooks" method="clearFieldsOnCopy"/>
+        <onCopy class="com.qcadoo.mes.basic.hooks.ProductHooks" method="onCopy"/>
 
         <onUpdate class="com.qcadoo.mes.basic.hooks.ProductHooks"
                   method="calculateConversionIfUnitChanged"/>

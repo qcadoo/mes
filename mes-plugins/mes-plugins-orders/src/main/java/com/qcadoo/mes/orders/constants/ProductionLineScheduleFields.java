@@ -25,4 +25,5 @@ public final class ProductionLineScheduleFields {
 
     public static final String DURATION_OF_ORDER_CALCULATED_ON_BASIS = "durationOfOrderCalculatedOnBasis";
 
+    public static final String STATE = "state";
 }

@@ -29,7 +29,7 @@
       xmlns="http://schema.qcadoo.org/view"
       xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
       name="trackingOperationProductOutComponentDetails" modelName="trackingOperationProductOutComponent"
-      windowHeight="600">
+      windowHeight="640">
 
     <component type="window" name="window">
 

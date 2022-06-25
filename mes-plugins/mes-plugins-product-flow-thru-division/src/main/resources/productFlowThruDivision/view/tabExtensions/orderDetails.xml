@@ -30,33 +30,33 @@
                     plugin="orders" view="orderDetails">
 
     <windowTab name="staffTab" reference="staffTab">
-        <component type="gridLayout" name="gridLayout" columns="9"
+        <component type="gridLayout" name="gridLayout" columns="18"
                    rows="6" hasBorders="false">
-            <layoutElement column="1" row="1" width="2">
+            <layoutElement column="1" row="1" width="5">
                 <component type="input" name="plannedStaff"
                            reference="plannedStaff" defaultEnabled="false">
                     <option type="alignment" value="right"/>
                     <option type="labelWidth" value="50"/>
                 </component>
             </layoutElement>
-            <layoutElement column="3" row="1">
+            <layoutElement column="6" row="1">
                 <component type="label" name="plannedStaffLabel">
-                    <option type="labelStyle" value="text"/>
+                    <option type="labelStyle" value="label"/>
                 </component>
             </layoutElement>
-            <layoutElement column="4" row="1" width="2">
+            <layoutElement column="7" row="1" width="5">
                 <component type="input" name="actualStaff"
                            reference="actualStaff" defaultEnabled="false">
                     <option type="alignment" value="right"/>
                     <option type="labelWidth" value="50"/>
                 </component>
             </layoutElement>
-            <layoutElement column="6" row="1">
+            <layoutElement column="12" row="1">
                 <component type="label" name="actualStaffLabel">
-                    <option type="labelStyle" value="text"/>
+                    <option type="labelStyle" value="label"/>
                 </component>
             </layoutElement>
-            <layoutElement column="1" row="2" width="6" height="5">
+            <layoutElement column="1" row="2" width="12" height="5">
                 <component type="lookup" name="staffLookup"
                            reference="staffLookup" field="#{form}.staff"
                            defaultVisible="false" persistent="false" hasLabel="false">

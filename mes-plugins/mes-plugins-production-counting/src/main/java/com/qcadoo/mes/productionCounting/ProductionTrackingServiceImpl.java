@@ -3,19 +3,19 @@
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
  * Version: 1.4
- *
+ * <p>
  * This file is part of Qcadoo.
- *
+ * <p>
  * Qcadoo is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation; either version 3 of the License,
  * or (at your option) any later version.
- *
+ * <p>
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty
  * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU Affero General Public License for more details.
- *
+ * <p>
  * You should have received a copy of the GNU Affero General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
@@ -258,8 +258,18 @@ public class ProductionTrackingServiceImpl implements ProductionTrackingService 
         EntityList trackingOperationProductOutComponents = productionTracking
                 .getHasManyField(ProductionTrackingFields.TRACKING_OPERATION_PRODUCT_OUT_COMPONENTS);
         List<Entity> copiedTrackingOperationProductOutComponents = Lists.newArrayList();
-        trackingOperationProductOutComponents.forEach(t -> copiedTrackingOperationProductOutComponents.add(t.getDataDefinition()
-                .copy(t.getId()).get(0)));
+        trackingOperationProductOutComponents.forEach(t -> {
+
+            Entity operationProductOutComponent = t.getDataDefinition()
+                    .copy(t.getId()).get(0);
+
+            List<Entity> copiedLacks = Lists.newArrayList();
+            t.getHasManyField(TrackingOperationProductOutComponentFields.LACKS).forEach(l -> {
+                copiedLacks.add(l.getDataDefinition().copy(l.getId()).get(0));
+            });
+            operationProductOutComponent.setField(TrackingOperationProductOutComponentFields.LACKS, copiedLacks);
+            copiedTrackingOperationProductOutComponents.add(operationProductOutComponent);
+        });
         correctingProductionTracking.setField(ProductionTrackingFields.TRACKING_OPERATION_PRODUCT_OUT_COMPONENTS,
                 copiedTrackingOperationProductOutComponents);
     }
@@ -327,7 +337,7 @@ public class ProductionTrackingServiceImpl implements ProductionTrackingService 
 
     @Override
     public Optional<BigDecimal> calculateGivenQuantity(final Entity trackingOperationProductInComponent,
-            final BigDecimal usedQuantity) {
+                                                       final BigDecimal usedQuantity) {
 
         Entity product = trackingOperationProductInComponent.getBelongsToField(TrackingOperationProductInComponentFields.PRODUCT);
 
@@ -349,7 +359,7 @@ public class ProductionTrackingServiceImpl implements ProductionTrackingService 
 
     @Override
     public Either<Boolean, Optional<Date>> findExpirationDate(final Entity productionTracking, final Entity order,
-            final Entity toc, final Entity batch) {
+                                                              final Entity toc, final Entity batch) {
         if (TypeOfProductionRecording.CUMULATED.getStringValue().equals(
                 order.getStringField(OrderFieldsPC.TYPE_OF_PRODUCTION_RECORDING))) {
 
@@ -384,7 +394,7 @@ public class ProductionTrackingServiceImpl implements ProductionTrackingService 
 
             if (Objects.nonNull(bpcq)
                     && bpcq.getBelongsToField(ProductionCountingQuantityFields.PRODUCT).getId()
-                            .equals(order.getBelongsToField(OrderFields.PRODUCT).getId())) {
+                    .equals(order.getBelongsToField(OrderFields.PRODUCT).getId())) {
                 List<Entity> productionTracingsForOrder = dataDefinitionService
                         .get(ProductionCountingConstants.PLUGIN_IDENTIFIER, ProductionCountingConstants.MODEL_PRODUCTION_TRACKING)
                         .find().add(SearchRestrictions.belongsTo(ProductionTrackingFields.ORDER, order))

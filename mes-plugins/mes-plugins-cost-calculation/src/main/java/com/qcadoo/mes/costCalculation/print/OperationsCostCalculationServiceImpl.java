@@ -49,6 +49,7 @@ import com.qcadoo.mes.operationTimeCalculations.dto.OperationTimesContainer;
 import com.qcadoo.mes.technologies.ProductQuantitiesService;
 import com.qcadoo.mes.technologies.ProductQuantitiesWithComponentsService;
 import com.qcadoo.mes.technologies.dto.ProductQuantitiesHolder;
+import com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperationComponentFieldsTNFO;
 import com.qcadoo.model.api.BigDecimalUtils;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
@@ -120,12 +121,12 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
                 .convertNullToZero(numberService
                         .setScaleWithDefaultMathContext(resultsMap.get(CalculationOperationComponentFields.MACHINE_HOURLY_COST)))
                 .add(BigDecimalUtils.convertNullToZero(numberService
-                        .setScaleWithDefaultMathContext(resultsMap.get(CalculationOperationComponentFields.LABOR_HOURLY_COST))),
+                                .setScaleWithDefaultMathContext(resultsMap.get(CalculationOperationComponentFields.LABOR_HOURLY_COST))),
                         numberService.getMathContext());
     }
 
     private ProductQuantitiesHolder getProductQuantitiesAndOperationRuns(final Entity technology, final BigDecimal quantity,
-            final Entity costCalculation) {
+                                                                         final Entity costCalculation) {
         boolean includeComponents = costCalculation.getBooleanField(CostCalculationFields.INCLUDE_COMPONENTS);
         if (pluginManager.isPluginEnabled(ORDERS_FOR_SUBPRODUCTS_GENERATION) && includeComponents) {
             return productQuantitiesWithComponentsService.getProductComponentQuantities(technology, quantity);
@@ -134,7 +135,7 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
     }
 
     private Map<String, BigDecimal> estimateCostCalculationForHourly(final EntityTreeNode calculationOperationComponent,
-            final OperationTimesContainer realizationTimes, final boolean hourlyCostFromOperation, Entity costCalculation) {
+                                                                     final OperationTimesContainer realizationTimes, final boolean hourlyCostFromOperation, Entity costCalculation) {
         checkArgument(calculationOperationComponent != null, "given operationComponent is empty");
 
         Map<String, BigDecimal> costs = Maps.newHashMapWithExpectedSize(L_COST_KEYS.size());
@@ -175,7 +176,7 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
     }
 
     private Map<String, BigDecimal> estimateHourlyCostCalculationForSingleOperation(final OperationTimes operationTimes,
-            boolean hourlyCostFromOperation, Entity costCalculation) {
+                                                                                    boolean hourlyCostFromOperation, Entity costCalculation) {
         Map<String, BigDecimal> costs = Maps.newHashMap();
 
         MathContext mathContext = numberService.getMathContext();
@@ -203,7 +204,8 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
         BigDecimal durationLaborInHours = durationLabor.divide(BigDecimal.valueOf(3600), mathContext);
 
         BigDecimal operationMachineCost = durationMachineInHours.multiply(machineHourlyCost, mathContext);
-        BigDecimal operationLaborCost = durationLaborInHours.multiply(laborHourlyCost, mathContext);
+        BigDecimal operationLaborCost = durationLaborInHours.multiply(laborHourlyCost, mathContext)
+                .multiply(BigDecimal.valueOf(technologyOperationComponent.getIntegerField(TechnologyOperationComponentFieldsTNFO.MIN_STAFF)), mathContext);
 
         BigDecimal operationCost = operationMachineCost.add(operationLaborCost, mathContext);
 
@@ -222,7 +224,7 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
     }
 
     private void saveGeneratedValues(final Map<String, BigDecimal> costs, final Entity calculationOperationComponent,
-            final OperationWorkTime operationWorkTimes) {
+                                     final OperationWorkTime operationWorkTimes) {
         calculationOperationComponent.setField(CalculationOperationComponentFields.DURATION,
                 new BigDecimal(operationWorkTimes.getDuration(), numberService.getMathContext()));
         calculationOperationComponent.setField(CalculationOperationComponentFields.MACHINE_WORK_TIME,

@@ -34,10 +34,13 @@ import com.qcadoo.mes.costCalculation.print.dto.ComponentsCalculationHolder;
 import com.qcadoo.mes.costCalculation.print.dto.CostCalculationMaterial;
 import com.qcadoo.mes.costCalculation.print.dto.CostCalculationMaterialBySize;
 import com.qcadoo.mes.costNormsForOperation.constants.CalculationOperationComponentFields;
+import com.qcadoo.mes.materialFlowResources.palletBalance.PalletBalanceXlsService;
 import com.qcadoo.mes.technologies.TechnologyService;
 import com.qcadoo.mes.technologies.constants.OperationFields;
 import com.qcadoo.mes.technologies.constants.OperationProductOutComponentFields;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
+import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
+import com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperationComponentFieldsTNFO;
 import com.qcadoo.model.api.BigDecimalUtils;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
@@ -171,7 +174,7 @@ public class CostCalculationXlsService extends XlsDocumentService {
         }
         if (includeComponents) {
             createComponentCostsSheet(componentCosts, createSheet(workbook,
-                    translationService.translate("costCalculation.costCalculation.report.xls.sheet.componentCosts", locale)),
+                            translationService.translate("costCalculation.costCalculation.report.xls.sheet.componentCosts", locale)),
                     locale);
         }
     }
@@ -189,7 +192,7 @@ public class CostCalculationXlsService extends XlsDocumentService {
     }
 
     private void createCalculationResultsSheet(HSSFSheet sheet, Entity costCalculation, List<Entity> calculationResults,
-            Map<Long, Boolean> hasComponents, StylesContainer stylesContainer, Locale locale) {
+                                               Map<Long, Boolean> hasComponents, StylesContainer stylesContainer, Locale locale) {
         int rowIndex = 1;
         for (Entity calculationResult : calculationResults) {
             HSSFRow row = sheet.createRow(rowIndex);
@@ -383,12 +386,14 @@ public class CostCalculationXlsService extends XlsDocumentService {
                 6);
         createHeaderCell(stylesContainer, row, translationService
                 .translate("costCalculation.costCalculation.report.xls.sheet.labourCost.employeeWorkTime", locale), 7);
+        createHeaderCell(stylesContainer, row, translationService
+                .translate("costCalculation.costCalculation.report.xls.sheet.labourCost.minStaff", locale), 8);
         createHeaderCell(stylesContainer, row,
                 translationService.translate("costCalculation.costCalculation.report.xls.sheet.labourCost.employeeCost", locale),
-                8);
+                9);
         createHeaderCell(stylesContainer, row,
                 translationService.translate("costCalculation.costCalculation.report.xls.sheet.labourCost.labourCost", locale),
-                9);
+                10);
 
         int rowCounter = 0;
         for (Entity calculationOperationComponent : calculationOperationComponents) {
@@ -412,13 +417,15 @@ public class CostCalculationXlsService extends XlsDocumentService {
                     .getDecimalField(CalculationOperationComponentFields.TOTAL_MACHINE_OPERATION_COST));
             createTimeCell(stylesContainer, row, 7,
                     calculationOperationComponent.getIntegerField(CalculationOperationComponentFields.LABOR_WORK_TIME));
-            createNumericCell(stylesContainer, row, 8, calculationOperationComponent
+            createNumericCell(stylesContainer, row, 8,
+                    technologyOperationComponent.getIntegerField(TechnologyOperationComponentFieldsTNFO.MIN_STAFF));
+            createNumericCell(stylesContainer, row, 9, calculationOperationComponent
                     .getDecimalField(CalculationOperationComponentFields.TOTAL_LABOR_OPERATION_COST));
-            createNumericCell(stylesContainer, row, 9,
+            createNumericCell(stylesContainer, row, 10,
                     calculationOperationComponent.getDecimalField(CalculationOperationComponentFields.OPERATION_COST));
             rowCounter++;
         }
-        for (int i = 0; i <= 9; i++) {
+        for (int i = 0; i <= 10; i++) {
             sheet.autoSizeColumn(i, false);
         }
     }
@@ -501,6 +508,13 @@ public class CostCalculationXlsService extends XlsDocumentService {
         }
         cell.setCellValue(numberService.setScaleWithDefaultMathContext(value, 2).doubleValue());
         cell.setCellStyle(StylesContainer.aligned(stylesContainer.numberStyle, HorizontalAlignment.RIGHT));
+        return cell;
+    }
+
+    private HSSFCell createNumericCell(StylesContainer stylesContainer, HSSFRow row, int column, int value) {
+        HSSFCell cell = row.createCell(column, HSSFCell.CELL_TYPE_NUMERIC);
+        cell.setCellValue(value);
+        cell.setCellStyle(StylesContainer.aligned(stylesContainer.regularStyle, HorizontalAlignment.RIGHT));
         return cell;
     }
 

@@ -24,7 +24,7 @@ public class UserDetailsHooksMF {
 
     public void setupRibbonForAdmin(final ViewDefinitionState view) {
         WindowComponent window = (WindowComponent) view.getComponentByReference(QcadooViewConstants.L_WINDOW);
-        if(!securityService.hasCurrentUserRole("ROLE_SUPERADMIN") && securityService.hasCurrentUserRole("ROLE_ADMIN")){
+        if(!securityService.hasCurrentUserRole("ROLE_USERS_EDIT") && securityService.hasCurrentUserRole("ROLE_ADMIN")){
             RibbonActionItem saveActionItem = window.getRibbon().getGroupByName("actions").getItemByName("save");
             saveActionItem.setEnabled(true);
             saveActionItem.requestUpdate(true);

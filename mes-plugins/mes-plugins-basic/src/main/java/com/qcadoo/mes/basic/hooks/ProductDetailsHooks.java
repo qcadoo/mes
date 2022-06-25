@@ -23,16 +23,6 @@
  */
 package com.qcadoo.mes.basic.hooks;
 
-import static com.qcadoo.mes.basic.constants.ProductFields.CONVERSION_ITEMS;
-import static com.qcadoo.mes.basic.constants.ProductFields.UNIT;
-
-import java.util.Objects;
-
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.stereotype.Service;
-
 import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.basic.constants.ProductFamilyElementType;
 import com.qcadoo.mes.basic.constants.ProductFields;
@@ -43,16 +33,21 @@ import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
-import com.qcadoo.view.api.components.AwesomeDynamicListComponent;
-import com.qcadoo.view.api.components.FieldComponent;
-import com.qcadoo.view.api.components.FormComponent;
-import com.qcadoo.view.api.components.LookupComponent;
-import com.qcadoo.view.api.components.WindowComponent;
+import com.qcadoo.view.api.components.*;
 import com.qcadoo.view.api.components.lookup.FilterValueHolder;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.api.ribbon.RibbonGroup;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
 import com.qcadoo.view.constants.QcadooViewConstants;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.stereotype.Service;
+
+import java.util.Objects;
+
+import static com.qcadoo.mes.basic.constants.ProductFields.CONVERSION_ITEMS;
+import static com.qcadoo.mes.basic.constants.ProductFields.UNIT;
 
 @Service
 public class ProductDetailsHooks {
@@ -71,7 +66,7 @@ public class ProductDetailsHooks {
 
     private static final String L_PRODUCT_MULTI_UPLOAD_LOCALE = "productMultiUploadLocale";
 
-    private static final String[] innerComponents = { ProductFields.SIZE, ProductFields.EXPIRY_DATE_VALIDITY,
+    private static final String[] innerComponents = { ProductFields.SIZE, ProductFields.EXPIRY_DATE_VALIDITY, ProductFields.EXPIRY_DATE_VALIDITY_UNIT,
             ProductFields.PRODUCT_FORM, ProductFields.SHOW_IN_PRODUCT_DATA };
 
     @Autowired
