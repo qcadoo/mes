@@ -51,6 +51,7 @@
                 </bigButton>
             </group>
         </ribbon>
+
         <windowTab name="mainTab">
             <component type="form" name="product" reference="form">
                 <component type="gridLayout" name="gridsLayout" columns="1"
@@ -78,10 +79,12 @@
                         </component>
                     </layoutElement>
                 </component>
+
                 <listener event="addSizes" class="com.qcadoo.mes.basic.listeners.ProductFamilySizesListeners"
                           method="addSizes"/>
             </component>
         </windowTab>
+
         <option type="header" value="false"/>
 
     </component>

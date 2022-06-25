@@ -126,7 +126,7 @@
                 </component>
 
                 <option type="header" value="true"/>
-                <option type="expression" value="#number"/>
+                <option type="expression" value="#number + ' ' + '@masterOrders.salesPlanMaterialRequirementDetails.window.mainTab.salesPlan.salesPlan' + ' ' + #salesPlan.get('number')"/>
 
                 <listener event="generateSalesPlanMaterialRequirement"
                           class="com.qcadoo.mes.masterOrders.listeners.SalesPlanMaterialRequirementDetailsListeners"

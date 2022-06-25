@@ -254,7 +254,7 @@ public class ScheduleStateService extends BasicStateService implements ScheduleS
         return schedulePositionMinStartTimeEntity.getDateField(SchedulePositionFields.START_TIME);
     }
 
-    private void setOrderDateTo(Entity order, Date endTime, Entity orderFromDB) {
+    public void setOrderDateTo(Entity order, Date endTime, Entity orderFromDB) {
         Date finishDateDB = new Date();
         if (orderFromDB.getDateField(OrderFields.FINISH_DATE) != null) {
             finishDateDB = orderFromDB.getDateField(OrderFields.FINISH_DATE);
@@ -265,7 +265,7 @@ public class ScheduleStateService extends BasicStateService implements ScheduleS
         }
     }
 
-    private void setOrderDateFrom(Entity order, Date startTime, Entity orderFromDB) {
+    public void setOrderDateFrom(Entity order, Date startTime, Entity orderFromDB) {
         Date startDateDB = new Date();
         if (orderFromDB.getDateField(OrderFields.START_DATE) != null) {
             startDateDB = orderFromDB.getDateField(OrderFields.START_DATE);

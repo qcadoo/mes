@@ -199,9 +199,11 @@ public class TechnologyServiceO {
     }
 
     public Entity getDefaultTechnology(final Entity product) {
-        SearchResult searchResult = getTechnologyDD().find().setMaxResults(1)
+        SearchResult searchResult = getTechnologyDD().find()
                 .add(SearchRestrictions.eq(TechnologyFields.MASTER, true)).add(SearchRestrictions.eq("active", true))
-                .add(SearchRestrictions.belongsTo(TechnologyFields.PRODUCT, product)).list();
+                .add(SearchRestrictions.belongsTo(TechnologyFields.PRODUCT, product))
+                .add(SearchRestrictions.isNull(TechnologyFields.TECHNOLOGY_TYPE))
+                .list();
 
         if (searchResult.getTotalNumberOfEntities() == 1) {
             return searchResult.getEntities().get(0);
@@ -216,9 +218,10 @@ public class TechnologyServiceO {
     }
 
     private Entity getParentDefaultTechnology(final Entity product) {
-        SearchResult searchResult = getTechnologyDD().find().setMaxResults(1)
+        SearchResult searchResult = getTechnologyDD().find()
                 .add(SearchRestrictions.eq(TechnologyFields.MASTER, true)).add(SearchRestrictions.eq("active", true))
-                .add(SearchRestrictions.belongsTo(TechnologyFields.PRODUCT, product)).list();
+                .add(SearchRestrictions.belongsTo(TechnologyFields.PRODUCT, product))
+                .add(SearchRestrictions.isNull(TechnologyFields.TECHNOLOGY_TYPE)).list();
         if (searchResult.getTotalNumberOfEntities() == 1) {
             return searchResult.getEntities().get(0);
         } else {

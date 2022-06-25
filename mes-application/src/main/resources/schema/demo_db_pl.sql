@@ -38772,6 +38772,7 @@ COPY jointable_group_role (group_id, role_id) FROM stdin;
 3	146
 4	146
 2	146
+4	148
 \.
 
 
@@ -42505,6 +42506,7 @@ COPY qcadoosecurity_role (id, identifier, description, entityversion) FROM stdin
 145	ROLE_ATTRIBUTES	\N	0
 146	ROLE_ORDERS_VIEW	\N	0
 147	ROLE_PRODUCTION_LINE_SCHEDULES	\N	0
+148	ROLE_USERS_EDIT	\N	0
 \.
 
 
@@ -42512,7 +42514,7 @@ COPY qcadoosecurity_role (id, identifier, description, entityversion) FROM stdin
 -- Name: qcadoosecurity_role_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('qcadoosecurity_role_id_seq', 147, true);
+SELECT pg_catalog.setval('qcadoosecurity_role_id_seq', 148, true);
 
 
 --
