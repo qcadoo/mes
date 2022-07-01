@@ -144,8 +144,8 @@ public class OrderReportPdf extends ReportPdfView {
         headerValues.add(new HeaderPair(OrderFields.STATE, translationService.translate("orders.order.state.value." + order.getStringField(OrderFields.STATE), locale)));
         headerValues.add(new HeaderPair(OrderFields.ORDER_CATEGORY, StringUtils.isEmpty(orderCategory) ? "" : orderCategory));
         headerValues.add(new HeaderPair(OrderFields.DESCRIPTION, StringUtils.isEmpty(description) ? "" : description));
-        headerValues.add(new HeaderPair("productName", Objects.isNull(product) ? "" : product.getStringField(ProductFields.NAME)));
         headerValues.add(new HeaderPair("productNumber", Objects.isNull(product) ? "" : product.getStringField(ProductFields.NUMBER)));
+        headerValues.add(new HeaderPair("productName", Objects.isNull(product) ? "" : product.getStringField(ProductFields.NAME)));
 
         if (PluginUtils.isEnabled("productionCounting")) {
             headerValues.add(new HeaderPair(L_TYPE_OF_PRODUCTION_RECORDING, translationService.translate("orders.order.typeOfProductionRecording.value." + order.getStringField(L_TYPE_OF_PRODUCTION_RECORDING), locale)));
