@@ -1598,8 +1598,14 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                     editoptions: {
                         dataInit: function (element) {
                             if (getColModelByIndex('expirationDate').editoptions.readonly !== 'readonly') {
-                                var locale = window.locale == 'cn' ? 'zh-CN' : window.locale;
+                                var locale = (window.locale == 'cn') ? 'zh-CN' : window.locale;
+
                                 var options = $.datepicker.regional[locale];
+
+                                if (!options) {
+                                    options = $.datepicker.regional[''];
+                                }
+
                                 options.showOn = 'button';
                                 options.buttonText = '';
                                 options.altField = element;
@@ -1619,8 +1625,14 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                     editoptions: {
                         dataInit: function (element) {
                             if (getColModelByIndex('productionDate').editoptions.readonly !== 'readonly') {
-                                var locale = window.locale == 'cn' ? 'zh-CN' : window.locale;
+                                var locale = (window.locale == 'cn') ? 'zh-CN' : window.locale;
+
                                 var options = $.datepicker.regional[locale];
+
+                                if (!options) {
+                                    options = $.datepicker.regional[''];
+                                }
+
                                 options.showOn = 'button';
                                 options.buttonText = '';
                                 options.altField = element;
