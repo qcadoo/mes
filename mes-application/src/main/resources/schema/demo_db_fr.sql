@@ -35866,6 +35866,7 @@ COPY basic_dashboardbutton (id, parameter_id, identifier, item_id, icon, success
 9	1	basic.dashboardButton.identifier.materialFlow.documentsList	73	/qcadooView/public/css/core/images/dashboard/documents.png	9	f
 10	1	basic.dashboardButton.identifier.ordersTracking.productionTrackingsList	96	/qcadooView/public/css/core/images/dashboard/productionTrackings.png	10	t
 11	1	basic.dashboardButton.identifier.ordersTracking.productionBalancesList	95	/qcadooView/public/css/core/images/dashboard/productionBalances.png	11	t
+12	1	basic.dashboardButton.identifier.ordersTracking.productionRegistrationTerminal	115	/qcadooView/public/css/core/images/dashboard/productionRegistrationTerminal.png	12	f
 \.
 
 
@@ -35873,7 +35874,7 @@ COPY basic_dashboardbutton (id, parameter_id, identifier, item_id, icon, success
 -- Name: basic_dashboardbutton_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('basic_dashboardbutton_id_seq', 12, false);
+SELECT pg_catalog.setval('basic_dashboardbutton_id_seq', 12, true);
 
 
 --
