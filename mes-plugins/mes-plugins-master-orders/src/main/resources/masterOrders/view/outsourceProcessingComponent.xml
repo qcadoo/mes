@@ -27,8 +27,8 @@
 <view defaultAuthorizationRole="ROLE_PLANNING" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
       xmlns="http://schema.qcadoo.org/view"
       xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
-      name="ordersGenerationFromProducts"
-      modelName="ordersGenerationHelper"
+      name="outsourceProcessingComponent"
+      modelName="outsourceProcessingComponentHelper"
       windowHeight="495">
 
     <component type="window" name="window" reference="window">
@@ -37,13 +37,13 @@
                 <bigButton name="back" icon="backIcon24.png" state="enabled" action="#{window}.performBackWithoutConfirm"/>
             </group>
             <group name="actions">
-                <bigButton name="generateOrders" icon="genealogyIcon24.png">
+                <bigButton name="generateOrder" icon="genealogyIcon24.png">
                     <script>
                         <![CDATA[
 					        this.addOnChangeListener({
 						        onClick: function() {
 						            #{form}.performEvent({
-                                        name : 'generateOrders'
+                                        name : 'generateOrder'
 							        });
 						        }
 					        });
@@ -67,12 +67,12 @@
             <component type="form" name="form" reference="form">
                 <script>
                     <![CDATA[
-                        var generateOrders = #{window}.getRibbonItemOrNull("actions.generateOrders");
+                        var generateOrder = #{window}.getRibbonItemOrNull("actions.generateOrder");
 
                         this.addOnChangeListener({
 						    onSetValue: function(value) {
-                                if (generateOrders) {
-                                    generateOrders.enable("#{translate(masterOrders.ordersGenerationFromProducts.ribbon.message.generateOrders)}");
+                                if (generateOrder) {
+                                    generateOrder.enable("#{translate(masterOrders.outsourceProcessingComponent.ribbon.message.generateOrder)}");
                                 }
 						    }
 						});
@@ -80,24 +80,58 @@
                 </script>
 
                 <component type="gridLayout" name="gridLayout" columns="2"
-                           rows="3">
+                           rows="5">
                     <layoutElement column="1" row="1">
-                        <component type="input" name="selectedEntities" reference="selectedEntities"
-                                   field="selectedEntities" defaultVisible="false" defaultEnabled="false"/>
+                        <component type="input" name="selectedEntity" reference="selectedEntity"
+                                   field="selectedEntity" defaultVisible="false" defaultEnabled="false"/>
                         <component type="checkbox" name="generated" defaultVisible="false"
                                    reference="generated" defaultEnabled="false"/>
-                        <component type="input" name="plannedQuantity"
-                                   reference="plannedQuantity" field="plannedQuantity">
-                            <option type="alignment" value="right"/>
+                        <component type="lookup" name="product" reference="product"
+                                   field="product" defaultEnabled="false">
+                            <option type="column" name="name" fields="name" link="true"
+                                    width="200"/>
+                            <option type="column" name="ean" fields="ean"/>
+                            <option type="column" name="assortment" fields="assortment" expression="#assortment['name']"/>
+
+                            <option type="searchable" value="name,ean,assortment"/>
+                            <option type="orderable" value="name,ean,assortment"/>
+
+                            <option type="expression"
+                                    value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name"/>
+                            <option type="fieldCode" value="number"/>
                         </component>
                     </layoutElement>
                     <layoutElement column="1" row="2">
+                        <component type="input" name="quantity"
+                                   reference="quantity" field="quantity">
+                            <option type="alignment" value="right"/>
+                        </component>
+                    </layoutElement>
+                    <layoutElement column="1" row="3">
+                        <component type="lookup" name="technology" reference="technology"
+                                   field="technology">
+                            <option type="column" name="name" fields="name" link="true"
+                                    width="300"/>
+
+                            <option type="searchable" value="name,number"/>
+                            <option type="orderable" value="name,number"/>
+
+                            <option type="expression"
+                                    value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name"/>
+                            <option type="fieldCode" value="number"/>
+
+                            <criteriaModifier
+                                    class="com.qcadoo.mes.masterOrders.criteriaModifier.TechnologyCriteriaModifiersMO"
+                                    method="showAcceptedTechnologyForComponent"/>
+                        </component>
+                    </layoutElement>
+                    <layoutElement column="1" row="4">
                         <component type="calendar" name="dateFrom" field="dateFrom"
                                    reference="dateFrom">
                             <option type="withTimePicker" value="true"/>
                         </component>
                     </layoutElement>
-                    <layoutElement column="1" row="3">
+                    <layoutElement column="1" row="5">
                         <component type="calendar" name="dateTo" field="dateTo"
                                    reference="dateTo">
                             <option type="withTimePicker" value="true"/>
@@ -108,10 +142,16 @@
                 <option type="header" value="true"/>
                 <option type="expression" value=""/>
 
-                <listener event="generateOrders" method="generateOrders"
-                          class="com.qcadoo.mes.masterOrders.listeners.OrdersGenerationFromProductsListeners"/>
+                <listener event="generateOrder" method="generateOrder"
+                          class="com.qcadoo.mes.masterOrders.listeners.OutsourceProcessingComponentListeners"/>
             </component>
         </windowTab>
 
     </component>
+
+    <hooks>
+        <beforeRender
+                class="com.qcadoo.mes.masterOrders.hooks.OutsourceProcessingComponentHooks"
+                method="onBeforeRender"/>
+    </hooks>
 </view>

@@ -21,24 +21,24 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.technologies.constants;
+package com.qcadoo.mes.masterOrders.constants;
 
-public final class ProductFieldsT {
+public final class OutsourceProcessingComponentHelperFields {
 
-    private ProductFieldsT() {
+    private OutsourceProcessingComponentHelperFields() {
 
     }
 
-    public static final String OPERATION_PRODUCT_IN_COMPONENTS = "operationProductInComponents";
+    public static final String PRODUCT = "product";
 
-    public static final String OPERATION_PRODUCT_OUT_COMPONENTS = "operationProductOutComponents";
+    public static final String QUANTITY = "quantity";
 
-    public static final String TECHNOLOGIES = "technologies";
+    public static final String TECHNOLOGY = "technology";
 
-    public static final String TECHNOLOGY_GROUP = "technologyGroup";
+    public static final String DATE_FROM = "dateFrom";
 
-    public static final String PRODUCT_BY_SIZE_GROUPS = "productBySizeGroups";
+    public static final String DATE_TO = "dateTo";
 
-    public static final String OPERATION_PRODUCT_IN_PRODUCTS_DTO = "operationProductInProductsDto";
+    public static final String SELECTED_ENTITY = "selectedEntity";
 
 }
