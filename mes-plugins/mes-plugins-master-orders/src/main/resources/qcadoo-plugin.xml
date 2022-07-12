@@ -96,6 +96,8 @@
         <model:model model="masterOrdersMaterialRequirement" resource="model/masterOrdersMaterialRequirement.xml"/>
         <model:model model="masterOrdersMaterialRequirementProduct" resource="model/masterOrdersMaterialRequirementProduct.xml"/>
 
+        <model:model model="outsourceProcessingComponentHelper" resource="model/outsourceProcessingComponentHelper.xml"/>
+
         <model:dictionary name="masterOrderState"/>
         <model:dictionary name="masterOrderPositionStatus"/>
 
@@ -285,6 +287,8 @@
         <view:view resource="view/masterOrdersMaterialRequirementsList.xml"/>
         <view:view resource="view/masterOrdersMaterialRequirementDetails.xml"/>
 
+        <view:view resource="view/outsourceProcessingComponent.xml"/>
+
         <view:view-ribbon-group resource="view/ribbonExtensions/productsList.xml"/>
 
         <view:view-tab resource="view/tabExtensions/orderDetails.xml"/>
@@ -321,10 +325,20 @@
                         class="com.qcadoo.mes.masterOrders.hooks.OrderDetailsHooksMO"
                         method="fillMasterOrderFields"/>
 
+        <view:view-hook plugin="basic" view="productsList"
+                        type="beforeRender"
+                        class="com.qcadoo.mes.masterOrders.hooks.ProductsListHooksMO"
+                        method="onBeforeRender"/>
+
         <view:view-listener plugin="basic" view="productsList"
                             component="grid" event="generateOrders"
                             class="com.qcadoo.mes.masterOrders.listeners.ProductsListListenersMO"
                             method="generateOrders"/>
+
+        <view:view-listener plugin="basic" view="productsList"
+                            component="grid" event="outsourceProcessingComponent"
+                            class="com.qcadoo.mes.masterOrders.listeners.ProductsListListenersMO"
+                            method="outsourceProcessingComponent"/>
 
         <view:resource uri="public/**/*"/>
 

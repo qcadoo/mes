@@ -35,8 +35,21 @@
                 <![CDATA[
 					this.addOnChangeListener({
 						onClick: function() {
-							if(window.canClose()) {
+							if (window.canClose()) {
 								#{grid}.performEvent('generateOrders', []);
+							}
+						}
+					});
+				]]>
+            </script>
+        </bigButton>
+        <bigButton name="outsourceProcessingComponent" icon="genealogyIcon24.png">
+            <script>
+                <![CDATA[
+					this.addOnChangeListener({
+						onClick: function() {
+							if (window.canClose()) {
+								#{grid}.performEvent('outsourceProcessingComponent', []);
 							}
 						}
 					});

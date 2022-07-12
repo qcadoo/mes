@@ -1,6 +1,7 @@
 <model name="ordersGenerationHelper" auditable="false" insertable="false" updatable="false" deletable="false"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
        xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
+
     <fields>
         <decimal name="plannedQuantity" required="true">
             <validatesRange from="0" exclusively="true"/>
@@ -11,10 +12,9 @@
         <datetime name="dateTo">
         </datetime>
         <string name="selectedEntities" persistent="false"/>
-
     </fields>
-    <hooks>
-        <validatesWith class="com.qcadoo.mes.masterOrders.listeners.OrdersGenerationFromProductsListeners" method="validateDate"/>
 
+    <hooks>
+        <validatesWith class="com.qcadoo.mes.masterOrders.hooks.OrdersGenerationHelperHooks" method="validateDates"/>
     </hooks>
 </model>
