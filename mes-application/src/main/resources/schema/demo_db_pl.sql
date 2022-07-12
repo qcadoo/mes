@@ -17469,6 +17469,37 @@ ALTER SEQUENCE masterorders_ordersgenerationhelper_id_seq OWNED BY masterorders_
 
 
 --
+-- Name: masterorders_outsourceprocessingcomponenthelper; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE masterorders_outsourceprocessingcomponenthelper (
+    id bigint NOT NULL,
+    quantity numeric(12,5),
+    datefrom timestamp without time zone,
+    dateto timestamp without time zone
+);
+
+
+--
+-- Name: masterorders_outsourceprocessingcomponenthelper_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE masterorders_outsourceprocessingcomponenthelper_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: masterorders_outsourceprocessingcomponenthelper_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE masterorders_outsourceprocessingcomponenthelper_id_seq OWNED BY masterorders_outsourceprocessingcomponenthelper.id;
+
+
+--
 -- Name: masterorders_position_deliveryproductquantityhelper; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -31652,6 +31683,13 @@ ALTER TABLE ONLY masterorders_ordersgenerationhelper ALTER COLUMN id SET DEFAULT
 -- Name: id; Type: DEFAULT; Schema: public; Owner: -
 --
 
+ALTER TABLE ONLY masterorders_outsourceprocessingcomponenthelper ALTER COLUMN id SET DEFAULT nextval('masterorders_outsourceprocessingcomponenthelper_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
+--
+
 ALTER TABLE ONLY masterorders_position_deliveryproductquantityhelper ALTER COLUMN id SET DEFAULT nextval('masterorders_position_deliveryproductquantityhelper_id_seq'::regclass);
 
 
@@ -39258,6 +39296,21 @@ COPY masterorders_ordersgenerationhelper (id, plannedquantity, datefrom, dateto)
 --
 
 SELECT pg_catalog.setval('masterorders_ordersgenerationhelper_id_seq', 1, false);
+
+
+--
+-- Data for Name: masterorders_outsourceprocessingcomponenthelper; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY masterorders_outsourceprocessingcomponenthelper (id, quantity, datefrom, dateto) FROM stdin;
+\.
+
+
+--
+-- Name: masterorders_outsourceprocessingcomponenthelper_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('masterorders_outsourceprocessingcomponenthelper_id_seq', 1, false);
 
 
 --
