@@ -37,7 +37,7 @@
         <windowTab name="mainTab" reference="mainTab">
             <component type="form" name="form" reference="form">
                 <component type="gridLayout" name="gridLayout" columns="3"
-                           rows="7">
+                           rows="6">
                     <layoutElement column="1" row="1">
                         <component type="lookup" name="technologicalProcess" field="technologicalProcess"
                                    reference="technologicalProcess" defaultEnabled="never">
@@ -49,23 +49,27 @@
                             <option type="fieldCode" value="name"/>
                         </component>
                     </layoutElement>
-                    <layoutElement column="1" row="2">
+                    <layoutElement column="1" row="2" height="2">
+                        <component type="textarea" name="remarks" field="remarks"
+                                   reference="remarks"/>
+                    </layoutElement>
+                    <layoutElement column="2" row="1">
                         <component type="time" name="tpz" field="tpz"
                                    reference="tpz">
                         </component>
                     </layoutElement>
-                    <layoutElement column="1" row="3">
+                    <layoutElement column="2" row="2">
                         <component type="time" name="tj" field="tj"
                                    reference="tj">
                         </component>
                     </layoutElement>
-                    <layoutElement column="1" row="4">
+                    <layoutElement column="2" row="3">
                         <component type="time" name="additionalTime" field="additionalTime"
                                    reference="additionalTime">
                             <option type="noHours" value="4"/>
                         </component>
                     </layoutElement>
-                    <layoutElement column="1" row="5">
+                    <layoutElement column="2" row="4">
                         <component type="checkbox" name="extendedTimeForSizeGroup" field="extendedTimeForSizeGroup"
                                    reference="extendedTimeForSizeGroup" hasDescription="true">
                             <listener event="onChange"
@@ -73,13 +77,13 @@
                                       method="onChangeRerender"/>
                         </component>
                     </layoutElement>
-                    <layoutElement column="1" row="6">
+                    <layoutElement column="2" row="5">
                         <component type="input" name="increasePercent" field="increasePercent"
                                    reference="increasePercent" defaultEnabled="false">
                             <option type="alignment" value="right"/>
                         </component>
                     </layoutElement>
-                    <layoutElement column="1" row="7">
+                    <layoutElement column="2" row="6">
                         <component type="lookup" name="sizeGroup" field="sizeGroup"
                                    reference="sizeGroup" defaultEnabled="false">
                             <option type="searchable" value="number"/>

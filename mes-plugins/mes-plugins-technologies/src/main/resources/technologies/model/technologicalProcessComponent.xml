@@ -46,6 +46,10 @@
 		<belongsTo name="technologicalProcessList" model="technologicalProcessList" required="true"/>
 		<belongsTo name="technologicalProcess" model="technologicalProcess" required="true"/>
 		<priority name="succession" scope="technologicalProcessList" />
+
+		<string name="remarks">
+			<validatesLength max="2048"/>
+		</string>
 	</fields>
 
 	<hooks>
