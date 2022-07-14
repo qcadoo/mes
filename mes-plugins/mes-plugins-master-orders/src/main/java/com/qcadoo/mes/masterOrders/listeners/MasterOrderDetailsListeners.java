@@ -3,19 +3,19 @@
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
  * Version: 1.4
- *
+ * <p>
  * This file is part of Qcadoo.
- *
+ * <p>
  * Qcadoo is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation; either version 3 of the License,
  * or (at your option) any later version.
- *
+ * <p>
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty
  * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU Affero General Public License for more details.
- *
+ * <p>
  * You should have received a copy of the GNU Affero General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
@@ -25,8 +25,11 @@ package com.qcadoo.mes.masterOrders.listeners;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 
+import com.qcadoo.mes.basic.ParameterService;
+import com.qcadoo.mes.masterOrders.MasterOrderDocumentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -55,11 +58,19 @@ public class MasterOrderDetailsListeners {
 
     private static final String L_WINDOW_ACTIVE_MENU = "window.activeMenu";
 
+    public static final String L_MASTER_ORDER_RELEASE_LOCATION = "masterOrderReleaseLocation";
+
     @Autowired
     private OrdersFromMOProductsGenerationService ordersGenerationService;
 
     @Autowired
+    private MasterOrderDocumentService masterOrderDocumentService;
+
+    @Autowired
     private DataDefinitionService dataDefinitionService;
+
+    @Autowired
+    private ParameterService parameterService;
 
     public void onAddExistingEntity(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
@@ -128,6 +139,20 @@ public class MasterOrderDetailsListeners {
 
         String url = "../page/masterOrders/productsBySize.html";
         view.openModal(url, parameters);
+    }
+
+    public void createReleaseDocument(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        GridComponent masterOrderProductsGrid = (GridComponent) view
+                .getComponentByReference(MasterOrderFields.MASTER_ORDER_PRODUCTS);
+        List<Entity> masterOrderProducts = masterOrderProductsGrid.getSelectedEntities();
+        Entity masterOrderReleaseLocation = parameterService.getParameter().getBelongsToField(L_MASTER_ORDER_RELEASE_LOCATION);
+
+        if (Objects.isNull(masterOrderReleaseLocation)) {
+            view.addMessage("masterOrders.masterOrder.createReleaseDocument.masterOrderReleaseLocationIsEmpty", ComponentState.MessageType.FAILURE);
+            return;
+        }
+
+        masterOrderDocumentService.createReleaseDocument(masterOrderProducts, view);
     }
 
     public void generateOrders(final ViewDefinitionState view, final ComponentState state, final String[] args) {

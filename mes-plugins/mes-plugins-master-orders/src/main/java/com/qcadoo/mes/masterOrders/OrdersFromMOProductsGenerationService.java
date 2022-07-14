@@ -9,6 +9,8 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import com.qcadoo.mes.materialFlow.constants.MaterialFlowConstants;
+import com.qcadoo.mes.materialFlowResources.constants.MaterialFlowResourcesConstants;
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;

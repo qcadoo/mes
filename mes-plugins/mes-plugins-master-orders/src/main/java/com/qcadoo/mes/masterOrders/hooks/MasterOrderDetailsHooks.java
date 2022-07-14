@@ -62,6 +62,8 @@ public class MasterOrderDetailsHooks {
     private static final String L_CREATE_ORDER = "createOrder";
 
     private static final String L_ORDERS_LOOKUP = "ordersLookup";
+    public static final String L_DOCUMENTS = "documents";
+    public static final String L_CREATE_RELEASE_DOCUMENT = "createReleaseDocument";
 
     @Autowired
     private NamedParameterJdbcTemplate jdbcTemplate;
@@ -104,15 +106,24 @@ public class MasterOrderDetailsHooks {
         RibbonGroup orders = (RibbonGroup) window.getRibbon().getGroupByName(L_ORDERS);
         RibbonActionItem createOrder = (RibbonActionItem) orders.getItemByName(L_CREATE_ORDER);
 
+        RibbonGroup documents = (RibbonGroup) window.getRibbon().getGroupByName(L_DOCUMENTS);
+        RibbonActionItem createReleaseDocument = (RibbonActionItem) documents.getItemByName(L_CREATE_RELEASE_DOCUMENT);
+        createReleaseDocument.setMessage("masterOrders.ribbon.documents.createReleaseDocument.message");
         if (masterOrderProductsGrid.getSelectedEntities().isEmpty()) {
             createOrder.setEnabled(false);
-        } else createOrder.setEnabled(masterOrderProductsGrid.getSelectedEntities().size() == 1);
+            createReleaseDocument.setEnabled(false);
+        } else {
+            createOrder.setEnabled(masterOrderProductsGrid.getSelectedEntities().size() == 1);
+            createReleaseDocument.setEnabled(true);
+        }
+
         if (PluginUtils.isEnabled("goodFood") && !masterOrderProductsGrid.getEntities().isEmpty()) {
             createOrder.setEnabled(true);
         } else {
             createOrder.setMessage("masterOrders.order.ribbon.message.selectOneProduct");
         }
         createOrder.requestUpdate(true);
+        createReleaseDocument.requestUpdate(true);
         toggleGenerateButton(view);
         window.requestRibbonRender();
     }
