@@ -5,9 +5,11 @@ import com.qcadoo.mes.productionPerShift.domain.ProgressForDaysContainer;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.plugin.api.PluginUtils;
 import com.qcadoo.plugin.api.RunIfEnabled;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -30,6 +32,17 @@ public class AutomaticPpsExecutorService {
         }
     }
 
+    public void generatePlanProgressForDays(ProgressForDaysContainer progressForDaysContainer, Entity planProductionPerShift, Date startDate) {
+        PpsAlgorithm algorithm = parametersService.getPpsAlgorithm();
+        if (PpsAlgorithm.STANDARD_TECHNOLOGY == algorithm) {
+            callPlanStandardAlgorithm(progressForDaysContainer, planProductionPerShift, startDate, algorithm);
+        } else if (PpsAlgorithm.STANDARD_TECHNOLOGY_AND_AMOUNT_OF_CHANGE == algorithm) {
+            callPlanStandardAlgorithm(progressForDaysContainer, planProductionPerShift, startDate, algorithm);
+        } else if (PpsAlgorithm.USER == algorithm) {
+            callPlanStandardAlgorithm(progressForDaysContainer, planProductionPerShift, startDate, PpsAlgorithm.STANDARD_TECHNOLOGY);
+        }
+    }
+
     private void callUserAlgorithm(ProgressForDaysContainer progressForDaysContainer, Entity productionPerShift) {
         for (AutomaticPpsService service : ppsAlgorithmServices) {
             if (serviceEnabled(service) && isNotStandardAlgorithm(service)) {
@@ -39,12 +52,24 @@ public class AutomaticPpsExecutorService {
     }
 
     private void callStandardAlgorithm(ProgressForDaysContainer progressForDaysContainer, Entity productionPerShift,
-            PpsAlgorithm algorithm) {
+                                       PpsAlgorithm algorithm) {
         for (AutomaticPpsService service : ppsAlgorithmServices) {
             if (serviceEnabled(service)) {
                 String aClass = service.getClass().getSimpleName();
                 if (algorithm.getAlgorithmClass().equalsIgnoreCase(aClass)) {
                     service.generateProgressForDays(progressForDaysContainer, productionPerShift);
+                }
+            }
+        }
+    }
+
+    private void callPlanStandardAlgorithm(ProgressForDaysContainer progressForDaysContainer, Entity planProductionPerShift,
+                                           Date startDate, PpsAlgorithm algorithm) {
+        for (AutomaticPpsService service : ppsAlgorithmServices) {
+            if (serviceEnabled(service)) {
+                String aClass = service.getClass().getSimpleName();
+                if (algorithm.getAlgorithmClass().equalsIgnoreCase(aClass)) {
+                    service.generatePlanProgressForDays(progressForDaysContainer, planProductionPerShift, startDate);
                 }
             }
         }

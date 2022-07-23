@@ -70,4 +70,8 @@ public class ProductionLineScheduleServicePSImpl implements ProductionLineSchedu
         position.setField(ProductionLineSchedulePositionFieldsLCNFO.LINE_CHANGEOVER_NORM, productionLinePositionNewData.getChangeover());
         position.getDataDefinition().fastSave(position);
     }
+
+    @Override
+    public void copyPS() {
+    }
 }

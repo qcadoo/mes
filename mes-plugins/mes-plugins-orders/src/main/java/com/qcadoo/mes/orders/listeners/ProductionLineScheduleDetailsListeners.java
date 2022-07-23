@@ -138,7 +138,7 @@ public class ProductionLineScheduleDetailsListeners {
             boolean skipPosition = getProductionLinesNewFinishDate(productionLinesFinishDates, productionLinesOrders, scheduleStartTime,
                     position, orderProductionLines, orderProductionLinesPositionNewData, durationOfOrderCalculatedOnBasis);
 
-            if (skipPosition) {
+            if (skipPosition || orderProductionLinesPositionNewData.isEmpty()) {
                 continue;
             }
 
@@ -215,14 +215,13 @@ public class ProductionLineScheduleDetailsListeners {
                     productionLineScheduleServicePSExecutorService.createProductionLinePositionNewData(orderProductionLinesPositionNewData,
                             productionLine, finishDate, order, technology, previousOrder);
                 }
-
             } else if (DurationOfOrderCalculatedOnBasis.PLAN_FOR_SHIFT.getStringValue()
                     .equals(durationOfOrderCalculatedOnBasis)) {
                 Optional<BigDecimal> norm = technologyService.getStandardPerformance(technology, productionLine);
                 if (norm.isPresent()) {
                     skipPosition = false;
                     productionLineScheduleServicePPSExecutorService.createProductionLinePositionNewData(orderProductionLinesPositionNewData,
-                            productionLine, finishDate, order.getDataDefinition().get(order.getId()), technology, previousOrder);
+                            productionLine, finishDate, position, technology, previousOrder);
                 }
             }
         }

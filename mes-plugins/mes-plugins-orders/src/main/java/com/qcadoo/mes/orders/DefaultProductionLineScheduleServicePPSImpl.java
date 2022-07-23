@@ -37,12 +37,16 @@ import com.qcadoo.model.api.Entity;
 public class DefaultProductionLineScheduleServicePPSImpl implements ProductionLineScheduleServicePPS {
 
     public void createProductionLinePositionNewData(Map<Long, ProductionLinePositionNewData> orderProductionLinesPositionNewData,
-                                                    Entity productionLine, Date finishDate, Entity order, Entity technology, Entity previousOrder) {
+                                                    Entity productionLine, Date startDate, Entity position, Entity technology, Entity previousOrder) {
     }
 
     @Override
     public void savePosition(Entity position, ProductionLinePositionNewData productionLinePositionNewData) {
         position.getDataDefinition().fastSave(position);
+    }
+
+    @Override
+    public void copyPPS(Entity productionLineSchedule, Entity order, Entity productionLine) {
     }
 
 }

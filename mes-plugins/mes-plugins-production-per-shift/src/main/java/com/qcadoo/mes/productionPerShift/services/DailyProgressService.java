@@ -103,13 +103,10 @@ public class DailyProgressService {
             scb.add(SearchRestrictions.eq(TrackingOperationProductOutComponentFields.PRODUCTION_TRACKING
                     + ".technologyOperationComponent.id", toc.getId()));
         }
-        // scb.add(SearchRestrictions.eq(TrackingOperationProductOutComponentFields.PRODUCTION_TRACKING + ".state",
-        // ProductionTrackingState.ACCEPTED.getStringValue()));
 
         scb.add(SearchRestrictions.belongsTo(TrackingOperationProductOutComponentFields.PRODUCT, product));
-        List<Entity> outProducts = scb.list().getEntities().stream()
-                .filter(outProduct -> isTrackingRecordAcceptedOrChangeInProgress(outProduct)).collect(Collectors.toList());
-        return outProducts;
+        return scb.list().getEntities().stream()
+                .filter(this::isTrackingRecordAcceptedOrChangeInProgress).collect(Collectors.toList());
     }
 
     private boolean isTrackingRecordAcceptedOrChangeInProgress(final Entity outProduct) {

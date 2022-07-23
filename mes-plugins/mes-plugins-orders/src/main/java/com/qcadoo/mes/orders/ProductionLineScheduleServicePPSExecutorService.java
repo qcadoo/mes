@@ -19,10 +19,10 @@ public class ProductionLineScheduleServicePPSExecutorService {
     List<ProductionLineScheduleServicePPS> productionLineScheduleServicesPPS;
 
     public void createProductionLinePositionNewData(Map<Long, ProductionLinePositionNewData> orderProductionLinesPositionNewData,
-                                                    Entity productionLine, Date finishDate, Entity order, Entity technology, Entity previousOrder) {
+                                                    Entity productionLine, Date startDate, Entity position, Entity technology, Entity previousOrder) {
         for (ProductionLineScheduleServicePPS service : productionLineScheduleServicesPPS) {
             if (canRun(service)) {
-                service.createProductionLinePositionNewData(orderProductionLinesPositionNewData, productionLine, finishDate, order, technology, previousOrder);
+                service.createProductionLinePositionNewData(orderProductionLinesPositionNewData, productionLine, startDate, position, technology, previousOrder);
             }
         }
     }
@@ -44,6 +44,14 @@ public class ProductionLineScheduleServicePPSExecutorService {
         for (ProductionLineScheduleServicePPS service : productionLineScheduleServicesPPS) {
             if (canRun(service)) {
                 service.savePosition(position, productionLinePositionNewData);
+            }
+        }
+    }
+
+    public void copyPPS(Entity productionLineSchedule, Entity order, Entity productionLine) {
+        for (ProductionLineScheduleServicePPS service : productionLineScheduleServicesPPS) {
+            if (canRun(service)) {
+                service.copyPPS(productionLineSchedule, order, productionLine);
             }
         }
     }

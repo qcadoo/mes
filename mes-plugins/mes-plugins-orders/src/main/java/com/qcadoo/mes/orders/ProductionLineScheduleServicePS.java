@@ -35,4 +35,6 @@ public interface ProductionLineScheduleServicePS {
                                              Entity productionLine, Date finishDate, Entity order, Entity technology, Entity previousOrder);
 
     void savePosition(Entity position, ProductionLinePositionNewData productionLinePositionNewData);
+
+    void copyPS();
 }
