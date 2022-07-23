@@ -101,6 +101,11 @@
         <model:dictionary name="masterOrderState"/>
         <model:dictionary name="masterOrderPositionStatus"/>
 
+        <model:model-field plugin="basic" model="parameter">
+            <model:belongsTo name="masterOrderReleaseLocation"
+                             model="location" plugin="materialFlow"/>
+        </model:model-field>
+
         <model:model-field plugin="basic" model="product">
             <model:hasMany name="salesPlanProducts" model="salesPlanProduct" plugin="masterOrders" joinField="product"/>
         </model:model-field>

@@ -199,6 +199,21 @@
                     </script>
                 </bigButton>
             </group>
+            <group name="documents" defaultAuthorizationRole="ROLE_PLANNING_ORDERS">
+                <bigButton name="createReleaseDocument" icon="generateIcon24.png">
+                    <script>
+                        <![CDATA[
+							this.addOnChangeListener({
+								onClick: function() {
+									if(window.canClose()) {
+										#{form}.performEvent('createReleaseDocument', []);
+									}
+								}
+							});
+						]]>
+                    </script>
+                </bigButton>
+            </group>
         </ribbon>
 
         <windowTab name="mainTab">
@@ -420,6 +435,10 @@
                 <listener event="generateOrders"
                           class="com.qcadoo.mes.masterOrders.listeners.MasterOrderDetailsListeners"
                           method="generateOrders"/>
+
+                <listener event="createReleaseDocument"
+                          class="com.qcadoo.mes.masterOrders.listeners.MasterOrderDetailsListeners"
+                          method="createReleaseDocument"/>
 
 
                 <listener event="changeState"

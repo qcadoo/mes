@@ -53,11 +53,16 @@
             <option type="column" name="resourceNumber" fields="resource" width="50"
                     expression="#resource?.get('number')"/>
 
+            <option type="column" name="documentId" fields="position"
+                    expression="#position?.get('document')?.get('id')" hidden="true"/>
+
             <option type="column" name="documentDate" fields="position"
                     expression="#position?.get('document')?.get('time')"/>
 
             <option type="column" name="documentNumber" fields="position" width="50"
-                    expression="#position?.get('document')?.get('number')"/>
+                    expression="#position?.get('document')?.get('number')"
+                    link="true" correspondingView="materialFlowResources/documentDetails"
+                    correspondingField="documentId"/>
 
             <option type="column" name="documentName" fields="position"
                     width="50" expression="#position?.get('document')?.get('name')"/>
@@ -65,9 +70,9 @@
             <option type="order" column="productNumber" direction="asc"/>
 
             <option type="searchable"
-                    value="location,productNumber,productName,quantity,documentNumber,documentName,documentDate,resourceNumber"/>
+                    value="location,productNumber,productName,quantity,unit,documentNumber,documentName,documentDate,resourceNumber"/>
             <option type="orderable"
-                    value="location,productNumber,productName,quantity,documentNumber,documentName,documentDate,resourceNumber"/>
+                    value="location,productNumber,productName,quantity,unit,documentNumber,documentName,documentDate,resourceNumber"/>
 
             <option type="creatable" value="false"/>
             <option type="deletable" value="false"/>

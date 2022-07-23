@@ -32,6 +32,30 @@
     <component name="window" type="window" reference="window">
         <ribbon>
             <template name="standardFormTemplate"/>
+            <group name="genericExport">
+                <smallButton name="csv" state="enabled" icon="exportToCsvIcon16.png">
+                    <script>
+                        <![CDATA[
+                            this.addOnChangeListener({
+                                onClick: function() {
+                                    #{technologicalProcessComponents}.performEvent('exportToCsv', ['technologicalProcessComponents'], 'exportToCsv');
+                                }
+                            });
+                        ]]>
+                    </script>
+                </smallButton>
+                <smallButton name="pdf" state="enabled" icon="pdfIcon16.png">
+                    <script>
+                        <![CDATA[
+                            this.addOnChangeListener({
+                                onClick: function() {
+                                    #{technologicalProcessComponents}.performEvent('exportToPdf', ['technologicalProcessComponents'], 'exportToPdf');
+                                }
+                            });
+                        ]]>
+                    </script>
+                </smallButton>
+            </group>
             <group name="technologicalProcesses">
                 <bigButton name="addProcesses" icon="newIcon24.png" action="#{form}.fireEvent(addProcesses);"
                            state="disabled"/>
@@ -84,13 +108,14 @@
                             <option type="column" name="additionalTime" fields="additionalTime" width="40"
                                     expression="T(com.qcadoo.view.api.utils.TimeConverterService).convertTimeToString(#additionalTime)"/>
                             <option type="column" name="extendedTimeForSizeGroup" fields="extendedTimeForSizeGroup"/>
+                            <option type="column" name="remarks" fields="remarks" />
                             <option type="column" name="increasePercent" fields="increasePercent" />
                             <option type="column" name="sizeGroup" fields="sizeGroup" expression="#sizeGroup['number']"/>
 
                             <option type="order" column="succession" direction="asc"/>
 
-                            <option type="searchable" value="technologicalProcess,extendedTimeForSizeGroup,increasePercent,sizeGroup"/>
-                            <option type="orderable" value="technologicalProcess,extendedTimeForSizeGroup,increasePercent,sizeGroup"/>
+                            <option type="searchable" value="technologicalProcess,extendedTimeForSizeGroup,increasePercent,sizeGroup,remarks"/>
+                            <option type="orderable" value="technologicalProcess,extendedTimeForSizeGroup,increasePercent,sizeGroup,remarks"/>
 
                             <option type="correspondingView" value="technologies/technologicalProcessComponentDetails" />
                             <option type="correspondingComponent" value="form" />

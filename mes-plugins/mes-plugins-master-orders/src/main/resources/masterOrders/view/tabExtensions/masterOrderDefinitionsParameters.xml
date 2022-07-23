@@ -79,6 +79,20 @@
                     <option type="labelWidth" value="90"/>
                 </component>
             </layoutElement>
+            <layoutElement column="2" row="3">
+                <component type="lookup" name="masterOrderReleaseLocation" reference="masterOrderReleaseLocation"
+                           field="#{form}.masterOrderReleaseLocation" hasDescription="true" >
+                    <option type="column" name="name" fields="name" link="true"/>
+
+                    <option type="searchable" value="name,number"/>
+                    <option type="orderable" value="name,number"/>
+
+                    <option type="expression"
+                            value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name"/>
+                    <option type="fieldCode" value="number"/>
+                    <option type="labelWidth" value="50"/>
+                </component>
+            </layoutElement>
         </component>
     </windowTab>
 

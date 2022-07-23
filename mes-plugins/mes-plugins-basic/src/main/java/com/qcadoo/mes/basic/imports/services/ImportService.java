@@ -23,23 +23,6 @@
  */
 package com.qcadoo.mes.basic.imports.services;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.util.Comparator;
-import java.util.Map;
-import java.util.Objects;
-import java.util.function.Function;
-
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.util.UriComponentsBuilder;
-
 import com.google.common.base.Throwables;
 import com.google.common.collect.Maps;
 import com.google.common.io.Files;
@@ -62,6 +45,22 @@ import com.qcadoo.view.api.ribbon.Ribbon;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.api.ribbon.RibbonGroup;
 import com.qcadoo.view.constants.QcadooViewConstants;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.util.UriComponentsBuilder;
+
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.Comparator;
+import java.util.Map;
+import java.util.Objects;
+import java.util.function.Function;
 
 @Service
 public abstract class ImportService {
@@ -79,6 +78,8 @@ public abstract class ImportService {
     public static final String L_IMPORT = "import";
 
     private static final String L_IMPORT_FILE = "importFile";
+
+    private static final String L_IMPORTED = "imported";
 
     private static final String L_SHOULD_UPDATE = "shouldUpdate";
 
@@ -113,6 +114,7 @@ public abstract class ImportService {
     public static final String L_CSV = "csv";
 
     public static final String L_XLSX = "xlsx";
+
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
@@ -166,6 +168,8 @@ public abstract class ImportService {
         boolean shouldUpdate = shouldUpdate(view);
 
         FieldComponent importFileField = (FieldComponent) view.getComponentByReference(L_IMPORT_FILE);
+        CheckBoxComponent importedCheckBox = (CheckBoxComponent) view.getComponentByReference(L_IMPORTED);
+
         String filePath = (String) importFileField.getFieldValue();
 
         changeButtonsState(view, false);
@@ -187,6 +191,8 @@ public abstract class ImportService {
                     if (!rollbackOnError && (savedEntities > 0)) {
                         view.addMessage(L_BASIC_IMPORT_SUCCESS_MESSAGE, ComponentState.MessageType.SUCCESS, false,
                                 String.valueOf(savedEntities));
+
+                        importedCheckBox.setChecked(true);
                     }
 
                     view.addMessage(L_BASIC_IMPORT_FAILURE_MESSAGE, ComponentState.MessageType.FAILURE, false,
@@ -200,6 +206,8 @@ public abstract class ImportService {
                 } else {
                     view.addMessage(L_BASIC_IMPORT_SUCCESS_MESSAGE, ComponentState.MessageType.SUCCESS, false,
                             String.valueOf(savedEntities));
+
+                    importedCheckBox.setChecked(true);
                 }
             } catch (Throwable throwable) {
                 Throwables.propagateIfInstanceOf(throwable, FileNotFoundException.class);
@@ -208,7 +216,7 @@ public abstract class ImportService {
                 view.addMessage(L_BASIC_IMPORT_ERROR_GENERIC, ComponentState.MessageType.FAILURE);
 
                 if (LOG.isErrorEnabled()) {
-                    LOG.error("An exception occured while importing file!", throwable);
+                    LOG.error("An exception occurred while importing file!", throwable);
                 }
             }
         }

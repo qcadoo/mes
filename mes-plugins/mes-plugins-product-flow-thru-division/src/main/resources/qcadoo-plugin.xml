@@ -652,6 +652,7 @@
         <view:view-ribbon-group resource="view/ribbonExtensions/productionTrackingDetails.xml"/>
         <view:view-ribbon-group resource="view/ribbonExtensions/costNormsForMaterialsInOrderList.xml"/>
         <view:view-ribbon-group resource="view/ribbonExtensions/detailedProductionCountingAndProgressList.xml"/>
+        <view:view-ribbon-group resource="view/ribbonExtensions/warehouseStocksList.xml"/>
 
         <view:view resource="view/orderWithMaterialAvailabilityList.xml"/>
         <view:view resource="view/ordersWithMaterialAvailabilityList.xml"/>
@@ -788,6 +789,7 @@
         <model:model model="productToIssueCorrectionHelper" resource="model/productToIssueCorrectionHelper.xml"/>
         <model:model model="productAndQuantityHelper" resource="model/productAndQuantityHelper.xml"/>
         <model:model model="materialAvailabilityDto" resource="model/materialAvailabilityDto.xml"/>
+        <model:model model="plannedConsumptionInOrderDto" resource="model/plannedConsumptionInOrderDto.xml"/>
 
         <menu:menu-category name="requirements"/>
 
@@ -802,6 +804,7 @@
         <view:view resource="view/modelCardsList.xml"/>
         <view:view resource="view/modelCardDetails.xml"/>
         <view:view resource="view/modelCardProductDetails.xml"/>
+        <view:view resource="view/plannedConsumptionInOrderList.xml"/>
 
         <menu:menu-item name="warehouseIssue" category="requirements"
                         view="warehouseIssueList" defaultAuthorizationRole="ROLE_REQUIREMENTS"/>
@@ -822,6 +825,16 @@
                             component="form" event="issueForOrder"
                             class="com.qcadoo.mes.productFlowThruDivision.listeners.OrderDetailsListenersPFTD"
                             method="issueForOrder"/>
+
+        <view:view-listener plugin="materialFlowResources" view="warehouseStocksList"
+                            component="grid" event="showPlannedConsumptionInOrders"
+                            class="com.qcadoo.mes.productFlowThruDivision.listeners.WarehouseStocksListListenersPFTD"
+                            method="showPlannedConsumptionInOrders"/>
+
+        <view:view-hook view="warehouseStocksList" type="beforeRender"
+                        plugin="materialFlowResources"
+                        class="com.qcadoo.mes.productFlowThruDivision.listeners.WarehouseStocksListListenersPFTD"
+                        method="onBeforeRender" />
 
     </modules>
 

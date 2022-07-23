@@ -3,19 +3,19 @@
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo Framework
  * Version: 1.4
- *
+ * <p>
  * This file is part of Qcadoo.
- *
+ * <p>
  * Qcadoo is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation; either version 3 of the License,
  * or (at your option) any later version.
- *
+ * <p>
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty
  * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU Affero General Public License for more details.
- *
+ * <p>
  * You should have received a copy of the GNU Affero General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
@@ -80,13 +80,16 @@ public class PPSReportXlsHelper {
         DateTime dateFrom = new DateTime(goodFoodReport.getDateField(PPSReportFields.DATE_FROM));
         Shift shiftFirst = new Shift(shifts.get(0), dateFrom, false);
         List<TimeRange> ranges = shiftFirst.findWorkTimeAt(dateFrom.toLocalDate());
+        if (ranges.isEmpty()) {
+            return Lists.newArrayList();
+        }
         LocalTime startTime = ranges.get(0).getFrom();
         DateTime firstStartShitTime = dateFrom;
         firstStartShitTime = firstStartShitTime.withHourOfDay(startTime.getHourOfDay());
         firstStartShitTime = firstStartShitTime.withMinuteOfHour(startTime.getMinuteOfHour());
 
         Optional<Long> maybeDateTo = getDateToInMills(goodFoodReport, shifts);
-        if(maybeDateTo.isPresent()) {
+        if (maybeDateTo.isPresent()) {
             long dateToInMills = maybeDateTo.get();
             String sql = "select pps from #productionPerShift_productionPerShift as pps where (" + "(" + "('"
                     + firstStartShitTime.toDate().toString() + "' <= pps.order.finishDate and '"
@@ -111,7 +114,7 @@ public class PPSReportXlsHelper {
         DateTime dateTo = new DateTime(goodFoodReport.getDateField(PPSReportFields.DATE_TO));
         Shift shiftEnd = new Shift(shifts.get(shifts.size() - 1), dateTo, false);
         List<TimeRange> rangesEnd = shiftEnd.findWorkTimeAt(dateTo.toLocalDate());
-        if(rangesEnd.isEmpty()) {
+        if (rangesEnd.isEmpty()) {
             return Optional.empty();
         }
         LocalTime endTime = rangesEnd.get(0).getTo();

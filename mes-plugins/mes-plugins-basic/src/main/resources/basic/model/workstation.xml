@@ -60,6 +60,7 @@
     </fields>
 
     <hooks>
+        <onCreate class="com.qcadoo.mes.basic.hooks.WorkstationModelHooks" method="onCreate"/>
         <onDelete class="com.qcadoo.mes.basic.hooks.WorkstationModelHooks" method="onDelete"/>
     </hooks>
 
