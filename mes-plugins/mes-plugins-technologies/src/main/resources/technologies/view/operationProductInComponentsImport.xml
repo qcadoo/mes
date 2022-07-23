@@ -37,12 +37,22 @@
 				<bigButton name="processImportFile" icon="sendIcon24.png" state="enabled">
 					<script>
 						<![CDATA[
-								this.addOnChangeListener({
-									onClick: function() {
-										#{form}.performEvent('processImportFile', []);
-									}
-								});
-							]]>
+							this.addOnChangeListener({
+								onClick: function() {
+									#{form}.performEvent('processImportFile', []);
+								}
+							});
+
+                            #{form}.addOnChangeListener({
+					            onSetValue: function(value) {
+								    var imported = #{imported}.getValue().content.value;
+
+                                    if (imported && imported == true) {
+									    #{window}.performBackWithoutConfirm();
+								    }
+						        }
+					        });
+						]]>
 					</script>
 				</bigButton>
 				<bigButton name="downloadImportSchema" icon="downloadIcon24.png" state="enabled"
@@ -56,6 +66,13 @@
 			<component type="gridLayout" name="gridLayout" columns="3"
 					   rows="1">
 				<layoutElement column="1" row="1" width="2">
+					<component type="checkbox" name="imported" reference="imported">
+						<script>
+							<![CDATA[
+                                this.setVisible(false);
+                            ]]>
+						</script>
+					</component>
 					<component type="file" name="importFile" reference="importFile" hasDescription="true">
 						<script>
 							<![CDATA[

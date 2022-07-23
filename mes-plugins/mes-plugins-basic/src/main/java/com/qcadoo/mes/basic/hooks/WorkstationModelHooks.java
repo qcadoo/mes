@@ -23,20 +23,30 @@
  */
 package com.qcadoo.mes.basic.hooks;
 
-import org.springframework.stereotype.Service;
-
 import com.qcadoo.mes.basic.constants.WorkstationFields;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
+import org.springframework.stereotype.Service;
+
+import java.util.Objects;
 
 @Service
 public class WorkstationModelHooks {
 
-    public boolean onDelete(final DataDefinition dataDefinition, final Entity workstation) {
+    public void onCreate(final DataDefinition workstationDD, final Entity workstation) {
+        if (Objects.isNull(workstation.getField(WorkstationFields.BUFFER))) {
+            workstation.setField(WorkstationFields.BUFFER, false);
+        }
+    }
+
+    public boolean onDelete(final DataDefinition workstationDD, final Entity workstation) {
         boolean canDelete = workstation.getHasManyField(WorkstationFields.SUBASSEMBLIES).isEmpty();
+
         if (!canDelete) {
             workstation.addGlobalError("basic.workstation.delete.hasSubassemblies");
         }
+
         return canDelete;
     }
+
 }

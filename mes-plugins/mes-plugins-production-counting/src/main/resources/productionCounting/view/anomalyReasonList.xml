@@ -24,7 +24,7 @@
     ***************************************************************************
 
 -->
-<view defaultAuthorizationRole="ROLE_PRODUCTION_TRACKING" name="anomalyReasonList"
+<view defaultAuthorizationRole="ROLE_ANOMALIES" name="anomalyReasonList"
       modelName="anomalyReason"
       menuAccessible="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
       xmlns="http://schema.qcadoo.org/view"
