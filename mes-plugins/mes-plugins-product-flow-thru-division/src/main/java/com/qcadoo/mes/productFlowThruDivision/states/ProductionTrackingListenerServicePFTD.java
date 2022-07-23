@@ -33,6 +33,11 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import com.qcadoo.mes.basicProductionCounting.constants.BasicProductionCountingConstants;
+import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityFields;
+import com.qcadoo.mes.productFlowThruDivision.constants.*;
+import com.qcadoo.mes.productionCounting.constants.*;
+import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -62,17 +67,7 @@ import com.qcadoo.mes.materialFlowResources.service.DocumentBuilder;
 import com.qcadoo.mes.materialFlowResources.service.DocumentManagementService;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.states.constants.OrderState;
-import com.qcadoo.mes.productFlowThruDivision.constants.DocumentFieldsPFTD;
 import com.qcadoo.mes.productionCounting.ProductionTrackingService;
-import com.qcadoo.mes.productionCounting.constants.ParameterFieldsPC;
-import com.qcadoo.mes.productionCounting.constants.PriceBasedOn;
-import com.qcadoo.mes.productionCounting.constants.ProdOutResourceAttrValFields;
-import com.qcadoo.mes.productionCounting.constants.ProductionTrackingFields;
-import com.qcadoo.mes.productionCounting.constants.ReceiptOfProducts;
-import com.qcadoo.mes.productionCounting.constants.ReleaseOfMaterials;
-import com.qcadoo.mes.productionCounting.constants.TrackingOperationProductInComponentFields;
-import com.qcadoo.mes.productionCounting.constants.TrackingOperationProductOutComponentFields;
-import com.qcadoo.mes.productionCounting.constants.UsedBatchFields;
 import com.qcadoo.mes.productionCounting.states.constants.ProductionTrackingStateStringValues;
 import com.qcadoo.mes.productionCounting.utils.OrderClosingHelper;
 import com.qcadoo.mes.productionCounting.utils.ProductionTrackingDocumentsHelper;
@@ -135,6 +130,42 @@ public final class ProductionTrackingListenerServicePFTD {
         }
 
         return productionTracking;
+    }
+
+    public boolean notCreateDocumentsForIntermediateRecords(final Entity productionTracking) {
+        Entity order = productionTracking.getBelongsToField(ProductionTrackingFields.ORDER);
+
+        boolean forEach = TypeOfProductionRecording.FOR_EACH.getStringValue().equals(
+                order.getStringField(OrderFieldsPC.TYPE_OF_PRODUCTION_RECORDING));
+
+        if(!forEach) {
+            return false;
+        }
+
+        String receiptOfProducts = parameterService.getParameter().getStringField(ParameterFieldsPC.RECEIPT_OF_PRODUCTS);
+        String releaseOfMaterials = parameterService.getParameter().getStringField(ParameterFieldsPC.RELEASE_OF_MATERIALS);
+
+        boolean documentsOnEndOfTheOrder = ReceiptOfProducts.END_OF_THE_ORDER.getStringValue().equals(receiptOfProducts)
+                && ReleaseOfMaterials.END_OF_THE_ORDER.getStringValue().equals(releaseOfMaterials);
+
+        if(!documentsOnEndOfTheOrder) {
+            return false;
+        }
+
+        Entity toc = productionTracking.getBelongsToField(ProductionTrackingFields.TECHNOLOGY_OPERATION_COMPONENT);
+
+        if (Objects.isNull(toc)) {
+            return false;
+        }
+
+        List<Entity> intermediateRecords = dataDefinitionService.get(BasicProductionCountingConstants.PLUGIN_IDENTIFIER, BasicProductionCountingConstants.MODEL_PRODUCTION_COUNTING_QUANTITY)
+                .find()
+                .add(SearchRestrictions.belongsTo(ProductionCountingQuantityFields.ORDER, order))
+                .add(SearchRestrictions.belongsTo(ProductionCountingQuantityFields.TECHNOLOGY_OPERATION_COMPONENT, toc))
+                .add(SearchRestrictions.eq(ProductionCountingQuantityFieldsPFTD.PRODUCTION_FLOW, ProductionFlowComponent.WAREHOUSE.getStringValue()))
+                .list().getEntities();
+
+        return !intermediateRecords.isEmpty();
     }
 
     public void createWarehouseDocuments(final Entity productionTracking) {
@@ -419,7 +450,6 @@ public final class ProductionTrackingListenerServicePFTD {
                     return inboundForFinalProduct;
                 }
             }
-
             return createInternalInboundDocumentForFinalProducts(locationTo, order, intermediateRecords, true, user);
         } else if (ReceiptOfProducts.END_OF_THE_ORDER.getStringValue().equals(receiptOfProducts)) {
             Entity existingInboundDocument = getDocumentDD().find()
@@ -449,6 +479,14 @@ public final class ProductionTrackingListenerServicePFTD {
                 }
             }
 
+            Optional<Entity> optionalEntity = intermediateRecords.stream().findFirst();
+            if(optionalEntity.isPresent()) {
+                Entity trackingOperationProductOutComponent = optionalEntity.get();
+                Entity pt = trackingOperationProductOutComponent.getBelongsToField(TrackingOperationProductOutComponentFields.PRODUCTION_TRACKING);
+                if(notCreateDocumentsForIntermediateRecords(pt)) {
+                    return null;
+                }
+            }
             return createInternalInboundDocumentForFinalProducts(locationTo, order, intermediateRecords, user);
         } else {
             return null;
@@ -462,7 +500,7 @@ public final class ProductionTrackingListenerServicePFTD {
 
         List<Entity> positions = Lists.newArrayList(existingInboundDocument.getHasManyField(DocumentFields.POSITIONS));
 
-        if(cleanPositionsQuantity) {
+        if (cleanPositionsQuantity) {
             positions.forEach(position -> {
                 position.setField(PositionFields.QUANTITY, BigDecimal.ZERO);
                 position.setField(PositionFields.GIVEN_QUANTITY, BigDecimal.ZERO);

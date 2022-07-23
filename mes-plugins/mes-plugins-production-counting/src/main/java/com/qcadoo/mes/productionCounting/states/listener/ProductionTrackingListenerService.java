@@ -34,6 +34,7 @@ import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuanti
 import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityRole;
 import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityTypeOfMaterial;
 import com.qcadoo.mes.orders.constants.OrderFields;
+import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.mes.orders.states.aop.OrderStateChangeAspect;
 import com.qcadoo.mes.orders.states.constants.OrderState;
 import com.qcadoo.mes.productionCounting.ProductionCountingService;
@@ -51,6 +52,7 @@ import com.qcadoo.mes.states.StateChangeContext;
 import com.qcadoo.mes.states.constants.StateChangeStatus;
 import com.qcadoo.mes.states.service.StateChangeContextBuilder;
 import com.qcadoo.model.api.BigDecimalUtils;
+import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
@@ -108,16 +110,29 @@ public final class ProductionTrackingListenerService {
     @Autowired
     private ParameterService parameterService;
 
+    @Autowired
+    private DataDefinitionService dataDefinitionService;
+
     public void onChangeFromDraftToAny(final Entity productionTracking) {
         productionTracking.setField(ProductionTrackingFields.LAST_STATE_CHANGE_FAILS, false);
         productionTracking.setField(ProductionTrackingFields.LAST_STATE_CHANGE_FAIL_CAUSE, null);
     }
 
     public void validationOnAccept(final Entity productionTracking) {
+        checkIfProductionOrderIsValid(productionTracking);
         checkIfExistsFinalRecord(productionTracking);
         checkIfTimesIsSet(productionTracking);
         checkIfBatchEvidenceSet(productionTracking);
     }
+
+    private void checkIfProductionOrderIsValid(final Entity productionTracking) {
+        Entity order = productionTracking.getBelongsToField(ProductionTrackingFields.ORDER);
+        Entity validatedOrder = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).validate(order);
+        if(!validatedOrder.isValid()) {
+            productionTracking.addGlobalError("productionCounting.productionTracking.error.orderIsInvalid");
+        }
+    }
+
 
     private void checkIfBatchEvidenceSet(final Entity productionTracking) {
         Entity order = productionTracking.getBelongsToField(ProductionTrackingFields.ORDER);
