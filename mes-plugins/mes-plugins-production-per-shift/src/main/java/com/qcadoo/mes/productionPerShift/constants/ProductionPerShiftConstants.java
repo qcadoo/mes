@@ -45,4 +45,10 @@ public final class ProductionPerShiftConstants {
 
     public static final String MODEL_BALANCE = "balance";
 
+    public static final String MODEL_PLAN_PRODUCTION_PER_SHIFT = "planProductionPerShift";
+
+    public static final String MODEL_PLAN_PROGRESS_FOR_DAY = "planProgressForDay";
+
+    public static final String MODEL_PLAN_DAILY_PROGRESS = "planDailyProgress";
+
 }

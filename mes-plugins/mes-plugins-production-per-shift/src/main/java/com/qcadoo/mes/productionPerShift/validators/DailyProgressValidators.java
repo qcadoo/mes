@@ -23,15 +23,19 @@
  */
 package com.qcadoo.mes.productionPerShift.validators;
 
-import com.google.common.base.Optional;
+import static com.qcadoo.model.api.search.SearchProjections.id;
+import static com.qcadoo.model.api.search.SearchRestrictions.belongsTo;
+import static com.qcadoo.model.api.search.SearchRestrictions.idNe;
+import static com.qcadoo.model.api.search.SearchRestrictions.isNotNull;
+
+import java.util.Optional;
+
+import org.springframework.stereotype.Service;
+
 import com.qcadoo.mes.productionPerShift.constants.DailyProgressFields;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
-import org.springframework.stereotype.Service;
-
-import static com.qcadoo.model.api.search.SearchProjections.id;
-import static com.qcadoo.model.api.search.SearchRestrictions.*;
 
 @Service
 public class DailyProgressValidators {
@@ -49,7 +53,7 @@ public class DailyProgressValidators {
         if (dailyProgress.getId() != null) {
             scb.add(idNe(dailyProgress.getId()));
         }
-        if (Optional.fromNullable(scb.setMaxResults(1).uniqueResult()).isPresent()) {
+        if (Optional.ofNullable(scb.setMaxResults(1).uniqueResult()).isPresent()) {
             dailyProgress.addError(dailyProgressDD.getField(DailyProgressFields.SHIFT),
                     "productionPerShift.dailyProgress.shiftAndProgressForDay.mustBeUnique");
             return false;

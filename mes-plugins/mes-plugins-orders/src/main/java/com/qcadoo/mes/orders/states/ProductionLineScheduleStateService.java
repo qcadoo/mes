@@ -1,20 +1,16 @@
 package com.qcadoo.mes.orders.states;
 
-import java.util.Date;
-import java.util.List;
-import java.util.stream.Collectors;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.newstates.BasicStateService;
+import com.qcadoo.mes.orders.ProductionLineScheduleServicePPSExecutorService;
+import com.qcadoo.mes.orders.ProductionLineScheduleServicePSExecutorService;
+import com.qcadoo.mes.orders.constants.DurationOfOrderCalculatedOnBasis;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.constants.ProductionLineScheduleFields;
 import com.qcadoo.mes.orders.constants.ProductionLineSchedulePositionFields;
 import com.qcadoo.mes.orders.constants.ProductionLineScheduleStateChangeFields;
-import com.qcadoo.mes.orders.constants.ScheduleFields;
-import com.qcadoo.mes.orders.constants.SchedulePositionFields;
-import com.qcadoo.mes.orders.hooks.OrderHooks;
 import com.qcadoo.mes.orders.states.constants.ScheduleStateStringValues;
 import com.qcadoo.mes.states.StateChangeEntityDescriber;
 import com.qcadoo.model.api.Entity;
@@ -24,6 +20,12 @@ public class ProductionLineScheduleStateService extends BasicStateService implem
 
     @Autowired
     private ProductionLineScheduleStateChangeDescriber productionLineScheduleStateChangeDescriber;
+
+    @Autowired
+    private ProductionLineScheduleServicePPSExecutorService productionLineScheduleServicePPSExecutorService;
+
+    @Autowired
+    private ProductionLineScheduleServicePSExecutorService productionLineScheduleServicePSExecutorService;
 
     @Override
     public StateChangeEntityDescriber getChangeEntityDescriber() {
@@ -54,13 +56,23 @@ public class ProductionLineScheduleStateService extends BasicStateService implem
     }
 
     private void updateOrderDates(Entity entity) {
+        String durationOfOrderCalculatedOnBasis = entity.getStringField(ProductionLineScheduleFields.DURATION_OF_ORDER_CALCULATED_ON_BASIS);
         for (Entity position : entity.getHasManyField(ProductionLineScheduleFields.POSITIONS)) {
             Entity order = position.getBelongsToField(ProductionLineSchedulePositionFields.ORDER);
+            Entity productionLine = position.getBelongsToField(ProductionLineSchedulePositionFields.PRODUCTION_LINE);
             Entity orderFromDB = order.getDataDefinition().get(order.getId());
             scheduleStateService.setOrderDateFrom(order, position.getDateField(ProductionLineSchedulePositionFields.START_TIME), orderFromDB);
             scheduleStateService.setOrderDateTo(order, position.getDateField(ProductionLineSchedulePositionFields.END_TIME), orderFromDB);
-            order.setField(OrderFields.PRODUCTION_LINE, position.getBelongsToField(ProductionLineSchedulePositionFields.PRODUCTION_LINE));
+            order.setField(OrderFields.PRODUCTION_LINE, productionLine);
             order.getDataDefinition().fastSave(order);
+            if (DurationOfOrderCalculatedOnBasis.TIME_CONSUMING_TECHNOLOGY.getStringValue()
+                    .equals(durationOfOrderCalculatedOnBasis)) {
+                productionLineScheduleServicePSExecutorService.copyPS();
+            } else if (DurationOfOrderCalculatedOnBasis.PLAN_FOR_SHIFT.getStringValue()
+                    .equals(durationOfOrderCalculatedOnBasis)) {
+                productionLineScheduleServicePPSExecutorService.copyPPS(entity,
+                        order, productionLine);
+            }
         }
     }
 }

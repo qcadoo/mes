@@ -45,4 +45,8 @@ public class DefaultProductionLineScheduleServicePSImpl implements ProductionLin
         position.getDataDefinition().fastSave(position);
     }
 
+    @Override
+    public void copyPS() {
+    }
+
 }

@@ -24,18 +24,16 @@
     ***************************************************************************
 
 -->
-<model name="dailyProgress" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<model name="planDailyProgress" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns="http://schema.qcadoo.org/model"
        xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
     <fields>
-        <belongsTo name="progressForDay" model="progressForDay"/>
+        <belongsTo name="progressForDay" model="planProgressForDay"/>
         <belongsTo name="shift" model="shift" plugin="basic" required="true"/>
         <decimal name="quantity" required="true">
             <validatesRange from="0"/>
         </decimal>
         <integer name="efficiencyTime" />
-        <!-- set to true if this progress' plan should not be editable by the user via PPS view -->
-        <boolean name="locked" default="false"/>
     </fields>
     <hooks>
         <validatesWith

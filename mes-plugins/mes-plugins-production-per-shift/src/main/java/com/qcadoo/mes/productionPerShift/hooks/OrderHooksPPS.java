@@ -23,15 +23,27 @@
  */
 package com.qcadoo.mes.productionPerShift.hooks;
 
+import static com.qcadoo.model.api.search.SearchProjections.id;
+import static com.qcadoo.model.api.search.SearchRestrictions.eq;
+import static com.qcadoo.model.api.search.SearchRestrictions.idEq;
+
+import java.math.BigDecimal;
+import java.util.Date;
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.google.common.collect.Sets;
-import com.qcadoo.mes.basic.ParameterService;
-import com.qcadoo.mes.basicProductionCounting.BasicProductionCountingService;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.states.constants.OrderState;
 import com.qcadoo.mes.productionPerShift.PpsTimeHelper;
 import com.qcadoo.mes.productionPerShift.constants.ProductionPerShiftConstants;
 import com.qcadoo.mes.productionPerShift.constants.ProductionPerShiftFields;
 import com.qcadoo.mes.productionPerShift.constants.ProgressForDayFields;
+import com.qcadoo.mes.productionPerShift.constants.ProgressType;
 import com.qcadoo.mes.productionPerShift.dates.ProgressDatesService;
 import com.qcadoo.mes.productionPerShift.domain.ProgressForDaysContainer;
 import com.qcadoo.mes.productionPerShift.services.AutomaticPpsExecutorService;
@@ -42,18 +54,6 @@ import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.model.api.validators.ErrorMessage;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import java.math.BigDecimal;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
-
-import static com.qcadoo.model.api.search.SearchProjections.id;
-import static com.qcadoo.model.api.search.SearchRestrictions.eq;
-import static com.qcadoo.model.api.search.SearchRestrictions.idEq;
 
 @Service
 public class OrderHooksPPS {
@@ -141,10 +141,10 @@ public class OrderHooksPPS {
                             order.setField(OrderFields.DATE_TO, finishDate);
                         }
                     }
-                    productionPerShift.setField(ProductionPerShiftFields.PLANNED_PROGRESS_TYPE, "01planned");
+                    productionPerShift.setField(ProductionPerShiftFields.PLANNED_PROGRESS_TYPE, ProgressType.PLANNED.getStringValue());
 
                     if (shouldBeCorrected) {
-                        productionPerShift.setField(ProductionPerShiftFields.PLANNED_PROGRESS_TYPE, "02corrected");
+                        productionPerShift.setField(ProductionPerShiftFields.PLANNED_PROGRESS_TYPE, ProgressType.CORRECTED.getStringValue());
 
                         progressForDays
                                 .addAll(productionPerShift.getHasManyField(ProductionPerShiftFields.PROGRES_FOR_DAYS).stream()

@@ -47,4 +47,12 @@ public class ProductionLineScheduleServicePSExecutorService {
             }
         }
     }
+
+    public void copyPS() {
+        for (ProductionLineScheduleServicePS service : productionLineScheduleServicesPS) {
+            if (canRun(service)) {
+                service.copyPS();
+            }
+        }
+    }
 }

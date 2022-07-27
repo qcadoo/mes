@@ -15,10 +15,12 @@ import com.qcadoo.mes.productionPerShift.domain.DailyProgressContainer;
 import com.qcadoo.mes.productionPerShift.domain.DailyProgressKey;
 import com.qcadoo.mes.productionPerShift.domain.ProgressForDaysContainer;
 import com.qcadoo.mes.productionPerShift.domain.ShiftEfficiencyCalculationHolder;
+import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
 import com.qcadoo.model.api.validators.ErrorMessage;
+
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -87,7 +89,7 @@ public abstract class PpsBaseAlgorithmService {
         if (order.getBooleanField(OrderFields.FINAL_PRODUCTION_TRACKING)) {
             plannedQuantity = basicProductionCountingService.getProducedQuantityFromBasicProductionCountings(order);
         }
-        calculateRegisteredQuantity(progressForDaysContainer, order, productionPerShift, plannedQuantity);
+        calculateRegisteredQuantity(progressForDaysContainer, productionPerShift, plannedQuantity);
 
         BigDecimal alreadyPlannedQuantity = BigDecimal.ZERO;
         List<Entity> progressForDays = Lists.newLinkedList();
@@ -101,8 +103,8 @@ public abstract class PpsBaseAlgorithmService {
                 || progressForDaysContainer.getAlreadyRegisteredQuantity().compareTo(BigDecimal.ZERO) > 0) {
 
             DailyProgressContainer dailyProgressContainer = fillDailyProgressWithShifts(progressForDaysContainer,
-                    productionPerShift, order, shifts, currentDate, orderStartDate, shouldBeCorrected, progressForDays.size(),
-                    alreadyPlannedQuantity, allowIncompleteUnits);
+                    productionPerShift, order, order.getBelongsToField(OrderFields.PRODUCTION_LINE), shifts, currentDate,
+                    orderStartDate, shouldBeCorrected, progressForDays.size(), alreadyPlannedQuantity, allowIncompleteUnits);
             if (dailyProgressContainer.isCalculationError()) {
                 progressForDaysContainer.setCalculationError(true);
                 return;
@@ -120,13 +122,65 @@ public abstract class PpsBaseAlgorithmService {
         progressForDaysContainer.setProgressForDays(progressForDays);
     }
 
+    public void generatePlanProgressForDays(ProgressForDaysContainer progressForDaysContainer, Entity planProductionPerShift, Date startDate) {
+        Entity order = progressForDaysContainer.getOrder();
+
+        Entity productionLine = planProductionPerShift.getBelongsToField(PlanProductionPerShiftFields.PRODUCTION_LINE);
+
+        List<Shift> shifts = shiftsService.findAll(productionLine);
+        if (shifts.isEmpty()) {
+            progressForDaysContainer
+                    .addError(new ErrorMessage("productionPerShift.automaticAlgorithm.productionLine.shiftsRequired", false,
+                            productionLine.getStringField(ProductionLineFields.NUMBER)));
+            throw new IllegalStateException("No shifts assigned to production line");
+        }
+
+        boolean allowIncompleteUnits = parameterService.getParameter().getBooleanField(ParameterFieldsPPS.ALLOW_INCOMPLITE_UNITS);
+
+        progressForDaysContainer.setPlannedQuantity(order.getDecimalField(OrderFields.PLANNED_QUANTITY));
+
+        BigDecimal alreadyPlannedQuantity = BigDecimal.ZERO;
+        List<Entity> progressForDays = Lists.newLinkedList();
+
+        DateTime currentDate = new DateTime(startDate);
+        currentDate = currentDate.minusDays(1);
+        currentDate = currentDate.toLocalDate().toDateTimeAtStartOfDay();
+        boolean shouldBeCorrected = progressForDaysContainer.isShouldBeCorrected();
+        int realizationDayNumber = 0;
+        while (progressForDaysContainer.getPlannedQuantity().compareTo(BigDecimal.ZERO) > 0) {
+            DailyProgressContainer dailyProgressContainer = fillDailyProgressWithShifts(progressForDaysContainer,
+                    planProductionPerShift, order, productionLine, shifts, currentDate, startDate, shouldBeCorrected,
+                    progressForDays.size(), alreadyPlannedQuantity, allowIncompleteUnits);
+            if (dailyProgressContainer.isCalculationError()) {
+                progressForDaysContainer.setCalculationError(true);
+                return;
+
+            }
+            List<Entity> dailyProgress = dailyProgressContainer.getDailyProgress();
+            if (!dailyProgress.isEmpty()) {
+                progressForDays
+                        .add(createPlanComponent(realizationDayNumber, currentDate.toDate(), dailyProgress));
+            }
+            currentDate = currentDate.plusDays(1);
+            ++realizationDayNumber;
+        }
+
+        progressForDaysContainer.setProgressForDays(progressForDays);
+    }
+
     private DailyProgressContainer fillDailyProgressWithShifts(ProgressForDaysContainer progressForDaysContainer,
-            Entity productionPerShift, Entity order, List<Shift> shifts, DateTime dateOfDay, Date orderStartDate,
-            boolean shouldBeCorrected, int progressForDayQuantity, BigDecimal alreadyPlannedQuantity,
-            boolean allowIncompleteUnits) {
+                                                               Entity productionPerShift, Entity order, Entity productionLine, List<Shift> shifts, DateTime dateOfDay, Date orderStartDate,
+                                                               boolean shouldBeCorrected, int progressForDayQuantity, BigDecimal alreadyPlannedQuantity,
+                                                               boolean allowIncompleteUnits) {
         DailyProgressContainer dailyProgressContainer = new DailyProgressContainer();
         List<Entity> dailyProgressWithShifts = Lists.newLinkedList();
 
+        DataDefinition dailyProgressDD = dataDefinitionService
+                .get(ProductionPerShiftConstants.PLUGIN_IDENTIFIER, ProductionPerShiftConstants.MODEL_DAILY_PROGRESS);
+        if (ProductionPerShiftConstants.MODEL_PLAN_PRODUCTION_PER_SHIFT.equals(productionPerShift.getDataDefinition().getName())) {
+            dailyProgressDD = dataDefinitionService
+                    .get(ProductionPerShiftConstants.PLUGIN_IDENTIFIER, ProductionPerShiftConstants.MODEL_PLAN_DAILY_PROGRESS);
+        }
         for (Shift shift : shifts) {
             Entity dailyProgress = null;
             if (dailyProgressesWithTrackingRecords != null) {
@@ -143,9 +197,7 @@ public abstract class PpsBaseAlgorithmService {
                 }
                 dailyProgressWithShifts.add(dailyProgress);
             } else if (progressForDaysContainer.getPlannedQuantity().compareTo(BigDecimal.ZERO) > 0) {
-                dailyProgress = dataDefinitionService
-                        .get(ProductionPerShiftConstants.PLUGIN_IDENTIFIER, ProductionPerShiftConstants.MODEL_DAILY_PROGRESS)
-                        .create();
+                dailyProgress = dailyProgressDD.create();
 
                 dailyProgress.setField(DailyProgressFields.SHIFT, shift.getEntity());
 
@@ -153,14 +205,14 @@ public abstract class PpsBaseAlgorithmService {
                 BigDecimal shiftEfficiency = BigDecimal.ZERO;
                 int time = 0;
                 for (DateTimeRange range : shiftExceptionService
-                        .getShiftWorkDateTimes(order.getBelongsToField(OrderFields.PRODUCTION_LINE), shift, dateOfDay, true)) {
+                        .getShiftWorkDateTimes(productionLine, shift, dateOfDay, true)) {
                     if (orderStartDate.after(dateOfDay.toDate())) {
                         range = range.trimBefore(orderStartDateDT);
                     }
                     if (range != null) {
                         ShiftEfficiencyCalculationHolder calculationHolder = calculateShiftEfficiency(progressForDaysContainer,
-                                productionPerShift, shift, order, range, shiftEfficiency, progressForDayQuantity,
-                                allowIncompleteUnits);
+                                productionPerShift, shift, order.getBelongsToField(OrderFields.TECHNOLOGY), productionLine,
+                                range, shiftEfficiency, progressForDayQuantity, allowIncompleteUnits);
                         shiftEfficiency = calculationHolder.getShiftEfficiency();
                         time = time + calculationHolder.getEfficiencyTime();
                     }
@@ -191,7 +243,7 @@ public abstract class PpsBaseAlgorithmService {
     }
 
     private Entity createComponent(final int dayNumber, Date realizationDate, final List<Entity> dailyProgress,
-            boolean shouldBeCorrected) {
+                                   boolean shouldBeCorrected) {
         Entity progressForDay = dataDefinitionService
                 .get(ProductionPerShiftConstants.PLUGIN_IDENTIFIER, ProductionPerShiftConstants.MODEL_PROGRESS_FOR_DAY).create();
 
@@ -204,8 +256,20 @@ public abstract class PpsBaseAlgorithmService {
         return progressForDay;
     }
 
-    private BigDecimal calculateRegisteredQuantity(final ProgressForDaysContainer progressForDaysContainer, final Entity order,
-            final Entity pps, BigDecimal plannedQuantity) {
+    private Entity createPlanComponent(final int dayNumber, Date realizationDate, final List<Entity> dailyProgress) {
+        Entity progressForDay = dataDefinitionService
+                .get(ProductionPerShiftConstants.PLUGIN_IDENTIFIER, ProductionPerShiftConstants.MODEL_PLAN_PROGRESS_FOR_DAY).create();
+
+        progressForDay.setField(ProgressForDayFields.DAY, dayNumber);
+        progressForDay.setField(ProgressForDayFields.DATE_OF_DAY, DateUtils.toDateString(realizationDate));
+        progressForDay.setField(ProgressForDayFields.ACTUAL_DATE_OF_DAY, DateUtils.toDateString(realizationDate));
+        progressForDay.setField(ProgressForDayFields.DAILY_PROGRESS, dailyProgress);
+
+        return progressForDay;
+    }
+
+    private void calculateRegisteredQuantity(final ProgressForDaysContainer progressForDaysContainer,
+                                             final Entity pps, BigDecimal plannedQuantity) {
         BigDecimal alreadyRegisteredQuantity = progressForDaysContainer.getAlreadyRegisteredQuantity();
         if (pps != null) {
             dailyProgressesWithTrackingRecords = dailyProgressService.getDailyProgressesWithTrackingRecords(pps);
@@ -219,10 +283,9 @@ public abstract class PpsBaseAlgorithmService {
         }
         progressForDaysContainer
                 .setPlannedQuantity(plannedQuantity.subtract(alreadyRegisteredQuantity, numberService.getMathContext()));
-        return progressForDaysContainer.getPlannedQuantity();
     }
 
     protected abstract ShiftEfficiencyCalculationHolder calculateShiftEfficiency(
-            ProgressForDaysContainer progressForDaysContainer, Entity productionPerShift, Shift shift, Entity order,
+            ProgressForDaysContainer progressForDaysContainer, Entity productionPerShift, Shift shift, Entity technology, Entity productionLine,
             DateTimeRange range, BigDecimal shiftEfficiency, int progressForDayQuantity, boolean allowIncompleteUnits);
 }
