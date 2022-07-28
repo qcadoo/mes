@@ -3,19 +3,19 @@
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
  * Version: 1.4
- *
+ * <p>
  * This file is part of Qcadoo.
- *
+ * <p>
  * Qcadoo is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation; either version 3 of the License,
  * or (at your option) any later version.
- *
+ * <p>
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty
  * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU Affero General Public License for more details.
- *
+ * <p>
  * You should have received a copy of the GNU Affero General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
@@ -23,6 +23,7 @@
  */
 package com.qcadoo.mes.technologies.hooks;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.basic.constants.ProductFields;
@@ -30,8 +31,10 @@ import com.qcadoo.mes.basic.constants.UnitConversionItemFieldsB;
 import com.qcadoo.mes.technologies.TechnologyService;
 import com.qcadoo.mes.technologies.constants.OperationProductInComponentFields;
 import com.qcadoo.mes.technologies.constants.ProductBySizeGroupFields;
+import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.mes.technologies.validators.TechnologyTreeValidators;
 import com.qcadoo.model.api.DataDefinition;
+import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
@@ -45,6 +48,7 @@ import java.util.Objects;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 import static com.qcadoo.model.api.search.SearchProjections.alias;
 import static com.qcadoo.model.api.search.SearchProjections.id;
 
@@ -63,14 +67,37 @@ public class OperationProductInComponentHooks {
     @Autowired
     private UnitConversionService unitConversionService;
 
+    @Autowired
+    private DataDefinitionService dataDefinitionService;
+
     public void onSave(final DataDefinition operationProductInComponentDD, final Entity operationProductInComponent) {
         setDifferentProductsInDifferentSizes(operationProductInComponent);
         clearProductBySizeGroups(operationProductInComponent);
         copyQuantityToProductsBySize(operationProductInComponentDD, operationProductInComponent);
     }
 
+    public void onViewDto(final DataDefinition operationProductInComponentDD, final Entity operationProductInComponent) {
+        if (Strings.isNullOrEmpty(operationProductInComponent.getStringField("productNumber"))
+                && Strings.isNullOrEmpty(operationProductInComponent.getStringField("productName"))) {
+            Entity opic = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
+                    TechnologiesConstants.MODEL_OPERATION_PRODUCT_IN_COMPONENT).get(operationProductInComponent.getId());
+            List<Entity> productsBySize = opic.getHasManyField(OperationProductInComponentFields.PRODUCT_BY_SIZE_GROUPS);
+            if (!productsBySize.isEmpty()) {
+                Entity product = productsBySize.get(0).getBelongsToField(ProductBySizeGroupFields.PRODUCT);
+
+                boolean allSameName = productsBySize.stream().map(pg -> pg.getBelongsToField(ProductBySizeGroupFields.PRODUCT)
+                                .getStringField(ProductFields.NUMBER))
+                        .allMatch(x -> x.equals(product.getStringField(ProductFields.NUMBER)));
+                if(allSameName) {
+                    operationProductInComponent.setField("productNumber", product.getStringField(ProductFields.NUMBER));
+                    operationProductInComponent.setField("productName", product.getStringField(ProductFields.NAME));
+                }
+            }
+        }
+    }
+
     private void copyQuantityToProductsBySize(final DataDefinition operationProductInComponentDD,
-            final Entity operationProductInComponent) {
+                                              final Entity operationProductInComponent) {
         if (Objects.isNull(
                 operationProductInComponent.getField(OperationProductInComponentFields.VARIOUS_QUANTITIES_IN_PRODUCTS_BY_SIZE))) {
             operationProductInComponent.setField(OperationProductInComponentFields.VARIOUS_QUANTITIES_IN_PRODUCTS_BY_SIZE, false);
@@ -78,12 +105,12 @@ public class OperationProductInComponentHooks {
 
         if (operationProductInComponent.getBooleanField(OperationProductInComponentFields.DIFFERENT_PRODUCTS_IN_DIFFERENT_SIZES)
                 && !operationProductInComponent
-                        .getBooleanField(OperationProductInComponentFields.VARIOUS_QUANTITIES_IN_PRODUCTS_BY_SIZE)
+                .getBooleanField(OperationProductInComponentFields.VARIOUS_QUANTITIES_IN_PRODUCTS_BY_SIZE)
                 && Objects.nonNull(operationProductInComponent.getId())) {
             Entity operationProductInComponentDb = operationProductInComponentDD.get(operationProductInComponent.getId());
             if (Objects.isNull(operationProductInComponentDb.getDecimalField(OperationProductInComponentFields.QUANTITY))
                     || !operationProductInComponentDb.getDecimalField(OperationProductInComponentFields.QUANTITY)
-                            .equals(operationProductInComponent.getDecimalField(OperationProductInComponentFields.QUANTITY))) {
+                    .equals(operationProductInComponent.getDecimalField(OperationProductInComponentFields.QUANTITY))) {
 
                 operationProductInComponent.getHasManyField(OperationProductInComponentFields.PRODUCT_BY_SIZE_GROUPS)
                         .forEach(pbs -> {
@@ -192,10 +219,10 @@ public class OperationProductInComponentHooks {
     private boolean checkIfProductBySizeFilled(DataDefinition operationProductInComponentDD, Entity operationProductInComponent) {
         if (!operationProductInComponent.getBooleanField(OperationProductInComponentFields.VARIOUS_QUANTITIES_IN_PRODUCTS_BY_SIZE)
                 && !operationProductInComponent.getHasManyField(OperationProductInComponentFields.PRODUCT_BY_SIZE_GROUPS)
-                        .isEmpty()
+                .isEmpty()
                 && (Objects.isNull(operationProductInComponent.getDecimalField(OperationProductInComponentFields.GIVEN_QUANTITY))
-                        || StringUtils.isEmpty(
-                                operationProductInComponent.getStringField(OperationProductInComponentFields.GIVEN_UNIT)))) {
+                || StringUtils.isEmpty(
+                operationProductInComponent.getStringField(OperationProductInComponentFields.GIVEN_UNIT)))) {
             operationProductInComponent
                     .addGlobalError("technologies.operationProductInComponent.error.productBySizeFilledAndQuantityIsNull");
             return false;
@@ -206,13 +233,13 @@ public class OperationProductInComponentHooks {
     private boolean checkIfGivenUnitChanged(DataDefinition operationProductInComponentDD, Entity operationProductInComponent) {
         if (operationProductInComponent.getBooleanField(OperationProductInComponentFields.DIFFERENT_PRODUCTS_IN_DIFFERENT_SIZES)
                 && !operationProductInComponent
-                        .getBooleanField(OperationProductInComponentFields.VARIOUS_QUANTITIES_IN_PRODUCTS_BY_SIZE)
+                .getBooleanField(OperationProductInComponentFields.VARIOUS_QUANTITIES_IN_PRODUCTS_BY_SIZE)
                 && Objects.nonNull(operationProductInComponent.getId())) {
             Entity operationProductInComponentDb = operationProductInComponentDD.get(operationProductInComponent.getId());
 
             if (StringUtils.isEmpty(operationProductInComponentDb.getStringField(OperationProductInComponentFields.GIVEN_UNIT))
                     || !operationProductInComponentDb.getStringField(OperationProductInComponentFields.GIVEN_UNIT)
-                            .equals(operationProductInComponent.getStringField(OperationProductInComponentFields.GIVEN_UNIT))) {
+                    .equals(operationProductInComponent.getStringField(OperationProductInComponentFields.GIVEN_UNIT))) {
 
                 String opicUnit = operationProductInComponent.getStringField(OperationProductInComponentFields.GIVEN_UNIT);
 
@@ -220,7 +247,7 @@ public class OperationProductInComponentHooks {
                         .getHasManyField(OperationProductInComponentFields.PRODUCT_BY_SIZE_GROUPS)) {
                     String productBySizeGroupUnit = pbsg.getBelongsToField(ProductBySizeGroupFields.PRODUCT)
                             .getStringField(ProductFields.UNIT);
-                    if(StringUtils.isEmpty(opicUnit)) {
+                    if (StringUtils.isEmpty(opicUnit)) {
                         operationProductInComponent.addGlobalError(
                                 "technologies.operationProductInComponent.error.unitChangedRemoveProductsBySizeGroup");
 
@@ -249,7 +276,7 @@ public class OperationProductInComponentHooks {
     }
 
     private boolean checkIfOperationInputProductTypeIsUnique(final DataDefinition operationProductInComponentDD,
-            final Entity operationProductInComponent) {
+                                                             final Entity operationProductInComponent) {
         Entity operationComponent = operationProductInComponent
                 .getBelongsToField(OperationProductInComponentFields.OPERATION_COMPONENT);
 
@@ -288,7 +315,7 @@ public class OperationProductInComponentHooks {
     }
 
     private boolean checkIfTechnologyInputProductTypeOrProductIsSelected(final DataDefinition operationProductInComponentDD,
-            final Entity operationProductInComponent) {
+                                                                         final Entity operationProductInComponent) {
         boolean differentProductsInDifferentSizes = operationProductInComponent
                 .getBooleanField(OperationProductInComponentFields.DIFFERENT_PRODUCTS_IN_DIFFERENT_SIZES);
         Entity technologyInputProductType = operationProductInComponent

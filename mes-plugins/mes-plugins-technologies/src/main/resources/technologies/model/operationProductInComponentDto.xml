@@ -55,7 +55,9 @@
         <boolean name="differentProductsInDifferentSizes"/>
     </fields>
 
-    <hooks/>
-
+    <hooks>
+        <onView class="com.qcadoo.mes.technologies.hooks.OperationProductInComponentHooks"
+                method="onViewDto" />
+    </hooks>
     <masterModel plugin="technologies" model="operationProductInComponent"/>
 </model>
