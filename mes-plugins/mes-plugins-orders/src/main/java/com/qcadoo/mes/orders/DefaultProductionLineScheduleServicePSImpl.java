@@ -37,7 +37,7 @@ import com.qcadoo.model.api.Entity;
 public class DefaultProductionLineScheduleServicePSImpl implements ProductionLineScheduleServicePS {
 
     public void createProductionLinePositionNewData(Map<Long, ProductionLinePositionNewData> orderProductionLinesPositionNewData,
-                                                    Entity productionLine, Date finishDate, Entity order, Entity technology, Entity previousOrder) {
+                                                    Entity productionLine, Date finishDate, Entity position, Entity technology, Entity previousOrder) {
     }
 
     @Override
@@ -46,7 +46,7 @@ public class DefaultProductionLineScheduleServicePSImpl implements ProductionLin
     }
 
     @Override
-    public void copyPS() {
+    public void copyPS(Entity productionLineSchedule, Entity order, Entity productionLine) {
     }
 
 }

@@ -67,7 +67,8 @@ public class ProductionLineScheduleStateService extends BasicStateService implem
             order.getDataDefinition().fastSave(order);
             if (DurationOfOrderCalculatedOnBasis.TIME_CONSUMING_TECHNOLOGY.getStringValue()
                     .equals(durationOfOrderCalculatedOnBasis)) {
-                productionLineScheduleServicePSExecutorService.copyPS();
+                productionLineScheduleServicePSExecutorService.copyPS(entity,
+                        order, productionLine);
             } else if (DurationOfOrderCalculatedOnBasis.PLAN_FOR_SHIFT.getStringValue()
                     .equals(durationOfOrderCalculatedOnBasis)) {
                 productionLineScheduleServicePPSExecutorService.copyPPS(entity,

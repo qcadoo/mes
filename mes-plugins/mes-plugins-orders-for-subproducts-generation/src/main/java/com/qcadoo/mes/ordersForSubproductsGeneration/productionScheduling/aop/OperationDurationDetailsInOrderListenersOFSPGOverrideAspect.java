@@ -229,7 +229,7 @@ public class OperationDurationDetailsInOrderListenersOFSPGOverrideAspect {
                 productQuantitiesService.getProductComponentQuantities(t, quantity, oR);
                 operationWorkTimeService.estimateTotalWorkTimeForOrder(o, oR, includeTpz, includeAdditionalTime, true);
 
-                int maxPathTime = orderRealizationTimeService.estimateMaxOperationTimeConsumptionForWorkstation(o,
+                int maxPathTime = orderRealizationTimeService.estimateMaxOperationTimeConsumptionForWorkstation(null, o,
                         t.getTreeField(TechnologyFields.OPERATION_COMPONENTS).getRoot(), quantity, includeTpz,
                         includeAdditionalTime, productionLine);
 

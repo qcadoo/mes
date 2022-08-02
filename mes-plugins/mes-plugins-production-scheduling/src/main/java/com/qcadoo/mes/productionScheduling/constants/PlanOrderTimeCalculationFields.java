@@ -21,20 +21,16 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.orders;
+package com.qcadoo.mes.productionScheduling.constants;
 
-import java.util.Date;
-import java.util.Map;
+public final class PlanOrderTimeCalculationFields {
 
-import com.qcadoo.mes.orders.listeners.ProductionLinePositionNewData;
-import com.qcadoo.model.api.Entity;
+    private PlanOrderTimeCalculationFields() {
+    }
 
-public interface ProductionLineScheduleServicePS {
 
-    void createProductionLinePositionNewData(Map<Long, ProductionLinePositionNewData> orderProductionLinesPositionNewData,
-                                             Entity productionLine, Date finishDate, Entity position, Entity technology, Entity previousOrder);
+    public static final String PRODUCTION_LINE = "productionLine";
 
-    void savePosition(Entity position, ProductionLinePositionNewData productionLinePositionNewData);
+    public static final String PRODUCTION_LINE_SCHEDULE = "productionLineSchedule";
 
-    void copyPS(Entity productionLineSchedule, Entity order, Entity productionLine);
 }

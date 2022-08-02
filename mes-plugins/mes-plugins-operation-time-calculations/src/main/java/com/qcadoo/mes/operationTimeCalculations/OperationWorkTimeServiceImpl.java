@@ -253,6 +253,43 @@ public class OperationWorkTimeServiceImpl implements OperationWorkTimeService {
     }
 
     @Override
+    public Entity createOrGetPlanOperCompTimeCalculation(Entity productionLineSchedule, Entity order, Entity productionLine, Entity technologyOperationComponent) {
+        Entity orderTimeCalculation = dataDefinitionService
+                .get(TimeNormsConstants.PLUGIN_PRODUCTION_SCHEDULING_IDENTIFIER,
+                        TimeNormsConstants.MODEL_PLAN_ORDER_TIME_CALCULATION)
+                .find()
+                .add(SearchRestrictions.belongsTo("productionLineSchedule", productionLineSchedule))
+                .add(SearchRestrictions.belongsTo(L_ORDER, order))
+                .add(SearchRestrictions.belongsTo("productionLine", productionLine))
+                .setMaxResults(1).uniqueResult();
+        if (Objects.isNull(orderTimeCalculation)) {
+            orderTimeCalculation = dataDefinitionService.get(TimeNormsConstants.PLUGIN_PRODUCTION_SCHEDULING_IDENTIFIER,
+                    TimeNormsConstants.MODEL_PLAN_ORDER_TIME_CALCULATION).create();
+            orderTimeCalculation.setField("productionLineSchedule", productionLineSchedule);
+            orderTimeCalculation.setField(L_ORDER, order);
+            orderTimeCalculation.setField("productionLine", productionLine);
+            orderTimeCalculation = orderTimeCalculation.getDataDefinition().save(orderTimeCalculation);
+        }
+        Entity operCompTimeCalculation = dataDefinitionService
+                .get(TimeNormsConstants.PLUGIN_PRODUCTION_SCHEDULING_IDENTIFIER,
+                        TimeNormsConstants.MODEL_PLAN_OPER_COMP_TIME_CALCULATION)
+                .find()
+                .add(SearchRestrictions.belongsTo(TimeNormsConstants.MODEL_ORDER_TIME_CALCULATION, orderTimeCalculation))
+                .add(SearchRestrictions.belongsTo(OperCompTimeCalculationsFields.TECHNOLOGY_OPERATION_COMPONENT,
+                        technologyOperationComponent))
+                .setMaxResults(1).uniqueResult();
+        if (Objects.isNull(operCompTimeCalculation)) {
+            operCompTimeCalculation = dataDefinitionService.get(TimeNormsConstants.PLUGIN_PRODUCTION_SCHEDULING_IDENTIFIER,
+                    TimeNormsConstants.MODEL_PLAN_OPER_COMP_TIME_CALCULATION).create();
+            operCompTimeCalculation.setField(TimeNormsConstants.MODEL_ORDER_TIME_CALCULATION, orderTimeCalculation);
+            operCompTimeCalculation.setField(OperCompTimeCalculationsFields.TECHNOLOGY_OPERATION_COMPONENT,
+                    technologyOperationComponent);
+            operCompTimeCalculation = operCompTimeCalculation.getDataDefinition().save(operCompTimeCalculation);
+        }
+        return operCompTimeCalculation;
+    }
+
+    @Override
     public void deleteOperCompTimeCalculations(Entity order) {
         Entity orderTimeCalculation = dataDefinitionService
                 .get(TimeNormsConstants.PLUGIN_PRODUCTION_SCHEDULING_IDENTIFIER, TimeNormsConstants.MODEL_ORDER_TIME_CALCULATION)
@@ -262,6 +299,25 @@ public class OperationWorkTimeServiceImpl implements OperationWorkTimeService {
             dataDefinitionService
                     .get(TimeNormsConstants.PLUGIN_PRODUCTION_SCHEDULING_IDENTIFIER,
                             TimeNormsConstants.MODEL_OPER_COMP_TIME_CALCULATION)
+                    .delete(orderTimeCalculation.getHasManyField(L_OPER_COMP_TIME_CALCULATIONS).stream().mapToLong(Entity::getId)
+                            .boxed().toArray(Long[]::new));
+        }
+    }
+
+    @Override
+    public void deletePlanOperCompTimeCalculations(Entity productionLineSchedule, Entity order, Entity productionLine) {
+        Entity orderTimeCalculation = dataDefinitionService
+                .get(TimeNormsConstants.PLUGIN_PRODUCTION_SCHEDULING_IDENTIFIER, TimeNormsConstants.MODEL_PLAN_ORDER_TIME_CALCULATION)
+                .find()
+                .add(SearchRestrictions.belongsTo("productionLineSchedule", productionLineSchedule))
+                .add(SearchRestrictions.belongsTo(L_ORDER, order))
+                .add(SearchRestrictions.belongsTo("productionLine", productionLine))
+                .setMaxResults(1).uniqueResult();
+        if (!Objects.isNull(orderTimeCalculation)
+                && !orderTimeCalculation.getHasManyField(L_OPER_COMP_TIME_CALCULATIONS).isEmpty()) {
+            dataDefinitionService
+                    .get(TimeNormsConstants.PLUGIN_PRODUCTION_SCHEDULING_IDENTIFIER,
+                            TimeNormsConstants.MODEL_PLAN_OPER_COMP_TIME_CALCULATION)
                     .delete(orderTimeCalculation.getHasManyField(L_OPER_COMP_TIME_CALCULATIONS).stream().mapToLong(Entity::getId)
                             .boxed().toArray(Long[]::new));
         }

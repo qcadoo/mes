@@ -92,13 +92,13 @@ public class OrderRealizationTimeServiceImpl implements OrderRealizationTimeServ
         OperationProductComponentWithQuantityContainer productComponentQuantities = productQuantitiesService
                 .getProductComponentQuantities(technology, plannedQuantity, operationRunsFromProductionQuantities);
 
-        return evaluateOperationTime(null, operationComponent, includeTpz, includeAdditionalTime,
+        return evaluateOperationTime(null, null, operationComponent, includeTpz, includeAdditionalTime,
                 operationRunsFromProductionQuantities, productionLine, false, productComponentQuantities);
     }
 
     @Override
     @Transactional
-    public int estimateMaxOperationTimeConsumptionForWorkstation(final Entity order, final EntityTreeNode operationComponent,
+    public int estimateMaxOperationTimeConsumptionForWorkstation(final Entity productionLineSchedule, final Entity order, final EntityTreeNode operationComponent,
                                                                  final BigDecimal plannedQuantity, final boolean includeTpz, final boolean includeAdditionalTime,
                                                                  final Entity productionLine) {
         Entity technology = operationComponent.getBelongsToField(TECHNOLOGY);
@@ -108,11 +108,11 @@ public class OrderRealizationTimeServiceImpl implements OrderRealizationTimeServ
         OperationProductComponentWithQuantityContainer productComponentQuantities = productQuantitiesService
                 .getProductComponentQuantities(technology, plannedQuantity, operationRunsFromProductionQuantities);
 
-        return evaluateOperationTime(order, operationComponent, includeTpz, includeAdditionalTime,
+        return evaluateOperationTime(productionLineSchedule, order, operationComponent, includeTpz, includeAdditionalTime,
                 operationRunsFromProductionQuantities, productionLine, true, productComponentQuantities);
     }
 
-    private int evaluateOperationTime(final Entity order, final Entity operationComponent, final boolean includeTpz,
+    private int evaluateOperationTime(final Entity productionLineSchedule, final Entity order, final Entity operationComponent, final boolean includeTpz,
                                       final boolean includeAdditionalTime, final Map<Long, BigDecimal> operationRuns, final Entity productionLine,
                                       final boolean maxForWorkstation, final OperationProductComponentWithQuantityContainer productComponentQuantities) {
 
@@ -122,7 +122,7 @@ public class OrderRealizationTimeServiceImpl implements OrderRealizationTimeServ
 
         List<Entity> children = Lists.newArrayList(operationComponent.getHasManyField(TechnologyOperationComponentFields.CHILDREN));
         for (Entity child : children) {
-            int childTime = evaluateOperationTime(order, child, includeTpz, includeAdditionalTime, operationRuns, productionLine,
+            int childTime = evaluateOperationTime(productionLineSchedule, order, child, includeTpz, includeAdditionalTime, operationRuns, productionLine,
                     maxForWorkstation, productComponentQuantities);
 
             if ("02specified".equals(child.getStringField(NEXT_OPERATION_AFTER_PRODUCED_TYPE))) {
@@ -140,8 +140,13 @@ public class OrderRealizationTimeServiceImpl implements OrderRealizationTimeServ
                 offset = childTime;
             }
         }
+        Entity operCompTimeCalculation;
+        if (productionLineSchedule == null) {
+            operCompTimeCalculation = operationWorkTimeService.createOrGetOperCompTimeCalculation(order, operationComponent);
+        } else {
+            operCompTimeCalculation = operationWorkTimeService.createOrGetPlanOperCompTimeCalculation(productionLineSchedule, order, productionLine, operationComponent);
+        }
 
-        Entity operCompTimeCalculation = operationWorkTimeService.createOrGetOperCompTimeCalculation(order, operationComponent);
 
         if (operCompTimeCalculation != null) {
             operCompTimeCalculation.setField(OperCompTimeCalculationsFields.OPERATION_OFF_SET, offset);

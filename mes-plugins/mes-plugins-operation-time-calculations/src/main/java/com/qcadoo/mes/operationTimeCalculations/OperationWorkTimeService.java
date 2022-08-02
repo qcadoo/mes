@@ -51,12 +51,15 @@ public interface OperationWorkTimeService {
 
     Entity createOrGetOperCompTimeCalculation(Entity order, Entity technologyOperationComponent);
 
+    Entity createOrGetPlanOperCompTimeCalculation(Entity productionLineSchedule, Entity order, Entity productionLine, Entity operation);
+
     void deleteOperCompTimeCalculations(Entity order);
+
+    void deletePlanOperCompTimeCalculations(Entity productionLineSchedule, Entity order, Entity productionLine);
 
     OperationWorkTime estimateTotalWorkTimeForOrder(final Entity order, final Map<Long, BigDecimal> operationRuns,
             final boolean includeTpz, final boolean includeAdditionalTime, final boolean saved);
 
     OperationWorkTime estimateTotalWorkTimeForTechnology(final Entity technology, final Map<Long, BigDecimal> operationRuns,
             final boolean includeTpz, final boolean includeAdditionalTime, final boolean saved);
-
 }

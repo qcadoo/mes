@@ -183,7 +183,7 @@ public class OperationDurationDetailsInOrderListeners {
 
         order = getActualOrderWithChanges(order);
 
-        int maxPathTime = orderRealizationTimeService.estimateMaxOperationTimeConsumptionForWorkstation(order,
+        int maxPathTime = orderRealizationTimeService.estimateMaxOperationTimeConsumptionForWorkstation(null, order,
                 technology.getTreeField(TechnologyFields.OPERATION_COMPONENTS).getRoot(), quantity, includeTpz,
                 includeAdditionalTime, productionLine);
 

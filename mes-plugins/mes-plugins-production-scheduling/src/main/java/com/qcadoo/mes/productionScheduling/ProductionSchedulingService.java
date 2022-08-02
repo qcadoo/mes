@@ -17,10 +17,11 @@ import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.mes.productionScheduling.constants.OrderFieldsPS;
 import com.qcadoo.mes.productionScheduling.constants.OrderTimeCalculationFields;
+import com.qcadoo.mes.productionScheduling.constants.PlanOrderTimeCalculationFields;
+import com.qcadoo.mes.productionScheduling.constants.ProductionSchedulingConstants;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
 import com.qcadoo.mes.timeNormsForOperations.constants.OperCompTimeCalculationsFields;
-import com.qcadoo.mes.timeNormsForOperations.constants.TimeNormsConstants;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -77,12 +78,12 @@ public class ProductionSchedulingService {
         Date orderStartDate = order.getDateField(OrderFields.START_DATE);
         Entity productionLine = order.getBelongsToField(OrderFields.PRODUCTION_LINE);
 
-        Entity orderTimeCalculation = scheduleOperationsInOrder(order, technology, orderStartDate, productionLine);
+        Entity orderTimeCalculation = scheduleOperationsInOrder(null, order, technology, orderStartDate, productionLine);
         order.setField(OrderFieldsPS.GENERATED_END_DATE, orderRealizationTimeService
                 .setDateToField(orderTimeCalculation.getDateField(OrderTimeCalculationFields.EFFECTIVE_DATE_TO)));
     }
 
-    public Entity scheduleOperationsInOrder(Entity order, Entity technology, Date orderStartDate, Entity productionLine) {
+    public Entity scheduleOperationsInOrder(Entity productionLineSchedule, Entity order, Entity technology, Date orderStartDate, Entity productionLine) {
         List<Date> operationStartDates = Lists.newArrayList();
         List<Date> operationEndDates = Lists.newArrayList();
 
@@ -95,7 +96,12 @@ public class ProductionSchedulingService {
 
 
         for (Entity operation : operations) {
-            Entity operCompTimeCalculation = operationWorkTimeService.createOrGetOperCompTimeCalculation(order, operation);
+            Entity operCompTimeCalculation;
+            if (productionLineSchedule == null) {
+                operCompTimeCalculation = operationWorkTimeService.createOrGetOperCompTimeCalculation(order, operation);
+            } else {
+                operCompTimeCalculation = operationWorkTimeService.createOrGetPlanOperCompTimeCalculation(productionLineSchedule, order, productionLine, operation);
+            }
 
             if (operCompTimeCalculation == null) {
                 continue;
@@ -130,14 +136,24 @@ public class ProductionSchedulingService {
             operationEndDates.add(dateTo);
             operCompTimeCalculation.getDataDefinition().save(operCompTimeCalculation);
         }
-        Entity orderTimeCalculation = dataDefinitionService
-                .get(TimeNormsConstants.PLUGIN_PRODUCTION_SCHEDULING_IDENTIFIER, TimeNormsConstants.MODEL_ORDER_TIME_CALCULATION)
-                .find().add(SearchRestrictions.belongsTo(OrderTimeCalculationFields.ORDER, order)).setMaxResults(1).uniqueResult();
+        Entity orderTimeCalculation;
+        if (productionLineSchedule == null) {
+            orderTimeCalculation = dataDefinitionService
+                    .get(ProductionSchedulingConstants.PLUGIN_IDENTIFIER, ProductionSchedulingConstants.MODEL_ORDER_TIME_CALCULATION)
+                    .find().add(SearchRestrictions.belongsTo(OrderTimeCalculationFields.ORDER, order)).setMaxResults(1).uniqueResult();
+        } else {
+            orderTimeCalculation = dataDefinitionService
+                    .get(ProductionSchedulingConstants.PLUGIN_IDENTIFIER, ProductionSchedulingConstants.MODEL_PLAN_ORDER_TIME_CALCULATION)
+                    .find()
+                    .add(SearchRestrictions.belongsTo(PlanOrderTimeCalculationFields.PRODUCTION_LINE_SCHEDULE, productionLineSchedule))
+                    .add(SearchRestrictions.belongsTo(OrderTimeCalculationFields.ORDER, order))
+                    .add(SearchRestrictions.belongsTo(PlanOrderTimeCalculationFields.PRODUCTION_LINE, productionLine))
+                    .setMaxResults(1).uniqueResult();
+        }
         orderTimeCalculation.setField(OrderTimeCalculationFields.EFFECTIVE_DATE_FROM,
                 operationStartDates.stream().min(Comparator.naturalOrder()).get());
         orderTimeCalculation.setField(OrderTimeCalculationFields.EFFECTIVE_DATE_TO,
                 operationEndDates.stream().max(Comparator.naturalOrder()).get());
-        orderTimeCalculation.getDataDefinition().save(orderTimeCalculation);
-        return orderTimeCalculation;
+        return orderTimeCalculation.getDataDefinition().save(orderTimeCalculation);
     }
 }

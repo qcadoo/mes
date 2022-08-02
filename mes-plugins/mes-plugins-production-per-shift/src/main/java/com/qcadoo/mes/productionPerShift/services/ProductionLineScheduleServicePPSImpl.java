@@ -23,6 +23,7 @@
  */
 package com.qcadoo.mes.productionPerShift.services;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -50,6 +51,7 @@ import com.qcadoo.mes.productionPerShift.constants.ProductionPerShiftFields;
 import com.qcadoo.mes.productionPerShift.constants.ProgressForDayFields;
 import com.qcadoo.mes.productionPerShift.constants.ProgressType;
 import com.qcadoo.mes.productionPerShift.domain.ProgressForDaysContainer;
+import com.qcadoo.mes.technologies.TechnologyService;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -76,26 +78,32 @@ public class ProductionLineScheduleServicePPSImpl implements ProductionLineSched
     @Autowired
     private PpsTimeHelper ppsTimeHelper;
 
+    @Autowired
+    private TechnologyService technologyService;
+
 
     public void createProductionLinePositionNewData(Map<Long, ProductionLinePositionNewData> orderProductionLinesPositionNewData,
                                                     Entity productionLine, Date startDate, Entity position, Entity technology, Entity previousOrder) {
-        Entity changeover = lineChangeoverNormsForOrdersService.getChangeover(previousOrder, technology, productionLine);
-        if (changeover != null) {
-            startDate = Date.from(startDate.toInstant().plusSeconds(changeover.getIntegerField(LineChangeoverNormsFields.DURATION)));
+        Optional<BigDecimal> norm = technologyService.getStandardPerformance(technology, productionLine);
+        if (norm.isPresent()) {
+            Entity changeover = lineChangeoverNormsForOrdersService.getChangeover(previousOrder, technology, productionLine);
+            if (changeover != null) {
+                startDate = Date.from(startDate.toInstant().plusSeconds(changeover.getIntegerField(LineChangeoverNormsFields.DURATION)));
+            }
+
+            DateTime startDateTime = new DateTime(startDate);
+            startDate = shiftsService
+                    .getNearestWorkingDate(startDateTime, productionLine).orElse(startDateTime).toDate();
+
+            Optional<Date> finishDate = generateProductionPerShift(position, startDate, productionLine);
+
+            Date finalStartDate = startDate;
+            finishDate.ifPresent(fd -> {
+                ProductionLinePositionNewData productionLinePositionNewData = new ProductionLinePositionNewData(finalStartDate,
+                        fd, changeover);
+                orderProductionLinesPositionNewData.put(productionLine.getId(), productionLinePositionNewData);
+            });
         }
-
-        DateTime startDateTime = new DateTime(startDate);
-        startDate = shiftsService
-                .getNearestWorkingDate(startDateTime, productionLine).orElse(startDateTime).toDate();
-
-        Optional<Date> finishDate = generateProductionPerShift(position, startDate, productionLine);
-
-        Date finalStartDate = startDate;
-        finishDate.ifPresent(fd -> {
-            ProductionLinePositionNewData productionLinePositionNewData = new ProductionLinePositionNewData(finalStartDate,
-                    fd, changeover);
-            orderProductionLinesPositionNewData.put(productionLine.getId(), productionLinePositionNewData);
-        });
     }
 
     @Override
@@ -108,46 +116,48 @@ public class ProductionLineScheduleServicePPSImpl implements ProductionLineSched
     public void copyPPS(Entity productionLineSchedule, Entity order, Entity productionLine) {
         DataDefinition planProductionPerShiftDD = dataDefinitionService
                 .get(ProductionPerShiftConstants.PLUGIN_IDENTIFIER, ProductionPerShiftConstants.MODEL_PLAN_PRODUCTION_PER_SHIFT);
-        DataDefinition productionPerShiftDD = dataDefinitionService
-                .get(ProductionPerShiftConstants.PLUGIN_IDENTIFIER, ProductionPerShiftConstants.MODEL_PRODUCTION_PER_SHIFT);
-        DataDefinition progressForDayDD = dataDefinitionService
-                .get(ProductionPerShiftConstants.PLUGIN_IDENTIFIER, ProductionPerShiftConstants.MODEL_PROGRESS_FOR_DAY);
-        DataDefinition dailyProgressDD = dataDefinitionService
-                .get(ProductionPerShiftConstants.PLUGIN_IDENTIFIER, ProductionPerShiftConstants.MODEL_DAILY_PROGRESS);
         Entity planProductionPerShift = planProductionPerShiftDD
                 .find().add(SearchRestrictions.belongsTo(PlanProductionPerShiftFields.ORDER, order))
                 .add(SearchRestrictions.belongsTo(PlanProductionPerShiftFields.PRODUCTION_LINE, productionLine))
                 .add(SearchRestrictions.belongsTo(PlanProductionPerShiftFields.PRODUCTION_LINE_SCHEDULE, productionLineSchedule))
                 .setMaxResults(1)
                 .uniqueResult();
-        Entity productionPerShift =
-                productionPerShiftDD.find().add(SearchRestrictions.belongsTo(ProductionPerShiftFields.ORDER, order)).setMaxResults(1)
-                        .uniqueResult();
-        if (productionPerShift == null) {
-            productionPerShift = productionPerShiftDD.create();
-            productionPerShift.setField(ProductionPerShiftFields.ORDER, order);
-            productionPerShift.setField(ProductionPerShiftFields.PLANNED_PROGRESS_TYPE, ProgressType.PLANNED.getStringValue());
-            productionPerShift = productionPerShiftDD.save(productionPerShift);
-        } else {
-            progressForDayDD.delete(productionPerShift.getHasManyField(ProductionPerShiftFields.PROGRES_FOR_DAYS).stream()
-                    .map(Entity::getId).collect(Collectors.toList()).toArray(new Long[]{}));
-        }
+        if(planProductionPerShift != null) {
+            DataDefinition productionPerShiftDD = dataDefinitionService
+                    .get(ProductionPerShiftConstants.PLUGIN_IDENTIFIER, ProductionPerShiftConstants.MODEL_PRODUCTION_PER_SHIFT);
+            DataDefinition progressForDayDD = dataDefinitionService
+                    .get(ProductionPerShiftConstants.PLUGIN_IDENTIFIER, ProductionPerShiftConstants.MODEL_PROGRESS_FOR_DAY);
+            DataDefinition dailyProgressDD = dataDefinitionService
+                    .get(ProductionPerShiftConstants.PLUGIN_IDENTIFIER, ProductionPerShiftConstants.MODEL_DAILY_PROGRESS);
+            Entity productionPerShift =
+                    productionPerShiftDD.find().add(SearchRestrictions.belongsTo(ProductionPerShiftFields.ORDER, order)).setMaxResults(1)
+                            .uniqueResult();
+            if (productionPerShift == null) {
+                productionPerShift = productionPerShiftDD.create();
+                productionPerShift.setField(ProductionPerShiftFields.ORDER, order);
+                productionPerShift.setField(ProductionPerShiftFields.PLANNED_PROGRESS_TYPE, ProgressType.PLANNED.getStringValue());
+                productionPerShift = productionPerShiftDD.save(productionPerShift);
+            } else {
+                progressForDayDD.delete(productionPerShift.getHasManyField(ProductionPerShiftFields.PROGRES_FOR_DAYS).stream()
+                        .map(Entity::getId).collect(Collectors.toList()).toArray(new Long[]{}));
+            }
 
-        for (Entity planProgressForDay : planProductionPerShift.getHasManyField(PlanProductionPerShiftFields.PROGRES_FOR_DAYS)) {
-            Entity progressForDay = progressForDayDD.create();
-            progressForDay.setField(ProgressForDayFields.PRODUCTION_PER_SHIFT, productionPerShift);
-            progressForDay.setField(ProgressForDayFields.DAY, planProgressForDay.getField(ProgressForDayFields.DAY));
-            progressForDay.setField(ProgressForDayFields.DATE_OF_DAY, planProgressForDay.getField(ProgressForDayFields.DATE_OF_DAY));
-            progressForDay.setField(ProgressForDayFields.ACTUAL_DATE_OF_DAY, planProgressForDay.getField(ProgressForDayFields.ACTUAL_DATE_OF_DAY));
-            progressForDay.setField(ProgressForDayFields.CORRECTED, false);
-            progressForDay = progressForDayDD.save(progressForDay);
-            for (Entity planDailyProgress : planProgressForDay.getHasManyField(ProgressForDayFields.DAILY_PROGRESS)) {
-                Entity dailyProgress = dailyProgressDD.create();
-                dailyProgress.setField(DailyProgressFields.PROGRESS_FOR_DAY, progressForDay);
-                dailyProgress.setField(DailyProgressFields.SHIFT, planDailyProgress.getField(DailyProgressFields.SHIFT));
-                dailyProgress.setField(DailyProgressFields.QUANTITY, planDailyProgress.getField(DailyProgressFields.QUANTITY));
-                dailyProgress.setField(DailyProgressFields.EFFICIENCY_TIME, planDailyProgress.getField(DailyProgressFields.EFFICIENCY_TIME));
-                dailyProgressDD.save(dailyProgress);
+            for (Entity planProgressForDay : planProductionPerShift.getHasManyField(PlanProductionPerShiftFields.PROGRES_FOR_DAYS)) {
+                Entity progressForDay = progressForDayDD.create();
+                progressForDay.setField(ProgressForDayFields.PRODUCTION_PER_SHIFT, productionPerShift);
+                progressForDay.setField(ProgressForDayFields.DAY, planProgressForDay.getField(ProgressForDayFields.DAY));
+                progressForDay.setField(ProgressForDayFields.DATE_OF_DAY, planProgressForDay.getField(ProgressForDayFields.DATE_OF_DAY));
+                progressForDay.setField(ProgressForDayFields.ACTUAL_DATE_OF_DAY, planProgressForDay.getField(ProgressForDayFields.ACTUAL_DATE_OF_DAY));
+                progressForDay.setField(ProgressForDayFields.CORRECTED, false);
+                progressForDay = progressForDayDD.save(progressForDay);
+                for (Entity planDailyProgress : planProgressForDay.getHasManyField(ProgressForDayFields.DAILY_PROGRESS)) {
+                    Entity dailyProgress = dailyProgressDD.create();
+                    dailyProgress.setField(DailyProgressFields.PROGRESS_FOR_DAY, progressForDay);
+                    dailyProgress.setField(DailyProgressFields.SHIFT, planDailyProgress.getField(DailyProgressFields.SHIFT));
+                    dailyProgress.setField(DailyProgressFields.QUANTITY, planDailyProgress.getField(DailyProgressFields.QUANTITY));
+                    dailyProgress.setField(DailyProgressFields.EFFICIENCY_TIME, planDailyProgress.getField(DailyProgressFields.EFFICIENCY_TIME));
+                    dailyProgressDD.save(dailyProgress);
+                }
             }
         }
         planProductionPerShiftDD.delete(planProductionPerShiftDD
