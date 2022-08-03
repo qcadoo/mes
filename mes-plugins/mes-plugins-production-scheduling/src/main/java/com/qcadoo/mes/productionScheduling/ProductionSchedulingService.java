@@ -13,15 +13,15 @@ import com.google.common.collect.Lists;
 import com.qcadoo.mes.basic.ShiftsService;
 import com.qcadoo.mes.operationTimeCalculations.OperationWorkTimeService;
 import com.qcadoo.mes.operationTimeCalculations.OrderRealizationTimeService;
+import com.qcadoo.mes.operationTimeCalculations.constants.OperCompTimeCalculationsFields;
+import com.qcadoo.mes.operationTimeCalculations.constants.OperationTimeCalculationsConstants;
+import com.qcadoo.mes.operationTimeCalculations.constants.OrderTimeCalculationFields;
+import com.qcadoo.mes.operationTimeCalculations.constants.PlanOrderTimeCalculationFields;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.mes.productionScheduling.constants.OrderFieldsPS;
-import com.qcadoo.mes.productionScheduling.constants.OrderTimeCalculationFields;
-import com.qcadoo.mes.productionScheduling.constants.PlanOrderTimeCalculationFields;
-import com.qcadoo.mes.productionScheduling.constants.ProductionSchedulingConstants;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
-import com.qcadoo.mes.timeNormsForOperations.constants.OperCompTimeCalculationsFields;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -139,11 +139,11 @@ public class ProductionSchedulingService {
         Entity orderTimeCalculation;
         if (productionLineSchedule == null) {
             orderTimeCalculation = dataDefinitionService
-                    .get(ProductionSchedulingConstants.PLUGIN_IDENTIFIER, ProductionSchedulingConstants.MODEL_ORDER_TIME_CALCULATION)
+                    .get(OperationTimeCalculationsConstants.PLUGIN_PRODUCTION_SCHEDULING_IDENTIFIER, OperationTimeCalculationsConstants.MODEL_ORDER_TIME_CALCULATION)
                     .find().add(SearchRestrictions.belongsTo(OrderTimeCalculationFields.ORDER, order)).setMaxResults(1).uniqueResult();
         } else {
             orderTimeCalculation = dataDefinitionService
-                    .get(ProductionSchedulingConstants.PLUGIN_IDENTIFIER, ProductionSchedulingConstants.MODEL_PLAN_ORDER_TIME_CALCULATION)
+                    .get(OperationTimeCalculationsConstants.PLUGIN_PRODUCTION_SCHEDULING_IDENTIFIER, OperationTimeCalculationsConstants.MODEL_PLAN_ORDER_TIME_CALCULATION)
                     .find()
                     .add(SearchRestrictions.belongsTo(PlanOrderTimeCalculationFields.PRODUCTION_LINE_SCHEDULE, productionLineSchedule))
                     .add(SearchRestrictions.belongsTo(OrderTimeCalculationFields.ORDER, order))

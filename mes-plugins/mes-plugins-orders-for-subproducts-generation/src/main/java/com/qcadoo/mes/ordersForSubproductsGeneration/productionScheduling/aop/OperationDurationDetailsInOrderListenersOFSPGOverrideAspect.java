@@ -46,6 +46,7 @@ import com.google.common.collect.Maps;
 import com.qcadoo.mes.operationTimeCalculations.OperationWorkTime;
 import com.qcadoo.mes.operationTimeCalculations.OperationWorkTimeService;
 import com.qcadoo.mes.operationTimeCalculations.OrderRealizationTimeService;
+import com.qcadoo.mes.operationTimeCalculations.constants.OperationTimeCalculationsConstants;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.mes.ordersForSubproductsGeneration.constants.OrdersForSubproductsGenerationConstans;
@@ -54,13 +55,12 @@ import com.qcadoo.mes.ordersForSubproductsGeneration.productionScheduling.Produc
 import com.qcadoo.mes.productionLines.constants.ProductionLinesConstants;
 import com.qcadoo.mes.productionScheduling.ProductionSchedulingService;
 import com.qcadoo.mes.productionScheduling.constants.OrderFieldsPS;
-import com.qcadoo.mes.productionScheduling.constants.OrderTimeCalculationFields;
+import com.qcadoo.mes.operationTimeCalculations.constants.OrderTimeCalculationFields;
 import com.qcadoo.mes.technologies.ProductQuantitiesService;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
 import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
-import com.qcadoo.mes.timeNormsForOperations.constants.OperCompTimeCalculationsFields;
-import com.qcadoo.mes.timeNormsForOperations.constants.TimeNormsConstants;
+import com.qcadoo.mes.operationTimeCalculations.constants.OperCompTimeCalculationsFields;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -281,8 +281,8 @@ public class OperationDurationDetailsInOrderListenersOFSPGOverrideAspect {
         if (isGenerated) {
             order = getActualOrderWithChanges(order);
             Entity orderTimeCalculation = dataDefinitionService
-                    .get(TimeNormsConstants.PLUGIN_PRODUCTION_SCHEDULING_IDENTIFIER,
-                            TimeNormsConstants.MODEL_ORDER_TIME_CALCULATION)
+                    .get(OperationTimeCalculationsConstants.PLUGIN_PRODUCTION_SCHEDULING_IDENTIFIER,
+                            OperationTimeCalculationsConstants.MODEL_ORDER_TIME_CALCULATION)
                     .find().add(SearchRestrictions.belongsTo("order", order)).setMaxResults(1).uniqueResult();
 
             Date startTimeOrders = findCalculatedStartAllOrders(order);
@@ -304,7 +304,7 @@ public class OperationDurationDetailsInOrderListenersOFSPGOverrideAspect {
 
     private Date findCalculatedStartAllOrders(final Entity order) {
         List<Entity> ordersTimeCalculations = dataDefinitionService
-                .get(TimeNormsConstants.PLUGIN_PRODUCTION_SCHEDULING_IDENTIFIER, TimeNormsConstants.MODEL_ORDER_TIME_CALCULATION)
+                .get(OperationTimeCalculationsConstants.PLUGIN_PRODUCTION_SCHEDULING_IDENTIFIER, OperationTimeCalculationsConstants.MODEL_ORDER_TIME_CALCULATION)
                 .find().createAlias("order", "ord", JoinType.LEFT)
                 .add(SearchRestrictions.in("ord.id",
                         getOrderAndSubOrders(order.getId()).stream().map(Entity::getId).collect(Collectors.toList())))
@@ -398,7 +398,7 @@ public class OperationDurationDetailsInOrderListenersOFSPGOverrideAspect {
         }
 
         Entity orderTimeCalculation = dataDefinitionService
-                .get(TimeNormsConstants.PLUGIN_PRODUCTION_SCHEDULING_IDENTIFIER, TimeNormsConstants.MODEL_ORDER_TIME_CALCULATION)
+                .get(OperationTimeCalculationsConstants.PLUGIN_PRODUCTION_SCHEDULING_IDENTIFIER, OperationTimeCalculationsConstants.MODEL_ORDER_TIME_CALCULATION)
                 .find().add(SearchRestrictions.belongsTo("order", order)).setMaxResults(1).uniqueResult();
         orderTimeCalculation.setField(OrderTimeCalculationFields.EFFECTIVE_DATE_FROM,
                 operationStartDates.stream().min(Comparator.naturalOrder()).get());

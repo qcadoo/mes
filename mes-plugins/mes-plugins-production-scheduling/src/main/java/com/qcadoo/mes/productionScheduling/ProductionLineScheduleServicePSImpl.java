@@ -38,16 +38,16 @@ import com.qcadoo.mes.lineChangeoverNormsForOrders.LineChangeoverNormsForOrdersS
 import com.qcadoo.mes.lineChangeoverNormsForOrders.constants.ProductionLineSchedulePositionFieldsLCNFO;
 import com.qcadoo.mes.operationTimeCalculations.OperationWorkTimeService;
 import com.qcadoo.mes.operationTimeCalculations.OrderRealizationTimeService;
+import com.qcadoo.mes.operationTimeCalculations.constants.OperCompTimeCalculationsFields;
+import com.qcadoo.mes.operationTimeCalculations.constants.OperationTimeCalculationsConstants;
 import com.qcadoo.mes.orders.ProductionLineScheduleServicePS;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.constants.ProductionLineSchedulePositionFields;
 import com.qcadoo.mes.orders.listeners.ProductionLinePositionNewData;
-import com.qcadoo.mes.productionScheduling.constants.OperCompTimeCalculation;
-import com.qcadoo.mes.productionScheduling.constants.OrderTimeCalculationFields;
-import com.qcadoo.mes.productionScheduling.constants.PlanOrderTimeCalculationFields;
+import com.qcadoo.mes.operationTimeCalculations.constants.OrderTimeCalculationFields;
+import com.qcadoo.mes.operationTimeCalculations.constants.PlanOrderTimeCalculationFields;
 import com.qcadoo.mes.productionScheduling.constants.ProductionSchedulingConstants;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
-import com.qcadoo.mes.timeNormsForOperations.constants.TimeNormsConstants;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -108,8 +108,8 @@ public class ProductionLineScheduleServicePSImpl implements ProductionLineSchedu
     @Override
     public void copyPS(Entity productionLineSchedule, Entity order, Entity productionLine) {
         DataDefinition planOrderTimeCalculationDD = dataDefinitionService
-                .get(ProductionSchedulingConstants.PLUGIN_IDENTIFIER,
-                        ProductionSchedulingConstants.MODEL_PLAN_ORDER_TIME_CALCULATION);
+                .get(OperationTimeCalculationsConstants.PLUGIN_PRODUCTION_SCHEDULING_IDENTIFIER,
+                        OperationTimeCalculationsConstants.MODEL_PLAN_ORDER_TIME_CALCULATION);
         Entity planOrderTimeCalculation = planOrderTimeCalculationDD
                 .find()
                 .add(SearchRestrictions.belongsTo(PlanOrderTimeCalculationFields.PRODUCTION_LINE_SCHEDULE, productionLineSchedule))
@@ -118,16 +118,16 @@ public class ProductionLineScheduleServicePSImpl implements ProductionLineSchedu
                 .setMaxResults(1).uniqueResult();
         if (planOrderTimeCalculation != null) {
             DataDefinition operCompTimeCalculationDD = dataDefinitionService
-                    .get(TimeNormsConstants.PLUGIN_PRODUCTION_SCHEDULING_IDENTIFIER,
-                            TimeNormsConstants.MODEL_OPER_COMP_TIME_CALCULATION);
+                    .get(OperationTimeCalculationsConstants.PLUGIN_PRODUCTION_SCHEDULING_IDENTIFIER,
+                            OperationTimeCalculationsConstants.MODEL_OPER_COMP_TIME_CALCULATION);
             operationWorkTimeService.deleteOperCompTimeCalculations(order);
             Entity orderTimeCalculation = dataDefinitionService
-                    .get(ProductionSchedulingConstants.PLUGIN_IDENTIFIER,
-                            ProductionSchedulingConstants.MODEL_ORDER_TIME_CALCULATION)
+                    .get(OperationTimeCalculationsConstants.PLUGIN_PRODUCTION_SCHEDULING_IDENTIFIER,
+                            OperationTimeCalculationsConstants.MODEL_ORDER_TIME_CALCULATION)
                     .find().add(SearchRestrictions.belongsTo(OrderTimeCalculationFields.ORDER, order)).setMaxResults(1).uniqueResult();
             if (Objects.isNull(orderTimeCalculation)) {
-                orderTimeCalculation = dataDefinitionService.get(ProductionSchedulingConstants.PLUGIN_IDENTIFIER,
-                        ProductionSchedulingConstants.MODEL_ORDER_TIME_CALCULATION).create();
+                orderTimeCalculation = dataDefinitionService.get(OperationTimeCalculationsConstants.PLUGIN_PRODUCTION_SCHEDULING_IDENTIFIER,
+                        OperationTimeCalculationsConstants.MODEL_ORDER_TIME_CALCULATION).create();
                 orderTimeCalculation.setField(OrderTimeCalculationFields.ORDER, order);
             }
             orderTimeCalculation.setField(OrderTimeCalculationFields.EFFECTIVE_DATE_FROM, planOrderTimeCalculation.getField(OrderTimeCalculationFields.EFFECTIVE_DATE_FROM));
@@ -135,15 +135,15 @@ public class ProductionLineScheduleServicePSImpl implements ProductionLineSchedu
             orderTimeCalculation = orderTimeCalculation.getDataDefinition().save(orderTimeCalculation);
             for (Entity planOperCompTimeCalculation : planOrderTimeCalculation.getHasManyField(OrderTimeCalculationFields.OPER_COMP_TIME_CALCULATIONS)) {
                 Entity operCompTimeCalculation = operCompTimeCalculationDD.create();
-                operCompTimeCalculation.setField(OperCompTimeCalculation.ORDER_TIME_CALCULATION, orderTimeCalculation);
-                operCompTimeCalculation.setField(OperCompTimeCalculation.TECHNOLOGY_OPERATION_COMPONENT, planOperCompTimeCalculation.getField(OperCompTimeCalculation.TECHNOLOGY_OPERATION_COMPONENT));
-                operCompTimeCalculation.setField(OperCompTimeCalculation.OPERATION_OFF_SET, planOperCompTimeCalculation.getField(OperCompTimeCalculation.OPERATION_OFF_SET));
-                operCompTimeCalculation.setField(OperCompTimeCalculation.EFFECTIVE_OPERATION_REALIZATION_TIME, planOperCompTimeCalculation.getField(OperCompTimeCalculation.EFFECTIVE_OPERATION_REALIZATION_TIME));
-                operCompTimeCalculation.setField(OperCompTimeCalculation.EFFECTIVE_DATE_FROM, planOperCompTimeCalculation.getField(OperCompTimeCalculation.EFFECTIVE_DATE_FROM));
-                operCompTimeCalculation.setField(OperCompTimeCalculation.EFFECTIVE_DATE_TO, planOperCompTimeCalculation.getField(OperCompTimeCalculation.EFFECTIVE_DATE_TO));
-                operCompTimeCalculation.setField(OperCompTimeCalculation.LABOR_WORK_TIME, planOperCompTimeCalculation.getField(OperCompTimeCalculation.EFFECTIVE_OPERATION_REALIZATION_TIME));
-                operCompTimeCalculation.setField(OperCompTimeCalculation.MACHINE_WORK_TIME, planOperCompTimeCalculation.getField(OperCompTimeCalculation.EFFECTIVE_OPERATION_REALIZATION_TIME));
-                operCompTimeCalculation.setField(OperCompTimeCalculation.DURATION, planOperCompTimeCalculation.getField(OperCompTimeCalculation.EFFECTIVE_OPERATION_REALIZATION_TIME));
+                operCompTimeCalculation.setField(OperCompTimeCalculationsFields.ORDER_TIME_CALCULATION, orderTimeCalculation);
+                operCompTimeCalculation.setField(OperCompTimeCalculationsFields.TECHNOLOGY_OPERATION_COMPONENT, planOperCompTimeCalculation.getField(OperCompTimeCalculationsFields.TECHNOLOGY_OPERATION_COMPONENT));
+                operCompTimeCalculation.setField(OperCompTimeCalculationsFields.OPERATION_OFF_SET, planOperCompTimeCalculation.getField(OperCompTimeCalculationsFields.OPERATION_OFF_SET));
+                operCompTimeCalculation.setField(OperCompTimeCalculationsFields.EFFECTIVE_OPERATION_REALIZATION_TIME, planOperCompTimeCalculation.getField(OperCompTimeCalculationsFields.EFFECTIVE_OPERATION_REALIZATION_TIME));
+                operCompTimeCalculation.setField(OperCompTimeCalculationsFields.EFFECTIVE_DATE_FROM, planOperCompTimeCalculation.getField(OperCompTimeCalculationsFields.EFFECTIVE_DATE_FROM));
+                operCompTimeCalculation.setField(OperCompTimeCalculationsFields.EFFECTIVE_DATE_TO, planOperCompTimeCalculation.getField(OperCompTimeCalculationsFields.EFFECTIVE_DATE_TO));
+                operCompTimeCalculation.setField(OperCompTimeCalculationsFields.LABOR_WORK_TIME, planOperCompTimeCalculation.getField(OperCompTimeCalculationsFields.EFFECTIVE_OPERATION_REALIZATION_TIME));
+                operCompTimeCalculation.setField(OperCompTimeCalculationsFields.MACHINE_WORK_TIME, planOperCompTimeCalculation.getField(OperCompTimeCalculationsFields.EFFECTIVE_OPERATION_REALIZATION_TIME));
+                operCompTimeCalculation.setField(OperCompTimeCalculationsFields.DURATION, planOperCompTimeCalculation.getField(OperCompTimeCalculationsFields.EFFECTIVE_OPERATION_REALIZATION_TIME));
                 operCompTimeCalculationDD.save(operCompTimeCalculation);
             }
         }

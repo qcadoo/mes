@@ -32,10 +32,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.google.common.collect.Lists;
+import com.qcadoo.mes.operationTimeCalculations.constants.OperationTimeCalculationsConstants;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
-import com.qcadoo.mes.productionScheduling.constants.OrderTimeCalculationFields;
-import com.qcadoo.mes.timeNormsForOperations.constants.TimeNormsConstants;
+import com.qcadoo.mes.operationTimeCalculations.constants.OrderTimeCalculationFields;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -63,7 +63,7 @@ public class OperationDurationDetailsInOrderListenerOFSPG {
         List<Entity> orders = getOrdersForComponent(orderId);
         if (!orders.isEmpty()) {
 
-            List<Entity> ordersTimeCalculations = dataDefinitionService.get(TimeNormsConstants.PLUGIN_PRODUCTION_SCHEDULING_IDENTIFIER, TimeNormsConstants.MODEL_ORDER_TIME_CALCULATION)
+            List<Entity> ordersTimeCalculations = dataDefinitionService.get(OperationTimeCalculationsConstants.PLUGIN_PRODUCTION_SCHEDULING_IDENTIFIER, OperationTimeCalculationsConstants.MODEL_ORDER_TIME_CALCULATION)
                     .find().createAlias("order", "ord", JoinType.LEFT)
                     .add(SearchRestrictions.in("ord.id", getOrdersForComponent(orderId).stream().map(entity -> entity.getId()).collect(
                             Collectors.toList()))).list().getEntities();

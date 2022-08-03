@@ -31,8 +31,6 @@ public final class OrderFieldsPS {
 
     public static final String REALIZATION_TIME = "realizationTime";
 
-    public static final String CALCULATE = "calculate";
-
     public static final String INCLUDE_TPZ = "includeTpz";
 
     public static final String INCLUDE_ADDITIONAL_TIME = "includeAdditionalTime";
@@ -44,7 +42,5 @@ public final class OrderFieldsPS {
     public static final String OPERATION_DURATION_QUANTITY_UNIT = "operationDurationQuantityUNIT";
 
     public static final String GENERATED_END_DATE = "generatedEndDate";
-
-    public static final String ORDER_TIME_CALCULATIONS = "orderTimeCalculations";
 
 }

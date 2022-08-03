@@ -21,11 +21,11 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.productionScheduling.constants;
+package com.qcadoo.mes.operationTimeCalculations.constants;
 
-public final class OrderTimeCalculationFields {
+public final class OperCompTimeCalculationsFields {
 
-    private OrderTimeCalculationFields() {
+    private OperCompTimeCalculationsFields() {
 
     }
 
@@ -33,8 +33,19 @@ public final class OrderTimeCalculationFields {
 
     public static final String EFFECTIVE_DATE_TO = "effectiveDateTo";
 
-    public static final String ORDER = "order";
+    public static final String EFFECTIVE_OPERATION_REALIZATION_TIME = "effectiveOperationRealizationTime";
 
-    public static final String OPER_COMP_TIME_CALCULATIONS = "operCompTimeCalculations";
+    public static final String OPERATION_OFF_SET = "operationOffSet";
+
+    public static final String DURATION = "duration";
+
+    public static final String MACHINE_WORK_TIME = "machineWorkTime";
+
+    public static final String LABOR_WORK_TIME = "laborWorkTime";
+
+    public static final String ORDER_TIME_CALCULATION = "orderTimeCalculation";
+
+    public static final String TECHNOLOGY_OPERATION_COMPONENT = "technologyOperationComponent";
+
 
 }
