@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.Date;
 import java.util.Optional;
 
 @Service
@@ -28,10 +29,10 @@ public class PpsTechNormAlgorithmService extends PpsBaseAlgorithmService {
 
     @Override
     protected ShiftEfficiencyCalculationHolder calculateShiftEfficiency(ProgressForDaysContainer progressForDaysContainer,
-                                                                        Entity productionPerShift, Shift shift, Entity order, DateTimeRange range, BigDecimal shiftEfficiency,
+                                                                        Entity productionPerShift, Shift shift, Entity technology, Entity productionLine, DateTimeRange range, BigDecimal shiftEfficiency,
                                                                         int progressForDayQuantity, boolean allowIncompleteUnits) {
         ShiftEfficiencyCalculationHolder calculationHolder = new ShiftEfficiencyCalculationHolder();
-        BigDecimal scaledNorm = getStandardPerformanceNorm(progressForDaysContainer, order);
+        BigDecimal scaledNorm = getStandardPerformanceNorm(progressForDaysContainer, technology, productionLine);
         long minutes = range.durationInMins();
         BigDecimal efficiencyForRange = calculateEfficiencyForRange(scaledNorm, minutes, allowIncompleteUnits);
         shiftEfficiency = shiftEfficiency.add(efficiencyForRange, numberService.getMathContext());
@@ -52,8 +53,7 @@ public class PpsTechNormAlgorithmService extends PpsBaseAlgorithmService {
     }
 
     protected BigDecimal calculateEfficiencyForRange(BigDecimal scaledNorm, long minuets, boolean allowIncompleteUnits) {
-        BigDecimal value;
-        value = scaledNorm.multiply(new BigDecimal(minuets), numberService.getMathContext());
+        BigDecimal value = scaledNorm.multiply(new BigDecimal(minuets), numberService.getMathContext());
         if (allowIncompleteUnits) {
             return value;
         } else {
@@ -61,11 +61,10 @@ public class PpsTechNormAlgorithmService extends PpsBaseAlgorithmService {
         }
     }
 
-    protected BigDecimal getStandardPerformanceNorm(ProgressForDaysContainer progressForDaysContainer, Entity order) {
+    protected BigDecimal getStandardPerformanceNorm(ProgressForDaysContainer progressForDaysContainer, Entity technology, Entity productionLine) {
         Optional<BigDecimal> norm = Optional.empty();
-        Entity productionLine = order.getBelongsToField(OrderFields.PRODUCTION_LINE);
         if (productionLine != null) {
-            norm = technologyService.getStandardPerformance(order.getBelongsToField(OrderFields.TECHNOLOGY), productionLine);
+            norm = technologyService.getStandardPerformance(technology, productionLine);
         }
         if (!norm.isPresent()) {
             progressForDaysContainer.addError(new ErrorMessage(

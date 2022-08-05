@@ -184,7 +184,7 @@ public class OrderRealizationTimeServiceImplTest {
         when(productionLinesService.getWorkstationTypesCount(opComp2, productionLine)).thenReturn(2);
 
         // when
-        int time = orderRealizationTimeServiceImpl.estimateMaxOperationTimeConsumptionForWorkstation(order, opComp1,
+        int time = orderRealizationTimeServiceImpl.estimateMaxOperationTimeConsumptionForWorkstation(null, order, opComp1,
                 plannedQuantity, includeTpz, includeAdditionalTime, productionLine);
 
         // then

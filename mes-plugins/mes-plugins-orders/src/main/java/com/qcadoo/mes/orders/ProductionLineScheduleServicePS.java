@@ -32,7 +32,9 @@ import com.qcadoo.model.api.Entity;
 public interface ProductionLineScheduleServicePS {
 
     void createProductionLinePositionNewData(Map<Long, ProductionLinePositionNewData> orderProductionLinesPositionNewData,
-                                             Entity productionLine, Date finishDate, Entity order, Entity technology, Entity previousOrder);
+                                             Entity productionLine, Date finishDate, Entity position, Entity technology, Entity previousOrder);
 
     void savePosition(Entity position, ProductionLinePositionNewData productionLinePositionNewData);
+
+    void copyPS(Entity productionLineSchedule, Entity order, Entity productionLine);
 }

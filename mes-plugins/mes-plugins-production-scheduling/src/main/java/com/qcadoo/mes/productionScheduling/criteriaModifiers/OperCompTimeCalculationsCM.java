@@ -1,10 +1,10 @@
 package com.qcadoo.mes.productionScheduling.criteriaModifiers;
 
+import com.qcadoo.mes.operationTimeCalculations.constants.OperationTimeCalculationsConstants;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
-import com.qcadoo.mes.timeNormsForOperations.constants.OperCompTimeCalculationsFields;
-import com.qcadoo.mes.timeNormsForOperations.constants.TimeNormsConstants;
+import com.qcadoo.mes.operationTimeCalculations.constants.OperCompTimeCalculationsFields;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.JoinType;
@@ -31,7 +31,7 @@ public class OperCompTimeCalculationsCM {
 
         if (filterValue.has(ORDER_PARAMETER)) {
             Entity orderTimeCalculation = dataDefinitionService
-                    .get(TimeNormsConstants.PLUGIN_PRODUCTION_SCHEDULING_IDENTIFIER, TimeNormsConstants.MODEL_ORDER_TIME_CALCULATION)
+                    .get(OperationTimeCalculationsConstants.PLUGIN_PRODUCTION_SCHEDULING_IDENTIFIER, OperationTimeCalculationsConstants.MODEL_ORDER_TIME_CALCULATION)
                     .find()
                     .add(SearchRestrictions.belongsTo("order", OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER,
                             filterValue.getLong(ORDER_PARAMETER))).setMaxResults(1).uniqueResult();

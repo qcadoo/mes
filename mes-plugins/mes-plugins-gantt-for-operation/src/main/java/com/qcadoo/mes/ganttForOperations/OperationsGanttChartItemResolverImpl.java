@@ -24,11 +24,11 @@
 package com.qcadoo.mes.ganttForOperations;
 
 import com.qcadoo.mes.operationTimeCalculations.OperationWorkTimeService;
+import com.qcadoo.mes.operationTimeCalculations.constants.OperationTimeCalculationsConstants;
 import com.qcadoo.mes.orders.constants.OrderFields;
-import com.qcadoo.mes.productionScheduling.constants.OrderTimeCalculationFields;
+import com.qcadoo.mes.operationTimeCalculations.constants.OrderTimeCalculationFields;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
 import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
-import com.qcadoo.mes.timeNormsForOperations.constants.TimeNormsConstants;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchRestrictions;
@@ -106,7 +106,7 @@ public class OperationsGanttChartItemResolverImpl implements OperationsGanttChar
             }
 
             if (scale.getIsDatesSet() != null && scale.getIsDatesSet()) {
-                Entity orderTimeCalculation = dataDefinitionService.get(TimeNormsConstants.PLUGIN_PRODUCTION_SCHEDULING_IDENTIFIER, TimeNormsConstants.MODEL_ORDER_TIME_CALCULATION).find()
+                Entity orderTimeCalculation = dataDefinitionService.get(OperationTimeCalculationsConstants.PLUGIN_PRODUCTION_SCHEDULING_IDENTIFIER, OperationTimeCalculationsConstants.MODEL_ORDER_TIME_CALCULATION).find()
                         .add(SearchRestrictions.belongsTo("order", order)).setMaxResults(1).uniqueResult();
                 if (Objects.nonNull(orderTimeCalculation)) {
                     scale.setDateFrom(orderTimeCalculation.getDateField(OrderTimeCalculationFields.EFFECTIVE_DATE_FROM));

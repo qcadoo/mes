@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.basic.constants.UnitConversionItemFieldsB;
 import com.qcadoo.mes.basicProductionCounting.constants.OrderFieldsBPC;
@@ -86,8 +87,17 @@ public class ProductionCountingDocumentService {
 
         List<Entity> trackingOperationProductInComponents = Lists.newArrayList();
         for (Entity productionTracking : productionTrackings) {
-            trackingOperationProductInComponents.addAll(
-                    productionTracking.getHasManyField(ProductionTrackingFields.TRACKING_OPERATION_PRODUCT_IN_COMPONENTS));
+            if(productionTrackingListenerServicePFTD.notCreateDocumentsForIntermediateRecords(productionTracking)) {
+
+                List<Entity> withoutIntermediateRecords = productionTracking.getHasManyField(ProductionTrackingFields.TRACKING_OPERATION_PRODUCT_IN_COMPONENTS)
+                                .stream().filter(pin -> !Strings.isNullOrEmpty(pin.getStringField(TrackingOperationProductInComponentFields.TYPE_OF_MATERIAL))
+                                && !pin.getStringField(TrackingOperationProductInComponentFields.TYPE_OF_MATERIAL).equals(ProductionCountingQuantityTypeOfMaterial.INTERMEDIATE.getStringValue()))
+                        .collect(Collectors.toList());
+                trackingOperationProductInComponents.addAll(withoutIntermediateRecords);
+            } else {
+                trackingOperationProductInComponents.addAll(
+                        productionTracking.getHasManyField(ProductionTrackingFields.TRACKING_OPERATION_PRODUCT_IN_COMPONENTS));
+            }
         }
 
         try {

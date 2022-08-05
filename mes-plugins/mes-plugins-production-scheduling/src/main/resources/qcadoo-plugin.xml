@@ -72,10 +72,11 @@
 
 		<model:model model="orderTimeCalculation" resource="model/orderTimeCalculation.xml"/>
 		<model:model model="operCompTimeCalculation" resource="model/operCompTimeCalculation.xml"/>
+		<model:model model="planOrderTimeCalculation" resource="model/planOrderTimeCalculation.xml"/>
+		<model:model model="planOperCompTimeCalculation" resource="model/planOperCompTimeCalculation.xml"/>
 
 		<model:model-field plugin="technologies" model="technologyOperationComponent">
-			<model:hasMany name="operCompTimeCalculations" model="operCompTimeCalculation" plugin="productionScheduling" joinField="technologyOperationComponent"
-						   cascade="nullify"/>
+			<model:hasMany name="operCompTimeCalculations" model="operCompTimeCalculation" plugin="productionScheduling" joinField="technologyOperationComponent"/>
 		</model:model-field>
 
 		<model:model-field plugin="orders" model="order">

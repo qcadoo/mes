@@ -24,7 +24,6 @@
 package com.qcadoo.mes.productionScheduling.listeners;
 
 import java.math.BigDecimal;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -36,11 +35,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
-import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.qcadoo.mes.operationTimeCalculations.OperationWorkTime;
 import com.qcadoo.mes.operationTimeCalculations.OperationWorkTimeService;
 import com.qcadoo.mes.operationTimeCalculations.OrderRealizationTimeService;
+import com.qcadoo.mes.operationTimeCalculations.constants.OperationTimeCalculationsConstants;
 import com.qcadoo.mes.orders.TechnologyServiceO;
 import com.qcadoo.mes.orders.constants.OperationalTaskFields;
 import com.qcadoo.mes.orders.constants.OperationalTaskType;
@@ -49,13 +48,10 @@ import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.mes.productionLines.constants.ProductionLinesConstants;
 import com.qcadoo.mes.productionScheduling.ProductionSchedulingService;
 import com.qcadoo.mes.productionScheduling.constants.OrderFieldsPS;
-import com.qcadoo.mes.productionScheduling.constants.OrderTimeCalculationFields;
+import com.qcadoo.mes.operationTimeCalculations.constants.OrderTimeCalculationFields;
 import com.qcadoo.mes.technologies.ProductQuantitiesService;
-import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
-import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
-import com.qcadoo.mes.timeNormsForOperations.constants.OperCompTimeCalculationsFields;
-import com.qcadoo.mes.timeNormsForOperations.constants.TimeNormsConstants;
+import com.qcadoo.mes.operationTimeCalculations.constants.OperCompTimeCalculationsFields;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -183,7 +179,7 @@ public class OperationDurationDetailsInOrderListeners {
 
         order = getActualOrderWithChanges(order);
 
-        int maxPathTime = orderRealizationTimeService.estimateMaxOperationTimeConsumptionForWorkstation(order,
+        int maxPathTime = orderRealizationTimeService.estimateMaxOperationTimeConsumptionForWorkstation(null, order,
                 technology.getTreeField(TechnologyFields.OPERATION_COMPONENTS).getRoot(), quantity, includeTpz,
                 includeAdditionalTime, productionLine);
 
@@ -218,8 +214,8 @@ public class OperationDurationDetailsInOrderListeners {
         if (isGenerated) {
             order = getActualOrderWithChanges(order);
             Entity orderTimeCalculation = dataDefinitionService
-                    .get(TimeNormsConstants.PLUGIN_PRODUCTION_SCHEDULING_IDENTIFIER,
-                            TimeNormsConstants.MODEL_ORDER_TIME_CALCULATION)
+                    .get(OperationTimeCalculationsConstants.PLUGIN_PRODUCTION_SCHEDULING_IDENTIFIER,
+                            OperationTimeCalculationsConstants.MODEL_ORDER_TIME_CALCULATION)
                     .find().add(SearchRestrictions.belongsTo(OrderTimeCalculationFields.ORDER, order)).setMaxResults(1).uniqueResult();
             order.setField(OrderFields.START_DATE, orderRealizationTimeService
                     .setDateToField(orderTimeCalculation.getDateField(OrderTimeCalculationFields.EFFECTIVE_DATE_FROM)));

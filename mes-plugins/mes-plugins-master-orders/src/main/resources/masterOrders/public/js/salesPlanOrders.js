@@ -114,7 +114,6 @@ thatObject.generateOrders = function (eventPerformer, ribbonItemName, entityId) 
 		},
 		complete: function () {
 			QCD.components.elements.utils.LoadingIndicator.unblockElement($("#window_windowComponents"));
-
 		}
 	});
 }

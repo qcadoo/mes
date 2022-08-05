@@ -73,7 +73,7 @@ public interface OrderRealizationTimeService {
      *         operations to finish.
      */
     @Transactional
-    int estimateMaxOperationTimeConsumptionForWorkstation(Entity order, EntityTreeNode operationComponent,
+    int estimateMaxOperationTimeConsumptionForWorkstation(Entity productionLineSchedule, Entity order, EntityTreeNode operationComponent,
             BigDecimal plannedQuantity, boolean includeTpz, boolean includeAdditionalTime, Entity productionLine);
 
     Object setDateToField(final Date date);

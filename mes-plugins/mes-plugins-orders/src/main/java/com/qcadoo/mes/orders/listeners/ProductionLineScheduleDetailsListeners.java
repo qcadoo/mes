@@ -4,7 +4,6 @@ import static com.qcadoo.model.api.search.SearchProjections.alias;
 import static com.qcadoo.model.api.search.SearchProjections.list;
 import static com.qcadoo.model.api.search.SearchProjections.rowCount;
 
-import java.math.BigDecimal;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
@@ -21,8 +20,6 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.newstates.StateExecutorService;
-import com.qcadoo.mes.operationTimeCalculations.OperationWorkTimeService;
-import com.qcadoo.mes.operationTimeCalculations.OrderRealizationTimeService;
 import com.qcadoo.mes.orders.ProductionLineScheduleServicePPSExecutorService;
 import com.qcadoo.mes.orders.ProductionLineScheduleServicePSExecutorService;
 import com.qcadoo.mes.orders.constants.DurationOfOrderCalculatedOnBasis;
@@ -39,7 +36,6 @@ import com.qcadoo.mes.orders.states.constants.OrderStateStringValues;
 import com.qcadoo.mes.orders.validators.ProductionLineSchedulePositionValidators;
 import com.qcadoo.mes.productionLines.constants.ProductionLineFields;
 import com.qcadoo.mes.productionLines.constants.ProductionLinesConstants;
-import com.qcadoo.mes.technologies.TechnologyService;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
 import com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperationComponentFieldsTNFO;
 import com.qcadoo.model.api.DataDefinition;
@@ -78,19 +74,10 @@ public class ProductionLineScheduleDetailsListeners {
     private ProductionLineSchedulePositionValidators productionLineSchedulePositionValidators;
 
     @Autowired
-    private OperationWorkTimeService operationWorkTimeService;
-
-    @Autowired
-    private OrderRealizationTimeService orderRealizationTimeService;
-
-    @Autowired
     private ProductionLineScheduleServicePSExecutorService productionLineScheduleServicePSExecutorService;
 
     @Autowired
     private ProductionLineScheduleServicePPSExecutorService productionLineScheduleServicePPSExecutorService;
-
-    @Autowired
-    private TechnologyService technologyService;
 
     public void changeState(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         stateExecutorService.changeState(ProductionLineScheduleServiceMarker.class, view, args);
@@ -135,10 +122,10 @@ public class ProductionLineScheduleDetailsListeners {
             List<Entity> orderProductionLines = productionLineSchedulePositionValidators.getProductionLinesFromTechnology(position, productionLines,
                     allowProductionLineChange, canChangeProdLineForAcceptedOrders);
             Map<Long, ProductionLinePositionNewData> orderProductionLinesPositionNewData = Maps.newHashMap();
-            boolean skipPosition = getProductionLinesNewFinishDate(productionLinesFinishDates, productionLinesOrders, scheduleStartTime,
+            getProductionLinesNewFinishDate(productionLinesFinishDates, productionLinesOrders, scheduleStartTime,
                     position, orderProductionLines, orderProductionLinesPositionNewData, durationOfOrderCalculatedOnBasis);
 
-            if (skipPosition) {
+            if (orderProductionLinesPositionNewData.isEmpty()) {
                 continue;
             }
 
@@ -190,10 +177,9 @@ public class ProductionLineScheduleDetailsListeners {
         }
     }
 
-    private boolean getProductionLinesNewFinishDate(Map<Long, Date> productionLinesFinishDates, Map<Long, Entity> productionLinesOrders, Date scheduleStartTime,
-                                                    Entity position, List<Entity> orderProductionLines,
-                                                    Map<Long, ProductionLinePositionNewData> orderProductionLinesPositionNewData, String durationOfOrderCalculatedOnBasis) {
-        boolean skipPosition = true;
+    private void getProductionLinesNewFinishDate(Map<Long, Date> productionLinesFinishDates, Map<Long, Entity> productionLinesOrders, Date scheduleStartTime,
+                                                 Entity position, List<Entity> orderProductionLines,
+                                                 Map<Long, ProductionLinePositionNewData> orderProductionLinesPositionNewData, String durationOfOrderCalculatedOnBasis) {
         for (Entity productionLine : orderProductionLines) {
             Entity order = position.getBelongsToField(ProductionLineSchedulePositionFields.ORDER);
             Entity technology = order.getBelongsToField(OrderFields.TECHNOLOGY);
@@ -202,31 +188,14 @@ public class ProductionLineScheduleDetailsListeners {
             Entity previousOrder = getPreviousOrder(productionLinesOrders, productionLine, finishDate);
             if (DurationOfOrderCalculatedOnBasis.TIME_CONSUMING_TECHNOLOGY.getStringValue()
                     .equals(durationOfOrderCalculatedOnBasis)) {
-                BigDecimal plannedQuantity = order.getDecimalField(OrderFields.PLANNED_QUANTITY);
-
-                operationWorkTimeService.deleteOperCompTimeCalculations(order);
-
-                int maxPathTime = orderRealizationTimeService.estimateMaxOperationTimeConsumptionForWorkstation(order,
-                        technology.getTreeField(TechnologyFields.OPERATION_COMPONENTS).getRoot(),
-                        plannedQuantity, true, true, productionLine);
-
-                if (maxPathTime <= OrderRealizationTimeService.MAX_REALIZATION_TIME && maxPathTime != 0) {
-                    skipPosition = false;
-                    productionLineScheduleServicePSExecutorService.createProductionLinePositionNewData(orderProductionLinesPositionNewData,
-                            productionLine, finishDate, order, technology, previousOrder);
-                }
-
+                productionLineScheduleServicePSExecutorService.createProductionLinePositionNewData(orderProductionLinesPositionNewData,
+                        productionLine, finishDate, position, technology, previousOrder);
             } else if (DurationOfOrderCalculatedOnBasis.PLAN_FOR_SHIFT.getStringValue()
                     .equals(durationOfOrderCalculatedOnBasis)) {
-                Optional<BigDecimal> norm = technologyService.getStandardPerformance(technology, productionLine);
-                if (norm.isPresent()) {
-                    skipPosition = false;
-                    productionLineScheduleServicePPSExecutorService.createProductionLinePositionNewData(orderProductionLinesPositionNewData,
-                            productionLine, finishDate, order.getDataDefinition().get(order.getId()), technology, previousOrder);
-                }
+                productionLineScheduleServicePPSExecutorService.createProductionLinePositionNewData(orderProductionLinesPositionNewData,
+                        productionLine, finishDate, position, technology, previousOrder);
             }
         }
-        return skipPosition;
     }
 
     private Entity getPreviousOrder(Map<Long, Entity> productionLinesOrders, Entity productionLine, final Date orderStartDate) {

@@ -76,6 +76,9 @@
         <model:model model="ppsReport" resource="model/ppsReport.xml"/>
         <model:model model="balanceContext" resource="model/balanceContext.xml"/>
         <model:model model="balance" resource="model/balance.xml"/>
+        <model:model model="planProductionPerShift" resource="model/planProductionPerShift.xml"/>
+        <model:model model="planProgressForDay" resource="model/planProgressForDay.xml"/>
+        <model:model model="planDailyProgress" resource="model/planDailyProgress.xml"/>
 
         <menu:menu-item name="ppsReports" category="orders"
                         view="ppsReportsList" defaultAuthorizationRole="ROLE_PLANNING"/>

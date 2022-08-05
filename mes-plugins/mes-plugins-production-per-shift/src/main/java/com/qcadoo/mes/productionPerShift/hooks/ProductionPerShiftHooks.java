@@ -23,17 +23,19 @@
  */
 package com.qcadoo.mes.productionPerShift.hooks;
 
-import com.google.common.base.Optional;
+import java.util.Collections;
+import java.util.Date;
+import java.util.Optional;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.states.constants.OrderState;
 import com.qcadoo.mes.productionPerShift.constants.ProductionPerShiftFields;
 import com.qcadoo.mes.productionPerShift.dates.ProgressDatesService;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import java.util.Date;
 
 @Service
 public class ProductionPerShiftHooks {
@@ -42,8 +44,8 @@ public class ProductionPerShiftHooks {
     private ProgressDatesService progressDatesService;
 
     public void onSave(final DataDefinition dataDefinition, final Entity pps) {
-        Optional<Entity> maybeOrder = Optional.fromNullable(pps.getBelongsToField(ProductionPerShiftFields.ORDER));
-        for (Entity order : maybeOrder.asSet()) {
+        Optional<Entity> maybeOrder = Optional.ofNullable(pps.getBelongsToField(ProductionPerShiftFields.ORDER));
+        for (Entity order : maybeOrder.map(Collections::singleton).orElse(Collections.emptySet())) {
             progressDatesService.setUpDatesFor(order);
         }
         fillOrderFinishDate(dataDefinition, pps);

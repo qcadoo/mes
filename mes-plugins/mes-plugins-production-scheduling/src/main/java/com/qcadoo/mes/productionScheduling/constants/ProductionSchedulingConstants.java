@@ -26,14 +26,9 @@ package com.qcadoo.mes.productionScheduling.constants;
 public final class ProductionSchedulingConstants {
 
     private ProductionSchedulingConstants() {
-
     }
 
     public static final String PLUGIN_IDENTIFIER = "productionScheduling";
-
-    public static final String MODEL_OPERATION_COMP_TIME_CALCULATION = "operCompTimeCalculation";
-
-    public static final String MODEL_ORDER_TIME_CALCUALTION = "orderTimeCalculation";
 
     public static final String VIEW_RIBBON_ACTION_ITEM_GROUP = "orderGantt";
 

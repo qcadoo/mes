@@ -3,38 +3,36 @@
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
  * Version: 1.4
- * <p>
+ *
  * This file is part of Qcadoo.
- * <p>
+ *
  * Qcadoo is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation; either version 3 of the License,
  * or (at your option) any later version.
- * <p>
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty
  * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU Affero General Public License for more details.
- * <p>
+ *
  * You should have received a copy of the GNU Affero General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.orders;
+package com.qcadoo.mes.operationTimeCalculations.constants;
 
-import java.util.Date;
-import java.util.Map;
+public final class OperationTimeCalculationsConstants {
 
-import com.qcadoo.mes.orders.listeners.ProductionLinePositionNewData;
-import com.qcadoo.model.api.Entity;
+    private OperationTimeCalculationsConstants() {
 
-public interface ProductionLineScheduleServicePPS {
+    }
 
-    void createProductionLinePositionNewData(Map<Long, ProductionLinePositionNewData> orderProductionLinesPositionNewData,
-                                             Entity productionLine, Date startDate, Entity position, Entity technology, Entity previousOrder);
+    public static final String PLUGIN_PRODUCTION_SCHEDULING_IDENTIFIER = "productionScheduling";
+    public static final String MODEL_ORDER_TIME_CALCULATION = "orderTimeCalculation";
+    public static final String MODEL_PLAN_ORDER_TIME_CALCULATION = "planOrderTimeCalculation";
+    public static final String MODEL_OPER_COMP_TIME_CALCULATION = "operCompTimeCalculation";
+    public static final String MODEL_PLAN_OPER_COMP_TIME_CALCULATION = "planOperCompTimeCalculation";
 
-    void savePosition(Entity position, ProductionLinePositionNewData productionLinePositionNewData);
-
-    void copyPPS(Entity productionLineSchedule, Entity order, Entity productionLine);
 }

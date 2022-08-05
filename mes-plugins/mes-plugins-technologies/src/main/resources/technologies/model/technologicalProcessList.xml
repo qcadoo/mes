@@ -36,8 +36,10 @@
 			<validatesLength max="2048" />
 		</string>
 		<belongsTo name="operation" model="operation" required="true"/>
+
 		<hasMany name="technologicalProcessComponents" joinField="technologicalProcessList" model="technologicalProcessComponent"
-				 cascade="delete"/>
+				 cascade="delete" copyable="true"/>
+
 		<hasMany name="operationComponents"
 				 joinField="technologicalProcessList" model="technologyOperationComponent"/>
 	</fields>

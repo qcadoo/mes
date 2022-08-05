@@ -10129,7 +10129,8 @@ CREATE TABLE basic_parameter (
     notincludedateswhenretrievingorders boolean DEFAULT false,
     requirequalityrating boolean DEFAULT true,
     synchronizeproductsize boolean DEFAULT false,
-    masterorderreleaselocation_id bigint
+    masterorderreleaselocation_id bigint,
+    demandworkstation boolean DEFAULT false
 );
 
 
@@ -21919,7 +21920,8 @@ CREATE VIEW ordersgroups_ordersgroupdto AS
            FROM (technologies_productionlinetechnologygroup productionlinetechnologygroup
              LEFT JOIN technologies_technologygroup technologygroup ON ((productionlinetechnologygroup.technologygroup_id = technologygroup.id)))
           WHERE ((productionlinetechnologygroup.productionline_id = ordersgroup.productionline_id) AND ((tgn.number ~~ (('%'::text || (technologygroup.number)::text) || '%'::text)) OR ((tgn.number IS NULL) AND (productionlinetechnologygroup.technologygroup_id IS NULL))))) AS materials,
-    masterorder.id AS masterorderid
+    masterorder.id AS masterorderid,
+    ordersgroup.description
    FROM ((((((((ordersgroups_ordersgroup ordersgroup
      LEFT JOIN basic_assortment assortment ON ((ordersgroup.assortment_id = assortment.id)))
      LEFT JOIN productionlines_productionline productionline ON ((ordersgroup.productionline_id = productionline.id)))
@@ -25720,6 +25722,101 @@ ALTER SEQUENCE productionpershift_dailyprogress_id_seq OWNED BY productionpershi
 
 
 --
+-- Name: productionpershift_plandailyprogress; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE productionpershift_plandailyprogress (
+    id bigint NOT NULL,
+    progressforday_id bigint,
+    shift_id bigint,
+    quantity numeric(12,5),
+    efficiencytime integer
+);
+
+
+--
+-- Name: productionpershift_plandailyprogress_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE productionpershift_plandailyprogress_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: productionpershift_plandailyprogress_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE productionpershift_plandailyprogress_id_seq OWNED BY productionpershift_plandailyprogress.id;
+
+
+--
+-- Name: productionpershift_planproductionpershift; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE productionpershift_planproductionpershift (
+    id bigint NOT NULL,
+    order_id bigint,
+    productionlineschedule_id bigint,
+    productionline_id bigint
+);
+
+
+--
+-- Name: productionpershift_planproductionpershift_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE productionpershift_planproductionpershift_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: productionpershift_planproductionpershift_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE productionpershift_planproductionpershift_id_seq OWNED BY productionpershift_planproductionpershift.id;
+
+
+--
+-- Name: productionpershift_planprogressforday; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE productionpershift_planprogressforday (
+    id bigint NOT NULL,
+    day integer,
+    dateofday date,
+    actualdateofday date,
+    productionpershift_id bigint
+);
+
+
+--
+-- Name: productionpershift_planprogressforday_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE productionpershift_planprogressforday_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: productionpershift_planprogressforday_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE productionpershift_planprogressforday_id_seq OWNED BY productionpershift_planprogressforday.id;
+
+
+--
 -- Name: productionpershift_ppsreport; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -25921,6 +26018,73 @@ CREATE SEQUENCE productionscheduling_ordertimecalculation_id_seq
 --
 
 ALTER SEQUENCE productionscheduling_ordertimecalculation_id_seq OWNED BY productionscheduling_ordertimecalculation.id;
+
+
+--
+-- Name: productionscheduling_planopercomptimecalculation; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE productionscheduling_planopercomptimecalculation (
+    id bigint NOT NULL,
+    ordertimecalculation_id bigint,
+    technologyoperationcomponent_id bigint,
+    operationoffset integer,
+    effectiveoperationrealizationtime integer,
+    effectivedatefrom timestamp without time zone,
+    effectivedateto timestamp without time zone
+);
+
+
+--
+-- Name: productionscheduling_planopercomptimecalculation_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE productionscheduling_planopercomptimecalculation_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: productionscheduling_planopercomptimecalculation_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE productionscheduling_planopercomptimecalculation_id_seq OWNED BY productionscheduling_planopercomptimecalculation.id;
+
+
+--
+-- Name: productionscheduling_planordertimecalculation; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE productionscheduling_planordertimecalculation (
+    id bigint NOT NULL,
+    order_id bigint,
+    productionlineschedule_id bigint,
+    productionline_id bigint,
+    effectivedatefrom timestamp without time zone,
+    effectivedateto timestamp without time zone
+);
+
+
+--
+-- Name: productionscheduling_planordertimecalculation_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE productionscheduling_planordertimecalculation_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: productionscheduling_planordertimecalculation_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE productionscheduling_planordertimecalculation_id_seq OWNED BY productionscheduling_planordertimecalculation.id;
 
 
 --
@@ -32728,6 +32892,27 @@ ALTER TABLE ONLY productionpershift_dailyprogress ALTER COLUMN id SET DEFAULT ne
 -- Name: id; Type: DEFAULT; Schema: public; Owner: -
 --
 
+ALTER TABLE ONLY productionpershift_plandailyprogress ALTER COLUMN id SET DEFAULT nextval('productionpershift_plandailyprogress_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY productionpershift_planproductionpershift ALTER COLUMN id SET DEFAULT nextval('productionpershift_planproductionpershift_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY productionpershift_planprogressforday ALTER COLUMN id SET DEFAULT nextval('productionpershift_planprogressforday_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
+--
+
 ALTER TABLE ONLY productionpershift_ppsreport ALTER COLUMN id SET DEFAULT nextval('productionpershift_ppsreport_id_seq'::regclass);
 
 
@@ -32764,6 +32949,20 @@ ALTER TABLE ONLY productionscheduling_opercomptimecalculation ALTER COLUMN id SE
 --
 
 ALTER TABLE ONLY productionscheduling_ordertimecalculation ALTER COLUMN id SET DEFAULT nextval('productionscheduling_ordertimecalculation_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY productionscheduling_planopercomptimecalculation ALTER COLUMN id SET DEFAULT nextval('productionscheduling_planopercomptimecalculation_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY productionscheduling_planordertimecalculation ALTER COLUMN id SET DEFAULT nextval('productionscheduling_planordertimecalculation_id_seq'::regclass);
 
 
 --
@@ -36164,8 +36363,8 @@ SELECT pg_catalog.setval('basic_palletnumberhelper_id_seq', 1, false);
 -- Data for Name: basic_parameter; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY basic_parameter (id, country_id, currency_id, unit, additionaltextinfooter, company_id, registerproductiontime, reasonneededwhendelayedeffectivedatefrom, earliereffectivedatetotime, reasonneededwhencorrectingtherequestedvolume, reasonneededwhencorrectingdateto, reasonneededwhenchangingstatetodeclined, imageurlinworkplan, hidedescriptioninworkplans, defaultproductionline_id, reasonneededwhenearliereffectivedateto, earliereffectivedatefromtime, defaultaddress, allowquantitychangeinacceptedorder, reasonneededwhendelayedeffectivedateto, justone, registerquantityinproduct, reasonneededwhenchangingstatetointerrupted, registerquantityoutproduct, dontprintordersinworkplans, location_id, typeofproductionrecording, dontprintinputproductsinworkplans, delayedeffectivedatefromtime, registerpiecework, hideemptycolumnsfororders, reasonneededwhenchangingstatetoabandoned, autocloseorder, allowtoclose, dontprintoutputproductsinworkplans, inputproductsrequiredfortype, otheraddress, reasonneededwhenearliereffectivedatefrom, defaultdescription, delayedeffectivedatetotime, hidetechnologyandorderinworkplans, reasonneededwhencorrectingdatefrom, ssccnumberprefix, lowerlimit, negativetrend, upperlimit, positivetrend, dueweight, printoperationatfirstpageinworkplans, averagelaborhourlycostpb, materialcostsusedpb, additionaloverheadpb, materialcostmarginpb, includetpzpb, productioncostmarginpb, averagemachinehourlycostpb, includeadditionaltimepb, batchnumberuniqueness, defaultcoveragefromdays, includedraftdeliveries, coveragetype, hideemptycolumnsforoffers, hideemptycolumnsforrequests, validateproductionrecordtimes, workstationsquantityfromproductionline, allowtechnologytreechangeinpendingorder, lockproductionprogress, hidebarcodeoperationcomponentinworkplans, ignoremissingcomponents, additionaloutputrows, additionalinputrows, allowmultipleregisteringtimeforworker, pricebasedon, takeactualprogressinworkplans, confectionplanrequirereasontypethreshold, confectionplancorrectionreasontype, autogeneratesuborders, automaticsavecoverage, externaldeliveriesextension, warehouse_id, documentstate, positivepurchaseprice, sameordernumber, automaticdeliveriesminstate, possibleworktimedeviation, ordersincludeperiod, includerequirements, entityversion, labelsbtpath, profitpb, registrationpriceoverheadpb, sourceofoperationcostspb, acceptanceevents, useblackbox, generatewarehouseissuestoorders, daysbeforeorderstart, issuelocation_id, consumptionofrawmaterialsbasedonstandards, documentpositionparameters_id, includecomponents, warehouseissuesreservestates, drawndocuments, generatewarehouseissuestodeliveries, issuedquantityuptoneed, documentsstatus, warehouseissueproductssource, productstoissue, trackingcorrectionrecalculatepps, deliveredbiggerthanordered, ordersganttparameters_id, additionalimage, esilcointegrationdir, autorecalculateorder, ppsisautomatic, ppsproducedamountrecalculateplan, ppsalgorithm, baselinkerparameters_id, technologiesgeneratorcopyproductsize, cartonlabelsbtpath, esilcodispositionshiftlocation_id, maxproductsquantity, allowerrorsinmasterorderpositions, companyname_id, hideassignedstaff, fillorderdescriptionbasedontechnologydescription, allowanomalycreationonacceptancerecord, esilcoaccountwithreservationlocation_id, includelevelandsuffix, orderedproductsunit, allowincompleteunits, acceptrecordsfromterminal, allowchangestousedquantityonterminal, includeadditionaltimeps, includetpzps, ordersgenerationnotcompletedates, canchangeprodlineforacceptedorders, generateeachonseparatepage, includewagegroups, ordersgeneratedbycoverage, automaticallygenerateordersforcomponents, seteffectivedatefromoninprogress, seteffectivedatetooncompleted, copydescription, exporttopdfonlyvisiblecolumns, additionalcartonlabelsquantity, maxcartonlabelsquantity, exporttocsvonlyvisiblecolumns, flagpercentageofexecutionwithcolor, opertaskflagpercentexecutionwithcolor, automaticclosingoforderwithingroups, copynotesfrommasterorderposition, manuallysendwarehousedocuments, realizationfromstock, alwaysorderitemswithpersonalization, selectorder, availabilityofrawmaterials, selectoperationaltask, stoppages, repair, employeeprogress, includeunacceptableproduction, calculateamounttimeemployeesonacceptancerecord, notshowtasksdownloadedbyanotheremployee, createcollectiveorders, completemasterorderafterorderingpositions, hideorderedproductworkplan, selectiontasksbyorderdateinterminal, showprogress, showdelays, requiresupplieridentification, numberpattern_id, generatebatchfororderedproduct, generatebatchoforderedproduct, acceptbatchtrackingwhenclosingorder, completewarehousesflowwhilechecking, qualitycontrol, finalqualitycontrolwithoutresources, terminalproductattribute_id, oeefor, oeeworktimefrom, range, division_id, showqronordersgrouppdf, advisestartdateoftheorder, orderstartdatebasedon, showchartondashboard, whattoshowondashboard, dashboardoperation_id, dashboardcomponentslocation_id, dashboardproductsinputlocation_id, momentofvalidation, moveproductstosubsequentoperations, demandcausesofwastes, wmsapk, wmsversion, applicationconfigured, materialcostsused, usenominalcostpricenotspecified, sourceofoperationcosts, standardlaborcost_id, averagemachinehourlycost, averagelaborhourlycost, includetpz, includeadditionaltime, materialcostmargin, productioncostmargin, additionaloverhead, registrationpriceoverhead, profit, applicationconfigurationfinished, generatepacksfororders, includepacksgeneratingprocessesfororder, optimalpacksize, restfeedinglastpack, deliveryusenominalcostwhenpricenotspecified, deliverypricefillbasedon, allowcheckedtechnologywithoutinproducts, requireassortment, changeorderdatesbasedonchangegroupdates, acceptedtechnologymarkedasdefault, terminalscanning, processsource, showproductdescriptiononordersgrouppdf, attributeonordersgrouppdf_id, copyattributestosizeproducts, materialcostsusedmc, usenominalcostpricenotspecifiedmc, productattribute_id, materialattribute_id, attributeonthelabel_id, requiretypeoffault, workingstationinputtype, allowchangeordeleteordertechnologicalprocess, technicalproductioncostoverhead, technicalproductioncostoverheadpb, synchronizeadditionalproductdata, processterminalplaceofperformance, emptylabelbtpath, schedulesortorder, workstationassigncriterion, workerassigncriterion, scheduleforbuffer, additionaltimeextendsoperation, synchronizeproductcategory, completenominalcostinarticleandproducts, copynominalcostfamilyofproductssizes, onlypackagesinproduction, bufferstationsshowninchart, allowtasklengthtobeedited, analyzeavailableresources, analyzeplannedquantity, analyzemaxquantity, numberpatternordergroup_id, otcopydescriptionfromproductionorder, setorderdatesbasedontaskdates, automaticallygeneratetasksfororder, automaticallygenerateprocessesfororder, includeadditionaltimesg, includetpzsg, includetpzs, dashboardshowforproduct, dashboardshowdescription, receivedeliveryinordercurrency, sortbyproducttypepriorityordersgrouppdf, attributeonordersgrouprequirementpdf_id, quantitymadeonthebasisofdashboard, producingmorethanplanned, logo, synchronizemasterorderattributes, synchronizedocumentpositionattributes, dashboardordersorting, completestationandemployeeingeneratedtasks, considerexceptionswhenpromptingcurrentshift, productionorderedquantityclosestheorder, receiptofproducts, releaseofmaterials, considerminimumstocklevelwhencreatingproductionorders, fillorderdescriptionbasedonproductdescription, ganttrunadjusterror, checkfortheexistenceofinputproductprices, automaticupdatecostnorms, costssource, automaticreleaseaftergeneration, analyzeactualstaff, analyzeactualstaffmaxquantity, analyzegetquantityfromshiftassignment, setmasterorderdatebasedonorderdates, notshowtasksblockedbyprevious, promptdefaultlinefromtechnology, numberofficelicenses, numberterminallicenses, typeterminallicenses, notshoworderfilters, notincludedateswhenretrievingorders, requirequalityrating, synchronizeproductsize, masterorderreleaselocation_id) FROM stdin;
-1	\N	39	一块	\N	1	t	f	0	f	f	f	\N	f	1	f	0	\N	t	f	f	t	f	t	f	\N	02cumulated	f	0	f	f	f	f	f	f	01startOrder	\N	f	\N	0	f	f	0005900125	\N	\N	\N	\N	\N	f	\N	06costForOrder	\N	\N	f	\N	\N	f	01globally	14	f	\N	f	f	f	f	f	f	f	t	\N	\N	f	01nominalProductCost	f	\N	\N	f	f	\N	\N	\N	f	f	f	\N	\N	f	0	\N	\N	\N	02parameters	f	\N	f	\N	\N	t	1	f	f	01transfer	f	f	01accepted	01order	01allInputProducts	f	t	\N	\N	\N	f	f	f	\N	\N	\N	\N	\N	150	\N	\N	f	t	f	\N	t	\N	f	f	t	f	f	f	t	f	f	f	f	f	f	t	f	50	3000	f	t	t	f	f	f	f	f	t	f	t	t	t	f	t	f	f	f	f	f	f	f	f	f	\N	\N	f	f	t	t	f	\N	01productionLine	01staffWorkTimes	01oneDivision	\N	f	t	03endDateLastOrderOnTheLine	t	01orders	\N	\N	\N	01orderAcceptance	t	f	\N	\N	f	01nominal	f	01technologyOperation	\N	\N	\N	f	f	0.00000	0.00000	0.00000	0.00000	0.00000	f	f	f	\N	\N	f	01lastPurchasePrice	f	f	f	f	01operationNumber	01orderPackages	f	\N	f	01nominal	f	\N	\N	\N	f	01scanTheNumber	f	0.00000	0.00000	f	01workstation	\N	01desc	01shortestTime	01workstationLastOperatorLatestFinished	f	t	t	f	f	f	f	f	f	f	\N	\N	f	f	f	f	\N	\N	t	01number	f	f	t	\N	01approvedProduction	t	\N	f	f	01startDate	f	f	f	01onAcceptanceRegistrationRecord	01onAcceptanceRegistrationRecord	f	f	t	f	f	01mes	f	f	\N	f	f	f	t	10000	10000	03over51Employees	f	f	t	f	\N
+COPY basic_parameter (id, country_id, currency_id, unit, additionaltextinfooter, company_id, registerproductiontime, reasonneededwhendelayedeffectivedatefrom, earliereffectivedatetotime, reasonneededwhencorrectingtherequestedvolume, reasonneededwhencorrectingdateto, reasonneededwhenchangingstatetodeclined, imageurlinworkplan, hidedescriptioninworkplans, defaultproductionline_id, reasonneededwhenearliereffectivedateto, earliereffectivedatefromtime, defaultaddress, allowquantitychangeinacceptedorder, reasonneededwhendelayedeffectivedateto, justone, registerquantityinproduct, reasonneededwhenchangingstatetointerrupted, registerquantityoutproduct, dontprintordersinworkplans, location_id, typeofproductionrecording, dontprintinputproductsinworkplans, delayedeffectivedatefromtime, registerpiecework, hideemptycolumnsfororders, reasonneededwhenchangingstatetoabandoned, autocloseorder, allowtoclose, dontprintoutputproductsinworkplans, inputproductsrequiredfortype, otheraddress, reasonneededwhenearliereffectivedatefrom, defaultdescription, delayedeffectivedatetotime, hidetechnologyandorderinworkplans, reasonneededwhencorrectingdatefrom, ssccnumberprefix, lowerlimit, negativetrend, upperlimit, positivetrend, dueweight, printoperationatfirstpageinworkplans, averagelaborhourlycostpb, materialcostsusedpb, additionaloverheadpb, materialcostmarginpb, includetpzpb, productioncostmarginpb, averagemachinehourlycostpb, includeadditionaltimepb, batchnumberuniqueness, defaultcoveragefromdays, includedraftdeliveries, coveragetype, hideemptycolumnsforoffers, hideemptycolumnsforrequests, validateproductionrecordtimes, workstationsquantityfromproductionline, allowtechnologytreechangeinpendingorder, lockproductionprogress, hidebarcodeoperationcomponentinworkplans, ignoremissingcomponents, additionaloutputrows, additionalinputrows, allowmultipleregisteringtimeforworker, pricebasedon, takeactualprogressinworkplans, confectionplanrequirereasontypethreshold, confectionplancorrectionreasontype, autogeneratesuborders, automaticsavecoverage, externaldeliveriesextension, warehouse_id, documentstate, positivepurchaseprice, sameordernumber, automaticdeliveriesminstate, possibleworktimedeviation, ordersincludeperiod, includerequirements, entityversion, labelsbtpath, profitpb, registrationpriceoverheadpb, sourceofoperationcostspb, acceptanceevents, useblackbox, generatewarehouseissuestoorders, daysbeforeorderstart, issuelocation_id, consumptionofrawmaterialsbasedonstandards, documentpositionparameters_id, includecomponents, warehouseissuesreservestates, drawndocuments, generatewarehouseissuestodeliveries, issuedquantityuptoneed, documentsstatus, warehouseissueproductssource, productstoissue, trackingcorrectionrecalculatepps, deliveredbiggerthanordered, ordersganttparameters_id, additionalimage, esilcointegrationdir, autorecalculateorder, ppsisautomatic, ppsproducedamountrecalculateplan, ppsalgorithm, baselinkerparameters_id, technologiesgeneratorcopyproductsize, cartonlabelsbtpath, esilcodispositionshiftlocation_id, maxproductsquantity, allowerrorsinmasterorderpositions, companyname_id, hideassignedstaff, fillorderdescriptionbasedontechnologydescription, allowanomalycreationonacceptancerecord, esilcoaccountwithreservationlocation_id, includelevelandsuffix, orderedproductsunit, allowincompleteunits, acceptrecordsfromterminal, allowchangestousedquantityonterminal, includeadditionaltimeps, includetpzps, ordersgenerationnotcompletedates, canchangeprodlineforacceptedorders, generateeachonseparatepage, includewagegroups, ordersgeneratedbycoverage, automaticallygenerateordersforcomponents, seteffectivedatefromoninprogress, seteffectivedatetooncompleted, copydescription, exporttopdfonlyvisiblecolumns, additionalcartonlabelsquantity, maxcartonlabelsquantity, exporttocsvonlyvisiblecolumns, flagpercentageofexecutionwithcolor, opertaskflagpercentexecutionwithcolor, automaticclosingoforderwithingroups, copynotesfrommasterorderposition, manuallysendwarehousedocuments, realizationfromstock, alwaysorderitemswithpersonalization, selectorder, availabilityofrawmaterials, selectoperationaltask, stoppages, repair, employeeprogress, includeunacceptableproduction, calculateamounttimeemployeesonacceptancerecord, notshowtasksdownloadedbyanotheremployee, createcollectiveorders, completemasterorderafterorderingpositions, hideorderedproductworkplan, selectiontasksbyorderdateinterminal, showprogress, showdelays, requiresupplieridentification, numberpattern_id, generatebatchfororderedproduct, generatebatchoforderedproduct, acceptbatchtrackingwhenclosingorder, completewarehousesflowwhilechecking, qualitycontrol, finalqualitycontrolwithoutresources, terminalproductattribute_id, oeefor, oeeworktimefrom, range, division_id, showqronordersgrouppdf, advisestartdateoftheorder, orderstartdatebasedon, showchartondashboard, whattoshowondashboard, dashboardoperation_id, dashboardcomponentslocation_id, dashboardproductsinputlocation_id, momentofvalidation, moveproductstosubsequentoperations, demandcausesofwastes, wmsapk, wmsversion, applicationconfigured, materialcostsused, usenominalcostpricenotspecified, sourceofoperationcosts, standardlaborcost_id, averagemachinehourlycost, averagelaborhourlycost, includetpz, includeadditionaltime, materialcostmargin, productioncostmargin, additionaloverhead, registrationpriceoverhead, profit, applicationconfigurationfinished, generatepacksfororders, includepacksgeneratingprocessesfororder, optimalpacksize, restfeedinglastpack, deliveryusenominalcostwhenpricenotspecified, deliverypricefillbasedon, allowcheckedtechnologywithoutinproducts, requireassortment, changeorderdatesbasedonchangegroupdates, acceptedtechnologymarkedasdefault, terminalscanning, processsource, showproductdescriptiononordersgrouppdf, attributeonordersgrouppdf_id, copyattributestosizeproducts, materialcostsusedmc, usenominalcostpricenotspecifiedmc, productattribute_id, materialattribute_id, attributeonthelabel_id, requiretypeoffault, workingstationinputtype, allowchangeordeleteordertechnologicalprocess, technicalproductioncostoverhead, technicalproductioncostoverheadpb, synchronizeadditionalproductdata, processterminalplaceofperformance, emptylabelbtpath, schedulesortorder, workstationassigncriterion, workerassigncriterion, scheduleforbuffer, additionaltimeextendsoperation, synchronizeproductcategory, completenominalcostinarticleandproducts, copynominalcostfamilyofproductssizes, onlypackagesinproduction, bufferstationsshowninchart, allowtasklengthtobeedited, analyzeavailableresources, analyzeplannedquantity, analyzemaxquantity, numberpatternordergroup_id, otcopydescriptionfromproductionorder, setorderdatesbasedontaskdates, automaticallygeneratetasksfororder, automaticallygenerateprocessesfororder, includeadditionaltimesg, includetpzsg, includetpzs, dashboardshowforproduct, dashboardshowdescription, receivedeliveryinordercurrency, sortbyproducttypepriorityordersgrouppdf, attributeonordersgrouprequirementpdf_id, quantitymadeonthebasisofdashboard, producingmorethanplanned, logo, synchronizemasterorderattributes, synchronizedocumentpositionattributes, dashboardordersorting, completestationandemployeeingeneratedtasks, considerexceptionswhenpromptingcurrentshift, productionorderedquantityclosestheorder, receiptofproducts, releaseofmaterials, considerminimumstocklevelwhencreatingproductionorders, fillorderdescriptionbasedonproductdescription, ganttrunadjusterror, checkfortheexistenceofinputproductprices, automaticupdatecostnorms, costssource, automaticreleaseaftergeneration, analyzeactualstaff, analyzeactualstaffmaxquantity, analyzegetquantityfromshiftassignment, setmasterorderdatebasedonorderdates, notshowtasksblockedbyprevious, promptdefaultlinefromtechnology, numberofficelicenses, numberterminallicenses, typeterminallicenses, notshoworderfilters, notincludedateswhenretrievingorders, requirequalityrating, synchronizeproductsize, masterorderreleaselocation_id, demandworkstation) FROM stdin;
+1	\N	39	一块	\N	1	t	f	0	f	f	f	\N	f	1	f	0	\N	t	f	f	t	f	t	f	\N	02cumulated	f	0	f	f	f	f	f	f	01startOrder	\N	f	\N	0	f	f	0005900125	\N	\N	\N	\N	\N	f	\N	06costForOrder	\N	\N	f	\N	\N	f	01globally	14	f	\N	f	f	f	f	f	f	f	t	\N	\N	f	01nominalProductCost	f	\N	\N	f	f	\N	\N	\N	f	f	f	\N	\N	f	0	\N	\N	\N	02parameters	f	\N	f	\N	\N	t	1	f	f	01transfer	f	f	01accepted	01order	01allInputProducts	f	t	\N	\N	\N	f	f	f	\N	\N	\N	\N	\N	150	\N	\N	f	t	f	\N	t	\N	f	f	t	f	f	f	t	f	f	f	f	f	f	t	f	50	3000	f	t	t	f	f	f	f	f	t	f	t	t	t	f	t	f	f	f	f	f	f	f	f	f	\N	\N	f	f	t	t	f	\N	01productionLine	01staffWorkTimes	01oneDivision	\N	f	t	03endDateLastOrderOnTheLine	t	01orders	\N	\N	\N	01orderAcceptance	t	f	\N	\N	f	01nominal	f	01technologyOperation	\N	\N	\N	f	f	0.00000	0.00000	0.00000	0.00000	0.00000	f	f	f	\N	\N	f	01lastPurchasePrice	f	f	f	f	01operationNumber	01orderPackages	f	\N	f	01nominal	f	\N	\N	\N	f	01scanTheNumber	f	0.00000	0.00000	f	01workstation	\N	01desc	01shortestTime	01workstationLastOperatorLatestFinished	f	t	t	f	f	f	f	f	f	f	\N	\N	f	f	f	f	\N	\N	t	01number	f	f	t	\N	01approvedProduction	t	\N	f	f	01startDate	f	f	f	01onAcceptanceRegistrationRecord	01onAcceptanceRegistrationRecord	f	f	t	f	f	01mes	f	f	\N	f	f	f	t	10000	10000	03over51Employees	f	f	t	f	\N	f
 \.
 
 
@@ -42699,6 +42898,51 @@ SELECT pg_catalog.setval('productionpershift_dailyprogress_id_seq', 1, false);
 
 
 --
+-- Data for Name: productionpershift_plandailyprogress; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY productionpershift_plandailyprogress (id, progressforday_id, shift_id, quantity, efficiencytime) FROM stdin;
+\.
+
+
+--
+-- Name: productionpershift_plandailyprogress_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('productionpershift_plandailyprogress_id_seq', 1, false);
+
+
+--
+-- Data for Name: productionpershift_planproductionpershift; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY productionpershift_planproductionpershift (id, order_id, productionlineschedule_id, productionline_id) FROM stdin;
+\.
+
+
+--
+-- Name: productionpershift_planproductionpershift_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('productionpershift_planproductionpershift_id_seq', 1, false);
+
+
+--
+-- Data for Name: productionpershift_planprogressforday; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY productionpershift_planprogressforday (id, day, dateofday, actualdateofday, productionpershift_id) FROM stdin;
+\.
+
+
+--
+-- Name: productionpershift_planprogressforday_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('productionpershift_planprogressforday_id_seq', 1, false);
+
+
+--
 -- Data for Name: productionpershift_ppsreport; Type: TABLE DATA; Schema: public; Owner: -
 --
 
@@ -42786,6 +43030,36 @@ COPY productionscheduling_ordertimecalculation (id, order_id, effectivedatefrom,
 --
 
 SELECT pg_catalog.setval('productionscheduling_ordertimecalculation_id_seq', 1, false);
+
+
+--
+-- Data for Name: productionscheduling_planopercomptimecalculation; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY productionscheduling_planopercomptimecalculation (id, ordertimecalculation_id, technologyoperationcomponent_id, operationoffset, effectiveoperationrealizationtime, effectivedatefrom, effectivedateto) FROM stdin;
+\.
+
+
+--
+-- Name: productionscheduling_planopercomptimecalculation_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('productionscheduling_planopercomptimecalculation_id_seq', 1, false);
+
+
+--
+-- Data for Name: productionscheduling_planordertimecalculation; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY productionscheduling_planordertimecalculation (id, order_id, productionlineschedule_id, productionline_id, effectivedatefrom, effectivedateto) FROM stdin;
+\.
+
+
+--
+-- Name: productionscheduling_planordertimecalculation_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('productionscheduling_planordertimecalculation_id_seq', 1, false);
 
 
 --
@@ -49247,6 +49521,30 @@ ALTER TABLE ONLY productionpershift_dailyprogress
 
 
 --
+-- Name: productionpershift_plandailyprogress_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY productionpershift_plandailyprogress
+    ADD CONSTRAINT productionpershift_plandailyprogress_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: productionpershift_planproductionpershift_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY productionpershift_planproductionpershift
+    ADD CONSTRAINT productionpershift_planproductionpershift_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: productionpershift_planprogressforday_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY productionpershift_planprogressforday
+    ADD CONSTRAINT productionpershift_planprogressforday_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: productionpershift_ppsreport_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -49292,6 +49590,22 @@ ALTER TABLE ONLY productionscheduling_opercomptimecalculation
 
 ALTER TABLE ONLY productionscheduling_ordertimecalculation
     ADD CONSTRAINT productionscheduling_ordertimecalculation_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: productionscheduling_planopercomptimecalculation_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY productionscheduling_planopercomptimecalculation
+    ADD CONSTRAINT productionscheduling_planopercomptimecalculation_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: productionscheduling_planordertimecalculation_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY productionscheduling_planordertimecalculation
+    ADD CONSTRAINT productionscheduling_planordertimecalculation_pkey PRIMARY KEY (id);
 
 
 --
@@ -59005,6 +59319,22 @@ ALTER TABLE ONLY arch_productflowthrudivision_warehouseissue
 
 
 --
+-- Name: plandailyprogress_progressforday_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY productionpershift_plandailyprogress
+    ADD CONSTRAINT plandailyprogress_progressforday_fkey FOREIGN KEY (progressforday_id) REFERENCES productionpershift_planprogressforday(id) DEFERRABLE;
+
+
+--
+-- Name: plandailyprogress_shift_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY productionpershift_plandailyprogress
+    ADD CONSTRAINT plandailyprogress_shift_fkey FOREIGN KEY (shift_id) REFERENCES basic_shift(id) DEFERRABLE;
+
+
+--
 -- Name: plannedevent_company_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -59202,6 +59532,78 @@ ALTER TABLE ONLY cmmsmachineparts_plannedeventstatechange
 
 ALTER TABLE ONLY cmmsmachineparts_plannedeventstatechange
     ADD CONSTRAINT plannedeventstatechange_shift_fkey FOREIGN KEY (shift_id) REFERENCES basic_shift(id) DEFERRABLE;
+
+
+--
+-- Name: planopercomptimecalculation_ordertimecalculation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY productionscheduling_planopercomptimecalculation
+    ADD CONSTRAINT planopercomptimecalculation_ordertimecalculation_fkey FOREIGN KEY (ordertimecalculation_id) REFERENCES productionscheduling_planordertimecalculation(id) DEFERRABLE;
+
+
+--
+-- Name: planopercomptimecalculation_technologyoperationcomponent_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY productionscheduling_planopercomptimecalculation
+    ADD CONSTRAINT planopercomptimecalculation_technologyoperationcomponent_fkey FOREIGN KEY (technologyoperationcomponent_id) REFERENCES technologies_technologyoperationcomponent(id) DEFERRABLE;
+
+
+--
+-- Name: planordertimecalculation_order_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY productionscheduling_planordertimecalculation
+    ADD CONSTRAINT planordertimecalculation_order_fkey FOREIGN KEY (order_id) REFERENCES orders_order(id) DEFERRABLE;
+
+
+--
+-- Name: planordertimecalculation_productionline_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY productionscheduling_planordertimecalculation
+    ADD CONSTRAINT planordertimecalculation_productionline_fkey FOREIGN KEY (productionline_id) REFERENCES productionlines_productionline(id) DEFERRABLE;
+
+
+--
+-- Name: planordertimecalculation_productionlineschedule_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY productionscheduling_planordertimecalculation
+    ADD CONSTRAINT planordertimecalculation_productionlineschedule_fkey FOREIGN KEY (productionlineschedule_id) REFERENCES orders_productionlineschedule(id) DEFERRABLE;
+
+
+--
+-- Name: planproductionpershift_order_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY productionpershift_planproductionpershift
+    ADD CONSTRAINT planproductionpershift_order_fkey FOREIGN KEY (order_id) REFERENCES orders_order(id) DEFERRABLE;
+
+
+--
+-- Name: planproductionpershift_productionline_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY productionpershift_planproductionpershift
+    ADD CONSTRAINT planproductionpershift_productionline_fkey FOREIGN KEY (productionline_id) REFERENCES productionlines_productionline(id) DEFERRABLE;
+
+
+--
+-- Name: planproductionpershift_productionlineschedule_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY productionpershift_planproductionpershift
+    ADD CONSTRAINT planproductionpershift_productionlineschedule_fkey FOREIGN KEY (productionlineschedule_id) REFERENCES orders_productionlineschedule(id) DEFERRABLE;
+
+
+--
+-- Name: planprogressforday_productionpershift_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY productionpershift_planprogressforday
+    ADD CONSTRAINT planprogressforday_productionpershift_fkey FOREIGN KEY (productionpershift_id) REFERENCES productionpershift_planproductionpershift(id) DEFERRABLE;
 
 
 --
