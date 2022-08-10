@@ -304,6 +304,20 @@
                     </script>
                 </bigButton>
             </group>
+            <group name="attachments">
+                <bigButton name="downloadAttachment" icon="generateIcon24.png"
+                           state="enabled">
+                    <script>
+                        <![CDATA[
+							this.addOnChangeListener({
+								onClick: function() {
+									#{form}.performEvent('downloadAttachment', []);
+								}
+							});
+						]]>
+                    </script>
+                </bigButton>
+            </group>
         </ribbon>
 
         <windowTab name="mainTab">
@@ -681,6 +695,8 @@
                           class="com.qcadoo.mes.orders.listeners.OrderDetailsListeners"/>
                 <listener event="generateOperationalTasks" method="generateOperationalTasks"
                           class="com.qcadoo.mes.orders.listeners.OrderDetailsListeners"/>
+                <listener event="downloadAttachment" method="downloadAttachment"
+                          class="com.qcadoo.mes.basic.listeners.AttachmentsListeners"/>
             </component>
             <component type="input" name="oldTechnologyId" reference="oldTechnologyId" defaultVisible="false"/>
         </windowTab>
@@ -1151,6 +1167,40 @@
                         </component>
 
                         <option type="label" value="reasonForCorrectionLabel"/>
+                    </component>
+                </layoutElement>
+            </component>
+        </windowTab>
+
+
+        <windowTab name="attachments">
+            <component type="gridLayout" name="attachmentsLayout" columns="3"
+                       rows="6" hasBorders="false">
+                <layoutElement column="1" row="1" height="6">
+                    <component type="staticPage" name="multiUpload">
+                        <option type="page" value="orders/multiUploadForOrder.jsp"/>
+                    </component>
+                    <component type="input" name="orderIdForMultiUpload"
+                               reference="orderIdForMultiUpload" defaultVisible="false">
+                        <option type="alignment" value="right"/>
+                    </component>
+                    <component type="input" name="orderMultiUploadLocale"
+                               reference="orderMultiUploadLocale" defaultVisible="false">
+                    </component>
+                </layoutElement>
+                <layoutElement column="2" row="1" width="2" height="6">
+                    <component type="grid" name="orderAttachments"
+                               reference="attachmentsGrid" source="#{form}.orderAttachments">
+                        <option type="column" name="attachment" fields="name" correspondingField="attachmentLocation"
+                                link="true" attachment="true"/>
+                        <option type="column" name="attachmentLocation" fields="attachment" hidden="true"/>
+                        <option type="column" name="size" fields="size"/>
+
+                        <option type="order" column="attachment" direction="desc"/>
+
+                        <option type="deletable" value="true"/>
+                        <option type="fullscreen" value="true"/>
+                        <option type="multiselect" value="true"/>
                     </component>
                 </layoutElement>
             </component>
