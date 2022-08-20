@@ -193,6 +193,8 @@
         <hasMany name="orderTechnologicalProcessesDto" model="orderTechnologicalProcessDto" joinField="order" persistent="false"/>
         <hasMany name="orderTechnologicalProcessWastes" model="orderTechnologicalProcessWaste" joinField="order" cascade="delete"/>
         <manyToMany name="staff" model="staff" plugin="basic" joinField="orders" cascade="nullify" copyable="true"/>
+
+        <hasMany name="orderAttachments" joinField="order" model="orderAttachment" cascade="delete"/>
     </fields>
 
     <hooks>

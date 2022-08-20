@@ -28,6 +28,7 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
+import com.qcadoo.view.api.components.CheckBoxComponent;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -82,6 +83,9 @@ public class ProductDetailsHooksTest {
     private LookupComponent supplierLookup, assortmentLookup, modelLookup;
 
     @Mock
+    private CheckBoxComponent batchEvidenceField;
+
+    @Mock
     private DataDefinition productDD;
 
     @Mock
@@ -110,6 +114,7 @@ public class ProductDetailsHooksTest {
         given(view.getComponentByReference(ProductFields.ASSORTMENT)).willReturn(assortmentLookup);
         given(view.getComponentByReference(ProductFields.ASSORTMENT)).willReturn(assortmentLookup);
         given(view.getComponentByReference(ProductFields.MODEL)).willReturn(modelLookup);
+        given(view.getComponentByReference(ProductFields.BATCH_EVIDENCE)).willReturn(batchEvidenceField);
 
         given(productForm.getEntityId()).willReturn(L_ID);
 

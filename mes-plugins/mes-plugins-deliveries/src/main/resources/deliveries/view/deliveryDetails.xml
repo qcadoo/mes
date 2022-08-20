@@ -747,9 +747,9 @@
                         <option type="order" column="succession" direction="asc"/>
 
                         <option type="searchable"
-                                value="productNumber,productName,orderedQuantity,additionalQuantity,additionalDeliveredQuantity,additionalLeftToReceiveQuantity,productUnit,additionalCode,batchNumber,deliveredQuantity,leftToReceiveQuantity,hasAttachments,qualityCardNumber,minOrderQuantity,belowMinOrderQuantity"/>
+                                value="succession,productNumber,productName,orderedQuantity,deliveredQuantity,leftToReceiveQuantity,productUnit,minOrderQuantity,belowMinOrderQuantity,additionalQuantity,additionalDeliveredQuantity,additionalLeftToReceiveQuantity,pricePerUnit,totalPrice,description,additionalCode,batchNumber,hasAttachments,qualityCardNumber"/>
                         <option type="orderable"
-                                value="succession,productNumber,productName,orderedQuantity,additionalQuantity,additionalDeliveredQuantity,additionalLeftToReceiveQuantity,productUnit,additionalCode,batchNumber,deliveredQuantity,leftToReceiveQuantity,hasAttachments,qualityCardNumber,minOrderQuantity,belowMinOrderQuantity"/>
+                                value="succession,productNumber,productName,orderedQuantity,deliveredQuantity,leftToReceiveQuantity,productUnit,minOrderQuantity,belowMinOrderQuantity,additionalQuantity,additionalDeliveredQuantity,additionalLeftToReceiveQuantity,pricePerUnit,totalPrice,description,additionalCode,batchNumber,hasAttachments,qualityCardNumber"/>
 
                         <option type="correspondingView" value="deliveries/orderedProductDetails"/>
                         <option type="correspondingComponent" value="form"/>
@@ -856,9 +856,9 @@
                         <option type="order" column="succession" direction="asc"/>
 
                         <option type="searchable"
-                                value="productNumber,productName,productUnit,deliveredQuantity,palletType,damagedQuantity,additionalQuantity,additionalUnit,conversion,additionalCode,storageLocationNumber,palletNumber,isWaste,batchNumber,damaged,hasReservations,expirationDate"/>
+                                value="succession,productNumber,productName,deliveredQuantity,damagedQuantity,productUnit,additionalQuantity,additionalUnit,conversion,pricePerUnit,totalPrice,additionalCode,storageLocationNumber,palletNumber,palletType,isWaste,batchNumber,damaged,hasReservations,expirationDate"/>
                         <option type="orderable"
-                                value="succession,productNumber,productName,productUnit,palletType,deliveredQuantity,additionalQuantity,additionalUnit,conversion,damagedQuantity,additionalCode,storageLocationNumber,palletNumber,isWaste,batchNumber,damaged,hasReservations,expirationDate"/>
+                                value="succession,productNumber,productName,deliveredQuantity,damagedQuantity,productUnit,additionalQuantity,additionalUnit,conversion,pricePerUnit,totalPrice,additionalCode,storageLocationNumber,palletNumber,palletType,isWaste,batchNumber,damaged,hasReservations,expirationDate"/>
 
                         <option type="correspondingView" value="deliveries/deliveredProductDetails"/>
                         <option type="correspondingComponent" value="form"/>

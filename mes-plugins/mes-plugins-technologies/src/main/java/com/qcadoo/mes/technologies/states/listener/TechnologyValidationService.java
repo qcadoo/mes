@@ -35,25 +35,16 @@ import com.qcadoo.mes.technologies.TechnologyService;
 import com.qcadoo.mes.technologies.constants.*;
 import com.qcadoo.mes.technologies.tree.ProductStructureTreeService;
 import com.qcadoo.mes.technologies.tree.TechnologyTreeValidationService;
-import com.qcadoo.model.api.DataDefinition;
-import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.EntityList;
-import com.qcadoo.model.api.EntityTree;
-import com.qcadoo.model.api.EntityTreeNode;
+import com.qcadoo.model.api.*;
 import com.qcadoo.model.api.validators.ErrorMessage;
 import com.qcadoo.view.api.ComponentState.MessageType;
 import com.qcadoo.view.api.components.FormComponent;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import java.util.*;
 
 import static com.qcadoo.mes.basic.constants.ProductFields.UNIT;
 import static com.qcadoo.mes.technologies.constants.TechnologyFields.OPERATION_COMPONENTS;
@@ -94,10 +85,10 @@ public class TechnologyValidationService {
         for (Entity operationComponent : operationComponents) {
             List<Entity> operationProductInComponents = operationComponent
                     .getHasManyField(TechnologyOperationComponentFields.OPERATION_PRODUCT_IN_COMPONENTS);
+
             for (Entity operationProductInComponent : operationProductInComponents) {
                 boolean differentProductsInDifferentSizes = operationProductInComponent
                         .getBooleanField(OperationProductInComponentFields.DIFFERENT_PRODUCTS_IN_DIFFERENT_SIZES);
-
                 boolean variousQuantitiesInProductsBySize = operationProductInComponent
                         .getBooleanField(OperationProductInComponentFields.VARIOUS_QUANTITIES_IN_PRODUCTS_BY_SIZE);
 
@@ -108,12 +99,13 @@ public class TechnologyValidationService {
                             operationComponent.getBelongsToField(TechnologyOperationComponentFields.OPERATION)
                                     .getStringField(OperationFields.NUMBER),
                             operationComponent.getStringField(TechnologyOperationComponentFields.NODE_NUMBER));
-                    return false;
 
+                    return false;
                 }
 
                 if (differentProductsInDifferentSizes && variousQuantitiesInProductsBySize) {
                     boolean quantitiesOrProductsNotSet = false;
+
                     if (operationProductInComponent.getHasManyField(OperationProductInComponentFields.PRODUCT_BY_SIZE_GROUPS)
                             .isEmpty()) {
                         quantitiesOrProductsNotSet = true;
@@ -122,17 +114,20 @@ public class TechnologyValidationService {
                             .anyMatch(pbs -> Objects.isNull(pbs.getDecimalField(ProductBySizeGroupFields.QUANTITY)))) {
                         quantitiesOrProductsNotSet = true;
                     }
+
                     if (quantitiesOrProductsNotSet) {
                         stateChangeContext.addValidationError(
                                 "technologies.technology.validate.global.error.variousQuantitiesInProductsBySizeNotFilled",
                                 operationComponent.getBelongsToField(TechnologyOperationComponentFields.OPERATION)
                                         .getStringField(OperationFields.NUMBER),
                                 operationComponent.getStringField(TechnologyOperationComponentFields.NODE_NUMBER));
+
                         return false;
                     }
                 }
             }
         }
+
         return true;
     }
 
@@ -145,8 +140,9 @@ public class TechnologyValidationService {
         for (Entity operationComponent : operationComponents) {
             List<Entity> operationProductOutComponents = operationComponent
                     .getHasManyField(TechnologyOperationComponentFields.OPERATION_PRODUCT_OUT_COMPONENTS);
+
             long notWasteCount = operationProductOutComponents.stream()
-                    .filter(opoc -> !opoc.getBooleanField(OperationProductOutComponentFields.WASTE)).count();
+                    .filter(operationProductOutComponent -> !operationProductOutComponent.getBooleanField(OperationProductOutComponentFields.WASTE)).count();
 
             if (notWasteCount > 1 || notWasteCount == 0) {
                 stateChangeContext.addValidationError(
@@ -154,9 +150,9 @@ public class TechnologyValidationService {
                         operationComponent.getBelongsToField(TechnologyOperationComponentFields.OPERATION)
                                 .getStringField(OperationFields.NUMBER),
                         operationComponent.getStringField(TechnologyOperationComponentFields.NODE_NUMBER));
+
                 return false;
             }
-
         }
 
         return true;
@@ -206,7 +202,7 @@ public class TechnologyValidationService {
     }
 
     public void checkIfTechnologyIsNotUsedInActiveOrder(final StateChangeContext stateChangeContext) {
-        final Entity technology = stateChangeContext.getOwner();
+        Entity technology = stateChangeContext.getOwner();
 
         if (technologyService.isTechnologyUsedInActiveOrder(technology)) {
             stateChangeContext.addValidationError("technologies.technology.state.error.orderInProgress");
@@ -214,15 +210,16 @@ public class TechnologyValidationService {
     }
 
     public void checkConsumingManyProductsFromOneSubOp(final StateChangeContext stateChangeContext) {
-        final Entity technology = stateChangeContext.getOwner();
-        final Map<String, Set<String>> parentChildNodeNums = technologyTreeValidationService
+        Entity technology = stateChangeContext.getOwner();
+
+        final Map<String, Set<String>> parentChildNodeNumbers = technologyTreeValidationService
                 .checkConsumingManyProductsFromOneSubOp(technology.getTreeField(OPERATION_COMPONENTS));
 
-        for (Map.Entry<String, Set<String>> parentChildNodeNum : parentChildNodeNums.entrySet()) {
-            for (String childNodeNum : parentChildNodeNum.getValue()) {
+        for (Map.Entry<String, Set<String>> parentChildNodeNumber : parentChildNodeNumbers.entrySet()) {
+            for (String childNodeNumber : parentChildNodeNumber.getValue()) {
                 stateChangeContext.addMessage(
                         "technologies.technology.validate.global.info.consumingManyProductsFromOneSubOperations",
-                        StateMessageType.INFO, parentChildNodeNum.getKey(), childNodeNum);
+                        StateMessageType.INFO, parentChildNodeNumber.getKey(), childNodeNumber);
             }
         }
     }
@@ -462,25 +459,24 @@ public class TechnologyValidationService {
 
         errorMessages.append(message).append("\n");
 
+        boolean addedError = false;
+
         for (ErrorMessage error : errors) {
             if (!error.getMessage().equals("qcadooView.validate.global.error.custom")) {
-                String translatedErrorMessage = translationService.translate(error.getMessage(), Locale.getDefault(),
+                if (addedError) {
+                    errorMessages.append(",\n ");
+                } else {
+                    addedError = true;
+                }
+
+                String translatedErrorMessage = translationService.translate(error.getMessage(), LocaleContextHolder.getLocale(),
                         error.getVars());
 
                 errorMessages.append("- ").append(translatedErrorMessage);
-                errorMessages.append(",\n ");
             }
         }
 
-        String msg = errorMessages.toString();
-        int length = msg.length();
-        String lastSign = msg.substring(length - 3);
-
-        if (",\n ".equals(lastSign)) {
-            msg = msg.substring(0, length - 3);
-        }
-
-        return msg;
+        return errorMessages.toString();
     }
 
     public boolean checkIfUnitMatch(final Entity technologyOperationComponent) {
@@ -507,9 +503,9 @@ public class TechnologyValidationService {
     }
 
     public boolean checkIfUnitsInTechnologyMatch(final Entity technologyOperationComponent) {
-        final String productionInOneCycleUNIT = technologyOperationComponent.getStringField(L_PRODUCTION_IN_ONE_CYCLE_UNIT);
-
         DataDefinition dataDefinition = technologyOperationComponent.getDataDefinition();
+
+        String productionInOneCycleUNIT = technologyOperationComponent.getStringField(L_PRODUCTION_IN_ONE_CYCLE_UNIT);
 
         if (Objects.isNull(productionInOneCycleUNIT)) {
             technologyOperationComponent.addError(dataDefinition.getField(L_PRODUCTION_IN_ONE_CYCLE_UNIT),
@@ -542,7 +538,7 @@ public class TechnologyValidationService {
     }
 
     public boolean checkIfTechnologyTreeIsSet(final StateChangeContext stateChangeContext) {
-        final Entity technology = stateChangeContext.getOwner();
+        Entity technology = stateChangeContext.getOwner();
 
         return checkIfTechnologyTreeIsSet(stateChangeContext, null, technology);
     }
@@ -570,7 +566,7 @@ public class TechnologyValidationService {
     }
 
     public boolean checkTechnologyCycles(final StateChangeContext stateChangeContext) {
-        final Entity technology = stateChangeContext.getOwner();
+        Entity technology = stateChangeContext.getOwner();
 
         Set<Long> usedTechnologies = Sets.newHashSet();
 
@@ -643,9 +639,12 @@ public class TechnologyValidationService {
 
     private Entity useChangingTechnologyInCheckingCycle(final StateChangeContext stateChangeContext, final Entity product,
                                                         final Entity subTechnology) {
-        if (Objects.isNull(subTechnology) && Objects.nonNull(product)
-                && stateChangeContext.getOwner().getBelongsToField(TechnologyFields.PRODUCT).getId().equals(product.getId())) {
-            return stateChangeContext.getOwner();
+        Entity technology = stateChangeContext.getOwner();
+
+        if (Objects.isNull(subTechnology) && Objects.nonNull(product)) {
+            if (technology.getBelongsToField(TechnologyFields.PRODUCT).getId().equals(product.getId())) {
+                return technology;
+            }
         }
 
         return subTechnology;
@@ -681,8 +680,9 @@ public class TechnologyValidationService {
         return true;
     }
 
-    public void checkIfInputProductPricesSet(StateChangeContext stateChangeContext) {
+    public void checkIfInputProductPricesSet(final StateChangeContext stateChangeContext) {
         Entity technology = stateChangeContext.getOwner();
+
         List<Entity> products = technologyService.getComponentsWithProductWithSizes(technology.getId());
 
         for (Entity product : products) {
@@ -697,4 +697,5 @@ public class TechnologyValidationService {
 
         }
     }
+
 }

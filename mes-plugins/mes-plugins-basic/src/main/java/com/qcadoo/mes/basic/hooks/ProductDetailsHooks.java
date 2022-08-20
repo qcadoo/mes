@@ -127,6 +127,7 @@ public class ProductDetailsHooks {
         FieldComponent entityTypeField = (FieldComponent) view.getComponentByReference(ProductFields.ENTITY_TYPE);
         FieldComponent parentField = (FieldComponent) view.getComponentByReference(ProductFields.PARENT);
         FieldComponent categoryField = (FieldComponent) view.getComponentByReference(ProductFields.CATEGORY);
+        FieldComponent batchEvidenceField = (FieldComponent) view.getComponentByReference(ProductFields.BATCH_EVIDENCE);
         LookupComponent supplierLookup = (LookupComponent) view.getComponentByReference(ProductFields.SUPPLIER);
         LookupComponent assortmentLookup = (LookupComponent) view.getComponentByReference(ProductFields.ASSORTMENT);
         LookupComponent modelLookup = (LookupComponent) view.getComponentByReference(ProductFields.MODEL);
@@ -157,6 +158,7 @@ public class ProductDetailsHooks {
             supplierLookup.setEnabled(true);
             assortmentLookup.setEnabled(true);
             modelLookup.setEnabled(true);
+            batchEvidenceField.setEnabled(true);
         }
     }
 

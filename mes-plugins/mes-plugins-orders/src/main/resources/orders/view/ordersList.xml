@@ -48,8 +48,7 @@
             <template name="standardGridTemplate" excludeGroups="actions"/>
 
             <group name="status">
-                <smallButton name="acceptOrder" icon="startIcon16.png"
-                             state="disabled">
+                <smallButton name="acceptOrder" icon="startIcon16.png" state="disabled">
                     <script>
                         <![CDATA[
 							this.addOnChangeListener({
@@ -76,8 +75,7 @@
 						]]>
                     </script>
                 </smallButton>
-                <smallButton name="declineOrder" icon="deleteIcon16.png"
-                             state="disabled">
+                <smallButton name="declineOrder" icon="deleteIcon16.png" state="disabled">
                     <script>
                         <![CDATA[
 							this.addOnChangeListener({
@@ -96,8 +94,7 @@
 						]]>
                     </script>
                 </smallButton>
-                <smallButton name="interruptOrder" icon="pauseIcon16.png"
-                             state="disabled">
+                <smallButton name="interruptOrder" icon="pauseIcon16.png" state="disabled">
                     <script>
                         <![CDATA[
 							this.addOnChangeListener({
@@ -111,6 +108,7 @@
                     </script>
                 </smallButton>
             </group>
+
             <group name="actions" defaultAuthorizationRole="ROLE_SUPERADMIN">
                 <bigButton name="generateProductionCounting" icon="calendarIcon24.png"
                            action="#{grid}.fireEvent(generateProductionCounting)"/>
@@ -229,6 +227,8 @@
             <option type="column" name="number" fields="number" link="true" width="60"/>
             <option type="column" name="name" fields="name" link="true" width="100"/>
             <option type="column" name="state" fields="state" width="30"/>
+            <option type="column" name="dateFrom" fields="startDate" width="50"/>
+            <option type="column" name="dateTo" fields="finishDate" width="50"/>
             <option type="column" name="deadline" fields="deadline" width="50"/>
             <option type="column" name="technologyNumber" fields="technologyNumber" width="60"/>
             <option type="column" name="productNumber" fields="productNumber" width="60"/>
@@ -245,9 +245,10 @@
             <option type="order" column="deadline" direction="desc"/>
 
             <option type="searchable"
-                    value="name,number,state,deadline,technologyNumber,productNumber,productName,plannedQuantity,unit,companyName,plannedQuantityForAdditionalUnit,unitForAdditionalUnit,orderCategory"/>
+                    value="name,number,state,dateFrom,dateTo,deadline,technologyNumber,productNumber,productName,plannedQuantity,unit,companyName,plannedQuantityForAdditionalUnit,unitForAdditionalUnit,orderCategory"/>
             <option type="orderable"
-                    value="name,number,state,deadline,technologyNumber,productNumber,productName,plannedQuantity,unit,companyName,plannedQuantityForAdditionalUnit,unitForAdditionalUnit,orderCategory"/>
+                    value="name,number,state,dateFrom,dateTo,deadline,technologyNumber,productNumber,productName,plannedQuantity,unit,companyName,plannedQuantityForAdditionalUnit,unitForAdditionalUnit,orderCategory"/>
+
             <option type="footerRow" value="true"/>
             <option type="columnsToSummary" value="plannedQuantity,plannedQuantityForAdditionalUnit"/>
 

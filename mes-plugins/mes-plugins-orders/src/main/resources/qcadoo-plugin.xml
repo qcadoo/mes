@@ -107,6 +107,7 @@
         <model:model model="orderTechnologicalProcessPart" resource="model/orderTechnologicalProcessPart.xml"/>
         <model:model model="orderTechnologicalProcessWaste" resource="model/orderTechnologicalProcessWaste.xml"/>
         <model:model model="orderTechnologicalProcessWasteDto" resource="model/orderTechnologicalProcessWasteDto.xml"/>
+        <model:model model="orderAttachment" resource="model/orderAttachment.xml"/>
 
         <model:model-field plugin="productionLines" model="productionLine">
             <model:hasMany name="positions" model="productionLineSchedulePosition" plugin="orders" joinField="productionLine"/>

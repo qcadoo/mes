@@ -81,6 +81,8 @@ public final class OrdersConstants {
 
     public static final String MODEL_ORDER_TECHNOLOGICAL_PROCESS_PART = "orderTechnologicalProcessPart";
 
+    public static final String MODEL_ORDER_ATTACHMENT = "orderAttachment";
+
     // VIEW
 
     public static final String VIEW_ORDER_TECHNOLOGICAL_PROCESSES_ANALYSIS = "orderTechnologicalProcessesAnalysis";

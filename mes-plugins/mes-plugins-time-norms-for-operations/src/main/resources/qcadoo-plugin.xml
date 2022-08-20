@@ -78,8 +78,8 @@
 			<model:decimal name="nextOperationAfterProducedQuantity"
 				default="0" required="true">
 				<model:validatesRange from="0" />
-				<model:validatesUnscaledValue max="3" />
-				<model:validatesScale max="5" />
+				<model:validatesUnscaledValue max="7"/>
+				<model:validatesScale max="5"/>
 			</model:decimal>
 		</model:model-field>
 		<model:model-field plugin="technologies" model="operation">

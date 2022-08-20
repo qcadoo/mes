@@ -32,6 +32,7 @@ import java.util.Objects;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Service;
 
 import com.google.common.collect.Lists;
@@ -161,6 +162,7 @@ public class OrderDetailsHooks {
         disableFieldOrderForm(view);
         disableTechnologiesIfProductDoesNotAny(view);
         setAndDisableState(view);
+        setOrderIdForMultiUploadField(view);
         unitService.fillProductUnitBeforeRender(view);
         changedEnabledFieldForSpecificOrderState(view);
         filterStateChangeHistory(view);
@@ -834,6 +836,27 @@ public class OrderDetailsHooks {
             productChanged = true;
         }
         return productChanged;
+    }
+
+
+    private void setOrderIdForMultiUploadField(final ViewDefinitionState view) {
+        FormComponent orderForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
+        FieldComponent orderIdForMultiUpload = (FieldComponent) view
+                .getComponentByReference("orderIdForMultiUpload");
+        FieldComponent qualityControlMultiUploadLocale = (FieldComponent) view
+                .getComponentByReference("orderMultiUploadLocale");
+
+        Long orderId = orderForm.getEntityId();
+
+        if (Objects.isNull(orderId)) {
+            orderIdForMultiUpload.setFieldValue("");
+        } else {
+            orderIdForMultiUpload.setFieldValue(orderId);
+        }
+
+        orderIdForMultiUpload.requestComponentUpdateState();
+        qualityControlMultiUploadLocale.setFieldValue(LocaleContextHolder.getLocale());
+        qualityControlMultiUploadLocale.requestComponentUpdateState();
     }
 
     private DataDefinition getTechnologyDD() {
