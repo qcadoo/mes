@@ -20590,6 +20590,39 @@ CREATE SEQUENCE orders_order_pack_number_seq
 
 
 --
+-- Name: orders_orderattachment; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE orders_orderattachment (
+    id bigint NOT NULL,
+    order_id bigint,
+    attachment character varying(255),
+    name character varying(255),
+    size numeric(12,5),
+    ext character varying(255)
+);
+
+
+--
+-- Name: orders_orderattachment_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE orders_orderattachment_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: orders_orderattachment_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE orders_orderattachment_id_seq OWNED BY orders_orderattachment.id;
+
+
+--
 -- Name: orders_ordercategorycolor; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -32325,6 +32358,13 @@ ALTER TABLE ONLY orders_order ALTER COLUMN id SET DEFAULT nextval('orders_order_
 -- Name: id; Type: DEFAULT; Schema: public; Owner: -
 --
 
+ALTER TABLE ONLY orders_orderattachment ALTER COLUMN id SET DEFAULT nextval('orders_orderattachment_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
+--
+
 ALTER TABLE ONLY orders_ordercategorycolor ALTER COLUMN id SET DEFAULT nextval('orders_ordercategorycolor_id_seq'::regclass);
 
 
@@ -41325,6 +41365,21 @@ SELECT pg_catalog.setval('orders_order_pack_number_seq', 1, false);
 
 
 --
+-- Data for Name: orders_orderattachment; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY orders_orderattachment (id, order_id, attachment, name, size, ext) FROM stdin;
+\.
+
+
+--
+-- Name: orders_orderattachment_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('orders_orderattachment_id_seq', 1, false);
+
+
+--
 -- Data for Name: orders_ordercategorycolor; Type: TABLE DATA; Schema: public; Owner: -
 --
 
@@ -48814,6 +48869,14 @@ ALTER TABLE ONLY orders_operationaltaskstatechange
 
 ALTER TABLE ONLY orders_order
     ADD CONSTRAINT orders_order_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: orders_orderattachment_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY orders_orderattachment
+    ADD CONSTRAINT orders_orderattachment_pkey PRIMARY KEY (id);
 
 
 --
@@ -58228,6 +58291,14 @@ ALTER TABLE ONLY jointable_order_workplan
 
 ALTER TABLE ONLY jointable_order_workplan
     ADD CONSTRAINT order_workplan_workplan_fkey FOREIGN KEY (workplan_id) REFERENCES workplans_workplan(id) DEFERRABLE;
+
+
+--
+-- Name: orderattachment_order_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY orders_orderattachment
+    ADD CONSTRAINT orderattachment_order_fkey FOREIGN KEY (order_id) REFERENCES orders_order(id) DEFERRABLE;
 
 
 --
