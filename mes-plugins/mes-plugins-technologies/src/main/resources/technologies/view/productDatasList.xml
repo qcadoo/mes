@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    ***************************************************************************
+    Copyright (c) 2010 Qcadoo Limited
+    Project: Qcadoo Framework
+    Version: 1.4
+
+    This file is part of Qcadoo.
+
+    Qcadoo is free software; you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as published
+    by the Free Software Foundation; either version 3 of the License,
+    or (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty
+    of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+    See the GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+    ***************************************************************************
+
+-->
+<view defaultAuthorizationRole="ROLE_BASE_FUNCTIONALITY" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns="http://schema.qcadoo.org/view"
+      xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
+      name="productDatasList" modelName="productData">
+
+    <component type="window" name="window" reference="window">
+
+        <ribbon>
+            <template name="standardGridTemplate" excludeGroups="states"/>
+            <group name="report">
+                <bigButton name="printReport" icon="pdfIcon24.png"
+                           state="disabled" action="#{window}.fireEvent(printReport,pdf);">
+                </bigButton>
+            </group>
+        </ribbon>
+
+        <windowTab name="mainTab">
+            <component type="grid" name="productDatas" reference="grid">
+                <script>
+                    <![CDATA[
+						var printReport = #{window}.getRibbonItem("report.printReport");
+
+						#{grid}.addOnChangeListener({
+							onChange: function(selectedEntitiesArray) {
+								if (!selectedEntitiesArray || selectedEntitiesArray.length == 0) {
+									printReport.disable();
+								} else {
+									for (var i = 0; i < selectedEntitiesArray.length; i++) {
+										var selected = selectedEntitiesArray[i];
+										var generated = selected.fields.generated;
+
+										if (generated == "1") {
+											printReport.enable();
+										} else {
+											printReport.disable();
+										}
+									}
+								}
+							}
+						});
+					]]>
+                </script>
+
+                <option type="column" name="number" fields="number" link="true" width="100"/>
+                <option type="column" name="technology" fields="technology" expression="#technology['name']"
+                        width="250"/>
+                <option type="column" name="productNumber" fields="product" expression="#product['number']"/>
+                <option type="column" name="productName" fields="product" expression="#product['name']" width="250"/>
+                <option type="column" name="generated" fields="generated" width="100"/>
+                <option type="column" name="dateGenerated" fields="dateGenerated" width="100"/>
+                <option type="column" name="staff" fields="staff" expression="#staff['name']"/>
+                <option type="order" column="number" direction="desc"/>
+
+                <option type="correspondingView" value="technologies/productDataDetails"/>
+                <option type="correspondingComponent" value="form"/>
+
+                <option type="searchable"
+                        value="number,technology,productNumber,productName,generated,dateGenerated,staff"/>
+                <option type="orderable"
+                        value="number,technology,productNumber,productName,generated,dateGenerated,staff"/>
+
+                <option type="multiselect" value="false"/>
+                <option type="header" value="true"/>
+                <option type="fixedHeight" value="true"/>
+
+                <criteriaModifier
+                        class="com.qcadoo.mes.technologies.criteriaModifiers.ProductDataCriteriaModifiers"
+                        method="restrictProductData"/>
+            </component>
+        </windowTab>
+
+        <option type="fixedHeight" value="true"/>
+        <option type="header" value="false"/>
+
+        <listener event="printReport"
+                  class="com.qcadoo.mes.technologies.listeners.ProductDatasListListeners"
+                  method="printReport"/>
+    </component>
+
+    <hooks>
+        <beforeRender class="com.qcadoo.mes.technologies.hooks.ProductDatasListHooks" method="onBeforeRender"/>
+    </hooks>
+</view>

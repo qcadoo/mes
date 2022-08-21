@@ -1,7 +1,7 @@
 /**
  * ***************************************************************************
  * Copyright (c) 2010 Qcadoo Limited
- * Project: Qcadoo MES
+ * Project: Qcadoo Framework
  * Version: 1.4
  *
  * This file is part of Qcadoo.
@@ -21,28 +21,30 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.technologies.constants;
+package com.qcadoo.mes.technologies.hooks;
 
-public final class ProductFieldsT {
+import com.qcadoo.mes.technologies.constants.ProductDataFields;
+import com.qcadoo.model.api.DataDefinition;
+import com.qcadoo.model.api.Entity;
+import org.springframework.stereotype.Service;
 
-    private ProductFieldsT() {
+@Service
+public class ProductDataHooks {
 
+    public void onSave(final DataDefinition productDataDD, final Entity productData) {
+        setSaved(productData);
     }
 
-    public static final String OPERATION_PRODUCT_IN_COMPONENTS = "operationProductInComponents";
+    private void setSaved(final Entity productData) {
+        productData.setField(ProductDataFields.SAVED, true);
+    }
 
-    public static final String OPERATION_PRODUCT_OUT_COMPONENTS = "operationProductOutComponents";
+    public void onCopy(final DataDefinition productDataDD, final Entity productData) {
+        setGenerated(productData);
+    }
 
-    public static final String TECHNOLOGIES = "technologies";
-
-    public static final String TECHNOLOGY_GROUP = "technologyGroup";
-
-    public static final String PRODUCT_BY_SIZE_GROUPS = "productBySizeGroups";
-
-    public static final String OPERATION_PRODUCT_IN_PRODUCTS_DTO = "operationProductInProductsDto";
-
-    public static final String PRODUCT_DATAS = "productDatas";
-
-    public static final String PRODUCT_DATA_INPUTS = "productDataInputs";
+    private void setGenerated(final Entity productData) {
+        productData.setField(ProductDataFields.GENERATED, false);
+    }
 
 }

@@ -57,6 +57,8 @@
 
         <belongsTo name="attribute" model="attribute" plugin="basic"/>
 
+        <boolean name="showInProductData" default="false"/>
+        <decimal name="productDataNumber" default="0"/>
     </fields>
 
     <hooks>

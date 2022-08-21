@@ -75,4 +75,10 @@ public final class TechnologyOperationComponentFields {
 
     public static final String TECHNOLOGICAL_PROCESS_LIST_ASSIGNMENT_DATE = "technologicalProcessListAssignmentDate";
 
+    public static final String SHOW_IN_PRODUCT_DATA = "showInProductData";
+
+    public static final String PRODUCT_DATA_NUMBER = "productDataNumber";
+
+    public static final String PRODUCT_DATA_OPERATIONS = "productDataOperations";
+
 }

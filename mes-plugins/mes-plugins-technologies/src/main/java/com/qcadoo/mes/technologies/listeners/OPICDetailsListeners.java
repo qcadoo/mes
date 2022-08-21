@@ -37,6 +37,7 @@ import com.qcadoo.model.api.units.PossibleUnitConversions;
 import com.qcadoo.model.api.units.UnitConversionService;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
+import com.qcadoo.view.api.components.CheckBoxComponent;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.LookupComponent;
@@ -44,19 +45,15 @@ import com.qcadoo.view.constants.QcadooViewConstants;
 import net.objecthunter.exp4j.Expression;
 import net.objecthunter.exp4j.ExpressionBuilder;
 import net.objecthunter.exp4j.ValidationResult;
-
-import java.math.BigDecimal;
-import java.util.Objects;
-
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
+import java.util.Objects;
+
 @Service
 public class OPICDetailsListeners {
-
-    @Autowired
-    private UnitConversionService unitConversionService;
 
     @Autowired
     private NumberService numberService;
@@ -64,16 +61,19 @@ public class OPICDetailsListeners {
     @Autowired
     private UnitService unitService;
 
+    @Autowired
+    private UnitConversionService unitConversionService;
+
     public void onProductChange(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         FieldComponent unitField = (FieldComponent) view.getComponentByReference(OperationProductInComponentFields.UNIT);
         LookupComponent productLookup = (LookupComponent) view.getComponentByReference(OperationProductInComponentFields.PRODUCT);
 
         Entity product = productLookup.getEntity();
+
         if (Objects.nonNull(product)) {
             unitField.setFieldValue(product.getStringField(ProductFields.UNIT));
             calculateQuantity(view, state, args);
         }
-
     }
 
     public void calculateQuantityFormula(final ViewDefinitionState view, final ComponentState state, final String[] args) {
@@ -171,6 +171,7 @@ public class OPICDetailsListeners {
             unitField.setFieldValue(givenUnit);
             unitField.requestComponentUpdateState();
         }
+
         unitService.fillProductUnitBeforeRenderIfEmpty(view, OperationProductInComponentFields.UNIT);
         unitService.fillProductUnitBeforeRenderIfEmpty(view, OperationProductInComponentFields.GIVEN_UNIT);
     }
@@ -233,6 +234,27 @@ public class OPICDetailsListeners {
         } else {
             operationProductInComponent.setField(OperationProductInComponentFields.QUANTITY, null);
         }
+    }
+
+    public void fillProductDataFields(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        LookupComponent productLookup = (LookupComponent) view.getComponentByReference(OperationProductInComponentFields.PRODUCT);
+
+        CheckBoxComponent showInProductDataCheckBox = (CheckBoxComponent) view.getComponentByReference(OperationProductInComponentFields.SHOW_IN_PRODUCT_DATA);
+        FieldComponent productDataNumberField = (FieldComponent) view.getComponentByReference(OperationProductInComponentFields.PRODUCT_DATA_NUMBER);
+
+        Entity product = productLookup.getEntity();
+
+        if (Objects.isNull(product)) {
+            showInProductDataCheckBox.setChecked(false);
+            productDataNumberField.setFieldValue(null);
+        } else {
+            showInProductDataCheckBox.setChecked(product.getBooleanField(ProductFields.SHOW_IN_PRODUCT_DATA));
+            productDataNumberField.setFieldValue(numberService.formatWithMinimumFractionDigits(
+                    product.getField(ProductFields.PRODUCT_DATA_NUMBER), 0));
+        }
+
+        showInProductDataCheckBox.requestComponentUpdateState();
+        productDataNumberField.requestComponentUpdateState();
     }
 
 }

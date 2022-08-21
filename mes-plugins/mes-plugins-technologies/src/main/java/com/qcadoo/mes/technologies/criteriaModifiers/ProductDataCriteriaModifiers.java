@@ -1,7 +1,7 @@
 /**
  * ***************************************************************************
  * Copyright (c) 2010 Qcadoo Limited
- * Project: Qcadoo MES
+ * Project: Qcadoo Framework
  * Version: 1.4
  *
  * This file is part of Qcadoo.
@@ -21,28 +21,26 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.technologies.constants;
+package com.qcadoo.mes.technologies.criteriaModifiers;
 
-public final class ProductFieldsT {
+import com.qcadoo.model.api.search.SearchCriteriaBuilder;
+import com.qcadoo.model.api.search.SearchRestrictions;
+import com.qcadoo.view.api.components.lookup.FilterValueHolder;
+import org.springframework.stereotype.Service;
 
-    private ProductFieldsT() {
+@Service
+public class ProductDataCriteriaModifiers {
 
+    public static final String FILTER_KEY_TECHNOLOGY_ID = "technology.id";
+
+    public static final String TECHNOLOGY_ID = "technology.id";
+
+    public void restrictProductData(final SearchCriteriaBuilder scb, final FilterValueHolder filterValue) {
+        if (filterValue.has(FILTER_KEY_TECHNOLOGY_ID)) {
+            Long id = filterValue.getLong(FILTER_KEY_TECHNOLOGY_ID);
+
+            scb.add(SearchRestrictions.eq(TECHNOLOGY_ID, id));
+        }
     }
-
-    public static final String OPERATION_PRODUCT_IN_COMPONENTS = "operationProductInComponents";
-
-    public static final String OPERATION_PRODUCT_OUT_COMPONENTS = "operationProductOutComponents";
-
-    public static final String TECHNOLOGIES = "technologies";
-
-    public static final String TECHNOLOGY_GROUP = "technologyGroup";
-
-    public static final String PRODUCT_BY_SIZE_GROUPS = "productBySizeGroups";
-
-    public static final String OPERATION_PRODUCT_IN_PRODUCTS_DTO = "operationProductInProductsDto";
-
-    public static final String PRODUCT_DATAS = "productDatas";
-
-    public static final String PRODUCT_DATA_INPUTS = "productDataInputs";
 
 }

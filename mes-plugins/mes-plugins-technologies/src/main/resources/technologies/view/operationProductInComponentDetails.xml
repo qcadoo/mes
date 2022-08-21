@@ -72,8 +72,7 @@
                         </component>
                     </layoutElement>
                     <layoutElement column="1" row="4" width="5">
-                        <component type="lookup" name="product" field="product"
-                                   reference="product">
+                        <component type="lookup" name="product" field="product" reference="product">
                             <option type="column" name="name" fields="name" link="true"
                                     width="200"/>
                             <option type="column" name="ean" fields="ean"/>
@@ -91,6 +90,9 @@
                             <listener event="onSelectedEntityChange"
                                       class="com.qcadoo.mes.technologies.listeners.OPICDetailsListeners"
                                       method="onProductChange"/>
+                            <listener event="onSelectedEntityChange"
+                                      class="com.qcadoo.mes.technologies.listeners.OPICDetailsListeners"
+                                      method="fillProductDataFields"/>
                         </component>
                     </layoutElement>
                     <layoutElement column="1" row="5" width="5">
@@ -193,6 +195,45 @@
                 </layoutElement>
             </component>
         </windowTab>
+
+        <windowTab name="productDataTab" reference="productDataTab">
+            <component type="gridLayout" name="gridLayout" columns="3"
+                       rows="2">
+                <layoutElement column="1" row="1">
+                    <component type="checkbox" name="showInProductData" field="#{form}.showInProductData"
+                               reference="showInProductData" defaultVisible="true">
+                        <script>
+                            <![CDATA[
+                                var setNumber = function(value) {
+                                    var showInProductData = #{showInProductData}.getValue().content.value;
+
+                                    if (showInProductData == 1) {
+                                        #{productDataNumber}.setEnabled(true, true);
+                                    } else {
+                                        #{productDataNumber}.setEnabled(false, true);
+                                    }
+                                }
+
+                                this.addOnChangeListener({
+                                    onSetValue: setNumber,
+                                    onChange: setNumber
+                                });
+						    ]]>
+                        </script>
+
+                        <option type="labelWidth" value="40" />
+                    </component>
+                </layoutElement>
+                <layoutElement column="1" row="2">
+                    <component type="input" name="productDataNumber" reference="productDataNumber"
+                               field="#{form}.productDataNumber">
+                        <option type="labelWidth" value="40" />
+                        <option type="alignment" value="right" />
+                    </component>
+                </layoutElement>
+            </component>
+        </windowTab>
+
     </component>
 
     <hooks>

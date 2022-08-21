@@ -73,4 +73,6 @@ public final class TechnologyFields {
 
     public static final String PRODUCTION_LINES = "productionLines";
 
+    public static final String PRODUCT_DATAS = "productDatas";
+
 }

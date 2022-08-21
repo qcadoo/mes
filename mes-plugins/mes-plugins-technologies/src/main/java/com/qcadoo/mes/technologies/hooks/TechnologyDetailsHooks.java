@@ -23,15 +23,6 @@
  */
 package com.qcadoo.mes.technologies.hooks;
 
-import static com.qcadoo.mes.technologies.states.constants.TechnologyStateChangeFields.STATUS;
-
-import java.util.Objects;
-import java.util.Optional;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.stereotype.Service;
-
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.qcadoo.mes.states.constants.StateChangeStatus;
@@ -47,17 +38,19 @@ import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.CustomRestriction;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
-import com.qcadoo.view.api.components.CheckBoxComponent;
-import com.qcadoo.view.api.components.FieldComponent;
-import com.qcadoo.view.api.components.FormComponent;
-import com.qcadoo.view.api.components.GridComponent;
-import com.qcadoo.view.api.components.LookupComponent;
-import com.qcadoo.view.api.components.TreeComponent;
-import com.qcadoo.view.api.components.WindowComponent;
+import com.qcadoo.view.api.components.*;
 import com.qcadoo.view.api.components.lookup.FilterValueHolder;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.api.ribbon.RibbonGroup;
 import com.qcadoo.view.constants.QcadooViewConstants;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.stereotype.Service;
+
+import java.util.Objects;
+import java.util.Optional;
+
+import static com.qcadoo.mes.technologies.states.constants.TechnologyStateChangeFields.STATUS;
 
 @Service
 public class TechnologyDetailsHooks {
@@ -82,6 +75,12 @@ public class TechnologyDetailsHooks {
 
     private static final String L_TECHNOLOGICAL_PROCESS_COMPONENTS = "technologicalProcessComponents";
 
+    private static final String L_IN_PRODUCTS = "inProducts";
+
+    private static final String L_PRODUCT_DATA_ACTIONS = "productDataActions";
+
+    private static final String L_ON_PRODUCT_CART = "onProductCart";
+
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
@@ -94,6 +93,7 @@ public class TechnologyDetailsHooks {
         filterStateChangeHistory(view);
         setTreeTabEditable(view);
         setRibbonState(view);
+        setProductDataRibbonState(view);
         fillCriteriaModifiers(view);
     }
 
@@ -192,6 +192,7 @@ public class TechnologyDetailsHooks {
         }
 
         technologyForm.setFormEnabled(!disabled);
+
         masterField.setEnabled(masterDisabled);
         masterField.requestComponentUpdateState();
         technologyGroupLookup.setEnabled(technologyGroupEnabled);
@@ -217,11 +218,11 @@ public class TechnologyDetailsHooks {
 
         if (Objects.nonNull(technologyId)) {
             technologyIdForMultiUpload.setFieldValue(technologyId);
-            technologyIdForMultiUpload.requestComponentUpdateState();
         } else {
             technologyIdForMultiUpload.setFieldValue("");
-            technologyIdForMultiUpload.requestComponentUpdateState();
         }
+
+        technologyIdForMultiUpload.requestComponentUpdateState();
 
         technologyMultiUploadLocale.setFieldValue(LocaleContextHolder.getLocale());
         technologyMultiUploadLocale.requestComponentUpdateState();
@@ -241,9 +242,10 @@ public class TechnologyDetailsHooks {
         Entity technology = technologyForm.getEntity();
 
         String state = technology.getStringField(TechnologyFields.STATE);
-        boolean isTemplateAccepted = technology.getBooleanField(TechnologyFields.IS_TEMPLATE_ACCEPTED);
+
         boolean isSaved = Objects.nonNull(technologyForm.getEntityId());
         boolean isDraft = TechnologyState.DRAFT.getStringValue().equals(state);
+        boolean isTemplateAccepted = technology.getBooleanField(TechnologyFields.IS_TEMPLATE_ACCEPTED);
 
         fillProductsRibbonActionItem.setEnabled(isSaved && isDraft && !isTemplateAccepted);
         fillProductsRibbonActionItem
@@ -259,9 +261,29 @@ public class TechnologyDetailsHooks {
         openOperationProductInComponentsImportPageRibbonActionItem.requestUpdate(true);
     }
 
-    private void fillCriteriaModifiers(final ViewDefinitionState viewDefinitionState) {
-        LookupComponent product = (LookupComponent) viewDefinitionState.getComponentByReference("product");
-        LookupComponent qualityCard = (LookupComponent) viewDefinitionState.getComponentByReference("qualityCard");
+    public void setProductDataRibbonState(final ViewDefinitionState view) {
+        FormComponent technologyForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
+        GridComponent inProductsGrid = (GridComponent) view.getComponentByReference(L_IN_PRODUCTS);
+
+        WindowComponent window = (WindowComponent) view.getComponentByReference(QcadooViewConstants.L_WINDOW);
+
+        RibbonGroup productDataActionsGroup = window.getRibbon().getGroupByName(L_PRODUCT_DATA_ACTIONS);
+        RibbonActionItem onProductCartRibbonActionItem = productDataActionsGroup.getItemByName(L_ON_PRODUCT_CART);
+
+        Entity technology = technologyForm.getEntity();
+
+        String state = technology.getStringField(TechnologyFields.STATE);
+
+        boolean isSaved = Objects.nonNull(technologyForm.getEntityId());
+        boolean isDraft = TechnologyState.DRAFT.getStringValue().equals(state);
+
+        onProductCartRibbonActionItem.setEnabled(isSaved && isDraft && !inProductsGrid.getSelectedEntities().isEmpty());
+        onProductCartRibbonActionItem.requestUpdate(true);
+    }
+
+    private void fillCriteriaModifiers(final ViewDefinitionState view) {
+        LookupComponent product = (LookupComponent) view.getComponentByReference(TechnologyFields.PRODUCT);
+        LookupComponent qualityCard = (LookupComponent) view.getComponentByReference(TechnologyFields.QUALITY_CARD);
 
         if (Objects.nonNull(product.getEntity())) {
             FilterValueHolder filter = qualityCard.getFilterValue();
@@ -271,15 +293,16 @@ public class TechnologyDetailsHooks {
             qualityCard.setFilterValue(filter);
             qualityCard.requestComponentUpdateState();
         }
-        GridComponent operationComponents = (GridComponent) viewDefinitionState.getComponentByReference(L_OPERATION_COMPONENTS);
+
+        GridComponent operationComponents = (GridComponent) view.getComponentByReference(L_OPERATION_COMPONENTS);
         FilterValueHolder operationComponentsFilterValueHolder = operationComponents.getFilterValue();
 
         operationComponentsFilterValueHolder.put(TechnologyDetailsCriteriaModifiers.L_TECHNOLOGY_ID,
-                ((FormComponent) viewDefinitionState.getComponentByReference(QcadooViewConstants.L_FORM)).getEntityId());
+                ((FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM)).getEntityId());
 
         operationComponents.setFilterValue(operationComponentsFilterValueHolder);
 
-        GridComponent technologicalProcessComponents = (GridComponent) viewDefinitionState
+        GridComponent technologicalProcessComponents = (GridComponent) view
                 .getComponentByReference(L_TECHNOLOGICAL_PROCESS_COMPONENTS);
         FilterValueHolder gridFilterValueHolder = technologicalProcessComponents.getFilterValue();
 

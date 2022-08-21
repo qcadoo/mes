@@ -61,4 +61,8 @@ public final class OperationProductInComponentFields {
 
     public static final String ATTRIBUTE = "attribute";
 
+    public static final String SHOW_IN_PRODUCT_DATA = "showInProductData";
+
+    public static final String PRODUCT_DATA_NUMBER = "productDataNumber";
+
 }
