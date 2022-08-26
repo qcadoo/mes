@@ -1,5 +1,6 @@
 package com.qcadoo.mes.productionScheduling.listeners;
 
+import static com.qcadoo.mes.orders.states.constants.OperationalTaskStateStringValues.FINISHED;
 import static com.qcadoo.mes.orders.states.constants.OperationalTaskStateStringValues.REJECTED;
 import static com.qcadoo.model.api.search.SearchProjections.alias;
 import static com.qcadoo.model.api.search.SearchProjections.list;
@@ -25,6 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.basic.ShiftsService;
 import com.qcadoo.mes.basic.constants.ProductFamilyElementType;
 import com.qcadoo.mes.basic.constants.ProductFields;
@@ -35,6 +37,7 @@ import com.qcadoo.mes.operationTimeCalculations.OperationWorkTimeService;
 import com.qcadoo.mes.orders.constants.OperationalTaskFields;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
+import com.qcadoo.mes.orders.constants.ParameterFieldsO;
 import com.qcadoo.mes.orders.constants.ScheduleFields;
 import com.qcadoo.mes.orders.constants.SchedulePositionFields;
 import com.qcadoo.mes.orders.constants.ScheduleSortOrder;
@@ -56,6 +59,7 @@ import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
+import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchOrders;
 import com.qcadoo.model.api.search.SearchProjections;
 import com.qcadoo.model.api.search.SearchRestrictions;
@@ -99,6 +103,9 @@ public class ScheduleDetailsListenersPS {
 
     @Autowired
     private NumberService numberService;
+
+    @Autowired
+    private ParameterService parameterService;
 
     @Transactional
     public void generatePlan(final ViewDefinitionState view, final ComponentState state, final String[] args) {
@@ -348,11 +355,16 @@ public class ScheduleDetailsListenersPS {
     }
 
     private Date getOperationalTasksMaxFinishDateForWorkstation(Date scheduleStartTime, Entity workstation) {
-        Entity operationalTasksMaxFinishDateEntity = dataDefinitionService
+        SearchCriteriaBuilder scb = dataDefinitionService
                 .get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_OPERATIONAL_TASK).find()
                 .add(SearchRestrictions.belongsTo(OperationalTaskFields.WORKSTATION, workstation))
-                .add(SearchRestrictions.ne(OperationalTaskFields.STATE, REJECTED))
-                .add(SearchRestrictions.gt(OperationalTaskFields.FINISH_DATE, scheduleStartTime))
+                .add(SearchRestrictions.ne(OperationalTaskFields.STATE, REJECTED));
+        Entity parameter = parameterService.getParameter();
+        if (parameter.getBooleanField(ParameterFieldsO.SKIP_FINISHED_TASKS)) {
+            scb.add(SearchRestrictions.ne(OperationalTaskFields.STATE, FINISHED));
+        }
+
+        Entity operationalTasksMaxFinishDateEntity = scb.add(SearchRestrictions.gt(OperationalTaskFields.FINISH_DATE, scheduleStartTime))
                 .setProjection(list()
                         .add(alias(SearchProjections.max(OperationalTaskFields.FINISH_DATE), OperationalTaskFields.FINISH_DATE))
                         .add(rowCount()))
