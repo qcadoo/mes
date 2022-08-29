@@ -118,6 +118,10 @@ public class ScheduleDetailsListenersPS {
     public void getOperations(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         GridComponent ordersGrid = (GridComponent) view.getComponentByReference(ScheduleFields.ORDERS);
         List<Entity> orders = ordersGrid.getEntities();
+        if (orders.isEmpty()) {
+            view.addMessage("productionScheduling.error.scheduleNoOrders", ComponentState.MessageType.INFO);
+            return;
+        }
         FormComponent formComponent = (FormComponent) state;
         Entity schedule = formComponent.getEntity();
         boolean includeTpz = schedule.getBooleanField(ScheduleFields.INCLUDE_TPZ);
