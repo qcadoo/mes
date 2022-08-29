@@ -95,7 +95,12 @@ public class ProductionLineScheduleDetailsListeners {
         }
         FormComponent formComponent = (FormComponent) state;
         GridComponent ordersGrid = (GridComponent) view.getComponentByReference(ProductionLineScheduleFields.ORDERS);
-        Entity schedule = getOrders(ordersGrid.getEntities(), formComponent.getEntity());
+        List<Entity> orders = ordersGrid.getEntities();
+        if (orders.isEmpty()) {
+            view.addMessage("orders.error.productionLineScheduleNoOrders", ComponentState.MessageType.INFO);
+            return;
+        }
+        Entity schedule = getOrders(orders, formComponent.getEntity());
         formComponent.setEntity(schedule);
         Entity parameter = parameterService.getParameter();
         if (DurationOfOrderCalculatedOnBasis.PLAN_FOR_SHIFT.getStringValue()
