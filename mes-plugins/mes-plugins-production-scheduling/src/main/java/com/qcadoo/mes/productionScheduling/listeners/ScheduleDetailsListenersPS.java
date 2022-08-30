@@ -18,6 +18,8 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.joda.time.DateTime;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Service;
@@ -72,6 +74,8 @@ import com.qcadoo.view.api.components.GridComponent;
 @Service
 public class ScheduleDetailsListenersPS {
 
+    private static final Logger LOG = LoggerFactory.getLogger(ScheduleDetailsListenersPS.class);
+
     private static final String ORDERS_FOR_SUBPRODUCTS_GENERATION = "ordersForSubproductsGeneration";
 
     @Autowired
@@ -116,6 +120,7 @@ public class ScheduleDetailsListenersPS {
 
     @Transactional
     public void getOperations(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        long start = System.currentTimeMillis();
         GridComponent ordersGrid = (GridComponent) view.getComponentByReference(ScheduleFields.ORDERS);
         List<Entity> orders = ordersGrid.getEntities();
         if (orders.isEmpty()) {
@@ -155,6 +160,8 @@ public class ScheduleDetailsListenersPS {
         schedule = schedule.getDataDefinition().save(schedule);
         formComponent.setEntity(schedule);
         view.addMessage("productionScheduling.info.schedulePositionsGenerated", ComponentState.MessageType.SUCCESS);
+        long finish = System.currentTimeMillis();
+        LOG.info(String.format("Plan for shift %s - get operations: %ss.", schedule.getStringField(ScheduleFields.NUMBER), (finish - start) / 1000));
     }
 
     private BigDecimal getStaffFactor(Entity operationComponent) {
@@ -193,12 +200,14 @@ public class ScheduleDetailsListenersPS {
 
     @Transactional
     public void assignOperationsToWorkstations(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        long startAll = System.currentTimeMillis();
         Entity schedule = ((FormComponent) state).getEntity();
         Map<Long, Date> workstationsFinishDates = Maps.newHashMap();
         Set<Long> ordersToAvoid = Sets.newHashSet();
         List<Long> positionsIds = sortPositionsForWorkstations(schedule.getId());
         Date scheduleStartTime = schedule.getDateField(ScheduleFields.START_TIME);
         for (Long positionId : positionsIds) {
+            long start = System.currentTimeMillis();
             Entity position = dataDefinitionService
                     .get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_SCHEDULE_POSITION).get(positionId);
             if (ordersToAvoid.contains(position.getBelongsToField(SchedulePositionFields.ORDER).getId())) {
@@ -235,7 +244,11 @@ public class ScheduleDetailsListenersPS {
                 }
                 updatePositionWorkstationAndDates(firstEntry, workstationsFinishDates, position);
             }
+            long finish = System.currentTimeMillis();
+            LOG.info(String.format("Plan for shift - one workstation assignment: %ss.", (finish - start) / 1000));
         }
+        long finishAll = System.currentTimeMillis();
+        LOG.info(String.format("Plan for shift %s - workstations assignment: %ss.", schedule.getStringField(ScheduleFields.NUMBER), (finishAll - startAll) / 1000));
     }
 
     private List<Entity> getWorkstationsFromTOC(Entity position) {
