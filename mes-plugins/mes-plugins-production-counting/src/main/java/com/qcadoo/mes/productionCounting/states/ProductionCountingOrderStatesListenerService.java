@@ -78,7 +78,6 @@ public class ProductionCountingOrderStatesListenerService {
         order.setField(OrderFields.DONE_QUANTITY,
                 basicProductionCountingService.getProducedQuantityFromBasicProductionCountings(order));
 
-        stateChangeContext.setOwner(order);
     }
 
     private void checkFinalProductionCountingForOrderCumulated(final StateChangeContext stateChangeContext) {

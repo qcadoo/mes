@@ -35,6 +35,7 @@ import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuanti
 import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityTypeOfMaterial;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
+import com.qcadoo.mes.orders.hooks.OrderHooks;
 import com.qcadoo.mes.orders.states.aop.OrderStateChangeAspect;
 import com.qcadoo.mes.orders.states.constants.OrderState;
 import com.qcadoo.mes.productionCounting.ProductionCountingService;
@@ -106,6 +107,9 @@ public final class ProductionTrackingListenerService {
 
     @Autowired
     private OrderClosingHelper orderClosingHelper;
+
+    @Autowired
+    private OrderHooks orderHooks;
 
     @Autowired
     private ParameterService parameterService;
@@ -359,7 +363,8 @@ public final class ProductionTrackingListenerService {
             order.setField(OrderFields.WASTES_QUANTITY,
                     getWastesQuantity(mainTrackingOperationProductOutComponent, order, operation));
             order.setField("finalProductionTracking", productionTracking.getBooleanField(ProductionTrackingFields.LAST_TRACKING));
-            order.getDataDefinition().save(order);
+            orderHooks.setProductQuantity(order);
+            order.getDataDefinition().fastSave(order);
         }
     }
 

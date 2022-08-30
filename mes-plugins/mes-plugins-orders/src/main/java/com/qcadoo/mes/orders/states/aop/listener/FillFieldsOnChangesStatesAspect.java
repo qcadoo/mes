@@ -50,7 +50,6 @@ import com.qcadoo.plugin.api.RunIfEnabled;
 @Configurable
 @RunIfEnabled(OrdersConstants.PLUGIN_IDENTIFIER)
 public class FillFieldsOnChangesStatesAspect extends AbstractStateListenerAspect {
-
     @Autowired
     private OrderStateService orderStateService;
 
