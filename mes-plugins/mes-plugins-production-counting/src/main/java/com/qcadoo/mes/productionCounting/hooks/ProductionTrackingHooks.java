@@ -47,6 +47,7 @@ import com.qcadoo.mes.productionCounting.states.listener.ProductionTrackingListe
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchRestrictions;
+import com.qcadoo.model.api.validators.ErrorMessage;
 import com.qcadoo.security.api.SecurityService;
 import com.qcadoo.security.api.UserService;
 import com.qcadoo.security.constants.UserFields;
@@ -61,10 +62,7 @@ import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -168,8 +166,16 @@ public class ProductionTrackingHooks {
                     trackingRecord = trackingRecord.getDataDefinition().save(trackingRecord);
 
                     if (!trackingRecord.isValid()) {
-                        productionTracking.addError(productionTrackingDD.getField(ProductionTrackingFields.BATCH_NUMBER),
-                                "productionCounting.productionTracking.messages.error.batchCreation");
+                        Optional<ErrorMessage> msg = trackingRecord.getGlobalErrors().stream()
+                                .filter(em -> em.getMessage().equals("advancedGenealogyForOrders.trackingRecord.validation.error.onlyOneBatchTrackingForOrder"))
+                                .findFirst();
+                        if(msg.isPresent()) {
+                            productionTracking.addGlobalError("advancedGenealogyForOrders.trackingRecord.validation.error.onlyOneBatchTrackingForOrder");
+                        } else {
+                            productionTracking.addError(productionTrackingDD.getField(ProductionTrackingFields.BATCH_NUMBER),
+                                    "productionCounting.productionTracking.messages.error.batchCreation");
+                        }
+
                     }
                 }
             }
