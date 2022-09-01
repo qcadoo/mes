@@ -1,25 +1,37 @@
 package com.qcadoo.mes.masterOrders;
 
+import com.google.common.collect.Maps;
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.basic.ParameterService;
+import com.qcadoo.mes.basic.constants.ProductFields;
+import com.qcadoo.mes.basic.constants.UnitConversionItemFieldsB;
 import com.qcadoo.mes.masterOrders.constants.MasterOrderFields;
 import com.qcadoo.mes.masterOrders.constants.MasterOrderProductFields;
 import com.qcadoo.mes.materialFlowResources.constants.DocumentFields;
+import com.qcadoo.mes.materialFlowResources.constants.MaterialFlowResourcesConstants;
+import com.qcadoo.mes.materialFlowResources.constants.PositionFields;
 import com.qcadoo.mes.materialFlowResources.service.DocumentBuilder;
 import com.qcadoo.mes.materialFlowResources.service.DocumentManagementService;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.NumberService;
+import com.qcadoo.model.api.search.SearchRestrictions;
+import com.qcadoo.model.api.units.PossibleUnitConversions;
+import com.qcadoo.model.api.units.UnitConversionService;
 import com.qcadoo.security.api.SecurityService;
 import com.qcadoo.security.constants.QcadooSecurityConstants;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.constants.QcadooViewConstants;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class MasterOrderDocumentService {
@@ -41,6 +53,12 @@ public class MasterOrderDocumentService {
     @Autowired
     private TranslationService translationService;
 
+    @Autowired
+    private UnitConversionService unitConversionService;
+
+    @Autowired
+    private NumberService numberService;
+
     public void createReleaseDocument(List<Entity> masterOrderProducts, ViewDefinitionState view) {
         FormComponent masterOrderForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         Entity masterOrderFormEntity = masterOrderForm.getEntity();
@@ -59,10 +77,72 @@ public class MasterOrderDocumentService {
 
         for (Entity masterOrderProduct : masterOrderProducts) {
             Entity mo = masterOrderProduct.getDataDefinition().getMasterModelEntity(masterOrderProduct.getId());
-            documentBuilder.addPosition(mo.getBelongsToField(MasterOrderProductFields.PRODUCT), mo.getDecimalField(MasterOrderProductFields.MASTER_ORDER_QUANTITY));
+
+            Entity position = dataDefinitionService
+                    .get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER, MaterialFlowResourcesConstants.MODEL_POSITION)
+                    .create();
+
+            Entity product = mo.getBelongsToField(MasterOrderProductFields.PRODUCT);
+            BigDecimal quantity = mo.getDecimalField(MasterOrderProductFields.MASTER_ORDER_QUANTITY);
+            BigDecimal conversion = BigDecimal.ONE;
+            String additionalUnit = product.getStringField(ProductFields.ADDITIONAL_UNIT);
+            String unit = product.getStringField(ProductFields.UNIT);
+
+            if (!StringUtils.isEmpty(additionalUnit)) {
+                PossibleUnitConversions unitConversions = unitConversionService.getPossibleConversions(unit,
+                        searchCriteriaBuilder -> searchCriteriaBuilder
+                                .add(SearchRestrictions.belongsTo(UnitConversionItemFieldsB.PRODUCT, product)));
+
+                if (unitConversions.isDefinedFor(additionalUnit)) {
+                    BigDecimal convertedQuantity = unitConversions.convertTo(quantity, additionalUnit);
+
+                    position.setField(PositionFields.GIVEN_QUANTITY, convertedQuantity);
+                    position.setField(PositionFields.GIVEN_UNIT, additionalUnit);
+                    position.setField(PositionFields.CONVERSION,
+                            numberService.setScaleWithDefaultMathContext(getConversion(product, unit, additionalUnit)));
+                }
+            } else {
+                position.setField(PositionFields.GIVEN_UNIT, unit);
+                position.setField(PositionFields.GIVEN_QUANTITY, quantity);
+                position.setField(PositionFields.CONVERSION, conversion);
+            }
+
+            position.setField(PositionFields.QUANTITY, quantity);
+            position.setField(PositionFields.PRODUCT, product);
+
+            position.setField(PositionFields.DOCUMENT, documentBuilder.getDocument());
+
+            documentBuilder.addPosition(position);
+
         }
 
-        documentBuilder.buildWithEntityRuntimeException();
-        view.addMessage("masterOrders.masterOrder.releaseDocument.created", ComponentState.MessageType.SUCCESS);
+        try {
+            Entity document = documentBuilder.buildWithEntityRuntimeException();
+            document = document.getDataDefinition().get(document.getId());
+            redirectToCreatedDocument(document, view);
+        } catch (Exception exc) {
+            view.addMessage("masterOrders.masterOrder.createReleaseDocument.error", ComponentState.MessageType.FAILURE);
+        }
+
+    }
+
+    private void redirectToCreatedDocument(Entity document, ViewDefinitionState view) {
+        Map<String, Object> parameters = Maps.newHashMap();
+        parameters.put("form.id", document.getId());
+
+        String url = "../page/materialFlowResources/documentDetails.html";
+        view.redirectTo(url, false, true, parameters);
+    }
+
+    private BigDecimal getConversion(final Entity product, final String unit, final String additionalUnit) {
+        PossibleUnitConversions unitConversions = unitConversionService.getPossibleConversions(unit,
+                searchCriteriaBuilder -> searchCriteriaBuilder
+                        .add(SearchRestrictions.belongsTo(UnitConversionItemFieldsB.PRODUCT, product)));
+
+        if (unitConversions.isDefinedFor(additionalUnit)) {
+            return unitConversions.asUnitToConversionMap().get(additionalUnit);
+        } else {
+            return BigDecimal.ZERO;
+        }
     }
 }

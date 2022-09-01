@@ -23,6 +23,7 @@
  */
 package com.qcadoo.mes.masterOrders.listeners;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -152,6 +153,12 @@ public class MasterOrderDetailsListeners {
             return;
         }
 
+        boolean anyZeroPositions = masterOrderProducts.stream().anyMatch(mo -> mo.getDecimalField(MasterOrderProductFields.MASTER_ORDER_QUANTITY).compareTo(BigDecimal.ZERO) == 0);
+
+        if(anyZeroPositions) {
+            view.addMessage("masterOrders.masterOrder.createReleaseDocument.masterOrderPositionsForZero", ComponentState.MessageType.FAILURE);
+            return;
+        }
         masterOrderDocumentService.createReleaseDocument(masterOrderProducts, view);
     }
 
