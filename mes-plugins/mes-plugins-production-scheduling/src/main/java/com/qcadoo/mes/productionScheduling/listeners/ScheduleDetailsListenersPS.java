@@ -161,7 +161,7 @@ public class ScheduleDetailsListenersPS {
         formComponent.setEntity(schedule);
         view.addMessage("productionScheduling.info.schedulePositionsGenerated", ComponentState.MessageType.SUCCESS);
         long finish = System.currentTimeMillis();
-        LOG.info(String.format("Plan for shift %s - get operations: %ss.", schedule.getStringField(ScheduleFields.NUMBER), (finish - start) / 1000));
+        LOG.info("Plan for shift {} - get operations: {}s.", schedule.getStringField(ScheduleFields.NUMBER), (finish - start) / 1000);
     }
 
     private BigDecimal getStaffFactor(Entity operationComponent) {
@@ -245,10 +245,10 @@ public class ScheduleDetailsListenersPS {
                 updatePositionWorkstationAndDates(firstEntry, workstationsFinishDates, position);
             }
             long finish = System.currentTimeMillis();
-            LOG.info(String.format("Plan for shift - one workstation assignment: %ss.", (finish - start) / 1000));
+            LOG.info("Plan for shift - workstation assignment: {}s.", (finish - start) / 1000);
         }
         long finishAll = System.currentTimeMillis();
-        LOG.info(String.format("Plan for shift %s - workstations assignment: %ss.", schedule.getStringField(ScheduleFields.NUMBER), (finishAll - startAll) / 1000));
+        LOG.info("Plan for shift {} - workstations assignment: {}s.", schedule.getStringField(ScheduleFields.NUMBER), (finishAll - startAll) / 1000);
     }
 
     private List<Entity> getWorkstationsFromTOC(Entity position) {

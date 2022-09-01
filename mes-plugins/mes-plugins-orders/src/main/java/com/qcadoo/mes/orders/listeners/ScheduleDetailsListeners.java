@@ -93,7 +93,7 @@ public class ScheduleDetailsListeners {
             position.getDataDefinition().fastSave(position);
         }
         long finish = System.currentTimeMillis();
-        LOG.info(String.format("Plan for shift %s - worker assignment: %ss.", schedule.getStringField(ScheduleFields.NUMBER), (finish - start) / 1000));
+        LOG.info("Plan for shift {} - workers assignment: {}s.", schedule.getStringField(ScheduleFields.NUMBER), (finish - start) / 1000);
     }
 
     private Optional<Entry<Long, Date>> getFirstEntryOptional(String scheduleWorkerAssignCriterion,
