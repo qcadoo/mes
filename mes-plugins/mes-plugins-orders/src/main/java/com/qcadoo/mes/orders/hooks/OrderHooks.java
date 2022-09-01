@@ -23,6 +23,7 @@
  */
 package com.qcadoo.mes.orders.hooks;
 
+import java.io.*;
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -31,6 +32,9 @@ import java.util.Locale;
 import java.util.Objects;
 import java.util.Optional;
 
+import com.qcadoo.mes.orders.constants.*;
+import com.qcadoo.model.api.file.FileService;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,10 +53,6 @@ import com.qcadoo.mes.orders.OrderPackService;
 import com.qcadoo.mes.orders.OrderService;
 import com.qcadoo.mes.orders.OrderStateChangeReasonService;
 import com.qcadoo.mes.orders.TechnologyServiceO;
-import com.qcadoo.mes.orders.constants.OrderFields;
-import com.qcadoo.mes.orders.constants.OrderStartDateBasedOn;
-import com.qcadoo.mes.orders.constants.OrdersConstants;
-import com.qcadoo.mes.orders.constants.ParameterFieldsO;
 import com.qcadoo.mes.orders.states.constants.OrderState;
 import com.qcadoo.mes.orders.states.constants.OrderStateChangeDescriber;
 import com.qcadoo.mes.orders.states.constants.OrderStateChangeFields;
@@ -122,6 +122,9 @@ public class OrderHooks {
 
     @Autowired
     private AdditionalUnitService additionalUnitService;
+
+    @Autowired
+    private FileService fileService;
 
     public boolean validatesWith(final DataDefinition orderDD, final Entity order) {
         Entity parameter = parameterService.getParameter();
@@ -221,7 +224,10 @@ public class OrderHooks {
         clearOrSetSpecyfiedValueOrderFieldsOnCopy(orderDD, order);
         setProductQuantity(orderDD, order);
         setCopyOfTechnology(order);
+        copyAttachments(order);
     }
+
+
 
     public void setRemainingQuantity(final Entity order) {
         BigDecimal remainingAmountOfProductToProduce = BigDecimalUtils
@@ -814,6 +820,26 @@ public class OrderHooks {
             }
         }
     }
+
+    private void copyAttachments(Entity order) {
+        List<Entity> orderAttachments = order.getHasManyField("orderAttachments");
+
+        for (Entity attachment : orderAttachments) {
+            File file = fileService.getFileFromFilenameWithRandomDirectory(attachment
+                    .getStringField(OrderAttachmentFields.NAME));
+            try (InputStream is = fileService.getInputStream(attachment
+                    .getStringField(OrderAttachmentFields.ATTACHMENT));
+                 OutputStream output = new FileOutputStream(file)) {
+                IOUtils.copy(is, output);
+            } catch (IOException e) {
+                throw new IllegalStateException("Problem with order attachments");
+            }
+            attachment.setField(OrderAttachmentFields.ATTACHMENT, file);
+            attachment.getDataDefinition().save(attachment);
+
+        }
+    }
+
 
     public void setProductQuantity(final DataDefinition orderDD, final Entity order) {
         if (Objects.isNull(order)) {
