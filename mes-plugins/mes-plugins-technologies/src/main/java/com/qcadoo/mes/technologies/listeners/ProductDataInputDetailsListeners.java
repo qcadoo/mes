@@ -23,10 +23,9 @@
  */
 package com.qcadoo.mes.technologies.listeners;
 
-import com.qcadoo.mes.basic.constants.ProductFields;
-import com.qcadoo.mes.technologies.constants.OperationProductInComponentFields;
 import com.qcadoo.mes.technologies.constants.ProductDataInputFields;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
+import com.qcadoo.mes.technologies.services.ProductDataService;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -39,9 +38,7 @@ import com.qcadoo.view.constants.QcadooViewConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -49,6 +46,9 @@ public class ProductDataInputDetailsListeners {
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
+
+    @Autowired
+    private ProductDataService productDataService;
 
     public void createProductDataInputs(final ViewDefinitionState view, final ComponentState state, final String args[]) {
         FormComponent productDataInputForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
@@ -61,45 +61,13 @@ public class ProductDataInputDetailsListeners {
         Entity productData = productDataInput.getBelongsToField(ProductDataInputFields.PRODUCT_DATA);
         List<Entity> operationProductInComponents = getOperationProductInComponents(operationProductInComponentDtos);
 
-        createProductDataInputs(productData, operationProductInComponents);
-    }
-
-    private void createProductDataInputs(final Entity productData, final List<Entity> operationProductInComponents) {
-        operationProductInComponents.forEach(operationProductInComponent -> {
-            Entity product = operationProductInComponent.getBelongsToField(OperationProductInComponentFields.PRODUCT);
-
-            String name = product.getStringField(ProductFields.NAME);
-            String number = product.getStringField(ProductFields.NUMBER);
-            BigDecimal quantity = operationProductInComponent.getDecimalField(OperationProductInComponentFields.GIVEN_QUANTITY);
-            String unit = operationProductInComponent.getStringField(OperationProductInComponentFields.GIVEN_UNIT);
-
-            if (Objects.isNull(quantity)) {
-                quantity = operationProductInComponent.getDecimalField(OperationProductInComponentFields.QUANTITY);
-
-                unit = product.getStringField(ProductFields.UNIT);
-            }
-
-            Entity productDataInput = getProductDataInputDD().create();
-
-            productDataInput.setField(ProductDataInputFields.PRODUCT_DATA, productData);
-            productDataInput.setField(ProductDataInputFields.OPERATION_PRODUCT_IN_COMPONENT, operationProductInComponent);
-            productDataInput.setField(ProductDataInputFields.NAME, name);
-            productDataInput.setField(ProductDataInputFields.NUMBER, number);
-            productDataInput.setField(ProductDataInputFields.QUANTITY, quantity);
-            productDataInput.setField(ProductDataInputFields.UNIT, unit);
-
-            productDataInput.getDataDefinition().save(productDataInput);
-        });
+        productDataService.createProductDataInputs(productData, operationProductInComponents);
     }
 
     private List<Entity> getOperationProductInComponents(final List<Entity> operationProductInComponentDtos) {
         List<Long> ids = operationProductInComponentDtos.stream().map(Entity::getId).collect(Collectors.toList());
 
         return getOperationProductInComponentDD().find().add(SearchRestrictions.in("id", ids)).list().getEntities();
-    }
-
-    private DataDefinition getProductDataInputDD() {
-        return dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_PRODUCT_DATA_INPUT);
     }
 
     private DataDefinition getOperationProductInComponentDD() {

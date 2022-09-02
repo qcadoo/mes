@@ -23,7 +23,6 @@
  */
 package com.qcadoo.mes.technologies.listeners;
 
-import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.technologies.constants.*;
 import com.qcadoo.mes.technologies.hooks.ProductDataDetailsHooks;
 import com.qcadoo.mes.technologies.print.ProductDataPdfService;
@@ -46,7 +45,6 @@ import com.qcadoo.view.constants.QcadooViewConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
@@ -125,54 +123,13 @@ public class ProductDataDetailsListeners {
     private void generateProductDataInputs(final Entity productData, final EntityTree operations) {
         List<Entity> operationProductInComponents = productDataService.getOperationProductInComponents(operations);
 
-        operationProductInComponents.forEach(operationProductInComponent -> {
-            Entity product = operationProductInComponent.getBelongsToField(OperationProductInComponentFields.PRODUCT);
-
-            String name = product.getStringField(ProductFields.NAME);
-            String number = product.getStringField(ProductFields.NUMBER);
-            BigDecimal quantity = operationProductInComponent.getDecimalField(OperationProductInComponentFields.GIVEN_QUANTITY);
-            String unit = operationProductInComponent.getStringField(OperationProductInComponentFields.GIVEN_UNIT);
-
-            if (Objects.isNull(quantity)) {
-                quantity = operationProductInComponent.getDecimalField(OperationProductInComponentFields.QUANTITY);
-
-                unit = product.getStringField(ProductFields.UNIT);
-            }
-
-            Entity productDataInput = getProductDataInputDD().create();
-
-            productDataInput.setField(ProductDataInputFields.PRODUCT_DATA, productData);
-            productDataInput.setField(ProductDataInputFields.OPERATION_PRODUCT_IN_COMPONENT, operationProductInComponent);
-            productDataInput.setField(ProductDataInputFields.NAME, name);
-            productDataInput.setField(ProductDataInputFields.NUMBER, number);
-            productDataInput.setField(ProductDataInputFields.QUANTITY, quantity);
-            productDataInput.setField(ProductDataInputFields.UNIT, unit);
-
-            productDataInput.getDataDefinition().save(productDataInput);
-        });
+        productDataService.createProductDataInputs(productData, operationProductInComponents);
     }
 
     private void generateProductDataOperations(final Entity productData, final EntityTree operations) {
         List<Entity> technologyOperationComponents = productDataService.getOperations(operations);
 
-        technologyOperationComponents.forEach(technologyOperationComponent -> {
-            Entity operation = technologyOperationComponent.getBelongsToField(TechnologyOperationComponentFields.OPERATION);
-
-            String name = operation.getStringField(OperationFields.NAME);
-            String number = operation.getStringField(OperationFields.NUMBER);
-
-            String description = technologyOperationComponent.getStringField(TechnologyOperationComponentFields.COMMENT);
-
-            Entity productDataOperation = getProductDataOperationDD().create();
-
-            productDataOperation.setField(ProductDataOperationFields.PRODUCT_DATA, productData);
-            productDataOperation.setField(ProductDataOperationFields.TECHNOLOGY_OPERATION_COMPONENT, technologyOperationComponent);
-            productDataOperation.setField(ProductDataOperationFields.NAME, name);
-            productDataOperation.setField(ProductDataOperationFields.NUMBER, number);
-            productDataOperation.setField(ProductDataOperationFields.DESCRIPTION, description);
-
-            productDataOperation.getDataDefinition().save(productDataOperation);
-        });
+        productDataService.createProductDataOperations(productData, technologyOperationComponents);
     }
 
     public void generateReport(final ViewDefinitionState view, final ComponentState state, final String args[]) {

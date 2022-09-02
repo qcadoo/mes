@@ -23,10 +23,9 @@
  */
 package com.qcadoo.mes.technologies.listeners;
 
-import com.qcadoo.mes.technologies.constants.OperationFields;
 import com.qcadoo.mes.technologies.constants.ProductDataOperationFields;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
-import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
+import com.qcadoo.mes.technologies.services.ProductDataService;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -48,6 +47,9 @@ public class ProductDataOperationDetailsListeners {
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
+    @Autowired
+    private ProductDataService productDataService;
+
     public void createProductDataOperations(final ViewDefinitionState view, final ComponentState state, final String args[]) {
         FormComponent productDataOperationForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         GridComponent technologyOperationComponentDtosGrid = (GridComponent) view.getComponentByReference(QcadooViewConstants.L_GRID);
@@ -58,38 +60,13 @@ public class ProductDataOperationDetailsListeners {
         Entity productData = productDataOperation.getBelongsToField(ProductDataOperationFields.PRODUCT_DATA);
         List<Entity> technologyOperationComponents = getTechnologyOperationComponents(technologyOperationComponentDtos);
 
-        createProductDataOperations(productData, technologyOperationComponents);
-    }
-
-    private void createProductDataOperations(final Entity productData, final List<Entity> technologyOperationComponents) {
-        technologyOperationComponents.forEach(technologyOperationComponent -> {
-            Entity operation = technologyOperationComponent.getBelongsToField(TechnologyOperationComponentFields.OPERATION);
-
-            String name = operation.getStringField(OperationFields.NAME);
-            String number = operation.getStringField(OperationFields.NUMBER);
-
-            String description = technologyOperationComponent.getStringField(TechnologyOperationComponentFields.COMMENT);
-
-            Entity productDataOperation = getProductDataOperationDD().create();
-
-            productDataOperation.setField(ProductDataOperationFields.PRODUCT_DATA, productData);
-            productDataOperation.setField(ProductDataOperationFields.TECHNOLOGY_OPERATION_COMPONENT, technologyOperationComponent);
-            productDataOperation.setField(ProductDataOperationFields.NAME, name);
-            productDataOperation.setField(ProductDataOperationFields.NUMBER, number);
-            productDataOperation.setField(ProductDataOperationFields.DESCRIPTION, description);
-
-            productDataOperation.getDataDefinition().save(productDataOperation);
-        });
+        productDataService.createProductDataOperations(productData, technologyOperationComponents);
     }
 
     private List<Entity> getTechnologyOperationComponents(final List<Entity> technologyOperationComponentDtos) {
         List<Long> ids = technologyOperationComponentDtos.stream().map(Entity::getId).collect(Collectors.toList());
 
         return getTechnologyOperationComponentDD().find().add(SearchRestrictions.in("id", ids)).list().getEntities();
-    }
-
-    private DataDefinition getProductDataOperationDD() {
-        return dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_PRODUCT_DATA_OPERATION);
     }
 
     private DataDefinition getTechnologyOperationComponentDD() {
