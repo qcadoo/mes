@@ -29,18 +29,18 @@ public final class ProductDataInputFields {
 
     }
 
+    public static final String PRODUCT_DATA = "productData";
+
+    public static final String OPERATION_PRODUCT_IN_COMPONENT = "operationProductInComponent";
+
     public static final String NUMBER = "number";
 
     public static final String NAME = "name";
 
-    public static final String PRODUCT_DATA = "productData";
-
-    public static final String PRODUCT = "product";
-
-    public static final String SUCCESSION = "succession";
-
     public static final String QUANTITY = "quantity";
 
     public static final String UNIT = "unit";
+
+    public static final String SUCCESSION = "succession";
 
 }

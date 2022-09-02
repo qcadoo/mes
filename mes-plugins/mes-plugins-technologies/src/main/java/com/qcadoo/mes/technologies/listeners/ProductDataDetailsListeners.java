@@ -23,11 +23,10 @@
  */
 package com.qcadoo.mes.technologies.listeners;
 
-import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.technologies.constants.*;
-import com.qcadoo.mes.technologies.services.ProductDataPdfService;
+import com.qcadoo.mes.technologies.hooks.ProductDataDetailsHooks;
+import com.qcadoo.mes.technologies.print.ProductDataPdfService;
 import com.qcadoo.mes.technologies.services.ProductDataService;
 import com.qcadoo.mes.technologies.tree.ProductStructureTreeService;
 import com.qcadoo.model.api.DataDefinition;
@@ -48,7 +47,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.util.*;
+import java.util.Date;
+import java.util.List;
+import java.util.Objects;
 
 @Service
 public class ProductDataDetailsListeners {
@@ -71,44 +72,8 @@ public class ProductDataDetailsListeners {
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
-    public void printReport(final ViewDefinitionState view, final ComponentState state, final String args[]) {
-        FormComponent productDataForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
-        Entity productData = productDataForm.getPersistedEntityWithIncludedFormValues();
-
-        state.setFieldValue(productData.getId());
-
-        reportService.printGeneratedReport(view, state, new String[]{args[0],
-                TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_PRODUCT_DATA});
-    }
-
-    public void generateReport(final ViewDefinitionState view, final ComponentState state, final String args[]) {
-        FormComponent productDataForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
-
-        state.performEvent(view, "save", new String[0]);
-
-        if (state.isHasError()) {
-            return;
-        }
-
-        Entity productData = productDataForm.getPersistedEntityWithIncludedFormValues();
-
-        productData.setField(ProductDataFields.GENERATED, true);
-        productData.setField(ProductDataFields.DATE_GENERATED, new Date());
-
-        productDataForm.setEntity(productData);
-
-        productData.getDataDefinition().save(productData);
-
-        try {
-            Entity productDataWithFileName = fileService.updateReportFileName(
-                    productData, ProductDataFields.DATE_GENERATED,
-                    "productData.productData.report.fileName");
-
-            productDataPdfService.generateDocument(productDataWithFileName, state.getLocale());
-        } catch (Exception e) {
-            throw new IllegalStateException(e.getMessage(), e);
-        }
-    }
+    @Autowired
+    private ProductDataDetailsHooks productDataDetailsHooks;
 
     public void loadProductData(final ViewDefinitionState view, final ComponentState state, final String args[]) {
         FormComponent productDataForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
@@ -177,7 +142,7 @@ public class ProductDataDetailsListeners {
             Entity productDataInput = getProductDataInputDD().create();
 
             productDataInput.setField(ProductDataInputFields.PRODUCT_DATA, productData);
-            productDataInput.setField(ProductDataInputFields.PRODUCT, product);
+            productDataInput.setField(ProductDataInputFields.OPERATION_PRODUCT_IN_COMPONENT, operationProductInComponent);
             productDataInput.setField(ProductDataInputFields.NAME, name);
             productDataInput.setField(ProductDataInputFields.NUMBER, number);
             productDataInput.setField(ProductDataInputFields.QUANTITY, quantity);
@@ -210,6 +175,45 @@ public class ProductDataDetailsListeners {
         });
     }
 
+    public void generateReport(final ViewDefinitionState view, final ComponentState state, final String args[]) {
+        FormComponent productDataForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
+
+        state.performEvent(view, "save", new String[0]);
+
+        if (state.isHasError()) {
+            return;
+        }
+
+        Entity productData = productDataForm.getPersistedEntityWithIncludedFormValues();
+
+        productData.setField(ProductDataFields.GENERATED, true);
+        productData.setField(ProductDataFields.DATE_GENERATED, new Date());
+
+        productDataForm.setEntity(productData);
+
+        productData.getDataDefinition().save(productData);
+
+        try {
+            Entity productDataWithFileName = fileService.updateReportFileName(
+                    productData, ProductDataFields.DATE_GENERATED,
+                    "productData.productData.report.fileName");
+
+            productDataPdfService.generateDocument(productDataWithFileName, state.getLocale());
+        } catch (Exception e) {
+            throw new IllegalStateException(e.getMessage(), e);
+        }
+    }
+
+    public void printReport(final ViewDefinitionState view, final ComponentState state, final String args[]) {
+        FormComponent productDataForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
+        Entity productData = productDataForm.getPersistedEntityWithIncludedFormValues();
+
+        state.setFieldValue(productData.getId());
+
+        reportService.printGeneratedReport(view, state, new String[]{args[0],
+                TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_PRODUCT_DATA});
+    }
+
     public void onTechnologyChange(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         LookupComponent technologyLookup = (LookupComponent) view.getComponentByReference(ProductDataFields.TECHNOLOGY);
 
@@ -223,34 +227,7 @@ public class ProductDataDetailsListeners {
             return;
         }
 
-        applyValuesToFields(view, technology);
-    }
-
-    private void applyValuesToFields(final ViewDefinitionState view, final Entity technology) {
-        if (Objects.isNull(technology)) {
-            clearFieldValues(view);
-
-            return;
-        }
-
-        Set<String> referenceNames = Sets.newHashSet(ProductDataFields.PRODUCT, ProductDataFields.TECHNOLOGY);
-
-        Map<String, FieldComponent> componentsMap = Maps.newHashMap();
-
-        for (String referenceName : referenceNames) {
-            FieldComponent fieldComponent = (FieldComponent) view.getComponentByReference(referenceName);
-
-            componentsMap.put(referenceName, fieldComponent);
-        }
-
-        componentsMap.get(ProductDataFields.TECHNOLOGY).setFieldValue(technology.getId());
-        componentsMap.get(ProductDataFields.PRODUCT).setFieldValue(
-                technology.getBelongsToField(TechnologyFields.PRODUCT).getId());
-    }
-
-    private void clearFieldValues(final ViewDefinitionState view) {
-        view.getComponentByReference(ProductDataFields.TECHNOLOGY).setFieldValue(null);
-        view.getComponentByReference(ProductDataFields.PRODUCT).setFieldValue(null);
+        productDataDetailsHooks.setTechnologyFields(view, technology);
     }
 
     public void onProductChange(final ViewDefinitionState view, final ComponentState state, final String[] args) {

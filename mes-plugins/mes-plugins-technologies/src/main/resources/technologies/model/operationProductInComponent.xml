@@ -59,6 +59,9 @@
 
         <boolean name="showInProductData" default="false"/>
         <decimal name="productDataNumber" default="0"/>
+
+        <hasMany name="productDataInputs" model="productDataInput" joinField="operationProductInComponent"
+                 cascade="delete"/>
     </fields>
 
     <hooks>

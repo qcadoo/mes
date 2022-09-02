@@ -28,18 +28,32 @@ import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.view.api.components.lookup.FilterValueHolder;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class ProductDataCriteriaModifiers {
 
-    public static final String FILTER_KEY_TECHNOLOGY_ID = "technology.id";
+    public static final String TECHNOLOGY_ID = "technologyId";
 
-    public static final String TECHNOLOGY_ID = "technology.id";
+    public static final String OPERATION_PRODUCT_IN_COMPONENT_IDS = "operationProductInComponentIds";
+
+    public static final String TECHNOLOGY_OPERATION_COMPONENT_IDS = "technologyOperationComponentIds";
 
     public void restrictProductData(final SearchCriteriaBuilder scb, final FilterValueHolder filterValue) {
-        if (filterValue.has(FILTER_KEY_TECHNOLOGY_ID)) {
-            Long id = filterValue.getLong(FILTER_KEY_TECHNOLOGY_ID);
+        if (filterValue.has(TECHNOLOGY_ID)) {
+            Long id = filterValue.getLong(TECHNOLOGY_ID);
 
-            scb.add(SearchRestrictions.eq(TECHNOLOGY_ID, id));
+            scb.add(SearchRestrictions.eq(TECHNOLOGY_ID, id.intValue()));
+        }
+        if (filterValue.has(OPERATION_PRODUCT_IN_COMPONENT_IDS)) {
+            List<Long> ids = filterValue.getListOfLongs(OPERATION_PRODUCT_IN_COMPONENT_IDS);
+
+            scb.add(SearchRestrictions.not(SearchRestrictions.in("id", ids)));
+        }
+        if (filterValue.has(TECHNOLOGY_OPERATION_COMPONENT_IDS)) {
+            List<Long> ids = filterValue.getListOfLongs(TECHNOLOGY_OPERATION_COMPONENT_IDS);
+
+            scb.add(SearchRestrictions.not(SearchRestrictions.in("id", ids)));
         }
     }
 

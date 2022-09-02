@@ -23,10 +23,15 @@
  */
 package com.qcadoo.mes.technologies.hooks;
 
+import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import com.qcadoo.mes.technologies.constants.ProductDataFields;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
+import com.qcadoo.mes.technologies.constants.TechnologyFields;
+import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
@@ -38,11 +43,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 
 @Service
 public class ProductDataDetailsHooks {
 
+    public static final String L_TECHNOLOGY_NUMBER = "technologyNumber";
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
@@ -51,6 +59,7 @@ public class ProductDataDetailsHooks {
 
     public void onBeforeRender(final ViewDefinitionState view) {
         setNumber(view);
+        setTechnology(view);
         setProductDataIdForMultiUploadField(view);
         setCriteriaModifierParameters(view);
     }
@@ -59,6 +68,49 @@ public class ProductDataDetailsHooks {
         numberGeneratorService
                 .generateAndInsertNumber(view, TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_PRODUCT_DATA,
                         QcadooViewConstants.L_FORM, ProductDataFields.NUMBER);
+    }
+
+    public void setTechnology(final ViewDefinitionState view) {
+        FieldComponent technologyNumberField = (FieldComponent) view.getComponentByReference(L_TECHNOLOGY_NUMBER);
+
+        String technologyNumber = (String) technologyNumberField.getFieldValue();
+
+        if (Objects.nonNull(technologyNumber)) {
+            Entity technology = getTechnology(technologyNumber);
+
+            if (Objects.isNull(technology)) {
+                return;
+            }
+
+            setTechnologyFields(view, technology);
+        }
+    }
+
+    public void setTechnologyFields(final ViewDefinitionState view, final Entity technology) {
+        if (Objects.isNull(technology)) {
+            clearFieldValues(view);
+
+            return;
+        }
+
+        Set<String> referenceNames = Sets.newHashSet(ProductDataFields.PRODUCT, ProductDataFields.TECHNOLOGY);
+
+        Map<String, FieldComponent> componentsMap = Maps.newHashMap();
+
+        for (String referenceName : referenceNames) {
+            FieldComponent fieldComponent = (FieldComponent) view.getComponentByReference(referenceName);
+
+            componentsMap.put(referenceName, fieldComponent);
+        }
+
+        componentsMap.get(ProductDataFields.TECHNOLOGY).setFieldValue(technology.getId());
+        componentsMap.get(ProductDataFields.PRODUCT).setFieldValue(
+                technology.getBelongsToField(TechnologyFields.PRODUCT).getId());
+    }
+
+    private void clearFieldValues(final ViewDefinitionState view) {
+        view.getComponentByReference(ProductDataFields.TECHNOLOGY).setFieldValue(null);
+        view.getComponentByReference(ProductDataFields.PRODUCT).setFieldValue(null);
     }
 
     public void setProductDataIdForMultiUploadField(final ViewDefinitionState view) {
@@ -94,6 +146,14 @@ public class ProductDataDetailsHooks {
         }
 
         technologyLookup.setFilterValue(filterValueHolder);
+    }
+
+    private Entity getTechnology(final String number) {
+        return getTechnologyDD().find().add(SearchRestrictions.eq(TechnologyFields.NUMBER, number)).setMaxResults(1).uniqueResult();
+    }
+
+    private DataDefinition getTechnologyDD() {
+        return dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_TECHNOLOGY);
     }
 
 }

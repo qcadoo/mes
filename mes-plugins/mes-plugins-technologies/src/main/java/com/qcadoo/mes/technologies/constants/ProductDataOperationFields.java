@@ -29,15 +29,15 @@ public final class ProductDataOperationFields {
 
     }
 
+    public static final String PRODUCT_DATA = "productData";
+
+    public static final String TECHNOLOGY_OPERATION_COMPONENT = "technologyOperationComponent";
+
     public static final String NUMBER = "number";
 
     public static final String NAME = "name";
 
     public static final String DESCRIPTION = "description";
-
-    public static final String PRODUCT_DATA = "productData";
-
-    public static final String TECHNOLOGY_OPERATION_COMPONENT = "technologyOperationComponent";
 
     public static final String SUCCESSION = "succession";
 

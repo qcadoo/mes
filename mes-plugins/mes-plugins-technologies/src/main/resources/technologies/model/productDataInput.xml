@@ -29,22 +29,22 @@
 	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
 
 	<fields>
+		<belongsTo name="productData" model="productData" required="true" />
+		<belongsTo name="operationProductInComponent" model="operationProductInComponent" />
+
 		<string name="number" required="true">
 			<validatesLength max="255" />
 		</string>
 		<string name="name" required="true">
 			<validatesLength max="255" />
 		</string>
-
-		<belongsTo name="productData" model="productData" required="true" />
-		<belongsTo name="product" plugin="basic" model="product" />
+        <decimal name="quantity" />
+		<string name="unit" />
 
 		<priority name="succession" scope="productData" />
-        <decimal name="quantity" />
-        <string name="unit" />
 	</fields>
 
 	<hooks />
 
-	<identifier expression="#product['name']" />
+	<identifier expression="#number" />
 </model>

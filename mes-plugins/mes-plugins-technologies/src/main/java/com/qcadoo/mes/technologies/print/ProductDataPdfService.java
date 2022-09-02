@@ -21,7 +21,7 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.technologies.services;
+package com.qcadoo.mes.technologies.print;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -236,7 +236,9 @@ public class ProductDataPdfService extends PdfDocumentService {
             throw new IllegalStateException(e.getMessage(), e);
         }
 
-        List<Entity> productDataInputs = productData.getHasManyField(ProductDataFields.PRODUCT_DATA_INPUTS);
+        List<Entity> productDataInputs = Lists.newArrayList(productData.getHasManyField(ProductDataFields.PRODUCT_DATA_INPUTS));
+
+        productDataInputs.sort(Comparator.comparing(productDataInput -> productDataInput.getIntegerField(ProductDataInputFields.SUCCESSION)));
 
         productDataInputs.forEach(productDataInput -> {
             String number = productDataInput.getStringField(ProductDataInputFields.NUMBER);
@@ -281,7 +283,9 @@ public class ProductDataPdfService extends PdfDocumentService {
             throw new IllegalStateException(e.getMessage(), e);
         }
 
-        List<Entity> productDataOperations = productData.getHasManyField(ProductDataFields.PRODUCT_DATA_OPERATIONS);
+        List<Entity> productDataOperations = Lists.newArrayList(productData.getHasManyField(ProductDataFields.PRODUCT_DATA_OPERATIONS));
+
+        productDataOperations.sort(Comparator.comparing(productDataOperation -> productDataOperation.getIntegerField(ProductDataOperationFields.SUCCESSION)));
 
         productDataOperations.forEach(productDataOperation -> {
             String name = productDataOperation.getStringField(ProductDataOperationFields.NAME);

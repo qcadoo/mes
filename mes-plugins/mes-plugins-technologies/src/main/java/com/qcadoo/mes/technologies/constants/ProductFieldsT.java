@@ -43,6 +43,4 @@ public final class ProductFieldsT {
 
     public static final String PRODUCT_DATAS = "productDatas";
 
-    public static final String PRODUCT_DATA_INPUTS = "productDataInputs";
-
 }

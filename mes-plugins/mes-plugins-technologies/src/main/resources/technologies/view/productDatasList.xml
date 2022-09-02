@@ -24,7 +24,7 @@
     ***************************************************************************
 
 -->
-<view defaultAuthorizationRole="ROLE_BASE_FUNCTIONALITY" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<view defaultAuthorizationRole="ROLE_TECHNOLOGIES" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
       xmlns="http://schema.qcadoo.org/view"
       xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
       name="productDatasList" modelName="productData">
@@ -48,6 +48,25 @@
 
 						#{grid}.addOnChangeListener({
 							onChange: function(selectedEntitiesArray) {
+                                var contextObject = #{grid}.contextObject;
+
+                                if (contextObject == null) {
+                                    localStorage.removeItem("productData");
+                                } else {
+                                    var filters = contextObject.options.filters;
+                                    console.log();
+
+                                    var technologyNumber = filters["technologyNumber"];
+
+                                    technologyNumber = technologyNumber.slice(1, -1);
+
+                                    var productData = JSON.parse(localStorage.getItem("productData")) || {};
+
+                                    productData.technologyNumber = technologyNumber;
+
+                                    localStorage.setItem("productData", JSON.stringify(productData));
+                                }
+
 								if (!selectedEntitiesArray || selectedEntitiesArray.length == 0) {
 									printReport.disable();
 								} else {
@@ -68,30 +87,26 @@
                 </script>
 
                 <option type="column" name="number" fields="number" link="true" width="100"/>
-                <option type="column" name="technology" fields="technology" expression="#technology['name']"
+                <option type="column" name="technologyNumber" fields="technology" expression="#technology['number']"
                         width="250"/>
                 <option type="column" name="productNumber" fields="product" expression="#product['number']"/>
                 <option type="column" name="productName" fields="product" expression="#product['name']" width="250"/>
                 <option type="column" name="generated" fields="generated" width="100"/>
                 <option type="column" name="dateGenerated" fields="dateGenerated" width="100"/>
                 <option type="column" name="staff" fields="staff" expression="#staff['name']"/>
+
                 <option type="order" column="number" direction="desc"/>
 
                 <option type="correspondingView" value="technologies/productDataDetails"/>
                 <option type="correspondingComponent" value="form"/>
 
                 <option type="searchable"
-                        value="number,technology,productNumber,productName,generated,dateGenerated,staff"/>
+                        value="number,technologyNumber,productNumber,productName,generated,dateGenerated,staff"/>
                 <option type="orderable"
-                        value="number,technology,productNumber,productName,generated,dateGenerated,staff"/>
+                        value="number,technologyNumber,productNumber,productName,generated,dateGenerated,staff"/>
 
                 <option type="multiselect" value="false"/>
-                <option type="header" value="true"/>
                 <option type="fixedHeight" value="true"/>
-
-                <criteriaModifier
-                        class="com.qcadoo.mes.technologies.criteriaModifiers.ProductDataCriteriaModifiers"
-                        method="restrictProductData"/>
             </component>
         </windowTab>
 
@@ -102,8 +117,4 @@
                   class="com.qcadoo.mes.technologies.listeners.ProductDatasListListeners"
                   method="printReport"/>
     </component>
-
-    <hooks>
-        <beforeRender class="com.qcadoo.mes.technologies.hooks.ProductDatasListHooks" method="onBeforeRender"/>
-    </hooks>
 </view>

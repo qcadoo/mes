@@ -24,7 +24,8 @@
     ***************************************************************************
 
 -->
-<view defaultAuthorizationRole="ROLE_BASE_FUNCTIONALITY" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
+<view defaultAuthorizationRole="ROLE_TECHNOLOGIES" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns="http://schema.qcadoo.org/view"
       xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
       name="productDataDetails" modelName="productData">
 
@@ -165,6 +166,24 @@
                                 </component>
                             </layoutElement>
                             <layoutElement column="1" row="3">
+                                <component type="input" name="technologyNumber" reference="technologyNumber"
+                                           defaultVisible="never" hasLabel="false">
+                                    <script>
+                                        <![CDATA[
+                                            var productData = JSON.parse(localStorage.getItem('productData')) || {};
+
+                                            if (productData.technologyNumber != undefined) {
+                                                localStorage.removeItem("productData");
+
+                                                var data = {
+                                                    "value" : productData.technologyNumber
+                                                };
+
+                                                this.setComponentData(data);
+                                            }
+                                        ]]>
+                                    </script>
+                                </component>
                                 <component type="lookup" name="technology" field="technology"
                                            reference="technology">
                                     <option type="column" name="name" fields="name" link="true"/>
@@ -186,16 +205,15 @@
                                               class="com.qcadoo.mes.technologies.listeners.ProductDataDetailsListeners"
                                               method="onTechnologyChange"/>
                                 </component>
-
                             </layoutElement>
                             <layoutElement column="1" row="4">
+                                <component type="textarea" name="description" field="description"
+                                           reference="description"/>
+                            </layoutElement>
+                            <layoutElement column="1" row="5" height="2">
                                 <component type="checkbox" name="generated" field="generated"
                                            reference="generated" defaultEnabled="false" defaultVisible="false">
                                 </component>
-                            </layoutElement>
-                            <layoutElement column="1" row="5" height="2">
-                                <component type="textarea" name="description" field="description"
-                                           reference="description"/>
                             </layoutElement>
                         </component>
                     </layoutElement>
@@ -210,10 +228,17 @@
 
                             <option type="order" column="succession" direction="asc"/>
 
-                            <option type="searchable" value="succession,number,name,quantity"/>
-                            <option type="orderable" value="succession,number,name,quantity"/>
+                            <option type="searchable" value="succession,number,name,quantity,unit"/>
+                            <option type="orderable" value="succession,number,name,quantity,unit"/>
+
+                            <option type="correspondingView" value="technologies/productDataInputDetails"/>
+                            <option type="correspondingComponent" value="form"/>
+                            <option type="correspondingViewInModal" value="true"/>
 
                             <option type="multiselect" value="true"/>
+                            <option type="creatable" value="true"/>
+                            <option type="deletable" value="true"/>
+
                             <option type="header" value="true"/>
                         </component>
                     </layoutElement>
@@ -229,7 +254,14 @@
                             <option type="searchable" value="succession,name,description"/>
                             <option type="orderable" value="succession,name,description"/>
 
+                            <option type="correspondingView" value="technologies/productDataOperationDetails"/>
+                            <option type="correspondingComponent" value="form"/>
+                            <option type="correspondingViewInModal" value="true"/>
+
                             <option type="multiselect" value="true"/>
+                            <option type="creatable" value="true"/>
+                            <option type="deletable" value="true"/>
+
                             <option type="header" value="true"/>
                         </component>
                     </layoutElement>

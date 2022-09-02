@@ -86,8 +86,6 @@ public final class TechnologiesConstants {
 
     public static final String MODEL_PRODUCT_DATA_OPERATION = "productDataOperation";
 
-    public static final String MODEL_SELECTED_TECHNOLOGY = "selectedTechnology";
-
     // VIEW
 
     public static final String VIEW_OPERATION_DETAILS = "operationDetails";

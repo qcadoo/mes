@@ -57,6 +57,12 @@ import static com.qcadoo.mes.technologies.constants.TechnologyFields.PRODUCT_STR
 @Service
 public class TechnologyDetailsListeners {
 
+    private static final String L_FILTERS = "filters";
+
+    private static final String L_GRID_OPTIONS = "grid.options";
+
+    private static final String L_WINDOW_ACTIVE_MENU = "window.activeMenu";
+
     private static final String L_PRODUCT_STRUCTURE_FORM = "productStructureForm";
 
     private static final String L_PRODUCT_STRUCTURE = "productStructure";
@@ -300,28 +306,32 @@ public class TechnologyDetailsListeners {
     public void showProductData(final ViewDefinitionState view, final ComponentState state, final String args[]) {
         FormComponent technologyForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
-        Long technologyId = technologyForm.getEntityId();
+        Entity technology = technologyForm.getEntity();
 
-        deleteSelectedTechnology();
-        setSelectedTechnology(technologyId);
+        if (Objects.isNull(technology.getId())) {
+            return;
+        }
+
+        String technologyNumber = technology.getStringField(TechnologyFields.NUMBER);
+
+        Map<String, String> filters = Maps.newHashMap();
+        filters.put("technologyNumber", applyInOperator(technologyNumber));
+
+        Map<String, Object> gridOptions = Maps.newHashMap();
+        gridOptions.put(L_FILTERS, filters);
+
+        Map<String, Object> parameters = Maps.newHashMap();
+        parameters.put(L_GRID_OPTIONS, gridOptions);
+
+        parameters.put(L_WINDOW_ACTIVE_MENU, "technologies.productDatasList");
 
         String url = "../page/technologies/productDatasList.html";
 
-        view.redirectTo(url, false, true);
+        view.redirectTo(url, false, true, parameters);
     }
 
-    private void deleteSelectedTechnology() {
-        DataDefinition selectedTechnologyDD = getSelectedTechnologyDD();
-
-        getSelectedTechnologies().forEach(selectedTechnology -> selectedTechnologyDD.delete(selectedTechnology.getId()));
-    }
-
-    private void setSelectedTechnology(final long technologyId) {
-        Entity selectedTechnology = getSelectedTechnologyDD().create();
-
-        selectedTechnology.setField(SelectedTechnologyFields.TECHNOLOGY_ID, technologyId);
-
-        selectedTechnology.getDataDefinition().save(selectedTechnology);
+    private String applyInOperator(final String value){
+        return "[" + value + "]";
     }
 
     public final void showInProductCart(final ViewDefinitionState view, final ComponentState state, final String[] args) {
@@ -351,14 +361,6 @@ public class TechnologyDetailsListeners {
 
     private DataDefinition getTechnologyDD() {
         return dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_TECHNOLOGY);
-    }
-
-    private DataDefinition getSelectedTechnologyDD() {
-        return dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_SELECTED_TECHNOLOGY);
-    }
-
-    private List<Entity> getSelectedTechnologies() {
-        return getSelectedTechnologyDD().find().list().getEntities();
     }
 
     private DataDefinition getTechnologyOperationComponentDD() {
