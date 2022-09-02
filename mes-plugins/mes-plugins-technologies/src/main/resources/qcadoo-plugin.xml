@@ -114,6 +114,11 @@
 
         <model:model model="technologyToCreationHelper" resource="model/technologyToCreationHelper.xml"/>
 
+        <model:model model="productData" resource="model/productData.xml"/>
+        <model:model model="productDataInput" resource="model/productDataInput.xml"/>
+        <model:model model="productDataOperation" resource="model/productDataOperation.xml"/>
+        <model:model model="productDataAttachment" resource="model/productDataAttachment.xml"/>
+
         <model:dictionary name="sampling"/>
 
         <model:model-field plugin="basic" model="workstationType">
@@ -204,18 +209,6 @@
                               cascade="nullify"/>
         </model:model-field>
 
-        <model:model-hook plugin="basic" model="workstation">
-            <model:onDelete
-                    class="com.qcadoo.mes.technologies.hooks.WorkstationHooksT"
-                    method="onDelete"/>
-        </model:model-hook>
-
-        <model:model-hook plugin="basic" model="product">
-            <model:onDelete
-                    class="com.qcadoo.mes.technologies.hooks.ProductHooksT"
-                    method="onDelete"/>
-        </model:model-hook>
-
         <model:model-field plugin="basic" model="workstationType">
             <model:hasMany name="operations" plugin="technologies"
                            model="operation" joinField="workstationType"/>
@@ -264,8 +257,28 @@
             <model:manyToMany name="qualityCards" plugin="technologies" model="qualityCard" joinField="products" lazy="true"/>
         </model:model-field>
 
-        <model:model-hook model="division" plugin="basic">
+        <model:model-field plugin="basic" model="staff">
+            <model:hasMany name="productDatas" plugin="technologies" model="productData" joinField="staff"/>
+        </model:model-field>
+
+        <model:model-field plugin="basic" model="product">
+            <model:hasMany name="productDatas" plugin="technologies" model="productData" joinField="product"/>
+        </model:model-field>
+
+        <model:model-hook plugin="basic" model="division">
             <model:onDelete class="com.qcadoo.mes.technologies.hooks.DivisionHooksT" method="onDelete"/>
+        </model:model-hook>
+
+        <model:model-hook plugin="basic" model="workstation">
+            <model:onDelete
+                    class="com.qcadoo.mes.technologies.hooks.WorkstationHooksT"
+                    method="onDelete"/>
+        </model:model-hook>
+
+        <model:model-hook plugin="basic" model="product">
+            <model:onDelete
+                    class="com.qcadoo.mes.technologies.hooks.ProductHooksT"
+                    method="onDelete"/>
         </model:model-hook>
 
         <model:model-enum-value plugin="basic" model="log" enum="logType" value="operationImport"/>
@@ -296,6 +309,9 @@
 
         <menu:menu-item-url name="technologiesParameters" category="parameters" url="/technologiesParameters.html"
                             defaultAuthorizationRole="ROLE_PARAMETERS"/>
+
+        <menu:menu-item name="productData" category="technology"
+                        view="productDatasList"/>
 
         <view:view resource="view/operationsList.xml"/>
         <view:view resource="view/operationsImport.xml"/>
@@ -344,6 +360,11 @@
         <view:view resource="view/productionLineTechnologyGroupDetails.xml"/>
 
         <view:view resource="view/productBySizeGroupDetails.xml"/>
+
+        <view:view resource="view/productDatasList.xml"/>
+        <view:view resource="view/productDataDetails.xml"/>
+        <view:view resource="view/productDataInputDetails.xml"/>
+        <view:view resource="view/productDataOperationDetails.xml"/>
 
         <view:view-ribbon-group resource="view/ribbonExtensions/productDetails.xml"/>
 

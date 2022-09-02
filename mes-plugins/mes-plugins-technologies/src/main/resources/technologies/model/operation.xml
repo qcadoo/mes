@@ -73,8 +73,10 @@
         </integer>
 
         <hasMany name="operationSkills" model="operationSkill" joinField="operation" cascade="delete" copyable="false"/>
-        <hasMany name="technologicalProcessLists"
-                       model="technologicalProcessList" joinField="operation"/>
+        <hasMany name="technologicalProcessLists" model="technologicalProcessList" joinField="operation"/>
+
+        <boolean name="showInProductData" default="false"/>
+        <decimal name="productDataNumber" default="0"/>
     </fields>
 
     <hooks>

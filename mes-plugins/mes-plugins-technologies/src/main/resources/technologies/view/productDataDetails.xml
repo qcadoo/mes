@@ -1,0 +1,321 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    ***************************************************************************
+    Copyright (c) 2010 Qcadoo Limited
+    Project: Qcadoo Framework
+    Version: 1.4
+
+    This file is part of Qcadoo.
+
+    Qcadoo is free software; you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as published
+    by the Free Software Foundation; either version 3 of the License,
+    or (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty
+    of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+    See the GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+    ***************************************************************************
+
+-->
+<view defaultAuthorizationRole="ROLE_TECHNOLOGIES" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns="http://schema.qcadoo.org/view"
+      xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
+      name="productDataDetails" modelName="productData">
+
+    <component type="window" name="window" reference="window">
+
+        <ribbon>
+            <template name="standardFormTemplate"/>
+
+            <group name="generate">
+                <bigButton name="loadProductData" icon="startIcon24.png"
+                           state="enabled" action="#{form}.fireEvent(loadProductData);">
+                </bigButton>
+                <bigButton name="generateReport" icon="generateIcon24.png"
+                           state="enabled" action="#{form}.fireEvent(generateReport);">
+                </bigButton>
+            </group>
+            <group name="report">
+                <bigButton name="printReport" icon="pdfIcon24.png"
+                           state="disabled" action="#{form}.fireEvent(printReport,pdf);">
+                </bigButton>
+            </group>
+        </ribbon>
+
+        <windowTab name="mainTab">
+            <component type="form" name="form" reference="form">
+                <script>
+                    <![CDATA[
+                        var save = #{window}.getRibbonItem("actions.save");
+                        var saveNew = #{window}.getRibbonItem("actions.saveNew");
+                        var saveBack = #{window}.getRibbonItem("actions.saveBack");
+                        var cancel = #{window}.getRibbonItem("actions.cancel");
+                        var loadProductData = #{window}.getRibbonItem("generate.loadProductData");
+                        var generateReport = #{window}.getRibbonItem("generate.generateReport");
+                        var printReport = #{window}.getRibbonItem("report.printReport");
+
+                        this.addOnChangeListener({
+                            onSetValue: function(value) {
+                                var saved = #{saved}.getValue().content.value;
+                                var loaded = #{loaded}.getValue().content.value;
+                                var generated = #{generated}.getValue().content.value;
+                                var product = #{product}.getValue().content.value;
+                                var technology = #{technology}.getValue().content.value;
+
+                                var btn = document.getElementById("fileupload").children[0];
+                                var dropzone = document.getElementById("dropzone");
+
+                                if (product == null) {
+                                    #{technology}.setEnabled(false, true);
+                                } else {
+                                    #{technology}.setEnabled(true, true);
+                                }
+                                if (saved == 1) {
+                                    loadProductData.enable();
+                                } else {
+                                    loadProductData.disable();
+                                }
+                                if (loaded == 1) {
+                                    generateReport.enable();
+                                } else {
+                                    generateReport.disable();
+                                }
+                                if (generated == 1) {
+                                    save.disable("#{translate(technologies.productDataDetails.ribbon.message.generated)}");
+                                    saveNew.disable("#{translate(technologies.productDataDetails.ribbon.message.generated)}");
+                                    saveBack.disable("#{translate(technologies.productDataDetails.ribbon.message.generated)}");
+                                    cancel.disable("#{translate(technologies.productDataDetails.ribbon.message.generated)}");
+                                    loadProductData.disable("#{translate(technologies.productDataDetails.ribbon.message.generated)}");
+                                    generateReport.disable("#{translate(technologies.productDataDetails.ribbon.message.generated)}");
+                                    printReport.enable();
+
+                                    this.setEnabled(false, true);
+
+                                    btn.disabled = true;
+                                    dropzone.style.display = "none";
+                                } else {
+                                    save.enable();
+                                    saveNew.enable();
+                                    saveBack.enable();
+                                    cancel.enable();
+                                    loadProductData.enable();
+
+                                    if (saved == 1) {
+                                        loadProductData.enable();
+                                    } else {
+                                        loadProductData.disable();
+                                    }
+
+                                    if (loaded == 1) {
+                                        generateReport.enable();
+                                    } else {
+                                        generateReport.disable();
+                                    }
+
+                                    printReport.disable();
+
+                                    this.setEnabled(true, true);
+
+                                    btn.disabled = false;
+                                    dropzone.style.display = "block";
+                                }
+                            }
+                        });
+					]]>
+                </script>
+
+                <component type="checkbox" name="saved" reference="saved"
+                           field="saved" defaultVisible="never" hasLabel="false"/>
+                <component type="checkbox" name="loaded" reference="loaded"
+                           field="loaded" defaultVisible="never" hasLabel="false"/>
+                <component type="gridLayout" name="gridLayout" columns="3"
+                           rows="2">
+                    <layoutElement column="1" row="1">
+                        <component type="gridLayout" name="gridLayout" columns="1"
+                                   rows="6">
+                            <layoutElement column="1" row="1">
+                                <component type="input" name="number" reference="number"
+                                           field="number">
+                                    <option type="alignment" value="right"/>
+                                </component>
+                            </layoutElement>
+                            <layoutElement column="1" row="2">
+                                <component type="lookup" name="product" field="product"
+                                           reference="product">
+                                    <option type="column" name="name" fields="name" link="true"/>
+
+                                    <option type="required" value="true"/>
+
+                                    <option type="searchable" value="number, name"/>
+                                    <option type="orderable" value="name"/>
+
+                                    <option type="expression"
+                                            value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name"/>
+                                    <option type="fieldCode" value="number"/>
+
+                                    <listener event="onSelectedEntityChange"
+                                              class="com.qcadoo.mes.technologies.listeners.ProductDataDetailsListeners"
+                                              method="onProductChange"/>
+                                </component>
+                            </layoutElement>
+                            <layoutElement column="1" row="3">
+                                <component type="input" name="technologyNumber" reference="technologyNumber"
+                                           defaultVisible="never" hasLabel="false">
+                                    <script>
+                                        <![CDATA[
+                                            var productData = JSON.parse(localStorage.getItem('productData')) || {};
+
+                                            if (productData.technologyNumber != undefined) {
+                                                localStorage.removeItem("productData");
+
+                                                var data = {
+                                                    "value" : productData.technologyNumber
+                                                };
+
+                                                this.setComponentData(data);
+                                            }
+                                        ]]>
+                                    </script>
+                                </component>
+                                <component type="lookup" name="technology" field="technology"
+                                           reference="technology">
+                                    <option type="column" name="name" fields="name" link="true"/>
+                                    <option type="column" name="state" fields="state"/>
+
+                                    <option type="required" value="true"/>
+
+                                    <option type="searchable" value="name"/>
+                                    <option type="orderable" value="name"/>
+
+                                    <option type="expression" value="#number + ' ' + #name"/>
+                                    <option type="fieldCode" value="number"/>
+
+                                    <criteriaModifier
+                                            class="com.qcadoo.mes.technologies.criteriaModifiers.ProductDataTechnologyModifiers"
+                                            method="restrictTechnology"/>
+
+                                    <listener event="onSelectedEntityChange"
+                                              class="com.qcadoo.mes.technologies.listeners.ProductDataDetailsListeners"
+                                              method="onTechnologyChange"/>
+                                </component>
+                            </layoutElement>
+                            <layoutElement column="1" row="4">
+                                <component type="textarea" name="description" field="description"
+                                           reference="description"/>
+                            </layoutElement>
+                            <layoutElement column="1" row="5" height="2">
+                                <component type="checkbox" name="generated" field="generated"
+                                           reference="generated" defaultEnabled="false" defaultVisible="false">
+                                </component>
+                            </layoutElement>
+                        </component>
+                    </layoutElement>
+                    <layoutElement column="2" width="2" row="1">
+                        <component type="grid" name="productDataInputs" reference="productDataInputs"
+                                   source="#{form}.productDataInputs">
+                            <option type="column" name="succession" fields="succession" width="30"/>
+                            <option type="column" name="number" fields="number"/>
+                            <option type="column" name="name" fields="name"/>
+                            <option type="column" name="quantity" fields="quantity" width="30"/>
+                            <option type="column" name="unit" fields="unit" width="30"/>
+
+                            <option type="order" column="succession" direction="asc"/>
+
+                            <option type="searchable" value="succession,number,name,quantity,unit"/>
+                            <option type="orderable" value="succession,number,name,quantity,unit"/>
+
+                            <option type="correspondingView" value="technologies/productDataInputDetails"/>
+                            <option type="correspondingComponent" value="form"/>
+                            <option type="correspondingViewInModal" value="true"/>
+
+                            <option type="multiselect" value="true"/>
+                            <option type="creatable" value="true"/>
+                            <option type="deletable" value="true"/>
+
+                            <option type="header" value="true"/>
+                        </component>
+                    </layoutElement>
+                    <layoutElement column="2" width="2" row="2">
+                        <component type="grid" name="productDataOperations" reference="productDataOperations"
+                                   source="#{form}.productDataOperations">
+                            <option type="column" name="succession" fields="succession" width="30"/>
+                            <option type="column" name="name" fields="name"/>
+                            <option type="column" name="description" fields="description"/>
+
+                            <option type="order" column="succession" direction="asc"/>
+
+                            <option type="searchable" value="succession,name,description"/>
+                            <option type="orderable" value="succession,name,description"/>
+
+                            <option type="correspondingView" value="technologies/productDataOperationDetails"/>
+                            <option type="correspondingComponent" value="form"/>
+                            <option type="correspondingViewInModal" value="true"/>
+
+                            <option type="multiselect" value="true"/>
+                            <option type="creatable" value="true"/>
+                            <option type="deletable" value="true"/>
+
+                            <option type="header" value="true"/>
+                        </component>
+                    </layoutElement>
+                </component>
+
+                <option type="header" value="true"/>
+                <option type="expression" value="#number"/>
+
+                <listener event="loadProductData" method="loadProductData"
+                          class="com.qcadoo.mes.technologies.listeners.ProductDataDetailsListeners"/>
+                <listener event="generateReport" method="generateReport"
+                          class="com.qcadoo.mes.technologies.listeners.ProductDataDetailsListeners"/>
+                <listener event="printReport" method="printReport"
+                          class="com.qcadoo.mes.technologies.listeners.ProductDataDetailsListeners"/>
+            </component>
+        </windowTab>
+
+        <windowTab name="attachmentsTab">
+            <component type="gridLayout" name="gridsLayout" columns="3"
+                       rows="6" hasBorders="false">
+                <layoutElement column="1" row="1" height="6">
+                    <component type="staticPage" name="multiUpload">
+                        <option type="page" value="technologies/productDataMultiUpload.jsp"/>
+                    </component>
+                    <component type="input" name="productDataIdForMultiUpload"
+                               reference="productDataIdForMultiUpload" defaultVisible="false">
+                        <option type="alignment" value="right"/>
+                    </component>
+                    <component type="input" name="productDataMultiUploadLocale"
+                               reference="productDataMultiUploadLocale" defaultVisible="false">
+                    </component>
+                </layoutElement>
+                <layoutElement column="2" row="1" width="2" height="6">
+                    <component type="grid" name="productDataAttachments"
+                               reference="productDataAttachments" source="#{form}.productDataAttachments">
+                        <option type="column" name="attachment" fields="name" correspondingField="attachmentLocation"
+                                link="true" attachment="true"/>
+                        <option type="column" name="attachmentLocation" fields="attachment" hidden="true"/>
+                        <option type="column" name="size" fields="size"/>
+
+                        <option type="order" column="attachment" direction="desc"/>
+
+                        <option type="deletable" value="true"/>
+                        <option type="fullscreen" value="true"/>
+                        <option type="multiselect" value="true"/>
+                    </component>
+                </layoutElement>
+            </component>
+        </windowTab>
+
+    </component>
+
+    <hooks>
+        <beforeRender class="com.qcadoo.mes.technologies.hooks.ProductDataDetailsHooks"
+                      method="onBeforeRender"/>
+    </hooks>
+</view>

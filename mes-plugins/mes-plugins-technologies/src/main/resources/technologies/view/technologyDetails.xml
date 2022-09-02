@@ -92,6 +92,15 @@
                     </script>
                 </bigButton>
             </group>
+            <group name="productDataActions">
+                <bigButton name="productData" icon="pdfIcon24.png" state="enabled"
+                           action="#{form}.fireEvent(showProductData);">
+                </bigButton>
+                <bigButton name="onProductCart" icon="generateIcon24.png"
+                           action="#{form}.fireEvent(showInProductCart,onProductCart);"
+                           state="disabled">
+                </bigButton>
+            </group>
         </ribbon>
 
         <windowTab name="mainTab">
@@ -386,6 +395,12 @@
                 <listener event="acceptTemplate"
                           class="com.qcadoo.mes.technologies.listeners.TechnologyDetailsListeners"
                           method="acceptTemplate"/>
+                <listener event="showProductData"
+                          class="com.qcadoo.mes.technologies.listeners.TechnologyDetailsListeners"
+                          method="showProductData"/>
+                <listener event="showInProductCart"
+                          class="com.qcadoo.mes.technologies.listeners.TechnologyDetailsListeners"
+                          method="showInProductCart"/>
             </component>
         </windowTab>
 
@@ -517,6 +532,10 @@
                         <rowStyleResolver
                                 class="com.qcadoo.mes.technologies.rowStyleResolvers.OperationProductInComponentsListResolver"
                                 method="fillRowStyles"/>
+
+                        <listener event="select"
+                                  class="com.qcadoo.mes.technologies.listeners.TechnologyDetailsListeners"
+                                  method="setProductDataRibbonState"/>
                     </component>
                 </layoutElement>
             </component>
@@ -708,6 +727,7 @@
                 </layoutElement>
             </component>
         </windowTab>
+
     </component>
 
     <hooks>

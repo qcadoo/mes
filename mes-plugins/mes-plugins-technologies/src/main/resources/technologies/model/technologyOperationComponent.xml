@@ -79,6 +79,12 @@
         <belongsTo name="technologicalProcessList" model="technologicalProcessList"/>
 
         <datetime name="technologicalProcessListAssignmentDate" copyable="false"/>
+
+        <boolean name="showInProductData" default="false"/>
+        <decimal name="productDataNumber" default="0"/>
+
+        <hasMany name="productDataOperations" model="productDataOperation" joinField="technologyOperationComponent"
+                 cascade="delete"/>
     </fields>
 
     <hooks>

@@ -63,4 +63,7 @@ public final class OperationFields {
 
     public static final String CREATE_OPERATION_OUTPUT = "createOperationOutput";
 
+    public static final String SHOW_IN_PRODUCT_DATA = "showInProductData";
+
+    public static final String PRODUCT_DATA_NUMBER = "productDataNumber";
 }

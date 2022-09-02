@@ -1,6 +1,5 @@
 package com.qcadoo.mes.orders.states.aop.listener;
 
-import org.aspectj.lang.annotation.After;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.annotation.Pointcut;

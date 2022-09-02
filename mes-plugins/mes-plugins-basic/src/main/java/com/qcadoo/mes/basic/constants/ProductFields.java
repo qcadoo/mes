@@ -71,6 +71,8 @@ public final class ProductFields {
 
     public static final String SHOW_IN_PRODUCT_DATA = "showInProductData";
 
+    public static final String PRODUCT_DATA_NUMBER = "productDataNumber";
+
     public static final String PRODUCT_FORM = "productForm";
 
     public static final String SIZE = "size";

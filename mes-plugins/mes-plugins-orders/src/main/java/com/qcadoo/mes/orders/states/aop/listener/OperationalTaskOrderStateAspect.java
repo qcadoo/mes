@@ -21,7 +21,6 @@ import org.springframework.beans.factory.annotation.Configurable;
 @Configurable
 @RunIfEnabled(OrdersConstants.PLUGIN_IDENTIFIER)
 public class OperationalTaskOrderStateAspect extends AbstractStateListenerAspect {
-
     @Autowired
     private OperationalTaskOrderStateService operationalTaskOrderStateService;
 

@@ -78,6 +78,14 @@ public final class TechnologiesConstants {
 
     public static final String MODEL_PRODUCT_BY_SIZE_GROUP = "productBySizeGroup";
 
+    public static final String MODEL_PRODUCT_DATA = "productData";
+
+    public static final String MODEL_PRODUCT_DATA_ATTACHMENT = "productDataAttachment";
+
+    public static final String MODEL_PRODUCT_DATA_INPUT = "productDataInput";
+
+    public static final String MODEL_PRODUCT_DATA_OPERATION = "productDataOperation";
+
     // VIEW
 
     public static final String VIEW_OPERATION_DETAILS = "operationDetails";
@@ -93,5 +101,9 @@ public final class TechnologiesConstants {
     public static final String VIEW_TECHNOLOGY_DETAILS = "technologyDetails";
 
     public static final String VIEW_TECHNOLOGY_OPERATION_COMPONENT_DETAILS = "technologyOperationComponentDetails";
+
+    public static final String UPLOAD_INPUT_ID = "productDataIdForMultiUpload";
+
+    public static final String UPLOAD_INPUT_LOCALE = "productDataMultiUploadLocale";
 
 }

@@ -1318,7 +1318,9 @@ QCD.orderDefinitionWizard = (function () {
 				if (data.code === 'OK') {
 
 					$("#orderDefinitionWizard").modal('hide');
-					QCD.dashboard.prependOrder('ordersPending', data.order);
+					if (data.order != null) {
+					    QCD.dashboard.prependOrder('ordersPending', data.order);
+					}
 					QCD.dashboard.filterKanbanReload();
 					showMessage('success',
 						QCD.translate("basic.dashboard.orderDefinitionWizard.success"),

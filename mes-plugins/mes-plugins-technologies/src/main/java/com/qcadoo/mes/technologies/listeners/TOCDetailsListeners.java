@@ -23,9 +23,6 @@
  */
 package com.qcadoo.mes.technologies.listeners;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.qcadoo.mes.technologies.TechnologyService;
 import com.qcadoo.mes.technologies.constants.AssignedToOperation;
 import com.qcadoo.mes.technologies.constants.OperationFields;
@@ -33,15 +30,24 @@ import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
 import com.qcadoo.mes.technologies.hooks.TOCDetailsHooks;
 import com.qcadoo.mes.technologies.hooks.TechnologyOperationComponentHooks;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.NumberService;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
-import com.qcadoo.view.api.components.FieldComponent;
-import com.qcadoo.view.api.components.FormComponent;
-import com.qcadoo.view.api.components.GridComponent;
+import com.qcadoo.view.api.components.*;
 import com.qcadoo.view.constants.QcadooViewConstants;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.Objects;
 
 @Service
 public class TOCDetailsListeners {
+
+    @Autowired
+    private NumberService numberService;
+
+    @Autowired
+    private TechnologyService technologyService;
 
     @Autowired
     private TOCDetailsHooks tOCDetailsHooks;
@@ -49,31 +55,26 @@ public class TOCDetailsListeners {
     @Autowired
     private TechnologyOperationComponentHooks technologyOperationComponentHooks;
 
-    @Autowired
-    private TechnologyService technologyService;
+    public void copyWorkstationsSettingsFromOperation(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        FormComponent technologyOperationComponentForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
+        GridComponent workstationsGrid = (GridComponent) view
+                .getComponentByReference(TechnologyOperationComponentFields.WORKSTATIONS);
 
-    public void copyWorkstationsSettingsFromOperation(final ViewDefinitionState view, final ComponentState componentState,
-            final String[] args) {
-        FormComponent formComponent = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
-        Entity toc = formComponent.getEntity();
+        Entity technologyOperationComponent = technologyOperationComponentForm.getEntity();
 
-        Entity operation = toc.getBelongsToField(TechnologyOperationComponentFields.OPERATION);
+        Entity operation = technologyOperationComponent.getBelongsToField(TechnologyOperationComponentFields.OPERATION);
 
-        if (operation != null) {
-            GridComponent workstationsGrid = (GridComponent) view
-                    .getComponentByReference(TechnologyOperationComponentFields.WORKSTATIONS);
+        if (Objects.nonNull(operation)) {
+            technologyOperationComponentHooks.copyWorkstationsSettingsFromOperation(technologyOperationComponent);
+            technologyService.copyCommentAndAttachmentFromLowerInstance(technologyOperationComponent, TechnologyOperationComponentFields.OPERATION);
 
-            technologyOperationComponentHooks.copyWorkstationsSettingsFromOperation(toc);
-            technologyService.copyCommentAndAttachmentFromLowerInstance(toc, TechnologyOperationComponentFields.OPERATION);
-
-            toc.setField(TechnologyOperationComponentFields.WORKSTATIONS, null);
+            technologyOperationComponent.setField(TechnologyOperationComponentFields.WORKSTATIONS, null);
             workstationsGrid.setEntities(operation.getManyToManyField(OperationFields.WORKSTATIONS));
-            formComponent.setEntity(toc);
+            technologyOperationComponentForm.setEntity(technologyOperationComponent);
         }
     }
 
-    public void setWorkstationsTabFields(final ViewDefinitionState view, final ComponentState componentState,
-            final String[] args) {
+    public void setWorkstationsTabFields(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         tOCDetailsHooks.setWorkstationsTabFields(view);
 
         FieldComponent assignedToOperation = (FieldComponent) view
@@ -89,11 +90,10 @@ public class TOCDetailsListeners {
         }
     }
 
-    public void addUpTheNumberOfWorkstations(final ViewDefinitionState view, final ComponentState componentState,
-            final String[] args) {
-        FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
+    public void addUpTheNumberOfWorkstations(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        FormComponent technologyOperationComponentForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
-        int size = form.getPersistedEntityWithIncludedFormValues()
+        int size = technologyOperationComponentForm.getPersistedEntityWithIncludedFormValues()
                 .getHasManyField(TechnologyOperationComponentFields.WORKSTATIONS).size();
 
         FieldComponent quantityOfWorkstations = (FieldComponent) view
@@ -101,6 +101,27 @@ public class TOCDetailsListeners {
 
         quantityOfWorkstations.setFieldValue(size);
         quantityOfWorkstations.requestComponentUpdateState();
+    }
+
+    public void fillProductDataFields(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        LookupComponent operationLookup = (LookupComponent) view.getComponentByReference(TechnologyOperationComponentFields.OPERATION);
+
+        CheckBoxComponent showInProductData = (CheckBoxComponent) view.getComponentByReference(TechnologyOperationComponentFields.SHOW_IN_PRODUCT_DATA);
+        FieldComponent productDataNumber = (FieldComponent) view.getComponentByReference(TechnologyOperationComponentFields.PRODUCT_DATA_NUMBER);
+
+        Entity operation = operationLookup.getEntity();
+
+        if (Objects.isNull(operation)) {
+            showInProductData.setChecked(false);
+            productDataNumber.setFieldValue(null);
+        } else {
+            showInProductData.setChecked(operation.getBooleanField(OperationFields.SHOW_IN_PRODUCT_DATA));
+            productDataNumber.setFieldValue(numberService.formatWithMinimumFractionDigits(operation
+                    .getField(OperationFields.PRODUCT_DATA_NUMBER), 0));
+        }
+
+        showInProductData.requestComponentUpdateState();
+        productDataNumber.requestComponentUpdateState();
     }
 
 }

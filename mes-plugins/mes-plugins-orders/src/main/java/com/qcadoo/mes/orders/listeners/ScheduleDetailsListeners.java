@@ -13,6 +13,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -47,6 +49,8 @@ import com.qcadoo.view.api.components.FormComponent;
 @Service
 public class ScheduleDetailsListeners {
 
+    private static final Logger LOG = LoggerFactory.getLogger(ScheduleDetailsListeners.class);
+
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
@@ -55,6 +59,7 @@ public class ScheduleDetailsListeners {
 
     @Transactional
     public void assignWorkersToOperations(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        long start = System.currentTimeMillis();
         Entity schedule = ((FormComponent) state).getEntity();
         String scheduleWorkerAssignCriterion = schedule.getStringField(ScheduleFields.WORKER_ASSIGN_CRITERION);
         Map<Long, Date> workersFinishDates = Maps.newHashMap();
@@ -87,10 +92,12 @@ public class ScheduleDetailsListeners {
             }
             position.getDataDefinition().fastSave(position);
         }
+        long finish = System.currentTimeMillis();
+        LOG.info("Plan for shift {} - workers assignment: {}s.", schedule.getStringField(ScheduleFields.NUMBER), (finish - start) / 1000);
     }
 
     private Optional<Entry<Long, Date>> getFirstEntryOptional(String scheduleWorkerAssignCriterion,
-            Map<Long, Long> workstationLastWorkers, Entity workstation, Map<Long, Date> operationWorkersFinishDates) {
+                                                              Map<Long, Long> workstationLastWorkers, Entity workstation, Map<Long, Date> operationWorkersFinishDates) {
         Long workstationLastWorkerId = workstationLastWorkers.get(workstation.getId());
         Optional<Entry<Long, Date>> firstEntryOptional = operationWorkersFinishDates.entrySet().stream()
                 .filter(entry -> entry.getKey().equals(workstationLastWorkerId)).findFirst();
@@ -145,7 +152,7 @@ public class ScheduleDetailsListeners {
     }
 
     private void getWorkersFinishDate(Map<Long, Date> workersFinishDates, Date scheduleStartTime, Entity position,
-            List<Entity> workers, Map<Long, Date> operationWorkersFinishDates) {
+                                      List<Entity> workers, Map<Long, Date> operationWorkersFinishDates) {
         for (Entity worker : workers) {
             Date finishDate = workersFinishDates.get(worker.getId());
             if (finishDate == null) {
@@ -165,7 +172,7 @@ public class ScheduleDetailsListeners {
     }
 
     private void updatePositionWorker(Map<Long, Date> workersFinishDates, Map<Long, Long> workstationLastWorkers, Entity position,
-            Entity workstation, Entry<Long, Date> firstEntry) {
+                                      Entity workstation, Entry<Long, Date> firstEntry) {
         workersFinishDates.put(firstEntry.getKey(), position.getDateField(SchedulePositionFields.END_TIME));
         workstationLastWorkers.put(workstation.getId(), firstEntry.getKey());
         position.setField(SchedulePositionFields.STAFF, firstEntry.getKey());

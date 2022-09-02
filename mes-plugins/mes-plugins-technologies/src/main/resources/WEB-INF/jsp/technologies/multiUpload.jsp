@@ -42,7 +42,7 @@ String ctx = request.getContextPath();
 
 
 
-<form id="fileupload" action="../../../rest/techologies/multiUploadFiles.html" method="POST" enctype="multipart/form-data">
+<form id="fileupload" action="../../../rest/technologies/multiUploadFiles.html" method="POST" enctype="multipart/form-data">
 
     <input type="file" name="files[]" multiple>
 

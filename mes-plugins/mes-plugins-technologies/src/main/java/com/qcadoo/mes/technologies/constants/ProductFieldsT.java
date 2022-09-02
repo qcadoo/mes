@@ -41,4 +41,6 @@ public final class ProductFieldsT {
 
     public static final String OPERATION_PRODUCT_IN_PRODUCTS_DTO = "operationProductInProductsDto";
 
+    public static final String PRODUCT_DATAS = "productDatas";
+
 }

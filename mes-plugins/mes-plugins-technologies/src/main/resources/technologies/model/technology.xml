@@ -62,7 +62,8 @@
         <hasMany name="stateChanges" joinField="technology" model="technologyStateChange"
                  cascade="delete"/>
 
-        <hasMany name="technologyAttachments" joinField="technology" model="technologyAttachment" cascade="delete" copyable="true"/>
+        <hasMany name="technologyAttachments" model="technologyAttachment" joinField="technology"
+                 cascade="delete" copyable="true"/>
 
         <tree name="productStructureTree" model="productStructureTreeNode"
               joinField="mainTechnology" cascade="delete"/>
@@ -76,9 +77,11 @@
 
         <belongsTo name="qualityCard" model="qualityCard"/>
 
-        <hasMany name="operationComponentDtos"
-                       joinField="technology" model="technologyOperationComponentDto"
-                       persistent="false"/>
+        <hasMany name="operationComponentDtos" model="technologyOperationComponentDto" joinField="technology"
+                 persistent="false"/>
+
+        <hasMany name="productDatas" model="productData" joinField="technology"
+                 cascade="delete"/>
     </fields>
 
     <hooks>

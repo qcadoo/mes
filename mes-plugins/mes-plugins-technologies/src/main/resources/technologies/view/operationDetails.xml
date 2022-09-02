@@ -304,6 +304,44 @@
             </component>
         </windowTab>
 
+        <windowTab name="productDataTab" reference="productDataTab">
+            <component type="gridLayout" name="gridLayout" columns="3"
+                       rows="2">
+                <layoutElement column="1" row="1">
+                    <component type="checkbox" name="showInProductData" field="#{form}.showInProductData"
+                               reference="showInProductData" defaultVisible="true">
+                        <script>
+                            <![CDATA[
+                                var setNumber = function(value) {
+                                    var showInProductData = #{showInProductData}.getValue().content.value;
+
+                                    if (showInProductData == 1) {
+                                        #{productDataNumber}.setEnabled(true, true);
+                                    } else {
+                                        #{productDataNumber}.setEnabled(false, true);
+                                    }
+                                }
+
+                                this.addOnChangeListener({
+                                    onChange: setNumber,
+                                    onSetValue: setNumber
+                                });
+						    ]]>
+                        </script>
+
+                        <option type="labelWidth" value="40" />
+                    </component>
+                </layoutElement>
+                <layoutElement column="1" row="2">
+                    <component type="input" name="productDataNumber" reference="productDataNumber"
+                               field="#{form}.productDataNumber">
+                        <option type="labelWidth" value="40" />
+                        <option type="alignment" value="right" />
+                    </component>
+                </layoutElement>
+            </component>
+        </windowTab>
+
     </component>
 
     <hooks>

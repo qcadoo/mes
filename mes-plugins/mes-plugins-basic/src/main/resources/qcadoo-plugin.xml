@@ -271,6 +271,10 @@
 
         <security:role identifier="ROLE_OPERATIONAL_TASKS_GANTT_EDIT"/>
 
+        <security:role identifier="ROLE_ORDERS_GANTT_VIEW"/>
+
+        <security:role identifier="ROLE_ORDERS_GANTT_EDIT"/>
+
         <security:role identifier="ROLE_ATTRIBUTES"/>
 
         <security:role identifier="ROLE_ANOMALIES"/>
