@@ -31,6 +31,7 @@ import com.qcadoo.mes.materialFlow.constants.MaterialFlowConstants;
 import com.qcadoo.mes.materialFlowResources.MaterialFlowResourcesService;
 import com.qcadoo.mes.productFlowThruDivision.constants.MaterialAvailabilityFields;
 import com.qcadoo.mes.productFlowThruDivision.constants.ProductFlowThruDivisionConstants;
+import com.qcadoo.model.api.BigDecimalUtils;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -89,16 +90,14 @@ public class MaterialAvailabilityListHooks {
             Map<Long, BigDecimal> availableQuantities = materialFlowResourcesService
                     .getQuantitiesForProductsAndLocation(replacements, warehouse);
             for (Entity replacement : replacements) {
-                if (Objects.nonNull(availableQuantities.get(replacement.getId()))
-                        && BigDecimal.ZERO.compareTo(availableQuantities.get(replacement.getId())) < 0) {
+
                     Entity materialAvailability = orderMaterialAvailabilityDD.create();
                     materialAvailability.setField(MaterialAvailabilityFields.PRODUCT, replacement);
                     materialAvailability.setField(MaterialAvailabilityFields.UNIT, replacement.getField(ProductFields.UNIT));
                     materialAvailability.setField(MaterialAvailabilityFields.AVAILABLE_QUANTITY,
-                            availableQuantities.get(replacement.getId()));
+                            BigDecimalUtils.convertNullToZero(availableQuantities.get(replacement.getId())));
                     materialAvailability.setField(MaterialAvailabilityFields.LOCATION, warehouse);
                     materialAvailabilityList.add(materialAvailability);
-                }
             }
         }
         grid.setEntities(materialAvailabilityList.stream()
@@ -122,16 +121,13 @@ public class MaterialAvailabilityListHooks {
         for (Entity warehouse : warehouses) {
             Map<Long, BigDecimal> availableQuantities = materialFlowResourcesService
                     .getQuantitiesForProductsAndLocation(Collections.singletonList(product), warehouse);
-            if (Objects.nonNull(availableQuantities.get(product.getId()))
-                    && BigDecimal.ZERO.compareTo(availableQuantities.get(product.getId())) < 0) {
                 Entity materialAvailability = orderMaterialAvailabilityDD.create();
 
                 materialAvailability.setField(MaterialAvailabilityFields.UNIT, product.getField(ProductFields.UNIT));
                 materialAvailability.setField(MaterialAvailabilityFields.AVAILABLE_QUANTITY,
-                        availableQuantities.get(product.getId()));
+                        BigDecimalUtils.convertNullToZero(availableQuantities.get(product.getId())));
                 materialAvailability.setField(MaterialAvailabilityFields.LOCATION, warehouse);
                 materialAvailabilityList.add(materialAvailability);
-            }
         }
         grid.setEntities(materialAvailabilityList.stream()
                 .sorted(Comparator.comparing(
