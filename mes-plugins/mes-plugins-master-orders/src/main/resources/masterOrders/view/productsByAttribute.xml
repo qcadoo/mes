@@ -64,7 +64,7 @@
                         });
                     ]]>
                 </script>
-                <component type="gridLayout" name="gridLayout" columns="1" hasBorders="false"
+                <component type="gridLayout" name="gridLayout" columns="5" hasBorders="false"
                            rows="10">
                     <layoutElement column="1" row="1" width="4">
                         <component type="checkbox" name="generated" defaultVisible="false"
