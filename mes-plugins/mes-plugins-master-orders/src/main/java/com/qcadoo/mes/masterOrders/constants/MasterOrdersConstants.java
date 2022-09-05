@@ -55,6 +55,10 @@ public final class MasterOrdersConstants {
 
     public static final String MODEL_PRODUCTS_BY_SIZE_ENTRY_HELPER = "productsBySizeEntryHelper";
 
+    public static final String MODEL_PRODUCTS_BY_ATTRIBUTE_HELPER = "productsByAttributeHelper";
+
+    public static final String MODEL_PRODUCTS_BY_ATTRIBUTE_ENTRY_HELPER = "productsByAttributeEntryHelper";
+
     public static final String MODEL_SALES_PLAN = "salesPlan";
 
     public static final String MODEL_SALES_PLAN_MATERIAL_REQUIREMENT = "salesPlanMaterialRequirement";

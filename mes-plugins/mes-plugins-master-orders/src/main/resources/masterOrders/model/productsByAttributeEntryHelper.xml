@@ -24,15 +24,17 @@
     ***************************************************************************
 
 -->
-<model name="productsBySizeEntryHelper" activable="false"
+<model name="productsByAttributeEntryHelper" activable="false"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
        xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
 
     <fields>
-        <belongsTo name="productsBySizeHelper" plugin="masterOrders" model="productsBySizeHelper"
+        <belongsTo name="productsByAttributeHelper" plugin="masterOrders" model="productsByAttributeHelper"
                    required="true"/>
         <belongsTo name="product" plugin="basic" model="product"/>
-        <decimal name="quantity"/>
+        <belongsTo name="attribute" plugin="basic" model="attribute"/>
+        <belongsTo name="attributeValue" plugin="basic" model="attributeValue"/>
+        <string name="value"/>
     </fields>
 
     <hooks />

@@ -23,7 +23,8 @@
     ***************************************************************************
 
 -->
-<view name="productsBySize" modelName="productsBySizeHelper" defaultAuthorizationRole="ROLE_PLANNING"
+<view name="productsByAttribute" modelName="productsByAttributeHelper" defaultAuthorizationRole="ROLE_PLANNING"
+      windowHeight="640"
       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
       xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd">
 
@@ -39,7 +40,7 @@
                         <![CDATA[
                             this.addOnChangeListener({
                                 onClick: function() {
-                                    #{productsBySizeEntryHelpers}.addPositionsToOrder();
+                                    #{form}.performEvent('addPositionsToOrder', []);
                                 }
                             });
                         ]]>
@@ -49,7 +50,7 @@
         </ribbon>
 
         <windowTab name="mainTab">
-            <component type="form" name="masterOrderDefinitionDetails" reference="form">
+            <component type="form" name="productsByAttribute" reference="form">
                 <script>
                     <![CDATA[
                         #{form}.addOnChangeListener({
@@ -63,9 +64,9 @@
                         });
                     ]]>
                 </script>
-                <component type="gridLayout" name="gridLayout" columns="1"
-                           rows="8">
-                    <layoutElement column="1" row="1">
+                <component type="gridLayout" name="gridLayout" columns="1" hasBorders="false"
+                           rows="10">
+                    <layoutElement column="1" row="1" width="4">
                         <component type="checkbox" name="generated" defaultVisible="false"
                                    reference="generated" defaultEnabled="false"/>
                         <component type="lookup" name="product" reference="product"
@@ -85,59 +86,62 @@
                                     method="showProductFamilyOnly"/>
 
                             <listener event="onSelectedEntityChange"
-                                      class="com.qcadoo.mes.masterOrders.listeners.ProductsBySizeListeners"
+                                      class="com.qcadoo.mes.masterOrders.listeners.ProductsByAttributeListeners"
                                       method="changeProductFamily"/>
                         </component>
                     </layoutElement>
-                    <layoutElement column="1" row="2">
-                        <component type="input" name="totalQuantity"
-                                   field="totalQuantity" reference="totalQuantity" defaultEnabled="false">
+                    <layoutElement column="1" row="2" width="4">
+                        <component type="input" name="orderedQuantity" field="orderedQuantity"
+                                   reference="orderedQuantity">
                             <option type="alignment" value="right"/>
                         </component>
                     </layoutElement>
-                    <layoutElement column="1" row="3" height="5">
-                        <component type="grid" name="productsBySizeEntryHelpers" reference="productsBySizeEntryHelpers"
-                                   source="#{form}.productsBySizeEntryHelpers">
-                            <script>
-                                QCD = QCD || {};
-                                QCD.translations = QCD.translations || {};
+                    <layoutElement column="5" row="2" width="1">
+                        <component type="input" name="unit" reference="unit"
+                                   defaultEnabled="false"  hasLabel="false">
+                            <option type="alignment" value="right"/>
+                            <option type="textRepresentationOnDisabled" value="true"/>
+                        </component>
+                    </layoutElement>
+                    <layoutElement column="1" row="3" width="4" height="2">
+                        <component type="textarea" name="comments" field="comments"
+                                   reference="comments"/>
+                    </layoutElement>
+                    <layoutElement column="1" row="5" width="5" height="5">
+                        <component type="grid" name="productsByAttributeEntryHelpers" reference="productsByAttributeEntryHelpers"
+                                   source="#{form}.productsByAttributeEntryHelpers">
+                            <option type="column" name="name" fields="attribute"
+                                    expression="#attribute['name']" link="true" width="150"/>
+                            <option type="column" name="value" fields="value"
+                                    link="true" width="100"/>
+                            <option type="column" name="unit" fields="attribute"
+                                    expression="#attribute['unit']" link="false" width="50"/>
 
-                                QCD.translations['masterOrders.productsBySize.productNotSelectedOrPositionsNotFilled'] =
-                                '#{translate(masterOrders.productsBySize.productNotSelectedOrPositionsNotFilled)}';
+                            <option type="order" column="number" direction="desc"/>
 
-                                QCD.translations['masterOrders.productsBySize.invalidScale.max'] =
-                                '#{translate(masterOrders.productsBySize.invalidScale.max)}';
+                            <option type="orderable" value="name,value,unit"/>
+                            <option type="searchable" value="name,value,unit"/>
 
-                                QCD.translations['masterOrders.productsBySize.invalidPrecision.max'] =
-                                '#{translate(masterOrders.productsBySize.invalidPrecision.max)}';
-                            </script>
-                            <script type="text/javascript" src="/masterOrders/public/js/productsBySize.js"></script>
-
-                            <option type="column" name="succession" fields="product"
-                                    expression="#product['size'].get('succession')" hidden="true"/>
-
-                            <option type="column" name="size" fields="product"
-                                    expression="#product['size'].get('number')"/>
-                            <option type="column" name="quantity" fields="quantity" formatter="input"
-                                   />
-                            <option type="order" column="succession" direction="asc"/>
-
-                            <option type="searchable" value=""/>
-                            <option type="orderable" value=""/>
-
-                            <option type="suppressSelectEvent" value="true"/>
+                            <option type="correspondingView" value="masterOrders/productsByAttributeEntry"/>
+                            <option type="correspondingComponent" value="form"/>
+                            <option type="correspondingViewInModal" value="true"/>
 
                             <option type="paginable" value="false"/>
-
-                            <listener event="addPositionsToOrder"
-                                      class="com.qcadoo.mes.masterOrders.listeners.ProductsBySizeListeners"
-                                      method="addPositionsToOrder"/>
+                            <option type="creatable" value="false"/>
+                            <option type="deletable" value="false"/>
+                            <option type="editable" value="true"/>
+                            <option type="fullscreen" value="true"/>
+                            <option type="multiselect" value="false"/>
                         </component>
                     </layoutElement>
                 </component>
 
                 <option type="header" value="true"/>
                 <option type="expression" value=""/>
+
+                <listener event="addPositionsToOrder"
+                          class="com.qcadoo.mes.masterOrders.listeners.ProductsByAttributeListeners"
+                          method="addPositionsToOrder"/>
             </component>
         </windowTab>
 

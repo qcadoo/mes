@@ -23,24 +23,12 @@
  */
 package com.qcadoo.mes.masterOrders.listeners;
 
-import java.math.BigDecimal;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-
+import com.google.common.collect.Maps;
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.masterOrders.MasterOrderDocumentService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import com.google.common.collect.Maps;
 import com.qcadoo.mes.masterOrders.OrdersFromMOProductsGenerationService;
-import com.qcadoo.mes.masterOrders.constants.MasterOrderFields;
-import com.qcadoo.mes.masterOrders.constants.MasterOrderProductFields;
-import com.qcadoo.mes.masterOrders.constants.MasterOrderState;
-import com.qcadoo.mes.masterOrders.constants.MasterOrdersConstants;
-import com.qcadoo.mes.masterOrders.constants.ProductsBySizeHelperFields;
+import com.qcadoo.mes.masterOrders.constants.*;
+import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.plugin.api.PluginUtils;
@@ -53,13 +41,25 @@ import com.qcadoo.view.api.components.WindowComponent;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.api.ribbon.RibbonGroup;
 import com.qcadoo.view.constants.QcadooViewConstants;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 
 @Service
 public class MasterOrderDetailsListeners {
 
     private static final String L_WINDOW_ACTIVE_MENU = "window.activeMenu";
 
-    public static final String L_MASTER_ORDER_RELEASE_LOCATION = "masterOrderReleaseLocation";
+    private static final String L_MASTER_ORDER_RELEASE_LOCATION = "masterOrderReleaseLocation";
+
+    private static final String L_ORDERS = "orders";
+
+    private static final String L_CREATE_ORDER = "createOrder";
 
     @Autowired
     private OrdersFromMOProductsGenerationService ordersGenerationService;
@@ -74,17 +74,20 @@ public class MasterOrderDetailsListeners {
     private ParameterService parameterService;
 
     public void onAddExistingEntity(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
-        form.performEvent(view, "reset");
+        FormComponent masterOrderForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
+
+        masterOrderForm.performEvent(view, "reset");
     }
 
     public void onRemoveSelectedEntity(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
-        form.performEvent(view, "reset");
+        FormComponent masterOrderForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
+
+        masterOrderForm.performEvent(view, "reset");
     }
 
     public void changeState(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         FormComponent masterOrderForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
+
         Entity masterOrder = masterOrderForm.getEntity();
         Entity masterOrderDB = masterOrder.getDataDefinition().get(masterOrder.getId());
 
@@ -97,13 +100,14 @@ public class MasterOrderDetailsListeners {
             masterOrderDB.setField(MasterOrderFields.STATE, MasterOrderState.DECLINED.getStringValue());
             masterOrderDB.getDataDefinition().save(masterOrderDB);
         }
+
         state.performEvent(view, "reset");
     }
 
     public void clearAddress(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        LookupComponent address = (LookupComponent) view.getComponentByReference(MasterOrderFields.ADDRESS);
+        LookupComponent addressLookup = (LookupComponent) view.getComponentByReference(MasterOrderFields.ADDRESS);
 
-        address.setFieldValue(null);
+        addressLookup.setFieldValue(null);
     }
 
     public void onProductsChange(final ViewDefinitionState view, final ComponentState state, final String[] args) {
@@ -111,8 +115,8 @@ public class MasterOrderDetailsListeners {
                 .getComponentByReference(MasterOrderFields.MASTER_ORDER_PRODUCTS);
 
         WindowComponent window = (WindowComponent) view.getComponentByReference(QcadooViewConstants.L_WINDOW);
-        RibbonGroup orders = window.getRibbon().getGroupByName("orders");
-        RibbonActionItem createOrder = orders.getItemByName("createOrder");
+        RibbonGroup orders = window.getRibbon().getGroupByName(L_ORDERS);
+        RibbonActionItem createOrder = orders.getItemByName(L_CREATE_ORDER);
 
         if (masterOrderProductsGrid.getSelectedEntities().isEmpty()) {
             createOrder.setEnabled(false);
@@ -125,62 +129,92 @@ public class MasterOrderDetailsListeners {
 
     public void refreshView(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         FormComponent masterOrderForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
+
         masterOrderForm.performEvent(view, "refresh");
     }
 
     public void addProductsBySize(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
-        Entity helper = dataDefinitionService
-                .get(MasterOrdersConstants.PLUGIN_IDENTIFIER, MasterOrdersConstants.MODEL_PRODUCTS_BY_SIZE_HELPER).create();
-        helper.setField(ProductsBySizeHelperFields.MASTER_ORDER, form.getEntityId());
-        helper = helper.getDataDefinition().save(helper);
+        FormComponent masterOrderForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
+
+        Entity productsBySizeHelper = getProductsBySizeHelperDD().create();
+
+        productsBySizeHelper.setField(ProductsBySizeHelperFields.MASTER_ORDER, masterOrderForm.getEntityId());
+
+        productsBySizeHelper = productsBySizeHelper.getDataDefinition().save(productsBySizeHelper);
 
         Map<String, Object> parameters = Maps.newHashMap();
-        parameters.put("form.id", helper.getId());
+
+        parameters.put("form.id", productsBySizeHelper.getId());
 
         String url = "../page/masterOrders/productsBySize.html";
+
+        view.openModal(url, parameters);
+    }
+
+    public void addProductsByAttribute(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        FormComponent masterOrderForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
+
+        Entity productsByAttributeHelper = getProductsByAttributeHelperDD().create();
+
+        productsByAttributeHelper.setField(ProductsByAttributeHelperFields.MASTER_ORDER, masterOrderForm.getEntityId());
+
+        productsByAttributeHelper = productsByAttributeHelper.getDataDefinition().save(productsByAttributeHelper);
+
+        Map<String, Object> parameters = Maps.newHashMap();
+        parameters.put("form.id", productsByAttributeHelper.getId());
+
+        String url = "../page/masterOrders/productsByAttribute.html";
         view.openModal(url, parameters);
     }
 
     public void createReleaseDocument(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         GridComponent masterOrderProductsGrid = (GridComponent) view
                 .getComponentByReference(MasterOrderFields.MASTER_ORDER_PRODUCTS);
+
         List<Entity> masterOrderProducts = masterOrderProductsGrid.getSelectedEntities();
         Entity masterOrderReleaseLocation = parameterService.getParameter().getBelongsToField(L_MASTER_ORDER_RELEASE_LOCATION);
 
         if (Objects.isNull(masterOrderReleaseLocation)) {
             view.addMessage("masterOrders.masterOrder.createReleaseDocument.masterOrderReleaseLocationIsEmpty", ComponentState.MessageType.FAILURE);
+
             return;
         }
 
         boolean anyZeroPositions = masterOrderProducts.stream().anyMatch(mo -> mo.getDecimalField(MasterOrderProductFields.MASTER_ORDER_QUANTITY).compareTo(BigDecimal.ZERO) == 0);
 
-        if(anyZeroPositions) {
+        if (anyZeroPositions) {
             view.addMessage("masterOrders.masterOrder.createReleaseDocument.masterOrderPositionsForZero", ComponentState.MessageType.FAILURE);
+
             return;
         }
+
         masterOrderDocumentService.createReleaseDocument(masterOrderProducts, view);
     }
 
     public void generateOrders(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         GridComponent masterOrderProductsGrid = (GridComponent) view
                 .getComponentByReference(MasterOrderFields.MASTER_ORDER_PRODUCTS);
+
         List<Entity> masterOrderProducts = masterOrderProductsGrid.getSelectedEntities();
+
         ordersGenerationService.generateOrders(masterOrderProducts, null, null, true).showMessage(view);
+
         state.performEvent(view, "reset");
     }
 
     public void createOrder(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         FormComponent masterOrderForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
+
         Entity masterOrder = masterOrderForm.getEntity();
 
         Long masterOrderId = masterOrder.getId();
 
-        if (masterOrderId == null) {
+        if (Objects.isNull(masterOrderId)) {
             return;
         }
 
         Map<String, Object> parameters = Maps.newHashMap();
+
         parameters.put("form.masterOrder", masterOrderId);
 
         GridComponent masterOrderProductsGrid = (GridComponent) view
@@ -205,10 +239,21 @@ public class MasterOrderDetailsListeners {
         view.redirectTo(url, false, true, parameters);
     }
 
-    private Entity extractMasterOrderProduct(Entity masterOrderProduct) {
+    private Entity extractMasterOrderProduct(final Entity masterOrderProduct) {
         Optional<Entity> dtoEntity = Optional
                 .ofNullable(masterOrderProduct.getDataDefinition().getMasterModelEntity(masterOrderProduct.getId()));
+
         return dtoEntity.orElse(masterOrderProduct);
+    }
+
+    private DataDefinition getProductsBySizeHelperDD() {
+        return dataDefinitionService
+                .get(MasterOrdersConstants.PLUGIN_IDENTIFIER, MasterOrdersConstants.MODEL_PRODUCTS_BY_SIZE_HELPER);
+    }
+
+    private DataDefinition getProductsByAttributeHelperDD() {
+        return dataDefinitionService
+                .get(MasterOrdersConstants.PLUGIN_IDENTIFIER, MasterOrdersConstants.MODEL_PRODUCTS_BY_ATTRIBUTE_HELPER);
     }
 
 }

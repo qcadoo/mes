@@ -80,6 +80,8 @@
 
         <model:model model="productsBySizeHelper" resource="model/productsBySizeHelper.xml"/>
         <model:model model="productsBySizeEntryHelper" resource="model/productsBySizeEntryHelper.xml"/>
+        <model:model model="productsByAttributeHelper" resource="model/productsByAttributeHelper.xml"/>
+        <model:model model="productsByAttributeEntryHelper" resource="model/productsByAttributeEntryHelper.xml"/>
         <model:model model="salesPlan" resource="model/salesPlan.xml"/>
         <model:model model="salesPlanProduct" resource="model/salesPlanProduct.xml"/>
         <model:model model="salesPlanStateChange" resource="model/salesPlanStateChange.xml"/>
@@ -217,6 +219,18 @@
                            joinField="technologyInputProductType"/>
         </model:model-field>
 
+        <model:model-field plugin="basic" model="product">
+            <hasMany name="productsByAttributeEntryHelpers" plugin="masterOrders" model="productsByAttributeEntryHelper" joinField="product"/>
+        </model:model-field>
+
+        <model:model-field plugin="basic" model="attribute">
+            <hasMany name="productsByAttributeEntryHelpers" plugin="masterOrders" model="productsByAttributeEntryHelper" joinField="attribute"/>
+        </model:model-field>
+
+        <model:model-field plugin="basic" model="productAttributeValue">
+            <hasMany name="productsByAttributeEntryHelpers" plugin="masterOrders" model="productsByAttributeEntryHelper" joinField="attributeValue"/>
+        </model:model-field>
+
         <model:model-hook model="order" plugin="orders">
             <model:validatesWith class="com.qcadoo.mes.masterOrders.validators.OrderValidatorsMO"
                                  method="checkProductAndTechnology"/>
@@ -271,6 +285,8 @@
         <view:view resource="view/generatingOrders.xml"/>
 
         <view:view resource="view/productsBySize.xml"/>
+        <view:view resource="view/productsByAttribute.xml"/>
+        <view:view resource="view/productsByAttributeEntry.xml"/>
 
         <view:view resource="view/salesPlansList.xml"/>
         <view:view resource="view/salesPlanDetails.xml"/>
