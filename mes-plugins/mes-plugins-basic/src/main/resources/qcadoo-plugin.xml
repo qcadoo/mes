@@ -301,6 +301,7 @@
         <model:model model="reportColumnWidth" resource="model/reportColumnWidth.xml"/>
 
         <model:model model="workstation" resource="model/workstation.xml"/>
+        <model:model model="workstationDto" resource="model/workstationDto.xml"/>
         <model:model model="workstationAttachment" resource="model/workstationAttachment.xml"/>
 
         <model:model model="factory" resource="model/factory.xml"/>

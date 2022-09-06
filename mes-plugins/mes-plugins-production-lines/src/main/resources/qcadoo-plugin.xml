@@ -86,6 +86,10 @@
             <model:belongsTo name="productionLine" model="productionLine" plugin="productionLines"/>
         </model:model-field>
 
+        <model:model-field model="workstationDto" plugin="basic">
+            <model:string name="productionLine"/>
+        </model:model-field>
+
         <model:model-field model="workstation" plugin="basic">
             <model:tree name="factoryStructure" model="factoryStructureElement"
                         joinField="workstation" cascade="delete" plugin="productionLines"/>
@@ -131,7 +135,7 @@
         <view:view-ribbon-group resource="view/ribbonExtensions/subassemblyDetails.xml"/>
 
         <view:view-grid-column view="workstationsList" component="grid" plugin="basic">
-            <view:column name="productionLine" fields="productionLine" expression="#productionLine['name']"
+            <view:column name="productionLine" fields="productionLine"
                          orderable="true"
                          searchable="true"/>
         </view:view-grid-column>
