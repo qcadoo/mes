@@ -85,7 +85,7 @@ public class EventListeners {
         factoryStructureId = Long.parseLong(args[1]);
 
         EntityTree tree = factoryStructureForEventHooks.getGeneratedTree();
-        Optional<Entity> maybeElement = tree.stream().filter(element -> element.getId() == factoryStructureId).findFirst();
+        Optional<Entity> maybeElement = tree.stream().filter(element -> element.getId().equals(factoryStructureId)).findFirst();
 
         if (!maybeElement.isPresent()) {
             viewDefinitionState.addMessage("cmmsMachineParts.error.elementNotSelected", ComponentState.MessageType.FAILURE);
