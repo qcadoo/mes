@@ -363,8 +363,7 @@ public final class ProductionTrackingListenerService {
             order.setField(OrderFields.WASTES_QUANTITY,
                     getWastesQuantity(mainTrackingOperationProductOutComponent, order, operation));
             order.setField("finalProductionTracking", productionTracking.getBooleanField(ProductionTrackingFields.LAST_TRACKING));
-            orderHooks.setProductQuantity(order);
-            order.getDataDefinition().fastSave(order);
+            order.getDataDefinition().save(order);
         }
     }
 
