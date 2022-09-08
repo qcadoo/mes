@@ -35,10 +35,82 @@
 
 		<ribbon>
 			<template name="standardGridTemplate" excludeItems="actions.new, actions.copy, actions.delete"/>
+			<group name="action">
+				<bigButton name="changeParameters" icon="generateIcon24.png" state="disabled">
+					<script>
+						<![CDATA[
+							this.addOnChangeListener({
+								onClick: function() {
+									#{form}.performEvent('changeParameters', []);
+								}
+							});
+						]]>
+					</script>
+				</bigButton>
+			</group>
 		</ribbon>
 
 		<component type="form" name="form" reference="form">
 			<component type="grid" name="operationTechnologies" reference="grid" source="operationTechnologiesDto">
+				<script>
+					<![CDATA[
+						this.addOnChangeListener({
+							onChange: function(selectedEntitiesArray) {
+								if (selectedEntitiesArray && selectedEntitiesArray.length > 0) {
+									updateRibbon(selectedEntitiesArray);
+								} else {
+									resetRibbon();
+								}
+							}
+						});
+
+						function resetRibbon() {
+							getRibbonItem("action.changeParameters").disable();
+						}
+
+						function updateRibbon(selectedEntitiesArray) {
+							var differentStates = statesAreDifferent(selectedEntitiesArray);
+							var allMaster = isAllMaster(selectedEntitiesArray);
+
+							if (!differentStates) {
+								var state = selectedEntitiesArray[0].fields.technologyState;
+							}
+
+							var changeParameters = getRibbonItem("action.changeParameters");
+
+							if(state && state == "02accepted" && allMaster) {
+							    changeParameters.enable();
+							} else {
+							    changeParameters.disable();
+							}
+						}
+
+						function getRibbonItem(ribbonPath) {
+							return #{window}.getRibbonItem(ribbonPath);
+						}
+
+						function statesAreDifferent(selectedEntitiesArray) {
+							if (selectedEntitiesArray.length < 2) {
+								return false;
+							}
+							for (var i = 1; i < selectedEntitiesArray.length; i++) {
+								if (selectedEntitiesArray[i-1].fields.technologyState != selectedEntitiesArray[i].fields.technologyState) {
+									return true;
+								}
+							}
+							return false;
+						}
+
+						function isAllMaster(selectedEntitiesArray) {
+							for (var i = 0; i < selectedEntitiesArray.length; i++) {
+								if (selectedEntitiesArray[i].fields.masterTechnology == '0') {
+									return false;
+								}
+							}
+							return true;
+						}
+					]]>
+				</script>
 				<option type="column" name="technologyName" fields="technologyName"
 				        link="true" correspondingView="technologies/technologyDetails"
 				        correspondingField="technologyId"/>
@@ -70,6 +142,9 @@
 
 			<option type="header" value="true"/>
 			<option type="expression" value="#number + ' - ' + #name"/>
+
+			<listener event="changeParameters" class="com.qcadoo.mes.technologies.listeners.TechnologiesWithUsingOperationListListeners"
+			          method="changeParameters"/>
 		</component>
 
 		<option type="fixedHeight" value="true"/>
