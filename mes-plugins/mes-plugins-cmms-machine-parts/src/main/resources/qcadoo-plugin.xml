@@ -123,6 +123,9 @@
         <menu:menu-item name="sourceCostReports" category="maintenance" view="sourceCostReports"
                         defaultAuthorizationRole="ROLE_MAINTENANCE"/>
 
+        <menu:menu-item name="toolsList" category="maintenance" view="toolsList"
+                        defaultAuthorizationRole="ROLE_TOOLS"/>
+
         <view:view resource="view/plannedEventsList.xml"/>
         <view:view resource="view/plannedEventDetails.xml"/>
         <view:view resource="view/plannedEventActions.xml"/>
@@ -137,6 +140,9 @@
 
         <view:view resource="view/workTimeForUserList.xml"/>
         <view:view resource="view/addActionsForPlannedEvent.xml"/>
+
+        <view:view resource="view/toolsList.xml"/>
+        <view:view resource="view/toolDetails.xml"/>
 
         <view:view-tab resource="view/tabExtensions/generalParameters.xml"/>
 
@@ -174,6 +180,11 @@
         <model:model model="sourceCostReportFilter" resource="model/sourceCostReportFilter.xml"/>
 
         <model:model model="workTimeForUserDto" resource="model/workTimeForUserDto.xml"/>
+
+        <model:model model="tool" resource="model/tool.xml"/>
+        <model:model model="toolAttachment" resource="model/toolAttachment.xml"/>
+
+        <model:dictionary name="toolCategory"/>
 
         <!-- model extensions -->
 
