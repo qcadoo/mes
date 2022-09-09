@@ -30,6 +30,7 @@
     <fields>
         <boolean name="changePerformanceNorm" default="false"/>
         <boolean name="updateOperationTimeNorms" default="false"/>
+        <boolean name="updateOperationWorkstations" default="false"/>
         <decimal name="standardPerformance">
             <validatesRange from="0" exclusively="true"/>
             <validatesUnscaledValue max="7"/>
