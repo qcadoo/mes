@@ -29,7 +29,7 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
        xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
     <fields>
-        <enum name="pinnedTo" values="01products,02technologies,03parts,04components,05batches,06deliveries,07qualityControls,08qualityCards,09workstations"/>
+        <enum name="pinnedTo" values="01products,02technologies,03parts,04components,05batches,06deliveries,07qualityControls,08qualityCards,09workstations,10orders,11tools"/>
         <string name="attachment"/>
         <string name="name"/>
         <decimal name="size"/>
