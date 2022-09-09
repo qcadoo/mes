@@ -66,6 +66,8 @@
             <validatesWith class="com.qcadoo.mes.orders.hooks.OrderHooks" method="setDateChanged"/>
         </datetime>
 
+        <date name="expirationDate"/>
+
         <enum name="state"
               values="01pending,02accepted,03inProgress,04completed,05declined,06interrupted,07abandoned"
               required="true"/>

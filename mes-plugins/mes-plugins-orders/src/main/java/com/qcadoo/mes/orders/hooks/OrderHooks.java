@@ -32,6 +32,7 @@ import java.util.Locale;
 import java.util.Objects;
 import java.util.Optional;
 
+import com.qcadoo.mes.basic.constants.ExpiryDateValidityUnit;
 import com.qcadoo.mes.orders.constants.*;
 import com.qcadoo.model.api.file.FileService;
 import org.apache.commons.io.IOUtils;
@@ -210,6 +211,54 @@ public class OrderHooks {
         technologyServiceO.createOrUpdateTechnology(orderDD, order);
         setRemainingQuantity(order);
         setAdditionalFields(order);
+        fillExpirationDate(order);
+    }
+
+    private void fillExpirationDate(final Entity order) {
+        if (Objects.isNull(order.getDateField(OrderFields.EXPIRATION_DATE))) {
+            setExpirationDate(order, false);
+        } else {
+            if(Objects.nonNull(order.getId())) {
+                Entity orderDb = order.getDataDefinition().get(order.getId());
+                if(!order.getDateField(OrderFields.START_DATE).equals(orderDb.getDateField(OrderFields.START_DATE))) {
+                    setExpirationDate(order, false);
+
+                }
+
+                Entity product = order.getBelongsToField(OrderFields.PRODUCT);
+                Entity productDb = orderDb.getBelongsToField(OrderFields.PRODUCT);
+
+                if(!product.getId().equals(productDb.getId())) {
+                    setExpirationDate(order, true);
+                }
+            }
+        }
+
+    }
+
+    private void setExpirationDate(Entity order, boolean clearIfEmptyProductExpiryDateValidity) {
+        Entity product = order.getBelongsToField(OrderFields.PRODUCT);
+        if(Objects.isNull(product)) {
+            return;
+        }
+        Integer expiryDateValidity = product.getIntegerField(ProductFields.EXPIRY_DATE_VALIDITY);
+        String expiryDateValidityUnit = product.getStringField(ProductFields.EXPIRY_DATE_VALIDITY_UNIT);
+
+        if (Objects.nonNull(expiryDateValidity)) {
+            Date expirationDate;
+
+            if (ExpiryDateValidityUnit.DAYS.getStringValue().equals(expiryDateValidityUnit)) {
+                expirationDate = new DateTime(order.getDateField(OrderFields.START_DATE)).plusDays(expiryDateValidity).toDate();
+            } else {
+                expirationDate = new DateTime(order.getDateField(OrderFields.START_DATE)).plusMonths(expiryDateValidity).toDate();
+            }
+
+            order.setField(OrderFields.EXPIRATION_DATE, expirationDate);
+        } else if(clearIfEmptyProductExpiryDateValidity) {
+            order.setField(OrderFields.EXPIRATION_DATE, null);
+
+        }
+
     }
 
     private void setAdditionalFields(final Entity order) {

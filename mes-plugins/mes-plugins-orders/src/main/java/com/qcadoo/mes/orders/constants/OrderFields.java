@@ -161,4 +161,6 @@ public final class OrderFields {
 
     public static final String STAFF = "staff";
 
+    public static final String EXPIRATION_DATE = "expirationDate";
+
 }
