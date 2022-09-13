@@ -88,7 +88,7 @@
 
         <hasMany name="orders" model="order" plugin="orders" joinField="masterOrderProductComponent" />
         <hasMany name="masterOrderProductAttrValues" joinField="masterOrderProduct"
-                 model="masterOrderProductAttrValue" cascade="delete"/>
+                 model="masterOrderProductAttrValue" cascade="delete" copyable="true"/>
     </fields>
 
     <hooks>
