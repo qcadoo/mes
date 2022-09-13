@@ -177,7 +177,7 @@ public class ProductsByAttributeListeners {
         masterOrderProduct.setField(MasterOrderProductFields.PRODUCT, product);
         masterOrderProduct.setField(MasterOrderProductFields.TECHNOLOGY, getTechnology(product));
         masterOrderProduct.setField(MasterOrderProductFields.MASTER_ORDER_QUANTITY, masterOrderQuantity);
-        masterOrderProduct.setField(MasterOrderProductFields.COMMENTS, masterOrderQuantity);
+        masterOrderProduct.setField(MasterOrderProductFields.COMMENTS, comments);
 
         return masterOrderProduct.getDataDefinition().save(masterOrderProduct);
     }
