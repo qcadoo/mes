@@ -158,7 +158,7 @@ public class ProductDataPdfService extends PdfDocumentService {
             String sizeNumber = size.getStringField(SizeFields.NUMBER);
 
             leftColumn.addCell(createTwoColumnsHeaderTable(
-                    translationService.translate("technologies.productData.report.headerTable.length", locale) + ":", sizeNumber));
+                    translationService.translate("technologies.productData.report.headerTable.size", locale) + ":", sizeNumber));
         }
 
         if (Objects.nonNull(form)) {
