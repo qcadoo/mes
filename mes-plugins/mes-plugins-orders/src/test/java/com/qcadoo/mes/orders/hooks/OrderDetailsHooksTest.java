@@ -100,7 +100,7 @@ public class OrderDetailsHooksTest {
 
     @Mock
     private FieldComponent defaultTechnologyField, plannedQuantityField, stateField, correctDateFromField, correctDateToField,
-            commentDateFromField, commentDateToField, dateFromField, dateToField, effectiveDateFromField;
+            commentDateFromField, commentDateToField, dateFromField, dateToField, effectiveDateFromField, expirationDateField;
 
     @Mock
     private AwesomeDynamicListComponent reasonsDateFromField, reasonsDateToField;
@@ -154,6 +154,7 @@ public class OrderDetailsHooksTest {
         given(view.getComponentByReference(OrderFields.DATE_TO)).willReturn(dateToField);
         given(view.getComponentByReference(OrderFields.EFFECTIVE_DATE_FROM)).willReturn(effectiveDateFromField);
         given(view.getComponentByReference(OrderFields.ADDRESS)).willReturn(addressLookup);
+        given(view.getComponentByReference(OrderFields.EXPIRATION_DATE)).willReturn(expirationDateField);
     }
 
     @Test
