@@ -59,4 +59,8 @@ public final class CmmsMachinePartsConstants {
 
     public static final String MODEL_TIME_USAGE_REPORT_FILTER = "timeUsageReportFilter";
 
+    public static final String MODEL_OPERATION_TOOL = "operationTool";
+
+    public static final String MODEL_TECHNOLOGY_OPERATION_TOOL = "technologyOperationTool";
+
 }
