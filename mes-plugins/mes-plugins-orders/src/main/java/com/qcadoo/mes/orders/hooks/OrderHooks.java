@@ -218,9 +218,9 @@ public class OrderHooks {
         if (Objects.isNull(order.getDateField(OrderFields.EXPIRATION_DATE))) {
             setExpirationDate(order, false);
         } else {
-            if(Objects.nonNull(order.getId())) {
+            if(Objects.nonNull(order.getId()) && Objects.nonNull(order.getDateField(OrderFields.START_DATE))) {
                 Entity orderDb = order.getDataDefinition().get(order.getId());
-                if(!order.getDateField(OrderFields.START_DATE).equals(orderDb.getDateField(OrderFields.START_DATE))) {
+                if(!order.getDateField(OrderFields.START_DATE).equals(orderDb.getDateField(OrderFields.START_DATE)) || Objects.isNull(orderDb.getDateField(OrderFields.START_DATE))) {
                     setExpirationDate(order, false);
 
                 }
@@ -244,7 +244,7 @@ public class OrderHooks {
         Integer expiryDateValidity = product.getIntegerField(ProductFields.EXPIRY_DATE_VALIDITY);
         String expiryDateValidityUnit = product.getStringField(ProductFields.EXPIRY_DATE_VALIDITY_UNIT);
 
-        if (Objects.nonNull(expiryDateValidity)) {
+        if (Objects.nonNull(expiryDateValidity) && Objects.nonNull(order.getDateField(OrderFields.START_DATE))) {
             Date expirationDate;
 
             if (ExpiryDateValidityUnit.DAYS.getStringValue().equals(expiryDateValidityUnit)) {

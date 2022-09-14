@@ -416,7 +416,7 @@ public class OrderDetailsHooks {
             List<String> references = Lists.newArrayList(OrderFields.CORRECTED_DATE_FROM, OrderFields.CORRECTED_DATE_TO,
                     OrderFields.REASON_TYPES_CORRECTION_DATE_FROM, OrderFields.COMMENT_REASON_TYPE_CORRECTION_DATE_FROM,
                     OrderFields.REASON_TYPES_CORRECTION_DATE_TO, OrderFields.COMMENT_REASON_TYPE_CORRECTION_DATE_TO,
-                    OrderFields.DATE_FROM, OrderFields.DATE_TO);
+                    OrderFields.DATE_FROM, OrderFields.DATE_TO, OrderFields.EXPIRATION_DATE);
 
             boolean canChangeProdLineForAcceptedOrders = parameterService.getParameter()
                     .getBooleanField(ParameterFieldsO.CAN_CHANGE_PROD_LINE_FOR_ACCEPTED_ORDERS);
