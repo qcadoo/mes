@@ -103,9 +103,14 @@ public class ProductsByAttributeListeners {
             productsByAttributeEntryHelper.getDataDefinition().save(productsByAttributeEntryHelper);
         }
 
+        Object orderedQuantity = orderedQuantityField.getFieldValue();
+        Object comments = commentsField.getFieldValue();
+
         Entity productsByAttributeHelper = getProductsByAttributeHelperDD().get(productsByAttributeHelperForm.getEntityId());
 
         productsByAttributeHelper.setField(ProductsByAttributeHelperFields.PRODUCT, product);
+        productsByAttributeHelper.setField(ProductsByAttributeHelperFields.ORDERED_QUANTITY, orderedQuantity);
+        productsByAttributeHelper.setField(ProductsByAttributeHelperFields.COMMENTS, comments);
 
         productsByAttributeHelper = productsByAttributeHelper.getDataDefinition().save(productsByAttributeHelper);
 
@@ -114,59 +119,94 @@ public class ProductsByAttributeListeners {
 
     public void addPositionsToOrder(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         FormComponent productsByAttributeHelperForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
+        LookupComponent productLookup = (LookupComponent) view.getComponentByReference(ProductsByAttributeHelperFields.PRODUCT);
         FieldComponent orderedQuantityField = (FieldComponent) view.getComponentByReference(ProductsByAttributeHelperFields.ORDERED_QUANTITY);
+        FieldComponent commentsField = (FieldComponent) view.getComponentByReference(ProductsByAttributeHelperFields.COMMENTS);
         CheckBoxComponent generatedCheckBox = (CheckBoxComponent) view.getComponentByReference(L_GENERATED);
 
-        Entity productsByAttributeHelper = productsByAttributeHelperForm.getPersistedEntityWithIncludedFormValues();
+        if (Objects.isNull(productLookup.getEntity())) {
+            productLookup.addMessage("qcadooView.validate.field.error.missing", ComponentState.MessageType.FAILURE);
+
+            return;
+        }
 
         BigDecimal orderedQuantity;
 
         String orderedQuantityString = (String) orderedQuantityField.getFieldValue();
 
-        if (StringUtils.isEmpty(orderedQuantityString)) {
-            orderedQuantityField.addMessage("qcadooView.validate.field.error.missing", ComponentState.MessageType.FAILURE);
+        Either<Exception, com.google.common.base.Optional<BigDecimal>> eitherOrderedQuantity = BigDecimalUtils.tryParseAndIgnoreSeparator(
+                orderedQuantityString, LocaleContextHolder.getLocale());
 
-            return;
-        } else {
-            Either<Exception, com.google.common.base.Optional<BigDecimal>> tryParseOrderedQuantity = BigDecimalUtils.tryParseAndIgnoreSeparator(
-                    orderedQuantityString, LocaleContextHolder.getLocale());
+        if (eitherOrderedQuantity.isRight()) {
+            if (eitherOrderedQuantity.getRight().isPresent()) {
+                orderedQuantity = eitherOrderedQuantity.getRight().get();
 
-            if (tryParseOrderedQuantity.isLeft()) {
-                orderedQuantityField.addMessage("qcadooView.validate.field.error.invalidNumericFormat", ComponentState.MessageType.FAILURE);
+                int scale = 5;
+                int valueScale = orderedQuantity.scale();
+
+                if (valueScale > scale) {
+                    orderedQuantityField.addMessage("qcadooView.validate.field.error.invalidScale.max", ComponentState.MessageType.FAILURE, String.valueOf(scale));
+
+                    return;
+                }
+
+                if (BigDecimal.ZERO.compareTo(orderedQuantity) >= 0) {
+                    orderedQuantityField.addMessage("qcadooView.validate.field.error.outOfRange.toSmall", ComponentState.MessageType.FAILURE);
+
+                    return;
+                }
+            } else {
+                orderedQuantityField.addMessage("qcadooView.validate.field.error.missing", ComponentState.MessageType.FAILURE);
 
                 return;
-            } else {
-                orderedQuantity = tryParseOrderedQuantity.getRight().get();
             }
+        } else {
+            orderedQuantityField.addMessage("qcadooView.validate.field.error.invalidNumericFormat", ComponentState.MessageType.FAILURE);
+
+            return;
         }
 
-        String comments = productsByAttributeHelper.getStringField(ProductsByAttributeHelperFields.COMMENTS);
+        String comments = (String) commentsField.getFieldValue();
 
-        productsByAttributeHelper = getProductsByAttributeHelperDD().get(productsByAttributeHelperForm.getEntityId());
+        Entity productsByAttributeHelper = getProductsByAttributeHelperDD().get(productsByAttributeHelperForm.getEntityId());
 
         Entity masterOrder = productsByAttributeHelper.getBelongsToField(ProductsByAttributeHelperFields.MASTER_ORDER);
         Entity product = productsByAttributeHelper.getBelongsToField(ProductsByAttributeHelperFields.PRODUCT);
         List<Entity> productsByAttributeEntryHelpers = productsByAttributeHelper.getHasManyField(ProductsByAttributeHelperFields.PRODUCTS_BY_ATTRIBUTE_ENTRY_HELPERS);
 
-        List<Entity> children = product.getHasManyField(ProductFields.CHILDREN);
+        if (productsByAttributeEntryHelpers.isEmpty()) {
+            view.addMessage("masterOrders.productsByAttribute.addPositionsToOrder.empty", ComponentState.MessageType.INFO);
 
-        Optional<Entity> mayBeProduct = findMatchingProduct(children, productsByAttributeEntryHelpers);
-
-        if (mayBeProduct.isPresent()) {
-
-            product = mayBeProduct.get();
-
-            Entity masterOrderProduct = createMasterOrderPosition(masterOrder, product, orderedQuantity, comments);
-
-            if (masterOrderProduct.isValid()) {
-                view.addMessage("masterOrders.productsByAttribute.addPositionsToOrder.success", ComponentState.MessageType.SUCCESS);
-
-                generatedCheckBox.setChecked(true);
-            } else {
-                view.addMessage("masterOrders.productsByAttribute.addPositionsToOrder.error", ComponentState.MessageType.FAILURE);
-            }
+            return;
         } else {
-            view.addMessage("masterOrders.productsByAttribute.addPositionsToOrder.failure", ComponentState.MessageType.FAILURE);
+            if (productsByAttributeEntryHelpers.stream().allMatch(productsByAttributeEntryHelper -> StringUtils.isEmpty(productsByAttributeEntryHelper.getStringField(ProductsByAttributeEntryHelperFields.VALUE)))) {
+                view.addMessage("masterOrders.productsByAttribute.addPositionsToOrder.info", ComponentState.MessageType.INFO);
+
+                return;
+            }
+        }
+
+        if (Objects.nonNull(masterOrder) && Objects.nonNull(product)) {
+            List<Entity> children = product.getHasManyField(ProductFields.CHILDREN);
+
+            Optional<Entity> mayBeProduct = findMatchingProduct(children, productsByAttributeEntryHelpers);
+
+            if (mayBeProduct.isPresent()) {
+
+                product = mayBeProduct.get();
+
+                Entity masterOrderProduct = createMasterOrderPosition(masterOrder, product, orderedQuantity, comments);
+
+                if (masterOrderProduct.isValid()) {
+                    view.addMessage("masterOrders.productsByAttribute.addPositionsToOrder.success", ComponentState.MessageType.SUCCESS);
+
+                    generatedCheckBox.setChecked(true);
+                } else {
+                    view.addMessage("masterOrders.productsByAttribute.addPositionsToOrder.error", ComponentState.MessageType.FAILURE);
+                }
+            } else {
+                view.addMessage("masterOrders.productsByAttribute.addPositionsToOrder.failure", ComponentState.MessageType.FAILURE);
+            }
         }
     }
 
@@ -177,7 +217,7 @@ public class ProductsByAttributeListeners {
         masterOrderProduct.setField(MasterOrderProductFields.PRODUCT, product);
         masterOrderProduct.setField(MasterOrderProductFields.TECHNOLOGY, getTechnology(product));
         masterOrderProduct.setField(MasterOrderProductFields.MASTER_ORDER_QUANTITY, masterOrderQuantity);
-        masterOrderProduct.setField(MasterOrderProductFields.COMMENTS, masterOrderQuantity);
+        masterOrderProduct.setField(MasterOrderProductFields.COMMENTS, comments);
 
         return masterOrderProduct.getDataDefinition().save(masterOrderProduct);
     }
@@ -208,10 +248,12 @@ public class ProductsByAttributeListeners {
                 Entity attribute = productsByAttributeEntryHelper.getBelongsToField(ProductsByAttributeEntryHelperFields.ATTRIBUTE);
                 String value = productsByAttributeEntryHelper.getStringField(ProductsByAttributeEntryHelperFields.VALUE);
 
-                if (productAttributeValues.stream().anyMatch(productAttributeValue ->
-                        productAttributeValue.getBelongsToField(ProductAttributeValueFields.ATTRIBUTE).getId().equals(attribute.getId())
-                                && productAttributeValue.getStringField(ProductAttributeValueFields.VALUE).equals(value))) {
-                    matchingAttributes++;
+                if (StringUtils.isNotEmpty(value)) {
+                    if (productAttributeValues.stream().anyMatch(productAttributeValue ->
+                            productAttributeValue.getBelongsToField(ProductAttributeValueFields.ATTRIBUTE).getId().equals(attribute.getId())
+                                    && productAttributeValue.getStringField(ProductAttributeValueFields.VALUE).equals(value))) {
+                        matchingAttributes++;
+                    }
                 }
             }
 

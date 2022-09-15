@@ -23,6 +23,7 @@
  */
 package com.qcadoo.mes.masterOrders.criteriaModifier;
 
+import com.beust.jcommander.internal.Sets;
 import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.technologies.constants.OperationProductInComponentDtoFields;
 import com.qcadoo.mes.technologies.constants.ProductFieldsT;
@@ -54,6 +55,8 @@ public class TechnologyCriteriaModifiersMO {
                 .add(SearchRestrictions.isNull(TechnologyFields.TECHNOLOGY_TYPE))
                 .add(SearchRestrictions.eq(TechnologyFields.ACTIVE, true));
 
+        Set<Long> technologyIds = Sets.newHashSet();
+
         if (filterValue.has(PRODUCT_ID)) {
             Long productId = filterValue.getLong(PRODUCT_ID);
 
@@ -61,13 +64,15 @@ public class TechnologyCriteriaModifiersMO {
 
             List<Entity> operationProductInProductsDto = product.getHasManyField(ProductFieldsT.OPERATION_PRODUCT_IN_PRODUCTS_DTO);
 
-            Set<Long> technologyIds = operationProductInProductsDto.stream()
+            technologyIds = operationProductInProductsDto.stream()
                     .map(operationProductInProductDto -> operationProductInProductDto.getIntegerField(OperationProductInComponentDtoFields.TECHNOLOGY_ID).longValue())
                     .collect(Collectors.toSet());
+        }
 
-            scb.add(SearchRestrictions.in("id", technologyIds));
-        } else {
+        if (technologyIds.isEmpty()) {
             scb.add(SearchRestrictions.idEq(0L));
+        } else {
+            scb.add(SearchRestrictions.in("id", technologyIds));
         }
     }
 
