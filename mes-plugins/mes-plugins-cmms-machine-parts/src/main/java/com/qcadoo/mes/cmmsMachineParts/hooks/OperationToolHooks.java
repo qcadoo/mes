@@ -29,6 +29,8 @@ public class OperationToolHooks {
 
         if (Objects.nonNull(operationTool.getBelongsToField("tool"))) {
             scb.add(SearchRestrictions.belongsTo("tool", operationTool.getBelongsToField("tool")));
+        } else {
+            scb.add(SearchRestrictions.isNull("tool"));
         }
 
         Long operationToolId = operationTool.getId();

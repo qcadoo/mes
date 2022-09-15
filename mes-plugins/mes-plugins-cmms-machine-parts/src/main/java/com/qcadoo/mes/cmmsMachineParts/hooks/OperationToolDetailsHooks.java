@@ -35,6 +35,12 @@ public class OperationToolDetailsHooks {
         } else {
             toolField.setEnabled(true);
         }
+
+        if(toolField.isEmpty()) {
+            unitField.setEnabled(true);
+        } else {
+            unitField.setEnabled(false);
+        }
         setCriteria(view);
     }
 

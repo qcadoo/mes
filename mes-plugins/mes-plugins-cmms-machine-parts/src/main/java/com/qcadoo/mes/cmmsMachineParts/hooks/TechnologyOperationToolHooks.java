@@ -28,6 +28,8 @@ public class TechnologyOperationToolHooks {
 
         if (Objects.nonNull(technologyOperationTool.getBelongsToField("tool"))) {
             scb.add(SearchRestrictions.belongsTo("tool", technologyOperationTool.getBelongsToField("tool")));
+        } else {
+            scb.add(SearchRestrictions.isNull("tool"));
         }
 
         Long technologyOperationToolId = technologyOperationTool.getId();
