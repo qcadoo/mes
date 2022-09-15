@@ -37,6 +37,12 @@
         <string name="value"/>
     </fields>
 
-    <hooks />
+    <hooks>
+        <validatesWith class="com.qcadoo.mes.masterOrders.hooks.ProductsByAttributeEntryHelperHooks"
+                       method="validate"/>
+
+        <onSave class="com.qcadoo.mes.masterOrders.hooks.ProductsByAttributeEntryHelperHooks"
+                method="onSave"/>
+    </hooks>
 
 </model>

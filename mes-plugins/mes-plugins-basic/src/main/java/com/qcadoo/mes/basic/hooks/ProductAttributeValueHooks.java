@@ -30,6 +30,8 @@ public class ProductAttributeValueHooks {
 
         if (AttributeDataType.CALCULATED.getStringValue().equals(attribute.getStringField(AttributeFields.DATA_TYPE))
                 && Objects.isNull(productAttributeValue.getBelongsToField(ProductAttributeValueFields.ATTRIBUTE_VALUE))) {
+            productAttributeValue.setField(ProductAttributeValueFields.VALUE, null);
+
             if (ProductFamilyElementType.PARTICULAR_PRODUCT.getStringValue().equals(entityType)) {
                 productAttributeValue.addError(productAttributeValueDD.getField(ProductAttributeValueFields.ATTRIBUTE_VALUE),
                         "qcadooView.validate.field.error.missing");
@@ -43,29 +45,36 @@ public class ProductAttributeValueHooks {
             Either<Exception, Optional<BigDecimal>> eitherNumber = BigDecimalUtils.tryParseAndIgnoreSeparator(
                     productAttributeValue.getStringField(ProductAttributeValueFields.VALUE), LocaleContextHolder.getLocale());
 
-            if (eitherNumber.isRight() && eitherNumber.getRight().isPresent()) {
-                int scale = attribute.getIntegerField(AttributeFields.PRECISION);
-                int valueScale = eitherNumber.getRight().get().scale();
+            if (eitherNumber.isRight()) {
+                if (eitherNumber.getRight().isPresent()) {
+                    int scale = attribute.getIntegerField(AttributeFields.PRECISION);
+                    int valueScale = eitherNumber.getRight().get().scale();
 
-                if (valueScale > scale) {
-                    productAttributeValue.addError(productAttributeValueDD.getField(ProductAttributeValueFields.VALUE),
-                            "qcadooView.validate.field.error.invalidScale.max", String.valueOf(scale));
+                    if (valueScale > scale) {
+                        productAttributeValue.addError(productAttributeValueDD.getField(ProductAttributeValueFields.VALUE),
+                                "qcadooView.validate.field.error.invalidScale.max", String.valueOf(scale));
 
-                    return false;
+                        return false;
+                    }
+
+                    productAttributeValue
+                            .setField(
+                                    ProductAttributeValueFields.VALUE,
+                                    BigDecimalUtils.toString(eitherNumber.getRight().get(),
+                                            attribute.getIntegerField(AttributeFields.PRECISION)));
+                } else {
+                    if (ProductFamilyElementType.PARTICULAR_PRODUCT.getStringValue().equals(entityType)) {
+                        productAttributeValue.addError(productAttributeValueDD.getField(ProductAttributeValueFields.VALUE),
+                                "qcadooView.validate.field.error.missing");
+
+                        return false;
+                    }
                 }
-
-                productAttributeValue
-                        .setField(
-                                ProductAttributeValueFields.VALUE,
-                                BigDecimalUtils.toString(eitherNumber.getRight().get(),
-                                        attribute.getIntegerField(AttributeFields.PRECISION)));
             } else {
-                if (ProductFamilyElementType.PARTICULAR_PRODUCT.getStringValue().equals(entityType)) {
-                    productAttributeValue.addError(productAttributeValueDD.getField(ProductAttributeValueFields.VALUE),
-                            "qcadooView.validate.field.error.invalidNumericFormat");
+                productAttributeValue.addError(productAttributeValueDD.getField(ProductAttributeValueFields.VALUE),
+                        "qcadooView.validate.field.error.invalidNumericFormat");
 
-                    return false;
-                }
+                return false;
             }
         }
 
@@ -77,18 +86,12 @@ public class ProductAttributeValueHooks {
         Entity attribute = productAttributeValue.getBelongsToField(ProductAttributeValueFields.ATTRIBUTE);
         Entity attributeValue = productAttributeValue.getBelongsToField(ProductAttributeValueFields.ATTRIBUTE_VALUE);
 
-        List<Entity> productAttributeValues = product.getHasManyField(ProductFields.PRODUCT_ATTRIBUTE_VALUES);
+        List<Entity> productAttributeValuesAdded = product.getHasManyField(ProductFields.PRODUCT_ATTRIBUTE_VALUES);
 
-        List sameValue;
+        List<Entity> sameValue;
 
         if (Objects.nonNull(attributeValue)) {
-            sameValue = productAttributeValues
-                    .stream()
-                    .filter(val -> val.getBelongsToField(ProductAttributeValueFields.ATTRIBUTE).getId().equals(attribute.getId())
-                            && Objects.nonNull(val.getBelongsToField(ProductAttributeValueFields.ATTRIBUTE_VALUE))
-                            && val.getBelongsToField(ProductAttributeValueFields.ATTRIBUTE_VALUE).getId()
-                            .equals(attributeValue.getId()))
-                    .filter(val -> !val.getId().equals(productAttributeValue.getId())).collect(Collectors.toList());
+            sameValue = getAttributeValueSamesValues(productAttributeValuesAdded, productAttributeValue, attribute, attributeValue);
 
             if (!sameValue.isEmpty()) {
                 productAttributeValue.addError(productAttributeValueDD.getField(ProductAttributeValueFields.ATTRIBUTE_VALUE),
@@ -97,21 +100,13 @@ public class ProductAttributeValueHooks {
                 return true;
             }
         } else {
-            sameValue = productAttributeValues
-                    .stream()
-                    .filter(val -> val.getBelongsToField(ProductAttributeValueFields.ATTRIBUTE).getId().equals(attribute.getId())
-                            && Objects.isNull(val.getBelongsToField(ProductAttributeValueFields.ATTRIBUTE_VALUE))
-                            && ((Objects.isNull(val.getStringField(ProductAttributeValueFields.VALUE)) &&
-                            Objects.isNull(productAttributeValue.getStringField(ProductAttributeValueFields.VALUE)))
-                            || (Objects.nonNull(val.getStringField(ProductAttributeValueFields.VALUE)) &&
-                            val.getStringField(ProductAttributeValueFields.VALUE).equals(productAttributeValue.getStringField(ProductAttributeValueFields.VALUE)))))
-                    .filter(val -> !val.getId().equals(productAttributeValue.getId())).collect(Collectors.toList());
+            sameValue = getAttributeSameValues(productAttributeValuesAdded, productAttributeValue, attribute);
 
             if (!sameValue.isEmpty()) {
                 if (AttributeDataType.CALCULATED.getStringValue().equals(attribute.getStringField(AttributeFields.DATA_TYPE))) {
                     productAttributeValue.addError(productAttributeValueDD.getField(ProductAttributeValueFields.ATTRIBUTE_VALUE),
                             "basic.attributeValue.error.valueExists");
-                } else{
+                } else {
                     productAttributeValue.addError(productAttributeValueDD.getField(ProductAttributeValueFields.VALUE),
                             "basic.attributeValue.error.valueExists");
                 }
@@ -123,8 +118,38 @@ public class ProductAttributeValueHooks {
         return false;
     }
 
+    private List<Entity> getAttributeValueSamesValues(final List<Entity> productAttributeValuesAdded, final Entity productAttributeValue, final Entity attribute, final Entity attributeValue) {
+        return productAttributeValuesAdded
+                .stream()
+                .filter(productAttributeValueAdded -> productAttributeValueAdded.getBelongsToField(ProductAttributeValueFields.ATTRIBUTE).getId().equals(attribute.getId())
+                        && Objects.nonNull(productAttributeValueAdded.getBelongsToField(ProductAttributeValueFields.ATTRIBUTE_VALUE))
+                        && productAttributeValueAdded.getBelongsToField(ProductAttributeValueFields.ATTRIBUTE_VALUE).getId()
+                        .equals(attributeValue.getId()))
+                .filter(val -> !val.getId().equals(productAttributeValue.getId())).collect(Collectors.toList());
+    }
+
+    private List<Entity> getAttributeSameValues(final List<Entity> productAttributeValuesAdded, final Entity productAttributeValue, final Entity attribute) {
+        return productAttributeValuesAdded
+                .stream()
+                .filter(productAttributeValueAdded -> productAttributeValueAdded.getBelongsToField(ProductAttributeValueFields.ATTRIBUTE).getId().equals(attribute.getId())
+                        && Objects.isNull(productAttributeValueAdded.getBelongsToField(ProductAttributeValueFields.ATTRIBUTE_VALUE))
+                        && ((Objects.isNull(productAttributeValueAdded.getStringField(ProductAttributeValueFields.VALUE)) &&
+                        Objects.isNull(productAttributeValue.getStringField(ProductAttributeValueFields.VALUE)))
+                        || (Objects.nonNull(productAttributeValueAdded.getStringField(ProductAttributeValueFields.VALUE)) &&
+                        productAttributeValueAdded.getStringField(ProductAttributeValueFields.VALUE).equals(productAttributeValue.getStringField(ProductAttributeValueFields.VALUE)))))
+                .filter(val -> !val.getId().equals(productAttributeValue.getId())).collect(Collectors.toList());
+    }
+
     public void onSave(final DataDefinition productAttributeValueDD, final Entity productAttributeValue) {
         Entity attribute = productAttributeValue.getBelongsToField(ProductAttributeValueFields.ATTRIBUTE);
+        Entity attributeValue = productAttributeValue.getBelongsToField(ProductAttributeValueFields.ATTRIBUTE_VALUE);
+
+        if (AttributeDataType.CALCULATED.getStringValue().equals(attribute.getStringField(AttributeFields.DATA_TYPE))) {
+            if (Objects.isNull(attributeValue)) {
+                productAttributeValue.setField(
+                        ProductAttributeValueFields.VALUE, null);
+            }
+        }
 
         if (AttributeValueType.NUMERIC.getStringValue().equals(attribute.getStringField(AttributeFields.VALUE_TYPE))) {
             Either<Exception, Optional<BigDecimal>> eitherNumber = BigDecimalUtils.tryParseAndIgnoreSeparator(
