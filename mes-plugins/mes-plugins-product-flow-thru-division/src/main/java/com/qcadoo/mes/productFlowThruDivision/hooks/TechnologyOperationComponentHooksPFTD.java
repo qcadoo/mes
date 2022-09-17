@@ -54,6 +54,9 @@ public class TechnologyOperationComponentHooksPFTD {
     }
 
     private void fillRangeAndDivision(DataDefinition technologyOperationComponentDD, Entity technologyOperationComponent) {
+        if(technologyOperationComponent.isCopied()) {
+            return;
+        }
         Entity division = technologyOperationComponent.getBelongsToField(TechnologyOperationComponentFields.DIVISION);
         if (division != null) {
             Long technologyOperationComponentId = technologyOperationComponent.getId();

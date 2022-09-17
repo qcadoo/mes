@@ -204,6 +204,21 @@ public class ProductHooks {
         return true;
     }
 
+    public boolean validateProductAttributeValues(final DataDefinition productDD, final Entity product) {
+        String entityType = product.getStringField(ProductFields.ENTITY_TYPE);
+        List<Entity> productAttributeValues = product.getHasManyField(ProductFields.PRODUCT_ATTRIBUTE_VALUES);
+
+        if (ProductFamilyElementType.PARTICULAR_PRODUCT.getStringValue().equals(entityType) &&
+                productAttributeValues.stream().anyMatch(productAttributeValue ->
+                        Objects.isNull(productAttributeValue.getStringField(ProductAttributeValueFields.VALUE)))) {
+            product.addGlobalError("basic.product.productAttributeValues.error.valuesEmpty");
+
+            return false;
+        }
+
+        return true;
+    }
+
     public void setCriteriaModifierParameters(final ViewDefinitionState view) {
         LookupComponent parentLookup = (LookupComponent) view.getComponentByReference(ProductFields.PARENT);
         FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);

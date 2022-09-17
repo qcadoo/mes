@@ -198,6 +198,7 @@
         <security:role identifier="ROLE_LINE_CHANGEOVER_NORMS_IN_ORDERS"/>
         <security:role identifier="ROLE_PRODUCTION_PER_SHIFT"/>
         <security:role identifier="ROLE_ACTIONS"/>
+        <security:role identifier="ROLE_TOOLS"/>
         <security:role identifier="ROLE_PRODUCTION_REGISTRATION_TERMINAL"/>
         <security:role identifier="ROLE_PROCESS_CONFIRMATION_TERMINAL"/>
         <security:role identifier="ROLE_REPAIR_ORDERS"/>
@@ -301,6 +302,7 @@
         <model:model model="reportColumnWidth" resource="model/reportColumnWidth.xml"/>
 
         <model:model model="workstation" resource="model/workstation.xml"/>
+        <model:model model="workstationDto" resource="model/workstationDto.xml"/>
         <model:model model="workstationAttachment" resource="model/workstationAttachment.xml"/>
 
         <model:model model="factory" resource="model/factory.xml"/>

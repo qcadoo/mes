@@ -29,9 +29,9 @@
        xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
 
     <fields>
-        <belongsTo name="product" plugin="basic" model="product"/>
         <belongsTo name="productsBySizeHelper" plugin="masterOrders" model="productsBySizeHelper"
                    required="true"/>
+        <belongsTo name="product" plugin="basic" model="product"/>
         <decimal name="quantity"/>
     </fields>
 

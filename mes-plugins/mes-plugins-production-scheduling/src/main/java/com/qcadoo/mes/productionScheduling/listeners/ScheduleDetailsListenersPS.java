@@ -145,8 +145,8 @@ public class ScheduleDetailsListenersPS {
                             operationRuns);
             List<Entity> operationComponents = technology.getHasManyField(TechnologyFields.OPERATION_COMPONENTS);
             for (Entity operationComponent : operationComponents) {
-                BigDecimal operationComponentRuns = BigDecimalUtils
-                        .convertNullToZero(operationRuns.get(operationComponent.getId()));
+                BigDecimal operationComponentRuns = numberService.setScaleWithDefaultMathContext(BigDecimalUtils
+                        .convertNullToZero(operationRuns.get(operationComponent.getId())));
                 BigDecimal staffFactor = getStaffFactor(operationComponent);
                 OperationWorkTime operationWorkTime = operationWorkTimeService.estimateTechOperationWorkTime(operationComponent,
                         operationComponentRuns, includeTpz, false, false, staffFactor);

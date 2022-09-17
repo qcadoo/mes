@@ -40,25 +40,24 @@
                 <bigButton name="changeTechnologyParameters" icon="genealogyIcon24.png">
                     <script>
                         <![CDATA[
-					this.addOnChangeListener({
-						onClick: function() {
-						    #{form}.performEvent({
-                                name : 'changeTechnologyParameters'
-							});
-						}
-					});
+                            this.addOnChangeListener({
+                                onClick: function() {
+                                    #{form}.performEvent({
+                                        name : 'changeTechnologyParameters'
+                                    });
+                                }
+                            });
 
+                            #{form}.addOnChangeListener({
+                                onSetValue: function(value) {
+                                    var generated = #{generated}.getValue().content.value;
 
-					#{form}.addOnChangeListener({
-					    onSetValue: function(value) {
-								var generated = #{generated}.getValue().content.value;
-
-                                if (generated && generated == true) {
-									    #{window}.performBackWithoutConfirm();
-								}
-						}
-					});
-				]]>
+                                    if (generated && generated == true) {
+                                        #{window}.performBackWithoutConfirm();
+                                    }
+                                }
+                            });
+                        ]]>
                     </script>
                 </bigButton>
             </group>
@@ -75,7 +74,9 @@
 							    var changePerformanceNorm = #{changePerformanceNorm}.getValue().content.value;
 							    var changeGroup = #{changeGroup}.getValue().content.value;
 							    var updateOperationTimeNorms = #{updateOperationTimeNorms}.getValue().content.value;
-                                if (changePerformanceNorm == '0' && changeGroup == '0' && updateOperationTimeNorms == '0') {
+							    var updateOperationWorkstations = #{updateOperationWorkstations}.getValue().content.value;
+                                if (changePerformanceNorm == '0' && changeGroup == '0'
+                                    && updateOperationTimeNorms == '0' && updateOperationWorkstations == '0') {
                                     changeTechnologyParameters.disable();
                                 }
 						    }
@@ -84,7 +85,7 @@
           			]]>
                 </script>
                 <component type="gridLayout" name="gridLayout" columns="3"
-                           rows="5">
+                           rows="6">
                     <layoutElement column="1" row="1">
                         <component type="checkbox" name="generated" defaultVisible="false"
                                    reference="generated" defaultEnabled="false"/>
@@ -140,6 +141,16 @@
                         <component type="checkbox" name="updateOperationTimeNorms"
                                    reference="updateOperationTimeNorms"
                                    field="#{form}.updateOperationTimeNorms" hasDescription="true">
+                            <option type="labelWidth" value="35" />
+                            <listener event="onChange"
+                                      class="com.qcadoo.view.api.listeners.RerenderListener"
+                                      method="onChangeRerender"/>
+                        </component>
+                    </layoutElement>
+                    <layoutElement column="1" row="6">
+                        <component type="checkbox" name="updateOperationWorkstations"
+                                   reference="updateOperationWorkstations"
+                                   field="#{form}.updateOperationWorkstations" hasDescription="true">
                             <option type="labelWidth" value="35" />
                             <listener event="onChange"
                                       class="com.qcadoo.view.api.listeners.RerenderListener"

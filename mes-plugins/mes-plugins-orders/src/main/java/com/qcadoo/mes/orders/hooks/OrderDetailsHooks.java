@@ -416,7 +416,7 @@ public class OrderDetailsHooks {
             List<String> references = Lists.newArrayList(OrderFields.CORRECTED_DATE_FROM, OrderFields.CORRECTED_DATE_TO,
                     OrderFields.REASON_TYPES_CORRECTION_DATE_FROM, OrderFields.COMMENT_REASON_TYPE_CORRECTION_DATE_FROM,
                     OrderFields.REASON_TYPES_CORRECTION_DATE_TO, OrderFields.COMMENT_REASON_TYPE_CORRECTION_DATE_TO,
-                    OrderFields.DATE_FROM, OrderFields.DATE_TO);
+                    OrderFields.DATE_FROM, OrderFields.DATE_TO, OrderFields.EXPIRATION_DATE);
 
             boolean canChangeProdLineForAcceptedOrders = parameterService.getParameter()
                     .getBooleanField(ParameterFieldsO.CAN_CHANGE_PROD_LINE_FOR_ACCEPTED_ORDERS);
@@ -434,7 +434,7 @@ public class OrderDetailsHooks {
             List<String> references = Lists.newArrayList(OrderFields.DATE_FROM, OrderFields.DATE_TO,
                     OrderFields.CORRECTED_DATE_TO, OrderFields.REASON_TYPES_CORRECTION_DATE_TO,
                     OrderFields.COMMENT_REASON_TYPE_CORRECTION_DATE_TO, OrderFields.EFFECTIVE_DATE_FROM,
-                    L_COMMENT_REASON_TYPE_DEVIATIONS_OF_EFFECTIVE_START);
+                    L_COMMENT_REASON_TYPE_DEVIATIONS_OF_EFFECTIVE_START, OrderFields.EXPIRATION_DATE);
 
             changedEnabledFields(view, references, true);
             changedEnabledAwesomeDynamicListComponents(view, Lists.newArrayList(OrderFields.REASON_TYPES_CORRECTION_DATE_FROM),

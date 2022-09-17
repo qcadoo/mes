@@ -3,19 +3,19 @@
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
  * Version: 1.4
- *
+ * <p>
  * This file is part of Qcadoo.
- *
+ * <p>
  * Qcadoo is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation; either version 3 of the License,
  * or (at your option) any later version.
- *
+ * <p>
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty
  * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU Affero General Public License for more details.
- *
+ * <p>
  * You should have received a copy of the GNU Affero General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
@@ -169,7 +169,7 @@ public class ProductionTrackingHooks {
                         Optional<ErrorMessage> msg = trackingRecord.getGlobalErrors().stream()
                                 .filter(em -> em.getMessage().equals("advancedGenealogyForOrders.trackingRecord.validation.error.onlyOneBatchTrackingForOrder"))
                                 .findFirst();
-                        if(msg.isPresent()) {
+                        if (msg.isPresent()) {
                             productionTracking.addGlobalError("advancedGenealogyForOrders.trackingRecord.validation.error.onlyOneBatchTrackingForOrder");
                         } else {
                             productionTracking.addError(productionTrackingDD.getField(ProductionTrackingFields.BATCH_NUMBER),
@@ -208,20 +208,24 @@ public class ProductionTrackingHooks {
 
     private void fillExpirationDate(final Entity productionTracking, final Entity order) {
         if (Objects.nonNull(order) && Objects.isNull(productionTracking.getDateField(ProductionTrackingFields.EXPIRATION_DATE))) {
-            Entity product = order.getBelongsToField(OrderFields.PRODUCT);
-            Integer expiryDateValidity = product.getIntegerField(ProductFields.EXPIRY_DATE_VALIDITY);
-            String expiryDateValidityUnit = product.getStringField(ProductFields.EXPIRY_DATE_VALIDITY_UNIT);
+            if (Objects.nonNull(order.getDateField(OrderFields.EXPIRATION_DATE))) {
+                productionTracking.setField(ProductionTrackingFields.EXPIRATION_DATE, order.getDateField(OrderFields.EXPIRATION_DATE));
+            } else {
+                Entity product = order.getBelongsToField(OrderFields.PRODUCT);
+                Integer expiryDateValidity = product.getIntegerField(ProductFields.EXPIRY_DATE_VALIDITY);
+                String expiryDateValidityUnit = product.getStringField(ProductFields.EXPIRY_DATE_VALIDITY_UNIT);
 
-            if (Objects.nonNull(expiryDateValidity)) {
-                Date expirationDate;
+                if (Objects.nonNull(expiryDateValidity)) {
+                    Date expirationDate;
 
-                if (ExpiryDateValidityUnit.DAYS.getStringValue().equals(expiryDateValidityUnit)) {
-                    expirationDate = new DateTime(order.getDateField(OrderFields.START_DATE)).plusDays(expiryDateValidity).toDate();
-                } else {
-                    expirationDate = new DateTime(order.getDateField(OrderFields.START_DATE)).plusMonths(expiryDateValidity).toDate();
+                    if (ExpiryDateValidityUnit.DAYS.getStringValue().equals(expiryDateValidityUnit)) {
+                        expirationDate = new DateTime(order.getDateField(OrderFields.START_DATE)).plusDays(expiryDateValidity).toDate();
+                    } else {
+                        expirationDate = new DateTime(order.getDateField(OrderFields.START_DATE)).plusMonths(expiryDateValidity).toDate();
+                    }
+
+                    productionTracking.setField(ProductionTrackingFields.EXPIRATION_DATE, expirationDate);
                 }
-
-                productionTracking.setField(ProductionTrackingFields.EXPIRATION_DATE, expirationDate);
             }
         }
     }
@@ -233,7 +237,7 @@ public class ProductionTrackingHooks {
     public void onDelete(final DataDefinition productionTrackingDD, final Entity productionTracking) {
         productionTrackingService.unCorrect(productionTracking);
         productionTrackingListenerService.updateOrderReportedQuantityOnRemove(productionTracking);
-        
+
         logPerformDelete(productionTracking);
     }
 

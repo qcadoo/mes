@@ -672,6 +672,12 @@
                             <option type="fieldCode" value="number"/>
                         </component>
                     </layoutElement>
+                    <layoutElement column="3" row="3">
+                        <component type="calendar" name="expirationDate"
+                                   field="#{form}.expirationDate" reference="expirationDate"
+                                   defaultEnabled="true" hasDescription="true">
+                        </component>
+                    </layoutElement>
                 </component>
 
                 <option type="header" value="true"/>

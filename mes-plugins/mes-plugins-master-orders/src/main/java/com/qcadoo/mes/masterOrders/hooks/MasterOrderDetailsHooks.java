@@ -23,17 +23,6 @@
  */
 package com.qcadoo.mes.masterOrders.hooks;
 
-import static com.qcadoo.mes.masterOrders.constants.MasterOrderFields.ADD_MASTER_PREFIX_TO_NUMBER;
-import static com.qcadoo.mes.masterOrders.constants.MasterOrderFields.NUMBER;
-
-import java.util.Collections;
-import java.util.Objects;
-
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
-import org.springframework.stereotype.Service;
-
 import com.qcadoo.mes.basic.constants.CompanyFields;
 import com.qcadoo.mes.masterOrders.constants.MasterOrderFields;
 import com.qcadoo.mes.masterOrders.constants.MasterOrderState;
@@ -44,26 +33,40 @@ import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.ExpressionService;
 import com.qcadoo.plugin.api.PluginUtils;
 import com.qcadoo.view.api.ViewDefinitionState;
-import com.qcadoo.view.api.components.FieldComponent;
-import com.qcadoo.view.api.components.FormComponent;
-import com.qcadoo.view.api.components.GridComponent;
-import com.qcadoo.view.api.components.LookupComponent;
-import com.qcadoo.view.api.components.WindowComponent;
+import com.qcadoo.view.api.components.*;
 import com.qcadoo.view.api.components.lookup.FilterValueHolder;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.api.ribbon.RibbonGroup;
 import com.qcadoo.view.constants.QcadooViewConstants;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.stereotype.Service;
+
+import java.util.Collections;
+import java.util.Objects;
+
+import static com.qcadoo.mes.masterOrders.constants.MasterOrderFields.ADD_MASTER_PREFIX_TO_NUMBER;
+import static com.qcadoo.mes.masterOrders.constants.MasterOrderFields.NUMBER;
 
 @Service
 public class MasterOrderDetailsHooks {
+
+    private static final String L_ORDERS_LOOKUP = "ordersLookup";
 
     private static final String L_ORDERS = "orders";
 
     private static final String L_CREATE_ORDER = "createOrder";
 
-    private static final String L_ORDERS_LOOKUP = "ordersLookup";
-    public static final String L_DOCUMENTS = "documents";
-    public static final String L_CREATE_RELEASE_DOCUMENT = "createReleaseDocument";
+    private static final String L_DOCUMENTS = "documents";
+
+    private static final String L_GENERATE_ORDERS = "generateOrders";
+
+    private static final String L_CREATE_RELEASE_DOCUMENT = "createReleaseDocument";
+
+    private static final String L_SIZE_ACTIONS = "sizeActions";
+
+    private static final String L_ADD_PRODUCTS_BY_ATTRIBUTE = "addProductsByAttribute";
 
     @Autowired
     private NamedParameterJdbcTemplate jdbcTemplate;
@@ -86,61 +89,16 @@ public class MasterOrderDetailsHooks {
     }
 
     public void initState(final ViewDefinitionState view) {
-        FormComponent orderForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
+        FormComponent masterOrderForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         FieldComponent stateField = (FieldComponent) view.getComponentByReference(MasterOrderFields.STATE);
 
         stateField.setEnabled(false);
 
-        if (orderForm.getEntityId() != null) {
+        if (Objects.nonNull(masterOrderForm.getEntityId())) {
             return;
         }
 
         stateField.setFieldValue(MasterOrderState.NEW.getStringValue());
-    }
-
-    public void ribbonRender(final ViewDefinitionState view) {
-        GridComponent masterOrderProductsGrid = (GridComponent) view
-                .getComponentByReference(MasterOrderFields.MASTER_ORDER_PRODUCTS);
-
-        WindowComponent window = (WindowComponent) view.getComponentByReference(QcadooViewConstants.L_WINDOW);
-        RibbonGroup orders = (RibbonGroup) window.getRibbon().getGroupByName(L_ORDERS);
-        RibbonActionItem createOrder = (RibbonActionItem) orders.getItemByName(L_CREATE_ORDER);
-
-        RibbonGroup documents = (RibbonGroup) window.getRibbon().getGroupByName(L_DOCUMENTS);
-        RibbonActionItem createReleaseDocument = (RibbonActionItem) documents.getItemByName(L_CREATE_RELEASE_DOCUMENT);
-        createReleaseDocument.setMessage("masterOrders.ribbon.documents.createReleaseDocument.message");
-        if (masterOrderProductsGrid.getSelectedEntities().isEmpty()) {
-            createOrder.setEnabled(false);
-            createReleaseDocument.setEnabled(false);
-        } else {
-            createOrder.setEnabled(masterOrderProductsGrid.getSelectedEntities().size() == 1);
-            createReleaseDocument.setEnabled(true);
-        }
-
-        if (PluginUtils.isEnabled("goodFood") && !masterOrderProductsGrid.getEntities().isEmpty()) {
-            createOrder.setEnabled(true);
-        } else {
-            createOrder.setMessage("masterOrders.order.ribbon.message.selectOneProduct");
-        }
-        createOrder.requestUpdate(true);
-        createReleaseDocument.requestUpdate(true);
-        toggleGenerateButton(view);
-        window.requestRibbonRender();
-    }
-
-    private void toggleGenerateButton(final ViewDefinitionState view) {
-        WindowComponent window = (WindowComponent) view.getComponentByReference(QcadooViewConstants.L_WINDOW);
-        RibbonGroup orders = (RibbonGroup) window.getRibbon().getGroupByName(L_ORDERS);
-        RibbonActionItem createOrder = (RibbonActionItem) orders.getItemByName("generateOrders");
-
-        createOrder.setMessage("qcadooView.ribbon.orders.generateOrders.message");
-
-        GridComponent masterOrderProductsGrid = (GridComponent) view
-                .getComponentByReference(MasterOrderFields.MASTER_ORDER_PRODUCTS);
-
-        createOrder.setEnabled(!masterOrderProductsGrid.getSelectedEntities().isEmpty());
-
-        createOrder.requestUpdate(true);
     }
 
     private void setOrderLookupCriteriaModifier(final ViewDefinitionState view) {
@@ -167,30 +125,15 @@ public class MasterOrderDetailsHooks {
         }
     }
 
-    private boolean checkIfShouldInsertNumber(final ViewDefinitionState state) {
-        FormComponent form = (FormComponent) state.getComponentByReference(QcadooViewConstants.L_FORM);
-        FieldComponent number = (FieldComponent) state.getComponentByReference(MasterOrderFields.NUMBER);
-
-        if (form.getEntityId() != null) {
-            // form is already saved
-            return false;
-        }
-        if (StringUtils.isNotBlank((String) number.getFieldValue())) {
-            // number is already chosen
-            return false;
-        }
-        // there is a validation message for that field
-        return !number.isHasError();
-    }
-
     private void disableFields(final ViewDefinitionState view) {
-        FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
-        Entity masterOrder = form.getEntity();
-        Entity company = masterOrder.getBelongsToField(MasterOrderFields.COMPANY);
+        FormComponent masterOrderForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         LookupComponent addressLookup = (LookupComponent) view.getComponentByReference(MasterOrderFields.ADDRESS);
         FieldComponent companyCategoryField = (FieldComponent) view.getComponentByReference(MasterOrderFields.COMPANY_CATEGORY);
 
-        if (company == null) {
+        Entity masterOrder = masterOrderForm.getEntity();
+        Entity company = masterOrder.getBelongsToField(MasterOrderFields.COMPANY);
+
+        if (Objects.isNull(company)) {
             addressLookup.setFieldValue(null);
             addressLookup.setEnabled(false);
             companyCategoryField.setFieldValue(null);
@@ -198,6 +141,82 @@ public class MasterOrderDetailsHooks {
             addressLookup.setEnabled(true);
             companyCategoryField.setFieldValue(company.getStringField(CompanyFields.CONTRACTOR_CATEGORY));
         }
+    }
+
+    public void ribbonRender(final ViewDefinitionState view) {
+        FormComponent masterOrderForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
+        GridComponent masterOrderProductsGrid = (GridComponent) view
+                .getComponentByReference(MasterOrderFields.MASTER_ORDER_PRODUCTS);
+
+        WindowComponent window = (WindowComponent) view.getComponentByReference(QcadooViewConstants.L_WINDOW);
+        RibbonGroup ordersRibbonGroup = window.getRibbon().getGroupByName(L_ORDERS);
+        RibbonActionItem createOrderRibbonActionItem = ordersRibbonGroup.getItemByName(L_CREATE_ORDER);
+
+        RibbonGroup documentsRibbonGroup = window.getRibbon().getGroupByName(L_DOCUMENTS);
+        RibbonActionItem createReleaseDocumentRibbonActionItem = documentsRibbonGroup.getItemByName(L_CREATE_RELEASE_DOCUMENT);
+        createReleaseDocumentRibbonActionItem.setMessage("masterOrders.ribbon.documents.createReleaseDocument.message");
+
+        RibbonGroup sizeActionsGroup = window.getRibbon().getGroupByName(L_SIZE_ACTIONS);
+        RibbonActionItem addProductsByAttributeRibbonActionItem = sizeActionsGroup.getItemByName(L_ADD_PRODUCTS_BY_ATTRIBUTE);
+
+        Entity masterOrder = masterOrderForm.getEntity();
+
+        String state = masterOrder.getStringField(MasterOrderFields.STATE);
+
+        boolean isSaved = Objects.nonNull(masterOrder.getId());
+        boolean isStateNotCompletedAndDeclined = !MasterOrderState.COMPLETED.getStringValue().equals(state) && !MasterOrderState.DECLINED.getStringValue().equals(state);
+
+        if (masterOrderProductsGrid.getSelectedEntities().isEmpty()) {
+            createOrderRibbonActionItem.setEnabled(false);
+            createReleaseDocumentRibbonActionItem.setEnabled(false);
+        } else {
+            createOrderRibbonActionItem.setEnabled(masterOrderProductsGrid.getSelectedEntities().size() == 1);
+            createReleaseDocumentRibbonActionItem.setEnabled(true);
+        }
+
+        if (PluginUtils.isEnabled("goodFood") && !masterOrderProductsGrid.getEntities().isEmpty()) {
+            createOrderRibbonActionItem.setEnabled(true);
+        } else {
+            createOrderRibbonActionItem.setMessage("masterOrders.order.ribbon.message.selectOneProduct");
+        }
+
+        createOrderRibbonActionItem.requestUpdate(true);
+        createReleaseDocumentRibbonActionItem.requestUpdate(true);
+        toggleGenerateOrdersButton(view);
+        addProductsByAttributeRibbonActionItem.setEnabled(isSaved && isStateNotCompletedAndDeclined);
+        addProductsByAttributeRibbonActionItem.requestUpdate(true);
+        window.requestRibbonRender();
+    }
+
+    private void toggleGenerateOrdersButton(final ViewDefinitionState view) {
+        WindowComponent window = (WindowComponent) view.getComponentByReference(QcadooViewConstants.L_WINDOW);
+        RibbonGroup ordersRibbonGroup = window.getRibbon().getGroupByName(L_ORDERS);
+        RibbonActionItem generateOrdersRibbonActionItem = ordersRibbonGroup.getItemByName(L_GENERATE_ORDERS);
+
+        generateOrdersRibbonActionItem.setMessage("qcadooView.ribbon.orders.generateOrders.message");
+
+        GridComponent masterOrderProductsGrid = (GridComponent) view
+                .getComponentByReference(MasterOrderFields.MASTER_ORDER_PRODUCTS);
+
+        generateOrdersRibbonActionItem.setEnabled(!masterOrderProductsGrid.getSelectedEntities().isEmpty());
+
+        generateOrdersRibbonActionItem.requestUpdate(true);
+    }
+
+    private boolean checkIfShouldInsertNumber(final ViewDefinitionState state) {
+        FormComponent masterOrderForm = (FormComponent) state.getComponentByReference(QcadooViewConstants.L_FORM);
+        FieldComponent numberField = (FieldComponent) state.getComponentByReference(MasterOrderFields.NUMBER);
+
+        if (Objects.nonNull(masterOrderForm.getEntityId())) {
+            // form is already saved
+            return false;
+        }
+        if (StringUtils.isNotBlank((String) numberField.getFieldValue())) {
+            // number is already chosen
+            return false;
+        }
+        // there is a validation message for that field
+        return !numberField.isHasError();
     }
 
     public void fillDefaultTechnology(final ViewDefinitionState view) {
@@ -224,7 +243,6 @@ public class MasterOrderDetailsHooks {
                 technologyLookup.setFieldValue(defaultTechnology.getId());
             }
         }
-
     }
 
 }

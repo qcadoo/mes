@@ -123,6 +123,9 @@
         <menu:menu-item name="sourceCostReports" category="maintenance" view="sourceCostReports"
                         defaultAuthorizationRole="ROLE_MAINTENANCE"/>
 
+        <menu:menu-item name="toolsList" category="maintenance" view="toolsList"
+                        defaultAuthorizationRole="ROLE_TOOLS"/>
+
         <view:view resource="view/plannedEventsList.xml"/>
         <view:view resource="view/plannedEventDetails.xml"/>
         <view:view resource="view/plannedEventActions.xml"/>
@@ -138,10 +141,18 @@
         <view:view resource="view/workTimeForUserList.xml"/>
         <view:view resource="view/addActionsForPlannedEvent.xml"/>
 
+        <view:view resource="view/toolsList.xml"/>
+        <view:view resource="view/toolDetails.xml"/>
+        <view:view resource="view/operationToolDetails.xml"/>
+        <view:view resource="view/technologyOperationToolDetails.xml"/>
+
         <view:view-tab resource="view/tabExtensions/generalParameters.xml"/>
 
         <view:view-tab resource="view/tabExtensions/documentDetails.xml"/>
         <view:view-tab resource="view/tabExtensions/factoryDetails.xml"/>
+
+        <view:view-tab resource="view/tabExtensions/operationDetails.xml"/>
+        <view:view-tab resource="view/tabExtensions/technologyOperationComponentDetails.xml"/>
 
         <!-- view extensions -->
 
@@ -174,6 +185,13 @@
         <model:model model="sourceCostReportFilter" resource="model/sourceCostReportFilter.xml"/>
 
         <model:model model="workTimeForUserDto" resource="model/workTimeForUserDto.xml"/>
+
+        <model:model model="tool" resource="model/tool.xml"/>
+        <model:model model="toolAttachment" resource="model/toolAttachment.xml"/>
+        <model:model model="operationTool" resource="model/operationTool.xml"/>
+        <model:model model="technologyOperationTool" resource="model/technologyOperationTool.xml"/>
+
+        <model:dictionary name="toolCategory"/>
 
         <!-- model extensions -->
 
@@ -240,6 +258,20 @@
                            cascade="nullify"
                            joinField="factory" copyable="false"/>
         </model:model-field>
+
+        <model:model-field plugin="technologies" model="operation">
+            <model:hasMany name="tools" model="operationTool" plugin="cmmsMachineParts"
+                           cascade="delete"
+                           joinField="operation" copyable="true"/>
+        </model:model-field>
+
+        <model:model-field plugin="technologies" model="technologyOperationComponent">
+            <model:hasMany name="tools" model="technologyOperationTool" plugin="cmmsMachineParts"
+                           cascade="delete"
+                           joinField="technologyOperationComponent" copyable="true"/>
+        </model:model-field>
+
+
         <model:model-field plugin="basic" model="factory">
             <model:belongsTo name="warehouse" model="location" plugin="materialFlow"/>
         </model:model-field>
@@ -371,6 +403,13 @@
             <model:validatesWith
                     class="com.qcadoo.mes.cmmsMachineParts.validators.DocumentValidatorsCMP"
                     method="checkSelectedEvents"/>
+        </model:model-hook>
+
+
+        <model:model-hook plugin="technologies" model="technologyOperationComponent">
+            <model:onCreate
+                    class="com.qcadoo.mes.cmmsMachineParts.hooks.TechnologyOperationComponentHooksCMP"
+                    method="onCreate" />
         </model:model-hook>
 
         <view:view-listener plugin="cmmsMachineParts" view="machinePartDetails"

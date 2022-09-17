@@ -100,6 +100,9 @@
         <hasMany name="productsBySizeHelpers" joinField="masterOrder" model="productsBySizeHelper"
                  plugin="masterOrders" cascade="nullify"/>
 
+        <hasMany name="productsByAttributeHelpers" joinField="masterOrder" model="productsByAttributeHelper"
+                 plugin="masterOrders" cascade="nullify"/>
+
         <belongsTo name="salesPlan" model="salesPlan"/>
 
         <dictionary name="companyCategory" dictionary="contractorCategory" persistent="false"/>

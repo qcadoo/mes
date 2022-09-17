@@ -43,35 +43,39 @@
                              action="#{form}.performSaveAndClear;"/>
                 <smallButton name="copy" icon="copyIcon16.png" state="disabled" action="#{form}.performCopy;"
                              accesskey="c">
-                    <script><![CDATA[
-				#{form}.addOnChangeListener({
-					onSetValue: function(value) {
-						if (!value || !value.content)
-							return;
-						if (value.content.entityId) {
-							this.enable();
-						} else {
-							this.disable();
-						}
-					}
-				});
-			]]></script>
+                    <script>
+                        <![CDATA[
+                            #{form}.addOnChangeListener({
+                                onSetValue: function(value) {
+                                    if (!value || !value.content)
+                                        return;
+                                    if (value.content.entityId) {
+                                        this.enable();
+                                    } else {
+                                        this.disable();
+                                    }
+                                }
+                            });
+                        ]]>
+                    </script>
                 </smallButton>
                 <smallButton name="delete" icon="deleteIcon16.png" state="disabled" action="#{form}.performDelete;"
                              accesskey="d">
-                    <script><![CDATA[
-                #{form}.addOnChangeListener({
-					onSetValue: function(value) {
-						if (!value || !value.content)
-							return;
-						if (value.content.entityId) {
-							this.enable();
-						} else {
-							this.disable();
-						}
-					}
-				});
-			]]></script>
+                    <script>
+                        <![CDATA[
+                            #{form}.addOnChangeListener({
+                                onSetValue: function(value) {
+                                    if (!value || !value.content)
+                                        return;
+                                    if (value.content.entityId) {
+                                        this.enable();
+                                    } else {
+                                        this.disable();
+                                    }
+                                }
+                            });
+                        ]]>
+                    </script>
                 </smallButton>
             </group>
 
@@ -79,38 +83,43 @@
                 <bigButton name="refresh" icon="updateIcon24.png" state="enabled" action="#{form}.performRefresh;"
                            accesskey="r"/>
             </group>
+
             <group name="states" if="#view.getComponentByReference('form').dataDefinition.activable">
                 <smallButton name="activate" icon="unactiveVisibleIcon.png" state="disabled"
                              action="#{form}.performActivate;">
-                    <script><![CDATA[
-				#{form}.addOnChangeListener({
-					onSetValue: function(value) {
-						if (!value || !value.content)
-							return;
-						if (value.content.entityId && !value.content.isActive) {
-							this.enable();
-						} else {
-							this.disable();
-						}
-					}
-				});
-			]]></script>
+                    <script>
+                        <![CDATA[
+                            #{form}.addOnChangeListener({
+                                onSetValue: function(value) {
+                                    if (!value || !value.content)
+                                        return;
+                                    if (value.content.entityId && !value.content.isActive) {
+                                        this.enable();
+                                    } else {
+                                        this.disable();
+                                    }
+                                }
+                            });
+                        ]]>
+                    </script>
                 </smallButton>
                 <smallButton name="deactivate" icon="unactiveNotVisibleIcon.png" state="disabled"
                              action="#{form}.performDeactivate;">
-                    <script><![CDATA[
-                #{form}.addOnChangeListener({
-					onSetValue: function(value) {
-						if (!value || !value.content)
-							return;
-						if (value.content.entityId && value.content.isActive) {
-							this.enable();
-						} else {
-							this.disable();
-						}
-					}
-				});
-			]]></script>
+                    <script>
+                        <![CDATA[
+                            #{form}.addOnChangeListener({
+                                onSetValue: function(value) {
+                                    if (!value || !value.content)
+                                        return;
+                                    if (value.content.entityId && value.content.isActive) {
+                                        this.enable();
+                                    } else {
+                                        this.disable();
+                                    }
+                                }
+                            });
+                        ]]>
+                    </script>
                 </smallButton>
             </group>
 
@@ -144,33 +153,60 @@
                     </script>
                 </smallButton>
             </group>
+
             <group name="sizeActions">
                 <bigButton name="addProductsBySize" icon="newIcon24.png">
                     <script>
                         <![CDATA[
 							this.addOnChangeListener({
 								onClick: function() {
-									if(window.canClose()) {
+									if (window.canClose()) {
 										#{form}.performEvent('addProductsBySize', []);
 									}
 								}
 							});
 
-							  #{form}.addOnChangeListener({
-					onSetValue: function(value) {
-						if (!value || !value.content)
-							return;
-						if (value.content.entityId) {
-							this.enable();
-						} else {
-							this.disable();
-						}
-					}
-				});
+							#{form}.addOnChangeListener({
+                                onSetValue: function(value) {
+                                    if (!value || !value.content)
+                                        return;
+                                    if (value.content.entityId) {
+                                        this.enable();
+                                    } else {
+                                        this.disable();
+                                    }
+                                }
+                            });
+						]]>
+                    </script>
+                </bigButton>
+                <bigButton name="addProductsByAttribute" icon="newIcon24.png">
+                    <script>
+                        <![CDATA[
+							this.addOnChangeListener({
+								onClick: function() {
+									if(window.canClose()) {
+										#{form}.performEvent('addProductsByAttribute', []);
+									}
+								}
+							});
+
+							#{form}.addOnChangeListener({
+                                onSetValue: function(value) {
+                                    if (!value || !value.content)
+                                        return;
+                                    if (value.content.entityId) {
+                                        this.enable();
+                                    } else {
+                                        this.disable();
+                                    }
+                                }
+                            });
 						]]>
                     </script>
                 </bigButton>
             </group>
+
             <group name="orders" defaultAuthorizationRole="ROLE_PLANNING_ORDERS">
                 <bigButton name="createOrder" icon="generateIcon24.png">
                     <script>
@@ -185,28 +221,30 @@
 						]]>
                     </script>
                 </bigButton>
+
                 <bigButton name="generateOrders" icon="generateIcon24.png" state="enabled">
                     <script>
                         <![CDATA[
                             this.addOnChangeListener({
                                 onClick: function() {
-                                        if(window.canClose()) {
-                                             #{form}.performEvent('generateOrders', []);
-                                        }
+                                    if (window.canClose()) {
+                                        #{form}.performEvent('generateOrders', []);
+                                    }
                                 }
                             });
                         ]]>
                     </script>
                 </bigButton>
             </group>
+
             <group name="documents" defaultAuthorizationRole="ROLE_PLANNING_ORDERS">
                 <bigButton name="createReleaseDocument" icon="generateIcon24.png">
                     <script>
                         <![CDATA[
 							this.addOnChangeListener({
 								onClick: function() {
-									if(window.canClose()) {
-										#{form}.performEvent('createReleaseDocument', []);
+									if (window.canClose()) {
+								        #{form}.performEvent('createReleaseDocument', []);
 									}
 								}
 							});
@@ -220,49 +258,45 @@
             <component type="form" name="masterOrderDetails" reference="form">
                 <script>
                     <![CDATA[
-
                        	var completeMasterOrder = #{window}.getRibbonItemOrNull("status.completeMasterOrder");
     					var declineMasterOrder = #{window}.getRibbonItemOrNull("status.declineMasterOrder");
 
                         this.addOnChangeListener({
-						onSetValue: function(value) {
-							if (! value || ! value.content) {
-								return;
-							}
+						    onSetValue: function(value) {
+                                if (! value || ! value.content) {
+                                    return;
+                                }
 
-						    if (! value.content.entityId) {
-						        return;
+                                if (! value.content.entityId) {
+                                    return;
+                                }
+
+                                var state = #{state}.getValue().content.value;
+                                if (!state) {
+                                    return;
+                                }
+
+                                if (state == "01new") {
+                                    completeMasterOrder.enable();
+                                    declineMasterOrder.enable();
+                                } else if (state == "02inExecution") {
+                                    completeMasterOrder.enable();
+                                    declineMasterOrder.disable();
+                                } else if (state == "03completed") {
+                                    completeMasterOrder.disable();
+                                    declineMasterOrder.disable();
+                                } else if (state == "04declined") {
+                                    completeMasterOrder.disable();
+                                    declineMasterOrder.disable();
+                                }
 						    }
-
-							var state = #{state}.getValue().content.value;
-                            if (!state) {
-								return;
-							}
-
-							if (state == "01new") {
-                                completeMasterOrder.enable();
-                                declineMasterOrder.enable();
-							} else if (state == "02inExecution") {
-                                completeMasterOrder.enable();
-                                declineMasterOrder.disable();
-							} else if (state == "03completed") {
-                                completeMasterOrder.disable();
-                                declineMasterOrder.disable();
-							} else if (state == "04declined") {
-                                completeMasterOrder.disable();
-                                declineMasterOrder.disable();
-							}
-
-						}
-					});
-
-
+					    });
                     ]]>
                 </script>
+
                 <component type="gridLayout" name="gridLayout" columns="3"
                            rows="8">
                     <layoutElement column="1" row="1">
-
                         <component type="lookup" name="masterOrderDefinition" reference="masterOrderDefinition"
                                    field="#{form}.masterOrderDefinition">
                             <option type="column" name="name" fields="name" link="true"
@@ -302,6 +336,7 @@
                             <option type="expression"
                                     value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name"/>
                             <option type="fieldCode" value="number"/>
+
                             <criteriaModifier
                                     class="com.qcadoo.mes.masterOrders.criteriaModifier.SalesPlanCriteriaModifier"
                                     method="showOnlyDrafts"/>
@@ -355,6 +390,7 @@
 
                             <option type="expression" value="(#name == null) ? #number : #number + ' - ' + #name"/>
                             <option type="fieldCode" value="number"/>
+
                             <option type="labelWidth" value="40"/>
                         </component>
                     </layoutElement>
@@ -388,7 +424,6 @@
                             <option type="labelWidth" value="40"/>
                         </component>
                     </layoutElement>
-
                     <layoutElement column="3" row="1">
                         <component type="calendar" name="deadline" field="deadline"
                                    reference="deadline" hasDescription="true">
@@ -428,6 +463,10 @@
                           class="com.qcadoo.mes.masterOrders.listeners.MasterOrderDetailsListeners"
                           method="addProductsBySize"/>
 
+                <listener event="addProductsByAttribute"
+                          class="com.qcadoo.mes.masterOrders.listeners.MasterOrderDetailsListeners"
+                          method="addProductsByAttribute"/>
+
                 <listener event="createOrder"
                           class="com.qcadoo.mes.masterOrders.listeners.MasterOrderDetailsListeners"
                           method="createOrder"/>
@@ -440,7 +479,6 @@
                           class="com.qcadoo.mes.masterOrders.listeners.MasterOrderDetailsListeners"
                           method="createReleaseDocument"/>
 
-
                 <listener event="changeState"
                           class="com.qcadoo.mes.masterOrders.listeners.MasterOrderDetailsListeners"
                           method="changeState"/>
@@ -448,11 +486,9 @@
         </windowTab>
 
         <windowTab name="productsTab">
-
             <component type="grid" name="masterOrderProducts" useDto="true" source="#{form}.masterOrderProductsDto"
                        model="masterOrderPositionDto" reference="masterOrderProducts"
                        defaultAuthorizationRole="ROLE_PLANNING_MASTER_ORDERS">
-
                 <option type="column" name="productNumber" fields="productNumber"
                         link="true"  width="100"/>
                 <option type="column" name="productName" fields="productName"
@@ -465,13 +501,10 @@
                         fields="comments" width="100"/>
                 <option type="column" name="masterOrderQuantity"
                         fields="masterOrderQuantity" width="60"/>
-
                 <option type="column" name="cumulatedOrderQuantity"
                         fields="cumulatedMasterOrderQuantity" width="60"/>
-
                 <option type="column" name="leftToRelease"
                         fields="leftToRelease" width="60"/>
-
                 <option type="column" name="quantityTakenFromWarehouse" fields="quantityTakenFromWarehouse" width="45"/>
                 <option type="column" name="warehouseMinimumStateQuantity" fields="warehouseMinimumStateQuantity" width="45"/>
                 <option type="column" name="quantityRemainingToOrder" fields="quantityRemainingToOrder" width="45"/>
@@ -479,13 +512,10 @@
                         fields="producedOrderQuantity" width="60"
                         classesCondition="rowObject['producedOrderQuantity'] >= rowObject['masterOrderQuantity']"
                         classesNames="green-cell"/>
-
                 <option type="column" name="unit" fields="unit"
                          width="60"/>
-
                 <option type="column" name="assortmentName" fields="assortmentName"
                         width="120"/>
-
                 <option type="column" name="modelName"
                         fields="modelName" width="60"/>
 
@@ -509,15 +539,11 @@
                 <option type="footerRow" value="true"/>
                 <option type="columnsToSummary"
                         value="masterOrderQuantity,cumulatedOrderQuantity,producedOrderQuantity,leftToRelease,quantityRemainingToOrder,quantityTakenFromWarehouse"/>
+
                 <listener event="onSelectedEntityChange"
                           class="com.qcadoo.mes.masterOrders.listeners.MasterOrderDetailsListeners"
                           method="onProductsChange"/>
-
-
-
-
             </component>
-
         </windowTab>
 
         <windowTab name="ordersTab">
@@ -533,6 +559,7 @@
                 <option type="fieldCode" value="number"/>
 
                 <option type="multiselect" value="true"/>
+
                 <criteriaModifier
                         class="com.qcadoo.mes.masterOrders.criteriaModifier.OrderCriteriaModifier"
                         method="filterByMasterOrderNumber"/>
@@ -541,7 +568,6 @@
             <component type="grid" name="orders" useDto="true" source="#{form}.ordersDto"
                        model="orderListDto" reference="orders" plugin="orders"
                        defaultAuthorizationRole="ROLE_PLANNING_MASTER_ORDERS">
-
                 <option type="column" name="number" fields="number" link="true"/>
                 <option type="column" name="productNumber" fields="productNumber"
                        link="true"/>
@@ -549,8 +575,7 @@
                        link="true"/>
                 <option type="column" name="plannedQuantity" fields="plannedQuantity"/>
                 <option type="column" name="doneQuantity" fields="doneQuantity"/>
-                <option type="column" name="unit" fields="unit"
-                      />
+                <option type="column" name="unit" fields="unit"/>
                 <option type="column" name="state" fields="state"/>
                 <option type="column" name="startDate" fields="startDate"/>
                 <option type="column" name="finishDate" fields="finishDate"/>
@@ -574,15 +599,15 @@
                 <option type="multiselect" value="true"/>
                 <option type="deletable" value="true"/>
 
-
                 <option type="creatable" value="true"/>
+
                 <listener event="addExistingEntity"
                           method="onAddExistingEntity"
                           class="com.qcadoo.mes.masterOrders.listeners.MasterOrderDetailsListeners"/>
+
                 <listener event="remove"
                           method="onRemoveSelectedEntity"
                           class="com.qcadoo.mes.masterOrders.listeners.MasterOrderDetailsListeners"/>
-
             </component>
         </windowTab>
 

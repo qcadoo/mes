@@ -3098,6 +3098,42 @@ ALTER SEQUENCE arch_advancedgenealogyfororders_genealogyproductincomponent_id_ O
 
 
 --
+-- Name: arch_archiving; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE arch_archiving (
+    id bigint NOT NULL,
+    entityversion bigint NOT NULL,
+    masterordernumber character varying(255),
+    start timestamp without time zone,
+    finish timestamp without time zone,
+    createdate timestamp without time zone,
+    updatedate timestamp without time zone,
+    createuser character varying(255),
+    updateuser character varying(255)
+);
+
+
+--
+-- Name: arch_archiving_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE arch_archiving_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: arch_archiving_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE arch_archiving_id_seq OWNED BY arch_archiving.id;
+
+
+--
 -- Name: arch_assignmenttoshift_multiassignmenttoshift; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -9053,12 +9089,158 @@ CREATE TABLE cmmsmachineparts_machinepartattachment (
 
 
 --
+-- Name: cmmsmachineparts_tool; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE cmmsmachineparts_tool (
+    id bigint NOT NULL,
+    number character varying(255),
+    name character varying(1024),
+    description character varying(2048),
+    toolcategory character varying(255),
+    producer character varying(255),
+    inventorynumber character varying(255),
+    serialnumber character varying(255),
+    unit character varying(255)
+);
+
+
+--
+-- Name: cmmsmachineparts_toolattachment; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE cmmsmachineparts_toolattachment (
+    id bigint NOT NULL,
+    tool_id bigint,
+    attachment character varying(255),
+    name character varying(255),
+    size numeric(12,5),
+    ext character varying(255)
+);
+
+
+--
 -- Name: deliveries_deliveryattachment; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE deliveries_deliveryattachment (
     id bigint NOT NULL,
     delivery_id bigint,
+    attachment character varying(255),
+    name character varying(255),
+    size numeric(12,5),
+    ext character varying(255)
+);
+
+
+--
+-- Name: orders_order; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE orders_order (
+    id bigint NOT NULL,
+    number character varying(255),
+    name character varying(1024),
+    description character varying(2048),
+    commentreasontypecorrectiondatefrom character varying(255),
+    commentreasontypecorrectiondateto character varying(255),
+    commentreasondeviationeffectivestart character varying(255),
+    commentreasondeviationeffectiveend character varying(255),
+    externalnumber character varying(255),
+    commentreasontypedeviationsquantity character varying(255),
+    datefrom timestamp without time zone,
+    dateto timestamp without time zone,
+    effectivedatefrom timestamp without time zone,
+    effectivedateto timestamp without time zone,
+    deadline timestamp without time zone,
+    correcteddatefrom timestamp without time zone,
+    correcteddateto timestamp without time zone,
+    startdate timestamp without time zone,
+    finishdate timestamp without time zone,
+    state character varying(255),
+    company_id bigint,
+    product_id bigint,
+    technology_id bigint,
+    productionline_id bigint,
+    plannedquantity numeric(12,5),
+    donequantity numeric(12,5),
+    externalsynchronized boolean DEFAULT true,
+    commissionedplannedquantity numeric(12,5),
+    commissionedcorrectedquantity numeric(12,5),
+    amountofproductproduced numeric(12,5),
+    remainingamountofproducttoproduce numeric(12,5),
+    ownlinechangeoverduration integer,
+    registerproductiontime boolean,
+    registerquantityinproduct boolean,
+    laborworktime integer,
+    includetpz boolean,
+    inputproductsrequiredfortype character varying(255),
+    registerpiecework boolean,
+    generatedenddate timestamp without time zone,
+    machineworktime integer,
+    ownlinechangeover boolean DEFAULT false,
+    registerquantityoutproduct boolean,
+    operationdurationquantityunit character varying(255),
+    realizationtime integer,
+    calculate boolean,
+    includeadditionaltime boolean,
+    typeofproductionrecording character varying(255) DEFAULT '02cumulated'::character varying,
+    masterorder_id bigint,
+    active boolean DEFAULT true,
+    productpriceperunit numeric(19,5),
+    failuresyncmessage character varying(255),
+    targetstate character varying(255),
+    ignorerequiredcomponents boolean,
+    automaticallymoveoverusage boolean DEFAULT false,
+    updatecomponentsavailability boolean,
+    technologyprototype_id bigint,
+    level integer,
+    parent_id bigint,
+    ignoremissingcomponents boolean DEFAULT false,
+    masterorderproduct_id bigint,
+    dateschanged boolean DEFAULT false,
+    sourcecorrecteddatefrom timestamp without time zone,
+    sourcecorrecteddateto timestamp without time zone,
+    sourcestartdate timestamp without time zone,
+    sourcefinishdate timestamp without time zone,
+    batchnumber character varying(255),
+    root_id bigint,
+    includeordersforcomponent boolean,
+    plannedfinishallorders timestamp without time zone,
+    plannedstartallorders timestamp without time zone,
+    calculatedfinishallorders timestamp without time zone,
+    issubcontracted boolean DEFAULT false,
+    registerfilled boolean,
+    workplandelivered boolean DEFAULT false,
+    calculatedstartallorders timestamp without time zone,
+    scadacreatedorupdatestate character varying(255),
+    entityversion bigint DEFAULT 0,
+    workertochange character varying(255),
+    masterorderproductcomponent_id bigint,
+    wastesquantity numeric(12,5),
+    existsrepairorders boolean DEFAULT false,
+    ordercategory character varying(255),
+    address_id bigint,
+    finalproductiontracking boolean DEFAULT false,
+    updatefinishdate boolean DEFAULT false,
+    ordersgroup_id bigint,
+    plannedquantityforadditionalunit numeric,
+    directadditionalcost numeric,
+    directadditionalcostdescription character varying,
+    division_id bigint,
+    salesplan_id bigint,
+    reportedproductionquantity numeric(12,5),
+    expirationdate date
+);
+
+
+--
+-- Name: orders_orderattachment; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE orders_orderattachment (
+    id bigint NOT NULL,
+    order_id bigint,
     attachment character varying(255),
     name character varying(255),
     size numeric(12,5),
@@ -9273,7 +9455,35 @@ UNION ALL
     (8000000 + row_number() OVER ()) AS id,
     'basic/workstationDetails'::text AS pinnedtocorrespondingview
    FROM (basic_workstationattachment workstationattachment
-     LEFT JOIN basic_workstation workstation ON ((workstationattachment.workstation_id = workstation.id)));
+     LEFT JOIN basic_workstation workstation ON ((workstationattachment.workstation_id = workstation.id)))
+UNION ALL
+ SELECT '10orders'::text AS pinnedto,
+    o.number AS pinnedtoobjectidentifier,
+    o.name AS pinnedtoobjectidentifiername,
+    (o.id)::integer AS pinnedtoobjectid,
+    'orders_order'::text AS pinnedtomodelname,
+    orderattachment.attachment,
+    orderattachment.name,
+    orderattachment.size,
+    upper((orderattachment.ext)::text) AS ext,
+    (9000000 + row_number() OVER ()) AS id,
+    'orders/orderDetails'::text AS pinnedtocorrespondingview
+   FROM (orders_orderattachment orderattachment
+     LEFT JOIN orders_order o ON ((orderattachment.order_id = o.id)))
+UNION ALL
+ SELECT '11tools'::text AS pinnedto,
+    tool.number AS pinnedtoobjectidentifier,
+    tool.name AS pinnedtoobjectidentifiername,
+    (tool.id)::integer AS pinnedtoobjectid,
+    'cmmsmachineparts_tool'::text AS pinnedtomodelname,
+    toolattachment.attachment,
+    toolattachment.name,
+    toolattachment.size,
+    upper((toolattachment.ext)::text) AS ext,
+    (10000000 + row_number() OVER ()) AS id,
+    'cmmsMachineParts/toolDetails'::text AS pinnedtocorrespondingview
+   FROM (cmmsmachineparts_toolattachment toolattachment
+     LEFT JOIN cmmsmachineparts_tool tool ON ((toolattachment.tool_id = tool.id)));
 
 
 --
@@ -10966,6 +11176,41 @@ ALTER SEQUENCE basic_workstationattachment_id_seq OWNED BY basic_workstationatta
 
 
 --
+-- Name: basic_workstationdto; Type: VIEW; Schema: public; Owner: -
+--
+
+CREATE VIEW basic_workstationdto AS
+ SELECT w.id,
+    w.active,
+    w.number,
+    w.name,
+    wt.name AS workstationtype,
+    d.number AS division,
+    w.wnknumber,
+    (((stf.name)::text || ' '::text) || (stf.surname)::text) AS staff,
+    w.dateofadmission,
+    w.dateofwithdrawal,
+    pl.name AS productionline
+   FROM ((((basic_workstation w
+     LEFT JOIN basic_workstationtype wt ON ((wt.id = w.workstationtype_id)))
+     LEFT JOIN basic_division d ON ((w.division_id = d.id)))
+     LEFT JOIN basic_staff stf ON ((stf.id = w.staff_id)))
+     LEFT JOIN productionlines_productionline pl ON ((w.productionline_id = pl.id)));
+
+
+--
+-- Name: basic_workstationdto_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE basic_workstationdto_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
 -- Name: basic_workstationtype_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
@@ -11044,106 +11289,6 @@ CREATE TABLE basicproductioncounting_productioncountingquantity (
     producedquantity numeric(14,5),
     wastereceptionwarehouse_id bigint,
     attribute_id bigint
-);
-
-
---
--- Name: orders_order; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE orders_order (
-    id bigint NOT NULL,
-    number character varying(255),
-    name character varying(1024),
-    description character varying(2048),
-    commentreasontypecorrectiondatefrom character varying(255),
-    commentreasontypecorrectiondateto character varying(255),
-    commentreasondeviationeffectivestart character varying(255),
-    commentreasondeviationeffectiveend character varying(255),
-    externalnumber character varying(255),
-    commentreasontypedeviationsquantity character varying(255),
-    datefrom timestamp without time zone,
-    dateto timestamp without time zone,
-    effectivedatefrom timestamp without time zone,
-    effectivedateto timestamp without time zone,
-    deadline timestamp without time zone,
-    correcteddatefrom timestamp without time zone,
-    correcteddateto timestamp without time zone,
-    startdate timestamp without time zone,
-    finishdate timestamp without time zone,
-    state character varying(255),
-    company_id bigint,
-    product_id bigint,
-    technology_id bigint,
-    productionline_id bigint,
-    plannedquantity numeric(12,5),
-    donequantity numeric(12,5),
-    externalsynchronized boolean DEFAULT true,
-    commissionedplannedquantity numeric(12,5),
-    commissionedcorrectedquantity numeric(12,5),
-    amountofproductproduced numeric(12,5),
-    remainingamountofproducttoproduce numeric(12,5),
-    ownlinechangeoverduration integer,
-    registerproductiontime boolean,
-    registerquantityinproduct boolean,
-    laborworktime integer,
-    includetpz boolean,
-    inputproductsrequiredfortype character varying(255),
-    registerpiecework boolean,
-    generatedenddate timestamp without time zone,
-    machineworktime integer,
-    ownlinechangeover boolean DEFAULT false,
-    registerquantityoutproduct boolean,
-    operationdurationquantityunit character varying(255),
-    realizationtime integer,
-    calculate boolean,
-    includeadditionaltime boolean,
-    typeofproductionrecording character varying(255) DEFAULT '02cumulated'::character varying,
-    masterorder_id bigint,
-    active boolean DEFAULT true,
-    productpriceperunit numeric(19,5),
-    failuresyncmessage character varying(255),
-    targetstate character varying(255),
-    ignorerequiredcomponents boolean,
-    automaticallymoveoverusage boolean DEFAULT false,
-    updatecomponentsavailability boolean,
-    technologyprototype_id bigint,
-    level integer,
-    parent_id bigint,
-    ignoremissingcomponents boolean DEFAULT false,
-    masterorderproduct_id bigint,
-    dateschanged boolean DEFAULT false,
-    sourcecorrecteddatefrom timestamp without time zone,
-    sourcecorrecteddateto timestamp without time zone,
-    sourcestartdate timestamp without time zone,
-    sourcefinishdate timestamp without time zone,
-    batchnumber character varying(255),
-    root_id bigint,
-    includeordersforcomponent boolean,
-    plannedfinishallorders timestamp without time zone,
-    plannedstartallorders timestamp without time zone,
-    calculatedfinishallorders timestamp without time zone,
-    issubcontracted boolean DEFAULT false,
-    registerfilled boolean,
-    workplandelivered boolean DEFAULT false,
-    calculatedstartallorders timestamp without time zone,
-    scadacreatedorupdatestate character varying(255),
-    entityversion bigint DEFAULT 0,
-    workertochange character varying(255),
-    masterorderproductcomponent_id bigint,
-    wastesquantity numeric(12,5),
-    existsrepairorders boolean DEFAULT false,
-    ordercategory character varying(255),
-    address_id bigint,
-    finalproductiontracking boolean DEFAULT false,
-    updatefinishdate boolean DEFAULT false,
-    ordersgroup_id bigint,
-    plannedquantityforadditionalunit numeric,
-    directadditionalcost numeric,
-    directadditionalcostdescription character varying,
-    division_id bigint,
-    salesplan_id bigint,
-    reportedproductionquantity numeric(12,5)
 );
 
 
@@ -12057,6 +12202,41 @@ CREATE TABLE cmmsmachineparts_maintenanceeventxlshelper (
 
 
 --
+-- Name: cmmsmachineparts_operationtool; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE cmmsmachineparts_operationtool (
+    id bigint NOT NULL,
+    toolcategory character varying(255),
+    operation_id bigint,
+    tool_id bigint,
+    description character varying(2048),
+    plannedquantity numeric(12,5),
+    unit character varying(255),
+    quantity numeric(12,5)
+);
+
+
+--
+-- Name: cmmsmachineparts_operationtool_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE cmmsmachineparts_operationtool_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: cmmsmachineparts_operationtool_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE cmmsmachineparts_operationtool_id_seq OWNED BY cmmsmachineparts_operationtool.id;
+
+
+--
 -- Name: cmmsmachineparts_plannedevent_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
@@ -12406,6 +12586,40 @@ ALTER SEQUENCE cmmsmachineparts_staffworktime_id_seq OWNED BY cmmsmachineparts_s
 
 
 --
+-- Name: cmmsmachineparts_technologyoperationtool; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE cmmsmachineparts_technologyoperationtool (
+    id bigint NOT NULL,
+    toolcategory character varying(255),
+    technologyoperationcomponent_id bigint,
+    tool_id bigint,
+    description character varying(2048),
+    quantity numeric(12,5),
+    unit character varying(255)
+);
+
+
+--
+-- Name: cmmsmachineparts_technologyoperationtool_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE cmmsmachineparts_technologyoperationtool_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: cmmsmachineparts_technologyoperationtool_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE cmmsmachineparts_technologyoperationtool_id_seq OWNED BY cmmsmachineparts_technologyoperationtool.id;
+
+
+--
 -- Name: cmmsmachineparts_timeusagereportfilter; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -12438,6 +12652,44 @@ CREATE SEQUENCE cmmsmachineparts_timeusagereportfilter_id_seq
 --
 
 ALTER SEQUENCE cmmsmachineparts_timeusagereportfilter_id_seq OWNED BY cmmsmachineparts_timeusagereportfilter.id;
+
+
+--
+-- Name: cmmsmachineparts_tool_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE cmmsmachineparts_tool_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: cmmsmachineparts_tool_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE cmmsmachineparts_tool_id_seq OWNED BY cmmsmachineparts_tool.id;
+
+
+--
+-- Name: cmmsmachineparts_toolattachment_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE cmmsmachineparts_toolattachment_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: cmmsmachineparts_toolattachment_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE cmmsmachineparts_toolattachment_id_seq OWNED BY cmmsmachineparts_toolattachment.id;
 
 
 --
@@ -17632,6 +17884,71 @@ ALTER SEQUENCE masterorders_position_warehousestatehelper_id_seq OWNED BY master
 
 
 --
+-- Name: masterorders_productsbyattributeentryhelper; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE masterorders_productsbyattributeentryhelper (
+    id bigint NOT NULL,
+    productsbyattributehelper_id bigint,
+    product_id bigint,
+    attribute_id bigint,
+    attributevalue_id bigint,
+    value character varying(255)
+);
+
+
+--
+-- Name: masterorders_productsbyattributeentryhelper_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE masterorders_productsbyattributeentryhelper_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: masterorders_productsbyattributeentryhelper_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE masterorders_productsbyattributeentryhelper_id_seq OWNED BY masterorders_productsbyattributeentryhelper.id;
+
+
+--
+-- Name: masterorders_productsbyattributehelper; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE masterorders_productsbyattributehelper (
+    id bigint NOT NULL,
+    masterorder_id bigint,
+    product_id bigint,
+    orderedquantity numeric(12,5),
+    comments character varying(2048)
+);
+
+
+--
+-- Name: masterorders_productsbyattributehelper_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE masterorders_productsbyattributehelper_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: masterorders_productsbyattributehelper_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE masterorders_productsbyattributehelper_id_seq OWNED BY masterorders_productsbyattributehelper.id;
+
+
+--
 -- Name: masterorders_productsbysizeentryhelper; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -20620,20 +20937,6 @@ CREATE SEQUENCE orders_order_pack_number_seq
     NO MINVALUE
     NO MAXVALUE
     CACHE 1;
-
-
---
--- Name: orders_orderattachment; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE orders_orderattachment (
-    id bigint NOT NULL,
-    order_id bigint,
-    attachment character varying(255),
-    name character varying(255),
-    size numeric(12,5),
-    ext character varying(255)
-);
 
 
 --
@@ -28173,7 +28476,8 @@ CREATE TABLE technologies_changetechnologyparameters (
     updatedate timestamp without time zone,
     createuser character varying(255),
     updateuser character varying(255),
-    updateoperationtimenorms boolean DEFAULT false
+    updateoperationtimenorms boolean DEFAULT false,
+    updateoperationworkstations boolean DEFAULT false
 );
 
 
@@ -30162,6 +30466,13 @@ ALTER TABLE ONLY arch_advancedgenealogyfororders_genealogyproductincomponent ALT
 -- Name: id; Type: DEFAULT; Schema: public; Owner: -
 --
 
+ALTER TABLE ONLY arch_archiving ALTER COLUMN id SET DEFAULT nextval('arch_archiving_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
+--
+
 ALTER TABLE ONLY arch_assignmenttoshift_multiassignmenttoshift ALTER COLUMN id SET DEFAULT nextval('arch_assignmenttoshift_multiassignmenttoshift_id_seq'::regclass);
 
 
@@ -31289,6 +31600,13 @@ ALTER TABLE ONLY cmmsmachineparts_maintenanceeventstatechange ALTER COLUMN id SE
 -- Name: id; Type: DEFAULT; Schema: public; Owner: -
 --
 
+ALTER TABLE ONLY cmmsmachineparts_operationtool ALTER COLUMN id SET DEFAULT nextval('cmmsmachineparts_operationtool_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
+--
+
 ALTER TABLE ONLY cmmsmachineparts_plannedevent ALTER COLUMN id SET DEFAULT nextval('cmmsmachineparts_plannedevent_id_seq'::regclass);
 
 
@@ -31352,7 +31670,28 @@ ALTER TABLE ONLY cmmsmachineparts_staffworktime ALTER COLUMN id SET DEFAULT next
 -- Name: id; Type: DEFAULT; Schema: public; Owner: -
 --
 
+ALTER TABLE ONLY cmmsmachineparts_technologyoperationtool ALTER COLUMN id SET DEFAULT nextval('cmmsmachineparts_technologyoperationtool_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
+--
+
 ALTER TABLE ONLY cmmsmachineparts_timeusagereportfilter ALTER COLUMN id SET DEFAULT nextval('cmmsmachineparts_timeusagereportfilter_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY cmmsmachineparts_tool ALTER COLUMN id SET DEFAULT nextval('cmmsmachineparts_tool_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY cmmsmachineparts_toolattachment ALTER COLUMN id SET DEFAULT nextval('cmmsmachineparts_toolattachment_id_seq'::regclass);
 
 
 --
@@ -31976,6 +32315,20 @@ ALTER TABLE ONLY masterorders_position_deliveryproductquantityhelper ALTER COLUM
 --
 
 ALTER TABLE ONLY masterorders_position_warehousestatehelper ALTER COLUMN id SET DEFAULT nextval('masterorders_position_warehousestatehelper_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY masterorders_productsbyattributeentryhelper ALTER COLUMN id SET DEFAULT nextval('masterorders_productsbyattributeentryhelper_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY masterorders_productsbyattributehelper ALTER COLUMN id SET DEFAULT nextval('masterorders_productsbyattributehelper_id_seq'::regclass);
 
 
 --
@@ -33971,6 +34324,21 @@ COPY arch_advancedgenealogyfororders_genealogyproductincomponent (id, trackingre
 --
 
 SELECT pg_catalog.setval('arch_advancedgenealogyfororders_genealogyproductincomponent_id_', 1, false);
+
+
+--
+-- Data for Name: arch_archiving; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY arch_archiving (id, entityversion, masterordernumber, start, finish, createdate, updatedate, createuser, updateuser) FROM stdin;
+\.
+
+
+--
+-- Name: arch_archiving_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('arch_archiving_id_seq', 1, false);
 
 
 --
@@ -36762,6 +37130,13 @@ SELECT pg_catalog.setval('basic_workstationattachment_id_seq', 1, false);
 
 
 --
+-- Name: basic_workstationdto_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('basic_workstationdto_id_seq', 1, false);
+
+
+--
 -- Data for Name: basic_workstationtype; Type: TABLE DATA; Schema: public; Owner: -
 --
 
@@ -37053,6 +37428,21 @@ SELECT pg_catalog.setval('cmmsmachineparts_maintenanceeventxlshelper_id_seq', 1,
 
 
 --
+-- Data for Name: cmmsmachineparts_operationtool; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY cmmsmachineparts_operationtool (id, toolcategory, operation_id, tool_id, description, plannedquantity, unit, quantity) FROM stdin;
+\.
+
+
+--
+-- Name: cmmsmachineparts_operationtool_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('cmmsmachineparts_operationtool_id_seq', 1, false);
+
+
+--
 -- Data for Name: cmmsmachineparts_plannedevent; Type: TABLE DATA; Schema: public; Owner: -
 --
 
@@ -37195,6 +37585,21 @@ SELECT pg_catalog.setval('cmmsmachineparts_staffworktime_id_seq', 1, false);
 
 
 --
+-- Data for Name: cmmsmachineparts_technologyoperationtool; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY cmmsmachineparts_technologyoperationtool (id, toolcategory, technologyoperationcomponent_id, tool_id, description, quantity, unit) FROM stdin;
+\.
+
+
+--
+-- Name: cmmsmachineparts_technologyoperationtool_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('cmmsmachineparts_technologyoperationtool_id_seq', 1, false);
+
+
+--
 -- Data for Name: cmmsmachineparts_timeusagereportfilter; Type: TABLE DATA; Schema: public; Owner: -
 --
 
@@ -37207,6 +37612,36 @@ COPY cmmsmachineparts_timeusagereportfilter (id, fromdate, todate, workersselect
 --
 
 SELECT pg_catalog.setval('cmmsmachineparts_timeusagereportfilter_id_seq', 1, false);
+
+
+--
+-- Data for Name: cmmsmachineparts_tool; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY cmmsmachineparts_tool (id, number, name, description, toolcategory, producer, inventorynumber, serialnumber, unit) FROM stdin;
+\.
+
+
+--
+-- Name: cmmsmachineparts_tool_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('cmmsmachineparts_tool_id_seq', 1, false);
+
+
+--
+-- Data for Name: cmmsmachineparts_toolattachment; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY cmmsmachineparts_toolattachment (id, tool_id, attachment, name, size, ext) FROM stdin;
+\.
+
+
+--
+-- Name: cmmsmachineparts_toolattachment_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('cmmsmachineparts_toolattachment_id_seq', 1, false);
 
 
 --
@@ -39752,6 +40187,9 @@ COPY jointable_group_role (group_id, role_id) FROM stdin;
 32	147
 33	147
 38	147
+2	152
+3	152
+4	152
 \.
 
 
@@ -40277,6 +40715,36 @@ COPY masterorders_position_warehousestatehelper (id, product_id, location_id, qu
 --
 
 SELECT pg_catalog.setval('masterorders_position_warehousestatehelper_id_seq', 1, false);
+
+
+--
+-- Data for Name: masterorders_productsbyattributeentryhelper; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY masterorders_productsbyattributeentryhelper (id, productsbyattributehelper_id, product_id, attribute_id, attributevalue_id, value) FROM stdin;
+\.
+
+
+--
+-- Name: masterorders_productsbyattributeentryhelper_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('masterorders_productsbyattributeentryhelper_id_seq', 1, false);
+
+
+--
+-- Data for Name: masterorders_productsbyattributehelper; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY masterorders_productsbyattributehelper (id, masterorder_id, product_id, orderedquantity, comments) FROM stdin;
+\.
+
+
+--
+-- Name: masterorders_productsbyattributehelper_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('masterorders_productsbyattributehelper_id_seq', 1, false);
 
 
 --
@@ -41346,7 +41814,7 @@ SELECT pg_catalog.setval('orders_operationaltaskwithcolordto_id_seq', 1, false);
 -- Data for Name: orders_order; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY orders_order (id, number, name, description, commentreasontypecorrectiondatefrom, commentreasontypecorrectiondateto, commentreasondeviationeffectivestart, commentreasondeviationeffectiveend, externalnumber, commentreasontypedeviationsquantity, datefrom, dateto, effectivedatefrom, effectivedateto, deadline, correcteddatefrom, correcteddateto, startdate, finishdate, state, company_id, product_id, technology_id, productionline_id, plannedquantity, donequantity, externalsynchronized, commissionedplannedquantity, commissionedcorrectedquantity, amountofproductproduced, remainingamountofproducttoproduce, ownlinechangeoverduration, registerproductiontime, registerquantityinproduct, laborworktime, includetpz, inputproductsrequiredfortype, registerpiecework, generatedenddate, machineworktime, ownlinechangeover, registerquantityoutproduct, operationdurationquantityunit, realizationtime, calculate, includeadditionaltime, typeofproductionrecording, masterorder_id, active, productpriceperunit, failuresyncmessage, targetstate, ignorerequiredcomponents, automaticallymoveoverusage, updatecomponentsavailability, technologyprototype_id, level, parent_id, ignoremissingcomponents, masterorderproduct_id, dateschanged, sourcecorrecteddatefrom, sourcecorrecteddateto, sourcestartdate, sourcefinishdate, batchnumber, root_id, includeordersforcomponent, plannedfinishallorders, plannedstartallorders, calculatedfinishallorders, issubcontracted, registerfilled, workplandelivered, calculatedstartallorders, scadacreatedorupdatestate, entityversion, workertochange, masterorderproductcomponent_id, wastesquantity, existsrepairorders, ordercategory, address_id, finalproductiontracking, updatefinishdate, ordersgroup_id, plannedquantityforadditionalunit, directadditionalcost, directadditionalcostdescription, division_id, salesplan_id, reportedproductionquantity) FROM stdin;
+COPY orders_order (id, number, name, description, commentreasontypecorrectiondatefrom, commentreasontypecorrectiondateto, commentreasondeviationeffectivestart, commentreasondeviationeffectiveend, externalnumber, commentreasontypedeviationsquantity, datefrom, dateto, effectivedatefrom, effectivedateto, deadline, correcteddatefrom, correcteddateto, startdate, finishdate, state, company_id, product_id, technology_id, productionline_id, plannedquantity, donequantity, externalsynchronized, commissionedplannedquantity, commissionedcorrectedquantity, amountofproductproduced, remainingamountofproducttoproduce, ownlinechangeoverduration, registerproductiontime, registerquantityinproduct, laborworktime, includetpz, inputproductsrequiredfortype, registerpiecework, generatedenddate, machineworktime, ownlinechangeover, registerquantityoutproduct, operationdurationquantityunit, realizationtime, calculate, includeadditionaltime, typeofproductionrecording, masterorder_id, active, productpriceperunit, failuresyncmessage, targetstate, ignorerequiredcomponents, automaticallymoveoverusage, updatecomponentsavailability, technologyprototype_id, level, parent_id, ignoremissingcomponents, masterorderproduct_id, dateschanged, sourcecorrecteddatefrom, sourcecorrecteddateto, sourcestartdate, sourcefinishdate, batchnumber, root_id, includeordersforcomponent, plannedfinishallorders, plannedstartallorders, calculatedfinishallorders, issubcontracted, registerfilled, workplandelivered, calculatedstartallorders, scadacreatedorupdatestate, entityversion, workertochange, masterorderproductcomponent_id, wastesquantity, existsrepairorders, ordercategory, address_id, finalproductiontracking, updatefinishdate, ordersgroup_id, plannedquantityforadditionalunit, directadditionalcost, directadditionalcostdescription, division_id, salesplan_id, reportedproductionquantity, expirationdate) FROM stdin;
 \.
 
 
@@ -43083,6 +43551,7 @@ COPY qcadoomodel_dictionary (id, name, pluginidentifier, active, entityversion) 
 22	typeOfProducts	basic	t	0
 23	contractorCategory	basic	t	0
 24	sampling	technologies	t	0
+25	toolCategory	cmmsMachineParts	t	0
 \.
 
 
@@ -43090,7 +43559,7 @@ COPY qcadoomodel_dictionary (id, name, pluginidentifier, active, entityversion) 
 -- Name: qcadoomodel_dictionary_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('qcadoomodel_dictionary_id_seq', 24, true);
+SELECT pg_catalog.setval('qcadoomodel_dictionary_id_seq', 25, true);
 
 
 --
@@ -43561,6 +44030,7 @@ COPY qcadoosecurity_role (id, identifier, description, entityversion) FROM stdin
 149	ROLE_ANOMALIES	\N	0
 150	ROLE_ORDERS_GANTT_VIEW	\N	0
 151	ROLE_ORDERS_GANTT_EDIT	\N	0
+152	ROLE_TOOLS	\N	0
 \.
 
 
@@ -43568,7 +44038,7 @@ COPY qcadoosecurity_role (id, identifier, description, entityversion) FROM stdin
 -- Name: qcadoosecurity_role_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('qcadoosecurity_role_id_seq', 151, true);
+SELECT pg_catalog.setval('qcadoosecurity_role_id_seq', 152, true);
 
 
 --
@@ -43832,6 +44302,8 @@ COPY qcadooview_item (id, pluginidentifier, name, active, category_id, view_id, 
 201	basic	licenses	t	1	200	18	ROLE_ADMIN	0
 126	productionCounting	anomalyReasonList	t	4	125	19	ROLE_ANOMALIES	0
 202	scheduleGantt	sgOrdersGantt	t	7	201	22	ROLE_ORDERS_GANTT_VIEW	0
+203	cmmsMachineParts	toolsList	t	13	202	1	ROLE_TOOLS	0
+204	arch	archivingList	t	16	203	8	ROLE_SUPERADMIN	0
 \.
 
 
@@ -43839,7 +44311,7 @@ COPY qcadooview_item (id, pluginidentifier, name, active, category_id, view_id, 
 -- Name: qcadooview_item_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('qcadooview_item_id_seq', 202, true);
+SELECT pg_catalog.setval('qcadooview_item_id_seq', 204, true);
 
 
 --
@@ -44034,6 +44506,8 @@ COPY qcadooview_view (id, pluginidentifier, name, view, url, entityversion) FROM
 199	orders	productionLineSchedulesList	productionLineSchedulesList	\N	0
 200	basic	licenses	\N	/licenses.html	0
 201	scheduleGantt	sgOrdersGantt	\N	/sgOrdersGantt.html	0
+202	cmmsMachineParts	toolsList	toolsList	\N	0
+203	arch	archivingList	archivingList	\N	0
 \.
 
 
@@ -44041,7 +44515,7 @@ COPY qcadooview_view (id, pluginidentifier, name, view, url, entityversion) FROM
 -- Name: qcadooview_view_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('qcadooview_view_id_seq', 201, true);
+SELECT pg_catalog.setval('qcadooview_view_id_seq', 203, true);
 
 
 --
@@ -44814,7 +45288,7 @@ SELECT pg_catalog.setval('technologies_barcodeoperationcomponent_number_seq', 1,
 -- Data for Name: technologies_changetechnologyparameters; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY technologies_changetechnologyparameters (id, changeperformancenorm, standardperformance, changegroup, technologygroup_id, createdate, updatedate, createuser, updateuser, updateoperationtimenorms) FROM stdin;
+COPY technologies_changetechnologyparameters (id, changeperformancenorm, standardperformance, changegroup, technologygroup_id, createdate, updatedate, createuser, updateuser, updateoperationtimenorms, updateoperationworkstations) FROM stdin;
 \.
 
 
@@ -45801,6 +46275,14 @@ ALTER TABLE ONLY arch_advancedgenealogyfororders_genealogyproductinbatch
 
 ALTER TABLE ONLY arch_advancedgenealogyfororders_genealogyproductincomponent
     ADD CONSTRAINT arch_advancedgenealogyfororders_genealogyproductincomponen_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: arch_archiving_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY arch_archiving
+    ADD CONSTRAINT arch_archiving_pkey PRIMARY KEY (id);
 
 
 --
@@ -47196,6 +47678,14 @@ ALTER TABLE ONLY cmmsmachineparts_maintenanceeventxlshelper
 
 
 --
+-- Name: cmmsmachineparts_operationtool_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY cmmsmachineparts_operationtool
+    ADD CONSTRAINT cmmsmachineparts_operationtool_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: cmmsmachineparts_plannedevent_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -47268,11 +47758,35 @@ ALTER TABLE ONLY cmmsmachineparts_staffworktime
 
 
 --
+-- Name: cmmsmachineparts_technologyoperationtool_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY cmmsmachineparts_technologyoperationtool
+    ADD CONSTRAINT cmmsmachineparts_technologyoperationtool_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: cmmsmachineparts_timeusagereportfilter_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY cmmsmachineparts_timeusagereportfilter
     ADD CONSTRAINT cmmsmachineparts_timeusagereportfilter_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: cmmsmachineparts_tool_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY cmmsmachineparts_tool
+    ADD CONSTRAINT cmmsmachineparts_tool_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: cmmsmachineparts_toolattachment_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY cmmsmachineparts_toolattachment
+    ADD CONSTRAINT cmmsmachineparts_toolattachment_pkey PRIMARY KEY (id);
 
 
 --
@@ -48441,6 +48955,22 @@ ALTER TABLE ONLY masterorders_position_deliveryproductquantityhelper
 
 ALTER TABLE ONLY masterorders_position_warehousestatehelper
     ADD CONSTRAINT masterorders_position_warehousestatehelper_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: masterorders_productsbyattributeentryhelper_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY masterorders_productsbyattributeentryhelper
+    ADD CONSTRAINT masterorders_productsbyattributeentryhelper_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: masterorders_productsbyattributehelper_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY masterorders_productsbyattributehelper
+    ADD CONSTRAINT masterorders_productsbyattributehelper_pkey PRIMARY KEY (id);
 
 
 --
@@ -57954,6 +58484,22 @@ ALTER TABLE ONLY technologies_operationskill
 
 
 --
+-- Name: operationtool_operation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY cmmsmachineparts_operationtool
+    ADD CONSTRAINT operationtool_operation_fkey FOREIGN KEY (operation_id) REFERENCES technologies_operation(id) DEFERRABLE;
+
+
+--
+-- Name: operationtool_tool_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY cmmsmachineparts_operationtool
+    ADD CONSTRAINT operationtool_tool_fkey FOREIGN KEY (tool_id) REFERENCES cmmsmachineparts_tool(id) DEFERRABLE;
+
+
+--
 -- Name: operationworkstationtime_operation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -60970,6 +61516,54 @@ ALTER TABLE ONLY productioncounting_productiontrackingattachment
 
 
 --
+-- Name: productsbyattributeentryhelper_attribute_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY masterorders_productsbyattributeentryhelper
+    ADD CONSTRAINT productsbyattributeentryhelper_attribute_fkey FOREIGN KEY (attribute_id) REFERENCES basic_attribute(id) DEFERRABLE;
+
+
+--
+-- Name: productsbyattributeentryhelper_attributevalue_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY masterorders_productsbyattributeentryhelper
+    ADD CONSTRAINT productsbyattributeentryhelper_attributevalue_fkey FOREIGN KEY (attributevalue_id) REFERENCES basic_attributevalue(id) DEFERRABLE;
+
+
+--
+-- Name: productsbyattributeentryhelper_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY masterorders_productsbyattributeentryhelper
+    ADD CONSTRAINT productsbyattributeentryhelper_product_fkey FOREIGN KEY (product_id) REFERENCES basic_product(id) DEFERRABLE;
+
+
+--
+-- Name: productsbyattributeentryhelper_productsbyattributehelper_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY masterorders_productsbyattributeentryhelper
+    ADD CONSTRAINT productsbyattributeentryhelper_productsbyattributehelper_fkey FOREIGN KEY (productsbyattributehelper_id) REFERENCES masterorders_productsbyattributehelper(id) DEFERRABLE;
+
+
+--
+-- Name: productsbyattributehelper_masterorder_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY masterorders_productsbyattributehelper
+    ADD CONSTRAINT productsbyattributehelper_masterorder_fkey FOREIGN KEY (masterorder_id) REFERENCES masterorders_masterorder(id) DEFERRABLE;
+
+
+--
+-- Name: productsbyattributehelper_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY masterorders_productsbyattributehelper
+    ADD CONSTRAINT productsbyattributehelper_product_fkey FOREIGN KEY (product_id) REFERENCES basic_product(id) DEFERRABLE;
+
+
+--
 -- Name: productsbysizeentryhelper_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -63642,6 +64236,22 @@ ALTER TABLE ONLY arch_technologies_technologyoperationcomponentmergeproductout
 
 
 --
+-- Name: technologyoperationtool_technologyoperationcomponent_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY cmmsmachineparts_technologyoperationtool
+    ADD CONSTRAINT technologyoperationtool_technologyoperationcomponent_fkey FOREIGN KEY (technologyoperationcomponent_id) REFERENCES technologies_technologyoperationcomponent(id) DEFERRABLE;
+
+
+--
+-- Name: technologyoperationtool_tool_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY cmmsmachineparts_technologyoperationtool
+    ADD CONSTRAINT technologyoperationtool_tool_fkey FOREIGN KEY (tool_id) REFERENCES cmmsmachineparts_tool(id) DEFERRABLE;
+
+
+--
 -- Name: technologyproductionline_productionline_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -63727,6 +64337,14 @@ ALTER TABLE ONLY timegapspreview_timegapscontext
 
 ALTER TABLE ONLY timegapspreview_timegapscontext
     ADD CONSTRAINT timegapscontext_supportedtechnologygroup_fkey FOREIGN KEY (supportedtechnologygroup_id) REFERENCES technologies_technologygroup(id) DEFERRABLE;
+
+
+--
+-- Name: toolattachment_tool_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY cmmsmachineparts_toolattachment
+    ADD CONSTRAINT toolattachment_tool_fkey FOREIGN KEY (tool_id) REFERENCES cmmsmachineparts_tool(id) DEFERRABLE;
 
 
 --

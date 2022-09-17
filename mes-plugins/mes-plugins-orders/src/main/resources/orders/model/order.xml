@@ -66,6 +66,8 @@
             <validatesWith class="com.qcadoo.mes.orders.hooks.OrderHooks" method="setDateChanged"/>
         </datetime>
 
+        <date name="expirationDate"/>
+
         <enum name="state"
               values="01pending,02accepted,03inProgress,04completed,05declined,06interrupted,07abandoned"
               required="true"/>
@@ -192,7 +194,7 @@
         <hasMany name="orderTechnologicalProcesses" model="orderTechnologicalProcess" joinField="order" cascade="delete"/>
         <hasMany name="orderTechnologicalProcessesDto" model="orderTechnologicalProcessDto" joinField="order" persistent="false"/>
         <hasMany name="orderTechnologicalProcessWastes" model="orderTechnologicalProcessWaste" joinField="order" cascade="delete"/>
-        <manyToMany name="staff" model="staff" plugin="basic" joinField="orders" cascade="nullify" copyable="true"/>
+        <manyToMany name="staff" model="staff" plugin="basic" joinField="orders" copyable="true"/>
 
         <hasMany name="orderAttachments" joinField="order" model="orderAttachment" cascade="delete" copyable="true"/>
     </fields>

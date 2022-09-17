@@ -19,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.google.common.collect.Sets;
 import com.qcadoo.mes.states.service.client.util.ViewContextHolder;
 import com.qcadoo.mes.technologies.TechnologyNameAndNumberGenerator;
+import com.qcadoo.mes.technologies.constants.OperationFields;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
 import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
@@ -59,6 +60,8 @@ public class ChangeTechnologyParametersListeners {
     private static final String PRODUCTION_IN_ONE_CYCLE = "productionInOneCycle";
 
     private static final String L_UPDATE_OPERATION_TIME_NORMS = "updateOperationTimeNorms";
+
+    private static final String L_UPDATE_OPERATION_WORKSTATIONS = "updateOperationWorkstations";
 
     private static final Set<String> FIELDS_OPERATION = Sets.newHashSet(TPZ, TJ, PRODUCTION_IN_ONE_CYCLE,
             NEXT_OPERATION_AFTER_PRODUCED_TYPE, NEXT_OPERATION_AFTER_PRODUCED_QUANTITY, "nextOperationAfterProducedQuantityUNIT",
@@ -135,6 +138,8 @@ public class ChangeTechnologyParametersListeners {
     private void createCustomizedTechnologies(ViewDefinitionState view, ComponentState state, Set<Long> ids, Entity entity,
                                               Entity finalGroup, BigDecimal finalStandardPerformance) {
         boolean updateOperationTimeNorms = entity.getBooleanField(L_UPDATE_OPERATION_TIME_NORMS);
+
+        boolean updateOperationWorkstations = entity.getBooleanField(L_UPDATE_OPERATION_WORKSTATIONS);
         ids.forEach(techId -> {
             Entity technology = dataDefinitionService
                     .get(TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_TECHNOLOGY).get(techId);
@@ -161,6 +166,14 @@ public class ChangeTechnologyParametersListeners {
                 }
                 copyTechnology = copyTechnology.getDataDefinition().save(copyTechnology);
                 Entity copyTechnologyDb = copyTechnology.getDataDefinition().get(copyTechnology.getId());
+                if (updateOperationWorkstations) {
+                    List<Entity> tocs = copyTechnologyDb.getHasManyField(TechnologyFields.OPERATION_COMPONENTS);
+                    tocs.forEach(toc -> {
+                        Entity operation = toc.getBelongsToField(TechnologyOperationComponentFields.OPERATION);
+                        toc.setField(TechnologyOperationComponentFields.WORKSTATIONS, operation.getField(OperationFields.WORKSTATIONS));
+                        toc.getDataDefinition().save(toc);
+                    });
+                }
                 if (updateOperationTimeNorms) {
                     List<Entity> tocs = copyTechnologyDb.getHasManyField(TechnologyFields.OPERATION_COMPONENTS);
                     tocs.forEach(toc -> {
@@ -182,7 +195,6 @@ public class ChangeTechnologyParametersListeners {
                         copyOperationWorkstationTimes(toc, operation);
                         toc.getDataDefinition().save(toc);
                     });
-
                 }
                 technologyStateChangeViewClient.changeState(new ViewContextHolder(view, state),
                         TechnologyStateStringValues.OUTDATED, technology);

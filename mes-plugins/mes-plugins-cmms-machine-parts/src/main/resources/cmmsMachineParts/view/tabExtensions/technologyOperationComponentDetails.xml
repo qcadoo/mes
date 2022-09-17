@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    ***************************************************************************
+    Copyright (c) 2010 Qcadoo Limited
+    Project: Qcadoo MES
+    Version: 1.4
+
+    This file is part of Qcadoo.
+
+    Qcadoo is free software; you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as published
+    by the Free Software Foundation; either version 3 of the License,
+    or (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty
+    of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+    See the GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+    ***************************************************************************
+
+-->
+<windowTabExtension xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                    xmlns="http://schema.qcadoo.org/modules/windowTabExtension"
+                    xsi:schemaLocation="http://schema.qcadoo.org/modules/windowTabExtension http://schema.qcadoo.org/modules/windowTabExtension.xsd"
+                    plugin="technologies" view="technologyOperationComponentDetails">
+
+    <windowTab name="toolsTab" reference="toolsTab">
+        <component type="gridLayout" name="gridLayout" columns="3"
+                   rows="1" fixedRowHeight="false">
+            <layoutElement column="1" row="1" width="3">
+
+                <component type="grid" name="tools" reference="tools"
+                           source="#{form}.tools">
+                    <option type="column" name="toolCategory" fields="toolCategory" link="true" width="100"/>
+
+                    <option type="column" name="toolNumber" fields="tool"
+                            expression="#tool['number']" width="70" link="true"/>
+
+                    <option type="column" name="toolName" fields="tool"
+                            expression="#tool['name']" width="100" link="true"/>
+
+                    <option type="column" name="quantity" fields="quantity" width="50"/>
+                    <option type="column" name="unit" fields="unit" width="50"/>
+                    <option type="column" name="description" fields="description" width="200"/>
+
+                    <option type="searchable" value="toolCategory,toolNumber,toolName,quantity,unit,description"/>
+                    <option type="orderable" value="toolCategory,toolNumber,toolName,quantity,unit,description"/>
+
+                    <option type="order" column="toolCategory" direction="asc"/>
+
+                    <option type="correspondingView" value="cmmsMachineParts/technologyOperationToolDetails"/>
+                    <option type="correspondingComponent" value="form"/>
+                    <option type="correspondingViewInModal" value="true"/>
+                    <option type="creatable" value="true"/>
+                    <option type="fullscreen" value="true"/>
+                    <option type="multiselect" value="true"/>
+                    <option type="creatable" value="true"/>
+                    <option type="deletable" value="true"/>
+                    <option type="paginable" value="false"/>
+                </component>
+            </layoutElement>
+
+        </component>
+    </windowTab>
+
+</windowTabExtension>

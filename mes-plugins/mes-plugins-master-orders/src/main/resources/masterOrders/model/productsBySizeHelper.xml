@@ -34,7 +34,6 @@
         <belongsTo name="product" plugin="basic" model="product"/>
         <decimal name="totalQuantity"/>
         <hasMany name="productsBySizeEntryHelpers" joinField="productsBySizeHelper" model="productsBySizeEntryHelper"/>
-
     </fields>
 
     <hooks />

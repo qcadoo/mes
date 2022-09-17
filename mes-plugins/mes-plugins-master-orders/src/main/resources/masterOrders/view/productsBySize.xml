@@ -23,7 +23,7 @@
     ***************************************************************************
 
 -->
-<view defaultAuthorizationRole="ROLE_PLANNING" name="productsBySize" modelName="productsBySizeHelper"
+<view name="productsBySize" modelName="productsBySizeHelper" defaultAuthorizationRole="ROLE_PLANNING"
       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
       xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd">
 
@@ -37,23 +37,12 @@
                 <bigButton name="addPositionsToOrder" icon="generateIcon24.png" state="enabled">
                     <script>
                         <![CDATA[
-					this.addOnChangeListener({
-						onClick: function() {
-						    #{productsBySizeEntryHelpers}.addPositionsToOrder();
-						}
-					});
-
-
-					#{form}.addOnChangeListener({
-					    onSetValue: function(value) {
-								var generated = #{generated}.getValue().content.value;
-
-                                if (generated && generated == true) {
-									    #{window}.performBackWithoutConfirm();
-								}
-						}
-					});
-				]]>
+                            this.addOnChangeListener({
+                                onClick: function() {
+                                    #{productsBySizeEntryHelpers}.addPositionsToOrder();
+                                }
+                            });
+                        ]]>
                     </script>
                 </bigButton>
             </group>
@@ -61,6 +50,19 @@
 
         <windowTab name="mainTab">
             <component type="form" name="masterOrderDefinitionDetails" reference="form">
+                <script>
+                    <![CDATA[
+                        #{form}.addOnChangeListener({
+                            onSetValue: function(value) {
+                                var generated = #{generated}.getValue().content.value;
+
+                                if (generated && generated == true) {
+                                    #{window}.performBackWithoutConfirm();
+                                }
+                            }
+                        });
+                    ]]>
+                </script>
                 <component type="gridLayout" name="gridLayout" columns="1"
                            rows="8">
                     <layoutElement column="1" row="1">
@@ -81,9 +83,10 @@
                             <criteriaModifier
                                     class="com.qcadoo.mes.basic.criteriaModifiers.ProductCriteriaModifiers"
                                     method="showProductFamilyOnly"/>
+
                             <listener event="onSelectedEntityChange"
                                       class="com.qcadoo.mes.masterOrders.listeners.ProductsBySizeListeners"
-                                      method="changeFamilyProduct"/>
+                                      method="changeProductFamily"/>
                         </component>
                     </layoutElement>
                     <layoutElement column="1" row="2">
@@ -96,24 +99,19 @@
                         <component type="grid" name="productsBySizeEntryHelpers" reference="productsBySizeEntryHelpers"
                                    source="#{form}.productsBySizeEntryHelpers">
                             <script>
-                            QCD = QCD || {};
-                            QCD.translations = QCD.translations || {};
+                                QCD = QCD || {};
+                                QCD.translations = QCD.translations || {};
 
-                            QCD.translations['masterOrders.productsBySize.productNotSelectedOrPositionsNotFilled'] =
-                            '#{translate(masterOrders.productsBySize.productNotSelectedOrPositionsNotFilled)}';
+                                QCD.translations['masterOrders.productsBySize.productNotSelectedOrPositionsNotFilled'] =
+                                '#{translate(masterOrders.productsBySize.productNotSelectedOrPositionsNotFilled)}';
 
-                            QCD.translations['masterOrders.productsBySize.invalidScale.max'] =
-                            '#{translate(masterOrders.productsBySize.invalidScale.max)}';
+                                QCD.translations['masterOrders.productsBySize.invalidScale.max'] =
+                                '#{translate(masterOrders.productsBySize.invalidScale.max)}';
 
-                            QCD.translations['masterOrders.productsBySize.invalidPrecision.max'] =
-                            '#{translate(masterOrders.productsBySize.invalidPrecision.max)}';
+                                QCD.translations['masterOrders.productsBySize.invalidPrecision.max'] =
+                                '#{translate(masterOrders.productsBySize.invalidPrecision.max)}';
                             </script>
                             <script type="text/javascript" src="/masterOrders/public/js/productsBySize.js"></script>
-
-                            <listener event="addPositionsToOrder"
-                                      class="com.qcadoo.mes.masterOrders.listeners.ProductsBySizeListeners"
-                                      method="addPositionsToOrder"/>
-
 
                             <option type="column" name="succession" fields="product"
                                     expression="#product['size'].get('succession')" hidden="true"/>
@@ -131,14 +129,15 @@
 
                             <option type="paginable" value="false"/>
 
-
+                            <listener event="addPositionsToOrder"
+                                      class="com.qcadoo.mes.masterOrders.listeners.ProductsBySizeListeners"
+                                      method="addPositionsToOrder"/>
                         </component>
                     </layoutElement>
                 </component>
 
                 <option type="header" value="true"/>
                 <option type="expression" value=""/>
-
             </component>
         </windowTab>
 

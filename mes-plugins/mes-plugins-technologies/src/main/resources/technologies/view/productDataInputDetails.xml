@@ -72,8 +72,8 @@
 
 							<option type="order" column="priority" direction="asc"/>
 
-							<option type="searchable" value="number,name,quantity,unit"/>
-							<option type="orderable" value="number,name,quantity,unit"/>
+							<option type="searchable" value="technologyInputProductTypeName,differentProductsInDifferentSizes,number,name,quantity,unit"/>
+							<option type="orderable" value="technologyInputProductTypeName,differentProductsInDifferentSizes,number,name,quantity,unit"/>
 
 							<option type="fullscreen" value="true"/>
 							<option type="prioritizable" value="false"/>
