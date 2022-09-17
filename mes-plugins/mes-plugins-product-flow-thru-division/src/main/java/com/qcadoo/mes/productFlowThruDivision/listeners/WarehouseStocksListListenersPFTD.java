@@ -40,11 +40,7 @@ public class WarehouseStocksListListenersPFTD {
         RibbonActionItem showPlannedConsumptionInOrdersItem = actionsRibbonGroup.getItemByName(L_SHOW_PLANNED_CONSUMPTION_IN_ORDERS);
         showPlannedConsumptionInOrdersItem.setMessage("productFlowThruDivision.plannedConsumptionInOrder.description");
 
-        if(grid.getSelectedEntitiesIds().isEmpty()) {
-            showPlannedConsumptionInOrdersItem.setEnabled(false);
-        } else {
-            showPlannedConsumptionInOrdersItem.setEnabled(true);
-        }
+        showPlannedConsumptionInOrdersItem.setEnabled(grid.getSelectedEntitiesIds().size() == 1);
         showPlannedConsumptionInOrdersItem.requestUpdate(true);
     }
 
