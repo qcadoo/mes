@@ -10,6 +10,7 @@ import com.qcadoo.mes.masterOrders.constants.MasterOrderProductFields;
 import com.qcadoo.mes.materialFlowResources.constants.DocumentFields;
 import com.qcadoo.mes.materialFlowResources.constants.MaterialFlowResourcesConstants;
 import com.qcadoo.mes.materialFlowResources.constants.PositionFields;
+import com.qcadoo.mes.materialFlowResources.exceptions.DocumentBuildException;
 import com.qcadoo.mes.materialFlowResources.service.DocumentBuilder;
 import com.qcadoo.mes.materialFlowResources.service.DocumentManagementService;
 import com.qcadoo.model.api.DataDefinitionService;
@@ -120,8 +121,13 @@ public class MasterOrderDocumentService {
             Entity document = documentBuilder.buildWithEntityRuntimeException();
             document = document.getDataDefinition().get(document.getId());
             redirectToCreatedDocument(document, view);
-        } catch (Exception exc) {
-            view.addMessage("masterOrders.masterOrder.createReleaseDocument.error", ComponentState.MessageType.FAILURE);
+        } catch (DocumentBuildException exc) {
+           exc.getGlobalErrors().forEach(errorMessage -> {
+               if(!errorMessage.getMessage().equals("qcadooView.validate.global.error.custom")) {
+                   view.addMessage(errorMessage.getMessage(), ComponentState.MessageType.FAILURE);
+               }
+           });
+           view.addMessage("masterOrders.masterOrder.createReleaseDocument.error", ComponentState.MessageType.FAILURE);
         }
 
     }
