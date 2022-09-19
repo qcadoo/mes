@@ -28,6 +28,7 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class ProductsByAttributeListeners {
@@ -237,6 +238,9 @@ public class ProductsByAttributeListeners {
     private Optional<Entity> findMatchingProduct(final List<Entity> children, final List<Entity> productsByAttributeEntryHelpers) {
         Entity product = null;
 
+        List<Entity> filteredProductsByAttributeEntryHelpers = productsByAttributeEntryHelpers.stream().filter(productsByAttributeEntryHelper
+                -> StringUtils.isNotEmpty(productsByAttributeEntryHelper.getStringField(ProductsByAttributeEntryHelperFields.VALUE))).collect(Collectors.toList());
+
         int isFound = 0;
 
         for (Entity child : children) {
@@ -244,20 +248,18 @@ public class ProductsByAttributeListeners {
 
             int matchingAttributes = 0;
 
-            for (Entity productsByAttributeEntryHelper : productsByAttributeEntryHelpers) {
+            for (Entity productsByAttributeEntryHelper : filteredProductsByAttributeEntryHelpers) {
                 Entity attribute = productsByAttributeEntryHelper.getBelongsToField(ProductsByAttributeEntryHelperFields.ATTRIBUTE);
                 String value = productsByAttributeEntryHelper.getStringField(ProductsByAttributeEntryHelperFields.VALUE);
 
-                if (StringUtils.isNotEmpty(value)) {
-                    if (productAttributeValues.stream().anyMatch(productAttributeValue ->
-                            productAttributeValue.getBelongsToField(ProductAttributeValueFields.ATTRIBUTE).getId().equals(attribute.getId())
-                                    && productAttributeValue.getStringField(ProductAttributeValueFields.VALUE).equals(value))) {
-                        matchingAttributes++;
-                    }
+                if (productAttributeValues.stream().anyMatch(productAttributeValue ->
+                        productAttributeValue.getBelongsToField(ProductAttributeValueFields.ATTRIBUTE).getId().equals(attribute.getId())
+                                && productAttributeValue.getStringField(ProductAttributeValueFields.VALUE).equals(value))) {
+                    matchingAttributes++;
                 }
             }
 
-            if (matchingAttributes == productsByAttributeEntryHelpers.size()) {
+            if (matchingAttributes == filteredProductsByAttributeEntryHelpers.size()) {
                 isFound++;
 
                 product = child;
