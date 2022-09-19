@@ -32,22 +32,17 @@ import com.qcadoo.mes.technologies.dto.OperationProductComponentHolder;
 import com.qcadoo.mes.technologies.dto.OperationProductComponentMessage;
 import com.qcadoo.mes.technologies.dto.OperationProductComponentWithQuantityContainer;
 import com.qcadoo.mes.technologies.dto.ProductQuantitiesHolder;
-import com.qcadoo.model.api.DataDefinition;
-import com.qcadoo.model.api.DataDefinitionService;
-import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.EntityTree;
-import com.qcadoo.model.api.NumberService;
+import com.qcadoo.model.api.*;
 import com.qcadoo.model.api.search.JoinType;
 import com.qcadoo.model.api.search.SearchRestrictions;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.*;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 import static java.util.stream.Collectors.groupingBy;
 
@@ -154,12 +149,12 @@ public class ProductQuantitiesServiceImpl implements ProductQuantitiesService {
 
     @Override
     public Map<OperationProductComponentHolder, BigDecimal> getNeededProductQuantitiesByOPC(final Entity technology,
-                                                                                            final Entity orderedProduct, final BigDecimal givenQuantity, final MrpAlgorithm mrpAlgorithm) {
+                                                                                            final Entity product, final BigDecimal givenQuantity, final MrpAlgorithm mrpAlgorithm) {
         Map<Long, BigDecimal> operationRuns = Maps.newHashMap();
         Set<OperationProductComponentHolder> nonComponents = Sets.newHashSet();
 
         OperationProductComponentWithQuantityContainer productComponentWithQuantities = getProductComponentWithQuantitiesForTechnology(
-                technology, orderedProduct, givenQuantity, operationRuns, nonComponents);
+                technology, product, givenQuantity, operationRuns, nonComponents);
 
         OperationProductComponentWithQuantityContainer allWithSameEntityType = productComponentWithQuantities
                 .getAllWithSameEntityType(TechnologiesConstants.MODEL_OPERATION_PRODUCT_IN_COMPONENT);
@@ -176,13 +171,13 @@ public class ProductQuantitiesServiceImpl implements ProductQuantitiesService {
     }
 
     public Map<OperationProductComponentHolder, BigDecimal> getNeededProductQuantities(final Entity technology,
-                                                                                       final Entity product, final BigDecimal plannedQuantity) {
+                                                                                       final Entity product, final BigDecimal givenQuantity) {
         String entityType = product.getStringField(ProductFields.ENTITY_TYPE);
 
         if (ProductFamilyElementType.PARTICULAR_PRODUCT.getStringValue().equals(entityType)) {
-            return getNeededProductQuantitiesByOPC(technology, product, plannedQuantity, MrpAlgorithm.ONLY_COMPONENTS);
+            return getNeededProductQuantitiesByOPC(technology, product, givenQuantity, MrpAlgorithm.ONLY_COMPONENTS);
         } else {
-            return getNeededProductQuantitiesByOPC(technology, plannedQuantity, MrpAlgorithm.ONLY_COMPONENTS);
+            return getNeededProductQuantitiesByOPC(technology, givenQuantity, MrpAlgorithm.ONLY_COMPONENTS);
         }
     }
 
@@ -262,15 +257,18 @@ public class ProductQuantitiesServiceImpl implements ProductQuantitiesService {
 
     @Override
     public OperationProductComponentWithQuantityContainer getProductComponentWithQuantitiesForTechnology(final Entity technology,
-                                                                                                         final Entity orderedProduct, final BigDecimal givenQuantity, final Map<Long, BigDecimal> operationRuns,
+                                                                                                         final Entity product, final BigDecimal givenQuantity, final Map<Long, BigDecimal> operationRuns,
                                                                                                          final Set<OperationProductComponentHolder> nonComponents) {
-
         OperationProductComponentWithQuantityContainer operationProductComponentWithQuantityContainer = new OperationProductComponentWithQuantityContainer();
-        operationProductComponentWithQuantityContainer.setOrderedProduct(orderedProduct);
-        if (Objects.nonNull(orderedProduct)) {
-            Entity size = orderedProduct.getBelongsToField(ProductFields.SIZE);
+
+        operationProductComponentWithQuantityContainer.setOrderedProduct(product);
+
+        if (Objects.nonNull(product)) {
+            Entity size = product.getBelongsToField(ProductFields.SIZE);
+
             if (Objects.nonNull(size)) {
                 List<Entity> sizeGroups = size.getHasManyField(SizeFields.SIZE_GROUPS);
+
                 if (!sizeGroups.isEmpty()) {
                     operationProductComponentWithQuantityContainer.setSizeGroups(sizeGroups);
                 }
@@ -278,6 +276,7 @@ public class ProductQuantitiesServiceImpl implements ProductQuantitiesService {
         }
 
         EntityTree operationComponents = getOperationComponentsFromTechnology(technology);
+
         Entity root = operationComponents.getRoot();
 
         if (Objects.nonNull(root)) {
@@ -321,6 +320,7 @@ public class ProductQuantitiesServiceImpl implements ProductQuantitiesService {
     public OperationProductComponentWithQuantityContainer groupOperationProductComponentWithQuantities(
             final Map<Long, OperationProductComponentWithQuantityContainer> operationProductComponentWithQuantityContainerForOrders) {
         OperationProductComponentWithQuantityContainer operationProductComponentWithQuantityContainer = new OperationProductComponentWithQuantityContainer();
+
         for (Entry<Long, OperationProductComponentWithQuantityContainer> operationProductComponentWithQuantityContainerForOrder : operationProductComponentWithQuantityContainerForOrders
                 .entrySet()) {
             operationProductComponentWithQuantityContainer.getMessages().addAll(operationProductComponentWithQuantityContainerForOrder.getValue().getMessages());
@@ -394,17 +394,18 @@ public class ProductQuantitiesServiceImpl implements ProductQuantitiesService {
 
                 Entity attribute = operationProductComponent.getBelongsToField(OperationProductInComponentFields.ATTRIBUTE);
 
-                List<Entity> attributeValues = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.PRODUCT_ATTRIBUTE_VALUE)
+                List<Entity> attributeValues = getProductAttributeValueDD()
                         .find()
                         .add(SearchRestrictions.belongsTo(ProductAttributeValueFields.PRODUCT, operationProductComponentWithQuantityContainer.getOrderedProduct()))
                         .add(SearchRestrictions.belongsTo(ProductAttributeValueFields.ATTRIBUTE, attribute))
                         .list().getEntities();
 
                 Entity opicProduct = getOperationProductProduct(operationProductComponent);
+
                 if (!attributeValues.isEmpty()) {
                     Collection<Long> attributeValuesId = attributeValues.stream().map(av -> av.getBelongsToField(ProductAttributeValueFields.ATTRIBUTE_VALUE).getId()).collect(Collectors.toList());
 
-                    List<Entity> allProductAttributeValues = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.PRODUCT_ATTRIBUTE_VALUE)
+                    List<Entity> allProductAttributeValues = getProductAttributeValueDD()
                             .find()
                             .createAlias(ProductAttributeValueFields.PRODUCT, "prod", JoinType.LEFT)
                             .createAlias("prod.parent", "parentProduct", JoinType.LEFT)
@@ -416,9 +417,11 @@ public class ProductQuantitiesServiceImpl implements ProductQuantitiesService {
 
                     Long specificProductId = null;
                     boolean moreThanOneSpecificProduct = false;
+
                     for (Entry<Long, List<Entity>> entry : attributeValuesByProduct.entrySet()) {
                         Long productId = entry.getKey();
                         List<Entity> attrValues = entry.getValue();
+
                         Collection<Long> allProductAttributeValuesId = attrValues.stream()
                                 .filter(av -> Objects.nonNull(av.getBelongsToField(ProductAttributeValueFields.ATTRIBUTE_VALUE)))
                                 .map(av -> av.getBelongsToField(ProductAttributeValueFields.ATTRIBUTE_VALUE).getId()).collect(Collectors.toList());
@@ -427,11 +430,14 @@ public class ProductQuantitiesServiceImpl implements ProductQuantitiesService {
                         boolean isSame = attributeValuesId.stream()
                                 .allMatch(a -> allProductAttributeValuesId.stream()
                                         .anyMatch(b -> b.equals(a)));
+
                         if (isSame && !hasNotCalculatedElements && attributeValuesId.size() == allProductAttributeValuesId.size()) {
                             if (Objects.nonNull(specificProductId)) {
                                 moreThanOneSpecificProduct = true;
+
                                 break;
                             }
+
                             specificProductId = productId;
                         }
                     }
@@ -441,26 +447,32 @@ public class ProductQuantitiesServiceImpl implements ProductQuantitiesService {
                         Entity operation = toc.getBelongsToField(TechnologyOperationComponentFields.OPERATION);
 
                         OperationProductComponentMessage message = new OperationProductComponentMessage();
+
                         message.setMessage("basicProductionCounting.productionCountingQuantity.error.couldNotFindSpecificProductWithMatchingAttributeValue");
                         message.setOperationNumber(operation.getStringField(OperationFields.NUMBER));
                         message.setProductNumber(opicProduct.getStringField(ProductFields.NUMBER));
                         message.setNodeNumber(toc.getStringField(TechnologyOperationComponentFields.NODE_NUMBER));
                         message.setAttributeNumber(attribute.getStringField(AttributeFields.NUMBER));
                         message.setAttributeValue(attributeValues.stream().map(a -> a.getStringField(ProductAttributeValueFields.VALUE)).collect(Collectors.joining(", ")));
+
                         operationProductComponentWithQuantityContainer.addMessage(message);
                     } else if (moreThanOneSpecificProduct) {
                         Entity toc = operationProductComponent.getBelongsToField(OperationProductInComponentFields.OPERATION_COMPONENT);
                         Entity operation = toc.getBelongsToField(TechnologyOperationComponentFields.OPERATION);
+
                         OperationProductComponentMessage message = new OperationProductComponentMessage();
+
                         message.setMessage("basicProductionCounting.productionCountingQuantity.error.toManyProductsWithMatchingAttributeValue");
                         message.setOperationNumber(operation.getStringField(OperationFields.NUMBER));
                         message.setProductNumber(opicProduct.getStringField(ProductFields.NUMBER));
                         message.setNodeNumber(toc.getStringField(TechnologyOperationComponentFields.NODE_NUMBER));
                         message.setAttributeNumber(attribute.getStringField(AttributeFields.NUMBER));
                         message.setAttributeValue(attributeValues.stream().map(a -> a.getStringField(ProductAttributeValueFields.VALUE)).collect(Collectors.joining(", ")));
+
                         operationProductComponentWithQuantityContainer.addMessage(message);
                     } else {
-                        Entity product = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PRODUCT).get(specificProductId);
+                        Entity product = getProductDD().get(specificProductId);
+
                         operationProductComponentWithQuantityContainer.put(operationProductComponent, product,
                                 operationProductComponent.getDecimalField(ProductBySizeGroupFields.QUANTITY));
                     }
@@ -468,12 +480,15 @@ public class ProductQuantitiesServiceImpl implements ProductQuantitiesService {
                 } else {
                     Entity toc = operationProductComponent.getBelongsToField(OperationProductInComponentFields.OPERATION_COMPONENT);
                     Entity operation = toc.getBelongsToField(TechnologyOperationComponentFields.OPERATION);
+
                     OperationProductComponentMessage message = new OperationProductComponentMessage();
+
                     message.setMessage("basicProductionCounting.productionCountingQuantity.error.orderedProductDoesNotHaveAttribute");
                     message.setOperationNumber(operation.getStringField(OperationFields.NUMBER));
                     message.setProductNumber(opicProduct.getStringField(ProductFields.NUMBER));
                     message.setNodeNumber(toc.getStringField(TechnologyOperationComponentFields.NODE_NUMBER));
                     message.setAttributeNumber(attribute.getStringField(AttributeFields.NUMBER));
+
                     operationProductComponentWithQuantityContainer.addMessage(message);
                 }
             } else {
@@ -666,17 +681,18 @@ public class ProductQuantitiesServiceImpl implements ProductQuantitiesService {
 
                 Entity attribute = operationProductComponent.getBelongsToField(OperationProductInComponentFields.ATTRIBUTE);
 
-                List<Entity> attributeValues = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.PRODUCT_ATTRIBUTE_VALUE)
+                List<Entity> attributeValues = getProductAttributeValueDD()
                         .find()
                         .add(SearchRestrictions.belongsTo(ProductAttributeValueFields.PRODUCT, operationProductComponentWithQuantityContainer.getOrderedProduct()))
                         .add(SearchRestrictions.belongsTo(ProductAttributeValueFields.ATTRIBUTE, attribute))
                         .list().getEntities();
 
                 Entity opicProduct = getOperationProductProduct(operationProductComponent);
+
                 if (!attributeValues.isEmpty()) {
                     Collection<Long> attributeValuesId = attributeValues.stream().map(av -> av.getBelongsToField(ProductAttributeValueFields.ATTRIBUTE_VALUE).getId()).collect(Collectors.toList());
 
-                    List<Entity> allProductAttributeValues = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.PRODUCT_ATTRIBUTE_VALUE)
+                    List<Entity> allProductAttributeValues = getProductAttributeValueDD()
                             .find()
                             .createAlias(ProductAttributeValueFields.PRODUCT, "prod", JoinType.LEFT)
                             .createAlias("prod.parent", "parentProduct", JoinType.LEFT)
@@ -688,9 +704,11 @@ public class ProductQuantitiesServiceImpl implements ProductQuantitiesService {
 
                     Long specificProductId = null;
                     boolean moreThanOneSpecificProduct = false;
+
                     for (Entry<Long, List<Entity>> entry : attributeValuesByProduct.entrySet()) {
                         Long productId = entry.getKey();
                         List<Entity> attrValues = entry.getValue();
+
                         Collection<Long> allProductAttributeValuesId = attrValues.stream()
                                 .filter(av -> Objects.nonNull(av.getBelongsToField(ProductAttributeValueFields.ATTRIBUTE_VALUE)))
                                 .map(av -> av.getBelongsToField(ProductAttributeValueFields.ATTRIBUTE_VALUE).getId()).collect(Collectors.toList());
@@ -699,30 +717,30 @@ public class ProductQuantitiesServiceImpl implements ProductQuantitiesService {
                         boolean isSame = attributeValuesId.stream()
                                 .allMatch(a -> allProductAttributeValuesId.stream()
                                         .anyMatch(b -> b.equals(a)));
+
                         if (isSame && !hasNotCalculatedElements && attributeValuesId.size() == allProductAttributeValuesId.size()) {
                             if (Objects.nonNull(specificProductId)) {
                                 moreThanOneSpecificProduct = true;
+
                                 break;
                             }
+
                             specificProductId = productId;
                         }
                     }
 
                     if (!moreThanOneSpecificProduct && Objects.nonNull(specificProductId)) {
-                        Entity product = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PRODUCT).get(specificProductId);
+                        Entity product = getProductDD().get(specificProductId);
 
                         BigDecimal addedQuantity = operationProductComponentWithQuantityContainer.get(operationProductComponent, product);
                         BigDecimal quantity = addedQuantity.multiply(multiplier, numberService.getMathContext());
-
 
                         operationProductComponentWithQuantityContainer.put(operationProductComponent,
                                 product,
                                 quantity.setScale(5, RoundingMode.CEILING));
                     }
                 }
-
             } else {
-
                 BigDecimal addedQuantity = operationProductComponentWithQuantityContainer.get(operationProductComponent);
                 BigDecimal quantity = addedQuantity.multiply(multiplier, numberService.getMathContext());
 
@@ -731,6 +749,7 @@ public class ProductQuantitiesServiceImpl implements ProductQuantitiesService {
             }
         }
     }
+
 
     @Override
     public OperationProductComponentWithQuantityContainer getProductComponentWithQuantities(final List<Entity> orders,
@@ -802,10 +821,7 @@ public class ProductQuantitiesServiceImpl implements ProductQuantitiesService {
     }
 
     private boolean hasAcceptedMasterTechnology(final Entity product) {
-        DataDefinition technologyDD = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
-                TechnologiesConstants.MODEL_TECHNOLOGY);
-        Entity masterTechnology = technologyDD
-                .find()
+        Entity masterTechnology = getTechnologyDD().find()
                 .add(SearchRestrictions.and(SearchRestrictions.belongsTo(TechnologyFields.PRODUCT, product),
                         (SearchRestrictions.eq("state", "02accepted"))))
                 .add(SearchRestrictions.eq(TechnologyFields.MASTER, true)).setMaxResults(1).uniqueResult();
@@ -819,7 +835,8 @@ public class ProductQuantitiesServiceImpl implements ProductQuantitiesService {
         OperationProductComponentHolder operationProductComponentHolder = productComponentWithQuantity.getKey();
 
         Entity product = operationProductComponentHolder.getProduct();
-        if (product != null) {
+
+        if (Objects.nonNull(product)) {
             BigDecimal newQuantity = productComponentWithQuantity.getValue();
             BigDecimal oldQuantity = productWithQuantities.get(product.getId());
 
@@ -879,25 +896,41 @@ public class ProductQuantitiesServiceImpl implements ProductQuantitiesService {
         return false;
     }
 
+    private Entity getOperationProductProduct(final Entity operationProductComponent) {
+        Entity product = operationProductComponent.getBelongsToField(OperationProductInComponentFields.PRODUCT);
+
+        if (Objects.isNull(product)) {
+            return null;
+        }
+
+        return product.getDataDefinition().get(product.getId());
+    }
+
+    private DataDefinition getTechnologyDD() {
+        return dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_TECHNOLOGY);
+    }
+
     @Override
     public Entity getTechnologyOperationComponent(final Long technologyOperationComponentId) {
+        return getTechnologyOperationComponentDD().get(technologyOperationComponentId);
+    }
+
+    private DataDefinition getTechnologyOperationComponentDD() {
         return dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
-                TechnologiesConstants.MODEL_TECHNOLOGY_OPERATION_COMPONENT).get(technologyOperationComponentId);
+                TechnologiesConstants.MODEL_TECHNOLOGY_OPERATION_COMPONENT);
     }
 
     @Override
     public Entity getProduct(final Long productId) {
-        return dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PRODUCT).get(productId);
+        return getProductDD().get(productId);
     }
 
-
-    private Entity getOperationProductProduct(Entity operationProductComponent) {
-        Entity product = operationProductComponent.getBelongsToField(OperationProductInComponentFields.PRODUCT);
-        if(Objects.isNull(product)) {
-            return null;
-        }
-        return product.getDataDefinition().get(product.getId());
+    private DataDefinition getProductDD() {
+        return dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PRODUCT);
     }
 
+    private DataDefinition getProductAttributeValueDD() {
+        return dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.PRODUCT_ATTRIBUTE_VALUE);
+    }
 
 }

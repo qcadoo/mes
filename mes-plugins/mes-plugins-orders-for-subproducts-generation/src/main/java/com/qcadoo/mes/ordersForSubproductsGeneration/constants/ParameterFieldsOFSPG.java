@@ -1,7 +1,7 @@
 /**
  * ***************************************************************************
  * Copyright (c) 2010 Qcadoo Limited
- * Project: Qcadoo MES
+ * Project: Qcadoo Framework
  * Version: 1.4
  *
  * This file is part of Qcadoo.
@@ -21,26 +21,18 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.masterOrders.constants;
+package com.qcadoo.mes.ordersForSubproductsGeneration.constants;
 
-public final class SalesPlanMaterialRequirementFields {
+public final class ParameterFieldsOFSPG {
 
-    private SalesPlanMaterialRequirementFields() {
+    private ParameterFieldsOFSPG() {
 
     }
 
-    public static final String NUMBER = "number";
-
-    public static final String SALES_PLAN = "salesPlan";
-
-    public static final String GENERATED = "generated";
-
-    public static final String WORKER = "worker";
-
-    public static final String DATE = "date";
-
-    public static final String SALES_PLAN_MATERIAL_REQUIREMENT_PRODUCTS = "salesPlanMaterialRequirementProducts";
-
     public static final String INCLUDE_COMPONENTS = "includeComponents";
+
+    public static final String AUTOMATICALLY_GENERATE_ORDERS_FOR_COMPONENTS = "automaticallyGenerateOrdersForComponents";
+
+    public static final String ORDERS_GENERATED_BY_COVERAGE = "ordersGeneratedByCoverage";
 
 }

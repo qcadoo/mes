@@ -43,4 +43,6 @@ public final class MasterOrdersMaterialRequirementFields {
 
     public static final String MASTER_ORDERS = "masterOrders";
 
+    public static final String INCLUDE_COMPONENTS = "includeComponents";
+
 }

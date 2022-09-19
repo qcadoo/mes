@@ -7,16 +7,15 @@ import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.deliveries.DeliveriesService;
 import com.qcadoo.mes.deliveries.constants.CompanyProductFields;
 import com.qcadoo.mes.deliveries.constants.CompanyProductsFamilyFields;
-import com.qcadoo.mes.masterOrders.constants.MasterOrderFields;
-import com.qcadoo.mes.masterOrders.constants.MasterOrderProductFields;
-import com.qcadoo.mes.masterOrders.constants.MasterOrdersConstants;
-import com.qcadoo.mes.masterOrders.constants.MasterOrdersMaterialRequirementProductFields;
+import com.qcadoo.mes.masterOrders.constants.*;
 import com.qcadoo.mes.materialFlowResources.MaterialFlowResourcesService;
 import com.qcadoo.mes.technologies.ProductQuantitiesService;
+import com.qcadoo.mes.technologies.ProductQuantitiesWithComponentsService;
 import com.qcadoo.mes.technologies.TechnologyService;
 import com.qcadoo.mes.technologies.dto.OperationProductComponentHolder;
 import com.qcadoo.mes.technologies.tree.ProductStructureTreeService;
 import com.qcadoo.model.api.*;
+import com.qcadoo.plugin.api.PluginManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -29,6 +28,11 @@ import java.util.stream.Collectors;
 @Service
 public class MasterOrdersMaterialRequirementHelper {
 
+	private static final String ORDERS_FOR_SUBPRODUCTS_GENERATION = "ordersForSubproductsGeneration";
+
+	@Autowired
+	private PluginManager pluginManager;
+
 	@Autowired
 	private DataDefinitionService dataDefinitionService;
 
@@ -40,6 +44,9 @@ public class MasterOrdersMaterialRequirementHelper {
 
 	@Autowired
 	private ProductQuantitiesService productQuantitiesService;
+
+	@Autowired
+	private ProductQuantitiesWithComponentsService productQuantitiesWithComponentsService;
 
 	@Autowired
 	private ProductStructureTreeService productStructureTreeService;
@@ -56,7 +63,9 @@ public class MasterOrdersMaterialRequirementHelper {
 	public List<Entity> generateMasterOrdersMaterialRequirementProducts(final Entity masterOrdersMaterialRequirement, final List<Entity> masterOrders) {
 		List<Entity> masterOrdersMaterialRequirementProducts = Lists.newArrayList();
 
-		createMasterOrdersMaterialRequirementProducts(masterOrdersMaterialRequirementProducts, masterOrders);
+		boolean includeComponents = masterOrdersMaterialRequirement.getBooleanField(MasterOrdersMaterialRequirementFields.INCLUDE_COMPONENTS);
+
+		createMasterOrdersMaterialRequirementProducts(masterOrdersMaterialRequirementProducts, masterOrders, includeComponents);
 
 		updateMasterOrdersMaterialRequirementProducts(masterOrdersMaterialRequirementProducts);
 
@@ -64,7 +73,7 @@ public class MasterOrdersMaterialRequirementHelper {
 	}
 
 	private void createMasterOrdersMaterialRequirementProducts(final List<Entity> masterOrdersMaterialRequirementProducts,
-															   final List<Entity> masterOrders) {
+															   final List<Entity> masterOrders, final boolean includeComponents) {
 		for (Entity masterOrder : masterOrders) {
 			List<Entity> masterOrderProducts = masterOrder.getHasManyField(MasterOrderFields.MASTER_ORDER_PRODUCTS);
 
@@ -76,8 +85,16 @@ public class MasterOrdersMaterialRequirementHelper {
 				Entity technology = getTechnology(masterOrderProductTechnology, masterOrderProductProduct);
 
 				if (Objects.nonNull(technology)) {
-					Map<OperationProductComponentHolder, BigDecimal> neededQuantities = productQuantitiesService
-							.getNeededProductQuantities(technology, masterOrderProductProduct, masterOrderQuantity);
+
+					Map<OperationProductComponentHolder, BigDecimal> neededQuantities;
+
+					if (pluginManager.isPluginEnabled(ORDERS_FOR_SUBPRODUCTS_GENERATION) && includeComponents) {
+						neededQuantities = productQuantitiesWithComponentsService
+								.getNeededProductQuantities(technology, masterOrderProductProduct, masterOrderQuantity);
+					} else {
+						neededQuantities = productQuantitiesService
+								.getNeededProductQuantities(technology, masterOrderProductProduct, masterOrderQuantity);
+					}
 
 					for (Map.Entry<OperationProductComponentHolder, BigDecimal> neededProductQuantity : neededQuantities.entrySet()) {
 						Entity product = neededProductQuantity.getKey().getProduct();
