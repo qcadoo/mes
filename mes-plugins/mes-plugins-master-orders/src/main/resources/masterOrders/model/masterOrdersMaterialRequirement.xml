@@ -43,6 +43,7 @@
 
         <manyToMany name="masterOrders" model="masterOrder" copyable="true"
                     plugin="masterOrders" joinField="masterOrdersMaterialRequirements"/>
+        <boolean name="includeComponents"/>
     </fields>
 
     <hooks>

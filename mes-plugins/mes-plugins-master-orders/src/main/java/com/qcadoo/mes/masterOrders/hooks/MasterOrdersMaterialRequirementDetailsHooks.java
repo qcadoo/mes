@@ -23,10 +23,7 @@
  */
 package com.qcadoo.mes.masterOrders.hooks;
 
-import java.util.Objects;
-
-import org.springframework.stereotype.Service;
-
+import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.masterOrders.constants.MasterOrdersMaterialRequirementFields;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.CheckBoxComponent;
@@ -37,53 +34,79 @@ import com.qcadoo.view.api.ribbon.Ribbon;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.api.ribbon.RibbonGroup;
 import com.qcadoo.view.constants.QcadooViewConstants;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.Objects;
 
 @Service
 public class MasterOrdersMaterialRequirementDetailsHooks {
 
-	private static final String L_GENERATE = "generate";
+    private static final String L_GENERATE = "generate";
 
-	private static final String L_GENERATE_MASTER_ORDERS_MATERIAL_REQUIREMENT = "generateMasterOrdersMaterialRequirement";
+    private static final String L_GENERATE_MASTER_ORDERS_MATERIAL_REQUIREMENT = "generateMasterOrdersMaterialRequirement";
 
-	public void onBeforeRender(final ViewDefinitionState view) {
-		setRibbonEnabled(view);
-		setFormEnabled(view);
-	}
+	private static final String L_INCLUDE_COMPONENTS = "includeComponents";
 
-	private void setRibbonEnabled(final ViewDefinitionState view) {
-		FormComponent masterOrdersMaterialRequirementForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
-		CheckBoxComponent generatedCheckBox = (CheckBoxComponent) view
-				.getComponentByReference(MasterOrdersMaterialRequirementFields.GENERATED);
+    @Autowired
+    private ParameterService parameterService;
 
-		WindowComponent window = (WindowComponent) view.getComponentByReference(QcadooViewConstants.L_WINDOW);
-		Ribbon ribbon = window.getRibbon();
+    public void onBeforeRender(final ViewDefinitionState view) {
+        setRibbonEnabled(view);
+        setFormEnabled(view);
+        setIncludeComponents(view);
+    }
 
-		RibbonGroup generateRibbonGroup = ribbon.getGroupByName(L_GENERATE);
+    private void setRibbonEnabled(final ViewDefinitionState view) {
+        FormComponent masterOrdersMaterialRequirementForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
+        CheckBoxComponent generatedCheckBox = (CheckBoxComponent) view
+                .getComponentByReference(MasterOrdersMaterialRequirementFields.GENERATED);
 
-		RibbonActionItem generateRibbonActionItem = generateRibbonGroup.getItemByName(L_GENERATE_MASTER_ORDERS_MATERIAL_REQUIREMENT);
+        WindowComponent window = (WindowComponent) view.getComponentByReference(QcadooViewConstants.L_WINDOW);
+        Ribbon ribbon = window.getRibbon();
 
-		Long masterOrdersMaterialRequirementId = masterOrdersMaterialRequirementForm.getEntityId();
+        RibbonGroup generateRibbonGroup = ribbon.getGroupByName(L_GENERATE);
 
-		boolean isEnabled = Objects.nonNull(masterOrdersMaterialRequirementId);
-		boolean isGenerated = generatedCheckBox.isChecked();
+        RibbonActionItem generateRibbonActionItem = generateRibbonGroup.getItemByName(L_GENERATE_MASTER_ORDERS_MATERIAL_REQUIREMENT);
 
-		generateRibbonActionItem.setEnabled(isEnabled && !isGenerated);
-		generateRibbonActionItem.requestUpdate(true);
-	}
+        Long masterOrdersMaterialRequirementId = masterOrdersMaterialRequirementForm.getEntityId();
 
-	private void setFormEnabled(final ViewDefinitionState view) {
-		FormComponent masterOrdersMaterialRequirementForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
-		GridComponent masterOrdersGrid = (GridComponent) view.getComponentByReference(MasterOrdersMaterialRequirementFields.MASTER_ORDERS);
-		CheckBoxComponent generatedCheckBox = (CheckBoxComponent) view
-				.getComponentByReference(MasterOrdersMaterialRequirementFields.GENERATED);
+        boolean isSaved = Objects.nonNull(masterOrdersMaterialRequirementId);
+        boolean isGenerated = generatedCheckBox.isChecked();
 
-		Long masterOrdersMaterialRequirementId = masterOrdersMaterialRequirementForm.getEntityId();
+        generateRibbonActionItem.setEnabled(isSaved && !isGenerated);
+        generateRibbonActionItem.requestUpdate(true);
+    }
 
-		boolean isEnabled = Objects.isNull(masterOrdersMaterialRequirementId);
-		boolean isGenerated = generatedCheckBox.isChecked();
+    private void setFormEnabled(final ViewDefinitionState view) {
+        FormComponent masterOrdersMaterialRequirementForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
+        GridComponent masterOrdersGrid = (GridComponent) view.getComponentByReference(MasterOrdersMaterialRequirementFields.MASTER_ORDERS);
+        CheckBoxComponent generatedCheckBox = (CheckBoxComponent) view
+                .getComponentByReference(MasterOrdersMaterialRequirementFields.GENERATED);
 
-		masterOrdersMaterialRequirementForm.setFormEnabled(isEnabled || !isGenerated);
-		masterOrdersGrid.setEnabled(isEnabled || !isGenerated);
-	}
+        Long masterOrdersMaterialRequirementId = masterOrdersMaterialRequirementForm.getEntityId();
+
+        boolean isSaved = Objects.nonNull(masterOrdersMaterialRequirementId);
+        boolean isGenerated = generatedCheckBox.isChecked();
+
+        masterOrdersMaterialRequirementForm.setFormEnabled(isSaved || !isGenerated);
+        masterOrdersGrid.setEnabled(isSaved && !isGenerated);
+    }
+
+    private void setIncludeComponents(final ViewDefinitionState view) {
+        FormComponent masterOrdersMaterialRequirementForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
+        CheckBoxComponent includeComponentsCheckBox = (CheckBoxComponent) view.getComponentByReference(MasterOrdersMaterialRequirementFields.INCLUDE_COMPONENTS);
+
+        Long masterOrdersMaterialRequirementId = masterOrdersMaterialRequirementForm.getEntityId();
+
+        boolean isSaved = Objects.nonNull(masterOrdersMaterialRequirementId);
+
+        if (!isSaved) {
+            boolean includeComponents = parameterService.getParameter().getBooleanField(L_INCLUDE_COMPONENTS);
+
+            includeComponentsCheckBox.setChecked(includeComponents);
+            includeComponentsCheckBox.requestComponentUpdateState();
+        }
+    }
 
 }

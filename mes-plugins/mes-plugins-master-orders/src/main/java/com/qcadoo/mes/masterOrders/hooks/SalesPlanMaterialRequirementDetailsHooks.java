@@ -23,10 +23,8 @@
  */
 package com.qcadoo.mes.masterOrders.hooks;
 
-import java.util.Objects;
-
-import org.springframework.stereotype.Service;
-
+import com.qcadoo.mes.basic.ParameterService;
+import com.qcadoo.mes.masterOrders.constants.MasterOrdersMaterialRequirementFields;
 import com.qcadoo.mes.masterOrders.constants.SalesPlanMaterialRequirementFields;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.CheckBoxComponent;
@@ -37,6 +35,10 @@ import com.qcadoo.view.api.ribbon.Ribbon;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.api.ribbon.RibbonGroup;
 import com.qcadoo.view.constants.QcadooViewConstants;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.Objects;
 
 @Service
 public class SalesPlanMaterialRequirementDetailsHooks {
@@ -55,9 +57,15 @@ public class SalesPlanMaterialRequirementDetailsHooks {
 
     private static final String SHOW_TECHNOLOGIES_WITH_USING_PRODUCT = "showTechnologiesWithUsingProduct";
 
+    private static final String L_INCLUDE_COMPONENTS = "includeComponents";
+
+    @Autowired
+    private ParameterService parameterService;
+
     public void onBeforeRender(final ViewDefinitionState view) {
         setRibbonEnabled(view);
         setFormEnabled(view);
+        setIncludeComponents(view);
     }
 
     private void setRibbonEnabled(final ViewDefinitionState view) {
@@ -83,19 +91,19 @@ public class SalesPlanMaterialRequirementDetailsHooks {
 
         Long salesPlanMaterialRequirementId = salesPlanMaterialRequirementForm.getEntityId();
 
-        boolean isEnabled = Objects.nonNull(salesPlanMaterialRequirementId);
+        boolean isSaved = Objects.nonNull(salesPlanMaterialRequirementId);
         boolean isGenerated = generatedCheckBox.isChecked();
         boolean isSalesPlanMaterialRequirementProductsSelected = !salesPlanMaterialRequirementProductsGrid.getSelectedEntities()
                 .isEmpty();
 
-        generateRibbonActionItem.setEnabled(isEnabled && !isGenerated);
+        generateRibbonActionItem.setEnabled(isSaved && !isGenerated);
         generateRibbonActionItem.requestUpdate(true);
-        createDeliveryRibbonActionItem.setEnabled(isEnabled && isGenerated && isSalesPlanMaterialRequirementProductsSelected);
+        createDeliveryRibbonActionItem.setEnabled(isSaved && isGenerated && isSalesPlanMaterialRequirementProductsSelected);
         createDeliveryRibbonActionItem.requestUpdate(true);
         showTechnologiesWithUsingProductRibbonActionItem
                 .setEnabled(salesPlanMaterialRequirementProductsGrid.getSelectedEntities().size() == 1);
         showTechnologiesWithUsingProductRibbonActionItem.requestUpdate(true);
-        showSalesPlanDeliveriesRibbonActionItem.setEnabled(isEnabled);
+        showSalesPlanDeliveriesRibbonActionItem.setEnabled(isSaved);
         showSalesPlanDeliveriesRibbonActionItem.requestUpdate(true);
     }
 
@@ -106,10 +114,26 @@ public class SalesPlanMaterialRequirementDetailsHooks {
 
         Long salesPlanMaterialRequirementId = salesPlanMaterialRequirementForm.getEntityId();
 
-        boolean isEnabled = Objects.isNull(salesPlanMaterialRequirementId);
+        boolean isSaved = Objects.nonNull(salesPlanMaterialRequirementId);
         boolean isGenerated = generatedCheckBox.isChecked();
 
-        salesPlanMaterialRequirementForm.setFormEnabled(isEnabled || !isGenerated);
+        salesPlanMaterialRequirementForm.setFormEnabled(isSaved || !isGenerated);
+    }
+
+    private void setIncludeComponents(final ViewDefinitionState view) {
+        FormComponent masterOrdersMaterialRequirementForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
+        CheckBoxComponent includeComponentsCheckBox = (CheckBoxComponent) view.getComponentByReference(MasterOrdersMaterialRequirementFields.INCLUDE_COMPONENTS);
+
+        Long masterOrdersMaterialRequirementId = masterOrdersMaterialRequirementForm.getEntityId();
+
+        boolean isSaved = Objects.nonNull(masterOrdersMaterialRequirementId);
+
+        if (!isSaved) {
+            boolean includeComponents = parameterService.getParameter().getBooleanField(L_INCLUDE_COMPONENTS);
+
+            includeComponentsCheckBox.setChecked(includeComponents);
+            includeComponentsCheckBox.requestComponentUpdateState();
+        }
     }
 
 }
