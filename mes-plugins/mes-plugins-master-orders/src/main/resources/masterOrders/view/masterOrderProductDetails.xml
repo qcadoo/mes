@@ -178,7 +178,7 @@
                     </layoutElement>
                 </component>
                 <option type="header" value="true"/>
-                <option type="expression" value=""/>
+                <option type="expression" value="#masterOrder.get('number')"/>
             </component>
         </windowTab>
 
