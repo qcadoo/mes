@@ -24,7 +24,11 @@ import com.google.common.collect.Lists;
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.basic.constants.CurrencyFields;
 import com.qcadoo.mes.basic.util.CurrencyService;
+import com.qcadoo.mes.costCalculation.constants.CalculationResultFields;
+import com.qcadoo.mes.costCalculation.constants.CostCalculationConstants;
+import com.qcadoo.mes.productionCounting.constants.OrderBalanceFields;
 import com.qcadoo.mes.productionCounting.constants.ProductionBalanceFields;
+import com.qcadoo.mes.productionCounting.constants.ProductionCountingConstants;
 import com.qcadoo.mes.productionCounting.xls.dto.LaborTime;
 import com.qcadoo.mes.productionCounting.xls.dto.LaborTimeDetails;
 import com.qcadoo.mes.productionCounting.xls.dto.MaterialCost;
@@ -33,6 +37,9 @@ import com.qcadoo.mes.productionCounting.xls.dto.PieceworkDetails;
 import com.qcadoo.mes.productionCounting.xls.dto.ProducedQuantity;
 import com.qcadoo.mes.productionCounting.xls.dto.ProductionCost;
 import com.qcadoo.mes.productionCounting.xls.dto.Stoppage;
+import com.qcadoo.mes.technologies.constants.TechnologyFields;
+import com.qcadoo.model.api.DataDefinition;
+import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
 import com.qcadoo.report.api.xls.XlsDocumentService;
@@ -51,6 +58,9 @@ public class ProductionBalanceXlsService extends XlsDocumentService {
 
     @Autowired
     private CurrencyService currencyService;
+
+    @Autowired
+    private DataDefinitionService dataDefinitionService;
 
     private static final List<String> PRODUCED_QUANTITIES_HEADERS = Lists.newArrayList("orderNumber", "productNumber",
             "productName", "plannedQuantity", "producedQuantity", "wastesQuantity", "producedWastes", "deviation", "productUnit");
@@ -89,13 +99,13 @@ public class ProductionBalanceXlsService extends XlsDocumentService {
         List<MaterialCost> materialCosts = productionBalanceRepository.getMaterialCosts(entity, ordersIds);
         recalculateMaterialCostsWithCurrencies(materialCosts);
         createMaterialCostsSheet(materialCosts, createSheet(workbook,
-                translationService.translate("productionCounting.productionBalance.report.xls.sheet.materialCosts", locale)),
+                        translationService.translate("productionCounting.productionBalance.report.xls.sheet.materialCosts", locale)),
                 locale);
         createLaborTimeSheet(createSheet(workbook, translationService.translate(LaborTimeSheetConstants.SHEET_TITLE, locale)),
                 ordersIds, locale);
         List<LaborTimeDetails> laborTimeDetailsList = productionBalanceRepository.getLaborTimeDetails(entity, ordersIds);
         createLaborTimeDetailsSheet(laborTimeDetailsList, createSheet(workbook,
-                translationService.translate("productionCounting.productionBalance.report.xls.sheet.laborTimeDetails", locale)),
+                        translationService.translate("productionCounting.productionBalance.report.xls.sheet.laborTimeDetails", locale)),
                 locale);
         createPieceworkSheet(createSheet(workbook, translationService.translate(PieceworkSheetConstants.SHEET_TITLE, locale)),
                 ordersIds, locale);
@@ -105,21 +115,80 @@ public class ProductionBalanceXlsService extends XlsDocumentService {
                 ordersIds, locale);
         List<ProductionCost> productionCosts = productionBalanceRepository.getProductionCosts(entity, ordersIds);
         createProductionCostsSheet(productionCosts, createSheet(workbook,
-                translationService.translate("productionCounting.productionBalance.report.xls.sheet.productionCosts", locale)),
+                        translationService.translate("productionCounting.productionBalance.report.xls.sheet.productionCosts", locale)),
                 locale);
         List<OrderBalance> ordersBalance = productionBalanceRepository.getOrdersBalance(entity, ordersIds, materialCosts,
                 productionCosts);
+        saveOrdersBalance(entity, ordersBalance);
         createOrdersBalanceSheet(ordersBalance, createSheet(workbook,
-                translationService.translate("productionCounting.productionBalance.report.xls.sheet.ordersBalance", locale)),
+                        translationService.translate("productionCounting.productionBalance.report.xls.sheet.ordersBalance", locale)),
                 locale);
         List<OrderBalance> componentsBalance = productionBalanceRepository.getComponentsBalance(entity, ordersIds, ordersBalance);
         createOrdersBalanceSheet(componentsBalance, createSheet(workbook,
-                translationService.translate("productionCounting.productionBalance.report.xls.sheet.componentsBalance", locale)),
+                        translationService.translate("productionCounting.productionBalance.report.xls.sheet.componentsBalance", locale)),
                 locale);
         List<OrderBalance> productsBalance = productionBalanceRepository.getProductsBalance(entity, ordersIds, componentsBalance);
         createProductsBalanceSheet(productsBalance, createSheet(workbook,
-                translationService.translate("productionCounting.productionBalance.report.xls.sheet.productsBalance", locale)),
+                        translationService.translate("productionCounting.productionBalance.report.xls.sheet.productsBalance", locale)),
                 locale);
+    }
+
+    private void saveOrdersBalance(Entity productionBalance, List<OrderBalance> ordersBalance) {
+        DataDefinition orderBalanceDD = dataDefinitionService.get(ProductionCountingConstants.PLUGIN_IDENTIFIER,
+                ProductionCountingConstants.MODEL_ORDER_BALANCE);
+
+        for (OrderBalance oBalance : ordersBalance) {
+            Entity orderBalance = orderBalanceDD.create();
+
+            orderBalance.setField(OrderBalanceFields.PRODUCTION_BALANCE, productionBalance);
+            orderBalance.setField(OrderBalanceFields.ORDER_NUMBER, oBalance.getOrderNumber());
+            orderBalance.setField(OrderBalanceFields.PRODUCT_NUMBER, oBalance.getProductNumber());
+            orderBalance.setField(OrderBalanceFields.PRODUCT_NAME, oBalance.getProductName());
+            orderBalance.setField(OrderBalanceFields.PRODUCED_QUANTITY,
+                    numberService.setScaleWithDefaultMathContext(oBalance.getProducedQuantity(), 2));
+            orderBalance.setField(OrderBalanceFields.PRODUCT_UNIT, oBalance.getProductUnit());
+            orderBalance.setField(OrderBalanceFields.MATERIAL_COSTS,
+                    numberService.setScaleWithDefaultMathContext(oBalance.getMaterialCosts(), 2));
+            orderBalance.setField(OrderBalanceFields.PRODUCTION_COSTS,
+                    numberService.setScaleWithDefaultMathContext(oBalance.getProductionCosts(), 2));
+            orderBalance.setField(OrderBalanceFields.TECHNICAL_PRODUCTION_COSTS,
+                    numberService.setScaleWithDefaultMathContext(oBalance.getTechnicalProductionCosts(), 2));
+            orderBalance.setField(OrderBalanceFields.MATERIAL_COST_MARGIN,
+                    numberService.setScaleWithDefaultMathContext(oBalance.getMaterialCostMargin(), 2));
+            orderBalance.setField(OrderBalanceFields.MATERIAL_COST_MARGIN_VALUE,
+                    numberService.setScaleWithDefaultMathContext(oBalance.getMaterialCostMarginValue(), 2));
+            orderBalance.setField(OrderBalanceFields.PRODUCTION_COST_MARGIN,
+                    numberService.setScaleWithDefaultMathContext(oBalance.getProductionCostMargin(), 2));
+            orderBalance.setField(OrderBalanceFields.PRODUCTION_COST_MARGIN_VALUE,
+                    numberService.setScaleWithDefaultMathContext(oBalance.getProductionCostMarginValue(), 2));
+            orderBalance.setField(OrderBalanceFields.ADDITIONAL_OVERHEAD,
+                    numberService.setScaleWithDefaultMathContext(oBalance.getAdditionalOverhead(), 2));
+            orderBalance.setField(OrderBalanceFields.DIRECT_ADDITIONAL_COST,
+                    numberService.setScaleWithDefaultMathContext(oBalance.getDirectAdditionalCost(), 2));
+            orderBalance.setField(OrderBalanceFields.TOTAL_COSTS,
+                    numberService.setScaleWithDefaultMathContext(oBalance.getTotalCosts(), 2));
+            orderBalance.setField(OrderBalanceFields.REGISTRATION_PRICE,
+                    numberService.setScaleWithDefaultMathContext(oBalance.getRegistrationPrice(), 2));
+            orderBalance.setField(OrderBalanceFields.REGISTRATION_PRICE_OVERHEAD,
+                    numberService.setScaleWithDefaultMathContext(oBalance.getRegistrationPriceOverhead(), 2));
+            orderBalance.setField(OrderBalanceFields.REGISTRATION_PRICE_OVERHEAD_VALUE,
+                    numberService.setScaleWithDefaultMathContext(oBalance.getRegistrationPriceOverheadValue(), 2));
+            orderBalance.setField(OrderBalanceFields.REAL_PRODUCTION_COSTS,
+                    numberService.setScaleWithDefaultMathContext(oBalance.getRealProductionCosts(), 2));
+            orderBalance.setField(OrderBalanceFields.TECHNICAL_PRODUCTION_COST_OVERHEAD,
+                    numberService.setScaleWithDefaultMathContext(oBalance.getTechnicalProductionCostOverhead(), 2));
+            orderBalance.setField(OrderBalanceFields.TECHNICAL_PRODUCTION_COST_OVERHEAD_VALUE,
+                    numberService.setScaleWithDefaultMathContext(oBalance.getTechnicalProductionCostOverheadValue(), 2));
+            orderBalance.setField(OrderBalanceFields.TOTAL_MANUFACTURING_COST,
+                    numberService.setScaleWithDefaultMathContext(oBalance.getTotalManufacturingCost(), 2));
+            orderBalance.setField(OrderBalanceFields.PROFIT,
+                    numberService.setScaleWithDefaultMathContext(oBalance.getProfit(), 2));
+            orderBalance.setField(OrderBalanceFields.PROFIT_VALUE,
+                    numberService.setScaleWithDefaultMathContext(oBalance.getProfitValue(), 2));
+            orderBalance.setField(OrderBalanceFields.SELL_PRICE,
+                    numberService.setScaleWithDefaultMathContext(oBalance.getSellPrice(), 2));
+            orderBalanceDD.save(orderBalance);
+        }
     }
 
     private void recalculateMaterialCostsWithCurrencies(List<MaterialCost> materialCosts) {

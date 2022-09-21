@@ -375,6 +375,7 @@
 
                         <option type="fullscreen" value="true"/>
                         <option type="fixedHeight" value="true"/>
+                        <option type="multiselect" value="true" />
 
                         <option type="footerRow" value="true"/>
                         <option type="columnsToSummary" value="materialCosts,labourCost,productionCosts"/>

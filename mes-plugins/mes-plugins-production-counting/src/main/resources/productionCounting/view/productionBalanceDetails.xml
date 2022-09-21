@@ -372,6 +372,42 @@
                 </layoutElement>
             </component>
         </windowTab>
+
+        <windowTab name="ordersBalanceTab">
+            <component type="gridLayout" name="ordersBalanceGridLayout" columns="1"
+                       rows="1">
+                <layoutElement column="1" row="1">
+                    <component type="grid" name="ordersBalance" reference="ordersBalance"
+                               source="#{form}.ordersBalance">
+                        <option type="column" name="orderNumber" fields="orderNumber"/>
+                        <option type="column" name="productNumber" fields="productNumber"/>
+                        <option type="column" name="producedQuantity" fields="producedQuantity"/>
+                        <option type="column" name="productUnit" fields="productUnit" />
+                        <option type="column" name="materialCosts" fields="materialCosts" />
+                        <option type="column" name="productionCosts" fields="productionCosts" />
+                        <option type="column" name="totalCosts" fields="totalCosts" />
+                        <option type="column" name="registrationPrice" fields="registrationPrice" />
+                        <option type="column" name="realProductionCosts" fields="realProductionCosts" />
+                        <option type="column" name="totalManufacturingCost" fields="totalManufacturingCost" />
+                        <option type="column" name="sellPrice" fields="sellPrice" />
+
+                        <option type="searchable" value="orderNumber,productNumber,producedQuantity,productUnit,
+                            materialCosts,productionCosts,totalCosts,registrationPrice,realProductionCosts,totalManufacturingCost,sellPrice"/>
+                        <option type="orderable" value="orderNumber,productNumber,producedQuantity,productUnit,
+                            materialCosts,productionCosts,totalCosts,registrationPrice,realProductionCosts,totalManufacturingCost,sellPrice"/>
+
+                        <option type="order" column="orderNumber" direction="asc"/>
+
+                        <option type="fullscreen" value="true"/>
+                        <option type="fixedHeight" value="true"/>
+                        <option type="multiselect" value="true" />
+
+                        <option type="footerRow" value="true"/>
+                        <option type="columnsToSummary" value="producedQuantity,materialCosts,productionCosts,totalCosts,registrationPrice,realProductionCosts,totalManufacturingCost,sellPrice"/>
+                    </component>
+                </layoutElement>
+            </component>
+        </windowTab>
     </component>
 
     <hooks>
