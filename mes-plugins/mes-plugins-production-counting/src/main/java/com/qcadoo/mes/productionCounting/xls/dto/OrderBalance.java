@@ -16,6 +16,8 @@ public class OrderBalance {
 
     private String productName;
 
+    private String productUnit;
+
     private BigDecimal producedQuantity;
 
     private BigDecimal materialCosts;
@@ -272,5 +274,13 @@ public class OrderBalance {
 
     public void setTotalManufacturingCost(BigDecimal totalManufacturingCost) {
         this.totalManufacturingCost = totalManufacturingCost;
+    }
+
+    public String getProductUnit() {
+        return productUnit;
+    }
+
+    public void setProductUnit(String productUnit) {
+        this.productUnit = productUnit;
     }
 }

@@ -89,6 +89,7 @@
         <model:model model="productionTracking" resource="model/productionTracking.xml"/>
         <model:model model="productionTrackingStateChange" resource="model/productionTrackingStateChange.xml"/>
         <model:model model="productionBalance" resource="model/productionBalance.xml"/>
+        <model:model model="orderBalance" resource="model/orderBalance.xml"/>
         <model:model model="trackingOperationProductInComponent"
                      resource="model/trackingOperationProductInComponent.xml"/>
         <model:model model="trackingOperationProductOutComponent"

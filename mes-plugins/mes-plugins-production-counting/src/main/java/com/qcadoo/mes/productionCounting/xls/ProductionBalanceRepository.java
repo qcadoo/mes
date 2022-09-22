@@ -759,7 +759,7 @@ class ProductionBalanceRepository {
         query.append("LEFT JOIN grouped_material_cost gmc ON gmc.order_id = o.id ");
         query.append("JOIN grouped_production_cost gpc ON gpc.order_id = o.id ");
         appendWhereClause(query);
-        query.append("GROUP BY orderId, rootId, orderNumber, productNumber, productName ");
+        query.append("GROUP BY orderId, rootId, orderNumber, productNumber, productName, productUnit ");
         query.append("ORDER BY orderNumber ");
 
         return jdbcTemplate.query(query.toString(), new MapSqlParameterSource("ordersIds", ordersIds),
@@ -774,7 +774,7 @@ class ProductionBalanceRepository {
         } else {
             for (int i = 0; i < materialCosts.size(); i++) {
                 MaterialCost materialCost = materialCosts.get(i);
-                query.append("(" + materialCost.getOrderId() + ", " + materialCost.getRealCost() + ") ");
+                query.append("(").append(materialCost.getOrderId()).append(", ").append(materialCost.getRealCost()).append(") ");
                 if (i != materialCosts.size() - 1) {
                     query.append(", ");
                 }
@@ -785,7 +785,7 @@ class ProductionBalanceRepository {
         query.append("real_production_cost (order_id, cost) AS (VALUES ");
         for (int i = 0; i < productionCosts.size(); i++) {
             ProductionCost productionCost = productionCosts.get(i);
-            query.append("(" + productionCost.getOrderId() + ", " + productionCost.getRealCostsSum() + ") ");
+            query.append("(").append(productionCost.getOrderId()).append(", ").append(productionCost.getRealCostsSum()).append(") ");
             if (i != productionCosts.size() - 1) {
                 query.append(", ");
             }
@@ -802,6 +802,7 @@ class ProductionBalanceRepository {
         query.append("o.number AS orderNumber, ");
         query.append("prod.number AS productNumber, ");
         query.append("prod.name AS productName, ");
+        query.append("prod.unit AS productUnit, ");
         appendProducedQuantity(query);
         query.append("AS producedQuantity, ");
         appendMaterialCostMargin(entity, query);
