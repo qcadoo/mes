@@ -27,4 +27,10 @@ public class OrdersCriteriaModifiers {
                 OrderState.IN_PROGRESS.getStringValue(), OrderState.INTERRUPTED.getStringValue())));
     }
 
+    public void showNotCompletedDeclinedAndAbandoned(final SearchCriteriaBuilder scb) {
+        scb.add(SearchRestrictions.not(SearchRestrictions.in(OrderFields.STATE, Lists.newArrayList(OrderState.COMPLETED.getStringValue(),
+                OrderState.DECLINED.getStringValue(), OrderState.ABANDONED.getStringValue()))
+        ));
+    }
+
 }

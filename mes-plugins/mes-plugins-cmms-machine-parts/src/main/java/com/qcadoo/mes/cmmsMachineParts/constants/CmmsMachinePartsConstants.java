@@ -65,4 +65,8 @@ public final class CmmsMachinePartsConstants {
 
     public static final String MODEL_TOOL = "tool";
 
+    public static final String MODEL_ORDERS_TOOL_REQUIREMENT = "ordersToolRequirement";
+
+    public static final String MODEL_ORDERS_TOOL_REQUIREMENT_TOOL = "ordersToolRequirementTool";
+
 }

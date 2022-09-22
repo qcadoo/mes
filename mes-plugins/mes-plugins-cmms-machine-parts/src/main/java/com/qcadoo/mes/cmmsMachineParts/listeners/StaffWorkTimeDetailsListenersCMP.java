@@ -23,37 +23,41 @@
  */
 package com.qcadoo.mes.cmmsMachineParts.listeners;
 
-import java.util.Date;
-
-import org.joda.time.DateTime;
-import org.joda.time.Seconds;
-import org.springframework.stereotype.Service;
-
 import com.qcadoo.localization.api.utils.DateUtils;
 import com.qcadoo.mes.cmmsMachineParts.constants.StaffWorkTimeFields;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
+import org.joda.time.DateTime;
+import org.joda.time.Seconds;
+import org.springframework.stereotype.Service;
+
+import java.util.Date;
+import java.util.Objects;
 
 @Service
-public class StaffWorkTimeDetailsListenersCMMS {
+public class StaffWorkTimeDetailsListenersCMP {
 
     public void calculateLaborTime(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        FieldComponent startDateFieldComponent = (FieldComponent) view
+        FieldComponent startDateField = (FieldComponent) view
                 .getComponentByReference(StaffWorkTimeFields.EFFECTIVE_EXECUTION_TIME_START);
-        FieldComponent endDateFieldComponent = (FieldComponent) view
+        FieldComponent endDateField = (FieldComponent) view
                 .getComponentByReference(StaffWorkTimeFields.EFFECTIVE_EXECUTION_TIME_END);
-        FieldComponent laborTimeFieldComponent = (FieldComponent) view.getComponentByReference(StaffWorkTimeFields.LABOR_TIME);
-        if (startDateFieldComponent.getFieldValue() == null || endDateFieldComponent.getFieldValue() == null) {
+        FieldComponent laborTimeField = (FieldComponent) view.getComponentByReference(StaffWorkTimeFields.LABOR_TIME);
+
+        if (Objects.isNull(startDateField.getFieldValue()) || Objects.isNull(endDateField.getFieldValue())) {
             return;
         }
-        Date start = DateUtils.parseDate(startDateFieldComponent.getFieldValue());
-        Date end = DateUtils.parseDate(endDateFieldComponent.getFieldValue());
 
-        if (start != null && end != null && start.before(end)) {
+        Date start = DateUtils.parseDate(startDateField.getFieldValue());
+        Date end = DateUtils.parseDate(endDateField.getFieldValue());
+
+        if (Objects.nonNull(start) && Objects.nonNull(end) && start.before(end)) {
             Seconds seconds = Seconds.secondsBetween(new DateTime(start), new DateTime(end));
-            laborTimeFieldComponent.setFieldValue(Integer.valueOf(seconds.getSeconds()));
+            laborTimeField.setFieldValue(seconds.getSeconds());
         }
-        laborTimeFieldComponent.requestComponentUpdateState();
+
+        laborTimeField.requestComponentUpdateState();
     }
+
 }

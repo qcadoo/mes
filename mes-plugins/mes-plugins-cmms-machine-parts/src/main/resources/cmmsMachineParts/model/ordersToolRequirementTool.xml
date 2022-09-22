@@ -24,30 +24,22 @@
     ***************************************************************************
 
 -->
-<model name="technologyOperationTool"
+<model name="ordersToolRequirementTool"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
        xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
 
     <fields>
-        <dictionary name="toolCategory" dictionary="toolCategory" required="true"/>
-        <belongsTo name="technologyOperationComponent" model="technologyOperationComponent" plugin="technologies" required="true"/>
-        <belongsTo name="tool" model="tool" plugin="cmmsMachineParts"/>
-        <string name="description">
-            <validatesLength max="2048"/>
-        </string>
-        <decimal name="quantity" required="true">
+        <belongsTo name="ordersToolRequirement" model="ordersToolRequirement" required="true"/>
+        <date name="date"/>
+        <belongsTo name="order" plugin="orders" model="order" required="true"/>
+        <belongsTo name="operation" plugin="technologies" model="operation" required="true"/>
+        <belongsTo name="technologyOperationTool" model="technologyOperationTool" required="true"/>
+        <decimal name="quantity">
             <validatesRange from="0" exclusively="true"/>
-            <validatesUnscaledValue max="7"/>
+            <validatesUnscaledValue max="9"/>
             <validatesScale max="5"/>
         </decimal>
-        <dictionary name="unit" dictionary="units" required="true"/>
-        <hasMany name="ordersToolRequirementTools" model="ordersToolRequirementTool" plugin="cmmsMachineParts"
-                 joinField="technologyOperationTool"/>
     </fields>
 
-    <hooks>
-        <validatesWith
-                class="com.qcadoo.mes.cmmsMachineParts.hooks.TechnologyOperationToolHooks"
-                method="validatesWith"/>
-    </hooks>
+    <hooks />
 </model>

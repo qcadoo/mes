@@ -24,30 +24,32 @@
     ***************************************************************************
 
 -->
-<model name="technologyOperationTool"
+<model name="ordersToolRequirement"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
        xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
 
     <fields>
-        <dictionary name="toolCategory" dictionary="toolCategory" required="true"/>
-        <belongsTo name="technologyOperationComponent" model="technologyOperationComponent" plugin="technologies" required="true"/>
-        <belongsTo name="tool" model="tool" plugin="cmmsMachineParts"/>
-        <string name="description">
-            <validatesLength max="2048"/>
+        <string name="number" unique="true">
+            <validatesLength max="256"/>
         </string>
-        <decimal name="quantity" required="true">
-            <validatesRange from="0" exclusively="true"/>
-            <validatesUnscaledValue max="7"/>
-            <validatesScale max="5"/>
-        </decimal>
-        <dictionary name="unit" dictionary="units" required="true"/>
+        <string name="name">
+            <validatesLength max="1024"/>
+        </string>
+        <boolean name="generated" copyable="false"/>
+        <string name="worker" copyable="false"/>
+        <datetime name="date" copyable="false"/>
+        <string name="fileName" copyable="false"/>
         <hasMany name="ordersToolRequirementTools" model="ordersToolRequirementTool" plugin="cmmsMachineParts"
-                 joinField="technologyOperationTool"/>
+                 joinField="ordersToolRequirement" cascade="delete"/>
+
+        <manyToMany name="orders" model="order" copyable="true"
+                    plugin="orders" joinField="ordersToolRequirements"/>
     </fields>
 
     <hooks>
-        <validatesWith
-                class="com.qcadoo.mes.cmmsMachineParts.hooks.TechnologyOperationToolHooks"
-                method="validatesWith"/>
+        <onSave class="com.qcadoo.mes.cmmsMachineParts.hooks.OrdersToolRequirementHooks"
+                method="onSave"/>
     </hooks>
+
+    <identifier expression="#number"/>
 </model>
