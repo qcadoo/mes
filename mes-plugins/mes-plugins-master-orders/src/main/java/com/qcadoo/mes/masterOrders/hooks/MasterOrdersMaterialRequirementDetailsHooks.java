@@ -89,7 +89,7 @@ public class MasterOrdersMaterialRequirementDetailsHooks {
         boolean isSaved = Objects.nonNull(masterOrdersMaterialRequirementId);
         boolean isGenerated = generatedCheckBox.isChecked();
 
-        masterOrdersMaterialRequirementForm.setFormEnabled(isSaved || !isGenerated);
+        masterOrdersMaterialRequirementForm.setFormEnabled(!isSaved || !isGenerated);
         masterOrdersGrid.setEnabled(isSaved && !isGenerated);
     }
 

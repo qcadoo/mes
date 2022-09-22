@@ -117,7 +117,7 @@ public class SalesPlanMaterialRequirementDetailsHooks {
         boolean isSaved = Objects.nonNull(salesPlanMaterialRequirementId);
         boolean isGenerated = generatedCheckBox.isChecked();
 
-        salesPlanMaterialRequirementForm.setFormEnabled(isSaved || !isGenerated);
+        salesPlanMaterialRequirementForm.setFormEnabled(!isSaved || !isGenerated);
     }
 
     private void setIncludeComponents(final ViewDefinitionState view) {
