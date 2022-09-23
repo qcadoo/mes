@@ -151,7 +151,7 @@ public class ProductsByAttributeListeners {
                     return;
                 }
 
-                if (BigDecimal.ZERO.compareTo(orderedQuantity) >= 0) {
+                if (BigDecimal.ZERO.compareTo(orderedQuantity) > 0) {
                     orderedQuantityField.addMessage("qcadooView.validate.field.error.outOfRange.toSmall", ComponentState.MessageType.FAILURE);
 
                     return;
@@ -193,7 +193,6 @@ public class ProductsByAttributeListeners {
             Optional<Entity> mayBeProduct = findMatchingProduct(children, productsByAttributeEntryHelpers);
 
             if (mayBeProduct.isPresent()) {
-
                 product = mayBeProduct.get();
 
                 Entity masterOrderProduct = createMasterOrderPosition(masterOrder, product, orderedQuantity, comments);
@@ -203,6 +202,15 @@ public class ProductsByAttributeListeners {
 
                     generatedCheckBox.setChecked(true);
                 } else {
+                    masterOrderProduct.getGlobalErrors().stream().filter(error ->
+                            !error.getMessage().equals("qcadooView.validate.global.error.custom")).forEach(error ->
+                            view.addMessage(error.getMessage(), ComponentState.MessageType.FAILURE, error.getVars())
+                    );
+
+                    masterOrderProduct.getErrors().values().forEach(error ->
+                            view.addMessage(error.getMessage(), ComponentState.MessageType.FAILURE, error.getVars())
+                    );
+
                     view.addMessage("masterOrders.productsByAttribute.addPositionsToOrder.error", ComponentState.MessageType.FAILURE);
                 }
             } else {

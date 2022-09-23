@@ -7,6 +7,7 @@ import com.qcadoo.model.api.BigDecimalUtils;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Service;
@@ -40,29 +41,48 @@ public class ProductAttributeValueHooks {
             }
         }
 
-        if (AttributeDataType.CONTINUOUS.getStringValue().equals(attribute.getStringField(AttributeFields.DATA_TYPE))
-                && AttributeValueType.NUMERIC.getStringValue().equals(attribute.getStringField(AttributeFields.VALUE_TYPE))) {
-            Either<Exception, Optional<BigDecimal>> eitherNumber = BigDecimalUtils.tryParseAndIgnoreSeparator(
-                    productAttributeValue.getStringField(ProductAttributeValueFields.VALUE), LocaleContextHolder.getLocale());
+        if (AttributeDataType.CONTINUOUS.getStringValue().equals(attribute.getStringField(AttributeFields.DATA_TYPE))) {
+            String value = productAttributeValue.getStringField(ProductAttributeValueFields.VALUE);
 
-            if (eitherNumber.isRight()) {
-                if (eitherNumber.getRight().isPresent()) {
-                    int scale = attribute.getIntegerField(AttributeFields.PRECISION);
-                    int valueScale = eitherNumber.getRight().get().scale();
+            if (AttributeValueType.NUMERIC.getStringValue().equals(attribute.getStringField(AttributeFields.VALUE_TYPE))) {
+                Either<Exception, Optional<BigDecimal>> eitherNumber = BigDecimalUtils.tryParseAndIgnoreSeparator(value,
+                        LocaleContextHolder.getLocale());
 
-                    if (valueScale > scale) {
-                        productAttributeValue.addError(productAttributeValueDD.getField(ProductAttributeValueFields.VALUE),
-                                "qcadooView.validate.field.error.invalidScale.max", String.valueOf(scale));
+                if (eitherNumber.isRight()) {
+                    if (eitherNumber.getRight().isPresent()) {
+                        int scale = attribute.getIntegerField(AttributeFields.PRECISION);
+                        int valueScale = eitherNumber.getRight().get().scale();
 
-                        return false;
+                        if (valueScale > scale) {
+                            productAttributeValue.addError(productAttributeValueDD.getField(ProductAttributeValueFields.VALUE),
+                                    "qcadooView.validate.field.error.invalidScale.max", String.valueOf(scale));
+
+                            return false;
+                        }
+
+                        productAttributeValue
+                                .setField(
+                                        ProductAttributeValueFields.VALUE,
+                                        BigDecimalUtils.toString(eitherNumber.getRight().get(),
+                                                attribute.getIntegerField(AttributeFields.PRECISION)));
+                    } else {
+                        if (ProductFamilyElementType.PARTICULAR_PRODUCT.getStringValue().equals(entityType)) {
+                            productAttributeValue.addError(productAttributeValueDD.getField(ProductAttributeValueFields.VALUE),
+                                    "qcadooView.validate.field.error.missing");
+
+                            return false;
+                        }
                     }
-
-                    productAttributeValue
-                            .setField(
-                                    ProductAttributeValueFields.VALUE,
-                                    BigDecimalUtils.toString(eitherNumber.getRight().get(),
-                                            attribute.getIntegerField(AttributeFields.PRECISION)));
                 } else {
+                    productAttributeValue.addError(productAttributeValueDD.getField(ProductAttributeValueFields.VALUE),
+                            "qcadooView.validate.field.error.invalidNumericFormat");
+
+                    return false;
+                }
+            }
+
+            if (AttributeValueType.TEXT.getStringValue().equals(attribute.getStringField(AttributeFields.VALUE_TYPE))) {
+                if (StringUtils.isEmpty(value)) {
                     if (ProductFamilyElementType.PARTICULAR_PRODUCT.getStringValue().equals(entityType)) {
                         productAttributeValue.addError(productAttributeValueDD.getField(ProductAttributeValueFields.VALUE),
                                 "qcadooView.validate.field.error.missing");
@@ -70,11 +90,6 @@ public class ProductAttributeValueHooks {
                         return false;
                     }
                 }
-            } else {
-                productAttributeValue.addError(productAttributeValueDD.getField(ProductAttributeValueFields.VALUE),
-                        "qcadooView.validate.field.error.invalidNumericFormat");
-
-                return false;
             }
         }
 
