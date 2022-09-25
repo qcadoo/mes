@@ -40,10 +40,9 @@
                         <![CDATA[
                             this.addOnChangeListener({
                                 onClick: function() {
-                                        #{grid}.performEvent({
-                                            name : 'showProductAttributesFromPositionLists'
-                                        });
-
+                                    #{grid}.performEvent({
+                                        name : 'showProductAttributesFromPositionLists'
+                                    });
                                 }
                             });
                         ]]>
@@ -55,76 +54,47 @@
         <component type="grid" name="grid" reference="grid">
             <option type="column" name="locationFrom" fields="locationFrom"
                     width="50"/>
-
             <option type="column" name="locationTo" fields="locationTo"
                     width="50"/>
-
             <option type="column" name="productNumber" fields="productNumber"/>
-
             <option type="column" name="productName" fields="productName"/>
-
+            <option type="column" name="productGlobalTypeOfMaterial" fields="productGlobalTypeOfMaterial"/>
             <option type="column" name="productCategory" fields="productCategory"/>
-
             <option type="column" name="quantity" fields="quantity" width="50"/>
-
             <option type="column" name="productUnit" fields="productUnit" width="30"/>
-
             <option type="column" name="givenQuantity" fields="givenQuantity" width="50"/>
-
             <option type="column" name="givenUnit" fields="givenUnit" width="30"/>
-
             <option type="column" name="conversion" fields="conversion" width="30"/>
-
             <option type="column" name="price" fields="price" width="50"/>
-
             <option type="column" name="sellingPrice" fields="sellingPrice" width="50"/>
-
             <option type="column" name="value" fields="value" width="50"/>
-
             <option type="column" name="documentDate" fields="documentDate"/>
-
             <option type="column" name="documentType" fields="documentType" width="80"/>
-
             <option type="column" name="documentNumber" fields="documentNumber" width="50" link="true"
                     correspondingView="materialFlowResources/documentDetails" correspondingField="documentId"/>
-
             <option type="column" name="documentId" fields="documentId"
                     hidden="true"/>
-
             <option type="column" name="documentName" fields="documentName"
                     width="50"/>
-
             <option type="column" name="resourceNumber" fields="resourceNumber"/>
-
             <option type="column" name="company" fields="companyName"/>
-
             <option type="column" name="address" fields="documentAddress"/>
-
             <option type="column" name="staff" fields="staff"/>
-
             <option type="column" name="batch" fields="batch" width="50"/>
-
             <option type="column" name="expirationDate" fields="expirationDate" width="60"/>
-
             <option type="column" name="productionDate" fields="productionDate" width="60"/>
-
             <option type="column" name="storageLocation" fields="storageLocation" width="70"/>
             <option type="column" name="additionalCode" fields="additionalCode"/>
-
             <option type="column" name="waste" fields="waste" width="30"/>
-
             <option type="column" name="state" fields="state" width="70"/>
-
             <option type="column" name="palletType" fields="palletType" width="50"/>
-
             <option type="column" name="palletNumber" fields="palletNumber" width="70"/>
-
             <option type="order" column="documentDate" direction="desc"/>
 
             <option type="searchable"
-                    value="value,sellingPrice,locationFrom,locationTo,productNumber,productName,productCategory,quantity,givenQuantity,givenUnit,conversion,documentType,documentNumber,documentName,company,batch,expirationDate,productionDate,storageLocation,additionalCode,state,waste,documentDate,price,palletType,palletNumber,address,staff,resourceNumber"/>
+                    value="value,sellingPrice,locationFrom,locationTo,productNumber,productName,productGlobalTypeOfMaterial,productCategory,quantity,givenQuantity,givenUnit,conversion,documentType,documentNumber,documentName,company,batch,expirationDate,productionDate,storageLocation,additionalCode,state,waste,documentDate,price,palletType,palletNumber,address,staff,resourceNumber"/>
             <option type="orderable"
-                    value="value,sellingPrice,locationFrom,locationTo,productNumber,productName,productCategory,quantity,givenQuantity,givenUnit,conversion,documentType,documentNumber,documentName,company,batch,expirationDate,productionDate,storageLocation,additionalCode,state,waste,documentDate,price,palletNumber,palletNumber,address,staff,resourceNumber"/>
+                    value="value,sellingPrice,locationFrom,locationTo,productNumber,productName,productGlobalTypeOfMaterial,productCategory,quantity,givenQuantity,givenUnit,conversion,documentType,documentNumber,documentName,company,batch,expirationDate,productionDate,storageLocation,additionalCode,state,waste,documentDate,price,palletNumber,palletNumber,address,staff,resourceNumber"/>
 
             <option type="creatable" value="false"/>
             <option type="deletable" value="false"/>

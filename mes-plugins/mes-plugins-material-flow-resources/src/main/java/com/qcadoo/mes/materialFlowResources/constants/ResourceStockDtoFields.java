@@ -18,6 +18,8 @@ public final class ResourceStockDtoFields {
 
     public static final String PRODUCT_NAME = "productName";
 
+    public static final String PRODUCT_GLOBAL_TYPE_OF_MATERIAL = "productGlobalTypeOfMaterial";
+    
     public static final String PRODUCT_UNIT = "productUnit";
 
     public static final String FAMILY_NUMBER = "familyNumber";

@@ -41,6 +41,7 @@
             <option type="column" name="locationName" fields="locationName" width="140"/>
             <option type="column" name="productNumber" fields="productNumber" width="100"/>
             <option type="column" name="productName" fields="productName" width="250"/>
+            <option type="column" name="productGlobalTypeOfMaterial" fields="productGlobalTypeOfMaterial" width="85"/>
             <option type="column" name="quantity" fields="quantity" width="100"/>
             <option type="column" name="reservedQuantity" fields="reservedQuantity" width="100"/>
             <option type="column" name="availableQuantity" fields="availableQuantity" width="100"/>
@@ -51,9 +52,9 @@
             <option type="order" column="locationName" direction="asc"/>
 
             <option type="searchable"
-                    value="locationNumber,locationName,productNumber,productName,quantity,unit,reservedQuantity,availableQuantity,quantityInAdditionalUnit,familyNumber"/>
+                    value="locationNumber,locationName,productNumber,productName,productGlobalTypeOfMaterial,quantity,unit,reservedQuantity,availableQuantity,quantityInAdditionalUnit,familyNumber"/>
             <option type="orderable"
-                    value="locationNumber,locationName,productNumber,productName,quantity,unit,reservedQuantity,availableQuantity,quantityInAdditionalUnit,familyNumber"/>
+                    value="locationNumber,locationName,productNumber,productName,productGlobalTypeOfMaterial,quantity,unit,reservedQuantity,availableQuantity,quantityInAdditionalUnit,familyNumber"/>
 
             <!-- column orderedQuantity from deliveriesToMaterialFlow -->
             <option type="columnsToSummary"

@@ -29,7 +29,7 @@ import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 
 public enum GlobalTypeOfMaterial {
-    COMPONENT("01component"), INTERMEDIATE("02intermediate"), FINAL_PRODUCT("03finalProduct"), WASTE("04waste"), NONE("");
+    COMPONENT("01component"), INTERMEDIATE("02intermediate"), FINAL_PRODUCT("03finalProduct"), WASTE("04waste"), PACKAGE("05package"), NONE("");
 
     private final String globalTypeOfMaterial;
 
@@ -67,6 +67,8 @@ public enum GlobalTypeOfMaterial {
             return FINAL_PRODUCT;
         } else if ("04waste".equals(globalTypeOfMaterial)) {
             return WASTE;
+        } else if ("05package".equals(globalTypeOfMaterial)) {
+            return PACKAGE;
         }
 
         throw new IllegalStateException("Unsupported GlobalTypeOfMaterial: " + globalTypeOfMaterial);

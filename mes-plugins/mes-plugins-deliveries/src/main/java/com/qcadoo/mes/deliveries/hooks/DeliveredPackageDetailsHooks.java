@@ -21,28 +21,31 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.deliveries.constants;
+package com.qcadoo.mes.deliveries.hooks;
 
-public final class ParameterFieldsD {
+import com.google.common.collect.Lists;
+import com.qcadoo.mes.deliveries.DeliveriesService;
+import com.qcadoo.mes.deliveries.constants.DeliveredProductFields;
+import com.qcadoo.view.api.ViewDefinitionState;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
-    private ParameterFieldsD() {
+import java.util.List;
 
+@Service
+public class DeliveredPackageDetailsHooks {
+
+    @Autowired
+    private DeliveriesService deliveriesService;
+
+    public void onBeforeRender(final ViewDefinitionState view) {
+        fillUnitField(view);
     }
 
-    public static final String DEFAULT_DESCRIPTION = "defaultDescription";
+    public void fillUnitField(final ViewDefinitionState view) {
+        List<String> unitNames = Lists.newArrayList("deliveredQuantityUnit");
 
-    public static final String DEFAULT_ADDRESS = "defaultAddress";
-
-    public static final String OTHER_ADDRESS = "otherAddress";
-
-    public static final String LOCATION = "location";
-
-    public static final String PACKAGING_LOCATION = "packagingLocation";
-
-    public static final String DELIVERED_BIGGER_THAN_ORDERED = "deliveredBiggerThanOrdered";
-
-    public static final String REQUIRE_SUPPLIER_IDENTYFICATION = "requireSupplierIdentification";
-
-    public static final String POSITIVE_PURCHASE_PRICE = "positivePurchasePrice";
+        deliveriesService.fillUnitFields(view, DeliveredProductFields.PRODUCT, unitNames);
+    }
 
 }

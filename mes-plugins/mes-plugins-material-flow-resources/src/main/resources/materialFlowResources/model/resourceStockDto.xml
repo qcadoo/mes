@@ -36,6 +36,7 @@
         <string name="locationName"/>
         <string name="productNumber"/>
         <string name="productName"/>
+        <enum name="productGlobalTypeOfMaterial" values="01component,02intermediate,03finalProduct,04waste,05package"/>
         <string name="productUnit"/>
         <string name="familyNumber"/>
         <decimal name="minimumState"/>

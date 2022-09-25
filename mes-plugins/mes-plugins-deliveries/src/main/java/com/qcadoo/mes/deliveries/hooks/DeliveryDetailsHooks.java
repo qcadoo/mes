@@ -44,29 +44,20 @@ import com.qcadoo.model.api.search.CustomRestriction;
 import com.qcadoo.security.api.SecurityService;
 import com.qcadoo.security.api.UserService;
 import com.qcadoo.view.api.ViewDefinitionState;
-import com.qcadoo.view.api.components.FieldComponent;
-import com.qcadoo.view.api.components.FormComponent;
-import com.qcadoo.view.api.components.GridComponent;
-import com.qcadoo.view.api.components.LookupComponent;
-import com.qcadoo.view.api.components.WindowComponent;
+import com.qcadoo.view.api.components.*;
 import com.qcadoo.view.api.ribbon.Ribbon;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.api.ribbon.RibbonGroup;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
 import com.qcadoo.view.constants.QcadooViewConstants;
 import com.qcadoo.view.constants.RowStyle;
-
-import java.math.BigDecimal;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
-
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
+import java.util.*;
 
 @Service
 public class DeliveryDetailsHooks {
@@ -88,7 +79,7 @@ public class DeliveryDetailsHooks {
     private static final String L_DELIVERY_POSITIONS = "deliveryPositions";
 
     private static final String L_CHANGE_STORAGE_LOCATIONS = "changeStorageLocations";
-    
+
     private static final String ASSIGN_STORAGE_LOCATIONS = "assignStorageLocations";
 
     @Autowired
@@ -144,30 +135,32 @@ public class DeliveryDetailsHooks {
         String state = stateField.getFieldValue().toString();
 
         if (Objects.isNull(deliveryForm.getEntityId())) {
-            changeFieldsEnabled(view, true, false, false);
+            changeFieldsEnabled(view, true, false, false, false);
         } else {
             if (DeliveryState.PREPARED.getStringValue().equals(state) || DeliveryState.APPROVED.getStringValue().equals(state)) {
-                changeFieldsEnabled(view, false, false, true);
+                changeFieldsEnabled(view, false, false, true, true);
             } else if (DeliveryState.DECLINED.getStringValue().equals(state)
                     || DeliveryState.RECEIVED.getStringValue().equals(state)
                     || DeliveryState.RECEIVE_CONFIRM_WAITING.getStringValue().equals(state)) {
-                changeFieldsEnabled(view, false, false, false);
+                changeFieldsEnabled(view, false, false, false, false);
             } else {
-                changeFieldsEnabled(view, true, true, true);
+                changeFieldsEnabled(view, true, true, true, true);
             }
         }
     }
 
     private void changeFieldsEnabled(final ViewDefinitionState view, final boolean enabledForm, final boolean enabledOrderedGrid,
-            final boolean enabledDeliveredGrid) {
+                                     final boolean enabledDeliveredGrid, final boolean enablePackagesGrid) {
         FormComponent deliveryForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
-        GridComponent orderedProducts = (GridComponent) view.getComponentByReference(DeliveryFields.ORDERED_PRODUCTS);
-        GridComponent deliveredProducts = (GridComponent) view.getComponentByReference(DeliveryFields.DELIVERED_PRODUCTS);
+        GridComponent orderedProductsGrid = (GridComponent) view.getComponentByReference(DeliveryFields.ORDERED_PRODUCTS);
+        GridComponent deliveredProductsGrid = (GridComponent) view.getComponentByReference(DeliveryFields.DELIVERED_PRODUCTS);
+        GridComponent deliveredPackagesGrid = (GridComponent) view.getComponentByReference(DeliveryFields.DELIVERED_PACKAGES);
 
         deliveryForm.setFormEnabled(enabledForm);
-        orderedProducts.setEnabled(enabledOrderedGrid);
-        deliveredProducts.setEnabled(enabledDeliveredGrid);
+        orderedProductsGrid.setEnabled(enabledOrderedGrid);
+        deliveredProductsGrid.setEnabled(enabledDeliveredGrid);
+        deliveredPackagesGrid.setEnabled(enabledDeliveredGrid);
     }
 
     private void fillDeliveryAddressDefaultValue(final ViewDefinitionState view) {
@@ -434,7 +427,7 @@ public class DeliveryDetailsHooks {
             List<Entity> sortedEntities = Lists.newArrayList();
 
             for (String filter : getSortedItemsFromFilter(productNumberFilter)) {
-                for (Iterator<Entity> orderedProduct = orderedProductsEntities.listIterator(); orderedProduct.hasNext();) {
+                for (Iterator<Entity> orderedProduct = orderedProductsEntities.listIterator(); orderedProduct.hasNext(); ) {
                     Entity entity = orderedProduct.next();
 
                     if (filter.equals(entity.getStringField("productNumber"))) {

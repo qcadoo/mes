@@ -29,29 +29,29 @@ public enum ProductMaterialType {
 
     COMPONENT("01component"), INTERMEDIATE("02intermediate"), FINAL_PRODUCT("03finalProduct"), WASTE("04waste"), NONE("");
 
-    private final String globalTypeOfMaterial;
+    private final String productMaterialType;
 
     private ProductMaterialType(final String type) {
-        this.globalTypeOfMaterial = type;
+        this.productMaterialType = type;
     }
 
     public String getStringValue() {
-        return globalTypeOfMaterial;
+        return productMaterialType;
     }
 
-    public static ProductMaterialType parseString(final String globalTypeOfMaterial) {
-        if (StringUtils.isEmpty(globalTypeOfMaterial)) {
+    public static ProductMaterialType parseString(final String productMaterialType) {
+        if (StringUtils.isEmpty(productMaterialType)) {
             return NONE;
-        } else if ("01component".equals(globalTypeOfMaterial)) {
+        } else if ("01component".equals(productMaterialType)) {
             return COMPONENT;
-        } else if ("02intermediate".equals(globalTypeOfMaterial)) {
+        } else if ("02intermediate".equals(productMaterialType)) {
             return INTERMEDIATE;
-        } else if ("03finalProduct".equals(globalTypeOfMaterial)) {
+        } else if ("03finalProduct".equals(productMaterialType)) {
             return FINAL_PRODUCT;
-        } else if ("04waste".equals(globalTypeOfMaterial)) {
+        } else if ("04waste".equals(productMaterialType)) {
             return WASTE;
         }
 
-        throw new IllegalStateException("Unsupported GlobalTypeOfMaterial: " + globalTypeOfMaterial);
+        throw new IllegalStateException("Unsupported ProductMaterialType: " + productMaterialType);
     }
 }

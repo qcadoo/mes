@@ -57,6 +57,8 @@ public final class DeliveryFields {
 
     public static final String DELIVERED_PRODUCTS = "deliveredProducts";
 
+    public static final String DELIVERED_PACKAGES = "deliveredPackages";
+
     public static final String EXTERNAL_NUMBER = "externalNumber";
 
     public static final String EXTERNAL_SYNCHRONIZED = "externalSynchronized";

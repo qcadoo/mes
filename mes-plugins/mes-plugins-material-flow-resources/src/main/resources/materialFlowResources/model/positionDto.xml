@@ -36,6 +36,7 @@
         <string name="locationTo"/>
         <string name="productNumber"/>
         <string name="productName"/>
+        <enum name="productGlobalTypeOfMaterial" values="01component,02intermediate,03finalProduct,04waste,05package"/>
         <string name="productCategory"/>
         <decimal name="quantity"/>
         <decimal name="givenQuantity"/>

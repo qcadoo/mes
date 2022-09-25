@@ -23,26 +23,16 @@
  */
 package com.qcadoo.mes.deliveries.constants;
 
-public final class ParameterFieldsD {
+public final class DeliveredPackageFields {
 
-    private ParameterFieldsD() {
+    private DeliveredPackageFields() {
 
     }
 
-    public static final String DEFAULT_DESCRIPTION = "defaultDescription";
+    public static final String DELIVERY = "delivery";
 
-    public static final String DEFAULT_ADDRESS = "defaultAddress";
+    public static final String PRODUCT = "product";
 
-    public static final String OTHER_ADDRESS = "otherAddress";
-
-    public static final String LOCATION = "location";
-
-    public static final String PACKAGING_LOCATION = "packagingLocation";
-
-    public static final String DELIVERED_BIGGER_THAN_ORDERED = "deliveredBiggerThanOrdered";
-
-    public static final String REQUIRE_SUPPLIER_IDENTYFICATION = "requireSupplierIdentification";
-
-    public static final String POSITIVE_PURCHASE_PRICE = "positivePurchasePrice";
+    public static final String DELIVERED_QUANTITY = "deliveredQuantity";
 
 }

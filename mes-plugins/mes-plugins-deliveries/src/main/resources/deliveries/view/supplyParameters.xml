@@ -41,7 +41,7 @@
         <windowTab name="mainTab">
             <component type="form" name="supplyParametersForm" reference="form">
                 <component type="gridLayout" name="gridLayout" columns="3"
-                           rows="11">
+                           rows="12">
                     <layoutElement column="1" row="1" height="2">
                         <component type="textarea" name="defaultDescription"
                                    field="#{form}.defaultDescription" reference="defaultDescription"/>
@@ -60,6 +60,22 @@
                         </component>
                     </layoutElement>
                     <layoutElement column="1" row="4">
+                        <component type="lookup" name="packagingLocation" reference="packagingLocation"
+                                   field="#{form}.packagingLocation">
+                            <option type="column" name="name" fields="name" link="true"/>
+
+                            <option type="searchable" value="number,name"/>
+                            <option type="orderable" value="number,name"/>
+
+                            <option type="expression"
+                                    value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name"/>
+                            <option type="fieldCode" value="number"/>
+
+                            <criteriaModifier class="com.qcadoo.mes.materialFlowResources.criteriaModifiers.LocationCriteriaModifiersMFR"
+                                              method="showWarehousesWithoutExternalNumber"/>
+                        </component>
+                    </layoutElement>
+                    <layoutElement column="1" row="5">
                         <component type="select" name="defaultAddress" field="#{form}.defaultAddress"
                                    reference="defaultAddress">
                             <listener event="onSelectedEntityChange"
@@ -67,45 +83,45 @@
                                       method="setFieldsVisibleAndRequired"/>
                         </component>
                     </layoutElement>
-                    <layoutElement column="1" row="5" height="2">
+                    <layoutElement column="1" row="6" height="2">
                         <component type="textarea" name="otherAddress" field="#{form}.otherAddress"
                                    reference="otherAddress" hasLabel="false"/>
                     </layoutElement>
-                    <layoutElement column="1" row="7">
+                    <layoutElement column="1" row="8">
                         <component type="checkbox" name="positivePurchasePrice" hasDescription="true"
                                    field="#{form}.positivePurchasePrice" reference="positivePurchasePrice">
                         <option type="labelWidth" value="50" />
                         </component>
                     </layoutElement>
-                    <layoutElement column="1" row="8">
+                    <layoutElement column="1" row="9">
                         <component type="checkbox" name="deliveredBiggerThanOrdered" hasDescription="true"
                                    field="#{form}.deliveredBiggerThanOrdered" reference="deliveredBiggerThanOrdered">
                             <option type="labelWidth" value="50" />
                         </component>
                     </layoutElement>
-                    <layoutElement column="1" row="9">
+                    <layoutElement column="1" row="10">
                         <component type="checkbox" name="requireSupplierIdentification" hasDescription="true"
                                    field="#{form}.requireSupplierIdentification" reference="requireSupplierIdentification">
                             <option type="labelWidth" value="50" />
                         </component>
                     </layoutElement>
-                    <layoutElement column="1" row="10">
+                    <layoutElement column="1" row="11">
                         <component type="select" name="deliveryPriceFillBasedOn" field="#{form}.deliveryPriceFillBasedOn"
                                    reference="deliveryPriceFillBasedOn">
                         </component>
                     </layoutElement>
-                    <layoutElement column="1" row="11">
+                    <layoutElement column="1" row="12">
                         <component type="checkbox" name="deliveryUseNominalCostWhenPriceNotSpecified" hasDescription="true"
                                    field="#{form}.deliveryUseNominalCostWhenPriceNotSpecified" reference="deliveryUseNominalCostWhenPriceNotSpecified">
                             <option type="labelWidth" value="50" />
                         </component>
                     </layoutElement>
 
-                    <layoutElement column="2" row="1" width="2" height="9">
+                    <layoutElement column="2" row="1" width="2" height="10">
                         <component type="borderLayout" name="columnsForOrdersBorderLayout">
                             <component type="gridLayout" name="columnForOrdersGridLayout"
-                                       columns="1" rows="2">
-                                <layoutElement column="1" row="1">
+                                       columns="1" rows="10">
+                                <layoutElement column="1" row="1" height="9">
                                     <component type="grid" name="columnsForOrders"
                                                source="#{form}.parameterDeliveryOrderColumns"
                                                reference="columnsForOrders">
@@ -126,7 +142,7 @@
                                         <option type="multiselect" value="true"/>
                                     </component>
                                 </layoutElement>
-                                <layoutElement column="1" row="2">
+                                <layoutElement column="1" row="10">
                                     <component type="hidden" name="hideEmptyColumnsForOrders"
                                                field="#{form}.hideEmptyColumnsForOrders"
                                                reference="hideEmptyColumnsForOrders">
