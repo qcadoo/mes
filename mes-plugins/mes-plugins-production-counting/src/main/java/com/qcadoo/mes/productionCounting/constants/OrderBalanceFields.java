@@ -30,13 +30,30 @@ public final class OrderBalanceFields {
     }
 
     public static final String PRODUCTION_BALANCE = "productionBalance";
+
     public static final String ORDER_NUMBER = "orderNumber";
+
     public static final String PRODUCT_NUMBER = "productNumber";
+
     public static final String PRODUCT_NAME = "productName";
+
+    public static final String PLANNED_QUANTITY = "plannedQuantity";
+
     public static final String PRODUCED_QUANTITY = "producedQuantity";
+
+    public static final String DEVIATION = "deviation";
+
     public static final String PRODUCT_UNIT = "productUnit";
+
+    public static final String PLANNED_MATERIAL_COSTS = "plannedMaterialCosts";
     public static final String MATERIAL_COSTS = "materialCosts";
+
+    public static final String MATERIAL_COSTS_DEVIATION = "materialCostsDeviation";
+
+    public static final String PLANNED_PRODUCTION_COSTS = "plannedProductionCosts";
     public static final String PRODUCTION_COSTS = "productionCosts";
+
+    public static final String PRODUCTION_COSTS_DEVIATION = "productionCostsDeviation";
     public static final String TECHNICAL_PRODUCTION_COSTS = "technicalProductionCosts";
     public static final String MATERIAL_COST_MARGIN = "materialCostMargin";
     public static final String MATERIAL_COST_MARGIN_VALUE = "materialCostMarginValue";

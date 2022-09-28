@@ -14,9 +14,10 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.basic.controllers.dataProvider.dto.ColumnDTO;
+import com.qcadoo.mes.basic.services.AnalysisDataProvider;
 
 @Service
-public class OrderTechnologicalProcessesAnalysisDataProvider {
+public class OrderTechnologicalProcessesAnalysisDataProvider implements AnalysisDataProvider {
 
     private static final String NUMERIC_DATA_TYPE = "02numeric";
 

@@ -144,13 +144,25 @@ public class ProductionBalanceXlsService extends XlsDocumentService {
             orderBalance.setField(OrderBalanceFields.ORDER_NUMBER, oBalance.getOrderNumber());
             orderBalance.setField(OrderBalanceFields.PRODUCT_NUMBER, oBalance.getProductNumber());
             orderBalance.setField(OrderBalanceFields.PRODUCT_NAME, oBalance.getProductName());
+            orderBalance.setField(OrderBalanceFields.PLANNED_QUANTITY,
+                    numberService.setScaleWithDefaultMathContext(oBalance.getPlannedQuantity(), 2));
             orderBalance.setField(OrderBalanceFields.PRODUCED_QUANTITY,
                     numberService.setScaleWithDefaultMathContext(oBalance.getProducedQuantity(), 2));
+            orderBalance.setField(OrderBalanceFields.DEVIATION,
+                    numberService.setScaleWithDefaultMathContext(oBalance.getDeviation(), 2));
             orderBalance.setField(OrderBalanceFields.PRODUCT_UNIT, oBalance.getProductUnit());
+            orderBalance.setField(OrderBalanceFields.PLANNED_MATERIAL_COSTS,
+                    numberService.setScaleWithDefaultMathContext(oBalance.getPlannedMaterialCosts(), 2));
             orderBalance.setField(OrderBalanceFields.MATERIAL_COSTS,
                     numberService.setScaleWithDefaultMathContext(oBalance.getMaterialCosts(), 2));
+            orderBalance.setField(OrderBalanceFields.MATERIAL_COSTS_DEVIATION,
+                    numberService.setScaleWithDefaultMathContext(oBalance.getMaterialCostsDeviation(), 2));
+            orderBalance.setField(OrderBalanceFields.PLANNED_PRODUCTION_COSTS,
+                    numberService.setScaleWithDefaultMathContext(oBalance.getPlannedProductionCosts(), 2));
             orderBalance.setField(OrderBalanceFields.PRODUCTION_COSTS,
                     numberService.setScaleWithDefaultMathContext(oBalance.getProductionCosts(), 2));
+            orderBalance.setField(OrderBalanceFields.PRODUCTION_COSTS_DEVIATION,
+                    numberService.setScaleWithDefaultMathContext(oBalance.getProductionCostsDeviation(), 2));
             orderBalance.setField(OrderBalanceFields.TECHNICAL_PRODUCTION_COSTS,
                     numberService.setScaleWithDefaultMathContext(oBalance.getTechnicalProductionCosts(), 2));
             orderBalance.setField(OrderBalanceFields.MATERIAL_COST_MARGIN,

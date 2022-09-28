@@ -25,6 +25,7 @@ QCD.productionBalanceAnalysis = (function() {
 
     function numberFormatter(row, cell, value, columnDef, dataContext) {
         if (value) {
+            value = Math.round(value * 100) / 100
             let parts = value.toString().split(".");
             parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, " ");
 
@@ -97,9 +98,23 @@ QCD.productionBalanceAnalysis = (function() {
     }
 
     function updateAllTotals(grid, dataView) {
+        let plannedQuantitySum = CalculateTotalByAggregator(new Slick.Data.Aggregators.Sum("plannedQuantity"), dataView);
         let producedQuantitySum = CalculateTotalByAggregator(new Slick.Data.Aggregators.Sum("producedQuantity"), dataView);
+        let plannedCostSum = CalculateTotalByAggregator(new Slick.Data.Aggregators.Sum("plannedCost"), dataView);
+        let realCostSum = CalculateTotalByAggregator(new Slick.Data.Aggregators.Sum("realCost"), dataView);
+        let plannedCostsSum = CalculateTotalByAggregator(new Slick.Data.Aggregators.Sum("plannedCostsSum"), dataView);
+        let realCostsSum = CalculateTotalByAggregator(new Slick.Data.Aggregators.Sum("realCostsSum"), dataView);
+        let technicalProductionCostsSum = CalculateTotalByAggregator(new Slick.Data.Aggregators.Sum("technicalProductionCosts"), dataView);
+        let totalCostsSum = CalculateTotalByAggregator(new Slick.Data.Aggregators.Sum("totalCosts"), dataView);
 
+        updateTotalRowValue(grid, "plannedQuantity", numberFormatter(null, null, plannedQuantitySum));
         updateTotalRowValue(grid, "producedQuantity", numberFormatter(null, null, producedQuantitySum));
+        updateTotalRowValue(grid, "plannedCost", numberFormatter(null, null, plannedCostSum));
+        updateTotalRowValue(grid, "realCost", numberFormatter(null, null, realCostSum));
+        updateTotalRowValue(grid, "plannedCostsSum", numberFormatter(null, null, plannedCostsSum));
+        updateTotalRowValue(grid, "realCostsSum", numberFormatter(null, null, realCostsSum));
+        updateTotalRowValue(grid, "technicalProductionCosts", numberFormatter(null, null, technicalProductionCostsSum));
+        updateTotalRowValue(grid, "totalCosts", numberFormatter(null, null, totalCostsSum));
     }
 
     function updateTotalRowValue(grid, columnId, total) {

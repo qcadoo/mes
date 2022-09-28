@@ -16,9 +16,10 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.basic.controllers.dataProvider.dto.ColumnDTO;
+import com.qcadoo.mes.basic.services.AnalysisDataProvider;
 
 @Service
-public class ProductionBalanceAnalysisDataProvider {
+public class ProductionBalanceAnalysisDataProvider implements AnalysisDataProvider {
 
     private static final String NUMERIC_DATA_TYPE = "02numeric";
 
@@ -178,18 +179,18 @@ public class ProductionBalanceAnalysisDataProvider {
         query.append("pb.number AS \"productionBalanceNumber\", ");
         query.append("ob.orderNumber AS \"orderNumber\", ");
         query.append("ob.productNumber AS \"productNumber\", ");
-        query.append("0 AS \"plannedQuantity\", ");
+        query.append("ob.plannedQuantity AS \"plannedQuantity\", ");
         query.append("ob.producedQuantity AS \"producedQuantity\", ");
-        query.append("0 AS deviation, ");
+        query.append("ob.deviation AS deviation, ");
         query.append("ob.productUnit AS \"productUnit\", ");
-        query.append("0 AS \"plannedCost\", ");
+        query.append("ob.plannedMaterialCosts AS \"plannedCost\", ");
         query.append("ob.materialCosts AS \"realCost\", ");
-        query.append("0 AS \"valueDeviation\", ");
-        query.append("0 AS \"plannedCostsSum\", ");
+        query.append("ob.materialCostsDeviation AS \"valueDeviation\", ");
+        query.append("ob.plannedProductionCosts AS \"plannedCostsSum\", ");
         query.append("ob.productionCosts AS \"realCostsSum\", ");
-        query.append("0 AS \"sumCostsDeviation\", ");
-        query.append("ob.totalCosts AS \"totalCosts\", ");
+        query.append("ob.productionCostsDeviation AS \"sumCostsDeviation\", ");
         query.append("ob.technicalProductionCosts AS \"technicalProductionCosts\", ");
+        query.append("ob.totalCosts AS \"totalCosts\", ");
         query.append("ob.registrationPrice AS \"registrationPrice\", ");
         query.append("ob.realProductionCosts AS \"realProductionCosts\", ");
         query.append("ob.totalManufacturingCost AS \"totalManufacturingCost\", ");
@@ -211,91 +212,79 @@ public class ProductionBalanceAnalysisDataProvider {
 
                 switch (key) {
                     case PRODUCTION_BALANCE_NUMBER:
-                        query.append("AND UPPER(op.number) LIKE '%").append(value).append("%' ");
+                        query.append("AND UPPER(pb.number) LIKE '%").append(value).append("%' ");
                         break;
 
                     case ORDER_NUMBER:
-                        query.append("AND UPPER(p.number) LIKE '%").append(value).append("%' ");
+                        query.append("AND UPPER(ob.orderNumber) LIKE '%").append(value).append("%' ");
                         break;
 
                     case PRODUCT_NUMBER:
-                        query.append("AND UPPER(p.name) LIKE '%").append(value).append("%' ");
+                        query.append("AND UPPER(ob.productNumber) LIKE '%").append(value).append("%' ");
                         break;
 
                     case PLANNED_QUANTITY:
-                        query.append(
-                                        "AND TO_CHAR((toc.tj || ' second')::interval, 'HH24:MI:SS') LIKE '%")
-                                .append(value).append("%' ");
+                        query.append("AND ob.plannedQuantity = ").append(value).append(" ");
                         break;
 
                     case PRODUCED_QUANTITY:
-                        query.append(
-                                        "AND TO_CHAR((toc.tpz || ' second')::interval, 'HH24:MI:SS') LIKE '%")
-                                .append(value).append("%' ");
+                        query.append("AND ob.producedQuantity = ").append(value).append(" ");
                         break;
 
                     case DEVIATION:
-                        query.append("AND toc.machineUtilization = ").append(value).append(" ");
+                        query.append("AND ob.deviation = ").append(value).append(" ");
                         break;
 
                     case PRODUCT_UNIT:
-                        query.append("AND UPPER(opocp.unit) LIKE '%").append(value).append("%' ");
+                        query.append("AND UPPER(ob.productUnit) LIKE '%").append(value).append("%' ");
                         break;
 
                     case PLANNED_COST:
-                        query.append("AND toc.laborUtilization = ").append(value).append(" ");
+                        query.append("AND ob.plannedMaterialCosts = ").append(value).append(" ");
                         break;
 
                     case REAL_COST:
-                        query.append("AND UPPER(opocp.number) LIKE '%").append(value).append("%' ");
+                        query.append("AND ob.materialCosts = ").append(value).append(" ");
                         break;
 
                     case VALUE_DEVIATION:
-                        query.append("AND SUM(topoc.usedquantity) = ").append(value).append(" ");
+                        query.append("AND ob.materialCostsDeviation = ").append(value).append(" ");
                         break;
 
                     case PLANNED_COSTS_SUM:
-                        query.append(
-                                        "AND TO_CHAR((SUM(pt.laborTime) || ' second')::interval, 'HH24:MI:SS') LIKE '%")
-                                .append(value).append("%' ");
+                        query.append("AND ob.plannedProductionCosts = ").append(value).append(" ");
                         break;
 
                     case REAL_COSTS_SUM:
-                        query.append(
-                                        "AND TO_CHAR((SUM(pt.laborTime)/(SUM(topoc.usedquantity) * toc.productionInOneCycle) || ' second')::interval, 'HH24:MI:SS') LIKE '%")
-                                .append(value).append("%' ");
+                        query.append("AND ob.productionCosts = ").append(value).append(" ");
                         break;
 
                     case SUM_COSTS_DEVIATION:
-                        query.append(
-                                        "AND TO_CHAR((SUM(pt.machineTime) || ' second')::interval, 'HH24:MI:SS') LIKE '%")
-                                .append(value).append("%' ");
+                        query.append("AND ob.productionCostsDeviation = ").append(value).append(" ");
                         break;
 
                     case TECHNICAL_PRODUCTION_COSTS:
-                        query.append(
-                                        "AND TO_CHAR((SUM(pt.machineTime)/(SUM(topoc.usedquantity) * toc.productionInOneCycle) || ' second')::interval, 'HH24:MI:SS') LIKE '%")
-                                .append(value).append("%' ");
+                        query.append("AND ob.technicalProductionCosts = ").append(value).append(" ");
                         break;
 
                     case TOTAL_COSTS:
-                        query.append("AND SUM(topoc.usedquantity) = ").append(value).append(" ");
+                        query.append("AND ob.totalCosts = ").append(value).append(" ");
                         break;
 
                     case REGISTRATION_PRICE:
-                        query.append("AND SUM(topoc.usedquantity) = ").append(value).append(" ");
+                        query.append("AND ob.registrationPrice = ").append(value).append(" ");
                         break;
 
                     case REAL_PRODUCTION_COSTS:
-                        query.append("AND SUM(topoc.usedquantity) = ").append(value).append(" ");
+                        query.append("AND ob.realProductionCosts = ").append(value).append(" ");
                         break;
 
                     case TOTAL_MANUFACTURING_COST:
-                        query.append("AND SUM(topoc.usedquantity) = ").append(value).append(" ");
+                        query.append("AND ob.totalManufacturingCost = ").append(value).append(" ");
                         break;
 
                     case SELL_PRICE:
-                        query.append("AND SUM(topoc.usedquantity) = ").append(value).append(" ");
+                        query.append("AND ob.sellPrice = ").append(value).append(" ");
                         break;
                 }
             }

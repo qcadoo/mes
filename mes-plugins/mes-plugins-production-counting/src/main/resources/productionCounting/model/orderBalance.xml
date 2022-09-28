@@ -34,10 +34,16 @@
         <string name="orderNumber"/>
         <string name="productNumber"/>
         <string name="productName"/>
+        <decimal name="plannedQuantity"/>
         <decimal name="producedQuantity"/>
+        <decimal name="deviation"/>
         <string name="productUnit"/>
+        <decimal name="plannedMaterialCosts"/>
         <decimal name="materialCosts"/>
+        <decimal name="materialCostsDeviation"/>
+        <decimal name="plannedProductionCosts"/>
         <decimal name="productionCosts"/>
+        <decimal name="productionCostsDeviation"/>
         <decimal name="technicalProductionCosts"/>
         <decimal name="materialCostMargin"/>
         <decimal name="materialCostMarginValue"/>

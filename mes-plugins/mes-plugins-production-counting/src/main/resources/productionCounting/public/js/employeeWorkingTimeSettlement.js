@@ -138,10 +138,6 @@ QCD.employeeWorkingTimeSettlement = (function() {
                         if (columns[i].dataType === '02numeric') {
                             columns[i].cssClass = 'right-align';
                             columns[i].formatter = numberFormatter;
-                            if (columns[i].unit) {
-                                columns[i].name = columns[i].name + '(' + columns[i].unit + ')';
-                                columns[i].toolTip = columns[i].name;
-                            }
                         }
                     }
                     let dataView = new Slick.Data.DataView();

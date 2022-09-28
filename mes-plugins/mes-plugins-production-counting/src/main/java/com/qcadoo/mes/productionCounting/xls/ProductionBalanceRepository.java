@@ -726,8 +726,12 @@ class ProductionBalanceRepository {
         StringBuilder query = new StringBuilder();
         appendOrdersBalanceWithQueries(materialCosts, productionCosts, query);
         appendOrdersBalanceSelectionClause(entity, query);
+        query.append("MIN(COALESCE(gpmc.cost, 0)) AS plannedMaterialCosts, ");
         query.append("MIN(COALESCE(gmc.cost, 0)) AS materialCosts, ");
+        query.append("MIN(COALESCE(gmc.cost, 0)) - MIN(COALESCE(gpmc.cost, 0)) AS materialCostsDeviation, ");
+        query.append("MIN(gppc.cost) AS plannedProductionCosts, ");
         query.append("MIN(gpc.cost) AS productionCosts, ");
+        query.append("MIN(gpc.cost) - MIN(gppc.cost) AS productionCostsDeviation, ");
         query.append("MIN(COALESCE(gmc.cost, 0)) + MIN(gpc.cost) AS technicalProductionCosts, ");
         appendMaterialCostMarginValue(entity, query);
         query.append("AS materialCostMarginValue, ");
@@ -757,7 +761,9 @@ class ProductionBalanceRepository {
         query.append(
                 "LEFT JOIN productioncounting_trackingoperationproductoutcomponent topoc ON topoc.productiontracking_id = pt.id AND topoc.product_id = prod.id ");
         query.append("LEFT JOIN grouped_material_cost gmc ON gmc.order_id = o.id ");
+        query.append("LEFT JOIN grouped_planned_material_cost gpmc ON gpmc.order_id = o.id ");
         query.append("JOIN grouped_production_cost gpc ON gpc.order_id = o.id ");
+        query.append("JOIN grouped_planned_production_cost gppc ON gppc.order_id = o.id ");
         appendWhereClause(query);
         query.append("GROUP BY orderId, rootId, orderNumber, productNumber, productName, productUnit ");
         query.append("ORDER BY orderNumber ");
@@ -781,7 +787,21 @@ class ProductionBalanceRepository {
             }
         }
         query.append("), ");
+        query.append("planned_material_cost (order_id, cost) AS (VALUES ");
+        if (materialCosts.isEmpty()) {
+            query.append("(NULL::numeric, NULL::numeric) ");
+        } else {
+            for (int i = 0; i < materialCosts.size(); i++) {
+                MaterialCost materialCost = materialCosts.get(i);
+                query.append("(").append(materialCost.getOrderId()).append(", ").append(materialCost.getPlannedCost()).append(") ");
+                if (i != materialCosts.size() - 1) {
+                    query.append(", ");
+                }
+            }
+        }
+        query.append("), ");
         query.append("grouped_material_cost AS (SELECT order_id, SUM(cost) AS cost FROM real_material_cost GROUP BY order_id), ");
+        query.append("grouped_planned_material_cost AS (SELECT order_id, SUM(cost) AS cost FROM planned_material_cost GROUP BY order_id), ");
         query.append("real_production_cost (order_id, cost) AS (VALUES ");
         for (int i = 0; i < productionCosts.size(); i++) {
             ProductionCost productionCost = productionCosts.get(i);
@@ -791,8 +811,19 @@ class ProductionBalanceRepository {
             }
         }
         query.append("), ");
+        query.append("planned_production_cost (order_id, cost) AS (VALUES ");
+        for (int i = 0; i < productionCosts.size(); i++) {
+            ProductionCost productionCost = productionCosts.get(i);
+            query.append("(").append(productionCost.getOrderId()).append(", ").append(productionCost.getPlannedCostsSum()).append(") ");
+            if (i != productionCosts.size() - 1) {
+                query.append(", ");
+            }
+        }
+        query.append("), ");
         query.append(
-                "grouped_production_cost AS (SELECT order_id, SUM(cost) AS cost FROM real_production_cost GROUP BY order_id) ");
+                "grouped_production_cost AS (SELECT order_id, SUM(cost) AS cost FROM real_production_cost GROUP BY order_id), ");
+        query.append(
+                "grouped_planned_production_cost AS (SELECT order_id, SUM(cost) AS cost FROM planned_production_cost GROUP BY order_id) ");
     }
 
     private void appendOrdersBalanceSelectionClause(Entity entity, StringBuilder query) {
@@ -803,8 +834,11 @@ class ProductionBalanceRepository {
         query.append("prod.number AS productNumber, ");
         query.append("prod.name AS productName, ");
         query.append("prod.unit AS productUnit, ");
+        query.append("MIN(o.plannedquantity) AS plannedQuantity, ");
         appendProducedQuantity(query);
         query.append("AS producedQuantity, ");
+        appendProducedQuantity(query);
+        query.append("- MIN(o.plannedQuantity) AS deviation, ");
         appendMaterialCostMargin(entity, query);
         query.append("AS materialCostMargin, ");
         appendProductionCostMargin(entity, query);
