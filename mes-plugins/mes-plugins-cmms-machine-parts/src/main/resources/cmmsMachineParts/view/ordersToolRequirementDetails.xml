@@ -160,11 +160,11 @@
                 <option type="column" name="toolCategory" fields="technologyOperationTool"
                         expression="#technologyOperationTool.get('toolCategory')"
                         width="100"/>
-                <option type="column" name="toolName" fields="technologyOperationTool"
-                        expression="#technologyOperationTool.get('tool')?.get('name')"
-                        width="100"/>
                 <option type="column" name="toolNumber" fields="technologyOperationTool"
                         expression="#technologyOperationTool.get('tool')?.get('number')"
+                        width="100"/>
+                <option type="column" name="toolName" fields="technologyOperationTool"
+                        expression="#technologyOperationTool.get('tool')?.get('name')"
                         width="100"/>
                 <option type="column" name="toolDescription" fields="technologyOperationTool"
                         expression="#technologyOperationTool.get('description')"
