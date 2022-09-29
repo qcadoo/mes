@@ -27,10 +27,7 @@ import com.google.common.collect.Lists;
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.deliveries.ProductSynchronizationService;
-import com.qcadoo.mes.deliveries.constants.DeliveredProductFields;
-import com.qcadoo.mes.deliveries.constants.DeliveryFields;
-import com.qcadoo.mes.deliveries.constants.OrderedProductFields;
-import com.qcadoo.mes.deliveries.constants.ParameterFieldsD;
+import com.qcadoo.mes.deliveries.constants.*;
 import com.qcadoo.mes.states.StateChangeContext;
 import com.qcadoo.model.api.BigDecimalUtils;
 import com.qcadoo.model.api.Entity;
@@ -73,6 +70,7 @@ public class DeliveryStateValidationService {
         checkRequired(stateChangeContext, fieldNames);
         checkDeliveredProductsDeliveredQuantities(stateChangeContext);
         checkDeliveredProductsBatches(stateChangeContext);
+        checkDeliveredPackages(stateChangeContext);
 
         if (parameterService.getParameter().getBooleanField(ParameterFieldsD.POSITIVE_PURCHASE_PRICE)) {
             checkDeliveredProductsPricePerUnits(stateChangeContext);
@@ -88,10 +86,10 @@ public class DeliveryStateValidationService {
     public void checkRequired(final StateChangeContext stateChangeContext, final List<String> fieldNames) {
         checkArgument(Objects.nonNull(stateChangeContext), L_ENTITY_IS_NULL);
 
-        final Entity stateChangeEntity = stateChangeContext.getOwner();
+        final Entity delivery = stateChangeContext.getOwner();
 
         for (String fieldName : fieldNames) {
-            if (Objects.isNull(stateChangeEntity.getField(fieldName))) {
+            if (Objects.isNull(delivery.getField(fieldName))) {
                 stateChangeContext.addFieldValidationError(fieldName, "deliveries.delivery.deliveryStates.fieldRequired");
             }
         }
@@ -100,9 +98,9 @@ public class DeliveryStateValidationService {
     private void checkOrderedProductsOrderedQuantities(final StateChangeContext stateChangeContext) {
         checkArgument(Objects.nonNull(stateChangeContext), L_ENTITY_IS_NULL);
 
-        final Entity stateChangeEntity = stateChangeContext.getOwner();
+        final Entity delivery = stateChangeContext.getOwner();
 
-        Set<String> orderedProductsWithoutOrderedQuantities = stateChangeEntity.getHasManyField(DeliveryFields.ORDERED_PRODUCTS)
+        Set<String> orderedProductsWithoutOrderedQuantities = delivery.getHasManyField(DeliveryFields.ORDERED_PRODUCTS)
                 .stream().filter(this::checkOrderedProductOrderedQuantity).map(this::getOrderedProductProductNumber)
                 .collect(Collectors.toSet());
 
@@ -122,15 +120,15 @@ public class DeliveryStateValidationService {
     private void checkDeliveredProductsDeliveredQuantities(final StateChangeContext stateChangeContext) {
         checkArgument(Objects.nonNull(stateChangeContext), L_ENTITY_IS_NULL);
 
-        final Entity stateChangeEntity = stateChangeContext.getOwner();
+        final Entity delivery = stateChangeContext.getOwner();
 
-        List<Entity> deliveredProducts = stateChangeEntity.getHasManyField(DeliveryFields.DELIVERED_PRODUCTS);
+        List<Entity> deliveredProducts = delivery.getHasManyField(DeliveryFields.DELIVERED_PRODUCTS);
 
         if (deliveredProducts.isEmpty()) {
             stateChangeContext.addValidationError("deliveries.deliveredProducts.deliveredProductsList.isEmpty");
         }
 
-        Set<String> deliveredProductsWithoutDeliveredQuantities = stateChangeEntity
+        Set<String> deliveredProductsWithoutDeliveredQuantities = delivery
                 .getHasManyField(DeliveryFields.DELIVERED_PRODUCTS).stream().filter(this::checkDeliveredProductDeliveredQuantity)
                 .map(this::getDeliveredProductProductNumber).collect(Collectors.toSet());
 
@@ -149,9 +147,9 @@ public class DeliveryStateValidationService {
     private void checkDeliveredProductsBatches(final StateChangeContext stateChangeContext) {
         checkArgument(Objects.nonNull(stateChangeContext), L_ENTITY_IS_NULL);
 
-        final Entity stateChangeEntity = stateChangeContext.getOwner();
+        final Entity delivery = stateChangeContext.getOwner();
 
-        Set<String> deliveredProductsWithoutBatches = stateChangeEntity.getHasManyField(DeliveryFields.DELIVERED_PRODUCTS)
+        Set<String> deliveredProductsWithoutBatches = delivery.getHasManyField(DeliveryFields.DELIVERED_PRODUCTS)
                 .stream().filter(this::checkDeliveredProductBatch).map(this::getDeliveredProductProductNumber)
                 .collect(Collectors.toSet());
 
@@ -168,12 +166,33 @@ public class DeliveryStateValidationService {
         return (product.getBooleanField(ProductFields.BATCH_EVIDENCE) && Objects.isNull(batch));
     }
 
+    private void checkDeliveredPackages(final StateChangeContext stateChangeContext) {
+        checkArgument(Objects.nonNull(stateChangeContext), L_ENTITY_IS_NULL);
+
+        final Entity delivery = stateChangeContext.getOwner();
+
+        Set<String> deliveredPackagesWithBatchEvidence = delivery.getHasManyField(DeliveryFields.DELIVERED_PACKAGES)
+                .stream().filter(this::checkDeliveredPackageBatchEvidence).map(this::getDeliveredPackageProductNumber)
+                .collect(Collectors.toSet());
+
+        if (!deliveredPackagesWithBatchEvidence.isEmpty()) {
+            stateChangeContext.addValidationError("deliveries.deliveredPackages.batch.isRequired", false,
+                    String.join(", ", deliveredPackagesWithBatchEvidence));
+        }
+    }
+
+    private boolean checkDeliveredPackageBatchEvidence(final Entity deliveredProduct) {
+        Entity product = deliveredProduct.getBelongsToField(DeliveredProductFields.PRODUCT);
+
+        return product.getBooleanField(ProductFields.BATCH_EVIDENCE);
+    }
+
     private void checkDeliveredProductsPricePerUnits(final StateChangeContext stateChangeContext) {
         checkArgument(Objects.nonNull(stateChangeContext), L_ENTITY_IS_NULL);
 
-        final Entity stateChangeEntity = stateChangeContext.getOwner();
+        final Entity delivery = stateChangeContext.getOwner();
 
-        Set<String> deliveredProductsWithoutPrices = stateChangeEntity.getHasManyField(DeliveryFields.DELIVERED_PRODUCTS).stream()
+        Set<String> deliveredProductsWithoutPrices = delivery.getHasManyField(DeliveryFields.DELIVERED_PRODUCTS).stream()
                 .filter(this::checkDeliveredProductPurchasePrice).map(this::getDeliveredProductProductNumber)
                 .collect(Collectors.toSet());
 
@@ -192,9 +211,9 @@ public class DeliveryStateValidationService {
     private void checkDeliveredProductsExternalNumbers(final StateChangeContext stateChangeContext) {
         checkArgument(Objects.nonNull(stateChangeContext), L_ENTITY_IS_NULL);
 
-        final Entity stateChangeEntity = stateChangeContext.getOwner();
+        final Entity delivery = stateChangeContext.getOwner();
 
-        Set<String> deliveredProductsNotSynchronized = stateChangeEntity.getHasManyField(DeliveryFields.DELIVERED_PRODUCTS)
+        Set<String> deliveredProductsNotSynchronized = delivery.getHasManyField(DeliveryFields.DELIVERED_PRODUCTS)
                 .stream().filter(this::checkDeliveredProductExternalNumber).map(this::getDeliveredProductProductNumber)
                 .collect(Collectors.toSet());
 
@@ -216,6 +235,10 @@ public class DeliveryStateValidationService {
 
     private String getDeliveredProductProductNumber(final Entity deliveredProduct) {
         return deliveredProduct.getBelongsToField(DeliveredProductFields.PRODUCT).getStringField(ProductFields.NUMBER);
+    }
+
+    private String getDeliveredPackageProductNumber(final Entity deliveredPackage) {
+        return deliveredPackage.getBelongsToField(DeliveredPackageFields.PRODUCT).getStringField(ProductFields.NUMBER);
     }
 
 }

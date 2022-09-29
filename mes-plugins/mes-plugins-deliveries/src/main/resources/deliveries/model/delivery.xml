@@ -82,7 +82,7 @@
                  cascade="delete" />
 
         <hasMany name="deliveredPackages" joinField="delivery" model="deliveredPackage"
-                 cascade="delete" />
+                 cascade="delete" copyable="true"/>
 
         <hasMany name="attachments" model="deliveryAttachment" joinField="delivery" cascade="delete"/>
 
