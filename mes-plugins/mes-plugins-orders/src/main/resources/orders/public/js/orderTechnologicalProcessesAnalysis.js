@@ -25,6 +25,7 @@ QCD.orderTechnologicalProcessesAnalysis = (function() {
 
     function numberFormatter(row, cell, value, columnDef, dataContext) {
         if (value) {
+            value = Math.round(value * 100) / 100;
             let parts = value.toString().split(".");
             parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, " ");
 
@@ -101,7 +102,7 @@ QCD.orderTechnologicalProcessesAnalysis = (function() {
         let valueSum = CalculateTotalByAggregator(new Slick.Data.Aggregators.Sum("value"), dataView);
 
         updateTotalRowValue(grid, "workTime", formatTime(workTimeInSecondsSum));
-        updateTotalRowValue(grid, "value", formatValue(valueSum));
+        updateTotalRowValue(grid, "value", numberFormatter(null, null, valueSum));
     }
 
     function formatTime(seconds) {
@@ -114,14 +115,6 @@ QCD.orderTechnologicalProcessesAnalysis = (function() {
             m > 9 ? m : (h ? '0' + m : m || '0'),
             s > 9 ? s : '0' + s
         ].filter(Boolean).join(':');
-    }
-
-    function formatValue(value) {
-        if (value == null) {
-            value = 0;
-        }
-
-        return value.toFixed(2);
     }
 
     function updateTotalRowValue(grid, columnId, total) {
@@ -167,6 +160,10 @@ QCD.orderTechnologicalProcessesAnalysis = (function() {
                         if (columns[i].dataType === '02numeric') {
                             columns[i].cssClass = 'right-align';
                             columns[i].formatter = numberFormatter;
+                        }
+
+                        if(columns[i].id === 'tj' || columns[i].id === 'workTime'){
+                            columns[i].cssClass = 'right-align';
                         }
                     }
 

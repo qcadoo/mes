@@ -71,13 +71,11 @@ public class OperationDurationAnalysisDataProvider implements AnalysisDataProvid
         columns.add(
                 new ColumnDTO(
                         L_TJ, translationService
-                        .translate("productionCounting.operationDurationAnalysis.window.mainTab.grid.column.tj", locale),
-                        NUMERIC_DATA_TYPE));
+                        .translate("productionCounting.operationDurationAnalysis.window.mainTab.grid.column.tj", locale)));
         columns.add(
                 new ColumnDTO(L_TPZ,
                         translationService
-                                .translate("productionCounting.operationDurationAnalysis.window.mainTab.grid.column.tpz", locale),
-                        NUMERIC_DATA_TYPE));
+                                .translate("productionCounting.operationDurationAnalysis.window.mainTab.grid.column.tpz", locale)));
         columns.add(new ColumnDTO(LABOR_UTILIZATION,
                 translationService.translate(
                         "productionCounting.operationDurationAnalysis.window.mainTab.grid.column.laborUtilization", locale),
@@ -96,20 +94,16 @@ public class OperationDurationAnalysisDataProvider implements AnalysisDataProvid
                 .translate("productionCounting.operationDurationAnalysis.window.mainTab.grid.column.productUnit", locale)));
         columns.add(new ColumnDTO(WORKERS_WORKING_TIME_SUM,
                 translationService.translate(
-                        "productionCounting.operationDurationAnalysis.window.mainTab.grid.column.workersWorkingTimeSum", locale),
-                NUMERIC_DATA_TYPE));
+                        "productionCounting.operationDurationAnalysis.window.mainTab.grid.column.workersWorkingTimeSum", locale)));
         columns.add(new ColumnDTO(WORKER_UNIT_TIME,
                 translationService.translate(
-                        "productionCounting.operationDurationAnalysis.window.mainTab.grid.column.workerUnitTime", locale),
-                NUMERIC_DATA_TYPE));
+                        "productionCounting.operationDurationAnalysis.window.mainTab.grid.column.workerUnitTime", locale)));
         columns.add(new ColumnDTO(MACHINES_WORKING_TIME_SUM,
                 translationService.translate(
-                        "productionCounting.operationDurationAnalysis.window.mainTab.grid.column.machinesWorkingTimeSum", locale),
-                NUMERIC_DATA_TYPE));
+                        "productionCounting.operationDurationAnalysis.window.mainTab.grid.column.machinesWorkingTimeSum", locale)));
         columns.add(new ColumnDTO(MACHINE_UNIT_TIME,
                 translationService.translate(
-                        "productionCounting.operationDurationAnalysis.window.mainTab.grid.column.machineUnitTime", locale),
-                NUMERIC_DATA_TYPE));
+                        "productionCounting.operationDurationAnalysis.window.mainTab.grid.column.machineUnitTime", locale)));
 
         return columns;
     }
@@ -141,6 +135,8 @@ public class OperationDurationAnalysisDataProvider implements AnalysisDataProvid
 
         query.append("GROUP BY op.number, p.number, p.name, toc.tj, toc.tpz, toc.machineUtilization, ");
         query.append("toc.laborUtilization, toc.productionInOneCycle, opocp.number, opocp.unit ");
+
+        appendGroupFilters(filters, query);
 
         appendSort(sortColumn, sortAsc, query);
 
@@ -203,58 +199,73 @@ public class OperationDurationAnalysisDataProvider implements AnalysisDataProvid
                         break;
 
                     case L_TJ:
-                        query.append(
-                                        "AND TO_CHAR((toc.tj || ' second')::interval, 'HH24:MI:SS') LIKE '%")
+                        query.append("AND TO_CHAR((toc.tj || ' second')::interval, 'HH24:MI:SS') LIKE '%")
                                 .append(value).append("%' ");
                         break;
 
                     case L_TPZ:
-                        query.append(
-                                        "AND TO_CHAR((toc.tpz || ' second')::interval, 'HH24:MI:SS') LIKE '%")
+                        query.append("AND TO_CHAR((toc.tpz || ' second')::interval, 'HH24:MI:SS') LIKE '%")
                                 .append(value).append("%' ");
                         break;
 
                     case LABOR_UTILIZATION:
-                        query.append("AND toc.machineUtilization = ").append(value).append(" ");
+                        query.append("AND CAST(toc.machineUtilization AS TEXT) LIKE '%").append(value).append("%' ");
                         break;
 
                     case MACHINE_UTILIZATION:
-                        query.append("AND toc.laborUtilization = ").append(value).append(" ");
+                        query.append("AND CAST(toc.laborUtilization AS TEXT) LIKE '%").append(value).append("%' ");
                         break;
 
                     case L_OUT_PRODUCT_NUMBER:
                         query.append("AND UPPER(opocp.number) LIKE '%").append(value).append("%' ");
                         break;
 
-                    case L_QUANTITY:
-                        query.append("AND SUM(topoc.usedquantity) = ").append(value).append(" ");
-                        break;
-
                     case L_PRODUCT_UNIT:
                         query.append("AND UPPER(opocp.unit) LIKE '%").append(value).append("%' ");
                         break;
+                }
+            }
+        }
+    }
+
+    private void appendGroupFilters(final JSONObject filters, final StringBuilder query) throws JSONException {
+        if (filters.length() > 0) {
+            boolean addHaving = true;
+            for (int i = 0; i < filters.names().length(); i++) {
+                String key = filters.names().getString(i);
+                String value = filters.getString(key).toUpperCase();
+
+                if (value.isEmpty()) {
+                    continue;
+                }
+
+                if (addHaving) {
+                    query.append("HAVING 1=1 ");
+                    addHaving = false;
+                }
+
+                switch (key) {
+                    case L_QUANTITY:
+                        query.append("AND CAST(SUM(topoc.usedquantity) AS TEXT) LIKE '%").append(value).append("%' ");
+                        break;
 
                     case WORKERS_WORKING_TIME_SUM:
-                        query.append(
-                                        "AND TO_CHAR((SUM(pt.laborTime) || ' second')::interval, 'HH24:MI:SS') LIKE '%")
+                        query.append("AND TO_CHAR((SUM(pt.laborTime) || ' second')::interval, 'HH24:MI:SS') LIKE '%")
                                 .append(value).append("%' ");
                         break;
 
                     case WORKER_UNIT_TIME:
-                        query.append(
-                                        "AND TO_CHAR((SUM(pt.laborTime)/(SUM(topoc.usedquantity) * toc.productionInOneCycle) || ' second')::interval, 'HH24:MI:SS') LIKE '%")
+                        query.append("AND TO_CHAR((SUM(pt.laborTime)/(SUM(topoc.usedquantity) * toc.productionInOneCycle) || ' second')::interval, 'HH24:MI:SS') LIKE '%")
                                 .append(value).append("%' ");
                         break;
 
                     case MACHINES_WORKING_TIME_SUM:
-                        query.append(
-                                        "AND TO_CHAR((SUM(pt.machineTime) || ' second')::interval, 'HH24:MI:SS') LIKE '%")
+                        query.append("AND TO_CHAR((SUM(pt.machineTime) || ' second')::interval, 'HH24:MI:SS') LIKE '%")
                                 .append(value).append("%' ");
                         break;
 
                     case MACHINE_UNIT_TIME:
-                        query.append(
-                                        "AND TO_CHAR((SUM(pt.machineTime)/(SUM(topoc.usedquantity) * toc.productionInOneCycle) || ' second')::interval, 'HH24:MI:SS') LIKE '%")
+                        query.append("AND TO_CHAR((SUM(pt.machineTime)/(SUM(topoc.usedquantity) * toc.productionInOneCycle) || ' second')::interval, 'HH24:MI:SS') LIKE '%")
                                 .append(value).append("%' ");
                         break;
                 }

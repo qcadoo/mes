@@ -224,15 +224,15 @@ public class ProductionBalanceAnalysisDataProvider implements AnalysisDataProvid
                         break;
 
                     case PLANNED_QUANTITY:
-                        query.append("AND ob.plannedQuantity = ").append(value).append(" ");
+                        query.append("AND CAST(ob.plannedQuantity AS TEXT) LIKE '%").append(value).append("%' ");
                         break;
 
                     case PRODUCED_QUANTITY:
-                        query.append("AND ob.producedQuantity = ").append(value).append(" ");
+                        query.append("AND CAST(ob.producedQuantity AS TEXT) LIKE '%").append(value).append("%' ");
                         break;
 
                     case DEVIATION:
-                        query.append("AND ob.deviation = ").append(value).append(" ");
+                        query.append("AND CAST(ob.deviation AS TEXT) LIKE '%").append(value).append("%' ");
                         break;
 
                     case PRODUCT_UNIT:
@@ -240,51 +240,51 @@ public class ProductionBalanceAnalysisDataProvider implements AnalysisDataProvid
                         break;
 
                     case PLANNED_COST:
-                        query.append("AND ob.plannedMaterialCosts = ").append(value).append(" ");
+                        query.append("AND CAST(ob.plannedMaterialCosts AS TEXT) LIKE '%").append(value).append("%' ");
                         break;
 
                     case REAL_COST:
-                        query.append("AND ob.materialCosts = ").append(value).append(" ");
+                        query.append("AND CAST(ob.materialCosts AS TEXT) LIKE '%").append(value).append("%' ");
                         break;
 
                     case VALUE_DEVIATION:
-                        query.append("AND ob.materialCostsDeviation = ").append(value).append(" ");
+                        query.append("AND CAST(ob.materialCostsDeviation AS TEXT) LIKE '%").append(value).append("%' ");
                         break;
 
                     case PLANNED_COSTS_SUM:
-                        query.append("AND ob.plannedProductionCosts = ").append(value).append(" ");
+                        query.append("AND CAST(ob.plannedProductionCosts AS TEXT) LIKE '%").append(value).append("%' ");
                         break;
 
                     case REAL_COSTS_SUM:
-                        query.append("AND ob.productionCosts = ").append(value).append(" ");
+                        query.append("AND CAST(ob.productionCosts AS TEXT) LIKE '%").append(value).append("%' ");
                         break;
 
                     case SUM_COSTS_DEVIATION:
-                        query.append("AND ob.productionCostsDeviation = ").append(value).append(" ");
+                        query.append("AND CAST(ob.productionCostsDeviation AS TEXT) LIKE '%").append(value).append("%' ");
                         break;
 
                     case TECHNICAL_PRODUCTION_COSTS:
-                        query.append("AND ob.technicalProductionCosts = ").append(value).append(" ");
+                        query.append("AND CAST(ob.technicalProductionCosts AS TEXT) LIKE '%").append(value).append("%' ");
                         break;
 
                     case TOTAL_COSTS:
-                        query.append("AND ob.totalCosts = ").append(value).append(" ");
+                        query.append("AND CAST(ob.totalCosts AS TEXT) LIKE '%").append(value).append("%' ");
                         break;
 
                     case REGISTRATION_PRICE:
-                        query.append("AND ob.registrationPrice = ").append(value).append(" ");
+                        query.append("AND CAST(ob.registrationPrice AS TEXT) LIKE '%").append(value).append("%' ");
                         break;
 
                     case REAL_PRODUCTION_COSTS:
-                        query.append("AND ob.realProductionCosts = ").append(value).append(" ");
+                        query.append("AND CAST(ob.realProductionCosts AS TEXT) LIKE '%").append(value).append("%' ");
                         break;
 
                     case TOTAL_MANUFACTURING_COST:
-                        query.append("AND ob.totalManufacturingCost = ").append(value).append(" ");
+                        query.append("AND CAST(ob.totalManufacturingCost AS TEXT) LIKE '%").append(value).append("%' ");
                         break;
 
                     case SELL_PRICE:
-                        query.append("AND ob.sellPrice = ").append(value).append(" ");
+                        query.append("AND CAST(ob.sellPrice AS TEXT) LIKE '%").append(value).append("%' ");
                         break;
                 }
             }

@@ -25,7 +25,7 @@ QCD.productionBalanceAnalysis = (function() {
 
     function numberFormatter(row, cell, value, columnDef, dataContext) {
         if (value) {
-            value = Math.round(value * 100) / 100
+            value = Math.round(value * 100) / 100;
             let parts = value.toString().split(".");
             parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, " ");
 
