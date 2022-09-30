@@ -180,6 +180,16 @@
             </component>
         </windowTab>
 
+        <windowTab name="componentsTab">
+            <component type="gridLayout" name="gridLayout" columns="3"
+                       rows="1">
+                <layoutElement column="1" row="1">
+                    <component type="checkbox" name="includeComponents" field="#{form}.includeComponents"
+                               reference="includeComponents"/>
+                </layoutElement>
+            </component>
+        </windowTab>
+
     </component>
 
     <hooks>

@@ -25,6 +25,7 @@ QCD.operationDurationAnalysis = (function() {
 
     function numberFormatter(row, cell, value, columnDef, dataContext) {
         if (value) {
+            value = Math.round(value * 100) / 100;
             let parts = value.toString().split(".");
             parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, " ");
 
@@ -102,8 +103,8 @@ QCD.operationDurationAnalysis = (function() {
         let machinesWorkingTimeSumInSecondsSum = CalculateTotalByAggregator(new Slick.Data.Aggregators.Sum("machinesWorkingTimeSumInSeconds"), dataView);
 
         updateTotalRowValue(grid, "quantity", numberFormatter(null, null, quantitySum));
-        updateTotalRowValue(grid, "workersWorkingTimeSum", numberFormatter(null, null, formatTime(workersWorkingTimeSumInSecondsSum)));
-        updateTotalRowValue(grid, "machinesWorkingTimeSum", numberFormatter(null, null, formatTime(machinesWorkingTimeSumInSecondsSum)));
+        updateTotalRowValue(grid, "workersWorkingTimeSum", formatTime(workersWorkingTimeSumInSecondsSum));
+        updateTotalRowValue(grid, "machinesWorkingTimeSum", formatTime(machinesWorkingTimeSumInSecondsSum));
     }
 
     function formatTime(seconds) {
@@ -161,11 +162,12 @@ QCD.operationDurationAnalysis = (function() {
                         if (columns[i].dataType === '02numeric') {
                             columns[i].cssClass = 'right-align';
                             columns[i].formatter = numberFormatter;
+                        }
 
-                            if (columns[i].unit) {
-                                columns[i].name = columns[i].name + '(' + columns[i].unit + ')';
-                                columns[i].toolTip = columns[i].name;
-                            }
+                        if(columns[i].id === 'tj' || columns[i].id === 'tpz' || columns[i].id === 'workersWorkingTimeSum'
+                            || columns[i].id === 'workerUnitTime' || columns[i].id === 'machinesWorkingTimeSum'
+                            || columns[i].id === 'machineUnitTime'){
+                            columns[i].cssClass = 'right-align';
                         }
                     }
 

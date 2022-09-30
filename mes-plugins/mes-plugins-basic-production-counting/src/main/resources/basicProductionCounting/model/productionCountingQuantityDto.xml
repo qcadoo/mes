@@ -29,40 +29,25 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns="http://schema.qcadoo.org/model"
        xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
+
     <fields>
         <belongsTo name="order" model="order" plugin="orders" persistent="false"/>
-
         <integer name="orderId"/>
-
         <integer name="productId"/>
         <string name="productNumber"/>
-
         <string name="productName"/>
-
         <string name="replacementTo"/>
-
         <string name="productUnit"/>
-
         <string name="nodeNumber"/>
-
         <string name="operationNumber"/>
-
         <string name="operationName"/>
-
         <string name="technologyInputProductTypeName"/>
-
         <enum name="role" values="01used,02produced" />
-
         <enum name="typeOfMaterial" values="01component,02intermediate,03finalProduct,04waste"/>
-
         <decimal name="plannedQuantity"/>
-
         <decimal name="usedQuantity"/>
-
         <decimal name="producedQuantity"/>
-
         <boolean name="replacement"/>
-
     </fields>
 
     <masterModel plugin="basicProductionCounting" model="productionCountingQuantity"/>

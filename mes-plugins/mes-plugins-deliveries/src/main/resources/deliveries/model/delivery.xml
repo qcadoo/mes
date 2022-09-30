@@ -69,7 +69,6 @@
         <hasMany name="orderedProducts" joinField="delivery" model="orderedProduct"
                          cascade="delete" copyable="true" />
 
-
         <hasMany name="orderedProductDtos" joinField="delivery" model="orderedProductDto"
                  cascade="nullify" copyable="false" persistent="false" />
 
@@ -82,6 +81,8 @@
         <hasMany name="deliveredProductMultis" joinField="delivery" model="deliveredProductMulti"
                  cascade="delete" />
 
+        <hasMany name="deliveredPackages" joinField="delivery" model="deliveredPackage"
+                 cascade="delete" copyable="true"/>
 
         <hasMany name="attachments" model="deliveryAttachment" joinField="delivery" cascade="delete"/>
 

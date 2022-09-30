@@ -28,6 +28,7 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class ProductsByAttributeListeners {
@@ -42,23 +43,18 @@ public class ProductsByAttributeListeners {
     @Autowired
     private ProductStructureTreeService productStructureTreeService;
 
-    public void changeProductFamily(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        LookupComponent productLookup = (LookupComponent) view.getComponentByReference(ProductsByAttributeHelperFields.PRODUCT);
-
-        Entity product = productLookup.getEntity();
-
-        if (Objects.nonNull(product)) {
-            setUnitField(view, product);
-            clearProductsList(view);
-            prepareProductsList(view, product);
-        } else {
-            setUnitField(view, null);
-            clearProductsList(view);
-        }
+    public void onProductFamilyChange(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        setUnitField(view);
+        clearProductsList(view);
+        prepareProductsList(view);
+        onFormChange(view);
     }
 
-    private void setUnitField(final ViewDefinitionState view, final Entity product) {
+    private void setUnitField(final ViewDefinitionState view) {
+        LookupComponent productLookup = (LookupComponent) view.getComponentByReference(ProductsByAttributeHelperFields.PRODUCT);
         FieldComponent unitField = (FieldComponent) view.getComponentByReference(L_UNIT);
+
+        Entity product = productLookup.getEntity();
 
         String unit = null;
 
@@ -75,34 +71,59 @@ public class ProductsByAttributeListeners {
 
         Entity productsByAttributeHelper = getProductsByAttributeHelperDD().get(productsByAttributeHelperForm.getEntityId());
 
-        for (Entity productsByAttributeEntryHelper : productsByAttributeHelper.getHasManyField(ProductsByAttributeHelperFields.PRODUCTS_BY_ATTRIBUTE_ENTRY_HELPERS)) {
+        List<Entity> productsByAttributeEntryHelpers = productsByAttributeHelper.getHasManyField(ProductsByAttributeHelperFields.PRODUCTS_BY_ATTRIBUTE_ENTRY_HELPERS);
+
+        for (Entity productsByAttributeEntryHelper : productsByAttributeEntryHelpers) {
             productsByAttributeEntryHelper.getDataDefinition().delete(productsByAttributeEntryHelper.getId());
         }
     }
 
-    private void prepareProductsList(final ViewDefinitionState view, final Entity product) {
+    private void prepareProductsList(final ViewDefinitionState view) {
         FormComponent productsByAttributeHelperForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
+        LookupComponent productLookup = (LookupComponent) view.getComponentByReference(ProductsByAttributeHelperFields.PRODUCT);
+
+        Entity product = productLookup.getEntity();
+
+        if (Objects.nonNull(product)) {
+            List<Entity> productAttributeValues = product.getHasManyField(ProductFields.PRODUCT_ATTRIBUTE_VALUES);
+
+            for (Entity productAttributeValue : productAttributeValues) {
+                Entity attribute = productAttributeValue.getBelongsToField(ProductAttributeValueFields.ATTRIBUTE);
+                Entity attributeValue = productAttributeValue.getBelongsToField(ProductAttributeValueFields.ATTRIBUTE_VALUE);
+                String value = productAttributeValue.getStringField(ProductAttributeValueFields.VALUE);
+
+                createProductsByAttributeHelper(productsByAttributeHelperForm.getEntityId(), product, attribute, attributeValue, value);
+            }
+        }
+    }
+
+    private void createProductsByAttributeHelper(final Long productsByAttributeHelperId, final Entity product, final Entity attribute, final Entity attributeValue, final String value) {
+        Entity productsByAttributeEntryHelper = getProductsByAttributeEntryHelperDD().create();
+
+        productsByAttributeEntryHelper.setField(ProductsByAttributeEntryHelperFields.PRODUCTS_BY_ATTRIBUTE_HELPER, productsByAttributeHelperId);
+        productsByAttributeEntryHelper.setField(ProductsByAttributeEntryHelperFields.PRODUCT, product);
+        productsByAttributeEntryHelper.setField(ProductsByAttributeEntryHelperFields.ATTRIBUTE, attribute);
+        productsByAttributeEntryHelper.setField(ProductsByAttributeEntryHelperFields.ATTRIBUTE_VALUE, attributeValue);
+        productsByAttributeEntryHelper.setField(ProductsByAttributeEntryHelperFields.VALUE, value);
+
+        productsByAttributeEntryHelper.getDataDefinition().save(productsByAttributeEntryHelper);
+    }
+
+    public void onQuantityChange(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        onFormChange(view);
+    }
+
+    public void onCommentsChange(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        onFormChange(view);
+    }
+
+    private void onFormChange(final ViewDefinitionState view) {
+        FormComponent productsByAttributeHelperForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
+        LookupComponent productLookup = (LookupComponent) view.getComponentByReference(ProductsByAttributeHelperFields.PRODUCT);
         FieldComponent orderedQuantityField = (FieldComponent) view.getComponentByReference(ProductsByAttributeHelperFields.ORDERED_QUANTITY);
         FieldComponent commentsField = (FieldComponent) view.getComponentByReference(ProductsByAttributeHelperFields.COMMENTS);
 
-        List<Entity> productAttributeValues = product.getHasManyField(ProductFields.PRODUCT_ATTRIBUTE_VALUES);
-
-        for (Entity productAttributeValue : productAttributeValues) {
-            Entity attribute = productAttributeValue.getBelongsToField(ProductAttributeValueFields.ATTRIBUTE);
-            Entity attributeValue = productAttributeValue.getBelongsToField(ProductAttributeValueFields.ATTRIBUTE_VALUE);
-            String value = productAttributeValue.getStringField(ProductAttributeValueFields.VALUE);
-
-            Entity productsByAttributeEntryHelper = getProductsByAttributeEntryHelperDD().create();
-
-            productsByAttributeEntryHelper.setField(ProductsByAttributeEntryHelperFields.PRODUCTS_BY_ATTRIBUTE_HELPER, productsByAttributeHelperForm.getEntityId());
-            productsByAttributeEntryHelper.setField(ProductsByAttributeEntryHelperFields.PRODUCT, product);
-            productsByAttributeEntryHelper.setField(ProductsByAttributeEntryHelperFields.ATTRIBUTE, attribute);
-            productsByAttributeEntryHelper.setField(ProductsByAttributeEntryHelperFields.ATTRIBUTE_VALUE, attributeValue);
-            productsByAttributeEntryHelper.setField(ProductsByAttributeEntryHelperFields.VALUE, value);
-
-            productsByAttributeEntryHelper.getDataDefinition().save(productsByAttributeEntryHelper);
-        }
-
+        Entity product = productLookup.getEntity();
         Object orderedQuantity = orderedQuantityField.getFieldValue();
         Object comments = commentsField.getFieldValue();
 
@@ -130,39 +151,9 @@ public class ProductsByAttributeListeners {
             return;
         }
 
-        BigDecimal orderedQuantity;
+        BigDecimal orderedQuantity = getBigDecimal(orderedQuantityField);
 
-        String orderedQuantityString = (String) orderedQuantityField.getFieldValue();
-
-        Either<Exception, com.google.common.base.Optional<BigDecimal>> eitherOrderedQuantity = BigDecimalUtils.tryParseAndIgnoreSeparator(
-                orderedQuantityString, LocaleContextHolder.getLocale());
-
-        if (eitherOrderedQuantity.isRight()) {
-            if (eitherOrderedQuantity.getRight().isPresent()) {
-                orderedQuantity = eitherOrderedQuantity.getRight().get();
-
-                int scale = 5;
-                int valueScale = orderedQuantity.scale();
-
-                if (valueScale > scale) {
-                    orderedQuantityField.addMessage("qcadooView.validate.field.error.invalidScale.max", ComponentState.MessageType.FAILURE, String.valueOf(scale));
-
-                    return;
-                }
-
-                if (BigDecimal.ZERO.compareTo(orderedQuantity) >= 0) {
-                    orderedQuantityField.addMessage("qcadooView.validate.field.error.outOfRange.toSmall", ComponentState.MessageType.FAILURE);
-
-                    return;
-                }
-            } else {
-                orderedQuantityField.addMessage("qcadooView.validate.field.error.missing", ComponentState.MessageType.FAILURE);
-
-                return;
-            }
-        } else {
-            orderedQuantityField.addMessage("qcadooView.validate.field.error.invalidNumericFormat", ComponentState.MessageType.FAILURE);
-
+        if (Objects.isNull(orderedQuantity)) {
             return;
         }
 
@@ -192,7 +183,6 @@ public class ProductsByAttributeListeners {
             Optional<Entity> mayBeProduct = findMatchingProduct(children, productsByAttributeEntryHelpers);
 
             if (mayBeProduct.isPresent()) {
-
                 product = mayBeProduct.get();
 
                 Entity masterOrderProduct = createMasterOrderPosition(masterOrder, product, orderedQuantity, comments);
@@ -202,12 +192,61 @@ public class ProductsByAttributeListeners {
 
                     generatedCheckBox.setChecked(true);
                 } else {
+                    masterOrderProduct.getGlobalErrors().stream().filter(error ->
+                            !error.getMessage().equals("qcadooView.validate.global.error.custom")).forEach(error ->
+                            view.addMessage(error.getMessage(), ComponentState.MessageType.FAILURE, error.getVars())
+                    );
+
+                    masterOrderProduct.getErrors().values().forEach(error ->
+                            view.addMessage(error.getMessage(), ComponentState.MessageType.FAILURE, error.getVars())
+                    );
+
                     view.addMessage("masterOrders.productsByAttribute.addPositionsToOrder.error", ComponentState.MessageType.FAILURE);
                 }
             } else {
                 view.addMessage("masterOrders.productsByAttribute.addPositionsToOrder.failure", ComponentState.MessageType.FAILURE);
             }
         }
+    }
+
+    private BigDecimal getBigDecimal(final FieldComponent orderedQuantityField) {
+        BigDecimal orderedQuantity;
+
+        String orderedQuantityString = (String) orderedQuantityField.getFieldValue();
+
+        Either<Exception, com.google.common.base.Optional<BigDecimal>> eitherOrderedQuantity = BigDecimalUtils.tryParseAndIgnoreSeparator(
+                orderedQuantityString, LocaleContextHolder.getLocale());
+
+        if (eitherOrderedQuantity.isRight()) {
+            if (eitherOrderedQuantity.getRight().isPresent()) {
+                orderedQuantity = eitherOrderedQuantity.getRight().get();
+
+                int scale = 5;
+                int valueScale = orderedQuantity.scale();
+
+                if (valueScale > scale) {
+                    orderedQuantityField.addMessage("qcadooView.validate.field.error.invalidScale.max", ComponentState.MessageType.FAILURE, String.valueOf(scale));
+
+                    return null;
+                }
+
+                if (BigDecimal.ZERO.compareTo(orderedQuantity) > 0) {
+                    orderedQuantityField.addMessage("qcadooView.validate.field.error.outOfRange.toSmall", ComponentState.MessageType.FAILURE);
+
+                    return null;
+                }
+            } else {
+                orderedQuantityField.addMessage("qcadooView.validate.field.error.missing", ComponentState.MessageType.FAILURE);
+
+                return null;
+            }
+        } else {
+            orderedQuantityField.addMessage("qcadooView.validate.field.error.invalidNumericFormat", ComponentState.MessageType.FAILURE);
+
+            return null;
+        }
+
+        return orderedQuantity;
     }
 
     private Entity createMasterOrderPosition(final Entity masterOrder, final Entity product, final BigDecimal masterOrderQuantity, final String comments) {
@@ -237,6 +276,9 @@ public class ProductsByAttributeListeners {
     private Optional<Entity> findMatchingProduct(final List<Entity> children, final List<Entity> productsByAttributeEntryHelpers) {
         Entity product = null;
 
+        List<Entity> filteredProductsByAttributeEntryHelpers = productsByAttributeEntryHelpers.stream().filter(productsByAttributeEntryHelper
+                -> StringUtils.isNotEmpty(productsByAttributeEntryHelper.getStringField(ProductsByAttributeEntryHelperFields.VALUE))).collect(Collectors.toList());
+
         int isFound = 0;
 
         for (Entity child : children) {
@@ -244,20 +286,18 @@ public class ProductsByAttributeListeners {
 
             int matchingAttributes = 0;
 
-            for (Entity productsByAttributeEntryHelper : productsByAttributeEntryHelpers) {
+            for (Entity productsByAttributeEntryHelper : filteredProductsByAttributeEntryHelpers) {
                 Entity attribute = productsByAttributeEntryHelper.getBelongsToField(ProductsByAttributeEntryHelperFields.ATTRIBUTE);
                 String value = productsByAttributeEntryHelper.getStringField(ProductsByAttributeEntryHelperFields.VALUE);
 
-                if (StringUtils.isNotEmpty(value)) {
-                    if (productAttributeValues.stream().anyMatch(productAttributeValue ->
-                            productAttributeValue.getBelongsToField(ProductAttributeValueFields.ATTRIBUTE).getId().equals(attribute.getId())
-                                    && productAttributeValue.getStringField(ProductAttributeValueFields.VALUE).equals(value))) {
-                        matchingAttributes++;
-                    }
+                if (productAttributeValues.stream().anyMatch(productAttributeValue ->
+                        productAttributeValue.getBelongsToField(ProductAttributeValueFields.ATTRIBUTE).getId().equals(attribute.getId())
+                                && productAttributeValue.getStringField(ProductAttributeValueFields.VALUE).equals(value))) {
+                    matchingAttributes++;
                 }
             }
 
-            if (matchingAttributes == productsByAttributeEntryHelpers.size()) {
+            if (matchingAttributes == filteredProductsByAttributeEntryHelpers.size()) {
                 isFound++;
 
                 product = child;

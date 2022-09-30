@@ -23,27 +23,14 @@
  */
 package com.qcadoo.mes.deliveriesToMaterialFlow.states;
 
-import java.math.BigDecimal;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.google.common.collect.Lists;
+import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.basic.constants.ParameterFields;
 import com.qcadoo.mes.basic.constants.ProductFields;
+import com.qcadoo.mes.basic.constants.UnitConversionItemFieldsB;
 import com.qcadoo.mes.basic.util.CurrencyService;
-import com.qcadoo.mes.deliveries.constants.DeliveredProductAttributeValFields;
-import com.qcadoo.mes.deliveries.constants.DeliveredProductFields;
-import com.qcadoo.mes.deliveries.constants.DeliveriesConstants;
-import com.qcadoo.mes.deliveries.constants.DeliveryFields;
+import com.qcadoo.mes.deliveries.constants.*;
 import com.qcadoo.mes.deliveriesToMaterialFlow.constants.DocumentFieldsDTMF;
 import com.qcadoo.mes.materialFlow.constants.LocationFields;
 import com.qcadoo.mes.materialFlowResources.constants.DocumentFields;
@@ -53,36 +40,57 @@ import com.qcadoo.mes.materialFlowResources.service.DocumentBuilder;
 import com.qcadoo.mes.materialFlowResources.service.DocumentManagementService;
 import com.qcadoo.mes.states.StateChangeContext;
 import com.qcadoo.mes.states.constants.StateChangeStatus;
+import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
+import com.qcadoo.model.api.search.SearchRestrictions;
+import com.qcadoo.model.api.units.UnitConversionService;
 import com.qcadoo.model.api.validators.ErrorMessage;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.math.BigDecimal;
+import java.util.Date;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
 @Service
 public class DeliveryStateServiceMF {
 
-    public static final String L_QUALITY_RATING = "qualityRating";
-
-    @Autowired
-    private DocumentManagementService documentManagementService;
-
-    @Autowired
-    private NumberService numberService;
-
-    @Autowired
-    private ParameterService parameterService;
+    private static final String L_QUALITY_RATING = "qualityRating";
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
     @Autowired
+    private NumberService numberService;
+
+    @Autowired
+    private TranslationService translationService;
+
+    @Autowired
+    private UnitConversionService unitConversionService;
+
+    @Autowired
+    private ParameterService parameterService;
+
+    @Autowired
     private CurrencyService currencyService;
+
+    @Autowired
+    private DocumentManagementService documentManagementService;
 
     public void createDocumentsForTheReceivedProducts(final StateChangeContext stateChangeContext) {
         final Entity delivery = stateChangeContext.getOwner();
 
         try {
-            createDocuments(stateChangeContext, delivery);
+            createDocumentForDeliveredProducts(stateChangeContext, delivery);
 
             if (!delivery.isValid()) {
                 stateChangeContext.setStatus(StateChangeStatus.FAILURE);
@@ -93,7 +101,7 @@ public class DeliveryStateServiceMF {
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    private void createDocuments(final StateChangeContext stateChangeContext, final Entity delivery) {
+    private void createDocumentForDeliveredProducts(final StateChangeContext stateChangeContext, final Entity delivery) {
         Entity location = getLocation(delivery);
 
         if (Objects.isNull(location)) {
@@ -105,6 +113,7 @@ public class DeliveryStateServiceMF {
         List<Entity> deliveredProducts = delivery.getHasManyField(DeliveryFields.DELIVERED_PRODUCTS);
 
         DocumentBuilder documentBuilder = documentManagementService.getDocumentBuilder();
+
         documentBuilder.receipt(location);
         documentBuilder.setField(DocumentFieldsDTMF.DELIVERY, delivery);
         documentBuilder.setField(DocumentFields.COMPANY, delivery.getField(DeliveryFields.SUPPLIER));
@@ -154,12 +163,11 @@ public class DeliveryStateServiceMF {
         }
     }
 
-    private List<Entity> prepareAttributes(Entity deliveredProduct) {
+    private List<Entity> prepareAttributes(final Entity deliveredProduct) {
         List<Entity> attributes = Lists.newArrayList();
 
         deliveredProduct.getHasManyField(DeliveredProductFields.DELIVERED_PRODUCT_ATTRIBUTE_VALS).forEach(aVal -> {
-            Entity deliveredProductAttributeVal = dataDefinitionService
-                    .get(DeliveriesConstants.PLUGIN_IDENTIFIER, DeliveriesConstants.MODEL_DELIVERED_PRODUCT_ATTRIBUTE_VAL)
+            Entity deliveredProductAttributeVal = getDeliveredProductAttributeValDD()
                     .create();
 
             deliveredProductAttributeVal.setField(PositionAttributeValueFields.ATTRIBUTE,
@@ -238,12 +246,80 @@ public class DeliveryStateServiceMF {
     }
 
     private void addErrorMessage(final StateChangeContext stateChangeContext, final List<String> message,
-            final String locationName, final String translationKey) {
+                                 final String locationName, final String translationKey) {
         if (message.size() != 0) {
             if (message.toString().length() < 255) {
                 stateChangeContext.addValidationError(translationKey, false, locationName, message.toString());
             } else {
                 stateChangeContext.addValidationError(translationKey + "Short", false, locationName);
+            }
+        }
+    }
+
+    public void createDocumentsForTheReceivedPackages(final StateChangeContext stateChangeContext) {
+        final Entity delivery = stateChangeContext.getOwner();
+
+        createDocumentForDeliveredPackages(delivery);
+
+        if (!delivery.isValid()) {
+            stateChangeContext.setStatus(StateChangeStatus.FAILURE);
+        }
+    }
+
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    private void createDocumentForDeliveredPackages(final Entity delivery) {
+        Entity packagingLocation = getPackagingLocation();
+
+        List<Entity> deliveredPackages = delivery.getHasManyField(DeliveryFields.DELIVERED_PACKAGES);
+
+        if (!deliveredPackages.isEmpty()) {
+            if (Objects.isNull(packagingLocation)) {
+                delivery.addGlobalError("deliveriesToMaterialFlow.deliveryStateValidator.error.packagingLocationNotSet");
+            } else {
+                DocumentBuilder documentBuilder = documentManagementService.getDocumentBuilder();
+
+                documentBuilder.receipt(packagingLocation);
+                documentBuilder.setField(DocumentFieldsDTMF.DELIVERY, delivery);
+                documentBuilder.setField(DocumentFields.COMPANY, delivery.getField(DeliveryFields.SUPPLIER));
+                documentBuilder.setField(DocumentFields.DESCRIPTION, translationService.translate("deliveriesToMaterialFlow.delivery.packagesReceipt", LocaleContextHolder.getLocale()));
+
+                for (Entity deliveredPackage : deliveredPackages) {
+                    Entity product = deliveredPackage.getBelongsToField(DeliveredPackageFields.PRODUCT);
+                    BigDecimal deliveredQuantity = deliveredPackage.getDecimalField(DeliveredPackageFields.DELIVERED_QUANTITY);
+                    String additionalUnit = product.getStringField(ProductFields.ADDITIONAL_UNIT);
+
+                    String unit = product.getStringField(ProductFields.UNIT);
+
+                    if (StringUtils.isEmpty(additionalUnit)) {
+                        additionalUnit = unit;
+                    }
+
+                    BigDecimal conversion = BigDecimal.ONE;
+
+                    if (!unit.equals(additionalUnit)) {
+                        conversion = unitConversionService
+                                .getPossibleConversions(unit,
+                                        searchCriteriaBuilder -> searchCriteriaBuilder
+                                                .add(SearchRestrictions.belongsTo(UnitConversionItemFieldsB.PRODUCT, product)))
+                                .asUnitToConversionMap().get(additionalUnit);
+                    }
+
+                    BigDecimal givenQuantity = deliveredQuantity.multiply(conversion, numberService.getMathContext());
+
+                    documentBuilder.addPosition(product, numberService.setScaleWithDefaultMathContext(deliveredQuantity),
+                            numberService.setScaleWithDefaultMathContext(givenQuantity), additionalUnit, conversion,
+                            null, null, null, null, null);
+                }
+
+                Entity createdDocument = documentBuilder.setAccepted().build();
+
+                if (!createdDocument.isValid()) {
+                    delivery.addGlobalError("deliveriesToMaterialFlow.deliveryStateValidator.error.document", true);
+
+                    for (ErrorMessage error : createdDocument.getGlobalErrors()) {
+                        delivery.addGlobalError(error.getMessage(), error.getAutoClose());
+                    }
+                }
             }
         }
     }
@@ -256,6 +332,12 @@ public class DeliveryStateServiceMF {
 
     private Entity getLocation(final Entity delivery) {
         return delivery.getBelongsToField(DeliveryFields.LOCATION);
+    }
+
+    private Entity getPackagingLocation() {
+        Entity parameter = parameterService.getParameter();
+
+        return parameter.getBelongsToField(ParameterFieldsD.PACKAGING_LOCATION);
     }
 
     private Entity getProduct(final Entity deliveredProduct) {
@@ -308,6 +390,11 @@ public class DeliveryStateServiceMF {
 
     private String getLocationName(final Entity location) {
         return location.getStringField(LocationFields.NAME);
+    }
+
+    private DataDefinition getDeliveredProductAttributeValDD() {
+        return dataDefinitionService
+                .get(DeliveriesConstants.PLUGIN_IDENTIFIER, DeliveriesConstants.MODEL_DELIVERED_PRODUCT_ATTRIBUTE_VAL);
     }
 
 }

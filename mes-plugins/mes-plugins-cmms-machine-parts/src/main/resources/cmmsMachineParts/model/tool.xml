@@ -27,6 +27,7 @@
 <model name="tool"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
        xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
+
     <fields>
         <string name="number" required="true" unique="true">
             <validatesLength max="255"/>
@@ -37,27 +38,20 @@
         <string name="description">
             <validatesLength max="2048"/>
         </string>
-
         <dictionary name="toolCategory" dictionary="toolCategory" required="true"/>
         <string name="producer">
             <validatesLength max="255"/>
         </string>
-
         <string name="inventoryNumber">
             <validatesLength max="255"/>
         </string>
-
         <string name="serialNumber">
             <validatesLength max="255"/>
         </string>
-
         <dictionary name="unit" dictionary="units" required="true"/>
-
         <hasMany name="toolAttachments" joinField="tool" model="toolAttachment" cascade="delete"/>
-
         <hasMany name="tools" joinField="tool" model="operationTool" cascade="delete"/>
-
     </fields>
-    <hooks>
-    </hooks>
+
+    <hooks />
 </model>

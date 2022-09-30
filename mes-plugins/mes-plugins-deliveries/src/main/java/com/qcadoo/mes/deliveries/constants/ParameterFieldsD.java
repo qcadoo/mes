@@ -37,6 +37,8 @@ public final class ParameterFieldsD {
 
     public static final String LOCATION = "location";
 
+    public static final String PACKAGING_LOCATION = "packagingLocation";
+
     public static final String DELIVERED_BIGGER_THAN_ORDERED = "deliveredBiggerThanOrdered";
 
     public static final String REQUIRE_SUPPLIER_IDENTYFICATION = "requireSupplierIdentification";

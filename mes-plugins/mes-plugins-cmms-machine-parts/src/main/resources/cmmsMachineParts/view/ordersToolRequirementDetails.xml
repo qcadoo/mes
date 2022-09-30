@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    ***************************************************************************
+    Copyright (c) 2010 Qcadoo Limited
+    Project: Qcadoo MES
+    Version: 1.4
+
+    This file is part of Qcadoo.
+
+    Qcadoo is free software; you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as published
+    by the Free Software Foundation; either version 3 of the License,
+    or (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty
+    of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+    See the GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+    ***************************************************************************
+
+-->
+<view defaultAuthorizationRole="ROLE_TOOLS" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns="http://schema.qcadoo.org/view"
+      xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
+      name="ordersToolRequirementDetails" modelName="ordersToolRequirement">
+
+    <component type="window" name="window" reference="window">
+
+        <ribbon>
+            <template name="standardFormTemplate"/>
+            <group name="genericExport">
+                <smallButton name="csv" state="enabled" icon="exportToCsvIcon16.png">
+                    <script>
+                        <![CDATA[
+                            this.addOnChangeListener({
+                                onClick: function() {
+                                    #{grid}.performEvent('exportToCsv', [], 'exportToCsv');
+                                }
+                            });
+                        ]]>
+                    </script>
+                </smallButton>
+                <smallButton name="pdf" state="enabled" icon="pdfIcon16.png">
+                    <script>
+                        <![CDATA[
+                            this.addOnChangeListener({
+                                onClick: function() {
+                                    #{grid}.performEvent('exportToPdf', [], 'exportToPdf');
+                                }
+                            });
+                        ]]>
+                    </script>
+                </smallButton>
+            </group>
+            <group name="generate">
+                <bigButton name="generateOrdersToolRequirement" icon="generateIcon24.png"
+                           action="#{form}.fireEvent(generateOrdersToolRequirement);" state="enabled"/>
+            </group>
+            <group name="export">
+                <bigButton name="printOrdersToolRequirement" icon="pdfIcon24.png"
+                             action="#{form}.fireEvent(printOrdersToolRequirement,pdf);" state="disabled" />
+            </group>
+        </ribbon>
+
+        <windowTab name="mainTab">
+            <component type="form" name="ordersToolRequirement" reference="form">
+                <component type="gridLayout" name="gridLayout" columns="3"
+                           rows="6">
+                    <layoutElement column="1" row="1">
+                        <component type="input" name="number" reference="number"
+                                   field="number" defaultEnabled="never">
+                            <option type="alignment" value="right"/>
+                        </component>
+                    </layoutElement>
+                    <layoutElement column="1" row="2" height="2">
+                        <component type="textarea" name="name" field="name"
+                                   reference="name"/>
+                    </layoutElement>
+                    <layoutElement column="1" row="4">
+                        <component type="checkbox" name="generated" field="generated"
+                                   reference="generated" defaultEnabled="never"/>
+                    </layoutElement>
+                    <layoutElement column="1" row="5">
+                        <component type="input" name="worker" field="worker"
+                                   reference="worker" defaultEnabled="never"/>
+                    </layoutElement>
+                    <layoutElement column="1" row="6">
+                        <component type="calendar" name="date" field="date"
+                                   reference="date" defaultEnabled="never">
+                            <option type="withTimePicker" value="true"/>
+                        </component>
+                    </layoutElement>
+                    <layoutElement column="2" row="1" width="2" height="6">
+                        <component type="lookup" name="order" reference="orderLookup"
+                                   field="orders" defaultVisible="false" persistent="false" hasLabel="false">
+                            <option type="column" name="name" fields="name"
+                                    link="true"/>
+                            <option type="column" name="dateFrom" fields="dateFrom"
+                                    link="false"/>
+                            <option type="column" name="dateTo" fields="dateTo"
+                                    link="false"/>
+
+                            <option type="searchable" value="number,name,dateFrom,dateTo" />
+                            <option type="orderable" value="number,name,dateFrom,dateTo" />
+
+                            <option type="expression" value="#number + ' - ' + #name" />
+                            <option type="fieldCode" value="number" />
+                            <option type="multiselect" value="true" />
+
+                            <criteriaModifier
+                                    class="com.qcadoo.mes.orders.criteriaModifiers.OrdersCriteriaModifiers"
+                                    method="showNotCompletedDeclinedAndAbandoned"/>
+                        </component>
+                        <component type="grid" name="orders" reference="orders"
+                                   source="#{form}.orders" defaultEnabled="false">
+                            <option type="column" name="number" fields="number"/>
+                            <option type="column" name="name" fields="name"/>
+
+                            <option type="order" column="number" direction="desc" />
+
+                            <option type="paginable" value="false" />
+                            <option type="multiselect" value="true" />
+                            <option type="creatable" value="true" />
+                            <option type="deletable" value="true" />
+
+                            <option type="weakRelation" value="true" />
+                            <option type="correspondingLookup" value="orderLookup" />
+                        </component>
+                    </layoutElement>
+                </component>
+
+                <option type="header" value="true"/>
+                <option type="expression" value="#number"/>
+
+                <listener event="generateOrdersToolRequirement"
+                          class="com.qcadoo.mes.cmmsMachineParts.listeners.OrdersToolRequirementDetailsListeners"
+                          method="generateOrdersToolRequirement"/>
+                <listener event="printOrdersToolRequirement"
+                          class="com.qcadoo.mes.cmmsMachineParts.listeners.OrdersToolRequirementDetailsListeners"
+                          method="printOrdersToolRequirement" />
+            </component>
+        </windowTab>
+
+        <windowTab name="toolsTab">
+            <component type="grid" name="ordersToolRequirementTools" source="#{form}.ordersToolRequirementTools"
+                       reference="grid">
+                <option type="column" name="date" fields="date"
+                        width="100"/>
+                <option type="column" name="orderNumber" fields="order"
+                        expression="#order.get('number')"
+                        width="100"/>
+                <option type="column" name="operationNumber" fields="operation"
+                        expression="#operation.get('number')"
+                        width="100"/>
+                <option type="column" name="toolCategory" fields="technologyOperationTool"
+                        expression="#technologyOperationTool.get('toolCategory')"
+                        width="100"/>
+                <option type="column" name="toolNumber" fields="technologyOperationTool"
+                        expression="#technologyOperationTool.get('tool')?.get('number')"
+                        width="100"/>
+                <option type="column" name="toolName" fields="technologyOperationTool"
+                        expression="#technologyOperationTool.get('tool')?.get('name')"
+                        width="100"/>
+                <option type="column" name="toolDescription" fields="technologyOperationTool"
+                        expression="#technologyOperationTool.get('description')"
+                        width="150"/>
+                <option type="column" name="quantity" fields="quantity"
+                        width="60"/>
+                <option type="column" name="toolUnit" fields="technologyOperationTool"
+                        expression="#technologyOperationTool.get('unit')"
+                        width="40"/>
+
+                <option type="order" column="date" direction="asc"/>
+
+                <option type="searchable"
+                        value="date,orderNumber,operationNumber,toolCategory,toolName,toolNumber,toolDescription,quantity,toolUnit"/>
+                <option type="orderable"
+                        value="date,orderNumber,operationNumber,toolCategory,toolName,toolNumber,toolDescription,quantity,toolUnit"/>
+
+                <option type="fullscreen" value="true"/>
+                <option type="multiselect" value="true"/>
+                <option type="fixedHeight" value="true"/>
+            </component>
+        </windowTab>
+
+    </component>
+
+    <hooks>
+        <beforeRender
+                class="com.qcadoo.mes.cmmsMachineParts.hooks.OrdersToolRequirementDetailsHooks"
+                method="onBeforeRender"/>
+    </hooks>
+
+</view>

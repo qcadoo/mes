@@ -35,6 +35,7 @@
         <integer name="location_id"/>
         <string name="productNumber"/>
         <string name="productName"/>
+        <enum name="productGlobalTypeOfMaterial" values="01component,02intermediate,03finalProduct,04waste,05package"/>
         <decimal name="quantity"/>
         <string name="productUnit"/>
         <decimal name="quantityInAdditionalUnit"/>

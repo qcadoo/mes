@@ -37,43 +37,63 @@
                            action="#{window}.performRefresh;"/>
             </group>
         </ribbon>
-        <component type="grid" name="plannedConsumptionInOrderGrid" reference="grid">
+        <component type="form" name="form" reference="form">
 
-            <option type="column" name="orderNumber" fields="orderNumber" width="60"/>
-            <option type="column" name="orderStartDate" fields="orderStartDate"/>
-            <option type="column" name="orderState" fields="orderState"/>
-            <option type="column" name="orderProduct" fields="orderProduct"/>
+            <component type="gridLayout" name="orderedProductsGridLayout"
+                       columns="4" rows="2" hasBorders="false">
+                <layoutElement column="1" row="1" width="2">
+                    <component type="input" name="productName"
+                               reference="productName"
+                               defaultEnabled="never">
+                        <option type="textRepresentationOnDisabled" value="true"/>
+                    </component>
+                </layoutElement>
+                <layoutElement column="1" row="2" width="4">
+                    <component type="grid" name="plannedConsumptionInOrderGrid" reference="grid">
 
-            <option type="column" name="orderPlanedQuantity" fields="orderPlanedQuantity"/>
-            <option type="column" name="orderDoneQuantity" fields="orderDoneQuantity"/>
-            <option type="column" name="orderUnit" fields="orderUnit"/>
-            <option type="column" name="productionLineNumber" fields="productionLineNumber"/>
-            <option type="column" name="productNumber" fields="productNumber"/>
-            <option type="column" name="productPlannedQuantity" fields="productPlannedQuantity"/>
-            <option type="column" name="productActualNeedQuantity" fields="productActualNeedQuantity"/>
-            <option type="column" name="productUnit" fields="productUnit"/>
+                        <option type="column" name="orderNumber" fields="orderNumber" link="true"
+                                correspondingView="orders/orderDetails" correspondingField="orderId"
+                                width="100"/>
+                        <option type="column" name="orderId" fields="orderId" hidden="true"/>
+                        <option type="column" name="orderStartDate" fields="orderStartDate"/>
+                        <option type="column" name="productPlannedQuantity" fields="productPlannedQuantity"/>
+                        <option type="column" name="productActualNeedQuantity" fields="productActualNeedQuantity"/>
+                        <option type="column" name="productUnit" fields="productUnit"/>
+                        <option type="column" name="productionLineNumber" fields="productionLineNumber"/>
+                        <option type="column" name="divisionNumber" fields="divisionNumber"/>
 
-            <option type="order" column="orderStartDate" direction="desc"/>
+                        <option type="column" name="orderProduct" fields="orderProduct"/>
+                        <option type="column" name="productNumber" fields="productNumber"/>
 
-            <option type="searchable"
-                    value="orderNumber,orderStartDate,orderState,orderProduct,orderPlanedQuantity,orderDoneQuantity,orderUnit,productionLineNumber,productNumber,productPlannedQuantity,productActualNeedQuantity,productUnit" />
-            <option type="orderable"
-                    value="orderNumber,orderStartDate,orderState,orderProduct,orderPlanedQuantity,orderDoneQuantity,orderUnit,productionLineNumber,productNumber,productPlannedQuantity,productActualNeedQuantity,productUnit" />
-            <option type="footerRow" value="true"/>
-            <option type="columnsToSummary" value="orderPlanedQuantity,orderDoneQuantity,productPlannedQuantity,productActualNeedQuantity"/>
+                        <option type="column" name="orderPlanedQuantity" fields="orderPlanedQuantity"/>
+                        <option type="column" name="orderDoneQuantity" fields="orderDoneQuantity"/>
+                        <option type="column" name="orderUnit" fields="orderUnit"/>
 
-            <option type="fullscreen" value="true"/>
-            <option type="multiselect" value="true"/>
+                        <option type="column" name="orderState" fields="orderState"/>
 
-            <criteriaModifier
-                    class="com.qcadoo.mes.productFlowThruDivision.criteriaModifiers.PlannedConsumptionInOrderCriteriaModifiers"
-                    method="filterByProduct"/>
+                        <option type="order" column="orderStartDate" direction="desc"/>
+
+                        <option type="searchable"
+                                value="divisionNumber,orderNumber,orderStartDate,orderState,orderProduct,orderPlanedQuantity,orderDoneQuantity,orderUnit,productionLineNumber,productNumber,productPlannedQuantity,productActualNeedQuantity,productUnit"/>
+                        <option type="orderable"
+                                value="divisionNumber,orderNumber,orderStartDate,orderState,orderProduct,orderPlanedQuantity,orderDoneQuantity,orderUnit,productionLineNumber,productNumber,productPlannedQuantity,productActualNeedQuantity,productUnit"/>
+                        <option type="footerRow" value="true"/>
+                        <option type="columnsToSummary"
+                                value="orderPlanedQuantity,orderDoneQuantity,productPlannedQuantity,productActualNeedQuantity"/>
+
+                        <option type="fullscreen" value="true"/>
+                        <option type="multiselect" value="false"/>
+                        <option type="fixedHeight" value="true"/>
+
+                        <criteriaModifier
+                                class="com.qcadoo.mes.productFlowThruDivision.criteriaModifiers.PlannedConsumptionInOrderCriteriaModifiers"
+                                method="filterByProduct"/>
+                    </component>
+                </layoutElement>
+            </component>
+            <option type="header" value="false"/>
         </component>
-
-        <option type="fixedHeight" value="true"/>
-        <option type="header" value="false"/>
     </component>
-
     <hooks>
         <beforeRender
                 class="com.qcadoo.mes.productFlowThruDivision.hooks.PlannedConsumptionInOrderListHooks"

@@ -36,6 +36,7 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import static com.qcadoo.mes.deliveries.constants.DeliveryFields.DELIVERED_PRODUCTS;
+import static com.qcadoo.mes.deliveries.constants.DeliveryFields.DELIVERED_PACKAGES;
 import static com.qcadoo.mes.deliveries.constants.DeliveryFields.ORDERED_PRODUCTS;
 import static com.qcadoo.mes.deliveries.constants.DeliveryFields.STATE;
 import static com.qcadoo.mes.deliveries.states.constants.DeliveryStateStringValues.APPROVED;
@@ -62,10 +63,7 @@ public class DeliveryDetailsHooksTest {
     private FieldComponent stateField;
 
     @Mock
-    private GridComponent deliveredProducts;
-
-    @Mock
-    private GridComponent orderedProducts;
+    private GridComponent orderedProductsGrid, deliveredProductsGrid, deliveredPackagesGrid;
 
     @Mock
     private LookupComponent supplierLookup;
@@ -85,17 +83,18 @@ public class DeliveryDetailsHooksTest {
         when(view.getComponentByReference(QcadooViewConstants.L_FORM)).thenReturn(form);
 
         when(view.getComponentByReference(STATE)).thenReturn(stateField);
-        when(view.getComponentByReference(DELIVERED_PRODUCTS)).thenReturn(deliveredProducts);
-        when(view.getComponentByReference(ORDERED_PRODUCTS)).thenReturn(orderedProducts);
+        when(view.getComponentByReference(ORDERED_PRODUCTS)).thenReturn(orderedProductsGrid);
+        when(view.getComponentByReference(DELIVERED_PRODUCTS)).thenReturn(deliveredProductsGrid);
+        when(view.getComponentByReference(DELIVERED_PACKAGES)).thenReturn(deliveredPackagesGrid);
     }
 
-   
     @Test
     public void shouldReturnWhenEntityIdIsNull() throws Exception {
         // given
         final boolean enabledForm = true;
         final boolean enabledOrderedGrid = false;
         final boolean enabledDeliveredGrid = false;
+        final boolean enabledPackagesGrid = false;
         when(form.getEntityId()).thenReturn(null);
         when(stateField.getFieldValue()).thenReturn(PREPARED);
 
@@ -104,8 +103,9 @@ public class DeliveryDetailsHooksTest {
 
         // then
         verify(form).setFormEnabled(enabledForm);
-        verify(orderedProducts).setEnabled(enabledOrderedGrid);
-        verify(deliveredProducts).setEnabled(enabledDeliveredGrid);
+        verify(orderedProductsGrid).setEnabled(enabledOrderedGrid);
+        verify(deliveredProductsGrid).setEnabled(enabledDeliveredGrid);
+        verify(deliveredPackagesGrid).setEnabled(enabledPackagesGrid);
     }
 
     @Test
@@ -114,6 +114,7 @@ public class DeliveryDetailsHooksTest {
         final boolean enabledForm = false;
         final boolean enabledOrderedGrid = false;
         final boolean enabledDeliveredGrid = true;
+        final boolean enabledPackagesGrid = true;
         when(stateField.getFieldValue()).thenReturn(PREPARED);
 
         // when
@@ -121,8 +122,9 @@ public class DeliveryDetailsHooksTest {
 
         // then
         verify(form).setFormEnabled(enabledForm);
-        verify(orderedProducts).setEnabled(enabledOrderedGrid);
-        verify(deliveredProducts).setEnabled(enabledDeliveredGrid);
+        verify(orderedProductsGrid).setEnabled(enabledOrderedGrid);
+        verify(deliveredProductsGrid).setEnabled(enabledDeliveredGrid);
+        verify(deliveredPackagesGrid).setEnabled(enabledPackagesGrid);
     }
 
     @Test
@@ -131,6 +133,7 @@ public class DeliveryDetailsHooksTest {
         final boolean enabledForm = false;
         final boolean enabledOrderedGrid = false;
         final boolean enabledDeliveredGrid = true;
+        final boolean enabledPackagesGrid = true;
         when(stateField.getFieldValue()).thenReturn(APPROVED);
 
         // when
@@ -138,8 +141,9 @@ public class DeliveryDetailsHooksTest {
 
         // then
         verify(form).setFormEnabled(enabledForm);
-        verify(orderedProducts).setEnabled(enabledOrderedGrid);
-        verify(deliveredProducts).setEnabled(enabledDeliveredGrid);
+        verify(orderedProductsGrid).setEnabled(enabledOrderedGrid);
+        verify(deliveredProductsGrid).setEnabled(enabledDeliveredGrid);
+        verify(deliveredPackagesGrid).setEnabled(enabledPackagesGrid);
     }
 
     @Test
@@ -148,6 +152,7 @@ public class DeliveryDetailsHooksTest {
         final boolean enabledForm = true;
         final boolean enabledOrderedGrid = true;
         final boolean enabledDeliveredGrid = true;
+        final boolean enabledPackagesGrid = true;
         when(stateField.getFieldValue()).thenReturn(DRAFT);
 
         // when
@@ -155,8 +160,9 @@ public class DeliveryDetailsHooksTest {
 
         // then
         verify(form).setFormEnabled(enabledForm);
-        verify(orderedProducts).setEnabled(enabledOrderedGrid);
-        verify(deliveredProducts).setEnabled(enabledDeliveredGrid);
+        verify(orderedProductsGrid).setEnabled(enabledOrderedGrid);
+        verify(deliveredProductsGrid).setEnabled(enabledDeliveredGrid);
+        verify(deliveredPackagesGrid).setEnabled(enabledPackagesGrid);
     }
 
     @Test
@@ -165,6 +171,7 @@ public class DeliveryDetailsHooksTest {
         final boolean enabledForm = false;
         final boolean enabledOrderedGrid = false;
         final boolean enabledDeliveredGrid = false;
+        final boolean enabledPackagesGrid = false;
         when(stateField.getFieldValue()).thenReturn(DECLINED);
 
         // when
@@ -172,8 +179,9 @@ public class DeliveryDetailsHooksTest {
 
         // then
         verify(form).setFormEnabled(enabledForm);
-        verify(orderedProducts).setEnabled(enabledOrderedGrid);
-        verify(deliveredProducts).setEnabled(enabledDeliveredGrid);
+        verify(orderedProductsGrid).setEnabled(enabledOrderedGrid);
+        verify(deliveredProductsGrid).setEnabled(enabledDeliveredGrid);
+        verify(deliveredPackagesGrid).setEnabled(enabledPackagesGrid);
     }
 
     @Test
@@ -182,6 +190,7 @@ public class DeliveryDetailsHooksTest {
         final boolean enabledForm = false;
         final boolean enabledOrderedGrid = false;
         final boolean enabledDeliveredGrid = false;
+        final boolean enabledPackagesGrid = false;
         when(stateField.getFieldValue()).thenReturn(RECEIVED);
 
         // when
@@ -189,8 +198,9 @@ public class DeliveryDetailsHooksTest {
 
         // then
         verify(form).setFormEnabled(enabledForm);
-        verify(orderedProducts).setEnabled(enabledOrderedGrid);
-        verify(deliveredProducts).setEnabled(enabledDeliveredGrid);
+        verify(orderedProductsGrid).setEnabled(enabledOrderedGrid);
+        verify(deliveredProductsGrid).setEnabled(enabledDeliveredGrid);
+        verify(deliveredPackagesGrid).setEnabled(enabledPackagesGrid);
     }
 
 }

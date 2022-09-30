@@ -35,17 +35,18 @@ import java.util.Set;
 
 public interface ProductQuantitiesWithComponentsService {
 
-    ProductQuantitiesHolder getProductComponentQuantities(Entity technology, BigDecimal givenQuantity);
+    ProductQuantitiesHolder getProductComponentQuantities(final Entity technology, final BigDecimal givenQuantity);
 
-    OperationProductComponentWithQuantityContainer getProductComponentWithQuantitiesForTechnology(Entity technology,
-            BigDecimal givenQuantity, Map<Long, BigDecimal> operationRuns, Set<OperationProductComponentHolder> nonComponents);
+    OperationProductComponentWithQuantityContainer getProductComponentWithQuantitiesForTechnology(final Entity technology,
+            final Entity product, final BigDecimal givenQuantity, Map<Long, BigDecimal> operationRuns, final Set<OperationProductComponentHolder> nonComponents);
 
-    /**
-     * @param technology    Given technology
-     * @param givenQuantity How many products, that are outcomes of this technology, we want.
-     * @param mrpAlgorithm  MRP Algorithm
-     */
     Map<OperationProductComponentHolder, BigDecimal> getNeededProductQuantitiesByOPC(final Entity technology, final BigDecimal givenQuantity,
             final MrpAlgorithm mrpAlgorithm);
+
+    Map<OperationProductComponentHolder, BigDecimal> getNeededProductQuantitiesByOPC(final Entity technology, final Entity product, final BigDecimal givenQuantity,
+                                                                                     final MrpAlgorithm mrpAlgorithm);
+
+    Map<OperationProductComponentHolder, BigDecimal> getNeededProductQuantities(final Entity technology, final Entity product,
+                                                                                final BigDecimal plannedQuantity);
 
 }

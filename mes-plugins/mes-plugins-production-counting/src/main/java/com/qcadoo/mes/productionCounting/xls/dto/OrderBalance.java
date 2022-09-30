@@ -16,11 +16,23 @@ public class OrderBalance {
 
     private String productName;
 
+    private String productUnit;
+
+    private BigDecimal plannedQuantity;
+
     private BigDecimal producedQuantity;
 
+    private BigDecimal deviation;
+
+    private BigDecimal plannedMaterialCosts;
     private BigDecimal materialCosts;
 
+    private BigDecimal materialCostsDeviation;
+
+    private BigDecimal plannedProductionCosts;
     private BigDecimal productionCosts;
+
+    private BigDecimal productionCostsDeviation;
 
     private BigDecimal technicalProductionCosts;
 
@@ -272,5 +284,61 @@ public class OrderBalance {
 
     public void setTotalManufacturingCost(BigDecimal totalManufacturingCost) {
         this.totalManufacturingCost = totalManufacturingCost;
+    }
+
+    public String getProductUnit() {
+        return productUnit;
+    }
+
+    public void setProductUnit(String productUnit) {
+        this.productUnit = productUnit;
+    }
+
+    public BigDecimal getPlannedQuantity() {
+        return plannedQuantity;
+    }
+
+    public void setPlannedQuantity(BigDecimal plannedQuantity) {
+        this.plannedQuantity = plannedQuantity;
+    }
+
+    public BigDecimal getDeviation() {
+        return deviation;
+    }
+
+    public void setDeviation(BigDecimal deviation) {
+        this.deviation = deviation;
+    }
+
+    public BigDecimal getPlannedMaterialCosts() {
+        return plannedMaterialCosts;
+    }
+
+    public void setPlannedMaterialCosts(BigDecimal plannedMaterialCosts) {
+        this.plannedMaterialCosts = plannedMaterialCosts;
+    }
+
+    public BigDecimal getMaterialCostsDeviation() {
+        return materialCostsDeviation;
+    }
+
+    public void setMaterialCostsDeviation(BigDecimal materialCostsDeviation) {
+        this.materialCostsDeviation = materialCostsDeviation;
+    }
+
+    public BigDecimal getPlannedProductionCosts() {
+        return plannedProductionCosts;
+    }
+
+    public void setPlannedProductionCosts(BigDecimal plannedProductionCosts) {
+        this.plannedProductionCosts = plannedProductionCosts;
+    }
+
+    public BigDecimal getProductionCostsDeviation() {
+        return productionCostsDeviation;
+    }
+
+    public void setProductionCostsDeviation(BigDecimal productionCostsDeviation) {
+        this.productionCostsDeviation = productionCostsDeviation;
     }
 }

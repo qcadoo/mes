@@ -58,15 +58,11 @@
             <version>[1.4.0</version>
         </dependency>
         <dependency>
-            <plugin>materialFlowResources</plugin>
-            <version>[1.4.0</version>
-        </dependency>
-        <dependency>
             <plugin>warehouseMinimalState</plugin>
             <version>[1.4.0</version>
         </dependency>
         <dependency>
-            <plugin>productionLines</plugin>
+            <plugin>orders</plugin>
             <version>[1.4.0</version>
         </dependency>
     </dependencies>
@@ -104,6 +100,9 @@
         <view:view resource="view/sourceCostDetails.xml"/>
         <view:view resource="view/sourceCostList.xml"/>
 
+        <view:view resource="view/ordersToolRequirementDetails.xml"/>
+        <view:view resource="view/ordersToolRequirementsList.xml"/>
+
         <menu:menu-category name="maintenance"/>
 
         <menu:menu-item name="sourceCostList" category="maintenance" view="sourceCostList"
@@ -125,6 +124,9 @@
 
         <menu:menu-item name="toolsList" category="maintenance" view="toolsList"
                         defaultAuthorizationRole="ROLE_TOOLS"/>
+
+        <menu:menu-item name="ordersToolRequirementsList" category="maintenance"
+                        view="ordersToolRequirementsList" defaultAuthorizationRole="ROLE_TOOLS"/>
 
         <view:view resource="view/plannedEventsList.xml"/>
         <view:view resource="view/plannedEventDetails.xml"/>
@@ -153,6 +155,8 @@
 
         <view:view-tab resource="view/tabExtensions/operationDetails.xml"/>
         <view:view-tab resource="view/tabExtensions/technologyOperationComponentDetails.xml"/>
+
+        <view:view-ribbon-group resource="view/ribbonExtensions/ordersPlanningList.xml"/>
 
         <!-- view extensions -->
 
@@ -190,6 +194,9 @@
         <model:model model="toolAttachment" resource="model/toolAttachment.xml"/>
         <model:model model="operationTool" resource="model/operationTool.xml"/>
         <model:model model="technologyOperationTool" resource="model/technologyOperationTool.xml"/>
+
+        <model:model model="ordersToolRequirement" resource="model/ordersToolRequirement.xml"/>
+        <model:model model="ordersToolRequirementTool" resource="model/ordersToolRequirementTool.xml"/>
 
         <model:dictionary name="toolCategory"/>
 
@@ -270,7 +277,6 @@
                            cascade="delete"
                            joinField="technologyOperationComponent" copyable="true"/>
         </model:model-field>
-
 
         <model:model-field plugin="basic" model="factory">
             <model:belongsTo name="warehouse" model="location" plugin="materialFlow"/>
@@ -399,12 +405,26 @@
                            joinField="productionLine" copyable="false"/>
         </model:model-field>
 
+        <model:model-field plugin="orders" model="order">
+            <model:manyToMany name="ordersToolRequirements" model="ordersToolRequirement" plugin="cmmsMachineParts"
+                              joinField="orders" />
+        </model:model-field>
+
+        <model:model-field plugin="technologies" model="operation">
+            <model:hasMany name="ordersToolRequirementTools" model="ordersToolRequirementTool" plugin="cmmsMachineParts"
+                           joinField="operation"/>
+        </model:model-field>
+
+        <model:model-field plugin="orders" model="order">
+            <model:hasMany name="ordersToolRequirementTools" model="ordersToolRequirementTool" plugin="cmmsMachineParts"
+                           joinField="order"/>
+        </model:model-field>
+
         <model:model-hook plugin="materialFlowResources" model="document">
             <model:validatesWith
                     class="com.qcadoo.mes.cmmsMachineParts.validators.DocumentValidatorsCMP"
                     method="checkSelectedEvents"/>
         </model:model-hook>
-
 
         <model:model-hook plugin="technologies" model="technologyOperationComponent">
             <model:onCreate
@@ -420,6 +440,7 @@
         <view:view-hook plugin="materialFlowResources" view="documentDetails" type="beforeRender"
                         class="com.qcadoo.mes.cmmsMachineParts.hooks.DocumentDetailsHooksCMP"
                         method="toggleEnabledForEventLookup"/>
+
         <view:view-listener plugin="materialFlowResources" view="documentDetails" component="type"
                             event="onSelectedEntityChange"
                             class="com.qcadoo.mes.cmmsMachineParts.listeners.DocumentDetailsListenersCMP"
@@ -438,6 +459,7 @@
         <model:model-field plugin="materialFlowResources" model="positionDto">
             <model:string name="maintenanceEventNumber"/>
         </model:model-field>
+
         <view:view-grid-column plugin="materialFlowResources"
                                view="documentPositionsList" component="grid">
             <view:column name="maintenanceEventNumber" fields="maintenanceEventNumber" orderable="true"
@@ -447,11 +469,17 @@
         <model:model-field plugin="materialFlowResources" model="positionDto">
             <model:string name="plannedEventNumber"/>
         </model:model-field>
+
         <view:view-grid-column plugin="materialFlowResources"
                                view="documentPositionsList" component="grid">
             <view:column name="plannedEventNumber" fields="plannedEventNumber" orderable="true"
                          searchable="true" width="52"/>
         </view:view-grid-column>
+
+        <view:view-listener plugin="orders" view="ordersPlanningList"
+                            component="grid" event="createOrdersToolRequirement"
+                            class="com.qcadoo.mes.cmmsMachineParts.listeners.OrdersPlanningListListenersCMP"
+                            method="createOrdersToolRequirement"/>
 
         <view:resource uri="public/**/*"/>
 

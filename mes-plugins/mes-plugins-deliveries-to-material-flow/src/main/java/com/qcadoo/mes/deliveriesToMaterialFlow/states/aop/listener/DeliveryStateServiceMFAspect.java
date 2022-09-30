@@ -65,6 +65,7 @@ public class DeliveryStateServiceMFAspect extends AbstractStateListenerAspect {
     @After(PHASE_EXECUTION_POINTCUT)
     public void createTransfersForTheReceivedProducts(final StateChangeContext stateChangeContext, final int phase) {
         deliveryStateServiceMF.createDocumentsForTheReceivedProducts(stateChangeContext);
+        deliveryStateServiceMF.createDocumentsForTheReceivedPackages(stateChangeContext);
     }
 
 }

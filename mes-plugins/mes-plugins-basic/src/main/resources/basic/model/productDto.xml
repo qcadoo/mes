@@ -32,7 +32,7 @@
     <fields>
         <string name="number"/>
         <string name="name"/>
-        <enum name="globalTypeOfMaterial" values="01component,02intermediate,03finalProduct,04waste"/>
+        <enum name="globalTypeOfMaterial" values="01component,02intermediate,03finalProduct,04waste,05package"/>
         <dictionary name="category" dictionary="categories"/>
         <string name="parentName"/>
         <string name="ean"/>

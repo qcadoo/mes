@@ -64,9 +64,9 @@
                         });
                     ]]>
                 </script>
-                <component type="gridLayout" name="gridLayout" columns="8" hasBorders="false"
+                <component type="gridLayout" name="gridLayout" columns="1" hasBorders="false"
                            rows="10">
-                    <layoutElement column="1" row="1" width="8">
+                    <layoutElement column="1" row="1">
                         <component type="checkbox" name="generated" defaultVisible="false"
                                    reference="generated" defaultEnabled="false"/>
                         <component type="lookup" name="product" reference="product"
@@ -87,28 +87,41 @@
 
                             <listener event="onSelectedEntityChange"
                                       class="com.qcadoo.mes.masterOrders.listeners.ProductsByAttributeListeners"
-                                      method="changeProductFamily"/>
+                                      method="onProductFamilyChange"/>
                         </component>
                     </layoutElement>
-                    <layoutElement column="1" row="2" width="7">
-                        <component type="input" name="orderedQuantity" field="orderedQuantity"
-                                   reference="orderedQuantity">
-                            <option type="alignment" value="right"/>
-                            <option type="labelWidth" value="34"/>
+                    <layoutElement column="1" row="2">
+                        <component type="gridLayout" name="orderedQuantityGridLayout"
+                               hasBorders="false" columns="4" rows="1">
+                            <layoutElement column="1" row="1" width="3">
+                                <component type="input" name="orderedQuantity" field="orderedQuantity"
+                                           reference="orderedQuantity">
+                                    <option type="alignment" value="right"/>
+                                    <option type="labelWidth" value="40"/>
+
+                                    <listener event="onInputChange"
+                                              class="com.qcadoo.mes.masterOrders.listeners.ProductsByAttributeListeners"
+                                              method="onQuantityChange"/>
+                                </component>
+                            </layoutElement>
+                            <layoutElement column="4" row="1">
+                                <component type="input" name="unit" reference="unit"
+                                           defaultEnabled="false"  hasLabel="false">
+                                    <option type="alignment" value="left"/>
+                                    <option type="textRepresentationOnDisabled" value="true"/>
+                                </component>
+                            </layoutElement>
                         </component>
                     </layoutElement>
-                    <layoutElement column="8" row="2">
-                        <component type="input" name="unit" reference="unit"
-                                   defaultEnabled="false"  hasLabel="false">
-                            <option type="alignment" value="left"/>
-                            <option type="textRepresentationOnDisabled" value="true"/>
-                        </component>
-                    </layoutElement>
-                    <layoutElement column="1" row="3" width="8" height="2">
+                    <layoutElement column="1" row="3" height="2">
                         <component type="textarea" name="comments" field="comments"
-                                   reference="comments"/>
+                                   reference="comments">
+                            <listener event="onChange"
+                                      class="com.qcadoo.mes.masterOrders.listeners.ProductsByAttributeListeners"
+                                      method="onCommentsChange"/>
+                        </component>
                     </layoutElement>
-                    <layoutElement column="1" row="5" width="8" height="5">
+                    <layoutElement column="1" row="5" height="5">
                         <component type="grid" name="productsByAttributeEntryHelpers" reference="productsByAttributeEntryHelpers"
                                    source="#{form}.productsByAttributeEntryHelpers">
                             <option type="column" name="name" fields="attribute"

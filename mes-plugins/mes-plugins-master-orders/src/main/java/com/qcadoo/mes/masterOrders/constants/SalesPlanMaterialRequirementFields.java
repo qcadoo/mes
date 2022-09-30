@@ -41,4 +41,6 @@ public final class SalesPlanMaterialRequirementFields {
 
     public static final String SALES_PLAN_MATERIAL_REQUIREMENT_PRODUCTS = "salesPlanMaterialRequirementProducts";
 
+    public static final String INCLUDE_COMPONENTS = "includeComponents";
+
 }

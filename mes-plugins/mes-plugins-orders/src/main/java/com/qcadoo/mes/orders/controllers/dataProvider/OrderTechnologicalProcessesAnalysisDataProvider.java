@@ -14,9 +14,10 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.basic.controllers.dataProvider.dto.ColumnDTO;
+import com.qcadoo.mes.basic.services.AnalysisDataProvider;
 
 @Service
-public class OrderTechnologicalProcessesAnalysisDataProvider {
+public class OrderTechnologicalProcessesAnalysisDataProvider implements AnalysisDataProvider {
 
     private static final String NUMERIC_DATA_TYPE = "02numeric";
 
@@ -96,12 +97,10 @@ public class OrderTechnologicalProcessesAnalysisDataProvider {
         columns.add(new ColumnDTO(L_DATE, translationService
                 .translate("orders.orderTechnologicalProcessesAnalysis.window.mainTab.grid.column.date", locale)));
         columns.add(new ColumnDTO(L_TJ,
-                translationService.translate("orders.orderTechnologicalProcessesAnalysis.window.mainTab.grid.column.tj", locale),
-                NUMERIC_DATA_TYPE));
+                translationService.translate("orders.orderTechnologicalProcessesAnalysis.window.mainTab.grid.column.tj", locale)));
         columns.add(new ColumnDTO(
                 L_WORK_TIME, translationService
-                        .translate("orders.orderTechnologicalProcessesAnalysis.window.mainTab.grid.column.workTime", locale),
-                NUMERIC_DATA_TYPE));
+                        .translate("orders.orderTechnologicalProcessesAnalysis.window.mainTab.grid.column.workTime", locale)));
         columns.add(new ColumnDTO(
                 L_CURRENT_RATE, translationService
                         .translate("orders.orderTechnologicalProcessesAnalysis.window.mainTab.grid.column.currentRate", locale),

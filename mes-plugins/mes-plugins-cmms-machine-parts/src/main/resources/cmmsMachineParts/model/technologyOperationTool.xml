@@ -27,8 +27,8 @@
 <model name="technologyOperationTool"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
        xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
-    <fields>
 
+    <fields>
         <dictionary name="toolCategory" dictionary="toolCategory" required="true"/>
         <belongsTo name="technologyOperationComponent" model="technologyOperationComponent" plugin="technologies" required="true"/>
         <belongsTo name="tool" model="tool" plugin="cmmsMachineParts"/>
@@ -41,8 +41,10 @@
             <validatesScale max="5"/>
         </decimal>
         <dictionary name="unit" dictionary="units" required="true"/>
-
+        <hasMany name="ordersToolRequirementTools" model="ordersToolRequirementTool" plugin="cmmsMachineParts"
+                 joinField="technologyOperationTool"/>
     </fields>
+
     <hooks>
         <validatesWith
                 class="com.qcadoo.mes.cmmsMachineParts.hooks.TechnologyOperationToolHooks"

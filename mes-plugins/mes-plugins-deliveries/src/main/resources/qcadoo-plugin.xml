@@ -89,6 +89,7 @@
         <model:model model="deliveredProductReservation" resource="model/deliveredProductReservation.xml"/>
         <model:model model="deliveredProductMulti" resource="model/deliveredProductMulti.xml"/>
         <model:model model="deliveredProductMultiPosition" resource="model/deliveredProductMultiPosition.xml"/>
+        <model:model model="deliveredPackage" resource="model/deliveredPackage.xml"/>
         <model:model model="orderedProduct" resource="model/orderedProduct.xml"/>
         <model:model model="orderedProductDto" resource="model/orderedProductDto.xml"/>
         <model:model model="orderedProductListDto" resource="model/orderedProductListDto.xml"/>
@@ -162,6 +163,11 @@
                              plugin="materialFlow"/>
         </model:model-field>
 
+        <model:model-field plugin="basic" model="parameter">
+            <model:belongsTo name="packagingLocation" model="location"
+                             plugin="materialFlow"/>
+        </model:model-field>
+
         <model:model-hook plugin="basic" model="parameter">
             <model:onCreate
                     class="com.qcadoo.mes.deliveries.hooks.SupplyParameterHooks"
@@ -217,7 +223,7 @@
                             method="onDelete"/>
         </model:model-hook>
 
-        <model:model-hook plugin="basic" model="company" >
+        <model:model-hook plugin="basic" model="company">
             <model:onCreate
                     class="com.qcadoo.mes.deliveries.hooks.CompanyHooksD"
                     method="onCreate"/>
@@ -260,6 +266,7 @@
         <view:view resource="view/deliveredProductDetails.xml"/>
         <view:view resource="view/deliveredProductReservationDetails.xml"/>
         <view:view resource="view/deliveredProductAddMulti.xml"/>
+        <view:view resource="view/deliveredPackageDetails.xml"/>
         <view:view resource="view/orderedProductDetails.xml"/>
         <view:view resource="view/orderedProductReservationDetails.xml"/>
         <view:view resource="view/supplyItems.xml"/>

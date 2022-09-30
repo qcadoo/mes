@@ -23,18 +23,18 @@
  */
 package com.qcadoo.mes.technologies;
 
-import java.math.BigDecimal;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-
 import com.qcadoo.mes.technologies.constants.MrpAlgorithm;
 import com.qcadoo.mes.technologies.dto.OperationProductComponentHolder;
 import com.qcadoo.mes.technologies.dto.OperationProductComponentWithQuantityContainer;
 import com.qcadoo.mes.technologies.dto.ProductQuantitiesHolder;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.EntityTree;
+
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 
 public interface ProductQuantitiesService {
 
@@ -95,10 +95,10 @@ public interface ProductQuantitiesService {
             final BigDecimal givenQuantity, final MrpAlgorithm mrpAlgorithm);
 
     Map<OperationProductComponentHolder, BigDecimal> getNeededProductQuantitiesByOPC(final Entity technology,
-            final Entity orderedProduct, final BigDecimal givenQuantity, final MrpAlgorithm mrpAlgorithm);
+            final Entity product, final BigDecimal givenQuantity, final MrpAlgorithm mrpAlgorithm);
 
     Map<OperationProductComponentHolder, BigDecimal> getNeededProductQuantities(final Entity technology, final Entity product,
-            final BigDecimal plannedQuantity);
+            final BigDecimal givenQuantity);
 
     /**
      * @param order
@@ -167,14 +167,14 @@ public interface ProductQuantitiesService {
 
     /**
      * @param technology
-     * @param orderedProduct
+     * @param product
      * @param givenQuantity
      * @param operationRuns
      * @param nonComponents
      * @return
      */
     OperationProductComponentWithQuantityContainer getProductComponentWithQuantitiesForTechnology(final Entity technology,
-            final Entity orderedProduct, final BigDecimal givenQuantity, final Map<Long, BigDecimal> operationRuns,
+            final Entity product, final BigDecimal givenQuantity, final Map<Long, BigDecimal> operationRuns,
             final Set<OperationProductComponentHolder> nonComponents);
 
     /**

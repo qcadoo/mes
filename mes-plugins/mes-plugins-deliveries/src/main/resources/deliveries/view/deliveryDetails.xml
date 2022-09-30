@@ -900,6 +900,42 @@
             </component>
         </windowTab>
 
+        <windowTab name="packagesTab">
+            <component type="gridLayout" name="deliveredPackagesGridLayout"
+                       columns="1" rows="1">
+                <layoutElement column="1" row="1">
+                    <component type="grid" name="deliveredPackages"
+                               reference="deliveredPackages" source="#{form}.deliveredPackages">
+                        <option type="column" name="productNumber" fields="product"
+                                expression="#product['number']" link="true" width="80"/>
+                        <option type="column" name="productName" fields="product"
+                                expression="#product['name']" link="true" width="80"/>
+                        <option type="column" name="deliveredQuantity" fields="deliveredQuantity"
+                                width="80"/>
+                        <option type="column" name="productUnit" fields="product"
+                                expression="#product['unit']" width="30"/>
+
+                        <option type="order" column="succession" direction="asc"/>
+
+                        <option type="searchable"
+                                value="productNumber,productName,deliveredQuantity,productUnit"/>
+                        <option type="orderable"
+                                value="productNumber,productName,deliveredQuantity,productUnit"/>
+
+                        <option type="correspondingView" value="deliveries/deliveredPackageDetails"/>
+                        <option type="correspondingComponent" value="form"/>
+                        <option type="correspondingViewInModal" value="true"/>
+
+                        <option type="creatable" value="true"/>
+                        <option type="deletable" value="true"/>
+                        <option type="fullscreen" value="true"/>
+                        <option type="multiselect" value="true"/>
+                        <option type="fixedHeight" value="true"/>
+                    </component>
+                </layoutElement>
+            </component>
+        </windowTab>
+
         <windowTab name="historyTab">
             <component type="gridLayout" name="loggingsGridLayout"
                        columns="2" rows="1">
@@ -921,7 +957,6 @@
                 </layoutElement>
             </component>
         </windowTab>
-
 
         <windowTab name="atachments">
             <component type="gridLayout" name="gridsLayout" columns="3"

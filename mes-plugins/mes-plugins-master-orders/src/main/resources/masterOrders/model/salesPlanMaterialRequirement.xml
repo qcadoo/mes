@@ -38,6 +38,7 @@
         <datetime name="date" copyable="false"/>
         <hasMany name="salesPlanMaterialRequirementProducts" model="salesPlanMaterialRequirementProduct" plugin="masterOrders"
                  joinField="salesPlanMaterialRequirement" cascade="delete"/>
+        <boolean name="includeComponents"/>
     </fields>
 
     <hooks>

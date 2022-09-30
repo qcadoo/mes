@@ -23,19 +23,7 @@
  */
 package com.qcadoo.mes.basic.criteriaModifiers;
 
-import static com.qcadoo.mes.basic.constants.ProductFields.ENTITY_TYPE;
-import static com.qcadoo.mes.basic.constants.ProductFields.PARENT;
-
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import com.qcadoo.mes.basic.constants.BasicConstants;
-import com.qcadoo.mes.basic.constants.ModelFields;
-import com.qcadoo.mes.basic.constants.ProductFamilyElementType;
-import com.qcadoo.mes.basic.constants.ProductFields;
-import com.qcadoo.mes.basic.constants.SubstituteComponentFields;
+import com.qcadoo.mes.basic.constants.*;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -43,6 +31,13 @@ import com.qcadoo.model.api.search.JoinType;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.view.api.components.lookup.FilterValueHolder;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+
+import static com.qcadoo.mes.basic.constants.ProductFields.ENTITY_TYPE;
+import static com.qcadoo.mes.basic.constants.ProductFields.PARENT;
 
 @Service
 public class ProductCriteriaModifiers {
@@ -117,6 +112,10 @@ public class ProductCriteriaModifiers {
             searchCriteriaBuilder.add(SearchRestrictions.or(SearchRestrictions.eq(ProductFields.MACHINE_PART, false),
                     SearchRestrictions.isNull(ProductFields.MACHINE_PART)));
         }
+    }
+
+    public void showWithGlobalTypeOfMaterialPackage(final SearchCriteriaBuilder scb) {
+        scb.add(SearchRestrictions.eq(ProductFields.GLOBAL_TYPE_OF_MATERIAL, GlobalTypeOfMaterial.PACKAGE.getStringValue()));
     }
 
     private DataDefinition getModelDD() {

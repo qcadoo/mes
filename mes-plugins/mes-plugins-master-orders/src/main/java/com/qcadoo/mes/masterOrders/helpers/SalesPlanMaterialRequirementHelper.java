@@ -1,18 +1,5 @@
 package com.qcadoo.mes.masterOrders.helpers;
 
-import java.math.BigDecimal;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
-import org.springframework.stereotype.Service;
-
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.qcadoo.mes.basic.constants.ProductFamilyElementType;
@@ -20,25 +7,32 @@ import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.deliveries.DeliveriesService;
 import com.qcadoo.mes.deliveries.constants.CompanyProductFields;
 import com.qcadoo.mes.deliveries.constants.CompanyProductsFamilyFields;
-import com.qcadoo.mes.masterOrders.constants.MasterOrdersConstants;
-import com.qcadoo.mes.masterOrders.constants.SalesPlanFields;
-import com.qcadoo.mes.masterOrders.constants.SalesPlanMaterialRequirementFields;
-import com.qcadoo.mes.masterOrders.constants.SalesPlanMaterialRequirementProductFields;
-import com.qcadoo.mes.masterOrders.constants.SalesPlanProductFields;
+import com.qcadoo.mes.masterOrders.constants.*;
 import com.qcadoo.mes.materialFlowResources.MaterialFlowResourcesService;
 import com.qcadoo.mes.technologies.ProductQuantitiesService;
+import com.qcadoo.mes.technologies.ProductQuantitiesWithComponentsService;
 import com.qcadoo.mes.technologies.TechnologyService;
 import com.qcadoo.mes.technologies.constants.ProductBySizeGroupFields;
 import com.qcadoo.mes.technologies.dto.OperationProductComponentHolder;
 import com.qcadoo.mes.technologies.tree.ProductStructureTreeService;
-import com.qcadoo.model.api.BigDecimalUtils;
-import com.qcadoo.model.api.DataDefinition;
-import com.qcadoo.model.api.DataDefinitionService;
-import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.NumberService;
+import com.qcadoo.model.api.*;
+import com.qcadoo.plugin.api.PluginManager;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class SalesPlanMaterialRequirementHelper {
+
+    private static final String ORDERS_FOR_SUBPRODUCTS_GENERATION = "ordersForSubproductsGeneration";
+
+    @Autowired
+    private PluginManager pluginManager;
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
@@ -51,6 +45,9 @@ public class SalesPlanMaterialRequirementHelper {
 
     @Autowired
     private ProductQuantitiesService productQuantitiesService;
+
+    @Autowired
+    private ProductQuantitiesWithComponentsService productQuantitiesWithComponentsService;
 
     @Autowired
     private ProductStructureTreeService productStructureTreeService;
@@ -68,8 +65,9 @@ public class SalesPlanMaterialRequirementHelper {
         List<Entity> salesPlanMaterialRequirementProducts = Lists.newArrayList();
 
         Entity salesPlan = salesPlanMaterialRequirement.getBelongsToField(SalesPlanMaterialRequirementFields.SALES_PLAN);
+        boolean includeComponents = salesPlanMaterialRequirement.getBooleanField(SalesPlanMaterialRequirementFields.INCLUDE_COMPONENTS);
 
-        createSalesPlanMaterialRequirementProducts(salesPlanMaterialRequirementProducts, salesPlan);
+        createSalesPlanMaterialRequirementProducts(salesPlanMaterialRequirementProducts, salesPlan, includeComponents);
 
         updateSalesPlanMaterialRequirementProducts(salesPlanMaterialRequirementProducts);
 
@@ -77,7 +75,7 @@ public class SalesPlanMaterialRequirementHelper {
     }
 
     private void createSalesPlanMaterialRequirementProducts(final List<Entity> salesPlanMaterialRequirementProducts,
-            final Entity salesPlan) {
+            final Entity salesPlan, final boolean includeComponents) {
         List<Entity> salesPlanProducts = salesPlan.getHasManyField(SalesPlanFields.PRODUCTS);
 
         for (Entity salesPlanProduct : salesPlanProducts) {
@@ -88,8 +86,15 @@ public class SalesPlanMaterialRequirementHelper {
             Entity technology = getTechnology(salesPlanProductTechnology, salesPlanProductProduct);
 
             if (Objects.nonNull(technology)) {
-                Map<OperationProductComponentHolder, BigDecimal> neededQuantities = productQuantitiesService
-                        .getNeededProductQuantities(technology, salesPlanProductProduct, plannedQuantity);
+                Map<OperationProductComponentHolder, BigDecimal> neededQuantities;
+
+                if (pluginManager.isPluginEnabled(ORDERS_FOR_SUBPRODUCTS_GENERATION) && includeComponents) {
+                    neededQuantities = productQuantitiesWithComponentsService
+                            .getNeededProductQuantities(technology, salesPlanProductProduct, plannedQuantity);
+                } else {
+                    neededQuantities = productQuantitiesService
+                            .getNeededProductQuantities(technology, salesPlanProductProduct, plannedQuantity);
+                }
 
                 for (Map.Entry<OperationProductComponentHolder, BigDecimal> neededProductQuantity : neededQuantities.entrySet()) {
                     Long productId = neededProductQuantity.getKey().getProductId();

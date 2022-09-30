@@ -93,6 +93,9 @@
             <validatesScale max="5"/>
             <validatesRange from="0"/>
         </decimal>
+
+        <hasMany name="ordersBalance" joinField="productionBalance" model="orderBalance"
+                 cascade="delete" />
     </fields>
 
     <hooks>

@@ -60,6 +60,22 @@
                         </component>
                     </layoutElement>
                     <layoutElement column="1" row="4">
+                        <component type="lookup" name="packagingLocation" reference="packagingLocation"
+                                   field="#{form}.packagingLocation">
+                            <option type="column" name="name" fields="name" link="true"/>
+
+                            <option type="searchable" value="number,name"/>
+                            <option type="orderable" value="number,name"/>
+
+                            <option type="expression"
+                                    value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name"/>
+                            <option type="fieldCode" value="number"/>
+
+                            <criteriaModifier class="com.qcadoo.mes.materialFlowResources.criteriaModifiers.LocationCriteriaModifiersMFR"
+                                              method="showWarehousesWithoutExternalNumber"/>
+                        </component>
+                    </layoutElement>
+                    <layoutElement column="1" row="5">
                         <component type="select" name="defaultAddress" field="#{form}.defaultAddress"
                                    reference="defaultAddress">
                             <listener event="onSelectedEntityChange"
@@ -67,7 +83,7 @@
                                       method="setFieldsVisibleAndRequired"/>
                         </component>
                     </layoutElement>
-                    <layoutElement column="1" row="5" height="2">
+                    <layoutElement column="1" row="6">
                         <component type="textarea" name="otherAddress" field="#{form}.otherAddress"
                                    reference="otherAddress" hasLabel="false"/>
                     </layoutElement>
@@ -101,11 +117,11 @@
                         </component>
                     </layoutElement>
 
-                    <layoutElement column="2" row="1" width="2" height="9">
+                    <layoutElement column="2" row="1" width="2" height="10">
                         <component type="borderLayout" name="columnsForOrdersBorderLayout">
                             <component type="gridLayout" name="columnForOrdersGridLayout"
-                                       columns="1" rows="2">
-                                <layoutElement column="1" row="1">
+                                       columns="1" rows="10">
+                                <layoutElement column="1" row="1" height="9">
                                     <component type="grid" name="columnsForOrders"
                                                source="#{form}.parameterDeliveryOrderColumns"
                                                reference="columnsForOrders">
@@ -126,7 +142,7 @@
                                         <option type="multiselect" value="true"/>
                                     </component>
                                 </layoutElement>
-                                <layoutElement column="1" row="2">
+                                <layoutElement column="1" row="10">
                                     <component type="hidden" name="hideEmptyColumnsForOrders"
                                                field="#{form}.hideEmptyColumnsForOrders"
                                                reference="hideEmptyColumnsForOrders">

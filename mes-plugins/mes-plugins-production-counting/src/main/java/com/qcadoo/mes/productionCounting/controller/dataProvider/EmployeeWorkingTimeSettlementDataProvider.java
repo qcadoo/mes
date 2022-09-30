@@ -14,9 +14,10 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.basic.controllers.dataProvider.dto.ColumnDTO;
+import com.qcadoo.mes.basic.services.AnalysisDataProvider;
 
 @Service
-public class EmployeeWorkingTimeSettlementDataProvider {
+public class EmployeeWorkingTimeSettlementDataProvider implements AnalysisDataProvider {
 
     private static final String NUMERIC_DATA_TYPE = "02numeric";
 
@@ -94,7 +95,7 @@ public class EmployeeWorkingTimeSettlementDataProvider {
     }
 
     public List<Map<String, Object>> getRecords(String dateFrom, String dateTo, JSONObject filters, String sortColumn,
-            boolean sortAsc) throws JSONException {
+                                                boolean sortAsc) throws JSONException {
         StringBuilder query = new StringBuilder();
 
         StringBuilder queryShiftPart = new StringBuilder();

@@ -39,6 +39,7 @@
         <string name="orderProduct"/>
         <string name="orderUnit"/>
         <string name="productionLineNumber"/>
+        <string name="divisionNumber"/>
         <string name="productNumber"/>
         <string name="productUnit"/>
         <decimal name="productPlannedQuantity"/>
