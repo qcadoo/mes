@@ -179,9 +179,10 @@ public class DataProviderForTechnology {
 
     public OperationsResponse getOperations() {
         StringBuilder query = new StringBuilder();
-        query.append("SELECT id, number ");
-        query.append("FROM technologies_operation ");
-        query.append("WHERE active = true ORDER BY lower(number) ASC");
+        query.append("SELECT o.id, o.number, p.number as productNumber, p.unit as productUnit ");
+        query.append("FROM technologies_operation o ");
+        query.append("LEFT JOIN basic_product p ON p.id = o.product_id ");
+        query.append("WHERE o.active = true ORDER BY lower(o.number) ASC ");
         return new OperationsResponse(jdbcTemplate.query(query.toString(), Maps.newHashMap(), new BeanPropertyRowMapper(
                 OperationDto.class)));
     }

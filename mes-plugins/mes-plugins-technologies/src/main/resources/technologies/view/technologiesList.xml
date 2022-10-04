@@ -64,6 +64,17 @@
 						]]>
                     </script>
                 </bigButton>
+                <bigButton name="technologyConfigurator" icon="generateIcon24.png">
+                    <script>
+                        <![CDATA[
+							this.addOnChangeListener({
+								onClick: function() {
+									#{grid}.performEvent('runTechnologyConfigurator', []);
+								}
+							});
+						]]>
+                    </script>
+                </bigButton>
             </group>
             <group name="attachments">
                 <bigButton name="addAttachments" icon="generateIcon24.png"
@@ -85,9 +96,12 @@
             <script>
                 <![CDATA[
 					var toggleRibbonItems = ["actions.delete"];
+					var technologyConfiguratorButton = #{window}.getRibbonItemOrNull("action.technologyConfigurator");
+                    technologyConfiguratorButton.enable("#{translate(technologies.menu.technology.technologyConfigurator.description)}");
 
 					this.addOnChangeListener({
 						onChange: function(selectedEntitiesArray) {
+						   technologyConfiguratorButton.enable("#{translate(technologies.menu.technology.technologyConfigurator.description)}");
 							if (selectedEntitiesArray && selectedEntitiesArray.length > 0) {
 								updateRibbon(selectedEntitiesArray);
 							} else {
@@ -298,6 +312,8 @@
                       method="changeParameters"/>
             <listener event="setAsDefault" class="com.qcadoo.mes.technologies.listeners.TechnologiesListListeners"
                       method="setAsDefault"/>
+            <listener event="runTechnologyConfigurator" class="com.qcadoo.mes.technologies.listeners.TechnologiesListListeners"
+                      method="runTechnologyConfigurator"/>
             <listener event="addAttachments" class="com.qcadoo.mes.technologies.listeners.TechnologiesListListeners"
                       method="addAttachments"/>
 
