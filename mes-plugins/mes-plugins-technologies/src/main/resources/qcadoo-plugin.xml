@@ -206,7 +206,7 @@
 
         <model:model-field plugin="basic" model="workstation">
             <model:manyToMany name="operationComponents" plugin="technologies"
-                              model="technologyOperationComponent" joinField="workstations"/>
+                              model="technologyOperationComponent" joinField="workstations" lazy="true"/>
         </model:model-field>
 
         <model:model-field plugin="basic" model="workstationType">
