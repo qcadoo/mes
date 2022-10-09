@@ -66,8 +66,8 @@ public class TechnologyOperationComponentHooks {
         copyCommentAndAttachmentFromOperation(technologyOperationComponent);
         setParentIfRootNodeAlreadyExists(technologyOperationComponent);
         setOperationOutProduct(technologyOperationComponent);
-        copyReferencedTechnology(technologyOperationComponentDD, technologyOperationComponent);
         copyWorkstationsSettingsFromOperation(technologyOperationComponent);
+        copyReferencedTechnology(technologyOperationComponentDD, technologyOperationComponent);
     }
 
     public void copyWorkstationsSettingsFromOperation(final Entity technologyOperationComponent) {
