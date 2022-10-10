@@ -245,6 +245,20 @@ public class DeliveryStateServiceMF {
         }
     }
 
+    public void validateReceivedPackages(final StateChangeContext stateChangeContext) {
+        final Entity delivery = stateChangeContext.getOwner();
+
+        Entity packagingLocation = getPackagingLocation();
+
+        List<Entity> deliveredPackages = delivery.getHasManyField(DeliveryFields.DELIVERED_PACKAGES);
+
+        if (!deliveredPackages.isEmpty()) {
+            if (Objects.isNull(packagingLocation)) {
+                stateChangeContext.addValidationError("deliveriesToMaterialFlow.deliveryStateValidator.error.packagingLocationNotSet");
+            }
+        }
+    }
+
     private void addErrorMessage(final StateChangeContext stateChangeContext, final List<String> message,
                                  final String locationName, final String translationKey) {
         if (message.size() != 0) {
@@ -273,9 +287,7 @@ public class DeliveryStateServiceMF {
         List<Entity> deliveredPackages = delivery.getHasManyField(DeliveryFields.DELIVERED_PACKAGES);
 
         if (!deliveredPackages.isEmpty()) {
-            if (Objects.isNull(packagingLocation)) {
-                delivery.addGlobalError("deliveriesToMaterialFlow.deliveryStateValidator.error.packagingLocationNotSet");
-            } else {
+            if (Objects.nonNull(packagingLocation)) {
                 DocumentBuilder documentBuilder = documentManagementService.getDocumentBuilder();
 
                 documentBuilder.receipt(packagingLocation);
