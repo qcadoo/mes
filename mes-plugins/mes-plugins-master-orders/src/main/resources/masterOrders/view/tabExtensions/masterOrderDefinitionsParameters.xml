@@ -91,6 +91,10 @@
                             value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name"/>
                     <option type="fieldCode" value="number"/>
                     <option type="labelWidth" value="50"/>
+
+                    <criteriaModifier
+                            class="com.qcadoo.mes.materialFlowResources.criteriaModifiers.LocationCriteriaModifiersMFR"
+                            method="showWarehousesWithoutExternalNumber"/>
                 </component>
             </layoutElement>
         </component>
