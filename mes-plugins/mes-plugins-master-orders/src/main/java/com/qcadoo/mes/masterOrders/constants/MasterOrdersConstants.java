@@ -77,6 +77,10 @@ public final class MasterOrdersConstants {
 
     public static final String MODEL_OUTSOURCE_PROCESSING_COMPONENT_HELPER = "outsourceProcessingComponentHelper";
 
+    public static final String MODEL_SALES_VOLUME = "salesVolume";
+
+    public static final String MODEL_SALES_VOLUME_MULTI = "salesVolumeMulti";
+
     public static String masterOrderDetailsUrl(Long id) {
 
         return "#page/" + PLUGIN_IDENTIFIER + "/" + MODEL_MASTER_ORDER + "Details.html?context=%7B%22form.id%22%3A%22" + id
