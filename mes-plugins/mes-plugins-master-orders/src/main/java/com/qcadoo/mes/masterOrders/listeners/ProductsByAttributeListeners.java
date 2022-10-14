@@ -8,10 +8,7 @@ import com.qcadoo.mes.masterOrders.constants.MasterOrdersConstants;
 import com.qcadoo.mes.masterOrders.constants.ProductsByAttributeEntryHelperFields;
 import com.qcadoo.mes.masterOrders.constants.ProductsByAttributeHelperFields;
 import com.qcadoo.mes.technologies.tree.ProductStructureTreeService;
-import com.qcadoo.model.api.BigDecimalUtils;
-import com.qcadoo.model.api.DataDefinition;
-import com.qcadoo.model.api.DataDefinitionService;
-import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.*;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.CheckBoxComponent;
@@ -39,6 +36,9 @@ public class ProductsByAttributeListeners {
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
+
+    @Autowired
+    private NumberService numberService;
 
     @Autowired
     private ProductStructureTreeService productStructureTreeService;
@@ -127,15 +127,24 @@ public class ProductsByAttributeListeners {
         Object orderedQuantity = orderedQuantityField.getFieldValue();
         Object comments = commentsField.getFieldValue();
 
-        Entity productsByAttributeHelper = getProductsByAttributeHelperDD().get(productsByAttributeHelperForm.getEntityId());
+        Either<Exception, com.google.common.base.Optional<BigDecimal>> eitherOrderedQuantity = BigDecimalUtils.tryParseAndIgnoreSeparator(
+                (String) orderedQuantity, LocaleContextHolder.getLocale());
 
-        productsByAttributeHelper.setField(ProductsByAttributeHelperFields.PRODUCT, product);
-        productsByAttributeHelper.setField(ProductsByAttributeHelperFields.ORDERED_QUANTITY, orderedQuantity);
-        productsByAttributeHelper.setField(ProductsByAttributeHelperFields.COMMENTS, comments);
+        if (Objects.nonNull(product)) {
+            Entity productsByAttributeHelper = getProductsByAttributeHelperDD().get(productsByAttributeHelperForm.getEntityId());
 
-        productsByAttributeHelper = productsByAttributeHelper.getDataDefinition().save(productsByAttributeHelper);
+            productsByAttributeHelper.setField(ProductsByAttributeHelperFields.PRODUCT, product);
+            if (eitherOrderedQuantity.isRight() && eitherOrderedQuantity.getRight().isPresent()) {
+                productsByAttributeHelper.setField(ProductsByAttributeHelperFields.ORDERED_QUANTITY, eitherOrderedQuantity.getRight().get());
+            } else {
+                productsByAttributeHelper.setField(ProductsByAttributeHelperFields.ORDERED_QUANTITY, orderedQuantity);
+            }
+            productsByAttributeHelper.setField(ProductsByAttributeHelperFields.COMMENTS, comments);
 
-        productsByAttributeHelperForm.setEntity(productsByAttributeHelper);
+            productsByAttributeHelper = productsByAttributeHelper.getDataDefinition().save(productsByAttributeHelper);
+
+            productsByAttributeHelperForm.setEntity(productsByAttributeHelper);
+        }
     }
 
     public void addPositionsToOrder(final ViewDefinitionState view, final ComponentState state, final String[] args) {
