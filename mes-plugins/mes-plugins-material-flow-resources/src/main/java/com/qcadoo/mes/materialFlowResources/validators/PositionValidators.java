@@ -114,40 +114,4 @@ public class PositionValidators {
         return true;
     }
 
-    public boolean validateAvailableQuantity(final DataDefinition dataDefinition, final Entity position) {
-        boolean isValid = true;
-
-        if(Objects.nonNull(position.getId())) {
-            return isValid;
-        }
-
-        Entity document = position.getBelongsToField(PositionFields.DOCUMENT);
-        String type = document.getStringField(DocumentFields.TYPE);
-
-        if (DocumentType.isOutbound(type) && !document.getBooleanField(DocumentFields.IN_BUFFER)) {
-            Entity location = document.getBelongsToField(DocumentFields.LOCATION_FROM);
-            if(location.getBooleanField(LocationFieldsMFR.DRAFT_MAKES_RESERVATION)) {
-                BigDecimal availableQuantity = getAvailableQuantityForProductAndLocation(position.getBelongsToField(PositionFields.PRODUCT), location);
-                BigDecimal quantity = position.getDecimalField(PositionFields.QUANTITY);
-                if (availableQuantity == null || quantity.compareTo(availableQuantity) > 0) {
-                    position.addError(dataDefinition.getField(PositionFields.QUANTITY),"documentGrid.error.position.quantity.notEnoughResources");
-                    isValid = false;
-                }
-            }
-        }
-
-        return isValid;
-    }
-
-    private BigDecimal getAvailableQuantityForProductAndLocation(Entity product, Entity location) {
-        Entity resourceStockDto = dataDefinitionService
-                .get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER, MaterialFlowResourcesConstants.MODEL_RESOURCE_STOCK_DTO)
-                .find().add(SearchRestrictions.eq(ResourceStockDtoFields.PRODUCT_ID, product.getId().intValue()))
-                .add(SearchRestrictions.eq(ResourceStockDtoFields.LOCATION_ID, location.getId().intValue())).setMaxResults(1)
-                .uniqueResult();
-        if (Objects.isNull(resourceStockDto)) {
-            return BigDecimal.ZERO;
-        }
-        return BigDecimalUtils.convertNullToZero(resourceStockDto.getDecimalField(ResourceStockDtoFields.AVAILABLE_QUANTITY));
-    }
 }

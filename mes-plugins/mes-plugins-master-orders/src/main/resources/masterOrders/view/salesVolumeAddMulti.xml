@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    ***************************************************************************
+    Copyright (c) 2010 Qcadoo Limited
+    Project: Qcadoo MES
+    Version: 1.4
+
+    This file is part of Qcadoo.
+
+    Qcadoo is free software; you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as published
+    by the Free Software Foundation; either version 3 of the License,
+    or (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty
+    of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+    See the GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+    ***************************************************************************
+
+-->
+<view defaultAuthorizationRole="ROLE_REQUIREMENTS"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
+      xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
+      name="salesVolumeAddMulti" modelName="salesVolumeMulti">
+
+    <component type="window" name="window" reference="window">
+
+        <ribbon>
+            <group name="navigation">
+                <bigButton name="back" icon="backIcon24.png" state="enabled" action="#{window}.performBack"/>
+            </group>
+            <group name="actions">
+                <bigButton name="createSalesVolumes" icon="generateIcon24.png" state="enabled">
+                    <script>
+                        <![CDATA[
+                            this.addOnChangeListener({
+                                onClick: function() {
+                                    #{form}.performEvent('createSalesVolumes', []);
+                                }
+                            });
+                        ]]>
+                    </script>
+                </bigButton>
+            </group>
+        </ribbon>
+
+        <windowTab name="mainTab">
+            <component type="form" name="salesVolumes" reference="form">
+                <script>
+                    <![CDATA[
+                        #{form}.addOnChangeListener({
+                            onSetValue: function(value) {
+                                var generated = #{generated}.getValue().content.value;
+
+                                if (generated && generated == true) {
+                                    #{window}.performBackWithoutConfirm();
+                                }
+                            }
+                        });
+                    ]]>
+                </script>
+                <component type="gridLayout" name="gridLayout" columns="1"
+                           rows="3">
+                    <layoutElement column="1" row="1">
+                        <component type="gridLayout" name="dailySalesVolumeGridLayout"
+                                   hasBorders="false" columns="4" rows="1">
+                            <layoutElement column="1" row="1" width="3">
+                                <component type="checkbox" name="generated" defaultVisible="false"
+                                           reference="generated" defaultEnabled="false"/>
+                                <component type="input" name="dailySalesVolume"
+                                           field="#{form}.dailySalesVolume" reference="dailySalesVolume"
+                                           hasDescription="true">
+                                    <option type="alignment" value="right"/>
+                                    <option type="labelWidth" value="40"/>
+
+                                    <listener event="onInputChange"
+                                              class="com.qcadoo.mes.masterOrders.listeners.SalesVolumeAddMultiListeners"
+                                              method="onQuantityChange"/>
+                                </component>
+                            </layoutElement>
+                            <layoutElement column="4" row="1">
+                                <component type="input" name="dailySalesVolumeUnit"
+                                           reference="dailySalesVolumeUnit" defaultEnabled="never"
+                                           hasLabel="false">
+                                    <option type="textRepresentationOnDisabled" value="true"/>
+                                </component>
+                            </layoutElement>
+                        </component>
+                    </layoutElement>
+                    <layoutElement column="1" row="2">
+                        <component type="gridLayout" name="optimalStockGridLayout"
+                                   hasBorders="false" columns="4" rows="1">
+                            <layoutElement column="1" row="1" width="3">
+                                <component type="input" name="optimalStock"
+                                           field="#{form}.optimalStock" reference="optimalStock"
+                                           hasDescription="true">
+                                    <option type="alignment" value="right"/>
+                                    <option type="labelWidth" value="40"/>
+
+                                    <listener event="onInputChange"
+                                              class="com.qcadoo.mes.masterOrders.listeners.SalesVolumeAddMultiListeners"
+                                              method="onQuantityChange"/>
+                                </component>
+                            </layoutElement>
+                            <layoutElement column="4" row="1">
+                                <component type="input" name="optimalStockUnit"
+                                           reference="optimalStockUnit" defaultEnabled="never"
+                                           hasLabel="false">
+                                    <option type="textRepresentationOnDisabled" value="true"/>
+                                </component>
+                            </layoutElement>
+                        </component>
+                    </layoutElement>
+                    <layoutElement column="1" row="3">
+                        <component type="lookup" name="product" reference="productLookup"
+                                   field="products" defaultVisible="false" persistent="false" hasLabel="false">
+                            <option type="column" name="name" fields="name" link="true"/>
+
+                            <option type="searchable" value="name,number"/>
+                            <option type="orderable" value="name,number"/>
+
+                            <option type="expression"
+                                    value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name"/>
+                            <option type="fieldCode" value="number"/>
+                            <option type="multiselect" value="true" />
+
+                            <criteriaModifier
+                                    class="com.qcadoo.mes.basic.criteriaModifiers.ProductCriteriaModifiers"
+                                    method="showParticularProductOnly"/>
+                        </component>
+                        <component type="grid" name="products" reference="products"
+                                   source="#{form}.products" defaultEnabled="false">
+                            <option type="column" name="number" fields="number"/>
+                            <option type="column" name="name" fields="name"/>
+
+                            <option type="order" column="number" direction="desc" />
+
+                            <option type="paginable" value="false" />
+                            <option type="multiselect" value="true" />
+                            <option type="creatable" value="true" />
+                            <option type="deletable" value="true" />
+
+                            <option type="weakRelation" value="true" />
+                            <option type="correspondingLookup" value="productLookup" />
+                        </component>
+                    </layoutElement>
+                </component>
+
+                <option type="header" value="true"/>
+                <option type="expression" value=""/>
+
+                <listener event="createSalesVolumes"
+                          class="com.qcadoo.mes.masterOrders.listeners.SalesVolumeAddMultiListeners"
+                          method="createSalesVolumes"/>
+            </component>
+        </windowTab>
+
+    </component>
+
+    <hooks>
+        <beforeRender
+                class="com.qcadoo.mes.masterOrders.hooks.SalesVolumeAddMultiHooks"
+                method="onBeforeRender"/>
+    </hooks>
+</view>

@@ -160,7 +160,7 @@ public class DeliveryDetailsHooks {
         deliveryForm.setFormEnabled(enabledForm);
         orderedProductsGrid.setEnabled(enabledOrderedGrid);
         deliveredProductsGrid.setEnabled(enabledDeliveredGrid);
-        deliveredPackagesGrid.setEnabled(enabledDeliveredGrid);
+        deliveredPackagesGrid.setEnabled(enablePackagesGrid);
     }
 
     private void fillDeliveryAddressDefaultValue(final ViewDefinitionState view) {

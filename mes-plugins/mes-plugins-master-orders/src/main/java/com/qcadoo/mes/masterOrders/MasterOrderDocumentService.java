@@ -7,12 +7,11 @@ import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.basic.constants.UnitConversionItemFieldsB;
 import com.qcadoo.mes.masterOrders.constants.MasterOrderFields;
 import com.qcadoo.mes.masterOrders.constants.MasterOrderProductFields;
-import com.qcadoo.mes.materialFlowResources.constants.DocumentFields;
-import com.qcadoo.mes.materialFlowResources.constants.MaterialFlowResourcesConstants;
-import com.qcadoo.mes.materialFlowResources.constants.PositionFields;
+import com.qcadoo.mes.materialFlowResources.constants.*;
 import com.qcadoo.mes.materialFlowResources.exceptions.DocumentBuildException;
 import com.qcadoo.mes.materialFlowResources.service.DocumentBuilder;
 import com.qcadoo.mes.materialFlowResources.service.DocumentManagementService;
+import com.qcadoo.model.api.BigDecimalUtils;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
@@ -33,6 +32,7 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 @Service
 public class MasterOrderDocumentService {
@@ -68,6 +68,21 @@ public class MasterOrderDocumentService {
                 .get(securityService.getCurrentUserId());
 
         Entity masterOrderReleaseLocation = parameterService.getParameter().getBelongsToField(L_MASTER_ORDER_RELEASE_LOCATION);
+        if (masterOrderReleaseLocation.getBooleanField(LocationFieldsMFR.DRAFT_MAKES_RESERVATION)) {
+            for (Entity masterOrderProduct : masterOrderProducts) {
+                Entity mo = masterOrderProduct.getDataDefinition().getMasterModelEntity(masterOrderProduct.getId());
+                Entity product = mo.getBelongsToField(MasterOrderProductFields.PRODUCT);
+                BigDecimal quantity = mo.getDecimalField(MasterOrderProductFields.MASTER_ORDER_QUANTITY);
+                BigDecimal availableQuantity = getAvailableQuantityForProductAndLocation(product, masterOrderReleaseLocation);
+                if (availableQuantity == null || quantity.compareTo(availableQuantity) > 0) {
+                    view.addMessage("masterOrders.masterOrder.releaseDocument.quantity.notEnoughResources",
+                            ComponentState.MessageType.FAILURE, product.getStringField(ProductFields.NUMBER));
+                    view.addMessage("masterOrders.masterOrder.createReleaseDocument.error", ComponentState.MessageType.FAILURE);
+                    return;
+                }
+            }
+        }
+
         DocumentBuilder documentBuilder = documentManagementService.getDocumentBuilder(user);
         documentBuilder.release(masterOrderReleaseLocation);
         documentBuilder.setField(DocumentFields.DESCRIPTION,
@@ -122,14 +137,26 @@ public class MasterOrderDocumentService {
             document = document.getDataDefinition().get(document.getId());
             redirectToCreatedDocument(document, view);
         } catch (DocumentBuildException exc) {
-           exc.getGlobalErrors().forEach(errorMessage -> {
-               if(!errorMessage.getMessage().equals("qcadooView.validate.global.error.custom")) {
-                   view.addMessage(errorMessage.getMessage(), ComponentState.MessageType.FAILURE);
-               }
-           });
-           view.addMessage("masterOrders.masterOrder.createReleaseDocument.error", ComponentState.MessageType.FAILURE);
+            exc.getGlobalErrors().forEach(errorMessage -> {
+                if (!errorMessage.getMessage().equals("qcadooView.validate.global.error.custom")) {
+                    view.addMessage(errorMessage.getMessage(), ComponentState.MessageType.FAILURE);
+                }
+            });
+            view.addMessage("masterOrders.masterOrder.createReleaseDocument.error", ComponentState.MessageType.FAILURE);
         }
 
+    }
+
+    private BigDecimal getAvailableQuantityForProductAndLocation(Entity product, Entity location) {
+        Entity resourceStockDto = dataDefinitionService
+                .get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER, MaterialFlowResourcesConstants.MODEL_RESOURCE_STOCK_DTO)
+                .find().add(SearchRestrictions.eq(ResourceStockDtoFields.PRODUCT_ID, product.getId().intValue()))
+                .add(SearchRestrictions.eq(ResourceStockDtoFields.LOCATION_ID, location.getId().intValue())).setMaxResults(1)
+                .uniqueResult();
+        if (Objects.isNull(resourceStockDto)) {
+            return BigDecimal.ZERO;
+        }
+        return BigDecimalUtils.convertNullToZero(resourceStockDto.getDecimalField(ResourceStockDtoFields.AVAILABLE_QUANTITY));
     }
 
     private void redirectToCreatedDocument(Entity document, ViewDefinitionState view) {

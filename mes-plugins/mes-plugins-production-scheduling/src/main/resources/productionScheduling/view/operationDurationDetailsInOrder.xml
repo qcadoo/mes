@@ -228,11 +228,15 @@
                             <component type="grid" name="operCompTimeCalculationsGrid"
                                        model="operCompTimeCalculation" reference="operCompTimeCalculationsGrid">
                                 <option type="column" name="nodeNumber" fields="technologyOperationComponent" expression="#technologyOperationComponent['nodeNumber']"
-                                        link="true"/>
+                                        correspondingView="technologies/technologyOperationComponentDetails" correspondingField="technologyOperationComponentId" link="true"/>
                                 <option type="column" name="number" fields="technologyOperationComponent"
-                                        expression="#technologyOperationComponent.get('operation').get('number')" link="true"/>
+                                        expression="#technologyOperationComponent.get('operation').get('number')"
+                                        correspondingView="technologies/technologyOperationComponentDetails" correspondingField="technologyOperationComponentId" link="true"/>
                                 <option type="column" name="name" fields="technologyOperationComponent"
-                                        expression="#technologyOperationComponent['operation'].get('name')" link="true"/>
+                                        expression="#technologyOperationComponent['operation'].get('name')"
+                                        correspondingView="technologies/technologyOperationComponentDetails" correspondingField="technologyOperationComponentId" link="true"/>
+                                <option type="column" name="technologyOperationComponentId" fields="technologyOperationComponent" expression="#technologyOperationComponent.get('id')"
+                                        hidden="true"/>
                                 <option type="column" name="effectiveDateFrom" fields="effectiveDateFrom"/>
                                 <option type="column" name="effectiveDateTo" fields="effectiveDateTo"/>
 
@@ -246,10 +250,6 @@
 
                                 <option type="searchable" value="nodeNumber, number, name, effectiveDateFrom, effectiveDateTo"/>
                                 <option type="orderable" value="nodeNumber, number, name, effectiveDateFrom, effectiveDateTo"/>
-
-                                <option type="correspondingView"
-                                        value="technologies/technologyOperationComponentDetails"/>
-                                <option type="correspondingComponent" value="form"/>
 
                                 <option type="fixedHeight" value="true"/>
                                 <option type="fullscreen" value="true"/>

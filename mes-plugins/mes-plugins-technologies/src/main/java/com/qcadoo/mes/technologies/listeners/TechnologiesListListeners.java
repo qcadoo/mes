@@ -27,6 +27,10 @@ public class TechnologiesListListeners {
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
+    public void runTechnologyConfigurator(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        view.redirectTo("/technologyConfigurator.html", false, false);
+    }
+
     public void setAsDefault(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         try {
             trySetAsDefault(view);

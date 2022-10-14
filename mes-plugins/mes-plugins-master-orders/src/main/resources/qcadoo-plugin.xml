@@ -100,6 +100,9 @@
 
         <model:model model="outsourceProcessingComponentHelper" resource="model/outsourceProcessingComponentHelper.xml"/>
 
+        <model:model model="salesVolume" resource="model/salesVolume.xml"/>
+        <model:model model="salesVolumeMulti" resource="model/salesVolumeMulti.xml"/>
+
         <model:dictionary name="masterOrderState"/>
         <model:dictionary name="masterOrderPositionStatus"/>
 
@@ -231,6 +234,16 @@
             <hasMany name="productsByAttributeEntryHelpers" plugin="masterOrders" model="productsByAttributeEntryHelper" joinField="attributeValue"/>
         </model:model-field>
 
+        <model:model-field plugin="basic" model="product">
+            <model:hasMany name="salesVolume" model="salesVolume" plugin="masterOrders"
+                           joinField="product" cascade="delete"/>
+        </model:model-field>
+
+        <model:model-field plugin="basic" model="product">
+            <model:manyToMany name="salesVolumesMulti" model="salesVolumeMulti" plugin="masterOrders"
+                              joinField="products"/>
+        </model:model-field>
+
         <model:model-hook model="order" plugin="orders">
             <model:validatesWith class="com.qcadoo.mes.masterOrders.validators.OrderValidatorsMO"
                                  method="checkProductAndTechnology"/>
@@ -271,6 +284,10 @@
         <menu:menu-item name="masterOrdersMaterialRequirementsList" category="requirements"
                         view="masterOrdersMaterialRequirementsList" defaultAuthorizationRole="ROLE_REQUIREMENTS"/>
 
+        <menu:menu-item name="salesVolumesList"
+                        category="materialFlow" view="salesVolumesList"
+                        defaultAuthorizationRole="ROLE_PLANNING"/>
+
         <view:view resource="view/masterOrdersList.xml"/>
         <view:view resource="view/masterOrderDetails.xml"/>
 
@@ -309,6 +326,10 @@
         <view:view resource="view/masterOrdersMaterialRequirementDetails.xml"/>
 
         <view:view resource="view/outsourceProcessingComponent.xml"/>
+
+        <view:view resource="view/salesVolumesList.xml"/>
+        <view:view resource="view/salesVolumeDetails.xml"/>
+        <view:view resource="view/salesVolumeAddMulti.xml"/>
 
         <view:view-ribbon-group resource="view/ribbonExtensions/productsList.xml"/>
 

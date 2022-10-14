@@ -17245,6 +17245,16 @@ CREATE TABLE jointable_product_qualitycard (
 
 
 --
+-- Name: jointable_product_salesvolumemulti; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE jointable_product_salesvolumemulti (
+    product_id bigint NOT NULL,
+    salesvolumemulti_id bigint NOT NULL
+);
+
+
+--
 -- Name: jointable_product_scale; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -18507,6 +18517,71 @@ CREATE SEQUENCE masterorders_salesplanstatechange_id_seq
 --
 
 ALTER SEQUENCE masterorders_salesplanstatechange_id_seq OWNED BY masterorders_salesplanstatechange.id;
+
+
+--
+-- Name: masterorders_salesvolume; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE masterorders_salesvolume (
+    id bigint NOT NULL,
+    product_id bigint,
+    dailysalesvolume numeric(14,5),
+    optimalstock numeric(14,5)
+);
+
+
+--
+-- Name: masterorders_salesvolume_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE masterorders_salesvolume_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: masterorders_salesvolume_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE masterorders_salesvolume_id_seq OWNED BY masterorders_salesvolume.id;
+
+
+--
+-- Name: masterorders_salesvolumemulti; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE masterorders_salesvolumemulti (
+    id bigint NOT NULL,
+    dailysalesvolume numeric(14,5),
+    optimalstock numeric(14,5),
+    createdate timestamp without time zone,
+    updatedate timestamp without time zone,
+    createuser character varying(255),
+    updateuser character varying(255)
+);
+
+
+--
+-- Name: masterorders_salesvolumemulti_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE masterorders_salesvolumemulti_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: masterorders_salesvolumemulti_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE masterorders_salesvolumemulti_id_seq OWNED BY masterorders_salesvolumemulti.id;
 
 
 --
@@ -32640,6 +32715,20 @@ ALTER TABLE ONLY masterorders_salesplanstatechange ALTER COLUMN id SET DEFAULT n
 -- Name: id; Type: DEFAULT; Schema: public; Owner: -
 --
 
+ALTER TABLE ONLY masterorders_salesvolume ALTER COLUMN id SET DEFAULT nextval('masterorders_salesvolume_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY masterorders_salesvolumemulti ALTER COLUMN id SET DEFAULT nextval('masterorders_salesvolumemulti_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
+--
+
 ALTER TABLE ONLY materialflow_location ALTER COLUMN id SET DEFAULT nextval('materialflow_location_id_seq'::regclass);
 
 
@@ -40679,6 +40768,14 @@ COPY jointable_product_qualitycard (product_id, qualitycard_id) FROM stdin;
 
 
 --
+-- Data for Name: jointable_product_salesvolumemulti; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY jointable_product_salesvolumemulti (product_id, salesvolumemulti_id) FROM stdin;
+\.
+
+
+--
 -- Data for Name: jointable_product_scale; Type: TABLE DATA; Schema: public; Owner: -
 --
 
@@ -41210,6 +41307,36 @@ COPY masterorders_salesplanstatechange (id, dateandtime, salesplan_id, shift_id,
 --
 
 SELECT pg_catalog.setval('masterorders_salesplanstatechange_id_seq', 1, false);
+
+
+--
+-- Data for Name: masterorders_salesvolume; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY masterorders_salesvolume (id, product_id, dailysalesvolume, optimalstock) FROM stdin;
+\.
+
+
+--
+-- Name: masterorders_salesvolume_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('masterorders_salesvolume_id_seq', 1, false);
+
+
+--
+-- Data for Name: masterorders_salesvolumemulti; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY masterorders_salesvolumemulti (id, dailysalesvolume, optimalstock, createdate, updatedate, createuser, updateuser) FROM stdin;
+\.
+
+
+--
+-- Name: masterorders_salesvolumemulti_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('masterorders_salesvolumemulti_id_seq', 1, false);
 
 
 --
@@ -44630,6 +44757,8 @@ COPY qcadooview_item (id, pluginidentifier, name, active, category_id, view_id, 
 101	ordersProgressGanttChart	ordersProgressGanttChart	f	7	101	17	ROLE_ORDERS_PROGRESS_GANTT_CHART	0
 205	productionCounting	productionBalanceAnalysis	t	15	204	14	ROLE_ANALYSIS_VIEWER	0
 206	cmmsMachineParts	ordersToolRequirementsList	t	13	205	8	ROLE_TOOLS	0
+207	technologies	technologyConfigurator	t	5	206	12	ROLE_TECHNOLOGIES	0
+208	masterOrders	salesVolumesList	t	6	207	17	ROLE_PLANNING	0
 \.
 
 
@@ -44637,7 +44766,7 @@ COPY qcadooview_item (id, pluginidentifier, name, active, category_id, view_id, 
 -- Name: qcadooview_item_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('qcadooview_item_id_seq', 206, true);
+SELECT pg_catalog.setval('qcadooview_item_id_seq', 208, true);
 
 
 --
@@ -44836,6 +44965,8 @@ COPY qcadooview_view (id, pluginidentifier, name, view, url, entityversion) FROM
 203	arch	archivingList	archivingList	\N	0
 204	productionCounting	productionBalanceAnalysis	\N	/productionBalanceAnalysis.html	0
 205	cmmsMachineParts	ordersToolRequirementsList	ordersToolRequirementsList	\N	0
+206	technologies	technologyConfigurator	\N	/technologyConfigurator.html	0
+207	masterOrders	salesVolumesList	salesVolumesList	\N	0
 \.
 
 
@@ -44843,7 +44974,7 @@ COPY qcadooview_view (id, pluginidentifier, name, view, url, entityversion) FROM
 -- Name: qcadooview_view_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('qcadooview_view_id_seq', 205, true);
+SELECT pg_catalog.setval('qcadooview_view_id_seq', 207, true);
 
 
 --
@@ -49110,6 +49241,14 @@ ALTER TABLE ONLY jointable_product_qualitycard
 
 
 --
+-- Name: jointable_product_salesvolumemulti_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY jointable_product_salesvolumemulti
+    ADD CONSTRAINT jointable_product_salesvolumemulti_pkey PRIMARY KEY (product_id, salesvolumemulti_id);
+
+
+--
 -- Name: jointable_product_scale_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -49403,6 +49542,22 @@ ALTER TABLE ONLY masterorders_salesplanproduct
 
 ALTER TABLE ONLY masterorders_salesplanstatechange
     ADD CONSTRAINT masterorders_salesplanstatechange_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: masterorders_salesvolume_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY masterorders_salesvolume
+    ADD CONSTRAINT masterorders_salesvolume_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: masterorders_salesvolumemulti_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY masterorders_salesvolumemulti
+    ADD CONSTRAINT masterorders_salesvolumemulti_pkey PRIMARY KEY (id);
 
 
 --
@@ -61060,6 +61215,22 @@ ALTER TABLE ONLY jointable_product_qualitycard
 
 
 --
+-- Name: product_salesvolumemulti_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY jointable_product_salesvolumemulti
+    ADD CONSTRAINT product_salesvolumemulti_product_fkey FOREIGN KEY (product_id) REFERENCES basic_product(id) DEFERRABLE;
+
+
+--
+-- Name: product_salesvolumemulti_salesvolumemulti_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY jointable_product_salesvolumemulti
+    ADD CONSTRAINT product_salesvolumemulti_salesvolumemulti_fkey FOREIGN KEY (salesvolumemulti_id) REFERENCES masterorders_salesvolumemulti(id) DEFERRABLE;
+
+
+--
 -- Name: product_scale_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -63697,6 +63868,14 @@ ALTER TABLE ONLY masterorders_salesplanstatechange
 
 ALTER TABLE ONLY masterorders_salesplanstatechange
     ADD CONSTRAINT salesplanstatechange_shift_fkey FOREIGN KEY (shift_id) REFERENCES basic_shift(id) DEFERRABLE;
+
+
+--
+-- Name: salesvolume_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY masterorders_salesvolume
+    ADD CONSTRAINT salesvolume_product_fkey FOREIGN KEY (product_id) REFERENCES basic_product(id) DEFERRABLE;
 
 
 --
