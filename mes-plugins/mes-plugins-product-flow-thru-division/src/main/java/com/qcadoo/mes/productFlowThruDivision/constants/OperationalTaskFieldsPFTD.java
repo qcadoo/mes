@@ -23,31 +23,12 @@
  */
 package com.qcadoo.mes.productFlowThruDivision.constants;
 
-public final class ProductFlowThruDivisionConstants {
 
-    public static final String MODEL_PRODUCTS_TO_ISSUE = "productsToIssue";
+public final class OperationalTaskFieldsPFTD {
 
-    public static final String MODEL_PRODUCT_TO_ISSUE_CORRECTION = "productToIssueCorrection";
+    public static final String MATERIAL_AVAILABILITY = "operTaskMaterialAvailability";
 
-    private ProductFlowThruDivisionConstants() {
+    private OperationalTaskFieldsPFTD(){
 
     }
-
-    public static final String MODEL_ISSUE = "issue";
-
-    public static final String PLUGIN_IDENTIFIER = "productFlowThruDivision";
-
-    public static final String MODEL_MATERIAL_AVAILABILITY = "materialAvailability";
-
-    public static final String MODEL_OPER_TASK_MATERIAL_AVAILABILITY = "operTaskMaterialAvailability";
-
-    public static final String MODEL_WAREHOUSE_ISSUE = "warehouseIssue";
-
-    public static final String MODEL_WAREHOUSE_ISSUE_STATE_CHANGE = "warehouseIssueStateChange";
-
-    public static final String MODEL_MODEL_CARD = "modelCard";
-
-    public static final String MODEL_MODEL_CARD_PRODUCT = "modelCardProduct";
-
-    public static final String MODEL_TECHNOLOGY_PRODUCTION_LINE = "technologyProductionLine";
 }

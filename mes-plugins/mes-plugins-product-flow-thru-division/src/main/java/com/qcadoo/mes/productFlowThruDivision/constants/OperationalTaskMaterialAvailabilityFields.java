@@ -23,31 +23,33 @@
  */
 package com.qcadoo.mes.productFlowThruDivision.constants;
 
-public final class ProductFlowThruDivisionConstants {
+public final class OperationalTaskMaterialAvailabilityFields {
 
-    public static final String MODEL_PRODUCTS_TO_ISSUE = "productsToIssue";
-
-    public static final String MODEL_PRODUCT_TO_ISSUE_CORRECTION = "productToIssueCorrection";
-
-    private ProductFlowThruDivisionConstants() {
+    private OperationalTaskMaterialAvailabilityFields() {
 
     }
 
-    public static final String MODEL_ISSUE = "issue";
+    public static final String OPERATIONAL_TASK = "operationalTask";
 
-    public static final String PLUGIN_IDENTIFIER = "productFlowThruDivision";
+    public static final String PRODUCT = "product";
 
-    public static final String MODEL_MATERIAL_AVAILABILITY = "materialAvailability";
+    public static final String AVAILABLE_QUANTITY = "availableQuantity";
 
-    public static final String MODEL_OPER_TASK_MATERIAL_AVAILABILITY = "operTaskMaterialAvailability";
+    public static final String UNIT = "unit";
 
-    public static final String MODEL_WAREHOUSE_ISSUE = "warehouseIssue";
+    public static final String REQUIRED_QUANTITY = "requiredQuantity";
 
-    public static final String MODEL_WAREHOUSE_ISSUE_STATE_CHANGE = "warehouseIssueStateChange";
+    public static final String AVAILABILITY = "availability";
 
-    public static final String MODEL_MODEL_CARD = "modelCard";
+    public static final String LOCATION = "location";
 
-    public static final String MODEL_MODEL_CARD_PRODUCT = "modelCardProduct";
+    public static final String REPLACEMENT = "replacement";
 
-    public static final String MODEL_TECHNOLOGY_PRODUCTION_LINE = "technologyProductionLine";
+    public static final String BATCHES = "batches";
+
+    public static final String BATCHES_ID = "batchesId";
+
+    public static final String BATCHES_QUANTITY = "batchesQuantity";
+
+    public static final String TYPE_OF_MATERIAL = "typeOfMaterial";
 }
