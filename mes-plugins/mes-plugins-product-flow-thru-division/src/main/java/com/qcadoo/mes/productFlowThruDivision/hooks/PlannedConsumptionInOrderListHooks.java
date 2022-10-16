@@ -20,28 +20,17 @@ import org.springframework.stereotype.Service;
 @Service
 public class PlannedConsumptionInOrderListHooks {
 
-    public static final String L_PRODUCT_NAME = "productName";
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
     public void onBeforeRender(final ViewDefinitionState view) throws JSONException {
 
         JSONObject jsonObject = view.getJsonContext();
-        if(view.isViewAfterRedirect()) {
-            FieldComponent component = (FieldComponent) view.getComponentByReference(L_PRODUCT_NAME);
-            fillProductName(jsonObject, component);
-        }
+
         GridComponent grid = (GridComponent) view.getComponentByReference(QcadooViewConstants.L_GRID);
         FilterValueHolder gridProductsComponentInHolder = grid.getFilterValue();
-        gridProductsComponentInHolder.put("productId", Integer.valueOf(jsonObject.getString("window.productId")));
+        gridProductsComponentInHolder.put("productId", Integer.valueOf(jsonObject.getString("window.mainTab.product.id")));
         grid.setFilterValue(gridProductsComponentInHolder);
-    }
-
-    private void fillProductName(JSONObject jsonObject, FieldComponent component) throws JSONException {
-        Entity product = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PRODUCT)
-                .get(Long.valueOf(jsonObject.getString("window.productId")));
-        component.setFieldValue(product.getStringField(ProductFields.NUMBER));
-        component.requestComponentUpdateState();
     }
 
 }

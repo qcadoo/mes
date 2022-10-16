@@ -26,7 +26,7 @@ public class WarehouseStocksListListenersPFTD {
         Integer productId = record.getIntegerField("product_id");
 
         Map<String, Object> parameters = Maps.newHashMap();
-        parameters.put("window.productId", productId);
+        parameters.put("product.id", productId);
 
         String url = "/page/productFlowThruDivision/plannedConsumptionInOrderList.html";
         view.redirectTo(url, false, true, parameters);
