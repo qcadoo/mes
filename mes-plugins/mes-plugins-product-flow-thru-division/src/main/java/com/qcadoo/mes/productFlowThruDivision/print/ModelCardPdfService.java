@@ -83,9 +83,9 @@ public final class ModelCardPdfService extends PdfDocumentService {
 
     private static final String L_ID = "id";
 
-    private static final int[] defaultModelCardProductColumnWidth = new int[] { 10, 20, 5, 10, 10 };
+    private static final int[] defaultModelCardProductColumnWidth = new int[]{10, 20, 5, 10, 10};
 
-    private static final int[] defaultModelCardMaterialsColumnWidth = new int[] { 9, 6, 15, 6, 6, 4, 4, 4, 4, 5, 7, 3 };
+    private static final int[] defaultModelCardMaterialsColumnWidth = new int[]{9, 6, 15, 6, 6, 4, 4, 4, 4, 5, 7, 3};
 
     @Autowired
     private TranslationService translationService;
@@ -183,7 +183,7 @@ public final class ModelCardPdfService extends PdfDocumentService {
                 BigDecimal materialUnitCost = numberService.setScaleWithDefaultMathContext(
                         productTypeCostsSum.get(modelCardMaterialEntry.getTechnologyInputProductTypeId())
                                 .divide(new BigDecimal(
-                                        productTypeCostsCount.get(modelCardMaterialEntry.getTechnologyInputProductTypeId())),
+                                                productTypeCostsCount.get(modelCardMaterialEntry.getTechnologyInputProductTypeId())),
                                         numberService.getMathContext()),
                         2);
                 modelCardMaterialEntry.setMaterialUnitCost(materialUnitCost);
@@ -214,8 +214,8 @@ public final class ModelCardPdfService extends PdfDocumentService {
     }
 
     private void mapToModelCardMaterialEntry(Entity modelCard, Map<Long, Map<Long, BigDecimal>> quantitiesInStock,
-            List<ModelCardMaterialEntry> entries, Map.Entry<OperationProductComponentHolder, BigDecimal> neededProductQuantity,
-            boolean forFamily, BigDecimal quantity, Locale locale) {
+                                             List<ModelCardMaterialEntry> entries, Map.Entry<OperationProductComponentHolder, BigDecimal> neededProductQuantity,
+                                             boolean forFamily, BigDecimal quantity, Locale locale) {
         ModelCardMaterialEntry modelCardMaterialEntry = new ModelCardMaterialEntry();
         Entity material = neededProductQuantity.getKey().getProduct();
         Entity operationProductComponent = neededProductQuantity.getKey().getOperationProductComponent();
@@ -239,9 +239,9 @@ public final class ModelCardPdfService extends PdfDocumentService {
                 .setDescription(operationProductComponent.getStringField(OperationProductInComponentFields.DESCRIPTION));
         if (forFamily
                 && operationProductComponent
-                        .getBooleanField(OperationProductInComponentFields.DIFFERENT_PRODUCTS_IN_DIFFERENT_SIZES)
+                .getBooleanField(OperationProductInComponentFields.DIFFERENT_PRODUCTS_IN_DIFFERENT_SIZES)
                 && !operationProductComponent.getHasManyField(OperationProductInComponentFields.PRODUCT_BY_SIZE_GROUPS)
-                        .isEmpty()) {
+                .isEmpty()) {
             modelCardMaterialEntry.setNumber(
                     translationService.translate("productFlowThruDivision.modelCard.report.productsBySize.label", locale));
 
@@ -279,7 +279,7 @@ public final class ModelCardPdfService extends PdfDocumentService {
                 BigDecimal price = numberService.setScaleWithDefaultMathContext(
                         productsCostCalculationService.calculateProductCostPerUnit(materialBySizeGroup,
                                 modelCard.getStringField(ModelCardFields.MATERIAL_COSTS_USED),
-                                modelCard.getBooleanField(ModelCardFields.USE_NOMINAL_COST_PRICE_NOT_SPECIFIED)),
+                                modelCard.getBooleanField(ModelCardFields.USE_NOMINAL_COST_PRICE_NOT_SPECIFIED), null),
                         2);
                 modelCardMaterialBySizeEntry.setPrice(price);
                 modelCardMaterialBySizeEntry.setMaterialUnitCost(
@@ -329,8 +329,8 @@ public final class ModelCardPdfService extends PdfDocumentService {
             }
 
             BigDecimal price = numberService.setScaleWithDefaultMathContext(productsCostCalculationService
-                    .calculateProductCostPerUnit(material, modelCard.getStringField(ModelCardFields.MATERIAL_COSTS_USED),
-                            modelCard.getBooleanField(ModelCardFields.USE_NOMINAL_COST_PRICE_NOT_SPECIFIED)),
+                            .calculateProductCostPerUnit(material, modelCard.getStringField(ModelCardFields.MATERIAL_COSTS_USED),
+                                    modelCard.getBooleanField(ModelCardFields.USE_NOMINAL_COST_PRICE_NOT_SPECIFIED), null),
                     2);
             modelCardMaterialEntry.setPrice(price);
             modelCardMaterialEntry.setMaterialUnitCost(
@@ -365,7 +365,7 @@ public final class ModelCardPdfService extends PdfDocumentService {
     }
 
     private void updateGroup(Map<ModelCardMaterialEntry, QuantityNormDescriptions> quantityNormDescriptionsMap,
-            ModelCardMaterialEntry modelCardMaterialEntry) {
+                             ModelCardMaterialEntry modelCardMaterialEntry) {
         QuantityNormDescriptions quantityNormDescriptions = quantityNormDescriptionsMap.get(modelCardMaterialEntry);
         if (quantityNormDescriptions.getNeededQuantity() != null) {
             quantityNormDescriptions.setNeededQuantity(
@@ -395,7 +395,7 @@ public final class ModelCardPdfService extends PdfDocumentService {
     }
 
     private void createNewGroup(Map<ModelCardMaterialEntry, QuantityNormDescriptions> quantityNormDescriptionsMap,
-            ModelCardMaterialEntry modelCardMaterialEntry) {
+                                ModelCardMaterialEntry modelCardMaterialEntry) {
         QuantityNormDescriptions quantityNormDescriptions = new QuantityNormDescriptions();
         quantityNormDescriptions.setNeededQuantity(modelCardMaterialEntry.getNeededQuantity());
         quantityNormDescriptions.setNorm(modelCardMaterialEntry.getNorm());
@@ -460,7 +460,7 @@ public final class ModelCardPdfService extends PdfDocumentService {
     }
 
     private void addMaterialsTable(Document document, List<ModelCardMaterialEntry> entries, Entity materialAttribute,
-            Locale locale) throws DocumentException {
+                                   Locale locale) throws DocumentException {
         Map<String, HeaderAlignment> headersWithAlignments = getMaterialHeaders(materialAttribute, locale);
 
         List<String> headers = com.google.common.collect.Lists.newLinkedList(headersWithAlignments.keySet());
@@ -722,7 +722,7 @@ public final class ModelCardPdfService extends PdfDocumentService {
     }
 
     private void addProductTable(Document document, Entity modelCardProduct, Entity productAttribute,
-            BigDecimal materialUnitCostsSum, Locale locale) throws DocumentException {
+                                 BigDecimal materialUnitCostsSum, Locale locale) throws DocumentException {
         PdfPTable panelTable = pdfHelper.createPanelTable(5);
         panelTable.setWidths(defaultModelCardProductColumnWidth);
         panelTable.addCell(
