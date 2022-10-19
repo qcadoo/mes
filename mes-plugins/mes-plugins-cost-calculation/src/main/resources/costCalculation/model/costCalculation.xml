@@ -46,8 +46,10 @@
 			cascade="delete" />
 
 		<enum name="materialCostsUsed"
-			values="01nominal,02average,03lastPurchase,04averageOfferCost,05lastOfferCost"
+			values="01nominal,02average,03lastPurchase,04averageOfferCost,05lastOfferCost,07offerCostOrLastPurchase"
 			required="true" default="01nominal" />
+
+		<belongsTo name="offer" model="offer" plugin="supplyNegotiations" />
 
 		<boolean name="useNominalCostPriceNotSpecified" default="false"/>
 

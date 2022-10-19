@@ -37,6 +37,7 @@ import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.basic.util.CurrencyService;
 import com.qcadoo.mes.costCalculation.constants.CostCalculationConstants;
 import com.qcadoo.mes.costCalculation.constants.CostCalculationFields;
+import com.qcadoo.mes.costCalculation.constants.MaterialCostsUsed;
 import com.qcadoo.mes.costCalculation.constants.SourceOfOperationCosts;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
@@ -121,6 +122,10 @@ public class CostCalculationDetailsHooks {
             view.getComponentByReference(CostCalculationFields.TECHNOLOGIES).setEnabled(false);
         }
         if (!isGenerated) {
+            FieldComponent materialCostsUsed = (FieldComponent) view
+                    .getComponentByReference(CostCalculationFields.MATERIAL_COSTS_USED);
+            FieldComponent offer = (FieldComponent) view
+                    .getComponentByReference(CostCalculationFields.OFFER);
             FieldComponent sourceOfOperationCosts = (FieldComponent) view
                     .getComponentByReference(CostCalculationFields.SOURCE_OF_OPERATION_COSTS);
             FieldComponent standardLaborCost = (FieldComponent) view
@@ -132,6 +137,14 @@ public class CostCalculationDetailsHooks {
                     .getComponentByReference(CostCalculationFields.AVERAGE_MACHINE_HOURLY_COST);
             FieldComponent averageLaborHourlyCost = (FieldComponent) view
                     .getComponentByReference(CostCalculationFields.AVERAGE_LABOR_HOURLY_COST);
+            offer.setEnabled(
+                    MaterialCostsUsed.OFFER_COST_OR_LAST_PURCHASE.getStringValue().equals(materialCostsUsed.getFieldValue()));
+            offer.setRequired(
+                    MaterialCostsUsed.OFFER_COST_OR_LAST_PURCHASE.getStringValue().equals(materialCostsUsed.getFieldValue()));
+            if (!MaterialCostsUsed.OFFER_COST_OR_LAST_PURCHASE.getStringValue().equals(materialCostsUsed.getFieldValue())) {
+                offer.setFieldValue(null);
+            }
+            offer.requestComponentUpdateState();
             standardLaborCost.setEnabled(
                     SourceOfOperationCosts.STANDARD_LABOR_COSTS.getStringValue().equals(sourceOfOperationCosts.getFieldValue()));
             standardLaborCost.setRequired(
@@ -245,7 +258,7 @@ public class CostCalculationDetailsHooks {
     }
 
     private void fillWithPropertyOrZero(String componentName, BigDecimal propertyValue, ViewDefinitionState view,
-            boolean defaultValue) {
+                                        boolean defaultValue) {
         FieldComponent component = (FieldComponent) view.getComponentByReference(componentName);
         if (component.getFieldValue() == null) {
             if (propertyValue != null) {
