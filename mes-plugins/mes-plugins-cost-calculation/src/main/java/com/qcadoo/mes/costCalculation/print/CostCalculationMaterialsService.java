@@ -23,6 +23,16 @@
  */
 package com.qcadoo.mes.costCalculation.print;
 
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.costCalculation.constants.CostCalculationFields;
@@ -43,16 +53,6 @@ import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
 import com.qcadoo.plugin.api.PluginManager;
-
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 @Service
 public class CostCalculationMaterialsService {
@@ -87,6 +87,7 @@ public class CostCalculationMaterialsService {
                 TechnologiesConstants.MODEL_OPERATION_PRODUCT_IN_COMPONENT);
         String technologyNumber = technology.getStringField(TechnologyFields.NUMBER);
         String finalProductNumber = technology.getBelongsToField(TechnologyFields.PRODUCT).getStringField(ProductFields.NUMBER);
+        Entity offer = costCalculation.getBelongsToField(CostCalculationFields.OFFER);
         for (Map.Entry<OperationProductComponentHolder, BigDecimal> neededProductQuantity : materialQuantitiesByOPC.entrySet()) {
             Entity product = neededProductQuantity.getKey().getProduct();
             Entity operationProductComponent = operationProductComponentDD.get(neededProductQuantity.getKey()
@@ -110,7 +111,8 @@ public class CostCalculationMaterialsService {
 
                     BigDecimal costPerUnitPBS = productsCostCalculationService.calculateProductCostPerUnit(p,
                             costCalculation.getStringField(CostCalculationFields.MATERIAL_COSTS_USED),
-                            costCalculation.getBooleanField(CostCalculationFields.USE_NOMINAL_COST_PRICE_NOT_SPECIFIED));
+                            costCalculation.getBooleanField(CostCalculationFields.USE_NOMINAL_COST_PRICE_NOT_SPECIFIED),
+                            offer);
                     BigDecimal q = costCalculation.getDecimalField(CostCalculationFields.QUANTITY).multiply(
                             pbs.getDecimalField(ProductBySizeGroupFields.QUANTITY), numberService.getMathContext());
 

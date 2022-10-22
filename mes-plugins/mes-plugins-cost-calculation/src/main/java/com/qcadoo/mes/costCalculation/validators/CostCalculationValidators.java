@@ -26,6 +26,7 @@ package com.qcadoo.mes.costCalculation.validators;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.costCalculation.constants.CostCalculationFields;
+import com.qcadoo.mes.costCalculation.constants.MaterialCostsUsed;
 import com.qcadoo.mes.costCalculation.constants.SourceOfOperationCosts;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
@@ -45,6 +46,13 @@ public class CostCalculationValidators {
         if (SourceOfOperationCosts.STANDARD_LABOR_COSTS.getStringValue().equals(sourceOfOperationCosts)
                 && costCalculation.getBelongsToField(CostCalculationFields.STANDARD_LABOR_COST) == null) {
             costCalculation.addError(dataDefinition.getField(CostCalculationFields.STANDARD_LABOR_COST),
+                    L_QCADOO_VIEW_VALIDATE_FIELD_ERROR_MISSING);
+            isValid = false;
+        }
+        String materialCostsUsed = costCalculation.getStringField(CostCalculationFields.MATERIAL_COSTS_USED);
+        if (MaterialCostsUsed.OFFER_COST_OR_LAST_PURCHASE.getStringValue().equals(materialCostsUsed)
+                && costCalculation.getBelongsToField(CostCalculationFields.OFFER) == null) {
+            costCalculation.addError(dataDefinition.getField(CostCalculationFields.OFFER),
                     L_QCADOO_VIEW_VALIDATE_FIELD_ERROR_MISSING);
             isValid = false;
         }

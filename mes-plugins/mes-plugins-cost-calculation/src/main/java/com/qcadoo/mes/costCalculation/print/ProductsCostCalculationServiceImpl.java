@@ -28,12 +28,14 @@ import com.qcadoo.mes.basic.util.CurrencyService;
 import com.qcadoo.mes.costCalculation.constants.CostCalculationFields;
 import com.qcadoo.mes.costNormsForMaterials.constants.ProductsCostFields;
 import com.qcadoo.mes.costNormsForProduct.constants.ProductFieldsCNFP;
+import com.qcadoo.mes.supplyNegotiations.SupplyNegotiationsService;
 import com.qcadoo.mes.technologies.constants.OperationProductInComponentFields;
 import com.qcadoo.mes.technologies.constants.ProductBySizeGroupFields;
 import com.qcadoo.mes.technologies.constants.TechnologyInputProductTypeFields;
 import com.qcadoo.model.api.BigDecimalUtils;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -49,9 +51,13 @@ public class ProductsCostCalculationServiceImpl implements ProductsCostCalculati
     @Autowired
     private CurrencyService currencyService;
 
+    @Autowired
+    private SupplyNegotiationsService supplyNegotiationsService;
+
     @Override
     public BigDecimal calculateOperationProductCostPerUnit(Entity costCalculation, Entity product,
-            Entity operationProductComponent) {
+                                                           Entity operationProductComponent) {
+        Entity offer = costCalculation.getBelongsToField(CostCalculationFields.OFFER);
         BigDecimal costPerUnit;
         if (operationProductComponent.getBooleanField(OperationProductInComponentFields.DIFFERENT_PRODUCTS_IN_DIFFERENT_SIZES)) {
             List<Entity> productBySizeGroups = operationProductComponent
@@ -62,7 +68,8 @@ public class ProductsCostCalculationServiceImpl implements ProductsCostCalculati
                     productBySizeGroupsCost = productBySizeGroupsCost.add(
                             calculateProductCostPerUnit(productBySizeGroup.getBelongsToField(ProductBySizeGroupFields.PRODUCT),
                                     costCalculation.getStringField(CostCalculationFields.MATERIAL_COSTS_USED),
-                                    costCalculation.getBooleanField(CostCalculationFields.USE_NOMINAL_COST_PRICE_NOT_SPECIFIED)),
+                                    costCalculation.getBooleanField(CostCalculationFields.USE_NOMINAL_COST_PRICE_NOT_SPECIFIED),
+                                    offer),
                             numberService.getMathContext());
                 }
                 costPerUnit = productBySizeGroupsCost.divide(new BigDecimal(productBySizeGroups.size()),
@@ -73,7 +80,8 @@ public class ProductsCostCalculationServiceImpl implements ProductsCostCalculati
         } else if (product != null) {
             costPerUnit = calculateProductCostPerUnit(product,
                     costCalculation.getStringField(CostCalculationFields.MATERIAL_COSTS_USED),
-                    costCalculation.getBooleanField(CostCalculationFields.USE_NOMINAL_COST_PRICE_NOT_SPECIFIED));
+                    costCalculation.getBooleanField(CostCalculationFields.USE_NOMINAL_COST_PRICE_NOT_SPECIFIED),
+                    offer);
         } else {
             costPerUnit = BigDecimalUtils.convertNullToZero(
                     operationProductComponent.getBelongsToField(OperationProductInComponentFields.TECHNOLOGY_INPUT_PRODUCT_TYPE)
@@ -84,7 +92,13 @@ public class ProductsCostCalculationServiceImpl implements ProductsCostCalculati
 
     @Override
     public BigDecimal calculateProductCostPerUnit(final Entity product, final String materialCostsUsed,
-            final boolean useNominalCostPriceNotSpecified) {
+                                                  final boolean useNominalCostPriceNotSpecified, final Entity offer) {
+        if (offer != null) {
+            BigDecimal offerProductPricePerUnit = supplyNegotiationsService.getPricePerUnit(offer, product);
+            if(offerProductPricePerUnit != null){
+                return offerProductPricePerUnit;
+            }
+        }
         Entity materialCurrency = null;
         BigDecimal cost = BigDecimalUtils
                 .convertNullToZero(product.getField(ProductsCostFields.forMode(materialCostsUsed).getStrValue()));

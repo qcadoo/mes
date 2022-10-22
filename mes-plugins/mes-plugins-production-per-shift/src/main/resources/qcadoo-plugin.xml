@@ -106,6 +106,13 @@
                            joinField="order"/>
         </model:model-field>
 
+        <model:model-field model="productionLineSchedule"
+                           plugin="orders">
+            <model:hasMany name="planProductionPerShift" model="planProductionPerShift"
+                           plugin="productionPerShift" cascade="delete"
+                           joinField="productionLineSchedule"/>
+        </model:model-field>
+
         <model:model-field model="parameter" plugin="basic">
             <model:boolean name="allowIncompleteUnits"/>
         </model:model-field>

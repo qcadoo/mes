@@ -71,7 +71,7 @@ public class OfferStateChangeListener {
         for (Entity offerProduct : offerProducts) {
             Entity product = productDD.get(offerProduct.getBelongsToField(OfferProductFields.PRODUCT).getId());
             BigDecimal averageOfferCost = countAveragePrice(product);
-            product.setField("averageOfferCost", countAveragePrice(product));
+            product.setField("averageOfferCost", averageOfferCost);
             productDD.save(product);
         }
     }

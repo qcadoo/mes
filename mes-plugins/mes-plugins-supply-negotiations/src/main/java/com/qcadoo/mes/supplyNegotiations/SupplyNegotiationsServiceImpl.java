@@ -178,8 +178,8 @@ public class SupplyNegotiationsServiceImpl implements SupplyNegotiationsService 
     @Override
     public Entity getLastOfferProduct(final Entity supplier, final Entity product) {
         String query = String.format("SELECT offerProduct FROM #%s_%s AS offerProduct "
-                + "INNER JOIN offerProduct.%s AS offer WHERE offer.%s = :state AND offer.%s = :supplier"
-                + " AND offerProduct.%s = :product ORDER BY offer.updateDate DESC",
+                        + "INNER JOIN offerProduct.%s AS offer WHERE offer.%s = :state AND offer.%s = :supplier"
+                        + " AND offerProduct.%s = :product ORDER BY offer.updateDate DESC",
                 SupplyNegotiationsConstants.PLUGIN_IDENTIFIER, SupplyNegotiationsConstants.MODEL_OFFER_PRODUCT,
                 SupplyNegotiationsConstants.MODEL_OFFER, OfferFields.STATE, OfferFields.SUPPLIER, OfferProductFields.PRODUCT);
 
@@ -206,7 +206,7 @@ public class SupplyNegotiationsServiceImpl implements SupplyNegotiationsService 
 
     @Override
     public void fillPriceField(final ViewDefinitionState view, final String priceFieldReference,
-            final BigDecimal lastPurchasePrice) {
+                               final BigDecimal lastPurchasePrice) {
         FieldComponent pricePerUnitField = (FieldComponent) view.getComponentByReference(priceFieldReference);
         pricePerUnitField.setFieldValue(numberService.format(lastPurchasePrice));
         pricePerUnitField.requestComponentUpdateState();

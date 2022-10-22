@@ -103,6 +103,9 @@
         <model:model model="salesVolume" resource="model/salesVolume.xml"/>
         <model:model model="salesVolumeMulti" resource="model/salesVolumeMulti.xml"/>
 
+        <model:model model="orderedProductConfigurator" resource="model/orderedProductConfigurator.xml"/>
+        <model:model model="orderedProductConfiguratorAttribute" resource="model/orderedProductConfiguratorAttribute.xml"/>
+
         <model:dictionary name="masterOrderState"/>
         <model:dictionary name="masterOrderPositionStatus"/>
 
@@ -244,6 +247,11 @@
                               joinField="products"/>
         </model:model-field>
 
+        <model:model-field plugin="basic" model="product">
+            <model:manyToMany name="orderedProductConfigurators" model="orderedProductConfigurator" plugin="masterOrders"
+                              joinField="products"/>
+        </model:model-field>
+
         <model:model-hook model="order" plugin="orders">
             <model:validatesWith class="com.qcadoo.mes.masterOrders.validators.OrderValidatorsMO"
                                  method="checkProductAndTechnology"/>
@@ -288,6 +296,10 @@
                         category="materialFlow" view="salesVolumesList"
                         defaultAuthorizationRole="ROLE_PLANNING"/>
 
+        <menu:menu-item name="orderedProductConfiguratorsList"
+                        category="products" view="orderedProductConfiguratorsList"
+                        defaultAuthorizationRole="ROLE_PLANNING"/>
+
         <view:view resource="view/masterOrdersList.xml"/>
         <view:view resource="view/masterOrderDetails.xml"/>
 
@@ -330,6 +342,10 @@
         <view:view resource="view/salesVolumesList.xml"/>
         <view:view resource="view/salesVolumeDetails.xml"/>
         <view:view resource="view/salesVolumeAddMulti.xml"/>
+
+        <view:view resource="view/orderedProductConfiguratorsList.xml"/>
+        <view:view resource="view/orderedProductConfiguratorDetails.xml"/>
+        <view:view resource="view/orderedProductConfiguratorAttributeDetails.xml"/>
 
         <view:view-ribbon-group resource="view/ribbonExtensions/productsList.xml"/>
 

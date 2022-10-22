@@ -1750,7 +1750,6 @@ QCD.technologyConfigurator = (function () {
     }
 
     function createTechnology() {
-        alert("AKCJA !!!")
         var technology = {};
         technology.productId = QCD.technologyConfiguratorContext.technology.product.id;
         technology.quantity = $("#otQuantity").val();

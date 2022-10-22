@@ -1,7 +1,7 @@
 /**
  * ***************************************************************************
  * Copyright (c) 2010 Qcadoo Limited
- * Project: Qcadoo MES
+ * Project: Qcadoo Framework
  * Version: 1.4
  *
  * This file is part of Qcadoo.
@@ -21,16 +21,26 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.costCalculation.print;
+package com.qcadoo.mes.masterOrders.criteriaModifier;
 
-import java.math.BigDecimal;
+import com.qcadoo.model.api.search.SearchCriteriaBuilder;
+import com.qcadoo.model.api.search.SearchRestrictions;
+import com.qcadoo.view.api.components.lookup.FilterValueHolder;
+import org.springframework.stereotype.Service;
 
-import com.qcadoo.model.api.Entity;
+import java.util.List;
 
-public interface ProductsCostCalculationService {
+@Service
+public class OrderedProductConfiguratorCriteriaModifiers {
 
-    BigDecimal calculateOperationProductCostPerUnit(Entity costCalculation, Entity product, Entity operationProductComponent);
+    public static final String ATTRIBUTE_IDS = "attributeIds";
 
-    BigDecimal calculateProductCostPerUnit(final Entity product, final String materialCostsUsed,
-                                           final boolean useNominalCostPriceNotSpecified, final Entity offer);
+    public void restrictOrderedProductConfigurator(final SearchCriteriaBuilder scb, final FilterValueHolder filterValue) {
+        if (filterValue.has(ATTRIBUTE_IDS)) {
+            List<Long> ids = filterValue.getListOfLongs(ATTRIBUTE_IDS);
+
+            scb.add(SearchRestrictions.not(SearchRestrictions.in("id", ids)));
+        }
+    }
+
 }
