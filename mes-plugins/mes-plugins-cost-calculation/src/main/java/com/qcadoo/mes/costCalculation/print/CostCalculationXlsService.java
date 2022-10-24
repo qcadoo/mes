@@ -330,11 +330,9 @@ public class CostCalculationXlsService extends XlsDocumentService {
         int rowCounter = 0;
         DataDefinition productDataDefinition = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER,
                 BasicConstants.MODEL_PRODUCT);
-        DataDefinition currencyDataDefinition = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER,
-                BasicConstants.MODEL_CURRENCY);
         Entity offer = entity.getBelongsToField(CostCalculationFields.OFFER);
         for (CostCalculationMaterialBySize costCalculationMaterialBySize : costCalculationService.getMaterialsBySize(entity)) {
-            Entity product = costCalculationMaterialBySize.getProductEntity(productDataDefinition, currencyDataDefinition);
+            Entity product = productDataDefinition.get(costCalculationMaterialBySize.getMaterialId());
             BigDecimal costPerUnit = productsCostCalculationService.calculateProductCostPerUnit(product,
                     entity.getStringField(CostCalculationFields.MATERIAL_COSTS_USED),
                     entity.getBooleanField(CostCalculationFields.USE_NOMINAL_COST_PRICE_NOT_SPECIFIED),
@@ -350,7 +348,7 @@ public class CostCalculationXlsService extends XlsDocumentService {
             createRegularCell(stylesContainer, row, 1, costCalculationMaterialBySize.getProductNumber());
             createRegularCell(stylesContainer, row, 2, costCalculationMaterialBySize.getTechnologyInputProductType());
             createRegularCell(stylesContainer, row, 3, costCalculationMaterialBySize.getSizeGroupNumber());
-            createRegularCell(stylesContainer, row, 4, costCalculationMaterialBySize.getMaterialNumber());
+            createRegularCell(stylesContainer, row, 4, product.getStringField(ProductFields.NUMBER));
             createNumericCell(stylesContainer, row, 5, numberService.setScaleWithDefaultMathContext(quantity));
             createRegularCell(stylesContainer, row, 6, costCalculationMaterialBySize.getUnit());
             createNumericCell(stylesContainer, row, 7, costPerUnit);
