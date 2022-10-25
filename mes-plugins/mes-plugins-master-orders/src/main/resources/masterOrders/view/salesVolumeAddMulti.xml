@@ -139,6 +139,9 @@
                             <option type="column" name="number" fields="number"/>
                             <option type="column" name="name" fields="name"/>
 
+                            <option type="searchable" value="name,number"/>
+                            <option type="orderable" value="name,number"/>
+
                             <option type="order" column="number" direction="desc" />
 
                             <option type="paginable" value="false" />

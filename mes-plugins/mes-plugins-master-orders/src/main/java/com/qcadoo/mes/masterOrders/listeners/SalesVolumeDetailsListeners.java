@@ -13,6 +13,7 @@ import com.qcadoo.plugin.api.PluginUtils;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
+import com.qcadoo.view.api.components.LookupComponent;
 import com.qcadoo.view.constants.QcadooViewConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -53,56 +54,66 @@ public class SalesVolumeDetailsListeners {
             BigDecimal optimalStock = BigDecimalUtils.convertNullToZero(salesVolume.getDecimalField(SalesVolumeFields.OPTIMAL_STOCK));
             BigDecimal currentStock = BigDecimalUtils.convertNullToZero(salesVolume.getDecimalField(SalesVolumeFields.CURRENT_STOCK));
 
-            Entity technology = technologyServiceO.getDefaultTechnology(product);
-            BigDecimal plannedQuantity = optimalStock.subtract(currentStock, numberService.getMathContext());
+            if (BigDecimal.ZERO.compareTo(optimalStock) == 0) {
+                view.addMessage("masterOrders.salesVolumeDetails.createOrder.info.optimalStock", ComponentState.MessageType.INFO);
+            } else {
+                if (currentStock.compareTo(optimalStock) <= 0) {
+                    view.addMessage("masterOrders.salesVolumeDetails.createOrder.info.currentStock", ComponentState.MessageType.INFO);
+                } else {
+                    Entity technology = technologyServiceO.getDefaultTechnology(product);
+                    BigDecimal plannedQuantity = optimalStock.subtract(currentStock, numberService.getMathContext());
 
-            if (Objects.nonNull(technology)) {
-                if (PluginUtils.isEnabled("minimalAffordableQuantity")) {
-                    BigDecimal minimalQuantity = technology.getDecimalField("minimalQuantity");
+                    if (Objects.nonNull(technology)) {
+                        if (PluginUtils.isEnabled("minimalAffordableQuantity")) {
+                            BigDecimal minimalQuantity = technology.getDecimalField("minimalQuantity");
 
-                    if (Objects.nonNull(minimalQuantity) && plannedQuantity.compareTo(minimalQuantity) < 0) {
-                        plannedQuantity = minimalQuantity;
+                            if (Objects.nonNull(minimalQuantity) && plannedQuantity.compareTo(minimalQuantity) < 0) {
+                                plannedQuantity = minimalQuantity;
+                            }
+                        }
+                    }
+
+                    Entity order = ordersGenerationService.createOrder(parameter, technology, product, plannedQuantity, null, null, null);
+
+                    if (order.isValid()) {
+                        Map<String, Object> parameters = Maps.newHashMap();
+
+                        parameters.put(L_WINDOW_ACTIVE_MENU, "orders.productionOrders");
+
+                        parameters.put("form.id", order.getId());
+
+                        String url = "../page/orders/orderDetails.html";
+
+                        view.redirectTo(url, false, true, parameters);
+                    } else {
+                        order.getGlobalErrors().stream().filter(error ->
+                                !error.getMessage().equals("qcadooView.validate.global.error.custom")).forEach(error ->
+                                view.addMessage(error.getMessage(), ComponentState.MessageType.FAILURE, error.getVars())
+                        );
+
+                        order.getErrors().values().forEach(error ->
+                                view.addMessage(error.getMessage(), ComponentState.MessageType.FAILURE, error.getVars())
+                        );
                     }
                 }
-            }
-
-            if (BigDecimal.ONE.compareTo(plannedQuantity) > 0) {
-                plannedQuantity = BigDecimal.ONE;
-            }
-
-            Entity order = ordersGenerationService.createOrder(parameter, technology, product, plannedQuantity, null, null, null);
-
-            if (order.isValid()) {
-                Map<String, Object> parameters = Maps.newHashMap();
-
-                parameters.put(L_WINDOW_ACTIVE_MENU, "orders.productionOrders");
-
-                parameters.put("form.id", order.getId());
-
-                String url = "../page/orders/orderDetails.html";
-
-                view.redirectTo(url, false, true, parameters);
-            } else {
-                order.getGlobalErrors().stream().filter(error ->
-                        !error.getMessage().equals("qcadooView.validate.global.error.custom")).forEach(error ->
-                        view.addMessage(error.getMessage(), ComponentState.MessageType.FAILURE, error.getVars())
-                );
-
-                order.getErrors().values().forEach(error ->
-                        view.addMessage(error.getMessage(), ComponentState.MessageType.FAILURE, error.getVars())
-                );
             }
         }
     }
 
     public void onQuantityChange(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         FormComponent salesVolumeForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
+        LookupComponent productLookup = (LookupComponent) view.getComponentByReference(SalesVolumeFields.PRODUCT);
 
         Entity salesVolume = salesVolumeForm.getEntity();
+        Entity product = productLookup.getEntity();
 
         salesVolumeHooks.fillStockFields(salesVolume);
 
-        salesVolumeForm.setEntity(salesVolume);
+        if (Objects.nonNull(product)) {
+            salesVolume.setField(SalesVolumeFields.PRODUCT, product);
+
+            salesVolumeForm.setEntity(salesVolume);
+        }
     }
 
 }
