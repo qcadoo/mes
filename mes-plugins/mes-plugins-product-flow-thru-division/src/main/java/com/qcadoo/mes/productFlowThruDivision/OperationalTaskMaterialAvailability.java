@@ -214,7 +214,7 @@ public class OperationalTaskMaterialAvailability {
     }
 
     private void deleteMaterialAvailability(final Entity operationalTask) {
-        EntityList operationalTaskMaterialAvailability = operationalTask.getHasManyField(OrderFieldsPFTD.MATERIAL_AVAILABILITY);
+        EntityList operationalTaskMaterialAvailability = operationalTask.getHasManyField(OperationalTaskFieldsPFTD.MATERIAL_AVAILABILITY);
 
         if (!operationalTaskMaterialAvailability.isEmpty()) {
             DataDefinition materialAvailabilityDD = getOperationalTaskMaterialAvailabilityDD();
