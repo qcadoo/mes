@@ -77,7 +77,7 @@
 
 							<criteriaModifier
 									class="com.qcadoo.mes.masterOrders.criteriaModifier.OrderedProductConfiguratorCriteriaModifiers"
-									method="restrictOrderedProductConfigurator"/>
+									method="restrictOrderedProductConfiguratorAttributes"/>
 						</component>
 					</layoutElement>
 				</component>

@@ -23,6 +23,7 @@
  */
 package com.qcadoo.mes.masterOrders.criteriaModifier;
 
+import com.qcadoo.mes.basic.constants.AttributeFields;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.view.api.components.lookup.FilterValueHolder;
@@ -35,9 +36,21 @@ public class OrderedProductConfiguratorCriteriaModifiers {
 
     public static final String ATTRIBUTE_IDS = "attributeIds";
 
-    public void restrictOrderedProductConfigurator(final SearchCriteriaBuilder scb, final FilterValueHolder filterValue) {
+    public static final String PRODUCT_IDS = "productIds";
+
+    public void restrictOrderedProductConfiguratorAttributes(final SearchCriteriaBuilder scb, final FilterValueHolder filterValue) {
         if (filterValue.has(ATTRIBUTE_IDS)) {
             List<Long> ids = filterValue.getListOfLongs(ATTRIBUTE_IDS);
+
+            scb.add(SearchRestrictions.not(SearchRestrictions.in("id", ids)));
+        }
+
+        scb.add(SearchRestrictions.eq(AttributeFields.FOR_RESOURCE, true));
+    }
+
+    public void restrictOrderedProductConfiguratorProducts(final SearchCriteriaBuilder scb, final FilterValueHolder filterValue) {
+        if (filterValue.has(PRODUCT_IDS)) {
+            List<Long> ids = filterValue.getListOfLongs(PRODUCT_IDS);
 
             scb.add(SearchRestrictions.not(SearchRestrictions.in("id", ids)));
         }

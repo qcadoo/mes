@@ -248,8 +248,7 @@
         </model:model-field>
 
         <model:model-field plugin="basic" model="product">
-            <model:manyToMany name="orderedProductConfigurators" model="orderedProductConfigurator" plugin="masterOrders"
-                              joinField="products"/>
+                <model:belongsTo name="orderedProductConfigurator" model="orderedProductConfigurator" plugin="masterOrders"/>
         </model:model-field>
 
         <model:model-hook model="order" plugin="orders">

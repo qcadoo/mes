@@ -96,6 +96,10 @@
                         <option type="fieldCode" value="number"/>
 
                         <option type="multiselect" value="true"/>
+
+                        <criteriaModifier
+                                class="com.qcadoo.mes.masterOrders.criteriaModifier.OrderedProductConfiguratorCriteriaModifiers"
+                                method="restrictOrderedProductConfiguratorProducts"/>
                     </component>
                     <component type="grid" name="products" reference="products"
                                source="#{form}.products">
@@ -123,4 +127,8 @@
 
     </component>
 
+    <hooks>
+        <beforeRender class="com.qcadoo.mes.masterOrders.hooks.OrderedProductConfiguratorDetailsHooks"
+                      method="onBeforeRender"/>
+    </hooks>
 </view>

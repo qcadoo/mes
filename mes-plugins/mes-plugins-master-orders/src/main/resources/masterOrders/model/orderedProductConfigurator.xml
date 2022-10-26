@@ -39,7 +39,7 @@
         <hasMany name="orderedProductConfiguratorAttributes" model="orderedProductConfiguratorAttribute" joinField="orderedProductConfigurator"
                  cascade="delete" copyable="false"/>
 
-        <manyToMany name="products" model="product" plugin="basic" joinField="orderedProductConfigurators"/>
+        <hasMany name="products" model="product" plugin="basic" joinField="orderedProductConfigurator"/>
     </fields>
 
     <hooks />

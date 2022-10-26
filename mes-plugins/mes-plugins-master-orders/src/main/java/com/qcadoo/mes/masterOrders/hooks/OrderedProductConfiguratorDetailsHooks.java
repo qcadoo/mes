@@ -23,13 +23,12 @@
  */
 package com.qcadoo.mes.masterOrders.hooks;
 
-import com.qcadoo.mes.masterOrders.constants.OrderedProductConfiguratorAttributeFields;
 import com.qcadoo.mes.masterOrders.constants.OrderedProductConfiguratorFields;
 import com.qcadoo.mes.masterOrders.criteriaModifier.OrderedProductConfiguratorCriteriaModifiers;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
-import com.qcadoo.view.api.components.GridComponent;
+import com.qcadoo.view.api.components.LookupComponent;
 import com.qcadoo.view.api.components.lookup.FilterValueHolder;
 import com.qcadoo.view.constants.QcadooViewConstants;
 import org.springframework.stereotype.Service;
@@ -38,38 +37,37 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-public class OrderedProductConfiguratorAttributeDetailsHooks {
+public class OrderedProductConfiguratorDetailsHooks {
+
+    private static final String L_PRODUCT_LOOKUP = "productLookup";
 
     public void onBeforeRender(final ViewDefinitionState view) {
         setCriteriaModifierParameters(view);
     }
 
     public void setCriteriaModifierParameters(final ViewDefinitionState view) {
-        FormComponent orderedProductConfiguratorAttributeForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
-        GridComponent attributesGrid = (GridComponent) view.getComponentByReference(QcadooViewConstants.L_GRID);
+        FormComponent orderedProductConfiguratorForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
+        LookupComponent productLookup = (LookupComponent) view.getComponentByReference(L_PRODUCT_LOOKUP);
 
-        Entity orderedProductConfiguratorAttribute = orderedProductConfiguratorAttributeForm.getPersistedEntityWithIncludedFormValues();
+        Entity orderedProductConfigurator = orderedProductConfiguratorForm.getPersistedEntityWithIncludedFormValues();
 
-        Entity orderedProductConfigurator = orderedProductConfiguratorAttribute.getBelongsToField(OrderedProductConfiguratorAttributeFields.ORDERED_PRODUCT_CONFIGURATOR);
+        List<Entity> products = orderedProductConfigurator.getHasManyField(OrderedProductConfiguratorFields.PRODUCTS);
 
-        List<Entity> orderedProductConfiguratorAttributes = orderedProductConfigurator.getHasManyField(OrderedProductConfiguratorFields.ORDERED_PRODUCT_CONFIGURATOR_ATTRIBUTES);
+        List<Long> productIds = getProductIds(products);
 
-        List<Long> attributeIds = getAttributesIds(orderedProductConfiguratorAttributes);
+        FilterValueHolder filterValueHolder = productLookup.getFilterValue();
 
-        FilterValueHolder filterValueHolder = attributesGrid.getFilterValue();
-
-        if (attributeIds.isEmpty()) {
-            filterValueHolder.remove(OrderedProductConfiguratorCriteriaModifiers.ATTRIBUTE_IDS);
+        if (productIds.isEmpty()) {
+            filterValueHolder.remove(OrderedProductConfiguratorCriteriaModifiers.PRODUCT_IDS);
         } else {
-            filterValueHolder.put(OrderedProductConfiguratorCriteriaModifiers.ATTRIBUTE_IDS, attributeIds);
+            filterValueHolder.put(OrderedProductConfiguratorCriteriaModifiers.PRODUCT_IDS, productIds);
         }
 
-        attributesGrid.setFilterValue(filterValueHolder);
+        productLookup.setFilterValue(filterValueHolder);
     }
 
-    private List<Long> getAttributesIds(final List<Entity> orderedProductConfiguratorAttributes) {
-        return orderedProductConfiguratorAttributes.stream().map(orderedProductConfiguratorAttribute ->
-                orderedProductConfiguratorAttribute.getBelongsToField(OrderedProductConfiguratorAttributeFields.ATTRIBUTE).getId()).collect(Collectors.toList());
+    private List<Long> getProductIds(final List<Entity> products) {
+        return products.stream().map(Entity::getId).collect(Collectors.toList());
     }
 
 }
