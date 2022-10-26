@@ -24,23 +24,17 @@
     ***************************************************************************
 
 -->
-<model name="masterOrderProductAttrValue" activable="false" auditable="false" versionable="false"
-       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
+<model name="orderedProductConfiguratorAttribute" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns="http://schema.qcadoo.org/model"
        xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
 
     <fields>
-        <belongsTo name="masterOrderProduct" model="masterOrderProduct" required="true"/>
-        <belongsTo name="attribute" model="attribute" plugin="basic" required="true"/>
-        <belongsTo name="attributeValue" model="attributeValue" plugin="basic"/>
-        <string name="value"/>
+        <belongsTo name="orderedProductConfigurator" model="orderedProductConfigurator" required="true"/>
+        <belongsTo name="attribute" model="attribute" plugin="basic"/>
+
+        <priority name="succession" scope="orderedProductConfigurator"/>
     </fields>
 
-    <hooks>
-        <validatesWith class="com.qcadoo.mes.masterOrders.hooks.MasterOrderProductAttrValueHooks"
-                       method="validate"/>
-        <onSave class="com.qcadoo.mes.masterOrders.hooks.MasterOrderProductAttrValueHooks"
-                method="onSave"/>
-    </hooks>
+    <hooks/>
 
-    <identifier expression="#value"/>
 </model>

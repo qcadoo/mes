@@ -23,14 +23,14 @@
  */
 package com.qcadoo.mes.costCalculation.print;
 
-import com.qcadoo.model.api.Entity;
-
 import java.math.BigDecimal;
+
+import com.qcadoo.model.api.Entity;
 
 public interface ProductsCostCalculationService {
 
     BigDecimal calculateOperationProductCostPerUnit(Entity costCalculation, Entity product, Entity operationProductComponent);
 
     BigDecimal calculateProductCostPerUnit(final Entity product, final String materialCostsUsed,
-            final boolean useNominalCostPriceNotSpecified);
+                                           final boolean useNominalCostPriceNotSpecified, final Entity offer);
 }

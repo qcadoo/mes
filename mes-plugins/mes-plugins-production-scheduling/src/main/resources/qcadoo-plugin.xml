@@ -83,6 +83,10 @@
 			<model:hasMany name="orderTimeCalculations" model="orderTimeCalculation" plugin="productionScheduling" joinField="order"/>
 		</model:model-field>
 
+		<model:model-field plugin="orders" model="productionLineSchedule">
+			<model:hasMany name="orderTimeCalculations" model="planOrderTimeCalculation" plugin="productionScheduling" joinField="productionLineSchedule" cascade="delete"/>
+		</model:model-field>
+
 		<model:model-field plugin="orders" model="order">
 			<model:integer name="realizationTime" />
 		</model:model-field>

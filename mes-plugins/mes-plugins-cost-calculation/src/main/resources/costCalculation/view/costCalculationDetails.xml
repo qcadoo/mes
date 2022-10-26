@@ -144,20 +144,39 @@
 
         <windowTab name="inputDataTab">
             <component type="gridLayout" name="inputData" reference="inputData"
-                       columns="3" rows="8" hasBorders="false">
-                <layoutElement column="1" row="1" height="2">
+                       columns="3" rows="9" hasBorders="false">
+                <layoutElement column="1" row="1" height="3">
                     <component type="borderLayout" name="parametersBorderLayout"
                                reference="parametersBorderLayout">
                         <component type="gridLayout" name="parametersGridLayout"
-                                   reference="parametersGridLayout" columns="1" rows="2">
+                                   reference="parametersGridLayout" columns="1" rows="3">
                             <layoutElement column="1" row="1">
                                 <component type="select" name="materialCostsUsed"
                                            reference="materialCostsUsed"
                                            field="#{form}.materialCostsUsed">
                                     <option type="labelWidth" value="40"/>
+                                    <listener event="onSelectedEntityChange"
+                                              class="com.qcadoo.view.api.listeners.RerenderListener"
+                                              method="onChangeRerender"/>
                                 </component>
                             </layoutElement>
                             <layoutElement column="1" row="2">
+                                <component type="lookup" name="offer" field="#{form}.offer"
+                                           reference="offer">
+                                    <option type="column" name="name" fields="name" link="true"/>
+
+                                    <option type="searchable" value="name"/>
+                                    <option type="orderable" value="name"/>
+
+                                    <option type="expression" value="#number"/>
+                                    <option type="fieldCode" value="number"/>
+                                    <option type="labelWidth" value="40"/>
+                                    <criteriaModifier
+                                            class="com.qcadoo.mes.supplyNegotiations.criteriaModifiers.OfferCriteriaModifiers"
+                                            method="showAcceptedOffers"/>
+                                </component>
+                            </layoutElement>
+                            <layoutElement column="1" row="3">
                                 <component type="checkbox" name="useNominalCostPriceNotSpecified"
                                            field="#{form}.useNominalCostPriceNotSpecified"
                                            reference="useNominalCostPriceNotSpecified" hasDescription="true">
@@ -168,7 +187,7 @@
                         <option type="label" value="materialCostsParameters"/>
                     </component>
                 </layoutElement>
-                <layoutElement column="1" row="3" height="6">
+                <layoutElement column="1" row="4" height="6">
                     <component type="borderLayout" name="operationCostsParametersBorderLayout">
                         <component type="gridLayout" name="operationCostsParametersGidLayout"
                                    columns="6" rows="6" hasBorders="false">

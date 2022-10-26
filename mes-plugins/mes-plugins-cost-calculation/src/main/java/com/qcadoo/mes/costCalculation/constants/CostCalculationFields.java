@@ -87,4 +87,6 @@ public final class CostCalculationFields {
 
     public static final String PDF = "pdf";
 
+    public static final String OFFER = "offer";
+
 }

@@ -44223,13 +44223,13 @@ COPY qcadooplugin_plugin (id, identifier, version, state, issystem, entityversio
 53	warehouseMinimalState	1.5.0	ENABLED	f	0	other	AGPL
 102	esilco	1.5.0	DISABLED	f	0	\N	Commercial
 151	integrationScales	1.5.0	DISABLED	f	0	\N	Commercial
-154	scheduleGantt	1.5.0	DISABLED	f	0	\N	Commercial
 150	integrationAsana	1.5.0	DISABLED	f	0	\N	Commercial
 68	advancedGenealogyForOrders	1.5.0	ENABLED	f	0	genealogy	Commercial
-156	oee	1.5.0	DISABLED	f	0	\N	\N
 157	luxon	1.5.0	DISABLED	f	0	\N	\N
 158	configurator	1.5.0	ENABLED	f	0	\N	\N
 155	qualityControl	1.5.0	ENABLED	f	0	\N	\N
+154	scheduleGantt	1.5.0	ENABLED	f	0	\N	Commercial
+156	oee	1.5.0	ENABLED	f	0	\N	\N
 \.
 
 

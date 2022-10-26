@@ -31,6 +31,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.supplyNegotiations.SupplyNegotiationsService;
+import com.qcadoo.mes.supplyNegotiations.constants.OfferFields;
+import com.qcadoo.mes.supplyNegotiations.states.constants.OfferStateStringValues;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchQueryBuilder;
@@ -48,7 +50,7 @@ public class OfferCriteriaModifiers {
                 .find("select offerProduct from #supplyNegotiations_offerProduct as offerProduct INNER JOIN offerProduct.offer as offer WHERE offer.active = 'true'");
 
         List<Entity> offerProductsList = sqb.list().getEntities();
-        List<Long> offerProductsListLong = new ArrayList<Long>();
+        List<Long> offerProductsListLong = new ArrayList<>();
 
         for (Entity entity : offerProductsList) {
             offerProductsListLong.add(entity.getId());
@@ -60,6 +62,11 @@ public class OfferCriteriaModifiers {
         } else {
             scb.add(SearchRestrictions.in("id", offerProductsListLong));
         }
+    }
+
+    public void showAcceptedOffers(final SearchCriteriaBuilder scb) {
+        scb.add(SearchRestrictions.eq(OfferFields.STATE, OfferStateStringValues.ACCEPTED));
+        scb.add(SearchRestrictions.eq("active", true));
     }
 
 }

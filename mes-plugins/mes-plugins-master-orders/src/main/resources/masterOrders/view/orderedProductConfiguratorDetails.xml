@@ -1,0 +1,134 @@
+<!--
+
+    ***************************************************************************
+    Copyright (c) 2010 Qcadoo Limited
+    Project: Qcadoo MES
+    Version: 1.4
+
+    This file is part of Qcadoo.
+
+    Qcadoo is free software; you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as published
+    by the Free Software Foundation; either version 3 of the License,
+    or (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty
+    of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+    See the GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+    ***************************************************************************
+
+-->
+<view defaultAuthorizationRole="ROLE_PLANNING" name="orderedProductConfiguratorDetails" modelName="orderedProductConfigurator"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
+      xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd">
+
+    <component type="window" name="window" reference="window">
+
+        <ribbon>
+            <template name="standardFormTemplate"/>
+        </ribbon>
+
+        <windowTab name="mainTab">
+            <component type="form" name="orderedProductConfiguratorDetails" reference="form">
+                <component type="gridLayout" name="gridLayout" columns="3"
+                           rows="8">
+                    <layoutElement column="1" row="1">
+                        <component type="input" name="number" field="number"
+                                   reference="number">
+                            <option type="alignment" value="right"/>
+                        </component>
+                    </layoutElement>
+                    <layoutElement column="1" row="2" height="2">
+                        <component type="textarea" name="name" field="name"
+                                   reference="name"/>
+                    </layoutElement>
+                    <layoutElement column="1" row="4" width="3" height="5">
+                        <component type="grid" name="orderedProductConfiguratorAttributes" reference="orderedProductConfiguratorAttributes"
+                                   source="#{form}.orderedProductConfiguratorAttributes">
+                            <option type="column" name="attributeNumber" fields="attribute"
+                                    expression="#attribute['number']"/>
+                            <option type="column" name="attributeName" fields="attribute"
+                                    expression="#attribute['name']"/>
+                            <option type="column" name="succession" fields="succession" width="30"/>
+
+                            <option type="order" column="succession" direction="asc"/>
+
+                            <option type="searchable" value="attributeNumber,attributeName,succession"/>
+                            <option type="orderable" value="attributeNumber,attributeName,succession"/>
+
+                            <option type="correspondingView" value="masterOrders/orderedProductConfiguratorAttributeDetails"/>
+                            <option type="correspondingComponent" value="form"/>
+                            <option type="correspondingViewInModal" value="true"/>
+
+                            <option type="multiselect" value="true"/>
+                            <option type="creatable" value="true"/>
+                            <option type="deletable" value="true"/>
+
+                            <option type="header" value="true"/>
+                        </component>
+                    </layoutElement>
+                </component>
+
+                <option type="header" value="true"/>
+                <option type="expression" value="#number"/>
+            </component>
+        </windowTab>
+
+        <windowTab name="productsTab">
+            <component type="gridLayout" name="productsGridLayout" columns="1"
+                       rows="1">
+                <layoutElement column="1" row="1">
+                    <component type="lookup" name="productLookup" reference="productLookup"
+                               field="#{form}.products" defaultVisible="false" persistent="false"
+                               hasLabel="false">
+                        <option type="column" name="name" fields="name" link="true"/>
+                        <option type="column" name="entityType" fields="entityType"/>
+
+                        <option type="searchable" value="number,name,entityType"/>
+                        <option type="orderable" value="number,name,entityType"/>
+
+                        <option type="expression" value="#number"/>
+                        <option type="fieldCode" value="number"/>
+
+                        <option type="multiselect" value="true"/>
+
+                        <criteriaModifier
+                                class="com.qcadoo.mes.masterOrders.criteriaModifier.OrderedProductConfiguratorCriteriaModifiers"
+                                method="restrictOrderedProductConfiguratorProducts"/>
+                    </component>
+                    <component type="grid" name="products" reference="products"
+                               source="#{form}.products">
+                        <option type="column" name="number" fields="number"/>
+                        <option type="column" name="name" fields="name"/>
+                        <option type="column" name="entityType" fields="entityType"/>
+
+                        <option type="order" column="number" direction="asc"/>
+
+                        <option type="searchable" value="number,name,entityType"/>
+                        <option type="orderable" value="number,name,entityType"/>
+
+                        <option type="correspondingLookup" value="productLookup"/>
+
+                        <option type="weakRelation" value="true"/>
+
+                        <option type="creatable" value="true"/>
+                        <option type="deletable" value="true"/>
+                        <option type="multiselect" value="true"/>
+                        <option type="fixedHeight" value="true"/>
+                    </component>
+                </layoutElement>
+            </component>
+        </windowTab>
+
+    </component>
+
+    <hooks>
+        <beforeRender class="com.qcadoo.mes.masterOrders.hooks.OrderedProductConfiguratorDetailsHooks"
+                      method="onBeforeRender"/>
+    </hooks>
+</view>

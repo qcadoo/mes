@@ -34,12 +34,10 @@ import com.qcadoo.mes.costCalculation.print.dto.ComponentsCalculationHolder;
 import com.qcadoo.mes.costCalculation.print.dto.CostCalculationMaterial;
 import com.qcadoo.mes.costCalculation.print.dto.CostCalculationMaterialBySize;
 import com.qcadoo.mes.costNormsForOperation.constants.CalculationOperationComponentFields;
-import com.qcadoo.mes.materialFlowResources.palletBalance.PalletBalanceXlsService;
 import com.qcadoo.mes.technologies.TechnologyService;
 import com.qcadoo.mes.technologies.constants.OperationFields;
 import com.qcadoo.mes.technologies.constants.OperationProductOutComponentFields;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
-import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
 import com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperationComponentFieldsTNFO;
 import com.qcadoo.model.api.BigDecimalUtils;
 import com.qcadoo.model.api.DataDefinition;
@@ -332,13 +330,13 @@ public class CostCalculationXlsService extends XlsDocumentService {
         int rowCounter = 0;
         DataDefinition productDataDefinition = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER,
                 BasicConstants.MODEL_PRODUCT);
-        DataDefinition currencyDataDefinition = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER,
-                BasicConstants.MODEL_CURRENCY);
+        Entity offer = entity.getBelongsToField(CostCalculationFields.OFFER);
         for (CostCalculationMaterialBySize costCalculationMaterialBySize : costCalculationService.getMaterialsBySize(entity)) {
-            Entity product = costCalculationMaterialBySize.getProductEntity(productDataDefinition, currencyDataDefinition);
+            Entity product = productDataDefinition.get(costCalculationMaterialBySize.getMaterialId());
             BigDecimal costPerUnit = productsCostCalculationService.calculateProductCostPerUnit(product,
                     entity.getStringField(CostCalculationFields.MATERIAL_COSTS_USED),
-                    entity.getBooleanField(CostCalculationFields.USE_NOMINAL_COST_PRICE_NOT_SPECIFIED));
+                    entity.getBooleanField(CostCalculationFields.USE_NOMINAL_COST_PRICE_NOT_SPECIFIED),
+                    offer);
 
             BigDecimal quantity = entity.getDecimalField(CostCalculationFields.QUANTITY)
                     .multiply(costCalculationMaterialBySize.getQuantity(), numberService.getMathContext());
@@ -350,7 +348,7 @@ public class CostCalculationXlsService extends XlsDocumentService {
             createRegularCell(stylesContainer, row, 1, costCalculationMaterialBySize.getProductNumber());
             createRegularCell(stylesContainer, row, 2, costCalculationMaterialBySize.getTechnologyInputProductType());
             createRegularCell(stylesContainer, row, 3, costCalculationMaterialBySize.getSizeGroupNumber());
-            createRegularCell(stylesContainer, row, 4, costCalculationMaterialBySize.getMaterialNumber());
+            createRegularCell(stylesContainer, row, 4, product.getStringField(ProductFields.NUMBER));
             createNumericCell(stylesContainer, row, 5, numberService.setScaleWithDefaultMathContext(quantity));
             createRegularCell(stylesContainer, row, 6, costCalculationMaterialBySize.getUnit());
             createNumericCell(stylesContainer, row, 7, costPerUnit);

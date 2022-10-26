@@ -31,7 +31,7 @@
 
     <component type="window" name="window" reference="window">
         <ribbon>
-            <template name="standardGridTemplate"/>
+            <template name="standardGridTemplate" excludeItems="actions.copy"/>
 
             <group name="salesVolumes">
                 <bigButton name="addSalesVolumes" icon="newIcon24.png" action="#{grid}.fireEvent(addSalesVolumes);"/>
@@ -56,9 +56,9 @@
             <option type="order" column="number" direction="desc"/>
 
             <option type="searchable"
-                    value="productNumber,productName,productUnit,dailySalesVolume,optimalStock,currentStock,stockForDays"/>
+                    value="productNumber,productName,productUnit,dailySalesVolume,optimalStock"/>
             <option type="orderable"
-                    value="productNumber,productName,productUnit,dailySalesVolume,optimalStock,currentStock,stockForDays"/>
+                    value="productNumber,productName,productUnit,dailySalesVolume,optimalStock"/>
 
             <option type="fullscreen" value="true"/>
             <option type="multiselect" value="true"/>

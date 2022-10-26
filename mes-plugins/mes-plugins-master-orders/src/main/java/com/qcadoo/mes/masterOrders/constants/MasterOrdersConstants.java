@@ -41,6 +41,8 @@ public final class MasterOrdersConstants {
 
     public static final String MODEL_MASTER_ORDER_POSITION_DTO = "masterOrderPositionDto";
 
+    public static final String MASTER_ORDER_PRODUCT_ATTR_VALUE = "masterOrderProductAttrValue";
+
     public static final String MODEL_MASTER_ORDER_DTO = "masterOrderDto";
 
     public static final String GENERATING_ORDERS_HELPER = "generatingOrdersHelper";
@@ -81,8 +83,11 @@ public final class MasterOrdersConstants {
 
     public static final String MODEL_SALES_VOLUME_MULTI = "salesVolumeMulti";
 
-    public static String masterOrderDetailsUrl(Long id) {
+    public static final String MODEL_ORDERED_PRODUCT_CONFIGURATOR = "orderedProductConfigurator";
 
+    public static final String MODEL_ORDERED_PRODUCT_CONFIGURATOR_ATTRIBUTE = "orderedProductConfiguratorAttribute";
+
+    public static String masterOrderDetailsUrl(final Long id) {
         return "#page/" + PLUGIN_IDENTIFIER + "/" + MODEL_MASTER_ORDER + "Details.html?context=%7B%22form.id%22%3A%22" + id
                 + "%22%2C%22form.undefined%22%3Anull%7D";
     }

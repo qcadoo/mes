@@ -266,8 +266,6 @@
 
         <security:role identifier="ROLE_FORMS"/>
 
-        <security:role identifier="ROLE_ORDERS_PROGRESS_GANTT_CHART"/>
-
         <security:role identifier="ROLE_OPERATIONAL_TASKS_GANTT_VIEW"/>
 
         <security:role identifier="ROLE_OPERATIONAL_TASKS_GANTT_EDIT"/>
