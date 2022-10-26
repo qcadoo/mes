@@ -80,7 +80,7 @@ public class TechnologyStateValidationServicePFTD {
             checkIfForOneDivisionLocationIsSet(technology, stateChangeContext);
             checkIfLocationInOperationIsSet(technology, stateChangeContext);
 
-            if(TypeOfProductionRecording.CUMULATED.getStringValue()
+/*            if(TypeOfProductionRecording.CUMULATED.getStringValue()
                     .equals(technology.getStringField(TechnologyFieldsPC.TYPE_OF_PRODUCTION_RECORDING))) {
                 List<Long> ids = operationComponentDataProvider.getComponentsForTechnology(technology.getId());
                 if (ids.isEmpty()) {
@@ -96,7 +96,7 @@ public class TechnologyStateValidationServicePFTD {
                 if(!allSameLocation) {
                     stateChangeContext.addValidationError("productFlowThruDivision.location.components.locationsAreDifferent");
                 }
-            }
+            }*/
         }
 
     }

@@ -189,7 +189,7 @@ public final class ProductionTrackingListenerServicePFTD {
             return;
         }
 
-        boolean cumulated = TypeOfProductionRecording.CUMULATED.getStringValue().equals(
+/*        boolean cumulated = TypeOfProductionRecording.CUMULATED.getStringValue().equals(
                 order.getStringField(OrderFieldsPC.TYPE_OF_PRODUCTION_RECORDING));
 
         if(cumulated) {
@@ -203,7 +203,7 @@ public final class ProductionTrackingListenerServicePFTD {
                     return;
                 }
             }
-        }
+        }*/
 
         String receiptOfProducts = parameterService.getParameter().getStringField(ParameterFieldsPC.RECEIPT_OF_PRODUCTS);
 
