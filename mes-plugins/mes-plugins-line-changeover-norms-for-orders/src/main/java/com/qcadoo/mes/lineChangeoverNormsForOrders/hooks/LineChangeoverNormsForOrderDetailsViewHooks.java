@@ -23,10 +23,6 @@
  */
 package com.qcadoo.mes.lineChangeoverNormsForOrders.hooks;
 
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.qcadoo.mes.lineChangeoverNorms.ChangeoverNormsSearchService;
 import com.qcadoo.mes.lineChangeoverNorms.ChangeoverNormsService;
 import com.qcadoo.mes.lineChangeoverNorms.constants.LineChangeoverNormsFields;
@@ -44,11 +40,34 @@ import com.qcadoo.view.api.components.WindowComponent;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.api.ribbon.RibbonGroup;
 import com.qcadoo.view.constants.QcadooViewConstants;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.Objects;
 
 @Service
 public class LineChangeoverNormsForOrderDetailsViewHooks {
 
+    private static final String L_ORDERS = "orders";
 
+    private static final String L_SHOW_PREVIOUS_ORDER = "showPreviousOrder";
+
+    private static final String L_LINE_CHANGEOVER_NORMS = "lineChangeoverNorms";
+
+    private static final String L_SHOW_BEST_FITTING_LINE_CHANGEOVER_NORM = "showBestFittingLineChangeoverNorm";
+
+    private static final String L_SHOW_LINE_CHANGEOVER_NORM_FOR_GROUP = "showLineChangeoverNormForGroup";
+
+    private static final String L_SHOW_LINE_CHANGEOVER_NORM_FOR_TECHNOLOGY = "showLineChangeoverNormForTechnology";
+
+    private static final String L_PREVIOUS_ORDER_TECHNOLOGY_GROUP_NUMBER = "previousOrderTechnologyGroupNumber";
+
+    private static final String L_TECHNOLOGY_GROUP_NUMBER = "technologyGroupNumber";
+
+    private static final String L_PREVIOUS_ORDER_TECHNOLOGY_NUMBER = "previousOrderTechnologyNumber";
+
+    private static final String L_TECHNOLOGY_NUMBER = "technologyNumber";
 
     @Autowired
     private OrderService orderService;
@@ -68,9 +87,10 @@ public class LineChangeoverNormsForOrderDetailsViewHooks {
         LookupComponent orderLookup = (LookupComponent) view.getComponentByReference(OrderFieldsLCNFO.ORDER);
         LookupComponent previousOrderLookup = (LookupComponent) view.getComponentByReference(OrderFieldsLCNFO.PREVIOUS_ORDER);
 
-        if (orderForm.getEntityId() == null) {
+        if (Objects.isNull(orderForm.getEntityId())) {
             return;
         }
+
         Entity order = orderForm.getPersistedEntityWithIncludedFormValues();
 
         orderLookup.setFieldValue(order.getId());
@@ -81,7 +101,7 @@ public class LineChangeoverNormsForOrderDetailsViewHooks {
         if (previousOrderLookup.isEmpty()) {
             Entity previousOrder = lineChangeoverNormsForOrdersService.getPreviousOrderFromDB(order);
 
-            if (previousOrder != null) {
+            if (Objects.nonNull(previousOrder)) {
                 previousOrderLookup.setFieldValue(previousOrder.getId());
                 previousOrderLookup.requestComponentUpdateState();
 
@@ -101,14 +121,14 @@ public class LineChangeoverNormsForOrderDetailsViewHooks {
 
         Entity order = orderLookup.getEntity();
 
-        if (order == null) {
+        if (Objects.isNull(order)) {
             return null;
         }
 
         Entity fromTechnology = extractTechnologyPrototypeFrom(previousOrderLookup.getEntity());
         Entity toTechnology = extractTechnologyPrototypeFrom(order);
 
-        if (fromTechnology == null || toTechnology == null) {
+        if (Objects.isNull(fromTechnology) || Objects.isNull(toTechnology)) {
             return null;
         }
 
@@ -118,7 +138,7 @@ public class LineChangeoverNormsForOrderDetailsViewHooks {
     }
 
     private Entity extractTechnologyPrototypeFrom(final Entity order) {
-        if (order == null) {
+        if (Objects.isNull(order)) {
             return null;
         }
 
@@ -130,7 +150,7 @@ public class LineChangeoverNormsForOrderDetailsViewHooks {
         FieldComponent lineChangeoverNormDurationField = (FieldComponent) view
                 .getComponentByReference("lineChangeoverNormDuration");
 
-        if (lineChangeoverNorm == null) {
+        if (Objects.isNull(lineChangeoverNorm)) {
             lineChangeoverNormField.setFieldValue(null);
             lineChangeoverNormDurationField.setFieldValue(null);
         } else {
@@ -144,33 +164,35 @@ public class LineChangeoverNormsForOrderDetailsViewHooks {
 
     public void updateRibbonState(final ViewDefinitionState view) {
         FieldComponent productionLineField = (FieldComponent) view.getComponentByReference(OrderFields.PRODUCTION_LINE);
-
         LookupComponent previousOrderLookup = (LookupComponent) view.getComponentByReference(OrderFieldsLCNFO.PREVIOUS_ORDER);
-
         LookupComponent lineChangeoverNormLookup = (LookupComponent) view.getComponentByReference(OrderFieldsLCNFO.LINE_CHANGEOVER_NORM);
-
         FieldComponent previousOrderTechnologyGroupNumberField = (FieldComponent) view
-                .getComponentByReference("previousOrderTechnologyGroupNumber");
-        FieldComponent technologyGroupNumberField = (FieldComponent) view.getComponentByReference("technologyGroupNumber");
-
+                .getComponentByReference(L_PREVIOUS_ORDER_TECHNOLOGY_GROUP_NUMBER);
+        FieldComponent technologyGroupNumberField = (FieldComponent) view.getComponentByReference(L_TECHNOLOGY_GROUP_NUMBER);
         FieldComponent previousOrderTechnologyNumberField = (FieldComponent) view
-                .getComponentByReference("previousOrderTechnologyNumber");
-        FieldComponent technologyNumberField = (FieldComponent) view.getComponentByReference("technologyNumber");
+                .getComponentByReference(L_PREVIOUS_ORDER_TECHNOLOGY_NUMBER);
+        FieldComponent technologyNumberField = (FieldComponent) view.getComponentByReference(L_TECHNOLOGY_NUMBER);
 
         WindowComponent window = (WindowComponent) view.getComponentByReference(QcadooViewConstants.L_WINDOW);
-        RibbonGroup orders = window.getRibbon().getGroupByName("orders");
-        RibbonGroup lineChangeoverNorms = window.getRibbon().getGroupByName("lineChangeoverNorms");
 
-        RibbonActionItem showPreviousOrder = orders.getItemByName("showPreviousOrder");
+        RibbonGroup orders = window.getRibbon().getGroupByName(L_ORDERS);
+        RibbonActionItem showPreviousOrder = orders.getItemByName(L_SHOW_PREVIOUS_ORDER);
 
+        RibbonGroup lineChangeoverNorms = window.getRibbon().getGroupByName(L_LINE_CHANGEOVER_NORMS);
         RibbonActionItem showBestFittingLineChangeoverNorm = lineChangeoverNorms
-                .getItemByName("showBestFittingLineChangeoverNorm");
-        RibbonActionItem showChangeoverNormForGroup = lineChangeoverNorms.getItemByName("showLineChangeoverNormForGroup");
+                .getItemByName(L_SHOW_BEST_FITTING_LINE_CHANGEOVER_NORM);
+        RibbonActionItem showChangeoverNormForGroup = lineChangeoverNorms.getItemByName(L_SHOW_LINE_CHANGEOVER_NORM_FOR_GROUP);
         RibbonActionItem showChangeoverNormForTechnology = lineChangeoverNorms
-                .getItemByName("showLineChangeoverNormForTechnology");
+                .getItemByName(L_SHOW_LINE_CHANGEOVER_NORM_FOR_TECHNOLOGY);
 
-        Entity productionLine = lineChangeoverNormsForOrdersService.getProductionLineFromDB((Long) productionLineField
-                .getFieldValue());
+        Long productionLineId = (Long) productionLineField
+                .getFieldValue();
+
+        Entity productionLine = null;
+
+        if (Objects.nonNull(productionLineId)) {
+            productionLine = lineChangeoverNormsForOrdersService.getProductionLineFromDB(productionLineId);
+        }
 
         boolean hasDefinedPreviousOrder = !previousOrderLookup.isEmpty();
         updateButtonState(showPreviousOrder, hasDefinedPreviousOrder);
@@ -187,14 +209,12 @@ public class LineChangeoverNormsForOrderDetailsViewHooks {
             Entity toTechnologyGroup = lineChangeoverNormsForOrdersService
                     .getTechnologyGroupByNumberFromDB((String) technologyGroupNumberField.getFieldValue());
 
-            if ((changeoverNormsSearchService.searchMatchingChangeroverNormsForTechnologyGroupWithLine(fromTechnologyGroup,
-                    toTechnologyGroup, productionLine) == null)
-                    && (changeoverNormsSearchService.searchMatchingChangeroverNormsForTechnologyGroupWithLine(
-                            fromTechnologyGroup, toTechnologyGroup, null) == null)) {
-                updateButtonState(showChangeoverNormForGroup, false);
-            } else {
-                updateButtonState(showChangeoverNormForGroup, true);
-            }
+            boolean isEnabled = Objects.nonNull(changeoverNormsSearchService.searchMatchingChangeoverNormsForTechnologyGroupWithLine(fromTechnologyGroup,
+                    toTechnologyGroup, productionLine))
+                    || Objects.nonNull(changeoverNormsSearchService.searchMatchingChangeoverNormsForTechnologyGroupWithLine(
+                    fromTechnologyGroup, toTechnologyGroup, null));
+
+            updateButtonState(showChangeoverNormForGroup, isEnabled);
         }
 
         if (StringUtils.isEmpty((String) previousOrderTechnologyNumberField.getFieldValue())
@@ -206,14 +226,12 @@ public class LineChangeoverNormsForOrderDetailsViewHooks {
             Entity toTechnology = lineChangeoverNormsForOrdersService.getTechnologyByNumberFromDB((String) technologyNumberField
                     .getFieldValue());
 
-            if ((changeoverNormsSearchService.searchMatchingChangeroverNormsForTechnologyWithLine(fromTechnology, toTechnology,
-                    productionLine) == null)
-                    && (changeoverNormsSearchService.searchMatchingChangeroverNormsForTechnologyWithLine(fromTechnology,
-                            toTechnology, null) == null)) {
-                updateButtonState(showChangeoverNormForTechnology, false);
-            } else {
-                updateButtonState(showChangeoverNormForTechnology, true);
-            }
+            boolean isEnabled = Objects.nonNull(changeoverNormsSearchService.searchMatchingChangeoverNormsForTechnologyWithLine(fromTechnology, toTechnology,
+                    productionLine))
+                    || Objects.nonNull(changeoverNormsSearchService.searchMatchingChangeoverNormsForTechnologyWithLine(fromTechnology,
+                    toTechnology, null));
+
+            updateButtonState(showChangeoverNormForTechnology, isEnabled);
         }
     }
 

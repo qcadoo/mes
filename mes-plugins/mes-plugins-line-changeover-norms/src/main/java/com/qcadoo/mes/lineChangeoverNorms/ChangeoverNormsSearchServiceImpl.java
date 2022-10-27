@@ -23,25 +23,19 @@
  */
 package com.qcadoo.mes.lineChangeoverNorms;
 
-import static com.qcadoo.model.api.search.SearchRestrictions.and;
-import static com.qcadoo.model.api.search.SearchRestrictions.eq;
-import static com.qcadoo.model.api.search.SearchRestrictions.isNull;
-import static com.qcadoo.model.api.search.SearchRestrictions.or;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.google.common.base.Preconditions;
 import com.qcadoo.mes.lineChangeoverNorms.constants.LineChangeoverNormsConstants;
 import com.qcadoo.mes.lineChangeoverNorms.constants.LineChangeoverNormsFields;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.search.SearchCriteriaBuilder;
-import com.qcadoo.model.api.search.SearchCriterion;
-import com.qcadoo.model.api.search.SearchDisjunction;
-import com.qcadoo.model.api.search.SearchOrders;
-import com.qcadoo.model.api.search.SearchRestrictions;
+import com.qcadoo.model.api.search.*;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.Objects;
+
+import static com.qcadoo.model.api.search.SearchRestrictions.*;
 
 @Service
 public class ChangeoverNormsSearchServiceImpl implements ChangeoverNormsSearchService {
@@ -53,8 +47,8 @@ public class ChangeoverNormsSearchServiceImpl implements ChangeoverNormsSearchSe
 
     @Override
     public Entity findBestMatching(final Long fromTechnologyId, final Long fromTechnologyGroupId, final Long toTechnologyId,
-            final Long toTechnologyGroupId, final Long productionLineId) {
-        SearchCriteriaBuilder scb = getChangeoverDataDef().find();
+                                   final Long toTechnologyGroupId, final Long productionLineId) {
+        SearchCriteriaBuilder scb = getLineChangeoverNormsDD().find();
 
         scb.add(getTechnologiesRestrictions(fromTechnologyId, fromTechnologyGroupId, toTechnologyId, toTechnologyGroupId));
         scb.add(getProductionLineRestrictions(productionLineId));
@@ -77,22 +71,22 @@ public class ChangeoverNormsSearchServiceImpl implements ChangeoverNormsSearchSe
     }
 
     private SearchCriterion getTechnologiesRestrictions(final Long fromTechnologyId, final Long fromTechnologyGroupId,
-            final Long toTechnologyId, final Long toTechnologyGroupId) {
+                                                        final Long toTechnologyId, final Long toTechnologyGroupId) {
         SearchCriterion matchTechnologies = getPairRestriction(LineChangeoverNormsFields.FROM_TECHNOLOGY, fromTechnologyId,
                 LineChangeoverNormsFields.TO_TECHNOLOGY, toTechnologyId);
         SearchCriterion matchTechnologyGroups = getPairRestriction(LineChangeoverNormsFields.FROM_TECHNOLOGY_GROUP,
                 fromTechnologyGroupId, LineChangeoverNormsFields.TO_TECHNOLOGY_GROUP, toTechnologyGroupId);
 
-        Preconditions.checkArgument(matchTechnologies != null || matchTechnologyGroups != null,
+        Preconditions.checkArgument(Objects.nonNull(matchTechnologies) || Objects.nonNull(matchTechnologyGroups),
                 "you have to provide pair of technologies or pair of technology groups.");
 
         SearchDisjunction disjunction = SearchRestrictions.disjunction();
 
-        if (matchTechnologies != null) {
+        if (Objects.nonNull(matchTechnologies)) {
             disjunction.add(matchTechnologies);
         }
 
-        if (matchTechnologyGroups != null) {
+        if (Objects.nonNull(matchTechnologyGroups)) {
             disjunction.add(matchTechnologyGroups);
         }
 
@@ -100,8 +94,8 @@ public class ChangeoverNormsSearchServiceImpl implements ChangeoverNormsSearchSe
     }
 
     private SearchCriterion getPairRestriction(final String leftFieldName, final Long leftId, final String rightFieldName,
-            final Long rightId) {
-        if (leftId == null || rightId == null) {
+                                               final Long rightId) {
+        if (Objects.isNull(leftId) || Objects.isNull(rightId)) {
             return null;
         }
 
@@ -109,10 +103,10 @@ public class ChangeoverNormsSearchServiceImpl implements ChangeoverNormsSearchSe
     }
 
     @Override
-    public Entity searchMatchingChangeroverNormsForTechnologyWithLine(final Entity fromTechnology, final Entity toTechnology,
-            final Entity productionLine) {
-        if ((fromTechnology != null) && (toTechnology != null)) {
-            if (productionLine == null) {
+    public Entity searchMatchingChangeoverNormsForTechnologyWithLine(final Entity fromTechnology, final Entity toTechnology,
+                                                                     final Entity productionLine) {
+        if (Objects.nonNull(fromTechnology) && Objects.nonNull(toTechnology)) {
+            if (Objects.isNull(productionLine)) {
                 return findBestMatching(fromTechnology.getId(), null, toTechnology.getId(), null, null);
             } else {
                 return findBestMatching(fromTechnology.getId(), null, toTechnology.getId(), null, productionLine.getId());
@@ -123,10 +117,10 @@ public class ChangeoverNormsSearchServiceImpl implements ChangeoverNormsSearchSe
     }
 
     @Override
-    public Entity searchMatchingChangeroverNormsForTechnologyGroupWithLine(final Entity fromTechnologyGroup,
-            final Entity toTechnologyGroup, final Entity productionLine) {
-        if ((fromTechnologyGroup != null) && (toTechnologyGroup != null)) {
-            if (productionLine == null) {
+    public Entity searchMatchingChangeoverNormsForTechnologyGroupWithLine(final Entity fromTechnologyGroup,
+                                                                          final Entity toTechnologyGroup, final Entity productionLine) {
+        if (Objects.nonNull(fromTechnologyGroup) && Objects.nonNull(toTechnologyGroup)) {
+            if (Objects.isNull(productionLine)) {
                 return findBestMatching(null, fromTechnologyGroup.getId(), null, toTechnologyGroup.getId(), null);
             } else {
                 return findBestMatching(null, fromTechnologyGroup.getId(), null, toTechnologyGroup.getId(),
@@ -137,7 +131,7 @@ public class ChangeoverNormsSearchServiceImpl implements ChangeoverNormsSearchSe
         return null;
     }
 
-    private DataDefinition getChangeoverDataDef() {
+    private DataDefinition getLineChangeoverNormsDD() {
         return dataDefinitionService.get(LineChangeoverNormsConstants.PLUGIN_IDENTIFIER,
                 LineChangeoverNormsConstants.MODEL_LINE_CHANGEOVER_NORMS);
     }
