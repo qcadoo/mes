@@ -23,23 +23,22 @@
  */
 package com.qcadoo.mes.lineChangeoverNormsForOrders.constants;
 
-import com.google.common.collect.ImmutableList;
+public final class LineChangeoverForOrderDtoFields {
 
-import java.util.List;
-
-public final class LineChangeoverNormsForOrdersConstants {
-
-    private LineChangeoverNormsForOrdersConstants() {
+    private LineChangeoverForOrderDtoFields() {
 
     }
 
-    public static final String PLUGIN_IDENTIFIER = "lineChangeoverNormsForOrders";
+    public static final String PRODUCTION_LINE_NUMBER = "productionLineNumber";
 
-    public static final String MODEL_LINE_CHANGEOVER_FOR_ORDER_DTO = "lineChangeoverForOrderDto";
+    public static final String LINE_CHANGEOVER_NORMS_NUMBER = "lineChangeoverNormsNumber";
 
-    public static final List<String> PREVIOUS_ORDER_FIELDS = ImmutableList.of("previousOrder", "previousOrderTechnologyNumber",
-            "previousOrderTechnologyGroupNumber", "previousOrderDateTo", "previousOrderDateIs");
+    public static final String LINE_CHANGEOVER_NORMS_NAME = "lineChangeoverNormsName";
 
-    public static final List<String> ORDER_FIELDS = ImmutableList.of("order", "technologyNumber", "technologyGroupNumber", "dateFrom", "dateIs");
+    public static final String ORDER_NUMBER = "orderNumber";
+
+    public static final String ORDER_FINISH_DATE = "orderFinishDate";
+
+    public static final String LINE_CHANGEOVER_DURATION = "lineChangeoverDuration";
 
 }

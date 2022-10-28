@@ -25,10 +25,12 @@
 -->
 <view defaultAuthorizationRole="ROLE_BASE_FUNCTIONALITY" name="lineChangeoverNormsList" modelName="lineChangeoverNorms" menuAccessible="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns="http://schema.qcadoo.org/view" xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd">
+
 	<component type="window" name="window">
 		<ribbon>
 			<template name="standardGridTemplate" excludeItems="actions.copy"/>
 		</ribbon>
+
 		<component type="grid" name="lineChangeoverNormsList" reference="grid">
 			<option type="column" name="number" fields="number" link="true"
 				width="200" />
@@ -44,14 +46,19 @@
 				width="250" expression="#productionLine['number']" />
 			<option type="column" name="duration" fields="duration" 
 				width="200" expression="T(com.qcadoo.view.api.utils.TimeConverterService).convertTimeToString(#duration)" />
+
 			<option type="order" column="name" direction="asc" />
-			<option type="correspondingView" value="lineChangeoverNorms/lineChangeoverNormsDetails" />
-			<option type="correspondingComponent" value="form" />
+
 			<option type="searchable" value="number,fromTechnology,toTechnology,fromTechnologyGroup,toTechnologyGroup,productionLine" />
 			<option type="orderable" value="number,fromTechnology,toTechnology,fromTechnologyGroup,toTechnologyGroup,productionLine" />
+
+			<option type="correspondingView" value="lineChangeoverNorms/lineChangeoverNormsDetails" />
+			<option type="correspondingComponent" value="form" />
+
 			<option type="fullscreen" value="true" />
 			<option type="multiselect" value="true" />
 		</component>
+
 		<option type="fixedHeight" value="true" />
 		<option type="header" value="false" />
 	</component>
