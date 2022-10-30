@@ -31,8 +31,8 @@
       modelName="order">
 
     <component type="window" name="window" reference="window">
-
         <ribbon>
+            <template name="standardFormTemplate" includeItems="navigation.back" />
             <group name="actions" hasLabel="false">
                 <bigButton name="saveOwnTime" icon="saveIcon24.png"
                            action="#{form}.performSave;"/>
@@ -97,17 +97,17 @@
 
         <windowTab name="mainTab" reference="mainTab">
             <component type="form" name="form" reference="form">
-                <component type="gridLayout" name="changeoverGridLayout"
-                           hasBorders="false" columns="3" rows="2">
+                <component type="gridLayout" name="changeoverGridLayout" hasBorders="false" columns="3" rows="2">
                     <layoutElement column="2" row="1">
                         <component type="lookup" name="productionLine" field="productionLine"
                                    reference="productionLine" defaultEnabled="false">
                             <option type="column" name="name" fields="name" link="true"
                                     width="300"/>
+
                             <option type="searchable" value="name,number"/>
                             <option type="orderable" value="name,number"/>
-                            <option type="expression"
-                                    value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name"/>
+
+                            <option type="expression" value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name"/>
                             <option type="fieldCode" value="number"/>
                         </component>
                     </layoutElement>
@@ -117,7 +117,7 @@
                                        columns="1" rows="5">
                                 <layoutElement column="1" row="1">
                                     <component type="lookup" name="previousOrder" field="previousOrder"
-                                               reference="previousOrder">
+                                               reference="previousOrder" defaultEnabled="false">
                                         <option type="column" name="name" fields="name" link="true"/>
                                         <option type="column" name="state" fields="state"/>
                                         <option type="column" name="dateTo" fields="finishDate"/>
@@ -255,16 +255,17 @@
 
         <option type="header" value="false"/>
     </component>
+
     <hooks>
+        <beforeRender
+                class="com.qcadoo.mes.lineChangeoverNormsForOrders.hooks.LineChangeoverNormsForOrderDetailsViewHooks"
+                method="updateRibbonState"/>
         <beforeRender
                 class="com.qcadoo.mes.lineChangeoverNormsForOrders.hooks.LineChangeoverNormsForOrderDetailsViewHooks"
                 method="fillOrderForms"/>
         <beforeRender
                 class="com.qcadoo.mes.lineChangeoverNormsForOrders.hooks.LineChangeoverNormsForOrderDetailsViewHooks"
                 method="fillLineChangeoverNorm"/>
-        <beforeRender
-                class="com.qcadoo.mes.lineChangeoverNormsForOrders.hooks.LineChangeoverNormsForOrderDetailsViewHooks"
-                method="updateRibbonState"/>
         <beforeRender
                 class="com.qcadoo.mes.lineChangeoverNormsForOrders.hooks.LineChangeoverNormsForOrderDetailsViewHooks"
                 method="showOwnLineChangeoverDurationField"/>

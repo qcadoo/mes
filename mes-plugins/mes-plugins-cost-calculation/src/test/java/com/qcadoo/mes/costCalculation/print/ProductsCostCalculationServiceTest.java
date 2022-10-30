@@ -92,7 +92,7 @@ public class ProductsCostCalculationServiceTest {
 
         // when
         BigDecimal result = productsCostCalculationService.calculateProductCostPerUnit(product,
-                costFields.getMode(), false);
+                costFields.getMode(), false, null);
 
         // then
         assertTrue(BigDecimalUtils.valueEquals(result, BigDecimal.valueOf(1L)));
@@ -112,7 +112,7 @@ public class ProductsCostCalculationServiceTest {
 
         // when
         BigDecimal result = productsCostCalculationService.calculateProductCostPerUnit(product,
-                materialCostsUsed, false);
+                materialCostsUsed, false, null);
 
         // then
         assertTrue(BigDecimalUtils.valueEquals(result, BigDecimal.valueOf(10L)));

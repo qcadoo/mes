@@ -29,7 +29,7 @@ public enum ProductsCostFields {
 
     NOMINAL("01nominal", "nominalCost"), AVERAGE("02average", "averageCost"), LAST_PURCHASE("03lastPurchase",
             "lastPurchaseCost"), AVERAGE_OFFER_COST("04averageOfferCost", "averageOfferCost"), LAST_OFFER_COST("05lastOfferCost",
-                    "lastOfferCost"), COST_FOR_ORDER("06costForOrder", "costForOrder");
+            "lastOfferCost"), COST_FOR_ORDER("06costForOrder", "costForOrder"), OFFER_COST_OR_LAST_PURCHASE("07offerCostOrLastPurchase", "lastPurchaseCost");
 
     private final String mode;
 

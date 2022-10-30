@@ -176,12 +176,8 @@ public class CostCalculationService {
                 .map(Entity::getId).collect(Collectors.toList());
 
         String query = "SELECT t.number AS technologyNumber, p.number AS productNumber, "
-                + "tipt.name AS technologyInputProductType, pbsgp.number AS materialNumber, "
-                + "sg.number AS sizeGroupNumber, pbsgp.nominalCost AS nominalCost, pbsgp.averageCost AS averageCost, "
-                + "pbsgp.nominalcostcurrency_id AS nominalCostCurrency, pbsgp.lastpurchasecostcurrency_id AS lastPurchaseCostCurrency, "
-                + "pbsgp.lastPurchaseCost AS lastPurchaseCost, pbsgp.averageOfferCost AS averageOfferCost, "
-                + "pbsgp.lastOfferCost AS lastOfferCost, pbsgp.costForNumber AS costForNumber, "
-                + "pbsg.quantity as quantity, pbsgp.unit as unit "
+                + "tipt.name AS technologyInputProductType, pbsgp.id AS materialId, "
+                + "sg.number AS sizeGroupNumber, pbsg.quantity as quantity, pbsgp.unit as unit "
                 + "FROM technologies_technology t JOIN basic_product p ON t.product_id = p.id "
                 + "JOIN technologies_technologyoperationcomponent toc ON toc.technology_id = t.id "
                 + "JOIN technologies_operationproductincomponent opic ON opic.operationcomponent_id = toc.id "
@@ -189,7 +185,7 @@ public class CostCalculationService {
                 + "JOIN technologies_productbysizegroup pbsg ON pbsg.operationproductincomponent_id = opic.id "
                 + "JOIN basic_product pbsgp ON pbsg.product_id = pbsgp.id "
                 + "JOIN basic_sizegroup sg ON pbsg.sizegroup_id = sg.id WHERE t.id IN (:technologiesIds) "
-                + "ORDER BY technologyNumber, materialNumber ";
+                + "ORDER BY technologyNumber, pbsgp.number ";
         return jdbcTemplate.query(query, new MapSqlParameterSource("technologiesIds", technologiesIds),
                 BeanPropertyRowMapper.newInstance(CostCalculationMaterialBySize.class));
     }

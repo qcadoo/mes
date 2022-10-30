@@ -39,6 +39,8 @@ public final class ProductFlowThruDivisionConstants {
 
     public static final String MODEL_MATERIAL_AVAILABILITY = "materialAvailability";
 
+    public static final String MODEL_OPER_TASK_MATERIAL_AVAILABILITY = "operTaskMaterialAvailability";
+
     public static final String MODEL_WAREHOUSE_ISSUE = "warehouseIssue";
 
     public static final String MODEL_WAREHOUSE_ISSUE_STATE_CHANGE = "warehouseIssueStateChange";

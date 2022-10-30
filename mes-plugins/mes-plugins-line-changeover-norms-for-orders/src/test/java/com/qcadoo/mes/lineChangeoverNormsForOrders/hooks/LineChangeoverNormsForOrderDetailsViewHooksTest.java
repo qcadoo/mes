@@ -459,10 +459,10 @@ public class LineChangeoverNormsForOrderDetailsViewHooksTest {
 
         given(productionLine.getId()).willReturn(L_ID);
 
-        given(changeoverNormsSearchService.searchMatchingChangeroverNormsForTechnologyGroupWithLine(null, null, null))
+        given(changeoverNormsSearchService.searchMatchingChangeoverNormsForTechnologyGroupWithLine(null, null, null))
                 .willReturn(null);
 
-        given(changeoverNormsSearchService.searchMatchingChangeroverNormsForTechnologyWithLine(null, null, null))
+        given(changeoverNormsSearchService.searchMatchingChangeoverNormsForTechnologyWithLine(null, null, null))
                 .willReturn(null);
 
         // when
@@ -526,11 +526,11 @@ public class LineChangeoverNormsForOrderDetailsViewHooksTest {
         given(lineChangeoverNormsForOrdersService.getTechnologyByNumberFromDB(L_TECHNOLOGY_NUMBER)).willReturn(toTechnology);
 
         given(
-                changeoverNormsSearchService.searchMatchingChangeroverNormsForTechnologyGroupWithLine(fromTechnologyGroup,
+                changeoverNormsSearchService.searchMatchingChangeoverNormsForTechnologyGroupWithLine(fromTechnologyGroup,
                         toTechnologyGroup, productionLine)).willReturn(lineChangeoverNormForGroup);
 
         given(
-                changeoverNormsSearchService.searchMatchingChangeroverNormsForTechnologyWithLine(fromTechnology, toTechnology,
+                changeoverNormsSearchService.searchMatchingChangeoverNormsForTechnologyWithLine(fromTechnology, toTechnology,
                         productionLine)).willReturn(lineChangeoverNormForTechnology);
 
         // when

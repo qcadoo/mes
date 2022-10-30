@@ -27,15 +27,12 @@
 <model name="masterOrderProductAttrValue" activable="false" auditable="false" versionable="false"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
        xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
+
     <fields>
-
         <belongsTo name="masterOrderProduct" model="masterOrderProduct" required="true"/>
-
         <belongsTo name="attribute" model="attribute" plugin="basic" required="true"/>
-
         <belongsTo name="attributeValue" model="attributeValue" plugin="basic"/>
-
-        <string name="value" required="true"/>
+        <string name="value"/>
     </fields>
 
     <hooks>

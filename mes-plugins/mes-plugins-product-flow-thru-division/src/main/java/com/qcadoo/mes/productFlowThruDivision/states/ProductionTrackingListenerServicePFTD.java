@@ -189,6 +189,22 @@ public final class ProductionTrackingListenerServicePFTD {
             return;
         }
 
+/*        boolean cumulated = TypeOfProductionRecording.CUMULATED.getStringValue().equals(
+                order.getStringField(OrderFieldsPC.TYPE_OF_PRODUCTION_RECORDING));
+
+        if(cumulated) {
+            Optional<Long> maybeLocation = groupedRecordInProducts.keySet().stream().findFirst();
+            if(maybeLocation.isPresent()) {
+                boolean allSameLocation = groupedRecordInProducts.keySet().stream().allMatch(x -> x.equals(maybeLocation.get()));
+
+                if(!allSameLocation) {
+                    productionTracking.addGlobalError(
+                            "productFlowThruDivision.location.components.locationsAreDifferent");
+                    return;
+                }
+            }
+        }*/
+
         String receiptOfProducts = parameterService.getParameter().getStringField(ParameterFieldsPC.RECEIPT_OF_PRODUCTS);
 
         if (ReceiptOfProducts.ON_ACCEPTANCE_REGISTRATION_RECORD.getStringValue().equals(receiptOfProducts)

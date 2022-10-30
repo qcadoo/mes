@@ -29,6 +29,8 @@ import com.qcadoo.mes.productFlowThruDivision.constants.OperationProductOutCompo
 import com.qcadoo.mes.productFlowThruDivision.constants.Range;
 import com.qcadoo.mes.productFlowThruDivision.constants.TechnologyFieldsPFTD;
 import com.qcadoo.mes.productFlowThruDivision.listeners.TechnologyDetailsListenersPFTD;
+import com.qcadoo.mes.productionCounting.constants.TechnologyFieldsPC;
+import com.qcadoo.mes.productionCounting.constants.TypeOfProductionRecording;
 import com.qcadoo.mes.states.StateChangeContext;
 import com.qcadoo.mes.states.constants.StateChangeStatus;
 import com.qcadoo.mes.technologies.OperationComponentDataProvider;
@@ -77,7 +79,26 @@ public class TechnologyStateValidationServicePFTD {
         if (technology != null && !stateChangeContext.getStatus().equals(StateChangeStatus.FAILURE)) {
             checkIfForOneDivisionLocationIsSet(technology, stateChangeContext);
             checkIfLocationInOperationIsSet(technology, stateChangeContext);
+
+/*            if(TypeOfProductionRecording.CUMULATED.getStringValue()
+                    .equals(technology.getStringField(TechnologyFieldsPC.TYPE_OF_PRODUCTION_RECORDING))) {
+                List<Long> ids = operationComponentDataProvider.getComponentsForTechnology(technology.getId());
+                if (ids.isEmpty()) {
+                    return;
+                }
+                List<Entity> opics = dataDefinitionService
+                        .get(TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_OPERATION_PRODUCT_IN_COMPONENT).find()
+                        .add(SearchRestrictions.in("id", ids)).list().getEntities();
+
+                Long locationId = opics.get(0).getBelongsToField("componentsLocation").getId();
+                boolean allSameLocation = opics.stream().allMatch(x -> x.getBelongsToField("componentsLocation").getId().equals(locationId));
+
+                if(!allSameLocation) {
+                    stateChangeContext.addValidationError("productFlowThruDivision.location.components.locationsAreDifferent");
+                }
+            }*/
         }
+
     }
 
     private void checkIfLocationInOperationIsSet(Entity technology, StateChangeContext stateChangeContext) {

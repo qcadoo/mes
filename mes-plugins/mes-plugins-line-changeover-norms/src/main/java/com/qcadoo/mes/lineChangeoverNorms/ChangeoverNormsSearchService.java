@@ -23,20 +23,19 @@
  */
 package com.qcadoo.mes.lineChangeoverNorms;
 
-import org.springframework.stereotype.Service;
-
 import com.qcadoo.model.api.Entity;
+import org.springframework.stereotype.Service;
 
 @Service
 public interface ChangeoverNormsSearchService {
 
     Entity findBestMatching(final Long fromTechnologyId, final Long fromTechnologyGroupId, final Long toTechnologyId,
-            final Long toTechnologyGroupId, final Long productionLineId);
+                            final Long toTechnologyGroupId, final Long productionLineId);
 
-    Entity searchMatchingChangeroverNormsForTechnologyWithLine(final Entity fromTechnology, final Entity toTechnology,
-            final Entity productionLine);
+    Entity searchMatchingChangeoverNormsForTechnologyWithLine(final Entity fromTechnology, final Entity toTechnology,
+                                                              final Entity productionLine);
 
-    Entity searchMatchingChangeroverNormsForTechnologyGroupWithLine(final Entity fromTechnologyGroup,
-            final Entity toTechnologyGroup, final Entity productionLine);
+    Entity searchMatchingChangeoverNormsForTechnologyGroupWithLine(final Entity fromTechnologyGroup,
+                                                                   final Entity toTechnologyGroup, final Entity productionLine);
 
 }

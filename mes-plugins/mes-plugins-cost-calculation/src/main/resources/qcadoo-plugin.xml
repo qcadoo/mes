@@ -60,6 +60,10 @@
             <plugin>operationCostCalculations</plugin>
             <version>[0.4.1</version>
         </dependency>
+        <dependency>
+            <plugin>supplyNegotiations</plugin>
+            <version>[1.1.7</version>
+        </dependency>
     </dependencies>
 
     <modules>
@@ -85,7 +89,7 @@
 
         <model:model-field model="parameter" plugin="basic">
             <model:enum name="materialCostsUsed"
-                        values="01nominal,02average,03lastPurchase,04averageOfferCost,05lastOfferCost"
+                        values="01nominal,02average,03lastPurchase,04averageOfferCost,05lastOfferCost,07offerCostOrLastPurchase"
                         required="true" default="01nominal"/>
         </model:model-field>
 
@@ -196,6 +200,12 @@
             <model:hasMany name="calculationResult"
                               plugin="costCalculation" model="calculationResult"
                               joinField="product"/>
+        </model:model-field>
+
+        <model:model-field model="offer" plugin="supplyNegotiations">
+            <model:hasMany name="costCalculations"
+                           plugin="costCalculation" model="costCalculation"
+                           joinField="offer"/>
         </model:model-field>
 
         <view:view resource="view/costCalculationList.xml"/>

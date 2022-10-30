@@ -32,7 +32,7 @@
     <component type="window" name="window" reference="window">
 
         <ribbon>
-            <template name="standardFormTemplate"/>
+            <template name="standardFormTemplate" excludeItems="actions.copy"/>
 
             <group name="orders">
                 <bigButton name="createOrder" icon="generateIcon24.png" state="enabled">
@@ -70,8 +70,8 @@
                                     method="showParticularProductOnly"/>
 
                             <listener event="onSelectedEntityChange"
-                                      class="com.qcadoo.view.api.listeners.RerenderListener"
-                                      method="onChangeRerender"/>
+                                      class="com.qcadoo.mes.masterOrders.listeners.SalesVolumeDetailsListeners"
+                                      method="onQuantityChange"/>
                         </component>
                     </layoutElement>
                     <layoutElement column="1" row="2">

@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    ***************************************************************************
+    Copyright (c) 2010 Qcadoo Limited
+    Project: Qcadoo MES
+    Version: 1.4
+
+    This file is part of Qcadoo.
+
+    Qcadoo is free software; you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as published
+    by the Free Software Foundation; either version 3 of the License,
+    or (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty
+    of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+    See the GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+    ***************************************************************************
+
+-->
+<view defaultAuthorizationRole="ROLE_PLANNING" name="orderedProductConfiguratorAttributeDetails" modelName="orderedProductConfiguratorAttribute"
+	  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
+	  xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd">
+
+	<component name="window" type="window" reference="window">
+		<ribbon>
+			<group name="navigation">
+				<bigButton name="select" icon="acceptIcon24.png" state="disabled" action="#{form}.fireEvent(createOrderedProductConfiguratorAttributes);#{window}.performBackWithoutConfirm">
+					<script>
+						<![CDATA[
+							#{grid}.addOnChangeListener({
+								onChange: function(selectedArray) {
+									if (!selectedArray || selectedArray.length == 0) {
+										this.disable('#{translate(noRecordSelected)}');
+									} else {
+										this.enable();
+									}
+								}
+							});
+						]]>
+					</script>
+				</bigButton>
+				<bigButton name="cancel" icon="cancelIcon24.png" state="enabled" action="#{window}.performBackWithoutConfirm"/>
+			</group>
+		</ribbon>
+
+		<windowTab name="mainTab" reference="mainTab">
+			<component type="form" name="form" reference="form">
+				<component type="gridLayout" name="orderedProductConfiguratorAttributeGridLayout"
+					columns="1" rows="1" hasBorders="false">
+					<layoutElement column="1" row="1">
+						<component type="grid" name="attributes" reference="grid"
+								   model="attribute" plugin="basic">
+							<option type="column" name="number" fields="number"
+									link="true" width="100"/>
+							<option type="column" name="name" fields="name"
+									link="true" width="150"/>
+							<option type="column" name="dataType" fields="dataType"
+									link="true" width="80"/>
+
+							<option type="order" column="priority" direction="asc"/>
+
+							<option type="searchable" value="number,name,dataType"/>
+							<option type="orderable" value="number,name,dataType"/>
+
+							<option type="fullscreen" value="true"/>
+							<option type="prioritizable" value="false"/>
+							<option type="multiselect" value="true"/>
+
+							<option type="filtersDefaultVisible" value="false"/>
+
+							<criteriaModifier
+									class="com.qcadoo.mes.masterOrders.criteriaModifier.OrderedProductConfiguratorCriteriaModifiers"
+									method="restrictOrderedProductConfiguratorAttributes"/>
+						</component>
+					</layoutElement>
+				</component>
+
+				<option type="header" value="false" />
+
+				<listener event="createOrderedProductConfiguratorAttributes"
+						  class="com.qcadoo.mes.masterOrders.listeners.OrderedProductConfiguratorAttributeDetailsListeners"
+						  method="createOrderedProductConfiguratorAttributes"/>
+			</component>
+		</windowTab>
+
+	</component>
+
+	<hooks>
+		<beforeRender class="com.qcadoo.mes.masterOrders.hooks.OrderedProductConfiguratorAttributeDetailsHooks"
+					  method="onBeforeRender"/>
+	</hooks>
+</view>

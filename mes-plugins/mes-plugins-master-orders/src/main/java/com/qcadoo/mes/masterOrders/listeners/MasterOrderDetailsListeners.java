@@ -31,6 +31,7 @@ import com.qcadoo.mes.masterOrders.constants.*;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.plugin.api.PluginUtils;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
@@ -41,14 +42,13 @@ import com.qcadoo.view.api.components.WindowComponent;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.api.ribbon.RibbonGroup;
 import com.qcadoo.view.constants.QcadooViewConstants;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class MasterOrderDetailsListeners {
@@ -197,9 +197,33 @@ public class MasterOrderDetailsListeners {
 
         List<Entity> masterOrderProducts = masterOrderProductsGrid.getSelectedEntities();
 
-        ordersGenerationService.generateOrders(masterOrderProducts, null, null, true).showMessage(view);
+        Set<Long> masterOrderProductIds = masterOrderProducts.stream().map(Entity::getId).collect(Collectors.toSet());
 
-        state.performEvent(view, "reset");
+        if (checkMasterOrderProductAttrValues(masterOrderProductIds)) {
+            ordersGenerationService.generateOrders(masterOrderProducts, null, null, true).showMessage(view);
+
+            state.performEvent(view, "reset");
+        } else {
+            view.addMessage("masterOrders.masterOrderDetails.generateGroup.masterOrderProductAttrValuesNotFilled", ComponentState.MessageType.INFO);
+        }
+    }
+
+    public boolean checkMasterOrderProductAttrValues(final Set<Long> masterOrderProductIds) {
+        List<Entity> masterOrderProducts = getMasterOrderProducts(masterOrderProductIds);
+
+        for (Entity masterOrderProduct : masterOrderProducts) {
+            List<Entity> masterOrderProductAttrValues = masterOrderProduct.getHasManyField(MasterOrderProductFields.MASTER_ORDER_PRODUCT_ATTR_VALUES);
+
+            if (masterOrderProductAttrValues.stream().anyMatch(masterOrderProductAttrValue -> StringUtils.isEmpty(masterOrderProductAttrValue.getStringField(MasterOrderProductAttrValueFields.VALUE)))) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    private List<Entity> getMasterOrderProducts(final Set<Long> masterOrderProductIds) {
+        return getMasterOrderProductDD().find().add(SearchRestrictions.in("id", masterOrderProductIds)).list().getEntities();
     }
 
     public void createOrder(final ViewDefinitionState view, final ComponentState state, final String[] args) {
@@ -220,23 +244,34 @@ public class MasterOrderDetailsListeners {
         GridComponent masterOrderProductsGrid = (GridComponent) view
                 .getComponentByReference(MasterOrderFields.MASTER_ORDER_PRODUCTS);
 
+        Entity masterOrderProduct;
+
         if (PluginUtils.isEnabled("goodFood")) {
-            Entity entity = extractMasterOrderProduct(masterOrderProductsGrid.getEntities().get(0));
-            Entity product = entity.getBelongsToField(MasterOrderProductFields.PRODUCT);
-            parameters.put("form.masterOrderProduct", product.getId());
-            parameters.put("form.masterOrderProductComponent", entity.getId());
+            masterOrderProduct = extractMasterOrderProduct(masterOrderProductsGrid.getEntities().get(0));
         } else {
-            Entity entity = extractMasterOrderProduct(masterOrderProductsGrid.getSelectedEntities().get(0));
-            Entity product = entity.getBelongsToField(MasterOrderProductFields.PRODUCT);
-            parameters.put("form.masterOrderProduct", product.getId());
-            parameters.put("form.masterOrderProductComponent", entity.getId());
+            masterOrderProduct = extractMasterOrderProduct(masterOrderProductsGrid.getSelectedEntities().get(0));
         }
 
-        parameters.put(L_WINDOW_ACTIVE_MENU, "orders.productionOrders");
+        Entity product = masterOrderProduct.getBelongsToField(MasterOrderProductFields.PRODUCT);
 
-        String url = "../page/orders/orderDetails.html";
+        if (checkMasterOrderProductAttrValues(masterOrderProduct)) {
+            parameters.put("form.masterOrderProduct", product.getId());
+            parameters.put("form.masterOrderProductComponent", masterOrderProduct.getId());
 
-        view.redirectTo(url, false, true, parameters);
+            parameters.put(L_WINDOW_ACTIVE_MENU, "orders.productionOrders");
+
+            String url = "../page/orders/orderDetails.html";
+
+            view.redirectTo(url, false, true, parameters);
+        } else {
+            view.addMessage("masterOrders.masterOrderDetails.generateGroup.masterOrderProductAttrValuesNotFilled", ComponentState.MessageType.INFO);
+        }
+    }
+
+    private boolean checkMasterOrderProductAttrValues(final Entity masterOrderProduct) {
+        List<Entity> masterOrderProductAttrValues = masterOrderProduct.getHasManyField(MasterOrderProductFields.MASTER_ORDER_PRODUCT_ATTR_VALUES);
+
+        return masterOrderProductAttrValues.stream().noneMatch(masterOrderProductAttrValue -> StringUtils.isEmpty(masterOrderProductAttrValue.getStringField(MasterOrderProductAttrValueFields.VALUE)));
     }
 
     private Entity extractMasterOrderProduct(final Entity masterOrderProduct) {
@@ -244,6 +279,11 @@ public class MasterOrderDetailsListeners {
                 .ofNullable(masterOrderProduct.getDataDefinition().getMasterModelEntity(masterOrderProduct.getId()));
 
         return dtoEntity.orElse(masterOrderProduct);
+    }
+
+    private DataDefinition getMasterOrderProductDD() {
+        return dataDefinitionService
+                .get(MasterOrdersConstants.PLUGIN_IDENTIFIER, MasterOrdersConstants.MODEL_MASTER_ORDER_PRODUCT);
     }
 
     private DataDefinition getProductsBySizeHelperDD() {

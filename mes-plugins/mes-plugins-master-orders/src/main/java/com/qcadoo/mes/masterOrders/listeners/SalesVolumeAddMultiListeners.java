@@ -3,6 +3,7 @@ package com.qcadoo.mes.masterOrders.listeners;
 import com.beust.jcommander.internal.Lists;
 import com.google.common.base.Optional;
 import com.qcadoo.commons.functional.Either;
+import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.masterOrders.constants.MasterOrdersConstants;
 import com.qcadoo.mes.masterOrders.constants.SalesVolumeFields;
 import com.qcadoo.mes.masterOrders.constants.SalesVolumeMultiFields;
@@ -10,6 +11,8 @@ import com.qcadoo.model.api.BigDecimalUtils;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.search.JoinType;
+import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.model.api.validators.ErrorMessage;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
@@ -24,12 +27,17 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class SalesVolumeAddMultiListeners {
 
     private static final String L_GENERATED = "generated";
+
+    private static final String L_DOT = ".";
+
+    private static final String L_ID = "id";
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
@@ -46,12 +54,20 @@ public class SalesVolumeAddMultiListeners {
         BigDecimal optimalStock = getBigDecimal(optimalStockField, false);
         List<Entity> products = productsGrid.getEntities();
 
-        if (Objects.isNull(dailySalesVolume)) {
+        if (dailySalesVolumeField.isHasError() || optimalStockField.isHasError()) {
             return;
         }
 
         if (products.isEmpty()) {
             view.addMessage("masterOrders.salesVolumeAddMulti.products.empty", ComponentState.MessageType.INFO);
+
+            return;
+        }
+
+        Set<String> productNumbers = getSalesVolumesForProducts(products);
+
+        if (!productNumbers.isEmpty()) {
+            view.addMessage("masterOrders.salesVolumeAddMulti.products.exists", ComponentState.MessageType.INFO, String.join(", ", productNumbers));
 
             return;
         }
@@ -108,7 +124,7 @@ public class SalesVolumeAddMultiListeners {
                     return null;
                 }
 
-                if (BigDecimal.ZERO.compareTo(quantity) > 0) {
+                if (BigDecimal.ZERO.compareTo(quantity) >= 0) {
                     quantityField.addMessage("qcadooView.validate.field.error.outOfRange.toSmall", ComponentState.MessageType.FAILURE);
 
                     return null;
@@ -127,6 +143,20 @@ public class SalesVolumeAddMultiListeners {
         }
 
         return quantity;
+    }
+
+    private Set<String> getSalesVolumesForProducts(final List<Entity> products) {
+        Set<Long> productIds = products.stream().map(Entity::getId).collect(Collectors.toSet());
+
+        List<Entity> salesVolumes = getSalesVolumesForProductIds(productIds);
+
+        return salesVolumes.stream().map(salesVolume -> salesVolume.getBelongsToField(SalesVolumeFields.PRODUCT).getStringField(ProductFields.NUMBER)).collect(Collectors.toSet());
+    }
+
+    private List<Entity> getSalesVolumesForProductIds(final Set<Long> productIds) {
+        return getSalesVolumeDD().find()
+                .createAlias(SalesVolumeFields.PRODUCT, SalesVolumeFields.PRODUCT, JoinType.LEFT)
+                .add(SearchRestrictions.in(SalesVolumeFields.PRODUCT + L_DOT + L_ID, productIds)).list().getEntities();
     }
 
     private List<Entity> createSalesVolumes(final List<Entity> products, final BigDecimal dailySalesVolume, final BigDecimal optimalStock) {
