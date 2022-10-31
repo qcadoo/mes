@@ -52,7 +52,6 @@ import com.qcadoo.mes.basic.util.CurrencyService;
 import com.qcadoo.mes.deliveries.constants.ColumnForDeliveriesFields;
 import com.qcadoo.mes.deliveries.constants.ColumnForOrdersFields;
 import com.qcadoo.mes.deliveries.constants.CompanyProductFields;
-import com.qcadoo.mes.deliveries.constants.CompanyProductsFamilyFields;
 import com.qcadoo.mes.deliveries.constants.DefaultAddressType;
 import com.qcadoo.mes.deliveries.constants.DeliveredProductFields;
 import com.qcadoo.mes.deliveries.constants.DeliveriesConstants;
@@ -145,11 +144,6 @@ public class DeliveriesServiceImpl implements DeliveriesService {
     }
 
     @Override
-    public Entity getCompanyProductsFamily(final Long companyProductsFamilyId) {
-        return getCompanyProductsFamilyDD().get(companyProductsFamilyId);
-    }
-
-    @Override
     public List<Entity> getColumnsForDeliveries() {
         List<Entity> columnsForDeliveries = Lists.newArrayList();
 
@@ -211,12 +205,6 @@ public class DeliveriesServiceImpl implements DeliveriesService {
     @Override
     public DataDefinition getCompanyProductDD() {
         return dataDefinitionService.get(DeliveriesConstants.PLUGIN_IDENTIFIER, DeliveriesConstants.MODEL_COMPANY_PRODUCT);
-    }
-
-    @Override
-    public DataDefinition getCompanyProductsFamilyDD() {
-        return dataDefinitionService.get(DeliveriesConstants.PLUGIN_IDENTIFIER,
-                DeliveriesConstants.MODEL_COMPANY_PRODUCTS_FAMILY);
     }
 
     @Override
@@ -731,24 +719,6 @@ public class DeliveriesServiceImpl implements DeliveriesService {
         return companyProducts.stream().filter(
                 companyProduct -> companyProduct.getBelongsToField(CompanyProductFields.PRODUCT).getId().equals(productId))
                 .findAny();
-    }
-
-    public List<Entity> getCompanyProductsFamilies(final Set<Long> productIds) {
-        List<Entity> companyProductFamilies = Lists.newArrayList();
-
-        if (!productIds.isEmpty()) {
-            companyProductFamilies = getCompanyProductsFamilyDD().find()
-                    .createAlias(CompanyProductsFamilyFields.PRODUCT, CompanyProductsFamilyFields.PRODUCT, JoinType.LEFT)
-                    .add(SearchRestrictions.in(CompanyProductsFamilyFields.PRODUCT + L_DOT + L_ID, productIds))
-                    .add(SearchRestrictions.eq(CompanyProductsFamilyFields.IS_DEFAULT, true)).list().getEntities();
-        }
-
-        return companyProductFamilies;
-    }
-
-    public Optional<Entity> getCompanyProductsFamily(final List<Entity> companyProductsFamilies, final Long productId) {
-        return companyProductsFamilies.stream().filter(companyProductsFamily -> companyProductsFamily
-                .getBelongsToField(CompanyProductsFamilyFields.PRODUCT).getId().equals(productId)).findAny();
     }
 
     public List<Entity> getSelectedOrderedProducts(final GridComponent orderedProductGrid) {

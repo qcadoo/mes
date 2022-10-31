@@ -59,11 +59,11 @@ public class DeliveriesServiceImplTest {
     private DataDefinitionService dataDefinitionService;
 
     @Mock
-    private DataDefinition deliveryDD, orderedProductDD, deliveredProductDD, companyProductDD, companyProductsFamilyDD,
+    private DataDefinition deliveryDD, orderedProductDD, deliveredProductDD, companyProductDD,
             columnForDeliveriesDD, columnForOrdersDD;
 
     @Mock
-    private Entity delivery, orderedProduct, deliveredProduct, companyProduct, companyProductsFamily;
+    private Entity delivery, orderedProduct, deliveredProduct, companyProduct;
 
     @Mock
     private SearchCriteriaBuilder searchCriteriaBuilder;
@@ -90,8 +90,6 @@ public class DeliveriesServiceImplTest {
                 .willReturn(deliveredProductDD);
         given(dataDefinitionService.get(DeliveriesConstants.PLUGIN_IDENTIFIER, DeliveriesConstants.MODEL_COMPANY_PRODUCT))
                 .willReturn(companyProductDD);
-        given(dataDefinitionService.get(DeliveriesConstants.PLUGIN_IDENTIFIER, DeliveriesConstants.MODEL_COMPANY_PRODUCTS_FAMILY))
-                .willReturn(companyProductsFamilyDD);
         given(dataDefinitionService.get(DeliveriesConstants.PLUGIN_IDENTIFIER, DeliveriesConstants.MODEL_COLUMN_FOR_DELIVERIES))
                 .willReturn(columnForDeliveriesDD);
         given(dataDefinitionService.get(DeliveriesConstants.PLUGIN_IDENTIFIER, DeliveriesConstants.MODEL_COLUMN_FOR_ORDERS))
@@ -212,34 +210,6 @@ public class DeliveriesServiceImplTest {
         assertEquals(companyProduct, result);
     }
 
-    @Test
-    public void shouldReturnNullWhenGetCompanyProductsFamily() {
-        // given
-        Long companyProductsFamilyId = null;
-
-        given(companyProductsFamilyDD.get(companyProductsFamilyId)).willReturn(null);
-
-        // when
-        Entity result = deliveriesService.getDeliveredProduct(companyProductsFamilyId);
-
-        // then
-        assertEquals(null, result);
-    }
-
-    @Test
-    public void shouldReturnCompanyProductsFamilyWhenGetCompanyProductsFamily() {
-        // given
-        Long companyProductsFamilyId = 1L;
-
-        given(companyProductsFamilyDD.get(companyProductsFamilyId)).willReturn(companyProductsFamily);
-
-        // when
-        Entity result = deliveriesService.getCompanyProductsFamily(companyProductsFamilyId);
-
-        // then
-        assertEquals(companyProductsFamily, result);
-    }
-
     @Ignore
     @Test
     public void shouldReturnNullWhenGetColumnsForDeliveriesIfColumnsForDeliveriesAreNull() {
@@ -314,17 +284,6 @@ public class DeliveriesServiceImplTest {
 
         // then
         assertEquals(companyProductDD, result);
-    }
-
-    @Test
-    public void shouldReturnCompanyProductsFamilyDD() {
-        // given
-
-        // when
-        DataDefinition result = deliveriesService.getCompanyProductsFamilyDD();
-
-        // then
-        assertEquals(companyProductsFamilyDD, result);
     }
 
     @Test

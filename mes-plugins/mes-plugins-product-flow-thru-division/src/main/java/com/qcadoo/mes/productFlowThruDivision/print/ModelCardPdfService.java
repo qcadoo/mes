@@ -48,7 +48,6 @@ import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.basic.constants.SizeGroupFields;
 import com.qcadoo.mes.costCalculation.print.ProductsCostCalculationService;
 import com.qcadoo.mes.deliveries.constants.CompanyProductFields;
-import com.qcadoo.mes.deliveries.constants.CompanyProductsFamilyFields;
 import com.qcadoo.mes.deliveries.constants.DeliveriesConstants;
 import com.qcadoo.mes.materialFlowResources.MaterialFlowResourcesService;
 import com.qcadoo.mes.productFlowThruDivision.constants.ModelCardFields;
@@ -533,8 +532,8 @@ public final class ModelCardPdfService extends PdfDocumentService {
                 supplier = supplierData.getBelongsToField(CompanyProductFields.COMPANY);
                 minimumOrderQuantity = supplierData.getDecimalField(CompanyProductFields.MINIMUM_ORDER_QUANTITY);
             } else {
-                supplier = supplierData.getBelongsToField(CompanyProductsFamilyFields.COMPANY);
-                minimumOrderQuantity = supplierData.getDecimalField(CompanyProductsFamilyFields.MINIMUM_ORDER_QUANTITY);
+                supplier = supplierData.getBelongsToField(CompanyProductFields.COMPANY);
+                minimumOrderQuantity = supplierData.getDecimalField(CompanyProductFields.MINIMUM_ORDER_QUANTITY);
             }
         }
 
@@ -572,8 +571,8 @@ public final class ModelCardPdfService extends PdfDocumentService {
                 supplier = supplierData.getBelongsToField(CompanyProductFields.COMPANY);
                 minimumOrderQuantity = supplierData.getDecimalField(CompanyProductFields.MINIMUM_ORDER_QUANTITY);
             } else {
-                supplier = supplierData.getBelongsToField(CompanyProductsFamilyFields.COMPANY);
-                minimumOrderQuantity = supplierData.getDecimalField(CompanyProductsFamilyFields.MINIMUM_ORDER_QUANTITY);
+                supplier = supplierData.getBelongsToField(CompanyProductFields.COMPANY);
+                minimumOrderQuantity = supplierData.getDecimalField(CompanyProductFields.MINIMUM_ORDER_QUANTITY);
             }
         }
         table.addCell(new Phrase(supplier != null ? supplier.getStringField(CompanyFields.NUMBER) : StringUtils.EMPTY,
@@ -668,10 +667,10 @@ public final class ModelCardPdfService extends PdfDocumentService {
             return companyProduct;
         } else {
             if (!Objects.isNull(parentId)) {
-                Entity companyProductFamily = getCompanyProductsFamilyDD().find()
-                        .createAlias(CompanyProductsFamilyFields.PRODUCT, CompanyProductsFamilyFields.PRODUCT, JoinType.LEFT)
-                        .add(SearchRestrictions.eq(CompanyProductsFamilyFields.PRODUCT + L_DOT + L_ID, parentId))
-                        .add(SearchRestrictions.eq(CompanyProductsFamilyFields.IS_DEFAULT, true)).uniqueResult();
+                Entity companyProductFamily = getCompanyProductDD().find()
+                        .createAlias(CompanyProductFields.PRODUCT, CompanyProductFields.PRODUCT, JoinType.LEFT)
+                        .add(SearchRestrictions.eq(CompanyProductFields.PRODUCT + L_DOT + L_ID, parentId))
+                        .add(SearchRestrictions.eq(CompanyProductFields.IS_DEFAULT, true)).uniqueResult();
                 if (!Objects.isNull(companyProductFamily)) {
                     return companyProductFamily;
                 }
@@ -682,11 +681,6 @@ public final class ModelCardPdfService extends PdfDocumentService {
 
     private DataDefinition getCompanyProductDD() {
         return dataDefinitionService.get(DeliveriesConstants.PLUGIN_IDENTIFIER, DeliveriesConstants.MODEL_COMPANY_PRODUCT);
-    }
-
-    private DataDefinition getCompanyProductsFamilyDD() {
-        return dataDefinitionService.get(DeliveriesConstants.PLUGIN_IDENTIFIER,
-                DeliveriesConstants.MODEL_COMPANY_PRODUCTS_FAMILY);
     }
 
     private String getProductAttributeValue(Entity productAttribute, Long productId) {

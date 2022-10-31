@@ -42,8 +42,7 @@ public class CompanyProductHooks {
     private CompanyProductService companyProductService;
 
     public boolean checkIfProductIsNotAlreadyUsed(final DataDefinition companyProductDD, final Entity companyProduct) {
-        if (!companyProductService.checkIfProductIsNotUsed(companyProduct, CompanyProductFields.PRODUCT,
-                CompanyProductFields.COMPANY, CompanyFieldsD.PRODUCTS)) {
+        if (!companyProductService.checkIfProductIsNotUsed(companyProduct)) {
             companyProduct.addError(companyProductDD.getField(CompanyProductFields.PRODUCT),
                     "basic.company.message.productIsAlreadyUsed");
             companyProduct.addError(companyProductDD.getField(CompanyProductFields.COMPANY),

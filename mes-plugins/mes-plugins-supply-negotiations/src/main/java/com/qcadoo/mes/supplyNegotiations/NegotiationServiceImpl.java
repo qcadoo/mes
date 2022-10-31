@@ -23,36 +23,39 @@
  */
 package com.qcadoo.mes.supplyNegotiations;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import com.qcadoo.mes.basic.constants.ProductFamilyElementType;
-import com.qcadoo.mes.states.StateChangeContext;
-import com.qcadoo.mes.states.messages.constants.StateMessageType;
-import com.qcadoo.mes.supplyNegotiations.constants.SupplyNegotiationsConstants;
-import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.NumberService;
-import com.qcadoo.view.api.utils.NumberGeneratorService;
-import org.joda.time.DateTime;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import static com.qcadoo.mes.basic.constants.ProductFields.PARENT;
+import static com.qcadoo.mes.deliveries.constants.CompanyFieldsD.BUFFER;
+import static com.qcadoo.mes.deliveries.constants.CompanyProductFields.COMPANY;
+import static com.qcadoo.mes.deliveries.constants.ProductFieldsD.PRODUCT_COMPANIES;
+import static com.qcadoo.mes.supplyNegotiations.constants.NegotiationFields.INCLUDED_COMPANIES;
+import static com.qcadoo.mes.supplyNegotiations.constants.NegotiationFields.NEGOTIATION_PRODUCTS;
+import static com.qcadoo.mes.supplyNegotiations.constants.NegotiationProductFields.DUE_DATE;
+import static com.qcadoo.mes.supplyNegotiations.constants.NegotiationProductFields.LEFT_QUANTITY;
+import static com.qcadoo.mes.supplyNegotiations.constants.NegotiationProductFields.PRODUCT;
+import static com.qcadoo.mes.supplyNegotiations.constants.RequestForQuotationFields.DESIRED_DATE;
+import static com.qcadoo.mes.supplyNegotiations.constants.RequestForQuotationFields.NEGOTIATION;
+import static com.qcadoo.mes.supplyNegotiations.constants.RequestForQuotationFields.NUMBER;
+import static com.qcadoo.mes.supplyNegotiations.constants.RequestForQuotationFields.REQUEST_FOR_QUOTATION_PRODUCTS;
+import static com.qcadoo.mes.supplyNegotiations.constants.RequestForQuotationFields.SUPPLIER;
+import static com.qcadoo.mes.supplyNegotiations.constants.RequestForQuotationProductFields.ORDERED_QUANTITY;
 
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import static com.qcadoo.mes.basic.constants.ProductFields.ENTITY_TYPE;
-import static com.qcadoo.mes.basic.constants.ProductFields.PARENT;
-import static com.qcadoo.mes.deliveries.constants.CompanyFieldsD.BUFFER;
-import static com.qcadoo.mes.deliveries.constants.CompanyProductFields.COMPANY;
-import static com.qcadoo.mes.deliveries.constants.ProductFieldsD.PRODUCTS_FAMILY_COMPANIES;
-import static com.qcadoo.mes.deliveries.constants.ProductFieldsD.PRODUCT_COMPANIES;
-import static com.qcadoo.mes.supplyNegotiations.constants.NegotiationFields.INCLUDED_COMPANIES;
-import static com.qcadoo.mes.supplyNegotiations.constants.NegotiationFields.NEGOTIATION_PRODUCTS;
-import static com.qcadoo.mes.supplyNegotiations.constants.NegotiationProductFields.*;
-import static com.qcadoo.mes.supplyNegotiations.constants.RequestForQuotationFields.NEGOTIATION;
-import static com.qcadoo.mes.supplyNegotiations.constants.RequestForQuotationFields.*;
-import static com.qcadoo.mes.supplyNegotiations.constants.RequestForQuotationProductFields.ORDERED_QUANTITY;
+import org.joda.time.DateTime;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import com.qcadoo.mes.states.StateChangeContext;
+import com.qcadoo.mes.states.messages.constants.StateMessageType;
+import com.qcadoo.mes.supplyNegotiations.constants.SupplyNegotiationsConstants;
+import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.NumberService;
+import com.qcadoo.view.api.utils.NumberGeneratorService;
 
 @Service
 public class NegotiationServiceImpl implements NegotiationService {
@@ -125,27 +128,13 @@ public class NegotiationServiceImpl implements NegotiationService {
     }
 
     private void addCompaniesWhichSellsProduct(final List<Entity> companies, final Entity product) {
-        String entityType = product.getStringField(ENTITY_TYPE);
+        List<Entity> productCompanies = product.getHasManyField(PRODUCT_COMPANIES);
 
-        if (ProductFamilyElementType.PARTICULAR_PRODUCT.getStringValue().equals(entityType)) {
-            List<Entity> productCompanies = product.getHasManyField(PRODUCT_COMPANIES);
+        for (Entity productCompany : productCompanies) {
+            Entity company = productCompany.getBelongsToField(COMPANY);
 
-            for (Entity productCompany : productCompanies) {
-                Entity company = productCompany.getBelongsToField(COMPANY);
-
-                if (!companies.contains(company)) {
-                    companies.add(company);
-                }
-            }
-
-        } else if (ProductFamilyElementType.PRODUCTS_FAMILY.getStringValue().equals(entityType)) {
-            List<Entity> productsFamilyCompanies = product.getHasManyField(PRODUCTS_FAMILY_COMPANIES);
-
-            for (Entity productsFamilyCompany : productsFamilyCompanies) {
-                Entity company = productsFamilyCompany.getBelongsToField(COMPANY);
-                if (!companies.contains(company)) {
-                    companies.add(company);
-                }
+            if (!companies.contains(company)) {
+                companies.add(company);
             }
         }
     }
@@ -163,7 +152,7 @@ public class NegotiationServiceImpl implements NegotiationService {
     }
 
     private void fillCompanyAndRequestForQuotation(final Map<Long, Entity> companyAndRequestForQuotations, final Entity company,
-            final Date dueDate, final Entity requestForQuotationProduct) {
+                                                   final Date dueDate, final Entity requestForQuotationProduct) {
         if (requestForQuotationProduct != null) {
             if (companyAndRequestForQuotations.containsKey(company.getId())) {
                 updateCompanyAndRequestForQuotation(companyAndRequestForQuotations, company, dueDate, requestForQuotationProduct);
@@ -174,7 +163,7 @@ public class NegotiationServiceImpl implements NegotiationService {
     }
 
     private void addCompanyAndRequestForQuotation(final Map<Long, Entity> companyAndRequestForQuotations, final Entity company,
-            final Date dueDate, final Entity requestForQuotationProduct) {
+                                                  final Date dueDate, final Entity requestForQuotationProduct) {
         Entity requestForQuotation = supplyNegotiationsService.getRequestForQuotationDD().create();
 
         requestForQuotation.setField(SUPPLIER, company);
@@ -185,7 +174,7 @@ public class NegotiationServiceImpl implements NegotiationService {
     }
 
     private void updateCompanyAndRequestForQuotation(final Map<Long, Entity> companyAndRequestForQuotations,
-            final Entity company, final Date dueDate, final Entity requestForQuotationProduct) {
+                                                     final Entity company, final Date dueDate, final Entity requestForQuotationProduct) {
         Entity addedRequestForQuotation = companyAndRequestForQuotations.get(company.getId());
 
         Date desiredDate = (Date) addedRequestForQuotation.getField(DESIRED_DATE);
@@ -220,7 +209,7 @@ public class NegotiationServiceImpl implements NegotiationService {
     }
 
     private void saveRequestForQuotationsAndFillNumbers(final Map<Long, Entity> companyAndRequestForQuotations,
-            final Entity negotiation) {
+                                                        final Entity negotiation) {
         for (Entity requestForQuotation : companyAndRequestForQuotations.values()) {
             requestForQuotation.setField(NUMBER, numberGeneratorService.generateNumber(
                     SupplyNegotiationsConstants.PLUGIN_IDENTIFIER, SupplyNegotiationsConstants.MODEL_REQUEST_FOR_QUOTATION));

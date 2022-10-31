@@ -23,10 +23,12 @@
  */
 package com.qcadoo.mes.deliveries.hooks;
 
-import com.qcadoo.mes.deliveries.CompanyProductService;
-import com.qcadoo.model.api.DataDefinition;
-import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.FieldDefinition;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -35,14 +37,10 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.springframework.test.util.ReflectionTestUtils;
 
-import static com.qcadoo.mes.deliveries.constants.CompanyFieldsD.PRODUCTS;
-import static com.qcadoo.mes.deliveries.constants.CompanyProductFields.COMPANY;
-import static com.qcadoo.mes.deliveries.constants.CompanyProductsFamilyFields.PRODUCT;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
+import com.qcadoo.mes.deliveries.CompanyProductService;
+import com.qcadoo.model.api.DataDefinition;
+import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.FieldDefinition;
 
 public class CompanyProductHooksTest {
 
@@ -70,7 +68,7 @@ public class CompanyProductHooksTest {
     @Test
     public void shouldReturnTrueWhenCheckIfProductIsNotAlreadyUsed() {
         // given
-        given(companyProductService.checkIfProductIsNotUsed(companyProduct, PRODUCT, COMPANY, PRODUCTS)).willReturn(true);
+        given(companyProductService.checkIfProductIsNotUsed(companyProduct)).willReturn(true);
 
         // when
         boolean result = companyProductHooks.checkIfProductIsNotAlreadyUsed(companyProductDD, companyProduct);
@@ -84,7 +82,7 @@ public class CompanyProductHooksTest {
     @Test
     public void shouldReturnFalseWhenCheckIfProductIsNotAlreadyUsed() {
         // given
-        given(companyProductService.checkIfProductIsNotUsed(companyProduct, PRODUCT, COMPANY, PRODUCTS)).willReturn(false);
+        given(companyProductService.checkIfProductIsNotUsed(companyProduct)).willReturn(false);
 
         // when
         boolean result = companyProductHooks.checkIfProductIsNotAlreadyUsed(companyProductDD, companyProduct);

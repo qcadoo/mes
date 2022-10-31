@@ -1,29 +1,41 @@
 package com.qcadoo.mes.masterOrders.helpers;
 
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.stereotype.Service;
+
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.qcadoo.mes.basic.constants.ProductFamilyElementType;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.deliveries.DeliveriesService;
 import com.qcadoo.mes.deliveries.constants.CompanyProductFields;
-import com.qcadoo.mes.deliveries.constants.CompanyProductsFamilyFields;
-import com.qcadoo.mes.masterOrders.constants.*;
+import com.qcadoo.mes.masterOrders.constants.MasterOrderFields;
+import com.qcadoo.mes.masterOrders.constants.MasterOrderProductFields;
+import com.qcadoo.mes.masterOrders.constants.MasterOrdersConstants;
+import com.qcadoo.mes.masterOrders.constants.MasterOrdersMaterialRequirementFields;
+import com.qcadoo.mes.masterOrders.constants.MasterOrdersMaterialRequirementProductFields;
 import com.qcadoo.mes.materialFlowResources.MaterialFlowResourcesService;
 import com.qcadoo.mes.technologies.ProductQuantitiesService;
 import com.qcadoo.mes.technologies.ProductQuantitiesWithComponentsService;
 import com.qcadoo.mes.technologies.TechnologyService;
 import com.qcadoo.mes.technologies.dto.OperationProductComponentHolder;
 import com.qcadoo.mes.technologies.tree.ProductStructureTreeService;
-import com.qcadoo.model.api.*;
+import com.qcadoo.model.api.BigDecimalUtils;
+import com.qcadoo.model.api.DataDefinition;
+import com.qcadoo.model.api.DataDefinitionService;
+import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.NumberService;
 import com.qcadoo.plugin.api.PluginManager;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
-import org.springframework.stereotype.Service;
-
-import java.math.BigDecimal;
-import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 public class MasterOrdersMaterialRequirementHelper {
@@ -199,7 +211,7 @@ public class MasterOrdersMaterialRequirementHelper {
 
 		Map<Long, Map<Long, BigDecimal>> resourceStocks = getResourceStocks(products);
 		List<Entity> companyProducts = deliveriesService.getCompanyProducts(productIds);
-		List<Entity> companyProductsFamilies = deliveriesService.getCompanyProductsFamilies(parentIds);
+		List<Entity> companyProductsFamilies = deliveriesService.getCompanyProducts(parentIds);
 		Map<Long, BigDecimal> neededQuantitiesFromOrders = getNeededQuantitiesFromOrders(productIds);
 
 		for (Entity masterOrdersMaterialRequirementProduct : masterOrdersMaterialRequirementProducts) {
@@ -226,13 +238,13 @@ public class MasterOrdersMaterialRequirementHelper {
 				supplier = companyProduct.getBelongsToField(CompanyProductFields.COMPANY);
 			} else {
 				if (Objects.nonNull(parent)) {
-					Optional<Entity> mayBeCompanyProductsFamily = deliveriesService.getCompanyProductsFamily(companyProductsFamilies,
+					Optional<Entity> mayBeCompanyProductsFamily = deliveriesService.getCompanyProduct(companyProductsFamilies,
 							parent.getId());
 
 					if (mayBeCompanyProductsFamily.isPresent()) {
 						Entity companyProductsFamily = mayBeCompanyProductsFamily.get();
 
-						supplier = companyProductsFamily.getBelongsToField(CompanyProductsFamilyFields.COMPANY);
+						supplier = companyProductsFamily.getBelongsToField(CompanyProductFields.COMPANY);
 					}
 				}
 			}

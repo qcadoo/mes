@@ -17,28 +17,10 @@ import com.qcadoo.view.constants.QcadooViewConstants;
 @Service
 public class ProductDetailsHooksD {
 
-    public static final String L_PARENT_ID = "parenId";
+    public static final String L_PARENT_ID = "parentId";
 
     public void beforeRender(final ViewDefinitionState view) {
-        toggleSuppliersGrids(view);
         updateParentCompaniesCriteriaModifiersState(view);
-    }
-
-    public void toggleSuppliersGrids(final ViewDefinitionState view) {
-        FormComponent productForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
-        Entity product = productForm.getPersistedEntityWithIncludedFormValues();
-
-        GridComponent productCompanies = (GridComponent) view.getComponentByReference(ProductFieldsD.PRODUCT_COMPANIES);
-        GridComponent productsFamilyCompanies = (GridComponent) view
-                .getComponentByReference(ProductFieldsD.PRODUCTS_FAMILY_COMPANIES);
-
-        if (ProductFamilyElementType.from(product).equals(ProductFamilyElementType.PARTICULAR_PRODUCT)) {
-            productCompanies.setVisible(true);
-            productsFamilyCompanies.setVisible(false);
-        } else {
-            productCompanies.setVisible(false);
-            productsFamilyCompanies.setVisible(true);
-        }
     }
 
     private void updateParentCompaniesCriteriaModifiersState(final ViewDefinitionState view) {
@@ -58,6 +40,8 @@ public class ProductDetailsHooksD {
         filterValueHolder.put(L_PARENT_ID, parentId);
 
         parentCompanies.setFilterValue(filterValueHolder);
+
+        parentCompanies.setVisible(!ProductFamilyElementType.from(product).equals(ProductFamilyElementType.PRODUCTS_FAMILY));
     }
 
 }
