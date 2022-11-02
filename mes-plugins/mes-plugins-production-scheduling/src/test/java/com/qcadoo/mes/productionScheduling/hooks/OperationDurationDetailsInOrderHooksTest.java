@@ -25,8 +25,10 @@ package com.qcadoo.mes.productionScheduling.hooks;
 
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.states.constants.OrderStateStringValues;
+import com.qcadoo.mes.orders.util.OrderDetailsRibbonHelper;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.testing.model.EntityListMock;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
@@ -44,10 +46,10 @@ import org.mockito.MockitoAnnotations;
 
 import static org.mockito.BDDMockito.given;
 
+import java.util.Collection;
+import java.util.Collections;
+
 public class OperationDurationDetailsInOrderHooksTest {
-
-    
-
 
 
     private static final String L_OPERATIONAL_TASKS = "operationalTasks";
@@ -93,7 +95,7 @@ public class OperationDurationDetailsInOrderHooksTest {
 
         Long orderId = 1L;
 
-        given(view.getComponentByReference(QcadooViewConstants.L_WINDOW)).willReturn((ComponentState) window);
+        given(view.getComponentByReference(QcadooViewConstants.L_WINDOW)).willReturn(window);
         given(window.getRibbon()).willReturn(ribbon);
         given(ribbon.getGroupByName(L_OPERATIONAL_TASKS)).willReturn(operationalTasks);
         given(operationalTasks.getItemByName(L_CREATE_OPERATIONAL_TASKS)).willReturn(createOperationalTasks);
@@ -115,6 +117,8 @@ public class OperationDurationDetailsInOrderHooksTest {
         given(generatedEndDateField.getFieldValue()).willReturn(generatedEndDate);
         given(order.getStringField(OrderFields.STATE)).willReturn(OrderStateStringValues.ACCEPTED);
         given(order.getBelongsToField(OrderFields.TECHNOLOGY)).willReturn(technology);
+        given(order.getStringField(OrderDetailsRibbonHelper.L_TYPE_OF_PRODUCTION_RECORDING)).willReturn(OrderDetailsRibbonHelper.FOR_EACH);
+        given(order.getHasManyField(OrderFields.OPERATIONAL_TASKS)).willReturn(EntityListMock.create());
 
         // when
         operationDurationDetailsInOrderHooksOTFO.disableCreateButton(view);
