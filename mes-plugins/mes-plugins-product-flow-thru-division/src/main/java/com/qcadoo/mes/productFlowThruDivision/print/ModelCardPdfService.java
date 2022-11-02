@@ -528,13 +528,8 @@ public final class ModelCardPdfService extends PdfDocumentService {
         Entity supplierData = getSupplierData(modelCardMaterialEntry.getId(), modelCardMaterialEntry.getParentId());
 
         if (!Objects.isNull(supplierData)) {
-            if (supplierData.getDataDefinition().getName().equals(DeliveriesConstants.MODEL_COMPANY_PRODUCT)) {
-                supplier = supplierData.getBelongsToField(CompanyProductFields.COMPANY);
-                minimumOrderQuantity = supplierData.getDecimalField(CompanyProductFields.MINIMUM_ORDER_QUANTITY);
-            } else {
-                supplier = supplierData.getBelongsToField(CompanyProductFields.COMPANY);
-                minimumOrderQuantity = supplierData.getDecimalField(CompanyProductFields.MINIMUM_ORDER_QUANTITY);
-            }
+            supplier = supplierData.getBelongsToField(CompanyProductFields.COMPANY);
+            minimumOrderQuantity = supplierData.getDecimalField(CompanyProductFields.MINIMUM_ORDER_QUANTITY);
         }
 
         table.addCell(new Phrase(supplier != null ? supplier.getStringField(CompanyFields.NUMBER) : StringUtils.EMPTY,
@@ -567,13 +562,8 @@ public final class ModelCardPdfService extends PdfDocumentService {
         Entity supplierData = getSupplierData(modelCardMaterialEntry.getId(), modelCardMaterialEntry.getParentId());
 
         if (!Objects.isNull(supplierData)) {
-            if (supplierData.getDataDefinition().getName().equals(DeliveriesConstants.MODEL_COMPANY_PRODUCT)) {
-                supplier = supplierData.getBelongsToField(CompanyProductFields.COMPANY);
-                minimumOrderQuantity = supplierData.getDecimalField(CompanyProductFields.MINIMUM_ORDER_QUANTITY);
-            } else {
-                supplier = supplierData.getBelongsToField(CompanyProductFields.COMPANY);
-                minimumOrderQuantity = supplierData.getDecimalField(CompanyProductFields.MINIMUM_ORDER_QUANTITY);
-            }
+            supplier = supplierData.getBelongsToField(CompanyProductFields.COMPANY);
+            minimumOrderQuantity = supplierData.getDecimalField(CompanyProductFields.MINIMUM_ORDER_QUANTITY);
         }
         table.addCell(new Phrase(supplier != null ? supplier.getStringField(CompanyFields.NUMBER) : StringUtils.EMPTY,
                 FontUtils.getDejavuRegular7Light()));

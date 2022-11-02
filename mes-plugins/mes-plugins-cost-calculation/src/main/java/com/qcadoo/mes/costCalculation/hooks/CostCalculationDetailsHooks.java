@@ -95,7 +95,7 @@ public class CostCalculationDetailsHooks {
 
     public void setFieldsEnabled(final ViewDefinitionState view) {
         Set<String> referenceNames = Sets.newHashSet(CostCalculationFields.QUANTITY, CostCalculationFields.NUMBER,
-                CostCalculationFields.DESCRIPTION, CostCalculationFields.MATERIAL_COSTS_USED,
+                CostCalculationFields.DESCRIPTION, CostCalculationFields.MATERIAL_COSTS_USED, CostCalculationFields.OFFER,
                 CostCalculationFields.AVERAGE_LABOR_HOURLY_COST, CostCalculationFields.STANDARD_LABOR_COST,
                 CostCalculationFields.PRODUCTION_COST_MARGIN, CostCalculationFields.AVERAGE_MACHINE_HOURLY_COST,
                 CostCalculationFields.MATERIAL_COST_MARGIN, CostCalculationFields.ADDITIONAL_OVERHEAD,
