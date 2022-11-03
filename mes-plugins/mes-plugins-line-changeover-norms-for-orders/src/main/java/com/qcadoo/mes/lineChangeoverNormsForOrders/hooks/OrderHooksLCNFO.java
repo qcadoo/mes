@@ -23,16 +23,15 @@
  */
 package com.qcadoo.mes.lineChangeoverNormsForOrders.hooks;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.qcadoo.mes.lineChangeoverNormsForOrders.LineChangeoverNormsForOrdersService;
 import com.qcadoo.mes.lineChangeoverNormsForOrders.constants.OrderFieldsLCNFO;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 @Service
-public class OrderModelValidatorsLCNFO {
+public class OrderHooksLCNFO {
 
     @Autowired
     private LineChangeoverNormsForOrdersService lineChangeoverNormsForOrdersService;
@@ -50,4 +49,11 @@ public class OrderModelValidatorsLCNFO {
 
         return true;
     }
+
+    public void onSave(final DataDefinition orderDD, final Entity order) {
+        if (!order.getBooleanField(OrderFieldsLCNFO.OWN_LINE_CHANGEOVER)) {
+            order.setField(OrderFieldsLCNFO.OWN_LINE_CHANGEOVER_DURATION, null);
+        }
+    }
+
 }
