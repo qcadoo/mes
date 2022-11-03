@@ -31,8 +31,6 @@ public final class ProductFieldsD {
 
     public static final String PRODUCT_COMPANIES = "productCompanies";
 
-    public static final String PRODUCTS_FAMILY_COMPANIES = "productsFamilyCompanies";
-
     public static final String SYNCHRONIZE = "synchronize";
 
 }

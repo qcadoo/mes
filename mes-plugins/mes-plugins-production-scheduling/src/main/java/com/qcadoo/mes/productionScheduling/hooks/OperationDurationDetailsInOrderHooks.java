@@ -28,6 +28,7 @@ import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.mes.orders.states.constants.OrderStateStringValues;
+import com.qcadoo.mes.orders.util.OrderDetailsRibbonHelper;
 import com.qcadoo.mes.productionScheduling.constants.OrderFieldsPS;
 import com.qcadoo.mes.productionScheduling.criteriaModifiers.OperCompTimeCalculationsCM;
 import com.qcadoo.model.api.DataDefinitionService;
@@ -38,6 +39,7 @@ import com.qcadoo.view.api.components.lookup.FilterValueHolder;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.api.ribbon.RibbonGroup;
 import com.qcadoo.view.constants.QcadooViewConstants;
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -46,9 +48,6 @@ import java.util.Objects;
 
 @Service
 public class OperationDurationDetailsInOrderHooks {
-
-    
-
 
 
     private static final String L_GENERATED_END_DATE = "generatedEndDate";
@@ -118,11 +117,7 @@ public class OperationDurationDetailsInOrderHooks {
         RibbonGroup realizationTimeGroup = window.getRibbon().getGroupByName("operationDuration");
         RibbonActionItem realizationTime = realizationTimeGroup.getItemByName("copy");
 
-        if (isGenerated(view)) {
-            realizationTime.setEnabled(true);
-        } else {
-            realizationTime.setEnabled(false);
-        }
+        realizationTime.setEnabled(isGenerated(view));
 
         realizationTime.requestUpdate(true);
     }
@@ -139,16 +134,18 @@ public class OperationDurationDetailsInOrderHooks {
         RibbonGroup operationalTasks = window.getRibbon().getGroupByName(L_OPERATIONAL_TASKS);
         RibbonActionItem createOperationalTasks = operationalTasks.getItemByName(L_CREATE_OPERATIONAL_TASKS);
 
-        if (isGenerated(view) && orderHasTechnologyAndCorrectState(view)) {
-            createOperationalTasks.setEnabled(true);
-        } else {
-            createOperationalTasks.setEnabled(false);
+        boolean enabled = isGenerated(view) && orderHasAppropriateProperties(view);
+
+        createOperationalTasks.setEnabled(enabled);
+
+        if (!enabled) {
+            createOperationalTasks.setMessage("orders.ribbon.message.canNotGenerateOperationalTasks");
         }
 
         createOperationalTasks.requestUpdate(true);
     }
 
-    private boolean orderHasTechnologyAndCorrectState(final ViewDefinitionState view) {
+    private boolean orderHasAppropriateProperties(final ViewDefinitionState view) {
         FormComponent orderForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
         Long orderId = orderForm.getEntityId();
@@ -159,14 +156,19 @@ public class OperationDurationDetailsInOrderHooks {
 
         Entity order = orderForm.getEntity().getDataDefinition().get(orderId);
 
-        Entity technology = order.getBelongsToField(OrderFields.TECHNOLOGY);
-        String state = order.getStringField(OrderFields.STATE);
+        if (Objects.isNull(order.getBelongsToField(OrderFields.TECHNOLOGY))) {
+            return false;
+        }
 
-        return (!Objects.isNull(technology) && checkIfOrderStateIsCorrect(state));
+        if (!OrderStateStringValues.ACCEPTED.equals(order.getStringField(OrderFields.STATE))) {
+            return false;
+        }
+
+        if (!OrderDetailsRibbonHelper.FOR_EACH.equals(order.getStringField(OrderDetailsRibbonHelper.L_TYPE_OF_PRODUCTION_RECORDING))) {
+            return false;
+        }
+
+        return order.getHasManyField(OrderFields.OPERATIONAL_TASKS).isEmpty();
     }
 
-    private boolean checkIfOrderStateIsCorrect(final String state) {
-        return (OrderStateStringValues.PENDING.equals(state) || OrderStateStringValues.ACCEPTED.equals(state)
-                || OrderStateStringValues.IN_PROGRESS.equals(state) || OrderStateStringValues.INTERRUPTED.equals(state));
-    }
 }

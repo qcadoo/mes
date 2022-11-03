@@ -184,13 +184,19 @@ public class MasterOrderProductHooks {
                 orderedProductConfiguratorAttributes.stream().sorted(Comparator.comparing(orderedProductConfiguratorAttribute ->
                         orderedProductConfiguratorAttribute.getIntegerField(OrderedProductConfiguratorAttributeFields.SUCCESSION))).forEach(orderedProductConfiguratorAttribute -> {
                     Entity attribute = orderedProductConfiguratorAttribute.getBelongsToField(OrderedProductConfiguratorAttributeFields.ATTRIBUTE);
+                    Integer succession = orderedProductConfiguratorAttribute.getIntegerField(OrderedProductConfiguratorAttributeFields.SUCCESSION);
 
                     Entity masterOrderProductAttrValue = getMasterOrderProductAttrValueDD().create();
 
                     masterOrderProductAttrValue.setField(MasterOrderProductAttrValueFields.ATTRIBUTE, attribute);
+                    masterOrderProductAttrValue.setField(MasterOrderProductAttrValueFields.SUCCESSION, succession);
 
                     masterOrderProductAttrValues.add(masterOrderProductAttrValue);
                 });
+
+                if (!masterOrderProductAttrValues.isEmpty()) {
+                    masterOrderProduct.addGlobalMessage("masterOrders.masterOrderProduct.masterOrderProductAttrValues.filled");
+                }
 
                 masterOrderProduct.setField(MasterOrderProductFields.MASTER_ORDER_PRODUCT_ATTR_VALUES, masterOrderProductAttrValues);
             }

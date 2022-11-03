@@ -33,32 +33,11 @@ public interface CompanyProductService {
      * @param companyProduct
      *            company product
      * 
-     * @param belongsToCompanyName
-     *            belongs to company name - company
-     * 
-     * @param hasManyName
-     *            has many name - companyProducts
-     * 
      * @return boolean
      * 
      */
-    boolean checkIfProductIsNotUsed(final Entity companyProduct, final String belongsToProductName,
-            final String belongsToCompanyName, final String hasManyName);
+    boolean checkIfProductIsNotUsed(final Entity companyProduct);
 
     boolean checkIfDefaultAlreadyExists(final Entity companyProduct);
-
-    boolean checkIfDefaultExistsForFamily(final Entity companyProduct);
-
-    boolean checkIfDefaultExistsForParticularProduct(final Entity product);
-
-    boolean checkIfDefaultExistsForProductFamily(final Entity product);
-
-    /**
-     * Checks if any product from given family has default supplier, if found - returns that product's number
-     * 
-     * @param companyProduct
-     * @return
-     */
-    String checkIfDefaultExistsForProductsInFamily(final Entity companyProduct);
 
 }

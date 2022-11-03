@@ -41,7 +41,7 @@
         </decimal>
 
         <integer name="bufferForDeliveryTimes">
-            <validatesRange from="0" exclusively="false"/>
+            <validatesRange from="0"/>
         </integer>
     </fields>
 

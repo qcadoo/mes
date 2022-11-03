@@ -251,6 +251,11 @@
                 <model:belongsTo name="orderedProductConfigurator" model="orderedProductConfigurator" plugin="masterOrders"/>
         </model:model-field>
 
+        <model:model-hook model="product" plugin="basic">
+            <model:validatesWith class="com.qcadoo.mes.masterOrders.hooks.ProductHooksMO"
+                                 method="validatesWith"/>
+        </model:model-hook>
+
         <model:model-hook model="order" plugin="orders">
             <model:validatesWith class="com.qcadoo.mes.masterOrders.validators.OrderValidatorsMO"
                                  method="checkProductAndTechnology"/>

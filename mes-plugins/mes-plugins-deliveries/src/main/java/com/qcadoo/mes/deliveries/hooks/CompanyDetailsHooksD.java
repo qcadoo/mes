@@ -58,7 +58,7 @@ public class CompanyDetailsHooksD {
     private CurrencyService currencyService;
 
     public void disabledGridWhenCompanyIsOwner(final ViewDefinitionState view) {
-        companyService.disabledGridWhenCompanyIsOwner(view, "productsFamilies", "products");
+        companyService.disabledGridWhenCompanyIsOwner(view,  "products");
     }
 
     public void disableBufferWhenCompanyIsOwner(final ViewDefinitionState view) {
