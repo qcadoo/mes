@@ -1,6 +1,9 @@
 var QCD = QCD || {};
 
+var getConfiguratorConfigurationPath = " /rest/technologyConfigurator/configuration";
+
 QCD.technologyConfiguratorContext = {};
+QCD.technologyConfiguratorContext.configuration = {};
 QCD.technologyConfiguratorContext.technology = {};
 QCD.technologyConfiguratorContext.technology.product = null;
 QCD.technologyConfiguratorContext.technology.description = null;
@@ -15,12 +18,37 @@ QCD.technologyConfiguratorContext.technology.workstationEvents = [];
 
 QCD.technologyConfiguratorContext.workstationTypes = [];
 
+QCD.technologyConfiguratorContext.operationRowAdded = false;
+
 var messagesController = new QCD.MessagesController();
 
 QCD.technologyConfigurator = (function () {
 
-    function init() {
+    function intConfiguration() {
 
+        $.ajax({
+            url : getConfiguratorConfigurationPath,
+            type : "GET",
+            async : false,
+            beforeSend : function() {
+            },
+            success : function(data) {
+                QCD.technologyConfiguratorContext.configuration = data;
+                if(QCD.technologyConfiguratorContext.configuration.typeOfProductionRecording === '02cumulated') {
+                    disableStep(3);
+                }
+            },
+            error : function(data) {
+                QCD.terminalView.showMessage('failure', QCD
+                    .translate(failureMessage), QCD
+                    .translate(data.message), false);
+            },
+            complete : function() {
+            }
+        });
+    }
+
+    function init() {
         (function ($) {
             'use strict';
 
@@ -101,6 +129,7 @@ QCD.technologyConfigurator = (function () {
 
         })(jQuery);
 
+
         $("#otSelectProduct").prop('disabled', true);
         $('#otProducts').on('check.bs.table', function (row, $element) {
             $("#otSelectProduct").prop('disabled', false);
@@ -133,6 +162,8 @@ QCD.technologyConfigurator = (function () {
             },
             titleTemplate: '<div class="title"><span class="number">#index#</span>#title#</div>',
             onStepChanging: function (event, currentIndex, newIndex) {
+
+
                 if (currentIndex == 0) {
                     var invalid = false;
                     if ($("#otProduct").val() == null || $("#otProduct").val() === '' || QCD.technologyConfiguratorContext.technology.product == null) {
@@ -170,6 +201,9 @@ QCD.technologyConfigurator = (function () {
                                 $('#quantityProductIn-' + material.index).val(material.quantity);
                             });
                         });
+                        if(newIndex == 4) {
+                            preparePreview();
+                        }
                     }
                     return !invalid;
                 } else if (currentIndex == 1) {
@@ -205,8 +239,55 @@ QCD.technologyConfigurator = (function () {
 
                     }
                     if (!invalid) {
-                        prepareOperationMaterials();
+                        if(QCD.technologyConfiguratorContext.operationRowAdded
+                            && newIndex !== 2) {
 
+                            var invalid = false;
+
+                            var data = QCD.technologyConfiguratorContext.technologyOperations;
+                            var last_element = data[data.length - 1];
+                            if (!last_element.materials || last_element.materials.length == 0) {
+                                invalid = true;
+                            }
+                            if(!invalid) {
+                                $.each(data, function (i, oper) {
+
+                                    $.each(oper.materials, function (i, material) {
+                                        if (material.product == null || material.product === '' || material.productId == null) {
+                                            invalid = true;
+                                        }
+
+                                        if (material.quantity == null || material.quantity === '') {
+                                            invalid = true;
+                                        } else {
+                                            var validQ = validQuantity("quantityProductIn-" + material.index);
+                                            if (!validQ) {
+                                                invalid = true;
+                                            }
+                                        }
+
+                                        if (material.quantityPerUnit == null || material.quantityPerUnit === '') {
+                                            invalid = true;
+                                        } else {
+                                            var validQ = validQuantity("quantityPerUnitProductIn-" + material.index);
+                                            if (!validQ) {
+                                                invalid = true;
+                                            }
+                                        }
+                                    });
+
+                                });
+                            }
+                            if (invalid) {
+                                gotToStep(2);
+                                return false;
+                            }
+                        }
+                        QCD.technologyConfiguratorContext.operationRowAdded = false;
+                        prepareOperationMaterials();
+                        if(newIndex == 4) {
+                            preparePreview();
+                        }
                     }
                     return !invalid;
                 } else if (currentIndex == 2) {
@@ -294,7 +375,9 @@ QCD.technologyConfigurator = (function () {
 
                     if (!invalid) {
                         $("#workstations").bootstrapTable('load', QCD.technologyConfiguratorContext.technologyOperations);
-
+                        if(newIndex == 4) {
+                            preparePreview();
+                        }
                     }
                     return !invalid;
                 } else if (currentIndex == 3) {
@@ -307,14 +390,33 @@ QCD.technologyConfigurator = (function () {
 
 
                     });
-                    preparePreview();
+                    if(newIndex == 4) {
+                        preparePreview();
+                    }
                     return true;
                 } else if (currentIndex == 4) {
-
                     return true;
                 }
             },
             onStepChanged: function (event, currentIndex, priorIndex) {
+                if (currentIndex == 3) {
+                    if(QCD.technologyConfiguratorContext.configuration.typeOfProductionRecording === '02cumulated') {
+                        if(priorIndex < 3) {
+                            $("#technologyConfiguratorWizardForm-t-" + 4).parent().removeClass("disabled");
+                            $("#technologyConfiguratorWizardForm-t-" + 4).parent().addClass("done");
+                            $("#technologyConfiguratorWizardForm-t-" + 4).parent()._enableAria(true);
+                            gotToStep(4);
+                            disableStep(3);
+                        } else {
+                            $("#technologyConfiguratorWizardForm-t-" + 2).parent().removeClass("disabled");
+                            $("#technologyConfiguratorWizardForm-t-" + 2).parent().addClass("done");
+                            $("#technologyConfiguratorWizardForm-t-" + 2).parent()._enableAria(true);
+                            gotToStep(2);
+                            disableStep(3);
+                        }
+
+                    }
+                }
                 return true;
 
             },
@@ -326,6 +428,8 @@ QCD.technologyConfigurator = (function () {
                 createTechnology();
             },
             onInit: function (event, currentIndex) {
+                $("#otQuantity").val("1");
+
                 $(".actions").find(".cancelBtn").remove();
 
                 var saveA = $("<a>").attr("href", "#").addClass("cancelBtn").text(QCD.translate('technologies.technologyConfigurator.technologyConfiguratorWizard.cancel'));
@@ -333,6 +437,8 @@ QCD.technologyConfigurator = (function () {
 
                 $(document).find(".actions ul").prepend(saveBtn);
                 operations();
+                intConfiguration();
+
 
             },
         });
@@ -599,6 +705,7 @@ QCD.technologyConfigurator = (function () {
             technologyOperation.index = new Date().getTime();
             QCD.technologyConfiguratorContext.technologyOperations.push(technologyOperation);
             $technologyOperations.bootstrapTable('load', QCD.technologyConfiguratorContext.technologyOperations);
+            QCD.technologyConfiguratorContext.operationRowAdded = true;
         });
 
         $("#removeTechnologyOperation").click(function () {
@@ -1607,11 +1714,7 @@ QCD.technologyConfigurator = (function () {
     }
 
     function gotToStep(index) {
-        $("#technologyConfiguratorWizardForm-t-" + index).parent().removeClass("disabled");
-        $("#technologyConfiguratorWizardForm-t-" + index).parent()._enableAria(true);
         $("#technologyConfiguratorWizardForm-t-" + index).click();
-        disableStep(2);
-        disableStep(3);
     }
 
     function disableStep(index) {
