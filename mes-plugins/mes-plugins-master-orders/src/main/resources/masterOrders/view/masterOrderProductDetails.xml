@@ -185,30 +185,27 @@
         <windowTab name="attributes" reference="attributes">
             <component type="grid" name="masterOrderProductAttrValues" reference="masterOrderProductAttrValues"
                        source="#{form}.masterOrderProductAttrValues">
-
                 <option type="column" name="number" fields="attribute"
                         expression="#attribute['number']" link="true" width="100"/>
-
                 <option type="column" name="name" fields="attribute"
                         expression="#attribute['name']" link="true" width="200"/>
-
                 <option type="column" name="value" fields="value"
                         link="true" width="100"/>
-
                 <option type="column" name="description" fields="attributeValue"
                         expression="#attributeValue['description']" width="200"/>
-
                 <option type="column" name="unit" fields="attribute"
                         expression="#attribute['unit']" link="false" width="50"/>
+                <option type="column" name="succession" fields="succession"
+                        width="50"/>
 
-                <option type="order" column="number" direction="desc"/>
+                <option type="order" column="succession" direction="asc"/>
 
+                <option type="orderable" value="number,name,value,description,unit,succession"/>
+                <option type="searchable" value="number,name,value,description,unit,succession"/>
 
                 <option type="correspondingView" value="masterOrders/masterOrderProductAttrValueDetails"/>
                 <option type="correspondingComponent" value="form"/>
                 <option type="correspondingViewInModal" value="true"/>
-                <option type="orderable" value="number,name,value,description,unit"/>
-                <option type="searchable" value="number,name,value,description,unit"/>
 
                 <option type="paginable" value="true"/>
                 <option type="creatable" value="true"/>

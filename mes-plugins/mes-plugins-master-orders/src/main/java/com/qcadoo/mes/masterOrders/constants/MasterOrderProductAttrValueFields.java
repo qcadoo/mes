@@ -14,4 +14,6 @@ public class MasterOrderProductAttrValueFields {
 
     public static final String VALUE = "value";
 
+    public static final String SUCCESSION = "succession";
+
 }
