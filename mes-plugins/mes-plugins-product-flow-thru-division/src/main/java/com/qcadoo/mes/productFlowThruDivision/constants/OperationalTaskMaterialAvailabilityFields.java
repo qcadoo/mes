@@ -51,5 +51,7 @@ public final class OperationalTaskMaterialAvailabilityFields {
 
     public static final String BATCHES_QUANTITY = "batchesQuantity";
 
+    public static final String PRODUCED = "produced";
+
     public static final String TYPE_OF_MATERIAL = "typeOfMaterial";
 }

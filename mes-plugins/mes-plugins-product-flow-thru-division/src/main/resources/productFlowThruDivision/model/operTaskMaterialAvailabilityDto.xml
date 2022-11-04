@@ -58,6 +58,10 @@
 			<validatesUnscaledValue max="14"/>
 			<validatesScale max="5"/>
 		</decimal>
+		<decimal name="produced">
+			<validatesUnscaledValue max="14"/>
+			<validatesScale max="5"/>
+		</decimal>
 		<string name="batchesQuantityClass"/>
 		<enum name="typeOfMaterial" values="01component,02intermediate"/>
 

@@ -99,6 +99,7 @@
                         <option type="column" name="availability" fields="availability"/>
                         <option type="column" name="availableQuantity" fields="availableQuantity"/>
                         <option type="column" name="requiredQuantity" fields="requiredQuantity"/>
+                        <option type="column" name="produced" fields="produced"/>
                         <option type="column" name="productUnit" fields="productUnit"/>
                         <option type="column" name="locationNumber" fields="locationNumber"/>
                         <option type="column" name="replacement" fields="replacement"/>
@@ -110,9 +111,9 @@
                         <option type="order" column="productNumber" direction="asc"/>
 
                         <option type="searchable"
-                                value="typeOfMaterial,batchesQuantity,batches,productName,productNumber,locationNumber,availability,availableQuantity,requiredQuantity,replacement"/>
+                                value="produced,typeOfMaterial,batchesQuantity,batches,productName,productNumber,locationNumber,availability,availableQuantity,requiredQuantity,replacement"/>
                         <option type="orderable"
-                                value="typeOfMaterial,batchesQuantity,batches,productName,productNumber,availability,availableQuantity,requiredQuantity,replacement"/>
+                                value="produced,typeOfMaterial,batchesQuantity,batches,productName,productNumber,availability,availableQuantity,requiredQuantity,replacement"/>
 
                         <option type="fullscreen" value="true"/>
                         <option type="multiselect" value="true"/>
