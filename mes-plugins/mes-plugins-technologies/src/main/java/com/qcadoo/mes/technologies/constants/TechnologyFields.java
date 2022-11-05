@@ -75,4 +75,6 @@ public final class TechnologyFields {
 
     public static final String PRODUCT_DATAS = "productDatas";
 
+    public static final String MINIMAL_QUANTITY = "minimalQuantity";
+
 }

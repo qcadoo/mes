@@ -6,6 +6,7 @@ import com.qcadoo.mes.masterOrders.OrdersGenerationService;
 import com.qcadoo.mes.masterOrders.constants.SalesVolumeFields;
 import com.qcadoo.mes.masterOrders.hooks.SalesVolumeHooks;
 import com.qcadoo.mes.orders.TechnologyServiceO;
+import com.qcadoo.mes.technologies.constants.TechnologyFields;
 import com.qcadoo.model.api.BigDecimalUtils;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
@@ -64,13 +65,11 @@ public class SalesVolumeDetailsListeners {
                     BigDecimal plannedQuantity = optimalStock.subtract(currentStock, numberService.getMathContext());
 
                     if (Objects.nonNull(technology)) {
-                        if (PluginUtils.isEnabled("minimalAffordableQuantity")) {
-                            BigDecimal minimalQuantity = technology.getDecimalField("minimalQuantity");
+                            BigDecimal minimalQuantity = technology.getDecimalField(TechnologyFields.MINIMAL_QUANTITY);
 
                             if (Objects.nonNull(minimalQuantity) && plannedQuantity.compareTo(minimalQuantity) < 0) {
                                 plannedQuantity = minimalQuantity;
                             }
-                        }
                     }
 
                     Entity order = ordersGenerationService.createOrder(parameter, technology, product, plannedQuantity, null, null, null);
