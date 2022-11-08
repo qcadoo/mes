@@ -87,6 +87,8 @@
                                         prefix="productionCounting.validate.global.error.operationDurationAnalysis"/>
         <localization:translation-group name="productionBalanceAnalysis"
                                         prefix="productionCounting.validate.global.error.productionBalanceAnalysis"/>
+        <localization:translation-group name="linesProducedQuantitiesChart"
+                                        prefix="productionCounting.linesProducedQuantitiesChart"/>
 
         <model:model model="productionTracking" resource="model/productionTracking.xml"/>
         <model:model model="productionTrackingStateChange" resource="model/productionTrackingStateChange.xml"/>
@@ -492,6 +494,9 @@
         <menu:menu-item-url name="productionBalanceAnalysis" category="analysis"
                             url="/productionBalanceAnalysis.html" defaultAuthorizationRole="ROLE_ANALYSIS_VIEWER"/>
 
+        <menu:menu-item-url name="linesProducedQuantitiesChart" category="analysis"
+                            url="/linesProducedQuantitiesChart.html" defaultAuthorizationRole="ROLE_ANALYSIS_VIEWER"/>
+
         <view:view resource="view/productionTrackingsList.xml"/>
         <view:view resource="view/productionTrackingDetails.xml"/>
         <view:view resource="view/productionBalancesList.xml"/>
@@ -535,6 +540,7 @@
         <view:view resource="view/productionAnalysisParameters.xml"/>
         <view:view resource="view/operationDurationAnalysis.xml"/>
         <view:view resource="view/productionBalanceAnalysis.xml"/>
+        <view:view resource="view/linesProducedQuantitiesChart.xml"/>
         <view:view resource="view/lackDetails.xml"/>
 
         <view:view-tab resource="view/tabExtensions/orderDetails.xml"/>
