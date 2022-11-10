@@ -614,12 +614,12 @@ public class DeliveriesServiceImpl implements DeliveriesService {
         if (Objects.nonNull(product) && ProductFamilyElementType.PARTICULAR_PRODUCT.getStringValue()
                 .equals(product.getStringField(ProductFields.ENTITY_TYPE))) {
 
-            Entity defaultSupplier = getDefaultSupplierForProductsFamily(productId);
+            Entity defaultSupplier = getDefaultSupplierForParticularProduct(productId);
 
             if (Objects.nonNull(defaultSupplier)) {
                 return Optional.of(defaultSupplier);
             } else {
-                return Optional.ofNullable(getDefaultSupplierForParticularProduct(productId));
+                return Optional.ofNullable(getDefaultSupplierForProductsFamily(productId));
             }
         }
 
