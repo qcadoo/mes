@@ -36,6 +36,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import com.google.common.collect.Maps;
+import com.qcadoo.mes.basic.constants.ProductFamilyElementType;
+import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.operationTimeCalculations.OperationWorkTime;
 import com.qcadoo.mes.operationTimeCalculations.OperationWorkTimeService;
 import com.qcadoo.mes.operationTimeCalculations.OrderRealizationTimeService;
@@ -45,11 +47,14 @@ import com.qcadoo.mes.orders.constants.OperationalTaskFields;
 import com.qcadoo.mes.orders.constants.OperationalTaskType;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
+import com.qcadoo.mes.orders.constants.SchedulePositionFields;
 import com.qcadoo.mes.productionLines.constants.ProductionLinesConstants;
 import com.qcadoo.mes.productionScheduling.ProductionSchedulingService;
 import com.qcadoo.mes.productionScheduling.constants.OrderFieldsPS;
 import com.qcadoo.mes.operationTimeCalculations.constants.OrderTimeCalculationFields;
 import com.qcadoo.mes.technologies.ProductQuantitiesService;
+import com.qcadoo.mes.technologies.TechnologyService;
+import com.qcadoo.mes.technologies.constants.OperationProductOutComponentFields;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
 import com.qcadoo.mes.operationTimeCalculations.constants.OperCompTimeCalculationsFields;
 import com.qcadoo.model.api.DataDefinition;
@@ -90,10 +95,10 @@ public class OperationDurationDetailsInOrderListeners {
     private ProductionSchedulingService productionSchedulingService;
 
     @Autowired
-    private NumberGeneratorService numberGeneratorService;
+    private TechnologyServiceO technologyServiceO;
 
     @Autowired
-    private TechnologyServiceO technologyServiceO;
+    private TechnologyService technologyService;
 
     public void showCopyOfTechnology(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         Long orderId = (Long) state.getFieldValue();
@@ -295,6 +300,12 @@ public class OperationDurationDetailsInOrderListeners {
         operationalTask.setField(OperationalTaskFields.TYPE, OperationalTaskType.EXECUTION_OPERATION_IN_ORDER.getStringValue());
         operationalTask.setField(OperationalTaskFields.ORDER, order);
         operationalTask.setField(OperationalTaskFields.TECHNOLOGY_OPERATION_COMPONENT, technologyOperationComponent);
+        Entity mainOutputProductComponent = technologyService.getMainOutputProductComponent(technologyOperationComponent);
+        Entity product = mainOutputProductComponent.getBelongsToField(OperationProductOutComponentFields.PRODUCT);
+        if (ProductFamilyElementType.PRODUCTS_FAMILY.getStringValue().equals(product.getField(ProductFields.ENTITY_TYPE))) {
+            product = order.getBelongsToField(OrderFields.PRODUCT);
+        }
+        operationalTask.setField(OperationalTaskFields.PRODUCT, product);
 
         Entity technology = order.getBelongsToField(OrderFields.TECHNOLOGY);
 

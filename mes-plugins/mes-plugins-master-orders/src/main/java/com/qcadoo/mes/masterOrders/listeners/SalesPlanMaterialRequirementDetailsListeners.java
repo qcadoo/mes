@@ -23,7 +23,6 @@ import com.qcadoo.mes.basic.constants.UnitConversionItemFieldsB;
 import com.qcadoo.mes.deliveries.DeliveriesService;
 import com.qcadoo.mes.deliveries.constants.CompanyFieldsD;
 import com.qcadoo.mes.deliveries.constants.CompanyProductFields;
-import com.qcadoo.mes.deliveries.constants.CompanyProductsFamilyFields;
 import com.qcadoo.mes.deliveries.constants.DeliveriesConstants;
 import com.qcadoo.mes.deliveries.constants.DeliveryFields;
 import com.qcadoo.mes.deliveries.constants.OrderedProductFields;
@@ -196,7 +195,7 @@ public class SalesPlanMaterialRequirementDetailsListeners {
         Set<Long> productIds = salesPlanMaterialRequirementHelper.getProductIds(products);
 
         List<Entity> companyProducts = getCompanyProducts(productIds, supplier);
-        List<Entity> companyProductsFamilies = getCompanyProductsFamilies(parentIds, supplier);
+        List<Entity> companyProductsFamilies = getCompanyProducts(parentIds, supplier);
 
         List<Entity> orderedProducts = createOrderedProducts(salesPlanMaterialRequirementProducts, companyProducts,
                 companyProductsFamilies);
@@ -247,21 +246,6 @@ public class SalesPlanMaterialRequirementDetailsListeners {
         }
 
         return companyProducts;
-    }
-
-    private List<Entity> getCompanyProductsFamilies(final Set<Long> productIds, final Entity company) {
-        List<Entity> companyProductFamilies = Lists.newArrayList();
-
-        if (!productIds.isEmpty() && Objects.nonNull(company)) {
-            companyProductFamilies = deliveriesService.getCompanyProductsFamilyDD().find()
-                    .createAlias(CompanyProductsFamilyFields.PRODUCT, CompanyProductsFamilyFields.PRODUCT, JoinType.LEFT)
-                    .createAlias(CompanyProductsFamilyFields.COMPANY, CompanyProductsFamilyFields.COMPANY, JoinType.LEFT)
-                    .add(SearchRestrictions.in(CompanyProductsFamilyFields.PRODUCT + L_DOT + L_ID, productIds))
-                    .add(SearchRestrictions.eq(CompanyProductsFamilyFields.COMPANY + L_DOT + L_ID, company.getId())).list()
-                    .getEntities();
-        }
-
-        return companyProductFamilies;
     }
 
     private List<Entity> createOrderedProducts(final List<Entity> salesPlanMaterialRequirementProducts,
@@ -342,14 +326,14 @@ public class SalesPlanMaterialRequirementDetailsListeners {
             Entity parent = product.getBelongsToField(ProductFields.PARENT);
 
             if (Objects.nonNull(parent)) {
-                Optional<Entity> mayBeCompanyProductsFamily = deliveriesService.getCompanyProductsFamily(companyProductsFamilies,
+                Optional<Entity> mayBeCompanyProductsFamily = deliveriesService.getCompanyProduct(companyProductsFamilies,
                         parent.getId());
 
                 if (mayBeCompanyProductsFamily.isPresent()) {
                     Entity companyProductsFamily = mayBeCompanyProductsFamily.get();
 
                     minimumOrderQuantity = companyProductsFamily
-                            .getDecimalField(CompanyProductsFamilyFields.MINIMUM_ORDER_QUANTITY);
+                            .getDecimalField(CompanyProductFields.MINIMUM_ORDER_QUANTITY);
                 }
             }
         }

@@ -6,10 +6,10 @@ import com.qcadoo.mes.masterOrders.OrdersGenerationService;
 import com.qcadoo.mes.masterOrders.constants.SalesVolumeFields;
 import com.qcadoo.mes.masterOrders.hooks.SalesVolumeHooks;
 import com.qcadoo.mes.orders.TechnologyServiceO;
+import com.qcadoo.mes.technologies.constants.TechnologyFields;
 import com.qcadoo.model.api.BigDecimalUtils;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
-import com.qcadoo.plugin.api.PluginUtils;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
@@ -57,20 +57,18 @@ public class SalesVolumeDetailsListeners {
             if (BigDecimal.ZERO.compareTo(optimalStock) == 0) {
                 view.addMessage("masterOrders.salesVolumeDetails.createOrder.info.optimalStock", ComponentState.MessageType.INFO);
             } else {
-                if (currentStock.compareTo(optimalStock) <= 0) {
+                if (currentStock.compareTo(optimalStock) >= 0) {
                     view.addMessage("masterOrders.salesVolumeDetails.createOrder.info.currentStock", ComponentState.MessageType.INFO);
                 } else {
                     Entity technology = technologyServiceO.getDefaultTechnology(product);
                     BigDecimal plannedQuantity = optimalStock.subtract(currentStock, numberService.getMathContext());
 
                     if (Objects.nonNull(technology)) {
-                        if (PluginUtils.isEnabled("minimalAffordableQuantity")) {
-                            BigDecimal minimalQuantity = technology.getDecimalField("minimalQuantity");
+                            BigDecimal minimalQuantity = technology.getDecimalField(TechnologyFields.MINIMAL_QUANTITY);
 
                             if (Objects.nonNull(minimalQuantity) && plannedQuantity.compareTo(minimalQuantity) < 0) {
                                 plannedQuantity = minimalQuantity;
                             }
-                        }
                     }
 
                     Entity order = ordersGenerationService.createOrder(parameter, technology, product, plannedQuantity, null, null, null);

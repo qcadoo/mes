@@ -313,7 +313,7 @@ public class MaterialRequirementCoverageServiceImpl implements MaterialRequireme
             sql = "SELECT distinct registry.productId AS productId FROM #orderSupplies_productionCountingQuantityInput AS registry "
                     + "WHERE registry.orderId IN :ids AND eventType IN ('04orderInput','03operationInput')";
             List<Entity> regs = getCoverageRegisterDD().find(sql)
-                    .setParameterList("ids", orderIds.stream().map(x -> x.intValue()).collect(Collectors.toList())).list().getEntities();
+                    .setParameterList("ids", orderIds.stream().map(Number::intValue).collect(Collectors.toList())).list().getEntities();
 
             List<Long> pids = getIdsFromRegisterProduct(regs);
 

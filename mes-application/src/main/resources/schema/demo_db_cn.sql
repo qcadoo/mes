@@ -13399,21 +13399,6 @@ CREATE TABLE deliveries_companyproduct (
 
 
 --
--- Name: deliveries_companyproductsfamily; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE deliveries_companyproductsfamily (
-    id bigint NOT NULL,
-    company_id bigint,
-    product_id bigint,
-    isdefault boolean DEFAULT false,
-    entityversion bigint DEFAULT 0,
-    minimumorderquantity numeric(12,5),
-    bufferfordeliverytimes integer
-);
-
-
---
 -- Name: deliveries_bufferfordeliverytimes; Type: VIEW; Schema: public; Owner: -
 --
 
@@ -13427,7 +13412,7 @@ CREATE VIEW deliveries_bufferfordeliverytimes AS
    FROM (((basic_product product
      LEFT JOIN basic_product parent ON ((parent.id = product.parent_id)))
      LEFT JOIN deliveries_companyproduct _companyproduct ON ((_companyproduct.product_id = product.id)))
-     LEFT JOIN deliveries_companyproductsfamily _companyproductsfamily ON ((_companyproductsfamily.product_id = parent.id)));
+     LEFT JOIN deliveries_companyproduct _companyproductsfamily ON ((_companyproductsfamily.product_id = parent.id)));
 
 
 --
@@ -13519,25 +13504,6 @@ CREATE SEQUENCE deliveries_companyproduct_id_seq
 --
 
 ALTER SEQUENCE deliveries_companyproduct_id_seq OWNED BY deliveries_companyproduct.id;
-
-
---
--- Name: deliveries_companyproductsfamily_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE deliveries_companyproductsfamily_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: deliveries_companyproductsfamily_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE deliveries_companyproductsfamily_id_seq OWNED BY deliveries_companyproductsfamily.id;
 
 
 --
@@ -14119,7 +14085,7 @@ CREATE VIEW deliveries_orderedproductdto AS
      LEFT JOIN basic_product product ON ((product.id = orderedproduct.product_id)))
      LEFT JOIN basic_product parentproduct ON ((product.parent_id = parentproduct.id)))
      LEFT JOIN deliveries_companyproduct companyproduct ON (((product.id = companyproduct.product_id) AND (supplier.id = companyproduct.company_id))))
-     LEFT JOIN deliveries_companyproductsfamily companyproductsfamily ON (((parentproduct.id = companyproductsfamily.product_id) AND (supplier.id = companyproductsfamily.company_id))))
+     LEFT JOIN deliveries_companyproduct companyproductsfamily ON (((parentproduct.id = companyproductsfamily.product_id) AND (supplier.id = companyproductsfamily.company_id))))
      LEFT JOIN supplynegotiations_offer offer ON ((offer.id = orderedproduct.offer_id)))
      LEFT JOIN supplynegotiations_negotiation negotiation ON ((negotiation.id = offer.negotiation_id)))
      LEFT JOIN technologies_operation operation ON ((operation.id = orderedproduct.operation_id)))
@@ -16387,6 +16353,37 @@ ALTER SEQUENCE goodfood_palletstatechange_id_seq OWNED BY goodfood_palletstatech
 
 
 --
+-- Name: goodfood_palnumber; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE goodfood_palnumber (
+    id bigint NOT NULL,
+    number character varying(255),
+    masterorder_id bigint,
+    ssccnumber character varying(20)
+);
+
+
+--
+-- Name: goodfood_palnumber_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE goodfood_palnumber_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: goodfood_palnumber_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE goodfood_palnumber_id_seq OWNED BY goodfood_palnumber.id;
+
+
+--
 -- Name: goodfood_printedlabel; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -17444,9 +17441,9 @@ CREATE VIEW linechangeovernorms_linechangeovernormsdto AS
     technologyfrom.number AS technologyfromnumber,
     technologyto.number AS technologytonumber
    FROM ((linechangeovernorms_linechangeovernorms linechangeovernorms
-     LEFT JOIN technologies_technology technologyfrom ON ((technologyfrom.id = linechangeovernorms.fromtechnology_id)))
-     LEFT JOIN technologies_technology technologyto ON ((technologyto.id = linechangeovernorms.totechnology_id)))
-  WHERE (((linechangeovernorms.changeovertype)::text = '01forTechnology'::text) AND (linechangeovernorms.fromtechnology_id IS NOT NULL) AND (linechangeovernorms.totechnology_id IS NOT NULL))
+     JOIN technologies_technology technologyfrom ON ((technologyfrom.id = linechangeovernorms.fromtechnology_id)))
+     JOIN technologies_technology technologyto ON ((technologyto.id = linechangeovernorms.totechnology_id)))
+  WHERE ((linechangeovernorms.changeovertype)::text = '01forTechnology'::text)
 UNION ALL
  SELECT linechangeovernorms.number,
     linechangeovernorms.name,
@@ -17458,11 +17455,11 @@ UNION ALL
     technologyfrom.number AS technologyfromnumber,
     technologyto.number AS technologytonumber
    FROM ((((linechangeovernorms_linechangeovernorms linechangeovernorms
-     LEFT JOIN technologies_technologygroup technologygroupfrom ON ((technologygroupfrom.id = linechangeovernorms.fromtechnologygroup_id)))
-     LEFT JOIN technologies_technology technologyfrom ON (((technologyfrom.technologygroup_id = technologygroupfrom.id) AND (technologyfrom.active = true) AND (technologyfrom.technologyprototype_id IS NULL))))
-     LEFT JOIN technologies_technologygroup technologygroupto ON ((technologygroupto.id = linechangeovernorms.totechnologygroup_id)))
-     LEFT JOIN technologies_technology technologyto ON (((technologyto.technologygroup_id = technologygroupto.id) AND (technologyto.active = true) AND (technologyto.technologyprototype_id IS NULL))))
-  WHERE (((linechangeovernorms.changeovertype)::text = '02forTechnologyGroup'::text) AND (technologyfrom.id IS NOT NULL) AND (technologyto.id IS NOT NULL));
+     JOIN technologies_technologygroup technologygroupfrom ON ((technologygroupfrom.id = linechangeovernorms.fromtechnologygroup_id)))
+     JOIN technologies_technology technologyfrom ON (((technologyfrom.technologygroup_id = technologygroupfrom.id) AND (technologyfrom.active = true) AND (technologyfrom.technologyprototype_id IS NULL))))
+     JOIN technologies_technologygroup technologygroupto ON ((technologygroupto.id = linechangeovernorms.totechnologygroup_id)))
+     JOIN technologies_technology technologyto ON (((technologyto.technologygroup_id = technologygroupto.id) AND (technologyto.active = true) AND (technologyto.technologyprototype_id IS NULL))))
+  WHERE ((linechangeovernorms.changeovertype)::text = '02forTechnologyGroup'::text);
 
 
 --
@@ -17513,10 +17510,10 @@ CREATE SEQUENCE linechangeovernorms_ordersnormview_id_seq
 
 
 --
--- Name: linechangeovernormsfororders_linechangeoverfororderdto; Type: VIEW; Schema: public; Owner: -
+-- Name: linechangeovernormsfororders_linechangeoverfororderdtohelper; Type: VIEW; Schema: public; Owner: -
 --
 
-CREATE VIEW linechangeovernormsfororders_linechangeoverfororderdto AS
+CREATE VIEW linechangeovernormsfororders_linechangeoverfororderdtohelper AS
  SELECT ordersorder.id,
     ordersorder.active,
     ordersorder.number AS ordernumber,
@@ -17537,10 +17534,51 @@ CREATE VIEW linechangeovernormsfororders_linechangeoverfororderdto AS
 
 
 --
+-- Name: linechangeovernormsfororders_linechangeoverfororderdto; Type: VIEW; Schema: public; Owner: -
+--
+
+CREATE VIEW linechangeovernormsfororders_linechangeoverfororderdto AS
+ SELECT ordersorder.id,
+    ordersorder.active,
+    ordersorder.number AS ordernumber,
+    linechangeoverfororderdto.orderstartdate,
+    linechangeoverfororderdto.orderfinishdate,
+    linechangeoverfororderdto.productionlinenumber,
+    linechangeoverfororderdto.linechangeovernormsnumber,
+    linechangeoverfororderdto.linechangeovernormsname,
+    linechangeoverfororderdto.linechangeoverduration
+   FROM (orders_order ordersorder
+     JOIN LATERAL ( SELECT linechangeovernormsfororders_linechangeoverfororderdtohelper.id,
+            linechangeovernormsfororders_linechangeoverfororderdtohelper.active,
+            linechangeovernormsfororders_linechangeoverfororderdtohelper.ordernumber,
+            linechangeovernormsfororders_linechangeoverfororderdtohelper.orderstartdate,
+            linechangeovernormsfororders_linechangeoverfororderdtohelper.orderfinishdate,
+            linechangeovernormsfororders_linechangeoverfororderdtohelper.productionlinenumber,
+            linechangeovernormsfororders_linechangeoverfororderdtohelper.linechangeovernormsnumber,
+            linechangeovernormsfororders_linechangeoverfororderdtohelper.linechangeovernormsname,
+            linechangeovernormsfororders_linechangeoverfororderdtohelper.linechangeoverduration
+           FROM linechangeovernormsfororders_linechangeoverfororderdtohelper
+          WHERE (linechangeovernormsfororders_linechangeoverfororderdtohelper.id = ordersorder.id)
+         LIMIT 1) linechangeoverfororderdto ON ((1 = 1)));
+
+
+--
 -- Name: linechangeovernormsfororders_linechangeoverfororderdto_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE linechangeovernormsfororders_linechangeoverfororderdto_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: linechangeovernormsfororders_linechangeoverfororderdtohelper_id; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE linechangeovernormsfororders_linechangeoverfororderdtohelper_id
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -17842,7 +17880,8 @@ CREATE TABLE masterorders_masterorderproductattrvalue (
     masterorderproduct_id bigint,
     attribute_id bigint,
     attributevalue_id bigint,
-    value character varying(255)
+    value character varying(255),
+    succession integer
 );
 
 
@@ -23988,7 +24027,8 @@ CREATE TABLE productflowthrudivision_opertaskmaterialavailability (
     batchesid character varying(255),
     batches character varying(255),
     batchesquantity numeric(19,5),
-    typeofmaterial character varying(255)
+    typeofmaterial character varying(255),
+    produced numeric(19,5)
 );
 
 
@@ -24040,7 +24080,8 @@ CREATE VIEW productflowthrudivision_opertaskmaterialavailabilitydto AS
             WHEN ((materialavailability.batchesquantity >= (0)::numeric) AND (materialavailability.requiredquantity > materialavailability.batchesquantity) AND (materialavailability.batchesid IS NOT NULL)) THEN 'red-cell'::text
             ELSE 'base-cell'::text
         END AS batchesquantityclass,
-    materialavailability.typeofmaterial
+    materialavailability.typeofmaterial,
+    COALESCE(materialavailability.produced, (0)::numeric) AS produced
    FROM (((productflowthrudivision_opertaskmaterialavailability materialavailability
      JOIN orders_operationaltask operationaltask ON ((operationaltask.id = materialavailability.operationaltask_id)))
      JOIN basic_product product ON ((product.id = materialavailability.product_id)))
@@ -32277,13 +32318,6 @@ ALTER TABLE ONLY deliveries_companyproduct ALTER COLUMN id SET DEFAULT nextval('
 -- Name: id; Type: DEFAULT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY deliveries_companyproductsfamily ALTER COLUMN id SET DEFAULT nextval('deliveries_companyproductsfamily_id_seq'::regclass);
-
-
---
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
---
-
 ALTER TABLE ONLY deliveries_deliveredpackage ALTER COLUMN id SET DEFAULT nextval('deliveries_deliveredpackage_id_seq'::regclass);
 
 
@@ -32656,6 +32690,13 @@ ALTER TABLE ONLY goodfood_palletlabelstatechange ALTER COLUMN id SET DEFAULT nex
 --
 
 ALTER TABLE ONLY goodfood_palletstatechange ALTER COLUMN id SET DEFAULT nextval('goodfood_palletstatechange_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY goodfood_palnumber ALTER COLUMN id SET DEFAULT nextval('goodfood_palnumber_id_seq'::regclass);
 
 
 --
@@ -38468,21 +38509,6 @@ SELECT pg_catalog.setval('deliveries_companyproduct_id_seq', 1, false);
 
 
 --
--- Data for Name: deliveries_companyproductsfamily; Type: TABLE DATA; Schema: public; Owner: -
---
-
-COPY deliveries_companyproductsfamily (id, company_id, product_id, isdefault, entityversion, minimumorderquantity, bufferfordeliverytimes) FROM stdin;
-\.
-
-
---
--- Name: deliveries_companyproductsfamily_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
---
-
-SELECT pg_catalog.setval('deliveries_companyproductsfamily_id_seq', 1, false);
-
-
---
 -- Data for Name: deliveries_deliveredpackage; Type: TABLE DATA; Schema: public; Owner: -
 --
 
@@ -39428,6 +39454,21 @@ COPY goodfood_palletstatechange (id, dateandtime, sourcestate, targetstate, stat
 --
 
 SELECT pg_catalog.setval('goodfood_palletstatechange_id_seq', 1, false);
+
+
+--
+-- Data for Name: goodfood_palnumber; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY goodfood_palnumber (id, number, masterorder_id, ssccnumber) FROM stdin;
+\.
+
+
+--
+-- Name: goodfood_palnumber_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('goodfood_palnumber_id_seq', 1, false);
 
 
 --
@@ -41127,6 +41168,13 @@ SELECT pg_catalog.setval('linechangeovernormsfororders_linechangeoverfororderdto
 
 
 --
+-- Name: linechangeovernormsfororders_linechangeoverfororderdtohelper_id; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('linechangeovernormsfororders_linechangeoverfororderdtohelper_id', 1, false);
+
+
+--
 -- Data for Name: masterorders_generatingordershelper; Type: TABLE DATA; Schema: public; Owner: -
 --
 
@@ -41218,7 +41266,7 @@ SELECT pg_catalog.setval('masterorders_masterorderproduct_id_seq', 1, false);
 -- Data for Name: masterorders_masterorderproductattrvalue; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY masterorders_masterorderproductattrvalue (id, masterorderproduct_id, attribute_id, attributevalue_id, value) FROM stdin;
+COPY masterorders_masterorderproductattrvalue (id, masterorderproduct_id, attribute_id, attributevalue_id, value, succession) FROM stdin;
 \.
 
 
@@ -43383,7 +43431,7 @@ SELECT pg_catalog.setval('productflowthrudivision_modelcardproduct_id_seq', 1, f
 -- Data for Name: productflowthrudivision_opertaskmaterialavailability; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY productflowthrudivision_opertaskmaterialavailability (id, operationaltask_id, product_id, location_id, availablequantity, requiredquantity, unit, availability, replacement, batchesid, batches, batchesquantity, typeofmaterial) FROM stdin;
+COPY productflowthrudivision_opertaskmaterialavailability (id, operationaltask_id, product_id, location_id, availablequantity, requiredquantity, unit, availability, replacement, batchesid, batches, batchesquantity, typeofmaterial, produced) FROM stdin;
 \.
 
 
@@ -44441,7 +44489,6 @@ COPY qcadooplugin_plugin (id, identifier, version, state, issystem, entityversio
 114	materialFlow	1.5.0	ENABLED	f	0	flow	AGPL
 116	materialRequirements	1.5.0	ENABLED	f	0	calculations	AGPL
 118	operationTimeCalculations	1.5.0	ENABLED	f	0	calculations	AGPL
-119	minimalAffordableQuantity	1.5.0	ENABLED	f	0	technologies	AGPL
 44	lineChangeoverNorms	1.5.0	ENABLED	f	0	technologies	AGPL
 120	operationCostCalculations	1.5.0	ENABLED	f	0	calculations	AGPL
 122	costNormsForMaterials	1.5.0	ENABLED	f	0	basic	AGPL
@@ -45013,6 +45060,7 @@ COPY qcadooview_item (id, pluginidentifier, name, active, category_id, view_id, 
 208	masterOrders	salesVolumesList	t	6	207	17	ROLE_PLANNING	0
 209	masterOrders	orderedProductConfiguratorsList	t	19	208	10	ROLE_PLANNING	0
 210	lineChangeoverNormsForOrders	lineChangeoverNormsForOrdersList	t	7	209	23	ROLE_LINE_CHANGEOVER_NORMS_IN_ORDERS	0
+211	productionCounting	linesProducedQuantitiesChart	t	15	210	15	ROLE_ANALYSIS_VIEWER	0
 \.
 
 
@@ -45020,7 +45068,7 @@ COPY qcadooview_item (id, pluginidentifier, name, active, category_id, view_id, 
 -- Name: qcadooview_item_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('qcadooview_item_id_seq', 210, true);
+SELECT pg_catalog.setval('qcadooview_item_id_seq', 211, true);
 
 
 --
@@ -45222,6 +45270,7 @@ COPY qcadooview_view (id, pluginidentifier, name, view, url, entityversion) FROM
 207	masterOrders	salesVolumesList	salesVolumesList	\N	0
 208	masterOrders	orderedProductConfiguratorsList	orderedProductConfiguratorsList	\N	0
 209	lineChangeoverNormsForOrders	lineChangeoverNormsForOrdersList	lineChangeoverNormsForOrdersList	\N	0
+210	productionCounting	linesProducedQuantitiesChart	\N	/linesProducedQuantitiesChart.html	0
 \.
 
 
@@ -45229,7 +45278,7 @@ COPY qcadooview_view (id, pluginidentifier, name, view, url, entityversion) FROM
 -- Name: qcadooview_view_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('qcadooview_view_id_seq', 209, true);
+SELECT pg_catalog.setval('qcadooview_view_id_seq', 210, true);
 
 
 --
@@ -48640,14 +48689,6 @@ ALTER TABLE ONLY deliveries_companyproduct
 
 
 --
--- Name: deliveries_companyproductsfamily_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY deliveries_companyproductsfamily
-    ADD CONSTRAINT deliveries_companyproductsfamily_pkey PRIMARY KEY (id);
-
-
---
 -- Name: deliveries_deliveredpackage_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -49101,6 +49142,14 @@ ALTER TABLE ONLY goodfood_palletlabelstatechange
 
 ALTER TABLE ONLY goodfood_palletstatechange
     ADD CONSTRAINT goodfood_palletstatechange_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: goodfood_palnumber_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY goodfood_palnumber
+    ADD CONSTRAINT goodfood_palnumber_pkey PRIMARY KEY (id);
 
 
 --
@@ -55281,22 +55330,6 @@ ALTER TABLE ONLY deliveries_companyproduct
 
 
 --
--- Name: companyproductsfamily_company_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY deliveries_companyproductsfamily
-    ADD CONSTRAINT companyproductsfamily_company_fkey FOREIGN KEY (company_id) REFERENCES basic_company(id) DEFERRABLE;
-
-
---
--- Name: companyproductsfamily_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY deliveries_companyproductsfamily
-    ADD CONSTRAINT companyproductsfamily_product_fkey FOREIGN KEY (product_id) REFERENCES basic_product(id) DEFERRABLE;
-
-
---
 -- Name: componentcost_costcalculation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -58222,6 +58255,14 @@ ALTER TABLE ONLY masterorders_masterorderproduct
 
 ALTER TABLE ONLY arch_masterorders_masterorderproduct
     ADD CONSTRAINT masterorderproduct_masterorder_fkey FOREIGN KEY (masterorder_id) REFERENCES arch_masterorders_masterorder(id) DEFERRABLE;
+
+
+--
+-- Name: masterorderproduct_masterorder_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY goodfood_palnumber
+    ADD CONSTRAINT masterorderproduct_masterorder_fkey FOREIGN KEY (masterorder_id) REFERENCES masterorders_masterorder(id) DEFERRABLE;
 
 
 --

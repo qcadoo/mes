@@ -82,6 +82,12 @@
 
         <hasMany name="productDatas" model="productData" joinField="technology"
                  cascade="delete"/>
+
+        <decimal name="minimalQuantity">
+            <validatesRange from="0" exclusively="true" />
+            <validatesUnscaledValue max="5" />
+            <validatesScale max="5" />
+        </decimal>
     </fields>
 
     <hooks>

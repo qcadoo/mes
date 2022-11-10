@@ -88,6 +88,12 @@ public class OperationalTaskMaterialAvailability {
                     BigDecimal totalQuantity = warehouseEntry.getValue().stream()
                             .map(productionCountingQuantity -> productionCountingQuantity.getDecimalField(ProductionCountingQuantityFields.PLANNED_QUANTITY))
                             .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+                    BigDecimal produced = warehouseEntry.getValue().stream()
+                            .map(productionCountingQuantity -> productionCountingQuantity.getDecimalField(ProductionCountingQuantityFields.PRODUCED_QUANTITY))
+                            .filter(Objects::nonNull)
+                            .reduce(BigDecimal.ZERO, BigDecimal::add);
+
                     Entity product = baseUsedMaterial.getBelongsToField(ProductionCountingQuantityFields.PRODUCT);
                     Entity location = baseUsedMaterial
                             .getBelongsToField(ProductionCountingQuantityFieldsPFTD.COMPONENTS_LOCATION);
@@ -101,17 +107,54 @@ public class OperationalTaskMaterialAvailability {
                     }
 
                     newOrderMaterialAvailability.add(createMaterialAvailability(materialAvailabilityDD, product, typOfMaterial,
-                            operationalTask, totalQuantity, location, batchesById.values()));
+                            operationalTask, totalQuantity, produced, location, batchesById.values()));
                 }
             }
         }
 
+        List<Entity> intermediates = getIntermediates(order, operationalTask);
+        for (Entity intermediate : intermediates) {
+            BigDecimal totalQuantity = BigDecimalUtils.convertNullToZero(intermediate.getDecimalField(ProductionCountingQuantityFields.PLANNED_QUANTITY));
+
+            BigDecimal produced = BigDecimalUtils.convertNullToZero(intermediate.getDecimalField(ProductionCountingQuantityFields.PRODUCED_QUANTITY));
+
+            Entity product = intermediate.getBelongsToField(ProductionCountingQuantityFields.PRODUCT);
+            Entity location = intermediate
+                    .getBelongsToField(ProductionCountingQuantityFieldsPFTD.PRODUCTS_FLOW_LOCATION);
+
+            Map<Long, Entity> batchesById = Maps.newHashMap();
+            String typOfMaterial = intermediate.getStringField(ProductionCountingQuantityFields.TYPE_OF_MATERIAL);
+            for (Entity batch : intermediate.getHasManyField(ProductionCountingQuantityFields.BATCHES)) {
+                batchesById.put(batch.getId(), batch);
+            }
+            Entity materialAvailability = createMaterialAvailability(materialAvailabilityDD, product, typOfMaterial,
+                    operationalTask, totalQuantity, produced, location, batchesById.values());
+            if(Objects.isNull(location)) {
+
+                materialAvailability.setField(OperationalTaskMaterialAvailabilityFields.AVAILABLE_QUANTITY, BigDecimal.ZERO);
+
+                if(BigDecimal.ZERO.compareTo(produced) == 0) {
+                    materialAvailability.setField(OperationalTaskMaterialAvailabilityFields.AVAILABILITY,
+                            AvailabilityOfMaterialAvailability.NONE.getStrValue());
+                } else if (produced.compareTo(totalQuantity) <= 0) {
+                    materialAvailability.setField(OperationalTaskMaterialAvailabilityFields.AVAILABILITY,
+                            AvailabilityOfMaterialAvailability.PARTIAL.getStrValue());
+                } else {
+                    materialAvailability.setField(OperationalTaskMaterialAvailabilityFields.AVAILABILITY,
+                            AvailabilityOfMaterialAvailability.FULL.getStrValue());
+                }
+
+
+            }
+            newOrderMaterialAvailability.add(materialAvailability);
+        }
         return newOrderMaterialAvailability;
     }
 
     private Entity createMaterialAvailability(final DataDefinition orderMaterialAvailabilityDD,
                                               final Entity product, final String typeOfMaterial,
-                                              final Entity operationalTask, final BigDecimal requiredQuantity, final Entity location,
+                                              final Entity operationalTask, final BigDecimal requiredQuantity, final BigDecimal produced,
+                                              final Entity location,
                                               final Collection<Entity> batchesList) {
         Entity materialAvailability = orderMaterialAvailabilityDD.create();
 
@@ -131,6 +174,8 @@ public class OperationalTaskMaterialAvailability {
         materialAvailability.setField(OperationalTaskMaterialAvailabilityFields.UNIT, product.getField(ProductFields.UNIT));
         materialAvailability.setField(OperationalTaskMaterialAvailabilityFields.REQUIRED_QUANTITY,
                 numberService.setScaleWithDefaultMathContext(requiredQuantity, REQUIRED_QUANTITY_SCALE));
+        materialAvailability.setField(OperationalTaskMaterialAvailabilityFields.PRODUCED,
+                numberService.setScaleWithDefaultMathContext(produced, REQUIRED_QUANTITY_SCALE));
         materialAvailability.setField(OperationalTaskMaterialAvailabilityFields.LOCATION, location);
 
         if (!replacements.isEmpty()) {
@@ -139,7 +184,11 @@ public class OperationalTaskMaterialAvailability {
 
         materialAvailability.setField(OperationalTaskMaterialAvailabilityFields.BATCHES, batches);
         materialAvailability.setField(OperationalTaskMaterialAvailabilityFields.BATCHES_ID, batchesId);
-        materialAvailability.setField(OperationalTaskMaterialAvailabilityFields.BATCHES_QUANTITY, getBatchesQuantity(batchesList, product, location));
+        if (Objects.isNull(location)) {
+            materialAvailability.setField(OperationalTaskMaterialAvailabilityFields.BATCHES_QUANTITY, BigDecimal.ZERO);
+        } else {
+            materialAvailability.setField(OperationalTaskMaterialAvailabilityFields.BATCHES_QUANTITY, getBatchesQuantity(batchesList, product, location));
+        }
 
         return materialAvailability;
     }
@@ -149,37 +198,38 @@ public class OperationalTaskMaterialAvailability {
 
         for (Entity materialAvailability : materialsAvailability) {
             Entity location = materialAvailability.getBelongsToField(OperationalTaskMaterialAvailabilityFields.LOCATION);
+            if (Objects.nonNull(location)) {
+                if (availableComponents.containsKey(location.getId())) {
+                    Entity product = materialAvailability.getBelongsToField(OperationalTaskMaterialAvailabilityFields.PRODUCT);
 
-            if (availableComponents.containsKey(location.getId())) {
-                Entity product = materialAvailability.getBelongsToField(OperationalTaskMaterialAvailabilityFields.PRODUCT);
+                    Map<Long, BigDecimal> availableComponentsInLocation = availableComponents.get(location.getId());
 
-                Map<Long, BigDecimal> availableComponentsInLocation = availableComponents.get(location.getId());
+                    if (availableComponentsInLocation.containsKey(product.getId())) {
+                        BigDecimal availableQuantity = availableComponentsInLocation.get(product.getId());
 
-                if (availableComponentsInLocation.containsKey(product.getId())) {
-                    BigDecimal availableQuantity = availableComponentsInLocation.get(product.getId());
+                        if (availableQuantity.compareTo(materialAvailability
+                                .getDecimalField(OperationalTaskMaterialAvailabilityFields.REQUIRED_QUANTITY)) >= 0) {
+                            materialAvailability.setField(OperationalTaskMaterialAvailabilityFields.AVAILABILITY,
+                                    AvailabilityOfMaterialAvailability.FULL.getStrValue());
+                        } else if (availableQuantity.compareTo(BigDecimal.ZERO) == 0) {
+                            materialAvailability.setField(OperationalTaskMaterialAvailabilityFields.AVAILABILITY,
+                                    AvailabilityOfMaterialAvailability.NONE.getStrValue());
+                        } else {
+                            materialAvailability.setField(OperationalTaskMaterialAvailabilityFields.AVAILABILITY,
+                                    AvailabilityOfMaterialAvailability.PARTIAL.getStrValue());
+                        }
 
-                    if (availableQuantity.compareTo(materialAvailability
-                            .getDecimalField(OperationalTaskMaterialAvailabilityFields.REQUIRED_QUANTITY)) >= 0) {
-                        materialAvailability.setField(OperationalTaskMaterialAvailabilityFields.AVAILABILITY,
-                                AvailabilityOfMaterialAvailability.FULL.getStrValue());
-                    } else if (availableQuantity.compareTo(BigDecimal.ZERO) == 0) {
-                        materialAvailability.setField(OperationalTaskMaterialAvailabilityFields.AVAILABILITY,
-                                AvailabilityOfMaterialAvailability.NONE.getStrValue());
+                        materialAvailability.setField(OperationalTaskMaterialAvailabilityFields.AVAILABLE_QUANTITY, availableQuantity);
                     } else {
                         materialAvailability.setField(OperationalTaskMaterialAvailabilityFields.AVAILABILITY,
-                                AvailabilityOfMaterialAvailability.PARTIAL.getStrValue());
+                                AvailabilityOfMaterialAvailability.NONE.getStrValue());
+                        materialAvailability.setField(OperationalTaskMaterialAvailabilityFields.AVAILABLE_QUANTITY, BigDecimal.ZERO);
                     }
-
-                    materialAvailability.setField(OperationalTaskMaterialAvailabilityFields.AVAILABLE_QUANTITY, availableQuantity);
                 } else {
                     materialAvailability.setField(OperationalTaskMaterialAvailabilityFields.AVAILABILITY,
                             AvailabilityOfMaterialAvailability.NONE.getStrValue());
                     materialAvailability.setField(OperationalTaskMaterialAvailabilityFields.AVAILABLE_QUANTITY, BigDecimal.ZERO);
                 }
-            } else {
-                materialAvailability.setField(OperationalTaskMaterialAvailabilityFields.AVAILABILITY,
-                        AvailabilityOfMaterialAvailability.NONE.getStrValue());
-                materialAvailability.setField(OperationalTaskMaterialAvailabilityFields.AVAILABLE_QUANTITY, BigDecimal.ZERO);
             }
         }
     }
@@ -189,13 +239,14 @@ public class OperationalTaskMaterialAvailability {
 
         materialAvailabilities.forEach(materialAvailability -> {
             Entity location = materialAvailability.getBelongsToField(MaterialAvailabilityFields.LOCATION);
-
-            if (groupedMaterialAvailabilities.containsKey(location)) {
-                groupedMaterialAvailabilities.get(location).add(
-                        materialAvailability.getBelongsToField(MaterialAvailabilityFields.PRODUCT));
-            } else {
-                groupedMaterialAvailabilities.put(location,
-                        Sets.newHashSet(materialAvailability.getBelongsToField(MaterialAvailabilityFields.PRODUCT)));
+            if (Objects.nonNull(location)) {
+                if (groupedMaterialAvailabilities.containsKey(location)) {
+                    groupedMaterialAvailabilities.get(location).add(
+                            materialAvailability.getBelongsToField(MaterialAvailabilityFields.PRODUCT));
+                } else {
+                    groupedMaterialAvailabilities.put(location,
+                            Sets.newHashSet(materialAvailability.getBelongsToField(MaterialAvailabilityFields.PRODUCT)));
+                }
             }
         });
 
@@ -241,6 +292,17 @@ public class OperationalTaskMaterialAvailability {
                                         ProductionCountingQuantityFieldsPFTD.COMPONENTS_LOCATION).getId())));
     }
 
+    private List<Entity> getIntermediates(Entity order, Entity operationalTask) {
+        Entity toc = operationalTask.getBelongsToField(OperationalTaskFields.TECHNOLOGY_OPERATION_COMPONENT);
+        return basicProductionCountingService.getUsedMaterialsFromProductionCountingQuantities(order)
+                .stream()
+                .filter(material -> material.getBelongsToField(ProductionCountingQuantityFields.TECHNOLOGY_OPERATION_COMPONENT).getId().equals(toc.getId())
+                        && material.getStringField(ProductionCountingQuantityFields.ROLE).equals(
+                        ProductionCountingQuantityRole.USED.getStringValue())
+                        && material.getStringField(ProductionCountingQuantityFields.TYPE_OF_MATERIAL).equals(
+                        ProductionCountingQuantityTypeOfMaterial.INTERMEDIATE.getStringValue()))
+                .collect(Collectors.toList());
+    }
 
     private BigDecimal getBatchesQuantity(final Collection<Entity> batches, final Entity product,
                                           final Entity location) {

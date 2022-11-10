@@ -34,7 +34,9 @@ import java.util.Optional;
 
 import com.qcadoo.mes.basic.constants.ExpiryDateValidityUnit;
 import com.qcadoo.mes.orders.constants.*;
+import com.qcadoo.mes.technologies.constants.TechnologyFields;
 import com.qcadoo.model.api.file.FileService;
+
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
@@ -60,7 +62,6 @@ import com.qcadoo.mes.orders.states.constants.OrderStateChangeFields;
 import com.qcadoo.mes.orders.util.AdditionalUnitService;
 import com.qcadoo.mes.orders.util.OrderDatesService;
 import com.qcadoo.mes.states.service.StateChangeEntityBuilder;
-import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.mes.technologies.states.constants.TechnologyState;
 import com.qcadoo.model.api.BigDecimalUtils;
 import com.qcadoo.model.api.DataDefinition;
@@ -212,15 +213,16 @@ public class OrderHooks {
         setRemainingQuantity(order);
         setAdditionalFields(order);
         fillExpirationDate(order);
+        checkMinimalQuantity(order);
     }
 
     private void fillExpirationDate(final Entity order) {
         if (Objects.isNull(order.getDateField(OrderFields.EXPIRATION_DATE))) {
             setExpirationDate(order, false);
         } else {
-            if(Objects.nonNull(order.getId()) && Objects.nonNull(order.getDateField(OrderFields.START_DATE))) {
+            if (Objects.nonNull(order.getId()) && Objects.nonNull(order.getDateField(OrderFields.START_DATE))) {
                 Entity orderDb = order.getDataDefinition().get(order.getId());
-                if(!order.getDateField(OrderFields.START_DATE).equals(orderDb.getDateField(OrderFields.START_DATE)) || Objects.isNull(orderDb.getDateField(OrderFields.START_DATE))) {
+                if (!order.getDateField(OrderFields.START_DATE).equals(orderDb.getDateField(OrderFields.START_DATE)) || Objects.isNull(orderDb.getDateField(OrderFields.START_DATE))) {
                     setExpirationDate(order, false);
 
                 }
@@ -228,7 +230,7 @@ public class OrderHooks {
                 Entity product = order.getBelongsToField(OrderFields.PRODUCT);
                 Entity productDb = orderDb.getBelongsToField(OrderFields.PRODUCT);
 
-                if(!product.getId().equals(productDb.getId())) {
+                if (!product.getId().equals(productDb.getId())) {
                     setExpirationDate(order, true);
                 }
             }
@@ -238,7 +240,7 @@ public class OrderHooks {
 
     private void setExpirationDate(Entity order, boolean clearIfEmptyProductExpiryDateValidity) {
         Entity product = order.getBelongsToField(OrderFields.PRODUCT);
-        if(Objects.isNull(product)) {
+        if (Objects.isNull(product)) {
             return;
         }
         Integer expiryDateValidity = product.getIntegerField(ProductFields.EXPIRY_DATE_VALIDITY);
@@ -254,7 +256,7 @@ public class OrderHooks {
             }
 
             order.setField(OrderFields.EXPIRATION_DATE, expirationDate);
-        } else if(clearIfEmptyProductExpiryDateValidity) {
+        } else if (clearIfEmptyProductExpiryDateValidity) {
             order.setField(OrderFields.EXPIRATION_DATE, null);
 
         }
@@ -275,7 +277,6 @@ public class OrderHooks {
         setCopyOfTechnology(order);
         copyAttachments(order);
     }
-
 
 
     public void setRemainingQuantity(final Entity order) {
@@ -369,6 +370,28 @@ public class OrderHooks {
 
     public void setInitialState(final DataDefinition orderDD, final Entity order) {
         stateChangeEntityBuilder.buildInitial(orderStateChangeDescriber, order, OrderState.PENDING);
+    }
+
+    private void checkMinimalQuantity(final Entity order) {
+        BigDecimal plannedQuantity = order.getDecimalField(OrderFields.PLANNED_QUANTITY);
+
+        if (Objects.isNull(plannedQuantity)) {
+            return;
+        }
+        Entity technology = order.getBelongsToField(OrderFields.TECHNOLOGY_PROTOTYPE);
+
+        if (Objects.isNull(technology)) {
+            return;
+        }
+        BigDecimal minimalQuantity = technology.getDecimalField(TechnologyFields.MINIMAL_QUANTITY);
+        if (!Objects.isNull(minimalQuantity)) {
+            String unit = technology.getBelongsToField(TechnologyFields.PRODUCT).getStringField(ProductFields.UNIT);
+
+            if (plannedQuantity.compareTo(minimalQuantity) < 0) {
+                order.addGlobalMessage("orders.order.minimalQuantity.info", false, false,
+                        order.getStringField(OrderFields.NUMBER), BigDecimalUtils.toString(minimalQuantity, 5), unit);
+            }
+        }
     }
 
     private boolean checkOperationalTasks(final DataDefinition orderDD, final Entity order) {

@@ -21,6 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
+import java.util.Objects;
 
 @Service
 public class OperationalTaskListenersPFTD {
@@ -102,8 +103,14 @@ public class OperationalTaskListenersPFTD {
         Entity oma = dataDefinitionService.get(ProductFlowThruDivisionConstants.PLUGIN_IDENTIFIER, ProductFlowThruDivisionConstants.MODEL_OPER_TASK_MATERIAL_AVAILABILITY).get(entity.getId());
 
         String productNumber = oma.getBelongsToField(MaterialAvailabilityFields.PRODUCT).getStringField(ProductFields.NUMBER);
-        String locationNumber = oma.getBelongsToField(MaterialAvailabilityFields.LOCATION)
-                .getStringField(LocationFields.NUMBER);
+        Entity location = oma.getBelongsToField(MaterialAvailabilityFields.LOCATION);
+
+        if(Objects.isNull(location)) {
+            view.addMessage("productFlowThruDivision.operTaskWithMaterialAvailabilityList.showWarehouseResources.locationEmpty", ComponentState.MessageType.INFO, false);
+            return;
+        }
+
+        String locationNumber = location.getStringField(LocationFields.NUMBER);
 
         Map<String, String> filters = Maps.newHashMap();
         filters.put("productNumber", applyInOperator(productNumber));

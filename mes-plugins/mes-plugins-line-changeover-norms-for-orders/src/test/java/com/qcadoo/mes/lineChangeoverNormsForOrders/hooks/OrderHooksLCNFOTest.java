@@ -23,6 +23,16 @@
  */
 package com.qcadoo.mes.lineChangeoverNormsForOrders.hooks;
 
+import com.qcadoo.mes.lineChangeoverNormsForOrders.LineChangeoverNormsForOrdersService;
+import com.qcadoo.mes.lineChangeoverNormsForOrders.constants.OrderFieldsLCNFO;
+import com.qcadoo.model.api.DataDefinition;
+import com.qcadoo.model.api.Entity;
+import org.junit.Before;
+import org.junit.Test;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
+
 import static com.qcadoo.mes.lineChangeoverNormsForOrders.constants.OrderFieldsLCNFO.PREVIOUS_ORDER;
 import static com.qcadoo.testing.model.EntityTestUtils.stubBelongsToField;
 import static org.junit.Assert.assertFalse;
@@ -32,20 +42,9 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.util.ReflectionTestUtils.setField;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
+public class OrderHooksLCNFOTest {
 
-import com.qcadoo.mes.lineChangeoverNormsForOrders.LineChangeoverNormsForOrdersService;
-import com.qcadoo.mes.lineChangeoverNormsForOrders.constants.OrderFieldsLCNFO;
-import com.qcadoo.model.api.DataDefinition;
-import com.qcadoo.model.api.Entity;
-
-public class OrderModelValidatorsLCNFOTest {
-
-    private OrderModelValidatorsLCNFO orderModelValidatorsLCNFO;
+    private OrderHooksLCNFO orderHooksLCNFO;
 
     @Mock
     private LineChangeoverNormsForOrdersService lineChangeoverNormsForOrdersService;
@@ -60,9 +59,9 @@ public class OrderModelValidatorsLCNFOTest {
     public void init() {
         MockitoAnnotations.initMocks(this);
 
-        orderModelValidatorsLCNFO = new OrderModelValidatorsLCNFO();
+        orderHooksLCNFO = new OrderHooksLCNFO();
 
-        setField(orderModelValidatorsLCNFO, "lineChangeoverNormsForOrdersService", lineChangeoverNormsForOrdersService);
+        setField(orderHooksLCNFO, "lineChangeoverNormsForOrdersService", lineChangeoverNormsForOrdersService);
 
         stubBelongsToField(order, OrderFieldsLCNFO.PREVIOUS_ORDER, previousOrderDB);
         stubBelongsToField(order, OrderFieldsLCNFO.ORDER, orderDB);
@@ -75,7 +74,7 @@ public class OrderModelValidatorsLCNFOTest {
                 false);
 
         // when
-        boolean result = orderModelValidatorsLCNFO.checkIfOrderHasCorrectStateAndIsPrevious(orderDD, order);
+        boolean result = orderHooksLCNFO.checkIfOrderHasCorrectStateAndIsPrevious(orderDD, order);
 
         // then
         assertFalse(result);
@@ -90,7 +89,7 @@ public class OrderModelValidatorsLCNFOTest {
                 true);
 
         // when
-        boolean result = orderModelValidatorsLCNFO.checkIfOrderHasCorrectStateAndIsPrevious(orderDD, order);
+        boolean result = orderHooksLCNFO.checkIfOrderHasCorrectStateAndIsPrevious(orderDD, order);
 
         // then
         assertTrue(result);

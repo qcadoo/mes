@@ -80,7 +80,6 @@
         <model:dictionary name="paymentForm"/>
 
         <model:model model="companyProduct" resource="model/companyProduct.xml"/>
-        <model:model model="companyProductsFamily" resource="model/companyProductsFamily.xml"/>
         <model:model model="columnForDeliveries" resource="model/columnForDeliveries.xml"/>
         <model:model model="columnForOrders" resource="model/columnForOrders.xml"/>
         <model:model model="delivery" resource="model/delivery.xml"/>
@@ -179,10 +178,6 @@
                            plugin="deliveries" model="companyProduct" cascade="delete"/>
         </model:model-field>
         <model:model-field plugin="basic" model="company">
-            <model:hasMany name="productsFamilies" joinField="company"
-                           plugin="deliveries" model="companyProductsFamily" cascade="delete"/>
-        </model:model-field>
-        <model:model-field plugin="basic" model="company">
             <model:integer name="buffer"/>
         </model:model-field>
         <model:model-field plugin="basic" model="company">
@@ -204,14 +199,10 @@
             <model:hasMany name="productCompanies" joinField="product"
                            plugin="deliveries" model="companyProduct" cascade="delete"/>
         </model:model-field>
-        <model:model-field plugin="basic" model="product">
-            <model:hasMany name="productsFamilyCompanies" joinField="product"
-                           plugin="deliveries" model="companyProductsFamily" cascade="delete"/>
-        </model:model-field>
 
         <model:model-field plugin="materialFlow" model="location">
             <model:hasMany name="deliveries" joinField="location"
-                           model="delivery" plugin="deliveries" cascade="nullify"/>
+                           model="delivery" plugin="deliveries"/>
         </model:model-field>
 
         <model:model-field plugin="basic" model="parameter">
@@ -234,11 +225,6 @@
                           method="onSave"/>
         </model:model-hook>
 
-        <model:model-hook plugin="basic" model="product">
-            <model:validatesWith class="com.qcadoo.mes.deliveries.hooks.ProductHooksD"
-                                 method="checkIfDefaultSupplierIsUnique"/>
-        </model:model-hook>
-
         <model:model-field plugin="technologies" model="qualityCard">
             <model:hasMany name="orderedProducts" plugin="deliveries" model="orderedProduct" joinField="qualityCard"/>
         </model:model-field>
@@ -258,9 +244,7 @@
                             defaultAuthorizationRole="ROLE_PARAMETERS"/>
 
         <view:view resource="view/companyProductDetails.xml"/>
-        <view:view resource="view/companyProductsFamilyDetails.xml"/>
         <view:view resource="view/productCompanyDetails.xml"/>
-        <view:view resource="view/productsFamilyCompanyDetails.xml"/>
         <view:view resource="view/deliveriesList.xml"/>
         <view:view resource="view/deliveryDetails.xml"/>
         <view:view resource="view/deliveredProductDetails.xml"/>
@@ -286,10 +270,6 @@
                             component="form" event="redirectToFilteredDeliveriesList"
                             class="com.qcadoo.mes.deliveries.listeners.CompanyDetailsListenersD"
                             method="redirectToFilteredDeliveriesList"/>
-
-        <view:view-listener plugin="basic" view="productDetails" component="parent" event="onSelectedEntityChange"
-                            class="com.qcadoo.mes.deliveries.listeners.ProductDetailsListenersD"
-                            method="checkIfDefaultSupplierIsUnique"/>
 
         <view:view-hook plugin="basic" view="companyDetails"
                         type="beforeRender" class="com.qcadoo.mes.deliveries.hooks.CompanyDetailsHooksD"

@@ -26,7 +26,9 @@ package com.qcadoo.mes.deliveries;
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
@@ -42,7 +44,6 @@ import com.google.common.collect.Lists;
 import com.qcadoo.mes.advancedGenealogy.constants.BatchFields;
 import com.qcadoo.mes.basic.CompanyService;
 import com.qcadoo.mes.basic.ParameterService;
-import com.qcadoo.mes.basic.ProductService;
 import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.basic.constants.CompanyFields;
 import com.qcadoo.mes.basic.constants.CurrencyFields;
@@ -52,7 +53,6 @@ import com.qcadoo.mes.basic.util.CurrencyService;
 import com.qcadoo.mes.deliveries.constants.ColumnForDeliveriesFields;
 import com.qcadoo.mes.deliveries.constants.ColumnForOrdersFields;
 import com.qcadoo.mes.deliveries.constants.CompanyProductFields;
-import com.qcadoo.mes.deliveries.constants.CompanyProductsFamilyFields;
 import com.qcadoo.mes.deliveries.constants.DefaultAddressType;
 import com.qcadoo.mes.deliveries.constants.DeliveredProductFields;
 import com.qcadoo.mes.deliveries.constants.DeliveriesConstants;
@@ -121,9 +121,6 @@ public class DeliveriesServiceImpl implements DeliveriesService {
     @Autowired
     private CompanyService companyService;
 
-    @Autowired
-    private ProductService productService;
-
     @Override
     public Entity getDelivery(final Long deliveryId) {
         return getDeliveryDD().get(deliveryId);
@@ -142,11 +139,6 @@ public class DeliveriesServiceImpl implements DeliveriesService {
     @Override
     public Entity getCompanyProduct(final Long companyProductId) {
         return getCompanyProductDD().get(companyProductId);
-    }
-
-    @Override
-    public Entity getCompanyProductsFamily(final Long companyProductsFamilyId) {
-        return getCompanyProductsFamilyDD().get(companyProductsFamilyId);
     }
 
     @Override
@@ -211,12 +203,6 @@ public class DeliveriesServiceImpl implements DeliveriesService {
     @Override
     public DataDefinition getCompanyProductDD() {
         return dataDefinitionService.get(DeliveriesConstants.PLUGIN_IDENTIFIER, DeliveriesConstants.MODEL_COMPANY_PRODUCT);
-    }
-
-    @Override
-    public DataDefinition getCompanyProductsFamilyDD() {
-        return dataDefinitionService.get(DeliveriesConstants.PLUGIN_IDENTIFIER,
-                DeliveriesConstants.MODEL_COMPANY_PRODUCTS_FAMILY);
     }
 
     @Override
@@ -314,7 +300,7 @@ public class DeliveriesServiceImpl implements DeliveriesService {
 
     @Override
     public void fillUnitFields(final ViewDefinitionState view, final Entity product, final List<String> referenceNames,
-            final List<String> additionalUnitNames) {
+                               final List<String> additionalUnitNames) {
         fillUnitFields(view, product, referenceNames);
         String additionalUnit = "";
 
@@ -331,7 +317,7 @@ public class DeliveriesServiceImpl implements DeliveriesService {
 
     @Override
     public void fillUnitFields(final ViewDefinitionState view, final String productName, final List<String> referenceNames,
-            final List<String> additionalUnitNames) {
+                               final List<String> additionalUnitNames) {
         Entity product = getProductEntityByComponentName(view, productName);
 
         fillUnitFields(view, product, referenceNames, additionalUnitNames);
@@ -350,7 +336,7 @@ public class DeliveriesServiceImpl implements DeliveriesService {
 
     @Override
     public void fillCurrencyFieldsForDelivery(final ViewDefinitionState view, final List<String> referenceNames,
-            final Entity delivery) {
+                                              final Entity delivery) {
         String currency = getCurrency(delivery);
 
         if (Objects.isNull(currency)) {
@@ -400,7 +386,7 @@ public class DeliveriesServiceImpl implements DeliveriesService {
     }
 
     private void calculatePriceUsingTotalCost(final ViewDefinitionState view, final FieldComponent quantityField,
-            final FieldComponent totalPriceField) {
+                                              final FieldComponent totalPriceField) {
         FieldComponent pricePerUnitField = (FieldComponent) view.getComponentByReference(L_PRICE_PER_UNIT);
 
         Locale locale = view.getLocale();
@@ -430,7 +416,7 @@ public class DeliveriesServiceImpl implements DeliveriesService {
     }
 
     private void calculatePriceUsingPricePerUnit(final ViewDefinitionState view, final FieldComponent quantityField,
-            final FieldComponent pricePerUnitField) {
+                                                 final FieldComponent pricePerUnitField) {
         FieldComponent totalPriceField = (FieldComponent) view.getComponentByReference(L_TOTAL_PRICE);
 
         Locale locale = view.getLocale();
@@ -628,12 +614,12 @@ public class DeliveriesServiceImpl implements DeliveriesService {
         if (Objects.nonNull(product) && ProductFamilyElementType.PARTICULAR_PRODUCT.getStringValue()
                 .equals(product.getStringField(ProductFields.ENTITY_TYPE))) {
 
-            Entity defaultSupplier = getDefaultSupplierForProductsFamily(productId);
+            Entity defaultSupplier = getDefaultSupplierForParticularProduct(productId);
 
             if (Objects.nonNull(defaultSupplier)) {
                 return Optional.of(defaultSupplier);
             } else {
-                return Optional.ofNullable(getDefaultSupplierForParticularProduct(productId));
+                return Optional.ofNullable(getDefaultSupplierForProductsFamily(productId));
             }
         }
 
@@ -678,17 +664,10 @@ public class DeliveriesServiceImpl implements DeliveriesService {
         Entity productFamily = product.getBelongsToField(ProductFields.PARENT);
 
         if (Objects.nonNull(productFamily)) {
-            return getDefaultCompanyProductFamilyEntity(productFamily.getId());
+            return getDefaultSupplierForParticularProduct(productFamily.getId());
         } else {
             return null;
         }
-    }
-
-    private Entity getDefaultCompanyProductFamilyEntity(final Long productId) {
-        String query = "select company from #deliveries_companyProductsFamily company WHERE company.product.id = :id"
-                + " and company.isDefault = true";
-
-        return getCompanyProductDD().find(query).setParameter("id", productId).setMaxResults(1).uniqueResult();
     }
 
     private Entity getDefaultSupplierForParticularProduct(final Long productId) {
@@ -703,9 +682,15 @@ public class DeliveriesServiceImpl implements DeliveriesService {
     }
 
     private List<Entity> getSuppliersForProductsFamily(final Long productId) {
-        String query = "select company.company from #deliveries_companyProductsFamily company, #basic_product product where product.parent.id = company.product.id and product.id = :id";
+        Entity product = getProductDD().get(productId);
 
-        return getCompanyProductDD().find(query).setParameter("id", productId).list().getEntities();
+        Entity productFamily = product.getBelongsToField(ProductFields.PARENT);
+
+        if (Objects.nonNull(productFamily)) {
+            return getSuppliersForParticularProduct(productFamily.getId());
+        } else {
+            return new ArrayList<>();
+        }
     }
 
     private List<Entity> getSuppliersForParticularProduct(final Long productId) {
@@ -729,26 +714,8 @@ public class DeliveriesServiceImpl implements DeliveriesService {
 
     public Optional<Entity> getCompanyProduct(final List<Entity> companyProducts, final Long productId) {
         return companyProducts.stream().filter(
-                companyProduct -> companyProduct.getBelongsToField(CompanyProductFields.PRODUCT).getId().equals(productId))
+                        companyProduct -> companyProduct.getBelongsToField(CompanyProductFields.PRODUCT).getId().equals(productId))
                 .findAny();
-    }
-
-    public List<Entity> getCompanyProductsFamilies(final Set<Long> productIds) {
-        List<Entity> companyProductFamilies = Lists.newArrayList();
-
-        if (!productIds.isEmpty()) {
-            companyProductFamilies = getCompanyProductsFamilyDD().find()
-                    .createAlias(CompanyProductsFamilyFields.PRODUCT, CompanyProductsFamilyFields.PRODUCT, JoinType.LEFT)
-                    .add(SearchRestrictions.in(CompanyProductsFamilyFields.PRODUCT + L_DOT + L_ID, productIds))
-                    .add(SearchRestrictions.eq(CompanyProductsFamilyFields.IS_DEFAULT, true)).list().getEntities();
-        }
-
-        return companyProductFamilies;
-    }
-
-    public Optional<Entity> getCompanyProductsFamily(final List<Entity> companyProductsFamilies, final Long productId) {
-        return companyProductsFamilies.stream().filter(companyProductsFamily -> companyProductsFamily
-                .getBelongsToField(CompanyProductsFamilyFields.PRODUCT).getId().equals(productId)).findAny();
     }
 
     public List<Entity> getSelectedOrderedProducts(final GridComponent orderedProductGrid) {
@@ -772,8 +739,8 @@ public class DeliveriesServiceImpl implements DeliveriesService {
     }
 
     public Optional<Entity> getOrderedProductForDeliveredProduct(final Entity deliveredProduct,
-            final SearchCriterion batchCustomSearchCriterion, final SearchCriterion offerCustomSearchCriterion,
-            final SearchCriterion operationCustomSearchCriterion) {
+                                                                 final SearchCriterion batchCustomSearchCriterion, final SearchCriterion offerCustomSearchCriterion,
+                                                                 final SearchCriterion operationCustomSearchCriterion) {
         SearchCriteriaBuilder searchCriteriaBuilder = getSearchCriteriaBuilderForOrderedProduct(getOrderedProductDD().find(),
                 deliveredProduct, batchCustomSearchCriterion, offerCustomSearchCriterion, operationCustomSearchCriterion);
 
@@ -917,21 +884,18 @@ public class DeliveriesServiceImpl implements DeliveriesService {
                 SearchRestrictions.isNull(OrderedProductFields.BATCH), SearchRestrictions.isNull(L_OFFER),
                 SearchRestrictions.isNull(L_OPERATION));
 
-        if (mayBeOrderedProduct.isPresent()) {
-            return mayBeOrderedProduct;
-        }
+        return mayBeOrderedProduct;
 
-        return Optional.empty();
     }
 
     public SearchCriteriaBuilder getSearchCriteriaBuilderForOrderedProduct(final SearchCriteriaBuilder searchCriteriaBuilder,
-            final Entity deliveredProduct) {
+                                                                           final Entity deliveredProduct) {
         return getSearchCriteriaBuilderForOrderedProduct(searchCriteriaBuilder, deliveredProduct, null, null, null);
     }
 
     public SearchCriteriaBuilder getSearchCriteriaBuilderForOrderedProduct(final SearchCriteriaBuilder searchCriteriaBuilder,
-            final Entity deliveredProduct, final SearchCriterion batchCustomSearchCriterion,
-            final SearchCriterion offerCustomSearchCriterion, final SearchCriterion operationCustomSearchCriterion) {
+                                                                           final Entity deliveredProduct, final SearchCriterion batchCustomSearchCriterion,
+                                                                           final SearchCriterion offerCustomSearchCriterion, final SearchCriterion operationCustomSearchCriterion) {
         Entity delivery = deliveredProduct.getBelongsToField(DeliveredProductFields.DELIVERY);
         Entity supplier = delivery.getBelongsToField(DeliveryFields.SUPPLIER);
         Entity product = deliveredProduct.getBelongsToField(DeliveredProductFields.PRODUCT);
@@ -995,13 +959,13 @@ public class DeliveriesServiceImpl implements DeliveriesService {
     }
 
     public SearchCriteriaBuilder getSearchCriteriaBuilderForDeliveredProduct(final SearchCriteriaBuilder searchCriteriaBuilder,
-            final Entity deliveredProduct) {
+                                                                             final Entity deliveredProduct) {
         return getSearchCriteriaBuilderForDeliveredProduct(searchCriteriaBuilder, deliveredProduct, true, null, null, null);
     }
 
     public SearchCriteriaBuilder getSearchCriteriaBuilderForDeliveredProduct(final SearchCriteriaBuilder searchCriteriaBuilder,
-            final Entity deliveredProduct, final boolean checkOther, final SearchCriterion batchCustomSearchCriterion,
-            final SearchCriterion offerCustomSearchCriterion, final SearchCriterion operationCustomSearchCriterion) {
+                                                                             final Entity deliveredProduct, final boolean checkOther, final SearchCriterion batchCustomSearchCriterion,
+                                                                             final SearchCriterion offerCustomSearchCriterion, final SearchCriterion operationCustomSearchCriterion) {
         Entity delivery = deliveredProduct.getBelongsToField(DeliveredProductFields.DELIVERY);
         Entity supplier = delivery.getBelongsToField(DeliveryFields.SUPPLIER);
         Entity product = deliveredProduct.getBelongsToField(DeliveredProductFields.PRODUCT);

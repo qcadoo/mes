@@ -363,6 +363,12 @@
                                     method="showQualityCardsForProduct"/>
                         </component>
                     </layoutElement>
+                    <layoutElement column="3" row="3">
+                        <component type="input" name="minimalQuantity" reference="minimalQuantity"
+                                   field="minimalQuantity" hasDescription="true">
+                            <option type="labelWidth" value="40"/>
+                        </component>
+                    </layoutElement>
                 </component>
 
                 <component type="select" name="state" field="state"

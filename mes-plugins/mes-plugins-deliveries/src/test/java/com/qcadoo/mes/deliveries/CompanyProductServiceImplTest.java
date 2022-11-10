@@ -76,16 +76,11 @@ public class CompanyProductServiceImplTest {
 
     @Test
     public void shouldRetrunTrueWhenCheckIfProductIsNotUsedIfEntityIsSaved() {
-        // given
-        String belongsToProductName = "product";
-        String belongsToCompanyName = "company";
-        String hasManyName = "products";
 
         given(companyProduct.getId()).willReturn(1L);
 
         // when
-        boolean result = companyProductService.checkIfProductIsNotUsed(companyProduct, belongsToProductName,
-                belongsToCompanyName, hasManyName);
+        boolean result = companyProductService.checkIfProductIsNotUsed(companyProduct);
 
         // then
         assertTrue(result);
@@ -95,15 +90,12 @@ public class CompanyProductServiceImplTest {
     public void shouldRetrunTrueWhenCheckIfProductIsNotUsedIfProductIsNull() {
         // given
         String belongsToProductName = "product";
-        String belongsToCompanyName = "company";
-        String hasManyName = "products";
 
         given(companyProduct.getId()).willReturn(null);
         given(companyProduct.getBelongsToField(belongsToProductName)).willReturn(null);
 
         // when
-        boolean result = companyProductService.checkIfProductIsNotUsed(companyProduct, belongsToProductName,
-                belongsToCompanyName, hasManyName);
+        boolean result = companyProductService.checkIfProductIsNotUsed(companyProduct);
 
         // then
         assertTrue(result);
@@ -114,15 +106,13 @@ public class CompanyProductServiceImplTest {
         // given
         String belongsToProductName = "product";
         String belongsToCompanyName = "company";
-        String hasManyName = "products";
 
         given(companyProduct.getId()).willReturn(null);
         given(companyProduct.getBelongsToField(belongsToProductName)).willReturn(product);
         given(companyProduct.getBelongsToField(belongsToCompanyName)).willReturn(null);
 
         // when
-        boolean result = companyProductService.checkIfProductIsNotUsed(companyProduct, belongsToProductName,
-                belongsToCompanyName, hasManyName);
+        boolean result = companyProductService.checkIfProductIsNotUsed(companyProduct);
 
         // then
         assertTrue(result);
@@ -148,8 +138,7 @@ public class CompanyProductServiceImplTest {
         given(entities.isEmpty()).willReturn(true);
 
         // when
-        boolean result = companyProductService.checkIfProductIsNotUsed(companyProduct, belongsToProductName,
-                belongsToCompanyName, hasManyName);
+        boolean result = companyProductService.checkIfProductIsNotUsed(companyProduct);
 
         // then
         assertTrue(result);
@@ -175,8 +164,7 @@ public class CompanyProductServiceImplTest {
         given(entities.isEmpty()).willReturn(false);
 
         // when
-        boolean result = companyProductService.checkIfProductIsNotUsed(companyProduct, belongsToProductName,
-                belongsToCompanyName, hasManyName);
+        boolean result = companyProductService.checkIfProductIsNotUsed(companyProduct);
 
         // then
         assertFalse(result);

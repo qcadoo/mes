@@ -176,9 +176,6 @@
                 <layoutElement column="1" row="1">
                     <component type="select" name="entityType" field="#{form}.entityType"
                                reference="entityType">
-                        <listener event="onSelectedEntityChange"
-                                  class="com.qcadoo.mes.deliveries.listeners.ProductDetailsListenersD"
-                                  method="toggleSuppliersGrids"/>
                     </component>
                 </layoutElement>
                 <layoutElement column="1" row="2">
@@ -196,9 +193,6 @@
                         <criteriaModifier
                                 class="com.qcadoo.mes.basic.criteriaModifiers.ProductCriteriaModifiers"
                                 method="showFamiliesByMachinePartType"/>
-                        <listener event="onSelectedEntityChange"
-                                  class="com.qcadoo.mes.deliveries.listeners.ProductDetailsListenersD"
-                                  method="checkIfDefaultSupplierIsUnique"/>
                     </component>
                 </layoutElement>
             </component>
@@ -370,30 +364,6 @@
                         <option type="fullscreen" value="true"/>
                         <option type="multiselect" value="true"/>
                     </component>
-
-                    <component type="grid" name="productsFamilyCompanies"
-                               source="#{form}.productsFamilyCompanies" reference="productsFamilyCompanies"
-                               defaultVisible="false">
-                        <option type="column" name="number" fields="company"
-                                expression="#company['number']" link="true" width="50"/>
-                        <option type="column" name="name" fields="company"
-                                expression="#company['name']" link="true" width="100"/>
-                        <option type="column" name="isDefault" fields="isDefault" width="30"/>
-
-                        <option type="order" column="number" direction="desc"/>
-
-                        <option type="correspondingView" value="deliveries/productsFamilyCompanyDetails"/>
-                        <option type="correspondingComponent" value="form"/>
-                        <option type="correspondingViewInModal" value="true"/>
-                        <option type="orderable" value="number,name,isDefault"/>
-                        <option type="searchable" value="number,name,isDefault"/>
-
-                        <option type="paginable" value="false"/>
-                        <option type="creatable" value="true"/>
-                        <option type="deletable" value="true"/>
-                        <option type="fullscreen" value="true"/>
-                        <option type="multiselect" value="true"/>
-                    </component>
                 </layoutElement>
             </component>
         </windowTab>
@@ -446,9 +416,6 @@
                       method="updateRibbonState"/>
         <beforeRender class="com.qcadoo.mes.cmmsMachineParts.hooks.MachinePartDetailsHooks"
                       method="setMachinePartCheckbox"/>
-
-        <beforeRender class="com.qcadoo.mes.deliveries.hooks.ProductDetailsHooksD"
-                      method="toggleSuppliersGrids"/>
 
         <beforeRender
                 class="com.qcadoo.mes.cmmsMachineParts.hooks.MachinePartDetailsHooks"

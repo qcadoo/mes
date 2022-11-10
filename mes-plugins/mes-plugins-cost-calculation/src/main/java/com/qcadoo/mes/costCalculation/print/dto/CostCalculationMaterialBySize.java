@@ -1,9 +1,5 @@
 package com.qcadoo.mes.costCalculation.print.dto;
 
-import com.qcadoo.mes.costNormsForProduct.constants.ProductFieldsCNFP;
-import com.qcadoo.model.api.DataDefinition;
-import com.qcadoo.model.api.Entity;
-
 import java.math.BigDecimal;
 
 public class CostCalculationMaterialBySize {

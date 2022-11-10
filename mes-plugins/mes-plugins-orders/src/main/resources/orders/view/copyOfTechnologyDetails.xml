@@ -184,6 +184,9 @@
                             <option type="fieldCode" value="number"/>
                         </component>
                     </layoutElement>
+                    <layoutElement column="3" row="1">
+                        <component type="input" name="minimalQuantity" reference="minimalQuantity" field="minimalQuantity"/>
+                    </layoutElement>
                 </component>
 
                 <component type="select" name="state" field="state"

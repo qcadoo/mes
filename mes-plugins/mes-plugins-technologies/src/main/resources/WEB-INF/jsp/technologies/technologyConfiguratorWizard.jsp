@@ -74,7 +74,7 @@
                                     <div class="col-sm-8">
                                         <div class="input-group">
                                             <div class="input-group-prepend">
-                                                <label class="form-label required "
+                                                <label class="form-label required " data-toggle="tooltip" data-placement="top"  title='${translationsMap['technologies.technologyConfigurator.technologyConfiguratorWizard.form.quantity.tip']}'
                                                        for="otQuantity">${translationsMap['technologies.technologyConfigurator.technologyConfiguratorWizard.form.quantity']}</label>
                                             </div>
                                             <input type="text" class="form-control right decimal" tabindex="2"
@@ -270,11 +270,6 @@
                 <div class="col-auto">
                     <h4 class="modal-title">${translationsMap['technologies.technologyConfigurator.technologyConfiguratorWizard.productsLookup']}</h4>
                 </div>
-                <div class="col text-right">
-                    <button type="button" class="close" data-dismiss="modal"
-                            aria-label="${translationsMap['technologies.technologyConfigurator.technologyConfiguratorWizard.productsLookup.closeButton']}">
-                        <span aria-hidden="true">&times;</span></button>
-                </div>
             </div>
             <div class="modal-body">
                 <table id="otProducts"
@@ -312,11 +307,6 @@
             <div class="modal-header">
                 <div class="col-auto">
                     <h4 class="modal-title">${translationsMap['technologies.technologyConfigurator.technologyConfiguratorWizard.productDefinitionModal']}</h4>
-                </div>
-                <div class="col text-right">
-                    <button type="button" class="close" data-dismiss="modal"
-                            aria-label="${translationsMap['technologies.technologyConfigurator.technologyConfiguratorWizard.productsLookup.closeButton']}">
-                        <span aria-hidden="true">&times;</span></button>
                 </div>
             </div>
             <div class="modal-body">
@@ -389,11 +379,6 @@
                 <div class="col-auto">
                     <h4 class="modal-title">${translationsMap['technologies.technologyConfigurator.technologyConfiguratorWizard.operationDefinitionModal']}</h4>
                 </div>
-                <div class="col text-right">
-                    <button type="button" class="close" data-dismiss="modal"
-                            aria-label="${translationsMap['technologies.technologyConfigurator.technologyConfiguratorWizard.productsLookup.closeButton']}">
-                        <span aria-hidden="true">&times;</span></button>
-                </div>
             </div>
             <div class="modal-body">
                 <div class="row">
@@ -448,11 +433,6 @@
                 <div class="col-auto">
                     <h4 class="modal-title">${translationsMap['technologies.technologyConfigurator.technologyConfiguratorWizard.productsLookup']}</h4>
                 </div>
-                <div class="col text-right">
-                    <button type="button" class="close" data-dismiss="modal"
-                            aria-label="${translationsMap['technologies.technologyConfigurator.technologyConfiguratorWizard.productsLookup.closeButton']}">
-                        <span aria-hidden="true">&times;</span></button>
-                </div>
             </div>
             <div class="modal-body">
                 <table id="otMaterialsItem"
@@ -491,11 +471,6 @@
                 <div class="col-auto">
                     <h4 class="modal-title">${translationsMap['technologies.technologyConfigurator.technologyConfiguratorWizard.workstationsLookup']}</h4>
                 </div>
-                <div class="col text-right">
-                    <button type="button" class="close" data-dismiss="modal"
-                            aria-label="${translationsMap['technologies.technologyConfigurator.technologyConfiguratorWizard.technologiesLookup.closeButton']}">
-                        <span aria-hidden="true">&times;</span></button>
-                </div>
             </div>
             <div class="modal-body">
                 <table id="workstationItems"
@@ -532,11 +507,7 @@
                 <div class="col-auto">
                     <h4 class="modal-title">${translationsMap['technologies.technologyConfigurator.technologyConfiguratorWizard.otWorkstationDefinitionModal']}</h4>
                 </div>
-                <div class="col text-right">
-                    <button type="button" class="close" data-dismiss="modal"
-                            aria-label="${translationsMap['technologies.technologyConfigurator.technologyConfiguratorWizard.otWorkstationDefinitionModal.closeButton']}">
-                        <span aria-hidden="true">&times;</span></button>
-                </div>
+
             </div>
             <div class="modal-body">
                 <div class="row">

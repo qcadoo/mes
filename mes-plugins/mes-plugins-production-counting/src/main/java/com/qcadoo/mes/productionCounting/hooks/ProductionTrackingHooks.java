@@ -235,8 +235,14 @@ public class ProductionTrackingHooks {
     }
 
     public void onDelete(final DataDefinition productionTrackingDD, final Entity productionTracking) {
-        productionTrackingService.unCorrect(productionTracking);
-        productionTrackingListenerService.updateOrderReportedQuantityOnRemove(productionTracking);
+        Entity correctedProductionTracking = productionTracking.getDataDefinition().find()
+                .add(SearchRestrictions.belongsTo(ProductionTrackingFields.CORRECTION, productionTracking))
+                .uniqueResult();
+        if (correctedProductionTracking != null) {
+            productionTrackingService.unCorrect(productionTracking);
+        } else {
+            productionTrackingListenerService.updateOrderReportedQuantityOnRemove(productionTracking);
+        }
 
         logPerformDelete(productionTracking);
     }

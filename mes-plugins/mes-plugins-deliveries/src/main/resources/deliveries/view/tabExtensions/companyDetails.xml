@@ -31,48 +31,24 @@
 
 	<windowTab name="sellsTab" reference="sellsTab">
 		<component type="flowGridLayout" name="sellsTabGridLayout"
-			columns="2" rows="3">
+			columns="1" rows="3">
 			<layoutElement column="1" row="1" minHeight='3'>
-				<component type="grid" name="productsFamilies" reference="productsFamilies"
-					source="#{form}.productsFamilies">
-					<option type="column" name="number" fields="product"
-						expression="#product['number']" width="50" link="true"/>
-					<option type="column" name="name" fields="product"
-						expression="#product['name']" width="100" link="true"/>
-					<option type="column" name="isDefault" fields="isDefault" width="30"/>
-					<option type="column" name="minimumOrderQuantity" fields="minimumOrderQuantity"/>
-					<option type="column" name="bufferForDeliveryTimes" fields="bufferForDeliveryTimes" width="50"/>
-
-					<option type="order" column="number" direction="desc" />
-
-					<option type="searchable" value="number,name,isDefault,minimumOrderQuantity,bufferForDeliveryTimes" />
-					<option type="orderable" value="number,name,isDefault,minimumOrderQuantity,bufferForDeliveryTimes" />
-
-					<option type="correspondingView" value="deliveries/companyProductsFamilyDetails" />
-					<option type="correspondingComponent" value="form" />
-					<option type="correspondingViewInModal" value="true" />
-
-					<option type="creatable" value="true" />
-					<option type="deletable" value="true" />
-					<option type="fullscreen" value="true" />
-					<option type="multiselect" value="true" />
-				</component>
-			</layoutElement>
-			<layoutElement column="2" row="1" minHeight='3'>
 				<component type="grid" name="products" reference="products"
 					source="#{form}.products">
 					<option type="column" name="number" fields="product"
 						expression="#product['number']" width="50" link="true"/>
 					<option type="column" name="name" fields="product"
 						expression="#product['name']" width="100" link="true"/>
+					<option type="column" name="entityType" fields="product"
+					        expression="#product['entityType']" width="100" link="true"/>
 					<option type="column" name="isDefault" fields="isDefault" width="30"/>
 					<option type="column" name="minimumOrderQuantity" fields="minimumOrderQuantity"/>
 					<option type="column" name="bufferForDeliveryTimes" fields="bufferForDeliveryTimes" width="50"/>
 
 					<option type="order" column="number" direction="desc" />
 
-					<option type="searchable" value="number,name,isDefault,minimumOrderQuantity,bufferForDeliveryTimes" />
-					<option type="orderable" value="number,name,isDefault,minimumOrderQuantity,bufferForDeliveryTimes" />
+					<option type="searchable" value="number,name,entityType,isDefault,minimumOrderQuantity,bufferForDeliveryTimes" />
+					<option type="orderable" value="number,name,entityType,isDefault,minimumOrderQuantity,bufferForDeliveryTimes" />
 
 					<option type="correspondingView" value="deliveries/companyProductDetails" />
 					<option type="correspondingComponent" value="form" />
