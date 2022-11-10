@@ -19,7 +19,6 @@ import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.CheckBoxComponent;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
-import com.qcadoo.view.api.components.GridComponent;
 import com.qcadoo.view.constants.QcadooViewConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.i18n.LocaleContextHolder;
@@ -46,13 +45,12 @@ public class SalesVolumeAddMultiListeners {
         FormComponent salesVolumeMultiForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         FieldComponent dailySalesVolumeField = (FieldComponent) view.getComponentByReference(SalesVolumeMultiFields.DAILY_SALES_VOLUME);
         FieldComponent optimalStockField = (FieldComponent) view.getComponentByReference(SalesVolumeMultiFields.OPTIMAL_STOCK);
-        GridComponent productsGrid = (GridComponent) view.getComponentByReference(SalesVolumeMultiFields.PRODUCTS);
         CheckBoxComponent generatedCheckBox = (CheckBoxComponent) view.getComponentByReference(L_GENERATED);
 
-        Entity salesVolumeMulti = salesVolumeMultiForm.getEntity();
+        Entity salesVolumeMulti = salesVolumeMultiForm.getPersistedEntityWithIncludedFormValues();
         BigDecimal dailySalesVolume = getBigDecimal(dailySalesVolumeField, true);
         BigDecimal optimalStock = getBigDecimal(optimalStockField, false);
-        List<Entity> products = productsGrid.getEntities();
+        List<Entity> products = salesVolumeMulti.getHasManyField(SalesVolumeMultiFields.PRODUCTS);
 
         if (dailySalesVolumeField.isHasError() || optimalStockField.isHasError()) {
             return;
