@@ -33,7 +33,7 @@
         <belongsTo name="attribute" model="attribute" plugin="basic" required="true"/>
         <belongsTo name="attributeValue" model="attributeValue" plugin="basic"/>
         <string name="value"/>
-        <priority name="succession" scope="masterOrderProduct"/>
+        <integer name="succession"/>
     </fields>
 
     <hooks>
