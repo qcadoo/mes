@@ -23,16 +23,6 @@
  */
 package com.qcadoo.mes.lineChangeoverNormsForOrders;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
-import java.util.Objects;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.stereotype.Service;
-
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.localization.api.utils.DateUtils;
 import com.qcadoo.mes.lineChangeoverNorms.ChangeoverNormsService;
@@ -50,6 +40,15 @@ import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.LookupComponent;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.stereotype.Service;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
+import java.util.Objects;
 
 @Service
 public class LineChangeoverNormsForOrdersServiceImpl implements LineChangeoverNormsForOrdersService {
@@ -226,7 +225,7 @@ public class LineChangeoverNormsForOrdersServiceImpl implements LineChangeoverNo
     }
 
     @Override
-    public Entity getChangeover(Entity previousOrder, final Entity toTechnology, final Entity productionLine) {
+    public Entity getChangeover(final Entity previousOrder, final Entity toTechnology, final Entity productionLine) {
         if (Objects.isNull(previousOrder)) {
             return null;
         }
@@ -235,4 +234,5 @@ public class LineChangeoverNormsForOrdersServiceImpl implements LineChangeoverNo
 
         return changeoverNormsService.getMatchingChangeoverNorms(fromTechnology, toTechnology, productionLine);
     }
+
 }
