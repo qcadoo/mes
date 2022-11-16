@@ -57,7 +57,7 @@ public class TechnologicalProcessRateHooks {
                 .get(BasicConstants.PLUGIN_IDENTIFIER, "technologicalProcessRateItem")
                 .find().addOrder(SearchOrders.desc("dateFrom"))
                 .add(SearchRestrictions.belongsTo("technologicalProcessRate", technologicalProcessRate))
-                .add(SearchRestrictions.or(SearchRestrictions.lt("dateFrom", new Date()), SearchRestrictions.eq("dateFrom", new Date())));
+                .add(SearchRestrictions.le("dateFrom", new Date()));
         Entity technologicalProcessRateItem = scb.setMaxResults(1).uniqueResult();
         if(Objects.isNull(technologicalProcessRateItem)) {
             return null;

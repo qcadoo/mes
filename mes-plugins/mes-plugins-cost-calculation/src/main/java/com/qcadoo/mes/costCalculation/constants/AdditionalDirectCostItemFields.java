@@ -23,24 +23,18 @@
  */
 package com.qcadoo.mes.costCalculation.constants;
 
-public final class CostCalculationConstants {
+public final class AdditionalDirectCostItemFields {
 
-    private CostCalculationConstants() {
+    private AdditionalDirectCostItemFields() {
 
     }
 
-    public static final String PLUGIN_IDENTIFIER = "costCalculation";
+    public static final String DATE_FROM = "dateFrom";
 
-    public static final String MODEL_COST_CALCULATION = "costCalculation";
+    public static final String DATE_TO = "dateTo";
 
-    public static final String MODEL_CALCULATION_RESULT = "calculationResult";
+    public static final String ACTUAL_COST = "actualCost";
 
-    public static final String MODEL_COMPONENT_COST = "componentCost";
-
-    public static final String MODEL_STANDARD_LABOR_COST = "standardLaborCost";
-
-    public static final String MODEL_ADDITIONAL_DIRECT_COST = "additionalDirectCost";
-
-    public static final String MODEL_ADDITIONAL_DIRECT_COST_ITEM = "additionalDirectCostItem";
+    public static final String ADDITIONAL_DIRECT_COST = "additionalDirectCost";
 
 }

@@ -73,6 +73,8 @@
         <model:model model="componentCost" resource="model/componentCost.xml"/>
         <model:model model="standardLaborCost" resource="model/standardLaborCost.xml"/>
         <model:model model="calculationResult" resource="model/calculationResult.xml"/>
+        <model:model model="additionalDirectCost" resource="model/additionalDirectCost.xml"/>
+        <model:model model="additionalDirectCostItem" resource="model/additionalDirectCostItem.xml"/>
 
         <menu:menu-category name="calculations" defaultAuthorizationRole="ROLE_CALCULATIONS"/>
 
@@ -80,6 +82,9 @@
                         view="costCalculationList"/>
         <menu:menu-item name="standardLaborCostsList" category="calculations" defaultAuthorizationRole="ROLE_CALCULATIONS"
                         view="standardLaborCostsList"/>
+
+        <menu:menu-item name="additionalDirectCostsList" category="calculations"
+                        view="additionalDirectCostsList" defaultAuthorizationRole="ROLE_CALCULATIONS"/>
 
         <model:model-field model="calculationOperationComponent"
                            plugin="costNormsForOperation">
@@ -196,6 +201,12 @@
                               joinField="technology"/>
         </model:model-field>
 
+        <model:model-field model="technology" plugin="technologies">
+            <model:manyToMany name="additionalDirectCosts"
+                              plugin="costCalculation" model="additionalDirectCost"
+                              joinField="technologies" copyable="true"/>
+        </model:model-field>
+
         <model:model-field model="product" plugin="basic">
             <model:hasMany name="calculationResult"
                               plugin="costCalculation" model="calculationResult"
@@ -212,9 +223,14 @@
         <view:view resource="view/costCalculationDetails.xml"/>
         <view:view resource="view/standardLaborCostsList.xml"/>
         <view:view resource="view/standardLaborCostDetails.xml"/>
+        <view:view resource="view/additionalDirectCostsList.xml"/>
+        <view:view resource="view/additionalDirectCostDetails.xml"/>
+        <view:view resource="view/additionalDirectCostItemDetails.xml"/>
+
         <view:view-ribbon-group resource="view/ribbonExtensions/technologiesList.xml"/>
 
         <view:view-tab resource="view/tabExtensions/technologiesParameters.xml" />
+        <view:view-tab resource="view/tabExtensions/technologyDetails.xml"/>
 
         <view:view-hook plugin="technologies" view="technologiesParameters"
                         type="beforeRender" class="com.qcadoo.mes.costCalculation.hooks.TechnologiesParametersHooksCC"
