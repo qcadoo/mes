@@ -45,53 +45,57 @@ public class SalesVolumeDetailsListeners {
     public final void createOrder(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         FormComponent salesVolumeForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
-        Entity salesVolume = salesVolumeForm.getEntity();
+        salesVolumeForm.performEvent(view, "save");
 
-        if (Objects.nonNull(salesVolume.getId())) {
-            Entity parameter = parameterService.getParameter();
+        if (salesVolumeForm.isValid()) {
+            Entity salesVolume = salesVolumeForm.getEntity();
 
-            Entity product = salesVolume.getBelongsToField(SalesVolumeFields.PRODUCT);
-            BigDecimal optimalStock = BigDecimalUtils.convertNullToZero(salesVolume.getDecimalField(SalesVolumeFields.OPTIMAL_STOCK));
-            BigDecimal currentStock = BigDecimalUtils.convertNullToZero(salesVolume.getDecimalField(SalesVolumeFields.CURRENT_STOCK));
+            if (Objects.nonNull(salesVolume.getId())) {
+                Entity parameter = parameterService.getParameter();
 
-            if (BigDecimal.ZERO.compareTo(optimalStock) == 0) {
-                view.addMessage("masterOrders.salesVolumeDetails.createOrder.info.optimalStock", ComponentState.MessageType.INFO);
-            } else {
-                if (currentStock.compareTo(optimalStock) >= 0) {
-                    view.addMessage("masterOrders.salesVolumeDetails.createOrder.info.currentStock", ComponentState.MessageType.INFO);
+                Entity product = salesVolume.getBelongsToField(SalesVolumeFields.PRODUCT);
+                BigDecimal optimalStock = BigDecimalUtils.convertNullToZero(salesVolume.getDecimalField(SalesVolumeFields.OPTIMAL_STOCK));
+                BigDecimal currentStock = BigDecimalUtils.convertNullToZero(salesVolume.getDecimalField(SalesVolumeFields.CURRENT_STOCK));
+
+                if (BigDecimal.ZERO.compareTo(optimalStock) == 0) {
+                    view.addMessage("masterOrders.salesVolumeDetails.createOrder.info.optimalStock", ComponentState.MessageType.INFO);
                 } else {
-                    Entity technology = technologyServiceO.getDefaultTechnology(product);
-                    BigDecimal plannedQuantity = optimalStock.subtract(currentStock, numberService.getMathContext());
+                    if (currentStock.compareTo(optimalStock) >= 0) {
+                        view.addMessage("masterOrders.salesVolumeDetails.createOrder.info.currentStock", ComponentState.MessageType.INFO);
+                    } else {
+                        Entity technology = technologyServiceO.getDefaultTechnology(product);
+                        BigDecimal plannedQuantity = optimalStock.subtract(currentStock, numberService.getMathContext());
 
-                    if (Objects.nonNull(technology)) {
+                        if (Objects.nonNull(technology)) {
                             BigDecimal minimalQuantity = technology.getDecimalField(TechnologyFields.MINIMAL_QUANTITY);
 
                             if (Objects.nonNull(minimalQuantity) && plannedQuantity.compareTo(minimalQuantity) < 0) {
                                 plannedQuantity = minimalQuantity;
                             }
-                    }
+                        }
 
-                    Entity order = ordersGenerationService.createOrder(parameter, technology, product, plannedQuantity, null, null, null);
+                        Entity order = ordersGenerationService.createOrder(parameter, technology, product, plannedQuantity, null, null, null);
 
-                    if (order.isValid()) {
-                        Map<String, Object> parameters = Maps.newHashMap();
+                        if (order.isValid()) {
+                            Map<String, Object> parameters = Maps.newHashMap();
 
-                        parameters.put(L_WINDOW_ACTIVE_MENU, "orders.productionOrders");
+                            parameters.put(L_WINDOW_ACTIVE_MENU, "orders.productionOrders");
 
-                        parameters.put("form.id", order.getId());
+                            parameters.put("form.id", order.getId());
 
-                        String url = "../page/orders/orderDetails.html";
+                            String url = "../page/orders/orderDetails.html";
 
-                        view.redirectTo(url, false, true, parameters);
-                    } else {
-                        order.getGlobalErrors().stream().filter(error ->
-                                !error.getMessage().equals("qcadooView.validate.global.error.custom")).forEach(error ->
-                                view.addMessage(error.getMessage(), ComponentState.MessageType.FAILURE, error.getVars())
-                        );
+                            view.redirectTo(url, false, true, parameters);
+                        } else {
+                            order.getGlobalErrors().stream().filter(error ->
+                                    !error.getMessage().equals("qcadooView.validate.global.error.custom")).forEach(error ->
+                                    view.addMessage(error.getMessage(), ComponentState.MessageType.FAILURE, error.getVars())
+                            );
 
-                        order.getErrors().values().forEach(error ->
-                                view.addMessage(error.getMessage(), ComponentState.MessageType.FAILURE, error.getVars())
-                        );
+                            order.getErrors().values().forEach(error ->
+                                    view.addMessage(error.getMessage(), ComponentState.MessageType.FAILURE, error.getVars())
+                            );
+                        }
                     }
                 }
             }
