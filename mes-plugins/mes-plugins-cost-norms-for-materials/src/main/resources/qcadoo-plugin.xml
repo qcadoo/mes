@@ -82,14 +82,6 @@
                            joinField="order" persistent="false"/>
         </model:model-field>
 
-        <model:model-field plugin="orders" model="order">
-            <model:decimal name="directAdditionalCost"/>
-        </model:model-field>
-
-        <model:model-field plugin="orders" model="order">
-            <model:string name="directAdditionalCostDescription"/>
-        </model:model-field>
-
         <model:model-hook plugin="orders" model="order">
             <model:onSave
                     class="com.qcadoo.mes.costNormsForMaterials.hooks.OrderHooksCNFM"

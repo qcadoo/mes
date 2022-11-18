@@ -68,7 +68,6 @@
                 <option type="expression" value="#skill['name'] +', ' + #skill['maximumLevel']"/>
             </component>
         </windowTab>
-         
     </component>
 
 	<hooks>

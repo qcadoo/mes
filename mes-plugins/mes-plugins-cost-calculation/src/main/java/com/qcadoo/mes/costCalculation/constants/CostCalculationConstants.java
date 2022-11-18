@@ -43,4 +43,6 @@ public final class CostCalculationConstants {
 
     public static final String MODEL_ADDITIONAL_DIRECT_COST_ITEM = "additionalDirectCostItem";
 
+    public static final String MODEL_ORDER_ADDITIONAL_DIRECT_COST = "orderAdditionalDirectCost";
+
 }

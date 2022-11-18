@@ -21,13 +21,14 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.costNormsForMaterials.constants;
+package com.qcadoo.mes.costCalculation.constants;
 
-public final class OrderFieldsCNFM {
+public final class TechnologyFieldsCC {
 
-    public static final String TECHNOLOGY_INST_OPER_PRODUCT_IN_COMPS = "technologyInstOperProductInComps";
+    private TechnologyFieldsCC() {
 
-    private OrderFieldsCNFM() {
     }
+
+    public static final String ADDITIONAL_DIRECT_COSTS = "additionalDirectCosts";
 
 }
