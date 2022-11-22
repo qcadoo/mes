@@ -102,7 +102,7 @@
 
                         <criteriaModifier
                                 class="com.qcadoo.mes.technologies.criteriaModifiers.TechnologyCriteriaModifiers"
-                                method="showPatternTechnology"/>
+                                method="showDraftAcceptedAndCheckedPatternTechnology"/>
                     </component>
                     <component type="grid" name="technologies" reference="technologies"
                                source="#{form}.technologies">

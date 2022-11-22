@@ -259,6 +259,10 @@
                         type="beforeRender" class="com.qcadoo.mes.costCalculation.hooks.TechnologiesListHooksCC"
                         method="toggleGenerateCostCalculationButton"/>
 
+        <view:view-hook plugin="technologies" view="technologyDetails"
+                        type="beforeRender" class="com.qcadoo.mes.costCalculation.hooks.TechnologyDetailsHooksCC"
+                        method="onBeforeRender"/>
+
     </modules>
 
     <features>
