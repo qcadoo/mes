@@ -29,8 +29,6 @@ public final class AdditionalDirectCostFields {
 
     }
 
-    public static final String NUMBER = "number";
-
     public static final String CURRENT_COST = "currentCost";
 
 }

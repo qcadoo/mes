@@ -42,8 +42,7 @@
                            rows="7">
                     <layoutElement column="1" row="1">
                         <component type="input" name="number" reference="number"
-                                   field="number" defaultEnabled="never">
-                            <option type="alignment" value="right"/>
+                                   field="number">
                         </component>
                     </layoutElement>
                     <layoutElement column="1" row="2">
