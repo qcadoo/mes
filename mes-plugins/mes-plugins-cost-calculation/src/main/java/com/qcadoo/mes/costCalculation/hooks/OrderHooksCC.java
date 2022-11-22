@@ -23,7 +23,9 @@
  */
 package com.qcadoo.mes.costCalculation.hooks;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,6 +44,9 @@ import com.qcadoo.model.api.Entity;
 public class OrderHooksCC {
 
     @Autowired
+    private OrderAdditionalDirectCostDetails orderAdditionalDirectCostDetails;
+
+    @Autowired
     private DataDefinitionService dataDefinitionService;
 
     public void copyAdditionalDirectCostsFromTechnology(final DataDefinition orderDD, final Entity order) {
@@ -50,10 +55,15 @@ public class OrderHooksCC {
             List<Entity> costs = new ArrayList<>();
             DataDefinition orderAdditionalDirectCostDD = dataDefinitionService
                     .get(CostCalculationConstants.PLUGIN_IDENTIFIER, CostCalculationConstants.MODEL_ORDER_ADDITIONAL_DIRECT_COST);
+            Date startDate = order.getDateField(OrderFields.START_DATE);
             for (Entity additionalDirectCost : technology.getManyToManyField(TechnologyFieldsCC.ADDITIONAL_DIRECT_COSTS)) {
-                if(additionalDirectCost.isActive()) {
+                if (additionalDirectCost.isActive()) {
                     Entity orderAdditionalDirectCost = orderAdditionalDirectCostDD.create();
                     orderAdditionalDirectCost.setField(OrderAdditionalDirectCostFields.ADDITIONAL_DIRECT_COST, additionalDirectCost);
+                    if (startDate != null) {
+                        BigDecimal currentCost = orderAdditionalDirectCostDetails.findCurrentCost(additionalDirectCost.getId(), startDate);
+                        orderAdditionalDirectCost.setField(OrderAdditionalDirectCostFields.ACTUAL_COST, currentCost);
+                    }
                     costs.add(orderAdditionalDirectCost);
                 }
             }

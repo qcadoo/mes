@@ -55,7 +55,7 @@ public class OrderAdditionalDirectCostDetails {
         }
     }
 
-    private BigDecimal findCurrentCost(Long entityId, Date startDate) {
+    public BigDecimal findCurrentCost(Long entityId, Date startDate) {
         Entity additionalDirectCost = dataDefinitionService.get(CostCalculationConstants.PLUGIN_IDENTIFIER, CostCalculationConstants.MODEL_ADDITIONAL_DIRECT_COST)
                 .get(entityId);
 
