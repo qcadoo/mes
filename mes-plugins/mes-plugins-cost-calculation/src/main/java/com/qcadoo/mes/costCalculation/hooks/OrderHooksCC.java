@@ -51,9 +51,11 @@ public class OrderHooksCC {
             DataDefinition orderAdditionalDirectCostDD = dataDefinitionService
                     .get(CostCalculationConstants.PLUGIN_IDENTIFIER, CostCalculationConstants.MODEL_ORDER_ADDITIONAL_DIRECT_COST);
             for (Entity additionalDirectCost : technology.getManyToManyField(TechnologyFieldsCC.ADDITIONAL_DIRECT_COSTS)) {
-                Entity orderAdditionalDirectCost = orderAdditionalDirectCostDD.create();
-                orderAdditionalDirectCost.setField(OrderAdditionalDirectCostFields.ADDITIONAL_DIRECT_COST, additionalDirectCost);
-                costs.add(orderAdditionalDirectCost);
+                if(additionalDirectCost.isActive()) {
+                    Entity orderAdditionalDirectCost = orderAdditionalDirectCostDD.create();
+                    orderAdditionalDirectCost.setField(OrderAdditionalDirectCostFields.ADDITIONAL_DIRECT_COST, additionalDirectCost);
+                    costs.add(orderAdditionalDirectCost);
+                }
             }
             order.setField(OrderFieldsCC.ORDER_ADDITIONAL_DIRECT_COSTS, costs);
         }
