@@ -28,6 +28,7 @@ import static com.qcadoo.model.api.search.SearchOrders.asc;
 import java.util.List;
 import java.util.Objects;
 
+import com.qcadoo.mes.basicProductionCounting.ProductionCountingQuantityChangeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -64,6 +65,13 @@ public class ProductionCountingQuantityHooks {
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
+
+    @Autowired
+    private ProductionCountingQuantityChangeService productionCountingQuantityChangeService;
+
+    public void onSave(final DataDefinition productionCountingQuantityDD, final Entity productionCountingQuantity) {
+        productionCountingQuantityChangeService.addEntry(productionCountingQuantity);
+    }
 
     public void onCreate(final DataDefinition productionCountingQuantityDD, final Entity productionCountingQuantity) {
         fillOrder(productionCountingQuantity);
@@ -119,6 +127,7 @@ public class ProductionCountingQuantityHooks {
     }
 
     public boolean onDelete(final DataDefinition productionCountingQuantityDD, final Entity productionCountingQuantity) {
+        productionCountingQuantityChangeService.addRemoveEntry(productionCountingQuantity);
         return deleteBasicProductionCounting(productionCountingQuantity);
     }
 

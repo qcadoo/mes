@@ -76,4 +76,6 @@ public final class ProductionCountingQuantityFields {
     public static final String WASTE_RECEPTION_WAREHOUSE = "wasteReceptionWarehouse";
 
     public static final String ATTRIBUTE = "attribute";
+
+    public static final String IS_ORDER_CREATE = "isOrderCreate";
 }

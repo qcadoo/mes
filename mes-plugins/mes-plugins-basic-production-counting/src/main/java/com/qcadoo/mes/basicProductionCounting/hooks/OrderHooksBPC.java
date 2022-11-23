@@ -66,6 +66,9 @@ public class OrderHooksBPC {
                 for (Entity pqor : order.getHasManyField(OrderFieldsBPC.PRODUCTION_COUNTING_OPERATION_RUNS)) {
                     pqor.getDataDefinition().delete(pqor.getId());
                 }
+                for (Entity qc : order.getHasManyField(OrderFieldsBPC.PRODUCTION_COUNTING_QUANTITY_CHANGES)) {
+                    qc.getDataDefinition().delete(qc.getId());
+                }
 
                 OperationProductComponentWithQuantityContainer operationProductComponentWithQuantityContainer = basicProductionCountingService
                         .createProductionCounting(order);
