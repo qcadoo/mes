@@ -56,6 +56,7 @@ public class ProductionTrackingDetailsListenersPPS {
 
             Map<String, Object> parameters = Maps.newHashMap();
             parameters.put("form.id", orderId);
+            parameters.put("window.activeMenu", "ordersTracking.productionTrackingsList");
 
             String url = "/page/lineChangeoverNormsForOrders/lineChangeoverNormsForOrderDetails.html";
             view.redirectTo(url, false, true, parameters);

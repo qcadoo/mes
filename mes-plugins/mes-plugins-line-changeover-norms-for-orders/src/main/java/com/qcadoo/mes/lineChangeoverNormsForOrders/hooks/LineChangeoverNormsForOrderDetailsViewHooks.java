@@ -23,6 +23,7 @@
  */
 package com.qcadoo.mes.lineChangeoverNormsForOrders.hooks;
 
+import com.google.common.collect.Lists;
 import com.qcadoo.mes.lineChangeoverNorms.ChangeoverNormsSearchService;
 import com.qcadoo.mes.lineChangeoverNorms.ChangeoverNormsService;
 import com.qcadoo.mes.lineChangeoverNorms.constants.LineChangeoverNormsFields;
@@ -48,6 +49,10 @@ import java.util.Objects;
 
 @Service
 public class LineChangeoverNormsForOrderDetailsViewHooks {
+
+    private static final String L_ACTIONS = "actions";
+
+    private static final String L_SAVE_OWN_TIME = "saveOwnTime";
 
     private static final String L_ORDERS = "orders";
 
@@ -81,7 +86,14 @@ public class LineChangeoverNormsForOrderDetailsViewHooks {
     @Autowired
     private LineChangeoverNormsForOrdersService lineChangeoverNormsForOrdersService;
 
-    public final void fillOrderForms(final ViewDefinitionState view) {
+    public final void onBeforeRender(final ViewDefinitionState view) {
+        fillOrderForms(view);
+        fillLineChangeoverNorm(view);
+        showOwnLineChangeoverDurationField(view);
+        updateRibbonState(view);
+    }
+
+    public void fillOrderForms(final ViewDefinitionState view) {
         FormComponent orderForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
         LookupComponent orderLookup = (LookupComponent) view.getComponentByReference(OrderFieldsLCNFO.ORDER);
@@ -175,6 +187,9 @@ public class LineChangeoverNormsForOrderDetailsViewHooks {
 
         WindowComponent window = (WindowComponent) view.getComponentByReference(QcadooViewConstants.L_WINDOW);
 
+        RibbonGroup actions = window.getRibbon().getGroupByName(L_ACTIONS);
+        RibbonActionItem saveOwnTime = actions.getItemByName(L_SAVE_OWN_TIME);
+
         RibbonGroup orders = window.getRibbon().getGroupByName(L_ORDERS);
         RibbonActionItem showPreviousOrder = orders.getItemByName(L_SHOW_PREVIOUS_ORDER);
 
@@ -193,6 +208,9 @@ public class LineChangeoverNormsForOrderDetailsViewHooks {
         if (Objects.nonNull(productionLineId)) {
             productionLine = lineChangeoverNormsForOrdersService.getProductionLineFromDB(productionLineId);
         }
+
+        boolean hasProductionTrackingsList = !view.getJsonContext().has("window.activeMenu");
+        updateButtonState(saveOwnTime, hasProductionTrackingsList);
 
         boolean hasDefinedPreviousOrder = !previousOrderLookup.isEmpty();
         updateButtonState(showPreviousOrder, hasDefinedPreviousOrder);
@@ -241,7 +259,14 @@ public class LineChangeoverNormsForOrderDetailsViewHooks {
     }
 
     public void showOwnLineChangeoverDurationField(final ViewDefinitionState view) {
-        orderService.changeFieldState(view, OrderFieldsLCNFO.OWN_LINE_CHANGEOVER, OrderFieldsLCNFO.OWN_LINE_CHANGEOVER_DURATION);
+        if (view.getJsonContext().has("window.activeMenu")) {
+            Lists.newArrayList(OrderFieldsLCNFO.OWN_LINE_CHANGEOVER, OrderFieldsLCNFO.OWN_LINE_CHANGEOVER_DURATION).forEach(fieldName -> {
+                FieldComponent fieldComponent = (FieldComponent) view.getComponentByReference(fieldName);
+                fieldComponent.setEnabled(false);
+            });
+        } else {
+            orderService.changeFieldState(view, OrderFieldsLCNFO.OWN_LINE_CHANGEOVER, OrderFieldsLCNFO.OWN_LINE_CHANGEOVER_DURATION);
+        }
     }
 
 }

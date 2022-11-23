@@ -45,9 +45,11 @@ import java.util.Objects;
 @Service
 public class ProductionTrackingDetailsHooksPPS {
 
+    private static final String L_CHANGEOVER = "changeover";
+
+    private static final String L_SHOW_CHANGEOVER = "showChangeover";
+
     private static final String L_CHANGEOVER_DURATION = "changeoverDuration";
-    public static final String L_CHANGEOVER = "changeover";
-    public static final String L_SHOW_CHANGEOVER = "showChangeover";
 
     @Autowired
     private LineChangeoverNormsForOrdersService lineChangeoverNormsForOrdersService;
@@ -88,19 +90,21 @@ public class ProductionTrackingDetailsHooksPPS {
 
             Entity order = productionTracking.getBelongsToField(ProductionTrackingFields.ORDER);
 
-            Entity previousOrder = lineChangeoverNormsForOrdersService.getPreviousOrderFromDB(order);
+            if (Objects.nonNull(order)) {
+                Entity previousOrder = lineChangeoverNormsForOrdersService.getPreviousOrderFromDB(order);
 
-            if (Objects.nonNull(previousOrder)) {
-                Entity technology = order.getBelongsToField(OrderFields.TECHNOLOGY);
-                Entity productionLine = order.getBelongsToField(OrderFields.PRODUCTION_LINE);
+                if (Objects.nonNull(previousOrder)) {
+                    Entity technology = order.getBelongsToField(OrderFields.TECHNOLOGY);
+                    Entity productionLine = order.getBelongsToField(OrderFields.PRODUCTION_LINE);
 
-                Entity changeOver = lineChangeoverNormsForOrdersService.getChangeover(previousOrder, technology, productionLine);
+                    Entity changeOver = lineChangeoverNormsForOrdersService.getChangeover(previousOrder, technology, productionLine);
 
-                if (Objects.nonNull(changeOver)) {
-                    duration = changeOver.getIntegerField(LineChangeoverNormsFields.DURATION);
+                    if (Objects.nonNull(changeOver)) {
+                        duration = changeOver.getIntegerField(LineChangeoverNormsFields.DURATION);
 
-                    if (order.getBooleanField(OrderFieldsLCNFO.OWN_LINE_CHANGEOVER)) {
-                        duration = order.getIntegerField(OrderFieldsLCNFO.OWN_LINE_CHANGEOVER_DURATION);
+                        if (order.getBooleanField(OrderFieldsLCNFO.OWN_LINE_CHANGEOVER)) {
+                            duration = order.getIntegerField(OrderFieldsLCNFO.OWN_LINE_CHANGEOVER_DURATION);
+                        }
                     }
                 }
             }

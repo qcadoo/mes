@@ -39,6 +39,7 @@ import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.api.ribbon.RibbonGroup;
 import com.qcadoo.view.constants.QcadooViewConstants;
 import com.qcadoo.view.internal.components.window.WindowComponentState;
+import org.json.JSONObject;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -59,8 +60,6 @@ import static org.springframework.test.util.ReflectionTestUtils.setField;
 public class LineChangeoverNormsForOrderDetailsViewHooksTest {
 
     private LineChangeoverNormsForOrderDetailsViewHooks lineChangeoverNormsForOrderDetailsViewHooks;
-
-    
 
     private static final long L_ID = 1L;
 
@@ -91,6 +90,9 @@ public class LineChangeoverNormsForOrderDetailsViewHooksTest {
     private FormComponent orderForm;
 
     @Mock
+    private JSONObject context;
+
+    @Mock
     private FieldComponent productionLineField, lineChangeoverNormDurationField, previousOrderTechnologyGroupNumberField,
             technologyGroupNumberField, previousOrderTechnologyNumberField, technologyNumberField;
 
@@ -108,10 +110,10 @@ public class LineChangeoverNormsForOrderDetailsViewHooksTest {
     private Ribbon ribbon;
 
     @Mock
-    private RibbonGroup orders, lineChangeoverNorms;
+    private RibbonGroup actions, orders, lineChangeoverNorms;
 
     @Mock
-    private RibbonActionItem showPreviousOrder, showBestFittingLineChangeoverNorm, showLineChangeoverNormForGroup,
+    private RibbonActionItem saveOwnTime, showPreviousOrder, showBestFittingLineChangeoverNorm, showLineChangeoverNormForGroup,
             showLineChangeoverNormForTechnology;
 
     @Before
@@ -375,10 +377,15 @@ public class LineChangeoverNormsForOrderDetailsViewHooksTest {
 
         given(view.getComponentByReference(QcadooViewConstants.L_WINDOW)).willReturn(window);
 
+        given(view.getJsonContext()).willReturn(context);
+
         given(window.getRibbon()).willReturn(ribbon);
 
+        given(ribbon.getGroupByName("actions")).willReturn(actions);
         given(ribbon.getGroupByName("orders")).willReturn(orders);
         given(ribbon.getGroupByName("lineChangeoverNorms")).willReturn(lineChangeoverNorms);
+
+        given(actions.getItemByName("saveOwnTime")).willReturn(saveOwnTime);
 
         given(orders.getItemByName("showPreviousOrder")).willReturn(showPreviousOrder);
 
@@ -402,6 +409,7 @@ public class LineChangeoverNormsForOrderDetailsViewHooksTest {
         lineChangeoverNormsForOrderDetailsViewHooks.updateRibbonState(view);
 
         // then
+        verify(saveOwnTime).setEnabled(true);
         verify(showPreviousOrder).setEnabled(false);
         verify(showBestFittingLineChangeoverNorm).setEnabled(false);
         verify(showLineChangeoverNormForGroup).setEnabled(false);
@@ -426,10 +434,15 @@ public class LineChangeoverNormsForOrderDetailsViewHooksTest {
 
         given(view.getComponentByReference(QcadooViewConstants.L_WINDOW)).willReturn((ComponentState) window);
 
+        given(view.getJsonContext()).willReturn(context);
+
         given(window.getRibbon()).willReturn(ribbon);
 
+        given(ribbon.getGroupByName("actions")).willReturn(actions);
         given(ribbon.getGroupByName("orders")).willReturn(orders);
         given(ribbon.getGroupByName("lineChangeoverNorms")).willReturn(lineChangeoverNorms);
+
+        given(actions.getItemByName("saveOwnTime")).willReturn(saveOwnTime);
 
         given(orders.getItemByName("showPreviousOrder")).willReturn(showPreviousOrder);
 
@@ -469,6 +482,7 @@ public class LineChangeoverNormsForOrderDetailsViewHooksTest {
         lineChangeoverNormsForOrderDetailsViewHooks.updateRibbonState(view);
 
         // then
+        verify(saveOwnTime).setEnabled(true);
         verify(showPreviousOrder).setEnabled(false);
         verify(showBestFittingLineChangeoverNorm).setEnabled(false);
         verify(showLineChangeoverNormForGroup).setEnabled(false);
@@ -493,10 +507,15 @@ public class LineChangeoverNormsForOrderDetailsViewHooksTest {
 
         given(view.getComponentByReference(QcadooViewConstants.L_WINDOW)).willReturn(window);
 
+        given(view.getJsonContext()).willReturn(context);
+
         given(window.getRibbon()).willReturn(ribbon);
 
+        given(ribbon.getGroupByName("actions")).willReturn(actions);
         given(ribbon.getGroupByName("orders")).willReturn(orders);
         given(ribbon.getGroupByName("lineChangeoverNorms")).willReturn(lineChangeoverNorms);
+
+        given(actions.getItemByName("saveOwnTime")).willReturn(saveOwnTime);
 
         given(orders.getItemByName("showPreviousOrder")).willReturn(showPreviousOrder);
 
@@ -537,6 +556,7 @@ public class LineChangeoverNormsForOrderDetailsViewHooksTest {
         lineChangeoverNormsForOrderDetailsViewHooks.updateRibbonState(view);
 
         // then
+        verify(saveOwnTime).setEnabled(true);
         verify(showPreviousOrder).setEnabled(true);
         verify(showBestFittingLineChangeoverNorm).setEnabled(true);
         verify(showLineChangeoverNormForGroup).setEnabled(true);
@@ -546,6 +566,7 @@ public class LineChangeoverNormsForOrderDetailsViewHooksTest {
     @Test
     public void shouldShowOwnLineChangeoverDurationField() {
         // given
+        given(view.getJsonContext()).willReturn(context);
 
         // when
         lineChangeoverNormsForOrderDetailsViewHooks.showOwnLineChangeoverDurationField(view);
