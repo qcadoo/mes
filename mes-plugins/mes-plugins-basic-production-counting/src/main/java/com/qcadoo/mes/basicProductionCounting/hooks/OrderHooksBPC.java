@@ -82,6 +82,7 @@ public class OrderHooksBPC {
             order.setField(OrderFieldsBPC.BASIC_PRODUCTION_COUNTINGS, Lists.newArrayList());
             order.setField(OrderFieldsBPC.PRODUCTION_COUNTING_OPERATION_RUNS, Lists.newArrayList());
             order.setField(OrderFieldsBPC.PRODUCTION_COUNTING_QUANTITIES, Lists.newArrayList());
+            order.setField(OrderFieldsBPC.PRODUCTION_COUNTING_QUANTITY_CHANGES, Lists.newArrayList());
         }
     }
 

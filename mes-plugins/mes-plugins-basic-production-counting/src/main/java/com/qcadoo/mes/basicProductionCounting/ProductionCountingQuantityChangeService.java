@@ -47,11 +47,11 @@ public class ProductionCountingQuantityChangeService {
         Entity entry = getDD().create();
         entry.setField(ProductionCountingQuantityChangeFields.ORDER, pcq.getBelongsToField(ProductionCountingQuantityFields.ORDER));
         entry.setField(ProductionCountingQuantityChangeFields.PRODUCT, pcq.getBelongsToField(ProductionCountingQuantityFields.PRODUCT));
-        entry.setField(ProductionCountingQuantityChangeFields.PLANNED_QUANTITY_AFTER, pcq.getDecimalField(ProductionCountingQuantityFields.PLANNED_QUANTITY));
         entry.setField(ProductionCountingQuantityChangeFields.WORKER, securityService.getCurrentUserName());
         entry.setField(ProductionCountingQuantityChangeFields.CHANGE_TYPE, changeType.getStringValue());
         entry.setField(ProductionCountingQuantityChangeFields.DATE_AND_TIME, DateTime.now().toDate());
         if(Objects.nonNull(beforeQuantity)) {
+            entry.setField(ProductionCountingQuantityChangeFields.PLANNED_QUANTITY_AFTER, pcq.getDecimalField(ProductionCountingQuantityFields.PLANNED_QUANTITY));
             entry.setField(ProductionCountingQuantityChangeFields.PLANNED_QUANTITY_BEFORE, beforeQuantity);
         }
         getDD().save(entry);
