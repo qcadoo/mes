@@ -41,6 +41,7 @@ import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.LookupComponent;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Service;
@@ -141,7 +142,7 @@ public class LineChangeoverNormsForOrdersServiceImpl implements LineChangeoverNo
     }
 
     private void setUpTechnologyFields(final Entity order, final FieldComponent technologyNumberField,
-            final FieldComponent technologyGroupNumberField) {
+                                       final FieldComponent technologyGroupNumberField) {
         Entity technologyPrototype = order.getBelongsToField(OrderFields.TECHNOLOGY_PROTOTYPE);
 
         String technologyNumber = extractTechnologyNumberFrom(technologyPrototype);
@@ -227,7 +228,8 @@ public class LineChangeoverNormsForOrdersServiceImpl implements LineChangeoverNo
 
     @Override
     public Entity getChangeover(final Entity previousOrder, final Entity toTechnology, final Entity productionLine) {
-        if (Objects.isNull(previousOrder) || Objects.isNull(previousOrder.getBelongsToField(OrderFields.TECHNOLOGY))) {
+        if (Objects.isNull(previousOrder) || Objects.isNull(previousOrder.getBelongsToField(OrderFields.TECHNOLOGY))
+                || Objects.isNull(toTechnology)) {
             return null;
         }
 
