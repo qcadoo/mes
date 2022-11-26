@@ -177,6 +177,7 @@ public class BasicProductionCountingServiceImpl implements BasicProductionCounti
             bpc.setField(BasicProductionCountingFields.PRODUCT, product);
 
             for (Entity pcq : pCountingQuantities) {
+                pcq.setField(ProductionCountingQuantityFields.IS_ORDER_CREATE, true);
                 pcq.setField(ProductionCountingQuantityFields.PRODUCT, product);
             }
             bpc.setField(BasicProductionCountingFields.PRODUCTION_COUNTING_QUANTITIES, pCountingQuantities);

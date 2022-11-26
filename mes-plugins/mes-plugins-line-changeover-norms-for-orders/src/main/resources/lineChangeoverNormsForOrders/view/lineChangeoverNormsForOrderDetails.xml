@@ -259,15 +259,6 @@
     <hooks>
         <beforeRender
                 class="com.qcadoo.mes.lineChangeoverNormsForOrders.hooks.LineChangeoverNormsForOrderDetailsViewHooks"
-                method="updateRibbonState"/>
-        <beforeRender
-                class="com.qcadoo.mes.lineChangeoverNormsForOrders.hooks.LineChangeoverNormsForOrderDetailsViewHooks"
-                method="fillOrderForms"/>
-        <beforeRender
-                class="com.qcadoo.mes.lineChangeoverNormsForOrders.hooks.LineChangeoverNormsForOrderDetailsViewHooks"
-                method="fillLineChangeoverNorm"/>
-        <beforeRender
-                class="com.qcadoo.mes.lineChangeoverNormsForOrders.hooks.LineChangeoverNormsForOrderDetailsViewHooks"
-                method="showOwnLineChangeoverDurationField"/>
+                method="onBeforeRender"/>
     </hooks>
 </view>

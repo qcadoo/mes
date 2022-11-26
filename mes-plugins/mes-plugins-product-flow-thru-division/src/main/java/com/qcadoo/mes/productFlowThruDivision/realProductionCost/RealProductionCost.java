@@ -2,6 +2,8 @@ package com.qcadoo.mes.productFlowThruDivision.realProductionCost;
 
 import java.math.BigDecimal;
 
+import com.qcadoo.mes.costCalculation.constants.OrderAdditionalDirectCostFields;
+import com.qcadoo.mes.costCalculation.constants.OrderFieldsCC;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.productionCounting.constants.ParameterFieldsPC;
 import com.qcadoo.model.api.BigDecimalUtils;
@@ -73,7 +75,7 @@ public class RealProductionCost {
         @Override
         public BigDecimal calculate() {
             BigDecimal doneQty = realProductionCost.order.getDecimalField(OrderFields.DONE_QUANTITY);
-            if (doneQty.compareTo(BigDecimal.ZERO) == 0) {
+            if (BigDecimal.ZERO.compareTo(BigDecimalUtils.convertNullToZero(doneQty)) == 0) {
                 realProductionCost.value = BigDecimal.ZERO;
             } else {
                 realProductionCost.value = realProductionCost.value.divide(doneQty,
@@ -117,8 +119,10 @@ public class RealProductionCost {
 
         @Override
         public ICalculate appendAdditionalDirectCosts() {
-            realProductionCost.value = realProductionCost.value.add(BigDecimalUtils.convertNullToZero(realProductionCost.order
-                    .getDecimalField("directAdditionalCost")));
+            realProductionCost.value = realProductionCost.value.add(realProductionCost.order
+                    .getHasManyField(OrderFieldsCC.ORDER_ADDITIONAL_DIRECT_COSTS).stream()
+                    .filter(e -> e.getDecimalField(OrderAdditionalDirectCostFields.ACTUAL_COST) != null)
+                    .map(e -> e.getDecimalField(OrderAdditionalDirectCostFields.ACTUAL_COST)).reduce(BigDecimal.ZERO, BigDecimal::add));
 
             return this;
         }

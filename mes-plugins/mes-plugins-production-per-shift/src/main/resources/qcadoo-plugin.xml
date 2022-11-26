@@ -50,7 +50,6 @@
         <license>AGPL</license>
     </information>
 
-
     <dependencies>
         <dependency>
             <plugin>lineChangeoverNormsForOrders</plugin>
@@ -91,8 +90,10 @@
         <view:view resource="view/generateBalance.xml"/>
 
         <view:view-tab resource="view/tabExtensions/ordersParameters.xml"/>
+        <view:view-tab resource="view/tabExtensions/productionTrackingDetails.xml"/>
 
         <view:view-ribbon-group resource="view/ribbonExtensions/orderDetails.xml"/>
+        <view:view-ribbon-group resource="view/ribbonExtensions/productionTrackingDetails.xml"/>
 
         <model:model-field model="technologyOperationComponent"
                            plugin="technologies">
@@ -130,9 +131,14 @@
         <model:model-field model="parameter" plugin="basic">
             <model:boolean name="ppsProducedAmountRecalculatePlan"/>
         </model:model-field>
-        <view:view-hook plugin="orders" view="ordersParameters"
-                        type="beforeRender" class="com.qcadoo.mes.productionPerShift.hooks.OrderParametersHooksPPS"
-                        method="onBeforeRender"/>
+
+        <model:model-field plugin="productionCounting"
+                           model="productionTracking">
+            <model:integer name="changeoverTime" copyable="false">
+                <model:validatesRange from="0"/>
+            </model:integer>
+        </model:model-field>
+
         <model:model-hook plugin="orders" model="order">
             <model:onUpdate
                     class="com.qcadoo.mes.productionPerShift.hooks.OrderHooksPPS"
@@ -145,14 +151,27 @@
                     method="validatesWith"/>
         </model:model-hook>
 
+        <view:view-hook plugin="orders" view="ordersParameters"
+                        type="beforeRender" class="com.qcadoo.mes.productionPerShift.hooks.OrderParametersHooksPPS"
+                        method="onBeforeRender"/>
+
+        <view:view-hook plugin="orders" view="orderDetails"
+                        type="beforeRender" class="com.qcadoo.mes.productionPerShift.hooks.OrderDetailsHooksPPS"
+                        method="onBeforeRender"/>
+
+        <view:view-hook plugin="productionCounting" view="productionTrackingDetails"
+                        type="beforeRender" class="com.qcadoo.mes.productionPerShift.hooks.ProductionTrackingDetailsHooksPPS"
+                        method="onBeforeRender"/>
+
         <view:view-listener plugin="orders" view="orderDetails"
                             component="form" event="redirectToProductionPerShift"
                             class="com.qcadoo.mes.productionPerShift.listeners.OrderDetailsListenersPPS"
                             method="redirectToProductionPerShift"/>
 
-        <view:view-hook plugin="orders" view="orderDetails"
-                        type="beforeRender" class="com.qcadoo.mes.productionPerShift.hooks.OrderDetailsHooksPPS"
-                        method="onBeforeRender"/>
+        <view:view-listener plugin="productionCounting" view="productionTrackingDetails"
+                            component="form" event="showChangeover"
+                            class="com.qcadoo.mes.productionPerShift.listeners.ProductionTrackingDetailsListenersPPS"
+                            method="showChangeover"/>
     </modules>
 
     <features>

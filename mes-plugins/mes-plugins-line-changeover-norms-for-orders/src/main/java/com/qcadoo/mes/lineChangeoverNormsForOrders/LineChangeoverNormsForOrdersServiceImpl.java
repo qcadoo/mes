@@ -23,16 +23,7 @@
  */
 package com.qcadoo.mes.lineChangeoverNormsForOrders;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
-import java.util.Objects;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.stereotype.Service;
-
+import com.google.common.collect.Lists;
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.localization.api.utils.DateUtils;
 import com.qcadoo.mes.lineChangeoverNorms.ChangeoverNormsService;
@@ -51,6 +42,16 @@ import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.LookupComponent;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.stereotype.Service;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
+import java.util.Objects;
+
 @Service
 public class LineChangeoverNormsForOrdersServiceImpl implements LineChangeoverNormsForOrdersService {
 
@@ -60,9 +61,9 @@ public class LineChangeoverNormsForOrdersServiceImpl implements LineChangeoverNo
 
     private static final String L_LINE_CHANGEOVER_NORMS_FOR_ORDERS_DATE_IS_EFFECTIVE = "lineChangeoverNormsForOrders.dateIs.effective";
 
-    public static final String L_PREVIOUS_ORDER_DATE_TO = "previousOrderDateTo";
+    private static final String L_PREVIOUS_ORDER_DATE_TO = "previousOrderDateTo";
 
-    public static final String L_DATE_FROM = "dateFrom";
+    private static final String L_DATE_FROM = "dateFrom";
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
@@ -77,7 +78,8 @@ public class LineChangeoverNormsForOrdersServiceImpl implements LineChangeoverNo
     public void fillOrderForm(final ViewDefinitionState view, final List<String> orderFields) {
         LookupComponent orderLookup = (LookupComponent) view.getComponentByReference(orderFields.get(0));
         Entity order = orderLookup.getEntity();
-        if (order == null) {
+
+        if (Objects.isNull(order)) {
             return;
         }
 
@@ -99,13 +101,13 @@ public class LineChangeoverNormsForOrdersServiceImpl implements LineChangeoverNo
             Date correctedDateTo = order.getDateField(OrderFields.CORRECTED_DATE_TO);
             Date dateTo = order.getDateField(OrderFields.DATE_TO);
 
-            if (effectiveDateTo != null) {
+            if (Objects.nonNull(effectiveDateTo)) {
                 dateToFrom = effectiveDateTo;
                 dateIs = L_LINE_CHANGEOVER_NORMS_FOR_ORDERS_DATE_IS_EFFECTIVE;
-            } else if (correctedDateTo != null) {
+            } else if (Objects.nonNull(correctedDateTo)) {
                 dateToFrom = correctedDateTo;
                 dateIs = L_LINE_CHANGEOVER_NORMS_FOR_ORDERS_DATE_IS_CORRECTED;
-            } else if (dateTo != null) {
+            } else if (Objects.nonNull(dateTo)) {
                 dateToFrom = dateTo;
                 dateIs = L_LINE_CHANGEOVER_NORMS_FOR_ORDERS_DATE_IS_PLANNED;
             }
@@ -114,19 +116,19 @@ public class LineChangeoverNormsForOrdersServiceImpl implements LineChangeoverNo
             Date correctedDateFrom = order.getDateField(OrderFields.CORRECTED_DATE_FROM);
             Date dateFrom = order.getDateField(OrderFields.DATE_FROM);
 
-            if (effectiveDateFrom != null) {
+            if (Objects.nonNull(effectiveDateFrom)) {
                 dateToFrom = effectiveDateFrom;
                 dateIs = L_LINE_CHANGEOVER_NORMS_FOR_ORDERS_DATE_IS_EFFECTIVE;
-            } else if (correctedDateFrom != null) {
+            } else if (Objects.nonNull(correctedDateFrom)) {
                 dateToFrom = correctedDateFrom;
                 dateIs = L_LINE_CHANGEOVER_NORMS_FOR_ORDERS_DATE_IS_CORRECTED;
-            } else if (dateFrom != null) {
+            } else if (Objects.nonNull(dateFrom)) {
                 dateToFrom = dateFrom;
                 dateIs = L_LINE_CHANGEOVER_NORMS_FOR_ORDERS_DATE_IS_PLANNED;
             }
         }
 
-        if (dateToFrom == null) {
+        if (Objects.isNull(dateToFrom)) {
             dateToFromField.setFieldValue(null);
             dateIsField.setFieldValue(null);
         } else {
@@ -140,7 +142,7 @@ public class LineChangeoverNormsForOrdersServiceImpl implements LineChangeoverNo
     }
 
     private void setUpTechnologyFields(final Entity order, final FieldComponent technologyNumberField,
-            final FieldComponent technologyGroupNumberField) {
+                                       final FieldComponent technologyGroupNumberField) {
         Entity technologyPrototype = order.getBelongsToField(OrderFields.TECHNOLOGY_PROTOTYPE);
 
         String technologyNumber = extractTechnologyNumberFrom(technologyPrototype);
@@ -153,13 +155,13 @@ public class LineChangeoverNormsForOrdersServiceImpl implements LineChangeoverNo
     }
 
     private String extractTechnologyGroupNumberFrom(final Entity technology) {
-        if (technology == null) {
+        if (Objects.isNull(technology)) {
             return null;
         }
 
         Entity technologyGroup = technology.getBelongsToField(TechnologyFields.TECHNOLOGY_GROUP);
 
-        if (technologyGroup == null) {
+        if (Objects.isNull(technologyGroup)) {
             return null;
         }
 
@@ -167,7 +169,7 @@ public class LineChangeoverNormsForOrdersServiceImpl implements LineChangeoverNo
     }
 
     private String extractTechnologyNumberFrom(final Entity technology) {
-        if (technology == null) {
+        if (Objects.isNull(technology)) {
             return null;
         }
 
@@ -176,7 +178,7 @@ public class LineChangeoverNormsForOrdersServiceImpl implements LineChangeoverNo
 
     @Override
     public boolean previousOrderEndsBeforeOrIsWithdrawed(final Entity previousOrder, final Entity order) {
-        boolean bothOrdersAreNotNull = ((previousOrder != null) && (order != null));
+        boolean bothOrdersAreNotNull = (Objects.nonNull(previousOrder) && Objects.nonNull(order));
 
         return !bothOrdersAreNotNull || (!isDeclinedOrAbandoned(previousOrder) && !areDatesCorrect(previousOrder, order));
     }
@@ -187,7 +189,7 @@ public class LineChangeoverNormsForOrdersServiceImpl implements LineChangeoverNo
     }
 
     private boolean areDatesCorrect(final Entity previousOrder, final Entity order) {
-        if ((previousOrder.getField(OrderFields.FINISH_DATE) == null) || (order.getField(OrderFields.START_DATE) == null)) {
+        if (Objects.isNull(previousOrder.getField(OrderFields.FINISH_DATE)) || Objects.isNull(order.getField(OrderFields.START_DATE))) {
             return true;
         }
 
@@ -219,20 +221,21 @@ public class LineChangeoverNormsForOrdersServiceImpl implements LineChangeoverNo
                 .find()
                 .add(SearchRestrictions.belongsTo(OrderFields.PRODUCTION_LINE,
                         order.getBelongsToField(OrderFields.PRODUCTION_LINE)))
-                .add(SearchRestrictions.or(SearchRestrictions.ne(OrderFields.STATE, OrderState.DECLINED.getStringValue()),
-                        SearchRestrictions.ne(OrderFields.STATE, OrderState.ABANDONED.getStringValue())))
+                .add(SearchRestrictions.not(SearchRestrictions.in(OrderFields.STATE, Lists.newArrayList(OrderState.DECLINED.getStringValue(), OrderState.ABANDONED.getStringValue()))))
                 .add(SearchRestrictions.lt(OrderFields.FINISH_DATE, order.getDateField(OrderFields.START_DATE)))
                 .addOrder(SearchOrders.desc(OrderFields.FINISH_DATE)).setMaxResults(1).uniqueResult();
     }
 
     @Override
-    public Entity getChangeover(Entity previousOrder, final Entity toTechnology, final Entity productionLine) {
-        if (Objects.isNull(previousOrder)) {
+    public Entity getChangeover(final Entity previousOrder, final Entity toTechnology, final Entity productionLine) {
+        if (Objects.isNull(previousOrder) || Objects.isNull(previousOrder.getBelongsToField(OrderFields.TECHNOLOGY))
+                || Objects.isNull(toTechnology)) {
             return null;
         }
 
-        Entity fromTechnology = previousOrder.getBelongsToField(OrderFields.TECHNOLOGY_PROTOTYPE);
+        Entity fromTechnology = previousOrder.getBelongsToField(OrderFields.TECHNOLOGY);
 
         return changeoverNormsService.getMatchingChangeoverNorms(fromTechnology, toTechnology, productionLine);
     }
+
 }

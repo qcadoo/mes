@@ -27,10 +27,6 @@ public final class OrderFieldsCNFM {
 
     public static final String TECHNOLOGY_INST_OPER_PRODUCT_IN_COMPS = "technologyInstOperProductInComps";
 
-    public static final String DIRECT_ADDITIONAL_COST = "directAdditionalCost";
-
-    public static final String DIRECT_ADDITIONAL_COST_DESCRIPTION = "directAdditionalCostDescription";
-
     private OrderFieldsCNFM() {
     }
 

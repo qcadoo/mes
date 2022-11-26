@@ -39,4 +39,10 @@ public final class CostCalculationConstants {
 
     public static final String MODEL_STANDARD_LABOR_COST = "standardLaborCost";
 
+    public static final String MODEL_ADDITIONAL_DIRECT_COST = "additionalDirectCost";
+
+    public static final String MODEL_ADDITIONAL_DIRECT_COST_ITEM = "additionalDirectCostItem";
+
+    public static final String MODEL_ORDER_ADDITIONAL_DIRECT_COST = "orderAdditionalDirectCost";
+
 }

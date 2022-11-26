@@ -55,6 +55,12 @@ public class TechnologyCriteriaModifiers {
                 Lists.newArrayList(TechnologyStateStringValues.ACCEPTED, TechnologyStateStringValues.CHECKED)));
     }
 
+    public void showDraftAcceptedAndCheckedPatternTechnology(final SearchCriteriaBuilder scb) {
+        scb.add(SearchRestrictions.isNull(TechnologyFields.TECHNOLOGY_TYPE));
+        scb.add(SearchRestrictions.in(TechnologyFields.STATE,
+                Lists.newArrayList(TechnologyStateStringValues.DRAFT, TechnologyStateStringValues.ACCEPTED, TechnologyStateStringValues.CHECKED)));
+    }
+
     public void showPatternTechnologyWithoutGroup(final SearchCriteriaBuilder scb) {
         scb.add(SearchRestrictions.isNull(TechnologyFields.TECHNOLOGY_TYPE))
                 .add(SearchRestrictions.isNull(TechnologyFields.TECHNOLOGY_GROUP));

@@ -23,18 +23,9 @@
  */
 package com.qcadoo.mes.orders.imports.order;
 
-import java.math.BigDecimal;
-import java.util.Date;
-import java.util.Objects;
-import java.util.Set;
-
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.stereotype.Service;
-
 import com.google.common.collect.Sets;
 import com.qcadoo.mes.basic.ParameterService;
+import com.qcadoo.mes.basic.constants.ProductFamilyElementType;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.basic.imports.services.XlsxImportService;
 import com.qcadoo.mes.orders.OrderService;
@@ -43,13 +34,20 @@ import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.mes.orders.constants.ParameterFieldsO;
 import com.qcadoo.mes.orders.util.AdditionalUnitService;
-import com.qcadoo.mes.productionLines.constants.ParameterFieldsPL;
-import com.qcadoo.mes.technologies.TechnologyService;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
 import com.qcadoo.mes.technologies.states.constants.TechnologyStateStringValues;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
+import java.util.Date;
+import java.util.Objects;
+import java.util.Set;
 
 @Service
 public class OrderXlsxImportService extends XlsxImportService {
@@ -153,17 +151,25 @@ public class OrderXlsxImportService extends XlsxImportService {
 
                 order.setField(OrderFields.TECHNOLOGY, technology);
             } else {
-                String technologyState = technology.getStringField(TechnologyFields.STATE);
-                Entity technologyProduct = technology.getBelongsToField(TechnologyFields.PRODUCT);
-
-                if (!TechnologyStateStringValues.ACCEPTED.equals(technologyState)
-                        || !technologyProduct.getId().equals(product.getId())) {
+                if (!validateTechnologyStateAndProduct(technology, product)) {
                     order.addError(orderDD.getField(OrderFields.TECHNOLOGY), L_QCADOO_VIEW_VALIDATE_FIELD_ERROR_CUSTOM);
                 }
             }
         }
 
         order.setField(OrderFields.TECHNOLOGY_PROTOTYPE, order.getBelongsToField(OrderFields.TECHNOLOGY));
+    }
+
+    private boolean validateTechnologyStateAndProduct(final Entity technology, final Entity product) {
+        String technologyState = technology.getStringField(TechnologyFields.STATE);
+        Entity technologyProduct = technology.getBelongsToField(TechnologyFields.PRODUCT);
+        String technologyProductEntityType = technologyProduct.getStringField(ProductFields.ENTITY_TYPE);
+
+        return TechnologyStateStringValues.ACCEPTED.equals(technologyState)
+                && (ProductFamilyElementType.PARTICULAR_PRODUCT.getStringValue().equals(technologyProductEntityType) &&
+                technologyProduct.getId().equals(product.getId()))
+                || (ProductFamilyElementType.PRODUCTS_FAMILY.getStringValue().equals(technologyProductEntityType) &&
+                technologyProduct.getHasManyField(ProductFields.CHILDREN).stream().anyMatch(child -> child.getId().equals(product.getId())));
     }
 
     private void validateName(final Entity order, final DataDefinition orderDD) {

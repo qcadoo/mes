@@ -9258,8 +9258,6 @@ CREATE TABLE orders_order (
     updatefinishdate boolean DEFAULT false,
     ordersgroup_id bigint,
     plannedquantityforadditionalunit numeric,
-    directadditionalcost numeric,
-    directadditionalcostdescription character varying,
     division_id bigint,
     salesplan_id bigint,
     reportedproductionquantity numeric(12,5),
@@ -11558,6 +11556,41 @@ ALTER SEQUENCE basicproductioncounting_productioncountingquantity_id_seq OWNED B
 
 
 --
+-- Name: basicproductioncounting_productioncountingquantitychange; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE basicproductioncounting_productioncountingquantitychange (
+    id bigint NOT NULL,
+    order_id bigint,
+    product_id bigint,
+    plannedquantitybefore numeric(14,5),
+    plannedquantityafter numeric(14,5),
+    dateandtime timestamp without time zone,
+    worker character varying(255),
+    changetype character varying(255)
+);
+
+
+--
+-- Name: basicproductioncounting_productioncountingquantitychange_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE basicproductioncounting_productioncountingquantitychange_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: basicproductioncounting_productioncountingquantitychange_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE basicproductioncounting_productioncountingquantitychange_id_seq OWNED BY basicproductioncounting_productioncountingquantitychange.id;
+
+
+--
 -- Name: technologies_technologyinputproducttype; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -13077,6 +13110,69 @@ ALTER SEQUENCE cmmsscheduler_recurringeventstatechange_id_seq OWNED BY cmmssched
 
 
 --
+-- Name: costcalculation_additionaldirectcost; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE costcalculation_additionaldirectcost (
+    id bigint NOT NULL,
+    number character varying(255),
+    name character varying(1024),
+    active boolean DEFAULT true
+);
+
+
+--
+-- Name: costcalculation_additionaldirectcost_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE costcalculation_additionaldirectcost_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: costcalculation_additionaldirectcost_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE costcalculation_additionaldirectcost_id_seq OWNED BY costcalculation_additionaldirectcost.id;
+
+
+--
+-- Name: costcalculation_additionaldirectcostitem; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE costcalculation_additionaldirectcostitem (
+    id bigint NOT NULL,
+    additionaldirectcost_id bigint,
+    actualcost numeric(9,2),
+    datefrom date,
+    dateto date
+);
+
+
+--
+-- Name: costcalculation_additionaldirectcostitem_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE costcalculation_additionaldirectcostitem_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: costcalculation_additionaldirectcostitem_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE costcalculation_additionaldirectcostitem_id_seq OWNED BY costcalculation_additionaldirectcostitem.id;
+
+
+--
 -- Name: costcalculation_calculationresult; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -13202,6 +13298,37 @@ CREATE SEQUENCE costcalculation_costcalculation_id_seq
 --
 
 ALTER SEQUENCE costcalculation_costcalculation_id_seq OWNED BY costcalculation_costcalculation.id;
+
+
+--
+-- Name: costcalculation_orderadditionaldirectcost; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE costcalculation_orderadditionaldirectcost (
+    id bigint NOT NULL,
+    additionaldirectcost_id bigint,
+    order_id bigint,
+    actualcost numeric(9,2)
+);
+
+
+--
+-- Name: costcalculation_orderadditionaldirectcost_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE costcalculation_orderadditionaldirectcost_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: costcalculation_orderadditionaldirectcost_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE costcalculation_orderadditionaldirectcost_id_seq OWNED BY costcalculation_orderadditionaldirectcost.id;
 
 
 --
@@ -16917,6 +17044,16 @@ CREATE TABLE jointable_action_workstationtype (
 
 
 --
+-- Name: jointable_additionaldirectcost_technology; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE jointable_additionaldirectcost_technology (
+    additionaldirectcost_id bigint NOT NULL,
+    technology_id bigint NOT NULL
+);
+
+
+--
 -- Name: jointable_anomaly_anomalyreason; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -17527,9 +17664,10 @@ CREATE VIEW linechangeovernormsfororders_linechangeoverfororderdtohelper AS
      LEFT JOIN productionlines_productionline productionline ON ((productionline.id = ordersorder.productionline_id)))
      JOIN linechangeovernorms_linechangeovernormsdto linechangeovernormsdto ON (((linechangeovernormsdto.technologyto_id = ordersorder.technology_id) AND (linechangeovernormsdto.technologyfrom_id = ( SELECT previousorder.technology_id
            FROM orders_order previousorder
-          WHERE ((previousorder.active = true) AND (previousorder.productionline_id = ordersorder.productionline_id) AND (previousorder.finishdate < ordersorder.finishdate) AND ((previousorder.state)::text <> ALL (ARRAY[('05declined'::character varying)::text, ('07abandoned'::character varying)::text])))
+          WHERE ((previousorder.productionline_id = ordersorder.productionline_id) AND (previousorder.finishdate < ordersorder.startdate) AND ((previousorder.state)::text <> ALL (ARRAY[('05declined'::character varying)::text, ('07abandoned'::character varying)::text])))
           ORDER BY previousorder.finishdate DESC
          LIMIT 1)) AND (((linechangeovernormsdto.productionline_id IS NOT NULL) AND (linechangeovernormsdto.productionline_id = ordersorder.productionline_id)) OR (linechangeovernormsdto.productionline_id IS NULL)))))
+  WHERE ((ordersorder.state)::text <> ALL (ARRAY[('05declined'::character varying)::text, ('07abandoned'::character varying)::text]))
   ORDER BY linechangeovernormsdto.changeovertype, linechangeovernormsdto.productionline_id;
 
 
@@ -17559,7 +17697,8 @@ CREATE VIEW linechangeovernormsfororders_linechangeoverfororderdto AS
             linechangeovernormsfororders_linechangeoverfororderdtohelper.linechangeoverduration
            FROM linechangeovernormsfororders_linechangeoverfororderdtohelper
           WHERE (linechangeovernormsfororders_linechangeoverfororderdtohelper.id = ordersorder.id)
-         LIMIT 1) linechangeoverfororderdto ON ((1 = 1)));
+         LIMIT 1) linechangeoverfororderdto ON ((1 = 1)))
+  WHERE ((ordersorder.state)::text <> ALL (ARRAY[('05declined'::character varying)::text, ('07abandoned'::character varying)::text]));
 
 
 --
@@ -32031,6 +32170,13 @@ ALTER TABLE ONLY basicproductioncounting_productioncountingquantity ALTER COLUMN
 -- Name: id; Type: DEFAULT; Schema: public; Owner: -
 --
 
+ALTER TABLE ONLY basicproductioncounting_productioncountingquantitychange ALTER COLUMN id SET DEFAULT nextval('basicproductioncounting_productioncountingquantitychange_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
+--
+
 ALTER TABLE ONLY basicproductioncounting_productioncountingreplacementhelper ALTER COLUMN id SET DEFAULT nextval('basicproductioncounting_productioncountingreplacementhelper_id_'::regclass);
 
 
@@ -32255,6 +32401,20 @@ ALTER TABLE ONLY cmmsscheduler_recurringeventstatechange ALTER COLUMN id SET DEF
 -- Name: id; Type: DEFAULT; Schema: public; Owner: -
 --
 
+ALTER TABLE ONLY costcalculation_additionaldirectcost ALTER COLUMN id SET DEFAULT nextval('costcalculation_additionaldirectcost_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY costcalculation_additionaldirectcostitem ALTER COLUMN id SET DEFAULT nextval('costcalculation_additionaldirectcostitem_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
+--
+
 ALTER TABLE ONLY costcalculation_calculationresult ALTER COLUMN id SET DEFAULT nextval('costcalculation_calculationresult_id_seq'::regclass);
 
 
@@ -32270,6 +32430,13 @@ ALTER TABLE ONLY costcalculation_componentcost ALTER COLUMN id SET DEFAULT nextv
 --
 
 ALTER TABLE ONLY costcalculation_costcalculation ALTER COLUMN id SET DEFAULT nextval('costcalculation_costcalculation_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY costcalculation_orderadditionaldirectcost ALTER COLUMN id SET DEFAULT nextval('costcalculation_orderadditionaldirectcost_id_seq'::regclass);
 
 
 --
@@ -37790,6 +37957,21 @@ SELECT pg_catalog.setval('basicproductioncounting_productioncountingquantity_id_
 
 
 --
+-- Data for Name: basicproductioncounting_productioncountingquantitychange; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY basicproductioncounting_productioncountingquantitychange (id, order_id, product_id, plannedquantitybefore, plannedquantityafter, dateandtime, worker, changetype) FROM stdin;
+\.
+
+
+--
+-- Name: basicproductioncounting_productioncountingquantitychange_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('basicproductioncounting_productioncountingquantitychange_id_seq', 1, false);
+
+
+--
 -- Name: basicproductioncounting_productioncountingquantitydto_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
@@ -38335,6 +38517,36 @@ SELECT pg_catalog.setval('cmmsscheduler_recurringeventstatechange_id_seq', 1, fa
 
 
 --
+-- Data for Name: costcalculation_additionaldirectcost; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY costcalculation_additionaldirectcost (id, number, name, active) FROM stdin;
+\.
+
+
+--
+-- Name: costcalculation_additionaldirectcost_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('costcalculation_additionaldirectcost_id_seq', 1, false);
+
+
+--
+-- Data for Name: costcalculation_additionaldirectcostitem; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY costcalculation_additionaldirectcostitem (id, additionaldirectcost_id, actualcost, datefrom, dateto) FROM stdin;
+\.
+
+
+--
+-- Name: costcalculation_additionaldirectcostitem_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('costcalculation_additionaldirectcostitem_id_seq', 1, false);
+
+
+--
 -- Data for Name: costcalculation_calculationresult; Type: TABLE DATA; Schema: public; Owner: -
 --
 
@@ -38377,6 +38589,21 @@ COPY costcalculation_costcalculation (id, number, quantity, productioncostmargin
 --
 
 SELECT pg_catalog.setval('costcalculation_costcalculation_id_seq', 1, false);
+
+
+--
+-- Data for Name: costcalculation_orderadditionaldirectcost; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY costcalculation_orderadditionaldirectcost (id, additionaldirectcost_id, order_id, actualcost) FROM stdin;
+\.
+
+
+--
+-- Name: costcalculation_orderadditionaldirectcost_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('costcalculation_orderadditionaldirectcost_id_seq', 1, false);
 
 
 --
@@ -39677,6 +39904,14 @@ COPY jointable_action_workstation (action_id, workstation_id) FROM stdin;
 --
 
 COPY jointable_action_workstationtype (action_id, workstationtype_id) FROM stdin;
+\.
+
+
+--
+-- Data for Name: jointable_additionaldirectcost_technology; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY jointable_additionaldirectcost_technology (additionaldirectcost_id, technology_id) FROM stdin;
 \.
 
 
@@ -42531,7 +42766,7 @@ SELECT pg_catalog.setval('orders_operationaltaskwithcolordto_id_seq', 1, false);
 -- Data for Name: orders_order; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY orders_order (id, number, name, description, commentreasontypecorrectiondatefrom, commentreasontypecorrectiondateto, commentreasondeviationeffectivestart, commentreasondeviationeffectiveend, externalnumber, commentreasontypedeviationsquantity, datefrom, dateto, effectivedatefrom, effectivedateto, deadline, correcteddatefrom, correcteddateto, startdate, finishdate, state, company_id, product_id, technology_id, productionline_id, plannedquantity, donequantity, externalsynchronized, commissionedplannedquantity, commissionedcorrectedquantity, amountofproductproduced, remainingamountofproducttoproduce, ownlinechangeoverduration, registerproductiontime, registerquantityinproduct, laborworktime, includetpz, inputproductsrequiredfortype, registerpiecework, generatedenddate, machineworktime, ownlinechangeover, registerquantityoutproduct, operationdurationquantityunit, realizationtime, calculate, includeadditionaltime, typeofproductionrecording, masterorder_id, active, productpriceperunit, failuresyncmessage, targetstate, ignorerequiredcomponents, automaticallymoveoverusage, updatecomponentsavailability, technologyprototype_id, level, parent_id, ignoremissingcomponents, masterorderproduct_id, dateschanged, sourcecorrecteddatefrom, sourcecorrecteddateto, sourcestartdate, sourcefinishdate, batchnumber, root_id, includeordersforcomponent, plannedfinishallorders, plannedstartallorders, calculatedfinishallorders, issubcontracted, registerfilled, workplandelivered, calculatedstartallorders, scadacreatedorupdatestate, entityversion, workertochange, masterorderproductcomponent_id, wastesquantity, existsrepairorders, ordercategory, address_id, finalproductiontracking, updatefinishdate, ordersgroup_id, plannedquantityforadditionalunit, directadditionalcost, directadditionalcostdescription, division_id, salesplan_id, reportedproductionquantity, expirationdate) FROM stdin;
+COPY orders_order (id, number, name, description, commentreasontypecorrectiondatefrom, commentreasontypecorrectiondateto, commentreasondeviationeffectivestart, commentreasondeviationeffectiveend, externalnumber, commentreasontypedeviationsquantity, datefrom, dateto, effectivedatefrom, effectivedateto, deadline, correcteddatefrom, correcteddateto, startdate, finishdate, state, company_id, product_id, technology_id, productionline_id, plannedquantity, donequantity, externalsynchronized, commissionedplannedquantity, commissionedcorrectedquantity, amountofproductproduced, remainingamountofproducttoproduce, ownlinechangeoverduration, registerproductiontime, registerquantityinproduct, laborworktime, includetpz, inputproductsrequiredfortype, registerpiecework, generatedenddate, machineworktime, ownlinechangeover, registerquantityoutproduct, operationdurationquantityunit, realizationtime, calculate, includeadditionaltime, typeofproductionrecording, masterorder_id, active, productpriceperunit, failuresyncmessage, targetstate, ignorerequiredcomponents, automaticallymoveoverusage, updatecomponentsavailability, technologyprototype_id, level, parent_id, ignoremissingcomponents, masterorderproduct_id, dateschanged, sourcecorrecteddatefrom, sourcecorrecteddateto, sourcestartdate, sourcefinishdate, batchnumber, root_id, includeordersforcomponent, plannedfinishallorders, plannedstartallorders, calculatedfinishallorders, issubcontracted, registerfilled, workplandelivered, calculatedstartallorders, scadacreatedorupdatestate, entityversion, workertochange, masterorderproductcomponent_id, wastesquantity, existsrepairorders, ordercategory, address_id, finalproductiontracking, updatefinishdate, ordersgroup_id, plannedquantityforadditionalunit, division_id, salesplan_id, reportedproductionquantity, expirationdate) FROM stdin;
 \.
 
 
@@ -44997,6 +45232,7 @@ COPY qcadooview_item (id, pluginidentifier, name, active, category_id, view_id, 
 174	esilco	picksReportsList	t	22	173	1	ROLE_REQUIREMENTS	0
 175	esilco	workerStatsReportsList	t	22	174	2	ROLE_REQUIREMENTS	0
 182	basic	technologicalProcessRateList	t	18	181	24	ROLE_TECHNOLOGICAL_PROCESSES	0
+212	costCalculation	additionalDirectCostsList	t	10	211	5	ROLE_CALCULATIONS	0
 183	technologies	technologicalProcessesList	t	5	182	8	ROLE_TECHNOLOGICAL_PROCESSES	0
 184	technologies	technologicalProcessListsList	t	5	183	9	ROLE_TECHNOLOGICAL_PROCESSES	0
 186	technologies	technologyInputProductTypesList	t	5	185	10	ROLE_TECHNOLOGIES	0
@@ -45068,7 +45304,7 @@ COPY qcadooview_item (id, pluginidentifier, name, active, category_id, view_id, 
 -- Name: qcadooview_item_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('qcadooview_item_id_seq', 211, true);
+SELECT pg_catalog.setval('qcadooview_item_id_seq', 212, true);
 
 
 --
@@ -45271,6 +45507,7 @@ COPY qcadooview_view (id, pluginidentifier, name, view, url, entityversion) FROM
 208	masterOrders	orderedProductConfiguratorsList	orderedProductConfiguratorsList	\N	0
 209	lineChangeoverNormsForOrders	lineChangeoverNormsForOrdersList	lineChangeoverNormsForOrdersList	\N	0
 210	productionCounting	linesProducedQuantitiesChart	\N	/linesProducedQuantitiesChart.html	0
+211	costCalculation	additionalDirectCostsList	additionalDirectCostsList	\N	0
 \.
 
 
@@ -45278,7 +45515,7 @@ COPY qcadooview_view (id, pluginidentifier, name, view, url, entityversion) FROM
 -- Name: qcadooview_view_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('qcadooview_view_id_seq', 210, true);
+SELECT pg_catalog.setval('qcadooview_view_id_seq', 211, true);
 
 
 --
@@ -48337,6 +48574,14 @@ ALTER TABLE ONLY basicproductioncounting_productioncountingquantity
 
 
 --
+-- Name: basicproductioncounting_productioncountingquantitychange_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY basicproductioncounting_productioncountingquantitychange
+    ADD CONSTRAINT basicproductioncounting_productioncountingquantitychange_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: basicproductioncounting_productioncountingreplacementhelpe_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -48614,6 +48859,22 @@ ALTER TABLE ONLY cmmsscheduler_recurringeventstatechange
 
 ALTER TABLE ONLY goodfood_confectionprotocol
     ADD CONSTRAINT confectionprotocol_externalnumber_unique UNIQUE (externalnumber);
+
+
+--
+-- Name: costcalculation_additionaldirectcost_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY costcalculation_additionaldirectcost
+    ADD CONSTRAINT costcalculation_additionaldirectcost_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: costcalculation_additionaldirectcostitem_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY costcalculation_additionaldirectcostitem
+    ADD CONSTRAINT costcalculation_additionaldirectcostitem_pkey PRIMARY KEY (id);
 
 
 --
@@ -49233,6 +49494,14 @@ ALTER TABLE ONLY integrationscales_scale
 
 
 --
+-- Name: jcostcalculation_orderadditionaldirectcost_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY costcalculation_orderadditionaldirectcost
+    ADD CONSTRAINT jcostcalculation_orderadditionaldirectcost_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: jointable_action_subassembly_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -49254,6 +49523,14 @@ ALTER TABLE ONLY jointable_action_workstation
 
 ALTER TABLE ONLY jointable_action_workstationtype
     ADD CONSTRAINT jointable_action_workstationtype_pkey PRIMARY KEY (workstationtype_id, action_id);
+
+
+--
+-- Name: jointable_additionaldirectcost_technology_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY jointable_additionaldirectcost_technology
+    ADD CONSTRAINT jointable_additionaldirectcost_technology_pkey PRIMARY KEY (additionaldirectcost_id, technology_id);
 
 
 --
@@ -54311,6 +54588,30 @@ ALTER TABLE ONLY cmmsscheduler_actionforrecurringevent
 
 ALTER TABLE ONLY basic_additionalcode
     ADD CONSTRAINT additionalcode_product_fkey FOREIGN KEY (product_id) REFERENCES basic_product(id) DEFERRABLE;
+
+
+--
+-- Name: additionaldirectcost_technology_additionaldirectcost_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY jointable_additionaldirectcost_technology
+    ADD CONSTRAINT additionaldirectcost_technology_additionaldirectcost_fkey FOREIGN KEY (additionaldirectcost_id) REFERENCES costcalculation_additionaldirectcost(id) DEFERRABLE;
+
+
+--
+-- Name: additionaldirectcost_technology_technology_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY jointable_additionaldirectcost_technology
+    ADD CONSTRAINT additionaldirectcost_technology_technology_fkey FOREIGN KEY (technology_id) REFERENCES technologies_technology(id) DEFERRABLE;
+
+
+--
+-- Name: additionaldirectcostitem_additionaldirectcost_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY costcalculation_additionaldirectcostitem
+    ADD CONSTRAINT additionaldirectcostitem_additionaldirectcost_fkey FOREIGN KEY (additionaldirectcost_id) REFERENCES costcalculation_additionaldirectcost(id) DEFERRABLE;
 
 
 --
@@ -59762,6 +60063,22 @@ ALTER TABLE ONLY jointable_order_workplan
 
 
 --
+-- Name: orderadditionaldirectcost_additionaldirectcost_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY costcalculation_orderadditionaldirectcost
+    ADD CONSTRAINT orderadditionaldirectcost_additionaldirectcost_fkey FOREIGN KEY (additionaldirectcost_id) REFERENCES costcalculation_additionaldirectcost(id) DEFERRABLE;
+
+
+--
+-- Name: orderadditionaldirectcost_order_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY costcalculation_orderadditionaldirectcost
+    ADD CONSTRAINT orderadditionaldirectcost_order_fkey FOREIGN KEY (order_id) REFERENCES orders_order(id) DEFERRABLE;
+
+
+--
 -- Name: orderattachment_order_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -62159,6 +62476,22 @@ ALTER TABLE ONLY arch_basicproductioncounting_productioncountingquantity
 
 ALTER TABLE ONLY basicproductioncounting_productioncountingquantity
     ADD CONSTRAINT productioncountingquantity_wastereceptionwarehouse_fkey FOREIGN KEY (wastereceptionwarehouse_id) REFERENCES materialflow_location(id) DEFERRABLE;
+
+
+--
+-- Name: productioncountingquantitychange_order_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY basicproductioncounting_productioncountingquantitychange
+    ADD CONSTRAINT productioncountingquantitychange_order_fkey FOREIGN KEY (order_id) REFERENCES orders_order(id) DEFERRABLE;
+
+
+--
+-- Name: productioncountingquantitychange_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY basicproductioncounting_productioncountingquantitychange
+    ADD CONSTRAINT productioncountingquantitychange_product_fkey FOREIGN KEY (product_id) REFERENCES basic_product(id) DEFERRABLE;
 
 
 --

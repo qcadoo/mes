@@ -177,8 +177,6 @@
 
                         <option type="creatable" value="true" />
                         <option type="deletable" value="true" />
-                        <option type="fullscreen" value="true" />
-                        <option type="multiselect" value="true" />
                     </component>
                 </layoutElement>
             </component>

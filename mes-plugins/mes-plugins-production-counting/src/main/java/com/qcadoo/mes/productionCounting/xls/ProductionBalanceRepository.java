@@ -11,6 +11,7 @@ import org.springframework.stereotype.Repository;
 import com.qcadoo.mes.costCalculation.constants.MaterialCostsUsed;
 import com.qcadoo.mes.costCalculation.constants.SourceOfOperationCosts;
 import com.qcadoo.mes.productionCounting.constants.ProductionBalanceFields;
+import com.qcadoo.mes.productionCounting.xls.dto.AdditionalCost;
 import com.qcadoo.mes.productionCounting.xls.dto.LaborTime;
 import com.qcadoo.mes.productionCounting.xls.dto.LaborTimeDetails;
 import com.qcadoo.mes.productionCounting.xls.dto.MaterialCost;
@@ -722,7 +723,7 @@ class ProductionBalanceRepository {
     }
 
     List<OrderBalance> getOrdersBalance(Entity entity, List<Long> ordersIds, List<MaterialCost> materialCosts,
-            List<ProductionCost> productionCosts) {
+                                        List<ProductionCost> productionCosts) {
         StringBuilder query = new StringBuilder();
         appendOrdersBalanceWithQueries(materialCosts, productionCosts, query);
         appendOrdersBalanceSelectionClause(entity, query);
@@ -764,6 +765,7 @@ class ProductionBalanceRepository {
         query.append("LEFT JOIN grouped_planned_material_cost gpmc ON gpmc.order_id = o.id ");
         query.append("JOIN grouped_production_cost gpc ON gpc.order_id = o.id ");
         query.append("JOIN grouped_planned_production_cost gppc ON gppc.order_id = o.id ");
+        query.append("LEFT JOIN grouped_additional_cost gac ON gac.order_id = o.id ");
         appendWhereClause(query);
         query.append("GROUP BY orderId, rootId, orderNumber, productNumber, productName, productUnit ");
         query.append("ORDER BY orderNumber ");
@@ -773,7 +775,7 @@ class ProductionBalanceRepository {
     }
 
     private void appendOrdersBalanceWithQueries(List<MaterialCost> materialCosts, List<ProductionCost> productionCosts,
-            StringBuilder query) {
+                                                StringBuilder query) {
         query.append("WITH real_material_cost (order_id, cost) AS (VALUES ");
         if (materialCosts.isEmpty()) {
             query.append("(NULL::numeric, NULL::numeric) ");
@@ -823,7 +825,9 @@ class ProductionBalanceRepository {
         query.append(
                 "grouped_production_cost AS (SELECT order_id, SUM(cost) AS cost FROM real_production_cost GROUP BY order_id), ");
         query.append(
-                "grouped_planned_production_cost AS (SELECT order_id, SUM(cost) AS cost FROM planned_production_cost GROUP BY order_id) ");
+                "grouped_planned_production_cost AS (SELECT order_id, SUM(cost) AS cost FROM planned_production_cost GROUP BY order_id), ");
+        query.append(
+                "grouped_additional_cost AS (SELECT order_id, SUM(actualCost) AS cost FROM costcalculation_orderadditionaldirectcost GROUP BY order_id) ");
     }
 
     private void appendOrdersBalanceSelectionClause(Entity entity, StringBuilder query) {
@@ -868,7 +872,7 @@ class ProductionBalanceRepository {
     }
 
     private void appendDirectAdditionalCost(StringBuilder query) {
-        query.append("COALESCE(MIN(o.directadditionalcost), 0) ");
+        query.append("COALESCE(MIN(gac.cost), 0) ");
     }
 
     private void appendRegistrationPriceOverhead(Entity entity, StringBuilder query) {
@@ -1199,15 +1203,15 @@ class ProductionBalanceRepository {
             for (int i = 0; i < componentsBalance.size(); i++) {
                 OrderBalance orderBalance = componentsBalance.get(i);
                 query.append("(");
-                query.append(orderBalance.getProductId() + ", ");
-                query.append(orderBalance.getProducedQuantity() + ", ");
-                query.append(orderBalance.getMaterialCosts() + ", ");
-                query.append(orderBalance.getProductionCosts() + ", ");
-                query.append(orderBalance.getTechnicalProductionCosts() + ", ");
-                query.append(orderBalance.getMaterialCostMarginValue() + ", ");
-                query.append(orderBalance.getProductionCostMarginValue() + ", ");
-                query.append(orderBalance.getAdditionalOverhead() + ", ");
-                query.append(orderBalance.getDirectAdditionalCost() + ", ");
+                query.append(orderBalance.getProductId()).append(", ");
+                query.append(orderBalance.getProducedQuantity()).append(", ");
+                query.append(orderBalance.getMaterialCosts()).append(", ");
+                query.append(orderBalance.getProductionCosts()).append(", ");
+                query.append(orderBalance.getTechnicalProductionCosts()).append(", ");
+                query.append(orderBalance.getMaterialCostMarginValue()).append(", ");
+                query.append(orderBalance.getProductionCostMarginValue()).append(", ");
+                query.append(orderBalance.getAdditionalOverhead()).append(", ");
+                query.append(orderBalance.getDirectAdditionalCost()).append(", ");
                 query.append(orderBalance.getTotalCosts());
                 query.append(") ");
                 if (i != componentsBalance.size() - 1) {
@@ -1255,5 +1259,22 @@ class ProductionBalanceRepository {
 
         return jdbcTemplate.query(query.toString(), new MapSqlParameterSource("ordersIds", ordersIds),
                 BeanPropertyRowMapper.newInstance(Stoppage.class));
+    }
+
+    public List<AdditionalCost> getAdditionalCosts(List<Long> ordersIds) {
+        StringBuilder query = new StringBuilder();
+        query.append("SELECT ");
+        query.append("o.number AS orderNumber, ");
+        query.append("adc.number, ");
+        query.append("adc.name, ");
+        query.append("oadc.actualcost AS actualCost ");
+        query.append("FROM costcalculation_orderadditionaldirectcost oadc ");
+        query.append("JOIN orders_order o ON o.id = oadc.order_id ");
+        query.append("JOIN costcalculation_additionaldirectcost adc ON adc.id = oadc.additionaldirectcost_id ");
+        appendWhereClause(query);
+        query.append("ORDER BY orderNumber, number ");
+
+        return jdbcTemplate.query(query.toString(), new MapSqlParameterSource("ordersIds", ordersIds),
+                BeanPropertyRowMapper.newInstance(AdditionalCost.class));
     }
 }

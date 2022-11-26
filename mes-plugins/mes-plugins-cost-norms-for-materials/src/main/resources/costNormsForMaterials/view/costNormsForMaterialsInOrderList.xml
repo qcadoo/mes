@@ -35,10 +35,6 @@
             <group name="navigation">
                 <bigButton name="back" icon="backIcon24.png" state="enabled" action="#{window}.performBackWithoutConfirm"/>
             </group>
-            <group name="actions">
-                <bigButton name="save" icon="saveIcon24.png" state="enabled"
-                           action="#{form}.fireEvent(saveCosts);"/>
-            </group>
             <template name="standardGridTemplate" excludeItems="actions.new, actions.copy, actions.delete"/>
 
             <group name="costs">
@@ -48,33 +44,9 @@
 
         <windowTab name="mainTab" reference="mainTab">
             <component type="form" name="order" reference="order"/>
-            <script>
-                <![CDATA[
-					var updateCosts = #{window}.getRibbonItemOrNull("costs.updateCosts");
-
-					this.addOnChangeListener({
-						onSetValue: function(value) {
-
-						}
-					});
-					]]>
-            </script>
             <component type="form" name="form" reference="form">
                 <component type="gridLayout" name="costNormsForProductsGridLayout" hasBorders="false" columns="3" rows="6">
-                    <layoutElement column="1" row="1" height="1">
-                        <component type="input" name="directAdditionalCost" field="#{order}.directAdditionalCost"
-                                   reference="directAdditionalCost" hasDescription="true"/>
-                    </layoutElement>
-                    <layoutElement column="2" row="1" width="2" height="1">
-
-                        <component type="input" name="directAdditionalCostDescription"
-                                   field="#{order}.directAdditionalCostDescription"
-                                   reference="directAdditionalCostDescription">
-                            <option type="labelWidth" value="10"/>
-                        </component>
-                    </layoutElement>
-
-                    <layoutElement column="1" row="2" height="5" width="3">
+                    <layoutElement column="1" row="1" height="6" width="3">
                         <component type="grid" name="inProductsGrid" source="#{order}.technologyInstOperProductInCompDtos"
                                    reference="grid" model="technologyInstOperProductInCompDto" useDto="true">
                             <option type="column" name="productNumber" fields="productNumber"
@@ -125,10 +97,6 @@
                 <listener event="updateCosts"
                           class="com.qcadoo.mes.costNormsForMaterials.CostNormsForMaterialsService"
                           method="updateCosts"/>
-
-                <listener event="saveCosts"
-                          class="com.qcadoo.mes.costNormsForMaterials.CostNormsForMaterialsService"
-                          method="saveCosts"/>
             </component>
         </windowTab>
 

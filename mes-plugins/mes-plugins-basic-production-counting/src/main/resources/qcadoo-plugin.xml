@@ -81,6 +81,9 @@
         <model:model model="productionCountingReplacementHelper"
                      resource="model/productionCountingReplacementHelper.xml"/>
 
+        <model:model model="productionCountingQuantityChange"
+                     resource="model/productionCountingQuantityChange.xml"/>
+
         <model:model-field model="batch" plugin="advancedGenealogy">
             <model:manyToMany name="productionCountingQuantities" model="productionCountingQuantity"
                               plugin="basicProductionCounting"
@@ -127,6 +130,13 @@
                            model="productionCountingQuantity" plugin="basicProductionCounting"
                            joinField="order" cascade="delete"/>
         </model:model-field>
+
+        <model:model-field model="order" plugin="orders">
+            <model:hasMany name="productionCountingQuantityChanges"
+                           model="productionCountingQuantityChange" plugin="basicProductionCounting"
+                           joinField="order" cascade="delete"/>
+        </model:model-field>
+
         <model:model-field model="order" plugin="orders">
             <model:hasMany name="productionCountingQuantityDtos"
                            model="productionCountingQuantityDto" plugin="basicProductionCounting"

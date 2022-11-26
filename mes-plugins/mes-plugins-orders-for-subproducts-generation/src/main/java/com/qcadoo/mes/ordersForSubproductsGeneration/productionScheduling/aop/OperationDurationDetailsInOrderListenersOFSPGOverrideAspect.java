@@ -72,6 +72,7 @@ import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.CheckBoxComponent;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
+import com.qcadoo.view.api.components.LookupComponent;
 import com.qcadoo.view.constants.QcadooViewConstants;
 
 @Aspect
@@ -165,11 +166,15 @@ public class OperationDurationDetailsInOrderListenersOFSPGOverrideAspect {
             startTimeField.addMessage(L_PRODUCTION_SCHEDULING_ERROR_FIELD_REQUIRED, ComponentState.MessageType.FAILURE);
             return;
         }
+        LookupComponent productionLineLookup = (LookupComponent) viewDefinitionState
+                .getComponentByReference(OrderFields.PRODUCTION_LINE);
+        if (productionLineLookup.isEmpty()) {
+            productionLineLookup.addMessage(L_PRODUCTION_SCHEDULING_ERROR_FIELD_REQUIRED, ComponentState.MessageType.FAILURE);
+            return;
+        }
 
         FieldComponent plannedQuantityField = (FieldComponent) viewDefinitionState
                 .getComponentByReference(OrderFields.PLANNED_QUANTITY);
-        FieldComponent productionLineLookup = (FieldComponent) viewDefinitionState
-                .getComponentByReference(OrderFields.PRODUCTION_LINE);
         FieldComponent generatedEndDateField = (FieldComponent) viewDefinitionState
                 .getComponentByReference(OrderFieldsPS.GENERATED_END_DATE);
         FieldComponent calculatedFinishAllOrdersField = (FieldComponent) viewDefinitionState

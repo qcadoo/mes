@@ -40,20 +40,26 @@ QCD.linesProducedQuantitiesChart = (function() {
                         }
                     }
 
-                    const colors = ['#FCF5C7','#ADF7B6','#b499cb','#A0CED9','#cb99c9','#ffb347'];
+                    const colors = ['#ADF7B6','#b499cb','#A0CED9','#cb99c9','#ffb347'];
 
                     const datasets = [];
+                    let factoryDataset;
                     for (let key in data.datasets) {
-                        datasets.push({
-                            label: key,
-                            data: data.datasets[key],
-                            backgroundColor: colors[datasets.length % 6]
-                        });
+                        if(key === QCD.translate('productionCounting.linesProducedQuantitiesChart.chart.factory.label')){
+                            factoryDataset = {
+                                label: key,
+                                data: data.datasets[key],
+                                backgroundColor: '#FCF5C7'
+                            }
+                        } else {
+                            datasets.push({
+                                label: key,
+                                data: data.datasets[key],
+                                backgroundColor: colors[datasets.length % 5]
+                            });
+                        }
                     }
 
-                    let factoryDataset = datasets[0];
-
-                    datasets.shift();
                     datasets.sort((a, b) =>
                         {   if (a.label < b.label) {
                             return -1;

@@ -24,11 +24,10 @@ import com.google.common.collect.Lists;
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.basic.constants.CurrencyFields;
 import com.qcadoo.mes.basic.util.CurrencyService;
-import com.qcadoo.mes.costCalculation.constants.CalculationResultFields;
-import com.qcadoo.mes.costCalculation.constants.CostCalculationConstants;
 import com.qcadoo.mes.productionCounting.constants.OrderBalanceFields;
 import com.qcadoo.mes.productionCounting.constants.ProductionBalanceFields;
 import com.qcadoo.mes.productionCounting.constants.ProductionCountingConstants;
+import com.qcadoo.mes.productionCounting.xls.dto.AdditionalCost;
 import com.qcadoo.mes.productionCounting.xls.dto.LaborTime;
 import com.qcadoo.mes.productionCounting.xls.dto.LaborTimeDetails;
 import com.qcadoo.mes.productionCounting.xls.dto.MaterialCost;
@@ -37,7 +36,6 @@ import com.qcadoo.mes.productionCounting.xls.dto.PieceworkDetails;
 import com.qcadoo.mes.productionCounting.xls.dto.ProducedQuantity;
 import com.qcadoo.mes.productionCounting.xls.dto.ProductionCost;
 import com.qcadoo.mes.productionCounting.xls.dto.Stoppage;
-import com.qcadoo.mes.technologies.constants.TechnologyFields;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -116,6 +114,10 @@ public class ProductionBalanceXlsService extends XlsDocumentService {
         List<ProductionCost> productionCosts = productionBalanceRepository.getProductionCosts(entity, ordersIds);
         createProductionCostsSheet(productionCosts, createSheet(workbook,
                         translationService.translate("productionCounting.productionBalance.report.xls.sheet.productionCosts", locale)),
+                locale);
+        List<AdditionalCost> additionalCosts = productionBalanceRepository.getAdditionalCosts(ordersIds);
+        createAdditionalCostsSheet(additionalCosts, createSheet(workbook,
+                        translationService.translate("productionCounting.productionBalance.report.xls.sheet.additionalCosts", locale)),
                 locale);
         List<OrderBalance> ordersBalance = productionBalanceRepository.getOrdersBalance(entity, ordersIds, materialCosts,
                 productionCosts);
@@ -722,6 +724,43 @@ public class ProductionBalanceXlsService extends XlsDocumentService {
             rowCounter++;
         }
         for (int i = 0; i <= 16; i++) {
+            sheet.autoSizeColumn(i, false);
+        }
+    }
+
+    private void createAdditionalCostsSheet(List<AdditionalCost> additionalCosts, HSSFSheet sheet, Locale locale) {
+        final FontsContainer fontsContainer = new FontsContainer(sheet.getWorkbook());
+        final StylesContainer stylesContainer = new StylesContainer(sheet.getWorkbook(), fontsContainer);
+        final int rowOffset = 1;
+        HSSFRow row = sheet.createRow(0);
+        createHeaderCell(
+                stylesContainer, row, translationService
+                        .translate("productionCounting.productionBalance.report.xls.sheet.additionalCosts.orderNumber", locale),
+                0);
+        createHeaderCell(stylesContainer, row,
+                translationService.translate(
+                        "productionCounting.productionBalance.report.xls.sheet.additionalCosts.number", locale),
+                1);
+        createHeaderCell(stylesContainer, row,
+                translationService.translate(
+                        "productionCounting.productionBalance.report.xls.sheet.additionalCosts.name", locale),
+                2);
+        createHeaderCell(
+                stylesContainer, row, translationService
+                        .translate("productionCounting.productionBalance.report.xls.sheet.additionalCosts.actualCost", locale),
+                3);
+
+
+        int rowCounter = 0;
+        for (AdditionalCost additionalCost : additionalCosts) {
+            row = sheet.createRow(rowOffset + rowCounter);
+            createRegularCell(stylesContainer, row, 0, additionalCost.getOrderNumber());
+            createRegularCell(stylesContainer, row, 1, additionalCost.getNumber());
+            createRegularCell(stylesContainer, row, 2, additionalCost.getName());
+            createNumericCell(stylesContainer, row, 3, additionalCost.getActualCost(), false);
+            rowCounter++;
+        }
+        for (int i = 0; i <= 3; i++) {
             sheet.autoSizeColumn(i, false);
         }
     }

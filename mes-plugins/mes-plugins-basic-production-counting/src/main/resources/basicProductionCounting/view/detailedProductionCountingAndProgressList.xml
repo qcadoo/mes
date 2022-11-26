@@ -24,24 +24,26 @@
     ***************************************************************************
 
 -->
-<view defaultAuthorizationRole="ROLE_BASE_FUNCTIONALITY" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
-	xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
-	name="detailedProductionCountingAndProgressList" modelName="order" modelPlugin="orders">
+<view defaultAuthorizationRole="ROLE_BASE_FUNCTIONALITY" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns="http://schema.qcadoo.org/view"
+      xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
+      name="detailedProductionCountingAndProgressList" modelName="order" modelPlugin="orders">
 
-	<component type="window" name="window"  reference="window">
+    <component type="window" name="window" reference="window">
 
         <ribbon>
             <group name="navigation">
-                <bigButton name="back" icon="backIcon24.png" state="enabled" action="#{window}.fireEvent(performActionOnBack); #{window}.performBack" />
+                <bigButton name="back" icon="backIcon24.png" state="enabled"
+                           action="#{order}.fireEvent(performActionOnBack); #{window}.performBack"/>
             </group>
 
-			<template name="standardGridTemplate" excludeItems="actions.new,actions.copy,actions.delete" />
+            <template name="standardGridTemplate" excludeItems="actions.new,actions.copy,actions.delete"/>
 
-			<group name="replacements">
-				<bigButton name="useReplacement" icon="copyIcon24.png"
-						   state="disabled">
-					<script>
-						<![CDATA[
+            <group name="replacements">
+                <bigButton name="useReplacement" icon="copyIcon24.png"
+                           state="disabled">
+                    <script>
+                        <![CDATA[
 							this.addOnChangeListener({
 								onClick: function() {
 									if (window.canClose()) {
@@ -50,23 +52,29 @@
 								}
 							});
 						]]>
-					</script>
-				</bigButton>
-			</group>
-		</ribbon>
+                    </script>
+                </bigButton>
+            </group>
+        </ribbon>
+        <windowTab name="mainTab">
 
-		<component type="form" name="order" reference="order">
-			<component type="select" name="state" field="state"
-					   reference="state" defaultVisible="false"/>
-		</component>
-		<component type="form" name="basicProductionCounting"
-			reference="form">
-			<component type="grid" name="productionCountingQuantities" reference="grid"
-					   useDto="true"
-					   source="#{order}.productionCountingQuantityDtos"
-					   model="productionCountingQuantityDto">
-				<script>
-					<![CDATA[
+            <component type="form" name="order" reference="order">
+                <component type="select" name="state" field="state"
+                           reference="state" defaultVisible="false"/>
+                <option type="header" value="true"/>
+                <option type="expression" value=""/>
+
+                <listener event="performActionOnBack" method="performActionOnBack"
+                          class="com.qcadoo.mes.basicProductionCounting.hooks.DetailedProductionCountingAndProgressListHooks"/>
+            </component>
+            <component type="form" name="basicProductionCounting"
+                       reference="form">
+                <component type="grid" name="productionCountingQuantities" reference="grid"
+                           useDto="true"
+                           source="#{order}.productionCountingQuantityDtos"
+                           model="productionCountingQuantityDto">
+                    <script>
+                        <![CDATA[
 					var resourceIssueButton = #{window}.getRibbonItemOrNull("issue.resourceIssue");
 					var useReplacementBtn = #{window}.getRibbonItemOrNull("replacements.useReplacement");
 
@@ -144,71 +152,95 @@
                                     }
                                 };
                             ]]>
-				</script>
-				<option type="column" name="productNumber" fields="productNumber"
-					link="true" width="70"/>
-				<option type="column" name="productName" fields="productName"
-					link="true" width="100"/>
-				<option type="column" name="technologyInputProductTypeName" fields="technologyInputProductTypeName"
-					link="true" width="100"/>
-				<option type="column" name="nodeNumber" fields="nodeNumber"
-					link="true" width="40"/>
-				<option type="column" name="operationNumber" fields="operationNumber"
-					link="true" width="40"/>
-				<option type="column" name="operationName" fields="operationName"
-					link="true" width="50"/>
-				<option type="column" name="role" fields="role" link="true" width="40"/>
-				<option type="column" name="typeOfMaterial" fields="typeOfMaterial"
-					link="true" width="40"/>
-				<option type="column" name="plannedQuantity" fields="plannedQuantity" width="30"/>
-				<option type="column" name="usedQuantity" fields="usedQuantity" width="30"/>
-				<option type="column" name="producedQuantity" fields="producedQuantity" width="30"/>
-				<option type="column" name="productUnit" fields="productUnit"
-					width="20"/>
-				<option type="column" name="replacement" fields="replacement" width="100"/>
-				<option type="column" name="replacementTo" fields="replacementTo" width="100"/>
-				<option type="order" column="productNumber" direction="asc" />
+                    </script>
+                    <option type="column" name="productNumber" fields="productNumber"
+                            link="true" width="70"/>
+                    <option type="column" name="productName" fields="productName"
+                            link="true" width="100"/>
+                    <option type="column" name="technologyInputProductTypeName" fields="technologyInputProductTypeName"
+                            link="true" width="100"/>
+                    <option type="column" name="nodeNumber" fields="nodeNumber"
+                            link="true" width="40"/>
+                    <option type="column" name="operationNumber" fields="operationNumber"
+                            link="true" width="40"/>
+                    <option type="column" name="operationName" fields="operationName"
+                            link="true" width="50"/>
+                    <option type="column" name="role" fields="role" link="true" width="40"/>
+                    <option type="column" name="typeOfMaterial" fields="typeOfMaterial"
+                            link="true" width="40"/>
+                    <option type="column" name="plannedQuantity" fields="plannedQuantity" width="30"/>
+                    <option type="column" name="usedQuantity" fields="usedQuantity" width="30"/>
+                    <option type="column" name="producedQuantity" fields="producedQuantity" width="30"/>
+                    <option type="column" name="productUnit" fields="productUnit"
+                            width="20"/>
+                    <option type="column" name="replacement" fields="replacement" width="100"/>
+                    <option type="column" name="replacementTo" fields="replacementTo" width="100"/>
+                    <option type="order" column="productNumber" direction="asc"/>
 
-				<option type="searchable" value="replacement,productNumber,productName,technologyInputProductTypeName,replacementTo,nodeNumber,operationNumber,operationName,role,
-					typeOfMaterial,plannedQuantity,usedQuantity,producedQuantity,productUnit" />
-				<option type="orderable" value="replacement,productNumber,productName,technologyInputProductTypeName,replacementTo,nodeNumber,operationNumber,operationName,role,
-					typeOfMaterial,plannedQuantity,usedQuantity,producedQuantity,productUnit" />
-				
-				<option type="correspondingView"
-					value="basicProductionCounting/productionCountingQuantityAdvancedDetails" />
-				<option type="correspondingComponent" value="form" />
-				<option type="correspondingViewInModal" value="true" />
-				
-				<option type="creatable" value="true" />
-				<option type="deletable" value="true" />
-				<option type="fullscreen" value="true" />
-				<option type="multiselect" value="true" />
-				<option type="fixedHeight" value="true" />
+                    <option type="searchable" value="replacement,productNumber,productName,technologyInputProductTypeName,replacementTo,nodeNumber,operationNumber,operationName,role,
+					typeOfMaterial,plannedQuantity,usedQuantity,producedQuantity,productUnit"/>
+                    <option type="orderable" value="replacement,productNumber,productName,technologyInputProductTypeName,replacementTo,nodeNumber,operationNumber,operationName,role,
+					typeOfMaterial,plannedQuantity,usedQuantity,producedQuantity,productUnit"/>
 
-				<option type="selectableWhenDisabled" value="true"/>
+                    <option type="correspondingView"
+                            value="basicProductionCounting/productionCountingQuantityAdvancedDetails"/>
+                    <option type="correspondingComponent" value="form"/>
+                    <option type="correspondingViewInModal" value="true"/>
 
-				<rowStyleResolver
-					class="com.qcadoo.mes.basicProductionCounting.rowStyleResolvers.DetailedProductionCountingAndProgressListCriteriaModifiers"
-					method="fillRowStylesDependsOfTypeOfMaterial" />
+                    <option type="creatable" value="true"/>
+                    <option type="deletable" value="true"/>
+                    <option type="fullscreen" value="true"/>
+                    <option type="multiselect" value="true"/>
+                    <option type="fixedHeight" value="true"/>
 
-				<listener event="removeSelectedProductionCountingQuantities"
-						  method="onRemoveSelectedProductionCountingQuantities"
-						  class="com.qcadoo.mes.basicProductionCounting.hooks.DetailedProductionCountingAndProgressListHooks"/>
+                    <option type="selectableWhenDisabled" value="true"/>
 
-			</component>
-		</component>
-		<listener event="performActionOnBack" method="performActionOnBack"
-				  class="com.qcadoo.mes.basicProductionCounting.hooks.DetailedProductionCountingAndProgressListHooks"/>
+                    <rowStyleResolver
+                            class="com.qcadoo.mes.basicProductionCounting.rowStyleResolvers.DetailedProductionCountingAndProgressListCriteriaModifiers"
+                            method="fillRowStylesDependsOfTypeOfMaterial"/>
 
-		<option type="fixedHeight" value="true" />
-		<option type="header" value="false" />
-		
-	</component>
+                    <listener event="removeSelectedProductionCountingQuantities"
+                              method="onRemoveSelectedProductionCountingQuantities"
+                              class="com.qcadoo.mes.basicProductionCounting.hooks.DetailedProductionCountingAndProgressListHooks"/>
 
-	<hooks>
-		<beforeRender
-			class="com.qcadoo.mes.basicProductionCounting.hooks.DetailedProductionCountingAndProgressListHooks"
-			method="setGridEditableDependsOfOrderState" />
-	</hooks>
+                </component>
+
+
+            </component>
+            <option type="fixedHeight" value="true"/>
+
+
+        </windowTab>
+        <windowTab name="changesTab">
+            <component type="grid" name="changes" reference="changesGrid"
+                       source="#{order}.productionCountingQuantityChanges">
+
+                <option type="column" name="dateAndTime" fields="dateAndTime"/>
+                <option type="column" name="product" fields="product" expression="#product['number']"/>
+                <option type="column" name="changeType" fields="changeType"/>
+
+                <option type="column" name="plannedQuantityBefore" fields="plannedQuantityBefore"/>
+                <option type="column" name="plannedQuantityAfter" fields="plannedQuantityAfter"/>
+
+
+                <option type="column" name="worker" fields="worker"/>
+
+
+                <option type="order" column="dateAndTime" direction="asc"/>
+
+                <option type="searchable" value="dateAndTime,changeType,product,plannedQuantityBefore,plannedQuantityAfter,worker"/>
+                <option type="orderable" value="dateAndTime,changeType,product,plannedQuantityBefore,plannedQuantityAfter,worker"/>
+                <option type="fullscreen" value="true"/>
+                <option type="fixedHeight" value="true"/>
+
+            </component>
+        </windowTab>
+    </component>
+
+    <hooks>
+        <beforeRender
+                class="com.qcadoo.mes.basicProductionCounting.hooks.DetailedProductionCountingAndProgressListHooks"
+                method="setGridEditableDependsOfOrderState"/>
+    </hooks>
 
 </view>

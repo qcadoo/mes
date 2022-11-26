@@ -166,17 +166,4 @@ public class CostNormsForMaterialsService {
         return order.getDataDefinition().save(order);
     }
 
-    public void saveCosts(final ViewDefinitionState viewDefinitionState, final ComponentState component, final String[] args) {
-        FormComponent orderForm = (FormComponent) viewDefinitionState.getComponentByReference("order");
-        Entity order = orderForm.getEntity();
-        Entity orderEntity = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER)
-                .get(order.getId());
-        orderEntity.setField(OrderFieldsCNFM.DIRECT_ADDITIONAL_COST,
-                order.getDecimalField(OrderFieldsCNFM.DIRECT_ADDITIONAL_COST));
-        orderEntity.setField(OrderFieldsCNFM.DIRECT_ADDITIONAL_COST_DESCRIPTION,
-                order.getStringField(OrderFieldsCNFM.DIRECT_ADDITIONAL_COST_DESCRIPTION));
-
-        orderEntity.getDataDefinition().save(orderEntity);
-    }
-
 }

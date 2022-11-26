@@ -41,6 +41,8 @@ public final class BasicProductionCountingConstants {
 
     public static final String MODEL_PRODUCTION_COUNTING_OPERATON_RUN = "productionCountingOperationRun";
 
+    public static final String MODEL_PRODUCTION_COUNTING_QUANTITY_CHANGE = "productionCountingQuantityChange";
+
     public static final String MODEL_PRODUCTION_COUNTING_ATTRIBUTE_VALUE = "productionCountingAttributeValue";
 
     public static final String VIEW_RIBBON_ACTION_ITEM_GROUP = "basicProductionCounting";
