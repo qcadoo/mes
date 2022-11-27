@@ -30,13 +30,18 @@ import com.qcadoo.mes.basic.constants.AttributeFields;
 import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.basic.constants.ProductAttributeValueFields;
 import com.qcadoo.mes.basic.constants.ProductFields;
+import com.qcadoo.mes.basicProductionCounting.constants.BasicProductionCountingConstants;
+import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityFields;
+import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityRole;
 import com.qcadoo.mes.workPlans.pdf.document.operation.product.ProductDirection;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
+import com.qcadoo.model.api.search.SearchRestrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -58,9 +63,7 @@ public class ProductNameOperationProductColumn extends AbstractOperationProductC
 
     @Override
     public String getColumnValue(Entity operationProduct) {
-        Entity product = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PRODUCT).get(
-                operationProduct.getIntegerField("productId").longValue());
-        return buildValue(product);
+            return buildValue(operationProduct);
     }
 
     @Override
@@ -81,10 +84,32 @@ public class ProductNameOperationProductColumn extends AbstractOperationProductC
         return product.getStringField(ProductFields.NAME);
     }
 
-    private String buildValue(Entity product) {
+    private String buildValue(Entity operationProduct) {
+        Entity product = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PRODUCT).get(
+                operationProduct.getIntegerField("productId").longValue());
+
+        Entity pcq = dataDefinitionService
+                .get(BasicProductionCountingConstants.PLUGIN_IDENTIFIER,
+                        BasicProductionCountingConstants.MODEL_PRODUCTION_COUNTING_QUANTITY)
+                .find()
+                .add(SearchRestrictions.eq("order.id", operationProduct.getIntegerField("orderId").longValue()))
+                .add(SearchRestrictions.eq("technologyOperationComponent.id", operationProduct.getIntegerField("technologyOperationComponentId").longValue()))
+                .add(SearchRestrictions.belongsTo(ProductionCountingQuantityFields.PRODUCT, product))
+                .add(SearchRestrictions.eq(ProductionCountingQuantityFields.ROLE,
+                        ProductionCountingQuantityRole.PRODUCED.getStringValue()))
+                .setMaxResults(1)
+                .uniqueResult();
+
         StringBuilder builder = new StringBuilder();
         builder.append(name(product)).append(" (").append(number(product)).append(")");
-        List<Entity> attrValues = product.getHasManyField(ProductFields.PRODUCT_ATTRIBUTE_VALUES);
+        appendAttributes(builder, product.getHasManyField(ProductFields.PRODUCT_ATTRIBUTE_VALUES));
+        if(Objects.nonNull(pcq)) {
+            appendAttributes(builder, pcq.getHasManyField(ProductionCountingQuantityFields.PRODUCTION_COUNTING_ATTRIBUTE_VALUES));
+        }
+        return builder.toString();
+    }
+
+    private void appendAttributes(StringBuilder builder, List<Entity> attrValues) {
         Map<String, List<String>> valuesByAttribute = Maps.newHashMap();
         attrValues.forEach(prodAttrVal -> {
             if (prodAttrVal.getBelongsToField(ProductAttributeValueFields.ATTRIBUTE).isActive()) {
@@ -103,7 +128,6 @@ public class ProductNameOperationProductColumn extends AbstractOperationProductC
             builder.append(entry.getKey()).append(": ");
             builder.append(String.join(", ", entry.getValue()));
         }
-        return builder.toString();
     }
 
 }

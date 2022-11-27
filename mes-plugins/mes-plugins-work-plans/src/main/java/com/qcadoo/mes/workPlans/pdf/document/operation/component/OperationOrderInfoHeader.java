@@ -3,19 +3,19 @@
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
  * Version: 1.4
- *
+ * <p>
  * This file is part of Qcadoo.
- *
+ * <p>
  * Qcadoo is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation; either version 3 of the License,
  * or (at your option) any later version.
- *
+ * <p>
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty
  * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU Affero General Public License for more details.
- *
+ * <p>
  * You should have received a copy of the GNU Affero General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
@@ -33,11 +33,16 @@ import com.qcadoo.mes.basic.constants.AttributeFields;
 import com.qcadoo.mes.basic.constants.CompanyFields;
 import com.qcadoo.mes.basic.constants.ProductAttributeValueFields;
 import com.qcadoo.mes.basic.constants.ProductFields;
+import com.qcadoo.mes.basicProductionCounting.constants.BasicProductionCountingConstants;
+import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityFields;
+import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityRole;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.productionLines.constants.ProductionLineFields;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
 import com.qcadoo.mes.workPlans.constants.ParameterFieldsWP;
+import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.report.api.pdf.PdfHelper;
 
 import java.util.List;
@@ -57,12 +62,15 @@ public class OperationOrderInfoHeader {
 
     private ParameterService parameterService;
 
+    private DataDefinitionService dataDefinitionService;
+
     @Autowired
     public OperationOrderInfoHeader(final PdfHelper pdfHelper, final TranslationService translationService,
-            final ParameterService parameterService) {
+                                    final ParameterService parameterService, final DataDefinitionService dataDefinitionService) {
         this.pdfHelper = pdfHelper;
         this.translationService = translationService;
         this.parameterService = parameterService;
+        this.dataDefinitionService = dataDefinitionService;
     }
 
     public void print(final Entity order, final PdfPTable operationTable, final Locale locale) throws DocumentException {
@@ -117,19 +125,34 @@ public class OperationOrderInfoHeader {
 
         if (!parameterService.getParameter().getBooleanField(ParameterFieldsWP.HIDE_ORDERED_PRODUCT_WORK_PLAN)) {
             Entity product = order.getBelongsToField(OrderFields.PRODUCT);
+            Entity pcq = dataDefinitionService
+                    .get(BasicProductionCountingConstants.PLUGIN_IDENTIFIER,
+                            BasicProductionCountingConstants.MODEL_PRODUCTION_COUNTING_QUANTITY)
+                    .find()
+                    .add(SearchRestrictions.belongsTo(ProductionCountingQuantityFields.ORDER, order))
+                    .add(SearchRestrictions.belongsTo(ProductionCountingQuantityFields.PRODUCT, product))
+                    .add(SearchRestrictions.eq(ProductionCountingQuantityFields.ROLE,
+                            ProductionCountingQuantityRole.PRODUCED.getStringValue()))
+                    .setMaxResults(1)
+                    .uniqueResult();
 
             pdfHelper.addTableCellAsOneColumnTable(operationTable,
                     translationService.translate("workPlans.workPlan.report.operation.orderedProduct", locale),
-                    buildOrderedProductValue(product));
+                    buildOrderedProductValue(product, pcq));
         }
 
         operationTable.completeRow();
     }
 
-    private String buildOrderedProductValue(Entity product) {
+    private String buildOrderedProductValue(Entity product, Entity pcq) {
         StringBuilder builder = new StringBuilder();
         builder.append(product.getStringField(ProductFields.NUMBER));
-        List<Entity> attrValues = product.getHasManyField(ProductFields.PRODUCT_ATTRIBUTE_VALUES);
+        appendAttribiutes(builder, product.getHasManyField(ProductFields.PRODUCT_ATTRIBUTE_VALUES));
+        appendAttribiutes(builder, pcq.getHasManyField(ProductionCountingQuantityFields.PRODUCTION_COUNTING_ATTRIBUTE_VALUES));
+        return builder.toString();
+    }
+
+    private void appendAttribiutes(StringBuilder builder, List<Entity> attrValues) {
         Map<String, List<String>> valuesByAttribute = Maps.newHashMap();
         attrValues.forEach(prodAttrVal -> {
             if (prodAttrVal.getBelongsToField(ProductAttributeValueFields.ATTRIBUTE).isActive()) {
@@ -146,7 +169,6 @@ public class OperationOrderInfoHeader {
             builder.append(entry.getKey()).append(": ");
             builder.append(String.join(", ", entry.getValue()));
         }
-        return builder.toString();
     }
 
 }

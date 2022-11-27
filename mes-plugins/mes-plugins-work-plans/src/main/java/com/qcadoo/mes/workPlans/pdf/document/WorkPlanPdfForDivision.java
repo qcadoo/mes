@@ -25,11 +25,17 @@ package com.qcadoo.mes.workPlans.pdf.document;
 
 import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.lowagie.text.*;
 import com.lowagie.text.pdf.*;
 import com.qcadoo.localization.api.TranslationService;
+import com.qcadoo.mes.basic.constants.AttributeFields;
 import com.qcadoo.mes.basic.constants.BasicConstants;
+import com.qcadoo.mes.basic.constants.ProductAttributeValueFields;
 import com.qcadoo.mes.basic.constants.ProductFields;
+import com.qcadoo.mes.basicProductionCounting.constants.BasicProductionCountingConstants;
+import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityFields;
+import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityRole;
 import com.qcadoo.mes.columnExtension.constants.ColumnAlignment;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.technologies.BarcodeOperationComponentService;
@@ -365,7 +371,7 @@ public class WorkPlanPdfForDivision {
         if (widths.length > 3) {
             widths[0] = 12f;
             widths[1] = 4f;
-            widths[2] = 3f;
+            widths[2] = 4f;
         }
         for (int i = 3; i < operationProductColumnAlignmentMap.size(); i++) {
             widths[i] = 5f;
@@ -404,6 +410,19 @@ public class WorkPlanPdfForDivision {
         summary.append(numberService.formatWithMinimumFractionDigits(order.getDecimalField(OrderFields.PLANNED_QUANTITY), 0));
         summary.append(" ");
         summary.append(product.getStringField(ProductFields.UNIT));
+        Entity pcq = dataDefinitionService
+                .get(BasicProductionCountingConstants.PLUGIN_IDENTIFIER,
+                        BasicProductionCountingConstants.MODEL_PRODUCTION_COUNTING_QUANTITY)
+                .find()
+                .add(SearchRestrictions.belongsTo(ProductionCountingQuantityFields.ORDER, order))
+                .add(SearchRestrictions.belongsTo(ProductionCountingQuantityFields.PRODUCT, product))
+                .add(SearchRestrictions.eq(ProductionCountingQuantityFields.ROLE,
+                        ProductionCountingQuantityRole.PRODUCED.getStringValue()))
+                .setMaxResults(1)
+                .uniqueResult();
+        if(Objects.nonNull(pcq)) {
+            appendAttribiutes(summary, pcq.getHasManyField(ProductionCountingQuantityFields.PRODUCTION_COUNTING_ATTRIBUTE_VALUES));
+        }
         Entity form = product.getBelongsToField(ProductFields.PRODUCT_FORM);
         if (Objects.nonNull(form)) {
             summary.append(", ");
@@ -411,6 +430,25 @@ public class WorkPlanPdfForDivision {
         }
 
         return summary.toString();
+    }
+
+    private void appendAttribiutes(StringBuilder builder, List<Entity> attrValues) {
+        Map<String, List<String>> valuesByAttribute = Maps.newHashMap();
+        attrValues.forEach(prodAttrVal -> {
+            if (prodAttrVal.getBelongsToField(ProductAttributeValueFields.ATTRIBUTE).isActive()) {
+                String number = prodAttrVal.getBelongsToField(ProductAttributeValueFields.ATTRIBUTE).getStringField(AttributeFields.NUMBER);
+                if (valuesByAttribute.containsKey(number)) {
+                    valuesByAttribute.get(number).add(prodAttrVal.getStringField(ProductAttributeValueFields.VALUE));
+                } else {
+                    valuesByAttribute.put(number, Lists.newArrayList(prodAttrVal.getStringField(ProductAttributeValueFields.VALUE)));
+                }
+            }
+        });
+        for (Map.Entry<String, List<String>> entry : valuesByAttribute.entrySet()) {
+            builder.append(", ");
+            builder.append(entry.getKey()).append(": ");
+            builder.append(String.join(", ", entry.getValue()));
+        }
     }
 
     private List<Entity> getMainOrdersForOperationComponents(List<OrderOperationComponent> orderOperationComponents) {
