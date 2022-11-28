@@ -69,7 +69,7 @@ public class AdditionalDirectCostItemHooks {
     public boolean validatesWith(final DataDefinition dataDefinition, final Entity entity) {
         Date dateFrom = entity.getDateField(AdditionalDirectCostItemFields.DATE_FROM);
         Date dateTo = entity.getDateField(AdditionalDirectCostItemFields.DATE_TO);
-        if (dateTo != null && dateTo.compareTo(dateFrom) <= 0) {
+        if (dateTo != null && dateTo.compareTo(dateFrom) < 0) {
             entity.addError(dataDefinition.getField(AdditionalDirectCostItemFields.DATE_FROM),
                     "costCalculation.additionalDirectCostItem.validation.datesInvalid");
             return false;

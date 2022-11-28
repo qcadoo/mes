@@ -75,7 +75,7 @@ public class TechnologicalProcessRateItemHooks {
     public boolean validatesWith(final DataDefinition dataDefinition, final Entity entity) {
         Date dateFrom = entity.getDateField(L_DATE_FROM);
         Date dateTo = entity.getDateField(L_DATE_TO);
-        if (dateTo != null && dateTo.compareTo(dateFrom) <= 0) {
+        if (dateTo != null && dateTo.compareTo(dateFrom) < 0) {
             entity.addError(dataDefinition.getField(L_DATE_FROM),
                     "basic.technologicalProcessRateItem.validation.datesInvalid");
             return false;
