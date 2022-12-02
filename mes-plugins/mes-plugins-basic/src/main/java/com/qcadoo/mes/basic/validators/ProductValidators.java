@@ -23,8 +23,12 @@
  */
 package com.qcadoo.mes.basic.validators;
 
+import com.qcadoo.mes.basic.ParameterService;
+import com.qcadoo.mes.basic.constants.ParameterFields;
+import com.qcadoo.plugin.api.PluginUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.basic.constants.ProductFields;
@@ -38,8 +42,16 @@ import com.qcadoo.model.api.search.SearchRestrictions;
 @Service
 public class ProductValidators {
 
+    @Autowired
+    private ParameterService parameterService;
+
     public boolean checkEanUniqueness(final DataDefinition productDD, final FieldDefinition eanFieldDefinition,
             final Entity product, final Object eanOldValue, final Object eanNewValue) {
+
+        if(!PluginUtils.isEnabled("urcBasic") && parameterService.getParameter().getBooleanField(ParameterFields.MANY_ARTICLES_WITH_THE_SAME_EAN)) {
+            return true;
+        }
+
         String ean = (String) eanNewValue;
         if (StringUtils.isEmpty(ean) || ObjectUtils.equals(eanOldValue, ean)) {
             return true;
