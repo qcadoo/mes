@@ -53,7 +53,6 @@ public class ProductionLineScheduleDetailsListeners {
     @Autowired
     private NamedParameterJdbcTemplate jdbcTemplate;
 
-
     @Autowired
     private ParameterService parameterService;
 
