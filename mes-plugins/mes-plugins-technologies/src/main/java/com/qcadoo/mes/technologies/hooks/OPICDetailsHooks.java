@@ -23,11 +23,20 @@
  */
 package com.qcadoo.mes.technologies.hooks;
 
+import java.math.BigDecimal;
+import java.util.Objects;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.google.common.collect.Lists;
+import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.basic.constants.ProductFamilyElementType;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.basic.util.UnitService;
 import com.qcadoo.mes.technologies.constants.OperationProductInComponentFields;
+import com.qcadoo.mes.technologies.constants.ParameterFieldsT;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
 import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
 import com.qcadoo.model.api.Entity;
@@ -39,30 +48,40 @@ import com.qcadoo.view.api.components.GridComponent;
 import com.qcadoo.view.api.components.LookupComponent;
 import com.qcadoo.view.constants.QcadooViewConstants;
 
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import java.util.Objects;
-
 @Service
 public class OPICDetailsHooks {
 
     @Autowired
     private UnitService unitService;
 
+    @Autowired
+    private ParameterService parameterService;
+
     public void onBeforeRender(final ViewDefinitionState view) {
         fillUnitBeforeRender(view);
         setProductBySizeGroupsGridEnabledAndClear(view);
         setStateForVariousQuantitiesInProductsBySize(view);
         setAttributeTabState(view);
+        setOPICDefaultQuantityFromParameter(view);
+    }
+
+    private void setOPICDefaultQuantityFromParameter(final ViewDefinitionState view) {
+        FormComponent operationProductInComponentForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
+        FieldComponent quantityField = (FieldComponent) view
+                .getComponentByReference(OperationProductInComponentFields.GIVEN_QUANTITY);
+        if (operationProductInComponentForm.getEntityId() == null && quantityField.getFieldValue() == null) {
+            BigDecimal operationProductInDefaultQuantity = parameterService.getParameter().getDecimalField(ParameterFieldsT.OPERATION_PRODUCT_IN_DEFAULT_QUANTITY);
+            if (operationProductInDefaultQuantity != null) {
+                quantityField.setFieldValue(operationProductInDefaultQuantity);
+            }
+        }
     }
 
     private void setAttributeTabState(ViewDefinitionState view) {
         FormComponent operationProductInComponentForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         LookupComponent attributeLookup = (LookupComponent) view.getComponentByReference(OperationProductInComponentFields.ATTRIBUTE);
 
-        if(Objects.isNull(attributeLookup)) {
+        if (Objects.isNull(attributeLookup)) {
             return;
         }
 
@@ -71,14 +90,14 @@ public class OPICDetailsHooks {
         Entity operationProductInComponent = operationProductInComponentForm.getEntity();
         Entity operationComponent = operationProductInComponent
                 .getBelongsToField(OperationProductInComponentFields.OPERATION_COMPONENT);
-        Entity technology = null;
-        if(Objects.isNull(operationComponent)) {
+        Entity technology;
+        if (Objects.isNull(operationComponent)) {
             technology = operationProductInComponent.getBelongsToField(OperationProductInComponentFields.TECHNOLOGY);
         } else {
             technology = operationComponent.getBelongsToField(TechnologyOperationComponentFields.TECHNOLOGY);
         }
         Entity technologyProduct = technology.getBelongsToField(TechnologyFields.PRODUCT);
-        if(ProductFamilyElementType.PRODUCTS_FAMILY.getStringValue().equals(
+        if (ProductFamilyElementType.PRODUCTS_FAMILY.getStringValue().equals(
                 technologyProduct.getField(ProductFields.ENTITY_TYPE)) && Objects.nonNull(productLookup.getEntity())
                 && ProductFamilyElementType.PRODUCTS_FAMILY.getStringValue()
                 .equals(productLookup.getEntity().getField(ProductFields.ENTITY_TYPE))) {
@@ -109,7 +128,7 @@ public class OPICDetailsHooks {
                     .getComponentByReference(OperationProductInComponentFields.GIVEN_UNIT);
             if (variousQuantitiesInProductsBySizeCheckBox.isChecked()) {
                 quantityField.setFieldValue(null);
-                if(Objects.nonNull(quantityFormulaField)) {
+                if (Objects.nonNull(quantityFormulaField)) {
                     quantityFormulaField.setFieldValue(null);
                     quantityFormulaField.setEnabled(false);
                 }
@@ -119,7 +138,7 @@ public class OPICDetailsHooks {
                 givenQuantityField.setEnabled(false);
                 givenUnitField.setEnabled(false);
             } else {
-                if(Objects.nonNull(quantityFormulaField)) {
+                if (Objects.nonNull(quantityFormulaField)) {
                     quantityFormulaField.setEnabled(true);
                 }
                 givenQuantityField.setEnabled(true);
@@ -154,8 +173,8 @@ public class OPICDetailsHooks {
         Entity operationProductInComponent = operationProductInComponentForm.getEntity();
         Entity operationComponent = operationProductInComponent
                 .getBelongsToField(OperationProductInComponentFields.OPERATION_COMPONENT);
-        Entity technology = null;
-        if(Objects.isNull(operationComponent)) {
+        Entity technology;
+        if (Objects.isNull(operationComponent)) {
             technology = operationProductInComponent.getBelongsToField(OperationProductInComponentFields.TECHNOLOGY);
         } else {
             technology = operationComponent.getBelongsToField(TechnologyOperationComponentFields.TECHNOLOGY);
