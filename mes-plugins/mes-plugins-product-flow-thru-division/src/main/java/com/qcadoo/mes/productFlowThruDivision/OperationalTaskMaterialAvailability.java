@@ -6,6 +6,7 @@ import com.google.common.collect.Sets;
 import com.qcadoo.mes.advancedGenealogy.constants.BatchFields;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.basicProductionCounting.BasicProductionCountingService;
+import com.qcadoo.mes.basicProductionCounting.constants.BasicProductionCountingConstants;
 import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityFields;
 import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityRole;
 import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityTypeOfMaterial;
@@ -15,6 +16,7 @@ import com.qcadoo.mes.materialFlowResources.constants.ResourceFields;
 import com.qcadoo.mes.orders.constants.OperationalTaskFields;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.productFlowThruDivision.constants.*;
+import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
 import com.qcadoo.model.api.*;
 import com.qcadoo.model.api.search.JoinType;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
@@ -114,11 +116,19 @@ public class OperationalTaskMaterialAvailability {
 
         List<Entity> intermediates = getIntermediates(order, operationalTask);
         for (Entity intermediate : intermediates) {
-            BigDecimal totalQuantity = BigDecimalUtils.convertNullToZero(intermediate.getDecimalField(ProductionCountingQuantityFields.PLANNED_QUANTITY));
-
-            BigDecimal produced = BigDecimalUtils.convertNullToZero(intermediate.getDecimalField(ProductionCountingQuantityFields.PRODUCED_QUANTITY));
 
             Entity product = intermediate.getBelongsToField(ProductionCountingQuantityFields.PRODUCT);
+            Entity toc = intermediate.getBelongsToField(ProductionCountingQuantityFields.TECHNOLOGY_OPERATION_COMPONENT);
+            List<Long> children = toc.getHasManyField(TechnologyOperationComponentFields.CHILDREN).stream().map(t -> t.getId()).collect(Collectors.toList());
+            Optional<Entity> childIntermediate = getChildIntermediates(order, children, product);
+
+            BigDecimal totalQuantity = BigDecimalUtils.convertNullToZero(intermediate.getDecimalField(ProductionCountingQuantityFields.PLANNED_QUANTITY));
+            BigDecimal produced = BigDecimal.ZERO;
+
+            if(childIntermediate.isPresent()) {
+                produced = BigDecimalUtils.convertNullToZero(childIntermediate.get().getDecimalField(ProductionCountingQuantityFields.PRODUCED_QUANTITY));
+            }
+
             Entity location = intermediate
                     .getBelongsToField(ProductionCountingQuantityFieldsPFTD.PRODUCTS_FLOW_LOCATION);
 
@@ -129,11 +139,11 @@ public class OperationalTaskMaterialAvailability {
             }
             Entity materialAvailability = createMaterialAvailability(materialAvailabilityDD, product, typOfMaterial,
                     operationalTask, totalQuantity, produced, location, batchesById.values());
-            if(Objects.isNull(location)) {
+            if (Objects.isNull(location)) {
 
                 materialAvailability.setField(OperationalTaskMaterialAvailabilityFields.AVAILABLE_QUANTITY, BigDecimal.ZERO);
 
-                if(BigDecimal.ZERO.compareTo(produced) == 0) {
+                if (BigDecimal.ZERO.compareTo(produced) == 0) {
                     materialAvailability.setField(OperationalTaskMaterialAvailabilityFields.AVAILABILITY,
                             AvailabilityOfMaterialAvailability.NONE.getStrValue());
                 } else if (produced.compareTo(totalQuantity) <= 0) {
@@ -150,6 +160,7 @@ public class OperationalTaskMaterialAvailability {
         }
         return newOrderMaterialAvailability;
     }
+
 
     private Entity createMaterialAvailability(final DataDefinition orderMaterialAvailabilityDD,
                                               final Entity product, final String typeOfMaterial,
@@ -294,6 +305,7 @@ public class OperationalTaskMaterialAvailability {
 
     private List<Entity> getIntermediates(Entity order, Entity operationalTask) {
         Entity toc = operationalTask.getBelongsToField(OperationalTaskFields.TECHNOLOGY_OPERATION_COMPONENT);
+
         return basicProductionCountingService.getUsedMaterialsFromProductionCountingQuantities(order)
                 .stream()
                 .filter(material -> material.getBelongsToField(ProductionCountingQuantityFields.TECHNOLOGY_OPERATION_COMPONENT).getId().equals(toc.getId())
@@ -302,6 +314,27 @@ public class OperationalTaskMaterialAvailability {
                         && material.getStringField(ProductionCountingQuantityFields.TYPE_OF_MATERIAL).equals(
                         ProductionCountingQuantityTypeOfMaterial.INTERMEDIATE.getStringValue()))
                 .collect(Collectors.toList());
+    }
+
+
+    private Optional<Entity> getChildIntermediates(Entity order, List<Long> tocs, Entity product) {
+        return getProducedMaterialsFromProductionCountingQuantities(order)
+                .stream()
+                .filter(material -> tocs.contains(material.getBelongsToField(ProductionCountingQuantityFields.TECHNOLOGY_OPERATION_COMPONENT).getId())
+                        && material.getBelongsToField(ProductionCountingQuantityFields.PRODUCT).getId().equals(product.getId())
+                        && material.getStringField(ProductionCountingQuantityFields.ROLE).equals(
+                        ProductionCountingQuantityRole.PRODUCED.getStringValue())
+                        && material.getStringField(ProductionCountingQuantityFields.TYPE_OF_MATERIAL).equals(
+                        ProductionCountingQuantityTypeOfMaterial.INTERMEDIATE.getStringValue()))
+                .findAny();
+    }
+
+    private List<Entity> getProducedMaterialsFromProductionCountingQuantities(Entity order) {
+        return getProductionCountingQuantityDD()
+                .find()
+                .add(SearchRestrictions.belongsTo(ProductionCountingQuantityFields.ORDER, order))
+                .add(SearchRestrictions.eq(ProductionCountingQuantityFields.ROLE,
+                        ProductionCountingQuantityRole.PRODUCED.getStringValue())).list().getEntities();
     }
 
     private BigDecimal getBatchesQuantity(final Collection<Entity> batches, final Entity product,
@@ -346,6 +379,12 @@ public class OperationalTaskMaterialAvailability {
     private DataDefinition getResourceDD() {
         return dataDefinitionService.get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER, MaterialFlowResourcesConstants.MODEL_RESOURCE);
     }
+
+    public DataDefinition getProductionCountingQuantityDD() {
+        return dataDefinitionService.get(BasicProductionCountingConstants.PLUGIN_IDENTIFIER,
+                BasicProductionCountingConstants.MODEL_PRODUCTION_COUNTING_QUANTITY);
+    }
+
 }
 
 
