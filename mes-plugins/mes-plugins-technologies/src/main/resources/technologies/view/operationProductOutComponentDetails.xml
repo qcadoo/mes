@@ -55,7 +55,7 @@
                     </component>
                 </layoutElement>
                 <layoutElement column="1" row="2">
-                    <component type="input" name="quantity" field="quantity">
+                    <component type="input" name="quantity" field="quantity" reference="quantity">
                         <option type="alignment" value="right"/>
                     </component>
                 </layoutElement>
@@ -81,5 +81,7 @@
     <hooks>
         <beforeRender class="com.qcadoo.mes.basic.util.UnitService"
                       method="fillProductUnitBeforeRender"/>
+        <beforeRender class="com.qcadoo.mes.technologies.hooks.OPOCDetailsHooks"
+                      method="onBeforeRender"/>
     </hooks>
 </view>

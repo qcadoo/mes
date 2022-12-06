@@ -40,7 +40,7 @@
 
         <windowTab name="main" reference="main">
             <component type="form" name="technologiesGeneratorParameters" reference="form">
-                <component type="gridLayout" name="generatorTabGridLayout"  columns="3" rows="6">
+                <component type="gridLayout" name="generatorTabGridLayout"  columns="3" rows="8">
                     <layoutElement column="1" row="1">
                         <component type="checkbox" name="completeWarehousesFlowWhileChecking" field="#{form}.completeWarehousesFlowWhileChecking"
                                    reference="completeWarehousesFlowWhileChecking" hasDescription="true">
@@ -74,6 +74,20 @@
                     <layoutElement column="1" row="6">
                         <component type="checkbox" name="checkForTheExistenceOfInputProductPrices" field="#{form}.checkForTheExistenceOfInputProductPrices"
                                    reference="checkForTheExistenceOfInputProductPrices" hasDescription="true">
+                            <option type="labelWidth" value="60"/>
+                        </component>
+                    </layoutElement>
+                    <layoutElement column="1" row="7">
+                        <component type="input" name="operationProductOutDefaultQuantity" field="operationProductOutDefaultQuantity"
+                                   reference="operationProductOutDefaultQuantity">
+                            <option type="alignment" value="right"/>
+                            <option type="labelWidth" value="60"/>
+                        </component>
+                    </layoutElement>
+                    <layoutElement column="1" row="8">
+                        <component type="input" name="operationProductInDefaultQuantity" field="operationProductInDefaultQuantity"
+                                   reference="operationProductInDefaultQuantity">
+                            <option type="alignment" value="right"/>
                             <option type="labelWidth" value="60"/>
                         </component>
                     </layoutElement>

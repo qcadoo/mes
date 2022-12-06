@@ -17,4 +17,8 @@ public final class ParameterFieldsT {
 
     public static final String CHECK_FOR_THE_EXISTENCE_OF_INPUT_PRODUCT_PRICES = "checkForTheExistenceOfInputProductPrices";
 
+    public static final String OPERATION_PRODUCT_IN_DEFAULT_QUANTITY = "operationProductInDefaultQuantity";
+
+    public static final String OPERATION_PRODUCT_OUT_DEFAULT_QUANTITY = "operationProductOutDefaultQuantity";
+
 }
