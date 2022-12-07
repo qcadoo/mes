@@ -2,6 +2,7 @@ package com.qcadoo.mes.technologies.listeners;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.states.service.client.util.ViewContextHolder;
 import com.qcadoo.mes.technologies.TechnologyNameAndNumberGenerator;
 import com.qcadoo.mes.technologies.constants.ModifyTechnologyAddProductHelperFields;
@@ -344,6 +345,9 @@ public class ModifyTechnologyListeners {
 
         newPBSG.setField(ProductBySizeGroupFields.OPERATION_PRODUCT_IN_COMPONENT, opic.getId());
         newPBSG.setField(ProductBySizeGroupFields.PRODUCT, product.getId());
+        newPBSG.setField(ProductBySizeGroupFields.UNIT, product.getStringField(ProductFields.UNIT));
+        newPBSG.setField(ProductBySizeGroupFields.GIVEN_UNIT, product.getStringField(ProductFields.UNIT));
+        newPBSG.setField(ProductBySizeGroupFields.GIVEN_QUANTITY, quantity);
         newPBSG.setField(ProductBySizeGroupFields.QUANTITY, quantity);
         newPBSG.setField(ProductBySizeGroupFields.SIZE_GROUP, pbsg.getBelongsToField(ProductBySizeGroupFields.SIZE_GROUP));
 
