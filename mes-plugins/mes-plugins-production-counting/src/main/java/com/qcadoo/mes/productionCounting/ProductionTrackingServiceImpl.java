@@ -45,6 +45,7 @@ import com.qcadoo.mes.productionCounting.constants.UsedBatchFields;
 import com.qcadoo.mes.productionCounting.newstates.ProductionTrackingStateServiceMarker;
 import com.qcadoo.mes.productionCounting.states.constants.ProductionTrackingState;
 import com.qcadoo.mes.productionCounting.states.constants.ProductionTrackingStateStringValues;
+import com.qcadoo.mes.productionCounting.states.listener.ProductionTrackingListenerService;
 import com.qcadoo.mes.states.service.StateChangeContextBuilder;
 import com.qcadoo.mes.technologies.TechnologyService;
 import com.qcadoo.model.api.BigDecimalUtils;
@@ -119,6 +120,9 @@ public class ProductionTrackingServiceImpl implements ProductionTrackingService 
 
     @Autowired
     private NumberService numberService;
+
+    @Autowired
+    private ProductionTrackingListenerService productionTrackingListenerService;
 
     @Override
     public void setTimeAndPieceworkComponentsVisible(final ViewDefinitionState view, final Entity order) {
@@ -323,7 +327,7 @@ public class ProductionTrackingServiceImpl implements ProductionTrackingService 
     }
 
     @Override
-    public void unCorrect(Entity correctingProductionTracking) {
+    public void unCorrect(Entity correctingProductionTracking, boolean updateOrderReportedQuantity) {
         Entity correctedProductionTracking = correctingProductionTracking.getDataDefinition().find()
                 .add(SearchRestrictions.belongsTo(ProductionTrackingFields.CORRECTION, correctingProductionTracking))
                 .uniqueResult();
@@ -331,7 +335,10 @@ public class ProductionTrackingServiceImpl implements ProductionTrackingService 
             correctedProductionTracking.setField(ProductionTrackingFields.CORRECTION, null);
             changeState(correctedProductionTracking, ProductionTrackingState.ACCEPTED);
             correctingProductionTracking.setField(ProductionTrackingFields.IS_CORRECTION, false);
-            correctingProductionTracking.getDataDefinition().save(correctingProductionTracking);
+            correctingProductionTracking = correctingProductionTracking.getDataDefinition().save(correctingProductionTracking);
+            if(updateOrderReportedQuantity) {
+                productionTrackingListenerService.updateOrderReportedQuantityAfterRemoveCorrection(correctedProductionTracking);
+            }
         }
     }
 

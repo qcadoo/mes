@@ -81,7 +81,7 @@ public class ProductionTrackingStateService extends BasicStateService implements
                 break;
 
             case ProductionTrackingStateStringValues.DECLINED:
-                productionTrackingService.unCorrect(entity);
+                productionTrackingService.unCorrect(entity, false);
 
                 if (ProductionTrackingStateStringValues.ACCEPTED.equals(sourceState)) {
                     productionTrackingListenerService.onChangeFromAcceptedToDeclined(entity);
