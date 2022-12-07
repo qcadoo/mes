@@ -24,7 +24,10 @@
 package com.qcadoo.mes.productFlowThruDivision.listeners;
 
 import java.util.Map;
+import java.util.Objects;
 
+import com.qcadoo.mes.basic.ParameterService;
+import com.qcadoo.mes.productFlowThruDivision.constants.ParameterFieldsPFTD;
 import com.qcadoo.mes.productFlowThruDivision.warehouseIssue.WarehouseIssueGenerator;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -60,14 +63,8 @@ public class OrderDetailsListenersPFTD {
     @Autowired
     private WarehouseIssueGenerator warehouseIssueGenerator;
 
-    public void issueForOrder(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
-        Entity order = form.getEntity();
-
-        if (order.getId() != null) {
-            warehouseIssueGenerator.generateWarehouseIssue(order.getDataDefinition().get(order.getId()));
-        }
-    }
+    @Autowired
+    private ParameterService parameterService;
 
     public void showWarehouseIssuesForOrder(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);

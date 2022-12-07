@@ -36,8 +36,4 @@
                    action="#{form}.fireEvent(showWarehouseIssuesForOrder);"/>
     </group>
 
-    <group name="issues" defaultAuthorizationRole="ROLE_SUPERADMIN">
-        <smallButton name="issueForOrder" icon="iconProducts16.png"
-                     action="#{form}.fireEvent(issueForOrder);"/>
-    </group>
 </ribbonExtension>
