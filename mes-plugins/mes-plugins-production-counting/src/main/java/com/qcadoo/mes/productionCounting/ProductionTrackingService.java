@@ -47,7 +47,7 @@ public interface ProductionTrackingService {
 
     Entity correct(Entity productionTracking);
 
-    void unCorrect(Entity productionTracking);
+    void unCorrect(Entity productionTracking, boolean updateOrderReportedQuantity);
 
     Optional<BigDecimal> calculateGivenQuantity(Entity trackingOperationProductInComponent, BigDecimal usedQuantity);
 

@@ -65,4 +65,6 @@ public final class ParameterFields {
 
     public static final String NUMBER_OFFICE_LICENSES = "numberOfficeLicenses";
 
+    public static final String MANY_ARTICLES_WITH_THE_SAME_EAN = "manyArticlesWithTheSameEAN";
+
 }

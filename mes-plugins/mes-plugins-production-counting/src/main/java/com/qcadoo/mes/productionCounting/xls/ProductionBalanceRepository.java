@@ -1267,7 +1267,7 @@ class ProductionBalanceRepository {
         query.append("o.number AS orderNumber, ");
         query.append("adc.number, ");
         query.append("adc.name, ");
-        query.append("oadc.actualcost AS actualCost ");
+        query.append("COALESCE(oadc.actualcost, 0) AS actualCost ");
         query.append("FROM costcalculation_orderadditionaldirectcost oadc ");
         query.append("JOIN orders_order o ON o.id = oadc.order_id ");
         query.append("JOIN costcalculation_additionaldirectcost adc ON adc.id = oadc.additionaldirectcost_id ");

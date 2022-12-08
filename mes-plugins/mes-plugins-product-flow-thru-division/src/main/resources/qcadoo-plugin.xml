@@ -846,11 +846,6 @@
                             class="com.qcadoo.mes.productFlowThruDivision.listeners.OrderDetailsListenersPFTD"
                             method="showWarehouseIssuesForOrder"/>
 
-        <view:view-listener plugin="orders" view="orderDetails"
-                            component="form" event="issueForOrder"
-                            class="com.qcadoo.mes.productFlowThruDivision.listeners.OrderDetailsListenersPFTD"
-                            method="issueForOrder"/>
-
         <view:view-listener plugin="materialFlowResources" view="warehouseStocksList"
                             component="grid" event="showPlannedConsumptionInOrders"
                             class="com.qcadoo.mes.productFlowThruDivision.listeners.WarehouseStocksListListenersPFTD"

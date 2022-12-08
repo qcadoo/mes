@@ -1,14 +1,9 @@
 package com.qcadoo.mes.orders.listeners;
 
-import static com.qcadoo.model.api.search.SearchProjections.alias;
-import static com.qcadoo.model.api.search.SearchProjections.list;
-import static com.qcadoo.model.api.search.SearchProjections.rowCount;
-
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +15,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.newstates.StateExecutorService;
+import com.qcadoo.mes.orders.ProductionLineScheduleService;
 import com.qcadoo.mes.orders.ProductionLineScheduleServicePPSExecutorService;
 import com.qcadoo.mes.orders.ProductionLineScheduleServicePSExecutorService;
 import com.qcadoo.mes.orders.constants.DurationOfOrderCalculatedOnBasis;
@@ -31,8 +27,6 @@ import com.qcadoo.mes.orders.constants.ProductionLineScheduleFields;
 import com.qcadoo.mes.orders.constants.ProductionLineSchedulePositionFields;
 import com.qcadoo.mes.orders.constants.ProductionLineScheduleSortOrder;
 import com.qcadoo.mes.orders.states.ProductionLineScheduleServiceMarker;
-import com.qcadoo.mes.orders.states.constants.OrderState;
-import com.qcadoo.mes.orders.states.constants.OrderStateStringValues;
 import com.qcadoo.mes.orders.validators.ProductionLineSchedulePositionValidators;
 import com.qcadoo.mes.productionLines.constants.ProductionLineFields;
 import com.qcadoo.mes.productionLines.constants.ProductionLinesConstants;
@@ -41,10 +35,7 @@ import com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperationCompon
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.search.SearchOrders;
-import com.qcadoo.model.api.search.SearchProjections;
 import com.qcadoo.model.api.search.SearchRestrictions;
-import com.qcadoo.plugin.api.PluginManager;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
@@ -52,8 +43,6 @@ import com.qcadoo.view.api.components.GridComponent;
 
 @Service
 public class ProductionLineScheduleDetailsListeners {
-
-    private static final String ORDERS_FOR_SUBPRODUCTS_GENERATION = "ordersForSubproductsGeneration";
 
     @Autowired
     private StateExecutorService stateExecutorService;
@@ -65,10 +54,10 @@ public class ProductionLineScheduleDetailsListeners {
     private NamedParameterJdbcTemplate jdbcTemplate;
 
     @Autowired
-    private PluginManager pluginManager;
+    private ParameterService parameterService;
 
     @Autowired
-    private ParameterService parameterService;
+    private ProductionLineScheduleService productionLineScheduleService;
 
     @Autowired
     private ProductionLineSchedulePositionValidators productionLineSchedulePositionValidators;
@@ -188,9 +177,9 @@ public class ProductionLineScheduleDetailsListeners {
         for (Entity productionLine : orderProductionLines) {
             Entity order = position.getBelongsToField(ProductionLineSchedulePositionFields.ORDER);
             Entity technology = order.getBelongsToField(OrderFields.TECHNOLOGY);
-            Date finishDate = getFinishDate(productionLinesFinishDates, scheduleStartTime, productionLine, order);
-            finishDate = getFinishDateWithChildren(position, finishDate);
-            Entity previousOrder = getPreviousOrder(productionLinesOrders, productionLine, finishDate);
+            Date finishDate = productionLineScheduleService.getFinishDate(productionLinesFinishDates, scheduleStartTime, productionLine, order);
+            finishDate = productionLineScheduleService.getFinishDateWithChildren(position, finishDate);
+            Entity previousOrder = productionLineScheduleService.getPreviousOrder(productionLinesOrders, productionLine, finishDate);
             if (DurationOfOrderCalculatedOnBasis.TIME_CONSUMING_TECHNOLOGY.getStringValue()
                     .equals(durationOfOrderCalculatedOnBasis)) {
                 productionLineScheduleServicePSExecutorService.createProductionLinePositionNewData(orderProductionLinesPositionNewData,
@@ -202,72 +191,6 @@ public class ProductionLineScheduleDetailsListeners {
             }
         }
     }
-
-    private Entity getPreviousOrder(Map<Long, Entity> productionLinesOrders, Entity productionLine, final Date orderStartDate) {
-        Entity previousOrder = productionLinesOrders.get(productionLine.getId());
-        if (Objects.isNull(previousOrder)) {
-            Entity previousOrderFromDB = getPreviousOrderFromDB(productionLine, orderStartDate);
-            if (previousOrderFromDB != null) {
-                previousOrder = previousOrderFromDB;
-                productionLinesOrders.put(productionLine.getId(), previousOrder);
-            }
-        }
-        return previousOrder;
-    }
-
-    private Entity getPreviousOrderFromDB(final Entity productionLine, final Date orderStartDate) {
-        return dataDefinitionService
-                .get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER)
-                .find()
-                .add(SearchRestrictions.belongsTo(OrderFields.PRODUCTION_LINE,
-                        productionLine))
-                .add(SearchRestrictions.or(SearchRestrictions.ne(OrderFields.STATE, OrderState.DECLINED.getStringValue()),
-                        SearchRestrictions.ne(OrderFields.STATE, OrderState.ABANDONED.getStringValue())))
-                .add(SearchRestrictions.lt(OrderFields.FINISH_DATE, orderStartDate))
-                .addOrder(SearchOrders.desc(OrderFields.FINISH_DATE)).setMaxResults(1).uniqueResult();
-    }
-
-    private Date getFinishDateWithChildren(Entity position, Date finishDate) {
-        if (pluginManager.isPluginEnabled(ORDERS_FOR_SUBPRODUCTS_GENERATION)) {
-            Date childEndTime = productionLineSchedulePositionValidators.getOrdersChildrenMaxEndTime(position);
-            if (!Objects.isNull(childEndTime) && childEndTime.after(finishDate)) {
-                finishDate = childEndTime;
-            }
-        }
-        return finishDate;
-    }
-
-    private Date getFinishDate(Map<Long, Date> productionLinesFinishDates, Date scheduleStartTime, Entity productionLine, Entity order) {
-        Date finishDate = productionLinesFinishDates.get(productionLine.getId());
-        if (finishDate == null) {
-            Date ordersMaxFinishDate = getOrdersMaxFinishDateForProductionLine(scheduleStartTime,
-                    productionLine, order);
-            if (ordersMaxFinishDate != null) {
-                finishDate = ordersMaxFinishDate;
-                productionLinesFinishDates.put(productionLine.getId(), finishDate);
-            }
-        }
-        if (finishDate == null) {
-            finishDate = scheduleStartTime;
-        }
-        return finishDate;
-    }
-
-    private Date getOrdersMaxFinishDateForProductionLine(Date scheduleStartTime, Entity productionLine, Entity order) {
-        Entity ordersMaxFinishDateEntity = dataDefinitionService
-                .get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).find()
-                .add(SearchRestrictions.idNe(order.getId()))
-                .add(SearchRestrictions.belongsTo(OrderFields.PRODUCTION_LINE, productionLine))
-                .add(SearchRestrictions.ne(OrderFields.STATE, OrderStateStringValues.ABANDONED))
-                .add(SearchRestrictions.ne(OrderFields.STATE, OrderStateStringValues.DECLINED))
-                .add(SearchRestrictions.gt(OrderFields.FINISH_DATE, scheduleStartTime))
-                .setProjection(list()
-                        .add(alias(SearchProjections.max(OrderFields.FINISH_DATE), OrderFields.FINISH_DATE))
-                        .add(rowCount()))
-                .addOrder(SearchOrders.desc(OrderFields.FINISH_DATE)).setMaxResults(1).uniqueResult();
-        return ordersMaxFinishDateEntity.getDateField(OrderFields.FINISH_DATE);
-    }
-
 
     private List<Long> sortPositionsForProductionLines(Long scheduleId) {
         Entity schedule = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_PRODUCTION_LINE_SCHEDULE)

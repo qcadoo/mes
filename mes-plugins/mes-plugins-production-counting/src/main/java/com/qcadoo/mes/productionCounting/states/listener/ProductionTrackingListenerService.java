@@ -328,6 +328,10 @@ public final class ProductionTrackingListenerService {
         fillOrderReportedQuantity(productionTracking, new Substraction());
     }
 
+    public void updateOrderReportedQuantityAfterRemoveCorrection(final Entity productionTracking) {
+        fillOrderReportedQuantity(productionTracking, new Addition());
+    }
+
     private void fillOrderReportedQuantity(final Entity productionTracking, final Operation operation) {
         Entity order = productionTracking.getBelongsToField(ProductionTrackingFields.ORDER);
         order = order.getDataDefinition().get(order.getId());

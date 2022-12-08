@@ -239,7 +239,9 @@ public class ProductionTrackingHooks {
                 .add(SearchRestrictions.belongsTo(ProductionTrackingFields.CORRECTION, productionTracking))
                 .uniqueResult();
         if (correctedProductionTracking != null) {
-            productionTrackingService.unCorrect(productionTracking);
+            productionTrackingListenerService.updateOrderReportedQuantityOnRemove(productionTracking);
+            productionTrackingService.unCorrect(productionTracking, true);
+
         } else {
             productionTrackingListenerService.updateOrderReportedQuantityOnRemove(productionTracking);
         }
