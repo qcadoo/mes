@@ -105,7 +105,7 @@ public class TechnologyOperationComponentHooksTNFO {
     }
 
     private void copyOperationWorkstationTimes(Entity target, Entity source) {
-        if (target.getHasManyField(TECH_OPER_COMP_WORKSTATION_TIMES).isEmpty()) {
+        if (target.getHasManyField(TECH_OPER_COMP_WORKSTATION_TIMES).isEmpty() && !target.isCopied()) {
             DataDefinition techOperCompWorkstationTimeDD = dataDefinitionService.get(TimeNormsConstants.PLUGIN_IDENTIFIER,
                     TimeNormsConstants.TECH_OPER_COMP_WORKSTATION_TIME);
             List<Entity> techOperCompWorkstationTimes = Lists.newArrayList();
