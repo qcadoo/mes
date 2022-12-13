@@ -210,12 +210,13 @@ public class ScheduleDetailsListenersPS {
             long start = System.currentTimeMillis();
             Entity position = dataDefinitionService
                     .get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_SCHEDULE_POSITION).get(positionId);
-            if (ordersToAvoid.contains(position.getBelongsToField(SchedulePositionFields.ORDER).getId())) {
+            Entity order = position.getBelongsToField(SchedulePositionFields.ORDER);
+            if (ordersToAvoid.contains(order.getId())) {
                 continue;
             }
-            List<Entity> workstations = getWorkstationsFromTOC(position);
+            List<Entity> workstations = getWorkstationsFromTOC(schedule, position, order);
             if (workstations.isEmpty()) {
-                ordersToAvoid.add(position.getBelongsToField(SchedulePositionFields.ORDER).getId());
+                ordersToAvoid.add(order.getId());
                 continue;
             }
             Map<Long, PositionNewData> operationWorkstationsPositionNewData = Maps.newHashMap();
@@ -224,7 +225,7 @@ public class ScheduleDetailsListenersPS {
                     position, workstations, operationWorkstationsPositionNewData);
 
             if (allMachineWorkTimesEqualsZero) {
-                ordersToAvoid.add(position.getBelongsToField(SchedulePositionFields.ORDER).getId());
+                ordersToAvoid.add(order.getId());
                 continue;
             }
 
@@ -251,7 +252,7 @@ public class ScheduleDetailsListenersPS {
         LOG.info("Plan for shift {} - workstations assignment: {}s.", schedule.getStringField(ScheduleFields.NUMBER), (finishAll - startAll) / 1000);
     }
 
-    private List<Entity> getWorkstationsFromTOC(Entity position) {
+    private List<Entity> getWorkstationsFromTOC(Entity schedule, Entity position, Entity order) {
         Entity technologyOperationComponent = position.getBelongsToField(SchedulePositionFields.TECHNOLOGY_OPERATION_COMPONENT);
         List<Entity> workstations;
         if (AssignedToOperation.WORKSTATIONS.getStringValue()
@@ -266,7 +267,15 @@ public class ScheduleDetailsListenersPS {
                 workstations = workstationType.getHasManyField(WorkstationTypeFields.WORKSTATIONS);
             }
         }
-        if (position.getBelongsToField(SchedulePositionFields.SCHEDULE).getBooleanField(ScheduleFields.SCHEDULE_FOR_BUFFER)) {
+        boolean onlyWorkstationsOfLineFromOrder = schedule.getBooleanField(ScheduleFields.ONLY_WORKSTATIONS_OF_LINE_FROM_ORDER);
+        if (onlyWorkstationsOfLineFromOrder) {
+            Entity productionLine = order.getBelongsToField(OrderFields.PRODUCTION_LINE);
+            if (productionLine != null) {
+                workstations = workstations.stream().filter(e -> e.getBelongsToField(WorkstationFieldsPL.PRODUCTION_LINE) != null && productionLine.getId().equals(e.getBelongsToField(WorkstationFieldsPL.PRODUCTION_LINE).getId()))
+                        .collect(Collectors.toList());
+            }
+        }
+        if (schedule.getBooleanField(ScheduleFields.SCHEDULE_FOR_BUFFER)) {
             List<Entity> bufferWorkstations = workstations.stream().filter(e -> e.getBooleanField(WorkstationFields.BUFFER))
                     .collect(Collectors.toList());
             if (!bufferWorkstations.isEmpty()) {
