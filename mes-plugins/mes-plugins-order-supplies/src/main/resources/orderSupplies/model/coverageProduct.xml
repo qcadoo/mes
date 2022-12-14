@@ -73,6 +73,7 @@
             <validatesUnscaledValue max="11"/>
             <validatesScale max="5"/>
         </decimal>
+        <decimal name="price"/>
 
         <enum name="state" values="01covered,02delay,03lack"/>
 

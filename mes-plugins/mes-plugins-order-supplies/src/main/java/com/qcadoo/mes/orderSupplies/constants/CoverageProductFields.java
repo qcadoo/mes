@@ -57,6 +57,8 @@ public final class CoverageProductFields {
 
     public static final String PRODUCE_QUANTITY = "produceQuantity";
 
+    public static final String PRICE = "price";
+
     public static final String STATE = "state";
 
     public static final String COVERAGE_PRODUCT_LOGGINGS = "coverageProductLoggings";

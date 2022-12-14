@@ -113,12 +113,12 @@ public class MaterialRequirementCoverageHelper {
     }
 
     public void fillCoverageProductForOrder(final Map<Long, Entity> productAndCoverageProducts, final Integer productId,
-            final String productType, final Entity coverageProductLogging) {
+                                            final String productType, BigDecimal price, final Entity coverageProductLogging) {
         if (coverageProductLogging != null) {
             if (productAndCoverageProducts.containsKey(Long.valueOf(productId))) {
                 updateCoverageProductForOrder(productAndCoverageProducts, productId, productType, coverageProductLogging);
             } else {
-                addCoverageProductForOrder(productAndCoverageProducts, productId, productType, coverageProductLogging);
+                addCoverageProductForOrder(productAndCoverageProducts, productId, productType, price, coverageProductLogging);
             }
         }
     }
@@ -133,10 +133,11 @@ public class MaterialRequirementCoverageHelper {
     }
 
     private void addCoverageProductForOrder(final Map<Long, Entity> productAndCoverageProducts, final Integer productId,
-            final String productType, final Entity coverageProductLogging) {
+                                            final String productType, BigDecimal price, final Entity coverageProductLogging) {
         Entity coverageProduct = orderSuppliesService.getCoverageProductDD().create();
 
         coverageProduct.setField(CoverageProductFields.PRODUCT, Long.valueOf(productId));
+        coverageProduct.setField(CoverageProductFields.PRICE, price);
         coverageProduct.setField(CoverageProductFields.PRODUCT_TYPE, productType);
         coverageProduct.setField(CoverageProductFields.DEMAND_QUANTITY, numberService
                 .setScaleWithDefaultMathContext(coverageProductLogging.getDecimalField(CoverageProductLoggingFields.CHANGES)));

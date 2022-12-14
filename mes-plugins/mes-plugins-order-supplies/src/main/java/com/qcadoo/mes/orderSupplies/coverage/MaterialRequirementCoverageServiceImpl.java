@@ -33,6 +33,9 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import com.qcadoo.mes.basic.ParameterService;
+import com.qcadoo.mes.costCalculation.constants.MaterialCostsUsed;
+import com.qcadoo.mes.productionCounting.constants.ParameterFieldsPC;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -105,6 +108,9 @@ public class MaterialRequirementCoverageServiceImpl implements MaterialRequireme
 
     @Autowired
     private MaterialRequirementCoverageHelper materialRequirementCoverageHelper;
+
+    @Autowired
+    private ParameterService parameterService;
 
     @Transactional
     @Override
@@ -262,10 +268,10 @@ public class MaterialRequirementCoverageServiceImpl implements MaterialRequireme
         String sql = "INSERT INTO ordersupplies_coverageproduct "
                 + "(materialrequirementcoverage_id, product_id, lackfromdate, demandquantity, coveredquantity, "
                 + "reservemissingquantity, deliveredquantity, locationsquantity, state, productnumber, productname, "
-                + "productunit, produceQuantity, fromSelectedOrder, company_id) "
+                + "productunit, produceQuantity, fromSelectedOrder, company_id, price) "
                 + "VALUES (:materialrequirementcoverage_id, :product_id, :lackfromdate, :demandquantity, :coveredquantity, "
                 + ":reservemissingquantity, :deliveredquantity, :locationsquantity, :state, :productnumber, :productname, "
-                + ":productunit, :produceQuantity, :fromSelectedOrder, :company_id)";
+                + ":productunit, :produceQuantity, :fromSelectedOrder, :company_id, :price)";
 
         Map<String, Object> parameters = Maps.newHashMap();
 
@@ -295,6 +301,12 @@ public class MaterialRequirementCoverageServiceImpl implements MaterialRequireme
         parameters.put("productunit",
                 coverageProduct.getBelongsToField(CoverageProductFields.PRODUCT).getStringField(ProductFields.UNIT));
         parameters.put("fromSelectedOrder", coverageProduct.getBooleanField(CoverageProductFields.FROM_SELECTED_ORDER));
+        Entity parameter = parameterService.getParameter();
+        if(MaterialCostsUsed.COST_FOR_ORDER.getStringValue().equals(parameter.getStringField(ParameterFieldsPC.MATERIAL_COSTS_USED_PB))) {
+            parameters.put("price", BigDecimal.ZERO);
+        } else {
+            parameters.put("price", coverageProduct.getDecimalField(CoverageProductFields.PRICE));
+        }
 
         SqlParameterSource namedParameters = new MapSqlParameterSource(parameters);
 
@@ -392,7 +404,7 @@ public class MaterialRequirementCoverageServiceImpl implements MaterialRequireme
                         actualDate);
 
                 materialRequirementCoverageHelper.fillCoverageProductForOrder(productAndCoverageProducts,
-                        reg.getIntegerField("productId"), reg.getStringField("productType"), coverageProductLogging);
+                        reg.getIntegerField("productId"), reg.getStringField("productType"), reg.getDecimalField("price"), coverageProductLogging);
             }
         }
     }
