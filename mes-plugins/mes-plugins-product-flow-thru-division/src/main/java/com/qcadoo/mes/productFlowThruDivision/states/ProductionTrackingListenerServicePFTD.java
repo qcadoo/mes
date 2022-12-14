@@ -24,13 +24,7 @@
 package com.qcadoo.mes.productFlowThruDivision.states;
 
 import java.math.BigDecimal;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import com.qcadoo.mes.basicProductionCounting.constants.BasicProductionCountingConstants;
@@ -138,7 +132,7 @@ public final class ProductionTrackingListenerServicePFTD {
         boolean forEach = TypeOfProductionRecording.FOR_EACH.getStringValue().equals(
                 order.getStringField(OrderFieldsPC.TYPE_OF_PRODUCTION_RECORDING));
 
-        if(!forEach) {
+        if (!forEach) {
             return false;
         }
 
@@ -148,7 +142,7 @@ public final class ProductionTrackingListenerServicePFTD {
         boolean documentsOnEndOfTheOrder = ReceiptOfProducts.END_OF_THE_ORDER.getStringValue().equals(receiptOfProducts)
                 && ReleaseOfMaterials.END_OF_THE_ORDER.getStringValue().equals(releaseOfMaterials);
 
-        if(!documentsOnEndOfTheOrder) {
+        if (!documentsOnEndOfTheOrder) {
             return false;
         }
 
@@ -184,26 +178,27 @@ public final class ProductionTrackingListenerServicePFTD {
         boolean releaseMaterials = ReleaseOfMaterials.ON_ACCEPTANCE_REGISTRATION_RECORD.getStringValue()
                 .equals(parameterService.getParameter().getStringField(ParameterFieldsPC.RELEASE_OF_MATERIALS));
 
+
+        boolean cumulated = TypeOfProductionRecording.CUMULATED.getStringValue().equals(
+                order.getStringField(OrderFieldsPC.TYPE_OF_PRODUCTION_RECORDING));
+
+        if (cumulated) {
+            List<Long> productIds = groupedRecordInProducts.values().stream().map(topic -> topic.getBelongsToField(TrackingOperationProductInComponentFields.PRODUCT).getId()).collect(Collectors.toList());
+            Set<Long> duplicatedProducts = productIds.stream()
+                    .filter(i -> Collections.frequency(productIds, i) > 1)
+                    .collect(Collectors.toSet());
+            if (!duplicatedProducts.isEmpty()) {
+                productionTracking.addGlobalError(
+                        "productFlowThruDivision.location.components.locationsAreDifferent");
+                return;
+            }
+
+        }
+
         if (!groupedRecordInProducts.isEmpty() && releaseMaterials &&
                 !checkIfProductsAvailableInStock(productionTracking, groupedRecordInProducts)) {
             return;
         }
-
-/*        boolean cumulated = TypeOfProductionRecording.CUMULATED.getStringValue().equals(
-                order.getStringField(OrderFieldsPC.TYPE_OF_PRODUCTION_RECORDING));
-
-        if(cumulated) {
-            Optional<Long> maybeLocation = groupedRecordInProducts.keySet().stream().findFirst();
-            if(maybeLocation.isPresent()) {
-                boolean allSameLocation = groupedRecordInProducts.keySet().stream().allMatch(x -> x.equals(maybeLocation.get()));
-
-                if(!allSameLocation) {
-                    productionTracking.addGlobalError(
-                            "productFlowThruDivision.location.components.locationsAreDifferent");
-                    return;
-                }
-            }
-        }*/
 
         String receiptOfProducts = parameterService.getParameter().getStringField(ParameterFieldsPC.RECEIPT_OF_PRODUCTS);
 
@@ -496,10 +491,10 @@ public final class ProductionTrackingListenerServicePFTD {
             }
 
             Optional<Entity> optionalEntity = intermediateRecords.stream().findFirst();
-            if(optionalEntity.isPresent()) {
+            if (optionalEntity.isPresent()) {
                 Entity trackingOperationProductOutComponent = optionalEntity.get();
                 Entity pt = trackingOperationProductOutComponent.getBelongsToField(TrackingOperationProductOutComponentFields.PRODUCTION_TRACKING);
-                if(notCreateDocumentsForIntermediateRecords(pt)) {
+                if (notCreateDocumentsForIntermediateRecords(pt)) {
                     return null;
                 }
             }
