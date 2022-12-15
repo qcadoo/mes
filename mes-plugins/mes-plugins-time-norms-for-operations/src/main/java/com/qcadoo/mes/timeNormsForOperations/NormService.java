@@ -25,6 +25,7 @@ package com.qcadoo.mes.timeNormsForOperations;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -34,14 +35,19 @@ import com.qcadoo.mes.technologies.TechnologyService;
 import com.qcadoo.mes.technologies.constants.OperationFields;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
 import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
+import com.qcadoo.mes.timeNormsForOperations.constants.TechOperCompWorkstationTimeFields;
 import com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperationComponentFieldsTNFO;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.NumberService;
 
 @Service
 public class NormService {
 
     @Autowired
     private TechnologyService technologyService;
+
+    @Autowired
+    private NumberService numberService;
 
     public List<String> checkOperationOutputQuantities(final Entity technology) {
         List<String> messages = Lists.newArrayList();
@@ -83,6 +89,27 @@ public class NormService {
 
     private BigDecimal getProductionInOneCycle(final Entity operationComponent) {
         return operationComponent.getDecimalField(TechnologyOperationComponentFieldsTNFO.PRODUCTION_IN_ONE_CYCLE);
+    }
+
+    public Optional<Entity> getTechOperCompWorkstationTime(Entity technologyOperationComponent, Entity workstation) {
+        List<Entity> techOperCompWorkstationTimes = technologyOperationComponent
+                .getHasManyField(TechnologyOperationComponentFieldsTNFO.TECH_OPER_COMP_WORKSTATION_TIMES);
+        for (Entity techOperCompWorkstationTime : techOperCompWorkstationTimes) {
+            if (techOperCompWorkstationTime.getBelongsToField(TechOperCompWorkstationTimeFields.WORKSTATION).getId()
+                    .equals(workstation.getId())) {
+                return Optional.of(techOperCompWorkstationTime);
+            }
+        }
+        return Optional.empty();
+    }
+
+    public BigDecimal getStaffFactor(Entity operationComponent, Integer actualStaff) {
+        int minStaff = operationComponent.getIntegerField(TechnologyOperationComponentFieldsTNFO.MIN_STAFF);
+        if (operationComponent
+                .getBooleanField(TechnologyOperationComponentFieldsTNFO.TJ_DECREASES_FOR_ENLARGED_STAFF) && actualStaff != null && actualStaff != minStaff) {
+            return BigDecimal.valueOf(minStaff).divide(BigDecimal.valueOf(actualStaff), numberService.getMathContext());
+        }
+        return BigDecimal.ONE;
     }
 
 }

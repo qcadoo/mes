@@ -31,6 +31,7 @@ import com.qcadoo.mes.productionLines.constants.WorkstationFieldsPL;
 import com.qcadoo.mes.technologies.ProductQuantitiesService;
 import com.qcadoo.mes.technologies.constants.OperationFields;
 import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
+import com.qcadoo.mes.timeNormsForOperations.NormService;
 import com.qcadoo.mes.timeNormsForOperations.constants.TechOperCompWorkstationTimeFields;
 import com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperationComponentFieldsTNFO;
 import com.qcadoo.model.api.BigDecimalUtils;
@@ -65,6 +66,9 @@ public class OperationalTaskHooks {
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
+
+    @Autowired
+    private NormService normService;
 
     public void onCopy(final DataDefinition operationalTaskDD, final Entity operationalTask) {
         setInitialState(operationalTask);
@@ -146,12 +150,10 @@ public class OperationalTaskHooks {
         productQuantitiesService.getProductComponentQuantities(technology, order.getDecimalField(OrderFields.PLANNED_QUANTITY),
                 operationRuns);
 
-        Optional<Entity> techOperCompWorkstationTime = getTechOperCompWorkstationTime(technologyOperationComponent, workstation);
+        Optional<Entity> techOperCompWorkstationTime = normService.getTechOperCompWorkstationTime(technologyOperationComponent, workstation);
+        BigDecimal staffFactor = normService.getStaffFactor(technologyOperationComponent, task.getIntegerField(OperationalTaskFields.ACTUAL_STAFF));
         Integer machineWorkTime;
         Integer additionalTime;
-        Integer actualStaff = task.getIntegerField(OperationalTaskFields.ACTUAL_STAFF);
-        int minStaff = technologyOperationComponent.getIntegerField(TechnologyOperationComponentFieldsTNFO.MIN_STAFF);
-        BigDecimal staffFactor = BigDecimal.valueOf(minStaff).divide(BigDecimal.valueOf(actualStaff), numberService.getMathContext());
         if (techOperCompWorkstationTime.isPresent()) {
             OperationWorkTime operationWorkTime = operationWorkTimeService.estimateTechOperationWorkTimeForWorkstation(
                     technologyOperationComponent,
@@ -179,18 +181,6 @@ public class OperationalTaskHooks {
             finishDate = Date.from(finishDate.toInstant().plusSeconds(additionalTime));
         }
         return finishDate;
-    }
-
-    private Optional<Entity> getTechOperCompWorkstationTime(Entity technologyOperationComponent, Entity workstation) {
-        List<Entity> techOperCompWorkstationTimes = technologyOperationComponent
-                .getHasManyField(TechnologyOperationComponentFieldsTNFO.TECH_OPER_COMP_WORKSTATION_TIMES);
-        for (Entity techOperCompWorkstationTime : techOperCompWorkstationTimes) {
-            if (techOperCompWorkstationTime.getBelongsToField(TechOperCompWorkstationTimeFields.WORKSTATION).getId()
-                    .equals(workstation.getId())) {
-                return Optional.of(techOperCompWorkstationTime);
-            }
-        }
-        return Optional.empty();
     }
 
     public void changeDateInOrder(Entity operationalTask) {
