@@ -208,7 +208,7 @@ public class ScheduleDetailsListenersPS {
             if (ordersToAvoid.contains(order.getId())) {
                 continue;
             }
-            List<Entity> workstations = getWorkstationsFromTOC(schedule, position, order);
+            List<Entity> workstations = schedulePositionValidators.getWorkstationsFromTOC(schedule, position, order);
             if (workstations.isEmpty()) {
                 ordersToAvoid.add(order.getId());
                 continue;
@@ -244,39 +244,6 @@ public class ScheduleDetailsListenersPS {
         }
         long finishAll = System.currentTimeMillis();
         LOG.info("Plan for shift {} - workstations assignment: {}s.", schedule.getStringField(ScheduleFields.NUMBER), (finishAll - startAll) / 1000);
-    }
-
-    private List<Entity> getWorkstationsFromTOC(Entity schedule, Entity position, Entity order) {
-        Entity technologyOperationComponent = position.getBelongsToField(SchedulePositionFields.TECHNOLOGY_OPERATION_COMPONENT);
-        List<Entity> workstations;
-        if (AssignedToOperation.WORKSTATIONS.getStringValue()
-                .equals(technologyOperationComponent.getStringField(TechnologyOperationComponentFields.ASSIGNED_TO_OPERATION))) {
-            workstations = technologyOperationComponent.getManyToManyField(TechnologyOperationComponentFields.WORKSTATIONS);
-        } else {
-            Entity workstationType = technologyOperationComponent
-                    .getBelongsToField(TechnologyOperationComponentFields.WORKSTATION_TYPE);
-            if (workstationType == null) {
-                workstations = Collections.emptyList();
-            } else {
-                workstations = workstationType.getHasManyField(WorkstationTypeFields.WORKSTATIONS);
-            }
-        }
-        boolean onlyWorkstationsOfLineFromOrder = schedule.getBooleanField(ScheduleFields.ONLY_WORKSTATIONS_OF_LINE_FROM_ORDER);
-        if (onlyWorkstationsOfLineFromOrder) {
-            Entity productionLine = order.getBelongsToField(OrderFields.PRODUCTION_LINE);
-            if (productionLine != null) {
-                workstations = workstations.stream().filter(e -> e.getBelongsToField(WorkstationFieldsPL.PRODUCTION_LINE) != null && productionLine.getId().equals(e.getBelongsToField(WorkstationFieldsPL.PRODUCTION_LINE).getId()))
-                        .collect(Collectors.toList());
-            }
-        }
-        if (schedule.getBooleanField(ScheduleFields.SCHEDULE_FOR_BUFFER)) {
-            List<Entity> bufferWorkstations = workstations.stream().filter(e -> e.getBooleanField(WorkstationFields.BUFFER))
-                    .collect(Collectors.toList());
-            if (!bufferWorkstations.isEmpty()) {
-                return bufferWorkstations;
-            }
-        }
-        return workstations;
     }
 
     private boolean getWorkstationsNewFinishDate(Map<Long, Date> workstationsFinishDates, Date scheduleStartTime, Entity position,
