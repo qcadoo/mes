@@ -161,7 +161,7 @@
     <repositories>
         <repository>
             <id>qcadoo-releases-repository</id>
-            <url>http://nexus.qcadoo.org/content/repositories/releases</url>
+            <url>https://nexus.qcadoo.org/content/repositories/releases</url>
             <releases>
                 <enabled>true</enabled>
                 <updatePolicy>never</updatePolicy>
@@ -183,11 +183,11 @@
     <distributionManagement>
         <repository>
             <id>qcadoo-releases-repository</id>
-            <url>http://nexus.qcadoo.org/content/repositories/releases</url>
+            <url>https://nexus.qcadoo.org/content/repositories/releases</url>
         </repository>
         <snapshotRepository>
             <id>qcadoo-snapshots-repository</id>
-            <url>http://nexus.qcadoo.org/content/repositories/snapshots</url>
+            <url>https://nexus.qcadoo.org/content/repositories/snapshots</url>
             <uniqueVersion>false</uniqueVersion>
         </snapshotRepository>
     </distributionManagement>
