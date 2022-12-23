@@ -27,6 +27,8 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.qcadoo.mes.materialFlowResources.constants.DocumentFields;
+import com.qcadoo.mes.materialFlowResources.constants.DocumentState;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -47,6 +49,8 @@ public class DocumentPositionsCriteriaModifier {
     public static final String LOCATION_FROM_ID = "locationFrom_id";
 
     public static final String LOCATION_TO_ID = "locationTo_id";
+    public static final String L_ORDER_ID = "orderId";
+    public static final String L_STATE = "state";
 
     @Autowired
     private SecurityService securityService;
@@ -55,6 +59,10 @@ public class DocumentPositionsCriteriaModifier {
     private DataDefinitionService dataDefinitionService;
 
     public void restrictToUserLocations(final SearchCriteriaBuilder scb, final FilterValueHolder filterValue) {
+
+        scb.add(SearchRestrictions.not(SearchRestrictions.and(SearchRestrictions.isNotNull(L_ORDER_ID),
+                SearchRestrictions.eq(L_STATE, DocumentState.DRAFT.getStringValue()))));
+
         Long currentUserId = securityService.getCurrentUserId();
         if (Objects.nonNull(currentUserId)) {
             EntityList userLocations = userDataDefinition().get(currentUserId).getHasManyField(UserFieldsMF.USER_LOCATIONS);

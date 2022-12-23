@@ -146,7 +146,7 @@ public class OperationalTaskMaterialAvailability {
                 if (BigDecimal.ZERO.compareTo(produced) == 0) {
                     materialAvailability.setField(OperationalTaskMaterialAvailabilityFields.AVAILABILITY,
                             AvailabilityOfMaterialAvailability.NONE.getStrValue());
-                } else if (produced.compareTo(totalQuantity) <= 0) {
+                } else if (produced.compareTo(totalQuantity) < 0) {
                     materialAvailability.setField(OperationalTaskMaterialAvailabilityFields.AVAILABILITY,
                             AvailabilityOfMaterialAvailability.PARTIAL.getStrValue());
                 } else {
@@ -291,11 +291,10 @@ public class OperationalTaskMaterialAvailability {
         Entity toc = operationalTask.getBelongsToField(OperationalTaskFields.TECHNOLOGY_OPERATION_COMPONENT);
         return basicProductionCountingService.getUsedMaterialsFromProductionCountingQuantities(order)
                 .stream()
-                .filter(material -> material.getBelongsToField(ProductionCountingQuantityFields.TECHNOLOGY_OPERATION_COMPONENT).getId().equals(toc.getId())
-                        && material.getStringField(ProductionCountingQuantityFields.ROLE).equals(
-                        ProductionCountingQuantityRole.USED.getStringValue())
-                        && material.getStringField(ProductionCountingQuantityFields.TYPE_OF_MATERIAL).equals(
-                        ProductionCountingQuantityTypeOfMaterial.COMPONENT.getStringValue()))
+                .filter(material -> Objects.nonNull(material.getBelongsToField(ProductionCountingQuantityFields.TECHNOLOGY_OPERATION_COMPONENT))
+                        && material.getBelongsToField(ProductionCountingQuantityFields.TECHNOLOGY_OPERATION_COMPONENT).getId().equals(toc.getId())
+                        && material.getStringField(ProductionCountingQuantityFields.ROLE).equals(ProductionCountingQuantityRole.USED.getStringValue())
+                        && material.getStringField(ProductionCountingQuantityFields.TYPE_OF_MATERIAL).equals(ProductionCountingQuantityTypeOfMaterial.COMPONENT.getStringValue()))
                 .collect(
                         Collectors.groupingBy(
                                 u -> ((Entity) u).getBelongsToField(ProductionCountingQuantityFields.PRODUCT).getId(),
@@ -308,7 +307,8 @@ public class OperationalTaskMaterialAvailability {
 
         return basicProductionCountingService.getUsedMaterialsFromProductionCountingQuantities(order)
                 .stream()
-                .filter(material -> material.getBelongsToField(ProductionCountingQuantityFields.TECHNOLOGY_OPERATION_COMPONENT).getId().equals(toc.getId())
+                .filter(material -> Objects.nonNull(material.getBelongsToField(ProductionCountingQuantityFields.TECHNOLOGY_OPERATION_COMPONENT))
+                        && material.getBelongsToField(ProductionCountingQuantityFields.TECHNOLOGY_OPERATION_COMPONENT).getId().equals(toc.getId())
                         && material.getStringField(ProductionCountingQuantityFields.ROLE).equals(
                         ProductionCountingQuantityRole.USED.getStringValue())
                         && material.getStringField(ProductionCountingQuantityFields.TYPE_OF_MATERIAL).equals(
@@ -320,7 +320,8 @@ public class OperationalTaskMaterialAvailability {
     private Optional<Entity> getChildIntermediates(Entity order, List<Long> tocs, Entity product) {
         return getProducedMaterialsFromProductionCountingQuantities(order)
                 .stream()
-                .filter(material -> tocs.contains(material.getBelongsToField(ProductionCountingQuantityFields.TECHNOLOGY_OPERATION_COMPONENT).getId())
+                .filter(material -> Objects.nonNull(material.getBelongsToField(ProductionCountingQuantityFields.TECHNOLOGY_OPERATION_COMPONENT))
+                        && tocs.contains(material.getBelongsToField(ProductionCountingQuantityFields.TECHNOLOGY_OPERATION_COMPONENT).getId())
                         && material.getBelongsToField(ProductionCountingQuantityFields.PRODUCT).getId().equals(product.getId())
                         && material.getStringField(ProductionCountingQuantityFields.ROLE).equals(
                         ProductionCountingQuantityRole.PRODUCED.getStringValue())

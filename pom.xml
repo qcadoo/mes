@@ -41,7 +41,7 @@
     </modules>
 
     <properties>
-        <qcadoo.buildVersionForUser>2.4.5</qcadoo.buildVersionForUser>
+        <qcadoo.buildVersionForUser>2.4.6</qcadoo.buildVersionForUser>
         <qcadoo.version>${project.version}</qcadoo.version>
         <qcadoo.plugin.version>1.5</qcadoo.plugin.version>
         <qcadoo.maven.plugin.version>1.5-SNAPSHOT</qcadoo.maven.plugin.version>
@@ -161,7 +161,7 @@
     <repositories>
         <repository>
             <id>qcadoo-releases-repository</id>
-            <url>http://nexus.qcadoo.org/content/repositories/releases</url>
+            <url>https://nexus.qcadoo.org/content/repositories/releases</url>
             <releases>
                 <enabled>true</enabled>
                 <updatePolicy>never</updatePolicy>
@@ -183,11 +183,11 @@
     <distributionManagement>
         <repository>
             <id>qcadoo-releases-repository</id>
-            <url>http://nexus.qcadoo.org/content/repositories/releases</url>
+            <url>https://nexus.qcadoo.org/content/repositories/releases</url>
         </repository>
         <snapshotRepository>
             <id>qcadoo-snapshots-repository</id>
-            <url>http://nexus.qcadoo.org/content/repositories/snapshots</url>
+            <url>https://nexus.qcadoo.org/content/repositories/snapshots</url>
             <uniqueVersion>false</uniqueVersion>
         </snapshotRepository>
     </distributionManagement>

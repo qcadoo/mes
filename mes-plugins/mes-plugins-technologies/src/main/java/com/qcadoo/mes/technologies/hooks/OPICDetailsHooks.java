@@ -40,6 +40,7 @@ import com.qcadoo.mes.technologies.constants.ParameterFieldsT;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
 import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.NumberService;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.CheckBoxComponent;
 import com.qcadoo.view.api.components.FieldComponent;
@@ -57,6 +58,9 @@ public class OPICDetailsHooks {
     @Autowired
     private ParameterService parameterService;
 
+    @Autowired
+    private NumberService numberService;
+
     public void onBeforeRender(final ViewDefinitionState view) {
         fillUnitBeforeRender(view);
         setProductBySizeGroupsGridEnabledAndClear(view);
@@ -72,7 +76,7 @@ public class OPICDetailsHooks {
         if (operationProductInComponentForm.getEntityId() == null && quantityField.getFieldValue() == null) {
             BigDecimal operationProductInDefaultQuantity = parameterService.getParameter().getDecimalField(ParameterFieldsT.OPERATION_PRODUCT_IN_DEFAULT_QUANTITY);
             if (operationProductInDefaultQuantity != null) {
-                quantityField.setFieldValue(operationProductInDefaultQuantity);
+                quantityField.setFieldValue(numberService.formatWithMinimumFractionDigits(operationProductInDefaultQuantity, 0));
             }
         }
     }

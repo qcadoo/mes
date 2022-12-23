@@ -26,13 +26,16 @@ package com.qcadoo.mes.materialRequirementCoverageForOrder.aspects;
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.basic.constants.ProductFields;
+import com.qcadoo.mes.costCalculation.constants.MaterialCostsUsed;
 import com.qcadoo.mes.materialRequirementCoverageForOrder.constans.MaterialRequirementCoverageForOrderConstans;
 import com.qcadoo.mes.orderSupplies.constants.CoverageProductFields;
 import com.qcadoo.mes.orderSupplies.constants.OrderSuppliesConstants;
+import com.qcadoo.mes.productionCounting.constants.ParameterFieldsPC;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.plugin.api.RunIfEnabled;
 
+import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -120,10 +123,10 @@ public class MRCServiceOverideAspect {
         String sql = "INSERT INTO ordersupplies_coverageproduct "
                 + "(materialrequirementcoverage_id, product_id, lackfromdate, demandquantity, coveredquantity, "
                 + "reservemissingquantity, deliveredquantity, locationsquantity, state, productnumber, productname, "
-                + "productunit, productType, planedQuantity, produceQuantity,fromSelectedOrder, company_id) "
+                + "productunit, productType, planedQuantity, produceQuantity,fromSelectedOrder, company_id, price) "
                 + "VALUES (:materialrequirementcoverage_id, :product_id, :lackfromdate, :demandquantity, :coveredquantity, "
                 + ":reservemissingquantity, :deliveredquantity, :locationsquantity, :state, :productnumber, :productname, "
-                + ":productunit, :productType, :planedQuantity, :produceQuantity,:fromSelectedOrder, :company_id)";
+                + ":productunit, :productType, :planedQuantity, :produceQuantity,:fromSelectedOrder, :company_id, :price)";
 
         Map<String, Object> parameters = new HashMap<String, Object>();
         parameters.put(L_PRODUCT_TYPE, covProduct.getStringField(L_PRODUCT_TYPE));
@@ -151,7 +154,12 @@ public class MRCServiceOverideAspect {
         parameters.put("productunit",
                 covProduct.getBelongsToField(CoverageProductFields.PRODUCT).getStringField(ProductFields.UNIT));
         parameters.put("fromSelectedOrder", covProduct.getBooleanField(CoverageProductFields.FROM_SELECTED_ORDER));
-
+        Entity parameter = parameterService.getParameter();
+        if(MaterialCostsUsed.COST_FOR_ORDER.getStringValue().equals(parameter.getStringField(ParameterFieldsPC.MATERIAL_COSTS_USED_PB))) {
+            parameters.put("price", BigDecimal.ZERO);
+        } else {
+            parameters.put("price", covProduct.getDecimalField(CoverageProductFields.PRICE));
+        }
         SqlParameterSource namedParameters = new MapSqlParameterSource(parameters);
         jdbcTemplate.update(sql, namedParameters);
     }

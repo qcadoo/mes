@@ -204,7 +204,8 @@
                                hasLabel="false">
 
                         <option type="column" name="name" fields="name"/>
-                        <option type="column" name="productionLine" fields="productionLine" expression="#productionLine['number']"/>
+                        <option type="column" name="productionLine" fields="productionLine"
+                                expression="#productionLine['number']"/>
                         <option type="column" name="division" fields="division" expression="#division['number']"/>
 
                         <option type="expression" value="#number"/>
@@ -285,11 +286,15 @@
                 <option type="column" name="productName" fields="productName"
                         width="75" link="true"/>
                 <option type="column" name="productParent" fields="productParent"
-                        width="75" />
+                        width="75"/>
                 <option type="column" name="state" fields="state" width="40"/>
                 <option type="column" name="lackFromDate" fields="lackFromDate"
                         width="35"/>
                 <option type="column" name="demandQuantity" fields="demandQuantity"
+                        width="35"/>
+                <option type="column" name="price" fields="price"
+                        width="35"/>
+                <option type="column" name="value" fields="value"
                         width="35"/>
                 <option type="column" name="coveredQuantity" fields="coveredQuantity"
                         width="35"/>
@@ -314,9 +319,9 @@
                 <option type="order" column="state" direction="desc"/>
 
                 <option type="searchable"
-                        value="productNumber,productName,replacement,companyName,state,lackFromDate,demandQuantity,coveredQuantity,reserveMissingQuantity,productUnit,locationsQuantity,deliveredQuantity,produceQuantity,productParent,deliveryBuffer,orderAtLatest"/>
+                        value="price,value,productNumber,productName,replacement,companyName,state,lackFromDate,demandQuantity,coveredQuantity,reserveMissingQuantity,productUnit,locationsQuantity,deliveredQuantity,produceQuantity,productParent,deliveryBuffer,orderAtLatest"/>
                 <option type="orderable"
-                        value="productNumber,productName,replacement,companyName,state,lackFromDate,demandQuantity,coveredQuantity,reserveMissingQuantity,productUnit,locationsQuantity,deliveredQuantity,produceQuantity,productParent,deliveryBuffer,orderAtLatest"/>
+                        value="price,value,productNumber,productName,replacement,companyName,state,lackFromDate,demandQuantity,coveredQuantity,reserveMissingQuantity,productUnit,locationsQuantity,deliveredQuantity,produceQuantity,productParent,deliveryBuffer,orderAtLatest"/>
 
                 <option type="correspondingView" value="orderSupplies/coverageProductLoggingDetails"/>
                 <option type="correspondingComponent" value="form"/>

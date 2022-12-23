@@ -66,8 +66,8 @@ public class TechnologyOperationComponentHooks {
         copyCommentAndAttachmentFromOperation(technologyOperationComponent);
         setParentIfRootNodeAlreadyExists(technologyOperationComponent);
         setOperationOutProduct(technologyOperationComponent);
-        copyWorkstationsSettingsFromOperation(technologyOperationComponent);
         copyReferencedTechnology(technologyOperationComponentDD, technologyOperationComponent);
+        copyWorkstationsSettingsFromOperation(technologyOperationComponent);
     }
 
     public void copyWorkstationsSettingsFromOperation(final Entity technologyOperationComponent) {
@@ -80,8 +80,10 @@ public class TechnologyOperationComponentHooks {
                     operation.getField(OperationFields.ASSIGNED_TO_OPERATION));
             technologyOperationComponent.setField(TechnologyOperationComponentFields.WORKSTATION_TYPE,
                     operation.getBelongsToField(OperationFields.WORKSTATION_TYPE));
-            technologyOperationComponent.setField(TechnologyOperationComponentFields.WORKSTATIONS,
-                    operation.getManyToManyField(OperationFields.WORKSTATIONS));
+            if (!technologyOperationComponent.isCopied()) {
+                technologyOperationComponent.setField(TechnologyOperationComponentFields.WORKSTATIONS,
+                        operation.getManyToManyField(OperationFields.WORKSTATIONS));
+            }
             technologyOperationComponent.setField(TechnologyOperationComponentFields.DIVISION,
                     operation.getBelongsToField(OperationFields.DIVISION));
         }
@@ -224,6 +226,7 @@ public class TechnologyOperationComponentHooks {
         copy.setField("operationalTasks", null);
         copy.setField("operCompTimeCalculations", null);
         copy.setField("barcodeOperationComponents", null);
+        copy.setCopied(true);
 
         return copy;
     }

@@ -51,6 +51,7 @@
         <boolean name="scheduleForBuffer" default="false"/>
         <boolean name="additionalTimeExtendsOperation" default="true"/>
         <boolean name="includeTpz" default="true"/>
+        <boolean name="onlyWorkstationsOfLineFromOrder" default="false"/>
         <datetime name="approveTime" />
 
         <manyToMany name="orders" joinField="schedules" model="order"/>

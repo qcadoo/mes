@@ -1,19 +1,26 @@
 package com.qcadoo.mes.orders.validators;
 
 import java.sql.Timestamp;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Service;
 
 import com.google.common.collect.Maps;
+import com.qcadoo.mes.basic.constants.WorkstationFields;
+import com.qcadoo.mes.basic.constants.WorkstationTypeFields;
+import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.mes.orders.constants.ScheduleFields;
 import com.qcadoo.mes.orders.constants.SchedulePositionFields;
+import com.qcadoo.mes.productionLines.constants.WorkstationFieldsPL;
+import com.qcadoo.mes.technologies.constants.AssignedToOperation;
 import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
@@ -51,17 +58,50 @@ public class SchedulePositionValidators {
     private boolean checkWorkstationIsCorrect(DataDefinition dataDefinition, Entity schedulePosition) {
         Entity workstation = schedulePosition.getBelongsToField(SchedulePositionFields.WORKSTATION);
         if (workstation != null) {
-            Entity technologyOperationComponent = schedulePosition
-                    .getBelongsToField(SchedulePositionFields.TECHNOLOGY_OPERATION_COMPONENT);
-            List<Entity> workstations = technologyOperationComponent
-                    .getManyToManyField(TechnologyOperationComponentFields.WORKSTATIONS);
-            if (!workstations.isEmpty() && workstations.stream().noneMatch(w -> w.getId().equals(workstation.getId()))) {
+            Entity schedule = schedulePosition.getBelongsToField(SchedulePositionFields.SCHEDULE);
+            Entity order = schedulePosition.getBelongsToField(SchedulePositionFields.ORDER);
+            List<Entity> workstations = getWorkstationsFromTOC(schedule, schedulePosition, order);
+
+            if (workstations.stream().noneMatch(w -> w.getId().equals(workstation.getId()))) {
                 schedulePosition.addError(dataDefinition.getField(SchedulePositionFields.WORKSTATION),
                         "orders.error.inappropriateWorkstationForPositionOperation");
                 return false;
             }
         }
         return true;
+    }
+
+    public List<Entity> getWorkstationsFromTOC(Entity schedule, Entity position, Entity order) {
+        Entity technologyOperationComponent = position.getBelongsToField(SchedulePositionFields.TECHNOLOGY_OPERATION_COMPONENT);
+        List<Entity> workstations;
+        if (AssignedToOperation.WORKSTATIONS.getStringValue()
+                .equals(technologyOperationComponent.getStringField(TechnologyOperationComponentFields.ASSIGNED_TO_OPERATION))) {
+            workstations = technologyOperationComponent.getManyToManyField(TechnologyOperationComponentFields.WORKSTATIONS);
+        } else {
+            Entity workstationType = technologyOperationComponent
+                    .getBelongsToField(TechnologyOperationComponentFields.WORKSTATION_TYPE);
+            if (workstationType == null) {
+                workstations = Collections.emptyList();
+            } else {
+                workstations = workstationType.getHasManyField(WorkstationTypeFields.WORKSTATIONS);
+            }
+        }
+        boolean onlyWorkstationsOfLineFromOrder = schedule.getBooleanField(ScheduleFields.ONLY_WORKSTATIONS_OF_LINE_FROM_ORDER);
+        if (onlyWorkstationsOfLineFromOrder) {
+            Entity productionLine = order.getBelongsToField(OrderFields.PRODUCTION_LINE);
+            if (productionLine != null) {
+                workstations = workstations.stream().filter(e -> e.getBelongsToField(WorkstationFieldsPL.PRODUCTION_LINE) != null && productionLine.getId().equals(e.getBelongsToField(WorkstationFieldsPL.PRODUCTION_LINE).getId()))
+                        .collect(Collectors.toList());
+            }
+        }
+        if (schedule.getBooleanField(ScheduleFields.SCHEDULE_FOR_BUFFER)) {
+            List<Entity> bufferWorkstations = workstations.stream().filter(e -> e.getBooleanField(WorkstationFields.BUFFER))
+                    .collect(Collectors.toList());
+            if (!bufferWorkstations.isEmpty()) {
+                return bufferWorkstations;
+            }
+        }
+        return workstations;
     }
 
     private boolean validateDates(DataDefinition dataDefinition, Entity schedulePosition) {
@@ -96,16 +136,16 @@ public class SchedulePositionValidators {
         Entity parent = getParent(schedulePosition);
         if (parent != null && !Objects.isNull(parent.getDateField(SchedulePositionFields.START_TIME))
                 && parent.getDateField(SchedulePositionFields.START_TIME)
-                        .before(schedulePosition.getDateField(SchedulePositionFields.START_TIME))) {
+                .before(schedulePosition.getDateField(SchedulePositionFields.START_TIME))) {
             schedulePosition.addError(dataDefinition.getField(SchedulePositionFields.START_TIME),
                     "orders.schedulePosition.error.inappropriateStartDateNext");
             return false;
         }
         if (pluginManager.isPluginEnabled(ORDERS_FOR_SUBPRODUCTS_GENERATION)
                 && schedulePosition.getBelongsToField(SchedulePositionFields.TECHNOLOGY_OPERATION_COMPONENT)
-                        .getBelongsToField(TechnologyOperationComponentFields.PARENT) == null
+                .getBelongsToField(TechnologyOperationComponentFields.PARENT) == null
                 && schedulePosition.getBelongsToField(SchedulePositionFields.ORDER)
-                        .getBelongsToField(TechnologyOperationComponentFields.PARENT) != null) {
+                .getBelongsToField(TechnologyOperationComponentFields.PARENT) != null) {
             Date parentStartTime = getOrdersParentsMinStartTime(schedulePosition);
             if (!Objects.isNull(parentStartTime)
                     && parentStartTime.before(schedulePosition.getDateField(SchedulePositionFields.START_TIME))) {
@@ -121,16 +161,16 @@ public class SchedulePositionValidators {
         Entity parent = getParent(schedulePosition);
         if (parent != null && !Objects.isNull(parent.getDateField(SchedulePositionFields.END_TIME))
                 && parent.getDateField(SchedulePositionFields.END_TIME)
-                        .before(schedulePosition.getDateField(SchedulePositionFields.END_TIME))) {
+                .before(schedulePosition.getDateField(SchedulePositionFields.END_TIME))) {
             schedulePosition.addError(dataDefinition.getField(SchedulePositionFields.END_TIME),
                     "orders.schedulePosition.error.inappropriateFinishDateNext");
             return false;
         }
         if (pluginManager.isPluginEnabled(ORDERS_FOR_SUBPRODUCTS_GENERATION)
                 && schedulePosition.getBelongsToField(SchedulePositionFields.TECHNOLOGY_OPERATION_COMPONENT)
-                        .getBelongsToField(TechnologyOperationComponentFields.PARENT) == null
+                .getBelongsToField(TechnologyOperationComponentFields.PARENT) == null
                 && schedulePosition.getBelongsToField(SchedulePositionFields.ORDER)
-                        .getBelongsToField(TechnologyOperationComponentFields.PARENT) != null) {
+                .getBelongsToField(TechnologyOperationComponentFields.PARENT) != null) {
             Date parentEndTime = getOrdersParentsMinEndTime(schedulePosition);
             if (!Objects.isNull(parentEndTime)
                     && parentEndTime.before(schedulePosition.getDateField(SchedulePositionFields.END_TIME))) {

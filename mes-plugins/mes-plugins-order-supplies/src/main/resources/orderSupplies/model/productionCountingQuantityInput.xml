@@ -38,6 +38,7 @@
         <decimal name="plannedQuantity"/>
         <decimal name="usedQuantity"/>
         <decimal name="quantity"/>
+        <decimal name="price"/>
         <string name="eventType"/>
         <string name="productType"/>
     </fields>

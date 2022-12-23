@@ -108,7 +108,7 @@ public class CoverageAnalysisForOrderService {
 
                 List<ProductLogging> productsLogging = inProductLoggingsByProduct.get(productState.getProductId());
                 if (Objects.isNull(productsLogging) || productsLogging.isEmpty()) {
-                    continue;
+                    return null;
                 }
                 productsLogging.sort(Comparator.comparing(ProductLogging::getDate));
 

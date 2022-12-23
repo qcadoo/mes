@@ -24,10 +24,7 @@
 package com.qcadoo.mes.productFlowThruDivision.states;
 
 import com.qcadoo.mes.basic.ParameterService;
-import com.qcadoo.mes.productFlowThruDivision.constants.OperationProductInComponentFieldsPFTD;
-import com.qcadoo.mes.productFlowThruDivision.constants.OperationProductOutComponentFieldsPFTD;
-import com.qcadoo.mes.productFlowThruDivision.constants.Range;
-import com.qcadoo.mes.productFlowThruDivision.constants.TechnologyFieldsPFTD;
+import com.qcadoo.mes.productFlowThruDivision.constants.*;
 import com.qcadoo.mes.productFlowThruDivision.listeners.TechnologyDetailsListenersPFTD;
 import com.qcadoo.mes.productionCounting.constants.TechnologyFieldsPC;
 import com.qcadoo.mes.productionCounting.constants.TypeOfProductionRecording;
@@ -35,15 +32,13 @@ import com.qcadoo.mes.states.StateChangeContext;
 import com.qcadoo.mes.states.constants.StateChangeStatus;
 import com.qcadoo.mes.technologies.OperationComponentDataProvider;
 import com.qcadoo.mes.technologies.TechnologyService;
-import com.qcadoo.mes.technologies.constants.ParameterFieldsT;
-import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
-import com.qcadoo.mes.technologies.constants.TechnologyFields;
-import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
+import com.qcadoo.mes.technologies.constants.*;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchRestrictions;
 
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -80,23 +75,33 @@ public class TechnologyStateValidationServicePFTD {
             checkIfForOneDivisionLocationIsSet(technology, stateChangeContext);
             checkIfLocationInOperationIsSet(technology, stateChangeContext);
 
-/*            if(TypeOfProductionRecording.CUMULATED.getStringValue()
+            if(TypeOfProductionRecording.CUMULATED.getStringValue()
                     .equals(technology.getStringField(TechnologyFieldsPC.TYPE_OF_PRODUCTION_RECORDING))) {
                 List<Long> ids = operationComponentDataProvider.getComponentsForTechnology(technology.getId());
                 if (ids.isEmpty()) {
                     return;
                 }
+                boolean differentLocation = false;
                 List<Entity> opics = dataDefinitionService
                         .get(TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_OPERATION_PRODUCT_IN_COMPONENT).find()
                         .add(SearchRestrictions.in("id", ids)).list().getEntities();
 
-                Long locationId = opics.get(0).getBelongsToField("componentsLocation").getId();
-                boolean allSameLocation = opics.stream().allMatch(x -> x.getBelongsToField("componentsLocation").getId().equals(locationId));
+                Map<Long, Map<Long, List<Entity>>> componentsLocation = opics.stream()
+                        .filter(opic -> Objects.nonNull(((Entity) opic).getBelongsToField(OperationProductInComponentFields.PRODUCT)))
+                        .collect(Collectors.groupingBy(opic -> ((Entity) opic).getBelongsToField(OperationProductInComponentFields.PRODUCT).getId(),
+                        Collectors.groupingBy(u -> ((Entity) u).getBelongsToField("componentsLocation").getId())));
+                for (Map.Entry<Long, Map<Long, List<Entity>>> productEntry : componentsLocation.entrySet()) {
+                    Map<Long, List<Entity>> productLocations = productEntry.getValue();
 
-                if(!allSameLocation) {
+                        if(productLocations.size() > 1) {
+                            differentLocation = true;
+                        }
+                }
+
+                if(differentLocation) {
                     stateChangeContext.addValidationError("productFlowThruDivision.location.components.locationsAreDifferent");
                 }
-            }*/
+            }
         }
 
     }

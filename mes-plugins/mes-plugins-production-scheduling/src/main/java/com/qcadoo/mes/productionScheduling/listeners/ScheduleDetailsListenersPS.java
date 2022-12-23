@@ -54,6 +54,7 @@ import com.qcadoo.mes.technologies.constants.OperationProductOutComponentFields;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
 import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
 import com.qcadoo.mes.technologies.dto.OperationProductComponentWithQuantityContainer;
+import com.qcadoo.mes.timeNormsForOperations.NormService;
 import com.qcadoo.mes.timeNormsForOperations.constants.TechOperCompWorkstationTimeFields;
 import com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperationComponentFieldsTNFO;
 import com.qcadoo.model.api.BigDecimalUtils;
@@ -111,6 +112,9 @@ public class ScheduleDetailsListenersPS {
     @Autowired
     private ParameterService parameterService;
 
+    @Autowired
+    private NormService normService;
+
     @Transactional
     public void generatePlan(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         getOperations(view, state, args);
@@ -147,7 +151,7 @@ public class ScheduleDetailsListenersPS {
             for (Entity operationComponent : operationComponents) {
                 BigDecimal operationComponentRuns = numberService.setScaleWithDefaultMathContext(BigDecimalUtils
                         .convertNullToZero(operationRuns.get(operationComponent.getId())));
-                BigDecimal staffFactor = getStaffFactor(operationComponent);
+                BigDecimal staffFactor = normService.getStaffFactor(operationComponent, operationComponent.getIntegerField(TechnologyOperationComponentFieldsTNFO.OPTIMAL_STAFF));
                 OperationWorkTime operationWorkTime = operationWorkTimeService.estimateTechOperationWorkTime(operationComponent,
                         operationComponentRuns, includeTpz, false, false, staffFactor);
                 Entity schedulePosition = createSchedulePosition(schedule, schedulePositionDD, order, operationComponent,
@@ -162,16 +166,6 @@ public class ScheduleDetailsListenersPS {
         view.addMessage("productionScheduling.info.schedulePositionsGenerated", ComponentState.MessageType.SUCCESS);
         long finish = System.currentTimeMillis();
         LOG.info("Plan for shift {} - get operations: {}s.", schedule.getStringField(ScheduleFields.NUMBER), (finish - start) / 1000);
-    }
-
-    private BigDecimal getStaffFactor(Entity operationComponent) {
-        if (operationComponent
-                .getBooleanField(TechnologyOperationComponentFieldsTNFO.TJ_DECREASES_FOR_ENLARGED_STAFF)) {
-            Integer optimalStaff = operationComponent.getIntegerField(TechnologyOperationComponentFieldsTNFO.OPTIMAL_STAFF);
-            int minStaff = operationComponent.getIntegerField(TechnologyOperationComponentFieldsTNFO.MIN_STAFF);
-            return BigDecimal.valueOf(minStaff).divide(BigDecimal.valueOf(optimalStaff), numberService.getMathContext());
-        }
-        return BigDecimal.ONE;
     }
 
     private Entity createSchedulePosition(Entity schedule, DataDefinition schedulePositionDD, Entity order,
@@ -210,12 +204,13 @@ public class ScheduleDetailsListenersPS {
             long start = System.currentTimeMillis();
             Entity position = dataDefinitionService
                     .get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_SCHEDULE_POSITION).get(positionId);
-            if (ordersToAvoid.contains(position.getBelongsToField(SchedulePositionFields.ORDER).getId())) {
+            Entity order = position.getBelongsToField(SchedulePositionFields.ORDER);
+            if (ordersToAvoid.contains(order.getId())) {
                 continue;
             }
-            List<Entity> workstations = getWorkstationsFromTOC(position);
+            List<Entity> workstations = schedulePositionValidators.getWorkstationsFromTOC(schedule, position, order);
             if (workstations.isEmpty()) {
-                ordersToAvoid.add(position.getBelongsToField(SchedulePositionFields.ORDER).getId());
+                ordersToAvoid.add(order.getId());
                 continue;
             }
             Map<Long, PositionNewData> operationWorkstationsPositionNewData = Maps.newHashMap();
@@ -224,7 +219,7 @@ public class ScheduleDetailsListenersPS {
                     position, workstations, operationWorkstationsPositionNewData);
 
             if (allMachineWorkTimesEqualsZero) {
-                ordersToAvoid.add(position.getBelongsToField(SchedulePositionFields.ORDER).getId());
+                ordersToAvoid.add(order.getId());
                 continue;
             }
 
@@ -251,43 +246,18 @@ public class ScheduleDetailsListenersPS {
         LOG.info("Plan for shift {} - workstations assignment: {}s.", schedule.getStringField(ScheduleFields.NUMBER), (finishAll - startAll) / 1000);
     }
 
-    private List<Entity> getWorkstationsFromTOC(Entity position) {
-        Entity technologyOperationComponent = position.getBelongsToField(SchedulePositionFields.TECHNOLOGY_OPERATION_COMPONENT);
-        List<Entity> workstations;
-        if (AssignedToOperation.WORKSTATIONS.getStringValue()
-                .equals(technologyOperationComponent.getStringField(TechnologyOperationComponentFields.ASSIGNED_TO_OPERATION))) {
-            workstations = technologyOperationComponent.getManyToManyField(TechnologyOperationComponentFields.WORKSTATIONS);
-        } else {
-            Entity workstationType = technologyOperationComponent
-                    .getBelongsToField(TechnologyOperationComponentFields.WORKSTATION_TYPE);
-            if (workstationType == null) {
-                workstations = Collections.emptyList();
-            } else {
-                workstations = workstationType.getHasManyField(WorkstationTypeFields.WORKSTATIONS);
-            }
-        }
-        if (position.getBelongsToField(SchedulePositionFields.SCHEDULE).getBooleanField(ScheduleFields.SCHEDULE_FOR_BUFFER)) {
-            List<Entity> bufferWorkstations = workstations.stream().filter(e -> e.getBooleanField(WorkstationFields.BUFFER))
-                    .collect(Collectors.toList());
-            if (!bufferWorkstations.isEmpty()) {
-                return bufferWorkstations;
-            }
-        }
-        return workstations;
-    }
-
     private boolean getWorkstationsNewFinishDate(Map<Long, Date> workstationsFinishDates, Date scheduleStartTime, Entity position,
                                                  List<Entity> workstations, Map<Long, PositionNewData> operationWorkstationsPositionNewData) {
         Entity schedule = position.getBelongsToField(SchedulePositionFields.SCHEDULE);
+        Entity technologyOperationComponent = position.getBelongsToField(SchedulePositionFields.TECHNOLOGY_OPERATION_COMPONENT);
+        BigDecimal staffFactor = normService.getStaffFactor(technologyOperationComponent, technologyOperationComponent.getIntegerField(TechnologyOperationComponentFieldsTNFO.OPTIMAL_STAFF));
         boolean allMachineWorkTimesEqualsZero = true;
         for (Entity workstation : workstations) {
             Integer laborWorkTime = position.getIntegerField(SchedulePositionFields.LABOR_WORK_TIME);
             Integer machineWorkTime = position.getIntegerField(SchedulePositionFields.MACHINE_WORK_TIME);
             Integer additionalTime = position.getIntegerField(SchedulePositionFields.ADDITIONAL_TIME);
-            Optional<Entity> techOperCompWorkstationTime = getTechOperCompWorkstationTime(position, workstation);
+            Optional<Entity> techOperCompWorkstationTime = normService.getTechOperCompWorkstationTime(technologyOperationComponent, workstation);
             if (techOperCompWorkstationTime.isPresent()) {
-                Entity technologyOperationComponent = position.getBelongsToField(SchedulePositionFields.TECHNOLOGY_OPERATION_COMPONENT);
-                BigDecimal staffFactor = getStaffFactor(technologyOperationComponent);
                 OperationWorkTime operationWorkTime = operationWorkTimeService.estimateTechOperationWorkTimeForWorkstation(
                         technologyOperationComponent,
                         position.getDecimalField(SchedulePositionFields.OPERATION_RUNS),
@@ -333,19 +303,6 @@ public class ScheduleDetailsListenersPS {
             }
         }
         return finishDate;
-    }
-
-    private Optional<Entity> getTechOperCompWorkstationTime(Entity position, Entity workstation) {
-        Entity technologyOperationComponent = position.getBelongsToField(SchedulePositionFields.TECHNOLOGY_OPERATION_COMPONENT);
-        List<Entity> techOperCompWorkstationTimes = technologyOperationComponent
-                .getHasManyField(TechnologyOperationComponentFieldsTNFO.TECH_OPER_COMP_WORKSTATION_TIMES);
-        for (Entity techOperCompWorkstationTime : techOperCompWorkstationTimes) {
-            if (techOperCompWorkstationTime.getBelongsToField(TechOperCompWorkstationTimeFields.WORKSTATION).getId()
-                    .equals(workstation.getId())) {
-                return Optional.of(techOperCompWorkstationTime);
-            }
-        }
-        return Optional.empty();
     }
 
     private Date getFinishDate(Map<Long, Date> workstationsFinishDates, Date scheduleStartTime, Entity schedule,
