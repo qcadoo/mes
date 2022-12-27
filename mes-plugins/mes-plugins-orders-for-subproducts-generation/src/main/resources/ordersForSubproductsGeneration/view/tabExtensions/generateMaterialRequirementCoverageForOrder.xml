@@ -47,6 +47,8 @@
             <option type="order" column="number" direction="desc"/>
 
             <option type="searchable" value="number,productNumber,technologyNumber,plannedQuantity,dateFrom,dateTo,state"/>
+            <option type="footerRow" value="true"/>
+            <option type="columnsToSummary" value="plannedQuantity"/>
 
             <option type="correspondingView" value="orders/orderDetails"/>
             <option type="correspondingComponent" value="form"/>
