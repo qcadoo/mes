@@ -302,6 +302,7 @@
         <model:model-enum-value plugin="basic" model="log" enum="logType" value="operationImport"/>
         <model:model-enum-value plugin="basic" model="log" enum="logType" value="operationProductInComponentImport"/>
         <model:model-enum-value plugin="basic" model="log" enum="logType" value="productToProductGroupTechnologyImport"/>
+        <model:model-enum-value plugin="basic" model="log" enum="logType" value="workstationChangeoverNormImport"/>
 
         <menu:menu-category name="technology" defaultAuthorizationRole="ROLE_TECHNOLOGIES"/>
 
@@ -396,6 +397,7 @@
         <view:view-tab resource="view/tabExtensions/skillDetails.xml"/>
 
         <view:view resource="view/workstationChangeoverNormsList.xml"/>
+        <view:view resource="view/workstationChangeoverNormsImport.xml"/>
         <view:view resource="view/workstationChangeoverNormDetails.xml"/>
 
         <view:resource uri="public/**/*"/>

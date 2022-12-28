@@ -32,6 +32,10 @@
     <component type="window" name="window">
         <ribbon>
             <template name="standardGridTemplate" excludeItems="actions.copy"/>
+            <group name="import">
+                <bigButton name="openWorkstationChangeoverNormsImportPage" state="enabled" icon="xlsIcon24.png"
+                           action="#{window}.fireEvent(openWorkstationChangeoverNormsImportPage);"/>
+            </group>
         </ribbon>
 
         <component type="grid" name="workstationChangeoverNormsList" reference="grid">
@@ -70,6 +74,10 @@
             <option type="fullscreen" value="true"/>
             <option type="multiselect" value="true"/>
         </component>
+
+        <listener event="openWorkstationChangeoverNormsImportPage"
+                  class="com.qcadoo.mes.technologies.listeners.WorkstationChangeoverNormsListListeners"
+                  method="openWorkstationChangeoverNormsImportPage"/>
 
         <option type="fixedHeight" value="true"/>
         <option type="header" value="false"/>
