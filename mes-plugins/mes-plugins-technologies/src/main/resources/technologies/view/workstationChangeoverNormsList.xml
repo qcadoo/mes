@@ -1,0 +1,77 @@
+<!--
+
+    ***************************************************************************
+    Copyright (c) 2010 Qcadoo Limited
+    Project: Qcadoo MES
+    Version: 1.4
+
+    This file is part of Qcadoo.
+
+    Qcadoo is free software; you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as published
+    by the Free Software Foundation; either version 3 of the License,
+    or (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty
+    of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+    See the GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+    ***************************************************************************
+
+-->
+<view defaultAuthorizationRole="ROLE_TECHNOLOGIES"
+	  name="workstationChangeoverNormsList" modelName="workstationChangeoverNorm"
+	  menuAccessible="true"
+	  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
+      xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd">
+
+    <component type="window" name="window">
+        <ribbon>
+            <template name="standardGridTemplate" excludeItems="actions.copy"/>
+        </ribbon>
+
+        <component type="grid" name="workstationChangeoverNormsList" reference="grid">
+            <option type="column" name="name" fields="name" link="true"
+                    width="150"/>
+			<option type="column" name="description" fields="description" link="true"
+					width="100"/>
+            <option type="column" name="workstationTypeNumber" fields="workstationType" link="true"
+                    width="100" expression="#workstationType['number']"/>
+            <option type="column" name="workstationNumber" fields="workstation" link="true"
+                    width="100" expression="#workstation['number']"/>
+            <option type="column" name="attributeNumber" fields="attribute" link="true"
+                    width="100" expression="#attribute['number']"/>
+            <option type="column" name="changeoverType" fields="changeoverType"
+                    width="120"/>
+            <option type="column" name="fromAttributeValueValue" fields="fromAttributeValue"
+                    width="100" expression="#fromAttributeValue['value']"/>
+			<option type="column" name="toAttributeValueValue" fields="toAttributeValue"
+					width="100" expression="#toAttributeValue['value']"/>
+            <option type="column" name="duration" fields="duration"
+                    width="80"
+                    expression="T(com.qcadoo.view.api.utils.TimeConverterService).convertTimeToString(#duration)"/>
+			<option type="column" name="isParallel" fields="isParallel"
+					width="50"/>
+
+            <option type="order" column="name" direction="asc"/>
+
+            <option type="searchable"
+                    value="name,description,workstationTypeNumber,workstationNumber,attributeNumber,changeoverType,fromAttributeValueValue,toAttributeValueValue,isParallel"/>
+            <option type="orderable"
+                    value="name,description,workstationTypeNumber,workstationNumber,attributeNumber,changeoverType,fromAttributeValueValue,toAttributeValueValue,isParallel"/>
+
+            <option type="correspondingView" value="technologies/workstationChangeoverNormDetails"/>
+            <option type="correspondingComponent" value="form"/>
+
+            <option type="fullscreen" value="true"/>
+            <option type="multiselect" value="true"/>
+        </component>
+
+        <option type="fixedHeight" value="true"/>
+        <option type="header" value="false"/>
+    </component>
+</view>
