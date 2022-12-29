@@ -31,7 +31,7 @@ public final class ParameterFieldsOS {
 
     public static final String COVERAGE_ORDER_STATES = "coverageOrderStates";
 
-    public static final String INCLUDE_DRAFT_DELIVERIES = "includeDraftDeliveries";
+    public static final String INCLUDE_IN_CALCULATION_DELIVERIES = "includeInCalculationDeliveries";
 
     public static final String COVERAGE_TYPE = "coverageType";
 

@@ -38,6 +38,12 @@
         <decimal name="producedQuantity"/>
         <decimal name="quantity"/>
         <decimal name="price"/>
+        <decimal name="nominalCost"/>
+        <decimal name="averageCost"/>
+        <decimal name="lastPurchaseCost"/>
+        <decimal name="averageOfferCost"/>
+        <decimal name="lastOfferCost"/>
+        <decimal name="offerCostOrLastPurchase"/>
         <string name="eventType"/>
         <string name="productType"/>
     </fields>

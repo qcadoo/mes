@@ -3,19 +3,19 @@
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo Framework
  * Version: 1.4
- *
+ * <p>
  * This file is part of Qcadoo.
- *
+ * <p>
  * Qcadoo is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation; either version 3 of the License,
  * or (at your option) any later version.
- *
+ * <p>
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty
  * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU Affero General Public License for more details.
- *
+ * <p>
  * You should have received a copy of the GNU Affero General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
@@ -162,10 +162,8 @@ public class MaterialRequirementCoverageReportPdfService extends PdfDocumentServ
 
         pdfHelper
                 .addTableCellAsOneColumnTable(leftPanelOptions, translationService
-                                .translate("orderSupplies.materialRequirementCoverage.report.includeDraftDeliveries", locale),
-                        materialRequirementCoverage.getBooleanField(MaterialRequirementCoverageFields.INCLUDE_DRAFT_DELIVERIES) ?
-                                translationService.translate("qcadooView.true", locale) :
-                                translationService.translate("qcadooView.false", locale));
+                                .translate("orderSupplies.materialRequirementCoverage.report.includeInCalculationDeliveries", locale),
+                        translationService.translate("orderSupplies.materialRequirementCoverage.includeInCalculationDeliveries.value." + materialRequirementCoverage.getStringField("includeInCalculationDeliveries") , locale));
 
         leftPanel.addCell(leftPanelOptions);
 
@@ -247,7 +245,7 @@ public class MaterialRequirementCoverageReportPdfService extends PdfDocumentServ
     private List<Entity> filterCoverageProducts(Entity materialRequirementCoverage, List<Entity> coverageProducts) {
 
         boolean coverageForSelectedOrders = materialRequirementCoverage.getHasManyField("coverageOrders").size() > 0;
-        if(coverageForSelectedOrders){
+        if (coverageForSelectedOrders) {
             coverageProducts = coverageProducts.stream().filter(cp -> cp.getBooleanField((CoverageProductFields.FROM_SELECTED_ORDER))).collect(
                     Collectors.toList());
         }
@@ -294,7 +292,7 @@ public class MaterialRequirementCoverageReportPdfService extends PdfDocumentServ
     }
 
     private List<String> prepareProductsTableHeader(final Document document, final List<Entity> columnsForCoverages,
-            final Locale locale) throws DocumentException {
+                                                    final Locale locale) throws DocumentException {
         document.add(new Paragraph(translationService.translate(
                 "orderSupplies.materialRequirementCoverage.report.coverageProducts.title", locale), FontUtils
                 .getDejavuBold11Dark()));
@@ -320,7 +318,7 @@ public class MaterialRequirementCoverageReportPdfService extends PdfDocumentServ
         includedTable.addCell(new Paragraph(translationService.translate("orderSupplies.materialRequirementCoverage.report."
                 + includedType + ".title", locale), FontUtils.getDejavuBold10Dark()));
 
-        int[] columnWidths = { 40, 60 };
+        int[] columnWidths = {40, 60};
 
         PdfPTable includedTableBody = pdfHelper.createTableWithHeader(2, prepareIncludedTableHeader(includedType, locale), false,
                 columnWidths);
@@ -342,7 +340,7 @@ public class MaterialRequirementCoverageReportPdfService extends PdfDocumentServ
 
     private List<String> prepareIncludedTableHeader(final String includedType, final Locale locale) throws DocumentException {
         List<String> productsHeader = Lists.newArrayList(translationService.translate(
-                "orderSupplies.materialRequirementCoverage.report." + includedType + ".column.number", locale),
+                        "orderSupplies.materialRequirementCoverage.report." + includedType + ".column.number", locale),
                 translationService.translate("orderSupplies.materialRequirementCoverage.report." + includedType + ".column.name",
                         locale));
 

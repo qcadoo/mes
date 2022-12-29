@@ -114,8 +114,8 @@
                                    reference="coverageType"/>
                     </layoutElement>
                     <layoutElement column="2" row="5">
-                        <component type="checkbox" name="includeDraftDeliveries"
-                                   field="includeDraftDeliveries" reference="includeDraftDeliveries"/>
+                        <component type="select" name="includeInCalculationDeliveries"
+                                   field="#{form}.includeInCalculationDeliveries" reference="includeInCalculationDeliveries"/>
                     </layoutElement>
                     <layoutElement column="3" row="1" height="3">
                         <component type="borderLayout" name="orderStatesBorderLayout">
