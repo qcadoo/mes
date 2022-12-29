@@ -120,6 +120,8 @@
         <model:model model="productDataOperation" resource="model/productDataOperation.xml"/>
         <model:model model="productDataAttachment" resource="model/productDataAttachment.xml"/>
 
+        <model:model model="workstationChangeoverNorm" resource="model/workstationChangeoverNorm.xml"/>
+
         <model:dictionary name="sampling"/>
 
         <model:model-field plugin="basic" model="workstationType">
@@ -300,6 +302,7 @@
         <model:model-enum-value plugin="basic" model="log" enum="logType" value="operationImport"/>
         <model:model-enum-value plugin="basic" model="log" enum="logType" value="operationProductInComponentImport"/>
         <model:model-enum-value plugin="basic" model="log" enum="logType" value="productToProductGroupTechnologyImport"/>
+        <model:model-enum-value plugin="basic" model="log" enum="logType" value="workstationChangeoverNormImport"/>
 
         <menu:menu-category name="technology" defaultAuthorizationRole="ROLE_TECHNOLOGIES"/>
 
@@ -329,10 +332,11 @@
         <menu:menu-item name="productData" category="technology"
                         view="productDatasList"/>
 
-
-
         <menu:menu-item-url name="technologyConfigurator" category="technology" defaultAuthorizationRole="ROLE_TECHNOLOGIES"
                             url="/technologyConfigurator.html"/>
+
+        <menu:menu-item name="technologies" category="technology"
+                        view="workstationChangeoverNormsList" defaultAuthorizationRole="ROLE_TECHNOLOGIES"/>
 
         <view:view resource="view/operationsList.xml"/>
         <view:view resource="view/operationsImport.xml"/>
@@ -391,6 +395,10 @@
 
         <view:view-tab resource="view/tabExtensions/productDetails.xml"/>
         <view:view-tab resource="view/tabExtensions/skillDetails.xml"/>
+
+        <view:view resource="view/workstationChangeoverNormsList.xml"/>
+        <view:view resource="view/workstationChangeoverNormsImport.xml"/>
+        <view:view resource="view/workstationChangeoverNormDetails.xml"/>
 
         <view:resource uri="public/**/*"/>
 

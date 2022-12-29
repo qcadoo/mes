@@ -21,24 +21,32 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.basic.criteriaModifiers;
+package com.qcadoo.mes.technologies.constants;
 
-import org.springframework.stereotype.Service;
+public final class WorkstationChangeoverNormFields {
 
-import com.qcadoo.mes.basic.constants.WorkstationTypeFields;
-import com.qcadoo.model.api.search.SearchCriteriaBuilder;
-import com.qcadoo.model.api.search.SearchRestrictions;
+    private WorkstationChangeoverNormFields() {
 
-@Service
-public class WorkstationTypeCriteriaModifiers {
-
-    public void showWorkstationTypesWithSubassembly(final SearchCriteriaBuilder scb) {
-        scb.add(SearchRestrictions.eq(WorkstationTypeFields.SUBASSEMBLY, true));
     }
 
-    public void showWorkstationTypesWithoutSubassembly(final SearchCriteriaBuilder scb) {
-        scb.add(SearchRestrictions.or(SearchRestrictions.eq(WorkstationTypeFields.SUBASSEMBLY, false),
-                SearchRestrictions.isNull(WorkstationTypeFields.SUBASSEMBLY)));
-    }
+    public static final String NAME = "name";
+
+    public static final String DESCRIPTION = "description";
+
+    public static final String WORKSTATION_TYPE = "workstationType";
+
+    public static final String WORKSTATION = "workstation";
+
+    public static final String ATTRIBUTE = "attribute";
+
+    public static final String CHANGEOVER_TYPE = "changeoverType";
+
+    public static final String FROM_ATTRIBUTE_VALUE = "fromAttributeValue";
+
+    public static final String TO_ATTRIBUTE_VALUE = "toAttributeValue";
+
+    public static final String DURATION = "duration";
+
+    public static final String IS_PARALLEL = "isParallel";
 
 }

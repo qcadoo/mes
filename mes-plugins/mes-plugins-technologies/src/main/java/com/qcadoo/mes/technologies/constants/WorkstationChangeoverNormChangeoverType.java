@@ -21,24 +21,30 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.basic.criteriaModifiers;
+package com.qcadoo.mes.technologies.constants;
 
-import org.springframework.stereotype.Service;
+public enum WorkstationChangeoverNormChangeoverType {
 
-import com.qcadoo.mes.basic.constants.WorkstationTypeFields;
-import com.qcadoo.model.api.search.SearchCriteriaBuilder;
-import com.qcadoo.model.api.search.SearchRestrictions;
+    ANY_CHANGE("01anyChange"), BETWEEN_VALUES("02betweenValues");
 
-@Service
-public class WorkstationTypeCriteriaModifiers {
+    private final String changeoverType;
 
-    public void showWorkstationTypesWithSubassembly(final SearchCriteriaBuilder scb) {
-        scb.add(SearchRestrictions.eq(WorkstationTypeFields.SUBASSEMBLY, true));
+    private WorkstationChangeoverNormChangeoverType(final String changeoverType) {
+        this.changeoverType = changeoverType;
     }
 
-    public void showWorkstationTypesWithoutSubassembly(final SearchCriteriaBuilder scb) {
-        scb.add(SearchRestrictions.or(SearchRestrictions.eq(WorkstationTypeFields.SUBASSEMBLY, false),
-                SearchRestrictions.isNull(WorkstationTypeFields.SUBASSEMBLY)));
+    public String getStringValue() {
+        return changeoverType;
+    }
+
+    public static WorkstationChangeoverNormChangeoverType parseString(final String changeoverType) {
+        if ("01anyChange".equals(changeoverType)) {
+            return ANY_CHANGE;
+        } else if ("02betweenValues".equals(changeoverType)) {
+            return BETWEEN_VALUES;
+        }
+
+        throw new IllegalStateException("Unsupported WorkstationChangeoverNormChangeoverType: " + changeoverType);
     }
 
 }

@@ -21,24 +21,12 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.basic.criteriaModifiers;
+package com.qcadoo.mes.technologies.imports.workstationChangeoverNorm;
 
+import com.qcadoo.mes.basic.imports.services.XlsxImportService;
 import org.springframework.stereotype.Service;
 
-import com.qcadoo.mes.basic.constants.WorkstationTypeFields;
-import com.qcadoo.model.api.search.SearchCriteriaBuilder;
-import com.qcadoo.model.api.search.SearchRestrictions;
-
 @Service
-public class WorkstationTypeCriteriaModifiers {
-
-    public void showWorkstationTypesWithSubassembly(final SearchCriteriaBuilder scb) {
-        scb.add(SearchRestrictions.eq(WorkstationTypeFields.SUBASSEMBLY, true));
-    }
-
-    public void showWorkstationTypesWithoutSubassembly(final SearchCriteriaBuilder scb) {
-        scb.add(SearchRestrictions.or(SearchRestrictions.eq(WorkstationTypeFields.SUBASSEMBLY, false),
-                SearchRestrictions.isNull(WorkstationTypeFields.SUBASSEMBLY)));
-    }
+public class WorkstationChangeoverNormXlsxImportService extends XlsxImportService {
 
 }
