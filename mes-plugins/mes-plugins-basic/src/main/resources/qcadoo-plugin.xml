@@ -350,6 +350,9 @@
         <model:model model="technologicalProcessRate" resource="model/technologicalProcessRate.xml"/>
         <model:model model="technologicalProcessRateItem" resource="model/technologicalProcessRateItem.xml"/>
 
+        <model:model model="pieceRate" resource="model/pieceRate.xml"/>
+        <model:model model="pieceRateItem" resource="model/pieceRateItem.xml"/>
+
         <model:dictionary name="categories"/>
         <model:dictionary name="reasonTypeOfChangingOrderState"/>
 
@@ -562,6 +565,9 @@
         <view:view resource="view/technologicalProcessRateList.xml"/>
         <view:view resource="view/technologicalProcessRateDetails.xml"/>
         <view:view resource="view/technologicalProcessRateItemDetails.xml"/>
+        <view:view resource="view/pieceRateList.xml"/>
+        <view:view resource="view/pieceRateDetails.xml"/>
+        <view:view resource="view/pieceRateItemDetails.xml"/>
 
         <view:view resource="view/companyDefaultProducts.xml"/>
 
@@ -569,6 +575,9 @@
 
         <menu:menu-item name="technologicalProcessRateList" category="staff"
                         view="technologicalProcessRateList" defaultAuthorizationRole="ROLE_TECHNOLOGICAL_PROCESSES"/>
+
+        <menu:menu-item name="pieceRateList" category="staff"
+                        view="pieceRateList" defaultAuthorizationRole="ROLE_BASE_FUNCTIONALITY"/>
 
         <view:view-hook plugin="qcadooUsers" view="userDetails" type="beforeRender"
                         class="com.qcadoo.mes.basic.hooks.UserDetailsHooksB"
