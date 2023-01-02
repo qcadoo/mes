@@ -55,7 +55,7 @@ public class WorkstationChangeoverNormCellBinderRegistry {
     private CellParser attributeValueCellParser;
 
     @Autowired
-    private CellParser integerCellParser;
+    private CellParser timeCellParser;
 
     @Autowired
     private CellParser booleanCellParser;
@@ -70,7 +70,7 @@ public class WorkstationChangeoverNormCellBinderRegistry {
         cellBinderRegistry.setCellBinder(required(WorkstationChangeoverNormFields.CHANGEOVER_TYPE, workstationChangeoverTypeCellParser));
         cellBinderRegistry.setCellBinder(optional(WorkstationChangeoverNormFields.FROM_ATTRIBUTE_VALUE, WorkstationChangeoverNormFields.ATTRIBUTE, attributeValueCellParser));
         cellBinderRegistry.setCellBinder(optional(WorkstationChangeoverNormFields.TO_ATTRIBUTE_VALUE, WorkstationChangeoverNormFields.ATTRIBUTE, attributeValueCellParser));
-        cellBinderRegistry.setCellBinder(required(WorkstationChangeoverNormFields.DURATION, integerCellParser));
+        cellBinderRegistry.setCellBinder(required(WorkstationChangeoverNormFields.DURATION, timeCellParser));
         cellBinderRegistry.setCellBinder(optional(WorkstationChangeoverNormFields.IS_PARALLEL, booleanCellParser));
     }
 
