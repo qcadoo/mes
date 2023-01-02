@@ -65,4 +65,6 @@ public final class WorkstationFields {
 
     public static final String BUFFER = "buffer";
 
+    public static final String STATE = "state";
+
 }

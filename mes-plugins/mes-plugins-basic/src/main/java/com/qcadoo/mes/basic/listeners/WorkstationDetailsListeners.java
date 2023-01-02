@@ -21,34 +21,22 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.basic.hooks;
+package com.qcadoo.mes.basic.listeners;
 
-import com.qcadoo.mes.basic.constants.WorkstationFields;
-import com.qcadoo.mes.basic.states.constants.WorkstationStateStringValues;
-import com.qcadoo.model.api.DataDefinition;
-import com.qcadoo.model.api.Entity;
 import org.springframework.stereotype.Service;
 
-import java.util.Objects;
+import com.qcadoo.view.api.ComponentState;
+import com.qcadoo.view.api.ViewDefinitionState;
 
 @Service
-public class WorkstationModelHooks {
+public class WorkstationDetailsListeners {
 
-    public void onCreate(final DataDefinition workstationDD, final Entity workstation) {
-        if (Objects.isNull(workstation.getField(WorkstationFields.BUFFER))) {
-            workstation.setField(WorkstationFields.BUFFER, false);
-        }
-        workstation.setField(WorkstationFields.STATE, WorkstationStateStringValues.STOPPED);
+    public void launchWorkstation(final ViewDefinitionState view, final ComponentState state, final String[] args){
+
     }
 
-    public boolean onDelete(final DataDefinition workstationDD, final Entity workstation) {
-        boolean canDelete = workstation.getHasManyField(WorkstationFields.SUBASSEMBLIES).isEmpty();
+    public void stopWorkstation(final ViewDefinitionState view, final ComponentState state, final String[] args){
 
-        if (!canDelete) {
-            workstation.addGlobalError("basic.workstation.delete.hasSubassemblies");
-        }
-
-        return canDelete;
     }
 
 }

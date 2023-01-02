@@ -3,19 +3,19 @@
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
  * Version: 1.4
- *
+ * <p>
  * This file is part of Qcadoo.
- *
+ * <p>
  * Qcadoo is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation; either version 3 of the License,
  * or (at your option) any later version.
- *
+ * <p>
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty
  * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU Affero General Public License for more details.
- *
+ * <p>
  * You should have received a copy of the GNU Affero General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
@@ -27,13 +27,18 @@ import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.basic.constants.SubassemblyFields;
 import com.qcadoo.mes.basic.constants.SubassemblyToWorkstationHelperFields;
 import com.qcadoo.mes.basic.constants.WorkstationFields;
+import com.qcadoo.mes.basic.states.constants.WorkstationStateStringValues;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
+import com.qcadoo.view.api.components.WindowComponent;
+import com.qcadoo.view.api.ribbon.RibbonActionItem;
+import com.qcadoo.view.api.ribbon.RibbonGroup;
 import com.qcadoo.view.constants.QcadooViewConstants;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -47,15 +52,31 @@ import java.util.stream.Collectors;
 @Service
 public class WorkstationDetailsHooks {
 
-
-
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
     @Autowired
     private NamedParameterJdbcTemplate jdbcTemplate;
 
-    public void setWorkstationIdForMultiUploadField(final ViewDefinitionState view) {
+    public void onBeforeRender(final ViewDefinitionState view) {
+        setWorkstationIdForMultiUploadField(view);
+        setSubassembliesHelpers(view);
+        setStateButtons(view);
+    }
+
+    private void setStateButtons(ViewDefinitionState view) {
+        WindowComponent window = (WindowComponent) view.getComponentByReference(QcadooViewConstants.L_WINDOW);
+        RibbonGroup workstationState = window.getRibbon().getGroupByName("workstationState");
+        RibbonActionItem launch = workstationState.getItemByName("launch");
+        RibbonActionItem stop = workstationState.getItemByName("stop");
+        FieldComponent stateField = (FieldComponent) view.getComponentByReference(WorkstationFields.STATE);
+        launch.setEnabled(WorkstationStateStringValues.STOPPED.equals(stateField.getFieldValue()));
+        launch.requestUpdate(true);
+        stop.setEnabled(WorkstationStateStringValues.LAUNCHED.equals(stateField.getFieldValue()));
+        stop.requestUpdate(true);
+    }
+
+    private void setWorkstationIdForMultiUploadField(final ViewDefinitionState view) {
         FormComponent workstationForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         FieldComponent workstationIdForMultiUpload = (FieldComponent) view.getComponentByReference("workstationIdForMultiUpload");
         FieldComponent workstationMultiUploadLocale = (FieldComponent) view
@@ -72,7 +93,7 @@ public class WorkstationDetailsHooks {
         workstationMultiUploadLocale.requestComponentUpdateState();
     }
 
-    public void setSubassembliesHelpers(final ViewDefinitionState view) {
+    private void setSubassembliesHelpers(final ViewDefinitionState view) {
         FormComponent workstationForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
         if (workstationForm.getEntityId() != null) {

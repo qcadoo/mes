@@ -45,35 +45,39 @@
                              action="#{form}.performSaveAndClear;"/>
                 <smallButton name="copy" icon="copyIcon16.png" state="disabled" action="#{form}.performCopy;"
                              accesskey="c">
-                    <script><![CDATA[
-				#{form}.addOnChangeListener({
-					onSetValue: function(value) {
-						if (!value || !value.content)
-							return;
-						if (value.content.entityId) {
-							this.enable();
-						} else {
-							this.disable();
-						}
-					}
-				});
-			]]></script>
+                    <script>
+                        <![CDATA[
+                            #{form}.addOnChangeListener({
+                                onSetValue: function(value) {
+                                    if (!value || !value.content)
+                                        return;
+                                    if (value.content.entityId) {
+                                        this.enable();
+                                    } else {
+                                        this.disable();
+                                    }
+                                }
+                            });
+                        ]]>
+                    </script>
                 </smallButton>
                 <smallButton name="delete" icon="deleteIcon16.png" state="disabled" action="#{form}.performDelete;"
                              accesskey="d">
-                    <script><![CDATA[
-                #{form}.addOnChangeListener({
-					onSetValue: function(value) {
-						if (!value || !value.content)
-							return;
-						if (value.content.entityId) {
-							this.enable();
-						} else {
-							this.disable();
-						}
-					}
-				});
-			]]></script>
+                    <script>
+                        <![CDATA[
+                            #{form}.addOnChangeListener({
+                                onSetValue: function(value) {
+                                    if (!value || !value.content)
+                                        return;
+                                    if (value.content.entityId) {
+                                        this.enable();
+                                    } else {
+                                        this.disable();
+                                    }
+                                }
+                            });
+                        ]]>
+                    </script>
                 </smallButton>
                 <smallButton name="cancel" icon="cancelIcon16.png" state="enabled" action="#{form}.performCancel;"
                              accesskey="x"/>
@@ -88,41 +92,44 @@
                    defaultAuthorizationRole="ROLE_COMPANY_STRUCTURE_EDIT">
                 <smallButton name="activate" icon="unactiveVisibleIcon.png" state="disabled"
                              action="#{form}.performActivate;">
-                    <script><![CDATA[
-				#{form}.addOnChangeListener({
-					onSetValue: function(value) {
-						if (!value || !value.content)
-							return;
-						if (value.content.entityId && !value.content.isActive) {
-							this.enable();
-						} else {
-							this.disable();
-						}
-					}
-				});
-			]]></script>
+                    <script>
+                        <![CDATA[
+                            #{form}.addOnChangeListener({
+                                onSetValue: function(value) {
+                                    if (!value || !value.content)
+                                        return;
+                                    if (value.content.entityId && !value.content.isActive) {
+                                        this.enable();
+                                    } else {
+                                        this.disable();
+                                    }
+                                }
+                            });
+                        ]]>
+                    </script>
                 </smallButton>
                 <smallButton name="deactivate" icon="unactiveNotVisibleIcon.png" state="disabled"
                              action="#{form}.performDeactivate;">
-                    <script><![CDATA[
-                #{form}.addOnChangeListener({
-					onSetValue: function(value) {
-						if (!value || !value.content)
-							return;
-						if (value.content.entityId && value.content.isActive) {
-							this.enable();
-						} else {
-							this.disable();
-						}
-					}
-				});
-			]]></script>
+                    <script>
+                        <![CDATA[
+                            #{form}.addOnChangeListener({
+                                onSetValue: function(value) {
+                                    if (!value || !value.content)
+                                        return;
+                                    if (value.content.entityId && value.content.isActive) {
+                                        this.enable();
+                                    } else {
+                                        this.disable();
+                                    }
+                                }
+                            });
+                        ]]>
+                    </script>
                 </smallButton>
             </group>
 
             <group name="atachments" defaultAuthorizationRole="ROLE_COMPANY_STRUCTURE">
-                <bigButton name="downloadAtachment" icon="generateIcon24.png"
-                           state="enabled">
+                <bigButton name="downloadAtachment" icon="generateIcon24.png" state="enabled">
                     <script>
                         <![CDATA[
 							this.addOnChangeListener({
@@ -134,6 +141,30 @@
                     </script>
                 </bigButton>
             </group>
+            <group name="workstationState" defaultAuthorizationRole="ROLE_COMPANY_STRUCTURE_EDIT">
+                <smallButton name="launch" icon="startIcon16.png" state="disabled">
+                    <script>
+                        <![CDATA[
+							this.addOnChangeListener({
+								onClick: function() {
+									#{form}.performEvent('launchWorkstation', []);
+								}
+							});
+						]]>
+                    </script>
+                </smallButton>
+                <smallButton name="stop" icon="pauseIcon16.png" state="disabled">
+                    <script>
+                        <![CDATA[
+							this.addOnChangeListener({
+								onClick: function() {
+									#{form}.performEvent('stopWorkstation', []);
+								}
+							});
+						]]>
+                    </script>
+                </smallButton>
+            </group>
         </ribbon>
         <windowTab name="mainTab" reference="mainTab">
             <component type="form" name="workstation" reference="form"
@@ -144,6 +175,8 @@
                         <component type="input" name="number" field="number">
                             <option type="alignment" value="right"/>
                         </component>
+                        <component type="select" name="state" field="state"
+                                   reference="state" defaultVisible="false"/>
                     </layoutElement>
                     <layoutElement column="1" row="2" height="2">
                         <component type="textarea" name="name" field="name"/>
@@ -217,6 +250,10 @@
 
                 <listener event="downloadAttachment" method="downloadAttachment"
                           class="com.qcadoo.mes.basic.listeners.AttachmentsListeners"/>
+                <listener event="launchWorkstation" method="launchWorkstation"
+                          class="com.qcadoo.mes.basic.listeners.WorkstationDetailsListeners"/>
+                <listener event="stopWorkstation" method="stopWorkstation"
+                          class="com.qcadoo.mes.basic.listeners.WorkstationDetailsListeners"/>
             </component>
         </windowTab>
         <windowTab name="companiesTab" reference="companiesTab">
@@ -331,14 +368,46 @@
                 </layoutElement>
             </component>
         </windowTab>
+        <windowTab name="machineWorkingPeriodsTab" reference="machineWorkingPeriodsTab">
+            <component type="flowGridLayout" name="machineWorkingPeriodsGridLayout"
+                       columns="1" rows="3">
+                <layoutElement column="1" row="1" minHeight="3">
+                    <component type="grid" name="machineWorkingPeriods" reference="machineWorkingPeriods"
+                               source="#{form}.machineWorkingPeriods"
+                               defaultAuthorizationRole="ROLE_COMPANY_STRUCTURE_EDIT">
+                        <option type="column" name="launchDate" fields="launchDate"
+                                width="50" link="true"/>
+                        <option type="column" name="launchedBy" fields="launchedBy" expression="#launchedBy['name'] + ' ' + #launchedBy['surname']"
+                                width="100" link="true"/>
+                        <option type="column" name="stopDate" fields="stopDate"
+                                width="50" link="true"/>
+                        <option type="column" name="stoppedBy" fields="stoppedBy" expression="#stoppedBy['name'] + ' ' + #stoppedBy['surname']"
+                                width="100" link="true"/>
+                        <option type="column" name="workingTime" fields="workingTime" width="50"/>
+
+                        <option type="searchable" value="launchDate,launchedBy,stopDate,stoppedBy,workingTime"/>
+                        <option type="orderable" value="launchDate,launchedBy,stopDate,stoppedBy,workingTime"/>
+
+                        <option type="order" column="launchDate" direction="asc"/>
+
+                        <option type="fullscreen" value="true"/>
+                        <option type="multiselect" value="true"/>
+                        <option type="creatable" value="true"/>
+                        <option type="deletable" value="true"/>
+
+                        <option type="correspondingView" value="basic/machineWorkingPeriodDetails"/>
+                        <option type="correspondingComponent" value="form"/>
+                        <option type="correspondingViewInModal" value="true"/>
+
+                    </component>
+                </layoutElement>
+            </component>
+        </windowTab>
     </component>
     <hooks>
         <beforeRender
                 class="com.qcadoo.mes.basic.hooks.WorkstationDetailsHooks"
-                method="setWorkstationIdForMultiUploadField"/>
-        <beforeRender
-                class="com.qcadoo.mes.basic.hooks.WorkstationDetailsHooks"
-                method="setSubassembliesHelpers"/>
+                method="onBeforeRender"/>
     </hooks>
 
 </view>

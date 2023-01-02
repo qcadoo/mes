@@ -17,8 +17,6 @@ import java.util.List;
 @Service
 public class NumberPatternDetailsListeners {
 
-    
-
     @Autowired
     private TranslationService translationService;
 
