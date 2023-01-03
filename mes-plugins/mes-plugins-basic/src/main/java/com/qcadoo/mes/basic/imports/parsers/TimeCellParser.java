@@ -39,7 +39,7 @@ public class TimeCellParser implements CellParser {
 
     private static final String L_QCADOO_VIEW_VALIDATE_FIELD_ERROR_CUSTOM = "qcadooView.validate.field.error.custom";
 
-    private static final String L_TIME_PATTERN = "^\\d{2}:\\d{2}:\\d{2}$";
+    private static final String L_TIME_PATTERN = "^\\d{1,2}:\\d{2}:\\d{2}$";
 
     @Override
     public void parse(final String cellValue, final String dependentCellValue, final CellErrorsAccessor errorsAccessor, final Consumer<Object> valueConsumer) {
