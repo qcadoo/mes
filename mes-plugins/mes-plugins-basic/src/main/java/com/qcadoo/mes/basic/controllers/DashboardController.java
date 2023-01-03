@@ -83,7 +83,7 @@ public class DashboardController {
             } else {
                 JSONObject json = new JSONObject(ImmutableMap.of("form.id", currentUser.getId()));
 
-                return crudService.prepareView(QcadooUsersConstants.PLUGIN_IDENTIFIER, QcadooUsersConstants.VIEW_USER_CHANGE_PASSWORD, ImmutableMap.of("context", json.toString()), locale);
+                return crudService.prepareView(QcadooUsersConstants.PLUGIN_IDENTIFIER, QcadooUsersConstants.VIEW_PROFILE_CHANGE_PASSWORD, ImmutableMap.of("context", json.toString()), locale);
             }
         }
     }
