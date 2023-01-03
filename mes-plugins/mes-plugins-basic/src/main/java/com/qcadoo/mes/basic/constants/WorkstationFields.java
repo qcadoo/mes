@@ -67,4 +67,6 @@ public final class WorkstationFields {
 
     public static final String STATE = "state";
 
+    public static final String MACHINE_WORKING_PERIODS = "machineWorkingPeriods";
+
 }

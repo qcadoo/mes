@@ -64,6 +64,7 @@
     <hooks>
         <onCreate class="com.qcadoo.mes.basic.hooks.WorkstationModelHooks" method="onCreate"/>
         <onDelete class="com.qcadoo.mes.basic.hooks.WorkstationModelHooks" method="onDelete"/>
+        <onCopy class="com.qcadoo.mes.basic.hooks.WorkstationModelHooks" method="onCopy"/>
     </hooks>
 
     <identifier expression="#number + ' - ' + #name"/>

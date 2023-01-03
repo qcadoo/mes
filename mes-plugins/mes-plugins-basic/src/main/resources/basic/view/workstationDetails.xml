@@ -141,30 +141,6 @@
                     </script>
                 </bigButton>
             </group>
-            <group name="workstationState" defaultAuthorizationRole="ROLE_COMPANY_STRUCTURE_EDIT">
-                <smallButton name="launch" icon="startIcon16.png" state="disabled">
-                    <script>
-                        <![CDATA[
-							this.addOnChangeListener({
-								onClick: function() {
-									#{form}.performEvent('launchWorkstation', []);
-								}
-							});
-						]]>
-                    </script>
-                </smallButton>
-                <smallButton name="stop" icon="pauseIcon16.png" state="disabled">
-                    <script>
-                        <![CDATA[
-							this.addOnChangeListener({
-								onClick: function() {
-									#{form}.performEvent('stopWorkstation', []);
-								}
-							});
-						]]>
-                    </script>
-                </smallButton>
-            </group>
         </ribbon>
         <windowTab name="mainTab" reference="mainTab">
             <component type="form" name="workstation" reference="form"
@@ -250,10 +226,6 @@
 
                 <listener event="downloadAttachment" method="downloadAttachment"
                           class="com.qcadoo.mes.basic.listeners.AttachmentsListeners"/>
-                <listener event="launchWorkstation" method="launchWorkstation"
-                          class="com.qcadoo.mes.basic.listeners.WorkstationDetailsListeners"/>
-                <listener event="stopWorkstation" method="stopWorkstation"
-                          class="com.qcadoo.mes.basic.listeners.WorkstationDetailsListeners"/>
             </component>
         </windowTab>
         <windowTab name="companiesTab" reference="companiesTab">

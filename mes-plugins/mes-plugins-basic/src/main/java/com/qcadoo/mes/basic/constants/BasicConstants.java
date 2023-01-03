@@ -114,6 +114,8 @@ public final class BasicConstants {
 
     public static final String MODEL_PIECE_RATE_ITEM = "pieceRateItem";
 
+    public static final String MODEL_MACHINE_WORKING_PERIOD = "machineWorkingPeriod";
+
     // VIEW
 
     public static final String VIEW_GENERAL_PARAMETERS = "generalParameters";

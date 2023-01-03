@@ -23,6 +23,7 @@
  */
 package com.qcadoo.mes.basic.hooks;
 
+import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.basic.constants.SubassemblyFields;
 import com.qcadoo.mes.basic.constants.SubassemblyToWorkstationHelperFields;
@@ -58,6 +59,9 @@ public class WorkstationDetailsHooks {
     @Autowired
     private NamedParameterJdbcTemplate jdbcTemplate;
 
+    @Autowired
+    private TranslationService translationService;
+
     public void onBeforeRender(final ViewDefinitionState view) {
         setWorkstationIdForMultiUploadField(view);
         setSubassembliesHelpers(view);
@@ -70,6 +74,13 @@ public class WorkstationDetailsHooks {
         RibbonActionItem launch = workstationState.getItemByName("launch");
         RibbonActionItem stop = workstationState.getItemByName("stop");
         FieldComponent stateField = (FieldComponent) view.getComponentByReference(WorkstationFields.STATE);
+        if (WorkstationStateStringValues.STOPPED.equals(stateField.getFieldValue())) {
+            launch.setMessage(null);
+            stop.setMessage(translationService.translate("basic.workstationDetails.window.ribbon.workstationState.stop.message", LocaleContextHolder.getLocale()));
+        } else {
+            launch.setMessage(translationService.translate("basic.workstationDetails.window.ribbon.workstationState.launch.message", LocaleContextHolder.getLocale()));
+            stop.setMessage(null);
+        }
         launch.setEnabled(WorkstationStateStringValues.STOPPED.equals(stateField.getFieldValue()));
         launch.requestUpdate(true);
         stop.setEnabled(WorkstationStateStringValues.LAUNCHED.equals(stateField.getFieldValue()));

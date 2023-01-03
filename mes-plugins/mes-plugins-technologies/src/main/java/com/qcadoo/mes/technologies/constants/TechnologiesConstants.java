@@ -88,6 +88,8 @@ public final class TechnologiesConstants {
 
     public static final String MODEL_WORKSTATION_CHANGEOVER_NORM = "workstationChangeoverNorm";
 
+    public static final String MODEL_WORKSTATION_STATE_CHANGE = "workstationStateChange";
+
     // VIEW
 
     public static final String VIEW_OPERATION_DETAILS = "operationDetails";

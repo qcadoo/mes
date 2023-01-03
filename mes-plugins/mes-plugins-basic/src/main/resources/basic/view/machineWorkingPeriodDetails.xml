@@ -77,7 +77,7 @@
                 </layoutElement>
                 <layoutElement column="1" row="5">
                     <component type="time" name="workingTime" field="workingTime"
-                               reference="workingTime">
+                               reference="workingTime" defaultEnabled="never">
                     </component>
                 </layoutElement>
             </component>
