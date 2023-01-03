@@ -49,12 +49,14 @@
 
         <date name="dateOfAdmission" />
         <date name="dateOfWithdrawal" />
+        <enum name="state" values="01stopped,02launched" default="01stopped"/>
 
         <manyToMany name="companies" model="company" joinField="workstations"/>
         <hasMany name="attachments" model="workstationAttachment" joinField="workstation" cascade="delete"/>
         <hasMany name="subassemblies" model="subassembly" joinField="workstation"/>
         <hasMany name="subassembliesHelpers" model="subassemblyToWorkstationHelper" joinField="workstation"/>
         <hasMany name="staffs" model="staff" joinField="workstation"/>
+        <hasMany name="machineWorkingPeriods" model="machineWorkingPeriod" joinField="workstation" cascade="delete"/>
         <manyToMany name="faultTypes" model="faultType" joinField="workstations"/>
         <boolean name="buffer" default="false"/>
     </fields>
@@ -62,6 +64,7 @@
     <hooks>
         <onCreate class="com.qcadoo.mes.basic.hooks.WorkstationModelHooks" method="onCreate"/>
         <onDelete class="com.qcadoo.mes.basic.hooks.WorkstationModelHooks" method="onDelete"/>
+        <onCopy class="com.qcadoo.mes.basic.hooks.WorkstationModelHooks" method="onCopy"/>
     </hooks>
 
     <identifier expression="#number + ' - ' + #name"/>

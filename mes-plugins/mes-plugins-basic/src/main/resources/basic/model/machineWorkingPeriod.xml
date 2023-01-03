@@ -24,24 +24,18 @@
     ***************************************************************************
 
 -->
-<model name="workstationDto" activable="true" auditable="false" deletable="false" insertable="false"
-       updatable="false"
+<model name="machineWorkingPeriod"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
        xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
-
     <fields>
-        <string name="number"/>
-        <string name="name"/>
-        <string name="workstationType"/>
-        <string name="division"/>
-        <string name="wnkNumber"/>
-        <string name="staff"/>
-        <date name="dateOfAdmission" />
-        <date name="dateOfWithdrawal" />
-        <enum name="state" values="01stopped,02launched"/>
+        <datetime name="launchDate" required="true"/>
+        <datetime name="stopDate"/>
+        <integer name="workingTime"/>
+        <belongsTo name="workstation" model="workstation" required="true"/>
+        <belongsTo name="launchedBy" model="staff"/>
+        <belongsTo name="stoppedBy" model="staff"/>
     </fields>
 
-    <identifier expression="#number + ' - ' + #name"/>
+    <hooks/>
 
-    <masterModel plugin="basic" model="workstation"/>
 </model>

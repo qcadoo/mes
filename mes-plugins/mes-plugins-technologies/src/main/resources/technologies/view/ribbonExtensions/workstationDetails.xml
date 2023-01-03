@@ -24,24 +24,38 @@
     ***************************************************************************
 
 -->
-<model name="workstationDto" activable="true" auditable="false" deletable="false" insertable="false"
-       updatable="false"
-       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
-       xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
+<ribbonExtension xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/modules/ribbonExtension"
+	xsi:schemaLocation="http://schema.qcadoo.org/modules/ribbonExtension http://schema.qcadoo.org/modules/ribbonExtension.xsd"
+	plugin="basic"
+	view="workstationDetails">
 
-    <fields>
-        <string name="number"/>
-        <string name="name"/>
-        <string name="workstationType"/>
-        <string name="division"/>
-        <string name="wnkNumber"/>
-        <string name="staff"/>
-        <date name="dateOfAdmission" />
-        <date name="dateOfWithdrawal" />
-        <enum name="state" values="01stopped,02launched"/>
-    </fields>
+	<group name="workstationState" defaultAuthorizationRole="ROLE_COMPANY_STRUCTURE_EDIT">
+		<smallButton name="launch" icon="startIcon16.png" state="disabled">
+			<script>
+				<![CDATA[
+					this.addOnChangeListener({
+						onClick: function() {
+							if(window.canClose()) {
+								#{form}.performEvent('changeState', ['02launched']);
+							}
+						}
+					});
+				]]>
+			</script>
+		</smallButton>
+		<smallButton name="stop" icon="pauseIcon16.png" state="disabled">
+			<script>
+				<![CDATA[
+					this.addOnChangeListener({
+						onClick: function() {
+							if(window.canClose()) {
+								#{form}.performEvent('changeState', ['01stopped']);
+							}
+						}
+					});
+				]]>
+			</script>
+		</smallButton>
+	</group>
 
-    <identifier expression="#number + ' - ' + #name"/>
-
-    <masterModel plugin="basic" model="workstation"/>
-</model>
+</ribbonExtension>
