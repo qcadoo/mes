@@ -230,8 +230,10 @@ public class OrdersForSubproductsGenerationService {
                 buildDescription(parentOrder.getStringField(OrderFields.DESCRIPTION), technology, product));
 
         if (transferOrdersGroupToOrdersForComponents) {
-            order.setField(L_ORDERS_GROUP, parentOrder.getBelongsToField(L_ORDERS_GROUP));
-
+            Entity orderGroup = parentOrder.getBelongsToField(L_ORDERS_GROUP);
+            order.setField(L_ORDERS_GROUP, orderGroup);
+            order.setField(OrderFields.DATE_FROM, orderGroup.getDateField("startDate"));
+            order.setField(OrderFields.DATE_TO, orderGroup.getDateField("finishDate"));
         }
 
         order = order.getDataDefinition().save(order);
@@ -297,9 +299,12 @@ public class OrdersForSubproductsGenerationService {
                 buildDescription(parentOrder.getStringField(OrderFields.DESCRIPTION), technology, product));
 
         if (transferOrdersGroupToOrdersForComponents) {
-            order.setField(L_ORDERS_GROUP, parentOrder.getBelongsToField(L_ORDERS_GROUP));
-
+            Entity orderGroup = parentOrder.getBelongsToField(L_ORDERS_GROUP);
+            order.setField(L_ORDERS_GROUP, orderGroup);
+            order.setField(OrderFields.DATE_FROM, orderGroup.getDateField("startDate"));
+            order.setField(OrderFields.DATE_TO, orderGroup.getDateField("finishDate"));
         }
+
         order = order.getDataDefinition().save(order);
 
         LOG.info(String.format("Finish generation order for order : %s , product %s",
