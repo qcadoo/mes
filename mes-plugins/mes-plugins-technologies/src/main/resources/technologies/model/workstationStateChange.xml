@@ -1,0 +1,24 @@
+<model name="workstationStateChange"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
+       xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
+
+    <fields>
+        <!-- generic state change fields -->
+        <datetime name="dateAndTime"/>
+        <enum name="sourceState"
+              values="01stopped,02launched"/>
+        <enum name="targetState"
+              values="01stopped,02launched"
+              required="true"/>
+        <enum name="status"
+              values="01inProgress,02paused,03successful,04failure,05canceled"
+              required="true"/>
+        <integer name="phase"/>
+        <string name="worker"/>
+        <belongsTo name="workstation" plugin="basic" model="workstation"/>
+        <belongsTo name="shift" model="shift" plugin="basic"/>
+    </fields>
+
+    <hooks/>
+
+</model>

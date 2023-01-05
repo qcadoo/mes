@@ -40,4 +40,5 @@ public class WorkstationTypeCriteriaModifiers {
         scb.add(SearchRestrictions.or(SearchRestrictions.eq(WorkstationTypeFields.SUBASSEMBLY, false),
                 SearchRestrictions.isNull(WorkstationTypeFields.SUBASSEMBLY)));
     }
+
 }

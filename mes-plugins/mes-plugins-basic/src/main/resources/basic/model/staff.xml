@@ -50,8 +50,10 @@
         <belongsTo name="crew" model="crew"/>
         <belongsTo name="workstation" model="workstation"/>
 
-        <hasMany name="crews" plugin="basic" model="crew" joinField="leader" copyable="false" cascade="nullify"/>
-        <hasMany name="staffSkills" plugin="basic" model="staffSkill" joinField="staff" cascade="delete" copyable="false"/>
+        <hasMany name="crews" model="crew" joinField="leader"/>
+        <hasMany name="staffSkills" model="staffSkill" joinField="staff" cascade="delete"/>
+        <hasMany name="machineWorkingPeriodsLaunchedBy" model="machineWorkingPeriod" joinField="launchedBy"/>
+        <hasMany name="machineWorkingPeriodsStoppedBy" model="machineWorkingPeriod" joinField="stoppedBy"/>
     </fields>
 
     <hooks/>

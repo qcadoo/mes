@@ -146,10 +146,11 @@
             <option type="column" name="staff" fields="staff"/>
             <option type="column" name="dateOfAdmission" fields="dateOfAdmission" width="50"/>
             <option type="column" name="dateOfWithdrawal" fields="dateOfWithdrawal" width="50"/>
+            <option type="column" name="state" fields="state" width="50"/>
             <option type="order" column="number" direction="desc"/>
 
-            <option type="searchable" value="name,number,workstationType,division,wnkNumber,staff,dateOfAdmission,dateOfWithdrawal"/>
-            <option type="orderable" value="name,number,workstationType,division,wnkNumber,staff,dateOfAdmission,dateOfWithdrawal"/>
+            <option type="searchable" value="name,number,workstationType,division,wnkNumber,staff,dateOfAdmission,dateOfWithdrawal,state"/>
+            <option type="orderable" value="name,number,workstationType,division,wnkNumber,staff,dateOfAdmission,dateOfWithdrawal,state"/>
 
             <option type="correspondingView" value="basic/workstationDetails"/>
             <option type="correspondingComponent" value="form"/>

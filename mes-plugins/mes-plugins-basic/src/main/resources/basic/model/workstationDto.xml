@@ -38,6 +38,7 @@
         <string name="staff"/>
         <date name="dateOfAdmission" />
         <date name="dateOfWithdrawal" />
+        <enum name="state" values="01stopped,02launched"/>
     </fields>
 
     <identifier expression="#number + ' - ' + #name"/>

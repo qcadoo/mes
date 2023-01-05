@@ -3,19 +3,19 @@
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo Framework
  * Version: 1.4
- *
+ * <p>
  * This file is part of Qcadoo.
- *
+ * <p>
  * Qcadoo is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation; either version 3 of the License,
  * or (at your option) any later version.
- *
+ * <p>
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty
  * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU Affero General Public License for more details.
- *
+ * <p>
  * You should have received a copy of the GNU Affero General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
@@ -93,6 +93,10 @@ public class OrdersForSubproductsGenerationService {
     private static final List<String> L_ORDER_FIELD_NAMES = Lists.newArrayList(OrderFieldsPC.TYPE_OF_PRODUCTION_RECORDING,
             OrderFieldsPC.REGISTER_PIECEWORK, OrderFieldsPC.REGISTER_QUANTITY_IN_PRODUCT,
             OrderFieldsPC.REGISTER_QUANTITY_OUT_PRODUCT, OrderFieldsPC.REGISTER_PRODUCTION_TIME);
+
+    private static final String L_TRANSFER_ORDERS_GROUP_TO_ORDERS_FOR_COMPONENTS = "transferOrdersGroupToOrdersForComponents";
+
+    private static final String L_ORDERS_GROUP = "ordersGroup";
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
@@ -183,6 +187,8 @@ public class OrdersForSubproductsGenerationService {
     @Transactional
     public void generateSimpleOrderForSubProduct(final Entity entry, final Entity parentOrder, final Locale locale,
                                                  final int index) {
+
+        boolean transferOrdersGroupToOrdersForComponents = parameterService.getParameter().getBooleanField(L_TRANSFER_ORDERS_GROUP_TO_ORDERS_FOR_COMPONENTS);
         Entity order = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).create();
         Entity product = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PRODUCT)
                 .get(Long.valueOf(entry.getIntegerField("productId")));
@@ -223,6 +229,13 @@ public class OrdersForSubproductsGenerationService {
         order.setField(OrderFields.DESCRIPTION,
                 buildDescription(parentOrder.getStringField(OrderFields.DESCRIPTION), technology, product));
 
+        if (transferOrdersGroupToOrdersForComponents) {
+            Entity orderGroup = parentOrder.getBelongsToField(L_ORDERS_GROUP);
+            order.setField(L_ORDERS_GROUP, orderGroup);
+            order.setField(OrderFields.DATE_FROM, orderGroup.getDateField("startDate"));
+            order.setField(OrderFields.DATE_TO, orderGroup.getDateField("finishDate"));
+        }
+
         order = order.getDataDefinition().save(order);
 
         LOG.info(String.format("Finish generation order for order : %s , product %s",
@@ -232,6 +245,8 @@ public class OrdersForSubproductsGenerationService {
     @Transactional
     public void generateOrderForSubProduct(final Entity coverageProduct, final Entity parentOrder, final Locale locale,
                                            final int index) {
+        boolean transferOrdersGroupToOrdersForComponents = parameterService.getParameter().getBooleanField(L_TRANSFER_ORDERS_GROUP_TO_ORDERS_FOR_COMPONENTS);
+
         Entity order = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).create();
 
         Entity product = coverageProduct.getBelongsToField(CoverageProductFields.PRODUCT);
@@ -282,6 +297,13 @@ public class OrdersForSubproductsGenerationService {
         setOrderWithDefaultProductionCountingValues(order, technology);
         order.setField(OrderFields.DESCRIPTION,
                 buildDescription(parentOrder.getStringField(OrderFields.DESCRIPTION), technology, product));
+
+        if (transferOrdersGroupToOrdersForComponents) {
+            Entity orderGroup = parentOrder.getBelongsToField(L_ORDERS_GROUP);
+            order.setField(L_ORDERS_GROUP, orderGroup);
+            order.setField(OrderFields.DATE_FROM, orderGroup.getDateField("startDate"));
+            order.setField(OrderFields.DATE_TO, orderGroup.getDateField("finishDate"));
+        }
 
         order = order.getDataDefinition().save(order);
 

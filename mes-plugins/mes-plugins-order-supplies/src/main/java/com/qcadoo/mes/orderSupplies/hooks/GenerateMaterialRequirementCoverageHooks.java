@@ -265,10 +265,10 @@ public class GenerateMaterialRequirementCoverageHooks {
             field.requestComponentUpdateState();
         }
 
-        if (parameter.getBooleanField(ParameterFieldsOS.INCLUDE_DRAFT_DELIVERIES)) {
-            FieldComponent field = (FieldComponent) view.getComponentByReference(ParameterFieldsOS.INCLUDE_DRAFT_DELIVERIES);
+        if (StringUtils.isNotEmpty(parameter.getStringField(ParameterFieldsOS.INCLUDE_IN_CALCULATION_DELIVERIES))) {
+            FieldComponent field = (FieldComponent) view.getComponentByReference(ParameterFieldsOS.INCLUDE_IN_CALCULATION_DELIVERIES);
 
-            field.setFieldValue(parameter.getBooleanField(ParameterFieldsOS.INCLUDE_DRAFT_DELIVERIES));
+            field.setFieldValue(parameter.getStringField(ParameterFieldsOS.INCLUDE_IN_CALCULATION_DELIVERIES));
             field.requestComponentUpdateState();
         }
 

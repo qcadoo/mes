@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    ***************************************************************************
+    Copyright (c) 2010 Qcadoo Limited
+    Project: Qcadoo MES
+    Version: 1.4
+
+    This file is part of Qcadoo.
+
+    Qcadoo is free software; you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as published
+    by the Free Software Foundation; either version 3 of the License,
+    or (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty
+    of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+    See the GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+    ***************************************************************************
+
+-->
+<view defaultAuthorizationRole="ROLE_COMPANY_STRUCTURE_EDIT" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
+      xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
+      name="machineWorkingPeriodDetails" modelName="machineWorkingPeriod">
+
+    <component type="window" name="window">
+
+        <ribbon>
+            <template name="standardFormTemplate" excludeItems="actions.copy"/>
+        </ribbon>
+
+        <component type="form" name="form" reference="form">
+            <component type="gridLayout" name="gridLayout" columns="1"
+                       rows="5">
+                <layoutElement column="1" row="1">
+                    <component type="calendar" name="launchDate" field="launchDate"
+                               reference="launchDate">
+                        <option type="withTimePicker" value="true" />
+                        <listener event="onChange"
+                                  class="com.qcadoo.mes.basic.listeners.MachineWorkingPeriodDetailsListeners"
+                                  method="calculateWorkingTime"/>
+                    </component>
+                </layoutElement>
+                <layoutElement column="1" row="2">
+                    <component type="lookup" name="launchedBy" reference="launchedBy"
+                               field="launchedBy">
+                        <option type="column" name="name" fields="name"/>
+
+                        <option type="searchable" value="name,surname"/>
+                        <option type="orderable" value="name,surname"/>
+
+                        <option type="expression"
+                                value="#name + ' ' + #surname"/>
+                        <option type="fieldCode" value="surname"/>
+                    </component>
+                </layoutElement>
+                <layoutElement column="1" row="3">
+                    <component type="calendar" name="stopDate" field="stopDate"
+                               reference="stopDate">
+                        <option type="withTimePicker" value="true" />
+                        <listener event="onChange"
+                                  class="com.qcadoo.mes.basic.listeners.MachineWorkingPeriodDetailsListeners"
+                                  method="calculateWorkingTime"/>
+                    </component>
+                </layoutElement>
+                <layoutElement column="1" row="4">
+                    <component type="lookup" name="stoppedBy" reference="stoppedBy"
+                               field="stoppedBy">
+                        <option type="column" name="name" fields="name"/>
+
+                        <option type="searchable" value="name,surname"/>
+                        <option type="orderable" value="name,surname"/>
+
+                        <option type="expression"
+                                value="#name + ' ' + #surname"/>
+                        <option type="fieldCode" value="surname"/>
+                    </component>
+                </layoutElement>
+                <layoutElement column="1" row="5">
+                    <component type="time" name="workingTime" field="workingTime"
+                               reference="workingTime" defaultEnabled="never">
+                    </component>
+                </layoutElement>
+            </component>
+        </component>
+    </component>
+
+    <hooks/>
+</view>

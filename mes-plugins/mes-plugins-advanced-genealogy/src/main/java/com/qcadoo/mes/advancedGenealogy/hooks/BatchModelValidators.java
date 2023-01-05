@@ -23,17 +23,6 @@
  */
 package com.qcadoo.mes.advancedGenealogy.hooks;
 
-import static com.qcadoo.model.api.search.SearchProjections.alias;
-import static com.qcadoo.model.api.search.SearchProjections.id;
-import static com.qcadoo.model.api.search.SearchRestrictions.and;
-import static com.qcadoo.model.api.search.SearchRestrictions.eq;
-import static com.qcadoo.model.api.search.SearchRestrictions.idNe;
-
-import java.util.Objects;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.qcadoo.mes.advancedGenealogy.constants.BatchFields;
 import com.qcadoo.mes.advancedGenealogy.constants.BatchNumberUniqueness;
 import com.qcadoo.mes.advancedGenealogy.constants.ParameterFieldsAG;
@@ -42,6 +31,14 @@ import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchCriterion;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.Objects;
+
+import static com.qcadoo.model.api.search.SearchProjections.alias;
+import static com.qcadoo.model.api.search.SearchProjections.id;
+import static com.qcadoo.model.api.search.SearchRestrictions.*;
 
 @Service
 public class BatchModelValidators {
@@ -64,7 +61,7 @@ public class BatchModelValidators {
         SearchCriterion criterion = buildCriteriaForExternalNumber(batch);
 
         if (existsAnyBatchMatchingCriterion(batchDD, criterion)) {
-            batch.addError(batchDD.getField(BatchFields.EXTERNAL_NUMBER), "test");
+            batch.addError(batchDD.getField(BatchFields.EXTERNAL_NUMBER), "qcadooView.validate.field.error.duplicated");
 
             return false;
         }

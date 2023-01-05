@@ -65,4 +65,10 @@ public final class WorkstationFields {
 
     public static final String BUFFER = "buffer";
 
+    public static final String STATE = "state";
+
+    public static final String MACHINE_WORKING_PERIODS = "machineWorkingPeriods";
+
+    public static final String MANUAL_STATE_CHANGE = "manualStateChange";
+
 }

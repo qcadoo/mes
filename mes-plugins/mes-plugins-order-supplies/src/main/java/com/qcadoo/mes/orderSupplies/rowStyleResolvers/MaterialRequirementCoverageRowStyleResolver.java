@@ -5,6 +5,7 @@ import com.google.common.collect.Sets;
 import com.qcadoo.mes.deliveries.constants.DeliveriesConstants;
 import com.qcadoo.mes.deliveries.constants.DeliveryFields;
 import com.qcadoo.mes.deliveries.states.constants.DeliveryStateStringValues;
+import com.qcadoo.mes.orderSupplies.constants.IncludeInCalculationDeliveries;
 import com.qcadoo.mes.orderSupplies.constants.MaterialRequirementCoverageFields;
 import com.qcadoo.mes.orderSupplies.constants.OrderSuppliesConstants;
 import com.qcadoo.model.api.DataDefinitionService;
@@ -32,17 +33,17 @@ public class MaterialRequirementCoverageRowStyleResolver {
                 OrderSuppliesConstants.MODEL_MATERIAL_REQUIREMENT_COVERAGE).get(
                 coverageProduct.getIntegerField("materialRequirementCoverageId").longValue());
         Date coverageToDate = materialRequirementCoverage.getDateField(MaterialRequirementCoverageFields.COVERAGE_TO_DATE);
-        boolean includeDraftDeliveries = materialRequirementCoverage
-                .getBooleanField(MaterialRequirementCoverageFields.INCLUDE_DRAFT_DELIVERIES);
+        String includeInCalculationDeliveries = materialRequirementCoverage
+                .getStringField(MaterialRequirementCoverageFields.INCLUDE_IN_CALCULATION_DELIVERIES);
 
-        String style = determineRowStyle(coverageProduct.getIntegerField("productId").longValue(), coverageToDate, includeDraftDeliveries);
+        String style = determineRowStyle(coverageProduct.getIntegerField("productId").longValue(), coverageToDate, includeInCalculationDeliveries);
         if (style != null) {
             rowStyles.add(style);
         }
         return rowStyles;
     }
 
-    private String determineRowStyle(final Long productId, final Date coverageToDate, final boolean includeDraftDeliveries) {
+    private String determineRowStyle(final Long productId, final Date coverageToDate, final String includeInCalculationDeliveries) {
         StringBuilder query = new StringBuilder();
         query.append("select delivery.state as state ");
         query.append("from #deliveries_delivery delivery ");
@@ -50,11 +51,20 @@ public class MaterialRequirementCoverageRowStyleResolver {
         query.append("where delivery.active = true and delivery.deliveryDate <= :deliveryDate ");
         query.append("and orderedProduct.product = :productId and delivery.state in (:states) ");
         List<String> states = Lists.newArrayList(DeliveryStateStringValues.APPROVED);
-        if (includeDraftDeliveries) {
+
+        if (IncludeInCalculationDeliveries.CONFIRMED_DELIVERIES.getStringValue().equals(includeInCalculationDeliveries)) {
+            states.add(DeliveryStateStringValues.APPROVED);
+        } else if (IncludeInCalculationDeliveries.UNCONFIRMED_DELIVERIES.getStringValue().equals(includeInCalculationDeliveries)) {
+            states.add(DeliveryStateStringValues.APPROVED);
+            states.add(DeliveryStateStringValues.PREPARED);
+            states.add(DeliveryStateStringValues.DURING_CORRECTION);
             states.add(DeliveryStateStringValues.DRAFT);
+        } else {
+            states.add(DeliveryStateStringValues.APPROVED);
             states.add(DeliveryStateStringValues.PREPARED);
             states.add(DeliveryStateStringValues.DURING_CORRECTION);
         }
+
         StringBuilder queryForDelivered = new StringBuilder();
 
         queryForDelivered.append("select count(delivery.id) as cnt ");

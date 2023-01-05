@@ -154,12 +154,9 @@ public class MRCServiceOverideAspect {
         parameters.put("productunit",
                 covProduct.getBelongsToField(CoverageProductFields.PRODUCT).getStringField(ProductFields.UNIT));
         parameters.put("fromSelectedOrder", covProduct.getBooleanField(CoverageProductFields.FROM_SELECTED_ORDER));
-        Entity parameter = parameterService.getParameter();
-        if(MaterialCostsUsed.COST_FOR_ORDER.getStringValue().equals(parameter.getStringField(ParameterFieldsPC.MATERIAL_COSTS_USED_PB))) {
-            parameters.put("price", BigDecimal.ZERO);
-        } else {
-            parameters.put("price", covProduct.getDecimalField(CoverageProductFields.PRICE));
-        }
+
+        parameters.put("price", covProduct.getDecimalField(CoverageProductFields.PRICE));
+
         SqlParameterSource namedParameters = new MapSqlParameterSource(parameters);
         jdbcTemplate.update(sql, namedParameters);
     }

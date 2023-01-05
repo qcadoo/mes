@@ -47,10 +47,7 @@ import com.qcadoo.mes.materialRequirementCoverageForOrder.constans.CoverageType;
 import com.qcadoo.mes.materialRequirements.MaterialRequirementService;
 import com.qcadoo.mes.materialRequirements.constants.InputProductsRequiredForType;
 import com.qcadoo.mes.materialRequirements.constants.OrderFieldsMR;
-import com.qcadoo.mes.orderSupplies.constants.MaterialRequirementCoverageFields;
-import com.qcadoo.mes.orderSupplies.constants.OrderSuppliesConstants;
-import com.qcadoo.mes.orderSupplies.constants.ParameterFieldsOS;
-import com.qcadoo.mes.orderSupplies.constants.ProductType;
+import com.qcadoo.mes.orderSupplies.constants.*;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.mes.orders.states.constants.OrderStateStringValues;
@@ -886,8 +883,8 @@ public class MaterialRequirementCoverageForOrderServiceImpl implements MaterialR
 
         mcfo.setField(MaterialRequirementCoverageFields.COVERAGE_TYPE,
                 materialRequirementEntity.getStringField(MaterialRequirementCoverageFields.COVERAGE_TYPE));
-        mcfo.setField(MaterialRequirementCoverageFields.INCLUDE_DRAFT_DELIVERIES,
-                materialRequirementEntity.getBooleanField(MaterialRequirementCoverageFields.INCLUDE_DRAFT_DELIVERIES));
+        mcfo.setField(MaterialRequirementCoverageFields.INCLUDE_IN_CALCULATION_DELIVERIES,
+                materialRequirementEntity.getStringField(MaterialRequirementCoverageFields.INCLUDE_IN_CALCULATION_DELIVERIES));
 
         return saveCoverage(mcfo);
     }
@@ -897,7 +894,7 @@ public class MaterialRequirementCoverageForOrderServiceImpl implements MaterialR
         Entity mcfo = createBaseCoverage(order);
 
         mcfo.setField(MaterialRequirementCoverageFields.COVERAGE_TYPE, CoverageType.ALL.getStringValue());
-        mcfo.setField(MaterialRequirementCoverageFields.INCLUDE_DRAFT_DELIVERIES, Boolean.FALSE);
+        mcfo.setField(MaterialRequirementCoverageFields.INCLUDE_IN_CALCULATION_DELIVERIES, IncludeInCalculationDeliveries.CONFIRMED_DELIVERIES);
 
         return saveCoverage(mcfo);
     }

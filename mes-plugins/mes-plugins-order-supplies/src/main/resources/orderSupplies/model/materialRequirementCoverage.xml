@@ -50,7 +50,9 @@
               values="01all,02withoutProductsFromWarehouse,03onlyShorcomingsAndDelays" default="01all" required="true"/>
 
         <boolean name="includeDraftDeliveries"/>
-
+        <enum name="includeInCalculationDeliveries"
+                    values="01confirmedDeliveries,02unconfirmedDeliveries,03nonDraftDeliveries"
+                    required="true" default="01confirmedDeliveries"/>
         <hasMany name="coverageLocations" joinField="materialRequirementCoverage"
                  model="coverageLocation" cascade="delete" copyable="true"/>
 
