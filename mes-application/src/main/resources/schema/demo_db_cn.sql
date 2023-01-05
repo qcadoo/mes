@@ -221,6 +221,71 @@ $$;
 
 
 --
+-- Name: add_view_item(character varying, character varying, character varying, character varying, character varying); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION public.add_view_item(plugin_identifier character varying, item_name character varying, view_name character varying, category_name character varying, auth_role character varying) RETURNS void
+    LANGUAGE plpgsql
+    AS $$
+    DECLARE
+        viewid bigint;
+        categoryid bigint;
+        relationcount bigint;
+
+    BEGIN
+
+        SELECT id INTO viewid FROM qcadooview_view WHERE name = view_name;
+
+        IF viewid IS NULL THEN
+            RAISE EXCEPTION 'View(%s) not found', view_name;
+        END IF;
+
+        SELECT id INTO categoryid FROM qcadooview_category WHERE name = category_name;
+
+        IF categoryid IS NULL THEN
+            RAISE EXCEPTION 'Category(%) not found', category_name;
+        END IF;
+
+        SELECT count(*) INTO relationcount FROM qcadooview_item WHERE name = item_name;
+
+        IF relationcount = 0 THEN
+            INSERT INTO qcadooview_item (pluginidentifier, name, active, category_id, view_id, succession, authrole, entityversion)
+            VALUES (plugin_identifier, item_name, true,
+                 (SELECT id FROM qcadooview_category WHERE name = category_name),
+                 (SELECT id FROM qcadooview_view WHERE name = view_name),
+                 (SELECT COALESCE(MAX(succession), 0)
+                  FROM qcadooview_item
+                  WHERE category_id = (SELECT id FROM qcadooview_category WHERE name = category_name)) + 1, auth_role, 0);
+        END IF;
+
+    END;
+$$;
+
+
+--
+-- Name: add_view_view(character varying, character varying, character varying); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION public.add_view_view(plugin_identifier character varying, view_name character varying, view_view character varying) RETURNS void
+    LANGUAGE plpgsql
+    AS $$
+    DECLARE
+        relationcount bigint;
+
+    BEGIN
+
+        SELECT count(*) INTO relationcount FROM qcadooview_view WHERE name = view_name;
+
+        IF relationcount = 0 THEN
+            INSERT INTO qcadooview_view (pluginidentifier, name, view, entityversion)
+                VALUES (plugin_identifier, view_name, view_view, 0);
+        END IF;
+
+    END;
+$$;
+
+
+--
 -- Name: archive(integer); Type: FUNCTION; Schema: public; Owner: -
 --
 
@@ -1591,6 +1656,37 @@ BEGIN
 	_externalnumber := replace(_externalnumber, '#seq', _seq);
 
 	RETURN _externalnumber;
+END;
+$$;
+
+
+--
+-- Name: generate_piece_rate_number(); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION public.generate_piece_rate_number() RETURNS text
+    LANGUAGE plpgsql
+    AS $$
+DECLARE
+    _pattern text;
+    _sequence_value numeric;
+    _seq text;
+    _number text;
+BEGIN
+    _pattern := '#seq';
+
+    select nextval('basic_piece_rate_number_seq') into _sequence_value;
+
+    _seq := to_char(_sequence_value, 'fm000000');
+
+    if _seq like '%#%' then
+        _seq := _sequence_value;
+    end if;
+
+    _number := _pattern;
+    _number := replace(_number, '#seq', _seq);
+
+    RETURN _number;
 END;
 $$;
 
@@ -9068,7 +9164,8 @@ CREATE TABLE public.basic_workstation (
     staff_id bigint,
     dateofadmission date,
     dateofwithdrawal date,
-    buffer boolean DEFAULT false
+    buffer boolean DEFAULT false,
+    state character varying(255) DEFAULT '01stopped'::character varying
 );
 
 
@@ -9923,6 +10020,40 @@ ALTER SEQUENCE public.basic_log_id_seq OWNED BY public.basic_log.id;
 
 
 --
+-- Name: basic_machineworkingperiod; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.basic_machineworkingperiod (
+    id bigint NOT NULL,
+    launchdate timestamp without time zone,
+    stopdate timestamp without time zone,
+    workingtime integer DEFAULT 0,
+    workstation_id bigint,
+    launchedby_id bigint,
+    stoppedby_id bigint
+);
+
+
+--
+-- Name: basic_machineworkingperiod_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.basic_machineworkingperiod_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: basic_machineworkingperiod_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.basic_machineworkingperiod_id_seq OWNED BY public.basic_machineworkingperiod.id;
+
+
+--
 -- Name: basic_model; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -10393,7 +10524,9 @@ CREATE TABLE public.basic_parameter (
     howmanydaysrecalculateplan integer DEFAULT 7,
     operationproductindefaultquantity numeric(14,5),
     operationproductoutdefaultquantity numeric(14,5),
-    manyarticleswiththesameean boolean DEFAULT false
+    manyarticleswiththesameean boolean DEFAULT false,
+    includeincalculationdeliveries character varying(255) DEFAULT '01confirmedDeliveries'::character varying,
+    transferordersgrouptoordersforcomponents boolean DEFAULT false
 );
 
 
@@ -10414,6 +10547,80 @@ CREATE SEQUENCE public.basic_parameter_id_seq
 --
 
 ALTER SEQUENCE public.basic_parameter_id_seq OWNED BY public.basic_parameter.id;
+
+
+--
+-- Name: basic_piece_rate_number_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.basic_piece_rate_number_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: basic_piecerate; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.basic_piecerate (
+    id bigint NOT NULL,
+    number character varying(255),
+    name character varying(1024)
+);
+
+
+--
+-- Name: basic_piecerate_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.basic_piecerate_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: basic_piecerate_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.basic_piecerate_id_seq OWNED BY public.basic_piecerate.id;
+
+
+--
+-- Name: basic_piecerateitem; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.basic_piecerateitem (
+    id bigint NOT NULL,
+    piecerate_id bigint,
+    actualrate numeric(14,5),
+    datefrom date,
+    dateto date
+);
+
+
+--
+-- Name: basic_piecerateitem_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.basic_piecerateitem_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: basic_piecerateitem_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.basic_piecerateitem_id_seq OWNED BY public.basic_piecerateitem.id;
 
 
 --
@@ -11208,7 +11415,8 @@ CREATE VIEW public.basic_workstationdto AS
     (((stf.name)::text || ' '::text) || (stf.surname)::text) AS staff,
     w.dateofadmission,
     w.dateofwithdrawal,
-    pl.name AS productionline
+    pl.name AS productionline,
+    w.state
    FROM ((((public.basic_workstation w
      LEFT JOIN public.basic_workstationtype wt ON ((wt.id = w.workstationtype_id)))
      LEFT JOIN public.basic_division d ON ((w.division_id = d.id)))
@@ -23637,7 +23845,8 @@ CREATE TABLE public.ordersupplies_materialrequirementcoverage (
     entityversion bigint DEFAULT 0,
     ordergenerationinprogress boolean DEFAULT false,
     forordersgroup_id bigint,
-    ordersgroupsgenerated boolean DEFAULT false
+    ordersgroupsgenerated boolean DEFAULT false,
+    includeincalculationdeliveries character varying(255) DEFAULT '01confirmedDeliveries'::character varying
 );
 
 
@@ -23748,7 +23957,13 @@ CREATE VIEW public.ordersupplies_productioncountingquantityinput AS
     '04orderInput'::text AS eventtype,
     COALESCE((coverageproducttype.producttype)::character varying(255), '01component'::character varying(255)) AS producttype,
     (o.product_id)::integer AS orderproductid,
-    product.lastpurchasecost AS price
+    product.averagecost AS price,
+    COALESCE(product.averagecost, (0)::numeric) AS averagecost,
+    COALESCE(product.lastpurchasecost, (0)::numeric) AS lastpurchasecost,
+    COALESCE(product.nominalcost, (0)::numeric) AS nominalcost,
+    COALESCE(product.lastoffercost, (0)::numeric) AS lastoffercost,
+    COALESCE(product.averageoffercost, (0)::numeric) AS averageoffercost,
+    COALESCE(product.lastoffercost, product.lastpurchasecost, (0)::numeric) AS offercostorlastpurchase
    FROM ((((public.basicproductioncounting_productioncountingquantity pcq
      JOIN public.orders_order o ON ((o.id = pcq.order_id)))
      JOIN public.basic_product product ON ((product.id = pcq.product_id)))
@@ -23769,7 +23984,13 @@ UNION
     '03operationInput'::text AS eventtype,
     COALESCE((coverageproducttype.producttype)::character varying(255), '01component'::character varying(255)) AS producttype,
     (o.product_id)::integer AS orderproductid,
-    product.lastpurchasecost AS price
+    product.averagecost AS price,
+    COALESCE(product.averagecost, (0)::numeric) AS averagecost,
+    COALESCE(product.lastpurchasecost, (0)::numeric) AS lastpurchasecost,
+    COALESCE(product.nominalcost, (0)::numeric) AS nominalcost,
+    COALESCE(product.lastoffercost, (0)::numeric) AS lastoffercost,
+    COALESCE(product.averageoffercost, (0)::numeric) AS averageoffercost,
+    COALESCE(product.lastoffercost, product.lastpurchasecost, (0)::numeric) AS offercostorlastpurchase
    FROM ((((public.basicproductioncounting_productioncountingquantity pcq
      JOIN public.orders_order o ON ((o.id = pcq.order_id)))
      JOIN public.basic_product product ON ((product.id = pcq.product_id)))
@@ -23807,7 +24028,13 @@ CREATE VIEW public.ordersupplies_productioncountingquantityoutput AS
     GREATEST((pcq.plannedquantity - COALESCE(pcq.producedquantity, (0)::numeric)), (0)::numeric) AS quantity,
     '05orderOutput'::text AS eventtype,
     pcq.typeofmaterial AS producttype,
-    product.lastpurchasecost AS price
+    product.averagecost AS price,
+    COALESCE(product.averagecost, (0)::numeric) AS averagecost,
+    COALESCE(product.lastpurchasecost, (0)::numeric) AS lastpurchasecost,
+    COALESCE(product.nominalcost, (0)::numeric) AS nominalcost,
+    COALESCE(product.lastoffercost, (0)::numeric) AS lastoffercost,
+    COALESCE(product.averageoffercost, (0)::numeric) AS averageoffercost,
+    COALESCE(product.lastoffercost, product.lastpurchasecost, (0)::numeric) AS offercostorlastpurchase
    FROM (((public.basicproductioncounting_productioncountingquantity pcq
      JOIN public.orders_order o ON ((o.id = pcq.order_id)))
      JOIN public.basic_product product ON ((product.id = pcq.product_id)))
@@ -30192,6 +30419,80 @@ ALTER SEQUENCE public.technologies_technologytocreationhelper_id_seq OWNED BY pu
 
 
 --
+-- Name: technologies_workstationchangeovernorm; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.technologies_workstationchangeovernorm (
+    id bigint NOT NULL,
+    name character varying(1024),
+    description character varying(2048),
+    workstationtype_id bigint,
+    workstation_id bigint,
+    attribute_id bigint,
+    changeovertype character varying(255) DEFAULT '01anyChange'::character varying,
+    fromattributevalue_id bigint,
+    toattributevalue_id bigint,
+    duration integer,
+    isparallel boolean
+);
+
+
+--
+-- Name: technologies_workstationchangeovernorm_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.technologies_workstationchangeovernorm_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: technologies_workstationchangeovernorm_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.technologies_workstationchangeovernorm_id_seq OWNED BY public.technologies_workstationchangeovernorm.id;
+
+
+--
+-- Name: technologies_workstationstatechange; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.technologies_workstationstatechange (
+    id bigint NOT NULL,
+    dateandtime timestamp without time zone,
+    sourcestate character varying(255),
+    targetstate character varying(255),
+    status character varying(255),
+    phase integer,
+    worker character varying(255),
+    workstation_id bigint,
+    shift_id bigint
+);
+
+
+--
+-- Name: technologies_workstationstatechange_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.technologies_workstationstatechange_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: technologies_workstationstatechange_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.technologies_workstationstatechange_id_seq OWNED BY public.technologies_workstationstatechange.id;
+
+
+--
 -- Name: technologiesgenerator_generatorcontext_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
@@ -31942,6 +32243,13 @@ ALTER TABLE ONLY public.basic_log ALTER COLUMN id SET DEFAULT nextval('public.ba
 
 
 --
+-- Name: basic_machineworkingperiod id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.basic_machineworkingperiod ALTER COLUMN id SET DEFAULT nextval('public.basic_machineworkingperiod_id_seq'::regclass);
+
+
+--
 -- Name: basic_model id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -31981,6 +32289,20 @@ ALTER TABLE ONLY public.basic_palletnumberhelper ALTER COLUMN id SET DEFAULT nex
 --
 
 ALTER TABLE ONLY public.basic_parameter ALTER COLUMN id SET DEFAULT nextval('public.basic_parameter_id_seq'::regclass);
+
+
+--
+-- Name: basic_piecerate id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.basic_piecerate ALTER COLUMN id SET DEFAULT nextval('public.basic_piecerate_id_seq'::regclass);
+
+
+--
+-- Name: basic_piecerateitem id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.basic_piecerateitem ALTER COLUMN id SET DEFAULT nextval('public.basic_piecerateitem_id_seq'::regclass);
 
 
 --
@@ -34658,6 +34980,20 @@ ALTER TABLE ONLY public.technologies_technologytocreationhelper ALTER COLUMN id 
 
 
 --
+-- Name: technologies_workstationchangeovernorm id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.technologies_workstationchangeovernorm ALTER COLUMN id SET DEFAULT nextval('public.technologies_workstationchangeovernorm_id_seq'::regclass);
+
+
+--
+-- Name: technologies_workstationstatechange id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.technologies_workstationstatechange ALTER COLUMN id SET DEFAULT nextval('public.technologies_workstationstatechange_id_seq'::regclass);
+
+
+--
 -- Name: technologiesgenerator_generatorcontext id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -36368,6 +36704,14 @@ COPY public.basic_log (id, createtime, user_id, message, item1, item2, item3, de
 
 
 --
+-- Data for Name: basic_machineworkingperiod; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY public.basic_machineworkingperiod (id, launchdate, stopdate, workingtime, workstation_id, launchedby_id, stoppedby_id) FROM stdin;
+\.
+
+
+--
 -- Data for Name: basic_model; Type: TABLE DATA; Schema: public; Owner: -
 --
 
@@ -36411,8 +36755,24 @@ COPY public.basic_palletnumberhelper (id, quantity, active, createdate, updateda
 -- Data for Name: basic_parameter; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.basic_parameter (id, country_id, currency_id, unit, additionaltextinfooter, company_id, registerproductiontime, reasonneededwhendelayedeffectivedatefrom, earliereffectivedatetotime, reasonneededwhencorrectingtherequestedvolume, reasonneededwhencorrectingdateto, reasonneededwhenchangingstatetodeclined, imageurlinworkplan, hidedescriptioninworkplans, defaultproductionline_id, reasonneededwhenearliereffectivedateto, earliereffectivedatefromtime, defaultaddress, allowquantitychangeinacceptedorder, reasonneededwhendelayedeffectivedateto, justone, registerquantityinproduct, reasonneededwhenchangingstatetointerrupted, registerquantityoutproduct, dontprintordersinworkplans, location_id, typeofproductionrecording, dontprintinputproductsinworkplans, delayedeffectivedatefromtime, registerpiecework, hideemptycolumnsfororders, reasonneededwhenchangingstatetoabandoned, autocloseorder, allowtoclose, dontprintoutputproductsinworkplans, inputproductsrequiredfortype, otheraddress, reasonneededwhenearliereffectivedatefrom, defaultdescription, delayedeffectivedatetotime, hidetechnologyandorderinworkplans, reasonneededwhencorrectingdatefrom, ssccnumberprefix, lowerlimit, negativetrend, upperlimit, positivetrend, dueweight, printoperationatfirstpageinworkplans, averagelaborhourlycostpb, materialcostsusedpb, additionaloverheadpb, materialcostmarginpb, includetpzpb, productioncostmarginpb, averagemachinehourlycostpb, includeadditionaltimepb, batchnumberuniqueness, defaultcoveragefromdays, includedraftdeliveries, coveragetype, hideemptycolumnsforoffers, hideemptycolumnsforrequests, validateproductionrecordtimes, workstationsquantityfromproductionline, allowtechnologytreechangeinpendingorder, lockproductionprogress, hidebarcodeoperationcomponentinworkplans, ignoremissingcomponents, additionaloutputrows, additionalinputrows, allowmultipleregisteringtimeforworker, pricebasedon, takeactualprogressinworkplans, confectionplanrequirereasontypethreshold, confectionplancorrectionreasontype, autogeneratesuborders, automaticsavecoverage, externaldeliveriesextension, warehouse_id, documentstate, positivepurchaseprice, sameordernumber, automaticdeliveriesminstate, possibleworktimedeviation, ordersincludeperiod, includerequirements, entityversion, labelsbtpath, profitpb, registrationpriceoverheadpb, sourceofoperationcostspb, acceptanceevents, useblackbox, generatewarehouseissuestoorders, daysbeforeorderstart, issuelocation_id, consumptionofrawmaterialsbasedonstandards, documentpositionparameters_id, includecomponents, warehouseissuesreservestates, drawndocuments, generatewarehouseissuestodeliveries, issuedquantityuptoneed, documentsstatus, warehouseissueproductssource, productstoissue, trackingcorrectionrecalculatepps, deliveredbiggerthanordered, ordersganttparameters_id, additionalimage, esilcointegrationdir, autorecalculateorder, ppsisautomatic, ppsproducedamountrecalculateplan, ppsalgorithm, baselinkerparameters_id, technologiesgeneratorcopyproductsize, cartonlabelsbtpath, esilcodispositionshiftlocation_id, maxproductsquantity, allowerrorsinmasterorderpositions, companyname_id, hideassignedstaff, fillorderdescriptionbasedontechnologydescription, allowanomalycreationonacceptancerecord, esilcoaccountwithreservationlocation_id, includelevelandsuffix, orderedproductsunit, allowincompleteunits, acceptrecordsfromterminal, allowchangestousedquantityonterminal, includeadditionaltimeps, includetpzps, ordersgenerationnotcompletedates, canchangeprodlineforacceptedorders, generateeachonseparatepage, includewagegroups, ordersgeneratedbycoverage, automaticallygenerateordersforcomponents, seteffectivedatefromoninprogress, seteffectivedatetooncompleted, copydescription, exporttopdfonlyvisiblecolumns, additionalcartonlabelsquantity, maxcartonlabelsquantity, exporttocsvonlyvisiblecolumns, flagpercentageofexecutionwithcolor, opertaskflagpercentexecutionwithcolor, automaticclosingoforderwithingroups, copynotesfrommasterorderposition, manuallysendwarehousedocuments, realizationfromstock, alwaysorderitemswithpersonalization, selectorder, availabilityofrawmaterials, selectoperationaltask, stoppages, repair, employeeprogress, includeunacceptableproduction, calculateamounttimeemployeesonacceptancerecord, notshowtasksdownloadedbyanotheremployee, createcollectiveorders, completemasterorderafterorderingpositions, hideorderedproductworkplan, selectiontasksbyorderdateinterminal, showprogress, showdelays, requiresupplieridentification, numberpattern_id, generatebatchfororderedproduct, generatebatchoforderedproduct, acceptbatchtrackingwhenclosingorder, completewarehousesflowwhilechecking, qualitycontrol, finalqualitycontrolwithoutresources, terminalproductattribute_id, oeefor, oeeworktimefrom, range, division_id, showqronordersgrouppdf, advisestartdateoftheorder, orderstartdatebasedon, showchartondashboard, whattoshowondashboard, dashboardoperation_id, dashboardcomponentslocation_id, dashboardproductsinputlocation_id, momentofvalidation, moveproductstosubsequentoperations, demandcausesofwastes, wmsapk, wmsversion, applicationconfigured, materialcostsused, usenominalcostpricenotspecified, sourceofoperationcosts, standardlaborcost_id, averagemachinehourlycost, averagelaborhourlycost, includetpz, includeadditionaltime, materialcostmargin, productioncostmargin, additionaloverhead, registrationpriceoverhead, profit, applicationconfigurationfinished, generatepacksfororders, includepacksgeneratingprocessesfororder, optimalpacksize, restfeedinglastpack, deliveryusenominalcostwhenpricenotspecified, deliverypricefillbasedon, allowcheckedtechnologywithoutinproducts, requireassortment, changeorderdatesbasedonchangegroupdates, acceptedtechnologymarkedasdefault, terminalscanning, processsource, showproductdescriptiononordersgrouppdf, attributeonordersgrouppdf_id, copyattributestosizeproducts, materialcostsusedmc, usenominalcostpricenotspecifiedmc, productattribute_id, materialattribute_id, attributeonthelabel_id, requiretypeoffault, workingstationinputtype, allowchangeordeleteordertechnologicalprocess, technicalproductioncostoverhead, technicalproductioncostoverheadpb, synchronizeadditionalproductdata, processterminalplaceofperformance, emptylabelbtpath, schedulesortorder, workstationassigncriterion, workerassigncriterion, scheduleforbuffer, additionaltimeextendsoperation, synchronizeproductcategory, completenominalcostinarticleandproducts, copynominalcostfamilyofproductssizes, onlypackagesinproduction, bufferstationsshowninchart, allowtilelengthtobeedited, analyzeavailableresources, analyzeplannedquantity, analyzemaxquantity, numberpatternordergroup_id, otcopydescriptionfromproductionorder, setorderdatesbasedontaskdates, automaticallygeneratetasksfororder, automaticallygenerateprocessesfororder, includeadditionaltimesg, includetpzsg, includetpzs, dashboardshowforproduct, dashboardshowdescription, receivedeliveryinordercurrency, sortbyproducttypepriorityordersgrouppdf, attributeonordersgrouprequirementpdf_id, quantitymadeonthebasisofdashboard, producingmorethanplanned, logo, synchronizemasterorderattributes, synchronizedocumentpositionattributes, dashboardordersorting, completestationandemployeeingeneratedtasks, considerexceptionswhenpromptingcurrentshift, productionorderedquantityclosestheorder, receiptofproducts, releaseofmaterials, considerminimumstocklevelwhencreatingproductionorders, fillorderdescriptionbasedonproductdescription, ganttrunadjusterror, checkfortheexistenceofinputproductprices, automaticupdatecostnorms, costssource, automaticreleaseaftergeneration, analyzeactualstaff, analyzeactualstaffmaxquantity, analyzegetquantityfromshiftassignment, setmasterorderdatebasedonorderdates, notshowtasksblockedbyprevious, promptdefaultlinefromtechnology, numberofficelicenses, numberterminallicenses, typeterminallicenses, notshoworderfilters, notincludedateswhenretrievingorders, requirequalityrating, synchronizeproductsize, masterorderreleaselocation_id, demandworkstation, skipfinishedtasks, onlyonebatchtrackingfororder, producedbatchfromordertrackingrecord, packaginglocation_id, includeworkstationongetrrforot, notincludeworkstationwhensearchingot, generatetransferdocumentsonrepair, howmanydaysrecalculateplan, operationproductindefaultquantity, operationproductoutdefaultquantity, manyarticleswiththesameean) FROM stdin;
-1	\N	39	一块	\N	1	t	f	0	f	f	f	\N	f	1	f	0	\N	t	f	f	t	f	t	f	\N	02cumulated	f	0	f	f	f	f	f	f	01startOrder	\N	f	\N	0	f	f	0005900125	\N	\N	\N	\N	\N	f	\N	06costForOrder	\N	\N	f	\N	\N	f	01globally	14	f	\N	f	f	f	f	f	f	f	t	\N	\N	f	01nominalProductCost	f	\N	\N	f	f	\N	\N	\N	f	f	f	\N	\N	f	0	\N	\N	\N	02parameters	f	\N	f	\N	\N	t	1	f	f	01transfer	f	f	01accepted	01order	01allInputProducts	f	t	\N	\N	\N	f	f	f	\N	\N	\N	\N	\N	150	\N	\N	f	t	f	\N	t	\N	f	f	t	f	f	f	t	f	f	f	f	f	f	t	f	50	3000	f	t	t	f	f	f	f	f	t	f	t	t	t	f	t	f	f	f	f	f	f	f	f	f	\N	\N	f	f	t	t	f	\N	01productionLine	01staffWorkTimes	01oneDivision	\N	f	t	03endDateLastOrderOnTheLine	t	01orders	\N	\N	\N	01orderAcceptance	t	f	\N	\N	f	01nominal	f	01technologyOperation	\N	\N	\N	f	f	0.00000	0.00000	0.00000	0.00000	0.00000	f	f	f	\N	\N	f	01lastPurchasePrice	f	f	f	f	01operationNumber	01orderPackages	f	\N	f	01nominal	f	\N	\N	\N	f	01scanTheNumber	f	0.00000	0.00000	f	01workstation	\N	01desc	01shortestTime	01workstationLastOperatorLatestFinished	f	t	t	f	f	f	f	f	f	f	\N	\N	f	f	f	f	\N	\N	t	01number	f	f	t	\N	01approvedProduction	t	\N	f	f	01startDate	f	f	f	01onAcceptanceRegistrationRecord	01onAcceptanceRegistrationRecord	f	f	t	f	f	01mes	f	f	\N	f	f	f	t	10000	10000	03over51Employees	f	f	t	f	\N	f	f	f	f	\N	f	f	t	7	\N	\N	f
+COPY public.basic_parameter (id, country_id, currency_id, unit, additionaltextinfooter, company_id, registerproductiontime, reasonneededwhendelayedeffectivedatefrom, earliereffectivedatetotime, reasonneededwhencorrectingtherequestedvolume, reasonneededwhencorrectingdateto, reasonneededwhenchangingstatetodeclined, imageurlinworkplan, hidedescriptioninworkplans, defaultproductionline_id, reasonneededwhenearliereffectivedateto, earliereffectivedatefromtime, defaultaddress, allowquantitychangeinacceptedorder, reasonneededwhendelayedeffectivedateto, justone, registerquantityinproduct, reasonneededwhenchangingstatetointerrupted, registerquantityoutproduct, dontprintordersinworkplans, location_id, typeofproductionrecording, dontprintinputproductsinworkplans, delayedeffectivedatefromtime, registerpiecework, hideemptycolumnsfororders, reasonneededwhenchangingstatetoabandoned, autocloseorder, allowtoclose, dontprintoutputproductsinworkplans, inputproductsrequiredfortype, otheraddress, reasonneededwhenearliereffectivedatefrom, defaultdescription, delayedeffectivedatetotime, hidetechnologyandorderinworkplans, reasonneededwhencorrectingdatefrom, ssccnumberprefix, lowerlimit, negativetrend, upperlimit, positivetrend, dueweight, printoperationatfirstpageinworkplans, averagelaborhourlycostpb, materialcostsusedpb, additionaloverheadpb, materialcostmarginpb, includetpzpb, productioncostmarginpb, averagemachinehourlycostpb, includeadditionaltimepb, batchnumberuniqueness, defaultcoveragefromdays, includedraftdeliveries, coveragetype, hideemptycolumnsforoffers, hideemptycolumnsforrequests, validateproductionrecordtimes, workstationsquantityfromproductionline, allowtechnologytreechangeinpendingorder, lockproductionprogress, hidebarcodeoperationcomponentinworkplans, ignoremissingcomponents, additionaloutputrows, additionalinputrows, allowmultipleregisteringtimeforworker, pricebasedon, takeactualprogressinworkplans, confectionplanrequirereasontypethreshold, confectionplancorrectionreasontype, autogeneratesuborders, automaticsavecoverage, externaldeliveriesextension, warehouse_id, documentstate, positivepurchaseprice, sameordernumber, automaticdeliveriesminstate, possibleworktimedeviation, ordersincludeperiod, includerequirements, entityversion, labelsbtpath, profitpb, registrationpriceoverheadpb, sourceofoperationcostspb, acceptanceevents, useblackbox, generatewarehouseissuestoorders, daysbeforeorderstart, issuelocation_id, consumptionofrawmaterialsbasedonstandards, documentpositionparameters_id, includecomponents, warehouseissuesreservestates, drawndocuments, generatewarehouseissuestodeliveries, issuedquantityuptoneed, documentsstatus, warehouseissueproductssource, productstoissue, trackingcorrectionrecalculatepps, deliveredbiggerthanordered, ordersganttparameters_id, additionalimage, esilcointegrationdir, autorecalculateorder, ppsisautomatic, ppsproducedamountrecalculateplan, ppsalgorithm, baselinkerparameters_id, technologiesgeneratorcopyproductsize, cartonlabelsbtpath, esilcodispositionshiftlocation_id, maxproductsquantity, allowerrorsinmasterorderpositions, companyname_id, hideassignedstaff, fillorderdescriptionbasedontechnologydescription, allowanomalycreationonacceptancerecord, esilcoaccountwithreservationlocation_id, includelevelandsuffix, orderedproductsunit, allowincompleteunits, acceptrecordsfromterminal, allowchangestousedquantityonterminal, includeadditionaltimeps, includetpzps, ordersgenerationnotcompletedates, canchangeprodlineforacceptedorders, generateeachonseparatepage, includewagegroups, ordersgeneratedbycoverage, automaticallygenerateordersforcomponents, seteffectivedatefromoninprogress, seteffectivedatetooncompleted, copydescription, exporttopdfonlyvisiblecolumns, additionalcartonlabelsquantity, maxcartonlabelsquantity, exporttocsvonlyvisiblecolumns, flagpercentageofexecutionwithcolor, opertaskflagpercentexecutionwithcolor, automaticclosingoforderwithingroups, copynotesfrommasterorderposition, manuallysendwarehousedocuments, realizationfromstock, alwaysorderitemswithpersonalization, selectorder, availabilityofrawmaterials, selectoperationaltask, stoppages, repair, employeeprogress, includeunacceptableproduction, calculateamounttimeemployeesonacceptancerecord, notshowtasksdownloadedbyanotheremployee, createcollectiveorders, completemasterorderafterorderingpositions, hideorderedproductworkplan, selectiontasksbyorderdateinterminal, showprogress, showdelays, requiresupplieridentification, numberpattern_id, generatebatchfororderedproduct, generatebatchoforderedproduct, acceptbatchtrackingwhenclosingorder, completewarehousesflowwhilechecking, qualitycontrol, finalqualitycontrolwithoutresources, terminalproductattribute_id, oeefor, oeeworktimefrom, range, division_id, showqronordersgrouppdf, advisestartdateoftheorder, orderstartdatebasedon, showchartondashboard, whattoshowondashboard, dashboardoperation_id, dashboardcomponentslocation_id, dashboardproductsinputlocation_id, momentofvalidation, moveproductstosubsequentoperations, demandcausesofwastes, wmsapk, wmsversion, applicationconfigured, materialcostsused, usenominalcostpricenotspecified, sourceofoperationcosts, standardlaborcost_id, averagemachinehourlycost, averagelaborhourlycost, includetpz, includeadditionaltime, materialcostmargin, productioncostmargin, additionaloverhead, registrationpriceoverhead, profit, applicationconfigurationfinished, generatepacksfororders, includepacksgeneratingprocessesfororder, optimalpacksize, restfeedinglastpack, deliveryusenominalcostwhenpricenotspecified, deliverypricefillbasedon, allowcheckedtechnologywithoutinproducts, requireassortment, changeorderdatesbasedonchangegroupdates, acceptedtechnologymarkedasdefault, terminalscanning, processsource, showproductdescriptiononordersgrouppdf, attributeonordersgrouppdf_id, copyattributestosizeproducts, materialcostsusedmc, usenominalcostpricenotspecifiedmc, productattribute_id, materialattribute_id, attributeonthelabel_id, requiretypeoffault, workingstationinputtype, allowchangeordeleteordertechnologicalprocess, technicalproductioncostoverhead, technicalproductioncostoverheadpb, synchronizeadditionalproductdata, processterminalplaceofperformance, emptylabelbtpath, schedulesortorder, workstationassigncriterion, workerassigncriterion, scheduleforbuffer, additionaltimeextendsoperation, synchronizeproductcategory, completenominalcostinarticleandproducts, copynominalcostfamilyofproductssizes, onlypackagesinproduction, bufferstationsshowninchart, allowtilelengthtobeedited, analyzeavailableresources, analyzeplannedquantity, analyzemaxquantity, numberpatternordergroup_id, otcopydescriptionfromproductionorder, setorderdatesbasedontaskdates, automaticallygeneratetasksfororder, automaticallygenerateprocessesfororder, includeadditionaltimesg, includetpzsg, includetpzs, dashboardshowforproduct, dashboardshowdescription, receivedeliveryinordercurrency, sortbyproducttypepriorityordersgrouppdf, attributeonordersgrouprequirementpdf_id, quantitymadeonthebasisofdashboard, producingmorethanplanned, logo, synchronizemasterorderattributes, synchronizedocumentpositionattributes, dashboardordersorting, completestationandemployeeingeneratedtasks, considerexceptionswhenpromptingcurrentshift, productionorderedquantityclosestheorder, receiptofproducts, releaseofmaterials, considerminimumstocklevelwhencreatingproductionorders, fillorderdescriptionbasedonproductdescription, ganttrunadjusterror, checkfortheexistenceofinputproductprices, automaticupdatecostnorms, costssource, automaticreleaseaftergeneration, analyzeactualstaff, analyzeactualstaffmaxquantity, analyzegetquantityfromshiftassignment, setmasterorderdatebasedonorderdates, notshowtasksblockedbyprevious, promptdefaultlinefromtechnology, numberofficelicenses, numberterminallicenses, typeterminallicenses, notshoworderfilters, notincludedateswhenretrievingorders, requirequalityrating, synchronizeproductsize, masterorderreleaselocation_id, demandworkstation, skipfinishedtasks, onlyonebatchtrackingfororder, producedbatchfromordertrackingrecord, packaginglocation_id, includeworkstationongetrrforot, notincludeworkstationwhensearchingot, generatetransferdocumentsonrepair, howmanydaysrecalculateplan, operationproductindefaultquantity, operationproductoutdefaultquantity, manyarticleswiththesameean, includeincalculationdeliveries, transferordersgrouptoordersforcomponents) FROM stdin;
+1	\N	39	一块	\N	1	t	f	0	f	f	f	\N	f	1	f	0	\N	t	f	f	t	f	t	f	\N	02cumulated	f	0	f	f	f	f	f	f	01startOrder	\N	f	\N	0	f	f	0005900125	\N	\N	\N	\N	\N	f	\N	06costForOrder	\N	\N	f	\N	\N	f	01globally	14	f	\N	f	f	f	f	f	f	f	t	\N	\N	f	01nominalProductCost	f	\N	\N	f	f	\N	\N	\N	f	f	f	\N	\N	f	0	\N	\N	\N	02parameters	f	\N	f	\N	\N	t	1	f	f	01transfer	f	f	01accepted	01order	01allInputProducts	f	t	\N	\N	\N	f	f	f	\N	\N	\N	\N	\N	150	\N	\N	f	t	f	\N	t	\N	f	f	t	f	f	f	t	f	f	f	f	f	f	t	f	50	3000	f	t	t	f	f	f	f	f	t	f	t	t	t	f	t	f	f	f	f	f	f	f	f	f	\N	\N	f	f	t	t	f	\N	01productionLine	01staffWorkTimes	01oneDivision	\N	f	t	03endDateLastOrderOnTheLine	t	01orders	\N	\N	\N	01orderAcceptance	t	f	\N	\N	f	01nominal	f	01technologyOperation	\N	\N	\N	f	f	0.00000	0.00000	0.00000	0.00000	0.00000	f	f	f	\N	\N	f	01lastPurchasePrice	f	f	f	f	01operationNumber	01orderPackages	f	\N	f	01nominal	f	\N	\N	\N	f	01scanTheNumber	f	0.00000	0.00000	f	01workstation	\N	01desc	01shortestTime	01workstationLastOperatorLatestFinished	f	t	t	f	f	f	f	f	f	f	\N	\N	f	f	f	f	\N	\N	t	01number	f	f	t	\N	01approvedProduction	t	\N	f	f	01startDate	f	f	f	01onAcceptanceRegistrationRecord	01onAcceptanceRegistrationRecord	f	f	t	f	f	01mes	f	f	\N	f	f	f	t	10000	10000	03over51Employees	f	f	t	f	\N	f	f	f	f	\N	f	f	t	7	\N	\N	f	01confirmedDeliveries	f
+\.
+
+
+--
+-- Data for Name: basic_piecerate; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY public.basic_piecerate (id, number, name) FROM stdin;
+\.
+
+
+--
+-- Data for Name: basic_piecerateitem; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY public.basic_piecerateitem (id, piecerate_id, actualrate, datefrom, dateto) FROM stdin;
 \.
 
 
@@ -36573,7 +36933,7 @@ COPY public.basic_viewedactivity (id, user_id, log_id) FROM stdin;
 -- Data for Name: basic_workstation; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.basic_workstation (id, number, name, description, workstationtype_id, operation_id, active, productionline_id, division_id, serialnumber, udtnumber, series, producer, productiondate, wnknumber, entityversion, staff_id, dateofadmission, dateofwithdrawal, buffer) FROM stdin;
+COPY public.basic_workstation (id, number, name, description, workstationtype_id, operation_id, active, productionline_id, division_id, serialnumber, udtnumber, series, producer, productiondate, wnknumber, entityversion, staff_id, dateofadmission, dateofwithdrawal, buffer, state) FROM stdin;
 \.
 
 
@@ -39984,7 +40344,7 @@ COPY public.ordersupplies_coverageproductselected (id, coverageproduct_id, entit
 -- Data for Name: ordersupplies_materialrequirementcoverage; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.ordersupplies_materialrequirementcoverage (id, number, coveragetodate, actualdate, generateddate, generatedby, generated, saved, coveragetype, includedraftdeliveries, createdate, updatedate, createuser, updateuser, filename, automaticsavecoverage, order_id, entityversion, ordergenerationinprogress, forordersgroup_id, ordersgroupsgenerated) FROM stdin;
+COPY public.ordersupplies_materialrequirementcoverage (id, number, coveragetodate, actualdate, generateddate, generatedby, generated, saved, coveragetype, includedraftdeliveries, createdate, updatedate, createuser, updateuser, filename, automaticsavecoverage, order_id, entityversion, ordergenerationinprogress, forordersgroup_id, ordersgroupsgenerated, includeincalculationdeliveries) FROM stdin;
 \.
 
 
@@ -41096,6 +41456,8 @@ COPY public.qcadooview_item (id, pluginidentifier, name, active, category_id, vi
 211	productionCounting	linesProducedQuantitiesChart	t	15	210	15	ROLE_ANALYSIS_VIEWER	0
 212	costCalculation	additionalDirectCostsList	t	10	211	5	ROLE_CALCULATIONS	0
 116	ordersGantt	ordersGantt	f	7	115	10	ROLE_PLANNING_ON_LINE_VIEW	0
+213	technologies	workstationChangeoverNormsList	t	5	212	13	ROLE_TECHNOLOGIES	0
+214	basic	pieceRateList	t	18	213	25	ROLE_BASE_FUNCTIONALITY	0
 \.
 
 
@@ -41300,6 +41662,8 @@ COPY public.qcadooview_view (id, pluginidentifier, name, view, url, entityversio
 209	lineChangeoverNormsForOrders	lineChangeoverNormsForOrdersList	lineChangeoverNormsForOrdersList	\N	0
 210	productionCounting	linesProducedQuantitiesChart	\N	/linesProducedQuantitiesChart.html	0
 211	costCalculation	additionalDirectCostsList	additionalDirectCostsList	\N	0
+212	technologies	workstationChangeoverNormsList	workstationChangeoverNormsList	\N	0
+213	basic	pieceRateList	pieceRateList	\N	0
 \.
 
 
@@ -41927,6 +42291,22 @@ COPY public.technologies_technologystatechange (id, dateandtime, sourcestate, ta
 --
 
 COPY public.technologies_technologytocreationhelper (id, number, reprocessed, active) FROM stdin;
+\.
+
+
+--
+-- Data for Name: technologies_workstationchangeovernorm; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY public.technologies_workstationchangeovernorm (id, name, description, workstationtype_id, workstation_id, attribute_id, changeovertype, fromattributevalue_id, toattributevalue_id, duration, isparallel) FROM stdin;
+\.
+
+
+--
+-- Data for Name: technologies_workstationstatechange; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY public.technologies_workstationstatechange (id, dateandtime, sourcestate, targetstate, status, phase, worker, workstation_id, shift_id) FROM stdin;
 \.
 
 
@@ -43196,6 +43576,13 @@ SELECT pg_catalog.setval('public.basic_log_id_seq', 1, false);
 
 
 --
+-- Name: basic_machineworkingperiod_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('public.basic_machineworkingperiod_id_seq', 1, false);
+
+
+--
 -- Name: basic_model_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
@@ -43235,6 +43622,27 @@ SELECT pg_catalog.setval('public.basic_palletnumberhelper_id_seq', 1, false);
 --
 
 SELECT pg_catalog.setval('public.basic_parameter_id_seq', 2, false);
+
+
+--
+-- Name: basic_piece_rate_number_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('public.basic_piece_rate_number_seq', 1, false);
+
+
+--
+-- Name: basic_piecerate_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('public.basic_piecerate_id_seq', 1, false);
+
+
+--
+-- Name: basic_piecerateitem_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('public.basic_piecerateitem_id_seq', 1, false);
 
 
 --
@@ -46342,14 +46750,14 @@ SELECT pg_catalog.setval('public.qcadooview_category_id_seq', 22, true);
 -- Name: qcadooview_item_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('public.qcadooview_item_id_seq', 212, true);
+SELECT pg_catalog.setval('public.qcadooview_item_id_seq', 214, true);
 
 
 --
 -- Name: qcadooview_view_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('public.qcadooview_view_id_seq', 211, true);
+SELECT pg_catalog.setval('public.qcadooview_view_id_seq', 213, true);
 
 
 --
@@ -46966,6 +47374,20 @@ SELECT pg_catalog.setval('public.technologies_technologystatechange_id_seq', 1, 
 --
 
 SELECT pg_catalog.setval('public.technologies_technologytocreationhelper_id_seq', 1, false);
+
+
+--
+-- Name: technologies_workstationchangeovernorm_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('public.technologies_workstationchangeovernorm_id_seq', 1, false);
+
+
+--
+-- Name: technologies_workstationstatechange_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('public.technologies_workstationstatechange_id_seq', 1, false);
 
 
 --
@@ -48304,6 +48726,14 @@ ALTER TABLE ONLY public.basic_log
 
 
 --
+-- Name: basic_machineworkingperiod basic_machineworkingperiod_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.basic_machineworkingperiod
+    ADD CONSTRAINT basic_machineworkingperiod_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: basic_model basic_model_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -48349,6 +48779,22 @@ ALTER TABLE ONLY public.basic_palletnumberhelper
 
 ALTER TABLE ONLY public.basic_parameter
     ADD CONSTRAINT basic_parameter_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: basic_piecerate basic_piecerate_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.basic_piecerate
+    ADD CONSTRAINT basic_piecerate_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: basic_piecerateitem basic_piecerateitem_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.basic_piecerateitem
+    ADD CONSTRAINT basic_piecerateitem_pkey PRIMARY KEY (id);
 
 
 --
@@ -51981,6 +52427,22 @@ ALTER TABLE ONLY public.technologies_technologystatechange
 
 ALTER TABLE ONLY public.technologies_technologytocreationhelper
     ADD CONSTRAINT technologies_technologytocreationhelper_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: technologies_workstationchangeovernorm technologies_workstationchangeovernorm_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.technologies_workstationchangeovernorm
+    ADD CONSTRAINT technologies_workstationchangeovernorm_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: technologies_workstationstatechange technologies_workstationstatechange_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.technologies_workstationstatechange
+    ADD CONSTRAINT technologies_workstationstatechange_pkey PRIMARY KEY (id);
 
 
 --
@@ -58329,6 +58791,30 @@ ALTER TABLE ONLY public.cmmsmachineparts_machinepartforevent
 
 
 --
+-- Name: basic_machineworkingperiod machineworkingperiod_launchedby_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.basic_machineworkingperiod
+    ADD CONSTRAINT machineworkingperiod_launchedby_fkey FOREIGN KEY (launchedby_id) REFERENCES public.basic_staff(id) DEFERRABLE;
+
+
+--
+-- Name: basic_machineworkingperiod machineworkingperiod_stoppedby_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.basic_machineworkingperiod
+    ADD CONSTRAINT machineworkingperiod_stoppedby_fkey FOREIGN KEY (stoppedby_id) REFERENCES public.basic_staff(id) DEFERRABLE;
+
+
+--
+-- Name: basic_machineworkingperiod machineworkingperiod_workstation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.basic_machineworkingperiod
+    ADD CONSTRAINT machineworkingperiod_workstation_fkey FOREIGN KEY (workstation_id) REFERENCES public.basic_workstation(id) DEFERRABLE;
+
+
+--
 -- Name: cmmsmachineparts_maintenanceevent maintenanceevent_division_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -61198,6 +61684,14 @@ ALTER TABLE ONLY public.arch_productioncounting_staffworktime
 
 ALTER TABLE ONLY public.esilco_picksreport
     ADD CONSTRAINT pickreport_location_fkey FOREIGN KEY (location_id) REFERENCES public.materialflow_location(id) DEFERRABLE;
+
+
+--
+-- Name: basic_piecerateitem piecerateitem_piecerate_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.basic_piecerateitem
+    ADD CONSTRAINT piecerateitem_piecerate_fkey FOREIGN KEY (piecerate_id) REFERENCES public.basic_piecerate(id) DEFERRABLE;
 
 
 --
@@ -66342,6 +66836,62 @@ ALTER TABLE ONLY public.basic_workstation
 
 ALTER TABLE ONLY public.basic_workstationattachment
     ADD CONSTRAINT workstationattachment_workstation_fkey FOREIGN KEY (workstation_id) REFERENCES public.basic_workstation(id) DEFERRABLE;
+
+
+--
+-- Name: technologies_workstationchangeovernorm workstationchangeovernorm_attribute_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.technologies_workstationchangeovernorm
+    ADD CONSTRAINT workstationchangeovernorm_attribute_fkey FOREIGN KEY (attribute_id) REFERENCES public.basic_attribute(id) DEFERRABLE;
+
+
+--
+-- Name: technologies_workstationchangeovernorm workstationchangeovernorm_fromdattributevalue_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.technologies_workstationchangeovernorm
+    ADD CONSTRAINT workstationchangeovernorm_fromdattributevalue_fkey FOREIGN KEY (fromattributevalue_id) REFERENCES public.basic_attributevalue(id) DEFERRABLE;
+
+
+--
+-- Name: technologies_workstationchangeovernorm workstationchangeovernorm_toattributevalue_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.technologies_workstationchangeovernorm
+    ADD CONSTRAINT workstationchangeovernorm_toattributevalue_fkey FOREIGN KEY (toattributevalue_id) REFERENCES public.basic_attributevalue(id) DEFERRABLE;
+
+
+--
+-- Name: technologies_workstationchangeovernorm workstationchangeovernorm_workstation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.technologies_workstationchangeovernorm
+    ADD CONSTRAINT workstationchangeovernorm_workstation_fkey FOREIGN KEY (workstation_id) REFERENCES public.basic_workstation(id) DEFERRABLE;
+
+
+--
+-- Name: technologies_workstationchangeovernorm workstationchangeovernorm_workstationtype_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.technologies_workstationchangeovernorm
+    ADD CONSTRAINT workstationchangeovernorm_workstationtype_fkey FOREIGN KEY (workstationtype_id) REFERENCES public.basic_workstationtype(id) DEFERRABLE;
+
+
+--
+-- Name: technologies_workstationstatechange workstationstatechange_shift_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.technologies_workstationstatechange
+    ADD CONSTRAINT workstationstatechange_shift_fkey FOREIGN KEY (shift_id) REFERENCES public.basic_shift(id) DEFERRABLE;
+
+
+--
+-- Name: technologies_workstationstatechange workstationstatechange_workstation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.technologies_workstationstatechange
+    ADD CONSTRAINT workstationstatechange_workstation_fkey FOREIGN KEY (workstation_id) REFERENCES public.basic_workstation(id) DEFERRABLE;
 
 
 --
