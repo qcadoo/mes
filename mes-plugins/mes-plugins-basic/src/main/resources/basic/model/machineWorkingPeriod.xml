@@ -30,12 +30,16 @@
     <fields>
         <datetime name="launchDate" required="true"/>
         <datetime name="stopDate"/>
-        <integer name="workingTime"/>
+        <integer name="workingTime" default="0"/>
         <belongsTo name="workstation" model="workstation" required="true"/>
         <belongsTo name="launchedBy" model="staff"/>
         <belongsTo name="stoppedBy" model="staff"/>
     </fields>
 
-    <hooks/>
+    <hooks>
+        <validatesWith class="com.qcadoo.mes.basic.validators.MachineWorkingPeriodValidators"
+                       method="validatesWith"/>
+        <onSave class="com.qcadoo.mes.basic.hooks.MachineWorkingPeriodHooks" method="onSave"/>
+    </hooks>
 
 </model>

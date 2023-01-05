@@ -59,6 +59,7 @@
         <hasMany name="machineWorkingPeriods" model="machineWorkingPeriod" joinField="workstation" cascade="delete"/>
         <manyToMany name="faultTypes" model="faultType" joinField="workstations"/>
         <boolean name="buffer" default="false"/>
+        <boolean name="manualStateChange" persistent="false"/>
     </fields>
 
     <hooks>

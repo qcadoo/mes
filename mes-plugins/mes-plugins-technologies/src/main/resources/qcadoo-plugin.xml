@@ -304,6 +304,12 @@
                     method="onDelete"/>
         </model:model-hook>
 
+        <model:model-hook plugin="basic" model="machineWorkingPeriod">
+            <model:onSave
+                    class="com.qcadoo.mes.technologies.hooks.MachineWorkingPeriodHooksT"
+                    method="onSave"/>
+        </model:model-hook>
+
         <model:model-enum-value plugin="basic" model="log" enum="logType" value="operationImport"/>
         <model:model-enum-value plugin="basic" model="log" enum="logType" value="operationProductInComponentImport"/>
         <model:model-enum-value plugin="basic" model="log" enum="logType" value="productToProductGroupTechnologyImport"/>

@@ -355,10 +355,11 @@
                                 width="50" link="true"/>
                         <option type="column" name="stoppedBy" fields="stoppedBy" expression="#stoppedBy['name'] + ' ' + #stoppedBy['surname']"
                                 width="100" link="true"/>
-                        <option type="column" name="workingTime" fields="workingTime" width="50"/>
+                        <option type="column" name="workingTime" fields="workingTime" width="50"
+                                expression="T(com.qcadoo.view.api.utils.TimeConverterService).convertTimeToString(#workingTime)"/>
 
-                        <option type="searchable" value="launchDate,launchedBy,stopDate,stoppedBy,workingTime"/>
-                        <option type="orderable" value="launchDate,launchedBy,stopDate,stoppedBy,workingTime"/>
+                        <option type="searchable" value="launchDate,launchedBy,stopDate,stoppedBy"/>
+                        <option type="orderable" value="launchDate,launchedBy,stopDate,stoppedBy"/>
 
                         <option type="order" column="launchDate" direction="asc"/>
 

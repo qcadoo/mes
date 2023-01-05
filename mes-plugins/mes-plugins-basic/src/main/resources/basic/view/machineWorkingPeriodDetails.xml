@@ -41,6 +41,9 @@
                     <component type="calendar" name="launchDate" field="launchDate"
                                reference="launchDate">
                         <option type="withTimePicker" value="true" />
+                        <listener event="onChange"
+                                  class="com.qcadoo.mes.basic.listeners.MachineWorkingPeriodDetailsListeners"
+                                  method="calculateWorkingTime"/>
                     </component>
                 </layoutElement>
                 <layoutElement column="1" row="2">
@@ -60,6 +63,9 @@
                     <component type="calendar" name="stopDate" field="stopDate"
                                reference="stopDate">
                         <option type="withTimePicker" value="true" />
+                        <listener event="onChange"
+                                  class="com.qcadoo.mes.basic.listeners.MachineWorkingPeriodDetailsListeners"
+                                  method="calculateWorkingTime"/>
                     </component>
                 </layoutElement>
                 <layoutElement column="1" row="4">

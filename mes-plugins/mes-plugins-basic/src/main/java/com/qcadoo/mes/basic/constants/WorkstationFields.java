@@ -69,4 +69,6 @@ public final class WorkstationFields {
 
     public static final String MACHINE_WORKING_PERIODS = "machineWorkingPeriods";
 
+    public static final String MANUAL_STATE_CHANGE = "manualStateChange";
+
 }

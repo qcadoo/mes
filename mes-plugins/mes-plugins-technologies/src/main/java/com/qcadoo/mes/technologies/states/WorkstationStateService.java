@@ -11,6 +11,7 @@ import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.basic.constants.MachineWorkingPeriodFields;
 import com.qcadoo.mes.basic.constants.UserFieldsB;
 import com.qcadoo.mes.basic.constants.WorkstationFields;
+import com.qcadoo.mes.basic.hooks.MachineWorkingPeriodHooks;
 import com.qcadoo.mes.basic.states.constants.WorkstationStateStringValues;
 import com.qcadoo.mes.newstates.BasicStateService;
 import com.qcadoo.mes.states.StateChangeEntityDescriber;
@@ -30,6 +31,8 @@ public class WorkstationStateService extends BasicStateService implements Workst
 
     @Autowired
     private UserService userService;
+    @Autowired
+    private MachineWorkingPeriodHooks machineWorkingPeriodHooks;
 
     @Override
     public StateChangeEntityDescriber getChangeEntityDescriber() {
@@ -66,8 +69,8 @@ public class WorkstationStateService extends BasicStateService implements Workst
     }
 
     @Override
-    public Entity onAfterSave(Entity entity, String sourceState, String targetState, Entity stateChangeEntity,
-                              StateChangeEntityDescriber describer) {
+    public Entity onBeforeSave(Entity entity, String sourceState, String targetState, Entity stateChangeEntity,
+                               StateChangeEntityDescriber describer) {
         switch (targetState) {
             case WorkstationStateStringValues.STOPPED:
                 updateStopDate(entity);
@@ -81,22 +84,28 @@ public class WorkstationStateService extends BasicStateService implements Workst
     }
 
     private void addMachineWorkingPeriod(Entity entity) {
-        DataDefinition machineWorkingPeriodDD = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER,
-                BasicConstants.MODEL_MACHINE_WORKING_PERIOD);
-        Entity machineWorkingPeriod = machineWorkingPeriodDD.create();
-        machineWorkingPeriod.setField(MachineWorkingPeriodFields.LAUNCH_DATE, new Date());
-        machineWorkingPeriod.setField(MachineWorkingPeriodFields.WORKSTATION, entity);
-        machineWorkingPeriod.setField(MachineWorkingPeriodFields.LAUNCHED_BY, getStaff());
-        machineWorkingPeriodDD.save(machineWorkingPeriod);
+        if (!entity.getBooleanField(WorkstationFields.MANUAL_STATE_CHANGE)) {
+            DataDefinition machineWorkingPeriodDD = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER,
+                    BasicConstants.MODEL_MACHINE_WORKING_PERIOD);
+            Entity machineWorkingPeriod = machineWorkingPeriodDD.create();
+            machineWorkingPeriod.setField(MachineWorkingPeriodFields.LAUNCH_DATE, new Date());
+            machineWorkingPeriod.setField(MachineWorkingPeriodFields.WORKSTATION, entity);
+            machineWorkingPeriod.setField(MachineWorkingPeriodFields.WORKING_TIME, 0);
+            machineWorkingPeriod.setField(MachineWorkingPeriodFields.LAUNCHED_BY, getStaff());
+            machineWorkingPeriodDD.fastSave(machineWorkingPeriod);
+        }
     }
 
     private void updateStopDate(Entity entity) {
-        List<Entity> machineWorkingPeriods = entity.getHasManyField(WorkstationFields.MACHINE_WORKING_PERIODS).stream()
-                .filter(e -> e.getDateField(MachineWorkingPeriodFields.STOP_DATE) == null).collect(Collectors.toList());
-        for (Entity machineWorkingPeriod : machineWorkingPeriods) {
-            machineWorkingPeriod.setField(MachineWorkingPeriodFields.STOP_DATE, new Date());
-            machineWorkingPeriod.setField(MachineWorkingPeriodFields.STOPPED_BY, getStaff());
-            machineWorkingPeriod.getDataDefinition().save(machineWorkingPeriod);
+        if (!entity.getBooleanField(WorkstationFields.MANUAL_STATE_CHANGE)) {
+            List<Entity> machineWorkingPeriods = entity.getHasManyField(WorkstationFields.MACHINE_WORKING_PERIODS).stream()
+                    .filter(e -> e.getDateField(MachineWorkingPeriodFields.STOP_DATE) == null).collect(Collectors.toList());
+            for (Entity machineWorkingPeriod : machineWorkingPeriods) {
+                machineWorkingPeriod.setField(MachineWorkingPeriodFields.STOP_DATE, new Date());
+                machineWorkingPeriod.setField(MachineWorkingPeriodFields.STOPPED_BY, getStaff());
+                machineWorkingPeriodHooks.onSave(null, machineWorkingPeriod);
+                machineWorkingPeriod.getDataDefinition().fastSave(machineWorkingPeriod);
+            }
         }
     }
 

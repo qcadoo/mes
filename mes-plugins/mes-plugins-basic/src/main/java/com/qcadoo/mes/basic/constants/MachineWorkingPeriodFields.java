@@ -16,4 +16,6 @@ public final class MachineWorkingPeriodFields {
 
     public static final String STOPPED_BY = "stoppedBy";
 
+    public static final String WORKING_TIME = "workingTime";
+
 }
