@@ -23,9 +23,17 @@
  */
 package com.qcadoo.mes.basic.controllers;
 
+import com.google.common.collect.ImmutableMap;
 import com.qcadoo.localization.api.TranslationService;
+import com.qcadoo.model.api.Entity;
+import com.qcadoo.plugins.users.constants.QcadooUsersConstants;
+import com.qcadoo.security.api.UserService;
+import com.qcadoo.security.constants.UserFields;
+import com.qcadoo.view.api.crud.CrudService;
 import com.qcadoo.view.utils.ViewParametersAppender;
 import org.apache.commons.lang3.StringUtils;
+import org.joda.time.DateTime;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
@@ -38,6 +46,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.Date;
 import java.util.Locale;
 import java.util.Objects;
 
@@ -46,8 +55,17 @@ public final class UserBlockedController {
 
     private static final String SYSTEM_ADMIN_CONTACT_MAIL = "pomoc@qcadoo.com";
 
+    @Value("${daysForFirstLogin:3}")
+    private Integer daysForFirstLogin;
+
     @Value("${systemAdminContactMail}")
     private String systemAdminContactMail;
+
+    @Autowired
+    private CrudService crudService;
+
+    @Autowired
+    private UserService userService;
 
     @Autowired
     private TranslationService translationService;
@@ -79,7 +97,44 @@ public final class UserBlockedController {
         return mav;
     }
 
-    public String getSystemAdminContactMail() {
+    public boolean isAfterFirstPswdChange(final Entity currentUser) {
+        return currentUser.getBooleanField(UserFields.AFTER_FIRST_PSWD_CHANGE);
+    }
+
+    public ModelAndView redirectToProfileChangePasswordOrUserBlocked(final Locale locale, final HttpServletRequest request, final HttpServletResponse response, Entity currentUser, final String activeMenu) {
+        Date pswdLastChanged = currentUser.getDateField(UserFields.PSWD_LAST_CHANGED);
+
+        if (checkIfTimeForLoginIsUp(pswdLastChanged)) {
+            currentUser.setField(UserFields.IS_BLOCKED, true);
+
+            currentUser = currentUser.getDataDefinition().save(currentUser);
+        }
+
+        if (currentUser.getBooleanField(UserFields.IS_BLOCKED)) {
+            return getUserBlockedView(locale, request, response);
+        } else {
+            JSONObject json = new JSONObject();
+
+            if (Objects.nonNull(activeMenu)) {
+                json = new JSONObject(ImmutableMap.of("form.id", currentUser.getId(), "window.activeMenu", activeMenu));
+            }
+
+            return crudService.prepareView(QcadooUsersConstants.PLUGIN_IDENTIFIER, QcadooUsersConstants.VIEW_PROFILE_CHANGE_PASSWORD, ImmutableMap.of("context", json.toString()), locale);
+        }
+    }
+
+    private boolean checkIfTimeForLoginIsUp(final Date pswdLastChanged) {
+        if (Objects.isNull(pswdLastChanged) || Objects.isNull(daysForFirstLogin)) {
+            return false;
+        }
+
+        DateTime now = DateTime.now();
+        DateTime end = new DateTime(pswdLastChanged).plusDays(daysForFirstLogin);
+
+        return end.isBefore(now);
+    }
+
+    private String getSystemAdminContactMail() {
         if (StringUtils.isBlank(systemAdminContactMail)) {
             systemAdminContactMail = SYSTEM_ADMIN_CONTACT_MAIL;
         }
