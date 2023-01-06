@@ -48,12 +48,20 @@ public class MachineWorkingPeriodHooksT {
         Long entityId = entity.getId();
         if (entityId != null) {
             Entity dbEntity = dataDefinition.get(entityId);
-            if (dbEntity.getDateField(MachineWorkingPeriodFields.STOP_DATE) == null && entity.getDateField(MachineWorkingPeriodFields.STOP_DATE) != null) {
+            if (dbEntity.getDateField(MachineWorkingPeriodFields.STOP_DATE) == null
+                    && entity.getDateField(MachineWorkingPeriodFields.STOP_DATE) != null) {
                 String userLogin = securityService.getCurrentUserName();
                 Entity workstation = entity.getBelongsToField(MachineWorkingPeriodFields.WORKSTATION);
                 workstation.setField(WorkstationFields.MANUAL_STATE_CHANGE, true);
                 stateExecutorService.changeState(WorkstationServiceMarker.class, workstation, userLogin,
                         WorkstationStateStringValues.STOPPED);
+            } else if (dbEntity.getDateField(MachineWorkingPeriodFields.STOP_DATE) != null
+                    && entity.getDateField(MachineWorkingPeriodFields.STOP_DATE) == null) {
+                String userLogin = securityService.getCurrentUserName();
+                Entity workstation = entity.getBelongsToField(MachineWorkingPeriodFields.WORKSTATION);
+                workstation.setField(WorkstationFields.MANUAL_STATE_CHANGE, true);
+                stateExecutorService.changeState(WorkstationServiceMarker.class, workstation, userLogin,
+                        WorkstationStateStringValues.LAUNCHED);
             }
         } else if (entity.getDateField(MachineWorkingPeriodFields.STOP_DATE) == null) {
             String userLogin = securityService.getCurrentUserName();
@@ -64,5 +72,15 @@ public class MachineWorkingPeriodHooksT {
         }
     }
 
+    public boolean onDelete(final DataDefinition dataDefinition, final Entity entity) {
+        if (entity.getDateField(MachineWorkingPeriodFields.STOP_DATE) == null) {
+            String userLogin = securityService.getCurrentUserName();
+            Entity workstation = entity.getBelongsToField(MachineWorkingPeriodFields.WORKSTATION);
+            workstation.setField(WorkstationFields.MANUAL_STATE_CHANGE, true);
+            stateExecutorService.changeState(WorkstationServiceMarker.class, workstation, userLogin,
+                    WorkstationStateStringValues.STOPPED);
+        }
+        return true;
+    }
 
 }
