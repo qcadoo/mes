@@ -12,6 +12,7 @@ public class SalesPlanProductHooks {
 
     public void onCopy(final DataDefinition salesPlanProductDD, final Entity salesPlanProduct) {
         salesPlanProduct.setField(SalesPlanProductFields.ORDERED_QUANTITY, BigDecimal.ZERO);
+        salesPlanProduct.setField(SalesPlanProductFields.ORDERED_TO_WAREHOUSE, BigDecimal.ZERO);
         salesPlanProduct.setField(SalesPlanProductFields.SURPLUS_FROM_PLAN,
                 salesPlanProduct.getDecimalField(SalesPlanProductFields.PLANNED_QUANTITY));
     }
