@@ -35,6 +35,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.qcadoo.model.api.search.SearchOrders;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -76,8 +77,13 @@ import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.LookupComponent;
 import com.qcadoo.view.constants.RowStyle;
 
+import static com.qcadoo.model.api.search.SearchProjections.*;
+import static com.qcadoo.model.api.search.SearchProjections.rowCount;
+
 @Service
 public class BasicProductionCountingServiceImpl implements BasicProductionCountingService {
+
+    private static final String QUANTITIES_SUM_ALIAS = "sum";
 
     private static final String COMPONENTS_LOCATION = "componentsLocation";
 
@@ -571,14 +577,16 @@ public class BasicProductionCountingServiceImpl implements BasicProductionCounti
     public BigDecimal getProducedQuantityFromBasicProductionCountings(final Entity order) {
         Entity entity = dataDefinitionService
                 .get(BasicProductionCountingConstants.PLUGIN_IDENTIFIER,
-                        BasicProductionCountingConstants.MODEL_BASIC_PRODUCTION_COUNTING_DTO)
+                        BasicProductionCountingConstants.MODEL_BASIC_PRODUCTION_COUNTING)
                 .find()
-                .add(SearchRestrictions.eq("orderId", order.getId().intValue()))
-                .add(SearchRestrictions.eq("productNumber",
-                        order.getBelongsToField(OrderFields.PRODUCT).getStringField(ProductFields.NUMBER)))
-                .setMaxResults(1)
-                .uniqueResult();
-        BigDecimal doneQuantity = BigDecimalUtils.convertNullToZero(entity.getDecimalField("producedQuantity"));
+                .add(SearchRestrictions.belongsTo(BasicProductionCountingFields.ORDER, order))
+                .add(SearchRestrictions.belongsTo(BasicProductionCountingFields.PRODUCT,
+                        order.getBelongsToField(OrderFields.PRODUCT)))
+                .setProjection(
+                        list().add(alias(sum(BasicProductionCountingFields.PRODUCED_QUANTITY), QUANTITIES_SUM_ALIAS)).add(
+                                rowCount())).addOrder(SearchOrders.asc(QUANTITIES_SUM_ALIAS)).setMaxResults(1).uniqueResult();
+        BigDecimal doneQuantity = BigDecimalUtils.convertNullToZero(entity.getDecimalField(QUANTITIES_SUM_ALIAS));
+
         return numberService.setScaleWithDefaultMathContext(doneQuantity);
     }
 
