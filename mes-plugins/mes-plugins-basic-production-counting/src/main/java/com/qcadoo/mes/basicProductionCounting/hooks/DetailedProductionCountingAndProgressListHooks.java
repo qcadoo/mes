@@ -3,19 +3,19 @@
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
  * Version: 1.4
- *
+ * <p>
  * This file is part of Qcadoo.
- *
+ * <p>
  * Qcadoo is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation; either version 3 of the License,
  * or (at your option) any later version.
- *
+ * <p>
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty
  * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU Affero General Public License for more details.
- *
+ * <p>
  * You should have received a copy of the GNU Affero General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
@@ -123,7 +123,7 @@ public class DetailedProductionCountingAndProgressListHooks {
         if (orderId == null) {
             return;
         }
-        if(disable(orderService.getOrder(orderId))) {
+        if (disable(orderService.getOrder(orderId))) {
             grid.setEnabled(false);
         } else {
             boolean isLocked = progressModifyLockHelper.isLocked(orderService.getOrder(orderId));
@@ -132,6 +132,9 @@ public class DetailedProductionCountingAndProgressListHooks {
     }
 
     private boolean disable(Entity order) {
+        if (order.getBelongsToField(OrderFields.TECHNOLOGY) == null) {
+            return true;
+        }
 
         String state = order.getStringField(OrderFields.STATE);
 
@@ -141,7 +144,7 @@ public class DetailedProductionCountingAndProgressListHooks {
     }
 
     public void onRemoveSelectedProductionCountingQuantities(final ViewDefinitionState view, final ComponentState state,
-            final String[] args) {
+                                                             final String[] args) {
         GridComponent grid = ((GridComponent) view.getComponentByReference(QcadooViewConstants.L_GRID));
         List<Entity> selectedEntities = grid.getSelectedEntities();
         List<Long> ids = new ArrayList<>();

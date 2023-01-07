@@ -62,7 +62,7 @@ public class MachineWorkingPeriodValidators {
             if (!Objects.isNull(entityId)) {
                 machineWorkingPeriods = machineWorkingPeriods.stream().filter(e -> !e.getId().equals(entityId)).collect(Collectors.toList());
             }
-            if (machineWorkingPeriods.size() > 0) {
+            if (!machineWorkingPeriods.isEmpty()) {
                 entity.addError(dataDefinition.getField(MachineWorkingPeriodFields.STOP_DATE), "basic.validate.global.error.machineWorkingPeriodLaunchDateBeforePeriodStopDate");
 
                 return false;
@@ -87,7 +87,7 @@ public class MachineWorkingPeriodValidators {
             if (!Objects.isNull(entityId)) {
                 machineWorkingPeriods = machineWorkingPeriods.stream().filter(e -> !e.getId().equals(entityId)).collect(Collectors.toList());
             }
-            if (machineWorkingPeriods.size() > 0) {
+            if (!machineWorkingPeriods.isEmpty()) {
                 entity.addError(dataDefinition.getField(MachineWorkingPeriodFields.LAUNCH_DATE), "basic.validate.global.error.machineWorkingPeriodStopDateAfterPeriodLaunchDate");
 
                 return false;
@@ -109,7 +109,7 @@ public class MachineWorkingPeriodValidators {
             if (!Objects.isNull(entityId)) {
                 machineWorkingPeriods = machineWorkingPeriods.stream().filter(e -> !e.getId().equals(entityId)).collect(Collectors.toList());
             }
-            if (machineWorkingPeriods.size() > 0) {
+            if (!machineWorkingPeriods.isEmpty()) {
                 entity.addError(dataDefinition.getField(MachineWorkingPeriodFields.STOP_DATE), "basic.validate.global.error.machineWorkingPeriodWithoutStopDateNotLast");
 
                 return false;
@@ -121,7 +121,7 @@ public class MachineWorkingPeriodValidators {
                     .filter(e -> e.getDateField(MachineWorkingPeriodFields.LAUNCH_DATE)
                             .before(stopDate))
                     .collect(Collectors.toList());
-            if (machineWorkingPeriods.size() > 0) {
+            if (!machineWorkingPeriods.isEmpty()) {
                 entity.addError(dataDefinition.getField(MachineWorkingPeriodFields.STOP_DATE), "basic.validate.global.error.machineWorkingPeriodWithoutStopDateNotLast");
 
                 return false;
@@ -159,7 +159,7 @@ public class MachineWorkingPeriodValidators {
                 machineWorkingPeriods = machineWorkingPeriods.stream().filter(e -> !e.getId().equals(entityId)).collect(Collectors.toList());
             }
 
-            if (machineWorkingPeriods.size() > 0) {
+            if (!machineWorkingPeriods.isEmpty()) {
                 entity.addError(dataDefinition.getField(MachineWorkingPeriodFields.STOP_DATE), "basic.validate.global.error.machineWorkingPeriodWithoutStopDateExists");
 
                 return false;
