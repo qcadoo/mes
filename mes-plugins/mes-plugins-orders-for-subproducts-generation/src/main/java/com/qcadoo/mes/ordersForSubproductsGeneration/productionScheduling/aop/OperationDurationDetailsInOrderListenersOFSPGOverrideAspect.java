@@ -223,6 +223,7 @@ public class OperationDurationDetailsInOrderListenersOFSPGOverrideAspect {
         Date orderStartDate = order.getDateField(OrderFields.START_DATE);
         Date lastDateTo = orderStartDate;
 
+        boolean dateFromSetToFirstPossible = false;
         for (Integer key : keys) {
             OrdersByLevel ords = ordersByLevel.get(key);
             Date currentDateTo = lastDateTo;
@@ -270,13 +271,17 @@ public class OperationDurationDetailsInOrderListenersOFSPGOverrideAspect {
                             isGenerated = true;
                         }
 
-                        orderForm.addMessage("orders.dateFrom.info.dateFromSetToFirstPossible", ComponentState.MessageType.INFO,
-                                false);
+                        dateFromSetToFirstPossible = true;
                     }
 
                     o.getDataDefinition().save(o);
                 }
             }
+        }
+
+        if (dateFromSetToFirstPossible) {
+            orderForm.addMessage("orders.dateFrom.info.dateFromSetToFirstPossible", ComponentState.MessageType.INFO,
+                    false);
         }
 
         fillWorkTimeFields(viewDefinitionState, workTime);
