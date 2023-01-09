@@ -54,9 +54,6 @@ import com.qcadoo.view.constants.QcadooViewConstants;
 public class MasterOrderProductDetailsHooks {
 
     @Autowired
-    private MasterOrderDetailsHooks masterOrderDetailsHooks;
-
-    @Autowired
     private DataDefinitionService dataDefinitionService;
 
     @Autowired

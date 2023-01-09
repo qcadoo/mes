@@ -208,7 +208,7 @@
                         </component>
                     </layoutElement>
                     <layoutElement column="1" row="5">
-                        <component type="borderLayout" name="priceBorderLayout">
+                        <component type="borderLayout" name="priceBorderLayout" reference="priceBorderLayout">
                             <option type="label" value="priceLabel"/>
                             <component type="gridLayout" name="priceGridLayout"
                                        hasBorders="false" columns="9" rows="1">

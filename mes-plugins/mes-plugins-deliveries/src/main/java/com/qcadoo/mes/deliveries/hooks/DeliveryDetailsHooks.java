@@ -3,25 +3,37 @@
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
  * Version: 1.4
- *
+ * <p>
  * This file is part of Qcadoo.
- *
+ * <p>
  * Qcadoo is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation; either version 3 of the License,
  * or (at your option) any later version.
- *
+ * <p>
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty
  * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU Affero General Public License for more details.
- *
+ * <p>
  * You should have received a copy of the GNU Affero General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
 package com.qcadoo.mes.deliveries.hooks;
+
+import java.math.BigDecimal;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.stereotype.Service;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
@@ -43,21 +55,19 @@ import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.CustomRestriction;
 import com.qcadoo.security.api.SecurityService;
 import com.qcadoo.security.api.UserService;
+import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
-import com.qcadoo.view.api.components.*;
+import com.qcadoo.view.api.components.FieldComponent;
+import com.qcadoo.view.api.components.FormComponent;
+import com.qcadoo.view.api.components.GridComponent;
+import com.qcadoo.view.api.components.LookupComponent;
+import com.qcadoo.view.api.components.WindowComponent;
 import com.qcadoo.view.api.ribbon.Ribbon;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.api.ribbon.RibbonGroup;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
 import com.qcadoo.view.constants.QcadooViewConstants;
 import com.qcadoo.view.constants.RowStyle;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.stereotype.Service;
-
-import java.math.BigDecimal;
-import java.util.*;
 
 @Service
 public class DeliveryDetailsHooks {
@@ -81,6 +91,8 @@ public class DeliveryDetailsHooks {
     private static final String L_CHANGE_STORAGE_LOCATIONS = "changeStorageLocations";
 
     private static final String ASSIGN_STORAGE_LOCATIONS = "assignStorageLocations";
+    public static final String DELIVERED_PRODUCTS_CUMULATED_TOTAL_PRICE_CURRENCY = "deliveredProductsCumulatedTotalPriceCurrency";
+    public static final String ORDERED_PRODUCTS_CUMULATED_TOTAL_PRICE_CURRENCY = "orderedProductsCumulatedTotalPriceCurrency";
 
     @Autowired
     private DeliveriesService deliveriesService;
@@ -235,8 +247,8 @@ public class DeliveryDetailsHooks {
     private void fillCurrencyFields(final ViewDefinitionState view) {
         FormComponent deliveryForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
-        List<String> referenceNames = Lists.newArrayList("deliveredProductsCumulatedTotalPriceCurrency",
-                "orderedProductsCumulatedTotalPriceCurrency");
+        List<String> referenceNames = Lists.newArrayList(DELIVERED_PRODUCTS_CUMULATED_TOTAL_PRICE_CURRENCY,
+                ORDERED_PRODUCTS_CUMULATED_TOTAL_PRICE_CURRENCY);
 
         Entity delivery = deliveryForm.getEntity();
 
@@ -344,12 +356,27 @@ public class DeliveryDetailsHooks {
         updateRelatedDeliveryButtonsState(view);
         filterStateChangeHistory(view);
         fillCurrencyFields(view);
+        togglePriceFields(view);
         disableShowProductButton(view);
         fillLocationDefaultValue(view);
         changeLocationEnabledDependOnState(view);
         updateCopyOrderedProductButtonsState(view);
         processRoles(view);
         setDeliveryIdForMultiUploadField(view);
+    }
+
+    private void togglePriceFields(final ViewDefinitionState view) {
+        FieldComponent deliveredTotalPriceField = (FieldComponent) view.getComponentByReference(DeliveryFields.DELIVERED_PRODUCTS_CUMULATED_TOTAL_PRICE);
+        FieldComponent orderedTotalPriceField = (FieldComponent) view.getComponentByReference(DeliveryFields.ORDERED_PRODUCTS_CUMULATED_TOTAL_PRICE);
+        FieldComponent deliveredTotalPriceCurrencyField = (FieldComponent) view.getComponentByReference(DELIVERED_PRODUCTS_CUMULATED_TOTAL_PRICE_CURRENCY);
+        FieldComponent orderedTotalPriceCurrencyField = (FieldComponent) view.getComponentByReference(ORDERED_PRODUCTS_CUMULATED_TOTAL_PRICE_CURRENCY);
+
+        boolean hasCurrentUserRole = securityService.hasCurrentUserRole("ROLE_DELIVERIES_PRICE");
+
+        deliveredTotalPriceField.setVisible(hasCurrentUserRole);
+        orderedTotalPriceField.setVisible(hasCurrentUserRole);
+        deliveredTotalPriceCurrencyField.setVisible(hasCurrentUserRole);
+        orderedTotalPriceCurrencyField.setVisible(hasCurrentUserRole);
     }
 
     private void updateChangeStorageLocationButton(final ViewDefinitionState view) {

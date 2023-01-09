@@ -3,19 +3,19 @@
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
  * Version: 1.4
- *
+ * <p>
  * This file is part of Qcadoo.
- *
+ * <p>
  * Qcadoo is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation; either version 3 of the License,
  * or (at your option) any later version.
- *
+ * <p>
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty
  * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU Affero General Public License for more details.
- *
+ * <p>
  * You should have received a copy of the GNU Affero General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
@@ -45,6 +45,8 @@ import com.qcadoo.model.api.NumberService;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.model.api.units.PossibleUnitConversions;
 import com.qcadoo.model.api.units.UnitConversionService;
+import com.qcadoo.security.api.SecurityService;
+import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
@@ -56,13 +58,13 @@ import com.qcadoo.view.constants.QcadooViewConstants;
 @Service
 public class DeliveredProductDetailsHooks {
 
-    
-
     private static final String L_DELIVERED_PRODUCT_RESERVATIONS = "deliveredProductReservations";
 
     private static final String L_LOCATION = "location";
 
     private static final String L_PRODUCT = "product";
+    public static final String TOTAL_PRICE_CURRENCY = "totalPriceCurrency";
+    public static final String PRICE_PER_UNIT_CURRENCY = "pricePerUnitCurrency";
 
     @Autowired
     private NumberService numberService;
@@ -76,6 +78,9 @@ public class DeliveredProductDetailsHooks {
     @Autowired
     private BatchCriteriaModifier batchCriteriaModifier;
 
+    @Autowired
+    private SecurityService securityService;
+
     public void beforeRender(final ViewDefinitionState view) {
         FormComponent deliveredProductForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
@@ -84,6 +89,7 @@ public class DeliveredProductDetailsHooks {
         fillOrderedQuantities(view);
         fillUnitFields(view);
         fillCurrencyFields(view);
+        togglePriceFields(view);
         setDeliveredQuantityFieldRequired(view);
         setAdditionalQuantityFieldRequired(view);
         lockConversion(view);
@@ -114,12 +120,28 @@ public class DeliveredProductDetailsHooks {
     public void fillCurrencyFields(final ViewDefinitionState view) {
         FormComponent deliveredProductForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
-        List<String> referenceNames = Lists.newArrayList("totalPriceCurrency", "pricePerUnitCurrency");
+        List<String> referenceNames = Lists.newArrayList(TOTAL_PRICE_CURRENCY, PRICE_PER_UNIT_CURRENCY);
 
         Entity deliveredProduct = deliveredProductForm.getEntity();
         Entity delivery = deliveredProduct.getBelongsToField(DeliveredProductFields.DELIVERY);
 
         deliveriesService.fillCurrencyFieldsForDelivery(view, referenceNames, delivery);
+    }
+
+    private void togglePriceFields(final ViewDefinitionState view) {
+        FieldComponent pricePerUnitField = (FieldComponent) view.getComponentByReference(DeliveredProductFields.PRICE_PER_UNIT);
+        FieldComponent totalPriceField = (FieldComponent) view.getComponentByReference(DeliveredProductFields.TOTAL_PRICE);
+        FieldComponent pricePerUnitCurrencyField = (FieldComponent) view.getComponentByReference(PRICE_PER_UNIT_CURRENCY);
+        FieldComponent totalPriceCurrencyField = (FieldComponent) view.getComponentByReference(TOTAL_PRICE_CURRENCY);
+        ComponentState priceBorderLayout = view.getComponentByReference("priceBorderLayout");
+
+        boolean hasCurrentUserRole = securityService.hasCurrentUserRole("ROLE_DELIVERIES_PRICE");
+
+        pricePerUnitField.setVisible(hasCurrentUserRole);
+        totalPriceField.setVisible(hasCurrentUserRole);
+        pricePerUnitCurrencyField.setVisible(hasCurrentUserRole);
+        totalPriceCurrencyField.setVisible(hasCurrentUserRole);
+        priceBorderLayout.setVisible(hasCurrentUserRole);
     }
 
     public void fillOrderedQuantities(final ViewDefinitionState view) {
