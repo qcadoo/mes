@@ -50,14 +50,15 @@
 			<option type="column" name="productUnit" fields="productUnit"/>
 			<option type="column" name="pricePerUnit" fields="pricePerUnit" authorizationRole="ROLE_DELIVERIES_PRICE"/>
             <option type="column" name="deliveryCurrency" fields="deliveryCurrency"/>
+			<option type="column" name="batchNumber" fields="batchNumber"/>
             <option type="column" name="supplierName" fields="supplierName"/>
 
 			<option type="order" column="deliveryDate" direction="desc" />
 
 			<option type="searchable"
-				value="deliveryDate,deliveryState,deliveryNumber,deliveryName,productNumber,productName,orderedQuantity,deliveredQuantity,productUnit,pricePerUnit,deliveryCurrency,supplierName" />
+				value="deliveryDate,deliveryState,deliveryNumber,deliveryName,productNumber,productName,orderedQuantity,deliveredQuantity,productUnit,pricePerUnit,deliveryCurrency,batchNumber,supplierName" />
 			<option type="orderable"
-				value="deliveryDate,deliveryState,deliveryNumber,deliveryName,productNumber,productName,orderedQuantity,deliveredQuantity,productUnit,pricePerUnit,deliveryCurrency,supplierName" />
+				value="deliveryDate,deliveryState,deliveryNumber,deliveryName,productNumber,productName,orderedQuantity,deliveredQuantity,productUnit,pricePerUnit,deliveryCurrency,batchNumber,supplierName" />
 
 			<option type="footerRow" value="true"/>
 			<option type="columnsToSummary"

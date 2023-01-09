@@ -55,6 +55,7 @@
         <string name="negotiationNumber"/>
         <boolean name="deliveryActive"/>
         <integer name="location_id"/>
+        <string name="batchNumber"/>
     </fields>
 
     <masterModel plugin="deliveries" model="orderedProduct"/>
