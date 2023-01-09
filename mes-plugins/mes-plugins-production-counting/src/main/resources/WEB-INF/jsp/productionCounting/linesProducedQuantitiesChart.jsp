@@ -46,7 +46,7 @@
 <link rel="stylesheet" href="/qcadooView/public/ChartJS/Chart.min.css?ver=${buildNumber}" type="text/css" />
 
 <script type="text/javascript" src="/qcadooView/public/ChartJS/Chart.min.js?ver=${buildNumber}"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.3.2/jspdf.min.js"></script>
+<script type="text/javascript" src="/qcadooView/public/jspdf/jspdf.min.js"></script>
 
 <div id="linesProducedQuantitiesChart" class="chart-container">
     <canvas id="chart"></canvas>

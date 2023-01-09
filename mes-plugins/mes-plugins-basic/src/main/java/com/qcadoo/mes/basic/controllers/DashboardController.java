@@ -23,9 +23,10 @@
  */
 package com.qcadoo.mes.basic.controllers;
 
-import java.util.Locale;
-import java.util.Map;
-
+import com.qcadoo.mes.basic.constants.BasicConstants;
+import com.qcadoo.mes.basic.services.DashboardView;
+import com.qcadoo.model.api.Entity;
+import com.qcadoo.security.api.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -33,17 +34,33 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.qcadoo.mes.basic.services.DashboardView;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.Locale;
+import java.util.Map;
 
 @Controller
 public class DashboardController {
 
     @Autowired
+    private UserService userService;
+
+    @Autowired
     private DashboardView dashboardView;
 
+    @Autowired
+    private UserBlockedController userBlockedController;
+
     @RequestMapping(value = "dashboard", method = RequestMethod.GET)
-    public ModelAndView getDashboardView(@RequestParam final Map<String, String> arguments, final Locale locale) {
-        return dashboardView.getModelAndView(arguments, locale);
+    public ModelAndView getDashboardView(@RequestParam final Map<String, String> arguments, final Locale locale, final HttpServletRequest request, final HttpServletResponse response) throws IOException {
+        Entity currentUser = userService.getCurrentUserEntity();
+
+        if (userBlockedController.isAfterFirstPswdChange(currentUser)) {
+            return dashboardView.getModelAndView(arguments, locale);
+        } else {
+            return userBlockedController.redirectToProfileChangePasswordOrUserBlocked(locale, request, response, currentUser, BasicConstants.PLUGIN_IDENTIFIER + "." + BasicConstants.VIEW_HOME);
+        }
     }
 
 }

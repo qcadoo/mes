@@ -118,6 +118,8 @@ public final class BasicConstants {
 
     // VIEW
 
+    public static final String VIEW_HOME = "home";
+
     public static final String VIEW_GENERAL_PARAMETERS = "generalParameters";
 
     public static final String VIEW_LICENSES = "licenses";
