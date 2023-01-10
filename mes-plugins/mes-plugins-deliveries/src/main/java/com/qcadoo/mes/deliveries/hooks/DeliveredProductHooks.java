@@ -156,13 +156,9 @@ public class DeliveredProductHooks {
         Entity deliveredProductDBOffer = deliveredProductDB.getBelongsToField(L_OFFER);
         Entity deliveredProductOffer = deliveredProduct.getBelongsToField(L_OFFER);
 
-        if (Objects.isNull(deliveredProductDBOffer) != Objects.isNull(deliveredProductOffer)
+        return Objects.isNull(deliveredProductDBOffer) != Objects.isNull(deliveredProductOffer)
                 || Objects.nonNull(deliveredProductDBOffer)
-                        && !deliveredProductDBOffer.getId().equals(deliveredProductOffer.getId())) {
-            return true;
-        }
-
-        return false;
+                && !deliveredProductDBOffer.getId().equals(deliveredProductOffer.getId());
     }
 
     private void updateDeliveredAndAdditionalQuantityInOrderedProduct(final DataDefinition deliveredProductDD,
@@ -198,11 +194,13 @@ public class DeliveredProductHooks {
             if (!deliveredProducts.isEmpty()) {
                 BigDecimal deliveredQuantityRest = deliveredProducts.stream()
                         .map(dp -> dp.getDecimalField(DeliveredProductFields.DELIVERED_QUANTITY))
+                        .filter(Objects::nonNull)
                         .reduce(BigDecimal.ZERO, BigDecimal::add);
                 deliveredQuantity = deliveredQuantity.add(deliveredQuantityRest, numberService.getMathContext());
 
                 BigDecimal additionalQuantityRest = deliveredProducts.stream()
                         .map(dp -> dp.getDecimalField(DeliveredProductFields.ADDITIONAL_QUANTITY))
+                        .filter(Objects::nonNull)
                         .reduce(BigDecimal.ZERO, BigDecimal::add);
                 additionalQuantity = additionalQuantity.add(additionalQuantityRest, numberService.getMathContext());
             }
@@ -237,9 +235,7 @@ public class DeliveredProductHooks {
 
             Optional<Entity> storageLocation = findStorageLocationForProduct(product, location);
 
-            if (storageLocation.isPresent()) {
-                deliveredProduct.setField(DeliveredProductFields.STORAGE_LOCATION, storageLocation.get());
-            }
+            storageLocation.ifPresent(entity -> deliveredProduct.setField(DeliveredProductFields.STORAGE_LOCATION, entity));
         }
     }
 
@@ -344,7 +340,7 @@ public class DeliveredProductHooks {
                 BigDecimalUtils.convertNullToZero(deliveredProduct.getDecimalField(DeliveredProductFields.DELIVERED_QUANTITY)),
                 numberService.getMathContext());
 
-        if (Objects.nonNull(deliveredQuantity) && deliveredQuantity.compareTo(orderedQuantity) > 0) {
+        if (deliveredQuantity.compareTo(orderedQuantity) > 0) {
             deliveredProduct.addError(deliveredProductDD.getField(DeliveredProductFields.DELIVERED_QUANTITY),
                     "deliveries.deliveredProduct.error.deliveredQuantity.biggerThanOrderedQuantity");
 

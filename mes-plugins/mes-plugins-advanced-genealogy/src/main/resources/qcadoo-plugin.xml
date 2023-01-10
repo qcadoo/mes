@@ -95,7 +95,7 @@
         </model:model-field>
 
         <model:model-field plugin="basic" model="parameter">
-            <model:enum name="batchNumberUniqueness" values="01globally,02supplier,03supplierAndProduct"
+            <model:enum name="batchNumberUniqueness" values="01globally,02supplier,03supplierAndProduct,04product"
                         default="01globally" required="true"/>
         </model:model-field>
 

@@ -28,7 +28,6 @@ import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
@@ -880,11 +879,10 @@ public class DeliveriesServiceImpl implements DeliveriesService {
     }
 
     private Optional<Entity> getOrderedProductForDeliveredProductWithAllNull(final Entity deliveredProduct) {
-        Optional<Entity> mayBeOrderedProduct = getOrderedProductForDeliveredProduct(deliveredProduct,
+
+        return getOrderedProductForDeliveredProduct(deliveredProduct,
                 SearchRestrictions.isNull(OrderedProductFields.BATCH), SearchRestrictions.isNull(L_OFFER),
                 SearchRestrictions.isNull(L_OPERATION));
-
-        return mayBeOrderedProduct;
 
     }
 
