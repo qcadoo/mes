@@ -229,7 +229,7 @@ public class OrdersForSubproductsGenerationService {
         order.setField(OrderFields.DESCRIPTION,
                 buildDescription(parentOrder.getStringField(OrderFields.DESCRIPTION), technology, product));
 
-        if (transferOrdersGroupToOrdersForComponents) {
+        if (transferOrdersGroupToOrdersForComponents && Objects.nonNull(parentOrder.getBelongsToField(L_ORDERS_GROUP))) {
             Entity orderGroup = parentOrder.getBelongsToField(L_ORDERS_GROUP);
             order.setField(L_ORDERS_GROUP, orderGroup);
             order.setField(OrderFields.DATE_FROM, orderGroup.getDateField("startDate"));
@@ -298,7 +298,7 @@ public class OrdersForSubproductsGenerationService {
         order.setField(OrderFields.DESCRIPTION,
                 buildDescription(parentOrder.getStringField(OrderFields.DESCRIPTION), technology, product));
 
-        if (transferOrdersGroupToOrdersForComponents) {
+        if (transferOrdersGroupToOrdersForComponents && Objects.nonNull(parentOrder.getBelongsToField(L_ORDERS_GROUP))) {
             Entity orderGroup = parentOrder.getBelongsToField(L_ORDERS_GROUP);
             order.setField(L_ORDERS_GROUP, orderGroup);
             order.setField(OrderFields.DATE_FROM, orderGroup.getDateField("startDate"));
