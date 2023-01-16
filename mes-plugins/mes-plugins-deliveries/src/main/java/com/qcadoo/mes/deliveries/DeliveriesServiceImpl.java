@@ -3,19 +3,19 @@
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
  * Version: 1.4
- *
+ * <p>
  * This file is part of Qcadoo.
- *
+ * <p>
  * Qcadoo is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation; either version 3 of the License,
  * or (at your option) any later version.
- *
+ * <p>
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty
  * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU Affero General Public License for more details.
- *
+ * <p>
  * You should have received a copy of the GNU Affero General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
@@ -70,6 +70,7 @@ import com.qcadoo.model.api.search.SearchCriterion;
 import com.qcadoo.model.api.search.SearchOrders;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.plugin.api.PluginUtils;
+import com.qcadoo.security.api.SecurityService;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ComponentState.MessageType;
 import com.qcadoo.view.api.ViewDefinitionState;
@@ -120,6 +121,9 @@ public class DeliveriesServiceImpl implements DeliveriesService {
     @Autowired
     private CompanyService companyService;
 
+    @Autowired
+    private SecurityService securityService;
+
     @Override
     public Entity getDelivery(final Long deliveryId) {
         return getDeliveryDD().get(deliveryId);
@@ -142,6 +146,7 @@ public class DeliveriesServiceImpl implements DeliveriesService {
 
     @Override
     public List<Entity> getColumnsForDeliveries() {
+        boolean hasCurrentUserRole = securityService.hasCurrentUserRole("ROLE_DELIVERIES_PRICE");
         List<Entity> columnsForDeliveries = Lists.newArrayList();
 
         List<Entity> sortedColumnsForDeliveries = getColumnForDeliveriesDD().find()
@@ -154,8 +159,13 @@ public class DeliveriesServiceImpl implements DeliveriesService {
         columnsForDeliveries.add(successionColumn);
 
         for (Entity columnForDeliveries : sortedColumnsForDeliveries) {
-            if (!columnForDeliveries.getStringField(ColumnForDeliveriesFields.IDENTIFIER)
-                    .equals(successionColumn.getStringField(ColumnForDeliveriesFields.IDENTIFIER))) {
+            if (!columnForDeliveries.getStringField(ColumnForDeliveriesFields.IDENTIFIER).equals(DeliveredProductFields.PRICE_PER_UNIT)
+                    && !columnForDeliveries.getStringField(ColumnForDeliveriesFields.IDENTIFIER).equals(DeliveredProductFields.TOTAL_PRICE) &&
+                    !columnForDeliveries.getStringField(ColumnForDeliveriesFields.IDENTIFIER)
+                            .equals(successionColumn.getStringField(ColumnForDeliveriesFields.IDENTIFIER)) ||
+                    (columnForDeliveries.getStringField(ColumnForDeliveriesFields.IDENTIFIER).equals(DeliveredProductFields.PRICE_PER_UNIT)
+                            || columnForDeliveries.getStringField(ColumnForDeliveriesFields.IDENTIFIER).equals(DeliveredProductFields.TOTAL_PRICE))
+                            && hasCurrentUserRole) {
                 columnsForDeliveries.add(columnForDeliveries);
             }
         }

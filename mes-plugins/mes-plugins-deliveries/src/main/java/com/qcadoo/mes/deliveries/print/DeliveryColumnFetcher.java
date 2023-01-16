@@ -155,7 +155,7 @@ public class DeliveryColumnFetcher {
             final List<DeliveryProduct> deliveryProducts) {
         List<Entity> columnsForDeliveries = deliveriesService.getColumnsForDeliveries();
 
-        Set<String> classNames = new HashSet<String>();
+        Set<String> classNames = new HashSet<>();
 
         for (Entity columnForDeliveries : columnsForDeliveries) {
             String className = columnForDeliveries.getStringField(COLUMN_FILLER);
@@ -180,22 +180,16 @@ public class DeliveryColumnFetcher {
 
             try {
                 method = clazz.getMethod(methodName, List.class);
-            } catch (SecurityException e) {
-                throw new IllegalStateException("Failed to find column evaulator method in class: " + className, e);
-            } catch (NoSuchMethodException e) {
-                throw new IllegalStateException("Failed to find column evaulator method in class: " + className, e);
+            } catch (SecurityException | NoSuchMethodException e) {
+                throw new IllegalStateException("Failed to find column evaluator method in class: " + className, e);
             }
 
             Map<DeliveryProduct, Map<String, String>> values;
 
-            String invokeMethodError = "Failed to invoke column evaulator method";
+            String invokeMethodError = "Failed to invoke column evaluator method";
             try {
                 values = (Map<DeliveryProduct, Map<String, String>>) method.invoke(bean, deliveryProducts);
-            } catch (IllegalArgumentException e) {
-                throw new IllegalStateException(invokeMethodError, e);
-            } catch (IllegalAccessException e) {
-                throw new IllegalStateException(invokeMethodError, e);
-            } catch (InvocationTargetException e) {
+            } catch (IllegalArgumentException | IllegalAccessException | InvocationTargetException e) {
                 throw new IllegalStateException(invokeMethodError, e);
             }
 
