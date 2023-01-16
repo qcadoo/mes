@@ -39,7 +39,6 @@ import com.qcadoo.mes.technologies.states.constants.TechnologyStateStringValues;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
-
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.i18n.LocaleContextHolder;
@@ -200,20 +199,25 @@ public class OrderXlsxImportService extends XlsxImportService {
 
         if (Objects.isNull(description)) {
             StringBuilder descriptionBuilder = new StringBuilder();
+
             if (fillOrderDescriptionBasedOnTechnology && Objects.nonNull(technology)
                     && StringUtils.isNoneBlank(technology.getStringField(TechnologyFields.DESCRIPTION))) {
                 descriptionBuilder.append(technology.getStringField(TechnologyFields.DESCRIPTION));
             }
+
             if (fillOrderDescriptionBasedOnProductDescription && Objects.nonNull(product)) {
                 String productDescription = product.getStringField(ProductFields.DESCRIPTION);
+
                 if (StringUtils.isNoneBlank(productDescription)) {
                     if (StringUtils.isNoneBlank(descriptionBuilder.toString())) {
                         descriptionBuilder.append("\n");
                     }
+                    
                     descriptionBuilder.append(productDescription);
                 }
             }
-            order.setField(OrderFields.DESCRIPTION, descriptionBuilder);
+
+            order.setField(OrderFields.DESCRIPTION, descriptionBuilder.toString());
         }
     }
 
