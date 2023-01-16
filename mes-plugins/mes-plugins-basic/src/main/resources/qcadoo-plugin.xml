@@ -279,6 +279,8 @@
 
         <security:role identifier="ROLE_ANOMALIES"/>
 
+        <security:role identifier="ROLE_ARCHIVING"/>
+
         <model:model model="company" resource="model/company.xml"/>
         <model:model model="staff" resource="model/staff.xml"/>
         <model:model model="staffDto" resource="model/staffDto.xml"/>
