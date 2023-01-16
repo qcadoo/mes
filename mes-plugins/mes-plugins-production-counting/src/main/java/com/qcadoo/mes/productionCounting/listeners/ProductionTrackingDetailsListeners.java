@@ -3,19 +3,19 @@
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
  * Version: 1.4
- *
+ * <p>
  * This file is part of Qcadoo.
- *
+ * <p>
  * Qcadoo is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation; either version 3 of the License,
  * or (at your option) any later version.
- *
+ * <p>
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty
  * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU Affero General Public License for more details.
- *
+ * <p>
  * You should have received a copy of the GNU Affero General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
@@ -42,6 +42,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 import com.qcadoo.mes.advancedGenealogy.constants.AdvancedGenealogyConstants;
+import com.qcadoo.mes.advancedGenealogy.constants.ParameterFieldsAG;
 import com.qcadoo.mes.advancedGenealogy.constants.TrackingRecordFields;
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.basic.constants.ProductFields;
@@ -162,7 +163,7 @@ public class ProductionTrackingDetailsListeners {
     }
 
     public void goToProductionCountingQuantities(final ViewDefinitionState view, final ComponentState state,
-            final String[] args) {
+                                                 final String[] args) {
         FormComponent productionTrackingForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
         Long productionTrackingId = productionTrackingForm.getEntityId();
@@ -241,7 +242,7 @@ public class ProductionTrackingDetailsListeners {
     }
 
     public void copyPlannedQuantityToUsedQuantity(final ViewDefinitionState view, final ComponentState state,
-            final String[] args) {
+                                                  final String[] args) {
         FormComponent productionRecordForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
         Long productionRecordId = productionRecordForm.getEntityId();
@@ -325,7 +326,7 @@ public class ProductionTrackingDetailsListeners {
     }
 
     public void disableFields(final ViewDefinitionState viewDefinitionState, final ComponentState componentState,
-            final String[] args) {
+                              final String[] args) {
         productionTrackingService.changeProducedQuantityFieldState(viewDefinitionState);
 
         Object recordingTypeValue = viewDefinitionState.getComponentByReference(OrderFieldsPC.TYPE_OF_PRODUCTION_RECORDING)
@@ -448,7 +449,7 @@ public class ProductionTrackingDetailsListeners {
     }
 
     public void onTechnologyOperationComponentChange(final ViewDefinitionState view, final ComponentState componentState,
-            final String[] args) {
+                                                     final String[] args) {
         LookupComponent technologyOperationComponentLookup = (LookupComponent) view
                 .getComponentByReference(ProductionTrackingFields.TECHNOLOGY_OPERATION_COMPONENT);
 
@@ -518,7 +519,7 @@ public class ProductionTrackingDetailsListeners {
     }
 
     public void onAddBatchChange(final ViewDefinitionState view, final ComponentState component, final String[] args) {
-        if (!parameterService.getParameter().getBooleanField(ParameterFieldsPC.GENERATE_BATCH_FOR_ORDERED_PRODUCT)) {
+        if (!parameterService.getParameter().getBooleanField(ParameterFieldsAG.GENERATE_BATCH_FOR_ORDERED_PRODUCT)) {
             FieldComponent batchNumber = (FieldComponent) view.getComponentByReference(ProductionTrackingFields.BATCH_NUMBER);
             batchNumber.setEnabled(true);
         }

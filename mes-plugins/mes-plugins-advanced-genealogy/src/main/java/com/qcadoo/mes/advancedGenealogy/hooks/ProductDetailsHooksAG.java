@@ -21,17 +21,28 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.advancedGenealogy.constants;
+package com.qcadoo.mes.advancedGenealogy.hooks;
 
-public final class ParameterFieldsAG {
+import org.springframework.stereotype.Service;
 
-    private ParameterFieldsAG() {
+import com.qcadoo.mes.basic.constants.ProductFields;
+import com.qcadoo.view.api.ViewDefinitionState;
+import com.qcadoo.view.api.components.CheckBoxComponent;
+import com.qcadoo.view.api.components.FieldComponent;
 
+@Service
+public class ProductDetailsHooksAG {
+
+    public final void setBatchNumberPatternEnabled(final ViewDefinitionState view) {
+        CheckBoxComponent batchEvidence = (CheckBoxComponent) view
+                .getComponentByReference(ProductFields.BATCH_EVIDENCE);
+        FieldComponent batchNumberPattern = (FieldComponent) view.getComponentByReference(ProductFields.BATCH_NUMBER_PATTERN);
+
+        if (batchEvidence.isChecked()) {
+            batchNumberPattern.setEnabled(true);
+        } else {
+            batchNumberPattern.setEnabled(false);
+            batchNumberPattern.setFieldValue(null);
+        }
     }
-
-    public static final String BATCH_NUMBER_UNIQUENESS = "batchNumberUniqueness";
-
-    public static final String NUMBER_PATTERN = "numberPattern";
-
-    public static final String GENERATE_BATCH_FOR_ORDERED_PRODUCT = "generateBatchForOrderedProduct";
 }

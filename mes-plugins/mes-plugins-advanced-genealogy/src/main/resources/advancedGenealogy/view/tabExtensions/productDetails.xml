@@ -31,11 +31,29 @@
 
 	<windowTab name="batchTab">
 		<component type="gridLayout" name="batchLayout" columns="3"
-				   rows="1" hasBorders="false">
+				   rows="2" hasBorders="false">
 			<layoutElement column="1" row="1" width="1">
 				<component type="checkbox" name="batchEvidence" hasDescription="true"
 						   field="#{form}.batchEvidence" reference="batchEvidence">
 					<option type="labelWidth" value="50" />
+
+					<listener event="onChange"
+					          class="com.qcadoo.view.api.listeners.RerenderListener"
+					          method="onChangeRerender"/>
+				</component>
+			</layoutElement>
+			<layoutElement column="1" row="2">
+				<component type="lookup" name="batchNumberPattern" field="#{form}.batchNumberPattern"
+				           reference="batchNumberPattern">
+					<option type="column" name="name" fields="name"/>
+					<option type="orderable" value="number,name"/>
+					<option type="expression" value="#number + ' - ' + #name"/>
+					<option type="fieldCode" value="number"/>
+					<option type="labelWidth" value="50"/>
+
+					<criteriaModifier
+							class="com.qcadoo.mes.advancedGenealogy.criteriaModifier.NumberPatternCriteriaModifiersAG"
+							method="restrictNumberPatternForUnused"/>
 				</component>
 			</layoutElement>
 		</component>

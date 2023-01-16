@@ -38,11 +38,11 @@
         <string name="usedIn"/>
         <boolean name="used"/>
         <hasMany name="numberPatternElements" joinField="numberPattern" model="numberPatternElement" cascade="delete"/>
+        <hasMany name="products" joinField="batchNumberPattern" model="product"/>
     </fields>
 
     <hooks>
         <onSave class="com.qcadoo.mes.basic.hooks.NumberPatternHooks" method="onSave"/>
-        <onDelete class="com.qcadoo.mes.basic.hooks.NumberPatternHooks" method="onDelete"/>
     </hooks>
 
     <identifier expression="#number + ' - ' + #name" />

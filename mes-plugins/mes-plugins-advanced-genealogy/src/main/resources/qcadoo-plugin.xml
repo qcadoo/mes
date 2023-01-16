@@ -111,6 +111,12 @@
                     method="addFieldsForParameter"/>
         </model:model-hook>
 
+        <model:model-hook model="product" plugin="basic">
+            <model:onSave
+                    class="com.qcadoo.mes.advancedGenealogy.hooks.ProductHooksAG"
+                    method="setUsedInForNumberPattern" />
+        </model:model-hook>
+
         <menu:menu-category name="advancedGenealogy" defaultAuthorizationRole="ROLE_GENEALOGY"/>
 
         <menu:menu-item name="batches" category="advancedGenealogy"
@@ -150,6 +156,17 @@
                             component="form" event="redirectToAdvancedGenealogyParameters"
                             class="com.qcadoo.mes.advancedGenealogy.listeners.ParametersListenersAGFO"
                             method="redirectToAdvancedGenealogyParameters"/>
+
+        <view:view-hook plugin="basic"
+                        view="productDetails" type="beforeRender"
+                        class="com.qcadoo.mes.advancedGenealogy.hooks.ProductDetailsHooksAG"
+                        method="setBatchNumberPatternEnabled" />
+
+        <view:view-grid-column plugin="basic"
+                               view="productsList" component="grid">
+            <view:column name="batchNumberPattern" fields="batchNumberPattern"
+                         align="right" searchable="true" orderable="true"/>
+        </view:view-grid-column>
 
         <custom:custom
                 class="com.qcadoo.mes.advancedGenealogy.states.module.BatchStateServiceRegisterModule"/>

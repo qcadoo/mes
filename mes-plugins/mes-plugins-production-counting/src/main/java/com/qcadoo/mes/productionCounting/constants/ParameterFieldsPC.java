@@ -89,10 +89,6 @@ public final class ParameterFieldsPC {
 
     public static final String CALCULATE_AMOUNT_TIME_EMPLOYEES_ON_ACCEPTANCE_RECORD = "calculateAmountTimeEmployeesOnAcceptanceRecord";
 
-    public static final String GENERATE_BATCH_FOR_ORDERED_PRODUCT = "generateBatchForOrderedProduct";
-
-    public static final String NUMBER_PATTERN = "numberPattern";
-
     public static final String PRODUCTION_ORDERED_QUANTITY_CLOSES_THE_ORDER = "productionOrderedQuantityClosesTheOrder";
 
     public static final String RECEIPT_OF_PRODUCTS = "receiptOfProducts";

@@ -47,6 +47,7 @@
         <string name="unit"/>
         <string name="additionalUnit"/>
         <enum name="entityType" values="01particularProduct,02productsFamily"/>
+        <string name="batchNumberPattern"/>
     </fields>
 
     <identifier expression="#number + ' - ' + #name"/>
