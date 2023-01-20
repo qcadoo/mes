@@ -698,12 +698,16 @@ public class ProductionBalanceXlsService extends XlsDocumentService {
                 14);
         createHeaderCell(stylesContainer, row,
                 translationService.translate(
-                        "productionCounting.productionBalance.report.xls.sheet.productionCosts.plannedPieceworkCosts", locale),
+                        "productionCounting.productionBalance.report.xls.sheet.productionCosts.pieceworkProduction", locale),
                 15);
         createHeaderCell(stylesContainer, row,
                 translationService.translate(
-                        "productionCounting.productionBalance.report.xls.sheet.productionCosts.realPieceworkCosts", locale),
+                        "productionCounting.productionBalance.report.xls.sheet.productionCosts.plannedPieceworkCosts", locale),
                 16);
+        createHeaderCell(stylesContainer, row,
+                translationService.translate(
+                        "productionCounting.productionBalance.report.xls.sheet.productionCosts.realPieceworkCosts", locale),
+                17);
 
         int rowCounter = 0;
         for (ProductionCost productionCost : productionCosts) {
@@ -717,17 +721,33 @@ public class ProductionBalanceXlsService extends XlsDocumentService {
             createTimeCell(stylesContainer, row, 6, productionCost.getRealStaffTime(), true);
             createTimeCell(stylesContainer, row, 7, productionCost.getPlannedMachineTime(), false);
             createTimeCell(stylesContainer, row, 8, productionCost.getRealMachineTime(), true);
-            createNumericCell(stylesContainer, row, 9, productionCost.getPlannedStaffCosts(), false);
-            createNumericCell(stylesContainer, row, 10, productionCost.getRealStaffCosts(), false);
-            createNumericCell(stylesContainer, row, 11, productionCost.getStaffCostsDeviation(), false);
-            createNumericCell(stylesContainer, row, 12, productionCost.getPlannedMachineCosts(), false);
-            createNumericCell(stylesContainer, row, 13, productionCost.getRealMachineCosts(), false);
-            createNumericCell(stylesContainer, row, 14, productionCost.getMachineCostsDeviation(), false);
-            createNumericCell(stylesContainer, row, 15, productionCost.getPlannedPieceworkCosts(), false);
-            createNumericCell(stylesContainer, row, 16, productionCost.getRealPieceworkCosts(), false);
+            if (productionCost.isPieceworkProduction()) {
+                createRegularCell(stylesContainer, row, 9, null);
+                createRegularCell(stylesContainer, row, 10, null);
+                createRegularCell(stylesContainer, row, 11, null);
+                createRegularCell(stylesContainer, row, 12, null);
+                createRegularCell(stylesContainer, row, 13, null);
+                createRegularCell(stylesContainer, row, 14, null);
+                createRegularCell(stylesContainer, row, 15, translationService.translate(
+                        "productionCounting.productionBalance.report.xls.sheet.productionCosts.pieceworkProduction.yes", locale));
+                createNumericCell(stylesContainer, row, 16, productionCost.getPlannedPieceworkCosts(), false);
+                createNumericCell(stylesContainer, row, 17, productionCost.getRealPieceworkCosts(), false);
+            } else {
+                createNumericCell(stylesContainer, row, 9, productionCost.getPlannedStaffCosts(), false);
+                createNumericCell(stylesContainer, row, 10, productionCost.getRealStaffCosts(), false);
+                createNumericCell(stylesContainer, row, 11, productionCost.getStaffCostsDeviation(), false);
+                createNumericCell(stylesContainer, row, 12, productionCost.getPlannedMachineCosts(), false);
+                createNumericCell(stylesContainer, row, 13, productionCost.getRealMachineCosts(), false);
+                createNumericCell(stylesContainer, row, 14, productionCost.getMachineCostsDeviation(), false);
+                createRegularCell(stylesContainer, row, 15, translationService.translate(
+                        "productionCounting.productionBalance.report.xls.sheet.productionCosts.pieceworkProduction.no", locale));
+                createRegularCell(stylesContainer, row, 16, null);
+                createRegularCell(stylesContainer, row, 17, null);
+            }
+
             rowCounter++;
         }
-        for (int i = 0; i <= 16; i++) {
+        for (int i = 0; i <= 17; i++) {
             sheet.autoSizeColumn(i, false);
         }
     }
