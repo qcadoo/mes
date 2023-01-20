@@ -59,6 +59,15 @@ public enum BatchNumberUniqueness {
             Entity product = batchEntity.getBelongsToField(BatchFields.PRODUCT);
             return and(SUPPLIER.buildCriterionFor(batchEntity), belongsTo(BatchFields.PRODUCT, product));
         }
+    },
+
+    PRODUCT("04product") {
+
+        @Override
+        public SearchCriterion buildCriterionFor(final Entity batchEntity) {
+            Entity product = batchEntity.getBelongsToField(BatchFields.PRODUCT);
+            return and(GLOBALLY.buildCriterionFor(batchEntity), belongsTo(BatchFields.PRODUCT, product));
+        }
     };
 
     private String stringValue;

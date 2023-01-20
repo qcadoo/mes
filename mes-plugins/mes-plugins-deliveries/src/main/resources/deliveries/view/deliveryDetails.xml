@@ -148,49 +148,6 @@
                     </script>
                 </smallButton>
             </group>
-            <group name="generate">
-                <smallButton name="generateOrder" icon="pdfIcon16.png"
-                           state="enabled">
-                    <script>
-                        <![CDATA[
-                            this.addOnChangeListener({
-                                onClick: function() {
-                                    if (window.canClose()) {
-                                        #{form}.performEvent({
-                                            name : 'validateColumnsWidthForOrder'
-                                        });
-                                        #{form}.performEvent({
-                                            name : 'printOrderReport',
-                                            args : ['pdf']
-                                        });
-                                    }
-                                }
-                            });
-                        ]]>
-                    </script>
-                </smallButton>
-                <smallButton name="generateDelivery" icon="pdfIcon16.png"
-                           state="enabled">
-                    <script>
-                        <![CDATA[
-                            this.addOnChangeListener({
-                                onClick: function() {
-                                    if (window.canClose()) {
-                                        #{form}.performEvent({
-                                            name : 'validateColumnsWidthForDelivery'
-                                        });
-                                        #{form}.performEvent({
-                                            name : 'printDeliveryReport',
-                                            args : ['pdf']
-                                        });
-                                    }
-                                }
-                            });
-                        ]]>
-                    </script>
-                </smallButton>
-            </group>
-
             <group name="status">
                 <smallButton name="accept" icon="startIcon16.png" state="disabled">
                     <script>
@@ -262,6 +219,50 @@
                 <bigButton name="copyProductsWithQuantityAndPrice" icon="copyIcon24.png"
                            state="disabled" action="#{form}.fireEvent(copyProductsWithQuantityAndPrice);"/>
             </group>
+            <group name="generate">
+                <bigButton name="generateDelivery" icon="pdfIcon24.png"
+                             state="enabled">
+                    <script>
+                        <![CDATA[
+                            this.addOnChangeListener({
+                                onClick: function() {
+                                    if (window.canClose()) {
+                                        #{form}.performEvent({
+                                            name : 'validateColumnsWidthForDelivery'
+                                        });
+                                        #{form}.performEvent({
+                                            name : 'printDeliveryReport',
+                                            args : ['pdf']
+                                        });
+                                    }
+                                }
+                            });
+                        ]]>
+                    </script>
+                </bigButton>
+            </group>
+            <group name="generateOrder" defaultAuthorizationRole="ROLE_DELIVERIES_PRICE">
+                <bigButton name="generateOrder" icon="pdfIcon24.png"
+                             state="enabled">
+                    <script>
+                        <![CDATA[
+                                this.addOnChangeListener({
+                                    onClick: function() {
+                                        if (window.canClose()) {
+                                            #{form}.performEvent({
+                                                name : 'validateColumnsWidthForOrder'
+                                            });
+                                            #{form}.performEvent({
+                                                name : 'printOrderReport',
+                                                args : ['pdf']
+                                            });
+                                        }
+                                    }
+                                });
+                            ]]>
+                    </script>
+                </bigButton>
+            </group>
 
             <group name="deliveryPositions">
                 <bigButton name="assignStorageLocations"
@@ -276,14 +277,14 @@
                            message="changeStorageLocations" enabled="false"/>
             </group>
 
-            <group name="relatedDelivery">
+            <group name="relatedDelivery" defaultAuthorizationRole="ROLE_DELIVERIES_PRICE">
                 <bigButton name="createRelatedDelivery" icon="genealogyIcon24.png"
                            state="disabled" action="#{form}.fireEvent(createRelatedDelivery);"/>
                 <bigButton name="showRelatedDeliveries" icon="genealogyIcon24.png"
                            state="disabled" action="#{form}.fireEvent(showRelatedDeliveries);"/>
             </group>
 
-            <group name="product" defaultAuthorizationRole="ROLE_PRODUCTS">
+            <group name="product" defaultAuthorizationRole="ROLE_DELIVERIES_PRICE">
                 <bigButton name="showProduct" icon="genealogyIcon24.png"
                            state="disabled" action="#{form}.fireEvent(showProduct);"/>
             </group>
@@ -348,7 +349,7 @@
 						var copyProductsWithoutQuantityAndPriceBtn = #{window}.getRibbonItem("copyOrderedProductsToDelivered.copyProductsWithoutQuantityAndPrice");
 						var copyProductsWithQuantityAndPriceBtn = #{window}.getRibbonItem("copyOrderedProductsToDelivered.copyProductsWithQuantityAndPrice");
 						
-						var generateOrderBtn = #{window}.getRibbonItem("generate.generateOrder");
+						var generateOrderBtn = #{window}.getRibbonItem("generateOrder.generateOrder");
 						var generateDeliveryBtn = #{window}.getRibbonItem("generate.generateDelivery");
 						
 						var createRelatedDeliveryBtn = #{window}.getRibbonItem("relatedDelivery.createRelatedDelivery");
@@ -371,13 +372,17 @@
 									declineDeliveryBtn.disable();
 									approveDeliveryBtn.disable();
 									correctDeliveryBtn.disable();
-									generateOrderBtn.disable();
+									if(generateOrderBtn){
+									    generateOrderBtn.disable();
+									}
 									generateDeliveryBtn.disable();
 									return;
 								}
 								
 								cancelBtn.enable();
-								generateOrderBtn.enable();
+								if(generateOrderBtn){
+								    generateOrderBtn.enable();
+								}
 								generateDeliveryBtn.enable();
 								
 								var state = #{state}.getValue().content.value;
@@ -399,8 +404,10 @@
 									declineDeliveryBtn.setIcon('deleteIcon16.png');
 									approveDeliveryBtn.enable();
 									correctDeliveryBtn.disable();
-									createRelatedDeliveryBtn.disable();
-									showRelatedDeliveriesBtn.disable();
+									if(createRelatedDeliveryBtn && showRelatedDeliveriesBtn){
+                                        createRelatedDeliveryBtn.disable();
+                                        showRelatedDeliveriesBtn.disable();
+									}
 								} else if (state == "02prepared") {
 									deleteBtn.disable();
 									acceptBtn.disable();
@@ -413,8 +420,10 @@
 									declineDeliveryBtn.setIcon('deleteIcon16.png');
 									approveDeliveryBtn.enable();
 									correctDeliveryBtn.enable();
-									createRelatedDeliveryBtn.disable();
-									showRelatedDeliveriesBtn.disable();
+									if(createRelatedDeliveryBtn && showRelatedDeliveriesBtn){
+                                        createRelatedDeliveryBtn.disable();
+                                        showRelatedDeliveriesBtn.disable();
+									}
 								} else if (state == "03duringCorrection") {
 									deleteBtn.disable();
 									acceptBtn.disable();
@@ -427,8 +436,10 @@
 									declineDeliveryBtn.setIcon('deleteIcon16.png');
 									approveDeliveryBtn.enable();
 									correctDeliveryBtn.disable();
-									createRelatedDeliveryBtn.disable();
-									showRelatedDeliveriesBtn.disable();
+                                    if(createRelatedDeliveryBtn && showRelatedDeliveriesBtn){
+                                        createRelatedDeliveryBtn.disable();
+                                        showRelatedDeliveriesBtn.disable();
+									}
 								} else if (state == "05approved") {
 									deleteBtn.disable();
 									acceptBtn.enable();
@@ -441,8 +452,10 @@
 									declineDeliveryBtn.setIcon('deleteIcon16.png');
 									approveDeliveryBtn.disable();
 									correctDeliveryBtn.enable();
-									createRelatedDeliveryBtn.disable();
-									showRelatedDeliveriesBtn.disable();
+									if(createRelatedDeliveryBtn && showRelatedDeliveriesBtn){
+                                        createRelatedDeliveryBtn.disable();
+                                        showRelatedDeliveriesBtn.disable();
+									}
 								} else if (state == "06received") {
 									saveBtn.disable();
 									saveBackBtn.disable();
@@ -455,8 +468,10 @@
 									correctDeliveryBtn.disable();
 									copyProductsWithoutQuantityAndPriceBtn.disable();
 									copyProductsWithQuantityAndPriceBtn.disable();
-									createRelatedDeliveryBtn.enable();
-									showRelatedDeliveriesBtn.enable();
+									if(createRelatedDeliveryBtn && showRelatedDeliveriesBtn){
+                                        createRelatedDeliveryBtn.enable();
+                                        showRelatedDeliveriesBtn.enable();
+									}
 								} else {
 									saveBtn.disable();
 									saveBackBtn.disable();
@@ -469,8 +484,10 @@
 									correctDeliveryBtn.disable();
 									copyProductsWithoutQuantityAndPriceBtn.disable();
 									copyProductsWithQuantityAndPriceBtn.disable();
-									createRelatedDeliveryBtn.disable();
-									showRelatedDeliveriesBtn.disable();
+									if(createRelatedDeliveryBtn && showRelatedDeliveriesBtn){
+                                        createRelatedDeliveryBtn.disable();
+                                        showRelatedDeliveriesBtn.disable();
+									}
 								}
 								if (externalSynchronized == '0') {
 									saveBtn.disable("#{translate(deliveries.delivery.ribbon.message.deliveryIsExternal)}");
@@ -484,10 +501,14 @@
 									correctDeliveryBtn.disable("#{translate(deliveries.delivery.ribbon.message.deliveryIsExternal)}");
 									copyProductsWithoutQuantityAndPriceBtn.disable("#{translate(deliveries.delivery.ribbon.message.deliveryIsExternal)}");
 									copyProductsWithQuantityAndPriceBtn.disable("#{translate(deliveries.delivery.ribbon.message.deliveryIsExternal)}");
-									generateOrderBtn.disable("#{translate(deliveries.delivery.ribbon.message.deliveryIsExternal)}");
+									if(generateOrderBtn){
+									    generateOrderBtn.disable("#{translate(deliveries.delivery.ribbon.message.deliveryIsExternal)}");
+									}
 									generateDeliveryBtn.disable("#{translate(deliveries.delivery.ribbon.message.deliveryIsExternal)}");
-									createRelatedDeliveryBtn.disable("#{translate(deliveries.delivery.ribbon.message.deliveryIsExternal)}");
-									showRelatedDeliveriesBtn.disable("#{translate(deliveries.delivery.ribbon.message.deliveryIsExternal)}");
+									if(createRelatedDeliveryBtn && showRelatedDeliveriesBtn){
+                                        createRelatedDeliveryBtn.disable("#{translate(deliveries.delivery.ribbon.message.deliveryIsExternal)}");
+                                        showRelatedDeliveriesBtn.disable("#{translate(deliveries.delivery.ribbon.message.deliveryIsExternal)}");
+									}
 								}
 							}
 						});
@@ -671,7 +692,7 @@
 
         <windowTab name="orderedProductTab">
             <component type="gridLayout" name="orderedProductsGridLayout"
-                       columns="4" rows="2">
+                       columns="4" rows="2" hasBorders="false">
                 <layoutElement column="1" row="1">
                     <component type="input" name="orderedProductsCumulatedQuantity"
                                field="#{form}.orderedProductsCumulatedQuantity"
@@ -730,9 +751,9 @@
                                 fields="additionalLeftToReceiveQuantity"
                                 width="80"/>
                         <option type="column" name="pricePerUnit" fields="pricePerUnit"
-                                width="60"/>
+                                width="60" authorizationRole="ROLE_DELIVERIES_PRICE"/>
                         <option type="column" name="totalPrice" fields="totalPrice"
-                                width="80"/>
+                                width="80" authorizationRole="ROLE_DELIVERIES_PRICE"/>
                         <option type="column" name="description" fields="description"
                                 width="120"/>
                         <option type="column" name="additionalCode" fields="additionalCode"
@@ -799,7 +820,7 @@
 
         <windowTab name="deliveredProductTab">
             <component type="gridLayout" name="deliveredProductsGridLayout"
-                       columns="4" rows="2">
+                       columns="4" rows="2" hasBorders="false">
                 <layoutElement column="1" row="1">
                     <component type="input" name="deliveredProductsCumulatedQuantity"
                                field="#{form}.deliveredProductsCumulatedQuantity"
@@ -831,9 +852,9 @@
                         <option type="column" name="conversion" fields="conversion"
                                 width="30"/>
                         <option type="column" name="pricePerUnit" fields="pricePerUnit"
-                                width="80"/>
+                                width="80" authorizationRole="ROLE_DELIVERIES_PRICE"/>
                         <option type="column" name="totalPrice" fields="totalPrice"
-                                width="80"/>
+                                width="80" authorizationRole="ROLE_DELIVERIES_PRICE"/>
                         <option type="column" name="additionalCode" fields="additionalCode"
                                 width="80"/>
                         <option type="column" name="storageLocationNumber" fields="storageLocationNumber"
@@ -876,7 +897,7 @@
                 </layoutElement>
                 <layoutElement column="2" row="1">
                     <component type="gridLayout"
-                               name="orderedProductsCumulatedTotalPriceGridLayout" hasBorders="false"
+                               name="deliveredProductsCumulatedTotalPriceGridLayout" hasBorders="false"
                                columns="4" rows="1">
                         <layoutElement column="1" row="1" width="3">
                             <component type="input" name="deliveredProductsCumulatedTotalPrice"

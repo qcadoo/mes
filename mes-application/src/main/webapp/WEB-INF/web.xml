@@ -151,7 +151,16 @@
         <filter-name>encoding-filter</filter-name>
         <url-pattern>*.json</url-pattern>
     </filter-mapping>
-    
+
+	<filter>
+		<filter-name>contentSecurityPolicyFilter</filter-name>
+		<filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
+	</filter>
+	<filter-mapping>
+		<filter-name>contentSecurityPolicyFilter</filter-name>
+		<url-pattern>*.html</url-pattern>
+	</filter-mapping>
+
 	<listener>
 		<listener-class>org.springframework.web.util.Log4jConfigListener</listener-class>
 	</listener>

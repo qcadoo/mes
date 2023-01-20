@@ -23,18 +23,7 @@ public class NumberPatternHooks {
         }
     }
 
-    public boolean onDelete(final DataDefinition dataDefinition, final Entity entity) {
-        if (entity.getBooleanField(NumberPatternFields.USED)) {
-            dropSequence(entity.getStringField(NumberPatternFields.NUMBER));
-        }
-        return true;
-    }
-
     private String setNumberFromSequence() {
         return jdbcTemplate.queryForObject("select generate_number_pattern_number()", Maps.newHashMap(), String.class);
-    }
-
-    private void dropSequence(String number) {
-        jdbcTemplate.execute("DROP SEQUENCE number_pattern_" + number + "_seq", (PreparedStatementCallback) PreparedStatement::executeUpdate);
     }
 }

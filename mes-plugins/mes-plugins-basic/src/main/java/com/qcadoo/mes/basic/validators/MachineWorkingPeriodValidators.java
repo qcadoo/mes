@@ -39,31 +39,134 @@ import com.qcadoo.model.api.Entity;
 public class MachineWorkingPeriodValidators {
 
     public boolean validatesWith(final DataDefinition dataDefinition, final Entity entity) {
-        boolean isValid = checkIfPeriodWithoutStopAlreadyAdded(dataDefinition, entity);
-        isValid = checkDates(dataDefinition, entity) && isValid;
+        boolean isValid = checkDates(dataDefinition, entity);
+        isValid = checkFutureDates(dataDefinition, entity) && isValid;
+        isValid = checkIfPeriodWithoutStopAlreadyAdded(dataDefinition, entity) && isValid;
+        isValid = checkIfPeriodWithoutStopIsLast(dataDefinition, entity) && isValid;
+        isValid = checkIfLaunchDateIsBeforeThanPreviousPeriodStopDate(dataDefinition, entity) && isValid;
+        isValid = checkIfStopDateIsLaterThanNextPeriodLaunchDate(dataDefinition, entity) && isValid;
 
         return isValid;
     }
 
-    private boolean checkIfPeriodWithoutStopAlreadyAdded(final DataDefinition dataDefinition, final Entity entity) {
-        boolean isNotAlreadyAdded = true;
+    private boolean checkIfStopDateIsLaterThanNextPeriodLaunchDate(DataDefinition dataDefinition, Entity entity) {
+        Date stopDate = entity.getDateField(MachineWorkingPeriodFields.STOP_DATE);
+        if (stopDate != null) {
+            List<Entity> machineWorkingPeriods = entity.getBelongsToField(MachineWorkingPeriodFields.WORKSTATION)
+                    .getHasManyField(WorkstationFields.MACHINE_WORKING_PERIODS).stream()
+                    .filter(e -> e.getDateField(MachineWorkingPeriodFields.STOP_DATE) == null || e.getDateField(MachineWorkingPeriodFields.STOP_DATE)
+                            .after(stopDate))
+                    .filter(e -> e.getDateField(MachineWorkingPeriodFields.LAUNCH_DATE).before(stopDate))
+                    .collect(Collectors.toList());
+            Long entityId = entity.getId();
+            if (!Objects.isNull(entityId)) {
+                machineWorkingPeriods = machineWorkingPeriods.stream().filter(e -> !e.getId().equals(entityId)).collect(Collectors.toList());
+            }
+            if (!machineWorkingPeriods.isEmpty()) {
+                entity.addError(dataDefinition.getField(MachineWorkingPeriodFields.STOP_DATE), "basic.validate.global.error.machineWorkingPeriodLaunchDateBeforePeriodStopDate");
 
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private boolean checkIfLaunchDateIsBeforeThanPreviousPeriodStopDate(DataDefinition dataDefinition, Entity entity) {
+        Date launchDate = entity.getDateField(MachineWorkingPeriodFields.LAUNCH_DATE);
+        Date stopDate = entity.getDateField(MachineWorkingPeriodFields.STOP_DATE);
+        if (stopDate != null) {
+            List<Entity> machineWorkingPeriods = entity.getBelongsToField(MachineWorkingPeriodFields.WORKSTATION)
+                    .getHasManyField(WorkstationFields.MACHINE_WORKING_PERIODS).stream()
+                    .filter(e -> e.getDateField(MachineWorkingPeriodFields.STOP_DATE) != null)
+                    .filter(e -> e.getDateField(MachineWorkingPeriodFields.LAUNCH_DATE)
+                            .before(launchDate) || e.getDateField(MachineWorkingPeriodFields.LAUNCH_DATE).after(launchDate)
+                            && e.getDateField(MachineWorkingPeriodFields.STOP_DATE).before(stopDate))
+                    .filter(e -> e.getDateField(MachineWorkingPeriodFields.STOP_DATE).after(launchDate))
+                    .collect(Collectors.toList());
+            Long entityId = entity.getId();
+            if (!Objects.isNull(entityId)) {
+                machineWorkingPeriods = machineWorkingPeriods.stream().filter(e -> !e.getId().equals(entityId)).collect(Collectors.toList());
+            }
+            if (!machineWorkingPeriods.isEmpty()) {
+                entity.addError(dataDefinition.getField(MachineWorkingPeriodFields.LAUNCH_DATE), "basic.validate.global.error.machineWorkingPeriodStopDateAfterPeriodLaunchDate");
+
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private boolean checkIfPeriodWithoutStopIsLast(DataDefinition dataDefinition, Entity entity) {
+        Date launchDate = entity.getDateField(MachineWorkingPeriodFields.LAUNCH_DATE);
+        Date stopDate = entity.getDateField(MachineWorkingPeriodFields.STOP_DATE);
         Long entityId = entity.getId();
+        if (stopDate == null) {
+            List<Entity> machineWorkingPeriods = entity.getBelongsToField(MachineWorkingPeriodFields.WORKSTATION)
+                    .getHasManyField(WorkstationFields.MACHINE_WORKING_PERIODS).stream()
+                    .filter(e -> e.getDateField(MachineWorkingPeriodFields.LAUNCH_DATE)
+                            .after(launchDate))
+                    .collect(Collectors.toList());
+            if (!Objects.isNull(entityId)) {
+                machineWorkingPeriods = machineWorkingPeriods.stream().filter(e -> !e.getId().equals(entityId)).collect(Collectors.toList());
+            }
+            if (!machineWorkingPeriods.isEmpty()) {
+                entity.addError(dataDefinition.getField(MachineWorkingPeriodFields.STOP_DATE), "basic.validate.global.error.machineWorkingPeriodWithoutStopDateNotLast");
 
-        List<Entity> machineWorkingPeriods = entity.getBelongsToField(MachineWorkingPeriodFields.WORKSTATION)
-                .getHasManyField(WorkstationFields.MACHINE_WORKING_PERIODS).stream()
-                .filter(e -> e.getDateField(MachineWorkingPeriodFields.STOP_DATE) == null).collect(Collectors.toList());
-        if (!Objects.isNull(entityId)) {
-            machineWorkingPeriods = machineWorkingPeriods.stream().filter(e -> !e.getId().equals(entityId)).collect(Collectors.toList());
+                return false;
+            }
+        } else if (entityId == null) {
+            List<Entity> machineWorkingPeriods = entity.getBelongsToField(MachineWorkingPeriodFields.WORKSTATION)
+                    .getHasManyField(WorkstationFields.MACHINE_WORKING_PERIODS).stream()
+                    .filter(e -> e.getDateField(MachineWorkingPeriodFields.STOP_DATE) == null)
+                    .filter(e -> e.getDateField(MachineWorkingPeriodFields.LAUNCH_DATE)
+                            .before(stopDate))
+                    .collect(Collectors.toList());
+            if (!machineWorkingPeriods.isEmpty()) {
+                entity.addError(dataDefinition.getField(MachineWorkingPeriodFields.STOP_DATE), "basic.validate.global.error.machineWorkingPeriodWithoutStopDateNotLast");
+
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private boolean checkFutureDates(DataDefinition dataDefinition, Entity entity) {
+        Date launchDate = entity.getDateField(MachineWorkingPeriodFields.LAUNCH_DATE);
+        Date stopDate = entity.getDateField(MachineWorkingPeriodFields.STOP_DATE);
+        Date actualDate = new Date();
+        if (launchDate.after(actualDate)) {
+            entity.addError(dataDefinition.getField(MachineWorkingPeriodFields.LAUNCH_DATE), "basic.validate.global.error.datesMachineWorkingPeriodInFuture");
+
+            return false;
+        } else if (stopDate != null && stopDate.after(actualDate)) {
+            entity.addError(dataDefinition.getField(MachineWorkingPeriodFields.STOP_DATE), "basic.validate.global.error.datesMachineWorkingPeriodInFuture");
+
+            return false;
+        }
+        return true;
+    }
+
+    private boolean checkIfPeriodWithoutStopAlreadyAdded(final DataDefinition dataDefinition, final Entity entity) {
+        Date stopDate = entity.getDateField(MachineWorkingPeriodFields.STOP_DATE);
+        if (stopDate == null) {
+
+            Long entityId = entity.getId();
+
+            List<Entity> machineWorkingPeriods = entity.getBelongsToField(MachineWorkingPeriodFields.WORKSTATION)
+                    .getHasManyField(WorkstationFields.MACHINE_WORKING_PERIODS).stream()
+                    .filter(e -> e.getDateField(MachineWorkingPeriodFields.STOP_DATE) == null).collect(Collectors.toList());
+            if (!Objects.isNull(entityId)) {
+                machineWorkingPeriods = machineWorkingPeriods.stream().filter(e -> !e.getId().equals(entityId)).collect(Collectors.toList());
+            }
+
+            if (!machineWorkingPeriods.isEmpty()) {
+                entity.addError(dataDefinition.getField(MachineWorkingPeriodFields.STOP_DATE), "basic.validate.global.error.machineWorkingPeriodWithoutStopDateExists");
+
+                return false;
+            }
         }
 
-        if (machineWorkingPeriods.size() >0) {
-            entity.addError(dataDefinition.getField(MachineWorkingPeriodFields.STOP_DATE), "basic.validate.global.error.machineWorkingPeriodWithoutStopDateExists");
-
-            isNotAlreadyAdded = false;
-        }
-
-        return isNotAlreadyAdded;
+        return true;
     }
 
     private boolean checkDates(final DataDefinition dataDefinition, final Entity entity) {

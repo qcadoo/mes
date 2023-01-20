@@ -37,12 +37,16 @@
                 <bigButton name="generateOrdersGroup" icon="generateIcon24.png" state="enabled">
                     <script>
                         <![CDATA[
-					this.addOnChangeListener({
-						onClick: function() {
-						    #{salesPlanOrdersGroupEntryHelpers}.generateOrdersGroup();
-						}
-					});
-				]]>
+                            var back = #{window}.getRibbonItem("navigation.back");
+                            var generateOrdersGroup = #{window}.getRibbonItem("action.generateOrdersGroup");
+                            this.addOnChangeListener({
+                                onClick: function() {
+                                    back.disable();
+                                    generateOrdersGroup.disable();
+                                    #{salesPlanOrdersGroupEntryHelpers}.generateOrdersGroup();
+                                }
+                            });
+                        ]]>
                     </script>
                 </bigButton>
             </group>

@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import com.qcadoo.model.api.BigDecimalUtils;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -83,7 +84,7 @@ public class SalesPlanDetailsListeners {
                         product.getBelongsToField(ProductFields.PARENT));
                 salesPlanOrdersGroupEntry.setField(SalesPlanOrdersGroupEntryHelperFields.ORDERED_QUANTITY,
                         salesPlanProduct.getDecimalField(SalesPlanProductFields.ORDERED_QUANTITY)
-                                .add(salesPlanProduct.getDecimalField(SalesPlanProductFields.ORDERED_TO_WAREHOUSE)));
+                                .add(BigDecimalUtils.convertNullToZero(salesPlanProduct.getDecimalField(SalesPlanProductFields.ORDERED_TO_WAREHOUSE))));
                 salesPlanOrdersGroupEntry.setField(SalesPlanOrdersGroupEntryHelperFields.PLANNED_QUANTITY,
                         salesPlanProduct.getDecimalField(SalesPlanProductFields.PLANNED_QUANTITY));
                 BigDecimal orderQuantity = salesPlanProductDto.getDecimalField("plannedQuantity")
@@ -194,7 +195,7 @@ public class SalesPlanDetailsListeners {
                         product.getBelongsToField(ProductFields.PARENT));
                 salesPlanOrdersGroupEntry.setField(SalesPlanOrdersGroupEntryHelperFields.ORDERED_QUANTITY,
                         salesPlanProduct.getDecimalField(SalesPlanProductFields.ORDERED_QUANTITY)
-                                .add(salesPlanProduct.getDecimalField(SalesPlanProductFields.ORDERED_TO_WAREHOUSE)));
+                                .add(BigDecimalUtils.convertNullToZero(salesPlanProduct.getDecimalField(SalesPlanProductFields.ORDERED_TO_WAREHOUSE))));
                 salesPlanOrdersGroupEntry.setField(SalesPlanOrdersGroupEntryHelperFields.PLANNED_QUANTITY,
                         salesPlanProduct.getDecimalField(SalesPlanProductFields.PLANNED_QUANTITY));
 

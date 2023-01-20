@@ -1,10 +1,7 @@
 package com.qcadoo.mes.technologies.listeners;
 
 import java.math.BigDecimal;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import com.qcadoo.mes.technologies.TechnologyService;
@@ -143,6 +140,16 @@ public class ChangeTechnologyParametersListeners {
         ids.forEach(techId -> {
             Entity technology = dataDefinitionService
                     .get(TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_TECHNOLOGY).get(techId);
+
+            if (entity.getBooleanField(L_CHANGE_PERFORMANCE_NORM)) {
+
+                Optional<Entity> productionLine = technologyService.getProductionLine(technology);
+                if(!productionLine.isPresent()) {
+                    view.addMessage("technologies.changeTechnologyParameters.error.noDefaultProductionLine", ComponentState.MessageType.FAILURE,technology.getStringField(TechnologyFields.NUMBER));
+                    throw new IllegalStateException("There was a problem creating the technology");
+                }
+
+            }
 
             technology.setField(TechnologyFields.MASTER, Boolean.FALSE);
             technology = technology.getDataDefinition().save(technology);

@@ -49,9 +49,7 @@ public class BatchModelValidators {
     private ParameterService parameterService;
 
     public final boolean validatesWith(final DataDefinition batchDD, final Entity batch) {
-        boolean isValid = true;
-
-        isValid = isValid && checkIfExternalNumberIsUnique(batchDD, batch);
+        boolean isValid = checkIfExternalNumberIsUnique(batchDD, batch);
         isValid = isValid && checkIfBatchNumberIsUnique(batchDD, batch);
 
         return isValid;

@@ -93,4 +93,6 @@ public final class ProductFields {
 
     public static final String SYNCHRONIZE = "synchronize";
 
+    public static final String BATCH_NUMBER_PATTERN = "batchNumberPattern";
+
 }

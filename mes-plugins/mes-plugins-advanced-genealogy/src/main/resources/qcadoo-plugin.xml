@@ -95,7 +95,7 @@
         </model:model-field>
 
         <model:model-field plugin="basic" model="parameter">
-            <model:enum name="batchNumberUniqueness" values="01globally,02supplier,03supplierAndProduct"
+            <model:enum name="batchNumberUniqueness" values="01globally,02supplier,03supplierAndProduct,04product"
                         default="01globally" required="true"/>
         </model:model-field>
 
@@ -109,6 +109,12 @@
             <model:onCreate
                     class="com.qcadoo.mes.advancedGenealogy.hooks.ParameterHooksAG"
                     method="addFieldsForParameter"/>
+        </model:model-hook>
+
+        <model:model-hook model="product" plugin="basic">
+            <model:onSave
+                    class="com.qcadoo.mes.advancedGenealogy.hooks.ProductHooksAG"
+                    method="setUsedInForNumberPattern" />
         </model:model-hook>
 
         <menu:menu-category name="advancedGenealogy" defaultAuthorizationRole="ROLE_GENEALOGY"/>
@@ -150,6 +156,17 @@
                             component="form" event="redirectToAdvancedGenealogyParameters"
                             class="com.qcadoo.mes.advancedGenealogy.listeners.ParametersListenersAGFO"
                             method="redirectToAdvancedGenealogyParameters"/>
+
+        <view:view-hook plugin="basic"
+                        view="productDetails" type="beforeRender"
+                        class="com.qcadoo.mes.advancedGenealogy.hooks.ProductDetailsHooksAG"
+                        method="setBatchNumberPatternEnabled" />
+
+        <view:view-grid-column plugin="basic"
+                               view="productsList" component="grid">
+            <view:column name="batchNumberPattern" fields="batchNumberPattern"
+                         align="right" searchable="true" orderable="true"/>
+        </view:view-grid-column>
 
         <custom:custom
                 class="com.qcadoo.mes.advancedGenealogy.states.module.BatchStateServiceRegisterModule"/>
