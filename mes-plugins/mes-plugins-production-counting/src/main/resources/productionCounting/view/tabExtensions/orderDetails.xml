@@ -31,7 +31,7 @@
 
 	<windowTab name="productionCounting" reference="productionCounting">
 		<component type="gridLayout" name="gridLayout" reference="gridLayout"
-			columns="3" rows="5">
+			columns="3" rows="4">
 			<layoutElement column="1" row="1">
 				<component type="select" name="typeOfProductionRecording"
 					reference="typeOfProductionRecording" field="#{form}.typeOfProductionRecording"
@@ -57,12 +57,6 @@
 			<layoutElement column="1" row="4">
 				<component type="checkbox" name="registerProductionTime"
 					reference="registerProductionTime" field="#{form}.registerProductionTime" >
-                    <option type="labelWidth" value="60" />
-                </component>
-			</layoutElement>
-			<layoutElement column="1" row="5">
-				<component type="checkbox" name="registerPiecework"
-					reference="registerPiecework" field="#{form}.registerPiecework" >
                     <option type="labelWidth" value="60" />
                 </component>
 			</layoutElement>

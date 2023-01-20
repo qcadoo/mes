@@ -181,9 +181,6 @@
             <model:boolean name="registerProductionTime"/>
         </model:model-field>
         <model:model-field model="parameter" plugin="basic">
-            <model:boolean name="registerPiecework"/>
-        </model:model-field>
-        <model:model-field model="parameter" plugin="basic">
             <model:boolean name="registerQuantityInProduct"/>
         </model:model-field>
         <model:model-field model="parameter" plugin="basic">
@@ -351,7 +348,7 @@
         <model:model-field plugin="basic" model="shift">
             <model:hasMany name="productionTrackingStateChanges"
                            plugin="productionCounting" model="productionTrackingStateChange"
-                           joinField="shift" cascade="nullify"/>
+                           joinField="shift"/>
         </model:model-field>
 
         <model:model-field model="order" plugin="orders">
@@ -359,9 +356,6 @@
         </model:model-field>
         <model:model-field model="order" plugin="orders">
             <model:boolean name="registerProductionTime"/>
-        </model:model-field>
-        <model:model-field model="order" plugin="orders">
-            <model:boolean name="registerPiecework"/>
         </model:model-field>
         <model:model-field model="order" plugin="orders">
             <model:boolean name="registerQuantityInProduct"/>
@@ -377,7 +371,7 @@
         <model:model-field model="order" plugin="orders">
             <model:manyToMany name="productionBalance"
                               plugin="productionCounting" model="productionBalance"
-                              joinField="orders" cascade="nullify"/>
+                              joinField="orders"/>
         </model:model-field>
 
         <model:model-field model="technology" plugin="technologies">
@@ -387,7 +381,15 @@
             <model:boolean name="registerProductionTime"/>
         </model:model-field>
         <model:model-field model="technology" plugin="technologies">
-            <model:boolean name="registerPiecework"/>
+            <model:boolean name="pieceworkProduction" default="false"/>
+        </model:model-field>
+        <model:model-field model="technology" plugin="technologies">
+            <model:belongsTo name="pieceRate"
+                             plugin="basic" model="pieceRate"/>
+        </model:model-field>
+        <model:model-field model="pieceRate" plugin="basic">
+            <model:hasMany name="technologies" model="technology"
+                           joinField="pieceRate" plugin="technologies"/>
         </model:model-field>
         <model:model-field model="technology" plugin="technologies">
             <model:boolean name="registerQuantityInProduct"/>
@@ -444,6 +446,18 @@
 
         <model:model-hook model="order" plugin="orders">
             <model:validatesWith class="com.qcadoo.mes.productionCounting.hooks.OrderHooksPC"
+                                 method="validatesWith"/>
+        </model:model-hook>
+
+        <model:model-hook plugin="technologies"
+                          model="technologyOperationComponent">
+            <model:onCreate
+                    class="com.qcadoo.mes.productionCounting.hooks.TechnologyOperationComponentHooksPC"
+                    method="copyTimeNormsToTechnologyOperationComponent" />
+        </model:model-hook>
+
+        <model:model-hook model="technologyOperationComponent" plugin="technologies">
+            <model:validatesWith class="com.qcadoo.mes.productionCounting.hooks.TechnologyOperationComponentHooksPC"
                                  method="validatesWith"/>
         </model:model-hook>
 
@@ -572,6 +586,11 @@
         <view:view-hook plugin="technologies" view="technologyDetails"
                         type="beforeRender" class="com.qcadoo.mes.productionCounting.hooks.TechnologyDetailsHooksPC"
                         method="checkTypeOfProductionRecording"/>
+
+        <view:view-hook plugin="technologies"
+                        view="technologyOperationComponentDetails" type="beforeRender"
+                        class="com.qcadoo.mes.productionCounting.hooks.TechnologyOperationComponentDetailsHooksPC"
+                        method="updateFieldsStateOnWindowLoad" />
 
         <view:view-listener plugin="basic" view="productDetails"
                             component="form"

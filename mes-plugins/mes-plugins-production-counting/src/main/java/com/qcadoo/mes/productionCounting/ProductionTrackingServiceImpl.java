@@ -23,6 +23,17 @@
  */
 package com.qcadoo.mes.productionCounting;
 
+import java.math.BigDecimal;
+import java.util.Date;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.google.common.collect.Lists;
 import com.qcadoo.commons.functional.Either;
 import com.qcadoo.mes.basic.constants.ProductFields;
@@ -32,8 +43,6 @@ import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuanti
 import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityRole;
 import com.qcadoo.mes.newstates.StateExecutorService;
 import com.qcadoo.mes.orders.constants.OrderFields;
-import com.qcadoo.mes.orders.constants.OrdersConstants;
-import com.qcadoo.mes.orders.states.constants.OrderState;
 import com.qcadoo.mes.productionCounting.constants.OrderFieldsPC;
 import com.qcadoo.mes.productionCounting.constants.ProductionCountingConstants;
 import com.qcadoo.mes.productionCounting.constants.ProductionTrackingFields;
@@ -58,36 +67,17 @@ import com.qcadoo.model.api.search.JoinType;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.security.api.SecurityService;
-import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
-import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.LookupComponent;
 import com.qcadoo.view.api.components.WindowComponent;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.constants.QcadooViewConstants;
 
-import java.math.BigDecimal;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.stream.Collectors;
-
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 @Service
 public class ProductionTrackingServiceImpl implements ProductionTrackingService {
 
-    private static final String L_DONE_QUANTITY = "doneQuantity";
-
-    private static final String L_AMOUNT_OF_PRODUCT_PRODUCED = "amountOfProductProduced";
-
     private static final String L_TIME_TAB = "timeTab";
-
-    private static final String L_PIECEWORK_TAB = "pieceworkTab";
 
     private static final String L_WORK_TIME_RIBBON_GROUP = "workTime";
 
@@ -149,8 +139,6 @@ public class ProductionTrackingServiceImpl implements ProductionTrackingService 
                     && ProductionTrackingState.DRAFT.equals(recordState));
             calcTotalLaborTimeBtn.requestUpdate(true);
         }
-        boolean registerPiecework = order.getBooleanField(OrderFieldsPC.REGISTER_PIECEWORK);
-        view.getComponentByReference(L_PIECEWORK_TAB).setVisible(registerPiecework && recordingTypeEqualsForEach);
     }
 
     @Override
@@ -162,34 +150,6 @@ public class ProductionTrackingServiceImpl implements ProductionTrackingService 
             return ProductionTrackingState.DRAFT;
         }
         return ProductionTrackingState.parseString(stateStringValue);
-    }
-
-    @Override
-    public void changeProducedQuantityFieldState(final ViewDefinitionState viewDefinitionState) {
-        final FormComponent form = (FormComponent) viewDefinitionState.getComponentByReference(QcadooViewConstants.L_FORM);
-        Entity order = null;
-        if (form.getEntityId() != null) {
-            order = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(
-                    form.getEntityId());
-        }
-
-        FieldComponent typeOfProductionRecording = (FieldComponent) viewDefinitionState
-                .getComponentByReference(OrderFieldsPC.TYPE_OF_PRODUCTION_RECORDING);
-        ComponentState doneQuantity = viewDefinitionState.getComponentByReference(L_DONE_QUANTITY);
-        ComponentState amountOfPP = viewDefinitionState.getComponentByReference(L_AMOUNT_OF_PRODUCT_PRODUCED);
-
-        if (order == null || order.getStringField(OrderFields.STATE).equals(OrderState.PENDING.getStringValue())
-                || order.getStringField(OrderFields.STATE).equals(OrderState.ACCEPTED.getStringValue())) {
-            doneQuantity.setEnabled(false);
-            amountOfPP.setEnabled(false);
-        } else if ("".equals(typeOfProductionRecording.getFieldValue())
-                || TypeOfProductionRecording.BASIC.getStringValue().equals(typeOfProductionRecording.getFieldValue())) {
-            doneQuantity.setEnabled(true);
-            amountOfPP.setEnabled(true);
-        } else {
-            doneQuantity.setEnabled(false);
-            amountOfPP.setEnabled(false);
-        }
     }
 
     @Override
@@ -206,10 +166,6 @@ public class ProductionTrackingServiceImpl implements ProductionTrackingService 
 
     @Override
     public void changeState(Entity productionTracking, ProductionTrackingState state) {
-        // final StateChangeContext orderStateChangeContext = stateChangeContextBuilder.build(
-        // productionTrackingStateChangeAspect.getChangeEntityDescriber(), productionTracking, state.getStringValue());
-        //
-        // productionTrackingStateChangeAspect.changeState(orderStateChangeContext);
         Long userId = securityService.getCurrentUserId();
         productionTracking.setField(USER_CHANGE_STATE, userId);
         String userLogin = securityService.getCurrentUserName();
@@ -249,13 +205,9 @@ public class ProductionTrackingServiceImpl implements ProductionTrackingService 
     }
 
     private void copyOtherFields(Entity productionTracking, Entity correctingProductionTracking) {
-        correctingProductionTracking.setField(ProductionTrackingFields.EXECUTED_OPERATION_CYCLES,
-                productionTracking.getDecimalField(ProductionTrackingFields.EXECUTED_OPERATION_CYCLES));
-
         copyStaffWorkTimes(productionTracking, correctingProductionTracking);
         copyTrackingOperationProductInComponents(productionTracking, correctingProductionTracking);
         copyTrackingOperationProductOutComponents(productionTracking, correctingProductionTracking);
-
     }
 
     private void copyTrackingOperationProductOutComponents(Entity productionTracking, Entity correctingProductionTracking) {

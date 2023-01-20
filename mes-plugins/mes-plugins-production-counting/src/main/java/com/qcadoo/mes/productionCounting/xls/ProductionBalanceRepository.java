@@ -279,19 +279,41 @@ class ProductionBalanceRepository {
         StringBuilder query = new StringBuilder();
         query.append("SELECT ");
         query.append("o.number AS orderNumber, ");
-        query.append("op.number AS operationNumber, ");
-        query.append("COALESCE(SUM(pt.executedoperationcycles), 0) AS totalexecutedoperationcycles ");
+//        query.append("op.number AS operationNumber, ");
+        query.append("NULL AS operationNumber, ");
+        query.append("stf.name || ' ' || stf.surname AS worker, ");
+        appendProducedQuantity(query);
+        query.append("AS producedQuantity, ");
+        query.append("pr.name AS pieceRate, ");
+        appendActualPieceRate(query);
+        query.append("AS rate, ");
+        appendProducedQuantity(query);
+        query.append("* ");
+        appendActualPieceRate(query);
+        query.append("AS cost ");
         query.append("FROM orders_order o ");
-        query.append("LEFT JOIN productioncounting_productiontracking pt ON o.id = pt.order_id AND pt.state = '02accepted' ");
-        query.append("LEFT JOIN technologies_technologyoperationcomponent toc ON pt.technologyoperationcomponent_id = toc.id ");
-        query.append("LEFT JOIN technologies_operation op ON toc.operation_id = op.id ");
+//        query.append("JOIN basic_product prod ON o.product_id = prod.id ");
+        query.append("LEFT JOIN productioncounting_productiontracking pt ON pt.order_id = o.id AND pt.state = '02accepted' ");
+        query.append(
+                "LEFT JOIN productioncounting_trackingoperationproductoutcomponent topoc ON topoc.productiontracking_id = pt.id ");//AND topoc.product_id = prod.id ");
+//        query.append("LEFT JOIN technologies_technologyoperationcomponent toc ON pt.technologyoperationcomponent_id = toc.id ");
+        query.append("JOIN technologies_technology t ON o.technology_id = t.id ");
+        query.append("JOIN basic_piecerate pr ON pr.id = t.piecerate_id ");
+//        query.append("LEFT JOIN technologies_operation op ON toc.operation_id = op.id ");
+        query.append("LEFT JOIN basic_staff stf ON pt.staff_id = stf.id ");
         appendWhereClause(query);
-        query.append("AND o.typeofproductionrecording = '03forEach' ");
-        query.append("GROUP BY orderNumber, operationNumber ");
-        query.append("ORDER BY orderNumber, operationNumber ");
+        query.append("AND o.typeofproductionrecording = '02cumulated' ");
+        query.append("AND t.pieceworkproduction = TRUE ");
+        query.append("GROUP BY orderNumber, o.startdate, operationNumber, worker, pr.id, pieceRate ");
+        query.append("ORDER BY orderNumber, o.startdate, operationNumber, worker, pr.id, pieceRate ");
 
         return jdbcTemplate.query(query.toString(), new MapSqlParameterSource("ordersIds", ordersIds),
                 BeanPropertyRowMapper.newInstance(PieceworkDetails.class));
+    }
+
+    private void appendActualPieceRate(StringBuilder query) {
+        query.append("COALESCE((SELECT pri.actualrate FROM basic_piecerateitem pri WHERE pri.piecerate_id = pr.id ");
+        query.append("AND pri.datefrom <= o.startdate ORDER BY pri.datefrom DESC LIMIT 1), 0) ");
     }
 
     List<LaborTime> getLaborTime(List<Long> ordersIds) {
@@ -543,9 +565,8 @@ class ProductionBalanceRepository {
         query.append("- ");
         appendForEachPlannedMachineCosts(entity, query);
         query.append("AS machineCostsDeviation, ");
-        query.append("COALESCE(MIN(pcor.runs / toc.numberofoperations * toc.pieceworkcost), 0) AS plannedPieceworkCosts, ");
-        query.append(
-                "COALESCE(SUM(pt.executedoperationcycles) / MIN(toc.numberofoperations) * MIN(toc.pieceworkcost), 0) AS realPieceworkCosts, ");
+        query.append("0 AS plannedPieceworkCosts, ");
+        query.append("0 AS realPieceworkCosts, ");
         appendForEachPlannedStaffCosts(entity, query);
         query.append("+ ");
         appendForEachPlannedMachineCosts(entity, query);
@@ -566,8 +587,6 @@ class ProductionBalanceRepository {
         query.append("LEFT JOIN productioncounting_productiontracking pt ON o.id = pt.order_id AND pt.state = '02accepted' ");
         query.append("LEFT JOIN planned_time plt ON plt.order_id = o.id AND plt.toc_id = pt.technologyoperationcomponent_id ");
         query.append("LEFT JOIN technologies_technologyoperationcomponent toc ON pt.technologyoperationcomponent_id = toc.id ");
-        query.append(
-                "LEFT JOIN basicproductioncounting_productioncountingoperationrun pcor ON pcor.order_id = o.id AND pcor.technologyoperationcomponent_id = toc.id ");
         query.append("LEFT JOIN technologies_operation op ON toc.operation_id = op.id ");
         appendRealStaffCostsJoin(entity, query);
         query.append("CROSS JOIN basic_parameter bp ");

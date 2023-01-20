@@ -24,7 +24,6 @@
 package com.qcadoo.mes.productionCounting.listeners;
 
 import java.math.BigDecimal;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -54,13 +53,11 @@ import com.qcadoo.mes.orders.OperationalTasksService;
 import com.qcadoo.mes.orders.constants.OperationalTaskFields;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.productionCounting.ProductionTrackingService;
-import com.qcadoo.mes.productionCounting.constants.OrderFieldsPC;
 import com.qcadoo.mes.productionCounting.constants.ParameterFieldsPC;
 import com.qcadoo.mes.productionCounting.constants.ProductionCountingConstants;
 import com.qcadoo.mes.productionCounting.constants.ProductionTrackingFields;
 import com.qcadoo.mes.productionCounting.constants.TrackingOperationProductInComponentDtoFields;
 import com.qcadoo.mes.productionCounting.constants.TrackingOperationProductInComponentFields;
-import com.qcadoo.mes.productionCounting.constants.TypeOfProductionRecording;
 import com.qcadoo.mes.productionCounting.newstates.ProductionTrackingStateServiceMarker;
 import com.qcadoo.mes.productionCounting.utils.ProductionTrackingDocumentsHelper;
 import com.qcadoo.mes.productionCounting.utils.StaffTimeCalculator;
@@ -322,26 +319,6 @@ public class ProductionTrackingDetailsListeners {
                     Boolean.FALSE);
             trackingOperationProductInComponent.setField(TrackingOperationProductInComponentFields.WASTE_USED_QUANTITY, null);
             trackingOperationProductInComponent.setField(TrackingOperationProductInComponentFields.WASTE_UNIT, null);
-        }
-    }
-
-    public void disableFields(final ViewDefinitionState viewDefinitionState, final ComponentState componentState,
-                              final String[] args) {
-        productionTrackingService.changeProducedQuantityFieldState(viewDefinitionState);
-
-        Object recordingTypeValue = viewDefinitionState.getComponentByReference(OrderFieldsPC.TYPE_OF_PRODUCTION_RECORDING)
-                .getFieldValue();
-
-        boolean recordingTypeEqualsCumulated = TypeOfProductionRecording.CUMULATED.getStringValue().equals(recordingTypeValue);
-        boolean recordingTypeEqualsForEach = TypeOfProductionRecording.FOR_EACH.getStringValue().equals(recordingTypeValue);
-
-        if (recordingTypeEqualsCumulated || recordingTypeEqualsForEach) {
-            for (String componentName : Arrays.asList(OrderFieldsPC.REGISTER_QUANTITY_IN_PRODUCT,
-                    OrderFieldsPC.REGISTER_QUANTITY_OUT_PRODUCT, OrderFieldsPC.REGISTER_PRODUCTION_TIME,
-                    OrderFieldsPC.REGISTER_PIECEWORK)) {
-                ComponentState component = viewDefinitionState.getComponentByReference(componentName);
-                component.setEnabled(true);
-            }
         }
     }
 

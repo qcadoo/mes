@@ -50,7 +50,7 @@ public class CostNormsForOperationServiceTest {
     private ViewDefinitionState view;
 
     @Mock
-    private FieldComponent field1, field2, field3, field4;
+    private FieldComponent field1, field2;
 
     @Mock
     private ComponentState state;
@@ -62,13 +62,13 @@ public class CostNormsForOperationServiceTest {
     private DataDefinitionService dataDefinitionService;
 
     @Mock
-    private DataDefinition operationDD, techInsOperCompDD;
+    private DataDefinition operationDD;
 
     @Mock
-    private Entity operationEntity, technologyInstanceOperCompEntity, techOperCompEntity;
+    private Entity operationEntity;
 
     @Mock
-    private Object obj1, obj2, obj3, obj4;
+    private Object obj1, obj2;
 
     @Mock
     private CurrencyService currencyService;
@@ -85,10 +85,8 @@ public class CostNormsForOperationServiceTest {
         when(view.getComponentByReference("operation")).thenReturn(state);
         when(view.getComponentByReference(QcadooViewConstants.L_FORM)).thenReturn(form);
 
-        when(view.getComponentByReference("pieceworkCost")).thenReturn(field1);
-        when(view.getComponentByReference("numberOfOperations")).thenReturn(field2);
-        when(view.getComponentByReference("laborHourlyCost")).thenReturn(field3);
-        when(view.getComponentByReference("machineHourlyCost")).thenReturn(field4);
+        when(view.getComponentByReference("laborHourlyCost")).thenReturn(field1);
+        when(view.getComponentByReference("machineHourlyCost")).thenReturn(field2);
 
     }
 
@@ -104,17 +102,13 @@ public class CostNormsForOperationServiceTest {
         when(state.getFieldValue()).thenReturn(1L);
         Long operationId = 1L;
         when(operationDD.get(operationId)).thenReturn(operationEntity);
-        when(operationEntity.getField("pieceworkCost")).thenReturn(obj1);
-        when(operationEntity.getField("numberOfOperations")).thenReturn(obj2);
-        when(operationEntity.getField("laborHourlyCost")).thenReturn(obj3);
-        when(operationEntity.getField("machineHourlyCost")).thenReturn(obj4);
+        when(operationEntity.getField("laborHourlyCost")).thenReturn(obj1);
+        when(operationEntity.getField("machineHourlyCost")).thenReturn(obj2);
         // when
         costNormsForOperationService.copyCostValuesFromOperation(view, state, null);
         // then
         Mockito.verify(field1).setFieldValue(obj1);
         Mockito.verify(field2).setFieldValue(obj2);
-        Mockito.verify(field3).setFieldValue(obj3);
-        Mockito.verify(field4).setFieldValue(obj4);
 
     }
 
@@ -123,9 +117,8 @@ public class CostNormsForOperationServiceTest {
         // given
         String currency = "PLN";
         when(currencyService.getCurrencyAlphabeticCode()).thenReturn(currency);
-        when(view.getComponentByReference("pieceworkCostCURRENCY")).thenReturn(field1);
-        when(view.getComponentByReference("laborHourlyCostCURRENCY")).thenReturn(field2);
-        when(view.getComponentByReference("machineHourlyCostCURRENCY")).thenReturn(field3);
+        when(view.getComponentByReference("laborHourlyCostCURRENCY")).thenReturn(field1);
+        when(view.getComponentByReference("machineHourlyCostCURRENCY")).thenReturn(field2);
 
         // when
         costNormsForOperationService.fillCurrencyFields(view);
@@ -133,7 +126,6 @@ public class CostNormsForOperationServiceTest {
 
         Mockito.verify(field1).setFieldValue(currency);
         Mockito.verify(field2).setFieldValue(currency);
-        Mockito.verify(field3).setFieldValue(currency);
     }
 
 }

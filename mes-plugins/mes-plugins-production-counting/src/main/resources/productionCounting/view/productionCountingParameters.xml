@@ -71,12 +71,6 @@
                         </component>
                     </layoutElement>
                     <layoutElement column="1" row="5">
-                        <component type="checkbox" name="registerPiecework"
-                                   reference="registerPiecework" field="#{form}.registerPiecework">
-                            <option type="labelWidth" value="60"/>
-                        </component>
-                    </layoutElement>
-                    <layoutElement column="1" row="6">
                         <component type="checkbox" name="allowAnomalyCreationOnAcceptanceRecord"
                                    reference="allowAnomalyCreationOnAcceptanceRecord"
                                    field="#{form}.allowAnomalyCreationOnAcceptanceRecord"
@@ -84,7 +78,7 @@
                             <option type="labelWidth" value="60"/>
                         </component>
                     </layoutElement>
-                    <layoutElement column="1" row="7">
+                    <layoutElement column="1" row="6">
                         <component type="checkbox" name="automaticallyUseTheBatchPlannedInOrder" reference="automaticallyUseTheBatchPlannedInOrder"
                                    field="#{form}.automaticallyUseTheBatchPlannedInOrder" hasDescription="true">
                             <option type="labelWidth" value="60"/>

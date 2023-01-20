@@ -31,7 +31,7 @@
 
 	<windowTab name="productionCounting" reference="productionCounting">
 		<component type="gridLayout" name="gridLayout" reference="gridLayout"
-			columns="3" rows="5">
+			columns="3" rows="6">
 			<layoutElement column="1" row="1">
 				<component type="select" name="typeOfProductionRecording"
 					reference="typeOfProductionRecording" field="#{form}.typeOfProductionRecording"
@@ -61,10 +61,27 @@
                 </component>
 			</layoutElement>
 			<layoutElement column="1" row="5">
-				<component type="checkbox" name="registerPiecework"
-					reference="registerPiecework" field="#{form}.registerPiecework" >
-                    <option type="labelWidth" value="60" />
-                </component>
+				<component type="checkbox" name="pieceworkProduction"
+				           reference="pieceworkProduction" field="#{form}.pieceworkProduction"
+				           hasDescription="true">
+					<option type="labelWidth" value="60" />
+					<listener event="onChange"
+					          class="com.qcadoo.view.api.listeners.RerenderListener"
+					          method="onChangeRerender"/>
+				</component>
+			</layoutElement>
+			<layoutElement column="1" row="6">
+				<component type="lookup" name="pieceRate" field="#{form}.pieceRate"
+				           reference="pieceRate">
+					<option type="column" name="name" fields="name"/>
+
+					<option type="searchable" value="name,number"/>
+					<option type="orderable" value="name,number"/>
+
+					<option type="expression" value="#number + ' - ' + #name"/>
+					<option type="fieldCode" value="number"/>
+					<option type="labelWidth" value="60" />
+				</component>
 			</layoutElement>
 		</component>
 	</windowTab>

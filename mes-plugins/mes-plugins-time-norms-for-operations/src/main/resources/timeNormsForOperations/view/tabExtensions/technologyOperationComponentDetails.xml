@@ -71,6 +71,12 @@
                     <option type="noHours" value="4"/>
                 </component>
             </layoutElement>
+            <layoutElement column="1" row="5">
+                <component type="checkbox" name="pieceworkProduction"
+                           reference="pieceworkProduction" field="#{form}.pieceworkProduction"
+                           hasDescription="true">
+                </component>
+            </layoutElement>
             <layoutElement column="1" row="6" width="2" height="5">
                 <component type="grid" name="techOperCompWorkstationTimes" reference="techOperCompWorkstationTimes"
                            source="#{form}.techOperCompWorkstationTimes">

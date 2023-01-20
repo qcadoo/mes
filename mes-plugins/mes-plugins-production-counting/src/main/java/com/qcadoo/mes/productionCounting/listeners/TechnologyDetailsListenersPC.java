@@ -41,7 +41,7 @@ public class TechnologyDetailsListenersPC {
 
     private static final List<String> L_TECHNOLOGY_FIELD_NAMES = Lists.newArrayList(
             TechnologyFieldsPC.REGISTER_QUANTITY_IN_PRODUCT, TechnologyFieldsPC.REGISTER_QUANTITY_OUT_PRODUCT,
-            TechnologyFieldsPC.REGISTER_PRODUCTION_TIME, TechnologyFieldsPC.REGISTER_PIECEWORK);
+            TechnologyFieldsPC.REGISTER_PRODUCTION_TIME, TechnologyFieldsPC.PIECEWORK_PRODUCTION);
 
     @Autowired
     private ProductionCountingService productionCountingService;

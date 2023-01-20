@@ -24,8 +24,10 @@
 package com.qcadoo.mes.timeNormsForOperations.hooks;
 
 import com.google.common.collect.Sets;
+import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.technologies.TechnologyService;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
+import com.qcadoo.mes.technologies.constants.TechnologyFields;
 import com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperationComponentFieldsTNFO;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
@@ -59,9 +61,9 @@ public class TechnologyOperationComponentDetailsHooks {
         Entity operationComponent = form.getEntity();
         operationComponent = operationComponent.getDataDefinition().get(operationComponent.getId());
 
-        BigDecimal timeNormsQuantity = operationComponent.getDecimalField("productionInOneCycle");
+        BigDecimal timeNormsQuantity = operationComponent.getDecimalField(PRODUCTION_IN_ONE_CYCLE);
 
-        Entity productOutComponent = null;
+        Entity productOutComponent;
 
         try {
             productOutComponent = technologyService.getMainOutputProductComponent(operationComponent);
@@ -74,7 +76,7 @@ public class TechnologyOperationComponentDetailsHooks {
         if (timeNormsQuantity != null && timeNormsQuantity.compareTo(currentQuantity) != 0) {
             form.addMessage("technologies.technologyOperationComponent.validate.error.invalidQuantity", MessageType.INFO, false,
                     numberService.format(currentQuantity),
-                    productOutComponent.getBelongsToField("product").getStringField("unit"));
+                    productOutComponent.getBelongsToField("product").getStringField(ProductFields.UNIT));
         }
     }
 
@@ -99,16 +101,16 @@ public class TechnologyOperationComponentDetailsHooks {
     }
 
     public void updateFieldsStateOnWindowLoad(final ViewDefinitionState viewDefinitionState) {
-        FieldComponent tpzNorm = (FieldComponent) viewDefinitionState.getComponentByReference("tpz");
-        FieldComponent tjNorm = (FieldComponent) viewDefinitionState.getComponentByReference("tj");
+        FieldComponent tpzNorm = (FieldComponent) viewDefinitionState.getComponentByReference(TPZ);
+        FieldComponent tjNorm = (FieldComponent) viewDefinitionState.getComponentByReference(TJ);
         FieldComponent productionInOneCycle = (FieldComponent) viewDefinitionState
                 .getComponentByReference(PRODUCTION_IN_ONE_CYCLE);
         FieldComponent nextOperationAfterProducedType = (FieldComponent) viewDefinitionState
                 .getComponentByReference(NEXT_OPERATION_AFTER_PRODUCED_TYPE);
         FieldComponent timeNextOperation = (FieldComponent) viewDefinitionState.getComponentByReference(TIME_NEXT_OPERATION);
         FieldComponent areProductQuantitiesDivisible = (FieldComponent) viewDefinitionState
-                .getComponentByReference("areProductQuantitiesDivisible");
-        FieldComponent isTjDivisible = (FieldComponent) viewDefinitionState.getComponentByReference("isTjDivisible");
+                .getComponentByReference(ARE_PRODUCT_QUANTITIES_DIVISIBLE);
+        FieldComponent isTjDivisible = (FieldComponent) viewDefinitionState.getComponentByReference(IS_TJ_DIVISIBLE);
 
         Object value = nextOperationAfterProducedType.getFieldValue();
 
@@ -140,7 +142,7 @@ public class TechnologyOperationComponentDetailsHooks {
         formEntity = formEntity.getDataDefinition().get(formEntity.getId());
         // you can use someEntity.getSTH().getSTH() only when you are 100% sure that all the passers-relations
         // will not return null (i.e. all relations using below are mandatory on the model definition level)
-        String unit = formEntity.getBelongsToField("technology").getBelongsToField("product").getField("unit").toString();
+        String unit = formEntity.getBelongsToField("technology").getBelongsToField(TechnologyFields.PRODUCT).getField(ProductFields.UNIT).toString();
         for (String referenceName : Sets.newHashSet(NEXT_OPERATION_AFTER_PRODUCED_QUANTITY_UNIT, TechnologyOperationComponentFieldsTNFO.PRODUCTION_IN_ONE_CYCLE_UNIT)) {
             component = (FieldComponent) view.getComponentByReference(referenceName);
             if (component == null) {

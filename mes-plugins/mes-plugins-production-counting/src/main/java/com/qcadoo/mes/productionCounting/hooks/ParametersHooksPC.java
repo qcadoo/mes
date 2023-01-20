@@ -23,11 +23,11 @@
  */
 package com.qcadoo.mes.productionCounting.hooks;
 
-import com.qcadoo.mes.productionCounting.constants.*;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.qcadoo.mes.productionCounting.ProductionCountingService;
+import com.qcadoo.mes.productionCounting.constants.ParameterFieldsPC;
+import com.qcadoo.mes.productionCounting.constants.ReceiptOfProducts;
+import com.qcadoo.mes.productionCounting.constants.ReleaseOfMaterials;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.CheckBoxComponent;
 import com.qcadoo.view.api.components.FieldComponent;
@@ -35,11 +35,7 @@ import com.qcadoo.view.api.components.FieldComponent;
 @Service
 public class ParametersHooksPC {
 
-    @Autowired
-    private ProductionCountingService productionCountingService;
-
     public void onBeforeRender(final ViewDefinitionState view) {
-        checkIfTypeIsCumulatedAndRegisterPieceworkIsFalse(view);
         checkIfRegisterProductionTimeIsSet(view);
         setStatePriceBasedOn(view);
         setStateConsumptionOfRawMaterialsBasedOnStandards(view);
@@ -49,41 +45,16 @@ public class ParametersHooksPC {
         CheckBoxComponent consumptionOfRawMaterialsBasedOnStandards = (CheckBoxComponent) view
                 .getComponentByReference(ParameterFieldsPC.CONSUMPTION_OF_RAW_MATERIALS_BASED_ON_STANDARDS);
         FieldComponent releaseOfMaterials = (FieldComponent) view.getComponentByReference(ParameterFieldsPC.RELEASE_OF_MATERIALS);
-        if (ReleaseOfMaterials.MANUALLY_TO_ORDER_OR_GROUP.getStringValue().equals(releaseOfMaterials.getFieldValue().toString())) {
-            consumptionOfRawMaterialsBasedOnStandards.setEnabled(false);
-        } else {
-            consumptionOfRawMaterialsBasedOnStandards.setEnabled(true);
-        }
+        consumptionOfRawMaterialsBasedOnStandards.setEnabled(!ReleaseOfMaterials.MANUALLY_TO_ORDER_OR_GROUP.getStringValue().equals(releaseOfMaterials.getFieldValue().toString()));
         consumptionOfRawMaterialsBasedOnStandards.requestComponentUpdateState();
     }
 
     private void setStatePriceBasedOn(ViewDefinitionState view) {
         FieldComponent priceBasedOn = (FieldComponent) view.getComponentByReference(ParameterFieldsPC.PRICE_BASED_ON);
         FieldComponent receiptOfProducts = (FieldComponent) view.getComponentByReference(ParameterFieldsPC.RECEIPT_OF_PRODUCTS);
-        if (ReceiptOfProducts.END_OF_THE_ORDER.getStringValue()
-                .equals(receiptOfProducts.getFieldValue().toString())) {
-            priceBasedOn.setEnabled(true);
-        } else {
-            priceBasedOn.setEnabled(false);
-        }
+        priceBasedOn.setEnabled(ReceiptOfProducts.END_OF_THE_ORDER.getStringValue()
+                .equals(receiptOfProducts.getFieldValue().toString()));
         priceBasedOn.requestComponentUpdateState();
-    }
-
-    private void checkIfTypeIsCumulatedAndRegisterPieceworkIsFalse(final ViewDefinitionState view) {
-        FieldComponent typeOfProductionRecordingField = (FieldComponent) view
-                .getComponentByReference(OrderFieldsPC.TYPE_OF_PRODUCTION_RECORDING);
-        FieldComponent registerPieceworkField = (FieldComponent) view.getComponentByReference(OrderFieldsPC.REGISTER_PIECEWORK);
-
-        String typeOfProductionRecording = (String) typeOfProductionRecordingField.getFieldValue();
-
-        if ((typeOfProductionRecording != null)
-                && productionCountingService.isTypeOfProductionRecordingCumulated(typeOfProductionRecording)) {
-            registerPieceworkField.setFieldValue(false);
-            registerPieceworkField.setEnabled(false);
-        } else {
-            registerPieceworkField.setEnabled(true);
-        }
-        registerPieceworkField.requestComponentUpdateState();
     }
 
     private void checkIfRegisterProductionTimeIsSet(final ViewDefinitionState viewDefinitionState) {

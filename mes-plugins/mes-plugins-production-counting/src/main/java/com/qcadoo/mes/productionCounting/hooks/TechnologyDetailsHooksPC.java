@@ -35,6 +35,7 @@ import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.productionCounting.ProductionCountingService;
 import com.qcadoo.mes.productionCounting.constants.TechnologyFieldsPC;
 import com.qcadoo.view.api.ViewDefinitionState;
+import com.qcadoo.view.api.components.CheckBoxComponent;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.constants.QcadooViewConstants;
@@ -44,7 +45,7 @@ public class TechnologyDetailsHooksPC {
 
     private static final List<String> L_TECHNOLOGY_FIELD_NAMES = Lists.newArrayList(
             TechnologyFieldsPC.REGISTER_QUANTITY_IN_PRODUCT, TechnologyFieldsPC.REGISTER_QUANTITY_OUT_PRODUCT,
-            TechnologyFieldsPC.REGISTER_PRODUCTION_TIME, TechnologyFieldsPC.REGISTER_PIECEWORK);
+            TechnologyFieldsPC.REGISTER_PRODUCTION_TIME);
 
     @Autowired
     private ProductionCountingService productionCountingService;
@@ -53,11 +54,11 @@ public class TechnologyDetailsHooksPC {
     private ParameterService parameterService;
 
     public void setTechnologyDefaultValues(final ViewDefinitionState view) {
-        FormComponent orderForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
+        FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         FieldComponent typeOfProductionRecordingField = (FieldComponent) view
                 .getComponentByReference(TechnologyFieldsPC.TYPE_OF_PRODUCTION_RECORDING);
 
-        if (Objects.nonNull(orderForm.getEntityId())) {
+        if (Objects.nonNull(form.getEntityId())) {
             return;
         }
 
@@ -89,21 +90,25 @@ public class TechnologyDetailsHooksPC {
     public void checkTypeOfProductionRecording(final ViewDefinitionState view) {
         FieldComponent typeOfProductionRecordingField = (FieldComponent) view
                 .getComponentByReference(TechnologyFieldsPC.TYPE_OF_PRODUCTION_RECORDING);
+        CheckBoxComponent pieceworkProductionField = (CheckBoxComponent) view.getComponentByReference(TechnologyFieldsPC.PIECEWORK_PRODUCTION);
+        FieldComponent pieceRateField = (FieldComponent) view.getComponentByReference(TechnologyFieldsPC.PIECE_RATE);
         String typeOfProductionRecording = (String) typeOfProductionRecordingField.getFieldValue();
 
         if (StringUtils.isEmpty(typeOfProductionRecording)
                 || productionCountingService.isTypeOfProductionRecordingBasic(typeOfProductionRecording)) {
             productionCountingService.setComponentsState(view, L_TECHNOLOGY_FIELD_NAMES, false, true);
-        } else if (productionCountingService.isTypeOfProductionRecordingCumulated(typeOfProductionRecording)) {
-            setRegisterPieceworkEnabledAndValue(view, false, false);
+            pieceworkProductionField.setEnabled(false);
+            pieceworkProductionField.setFieldValue(false);
+        } else if (productionCountingService.isTypeOfProductionRecordingForEach(typeOfProductionRecording)) {
+            pieceworkProductionField.setEnabled(false);
+            pieceworkProductionField.setFieldValue(false);
         }
-    }
-
-    private void setRegisterPieceworkEnabledAndValue(final ViewDefinitionState view, final boolean isEnabled,
-            final boolean value) {
-        FieldComponent fieldComponent = (FieldComponent) view.getComponentByReference(TechnologyFieldsPC.REGISTER_PIECEWORK);
-        fieldComponent.setEnabled(isEnabled);
-        fieldComponent.setFieldValue(value);
+        if(pieceworkProductionField.isChecked()){
+            pieceRateField.setEnabled(true);
+        } else {
+            pieceRateField.setEnabled(false);
+            pieceRateField.setFieldValue(null);
+        }
     }
 
 }

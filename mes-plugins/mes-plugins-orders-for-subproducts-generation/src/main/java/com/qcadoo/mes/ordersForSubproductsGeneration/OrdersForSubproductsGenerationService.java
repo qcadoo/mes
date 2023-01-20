@@ -91,7 +91,7 @@ public class OrdersForSubproductsGenerationService {
     private static final String COUNT_ALIAS = "count";
 
     private static final List<String> L_ORDER_FIELD_NAMES = Lists.newArrayList(OrderFieldsPC.TYPE_OF_PRODUCTION_RECORDING,
-            OrderFieldsPC.REGISTER_PIECEWORK, OrderFieldsPC.REGISTER_QUANTITY_IN_PRODUCT,
+            OrderFieldsPC.REGISTER_QUANTITY_IN_PRODUCT,
             OrderFieldsPC.REGISTER_QUANTITY_OUT_PRODUCT, OrderFieldsPC.REGISTER_PRODUCTION_TIME);
 
     private static final String L_TRANSFER_ORDERS_GROUP_TO_ORDERS_FOR_COMPONENTS = "transferOrdersGroupToOrdersForComponents";

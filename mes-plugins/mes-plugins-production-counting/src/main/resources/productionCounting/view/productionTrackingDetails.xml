@@ -465,6 +465,8 @@
                                     value="#number + ' - ' + #name"/>
                             <option type="fieldCode" value="number"/>
                         </component>
+                        <component type="checkbox" name="pieceworkProduction" reference="pieceworkProduction"
+                                   field="pieceworkProduction" defaultEnabled="never"/>
                         <component type="checkbox" name="isDisabled" reference="isDisabled"
                                    defaultVisible="false" hasLabel="false"/>
                         <component type="hidden" name="isExternalSynchronized"
@@ -662,18 +664,6 @@
                     <component type="time" name="machineTime" reference="machineTime"
                                field="#{form}.machineTime" hasDescription="true">
                         <option type="noHours" value="5"/>
-                    </component>
-                </layoutElement>
-            </component>
-        </windowTab>
-
-        <windowTab name="pieceworkTab" reference="pieceworkTab">
-            <component type="gridLayout" name="pieceworkGridLayout"
-                       columns="3" rows="1">
-                <layoutElement column="1" row="1">
-                    <component type="input" name="executedOperationCycles"
-                               reference="executedOperationCycles" field="#{form}.executedOperationCycles">
-                        <option type="alignment" value="right"/>
                     </component>
                 </layoutElement>
             </component>

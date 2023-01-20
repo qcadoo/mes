@@ -47,9 +47,6 @@ public class ParameterHooksPC {
         if (parameter.getField(ParameterFieldsPC.REGISTER_PRODUCTION_TIME) == null) {
             parameter.setField(ParameterFieldsPC.REGISTER_PRODUCTION_TIME, true);
         }
-        if (parameter.getField(ParameterFieldsPC.REGISTER_PIECEWORK) == null) {
-            parameter.setField(ParameterFieldsPC.REGISTER_PIECEWORK, false);
-        }
         if (parameter.getField(ParameterFieldsPC.REGISTER_QUANTITY_IN_PRODUCT) == null) {
             parameter.setField(ParameterFieldsPC.REGISTER_QUANTITY_IN_PRODUCT, true);
         }

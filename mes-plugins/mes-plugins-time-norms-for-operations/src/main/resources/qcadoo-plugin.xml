@@ -127,6 +127,9 @@
 				<model:validatesRange from="1"/>
 			</model:integer>
 		</model:model-field>
+		<model:model-field model="operation" plugin="technologies">
+			<model:boolean name="pieceworkProduction" default="false"/>
+		</model:model-field>
 
 		<model:model-field plugin="technologies"
 			model="technologyOperationComponent">
@@ -214,6 +217,9 @@
 			<model:integer name="optimalStaff" default="1" required="true">
 				<model:validatesRange from="1"/>
 			</model:integer>
+		</model:model-field>
+		<model:model-field model="technologyOperationComponent" plugin="technologies">
+			<model:boolean name="pieceworkProduction" default="false"/>
 		</model:model-field>
 	
 		<model:model-field plugin="technologies"

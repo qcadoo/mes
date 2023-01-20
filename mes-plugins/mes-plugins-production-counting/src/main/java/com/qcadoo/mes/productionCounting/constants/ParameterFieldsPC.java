@@ -61,8 +61,6 @@ public final class ParameterFieldsPC {
 
     public static final String ACCEPT_RECORDS_FROM_TERMINAL = "acceptRecordsFromTerminal";
 
-    public static final String REGISTER_PIECEWORK = "registerPiecework";
-
     public static final String REGISTER_QUANTITY_OUT_PRODUCT = "registerQuantityOutProduct";
 
     public static final String REGISTER_QUANTITY_IN_PRODUCT = "registerQuantityInProduct";

@@ -33,4 +33,6 @@ public final class TechnologyOperationComponentFieldsCNFO {
 
     public static final String MACHINE_HOURLY_COST = "machineHourlyCost";
 
+    public static final String PIECE_RATE = "pieceRate";
+
 }

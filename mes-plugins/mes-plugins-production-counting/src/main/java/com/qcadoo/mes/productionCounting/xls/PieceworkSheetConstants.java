@@ -8,5 +8,4 @@ final class PieceworkSheetConstants {
 
     static final String OPERATION_NUMBER = "productionCounting.productionBalance.report.xls.sheet.piecework.operationNumber";
 
-    static final String TOTAL_EXECUTED_OPERATION_CYCLES = "productionCounting.productionBalance.report.xls.sheet.piecework.totalExecutedOperationCycles";
 }

@@ -342,13 +342,13 @@ public class ProductionBalanceXlsService extends XlsDocumentService {
         final StylesContainer stylesContainer = new StylesContainer(sheet.getWorkbook(), fontsContainer);
         final int rowOffset = 1;
         HSSFRow row = sheet.createRow(0);
-        createHeaderCell(stylesContainer, row, translationService.translate(PieceworkSheetConstants.ORDER_NUMBER, locale), 0
-        );
-        createHeaderCell(stylesContainer, row, translationService.translate(PieceworkSheetConstants.OPERATION_NUMBER, locale), 1
-        );
-        createHeaderCell(stylesContainer, row,
-                translationService.translate(PieceworkSheetConstants.TOTAL_EXECUTED_OPERATION_CYCLES, locale), 2
-        );
+        createHeaderCell(stylesContainer, row, translationService.translate(PieceworkSheetConstants.ORDER_NUMBER, locale), 0);
+        createHeaderCell(stylesContainer, row, translationService.translate(PieceworkSheetConstants.OPERATION_NUMBER, locale), 1);
+        createHeaderCell(stylesContainer, row, translationService.translate("productionCounting.productionBalance.report.xls.sheet.piecework.worker", locale), 2);
+        createHeaderCell(stylesContainer, row, translationService.translate("productionCounting.productionBalance.report.xls.sheet.piecework.producedQuantity", locale), 3);
+        createHeaderCell(stylesContainer, row, translationService.translate("productionCounting.productionBalance.report.xls.sheet.piecework.pieceRate", locale), 4);
+        createHeaderCell(stylesContainer, row, translationService.translate("productionCounting.productionBalance.report.xls.sheet.piecework.rate", locale), 5);
+        createHeaderCell(stylesContainer, row, translationService.translate("productionCounting.productionBalance.report.xls.sheet.piecework.cost", locale), 6);
 
         List<PieceworkDetails> pieceworkDetailsList = productionBalanceRepository.getPieceworkDetails(ordersIds);
         int rowCounter = 0;
@@ -356,10 +356,14 @@ public class ProductionBalanceXlsService extends XlsDocumentService {
             row = sheet.createRow(rowOffset + rowCounter);
             createRegularCell(stylesContainer, row, 0, pieceworkDetails.getOrderNumber());
             createRegularCell(stylesContainer, row, 1, pieceworkDetails.getOperationNumber());
-            createNumericCell(stylesContainer, row, 2, pieceworkDetails.getTotalExecutedOperationCycles(), false);
+            createRegularCell(stylesContainer, row, 2, pieceworkDetails.getWorker());
+            createNumericCell(stylesContainer, row, 3, pieceworkDetails.getProducedQuantity(), false);
+            createRegularCell(stylesContainer, row, 4, pieceworkDetails.getPieceRate());
+            createNumericCell(stylesContainer, row, 5, pieceworkDetails.getRate(), false);
+            createNumericCell(stylesContainer, row, 6, pieceworkDetails.getCost(), false);
             rowCounter++;
         }
-        for (int i = 0; i <= 2; i++) {
+        for (int i = 0; i <= 6; i++) {
             sheet.autoSizeColumn(i, false);
         }
     }

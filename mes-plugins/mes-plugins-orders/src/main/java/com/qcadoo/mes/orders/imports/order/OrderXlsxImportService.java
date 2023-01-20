@@ -68,10 +68,8 @@ public class OrderXlsxImportService extends XlsxImportService {
 
     private static final String L_REGISTER_PRODUCTION_TIME = "registerProductionTime";
 
-    private static final String L_REGISTER_PIECEWORK = "registerPiecework";
-
     private static final Set<String> L_PRODUCTION_TRACKING_FIELDS = Sets.newHashSet(L_TYPE_OF_PRODUCTION_RECORDING,
-            L_REGISTER_QUANTITY_IN_PRODUCT, L_REGISTER_QUANTITY_OUT_PRODUCT, L_REGISTER_PRODUCTION_TIME, L_REGISTER_PIECEWORK);
+            L_REGISTER_QUANTITY_IN_PRODUCT, L_REGISTER_QUANTITY_OUT_PRODUCT, L_REGISTER_PRODUCTION_TIME);
 
     @Autowired
     private NumberGeneratorService numberGeneratorService;
