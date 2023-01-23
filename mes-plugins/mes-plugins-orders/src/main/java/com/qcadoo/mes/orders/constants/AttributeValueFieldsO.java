@@ -21,18 +21,16 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.technologies.constants;
+package com.qcadoo.mes.orders.constants;
 
-public final class WorkstationFieldsT {
+public final class AttributeValueFieldsO {
 
-    private WorkstationFieldsT() {
+    private AttributeValueFieldsO() {
 
     }
 
-    public static final String OPERATIONS = "operations";
+    public static final String FROM_WORKSTATION_CHANGEOVER_FOR_OPERATIONAL_TASKS = "fromWorkstationChangeoverForOperationalTasks";
 
-    public static final String OPERATION_COMPONENTS = "operationComponents";
-
-    public static final String WORKSTATION_CHANGEOVER_NORMS = "workstationChangeoverNorms";
+    public static final String TO_WORKSTATION_CHANGEOVER_FOR_OPERATIONAL_TASKS = "toWorkstationChangeoverForOperationalTasks";
 
 }

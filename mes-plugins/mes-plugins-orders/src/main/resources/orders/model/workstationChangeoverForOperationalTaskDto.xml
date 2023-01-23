@@ -24,34 +24,39 @@
     ***************************************************************************
 
 -->
-<model name="workstationChangeoverNorm" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xmlns="http://schema.qcadoo.org/model"
+<model name="workstationChangeoverForOperationalTaskDto" auditable="false" deletable="false" insertable="false" updatable="false"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
        xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
 
     <fields>
-        <string name="name" unique="true">
+        <string name="number">
+            <validatesLength max="255"/>
+        </string>
+        <string name="name">
             <validatesLength max="1024"/>
         </string>
         <string name="description">
             <validatesLength max="2048"/>
         </string>
-        <belongsTo name="workstationType" model="workstationType" plugin="basic"/>
-        <belongsTo name="workstation" model="workstation" plugin="basic"/>
-        <belongsTo name="attribute" model="attribute" plugin="basic" required="true"/>
-        <enum name="changeoverType" values="01anyChange,02betweenValues"
-              default="01anyChange" required="true"/>
-        <belongsTo name="fromAttributeValue" model="attributeValue" plugin="basic"/>
-        <belongsTo name="toAttributeValue" model="attributeValue" plugin="basic"/>
+        <string name="workstationNumber"/>
+
+        <string name="currentOperationalTaskNumber"/>
+        <string name="currentOperationalTaskName"/>
+        <string name="currentOperationalTaskOrderNumber"/>
+        <string name="currentOperationalTaskOrderProductNumber"/>
+
+        <enum name="changeoverType" values="01basedOnNorm,02own"
+              default="01basedOnNorm" required="true"/>
+        <string name="attributeNumber"/>
+        <string name="fromAttributeValueValue"/>
+        <string name="toAttributeValueValue"/>
+        <datetime name="startDate" required="true"/>
+        <datetime name="finishDate" required="true"/>
         <integer name="duration" required="true"/>
         <boolean name="isParallel"/>
     </fields>
 
-    <hooks>
-        <validatesWith class="com.qcadoo.mes.technologies.hooks.WorkstationChangeoverHooks"
-                method="validatesWith"/>
-        <onSave class="com.qcadoo.mes.technologies.hooks.WorkstationChangeoverHooks"
-                method="onSave"/>
-    </hooks>
+    <hooks/>
 
-    <identifier expression="#name"/>
+    <masterModel plugin="orders" model="workstationChangeoverForOperationalTask"/>
 </model>

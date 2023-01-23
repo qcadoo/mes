@@ -27,6 +27,7 @@ import com.google.common.collect.Maps;
 import com.qcadoo.mes.orders.constants.OperationalTaskDtoFields;
 import com.qcadoo.mes.orders.constants.OperationalTaskFields;
 import com.qcadoo.mes.orders.constants.OrderFields;
+import com.qcadoo.mes.orders.constants.WorkstationChangeoverForOperationalTaskDtoFields;
 import com.qcadoo.mes.orders.hooks.OperationalTasksDetailsHooks;
 import com.qcadoo.mes.technologies.ProductQuantitiesService;
 import com.qcadoo.mes.technologies.TechnologyService;
@@ -41,16 +42,14 @@ import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.LookupComponent;
 import com.qcadoo.view.api.components.lookup.FilterValueHolder;
 import com.qcadoo.view.constants.QcadooViewConstants;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.Map;
 import java.util.Objects;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 @Service
 public class OperationalTaskDetailsListeners {
-
 
     private static final String L_GRID_OPTIONS = "grid.options";
 
@@ -97,6 +96,7 @@ public class OperationalTaskDetailsListeners {
     public final void showOperationParameters(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         LookupComponent technologyOperationComponentLookup = (LookupComponent) view
                 .getComponentByReference(OperationalTaskFields.TECHNOLOGY_OPERATION_COMPONENT);
+
         Entity technologyOperationComponent = technologyOperationComponentLookup.getEntity();
 
         if (Objects.isNull(technologyOperationComponent)) {
@@ -115,6 +115,7 @@ public class OperationalTaskDetailsListeners {
     public final void showOperationalTasksWithOrder(final ViewDefinitionState view, final ComponentState state,
                                                     final String[] args) {
         FormComponent operationalTaskForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
+
         Entity operationalTask = operationalTaskForm.getEntity();
 
         if (Objects.isNull(operationalTask.getId())) {
@@ -144,6 +145,33 @@ public class OperationalTaskDetailsListeners {
         view.redirectTo(url, false, true, parameters);
     }
 
+    public final void showWorkstationChangeoverForOperationalTasks(final ViewDefinitionState view, final ComponentState state,
+                                                                   final String[] args) {
+        FormComponent operationalTaskForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
+
+        Entity operationalTask = operationalTaskForm.getEntity();
+
+        if (Objects.isNull(operationalTask.getId())) {
+            return;
+        }
+
+        String operationalTaskNumber = operationalTask.getStringField(OperationalTaskFields.NUMBER);
+
+        Map<String, String> filters = Maps.newHashMap();
+        filters.put(WorkstationChangeoverForOperationalTaskDtoFields.CURRENT_OPERATIONAL_TASK_NUMBER, "[" + operationalTaskNumber + "]");
+
+        Map<String, Object> gridOptions = Maps.newHashMap();
+        gridOptions.put(L_FILTERS, filters);
+
+        Map<String, Object> parameters = Maps.newHashMap();
+        parameters.put(L_GRID_OPTIONS, gridOptions);
+
+        parameters.put(L_WINDOW_ACTIVE_MENU, "orders.workstationChangeoverForOperationalTasksList");
+
+        String url = "../page/orders/workstationChangeoverForOperationalTasksList.html";
+        view.redirectTo(url, false, true, parameters);
+    }
+
     public void disableFieldsWhenOrderTypeIsSelected(final ViewDefinitionState view, final ComponentState state,
                                                      final String[] args) {
         operationalTaskDetailsHooks.disableFieldsWhenOrderTypeIsSelected(view);
@@ -153,20 +181,24 @@ public class OperationalTaskDetailsListeners {
         LookupComponent technologyOperationComponentLookup = (LookupComponent) view
                 .getComponentByReference(OperationalTaskFields.TECHNOLOGY_OPERATION_COMPONENT);
         LookupComponent productLookup = (LookupComponent) view.getComponentByReference(OperationalTaskFields.PRODUCT);
-        productLookup.setFieldValue(null);
         FieldComponent plannedQuantityField = (FieldComponent) view.getComponentByReference(OperationalTaskFields.PLANNED_QUANTITY);
+
+        productLookup.setFieldValue(null);
         plannedQuantityField.setFieldValue(null);
         technologyOperationComponentLookup.setFieldValue(null);
     }
 
-    public void onDivisionChange(final ViewDefinitionState view, final ComponentState state,
-                                 final String[] args) {
+    public void onDivisionChange(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         LookupComponent workstationLookup = (LookupComponent) view.getComponentByReference(OperationalTaskFields.WORKSTATION);
+
         FilterValueHolder filterValueHolder = workstationLookup.getFilterValue();
+
         if (filterValueHolder.has(OperationalTaskFields.DIVISION)) {
             filterValueHolder.remove(OperationalTaskFields.DIVISION);
+
             workstationLookup.setFilterValue(filterValueHolder);
         }
+
         workstationLookup.setFieldValue(null);
         workstationLookup.requestComponentUpdateState();
     }
@@ -174,6 +206,7 @@ public class OperationalTaskDetailsListeners {
     public void onTechnologyOperationComponentChange(final ViewDefinitionState view, final ComponentState state,
                                                      final String[] args) {
         operationalTaskDetailsHooks.setNameAndDescription(view);
+
         setAdditionalFields(view);
     }
 
@@ -184,7 +217,7 @@ public class OperationalTaskDetailsListeners {
         FieldComponent plannedQuantityField = (FieldComponent) view
                 .getComponentByReference(OperationalTaskFields.PLANNED_QUANTITY);
         FieldComponent plannedQuantityUnitField = (FieldComponent) view.getComponentByReference(PLANNED_QUANTITY_UNIT);
-        FieldComponent usedQuantityField = (FieldComponent) view.getComponentByReference("usedQuantity");
+        FieldComponent usedQuantityField = (FieldComponent) view.getComponentByReference(OperationalTaskFields.USED_QUANTITY);
         FieldComponent usedQuantityUnitField = (FieldComponent) view.getComponentByReference(USED_QUANTITY_UNIT);
         FieldComponent actualStaffField = (FieldComponent) view.getComponentByReference(OperationalTaskFields.ACTUAL_STAFF);
 
@@ -198,8 +231,10 @@ public class OperationalTaskDetailsListeners {
             usedQuantityUnitField.setFieldValue(null);
         } else {
             actualStaffField.setFieldValue(technologyOperationComponent.getIntegerField(TechnologyOperationComponentFieldsTNFO.OPTIMAL_STAFF));
+
             Entity mainOutputProductComponent = technologyService.getMainOutputProductComponent(technologyOperationComponent);
             Entity product = mainOutputProductComponent.getBelongsToField(OperationProductOutComponentFields.PRODUCT);
+
             productLookup.setFieldValue(product.getId());
         }
 

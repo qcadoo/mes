@@ -31,4 +31,6 @@ public final class WorkstationTypeFieldsT {
 
     public static final String OPERATIONS = "operations";
 
+    public static final String WORKSTATION_CHANGEOVER_NORMS = "workstationChangeoverNorms";
+
 }

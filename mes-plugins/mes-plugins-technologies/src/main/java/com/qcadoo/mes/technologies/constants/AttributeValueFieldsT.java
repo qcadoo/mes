@@ -23,16 +23,14 @@
  */
 package com.qcadoo.mes.technologies.constants;
 
-public final class WorkstationFieldsT {
+public final class AttributeValueFieldsT {
 
-    private WorkstationFieldsT() {
+    private AttributeValueFieldsT() {
 
     }
 
-    public static final String OPERATIONS = "operations";
+    public static final String FROM_WORKSTATION_CHANGEOVER_NORMS = "fromWorkstationChangeoverNorms";
 
-    public static final String OPERATION_COMPONENTS = "operationComponents";
-
-    public static final String WORKSTATION_CHANGEOVER_NORMS = "workstationChangeoverNorms";
+    public static final String TO_WORKSTATION_CHANGEOVER_NORMS = "toWorkstationChangeoverNorms";
 
 }

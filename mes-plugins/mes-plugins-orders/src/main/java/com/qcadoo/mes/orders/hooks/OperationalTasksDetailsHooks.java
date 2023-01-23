@@ -23,18 +23,7 @@
  */
 package com.qcadoo.mes.orders.hooks;
 
-import java.math.BigDecimal;
-import java.math.MathContext;
-import java.math.RoundingMode;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-
 import com.google.common.base.Strings;
-import org.apache.commons.lang3.math.NumberUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.orders.OperationalTasksService;
@@ -47,38 +36,45 @@ import com.qcadoo.mes.orders.states.constants.OperationalTaskStateStringValues;
 import com.qcadoo.mes.technologies.constants.OperationFields;
 import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
 import com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperationComponentFieldsTNFO;
-import com.qcadoo.model.api.BigDecimalUtils;
-import com.qcadoo.model.api.DataDefinitionService;
-import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.NumberService;
-import com.qcadoo.plugins.users.constants.GroupDetailsConstants;
+import com.qcadoo.model.api.*;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
-import com.qcadoo.view.api.components.FieldComponent;
-import com.qcadoo.view.api.components.FormComponent;
-import com.qcadoo.view.api.components.GridComponent;
-import com.qcadoo.view.api.components.LookupComponent;
-import com.qcadoo.view.api.components.WindowComponent;
+import com.qcadoo.view.api.components.*;
 import com.qcadoo.view.api.components.lookup.FilterValueHolder;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.api.ribbon.RibbonGroup;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
 import com.qcadoo.view.constants.QcadooViewConstants;
+import org.apache.commons.lang3.math.NumberUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
+import java.math.MathContext;
+import java.math.RoundingMode;
+import java.util.List;
+import java.util.Objects;
 
 @Service
 public class OperationalTasksDetailsHooks {
 
     private static final String L_ORDER = "order";
 
-    private static final String L_TECHNOLOGY_OPERATION_COMPONENT = "technologyOperationComponent";
-
-    private static final String L_OPERATIONAL_TASKS = "operationalTasks";
-
     private static final String L_SHOW_ORDER = "showOrder";
+
+    private static final String L_TECHNOLOGY_OPERATION_COMPONENT = "technologyOperationComponent";
 
     private static final String L_SHOW_OPERATION_PARAMETERS = "showOperationParameters";
 
+    private static final String L_OPERATIONAL_TASKS = "operationalTasks";
+
     private static final String L_SHOW_OPERATIONAL_TASKS_WITH_ORDER = "showOperationalTasksWithOrder";
+
+    private static final String L_WORKSTATION_CHANGEOVER_FOR_OPERATIONAL_TASKS = "workstationChangeoverForOperationalTasks";
+
+    private static final String L_SHOW_WORKSTATION_CHANGEOVER_FOR_OPERATIONAL_TASKS = "showWorkstationChangeoverForOperationalTasks";
+
+    private static final String L_STAFF_LOOKUP = "staffLookup";
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
@@ -92,82 +88,90 @@ public class OperationalTasksDetailsHooks {
     @Autowired
     private NumberGeneratorService numberGeneratorService;
 
-    public void beforeRender(final ViewDefinitionState view) {
-        FieldComponent numberField = (FieldComponent) view.getComponentByReference(OperationalTaskFields.NUMBER);
-        numberField.setEnabled(false);
+    public void onBeforeRender(final ViewDefinitionState view) {
         fetchNumberFromDatabase(view);
         filterDivisionLookup(view);
         setTechnology(view);
         setQuantities(view);
         setStaff(view);
-
         disableFieldsWhenOrderTypeIsSelected(view);
         disableButtons(view);
         fillCriteriaModifiers(view);
     }
 
     private void fetchNumberFromDatabase(final ViewDefinitionState view) {
-        FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
+        FormComponent operationalTaskForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
+        ComponentState numberField = view.getComponentByReference(OperationalTaskFields.NUMBER);
 
-        if (form.getEntityId() != null) {
-            ComponentState numberField = view.getComponentByReference(OperationalTaskFields.NUMBER);
+        if (Objects.nonNull(operationalTaskForm.getEntityId())) {
             String numberFieldValue = (String) numberField.getFieldValue();
 
             if (Strings.isNullOrEmpty(numberFieldValue)) {
-                Entity ot = dataDefinitionService
-                        .get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_OPERATIONAL_TASK).get(form.getEntityId());
+                Entity operationalTask = getOperationalTaskDD().get(operationalTaskForm.getEntityId());
 
-                    numberField.setFieldValue(ot.getField(OperationalTaskFields.NUMBER));
-
+                numberField.setFieldValue(operationalTask.getField(OperationalTaskFields.NUMBER));
             }
         }
     }
 
-    public void fillCriteriaModifiers(final ViewDefinitionState viewDefinitionState) {
-        LookupComponent staffLookup = (LookupComponent) viewDefinitionState.getComponentByReference("staffLookup");
-        FormComponent form = (FormComponent) viewDefinitionState.getComponentByReference(QcadooViewConstants.L_FORM);
-        if (form.getEntityId() != null) {
+    public void fillCriteriaModifiers(final ViewDefinitionState view) {
+        FormComponent operationalTaskForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
+        LookupComponent staffLookup = (LookupComponent) view.getComponentByReference(L_STAFF_LOOKUP);
+
+        if (Objects.nonNull(operationalTaskForm.getEntityId())) {
             FilterValueHolder filter = staffLookup.getFilterValue();
-            filter.put(OperationalTaskDetailsCriteriaModifiers.OPERATIONAL_TASK_ID, form.getEntityId());
+
+            filter.put(OperationalTaskDetailsCriteriaModifiers.OPERATIONAL_TASK_ID, operationalTaskForm.getEntityId());
+
             staffLookup.setFilterValue(filter);
             staffLookup.requestComponentUpdateState();
         }
     }
 
-    private void setStaff(ViewDefinitionState view) {
+    private void setStaff(final ViewDefinitionState view) {
         FieldComponent minStaffField = (FieldComponent) view.getComponentByReference(TechnologyOperationComponentFieldsTNFO.MIN_STAFF);
         FieldComponent optimalStaffField = (FieldComponent) view.getComponentByReference(TechnologyOperationComponentFieldsTNFO.OPTIMAL_STAFF);
         FieldComponent actualStaffField = (FieldComponent) view.getComponentByReference(OperationalTaskFields.ACTUAL_STAFF);
         GridComponent workersGrid = (GridComponent) view.getComponentByReference(OperationalTaskFields.WORKERS);
-        LookupComponent technologyOperationComponentLookup = (LookupComponent) view
-                .getComponentByReference(OperationalTaskFields.TECHNOLOGY_OPERATION_COMPONENT);
+        LookupComponent technologyOperationComponentLookup = (LookupComponent) view.getComponentByReference(OperationalTaskFields.TECHNOLOGY_OPERATION_COMPONENT);
+
         Entity technologyOperationComponent = technologyOperationComponentLookup.getEntity();
+
         int minStaff;
         if (!Objects.isNull(technologyOperationComponent)) {
             minStaff = technologyOperationComponent.getIntegerField(TechnologyOperationComponentFieldsTNFO.MIN_STAFF);
         } else {
             minStaff = 1;
         }
+
         minStaffField.setFieldValue(minStaff);
+
         int optimalStaff;
         if (!Objects.isNull(technologyOperationComponent)) {
             optimalStaff = technologyOperationComponent.getIntegerField(TechnologyOperationComponentFieldsTNFO.OPTIMAL_STAFF);
         } else {
             optimalStaff = 1;
         }
+
         optimalStaffField.setFieldValue(optimalStaff);
-        if (actualStaffField.getFieldValue() == null || !NumberUtils.isDigits(actualStaffField.getFieldValue().toString())) {
+        if (Objects.isNull(actualStaffField.getFieldValue()) || !NumberUtils.isDigits(actualStaffField.getFieldValue().toString())) {
             actualStaffField.setFieldValue(optimalStaff);
         }
+
         LookupComponent staff = (LookupComponent) view.getComponentByReference(OperationalTaskFields.STAFF);
+
         List<Entity> workers = workersGrid.getEntities();
-        if (staff.getEntity() != null && workers.size() != 1) {
+
+        if (Objects.nonNull(staff.getEntity()) && workers.size() != 1) {
             staff.setFieldValue(null);
         } else if (workers.size() == 1 && !staff.isClearCurrentCode() && "".equals(staff.getCurrentCode())) {
             staff.setFieldValue(workers.get(0).getId());
         }
+
         staff.setEnabled(workers.size() <= 1);
+
         int actualStaff = Integer.parseInt((String) actualStaffField.getFieldValue());
+
         if (view.isViewAfterRedirect() && actualStaff != workers.size()) {
             view.addMessage(
                     "orders.operationalTask.error.workersQuantityDifferentThanActualStaff", ComponentState.MessageType.INFO);
@@ -175,44 +179,49 @@ public class OperationalTasksDetailsHooks {
     }
 
     private void setQuantities(final ViewDefinitionState view) {
-        final FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
-        if (Objects.nonNull(form.getEntityId())) {
-            Entity ot = form.getEntity();
-            Entity product = ot.getBelongsToField(OperationalTaskFields.PRODUCT);
+        final FormComponent operationalTaskForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
+
+        if (Objects.nonNull(operationalTaskForm.getEntityId())) {
+            Entity operationalTask = operationalTaskForm.getEntity();
+
+            Entity product = operationalTask.getBelongsToField(OperationalTaskFields.PRODUCT);
+
             if (Objects.nonNull(product)) {
-                Entity otDto = dataDefinitionService
-                        .get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_OPERATIONAL_TASK_DTO).get(ot.getId());
+                Entity operationalTaskDto = getOperationalTaskDtoDD().get(operationalTask.getId());
+
                 FieldComponent doneInPercentage = (FieldComponent) view.getComponentByReference("doneInPercentage");
                 FieldComponent doneInPercentageUnit = (FieldComponent) view.getComponentByReference("doneInPercentageUNIT");
                 FieldComponent usedQuantityUnit = (FieldComponent) view.getComponentByReference("usedQuantityUNIT");
                 FieldComponent plannedQuantityUnit = (FieldComponent) view.getComponentByReference("plannedQuantityUNIT");
                 FieldComponent usedQuantity = (FieldComponent) view.getComponentByReference("usedQuantity");
                 FieldComponent plannedQuantity = (FieldComponent) view.getComponentByReference("plannedQuantity");
+
                 usedQuantityUnit.setFieldValue(product.getStringField(ProductFields.UNIT));
                 plannedQuantityUnit.setFieldValue(product.getStringField(ProductFields.UNIT));
 
                 plannedQuantity.setFieldValue(numberService
-                        .formatWithMinimumFractionDigits(otDto.getDecimalField(OperationalTaskDtoFields.PLANNED_QUANTITY), 0));
+                        .formatWithMinimumFractionDigits(operationalTaskDto.getDecimalField(OperationalTaskDtoFields.PLANNED_QUANTITY), 0));
                 usedQuantity.setFieldValue(numberService
-                        .formatWithMinimumFractionDigits(otDto.getDecimalField(OperationalTaskDtoFields.USED_QUANTITY), 0));
-                if (Objects.nonNull(otDto.getDecimalField(OperationalTaskDtoFields.PLANNED_QUANTITY))
-                        && otDto.getDecimalField(OperationalTaskDtoFields.PLANNED_QUANTITY).compareTo(BigDecimal.ZERO) > 0) {
-                    BigDecimal doneInPercentageQuantity = BigDecimalUtils.convertNullToZero(otDto.getDecimalField("usedQuantity"))
+                        .formatWithMinimumFractionDigits(operationalTaskDto.getDecimalField(OperationalTaskDtoFields.USED_QUANTITY), 0));
+
+                if (Objects.nonNull(operationalTaskDto.getDecimalField(OperationalTaskDtoFields.PLANNED_QUANTITY))
+                        && operationalTaskDto.getDecimalField(OperationalTaskDtoFields.PLANNED_QUANTITY).compareTo(BigDecimal.ZERO) > 0) {
+                    BigDecimal doneInPercentageQuantity = BigDecimalUtils.convertNullToZero(operationalTaskDto.getDecimalField(OperationalTaskDtoFields.USED_QUANTITY))
                             .multiply(new BigDecimal(100));
                     doneInPercentageQuantity = doneInPercentageQuantity
-                            .divide(otDto.getDecimalField(OperationalTaskDtoFields.PLANNED_QUANTITY), MathContext.DECIMAL64);
+                            .divide(operationalTaskDto.getDecimalField(OperationalTaskDtoFields.PLANNED_QUANTITY), MathContext.DECIMAL64);
                     doneInPercentage.setFieldValue(numberService
                             .formatWithMinimumFractionDigits(doneInPercentageQuantity.setScale(0, RoundingMode.CEILING), 0));
-                    doneInPercentage.setEnabled(false);
-                    doneInPercentageUnit.setFieldValue("%");
                 } else {
                     doneInPercentage.setFieldValue(numberService.formatWithMinimumFractionDigits(BigDecimal.ZERO, 0));
-                    doneInPercentage.setEnabled(false);
-                    doneInPercentageUnit.setFieldValue("%");
                 }
+
+                doneInPercentage.setEnabled(false);
+                doneInPercentageUnit.setFieldValue("%");
             }
         }
     }
+
 
     private void filterDivisionLookup(final ViewDefinitionState view) {
         LookupComponent divisionLookup = (LookupComponent) view.getComponentByReference(OperationalTaskFields.DIVISION);
@@ -224,15 +233,19 @@ public class OperationalTasksDetailsHooks {
 
         if (Objects.nonNull(division)) {
             Long divisionId = division.getId();
+
             filterValueHolder.put(OperationalTaskFields.DIVISION, divisionId);
+
             workstationLookup.setFilterValue(filterValueHolder);
         }
     }
 
     public void disableFieldsWhenOrderTypeIsSelected(final ViewDefinitionState view) {
-        FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
+        FormComponent operationalTaskForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         FieldComponent typeField = (FieldComponent) view.getComponentByReference(OperationalTaskFields.TYPE);
         FieldComponent stateField = (FieldComponent) view.getComponentByReference(OperationalTaskFields.STATE);
+        FieldComponent actualStaff = (FieldComponent) view.getComponentByReference(OperationalTaskFields.ACTUAL_STAFF);
+        GridComponent workers = (GridComponent) view.getComponentByReference(OperationalTaskFields.WORKERS);
 
         String type = (String) typeField.getFieldValue();
         String state = (String) stateField.getFieldValue();
@@ -244,21 +257,23 @@ public class OperationalTasksDetailsHooks {
         if (operationalTasksService.isOperationalTaskTypeOtherCase(type)) {
             changedStateField(view, referenceBasicFields, true);
             changedStateField(view, extendFields, false);
+
             clearFieldValue(view, extendFields);
         } else {
             changedStateField(view, referenceBasicFields, false);
             changedStateField(view, extendFields, true);
         }
-        FieldComponent actualStaff = (FieldComponent) view.getComponentByReference(OperationalTaskFields.ACTUAL_STAFF);
-        GridComponent workers = (GridComponent) view.getComponentByReference(OperationalTaskFields.WORKERS);
+
         boolean staffTabEnabled = !OperationalTaskStateStringValues.FINISHED.equals(state) && !OperationalTaskStateStringValues.REJECTED.equals(state);
+
         actualStaff.setEnabled(staffTabEnabled);
-        workers.setEnabled(staffTabEnabled && form.getEntityId() != null);
+        workers.setEnabled(staffTabEnabled && Objects.nonNull(operationalTaskForm.getEntityId()));
     }
 
     private void changedStateField(final ViewDefinitionState view, final List<String> references, final boolean enabled) {
         for (String reference : references) {
             FieldComponent fieldComponent = (FieldComponent) view.getComponentByReference(reference);
+
             fieldComponent.setEnabled(enabled);
         }
     }
@@ -266,6 +281,7 @@ public class OperationalTasksDetailsHooks {
     private void clearFieldValue(final ViewDefinitionState view, final List<String> references) {
         for (String reference : references) {
             FieldComponent fieldComponent = (FieldComponent) view.getComponentByReference(reference);
+
             fieldComponent.setFieldValue(null);
             fieldComponent.requestComponentUpdateState();
         }
@@ -273,35 +289,41 @@ public class OperationalTasksDetailsHooks {
 
     public void disableButtons(final ViewDefinitionState view) {
         WindowComponent window = (WindowComponent) view.getComponentByReference(QcadooViewConstants.L_WINDOW);
+
+        RibbonGroup orderRibbonGroup = window.getRibbon().getGroupByName(L_ORDER);
+        RibbonGroup technologyOperationComponentRibbonGroup = window.getRibbon().getGroupByName(L_TECHNOLOGY_OPERATION_COMPONENT);
+        RibbonGroup operationalTasksRibbonGroup = window.getRibbon().getGroupByName(L_OPERATIONAL_TASKS);
+        RibbonGroup changeoversRibbonGroup = window.getRibbon().getGroupByName(L_WORKSTATION_CHANGEOVER_FOR_OPERATIONAL_TASKS);
+
+        RibbonActionItem showOrderRibbonItem = orderRibbonGroup.getItemByName(L_SHOW_ORDER);
+        RibbonActionItem showOperationParametersRibbonItem = technologyOperationComponentRibbonGroup.getItemByName(L_SHOW_OPERATION_PARAMETERS);
+        RibbonActionItem showOperationalTasksWithOrderRibbonItem = operationalTasksRibbonGroup.getItemByName(L_SHOW_OPERATIONAL_TASKS_WITH_ORDER);
+        RibbonActionItem showWorkstationChangeoverForOperationalTasksRibbonItem = changeoversRibbonGroup.getItemByName(L_SHOW_WORKSTATION_CHANGEOVER_FOR_OPERATIONAL_TASKS);
+
         FieldComponent typeField = (FieldComponent) view.getComponentByReference(OperationalTaskFields.TYPE);
         LookupComponent orderLookup = (LookupComponent) view.getComponentByReference(OperationalTaskFields.ORDER);
         LookupComponent technologyOperationComponentLookup = (LookupComponent) view
                 .getComponentByReference(OperationalTaskFields.TECHNOLOGY_OPERATION_COMPONENT);
+        LookupComponent workstationLookup = (LookupComponent) view.getComponentByReference(OperationalTaskFields.WORKSTATION);
 
         String type = (String) typeField.getFieldValue();
 
-        boolean isOperationalTaskTypeExecutionOperationInOrder = operationalTasksService
-                .isOperationalTaskTypeExecutionOperationInOrder(type);
-        boolean isOrderSelected = !Objects.isNull(orderLookup.getEntity());
-        boolean isTechnologyOperationComponentSelected = !Objects.isNull(technologyOperationComponentLookup.getEntity());
+        boolean isOperationalTaskTypeExecutionOperationInOrder = operationalTasksService.isOperationalTaskTypeExecutionOperationInOrder(type);
+        boolean isOrderSelected = Objects.nonNull(orderLookup.getEntity());
+        boolean isTechnologyOperationComponentSelected = Objects.nonNull(technologyOperationComponentLookup.getEntity());
+        boolean isWorkstationSelected = Objects.nonNull(workstationLookup.getEntity());
 
-        RibbonGroup order = window.getRibbon().getGroupByName(L_ORDER);
-        RibbonGroup technologyOperationComponent = window.getRibbon().getGroupByName(L_TECHNOLOGY_OPERATION_COMPONENT);
-        RibbonGroup operationalTasks = window.getRibbon().getGroupByName(L_OPERATIONAL_TASKS);
+        showOrderRibbonItem.setEnabled(isOperationalTaskTypeExecutionOperationInOrder && isOrderSelected);
+        showOrderRibbonItem.requestUpdate(true);
 
-        RibbonActionItem showOrder = order.getItemByName(L_SHOW_ORDER);
-        RibbonActionItem showOperationParameters = technologyOperationComponent.getItemByName(L_SHOW_OPERATION_PARAMETERS);
-        RibbonActionItem showOperationalTasksWithOrder = operationalTasks.getItemByName(L_SHOW_OPERATIONAL_TASKS_WITH_ORDER);
+        showOperationParametersRibbonItem.setEnabled(isOperationalTaskTypeExecutionOperationInOrder && isOrderSelected && isTechnologyOperationComponentSelected);
+        showOperationParametersRibbonItem.requestUpdate(true);
 
-        showOrder.setEnabled(isOperationalTaskTypeExecutionOperationInOrder && isOrderSelected);
-        showOrder.requestUpdate(true);
+        showOperationalTasksWithOrderRibbonItem.setEnabled(isOperationalTaskTypeExecutionOperationInOrder && isOrderSelected);
+        showOperationalTasksWithOrderRibbonItem.requestUpdate(true);
 
-        showOperationParameters.setEnabled(
-                isOperationalTaskTypeExecutionOperationInOrder && isOrderSelected && isTechnologyOperationComponentSelected);
-        showOperationParameters.requestUpdate(true);
-
-        showOperationalTasksWithOrder.setEnabled(isOperationalTaskTypeExecutionOperationInOrder && isOrderSelected);
-        showOperationalTasksWithOrder.requestUpdate(true);
+        showWorkstationChangeoverForOperationalTasksRibbonItem.setEnabled(isWorkstationSelected);
+        showWorkstationChangeoverForOperationalTasksRibbonItem.requestUpdate(true);
     }
 
     private void setTechnology(final ViewDefinitionState view) {
@@ -336,8 +358,7 @@ public class OperationalTasksDetailsHooks {
         } else {
             Entity operation = technologyOperationComponent.getBelongsToField(TechnologyOperationComponentFields.OPERATION);
 
-            descriptionField
-                    .setFieldValue(technologyOperationComponent.getStringField(TechnologyOperationComponentFields.COMMENT));
+            descriptionField.setFieldValue(technologyOperationComponent.getStringField(TechnologyOperationComponentFields.COMMENT));
 
             if (!Objects.isNull(operation)) {
                 nameField.setFieldValue(operation.getStringField(OperationFields.NAME));
@@ -346,6 +367,14 @@ public class OperationalTasksDetailsHooks {
 
         nameField.requestComponentUpdateState();
         descriptionField.requestComponentUpdateState();
+    }
+
+    private DataDefinition getOperationalTaskDD() {
+        return dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_OPERATIONAL_TASK);
+    }
+
+    private DataDefinition getOperationalTaskDtoDD() {
+        return dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_OPERATIONAL_TASK_DTO);
     }
 
 }

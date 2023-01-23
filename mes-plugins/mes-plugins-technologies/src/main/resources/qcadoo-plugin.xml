@@ -125,19 +125,44 @@
 
         <model:dictionary name="sampling"/>
 
+        <model:model-field plugin="basic" model="attribute">
+            <model:hasMany name="workstationChangeoverNorms" plugin="technologies"
+                           model="workstationChangeoverNorm" joinField="attribute"/>
+        </model:model-field>
+
+        <model:model-field plugin="basic" model="attributeValue">
+            <model:hasMany name="fromWorkstationChangeoverNorms" plugin="technologies"
+                           model="workstationChangeoverNorm" joinField="fromAttributeValue"/>
+        </model:model-field>
+
+        <model:model-field plugin="basic" model="attributeValue">
+            <model:hasMany name="toWorkstationChangeoverNorms" plugin="technologies"
+                           model="workstationChangeoverNorm" joinField="toAttributeValue"/>
+        </model:model-field>
+
         <model:model-field plugin="basic" model="workstationType">
             <model:hasMany name="technologicalProcesses" plugin="technologies"
-            model="technologicalProcess" joinField="workstationType"/>
+                           model="technologicalProcess" joinField="workstationType"/>
+        </model:model-field>
+
+        <model:model-field plugin="basic" model="workstationType">
+            <model:hasMany name="workstationChangeoverNorms" plugin="technologies"
+                           model="workstationChangeoverNorm" joinField="workstationType"/>
         </model:model-field>
 
         <model:model-field plugin="basic" model="workstation">
             <model:hasMany name="technologicalProcesses" plugin="technologies"
-            model="technologicalProcess" joinField="workstation"/>
+                           model="technologicalProcess" joinField="workstation"/>
+        </model:model-field>
+
+        <model:model-field plugin="basic" model="workstation">
+            <model:hasMany name="workstationChangeoverNorms" plugin="technologies"
+                           model="workstationChangeoverNorm" joinField="workstation"/>
         </model:model-field>
 
         <model:model-field plugin="basic" model="sizeGroup">
             <model:hasMany name="technologicalProcesses" plugin="technologies"
-            model="technologicalProcess" joinField="sizeGroup"/>
+                            model="technologicalProcess" joinField="sizeGroup"/>
         </model:model-field>
 
         <model:model-field plugin="basic" model="sizeGroup">
@@ -147,7 +172,7 @@
 
         <model:model-field plugin="basic" model="technologicalProcessRate">
             <model:hasMany name="technologicalProcesses" plugin="technologies"
-            model="technologicalProcess" joinField="technologicalProcessRate"/>
+                           model="technologicalProcess" joinField="technologicalProcessRate"/>
         </model:model-field>
 
         <model:model-field plugin="states" model="message">

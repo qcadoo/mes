@@ -83,6 +83,10 @@ public final class OrdersConstants {
 
     public static final String MODEL_ORDER_ATTACHMENT = "orderAttachment";
 
+    public static final String MODEL_WORKSTATION_CHANGEOVER_FOR_OPERATIONAL_TASK = "workstationChangeoverForOperationalTask";
+
+    public static final String MODEL_WORKSTATION_CHANGEOVER_FOR_OPERATIONAL_TASK_DTO = "workstationChangeoverForOperationalTaskDto";
+
     // VIEW
 
     public static final String VIEW_ORDER_TECHNOLOGICAL_PROCESSES_ANALYSIS = "orderTechnologicalProcessesAnalysis";

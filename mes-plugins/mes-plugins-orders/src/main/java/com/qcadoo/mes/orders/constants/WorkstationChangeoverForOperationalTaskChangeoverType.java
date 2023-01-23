@@ -21,18 +21,30 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.technologies.constants;
+package com.qcadoo.mes.orders.constants;
 
-public final class WorkstationFieldsT {
+public enum WorkstationChangeoverForOperationalTaskChangeoverType {
 
-    private WorkstationFieldsT() {
+    BASED_ON_NORM("01basedOnNorm"), OWN("02own");
 
+    private final String changeoverType;
+
+    private WorkstationChangeoverForOperationalTaskChangeoverType(final String changeoverType) {
+        this.changeoverType = changeoverType;
     }
 
-    public static final String OPERATIONS = "operations";
+    public String getStringValue() {
+        return changeoverType;
+    }
 
-    public static final String OPERATION_COMPONENTS = "operationComponents";
+    public static WorkstationChangeoverForOperationalTaskChangeoverType parseString(final String changeoverType) {
+        if ("01basedOnNorm".equals(changeoverType)) {
+            return BASED_ON_NORM;
+        } else if ("02own".equals(changeoverType)) {
+            return OWN;
+        }
 
-    public static final String WORKSTATION_CHANGEOVER_NORMS = "workstationChangeoverNorms";
+        throw new IllegalStateException("Unsupported WorkstationChangeoverForOperationalTaskChangeoverType: " + changeoverType);
+    }
 
 }

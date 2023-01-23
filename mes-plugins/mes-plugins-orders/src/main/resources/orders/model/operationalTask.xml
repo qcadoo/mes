@@ -59,12 +59,18 @@
                          model="technology" persistent="false" />
 
         <enum name="state" values="01pending,02started,03finished,04rejected" default="01pending"/>
-        <hasMany name="stateChanges" model="operationalTaskStateChange" joinField="operationalTask" cascade="delete"/>
+        <hasMany name="stateChanges" model="operationalTaskStateChange"
+                 joinField="operationalTask" cascade="delete"/>
         <integer name="actualStaff">
             <validatesRange from="1"/>
         </integer>
         <manyToMany name="workers" plugin="basic" model="staff"
                     joinField="operationalTasksStaff" copyable="true"/>
+
+        <hasMany name="currentWorkstationChangeoverForOperationalTasks" model="workstationChangeoverForOperationalTask"
+                 joinField="currentOperationalTask"/>
+        <hasMany name="previousWorkstationChangeoverForOperationalTasks" model="workstationChangeoverForOperationalTask"
+                 joinField="previousOperationalTask"/>
     </fields>
 
     <hooks>

@@ -1,27 +1,8 @@
 package com.qcadoo.mes.orders.states;
 
-import static com.qcadoo.model.api.search.SearchOrders.desc;
-import static com.qcadoo.model.api.search.SearchProjections.alias;
-import static com.qcadoo.model.api.search.SearchProjections.list;
-import static com.qcadoo.model.api.search.SearchProjections.rowCount;
-
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.qcadoo.mes.newstates.BasicStateService;
 import com.qcadoo.mes.orders.TechnologyServiceO;
-import com.qcadoo.mes.orders.constants.OperationalTaskFields;
-import com.qcadoo.mes.orders.constants.OperationalTaskType;
-import com.qcadoo.mes.orders.constants.OrderFields;
-import com.qcadoo.mes.orders.constants.OrdersConstants;
-import com.qcadoo.mes.orders.constants.ScheduleFields;
-import com.qcadoo.mes.orders.constants.SchedulePositionFields;
-import com.qcadoo.mes.orders.constants.ScheduleStateChangeFields;
+import com.qcadoo.mes.orders.constants.*;
 import com.qcadoo.mes.orders.hooks.OperationalTaskHooks;
 import com.qcadoo.mes.orders.hooks.OrderHooks;
 import com.qcadoo.mes.orders.states.constants.OperationalTaskStateStringValues;
@@ -36,7 +17,16 @@ import com.qcadoo.model.api.search.JoinType;
 import com.qcadoo.model.api.search.SearchOrders;
 import com.qcadoo.model.api.search.SearchProjections;
 import com.qcadoo.model.api.search.SearchRestrictions;
-import com.qcadoo.view.api.utils.NumberGeneratorService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.Date;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+import static com.qcadoo.model.api.search.SearchOrders.desc;
+import static com.qcadoo.model.api.search.SearchProjections.*;
 
 @Service
 public class ScheduleStateService extends BasicStateService implements ScheduleServiceMarker {
@@ -303,7 +293,7 @@ public class ScheduleStateService extends BasicStateService implements ScheduleS
             maybeDivision.ifPresent(d -> operationalTask.setField(OperationalTaskFields.DIVISION, d));
             operationalTaskHooks.setInitialState(operationalTask);
             operationalTaskHooks.fillNameAndDescription(operationalTask);
-            operationalTaskHooks.setStaff(operationalTask);
+            operationalTaskHooks.setStaff(operationalTaskDD, operationalTask);
             operationalTaskDD.fastSave(operationalTask);
         }
         schedule.addGlobalMessage("productionScheduling.operationDurationDetailsInOrder.info.operationalTasksCreated");
