@@ -3,19 +3,19 @@
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
  * Version: 1.4
- *
+ * <p>
  * This file is part of Qcadoo.
- *
+ * <p>
  * Qcadoo is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation; either version 3 of the License,
  * or (at your option) any later version.
- *
+ * <p>
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty
  * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU Affero General Public License for more details.
- *
+ * <p>
  * You should have received a copy of the GNU Affero General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
@@ -34,6 +34,8 @@ import com.google.common.collect.Lists;
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.productionCounting.ProductionCountingService;
 import com.qcadoo.mes.productionCounting.constants.TechnologyFieldsPC;
+import com.qcadoo.mes.technologies.constants.TechnologyFields;
+import com.qcadoo.mes.technologies.states.constants.TechnologyState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.CheckBoxComponent;
 import com.qcadoo.view.api.components.FieldComponent;
@@ -90,6 +92,8 @@ public class TechnologyDetailsHooksPC {
     public void checkTypeOfProductionRecording(final ViewDefinitionState view) {
         FieldComponent typeOfProductionRecordingField = (FieldComponent) view
                 .getComponentByReference(TechnologyFieldsPC.TYPE_OF_PRODUCTION_RECORDING);
+        FieldComponent stateField = (FieldComponent) view
+                .getComponentByReference(TechnologyFields.STATE);
         CheckBoxComponent pieceworkProductionField = (CheckBoxComponent) view.getComponentByReference(TechnologyFieldsPC.PIECEWORK_PRODUCTION);
         FieldComponent pieceRateField = (FieldComponent) view.getComponentByReference(TechnologyFieldsPC.PIECE_RATE);
         String typeOfProductionRecording = (String) typeOfProductionRecordingField.getFieldValue();
@@ -103,8 +107,10 @@ public class TechnologyDetailsHooksPC {
             pieceworkProductionField.setEnabled(false);
             pieceworkProductionField.setFieldValue(false);
         }
-        if(pieceworkProductionField.isChecked()){
+        if (pieceworkProductionField.isChecked() && TechnologyState.DRAFT.getStringValue().equals(stateField.getFieldValue())) {
             pieceRateField.setEnabled(true);
+        } else if (pieceworkProductionField.isChecked() && !TechnologyState.DRAFT.getStringValue().equals(stateField.getFieldValue())) {
+            pieceRateField.setEnabled(false);
         } else {
             pieceRateField.setEnabled(false);
             pieceRateField.setFieldValue(null);
