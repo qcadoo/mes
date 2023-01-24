@@ -284,8 +284,9 @@ public class OperationalTaskHooks {
 
     private void setWorkstationChangeoverForOperationalTasks(final DataDefinition operationalTaskDD, final Entity operationalTask) {
         Entity workstation = operationalTask.getBelongsToField(OperationalTaskFields.WORKSTATION);
+        Date startDate = operationalTask.getDateField(OperationalTaskFields.START_DATE);
 
-        if (Objects.isNull(workstation)) {
+        if (Objects.isNull(workstation) || Objects.isNull(startDate)) {
             List<Entity> currentWorkstationChangeoverForOperationalTasks = operationalTask.getHasManyField(OperationalTaskFields.CURRENT_WORKSTATION_CHANGEOVER_FOR_OPERATIONAL_TASKS);
 
             currentWorkstationChangeoverForOperationalTasks.forEach(workstationChangeoverForOperationalTask ->
@@ -296,39 +297,45 @@ public class OperationalTaskHooks {
             if (Objects.nonNull(operationalTaskId)) {
                 Entity operationalTaskFromDB = operationalTaskDD.get(operationalTaskId);
                 Entity workstationFromDB = operationalTaskFromDB.getBelongsToField(OperationalTaskFields.WORKSTATION);
+                Date startDateFromDB = operationalTaskFromDB.getDateField(OperationalTaskFields.START_DATE);
 
-                if (Objects.isNull(workstationFromDB) || !workstation.getId().equals(workstationFromDB.getId())) {
-                    List<Entity> workstationChangeoverForOperationalTasks = workstationChangeoverService.findWorkstationChangeoverForOperationalTasks(operationalTask);
-
-                    operationalTask.setField(OperationalTaskFields.CURRENT_WORKSTATION_CHANGEOVER_FOR_OPERATIONAL_TASKS, workstationChangeoverForOperationalTasks);
+                if (Objects.isNull(workstationFromDB) || !workstation.getId().equals(workstationFromDB.getId())
+                    || Objects.isNull(startDateFromDB) || !startDate.equals(startDateFromDB)) {
+                    setWorkstationChangeoverForOperationalTasksAndUpdateDates(operationalTask);
                 }
             } else {
-                List<Entity> workstationChangeoverForOperationalTasks = workstationChangeoverService.findWorkstationChangeoverForOperationalTasks(operationalTask);
-
-                if (workstationChangeoverForOperationalTasks.isEmpty()) {
-                    Optional<Date> mayBeStartDate = getStartDate(workstationChangeoverForOperationalTasks);
-
-                    if (mayBeStartDate.isPresent()) {
-                        Date startDate = operationalTask.getDateField(OperationalTaskFields.START_DATE);
-                        Date finishDate = operationalTask.getDateField(OperationalTaskFields.FINISH_DATE);
-
-                        Seconds seconds = Seconds.secondsBetween(new DateTime(startDate), new DateTime(finishDate));
-
-                        startDate = mayBeStartDate.get();
-                        finishDate = new DateTime(startDate).plusSeconds(seconds.getSeconds()).toDate();
-
-                        operationalTask.setField(OperationalTaskFields.START_DATE, startDate);
-                        operationalTask.setField(OperationalTaskFields.FINISH_DATE, finishDate);
-                    }
-                }
-
-                operationalTask.setField(OperationalTaskFields.CURRENT_WORKSTATION_CHANGEOVER_FOR_OPERATIONAL_TASKS, workstationChangeoverForOperationalTasks);
+                setWorkstationChangeoverForOperationalTasksAndUpdateDates(operationalTask);
             }
         }
     }
 
-    private Optional<Date> getStartDate(final List<Entity> workstationChangeoverForOperationalTasks) {
-        return workstationChangeoverForOperationalTasks.stream().map(workstationChangeoverForOperationalTask -> workstationChangeoverForOperationalTask.getDateField(WorkstationChangeoverForOperationalTaskFields.FINISH_DATE)).max(Date::compareTo);
+    private void setWorkstationChangeoverForOperationalTasksAndUpdateDates(final Entity operationalTask) {
+        List<Entity> workstationChangeoverForOperationalTasks = workstationChangeoverService.findWorkstationChangeoverForOperationalTasks(operationalTask);
+
+        if (!workstationChangeoverForOperationalTasks.isEmpty()) {
+            Optional<Date> mayBeMaxFinishDate = getWorkstationChangeoverForOperationalTasksMaxFinishDate(workstationChangeoverForOperationalTasks);
+
+            if (mayBeMaxFinishDate.isPresent()) {
+                Date startDate = operationalTask.getDateField(OperationalTaskFields.START_DATE);
+                Date finishDate = operationalTask.getDateField(OperationalTaskFields.FINISH_DATE);
+
+                Integer duration = Seconds.secondsBetween(new DateTime(startDate), new DateTime(finishDate)).getSeconds();
+
+                startDate = mayBeMaxFinishDate.get();
+                finishDate = new DateTime(startDate).plusSeconds(duration).toDate();
+
+                operationalTask.setField(OperationalTaskFields.START_DATE, startDate);
+                operationalTask.setField(OperationalTaskFields.FINISH_DATE, finishDate);
+            }
+        }
+
+        operationalTask.setField(OperationalTaskFields.CURRENT_WORKSTATION_CHANGEOVER_FOR_OPERATIONAL_TASKS, workstationChangeoverForOperationalTasks);
+    }
+
+    private Optional<Date> getWorkstationChangeoverForOperationalTasksMaxFinishDate(final List<Entity> workstationChangeoverForOperationalTasks) {
+        return workstationChangeoverForOperationalTasks.stream().map(workstationChangeoverForOperationalTask ->
+                workstationChangeoverForOperationalTask.getDateField(WorkstationChangeoverForOperationalTaskFields.FINISH_DATE))
+                .max(Date::compareTo);
     }
 
     public void setInitialState(final Entity operationalTask) {

@@ -36,9 +36,9 @@ public class WorkstationChangeoverForOperationalTaskDetailsListeners {
         Date finishDate = DateUtils.parseDate(finishDateField.getFieldValue());
 
         if (Objects.nonNull(startDate) && Objects.nonNull(finishDate) && startDate.before(finishDate)) {
-            Seconds seconds = Seconds.secondsBetween(new DateTime(startDate), new DateTime(finishDate));
+            Integer duration = Seconds.secondsBetween(new DateTime(startDate), new DateTime(finishDate)).getSeconds();
 
-            durationField.setFieldValue(seconds.getSeconds());
+            durationField.setFieldValue(duration);
         }
 
         durationField.requestComponentUpdateState();
