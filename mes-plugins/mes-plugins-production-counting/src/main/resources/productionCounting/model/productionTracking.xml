@@ -32,6 +32,11 @@
 		<string name="number" unique="true">
 			<validatesLength max="255"/>
 		</string>
+
+		<string name="comments">
+			<validatesLength max="2048"/>
+		</string>
+
 		<string name="lastStateChangeFailCause" copyable="false"/>
 		<boolean name="lastStateChangeFails" default="false" copyable="false"/>
 		<boolean name="isExternalSynchronized" default="true"

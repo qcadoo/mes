@@ -91,4 +91,6 @@ public final class ProductionTrackingFields {
 
     public static final String PIECEWORK_PRODUCTION = "pieceworkProduction";
 
+    public static final String COMMENTS = "comments";
+
 }

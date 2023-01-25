@@ -213,7 +213,7 @@
                 </script>
 
                 <component type="gridLayout" name="mainGridLayout"
-                           columns="3" rows="1">
+                           columns="3" rows="3">
                     <layoutElement column="1" row="1">
                         <component type="checkbox" name="lastTracking" field="lastTracking"
                                    reference="lastTracking" hasDescription="true"/>
@@ -467,11 +467,16 @@
                         </component>
                         <component type="checkbox" name="pieceworkProduction" reference="pieceworkProduction"
                                    field="pieceworkProduction" defaultEnabled="never"/>
+
                         <component type="checkbox" name="isDisabled" reference="isDisabled"
                                    defaultVisible="false" hasLabel="false"/>
                         <component type="hidden" name="isExternalSynchronized"
                                    reference="isExternalSynchronized" defaultVisible="false"
                                    field="isExternalSynchronized"/>
+                    </layoutElement>
+                    <layoutElement column="3" row="2" height="2">
+                        <component type="textarea" name="comments" field="comments"
+                                   reference="comments"/>
                     </layoutElement>
                 </component>
 
@@ -728,7 +733,9 @@
                         };
                     ]]>
                 </script>
-                <option type="column" name="duration" fields="duration" expression="T(com.qcadoo.view.api.utils.TimeConverterService).convertTimeToString(#duration)" link="true"/>
+                <option type="column" name="duration" fields="duration"
+                        expression="T(com.qcadoo.view.api.utils.TimeConverterService).convertTimeToString(#duration)"
+                        link="true"/>
                 <option type="column" name="dateFrom" fields="dateFrom" link="true"/>
                 <option type="column" name="dateTo" fields="dateTo" link="true"/>
                 <option type="column" name="reason" fields="reason" expression="#reason['name']" link="true"/>
@@ -749,7 +756,8 @@
                 <option type="orderable" value="duration,dateFrom,dateTo,reason,description"/>
 
                 <listener event="addNew"
-                          class="com.qcadoo.mes.stoppage.listeners.AllStoppagesListeners" method="addNewFromProductionTracking"/>
+                          class="com.qcadoo.mes.stoppage.listeners.AllStoppagesListeners"
+                          method="addNewFromProductionTracking"/>
             </component>
         </windowTab>
 

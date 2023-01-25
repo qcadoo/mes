@@ -113,7 +113,7 @@ public class ProductionTrackingDetailsHooks {
             ProductionTrackingFields.TIME_RANGE_TO, ProductionTrackingFields.TRACKING_OPERATION_PRODUCT_IN_COMPONENTS,
             ProductionTrackingFields.TRACKING_OPERATION_PRODUCT_OUT_COMPONENTS, ProductionTrackingFields.SHIFT_START_DAY,
             ProductionTrackingFields.STAFF_WORK_TIMES, ProductionTrackingFields.BATCH, ProductionTrackingFields.EXPIRATION_DATE,
-            ProductionTrackingFields.ADD_BATCH, ProductionTrackingFields.STOPPAGES);
+            ProductionTrackingFields.ADD_BATCH, ProductionTrackingFields.STOPPAGES, ProductionTrackingFields.COMMENTS);
 
     public static final String L_ROLE_STOPPAGES = "ROLE_STOPPAGES";
 
