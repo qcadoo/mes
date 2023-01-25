@@ -714,9 +714,15 @@ public class ProductionBalanceXlsService extends XlsDocumentService {
             row = sheet.createRow(rowOffset + rowCounter);
             createRegularCell(stylesContainer, row, 0, productionCost.getOrderNumber());
             createRegularCell(stylesContainer, row, 1, productionCost.getOperationNumber());
-            createNumericCell(stylesContainer, row, 2, productionCost.getPlannedCostsSum(), false);
-            createNumericCell(stylesContainer, row, 3, productionCost.getRealCostsSum(), false);
-            createNumericCell(stylesContainer, row, 4, productionCost.getSumCostsDeviation(), false);
+            if (productionCost.isPieceworkProduction()) {
+                createRegularCell(stylesContainer, row, 2, null);
+                createRegularCell(stylesContainer, row, 3, null);
+                createRegularCell(stylesContainer, row, 4, null);
+            } else {
+                createNumericCell(stylesContainer, row, 2, productionCost.getPlannedCostsSum(), false);
+                createNumericCell(stylesContainer, row, 3, productionCost.getRealCostsSum(), false);
+                createNumericCell(stylesContainer, row, 4, productionCost.getSumCostsDeviation(), false);
+            }
             createTimeCell(stylesContainer, row, 5, productionCost.getPlannedStaffTime(), false);
             createTimeCell(stylesContainer, row, 6, productionCost.getRealStaffTime(), true);
             createTimeCell(stylesContainer, row, 7, productionCost.getPlannedMachineTime(), false);
