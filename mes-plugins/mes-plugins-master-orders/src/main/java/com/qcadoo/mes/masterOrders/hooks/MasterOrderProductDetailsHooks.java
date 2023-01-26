@@ -148,7 +148,8 @@ public class MasterOrderProductDetailsHooks {
                         view.getLocale());
 
                 defaultTechnologyField.setFieldValue(defaultTechnologyValue);
-                if (technologyLookup.getFieldValue() == null && technologyLookup.getCurrentCode().isEmpty()) {
+                if (technologyLookup.getFieldValue() == null && (technologyLookup.getCurrentCode() == null
+                        || technologyLookup.getCurrentCode().isEmpty())) {
                     technologyLookup.setFieldValue(defaultTechnology.getId());
                 }
             }
