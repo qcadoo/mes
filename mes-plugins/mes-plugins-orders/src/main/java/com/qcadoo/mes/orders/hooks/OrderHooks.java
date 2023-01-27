@@ -23,8 +23,12 @@
  */
 package com.qcadoo.mes.orders.hooks;
 
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.math.BigDecimal;
+import java.nio.file.Files;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -32,16 +36,10 @@ import java.util.Locale;
 import java.util.Objects;
 import java.util.Optional;
 
-import com.qcadoo.mes.basic.constants.ExpiryDateValidityUnit;
-import com.qcadoo.mes.orders.constants.*;
-import com.qcadoo.mes.technologies.constants.TechnologyFields;
-import com.qcadoo.model.api.file.FileService;
-
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Service;
 
 import com.google.common.collect.Lists;
@@ -50,18 +48,25 @@ import com.qcadoo.localization.api.utils.DateUtils;
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.basic.ProductService;
 import com.qcadoo.mes.basic.ShiftsService;
+import com.qcadoo.mes.basic.constants.ExpiryDateValidityUnit;
 import com.qcadoo.mes.basic.constants.ProductFamilyElementType;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.orders.OrderPackService;
 import com.qcadoo.mes.orders.OrderService;
 import com.qcadoo.mes.orders.OrderStateChangeReasonService;
 import com.qcadoo.mes.orders.TechnologyServiceO;
+import com.qcadoo.mes.orders.constants.OrderAttachmentFields;
+import com.qcadoo.mes.orders.constants.OrderFields;
+import com.qcadoo.mes.orders.constants.OrderStartDateBasedOn;
+import com.qcadoo.mes.orders.constants.OrdersConstants;
+import com.qcadoo.mes.orders.constants.ParameterFieldsO;
 import com.qcadoo.mes.orders.states.constants.OrderState;
 import com.qcadoo.mes.orders.states.constants.OrderStateChangeDescriber;
 import com.qcadoo.mes.orders.states.constants.OrderStateChangeFields;
 import com.qcadoo.mes.orders.util.AdditionalUnitService;
 import com.qcadoo.mes.orders.util.OrderDatesService;
 import com.qcadoo.mes.states.service.StateChangeEntityBuilder;
+import com.qcadoo.mes.technologies.constants.TechnologyFields;
 import com.qcadoo.mes.technologies.states.constants.TechnologyState;
 import com.qcadoo.model.api.BigDecimalUtils;
 import com.qcadoo.model.api.DataDefinition;
@@ -69,6 +74,7 @@ import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.FieldDefinition;
 import com.qcadoo.model.api.NumberService;
+import com.qcadoo.model.api.file.FileService;
 import com.qcadoo.security.api.UserService;
 import com.qcadoo.security.constants.UserFields;
 import com.qcadoo.view.api.utils.TimeConverterService;
@@ -886,7 +892,7 @@ public class OrderHooks {
         Object quantity = order.getField(OrderFields.PLANNED_QUANTITY);
 
         if (Objects.nonNull(quantity)) {
-            if (BigDecimalUtils.tryParse(quantity.toString(), LocaleContextHolder.getLocale()).isRight()) {
+            if (BigDecimalUtils.checkIfCorrectDecimalValue(order, OrderFields.PLANNED_QUANTITY)) {
                 order.setField(OrderFields.COMMISSIONED_PLANNED_QUANTITY,
                         numberService.setScaleWithDefaultMathContext(order.getDecimalField(OrderFields.PLANNED_QUANTITY)));
             }
@@ -901,7 +907,7 @@ public class OrderHooks {
                     .getStringField(OrderAttachmentFields.NAME));
             try (InputStream is = fileService.getInputStream(attachment
                     .getStringField(OrderAttachmentFields.ATTACHMENT));
-                 OutputStream output = new FileOutputStream(file)) {
+                 OutputStream output = Files.newOutputStream(file.toPath())) {
                 IOUtils.copy(is, output);
             } catch (IOException e) {
                 throw new IllegalStateException("Problem with order attachments");
