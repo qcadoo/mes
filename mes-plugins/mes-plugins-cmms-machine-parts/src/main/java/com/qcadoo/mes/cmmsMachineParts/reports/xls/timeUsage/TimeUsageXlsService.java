@@ -53,8 +53,8 @@ import java.util.stream.Collectors;
         reportStyleFactory = new ReportStyleFactory(workbook);
         List<TimeUsageDTO> usages = timeUsageXLSDataProvider.getUsages((Map<String, Object>) filters.get("filtersMap"));
         updatePartsAndDescription(usages, locale);
-        fillHeaderData(workbook, sheet, 0, locale, (Map<String, Object>) filters.get("filtersMap"));
-        fillHeaderRow(workbook, sheet, 4, locale);
+        fillHeaderData(workbook, sheet, locale, (Map<String, Object>) filters.get("filtersMap"));
+        fillHeaderRow(workbook, sheet, locale);
         List<TimeUsageGroupDTO> timeUsageGroups = group(usages);
         int rowCounter = 5;
         for (TimeUsageGroupDTO timeUsageGroupDTO : timeUsageGroups) {
@@ -115,8 +115,8 @@ import java.util.stream.Collectors;
         }).collect(Collectors.toList());
     }
 
-    private void fillHeaderData(final HSSFWorkbook workbook, final HSSFSheet sheet, Integer rowNum, final Locale locale,
-            Map<String, Object> filters) {
+    private void fillHeaderData(final HSSFWorkbook workbook, final HSSFSheet sheet, final Locale locale,
+                                Map<String, Object> filters) {
         Font font = workbook.createFont();
         font.setFontName(HSSFFont.FONT_ARIAL);
         font.setFontHeightInPoints((short) 10);
@@ -157,17 +157,12 @@ import java.util.stream.Collectors;
     private String getUserString() {
         Entity user = dataDefinitionService.get(QcadooSecurityConstants.PLUGIN_IDENTIFIER, QcadooSecurityConstants.MODEL_USER)
                 .get(securityService.getCurrentUserId());
-        StringBuilder builder = new StringBuilder();
-        builder.append(user.getStringField("firstName"));
-        builder.append(" ");
-        builder.append(user.getStringField("lastName"));
-        builder.append(" ");
-        builder.append(getDateValue(new Date()));
-        return builder.toString();
+        return user.getStringField("firstName") + " " + user.getStringField("lastName") +
+                " " + getDateValue(new Date());
     }
 
-    private void fillHeaderRow(final HSSFWorkbook workbook, final HSSFSheet sheet, Integer rowNum, final Locale locale) {
-        HSSFRow headerLine = sheet.createRow(rowNum);
+    private void fillHeaderRow(final HSSFWorkbook workbook, final HSSFSheet sheet, final Locale locale) {
+        HSSFRow headerLine = sheet.createRow(4);
         headerLine.setHeight((short) 800);
         Font font = workbook.createFont();
         font.setFontName(HSSFFont.FONT_ARIAL);
@@ -206,8 +201,8 @@ import java.util.stream.Collectors;
         for (TimeUsageDTO usage : timeUsage.getTimeUsages()) {
             HSSFRow usageRow = sheet.createRow(rowCounter + usagesCounter);
             boolean isFirst = usagesCounter == 0;
-            HSSFCellStyle style = getLeftAlignedStyle(workbook, isFirst, usage);
-            HSSFCellStyle styleRight = getRightAlignedStyle(workbook, isFirst, usage);
+            HSSFCellStyle style = getLeftAlignedStyle(isFirst, usage.getEventType(), timeUsage.getDurationSum());
+            HSSFCellStyle styleRight = getRightAlignedStyle(isFirst, usage.getEventType(), timeUsage.getDurationSum());
             addNewRow(usageRow, usage, locale, style, styleRight);
             if (isFirst) {
                 addNewCell(usageRow, timeUsage.getDurationSum().toString(), 10, styleRight, true);
@@ -241,7 +236,7 @@ import java.util.stream.Collectors;
         cell.setCellStyle(style);
         if(numeric){
             cell.setCellType(Cell.CELL_TYPE_NUMERIC);
-            cell.setCellValue(Integer.valueOf(value));
+            cell.setCellValue(Integer.parseInt(value));
         } else {
             cell.setCellValue(value);
         }
@@ -249,15 +244,15 @@ import java.util.stream.Collectors;
 
     }
 
-    private HSSFCellStyle getStyle(final HSSFWorkbook workbook, boolean isFirst, TimeUsageDTO usage, boolean isLeft) {
+    private HSSFCellStyle getStyle(boolean isFirst, boolean isLeft, String eventType, Long durationSum) {
         reportStyleFactory.setFirst(isFirst);
         if (isLeft) {
             reportStyleFactory.setLeftAligned();
         } else {
             reportStyleFactory.setRightAligned();
         }
-        if ("maintenance".equals(usage.getEventType())) {
-            if (usage.getRegisteredTime() - 5 <= usage.getDuration() && usage.getDuration() <= usage.getRegisteredTime() + 15) {
+        if ("maintenance".equals(eventType)) {
+            if (420 <= durationSum && durationSum <= 480) {
                 reportStyleFactory.setGreen();
             } else {
                 reportStyleFactory.setRed();
@@ -268,12 +263,12 @@ import java.util.stream.Collectors;
         return reportStyleFactory.getStyle();
     }
 
-    private HSSFCellStyle getRightAlignedStyle(final HSSFWorkbook workbook, boolean isFirst, TimeUsageDTO usage) {
-        return getStyle(workbook, isFirst, usage, false);
+    private HSSFCellStyle getRightAlignedStyle(boolean isFirst, String eventType, Long durationSum) {
+        return getStyle(isFirst, false, eventType, durationSum);
     }
 
-    private HSSFCellStyle getLeftAlignedStyle(final HSSFWorkbook workbook, boolean isFirst, TimeUsageDTO usage) {
-        return getStyle(workbook, isFirst, usage, true);
+    private HSSFCellStyle getLeftAlignedStyle(boolean isFirst, String eventType, Long durationSum) {
+        return getStyle(isFirst, true, eventType, durationSum);
     }
 
     private String getDateValue(Date date) {
@@ -288,8 +283,7 @@ import java.util.stream.Collectors;
             return "";
         }
         SimpleDateFormat df = new SimpleDateFormat(DateUtils.L_DATE_FORMAT);
-        String time = df.format(date);
 
-        return time;
+        return df.format(date);
     }
 }
