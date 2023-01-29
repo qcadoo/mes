@@ -27,6 +27,7 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.Objects;
 
+import com.qcadoo.view.api.components.CheckBoxComponent;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -63,6 +64,15 @@ public class OrderedProductDetailsHooks {
     private SecurityService securityService;
 
     public void beforeRender(final ViewDefinitionState view) {
+
+        FieldComponent batchNumber = (FieldComponent) view.getComponentByReference(OrderedProductFields.BATCH_NUMBER);
+        if (((CheckBoxComponent) view.getComponentByReference(OrderedProductFields.ADD_BATCH)).isChecked()) {
+            batchNumber.setEnabled(true);
+        } else {
+            batchNumber.setEnabled(false);
+        }
+
+
         FormComponent orderedProductForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
         Entity orderedProduct = orderedProductForm.getPersistedEntityWithIncludedFormValues();

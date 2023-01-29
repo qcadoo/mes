@@ -71,6 +71,9 @@
 
         <hasMany name="deliveredProducts" model="deliveredProduct"
                  joinField="orderedProduct" cascade="nullify" copyable="false"/>
+
+        <boolean name="addBatch" default="false" persistent="false"/>
+
     </fields>
 
     <hooks>

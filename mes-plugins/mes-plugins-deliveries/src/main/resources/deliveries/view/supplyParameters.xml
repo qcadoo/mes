@@ -41,7 +41,7 @@
         <windowTab name="mainTab">
             <component type="form" name="supplyParametersForm" reference="form">
                 <component type="gridLayout" name="gridLayout" columns="3"
-                           rows="11">
+                           rows="13">
                     <layoutElement column="1" row="1" height="2">
                         <component type="textarea" name="defaultDescription"
                                    field="#{form}.defaultDescription" reference="defaultDescription"/>
@@ -117,11 +117,37 @@
                         </component>
                     </layoutElement>
 
-                    <layoutElement column="2" row="1" width="2" height="10">
+                    <layoutElement column="1" row="12">
+                        <component type="checkbox" name="productDeliveryBatchEvidence" hasDescription="true"
+                                   field="#{form}.productDeliveryBatchEvidence" reference="productDeliveryBatchEvidence">
+                            <option type="labelWidth" value="50" />
+                            <listener event="onChange"
+                                      class="com.qcadoo.view.api.listeners.RerenderListener"
+                                      method="onChangeRerender"/>
+                        </component>
+                    </layoutElement>
+
+                    <layoutElement column="1" row="13">
+                        <component type="lookup" name="productDeliveryBatchNumberPattern" field="#{form}.productDeliveryBatchNumberPattern"
+                                   reference="productDeliveryBatchNumberPattern" hasDescription="true">
+                            <option type="column" name="name" fields="name"/>
+                            <option type="orderable" value="number,name"/>
+                            <option type="expression" value="#number + ' - ' + #name"/>
+                            <option type="fieldCode" value="number"/>
+                            <option type="labelWidth" value="50"/>
+
+                            <criteriaModifier
+                                    class="com.qcadoo.mes.advancedGenealogy.criteriaModifier.NumberPatternCriteriaModifiersAG"
+                                    method="restrictNumberPatternForUnusedDelivery"/>
+                        </component>
+                    </layoutElement>
+
+
+                    <layoutElement column="2" row="1" width="2" height="13">
                         <component type="borderLayout" name="columnsForOrdersBorderLayout">
                             <component type="gridLayout" name="columnForOrdersGridLayout"
-                                       columns="1" rows="10">
-                                <layoutElement column="1" row="1" height="9">
+                                       columns="1" rows="13">
+                                <layoutElement column="1" row="1" height="12">
                                     <component type="grid" name="columnsForOrders"
                                                source="#{form}.parameterDeliveryOrderColumns"
                                                reference="columnsForOrders">
@@ -142,7 +168,7 @@
                                         <option type="multiselect" value="true"/>
                                     </component>
                                 </layoutElement>
-                                <layoutElement column="1" row="10">
+                                <layoutElement column="1" row="13">
                                     <component type="hidden" name="hideEmptyColumnsForOrders"
                                                field="#{form}.hideEmptyColumnsForOrders"
                                                reference="hideEmptyColumnsForOrders">
@@ -166,7 +192,7 @@
 
     <hooks>
         <beforeRender class="com.qcadoo.mes.deliveries.hooks.SupplyParameterHooks"
-                      method="setFieldsVisibleAndRequired"/>
+                      method="onBeforeRender"/>
     </hooks>
 
 </view>

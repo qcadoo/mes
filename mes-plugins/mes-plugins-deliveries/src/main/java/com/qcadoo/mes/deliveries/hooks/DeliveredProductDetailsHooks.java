@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
+import com.qcadoo.view.api.components.*;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -48,10 +49,6 @@ import com.qcadoo.model.api.units.UnitConversionService;
 import com.qcadoo.security.api.SecurityService;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
-import com.qcadoo.view.api.components.FieldComponent;
-import com.qcadoo.view.api.components.FormComponent;
-import com.qcadoo.view.api.components.GridComponent;
-import com.qcadoo.view.api.components.LookupComponent;
 import com.qcadoo.view.api.components.lookup.FilterValueHolder;
 import com.qcadoo.view.constants.QcadooViewConstants;
 
@@ -82,6 +79,14 @@ public class DeliveredProductDetailsHooks {
     private SecurityService securityService;
 
     public void beforeRender(final ViewDefinitionState view) {
+
+        FieldComponent batchNumber = (FieldComponent) view.getComponentByReference(DeliveredProductFields.BATCH_NUMBER);
+        if (((CheckBoxComponent) view.getComponentByReference(DeliveredProductFields.ADD_BATCH)).isChecked()) {
+            batchNumber.setEnabled(true);
+        } else {
+            batchNumber.setEnabled(false);
+        }
+
         FormComponent deliveredProductForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
         Entity deliveredProduct = deliveredProductForm.getPersistedEntityWithIncludedFormValues();

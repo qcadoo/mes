@@ -25,6 +25,7 @@ package com.qcadoo.mes.advancedGenealogy;
 
 import java.util.Objects;
 
+import com.google.common.base.Strings;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -43,6 +44,8 @@ import com.qcadoo.model.api.search.SearchRestrictions;
 @Service
 public class AdvancedGenealogyService {
 
+    public static final String L_PRODUCT_DELIVERY_BATCH_EVIDENCE = "productDeliveryBatchEvidence";
+    public static final String L_PRODUCT_DELIVERY_BATCH_NUMBER_PATTERN = "productDeliveryBatchNumberPattern";
     @Autowired
     private ParameterService parameterService;
 
@@ -66,7 +69,10 @@ public class AdvancedGenealogyService {
         return batch;
     }
 
-    public Entity createOrGetBatch(final String number, final Entity product, final Entity supplier) {
+    public Entity createOrGetBatch(String number, final Entity product, final Entity supplier) {
+        if (Strings.isNullOrEmpty(number) && parameterService.getParameter().getBooleanField(L_PRODUCT_DELIVERY_BATCH_EVIDENCE)) {
+            number = getNumberDeliveryProductFromNumberPattern(product);
+        }
         Entity batch = getBatch(number, product, supplier);
 
         if (Objects.isNull(batch)) {
@@ -136,6 +142,21 @@ public class AdvancedGenealogyService {
         } else {
             numberPattern = parameterService.getParameter().getBelongsToField(
                     ParameterFieldsAG.NUMBER_PATTERN);
+        }
+        return numberPatternGeneratorService.generateNumber(numberPattern);
+    }
+
+    public String getNumberDeliveryProductFromNumberPattern(Entity product) {
+        Entity numberPattern;
+        Entity batchNumberPattern = product.getBelongsToField(ProductFields.BATCH_NUMBER_PATTERN);
+        Entity parent = product.getBelongsToField(ProductFields.PARENT);
+        if (batchNumberPattern != null) {
+            numberPattern = batchNumberPattern;
+        } else if (parent != null && parent.getBelongsToField(ProductFields.BATCH_NUMBER_PATTERN) != null) {
+            numberPattern = parent.getBelongsToField(ProductFields.BATCH_NUMBER_PATTERN);
+        } else {
+            numberPattern = parameterService.getParameter().getBelongsToField(
+                    L_PRODUCT_DELIVERY_BATCH_NUMBER_PATTERN);
         }
         return numberPatternGeneratorService.generateNumber(numberPattern);
     }

@@ -251,12 +251,9 @@
         </windowTab>
 
         <windowTab name="bachTab">
-            <component type="gridLayout" name="gridsLayout" columns="1" rows="2" hasBorders="false">
+            <component type="gridLayout" name="gridsLayout" columns="1" rows="3" hasBorders="false">
+
                 <layoutElement column="1" row="1">
-                    <component type="input" name="batchNumber" field="#{form}.batchNumber"
-                               reference="batchNumber" hasDescription="true"/>
-                </layoutElement>
-                <layoutElement column="1" row="2">
                     <component type="lookup" name="batch" field="#{form}.batch"
                                reference="batch">
                         <option type="column" name="supplierName" fields="supplier"
@@ -275,6 +272,19 @@
                                 method="filterByProduct"/>
                     </component>
                 </layoutElement>
+                <layoutElement column="1" row="2">
+                    <component type="checkbox" name="addBatch" field="#{form}.addBatch"
+                               reference="addBatch" hasDescription="true">
+                        <listener event="onChange"
+                                  class="com.qcadoo.view.api.listeners.RerenderListener"
+                                  method="onChangeRerender"/>
+                    </component>
+                </layoutElement>
+                <layoutElement column="1" row="3">
+                    <component type="input" name="batchNumber" field="#{form}.batchNumber"
+                               reference="batchNumber" hasDescription="true"/>
+                </layoutElement>
+
             </component>
         </windowTab>
     </component>

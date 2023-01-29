@@ -75,6 +75,9 @@
         <belongsTo name="orderedProduct" model="orderedProduct"/>
         <date name="productionDate"/>
         <date name="expirationDate"/>
+
+        <boolean name="addBatch" default="false" persistent="false"/>
+
     </fields>
 
     <hooks>
