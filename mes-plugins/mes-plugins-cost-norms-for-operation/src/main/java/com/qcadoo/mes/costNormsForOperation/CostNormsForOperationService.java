@@ -51,8 +51,6 @@ public class CostNormsForOperationService {
     @Autowired
     private CurrencyService currencyService;
 
-    /* ****** VIEW EVENT LISTENERS ******* */
-
     public void copyCostValuesFromOperation(final ViewDefinitionState view, final ComponentState operationLookupState,
             final String[] args) {
         ComponentState operationLookup = view.getComponentByReference(OPERATION_FIELD);
@@ -75,8 +73,8 @@ public class CostNormsForOperationService {
 
     public void fillCurrencyFields(final ViewDefinitionState view) {
         String currencyStringCode = currencyService.getCurrencyAlphabeticCode();
-        FieldComponent component = null;
-        for (String componentReference : Sets.newHashSet("pieceworkCostCURRENCY", "laborHourlyCostCURRENCY",
+        FieldComponent component;
+        for (String componentReference : Sets.newHashSet("laborHourlyCostCURRENCY",
                 "machineHourlyCostCURRENCY")) {
             component = (FieldComponent) view.getComponentByReference(componentReference);
             if (component == null) {
@@ -89,15 +87,13 @@ public class CostNormsForOperationService {
 
     private void applyCostNormsFromGivenSource(final ViewDefinitionState view, final Entity source) {
         checkArgument(source != null, "source entity is null");
-        FieldComponent component = null;
+        FieldComponent component;
 
         for (String fieldName : FIELDS) {
             component = (FieldComponent) view.getComponentByReference(fieldName);
             component.setFieldValue(source.getField(fieldName));
         }
     }
-
-    /* ******* MODEL HOOKS ******* */
 
     public void copyCostNormsToTechnologyOperationComponent(final DataDefinition dd, final Entity technologyOperationComponent) {
         if (technologyOperationComponent.getBelongsToField(OPERATION_FIELD) == null) {
@@ -106,8 +102,6 @@ public class CostNormsForOperationService {
         copyCostValuesFromGivenOperation(technologyOperationComponent,
                 technologyOperationComponent.getBelongsToField(OPERATION_FIELD));
     }
-
-    /* ******* CUSTOM HELPER(S) ******* */
 
     private void copyCostValuesFromGivenOperation(final Entity target, final Entity source) {
         checkArgument(target != null, "given target is null");

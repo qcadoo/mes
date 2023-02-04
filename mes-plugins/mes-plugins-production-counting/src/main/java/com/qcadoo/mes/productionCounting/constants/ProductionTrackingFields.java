@@ -61,8 +61,6 @@ public final class ProductionTrackingFields {
 
     public static final String LABOR_TIME = "laborTime";
 
-    public static final String EXECUTED_OPERATION_CYCLES = "executedOperationCycles";
-
     public static final String STAFF = "staff";
 
     public static final String STAFF_WORK_TIMES = "staffWorkTimes";
@@ -90,5 +88,9 @@ public final class ProductionTrackingFields {
     public static final String EXPIRATION_DATE = "expirationDate";
 
     public static final String STOPPAGES = "stoppages";
+
+    public static final String PIECEWORK_PRODUCTION = "pieceworkProduction";
+
+    public static final String COMMENTS = "comments";
 
 }

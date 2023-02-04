@@ -27,6 +27,7 @@ import com.qcadoo.mes.technologies.constants.TechnologyInputProductTypeFields;
 import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
 import com.qcadoo.mes.technologies.dto.OperationProductComponentHolder;
 import com.qcadoo.mes.technologies.tree.ProductStructureTreeService;
+import com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperationComponentFieldsTNFO;
 import com.qcadoo.model.api.BigDecimalUtils;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
@@ -109,23 +110,26 @@ public class CostCalculationComponentsService {
                 .getStringField(CostCalculationFields.SOURCE_OF_OPERATION_COSTS)))) {
 
             for (Entity calculationOperationComponent : calculationOperationComponents) {
-                BigDecimal totalMachineOperationCost = calculationOperationComponent
-                        .getDecimalField(CalculationOperationComponentFields.TOTAL_MACHINE_OPERATION_COST);
-                BigDecimal totalLaborOperationCost = calculationOperationComponent
-                        .getDecimalField(CalculationOperationComponentFields.TOTAL_LABOR_OPERATION_COST);
-                ComponentsCalculationHolder holder = allOperationComponents
-                        .stream()
-                        .filter(bc -> bc
-                                .getToc()
-                                .getId()
-                                .equals(calculationOperationComponent.getBelongsToField(
-                                        CalculationOperationComponentFields.TECHNOLOGY_OPERATION_COMPONENT).getId())).findFirst()
-                        .orElse(null);
+                Entity toc = calculationOperationComponent.getBelongsToField(
+                        CalculationOperationComponentFields.TECHNOLOGY_OPERATION_COMPONENT);
+                if (!toc.getBooleanField(TechnologyOperationComponentFieldsTNFO.PIECEWORK_PRODUCTION)) {
+                    BigDecimal totalMachineOperationCost = calculationOperationComponent
+                            .getDecimalField(CalculationOperationComponentFields.TOTAL_MACHINE_OPERATION_COST);
+                    BigDecimal totalLaborOperationCost = calculationOperationComponent
+                            .getDecimalField(CalculationOperationComponentFields.TOTAL_LABOR_OPERATION_COST);
+                    ComponentsCalculationHolder holder = allOperationComponents
+                            .stream()
+                            .filter(bc -> bc
+                                    .getToc()
+                                    .getId()
+                                    .equals(toc.getId())).findFirst()
+                            .orElse(null);
 
-                if (Objects.nonNull(holder)) {
-                    BigDecimal cost = BigDecimalUtils.convertNullToZero(totalMachineOperationCost).add(
-                            BigDecimalUtils.convertNullToZero(totalLaborOperationCost), numberService.getMathContext());
-                    holder.setLaborCost(numberService.setScaleWithDefaultMathContext(cost, 2));
+                    if (Objects.nonNull(holder)) {
+                        BigDecimal cost = BigDecimalUtils.convertNullToZero(totalMachineOperationCost).add(
+                                BigDecimalUtils.convertNullToZero(totalLaborOperationCost), numberService.getMathContext());
+                        holder.setLaborCost(numberService.setScaleWithDefaultMathContext(cost, 2));
+                    }
                 }
             }
         }

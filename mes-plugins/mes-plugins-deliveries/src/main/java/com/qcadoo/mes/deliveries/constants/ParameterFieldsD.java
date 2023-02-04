@@ -45,4 +45,8 @@ public final class ParameterFieldsD {
 
     public static final String POSITIVE_PURCHASE_PRICE = "positivePurchasePrice";
 
+    public static final String PRODUCT_DELIVERY_BATCH_EVIDENCE = "productDeliveryBatchEvidence";
+
+    public static final String PRODUCT_DELIVERY_BATCH_NUMBER_PATTERN = "productDeliveryBatchNumberPattern";
+
 }

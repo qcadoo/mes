@@ -3,19 +3,19 @@
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
  * Version: 1.4
- *
+ * <p>
  * This file is part of Qcadoo.
- *
+ * <p>
  * Qcadoo is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation; either version 3 of the License,
  * or (at your option) any later version.
- *
+ * <p>
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty
  * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU Affero General Public License for more details.
- *
+ * <p>
  * You should have received a copy of the GNU Affero General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -101,7 +102,7 @@ public class DeliveredProductHooks {
     }
 
     private void updateDeliveredAndAdditionalQuantityInOrderedProduct(final DataDefinition deliveredProductDD,
-            final Entity deliveredProduct) {
+                                                                      final Entity deliveredProduct) {
         if (Objects.nonNull(deliveredProduct.getId())) {
             Entity deliveredProductDB = deliveredProduct.getDataDefinition().get(deliveredProduct.getId());
 
@@ -140,7 +141,7 @@ public class DeliveredProductHooks {
 
         if (Objects.isNull(deliveredProductDBAdditionalCode) != Objects.isNull(deliveredProductAdditionalCode)
                 || Objects.nonNull(deliveredProductDBAdditionalCode)
-                        && !deliveredProductDBAdditionalCode.getId().equals(deliveredProductAdditionalCode.getId())) {
+                && !deliveredProductDBAdditionalCode.getId().equals(deliveredProductAdditionalCode.getId())) {
             return true;
         }
 
@@ -149,7 +150,7 @@ public class DeliveredProductHooks {
 
         if (Objects.isNull(deliveredProductDBBatch) != Objects.isNull(deliveredProductBatch)
                 || Objects.nonNull(deliveredProductDBBatch)
-                        && !deliveredProductDBBatch.getId().equals(deliveredProductBatch.getId())) {
+                && !deliveredProductDBBatch.getId().equals(deliveredProductBatch.getId())) {
             return true;
         }
 
@@ -162,7 +163,7 @@ public class DeliveredProductHooks {
     }
 
     private void updateDeliveredAndAdditionalQuantityInOrderedProduct(final DataDefinition deliveredProductDD,
-            final Entity deliveredProduct, BigDecimal deliveredQuantity, BigDecimal additionalQuantity) {
+                                                                      final Entity deliveredProduct, BigDecimal deliveredQuantity, BigDecimal additionalQuantity) {
         Optional<Entity> maybeOrderedProduct = deliveriesService.getOrderedProductForDeliveredProduct(deliveredProduct);
 
         if (maybeOrderedProduct.isPresent()) {
@@ -187,7 +188,7 @@ public class DeliveredProductHooks {
     }
 
     private void updateDeliveredAndAdditionalQuantityInOrderedProduct(final Entity deliveredProduct, BigDecimal deliveredQuantity,
-            BigDecimal additionalQuantity, Entity orderedProduct) {
+                                                                      BigDecimal additionalQuantity, Entity orderedProduct) {
         if (Objects.nonNull(orderedProduct)) {
             List<Entity> deliveredProducts = getOtherDeliveredProducts(deliveredProduct, orderedProduct);
 
@@ -249,11 +250,16 @@ public class DeliveredProductHooks {
     }
 
     private void createBatch(final Entity deliveredProduct) {
-        String batchNumber = deliveredProduct.getStringField(DeliveredProductFields.BATCH_NUMBER);
-        Entity product = deliveredProduct.getBelongsToField(DeliveredProductFields.PRODUCT);
-        Entity delivery = deliveredProduct.getBelongsToField(DeliveredProductFields.DELIVERY);
 
-        if (Objects.nonNull(batchNumber) && Objects.nonNull(product) && Objects.nonNull(delivery)) {
+        if (deliveredProduct.getBooleanField(DeliveredProductFields.ADD_BATCH)
+                && (StringUtils.isNoneEmpty(deliveredProduct.getStringField(DeliveredProductFields.BATCH_NUMBER))
+                || parameterService.getParameter().getBooleanField(
+                ParameterFieldsD.PRODUCT_DELIVERY_BATCH_EVIDENCE))) {
+            String batchNumber = deliveredProduct.getStringField(DeliveredProductFields.BATCH_NUMBER);
+            Entity product = deliveredProduct.getBelongsToField(DeliveredProductFields.PRODUCT);
+            Entity delivery = deliveredProduct.getBelongsToField(DeliveredProductFields.DELIVERY);
+
+
             Entity supplier = delivery.getBelongsToField(DeliveryFields.SUPPLIER);
 
             Entity batch = advancedGenealogyService.createOrGetBatch(batchNumber, product, supplier);
@@ -310,7 +316,7 @@ public class DeliveredProductHooks {
     }
 
     public boolean checkIfDeliveredQuantityIsLessThanDamagedQuantity(final DataDefinition deliveredProductDD,
-            final Entity deliveredProduct) {
+                                                                     final Entity deliveredProduct) {
         BigDecimal damagedQuantity = deliveredProduct.getDecimalField(DeliveredProductFields.DAMAGED_QUANTITY);
         BigDecimal deliveredQuantity = deliveredProduct.getDecimalField(DeliveredProductFields.DELIVERED_QUANTITY);
 
@@ -328,7 +334,7 @@ public class DeliveredProductHooks {
     }
 
     private boolean checkIfDeliveredQuantityIsLessThanOrderedQuantity(final DataDefinition deliveredProductDD,
-            final Entity deliveredProduct) {
+                                                                      final Entity deliveredProduct) {
         if (isBiggerDeliveredQuantityAllowed()) {
             return true;
         }

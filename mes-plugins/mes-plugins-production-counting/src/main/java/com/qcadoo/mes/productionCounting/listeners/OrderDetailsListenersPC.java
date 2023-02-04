@@ -39,8 +39,7 @@ import com.qcadoo.view.api.components.FieldComponent;
 public class OrderDetailsListenersPC {
 
     private static final List<String> L_ORDER_FIELD_NAMES = Lists.newArrayList(OrderFieldsPC.REGISTER_QUANTITY_IN_PRODUCT,
-            OrderFieldsPC.REGISTER_QUANTITY_OUT_PRODUCT, OrderFieldsPC.REGISTER_PRODUCTION_TIME,
-            OrderFieldsPC.REGISTER_PIECEWORK);
+            OrderFieldsPC.REGISTER_QUANTITY_OUT_PRODUCT, OrderFieldsPC.REGISTER_PRODUCTION_TIME);
 
     @Autowired
     private ProductionCountingService productionCountingService;

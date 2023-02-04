@@ -20,4 +20,10 @@ public class NumberPatternCriteriaModifiersAG {
 				SearchRestrictions.eq(NumberPatternFields.USED_IN, translationService
 						.translate("basic.parameter.numberPattern.usedIn.value", LocaleContextHolder.getLocale()))));
 	}
+
+	public void restrictNumberPatternForUnusedDelivery(final SearchCriteriaBuilder searchCriteriaBuilder) {
+		searchCriteriaBuilder.add(SearchRestrictions.or(SearchRestrictions.isNull(NumberPatternFields.USED_IN),
+				SearchRestrictions.eq(NumberPatternFields.USED_IN, translationService
+						.translate("basic.parameter.numberPattern.usedInDeliveryProductBatch.value", LocaleContextHolder.getLocale()))));
+	}
 }

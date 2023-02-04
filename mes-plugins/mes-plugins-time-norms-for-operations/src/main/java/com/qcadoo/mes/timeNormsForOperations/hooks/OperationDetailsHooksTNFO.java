@@ -23,7 +23,7 @@
  */
 package com.qcadoo.mes.timeNormsForOperations.hooks;
 
-import static com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperationComponentFieldsTNFO.*;
+import static com.qcadoo.mes.timeNormsForOperations.constants.OperationFieldsTFNO.*;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -48,7 +48,6 @@ public class OperationDetailsHooksTNFO {
     }
 
     public void updateFieldsStateOnWindowLoad(final ViewDefinitionState viewDefinitionState) {
-
         FieldComponent nextOperationAfterProducedType = (FieldComponent) viewDefinitionState
                 .getComponentByReference(NEXT_OPERATION_AFTER_PRODUCED_TYPE);
         FieldComponent nextOperationAfterProducedQuantity = (FieldComponent) viewDefinitionState
@@ -56,8 +55,8 @@ public class OperationDetailsHooksTNFO {
         FieldComponent nextOperationAfterProducedQuantityUNIT = (FieldComponent) viewDefinitionState
                 .getComponentByReference(NEXT_OPERATION_AFTER_PRODUCED_QUANTITY_UNIT);
         FieldComponent areProductQuantitiesDivisible = (FieldComponent) viewDefinitionState
-                .getComponentByReference("areProductQuantitiesDivisible");
-        FieldComponent isTjDivisible = (FieldComponent) viewDefinitionState.getComponentByReference("isTjDivisible");
+                .getComponentByReference(ARE_PRODUCT_QUANTITIES_DIVISIBLE);
+        FieldComponent isTjDivisible = (FieldComponent) viewDefinitionState.getComponentByReference(IS_TJ_DIVISIBLE);
 
         nextOperationAfterProducedType.setRequired(true);
 

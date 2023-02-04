@@ -39,8 +39,6 @@ public interface ProductionTrackingService {
 
     ProductionTrackingState getTrackingState(final ViewDefinitionState view);
 
-    void changeProducedQuantityFieldState(final ViewDefinitionState viewDefinitionState);
-
     void fillProductionLineLookup(final ViewDefinitionState view);
 
     void changeState(Entity productionTracking, ProductionTrackingState state);

@@ -34,6 +34,7 @@ import com.qcadoo.mes.costCalculation.print.dto.ComponentsCalculationHolder;
 import com.qcadoo.mes.costCalculation.print.dto.CostCalculationMaterial;
 import com.qcadoo.mes.costCalculation.print.dto.CostCalculationMaterialBySize;
 import com.qcadoo.mes.costNormsForOperation.constants.CalculationOperationComponentFields;
+import com.qcadoo.mes.costNormsForOperation.constants.TechnologyOperationComponentFieldsCNFO;
 import com.qcadoo.mes.technologies.TechnologyService;
 import com.qcadoo.mes.technologies.constants.OperationFields;
 import com.qcadoo.mes.technologies.constants.OperationProductOutComponentFields;
@@ -133,6 +134,10 @@ public class CostCalculationXlsService extends XlsDocumentService {
                     SourceOfOperationCosts.parseString(entity.getStringField(CostCalculationFields.SOURCE_OF_OPERATION_COSTS)))) {
                 labourCost = entity.getBelongsToField(CostCalculationFields.STANDARD_LABOR_COST)
                         .getDecimalField(StandardLaborCostFields.LABOR_COST);
+            } else if (technology.getBooleanField(TechnologyOperationComponentFieldsTNFO.PIECEWORK_PRODUCTION)) {
+                labourCost = entity.getDecimalField(CostCalculationFields.QUANTITY)
+                        .multiply(operationsCostCalculationService.getCurrentRate(technology
+                                .getBelongsToField(TechnologyOperationComponentFieldsCNFO.PIECE_RATE)), numberService.getMathContext());
             } else {
                 labourCost = operationsCostCalculationService.calculateOperationsCost(entity, technology);
                 List<Entity> technologyCalculationOperationComponents = entity
@@ -395,33 +400,36 @@ public class CostCalculationXlsService extends XlsDocumentService {
 
         int rowCounter = 0;
         for (Entity calculationOperationComponent : calculationOperationComponents) {
-            row = sheet.createRow(rowOffset + rowCounter);
             Entity technologyOperationComponent = calculationOperationComponent
                     .getBelongsToField(CalculationOperationComponentFields.TECHNOLOGY_OPERATION_COMPONENT);
-            Entity technology = calculationOperationComponent.getBelongsToField(CalculationOperationComponentFields.TECHNOLOGY);
-            Entity mainOutputProductComponent = technologyService.getMainOutputProductComponent(technologyOperationComponent);
-            createRegularCell(stylesContainer, row, 0, technology.getStringField(TechnologyFields.NUMBER));
-            createRegularCell(stylesContainer, row, 1,
-                    technology.getBelongsToField(TechnologyFields.PRODUCT).getStringField(ProductFields.NUMBER));
-            createRegularCell(stylesContainer, row, 2, mainOutputProductComponent
-                    .getBelongsToField(OperationProductOutComponentFields.PRODUCT).getStringField(ProductFields.NUMBER));
-            createRegularCell(stylesContainer, row, 3,
-                    calculationOperationComponent.getStringField(CalculationOperationComponentFields.NODE_NUMBER));
-            createRegularCell(stylesContainer, row, 4, calculationOperationComponent
-                    .getBelongsToField(CalculationOperationComponentFields.OPERATION).getStringField(OperationFields.NUMBER));
-            createTimeCell(stylesContainer, row, 5,
-                    calculationOperationComponent.getIntegerField(CalculationOperationComponentFields.MACHINE_WORK_TIME));
-            createNumericCell(stylesContainer, row, 6, calculationOperationComponent
-                    .getDecimalField(CalculationOperationComponentFields.TOTAL_MACHINE_OPERATION_COST));
-            createTimeCell(stylesContainer, row, 7,
-                    calculationOperationComponent.getIntegerField(CalculationOperationComponentFields.LABOR_WORK_TIME));
-            createNumericCell(stylesContainer, row, 8,
-                    technologyOperationComponent.getIntegerField(TechnologyOperationComponentFieldsTNFO.MIN_STAFF));
-            createNumericCell(stylesContainer, row, 9, calculationOperationComponent
-                    .getDecimalField(CalculationOperationComponentFields.TOTAL_LABOR_OPERATION_COST));
-            createNumericCell(stylesContainer, row, 10,
-                    calculationOperationComponent.getDecimalField(CalculationOperationComponentFields.OPERATION_COST));
-            rowCounter++;
+            if (!technologyOperationComponent
+                    .getBooleanField(TechnologyOperationComponentFieldsTNFO.PIECEWORK_PRODUCTION)) {
+                row = sheet.createRow(rowOffset + rowCounter);
+                Entity technology = calculationOperationComponent.getBelongsToField(CalculationOperationComponentFields.TECHNOLOGY);
+                Entity mainOutputProductComponent = technologyService.getMainOutputProductComponent(technologyOperationComponent);
+                createRegularCell(stylesContainer, row, 0, technology.getStringField(TechnologyFields.NUMBER));
+                createRegularCell(stylesContainer, row, 1,
+                        technology.getBelongsToField(TechnologyFields.PRODUCT).getStringField(ProductFields.NUMBER));
+                createRegularCell(stylesContainer, row, 2, mainOutputProductComponent
+                        .getBelongsToField(OperationProductOutComponentFields.PRODUCT).getStringField(ProductFields.NUMBER));
+                createRegularCell(stylesContainer, row, 3,
+                        calculationOperationComponent.getStringField(CalculationOperationComponentFields.NODE_NUMBER));
+                createRegularCell(stylesContainer, row, 4, calculationOperationComponent
+                        .getBelongsToField(CalculationOperationComponentFields.OPERATION).getStringField(OperationFields.NUMBER));
+                createTimeCell(stylesContainer, row, 5,
+                        calculationOperationComponent.getIntegerField(CalculationOperationComponentFields.MACHINE_WORK_TIME));
+                createNumericCell(stylesContainer, row, 6, calculationOperationComponent
+                        .getDecimalField(CalculationOperationComponentFields.TOTAL_MACHINE_OPERATION_COST));
+                createTimeCell(stylesContainer, row, 7,
+                        calculationOperationComponent.getIntegerField(CalculationOperationComponentFields.LABOR_WORK_TIME));
+                createNumericCell(stylesContainer, row, 8,
+                        technologyOperationComponent.getIntegerField(TechnologyOperationComponentFieldsTNFO.MIN_STAFF));
+                createNumericCell(stylesContainer, row, 9, calculationOperationComponent
+                        .getDecimalField(CalculationOperationComponentFields.TOTAL_LABOR_OPERATION_COST));
+                createNumericCell(stylesContainer, row, 10,
+                        calculationOperationComponent.getDecimalField(CalculationOperationComponentFields.OPERATION_COST));
+                rowCounter++;
+            }
         }
         for (int i = 0; i <= 10; i++) {
             sheet.autoSizeColumn(i, false);

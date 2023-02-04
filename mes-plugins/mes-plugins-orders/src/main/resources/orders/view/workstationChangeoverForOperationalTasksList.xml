@@ -1,0 +1,98 @@
+<!--
+
+    ***************************************************************************
+    Copyright (c) 2010 Qcadoo Limited
+    Project: Qcadoo MES
+    Version: 1.4
+
+    This file is part of Qcadoo.
+
+    Qcadoo is free software; you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as published
+    by the Free Software Foundation; either version 3 of the License,
+    or (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty
+    of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+    See the GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+    ***************************************************************************
+
+-->
+<view defaultAuthorizationRole="ROLE_PLANNING"
+      name="workstationChangeoverForOperationalTasksList" modelName="workstationChangeoverForOperationalTaskDto"
+      menuAccessible="true"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
+      xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd">
+
+    <component type="window" name="window">
+        <ribbon>
+            <template name="standardGridTemplate"/>
+        </ribbon>
+
+        <component type="grid" name="workstationChangeoverNormsList" reference="grid">
+            <script>
+                <![CDATA[
+                    #{grid}.addOnChangeListener({
+                        onChange: function(selectedEntitiesArray) {
+                            var contextObject = #{grid}.contextObject;
+
+                            if (contextObject == null) {
+                                localStorage.removeItem("operationalTaskData");
+                            } else {
+                                var filters = contextObject.options.filters;
+
+                                var currentOperationalTaskNumber = filters["currentOperationalTaskNumber"];
+
+                                currentOperationalTaskNumber = currentOperationalTaskNumber.slice(1, -1);
+
+                                var operationalTaskData = JSON.parse(localStorage.getItem("operationalTaskData")) || {};
+
+                                operationalTaskData.currentOperationalTaskNumber = currentOperationalTaskNumber;
+
+                                localStorage.setItem("operationalTaskData", JSON.stringify(operationalTaskData));
+                            }
+                        }
+                    });
+                ]]>
+            </script>
+
+            <option type="column" name="number" fields="number" link="true" width="100"/>
+            <option type="column" name="workstationNumber" fields="workstationNumber" link="true"/>
+            <option type="column" name="startDate" fields="startDate" link="true" width="80"/>
+            <option type="column" name="finishDate" fields="finishDate" link="true" width="80"/>
+            <option type="column" name="duration" fields="duration" link="true" width="80"
+                    expression="T(com.qcadoo.view.api.utils.TimeConverterService).convertTimeToString(#duration)"/>
+            <option type="column" name="name" fields="name" link="true" width="100"/>
+            <option type="column" name="description" fields="description" width="100"/>
+            <option type="column" name="changeoverType" fields="changeoverType"/>
+            <option type="column" name="attributeNumber" fields="attributeNumber"/>
+            <option type="column" name="toAttributeValueValue" fields="toAttributeValueValue"/>
+            <option type="column" name="currentOperationalTaskNumber" fields="currentOperationalTaskNumber"/>
+            <option type="column" name="currentOperationalTaskName" fields="currentOperationalTaskName"/>
+            <option type="column" name="currentOperationalTaskOrderNumber" fields="currentOperationalTaskOrderNumber"/>
+            <option type="column" name="currentOperationalTaskOrderProductNumber" fields="currentOperationalTaskOrderProductNumber"/>
+            <option type="column" name="isParallel" fields="isParallel" width="80"/>
+
+            <option type="order" column="number" direction="asc"/>
+
+            <option type="searchable"
+                    value="number,workstationNumber,startDate,finishDate,name,description,changeoverType,attributeNumber,toAttributeValueValue,currentOperationalTaskNumber,currentOperationalTaskName,currentOperationalTaskOrderNumber,currentOperationalTaskOrderProductNumber,isParallel"/>
+            <option type="orderable"
+                    value="number,workstationNumber,startDate,finishDate,name,description,changeoverType,attributeNumber,toAttributeValueValue,currentOperationalTaskNumber,currentOperationalTaskName,currentOperationalTaskOrderNumber,currentOperationalTaskOrderProductNumber,isParallel"/>
+
+            <option type="correspondingView" value="orders/workstationChangeoverForOperationalTaskDetails"/>
+            <option type="correspondingComponent" value="form"/>
+
+            <option type="fullscreen" value="true"/>
+            <option type="multiselect" value="true"/>
+        </component>
+
+        <option type="fixedHeight" value="true"/>
+        <option type="header" value="false"/>
+    </component>
+</view>

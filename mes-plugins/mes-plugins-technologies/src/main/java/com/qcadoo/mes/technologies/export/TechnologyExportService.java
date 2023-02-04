@@ -1,5 +1,6 @@
 package com.qcadoo.mes.technologies.export;
 
+import com.google.common.collect.Lists;
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.technologies.ProductQuantitiesWithComponentsService;
@@ -35,10 +36,7 @@ import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 @Service
 public class TechnologyExportService {
@@ -108,48 +106,42 @@ public class TechnologyExportService {
         String dateWithTime = dateFormat.format(exportDate);
         String date = DateFormat.getDateInstance().format(exportDate);
 
+        LOG.info("---------------------------------- START ACCEPTED ---------------------------------------------");
         String acceptedTechnologiesFileName = "technologie_aktualne_" + dateWithTime + ".csv";
         List<Entity> acceptedTechnologies = findAcceptedTechnologies();
-        exportTechnologiesToFile(date, acceptedTechnologiesFileName, acceptedTechnologies);
+        List<TechnologyExportEntry> acceptedTechnologyEntries = prepareEntriesForTechnologies(acceptedTechnologies);
+
+        exportTechnologiesToFile(date, acceptedTechnologiesFileName, acceptedTechnologyEntries);
+        LOG.info("---------------------------------- FINISH ACCEPTED ---------------------------------------------");
+
+        LOG.info("------------------------------------ START ALL -------------------------------------------------");
 
         String allTechnologiesFileName = "technologie_pelna_kopia_" + dateWithTime + ".csv";
-        List<Entity> allTechnologies = findAllTechnologies();
-        exportTechnologiesToFile(date, allTechnologiesFileName, allTechnologies);
+        List<Entity> notAcceptedTechnologies = findNotAcceptedTechnologies();
+        List<TechnologyExportEntry> allTechnologiesEntries = prepareEntriesForTechnologies(notAcceptedTechnologies);
+        allTechnologiesEntries.addAll(acceptedTechnologyEntries);
+        allTechnologiesEntries.sort(Comparator.comparing(TechnologyExportEntry::getTechnologyNumber));
+        exportTechnologiesToFile(date, allTechnologiesFileName, allTechnologiesEntries);
+        LOG.info("-------------------------------------- FINISH ALL ----------------------------------------------");
+
     }
 
-    private void exportTechnologiesToFile(final String exportDate, final String fileName, final List<Entity> technologies) {
+    private void exportTechnologiesToFile(final String exportDate, final String fileName, final  List<TechnologyExportEntry> entries) {
         File exportFile = fileService.createExportFile(fileName);
 
-        exportToFile(exportFile, technologies, exportDate);
+        exportToFile(exportFile, entries, exportDate);
+        LOG.info("File created : " + exportFile.getPath());
         sendFileToFtp(fileName, exportFile);
+        LOG.info("File sent : " + exportFile.getPath());
 
         fileService.remove(exportFile.getPath());
     }
 
-    private void exportToFile(final File file, final List<Entity> technologies, final String exportDate) {
-        LOG.info("Start export file: " + file.getName());
+    private List<TechnologyExportEntry> prepareEntriesForTechnologies(final List<Entity> technologies) {
+        List<TechnologyExportEntry> entries = Lists.newArrayList();
 
-        try (FileOutputStream fileOutputStream = new FileOutputStream(file)) {
-            fileOutputStream.write(239);
-            fileOutputStream.write(187);
-            fileOutputStream.write(191);
-
-            try (BufferedWriter bufferedWriter = new BufferedWriter(
-                    new OutputStreamWriter(fileOutputStream, StandardCharsets.UTF_8))) {
-                createHeader(bufferedWriter);
-
-                createRows(technologies, exportDate, bufferedWriter);
-            }
-        } catch (IOException e) {
-            throw new IllegalStateException(e.getMessage(), e);
-        }
-
-        LOG.info("The file exported successfully.");
-    }
-
-    private void createRows(final List<Entity> technologies, final String exportDate, final BufferedWriter bufferedWriter)
-            throws IOException {
         for (Entity technology : technologies) {
+
             String technologyNumber = normalizeString(technology.getStringField(TechnologyFields.NUMBER));
             String technologyName = normalizeString(technology.getStringField(TechnologyFields.NAME));
             String technologyState = translationService.translate(
@@ -172,39 +164,85 @@ public class TechnologyExportService {
                     .entrySet()) {
                 Entity material = neededProductQuantity.getKey().getProduct();
 
-                bufferedWriter.append(BACKSLASH).append(technologyNumber).append(BACKSLASH);
+                TechnologyExportEntry entry = new TechnologyExportEntry();
+                entry.setTechnologyNumber(technologyNumber);
+                entry.setTechnologyName(technologyName);
+                entry.setTechnologyState(technologyState);
+                entry.setIsDefaultTechnology(isDefaultTechnology);
+                entry.setStandardPerformance(standardPerformance);
+                entry.setTechnologyStateChange(technologyStateChange);
+                entry.setTechnologyAcceptStateChange(technologyAcceptStateChange);
+                entry.setTechnologyOutdatedStateChange(technologyOutdatedStateChange);
+                entry.setTechnologyProduct(technologyProduct);
+                entry.setMaterialNumber(normalizeString(material.getStringField(ProductFields.NUMBER)));
+                entry.setMaterialName(normalizeString(material.getStringField(ProductFields.NAME)));
+                entry.setMaterialNeededQuantity(numberService.format(neededProductQuantity.getValue()));
+                entry.setMaterialUnit(normalizeString(material.getStringField(ProductFields.UNIT)));
+
+                entries.add(entry);
+            }
+        }
+
+
+        return entries;
+    }
+
+    private void exportToFile(final File file, List<TechnologyExportEntry> entries, final String exportDate) {
+        LOG.info("Start export file: " + file.getName());
+
+        try (FileOutputStream fileOutputStream = new FileOutputStream(file)) {
+            fileOutputStream.write(239);
+            fileOutputStream.write(187);
+            fileOutputStream.write(191);
+
+            try (BufferedWriter bufferedWriter = new BufferedWriter(
+                    new OutputStreamWriter(fileOutputStream, StandardCharsets.UTF_8))) {
+                createHeader(bufferedWriter);
+
+                createRows(entries, exportDate, bufferedWriter);
+            }
+        } catch (IOException e) {
+            throw new IllegalStateException(e.getMessage(), e);
+        }
+
+        LOG.info("The file exported successfully.");
+    }
+
+    private void createRows(List<TechnologyExportEntry> entries, final String exportDate, final BufferedWriter bufferedWriter)
+            throws IOException {
+        for (TechnologyExportEntry entry : entries) {
+                bufferedWriter.append(BACKSLASH).append(entry.getTechnologyNumber()).append(BACKSLASH);
                 bufferedWriter.append(exportedCsvSeparator);
-                bufferedWriter.append(BACKSLASH).append(technologyName).append(BACKSLASH);
+                bufferedWriter.append(BACKSLASH).append(entry.getTechnologyName()).append(BACKSLASH);
                 bufferedWriter.append(exportedCsvSeparator);
-                bufferedWriter.append(BACKSLASH).append(technologyState).append(BACKSLASH);
+                bufferedWriter.append(BACKSLASH).append(entry.getTechnologyState()).append(BACKSLASH);
                 bufferedWriter.append(exportedCsvSeparator);
-                bufferedWriter.append(BACKSLASH).append(isDefaultTechnology).append(BACKSLASH);
+                bufferedWriter.append(BACKSLASH).append(entry.getIsDefaultTechnology()).append(BACKSLASH);
                 bufferedWriter.append(exportedCsvSeparator);
-                bufferedWriter.append(BACKSLASH).append(standardPerformance).append(BACKSLASH);
+                bufferedWriter.append(BACKSLASH).append(entry.getStandardPerformance()).append(BACKSLASH);
                 bufferedWriter.append(exportedCsvSeparator);
-                bufferedWriter.append(BACKSLASH).append(technologyStateChange).append(BACKSLASH);
+                bufferedWriter.append(BACKSLASH).append(entry.getTechnologyStateChange()).append(BACKSLASH);
                 bufferedWriter.append(exportedCsvSeparator);
-                bufferedWriter.append(BACKSLASH).append(technologyAcceptStateChange).append(BACKSLASH);
+                bufferedWriter.append(BACKSLASH).append(entry.getTechnologyAcceptStateChange()).append(BACKSLASH);
                 bufferedWriter.append(exportedCsvSeparator);
-                bufferedWriter.append(BACKSLASH).append(technologyOutdatedStateChange).append(BACKSLASH);
+                bufferedWriter.append(BACKSLASH).append(entry.getTechnologyOutdatedStateChange()).append(BACKSLASH);
                 bufferedWriter.append(exportedCsvSeparator);
-                bufferedWriter.append(BACKSLASH).append(technologyProduct).append(BACKSLASH);
+                bufferedWriter.append(BACKSLASH).append(entry.getTechnologyProduct()).append(BACKSLASH);
                 bufferedWriter.append(exportedCsvSeparator);
-                bufferedWriter.append(BACKSLASH).append(normalizeString(material.getStringField(ProductFields.NUMBER)))
+                bufferedWriter.append(BACKSLASH).append(entry.getMaterialNumber())
                         .append(BACKSLASH);
                 bufferedWriter.append(exportedCsvSeparator);
-                bufferedWriter.append(BACKSLASH).append(normalizeString(material.getStringField(ProductFields.NAME)))
+                bufferedWriter.append(BACKSLASH).append(entry.getMaterialName())
                         .append(BACKSLASH);
                 bufferedWriter.append(exportedCsvSeparator);
-                bufferedWriter.append(BACKSLASH).append(numberService.format(neededProductQuantity.getValue())).append(BACKSLASH);
+                bufferedWriter.append(BACKSLASH).append(entry.getMaterialNeededQuantity()).append(BACKSLASH);
                 bufferedWriter.append(exportedCsvSeparator);
-                bufferedWriter.append(BACKSLASH).append(normalizeString(material.getStringField(ProductFields.UNIT)))
+                bufferedWriter.append(BACKSLASH).append(entry.getMaterialUnit())
                         .append(BACKSLASH);
                 bufferedWriter.append(exportedCsvSeparator);
                 bufferedWriter.append(BACKSLASH).append(exportDate).append(BACKSLASH);
 
                 bufferedWriter.append(NEWLINE);
-            }
         }
     }
 
@@ -363,13 +401,16 @@ public class TechnologyExportService {
     private List<Entity> findAcceptedTechnologies() {
         return getTechnologyDD().find().add(SearchRestrictions.isNull(TechnologyFields.TECHNOLOGY_TYPE))
                 .add(SearchRestrictions.eq(TechnologyFields.STATE, TechnologyStateStringValues.ACCEPTED))
-                .add(SearchRestrictions.eq(TechnologyFields.ACTIVE, true)).addOrder(SearchOrders.asc(TechnologyFields.NUMBER))
+                .add(SearchRestrictions.eq(TechnologyFields.ACTIVE, true))
+                .addOrder(SearchOrders.asc(TechnologyFields.NUMBER))
                 .list().getEntities();
     }
 
-    private List<Entity> findAllTechnologies() {
+    private List<Entity> findNotAcceptedTechnologies() {
         return getTechnologyDD().find().add(SearchRestrictions.isNull(TechnologyFields.TECHNOLOGY_TYPE))
-                .add(SearchRestrictions.eq(TechnologyFields.ACTIVE, true)).addOrder(SearchOrders.asc(TechnologyFields.NUMBER))
+                .add(SearchRestrictions.ne(TechnologyFields.STATE, TechnologyStateStringValues.ACCEPTED))
+                .add(SearchRestrictions.eq(TechnologyFields.ACTIVE, true))
+                .addOrder(SearchOrders.asc(TechnologyFields.NUMBER))
                 .list().getEntities();
     }
 

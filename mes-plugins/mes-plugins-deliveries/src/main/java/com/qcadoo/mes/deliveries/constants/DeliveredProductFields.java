@@ -77,4 +77,6 @@ public final class DeliveredProductFields {
 
     public static final String EXPIRATION_DATE = "expirationDate";
 
+    public static final String ADD_BATCH = "addBatch";
+
 }

@@ -104,7 +104,7 @@ public class OperationCostCalculationTreeBuilder {
 
         for (String fieldName : Arrays.asList("priority", "nodeNumber", L_PRODUCTION_IN_ONE_CYCLE,
                 "nextOperationAfterProducedQuantity", "operationOffSet", "effectiveOperationRealizationTime",
-                "effectiveDateFrom", "effectiveDateTo", "pieceworkCost", "numberOfOperations")) {
+                "effectiveDateFrom", "effectiveDateTo")) {
             calculationOperationComponent.setField(fieldName, operationComponent.getField(fieldName));
         }
 

@@ -3,19 +3,19 @@
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
  * Version: 1.4
- *
+ * <p>
  * This file is part of Qcadoo.
- *
+ * <p>
  * Qcadoo is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation; either version 3 of the License,
  * or (at your option) any later version.
- *
+ * <p>
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty
  * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU Affero General Public License for more details.
- *
+ * <p>
  * You should have received a copy of the GNU Affero General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
@@ -34,7 +34,10 @@ import com.google.common.collect.Lists;
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.productionCounting.ProductionCountingService;
 import com.qcadoo.mes.productionCounting.constants.TechnologyFieldsPC;
+import com.qcadoo.mes.technologies.constants.TechnologyFields;
+import com.qcadoo.mes.technologies.states.constants.TechnologyState;
 import com.qcadoo.view.api.ViewDefinitionState;
+import com.qcadoo.view.api.components.CheckBoxComponent;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.constants.QcadooViewConstants;
@@ -44,7 +47,7 @@ public class TechnologyDetailsHooksPC {
 
     private static final List<String> L_TECHNOLOGY_FIELD_NAMES = Lists.newArrayList(
             TechnologyFieldsPC.REGISTER_QUANTITY_IN_PRODUCT, TechnologyFieldsPC.REGISTER_QUANTITY_OUT_PRODUCT,
-            TechnologyFieldsPC.REGISTER_PRODUCTION_TIME, TechnologyFieldsPC.REGISTER_PIECEWORK);
+            TechnologyFieldsPC.REGISTER_PRODUCTION_TIME);
 
     @Autowired
     private ProductionCountingService productionCountingService;
@@ -53,11 +56,11 @@ public class TechnologyDetailsHooksPC {
     private ParameterService parameterService;
 
     public void setTechnologyDefaultValues(final ViewDefinitionState view) {
-        FormComponent orderForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
+        FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         FieldComponent typeOfProductionRecordingField = (FieldComponent) view
                 .getComponentByReference(TechnologyFieldsPC.TYPE_OF_PRODUCTION_RECORDING);
 
-        if (Objects.nonNull(orderForm.getEntityId())) {
+        if (Objects.nonNull(form.getEntityId())) {
             return;
         }
 
@@ -89,21 +92,29 @@ public class TechnologyDetailsHooksPC {
     public void checkTypeOfProductionRecording(final ViewDefinitionState view) {
         FieldComponent typeOfProductionRecordingField = (FieldComponent) view
                 .getComponentByReference(TechnologyFieldsPC.TYPE_OF_PRODUCTION_RECORDING);
+        FieldComponent stateField = (FieldComponent) view
+                .getComponentByReference(TechnologyFields.STATE);
+        CheckBoxComponent pieceworkProductionField = (CheckBoxComponent) view.getComponentByReference(TechnologyFieldsPC.PIECEWORK_PRODUCTION);
+        FieldComponent pieceRateField = (FieldComponent) view.getComponentByReference(TechnologyFieldsPC.PIECE_RATE);
         String typeOfProductionRecording = (String) typeOfProductionRecordingField.getFieldValue();
 
         if (StringUtils.isEmpty(typeOfProductionRecording)
                 || productionCountingService.isTypeOfProductionRecordingBasic(typeOfProductionRecording)) {
             productionCountingService.setComponentsState(view, L_TECHNOLOGY_FIELD_NAMES, false, true);
-        } else if (productionCountingService.isTypeOfProductionRecordingCumulated(typeOfProductionRecording)) {
-            setRegisterPieceworkEnabledAndValue(view, false, false);
+            pieceworkProductionField.setEnabled(false);
+            pieceworkProductionField.setFieldValue(false);
+        } else if (productionCountingService.isTypeOfProductionRecordingForEach(typeOfProductionRecording)) {
+            pieceworkProductionField.setEnabled(false);
+            pieceworkProductionField.setFieldValue(false);
         }
-    }
-
-    private void setRegisterPieceworkEnabledAndValue(final ViewDefinitionState view, final boolean isEnabled,
-            final boolean value) {
-        FieldComponent fieldComponent = (FieldComponent) view.getComponentByReference(TechnologyFieldsPC.REGISTER_PIECEWORK);
-        fieldComponent.setEnabled(isEnabled);
-        fieldComponent.setFieldValue(value);
+        if (pieceworkProductionField.isChecked() && TechnologyState.DRAFT.getStringValue().equals(stateField.getFieldValue())) {
+            pieceRateField.setEnabled(true);
+        } else if (pieceworkProductionField.isChecked() && !TechnologyState.DRAFT.getStringValue().equals(stateField.getFieldValue())) {
+            pieceRateField.setEnabled(false);
+        } else {
+            pieceRateField.setEnabled(false);
+            pieceRateField.setFieldValue(null);
+        }
     }
 
 }

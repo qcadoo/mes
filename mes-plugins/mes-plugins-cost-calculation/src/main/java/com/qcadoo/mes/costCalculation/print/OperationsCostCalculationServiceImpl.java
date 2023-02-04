@@ -3,19 +3,19 @@
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
  * Version: 1.4
- *
+ * <p>
  * This file is part of Qcadoo.
- *
+ * <p>
  * Qcadoo is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation; either version 3 of the License,
  * or (at your option) any later version.
- *
+ * <p>
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty
  * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU Affero General Public License for more details.
- *
+ * <p>
  * You should have received a copy of the GNU Affero General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
@@ -27,8 +27,10 @@ import static com.google.common.base.Preconditions.checkArgument;
 
 import java.math.BigDecimal;
 import java.math.MathContext;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -37,6 +39,8 @@ import org.springframework.stereotype.Service;
 
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+import com.qcadoo.mes.basic.constants.PieceRateFields;
+import com.qcadoo.mes.basic.constants.PieceRateItemFields;
 import com.qcadoo.mes.costCalculation.constants.CostCalculationFields;
 import com.qcadoo.mes.costCalculation.constants.SourceOfOperationCosts;
 import com.qcadoo.mes.costNormsForOperation.constants.CalculationOperationComponentFields;
@@ -56,6 +60,8 @@ import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.EntityTree;
 import com.qcadoo.model.api.EntityTreeNode;
 import com.qcadoo.model.api.NumberService;
+import com.qcadoo.model.api.search.SearchOrders;
+import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.plugin.api.PluginManager;
 
 @Service
@@ -114,7 +120,7 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
         boolean hourlyCostFromOperation = !SourceOfOperationCosts.PARAMETERS.getStringValue()
                 .equals(costCalculation.getStringField(CostCalculationFields.SOURCE_OF_OPERATION_COSTS));
         Map<String, BigDecimal> resultsMap = estimateCostCalculationForHourly(calculationOperationComponents.getRoot(),
-                operationTimes, hourlyCostFromOperation, costCalculation);
+                operationTimes, hourlyCostFromOperation, costCalculation, productQuantitiesAndOperationRuns.getOperationRuns());
 
         costCalculation.setField(CostCalculationFields.CALCULATION_OPERATION_COMPONENTS, calculationOperationComponents);
         return BigDecimalUtils
@@ -135,7 +141,8 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
     }
 
     private Map<String, BigDecimal> estimateCostCalculationForHourly(final EntityTreeNode calculationOperationComponent,
-                                                                     final OperationTimesContainer realizationTimes, final boolean hourlyCostFromOperation, Entity costCalculation) {
+                                                                     final OperationTimesContainer realizationTimes, final boolean hourlyCostFromOperation,
+                                                                     Entity costCalculation, Map<Long, BigDecimal> operationRuns) {
         checkArgument(calculationOperationComponent != null, "given operationComponent is empty");
 
         Map<String, BigDecimal> costs = Maps.newHashMapWithExpectedSize(L_COST_KEYS.size());
@@ -148,7 +155,7 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
 
         for (EntityTreeNode child : calculationOperationComponent.getChildren()) {
             Map<String, BigDecimal> unitCosts = estimateCostCalculationForHourly(child, realizationTimes, hourlyCostFromOperation,
-                    costCalculation);
+                    costCalculation, operationRuns);
 
             for (String costKey : L_COST_KEYS) {
                 BigDecimal unitCost = costs.get(costKey).add(unitCosts.get(costKey), mathContext);
@@ -157,22 +164,43 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
             }
         }
 
-        OperationTimes operationTimes = realizationTimes.get(calculationOperationComponent
-                .getBelongsToField(CalculationOperationComponentFields.TECHNOLOGY_OPERATION_COMPONENT).getId());
-        Map<String, BigDecimal> costsForSingleOperation = estimateHourlyCostCalculationForSingleOperation(operationTimes,
-                hourlyCostFromOperation, costCalculation);
-        saveGeneratedValues(costsForSingleOperation, calculationOperationComponent, operationTimes.getTimes());
+        Entity toc = calculationOperationComponent.getBelongsToField(
+                CalculationOperationComponentFields.TECHNOLOGY_OPERATION_COMPONENT);
+        if (!toc.getBooleanField(TechnologyOperationComponentFieldsTNFO.PIECEWORK_PRODUCTION)) {
+            OperationTimes operationTimes = realizationTimes.get(toc.getId());
+            Map<String, BigDecimal> costsForSingleOperation = estimateHourlyCostCalculationForSingleOperation(operationTimes,
+                    hourlyCostFromOperation, costCalculation);
+            saveGeneratedValues(costsForSingleOperation, calculationOperationComponent, operationTimes.getTimes());
 
-        costs.put(CalculationOperationComponentFields.MACHINE_HOURLY_COST,
-                costs.get(CalculationOperationComponentFields.MACHINE_HOURLY_COST).add(
-                        costsForSingleOperation.get(CalculationOperationComponentFields.TOTAL_MACHINE_OPERATION_COST),
-                        mathContext));
-        costs.put(CalculationOperationComponentFields.LABOR_HOURLY_COST,
-                costs.get(CalculationOperationComponentFields.LABOR_HOURLY_COST).add(
-                        costsForSingleOperation.get(CalculationOperationComponentFields.TOTAL_LABOR_OPERATION_COST),
-                        mathContext));
+            costs.put(CalculationOperationComponentFields.MACHINE_HOURLY_COST,
+                    costs.get(CalculationOperationComponentFields.MACHINE_HOURLY_COST).add(
+                            costsForSingleOperation.get(CalculationOperationComponentFields.TOTAL_MACHINE_OPERATION_COST),
+                            mathContext));
+            costs.put(CalculationOperationComponentFields.LABOR_HOURLY_COST,
+                    costs.get(CalculationOperationComponentFields.LABOR_HOURLY_COST).add(
+                            costsForSingleOperation.get(CalculationOperationComponentFields.TOTAL_LABOR_OPERATION_COST),
+                            mathContext));
+        } else {
+            costs.put(CalculationOperationComponentFields.LABOR_HOURLY_COST,
+                    costs.get(CalculationOperationComponentFields.LABOR_HOURLY_COST).add(
+                            BigDecimalUtils.convertNullToZero(operationRuns.get(toc.getId()))
+                                    .multiply(getCurrentRate(toc.getBelongsToField(TechnologyOperationComponentFieldsCNFO.PIECE_RATE)), numberService.getMathContext()),
+                            mathContext));
+        }
 
         return costs;
+    }
+
+    @Override
+    public BigDecimal getCurrentRate(Entity pieceRate) {
+        Entity pieceRateItem = pieceRate.getHasManyField(PieceRateFields.PIECE_RATE_ITEMS)
+                .find().addOrder(SearchOrders.desc(PieceRateItemFields.DATE_FROM))
+                .add(SearchRestrictions.le(PieceRateItemFields.DATE_FROM, new Date())).setMaxResults(1).uniqueResult();
+        BigDecimal currentRate = BigDecimal.ZERO;
+        if (!Objects.isNull(pieceRateItem)) {
+            currentRate = pieceRateItem.getDecimalField(PieceRateItemFields.ACTUAL_RATE);
+        }
+        return currentRate;
     }
 
     private Map<String, BigDecimal> estimateHourlyCostCalculationForSingleOperation(final OperationTimes operationTimes,

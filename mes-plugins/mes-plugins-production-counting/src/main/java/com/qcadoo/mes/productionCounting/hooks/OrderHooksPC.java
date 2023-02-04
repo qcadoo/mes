@@ -3,19 +3,19 @@
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
  * Version: 1.4
- *
+ * <p>
  * This file is part of Qcadoo.
- *
+ * <p>
  * Qcadoo is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation; either version 3 of the License,
  * or (at your option) any later version.
- *
+ * <p>
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty
  * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU Affero General Public License for more details.
- *
+ * <p>
  * You should have received a copy of the GNU Affero General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
@@ -44,7 +44,7 @@ import com.qcadoo.model.api.Entity;
 public class OrderHooksPC {
 
     private static final List<String> L_ORDER_FIELD_NAMES = Lists.newArrayList(OrderFieldsPC.TYPE_OF_PRODUCTION_RECORDING,
-            OrderFieldsPC.REGISTER_PIECEWORK, OrderFieldsPC.REGISTER_QUANTITY_IN_PRODUCT,
+            OrderFieldsPC.REGISTER_QUANTITY_IN_PRODUCT,
             OrderFieldsPC.REGISTER_QUANTITY_OUT_PRODUCT, OrderFieldsPC.REGISTER_PRODUCTION_TIME);
 
     @Autowired
@@ -77,10 +77,9 @@ public class OrderHooksPC {
     }
 
     private void setOrderWithTechnologyProductionCountingValues(final DataDefinition orderDD, final Entity order,
-            final Entity technology) {
+                                                                final Entity technology) {
         order.setField(OrderFieldsPC.TYPE_OF_PRODUCTION_RECORDING,
                 technology.getField(TechnologyFieldsPC.TYPE_OF_PRODUCTION_RECORDING));
-        order.setField(OrderFieldsPC.REGISTER_PIECEWORK, technology.getField(TechnologyFieldsPC.REGISTER_PIECEWORK));
         order.setField(OrderFieldsPC.REGISTER_QUANTITY_IN_PRODUCT,
                 technology.getField(TechnologyFieldsPC.REGISTER_QUANTITY_IN_PRODUCT));
         order.setField(OrderFieldsPC.REGISTER_QUANTITY_OUT_PRODUCT,

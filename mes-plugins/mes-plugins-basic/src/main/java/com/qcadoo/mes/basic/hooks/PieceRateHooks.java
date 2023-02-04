@@ -35,7 +35,6 @@ public class PieceRateHooks {
 
     public void onView(final DataDefinition dataDefinition, final Entity entity) {
         entity.setField(PieceRateFields.CURRENT_RATE, findCurrentRate(entity));
-
     }
 
     private void setNumber(final Entity entity) {
@@ -60,11 +59,11 @@ public class PieceRateHooks {
                 .find().addOrder(SearchOrders.desc(PieceRateItemFields.DATE_FROM))
                 .add(SearchRestrictions.belongsTo(PieceRateItemFields.PIECE_RATE, pieceRate))
                 .add(SearchRestrictions.le(PieceRateItemFields.DATE_FROM, new Date()));
-        Entity technologicalProcessRateItem = scb.setMaxResults(1).uniqueResult();
-        if (Objects.isNull(technologicalProcessRateItem)) {
+        Entity pieceRateItem = scb.setMaxResults(1).uniqueResult();
+        if (Objects.isNull(pieceRateItem)) {
             return null;
         } else {
-            return technologicalProcessRateItem.getDecimalField(PieceRateItemFields.ACTUAL_RATE);
+            return pieceRateItem.getDecimalField(PieceRateItemFields.ACTUAL_RATE);
         }
 
     }

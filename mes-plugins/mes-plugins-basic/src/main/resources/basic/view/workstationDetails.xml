@@ -358,8 +358,8 @@
                         <option type="column" name="workingTime" fields="workingTime" width="50"
                                 expression="T(com.qcadoo.view.api.utils.TimeConverterService).convertTimeToString(#workingTime)"/>
 
-                        <option type="searchable" value="launchDate,launchedBy,stopDate,stoppedBy"/>
-                        <option type="orderable" value="launchDate,launchedBy,stopDate,stoppedBy"/>
+                        <option type="searchable" value="launchDate,stopDate"/>
+                        <option type="orderable" value="launchDate,stopDate"/>
 
                         <option type="order" column="launchDate" direction="asc"/>
 

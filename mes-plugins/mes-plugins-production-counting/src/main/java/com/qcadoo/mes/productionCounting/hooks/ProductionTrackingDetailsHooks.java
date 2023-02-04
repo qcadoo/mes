@@ -3,19 +3,19 @@
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
  * Version: 1.4
- *
+ * <p>
  * This file is part of Qcadoo.
- *
+ * <p>
  * Qcadoo is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation; either version 3 of the License,
  * or (at your option) any later version.
- *
+ * <p>
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty
  * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU Affero General Public License for more details.
- *
+ * <p>
  * You should have received a copy of the GNU Affero General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
@@ -24,14 +24,9 @@
 package com.qcadoo.mes.productionCounting.hooks;
 
 import java.util.List;
-import java.util.Locale;
 import java.util.Objects;
-import java.util.Optional;
 
-import com.qcadoo.mes.basic.ParameterService;
-import com.qcadoo.mes.productionCounting.constants.*;
 import org.apache.commons.lang3.StringUtils;
-import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Service;
@@ -39,14 +34,22 @@ import org.springframework.stereotype.Service;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.qcadoo.localization.api.TranslationService;
+import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.states.constants.OrderStateStringValues;
 import com.qcadoo.mes.productionCounting.ProductionCountingService;
 import com.qcadoo.mes.productionCounting.ProductionTrackingService;
+import com.qcadoo.mes.productionCounting.constants.OrderFieldsPC;
+import com.qcadoo.mes.productionCounting.constants.ParameterFieldsPC;
+import com.qcadoo.mes.productionCounting.constants.ProductionCountingConstants;
+import com.qcadoo.mes.productionCounting.constants.ProductionTrackingFields;
+import com.qcadoo.mes.productionCounting.constants.ReleaseOfMaterials;
+import com.qcadoo.mes.productionCounting.constants.TechnologyFieldsPC;
 import com.qcadoo.mes.productionCounting.listeners.ProductionTrackingDetailsListeners;
 import com.qcadoo.mes.productionCounting.states.constants.ProductionTrackingState;
 import com.qcadoo.mes.productionCounting.states.constants.ProductionTrackingStateStringValues;
+import com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperationComponentFieldsTNFO;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchRestrictions;
@@ -106,11 +109,11 @@ public class ProductionTrackingDetailsHooks {
             ProductionTrackingFields.TECHNOLOGY_OPERATION_COMPONENT, ProductionTrackingFields.STAFF,
             ProductionTrackingFields.SHIFT, ProductionTrackingFields.WORKSTATION, ProductionTrackingFields.DIVISION,
             ProductionTrackingFields.LABOR_TIME, ProductionTrackingFields.MACHINE_TIME,
-            ProductionTrackingFields.EXECUTED_OPERATION_CYCLES, ProductionTrackingFields.TIME_RANGE_FROM,
+            ProductionTrackingFields.TIME_RANGE_FROM,
             ProductionTrackingFields.TIME_RANGE_TO, ProductionTrackingFields.TRACKING_OPERATION_PRODUCT_IN_COMPONENTS,
             ProductionTrackingFields.TRACKING_OPERATION_PRODUCT_OUT_COMPONENTS, ProductionTrackingFields.SHIFT_START_DAY,
             ProductionTrackingFields.STAFF_WORK_TIMES, ProductionTrackingFields.BATCH, ProductionTrackingFields.EXPIRATION_DATE,
-            ProductionTrackingFields.ADD_BATCH, ProductionTrackingFields.STOPPAGES);
+            ProductionTrackingFields.ADD_BATCH, ProductionTrackingFields.STOPPAGES, ProductionTrackingFields.COMMENTS);
 
     public static final String L_ROLE_STOPPAGES = "ROLE_STOPPAGES";
 
@@ -167,6 +170,30 @@ public class ProductionTrackingDetailsHooks {
 
         fillBatchOrderedProductLabel(view);
         changeStoppagesTabVisible(view);
+        fillPieceworkProduction(view);
+    }
+
+    private void fillPieceworkProduction(ViewDefinitionState view) {
+        FormComponent productionTrackingForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
+        CheckBoxComponent pieceworkProduction = (CheckBoxComponent) view.getComponentByReference(ProductionTrackingFields.PIECEWORK_PRODUCTION);
+        Entity productionTracking = productionTrackingForm.getPersistedEntityWithIncludedFormValues();
+
+        Entity order = productionTracking.getBelongsToField(ProductionTrackingFields.ORDER);
+
+        if (Objects.nonNull(order)) {
+            Entity technology = order.getBelongsToField(OrderFields.TECHNOLOGY);
+
+            if (Objects.nonNull(technology)) {
+                pieceworkProduction.setFieldValue(technology.getBooleanField(TechnologyFieldsPC.PIECEWORK_PRODUCTION));
+            }
+
+            Entity technologyOperationComponent = productionTracking.getBelongsToField(ProductionTrackingFields.TECHNOLOGY_OPERATION_COMPONENT);
+            if (Objects.nonNull(technologyOperationComponent)) {
+                pieceworkProduction.setFieldValue(technologyOperationComponent.getBooleanField(TechnologyOperationComponentFieldsTNFO.PIECEWORK_PRODUCTION));
+            }
+        } else {
+            pieceworkProduction.setFieldValue(false);
+        }
     }
 
     private void fillBatchOrderedProductLabel(final ViewDefinitionState view) {
@@ -216,11 +243,7 @@ public class ProductionTrackingDetailsHooks {
         boolean orderIsNotFinished = !OrderStateStringValues.COMPLETED.equals(orderState)
                 && !OrderStateStringValues.ABANDONED.equals(orderState);
 
-        if (productionTrackingIsAccepted && orderIsNotFinished) {
-            correctButton.setEnabled(true);
-        } else {
-            correctButton.setEnabled(false);
-        }
+        correctButton.setEnabled(productionTrackingIsAccepted && orderIsNotFinished);
 
         correctButton.requestUpdate(true);
     }
@@ -328,7 +351,7 @@ public class ProductionTrackingDetailsHooks {
     }
 
     private void showLastStateChangeFailNotification(final FormComponent productionTrackingForm,
-            final Entity productionTracking) {
+                                                     final Entity productionTracking) {
         boolean lastStateChangeFails = productionTracking.getBooleanField(ProductionTrackingFields.LAST_STATE_CHANGE_FAILS);
 
         if (lastStateChangeFails) {

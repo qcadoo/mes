@@ -1,0 +1,376 @@
+<!--
+
+    ***************************************************************************
+    Copyright (c) 2010 Qcadoo Limited
+    Project: Qcadoo MES
+    Version: 1.4
+
+    This file is part of Qcadoo.
+
+    Qcadoo is free software; you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as published
+    by the Free Software Foundation; either version 3 of the License,
+    or (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty
+    of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+    See the GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+    ***************************************************************************
+
+-->
+<view defaultAuthorizationRole="ROLE_PLANNING"
+	  name="workstationChangeoverForOperationalTaskDetails" modelName="workstationChangeoverForOperationalTask"
+	  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
+      xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd">
+
+    <component type="window" name="window">
+
+        <ribbon>
+            <template name="standardFormTemplate"/>
+        </ribbon>
+
+        <windowTab name="mainTab">
+            <component type="form" name="workstationChangeoverForOperationalTask" reference="form">
+                <component type="gridLayout" name="gridLayout" columns="3"
+                           rows="1" hasBorders="false">
+                    <layoutElement column="1" row="1">
+                        <component type="gridLayout" name="leftGridLayout" columns="1"
+                                   rows="5" hasBorders="false">
+                            <layoutElement column="1" row="1">
+                                <component type="input" name="number" field="number"
+                                           reference="number" defaultEnabled="never">
+                                    <option type="alignment" value="right"/>
+                                </component>
+                            </layoutElement>
+                            <layoutElement column="1" row="2">
+                                <component type="input" name="name" field="name"
+                                           reference="name"/>
+                            </layoutElement>
+                            <layoutElement column="1" row="3" height="2">
+                                <component type="textarea" name="description" field="description"
+                                           reference="description"/>
+                            </layoutElement>
+                            <layoutElement column="1" row="5">
+                                <component type="lookup" name="workstation" field="workstation"
+                                           reference="workstation" defaultEnabled="false">
+                                    <option type="column" name="name" fields="name" link="true"/>
+                                    <option type="column" name="workstationType" fields="workstationType" link="true"
+                                            expression="#workstationType['name']"/>
+
+                                    <option type="searchable" value="name,number,workstationType"/>
+                                    <option type="orderable" value="name,number,workstationType"/>
+
+                                    <option type="expression" value="#number + ' - ' + #name"/>
+                                    <option type="fieldCode" value="number"/>
+
+                                    <listener event="onSelectedEntityChange"
+                                              class="com.qcadoo.view.api.listeners.RerenderListener"
+                                              method="onChangeRerender"/>
+                                </component>
+                            </layoutElement>
+                        </component>
+                    </layoutElement>
+                    <layoutElement column="2" row="1">
+                        <component type="gridLayout" name="centerGridLayout" columns="1"
+                                   rows="2" hasBorders="false">
+                            <layoutElement column="1" row="1">
+                                <component type="borderLayout" name="currentOperationalTaskBorderLayout">
+                                    <component type="gridLayout" name="currentOperationalTaskGridLayout"
+                                               columns="1" rows="6">
+                                        <layoutElement column="1" row="1">
+                                            <component type="input" name="currentOperationalTaskNumber" reference="currentOperationalTaskNumber"
+                                                       defaultVisible="never" hasLabel="false">
+                                                <script>
+                                                    <![CDATA[
+                                                        var operationalTaskData = JSON.parse(localStorage.getItem('operationalTaskData')) || {};
+
+                                                        if (operationalTaskData.currentOperationalTaskNumber != undefined) {
+                                                            localStorage.removeItem("operationalTaskData");
+
+                                                            var data = {
+                                                                "value" : operationalTaskData.currentOperationalTaskNumber
+                                                            };
+
+                                                            this.setComponentData(data);
+                                                        }
+                                                    ]]>
+                                                </script>
+                                            </component>
+                                            <component type="lookup" name="currentOperationalTask" field="currentOperationalTask"
+                                                       reference="currentOperationalTask" defaultEnabled="false">
+                                                <option type="column" name="name" fields="name" link="true"/>
+                                                <option type="column" name="state" fields="state"/>
+
+                                                <option type="searchable" value="name,number,state"/>
+                                                <option type="orderable" value="name,number,state"/>
+
+                                                <option type="expression" value="#number"/>
+                                                <option type="fieldCode" value="number"/>
+
+                                                <criteriaModifier
+                                                        class="com.qcadoo.mes.orders.criteriaModifiers.OperationalTaskCriteriaModifiers"
+                                                        method="filter"/>
+
+                                                <listener event="onSelectedEntityChange"
+                                                          class="com.qcadoo.view.api.listeners.RerenderListener"
+                                                          method="onChangeRerender"/>
+                                            </component>
+                                        </layoutElement>
+                                        <layoutElement column="1" row="2">
+                                            <component type="textarea" name="currentOperationalTaskName" field="currentOperationalTaskName"
+                                                       reference="currentOperationalTaskName" defaultEnabled="never"/>
+                                        </layoutElement>
+                                        <layoutElement column="1" row="3">
+                                            <component type="lookup" name="currentOperationalTaskOrder" field="currentOperationalTaskOrder"
+                                                       reference="currentOperationalTaskOrder" defaultEnabled="never">
+                                                <option type="column" name="name" fields="name" link="true"/>
+                                                <option type="column" name="state" fields="state"/>
+
+                                                <option type="searchable" value="name,number,state"/>
+                                                <option type="orderable" value="name,number,state"/>
+
+                                                <option type="expression" value="#number"/>
+                                                <option type="fieldCode" value="number"/>
+                                            </component>
+                                        </layoutElement>
+                                        <layoutElement column="1" row="4">
+                                            <component type="lookup" name="currentOperationalTaskOrderProduct" field="currentOperationalTaskOrderProduct"
+                                                       reference="currentOperationalTaskOrderProduct" defaultEnabled="never">
+                                                <option type="column" name="name" fields="name" link="true"/>
+
+                                                <option type="searchable" value="name,number"/>
+                                                <option type="orderable" value="name,number"/>
+
+                                                <option type="expression" value="#number"/>
+                                                <option type="fieldCode" value="number"/>
+                                            </component>
+                                        </layoutElement>
+                                        <layoutElement column="1" row="5">
+                                            <component type="calendar" name="currentOperationalTaskStartDate" field="currentOperationalTaskStartDate"
+                                                       reference="currentOperationalTaskStartDate" defaultEnabled="never">
+                                                <option type="labelWidth" value="50"/>
+                                                <option type="withTimePicker" value="true"/>
+                                            </component>
+                                        </layoutElement>
+                                        <layoutElement column="1" row="6">
+                                            <component type="calendar" name="currentOperationalTaskFinishDate" field="currentOperationalTaskFinishDate"
+                                                       reference="currentOperationalTaskFinishDate" defaultEnabled="never">
+                                                <option type="labelWidth" value="50"/>
+                                                <option type="withTimePicker" value="true"/>
+                                            </component>
+                                        </layoutElement>
+                                    </component>
+
+                                    <option type="label" value="currentOperationalTask"/>
+                                </component>
+                            </layoutElement>
+                            <layoutElement column="1" row="2">
+                                <component type="borderLayout" name="previousOperationalTaskBorderLayout">
+                                    <component type="gridLayout" name="previousOperationalTaskGridLayout"
+                                               columns="1" rows="6">
+                                        <layoutElement column="1" row="1">
+                                            <component type="lookup" name="previousOperationalTask" field="previousOperationalTask"
+                                                       reference="previousOperationalTask" defaultEnabled="false">
+                                                <option type="column" name="name" fields="name" link="true"/>
+                                                <option type="column" name="state" fields="state"/>
+
+                                                <option type="searchable" value="name,number,state"/>
+                                                <option type="orderable" value="name,number,state"/>
+
+                                                <option type="expression" value="#number"/>
+                                                <option type="fieldCode" value="number"/>
+
+                                                <criteriaModifier
+                                                        class="com.qcadoo.mes.orders.criteriaModifiers.OperationalTaskCriteriaModifiers"
+                                                        method="filter"/>
+                                            </component>
+                                        </layoutElement>
+                                        <layoutElement column="1" row="2">
+                                            <component type="textarea" name="previousOperationalTaskName" field="previousOperationalTaskName"
+                                                       reference="previousOperationalTaskName" defaultEnabled="never"/>
+                                        </layoutElement>
+                                        <layoutElement column="1" row="3">
+                                            <component type="lookup" name="previousOperationalTaskOrder" field="previousOperationalTaskOrder"
+                                                       reference="previousOperationalTaskOrder" defaultEnabled="never">
+                                                <option type="column" name="name" fields="name" link="true"/>
+                                                <option type="column" name="state" fields="state"/>
+
+                                                <option type="searchable" value="name,number,state"/>
+                                                <option type="orderable" value="name,number,state"/>
+
+                                                <option type="expression" value="#number"/>
+                                                <option type="fieldCode" value="number"/>
+                                            </component>
+                                        </layoutElement>
+                                        <layoutElement column="1" row="4">
+                                            <component type="lookup" name="previousOperationalTaskOrderProduct" field="previousOperationalTaskOrderProduct"
+                                                       reference="previousOperationalTaskOrderProduct" defaultEnabled="never">
+                                                <option type="column" name="name" fields="name" link="true"/>
+
+                                                <option type="searchable" value="name,number"/>
+                                                <option type="orderable" value="name,number"/>
+
+                                                <option type="expression" value="#number"/>
+                                                <option type="fieldCode" value="number"/>
+                                            </component>
+                                        </layoutElement>
+                                        <layoutElement column="1" row="5">
+                                            <component type="calendar" name="previousOperationalTaskStartDate" field="previousOperationalTaskStartDate"
+                                                       reference="previousOperationalTaskStartDate" defaultEnabled="never">
+                                                <option type="labelWidth" value="50"/>
+                                                <option type="withTimePicker" value="true"/>
+                                            </component>
+                                        </layoutElement>
+                                        <layoutElement column="1" row="6">
+                                            <component type="calendar" name="previousOperationalTaskFinishDate" field="previousOperationalTaskFinishDate"
+                                                       reference="previousOperationalTaskFinishDate" defaultEnabled="never">
+                                                <option type="labelWidth" value="50"/>
+                                                <option type="withTimePicker" value="true"/>
+                                            </component>
+                                        </layoutElement>
+                                    </component>
+
+                                    <option type="label" value="previousOperationalTask"/>
+                                </component>
+                            </layoutElement>
+                        </component>
+                    </layoutElement>
+                    <layoutElement column="3" row="1">
+                        <component type="gridLayout" name="rightGridLayout" columns="1"
+                                   rows="9" hasBorders="false">
+                            <layoutElement column="1" row="1">
+                                <component type="select" name="changeoverType" field="changeoverType"
+                                           reference="changeoverType" defaultEnabled="never">
+                                </component>
+                            </layoutElement>
+                            <layoutElement column="1" row="2">
+                                <component type="lookup" name="workstationChangeoverNorm" field="workstationChangeoverNorm"
+                                           reference="workstationChangeoverNorm" defaultEnabled="never">
+                                    <option type="column" name="name" fields="name" link="true"/>
+                                    <option type="column" name="description" fields="description"/>
+
+                                    <option type="searchable" value="name,description"/>
+                                    <option type="orderable" value="name,description"/>
+
+                                    <option type="expression" value="#name"/>
+                                    <option type="fieldCode" value="name"/>
+
+                                    <criteriaModifier
+                                            class="com.qcadoo.mes.technologies.criteriaModifiers.WorkstationChangeoverNormCriteriaModifiers"
+                                            method="filter"/>
+                                </component>
+                            </layoutElement>
+                            <layoutElement column="1" row="3">
+                                <component type="lookup" name="attribute" field="attribute"
+                                           reference="attribute" defaultEnabled="never">
+                                    <option type="column" name="name" fields="name" link="true"/>
+
+                                    <option type="searchable" value="name,number"/>
+                                    <option type="orderable" value="name,number"/>
+
+                                    <option type="expression" value="#number"/>
+                                    <option type="fieldCode" value="number"/>
+
+                                    <criteriaModifier
+                                            class="com.qcadoo.mes.basic.criteriaModifiers.AttributeCriteriaModifiers"
+                                            method="showForProductCalculatedType"/>
+
+                                    <listener event="onSelectedEntityChange"
+                                              class="com.qcadoo.mes.orders.listeners.WorkstationChangeoverForOperationalTaskDetailsListeners"
+                                              method="clearAttributeValueLookups"/>
+                                </component>
+                            </layoutElement>
+                            <layoutElement column="1" row="4">
+                                <component type="lookup" name="fromAttributeValue" field="fromAttributeValue"
+                                           reference="fromAttributeValue" defaultEnabled="never">
+                                    <option type="column" name="value" fields="value" link="value"
+                                            width="200"/>
+                                    <option type="column" name="description" fields="description" link="true"
+                                            width="300"/>
+
+                                    <option type="searchable" value="value,description"/>
+                                    <option type="orderable" value="value,description"/>
+
+                                    <option type="expression" value="#value"/>
+                                    <option type="fieldCode" value="value"/>
+
+                                    <criteriaModifier
+                                            class="com.qcadoo.mes.basic.criteriaModifiers.AttributeValueCriteriaModifiers"
+                                            method="filter"/>
+                                </component>
+                            </layoutElement>
+                            <layoutElement column="1" row="5">
+                                <component type="lookup" name="toAttributeValue" field="toAttributeValue"
+                                           reference="toAttributeValue" defaultEnabled="never">
+                                    <option type="column" name="value" fields="value" link="value"
+                                            width="200"/>
+                                    <option type="column" name="description" fields="description" link="true"
+                                            width="300"/>
+
+                                    <option type="searchable" value="value,description"/>
+                                    <option type="orderable" value="value,description"/>
+
+                                    <option type="expression" value="#value"/>
+                                    <option type="fieldCode" value="value"/>
+
+                                    <criteriaModifier
+                                            class="com.qcadoo.mes.basic.criteriaModifiers.AttributeValueCriteriaModifiers"
+                                            method="filter"/>
+                                </component>
+                            </layoutElement>
+                            <layoutElement column="1" row="6">
+                                <component type="calendar" name="startDate" field="startDate"
+                                           reference="startDate">
+                                    <option type="labelWidth" value="50"/>
+                                    <option type="withTimePicker" value="true"/>
+
+                                    <listener event="onChange"
+                                              class="com.qcadoo.mes.orders.listeners.WorkstationChangeoverForOperationalTaskDetailsListeners"
+                                              method="onDatesChange"/>
+                                </component>
+                            </layoutElement>
+                            <layoutElement column="1" row="7">
+                                <component type="calendar" name="finishDate" field="finishDate"
+                                           reference="finishDate">
+                                    <option type="labelWidth" value="50"/>
+                                    <option type="withTimePicker" value="true"/>
+
+                                    <listener event="onChange"
+                                              class="com.qcadoo.mes.orders.listeners.WorkstationChangeoverForOperationalTaskDetailsListeners"
+                                              method="onDatesChange"/>
+                                </component>
+                            </layoutElement>
+                            <layoutElement column="1" row="8">
+                                <component type="time" name="duration" field="duration"
+                                           reference="duration">
+                                    <listener event="onInputChange"
+                                              class="com.qcadoo.mes.orders.listeners.WorkstationChangeoverForOperationalTaskDetailsListeners"
+                                              method="onDurationChange"/>
+                                </component>
+                            </layoutElement>
+                            <layoutElement column="1" row="9">
+                                <component type="checkbox" name="isParallel" field="isParallel"
+                                           reference="isParallel" defaultEnabled="false"/>
+                            </layoutElement>
+                        </component>
+                    </layoutElement>
+                </component>
+
+                <option type="header" value="true"/>
+                <option type="expression" value="#number"/>
+            </component>
+        </windowTab>
+
+    </component>
+
+    <hooks>
+        <beforeRender
+                class="com.qcadoo.mes.orders.hooks.WorkstationChangeoverForOperationalTaskDetailsHooks"
+                method="onBeforeRender"/>
+    </hooks>
+</view>

@@ -54,7 +54,6 @@
                                     localStorage.removeItem("productData");
                                 } else {
                                     var filters = contextObject.options.filters;
-                                    console.log();
 
                                     var technologyNumber = filters["technologyNumber"];
 

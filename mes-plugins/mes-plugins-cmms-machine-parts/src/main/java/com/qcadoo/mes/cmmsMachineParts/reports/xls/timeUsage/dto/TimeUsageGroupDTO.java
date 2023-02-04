@@ -42,11 +42,11 @@ public class TimeUsageGroupDTO {
     }
 
     public Long getDurationSum() {
-        return timeUsages.stream().mapToLong(u -> u.getDuration()).sum();
+        return timeUsages.stream().mapToLong(TimeUsageDTO::getDuration).sum();
     }
 
     public Long getRegisteredTimeSum() {
-        return timeUsages.stream().mapToLong(u -> u.getRegisteredTime()).sum();
+        return timeUsages.stream().mapToLong(TimeUsageDTO::getRegisteredTime).sum();
     }
 
 }

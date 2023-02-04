@@ -17,7 +17,7 @@ public class WorkstationChangeoverDetailsHooks {
 
     public void onBeforeRender(final ViewDefinitionState view) {
         setFieldsRequired(view);
-        setLookupsEnabled(view);
+        setLookupsEnabledAndFilterValueHolders(view);
     }
 
     private void setFieldsRequired(final ViewDefinitionState view) {
@@ -26,7 +26,7 @@ public class WorkstationChangeoverDetailsHooks {
         nameField.setRequired(true);
     }
 
-    private void setLookupsEnabled(final ViewDefinitionState view) {
+    private void setLookupsEnabledAndFilterValueHolders(final ViewDefinitionState view) {
         LookupComponent workstationTypeLookup = (LookupComponent) view.getComponentByReference(WorkstationChangeoverNormFields.WORKSTATION_TYPE);
         LookupComponent workstationLookup = (LookupComponent) view.getComponentByReference(WorkstationChangeoverNormFields.WORKSTATION);
         LookupComponent attributeLookup = (LookupComponent) view.getComponentByReference(WorkstationChangeoverNormFields.ATTRIBUTE);

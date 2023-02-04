@@ -50,8 +50,6 @@ public class ProductionTrackingServiceImplTest {
 
     private static final String L_TIME_TAB = "timeTab";
 
-    private static final String L_PIECEWORK_TAB = "pieceworkTab";
-
     private ProductionTrackingService productionTrackingService;
 
     @Mock
@@ -67,7 +65,7 @@ public class ProductionTrackingServiceImplTest {
     private LookupComponent technologyOperationComponentLookup;
 
     @Mock
-    private ComponentState timeTab, pieceworkTab;
+    private ComponentState timeTab;
 
     @Mock
     private WindowComponentState window;
@@ -98,18 +96,16 @@ public class ProductionTrackingServiceImplTest {
         given(form.getPersistedEntityWithIncludedFormValues()).willReturn(order);
 
         given(view.getComponentByReference(L_TIME_TAB)).willReturn(timeTab);
-        given(view.getComponentByReference(L_PIECEWORK_TAB)).willReturn(pieceworkTab);
     }
 
     @Test
-    public void shouldNotSetTimeAndPieceworkTabVisibleIfTypeIsBasic() {
+    public void shouldNotSetTimeVisibleIfTypeIsBasic() {
         // given
         String typeOfProductionRecording = TypeOfProductionRecording.BASIC.getStringValue();
 
         given(order.getStringField(OrderFieldsPC.TYPE_OF_PRODUCTION_RECORDING)).willReturn(typeOfProductionRecording);
 
         given(order.getBooleanField(OrderFieldsPC.REGISTER_PRODUCTION_TIME)).willReturn(true);
-        given(order.getBooleanField(OrderFieldsPC.REGISTER_PIECEWORK)).willReturn(true);
 
         given(productionCountingService.isTypeOfProductionRecordingBasic(typeOfProductionRecording)).willReturn(true);
         given(productionCountingService.isTypeOfProductionRecordingForEach(typeOfProductionRecording)).willReturn(false);
@@ -121,20 +117,18 @@ public class ProductionTrackingServiceImplTest {
         verify(technologyOperationComponentLookup).setVisible(false);
 
         verify(timeTab).setVisible(false);
-        verify(pieceworkTab).setVisible(false);
         verify(calcTotalLaborTimeRibbonBtn).setEnabled(false);
         verify(calcTotalLaborTimeRibbonBtn).requestUpdate(true);
     }
 
     @Test
-    public void shoulsSetTimeAndPieceworkTabVisibleIfTypeIsCumulated() {
+    public void shoulsSetTimeVisibleIfTypeIsCumulated() {
         // given
         String typeOfProductionRecording = TypeOfProductionRecording.CUMULATED.getStringValue();
 
         given(order.getStringField(OrderFieldsPC.TYPE_OF_PRODUCTION_RECORDING)).willReturn(typeOfProductionRecording);
 
         given(order.getBooleanField(OrderFieldsPC.REGISTER_PRODUCTION_TIME)).willReturn(true);
-        given(order.getBooleanField(OrderFieldsPC.REGISTER_PIECEWORK)).willReturn(true);
 
         given(productionCountingService.isTypeOfProductionRecordingBasic(typeOfProductionRecording)).willReturn(false);
         given(productionCountingService.isTypeOfProductionRecordingForEach(typeOfProductionRecording)).willReturn(false);
@@ -146,20 +140,18 @@ public class ProductionTrackingServiceImplTest {
         verify(technologyOperationComponentLookup).setVisible(false);
 
         verify(timeTab).setVisible(true);
-        verify(pieceworkTab).setVisible(false);
         verify(calcTotalLaborTimeRibbonBtn).setEnabled(true);
         verify(calcTotalLaborTimeRibbonBtn).requestUpdate(true);
     }
 
     @Test
-    public void shoulsSetTimeAndPieceworkTabVisibleIfTypeIsForEach() {
+    public void shoulsSetTimeVisibleIfTypeIsForEach() {
         // given
         String typeOfProductionRecording = TypeOfProductionRecording.FOR_EACH.getStringValue();
 
         given(order.getStringField(OrderFieldsPC.TYPE_OF_PRODUCTION_RECORDING)).willReturn(typeOfProductionRecording);
 
         given(order.getBooleanField(OrderFieldsPC.REGISTER_PRODUCTION_TIME)).willReturn(true);
-        given(order.getBooleanField(OrderFieldsPC.REGISTER_PIECEWORK)).willReturn(true);
 
         given(productionCountingService.isTypeOfProductionRecordingBasic(typeOfProductionRecording)).willReturn(false);
         given(productionCountingService.isTypeOfProductionRecordingForEach(typeOfProductionRecording)).willReturn(true);
@@ -171,7 +163,6 @@ public class ProductionTrackingServiceImplTest {
         verify(technologyOperationComponentLookup).setVisible(true);
 
         verify(timeTab).setVisible(true);
-        verify(pieceworkTab).setVisible(true);
         verify(calcTotalLaborTimeRibbonBtn).setEnabled(true);
         verify(calcTotalLaborTimeRibbonBtn).requestUpdate(true);
     }

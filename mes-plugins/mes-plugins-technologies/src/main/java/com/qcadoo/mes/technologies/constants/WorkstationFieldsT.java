@@ -32,4 +32,7 @@ public final class WorkstationFieldsT {
     public static final String OPERATIONS = "operations";
 
     public static final String OPERATION_COMPONENTS = "operationComponents";
+
+    public static final String WORKSTATION_CHANGEOVER_NORMS = "workstationChangeoverNorms";
+
 }

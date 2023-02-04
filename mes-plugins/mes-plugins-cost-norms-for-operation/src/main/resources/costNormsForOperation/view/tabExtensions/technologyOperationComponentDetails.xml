@@ -36,22 +36,18 @@
 				<component type="borderLayout" name="borderLayoutPiecework"
 					reference="borderLayoutPiecework">
 					<option type="label" value="piecework" />
-					<component type="gridLayout" name="gridLayout" hasBorders="false"
-						columns="6" rows="1">
-						<layoutElement column="1" row="1" width="3">
-							<component type="input" name="pieceworkCost" reference="pieceworkCost"
-								field="#{form}.pieceworkCost">
-								<option type="alignment" value="right" />
-							</component>
-						</layoutElement>
-						<layoutElement column="4" row="1">
-							<component type="input" name="pieceworkCostCURRENCY"
-								defaultEnabled="false" hasLabel="false" reference="pieceworkCostCURRENCY" />
-						</layoutElement>
-						<layoutElement column="5" row="1" width="2">
-							<component type="input" name="numberOfOperations"
-								reference="numberOfOperations" field="#{form}.numberOfOperations">
-								<option type="alignment" value="right" />
+					<component type="gridLayout" name="gridLayout"
+					           hasBorders="false" columns="2" rows="1">
+						<layoutElement column="1" row="1">
+							<component type="lookup" name="pieceRate" field="#{form}.pieceRate"
+							           reference="pieceRate">
+								<option type="column" name="name" fields="name"/>
+
+								<option type="searchable" value="name,number"/>
+								<option type="orderable" value="name,number"/>
+
+								<option type="expression" value="#number + ' - ' + #name"/>
+								<option type="fieldCode" value="number"/>
 							</component>
 						</layoutElement>
 					</component>

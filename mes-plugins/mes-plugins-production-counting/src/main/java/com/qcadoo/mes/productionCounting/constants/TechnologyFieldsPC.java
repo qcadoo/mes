@@ -33,7 +33,9 @@ public final class TechnologyFieldsPC {
 
     public static final String REGISTER_PRODUCTION_TIME = "registerProductionTime";
 
-    public static final String REGISTER_PIECEWORK = "registerPiecework";
+    public static final String PIECEWORK_PRODUCTION = "pieceworkProduction";
+
+    public static final String PIECE_RATE = "pieceRate";
 
     public static final String REGISTER_QUANTITY_OUT_PRODUCT = "registerQuantityOutProduct";
 

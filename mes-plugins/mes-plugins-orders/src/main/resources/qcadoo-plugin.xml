@@ -109,6 +109,9 @@
         <model:model model="orderTechnologicalProcessWasteDto" resource="model/orderTechnologicalProcessWasteDto.xml"/>
         <model:model model="orderAttachment" resource="model/orderAttachment.xml"/>
 
+        <model:model model="workstationChangeoverForOperationalTask" resource="model/workstationChangeoverForOperationalTask.xml"/>
+        <model:model model="workstationChangeoverForOperationalTaskDto" resource="model/workstationChangeoverForOperationalTaskDto.xml"/>
+
         <model:model-field plugin="productionLines" model="productionLine">
             <model:hasMany name="positions" model="productionLineSchedulePosition" plugin="orders" joinField="productionLine"/>
         </model:model-field>
@@ -481,6 +484,31 @@
             <model:manyToMany name="orders" model="order" plugin="orders" joinField="staff" cascade="nullify"/>
         </model:model-field>
 
+        <model:model-field plugin="basic" model="attribute">
+            <model:hasMany name="workstationChangeoverForOperationalTasks" plugin="orders"
+                           model="workstationChangeoverForOperationalTask" joinField="attribute"/>
+        </model:model-field>
+
+        <model:model-field plugin="basic" model="attributeValue">
+            <model:hasMany name="fromWorkstationChangeoverForOperationalTasks" plugin="orders"
+                           model="workstationChangeoverForOperationalTask" joinField="fromAttributeValue"/>
+        </model:model-field>
+
+        <model:model-field plugin="basic" model="attributeValue">
+            <model:hasMany name="toWorkstationChangeoverForOperationalTasks" plugin="orders"
+                           model="workstationChangeoverForOperationalTask" joinField="toAttributeValue"/>
+        </model:model-field>
+
+        <model:model-field plugin="basic" model="workstation">
+            <model:hasMany name="workstationChangeoverForOperationalTasks" plugin="orders"
+                           model="workstationChangeoverForOperationalTask" joinField="workstation"/>
+        </model:model-field>
+
+        <model:model-field plugin="technologies" model="workstationChangeoverNorm">
+            <model:hasMany name="workstationChangeoverForOperationalTasks" plugin="orders"
+                           model="workstationChangeoverForOperationalTask" joinField="workstationChangeoverNorm"/>
+        </model:model-field>
+
         <model:model-enum-value plugin="basic" model="log" enum="logType" value="orderImport"/>
 
         <menu:menu-category name="orders" defaultAuthorizationRole="ROLE_PLANNING_MENU"/>
@@ -515,6 +543,9 @@
 
         <menu:menu-item-url name="planningParameters" category="parameters" url="/planningParameters.html"
                             defaultAuthorizationRole="ROLE_PARAMETERS"/>
+
+        <menu:menu-item name="workstationChangeoverForOperationalTasksList" category="orders"
+                        view="workstationChangeoverForOperationalTasksList" defaultAuthorizationRole="ROLE_PLANNING"/>
 
         <view:view resource="view/ordersList.xml"/>
         <view:view resource="view/ordersImport.xml"/>
@@ -555,6 +586,9 @@
         <view:view resource="view/orderTechnologicalProcessWasteSingleDetails.xml"/>
         <view:view resource="view/orderTechnologicalProcessWastesList.xml"/>
         <view:view resource="view/orderTechnologicalProcessesAnalysis.xml"/>
+
+        <view:view resource="view/workstationChangeoverForOperationalTaskDetails.xml"/>
+        <view:view resource="view/workstationChangeoverForOperationalTasksList.xml"/>
 
         <view:view-ribbon-group resource="view/ribbonExtensions/productDetails.xml"/>
 

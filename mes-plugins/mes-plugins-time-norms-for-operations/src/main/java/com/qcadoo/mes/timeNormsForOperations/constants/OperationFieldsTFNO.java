@@ -28,11 +28,23 @@ public final class OperationFieldsTFNO {
     private OperationFieldsTFNO() {
 
     }
+    public static final String NEXT_OPERATION_AFTER_PRODUCED_TYPE = "nextOperationAfterProducedType";
 
+    public static final String NEXT_OPERATION_AFTER_PRODUCED_QUANTITY = "nextOperationAfterProducedQuantity";
+
+    public static final String NEXT_OPERATION_AFTER_PRODUCED_QUANTITY_UNIT = "nextOperationAfterProducedQuantityUNIT";
+
+    public static final String ARE_PRODUCT_QUANTITIES_DIVISIBLE = "areProductQuantitiesDivisible";
+
+    public static final String IS_TJ_DIVISIBLE = "isTjDivisible";
+
+    public static final String PRODUCTION_IN_ONE_CYCLE_UNIT = "productionInOneCycleUNIT";
     public static final String OPERATION_WORKSTATION_TIMES = "operationWorkstationTimes";
 
     public static final String MIN_STAFF = "minStaff";
 
     public static final String OPTIMAL_STAFF = "optimalStaff";
 
+
+    public static final String PIECEWORK_PRODUCTION = "pieceworkProduction";
 }

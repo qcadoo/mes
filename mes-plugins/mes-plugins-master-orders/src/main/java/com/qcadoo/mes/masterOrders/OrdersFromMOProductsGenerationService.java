@@ -60,7 +60,7 @@ public class OrdersFromMOProductsGenerationService {
     private static final String L_MASTER_ORDER_POSITION_STATUS = "masterOrderPositionStatus";
 
     private static final List<String> L_TECHNOLOGY_FIELD_NAMES = Lists.newArrayList("registerQuantityInProduct",
-            "registerQuantityOutProduct", "registerProductionTime", "registerPiecework", "typeOfProductionRecording");
+            "registerQuantityOutProduct", "registerProductionTime", "typeOfProductionRecording");
 
     private static final String L_ORDERS_GENERATION_NOT_COMPLETE_DATES = "ordersGenerationNotCompleteDates";
 

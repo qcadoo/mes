@@ -39,6 +39,7 @@ public class ProductionCost {
     private BigDecimal realCostsSum;
 
     private BigDecimal sumCostsDeviation;
+    private boolean pieceworkProduction;
 
     public String getOrderNumber() {
         return orderNumber;
@@ -182,5 +183,13 @@ public class ProductionCost {
 
     public void setOrderId(Long orderId) {
         this.orderId = orderId;
+    }
+
+    public boolean isPieceworkProduction() {
+        return pieceworkProduction;
+    }
+
+    public void setPieceworkProduction(boolean pieceworkProduction) {
+        this.pieceworkProduction = pieceworkProduction;
     }
 }

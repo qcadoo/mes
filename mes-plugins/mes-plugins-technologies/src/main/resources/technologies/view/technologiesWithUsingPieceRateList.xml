@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    ***************************************************************************
+    Copyright (c) 2010 Qcadoo Limited
+    Project: Qcadoo MES
+    Version: 1.4
+
+    This file is part of Qcadoo.
+
+    Qcadoo is free software; you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as published
+    by the Free Software Foundation; either version 3 of the License,
+    or (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty
+    of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+    See the GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+    ***************************************************************************
+
+-->
+<view defaultAuthorizationRole="ROLE_TECHNOLOGIES" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns="http://schema.qcadoo.org/view"
+      xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
+      name="technologiesWithUsingPieceRateList"
+      modelPlugin="basic"
+      modelName="pieceRate"
+      menuAccessible="true">
+
+	<component type="window" name="window" reference="window">
+
+		<ribbon>
+			<template name="standardGridTemplate" excludeItems="actions.new, actions.copy, actions.delete"/>
+		</ribbon>
+
+		<component type="form" name="form" reference="form">
+			<component type="grid" name="pieceRateTechnologies" reference="grid" source="pieceRateTechnologiesDto">
+				<option type="column" name="technologyName" fields="technologyName"
+				        link="true"/>
+				<option type="column" name="technologyNumber" fields="technologyNumber"
+				        link="true"/>
+
+				<option type="column" name="technologyProductNumber" fields="technologyProductNumber"/>
+				<option type="column" name="technologyState" fields="technologyState" width="50"/>
+				<option type="column" name="masterTechnology" fields="masterTechnology" width="50"/>
+
+				<option type="order" column="technologyNumber" direction="asc"/>
+				<option type="orderable"
+				        value="technologyName,technologyNumber,technologyProductNumber,technologyState,masterTechnology"/>
+				<option type="searchable"
+				        value="technologyName,technologyNumber,technologyProductNumber,technologyState,masterTechnology"/>
+
+				<option type="correspondingView" value="technologies/technologyDetails"/>
+				<option type="correspondingComponent" value="form"/>
+
+				<option type="fullscreen" value="true"/>
+				<option type="multiselect" value="true"/>
+				<option type="prioritizable" value="false"/>
+
+				<criteriaModifier class="com.qcadoo.mes.technologies.criteriaModifiers.TechnologyCriteriaModifiers"
+				                  method="showPatternTechnologyFromOperationProductInComponentDto"/>
+			</component>
+
+			<option type="header" value="true"/>
+			<option type="expression" value="#number + ' - ' + #name"/>
+		</component>
+
+		<option type="fixedHeight" value="true"/>
+	</component>
+
+	<hooks>
+	</hooks>
+
+</view>
