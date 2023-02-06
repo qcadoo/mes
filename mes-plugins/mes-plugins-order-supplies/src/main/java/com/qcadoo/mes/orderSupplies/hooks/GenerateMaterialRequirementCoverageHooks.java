@@ -50,6 +50,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -234,6 +235,9 @@ public class GenerateMaterialRequirementCoverageHooks {
     private boolean isReplacement(Long coverageProductId) {
         Entity pc = dataDefinitionService.get(OrderSuppliesConstants.PLUGIN_IDENTIFIER,
                 OrderSuppliesConstants.MODEL_COVERAGE_PRODUCT_DTO).get(coverageProductId);
+        if(Objects.isNull(pc)) {
+            return false;
+        }
         return pc.getBooleanField(L_REPLACEMENT);
     }
 
