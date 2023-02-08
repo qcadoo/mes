@@ -119,7 +119,7 @@ public class OrderDetailsHooksMO {
             Entity masterOrderProductDto = dataDefinitionService
                     .get(MasterOrdersConstants.PLUGIN_IDENTIFIER, MasterOrdersConstants.MODEL_MASTER_ORDER_POSITION_DTO)
                     .get(productComponent.getId());
-            
+
             BigDecimal plannedQuantity = BigDecimalUtils.convertNullToZero(
                     masterOrderProductDto.getDecimalField(MasterOrderPositionDtoFields.QUANTITY_REMAINING_TO_ORDER));
             String generatedNumber;
