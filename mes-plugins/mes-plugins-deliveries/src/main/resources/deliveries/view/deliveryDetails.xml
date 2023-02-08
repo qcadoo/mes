@@ -539,9 +539,10 @@
                                    field="supplier">
                             <option type="column" name="name" fields="name" link="true"/>
                             <option type="column" name="contractorCategory" fields="contractorCategory" link="true"/>
+                            <option type="column" name="isSupplier" fields="isSupplier" link="true"/>
 
-                            <option type="searchable" value="name,number,contractorCategory"/>
-                            <option type="orderable" value="name,number,contractorCategory"/>
+                            <option type="searchable" value="name,number,contractorCategory,isSupplier"/>
+                            <option type="orderable" value="name,number,contractorCategory,isSupplier"/>
 
                             <option type="expression"
                                     value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name"/>
