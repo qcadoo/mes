@@ -615,7 +615,7 @@ class ProductionBalanceRepository {
         query.append("- ");
         appendForEachPlannedMachineCosts(entity, query);
         query.append("AS machineCostsDeviation, ");
-        query.append("toc.pieceworkproduction, ");
+        query.append("COALESCE(toc.pieceworkproduction, FALSE) AS pieceworkProduction, ");
         query.append("MIN(q.plannedQuantity) * ");
         appendActualPieceRate(query);
         query.append("AS plannedPieceworkCosts, ");
