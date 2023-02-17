@@ -555,8 +555,8 @@ class ProductionBalanceRepository {
         query.append("FROM orders_order o ");
         query.append("JOIN planned_time plt ON plt.order_id = o.id ");
         query.append("JOIN quantities q ON q.order_id = o.id ");
+        query.append("JOIN technologies_technology t ON o.technology_id = t.id ");
         query.append("LEFT JOIN productioncounting_productiontracking pt ON o.id = pt.order_id AND pt.state = '02accepted' ");
-        query.append("LEFT JOIN technologies_technology t ON o.technology_id = t.id ");
         query.append("LEFT JOIN basic_piecerate pr ON pr.id = t.piecerate_id ");
         appendRealStaffCostsJoin(entity, query);
         query.append("CROSS JOIN basic_parameter bp ");
@@ -615,7 +615,7 @@ class ProductionBalanceRepository {
         query.append("- ");
         appendForEachPlannedMachineCosts(entity, query);
         query.append("AS machineCostsDeviation, ");
-        query.append("toc.pieceworkproduction, ");
+        query.append("COALESCE(toc.pieceworkproduction, FALSE) AS pieceworkProduction, ");
         query.append("MIN(q.plannedQuantity) * ");
         appendActualPieceRate(query);
         query.append("AS plannedPieceworkCosts, ");

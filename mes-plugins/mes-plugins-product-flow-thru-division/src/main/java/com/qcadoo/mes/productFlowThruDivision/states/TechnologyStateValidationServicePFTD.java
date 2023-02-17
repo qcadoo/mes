@@ -3,19 +3,19 @@
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo Framework
  * Version: 1.4
- *
+ * <p>
  * This file is part of Qcadoo.
- *
+ * <p>
  * Qcadoo is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation; either version 3 of the License,
  * or (at your option) any later version.
- *
+ * <p>
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty
  * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU Affero General Public License for more details.
- *
+ * <p>
  * You should have received a copy of the GNU Affero General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
@@ -75,31 +75,33 @@ public class TechnologyStateValidationServicePFTD {
             checkIfForOneDivisionLocationIsSet(technology, stateChangeContext);
             checkIfLocationInOperationIsSet(technology, stateChangeContext);
 
-            if(TypeOfProductionRecording.CUMULATED.getStringValue()
-                    .equals(technology.getStringField(TechnologyFieldsPC.TYPE_OF_PRODUCTION_RECORDING))) {
-                List<Long> ids = operationComponentDataProvider.getComponentsForTechnology(technology.getId());
-                if (ids.isEmpty()) {
-                    return;
-                }
-                boolean differentLocation = false;
-                List<Entity> opics = dataDefinitionService
-                        .get(TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_OPERATION_PRODUCT_IN_COMPONENT).find()
-                        .add(SearchRestrictions.in("id", ids)).list().getEntities();
+            if (!stateChangeContext.getStatus().equals(StateChangeStatus.FAILURE)) {
+                if (TypeOfProductionRecording.CUMULATED.getStringValue()
+                        .equals(technology.getStringField(TechnologyFieldsPC.TYPE_OF_PRODUCTION_RECORDING))) {
+                    List<Long> ids = operationComponentDataProvider.getComponentsForTechnology(technology.getId());
+                    if (ids.isEmpty()) {
+                        return;
+                    }
+                    boolean differentLocation = false;
+                    List<Entity> opics = dataDefinitionService
+                            .get(TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_OPERATION_PRODUCT_IN_COMPONENT).find()
+                            .add(SearchRestrictions.in("id", ids)).list().getEntities();
 
-                Map<Long, Map<Long, List<Entity>>> componentsLocation = opics.stream()
-                        .filter(opic -> Objects.nonNull(((Entity) opic).getBelongsToField(OperationProductInComponentFields.PRODUCT)))
-                        .collect(Collectors.groupingBy(opic -> ((Entity) opic).getBelongsToField(OperationProductInComponentFields.PRODUCT).getId(),
-                        Collectors.groupingBy(u -> ((Entity) u).getBelongsToField("componentsLocation").getId())));
-                for (Map.Entry<Long, Map<Long, List<Entity>>> productEntry : componentsLocation.entrySet()) {
-                    Map<Long, List<Entity>> productLocations = productEntry.getValue();
+                    Map<Long, Map<Long, List<Entity>>> componentsLocation = opics.stream()
+                            .filter(opic -> Objects.nonNull(((Entity) opic).getBelongsToField(OperationProductInComponentFields.PRODUCT)))
+                            .collect(Collectors.groupingBy(opic -> ((Entity) opic).getBelongsToField(OperationProductInComponentFields.PRODUCT).getId(),
+                                    Collectors.groupingBy(u -> ((Entity) u).getBelongsToField("componentsLocation").getId())));
+                    for (Map.Entry<Long, Map<Long, List<Entity>>> productEntry : componentsLocation.entrySet()) {
+                        Map<Long, List<Entity>> productLocations = productEntry.getValue();
 
-                        if(productLocations.size() > 1) {
+                        if (productLocations.size() > 1) {
                             differentLocation = true;
                         }
-                }
+                    }
 
-                if(differentLocation) {
-                    stateChangeContext.addValidationError("productFlowThruDivision.location.components.locationsAreDifferent");
+                    if (differentLocation) {
+                        stateChangeContext.addValidationError("productFlowThruDivision.location.components.locationsAreDifferent");
+                    }
                 }
             }
         }

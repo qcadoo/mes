@@ -120,14 +120,8 @@ public class OrderDetailsHooksMO {
                     .get(MasterOrdersConstants.PLUGIN_IDENTIFIER, MasterOrdersConstants.MODEL_MASTER_ORDER_POSITION_DTO)
                     .get(productComponent.getId());
 
-            BigDecimal masterOrderQuantity = BigDecimalUtils
-                    .convertNullToZero(productComponent.getDecimalField(MasterOrderProductFields.MASTER_ORDER_QUANTITY));
-
-            BigDecimal cumulatedOrderQuantity = BigDecimalUtils.convertNullToZero(
-                    masterOrderProductDto.getDecimalField(MasterOrderPositionDtoFields.CUMULATED_MASTER_ORDER_QUANTITY));
-
-            BigDecimal plannedQuantity = masterOrderQuantity.subtract(cumulatedOrderQuantity, numberService.getMathContext());
-
+            BigDecimal plannedQuantity = BigDecimalUtils.convertNullToZero(
+                    masterOrderProductDto.getDecimalField(MasterOrderPositionDtoFields.QUANTITY_REMAINING_TO_ORDER));
             String generatedNumber;
 
             if (parameter.getBooleanField(ParameterFieldsMO.SAME_ORDER_NUMBER)) {

@@ -891,11 +891,9 @@ public class OrderHooks {
 
         Object quantity = order.getField(OrderFields.PLANNED_QUANTITY);
 
-        if (Objects.nonNull(quantity)) {
-            if (BigDecimalUtils.checkIfCorrectDecimalValue(order, OrderFields.PLANNED_QUANTITY)) {
-                order.setField(OrderFields.COMMISSIONED_PLANNED_QUANTITY,
-                        numberService.setScaleWithDefaultMathContext(order.getDecimalField(OrderFields.PLANNED_QUANTITY)));
-            }
+        if (Objects.nonNull(quantity) && BigDecimalUtils.checkIfCorrectDecimalValue(order, OrderFields.PLANNED_QUANTITY)) {
+            order.setField(OrderFields.COMMISSIONED_PLANNED_QUANTITY,
+                    numberService.setScaleWithDefaultMathContext(order.getDecimalField(OrderFields.PLANNED_QUANTITY)));
         }
     }
 

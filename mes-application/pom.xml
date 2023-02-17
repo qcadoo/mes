@@ -432,7 +432,7 @@
             </build>
         </profile>
         <profile>
-            <id>muffinka</id>
+            <id>qcadoodev</id>
             <build>
                 <plugins>
                     <plugin>
@@ -441,7 +441,7 @@
                         <version>${maven.antrun.plugin.version}</version>
                         <executions>
                             <execution>
-                                <id>deploy-to-muffinka</id>
+                                <id>deploy-to-qcadoodev</id>
                                 <phase>deploy</phase>
                                 <configuration>
                                     <target>
@@ -479,7 +479,7 @@
                         <version>${maven.antrun.plugin.version}</version>
                         <executions>
                             <execution>
-                                <id>package-to-muffinka</id>
+                                <id>package-to-qcadoodev</id>
                                 <phase>deploy</phase>
                                 <configuration>
                                     <target>
