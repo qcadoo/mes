@@ -32,6 +32,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import com.qcadoo.mes.technologies.dto.OperationProductComponentWithQuantityContainer;
 import org.apache.commons.lang3.Validate;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -237,7 +238,8 @@ public class OrderTimePredictionListeners {
 
         final Map<Long, BigDecimal> operationRuns = Maps.newHashMap();
 
-        productQuantitiesService.getProductComponentQuantities(technology, quantity, operationRuns);
+        OperationProductComponentWithQuantityContainer productComponentQuantities = productQuantitiesService.
+                getProductComponentQuantities(technology, quantity, operationRuns);
 
         OperationWorkTime workTime = operationWorkTimeService.estimateTotalWorkTimeForTechnology(technology, operationRuns,
                 includeTpz, includeAdditionalTime, true);
@@ -245,9 +247,9 @@ public class OrderTimePredictionListeners {
         laborWorkTimeField.setFieldValue(workTime.getLaborWorkTime());
         machineWorkTimeField.setFieldValue(workTime.getMachineWorkTime());
 
-        int maxPathTime = orderRealizationTimeService.estimateOperationTimeConsumption(
-                technology.getTreeField(TechnologyFields.OPERATION_COMPONENTS).getRoot(), quantity, includeTpz,
-                includeAdditionalTime, productionLine);
+        int maxPathTime = orderRealizationTimeService.estimateOperationTimeConsumption(null, null,
+                technology.getTreeField(TechnologyFields.OPERATION_COMPONENTS).getRoot(), includeTpz,
+                includeAdditionalTime, false, productionLine, productComponentQuantities, operationRuns);
 
         if (maxPathTime > OrderRealizationTimeService.MAX_REALIZATION_TIME) {
             state.addMessage("orders.validate.global.error.RealizationTimeIsToLong", MessageType.FAILURE);

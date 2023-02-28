@@ -157,15 +157,6 @@ public interface ProductQuantitiesService {
             final Map<Long, BigDecimal> productQuantities);
 
     /**
-     * @param operationComponent
-     *            Operation Component
-     * @return
-     * @deprecated use com.qcadoo.mes.technologies.tree.traversing.MainOutputProductCriteriaBuilder
-     */
-    @Deprecated
-    Entity getOutputProductsFromOperationComponent(final Entity operationComponent);
-
-    /**
      * @param technology
      * @param product
      * @param givenQuantity

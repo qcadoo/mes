@@ -3,19 +3,19 @@
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
  * Version: 1.4
- *
+ * <p>
  * This file is part of Qcadoo.
- *
+ * <p>
  * Qcadoo is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation; either version 3 of the License,
  * or (at your option) any later version.
- *
+ * <p>
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty
  * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU Affero General Public License for more details.
- *
+ * <p>
  * You should have received a copy of the GNU Affero General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
@@ -23,21 +23,15 @@
  */
 package com.qcadoo.mes.operationTimeCalculations;
 
-import java.math.BigDecimal;
-import java.math.MathContext;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
+import com.google.common.collect.Maps;
+import com.qcadoo.mes.operationTimeCalculations.constants.OperCompTimeCalculationsFields;
 import com.qcadoo.mes.operationTimeCalculations.constants.OperationTimeCalculationsConstants;
 import com.qcadoo.mes.operationTimeCalculations.constants.OrderTimeCalculationFields;
 import com.qcadoo.mes.operationTimeCalculations.constants.PlanOrderTimeCalculationFields;
 import com.qcadoo.mes.operationTimeCalculations.dto.OperationTimesContainer;
+import com.qcadoo.mes.technologies.ProductQuantitiesService;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
-import com.qcadoo.mes.operationTimeCalculations.constants.OperCompTimeCalculationsFields;
+import com.qcadoo.mes.technologies.dto.OperationProductComponentWithQuantityContainer;
 import com.qcadoo.mes.timeNormsForOperations.constants.TechOperCompWorkstationTimeFields;
 import com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperationComponentFieldsTNFO;
 import com.qcadoo.model.api.BigDecimalUtils;
@@ -45,6 +39,16 @@ import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
 import com.qcadoo.model.api.search.SearchRestrictions;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
+import java.math.MathContext;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+
+import static com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields.TECHNOLOGY;
 
 @Service
 public class OperationWorkTimeServiceImpl implements OperationWorkTimeService {
@@ -57,9 +61,12 @@ public class OperationWorkTimeServiceImpl implements OperationWorkTimeService {
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
+    @Autowired
+    private ProductQuantitiesService productQuantitiesService;
+
     @Override
     public BigDecimal estimateAbstractOperationWorkTime(final Entity operationComponent, final BigDecimal neededNumberOfCycles,
-            final boolean includeTpz, final boolean includeAdditionalTime, final BigDecimal staffFactor) {
+                                                        final boolean includeTpz, final boolean includeAdditionalTime, final BigDecimal staffFactor) {
         MathContext mc = numberService.getMathContext();
         BigDecimal tj = BigDecimalUtils
                 .convertNullToZero(operationComponent.getIntegerField(TechnologyOperationComponentFieldsTNFO.TJ));
@@ -79,8 +86,8 @@ public class OperationWorkTimeServiceImpl implements OperationWorkTimeService {
 
     @Override
     public OperationWorkTime estimateTechOperationWorkTimeForWorkstation(final Entity operationComponent,
-            final BigDecimal neededNumberOfCycles, final boolean includeTpz, final boolean includeAdditionalTime,
-            Entity techOperCompWorkstationTime, BigDecimal staffFactor) {
+                                                                         final BigDecimal neededNumberOfCycles, final boolean includeTpz, final boolean includeAdditionalTime,
+                                                                         Entity techOperCompWorkstationTime, BigDecimal staffFactor) {
         MathContext mc = numberService.getMathContext();
         BigDecimal laborUtilization = BigDecimalUtils
                 .convertNullToZero(operationComponent.getDecimalField(TechnologyOperationComponentFieldsTNFO.LABOR_UTILIZATION));
@@ -115,15 +122,15 @@ public class OperationWorkTimeServiceImpl implements OperationWorkTimeService {
 
     @Override
     public OperationWorkTime estimateTechOperationWorkTime(final Entity operationComponent, final BigDecimal neededNumberOfCycles,
-            final boolean includeTpz, final boolean includeAdditionalTime, final boolean saved, final BigDecimal staffFactor) {
+                                                           final boolean includeTpz, final boolean includeAdditionalTime, final boolean saved, final BigDecimal staffFactor) {
 
         return estimateOperationWorkTime(null, operationComponent, neededNumberOfCycles, includeTpz, includeAdditionalTime, saved,
                 staffFactor);
     }
 
     private OperationWorkTime estimateOperationWorkTime(final Entity order, final Entity operationComponent,
-            final BigDecimal neededNumberOfCycles, final boolean includeTpz, final boolean includeAdditionalTime,
-            final boolean saved, final BigDecimal staffFactor) {
+                                                        final BigDecimal neededNumberOfCycles, final boolean includeTpz, final boolean includeAdditionalTime,
+                                                        final boolean saved, final BigDecimal staffFactor) {
         MathContext mc = numberService.getMathContext();
         BigDecimal laborUtilization = BigDecimalUtils
                 .convertNullToZero(operationComponent.getDecimalField(TechnologyOperationComponentFieldsTNFO.LABOR_UTILIZATION));
@@ -149,7 +156,7 @@ public class OperationWorkTimeServiceImpl implements OperationWorkTimeService {
 
     @Override
     public OperationTimesContainer estimateOperationsWorkTimes(List<Entity> operationComponents,
-            Map<Long, BigDecimal> operationRuns, boolean includeTpz, boolean includeAdditionalTime, boolean saved) {
+                                                               Map<Long, BigDecimal> operationRuns, boolean includeTpz, boolean includeAdditionalTime, boolean saved) {
         OperationTimesContainer operationTimesContainer = new OperationTimesContainer();
         for (Entity operationComponent : operationComponents) {
             OperationWorkTime operationWorkTime = estimateTechOperationWorkTime(operationComponent,
@@ -163,8 +170,8 @@ public class OperationWorkTimeServiceImpl implements OperationWorkTimeService {
 
     @Override
     public OperationWorkTime estimateTotalWorkTime(final List<Entity> operationComponents,
-            final Map<Long, BigDecimal> operationRuns, final boolean includeTpz, final boolean includeAdditionalTime,
-            final boolean saved) {
+                                                   final Map<Long, BigDecimal> operationRuns, final boolean includeTpz, final boolean includeAdditionalTime,
+                                                   final boolean saved) {
         OperationWorkTime totalWorkTime = new OperationWorkTime();
         Integer totalLaborWorkTime = 0;
         Integer totalMachineWorkTime = 0;
@@ -187,7 +194,7 @@ public class OperationWorkTimeServiceImpl implements OperationWorkTimeService {
     }
 
     private void savedWorkTime(Entity order, final Entity technologyOperationComponent, final Integer machineWorkTime,
-            final Integer laborWorkTime, final Integer duration) {
+                               final Integer laborWorkTime, final Integer duration) {
 
         Entity operCompTimeCalculation = createOrGetOperCompTimeCalculation(order, technologyOperationComponent);
 
@@ -323,7 +330,7 @@ public class OperationWorkTimeServiceImpl implements OperationWorkTimeService {
 
     @Override
     public OperationWorkTime estimateTotalWorkTimeForOrder(final Entity order, final Map<Long, BigDecimal> operationRuns,
-            final boolean includeTpz, final boolean includeAdditionalTime, final boolean saved) {
+                                                           final boolean includeTpz, final boolean includeAdditionalTime, final boolean saved) {
         List<Entity> operationComponents = order.getBelongsToField(L_TECHNOLOGY)
                 .getHasManyField(TechnologyFields.OPERATION_COMPONENTS);
 
@@ -357,10 +364,31 @@ public class OperationWorkTimeServiceImpl implements OperationWorkTimeService {
 
     @Override
     public OperationWorkTime estimateTotalWorkTimeForTechnology(final Entity technology,
-            final Map<Long, BigDecimal> operationRuns, final boolean includeTpz, final boolean includeAdditionalTime,
-            final boolean saved) {
+                                                                final Map<Long, BigDecimal> operationRuns, final boolean includeTpz, final boolean includeAdditionalTime,
+                                                                final boolean saved) {
         List<Entity> operationComponents = technology.getHasManyField(TechnologyFields.OPERATION_COMPONENTS);
         return estimateTotalWorkTime(operationComponents, operationRuns, includeTpz, includeAdditionalTime, saved);
     }
 
+    @Override
+    public BigDecimal getQuantityCyclesNeededToProducedNextOperationAfterProducedQuantity(Entity operationComponent, BigDecimal operationRuns,
+                                                                                          BigDecimal productComponentQuantity, Entity outputProduct) {
+        Entity technology = operationComponent.getBelongsToField(TECHNOLOGY);
+
+        Map<Long, BigDecimal> operationRunsFromProductionQuantities = Maps.newHashMap();
+
+        OperationProductComponentWithQuantityContainer productQuantities = productQuantitiesService
+                .getProductComponentQuantities(technology, BigDecimal.ONE, operationRunsFromProductionQuantities);
+
+        BigDecimal operationsRunsForOneMainProduct = operationRunsFromProductionQuantities.get(operationComponent.getId());
+        BigDecimal quantityOutputProductProduced = productQuantities.get(outputProduct);
+        BigDecimal nextOperationAfterProducedQuantity = BigDecimalUtils
+                .convertNullToZero(operationComponent.getDecimalField(TechnologyOperationComponentFieldsTNFO.NEXT_OPERATION_AFTER_PRODUCED_QUANTITY));
+        if (nextOperationAfterProducedQuantity.compareTo(productComponentQuantity) >= 0) {
+            return operationRuns;
+        }
+
+        return numberService.setScaleWithDefaultMathContext(operationsRunsForOneMainProduct.multiply(nextOperationAfterProducedQuantity, numberService.getMathContext())
+                .divide(quantityOutputProductProduced, numberService.getMathContext()));
+    }
 }

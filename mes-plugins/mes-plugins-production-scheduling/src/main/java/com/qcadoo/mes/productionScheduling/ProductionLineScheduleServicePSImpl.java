@@ -29,6 +29,9 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import com.google.common.collect.Maps;
+import com.qcadoo.mes.technologies.ProductQuantitiesService;
+import com.qcadoo.mes.technologies.dto.OperationProductComponentWithQuantityContainer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Service;
@@ -74,16 +77,23 @@ public class ProductionLineScheduleServicePSImpl implements ProductionLineSchedu
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
+    @Autowired
+    private ProductQuantitiesService productQuantitiesService;
+
     public void createProductionLinePositionNewData(Map<Long, ProductionLinePositionNewData> orderProductionLinesPositionNewData,
                                                     Entity productionLine, Date finishDate, Entity position, Entity technology, Entity previousOrder) {
         Entity productionLineSchedule = position.getBelongsToField(ProductionLineSchedulePositionFields.PRODUCTION_LINE_SCHEDULE);
         Entity order = position.getBelongsToField(ProductionLineSchedulePositionFields.ORDER);
-        BigDecimal plannedQuantity = order.getDecimalField(OrderFields.PLANNED_QUANTITY);
+
+        final Map<Long, BigDecimal> operationRuns = Maps.newHashMap();
+
+        OperationProductComponentWithQuantityContainer productComponentQuantities = productQuantitiesService.getProductComponentQuantities(technology, order.getDecimalField(OrderFields.PLANNED_QUANTITY), operationRuns);
+
         operationWorkTimeService.deletePlanOperCompTimeCalculations(productionLineSchedule, order, productionLine);
 
-        int maxPathTime = orderRealizationTimeService.estimateMaxOperationTimeConsumptionForWorkstation(productionLineSchedule, order,
+        int maxPathTime = orderRealizationTimeService.estimateOperationTimeConsumption(productionLineSchedule, order,
                 technology.getTreeField(TechnologyFields.OPERATION_COMPONENTS).getRoot(),
-                plannedQuantity, true, true, productionLine);
+                 true, true, true, productionLine, productComponentQuantities, operationRuns);
 
         if (maxPathTime != 0 && maxPathTime <= OrderRealizationTimeService.MAX_REALIZATION_TIME) {
             Entity changeover = lineChangeoverNormsForOrdersService.getChangeover(previousOrder, technology, productionLine);

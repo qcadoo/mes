@@ -84,6 +84,7 @@ public class OperationalTasksServiceImpl implements OperationalTasksService {
                 .createAlias(OperationalTaskFields.TECHNOLOGY_OPERATION_COMPONENT, "toc", JoinType.INNER)
                 .add(SearchRestrictions.belongsTo("toc." + TechnologyOperationComponentFields.PARENT,
                         technologyOperationComponent))
+                .add(SearchRestrictions.ne(OperationalTaskFields.STATE, OperationalTaskStateStringValues.REJECTED))
                 .add(SearchRestrictions.belongsTo(OperationalTaskFields.ORDER, order)).list().getEntities();
     }
 
@@ -92,6 +93,7 @@ public class OperationalTasksServiceImpl implements OperationalTasksService {
         return dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_OPERATIONAL_TASK).find()
                 .add(SearchRestrictions.belongsTo(OperationalTaskFields.TECHNOLOGY_OPERATION_COMPONENT,
                         technologyOperationComponent.getBelongsToField(TechnologyOperationComponentFields.PARENT)))
+                .add(SearchRestrictions.ne(OperationalTaskFields.STATE, OperationalTaskStateStringValues.REJECTED))
                 .add(SearchRestrictions.belongsTo(OperationalTaskFields.ORDER, order)).uniqueResult();
     }
 }

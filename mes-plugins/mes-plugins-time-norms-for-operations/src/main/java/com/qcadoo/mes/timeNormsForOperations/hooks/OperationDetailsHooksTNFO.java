@@ -24,6 +24,8 @@
 package com.qcadoo.mes.timeNormsForOperations.hooks;
 
 import static com.qcadoo.mes.timeNormsForOperations.constants.OperationFieldsTFNO.*;
+import static com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperationComponentFieldsTNFO.ALL;
+import static com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperationComponentFieldsTNFO.SPECIFIED;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -41,8 +43,8 @@ public class OperationDetailsHooksTNFO {
     public void setNextOperationAfterProducedTypeOperationValue(final ViewDefinitionState viewDefinitionState) {
         FieldComponent nextOperationAfterProducedType = (FieldComponent) viewDefinitionState
                 .getComponentByReference(NEXT_OPERATION_AFTER_PRODUCED_TYPE);
-        if (!"02specified".equals(nextOperationAfterProducedType.getFieldValue())) {
-            nextOperationAfterProducedType.setFieldValue("01all");
+        if (!SPECIFIED.equals(nextOperationAfterProducedType.getFieldValue())) {
+            nextOperationAfterProducedType.setFieldValue(ALL);
 
         }
     }
@@ -60,7 +62,7 @@ public class OperationDetailsHooksTNFO {
 
         nextOperationAfterProducedType.setRequired(true);
 
-        if (nextOperationAfterProducedType.getFieldValue().equals("02specified")) {
+        if (nextOperationAfterProducedType.getFieldValue().equals(SPECIFIED)) {
             nextOperationAfterProducedQuantity.setVisible(true);
             nextOperationAfterProducedQuantity.setEnabled(true);
             nextOperationAfterProducedQuantityUNIT.setVisible(true);

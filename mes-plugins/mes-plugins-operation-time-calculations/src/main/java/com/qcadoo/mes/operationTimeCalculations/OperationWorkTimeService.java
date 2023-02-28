@@ -23,12 +23,12 @@
  */
 package com.qcadoo.mes.operationTimeCalculations;
 
+import com.qcadoo.mes.operationTimeCalculations.dto.OperationTimesContainer;
+import com.qcadoo.model.api.Entity;
+
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
-
-import com.qcadoo.mes.operationTimeCalculations.dto.OperationTimesContainer;
-import com.qcadoo.model.api.Entity;
 
 public interface OperationWorkTimeService {
 
@@ -62,4 +62,7 @@ public interface OperationWorkTimeService {
 
     OperationWorkTime estimateTotalWorkTimeForTechnology(final Entity technology, final Map<Long, BigDecimal> operationRuns,
             final boolean includeTpz, final boolean includeAdditionalTime, final boolean saved);
+
+    BigDecimal getQuantityCyclesNeededToProducedNextOperationAfterProducedQuantity(Entity operationComponent, BigDecimal operationRuns,
+                                                                                   BigDecimal productComponentQuantity, Entity outputProduct);
 }

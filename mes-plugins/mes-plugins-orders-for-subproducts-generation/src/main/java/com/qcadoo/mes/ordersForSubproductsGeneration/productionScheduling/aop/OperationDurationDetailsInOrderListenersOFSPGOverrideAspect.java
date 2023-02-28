@@ -32,6 +32,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import com.qcadoo.mes.technologies.dto.OperationProductComponentWithQuantityContainer;
 import org.apache.commons.lang3.Validate;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
@@ -232,12 +233,12 @@ public class OperationDurationDetailsInOrderListenersOFSPGOverrideAspect {
                 Entity t = o.getBelongsToField(OrderFields.TECHNOLOGY);
                 final Map<Long, BigDecimal> oR = Maps.newHashMap();
 
-                productQuantitiesService.getProductComponentQuantities(t, quantity, oR);
+                OperationProductComponentWithQuantityContainer productComponentQuantities = productQuantitiesService.getProductComponentQuantities(t, quantity, oR);
                 operationWorkTimeService.estimateTotalWorkTimeForOrder(o, oR, includeTpz, includeAdditionalTime, true);
 
-                int maxPathTime = orderRealizationTimeService.estimateMaxOperationTimeConsumptionForWorkstation(null, o,
-                        t.getTreeField(TechnologyFields.OPERATION_COMPONENTS).getRoot(), quantity, includeTpz,
-                        includeAdditionalTime, productionLine);
+                int maxPathTime = orderRealizationTimeService.estimateOperationTimeConsumption(null, o,
+                        t.getTreeField(TechnologyFields.OPERATION_COMPONENTS).getRoot(), includeTpz,
+                        includeAdditionalTime, true, productionLine, productComponentQuantities, oR);
 
                 if (maxPathTime > OrderRealizationTimeService.MAX_REALIZATION_TIME) {
                     state.addMessage("orders.validate.global.error.RealizationTimeIsToLong", ComponentState.MessageType.FAILURE);

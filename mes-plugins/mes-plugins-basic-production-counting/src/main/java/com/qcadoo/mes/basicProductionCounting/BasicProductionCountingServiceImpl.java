@@ -3,19 +3,19 @@
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
  * Version: 1.4
- *
+ * <p>
  * This file is part of Qcadoo.
- *
+ * <p>
  * Qcadoo is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation; either version 3 of the License,
  * or (at your option) any later version.
- *
+ * <p>
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty
  * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU Affero General Public License for more details.
- *
+ * <p>
  * You should have received a copy of the GNU Affero General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
@@ -23,62 +23,34 @@
  */
 package com.qcadoo.mes.basicProductionCounting;
 
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
-
-import com.qcadoo.model.api.search.SearchOrders;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import com.google.common.collect.Multimap;
-import com.google.common.collect.Sets;
+import com.google.common.collect.*;
 import com.qcadoo.mes.basic.constants.ProductFamilyElementType;
 import com.qcadoo.mes.basic.constants.ProductFields;
-import com.qcadoo.mes.basicProductionCounting.constants.BasicProductionCountingConstants;
-import com.qcadoo.mes.basicProductionCounting.constants.BasicProductionCountingFields;
-import com.qcadoo.mes.basicProductionCounting.constants.OrderFieldsBPC;
-import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingOperationRunFields;
-import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityFields;
-import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityRole;
-import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityTypeOfMaterial;
+import com.qcadoo.mes.basicProductionCounting.constants.*;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.technologies.ProductQuantitiesService;
 import com.qcadoo.mes.technologies.TechnologyService;
-import com.qcadoo.mes.technologies.constants.MrpAlgorithm;
-import com.qcadoo.mes.technologies.constants.OperationProductInComponentFields;
-import com.qcadoo.mes.technologies.constants.ProductBySizeGroupFields;
-import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
-import com.qcadoo.mes.technologies.constants.TechnologyFields;
-import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
+import com.qcadoo.mes.technologies.constants.*;
 import com.qcadoo.mes.technologies.dto.OperationProductComponentHolder;
 import com.qcadoo.mes.technologies.dto.OperationProductComponentWithQuantityContainer;
-import com.qcadoo.model.api.BigDecimalUtils;
-import com.qcadoo.model.api.DataDefinition;
-import com.qcadoo.model.api.DataDefinitionService;
-import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.NumberService;
+import com.qcadoo.model.api.*;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
+import com.qcadoo.model.api.search.SearchOrders;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.plugin.api.PluginUtils;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.LookupComponent;
 import com.qcadoo.view.constants.RowStyle;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
+import java.util.*;
+import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
 import static com.qcadoo.model.api.search.SearchProjections.*;
-import static com.qcadoo.model.api.search.SearchProjections.rowCount;
 
 @Service
 public class BasicProductionCountingServiceImpl implements BasicProductionCountingService {
@@ -161,7 +133,7 @@ public class BasicProductionCountingServiceImpl implements BasicProductionCounti
     }
 
     private boolean saveBasicProductionCounting(Entity order, final List<Entity> productionCountingQuantities,
-            final List<Entity> basicProductionCounting, final Entity orderProduct) {
+                                                final List<Entity> basicProductionCounting, final Entity orderProduct) {
         boolean productToProductGroupTechnologyDoesntExists = false;
         Multimap<Long, Entity> productionCountingQuantitiesByProduct = ArrayListMultimap.create();
 
@@ -193,15 +165,15 @@ public class BasicProductionCountingServiceImpl implements BasicProductionCounti
     }
 
     private void prepareBasicProductionCounting(final Entity order, final List<Entity> productionCountingQuantities,
-            final List<Entity> basicProductionCounting) {
+                                                final List<Entity> basicProductionCounting) {
         List<Entity> forBasicProductionCounting = productionCountingQuantities
                 .stream()
                 .filter(pcq -> pcq.getStringField(ProductionCountingQuantityFields.ROLE).equals(
                         ProductionCountingQuantityRole.USED.getStringValue())
                         || (pcq.getStringField(ProductionCountingQuantityFields.ROLE).equals(
-                                ProductionCountingQuantityRole.PRODUCED.getStringValue()) && pcq.getStringField(
-                                ProductionCountingQuantityFields.TYPE_OF_MATERIAL).equals(
-                                ProductionCountingQuantityTypeOfMaterial.WASTE.getStringValue()))).collect(Collectors.toList());
+                        ProductionCountingQuantityRole.PRODUCED.getStringValue()) && pcq.getStringField(
+                        ProductionCountingQuantityFields.TYPE_OF_MATERIAL).equals(
+                        ProductionCountingQuantityTypeOfMaterial.WASTE.getStringValue()))).collect(Collectors.toList());
 
         Set<Long> alreadyAddedProducts = Sets.newHashSet();
 
@@ -280,8 +252,8 @@ public class BasicProductionCountingServiceImpl implements BasicProductionCounti
     }
 
     private Entity prepareProductionCountingQuantity(final Entity order, final Entity technologyOperationComponent, final Entity attribute,
-            final Entity technologyInputProductType, final Entity operationProductComponent, Entity product, final String role,
-            final boolean isNonComponent, final BigDecimal plannedQuantity) {
+                                                     final Entity technologyInputProductType, final Entity operationProductComponent, Entity product, final String role,
+                                                     final boolean isNonComponent, final BigDecimal plannedQuantity) {
         Entity productionCountingQuantity = getProductionCountingQuantityDD().create();
 
         productionCountingQuantity.setField(ProductionCountingQuantityFields.TECHNOLOGY_OPERATION_COMPONENT,
@@ -316,7 +288,7 @@ public class BasicProductionCountingServiceImpl implements BasicProductionCounti
     }
 
     private String getTypeOfMaterial(final Entity order, final Entity technologyOperationComponent, final Entity product,
-            final String role, boolean isNonComponent) {
+                                     final String role, boolean isNonComponent) {
         if (isNonComponent) {
             return ProductionCountingQuantityTypeOfMaterial.INTERMEDIATE.getStringValue();
         } else if (isRoleProduced(role)) {
@@ -333,7 +305,7 @@ public class BasicProductionCountingServiceImpl implements BasicProductionCounti
     }
 
     private boolean checkIfProductIsFinalProduct(final Entity order, final Entity technologyOperationComponent,
-            final Entity product) {
+                                                 final Entity product) {
         return (checkIfProductsAreSame(order, product) && checkIfTechnologyOperationComponentsAreSame(order,
                 technologyOperationComponent));
     }
@@ -397,7 +369,7 @@ public class BasicProductionCountingServiceImpl implements BasicProductionCounti
     }
 
     private void updateProductionCountingOperationRun(final Entity order, final Entity technologyOperationComponent,
-            final BigDecimal runs) {
+                                                      final BigDecimal runs) {
         Entity productionCountingOperationRun = getProductionCountingOperationRunDD()
                 .find()
                 .add(SearchRestrictions.belongsTo(ProductionCountingOperationRunFields.ORDER, order))
@@ -415,8 +387,8 @@ public class BasicProductionCountingServiceImpl implements BasicProductionCounti
     }
 
     private void updateProductionCountingQuantities(final Entity order,
-            final OperationProductComponentWithQuantityContainer productComponentQuantities,
-            final Set<OperationProductComponentHolder> nonComponents) {
+                                                    final OperationProductComponentWithQuantityContainer productComponentQuantities,
+                                                    final Set<OperationProductComponentHolder> nonComponents) {
         for (Entry<OperationProductComponentHolder, BigDecimal> productComponentQuantity : productComponentQuantities.asMap()
                 .entrySet()) {
             OperationProductComponentHolder operationProductComponentHolder = productComponentQuantity.getKey();
@@ -438,7 +410,7 @@ public class BasicProductionCountingServiceImpl implements BasicProductionCounti
     }
 
     private void updateProductionCountingQuantity(final Entity order, final Entity technologyOperationComponent,
-            final Entity product, final String role, final boolean isNonComponent, final BigDecimal plannedQuantity) {
+                                                  final Entity product, final String role, final boolean isNonComponent, final BigDecimal plannedQuantity) {
         Entity productionCountingQuantity = getProductionCountingQuantityDD()
                 .find()
                 .add(SearchRestrictions.belongsTo(ProductionCountingQuantityFields.ORDER, order))
@@ -508,17 +480,6 @@ public class BasicProductionCountingServiceImpl implements BasicProductionCounti
     }
 
     @Override
-    public List<Entity> getMaterialsForOperationFromProductionCountingQuantities(final Entity order,
-            final Entity operationComponent) {
-        SearchCriteriaBuilder scb = order
-                .getHasManyField(OrderFieldsBPC.PRODUCTION_COUNTING_QUANTITIES)
-                .find()
-                .add(SearchRestrictions.belongsTo(ProductionCountingQuantityFields.TECHNOLOGY_OPERATION_COMPONENT,
-                        operationComponent));
-        return scb.list().getEntities();
-    }
-
-    @Override
     public Map<Long, BigDecimal> getNeededProductQuantities(final List<Entity> orders, final MrpAlgorithm algorithm) {
         Map<Long, BigDecimal> neededProductQuantities = Maps.newHashMap();
 
@@ -549,11 +510,6 @@ public class BasicProductionCountingServiceImpl implements BasicProductionCounti
     @Override
     public Entity getBasicProductionCounting(final Long basicProductionCoutningId) {
         return getBasicProductionCountingDD().get(basicProductionCoutningId);
-    }
-
-    @Override
-    public Entity getProductionCountingQuantity(final Long productionCountingQuantityId) {
-        return getProductionCountingQuantityDD().get(productionCountingQuantityId);
     }
 
     @Override
@@ -666,7 +622,7 @@ public class BasicProductionCountingServiceImpl implements BasicProductionCounti
                 if (opoc != null) {
                     productionCountingQuantity.setField(PRODUCTS_INPUT_LOCATION, opoc.getField(PRODUCTS_INPUT_LOCATION));
                 }
-            }  else if (ProductionCountingQuantityTypeOfMaterial.WASTE.getStringValue().equals(type)) {
+            } else if (ProductionCountingQuantityTypeOfMaterial.WASTE.getStringValue().equals(type)) {
                 Entity opoc = getOperationProduct(opocs,
                         productionCountingQuantity
                                 .getBelongsToField(ProductionCountingQuantityFields.TECHNOLOGY_OPERATION_COMPONENT),
@@ -683,7 +639,7 @@ public class BasicProductionCountingServiceImpl implements BasicProductionCounti
                 if (Objects.isNull(opic)) {
                     Entity parent = productionCountingQuantity.getBelongsToField(ProductionCountingQuantityFields.PRODUCT)
                             .getBelongsToField(ProductFields.PARENT);
-                    if(Objects.nonNull(parent)) {
+                    if (Objects.nonNull(parent)) {
                         opic = getOperationProduct(opics,
                                 productionCountingQuantity
                                         .getBelongsToField(ProductionCountingQuantityFields.TECHNOLOGY_OPERATION_COMPONENT),
@@ -747,6 +703,23 @@ public class BasicProductionCountingServiceImpl implements BasicProductionCounti
         }
 
         return maybeOperationProduct.orElse(null);
+    }
+
+    @Override
+    public BigDecimal getOperationComponentRuns(Entity order, Entity toc) {
+        return getProductionCountingOperationRunDD().find()
+                .add(SearchRestrictions.belongsTo(ProductionCountingOperationRunFields.ORDER, order))
+                .add(SearchRestrictions.belongsTo(ProductionCountingOperationRunFields.TECHNOLOGY_OPERATION_COMPONENT, toc))
+                .uniqueResult().getDecimalField(ProductionCountingOperationRunFields.RUNS);
+    }
+
+    @Override
+    public BigDecimal getProductPlannedQuantity(Entity order, Entity toc, Entity product) {
+        return getProductionCountingQuantityDD().find()
+                .add(SearchRestrictions.belongsTo(ProductionCountingQuantityFields.ORDER, order))
+                .add(SearchRestrictions.belongsTo(ProductionCountingQuantityFields.TECHNOLOGY_OPERATION_COMPONENT, toc))
+                .add(SearchRestrictions.belongsTo(ProductionCountingQuantityFields.PRODUCT, product))
+                .uniqueResult().getDecimalField(ProductionCountingQuantityFields.PLANNED_QUANTITY);
     }
 
 }

@@ -848,54 +848,6 @@ public class ProductQuantitiesServiceImpl implements ProductQuantitiesService {
         }
     }
 
-    @Override
-    public Entity getOutputProductsFromOperationComponent(final Entity operationComponent) {
-        final List<Entity> operationProductOutComponents = operationComponent
-                .getHasManyField(TechnologyOperationComponentFields.OPERATION_PRODUCT_OUT_COMPONENTS);
-
-        if (operationProductOutComponents.isEmpty()) {
-            return null;
-        }
-
-        final Entity parentOperation = operationComponent.getBelongsToField(TechnologyOperationComponentFields.PARENT);
-
-        if (Objects.isNull(parentOperation)) {
-            Entity technology = operationComponent.getBelongsToField(TechnologyOperationComponentFields.TECHNOLOGY);
-            Entity technologyProduct = technology.getBelongsToField(TechnologyFields.PRODUCT);
-
-            for (Entity product : operationProductOutComponents) {
-                if (product.getBelongsToField(ProductComponentFields.PRODUCT).getId().equals(technologyProduct.getId())) {
-                    return product;
-                }
-            }
-        } else {
-            final List<Entity> parentOperationProductInComponents = parentOperation
-                    .getHasManyField(TechnologyOperationComponentFields.OPERATION_PRODUCT_IN_COMPONENTS);
-
-            for (Entity operationProductOutComponent : operationProductOutComponents) {
-                if (findProductParentOperation(operationProductOutComponent, parentOperationProductInComponents)) {
-                    return operationProductOutComponent;
-                }
-            }
-        }
-
-        return null;
-    }
-
-    private boolean findProductParentOperation(final Entity operationProductOutComponent,
-                                               final List<Entity> parentOperationProductInComponents) {
-        for (Entity parentOperationProductInComponent : parentOperationProductInComponents) {
-            Entity parentProduct = getOperationProductProduct(parentOperationProductInComponent);
-            Entity currentProduct = operationProductOutComponent.getBelongsToField(OperationProductOutComponentFields.PRODUCT);
-
-            if (Objects.nonNull(parentProduct) && parentProduct.getId().equals(currentProduct.getId())) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
     private Entity getOperationProductProduct(final Entity operationProductComponent) {
         Entity product = operationProductComponent.getBelongsToField(OperationProductInComponentFields.PRODUCT);
 

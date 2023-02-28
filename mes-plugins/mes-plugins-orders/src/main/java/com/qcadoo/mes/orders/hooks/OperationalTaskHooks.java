@@ -319,7 +319,7 @@ public class OperationalTaskHooks {
                 Date startDate = operationalTask.getDateField(OperationalTaskFields.START_DATE);
                 Date finishDate = operationalTask.getDateField(OperationalTaskFields.FINISH_DATE);
 
-                Integer duration = Seconds.secondsBetween(new DateTime(startDate), new DateTime(finishDate)).getSeconds();
+                int duration = Seconds.secondsBetween(new DateTime(startDate), new DateTime(finishDate)).getSeconds();
 
                 startDate = mayBeMaxFinishDate.get();
                 finishDate = new DateTime(startDate).plusSeconds(duration).toDate();

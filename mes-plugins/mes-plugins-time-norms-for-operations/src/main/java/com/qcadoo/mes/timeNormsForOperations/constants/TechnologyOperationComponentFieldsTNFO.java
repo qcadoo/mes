@@ -41,6 +41,10 @@ public final class TechnologyOperationComponentFieldsTNFO {
 
     public static final String NEXT_OPERATION_AFTER_PRODUCED_TYPE = "nextOperationAfterProducedType";
 
+    public static final String SPECIFIED = "02specified";
+
+    public static final String ALL = "01all";
+
     public static final String NEXT_OPERATION_AFTER_PRODUCED_QUANTITY = "nextOperationAfterProducedQuantity";
 
     public static final String NEXT_OPERATION_AFTER_PRODUCED_QUANTITY_UNIT = "nextOperationAfterProducedQuantityUNIT";

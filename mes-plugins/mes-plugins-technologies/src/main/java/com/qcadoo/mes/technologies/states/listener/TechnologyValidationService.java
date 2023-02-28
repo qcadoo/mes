@@ -30,7 +30,6 @@ import com.qcadoo.mes.basic.constants.ProductFamilyElementType;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.states.StateChangeContext;
 import com.qcadoo.mes.states.messages.constants.StateMessageType;
-import com.qcadoo.mes.technologies.ProductQuantitiesService;
 import com.qcadoo.mes.technologies.TechnologyService;
 import com.qcadoo.mes.technologies.constants.*;
 import com.qcadoo.mes.technologies.tree.ProductStructureTreeService;
@@ -69,9 +68,6 @@ public class TechnologyValidationService {
 
     @Autowired
     private TranslationService translationService;
-
-    @Autowired
-    private ProductQuantitiesService productQuantitiesService;
 
     @Autowired
     private ProductStructureTreeService productStructureTreeService;
@@ -519,8 +515,8 @@ public class TechnologyValidationService {
             return true;
         }
 
-        final Entity outputProduct = productQuantitiesService
-                .getOutputProductsFromOperationComponent(technologyOperationComponent);
+        final Entity outputProduct = technologyService
+                .getMainOutputProductComponent(technologyOperationComponent);
 
         if (Objects.nonNull(outputProduct)) {
             final String outputProductionUnit = outputProduct.getBelongsToField(PRODUCT).getStringField(UNIT);
