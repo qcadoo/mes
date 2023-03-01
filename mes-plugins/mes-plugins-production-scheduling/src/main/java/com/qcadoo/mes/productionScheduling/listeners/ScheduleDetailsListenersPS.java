@@ -8,22 +8,23 @@ import com.qcadoo.mes.basic.ShiftsService;
 import com.qcadoo.mes.basic.constants.ProductFamilyElementType;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.basic.constants.WorkstationFields;
+import com.qcadoo.mes.basicProductionCounting.BasicProductionCountingService;
 import com.qcadoo.mes.operationTimeCalculations.OperationWorkTime;
 import com.qcadoo.mes.operationTimeCalculations.OperationWorkTimeService;
 import com.qcadoo.mes.orders.constants.*;
 import com.qcadoo.mes.orders.listeners.ScheduleDetailsListeners;
 import com.qcadoo.mes.orders.validators.SchedulePositionValidators;
 import com.qcadoo.mes.productionLines.constants.WorkstationFieldsPL;
-import com.qcadoo.mes.technologies.ProductQuantitiesService;
 import com.qcadoo.mes.technologies.TechnologyService;
 import com.qcadoo.mes.technologies.constants.OperationProductOutComponentFields;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
 import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
-import com.qcadoo.mes.technologies.dto.OperationProductComponentWithQuantityContainer;
 import com.qcadoo.mes.timeNormsForOperations.NormService;
 import com.qcadoo.mes.timeNormsForOperations.constants.TechOperCompWorkstationTimeFields;
 import com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperationComponentFieldsTNFO;
-import com.qcadoo.model.api.*;
+import com.qcadoo.model.api.DataDefinition;
+import com.qcadoo.model.api.DataDefinitionService;
+import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchOrders;
 import com.qcadoo.model.api.search.SearchProjections;
@@ -62,9 +63,6 @@ public class ScheduleDetailsListenersPS {
     private DataDefinitionService dataDefinitionService;
 
     @Autowired
-    private ProductQuantitiesService productQuantitiesService;
-
-    @Autowired
     private OperationWorkTimeService operationWorkTimeService;
 
     @Autowired
@@ -86,13 +84,13 @@ public class ScheduleDetailsListenersPS {
     private SchedulePositionValidators schedulePositionValidators;
 
     @Autowired
-    private NumberService numberService;
-
-    @Autowired
     private ParameterService parameterService;
 
     @Autowired
     private NormService normService;
+
+    @Autowired
+    private BasicProductionCountingService basicProductionCountingService;
 
     @Transactional
     public void generatePlan(final ViewDefinitionState view, final ComponentState state, final String[] args) {
@@ -121,26 +119,15 @@ public class ScheduleDetailsListenersPS {
             if (technology == null) {
                 continue;
             }
-            final Map<Long, BigDecimal> operationRuns = Maps.newHashMap();
 
-            OperationProductComponentWithQuantityContainer operationProductComponentWithQuantityContainer = productQuantitiesService
-                    .getProductComponentQuantities(technology, order.getDecimalField(OrderFields.PLANNED_QUANTITY),
-                            operationRuns);
             List<Entity> operationComponents = technology.getHasManyField(TechnologyFields.OPERATION_COMPONENTS);
             for (Entity operationComponent : operationComponents) {
-                BigDecimal operationComponentRuns = numberService.setScaleWithDefaultMathContext(BigDecimalUtils
-                        .convertNullToZero(operationRuns.get(operationComponent.getId())));
+                BigDecimal operationComponentRuns = basicProductionCountingService.getOperationComponentRuns(order, operationComponent);
                 BigDecimal staffFactor = normService.getStaffFactor(operationComponent, operationComponent.getIntegerField(TechnologyOperationComponentFieldsTNFO.OPTIMAL_STAFF));
                 OperationWorkTime operationWorkTime = operationWorkTimeService.estimateTechOperationWorkTime(operationComponent,
                         operationComponentRuns, includeTpz, false, false, staffFactor);
-                BigDecimal partialOperationComponentRuns = operationComponentRuns;
-                if (SPECIFIED.equals(operationComponent.getStringField(NEXT_OPERATION_AFTER_PRODUCED_TYPE))) {
-                    Entity outputProduct = technologyService.getMainOutputProductComponent(operationComponent);
-                    partialOperationComponentRuns = operationWorkTimeService.getQuantityCyclesNeededToProducedNextOperationAfterProducedQuantity(operationComponent,
-                            operationComponentRuns, operationProductComponentWithQuantityContainer.get(outputProduct), outputProduct);
-                }
                 Entity schedulePosition = createSchedulePosition(schedule, schedulePositionDD, order, operationComponent,
-                        operationWorkTime, operationProductComponentWithQuantityContainer, operationComponentRuns, partialOperationComponentRuns);
+                        operationWorkTime, operationComponentRuns);
                 positions.add(schedulePosition);
             }
         }
@@ -155,20 +142,24 @@ public class ScheduleDetailsListenersPS {
 
     private Entity createSchedulePosition(Entity schedule, DataDefinition schedulePositionDD, Entity order,
                                           Entity technologyOperationComponent, OperationWorkTime operationWorkTime,
-                                          OperationProductComponentWithQuantityContainer operationProductComponentWithQuantityContainer,
-                                          BigDecimal operationComponentRuns, BigDecimal partialOperationComponentRuns) {
+                                          BigDecimal operationComponentRuns) {
+        BigDecimal partialOperationComponentRuns = operationComponentRuns;
+        Entity outputProduct = technologyService.getMainOutputProductComponent(technologyOperationComponent);
+        BigDecimal productComponentQuantity = basicProductionCountingService.getProductPlannedQuantity(order, technologyOperationComponent, outputProduct.getBelongsToField(OperationProductOutComponentFields.PRODUCT));
+        if (SPECIFIED.equals(technologyOperationComponent.getStringField(NEXT_OPERATION_AFTER_PRODUCED_TYPE))) {
+            partialOperationComponentRuns = operationWorkTimeService.getQuantityCyclesNeededToProducedNextOperationAfterProducedQuantity(technologyOperationComponent,
+                    operationComponentRuns, productComponentQuantity, outputProduct);
+        }
+        Entity product = outputProduct.getBelongsToField(OperationProductOutComponentFields.PRODUCT);
+        if (ProductFamilyElementType.PRODUCTS_FAMILY.getStringValue().equals(product.getField(ProductFields.ENTITY_TYPE))) {
+            product = order.getBelongsToField(OrderFields.PRODUCT);
+        }
         Entity schedulePosition = schedulePositionDD.create();
         schedulePosition.setField(SchedulePositionFields.SCHEDULE, schedule);
         schedulePosition.setField(SchedulePositionFields.ORDER, order);
         schedulePosition.setField(SchedulePositionFields.TECHNOLOGY_OPERATION_COMPONENT, technologyOperationComponent);
-        Entity mainOutputProductComponent = technologyService.getMainOutputProductComponent(technologyOperationComponent);
-        Entity product = mainOutputProductComponent.getBelongsToField(OperationProductOutComponentFields.PRODUCT);
-        if (ProductFamilyElementType.PRODUCTS_FAMILY.getStringValue().equals(product.getField(ProductFields.ENTITY_TYPE))) {
-            product = order.getBelongsToField(OrderFields.PRODUCT);
-        }
         schedulePosition.setField(SchedulePositionFields.PRODUCT, product);
-        schedulePosition.setField(SchedulePositionFields.QUANTITY,
-                operationProductComponentWithQuantityContainer.get(mainOutputProductComponent));
+        schedulePosition.setField(SchedulePositionFields.QUANTITY, productComponentQuantity);
         schedulePosition.setField(SchedulePositionFields.ADDITIONAL_TIME,
                 technologyOperationComponent.getIntegerField(TechnologyOperationComponentFieldsTNFO.TIME_NEXT_OPERATION));
         schedulePosition.setField(SchedulePositionFields.LABOR_WORK_TIME, operationWorkTime.getLaborWorkTime());
@@ -179,7 +170,8 @@ public class ScheduleDetailsListenersPS {
     }
 
     @Transactional
-    public void assignOperationsToWorkstations(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+    public void assignOperationsToWorkstations(final ViewDefinitionState view, final ComponentState state,
+                                               final String[] args) {
         long startAll = System.currentTimeMillis();
         Entity schedule = ((FormComponent) state).getEntity();
         Map<Long, Date> workstationsFinishDates = Maps.newHashMap();
@@ -232,8 +224,10 @@ public class ScheduleDetailsListenersPS {
         LOG.info("Plan for shift {} - workstations assignment: {}s.", schedule.getStringField(ScheduleFields.NUMBER), (finishAll - startAll) / 1000);
     }
 
-    private boolean getWorkstationsNewFinishDate(Map<Long, Date> workstationsFinishDates, Date scheduleStartTime, Entity position,
-                                                 List<Entity> workstations, Map<Long, PositionNewData> operationWorkstationsPositionNewData) {
+    private boolean getWorkstationsNewFinishDate(Map<Long, Date> workstationsFinishDates, Date scheduleStartTime,
+                                                 Entity position,
+                                                 List<Entity> workstations,
+                                                 Map<Long, PositionNewData> operationWorkstationsPositionNewData) {
         Entity schedule = position.getBelongsToField(SchedulePositionFields.SCHEDULE);
         Entity technologyOperationComponent = position.getBelongsToField(SchedulePositionFields.TECHNOLOGY_OPERATION_COMPONENT);
         BigDecimal staffFactor = normService.getStaffFactor(technologyOperationComponent, technologyOperationComponent.getIntegerField(TechnologyOperationComponentFieldsTNFO.OPTIMAL_STAFF));
@@ -304,23 +298,9 @@ public class ScheduleDetailsListenersPS {
             Entity operationComponent = child.getBelongsToField(SchedulePositionFields.TECHNOLOGY_OPERATION_COMPONENT);
             Date childEndTime;
             if (SPECIFIED.equals(operationComponent.getStringField(NEXT_OPERATION_AFTER_PRODUCED_TYPE))) {
-                BigDecimal partialOperationComponentRuns = child.getDecimalField(SchedulePositionFields.PARTIAL_OPERATION_RUNS);
-                BigDecimal staffFactor = normService.getStaffFactor(operationComponent, operationComponent.getIntegerField(TechnologyOperationComponentFieldsTNFO.OPTIMAL_STAFF));
                 Entity workstation = child.getBelongsToField(SchedulePositionFields.WORKSTATION);
-                Optional<Entity> techOperCompWorkstationTime = normService.getTechOperCompWorkstationTime(operationComponent, workstation);
-                OperationWorkTime partialOperationWorkTime;
-                if (techOperCompWorkstationTime.isPresent()) {
-                    partialOperationWorkTime = operationWorkTimeService.estimateTechOperationWorkTimeForWorkstation(
-                            operationComponent,
-                            partialOperationComponentRuns,
-                            includeTpz, true, techOperCompWorkstationTime.get(),
-                            staffFactor);
-                } else {
-                    partialOperationWorkTime = operationWorkTimeService.estimateTechOperationWorkTime(operationComponent,
-                            partialOperationComponentRuns, includeTpz, true, false, staffFactor);
-                }
-                Integer machineWorkTime = partialOperationWorkTime.getMachineWorkTime();
                 Entity productionLine = workstation.getBelongsToField(WorkstationFieldsPL.PRODUCTION_LINE);
+                Integer machineWorkTime = getMachineWorkTime(includeTpz, child, operationComponent, workstation);
 
                 childEndTime = shiftsService.findDateToForProductionLine(child.getDateField(SchedulePositionFields.START_TIME), machineWorkTime, productionLine);
             } else {
@@ -335,6 +315,25 @@ public class ScheduleDetailsListenersPS {
             }
         }
         return childrenEndTime;
+    }
+
+    private Integer getMachineWorkTime(boolean includeTpz, Entity child, Entity operationComponent,
+                                       Entity workstation) {
+        BigDecimal partialOperationComponentRuns = child.getDecimalField(SchedulePositionFields.PARTIAL_OPERATION_RUNS);
+        BigDecimal staffFactor = normService.getStaffFactor(operationComponent, operationComponent.getIntegerField(TechnologyOperationComponentFieldsTNFO.OPTIMAL_STAFF));
+        Optional<Entity> techOperCompWorkstationTime = normService.getTechOperCompWorkstationTime(operationComponent, workstation);
+        OperationWorkTime partialOperationWorkTime;
+        if (techOperCompWorkstationTime.isPresent()) {
+            partialOperationWorkTime = operationWorkTimeService.estimateTechOperationWorkTimeForWorkstation(
+                    operationComponent,
+                    partialOperationComponentRuns,
+                    includeTpz, true, techOperCompWorkstationTime.get(),
+                    staffFactor);
+        } else {
+            partialOperationWorkTime = operationWorkTimeService.estimateTechOperationWorkTime(operationComponent,
+                    partialOperationComponentRuns, includeTpz, true, false, staffFactor);
+        }
+        return partialOperationWorkTime.getMachineWorkTime();
     }
 
     private Date getFinishDate(Map<Long, Date> workstationsFinishDates, Date scheduleStartTime, Entity schedule,

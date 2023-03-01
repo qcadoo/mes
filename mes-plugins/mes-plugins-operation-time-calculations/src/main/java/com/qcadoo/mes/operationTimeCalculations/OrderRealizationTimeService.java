@@ -23,13 +23,12 @@
  */
 package com.qcadoo.mes.operationTimeCalculations;
 
-import com.qcadoo.mes.technologies.dto.OperationProductComponentWithQuantityContainer;
+import com.qcadoo.mes.technologies.dto.ProductQuantitiesHolder;
 import com.qcadoo.model.api.Entity;
 
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.Locale;
-import java.util.Map;
 
 public interface OrderRealizationTimeService {
 
@@ -43,14 +42,11 @@ public interface OrderRealizationTimeService {
      * @param includeAdditionalTime      Flag indicating if we want to include Additional Time
      * @param productionLine             production line for technology. It's needed to retrieve workstations info. It's not used if we deal with an
      *                                   order, though.
-     * @param productComponentQuantities
-     * @param operationRuns
      * @return Time consumption of an operation in seconds, including offset caused by waiting for child operations to finish.
      */
     int estimateOperationTimeConsumption(final Entity productionLineSchedule, final Entity order, final Entity operationComponent,
                                          final boolean includeTpz, final boolean includeAdditionalTime, boolean maxForWorkstation,
-                                         final Entity productionLine, OperationProductComponentWithQuantityContainer productComponentQuantities,
-                                         Map<Long, BigDecimal> operationRuns);
+                                         final Entity productionLine, ProductQuantitiesHolder productQuantitiesAndOperationRuns);
 
     Object setDateToField(final Date date);
 }

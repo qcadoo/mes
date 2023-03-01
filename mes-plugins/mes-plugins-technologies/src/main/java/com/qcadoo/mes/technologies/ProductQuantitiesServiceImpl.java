@@ -73,8 +73,7 @@ public class ProductQuantitiesServiceImpl implements ProductQuantitiesService {
         return new ProductQuantitiesHolder(productQuantities, operationRuns);
     }
 
-    @Override
-    public OperationProductComponentWithQuantityContainer getProductComponentQuantities(final Entity technology,
+    private OperationProductComponentWithQuantityContainer getProductComponentQuantities(final Entity technology,
                                                                                         final BigDecimal givenQuantity, final Map<Long, BigDecimal> operationRuns) {
         Set<OperationProductComponentHolder> nonComponents = Sets.newHashSet();
 

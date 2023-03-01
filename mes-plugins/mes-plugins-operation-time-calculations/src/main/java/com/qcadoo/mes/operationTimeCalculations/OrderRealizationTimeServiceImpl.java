@@ -31,7 +31,8 @@ import com.qcadoo.mes.technologies.ProductionLinesService;
 import com.qcadoo.mes.technologies.TechnologyService;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
 import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
-import com.qcadoo.mes.technologies.dto.OperationProductComponentWithQuantityContainer;
+import com.qcadoo.mes.technologies.dto.OperationProductComponentHolder;
+import com.qcadoo.mes.technologies.dto.ProductQuantitiesHolder;
 import com.qcadoo.mes.timeNormsForOperations.NormService;
 import com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperationComponentFieldsTNFO;
 import com.qcadoo.model.api.Entity;
@@ -49,7 +50,6 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 
 import static com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperationComponentFieldsTNFO.NEXT_OPERATION_AFTER_PRODUCED_TYPE;
 import static com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperationComponentFieldsTNFO.SPECIFIED;
@@ -84,22 +84,21 @@ public class OrderRealizationTimeServiceImpl implements OrderRealizationTimeServ
     @Transactional
     public int estimateOperationTimeConsumption(final Entity productionLineSchedule, final Entity order, final Entity operationComponent, final boolean includeTpz,
                                                 final boolean includeAdditionalTime, boolean maxForWorkstation, final Entity productionLine,
-                                                OperationProductComponentWithQuantityContainer productComponentQuantities,
-                                                Map<Long, BigDecimal> operationRuns) {
-        int operationTime = evaluateOperationDurationOutOfCycles(operationRuns.get(operationComponent.getId()), operationComponent, productionLine, maxForWorkstation, includeTpz,
+                                                ProductQuantitiesHolder productQuantitiesAndOperationRuns) {
+        int operationTime = evaluateOperationDurationOutOfCycles(productQuantitiesAndOperationRuns.getOperationRuns().get(operationComponent.getId()), operationComponent, productionLine, maxForWorkstation, includeTpz,
                 includeAdditionalTime);
         int offset = 0;
 
         List<Entity> children = Lists.newArrayList(operationComponent.getHasManyField(TechnologyOperationComponentFields.CHILDREN));
         for (Entity child : children) {
             int childTime = estimateOperationTimeConsumption(productionLineSchedule, order, child, includeTpz, includeAdditionalTime,
-                    maxForWorkstation, productionLine, productComponentQuantities, operationRuns);
+                    maxForWorkstation, productionLine, productQuantitiesAndOperationRuns);
 
             if (SPECIFIED.equals(child.getStringField(NEXT_OPERATION_AFTER_PRODUCED_TYPE))) {
-                int childTimeTotal = evaluateOperationDurationOutOfCycles(operationRuns.get(child.getId()), child, productionLine, true, includeTpz,
+                int childTimeTotal = evaluateOperationDurationOutOfCycles(productQuantitiesAndOperationRuns.getOperationRuns().get(child.getId()), child, productionLine, true, includeTpz,
                         includeAdditionalTime);
                 Entity outputProduct = technologyService.getMainOutputProductComponent(operationComponent);
-                BigDecimal cycles = operationWorkTimeService.getQuantityCyclesNeededToProducedNextOperationAfterProducedQuantity(child, operationRuns.get(operationComponent.getId()), productComponentQuantities.get(outputProduct), outputProduct);
+                BigDecimal cycles = operationWorkTimeService.getQuantityCyclesNeededToProducedNextOperationAfterProducedQuantity(child, productQuantitiesAndOperationRuns.getOperationRuns().get(operationComponent.getId()), productQuantitiesAndOperationRuns.getProductQuantities().get(new OperationProductComponentHolder(outputProduct)), outputProduct);
                 int childTimeForQuantity = evaluateOperationDurationOutOfCycles(cycles, child, productionLine, true, includeTpz, false);
 
                 int difference = childTimeTotal - childTimeForQuantity;

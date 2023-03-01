@@ -23,7 +23,6 @@
  */
 package com.qcadoo.mes.operationTimeCalculations;
 
-import com.google.common.collect.Maps;
 import com.qcadoo.mes.operationTimeCalculations.constants.OperCompTimeCalculationsFields;
 import com.qcadoo.mes.operationTimeCalculations.constants.OperationTimeCalculationsConstants;
 import com.qcadoo.mes.operationTimeCalculations.constants.OrderTimeCalculationFields;
@@ -31,7 +30,8 @@ import com.qcadoo.mes.operationTimeCalculations.constants.PlanOrderTimeCalculati
 import com.qcadoo.mes.operationTimeCalculations.dto.OperationTimesContainer;
 import com.qcadoo.mes.technologies.ProductQuantitiesService;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
-import com.qcadoo.mes.technologies.dto.OperationProductComponentWithQuantityContainer;
+import com.qcadoo.mes.technologies.dto.OperationProductComponentHolder;
+import com.qcadoo.mes.technologies.dto.ProductQuantitiesHolder;
 import com.qcadoo.mes.timeNormsForOperations.constants.TechOperCompWorkstationTimeFields;
 import com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperationComponentFieldsTNFO;
 import com.qcadoo.model.api.BigDecimalUtils;
@@ -375,13 +375,11 @@ public class OperationWorkTimeServiceImpl implements OperationWorkTimeService {
                                                                                           BigDecimal productComponentQuantity, Entity outputProduct) {
         Entity technology = operationComponent.getBelongsToField(TECHNOLOGY);
 
-        Map<Long, BigDecimal> operationRunsFromProductionQuantities = Maps.newHashMap();
+        ProductQuantitiesHolder productQuantitiesAndOperationRuns = productQuantitiesService
+                .getProductComponentQuantities(technology, BigDecimal.ONE);
 
-        OperationProductComponentWithQuantityContainer productQuantities = productQuantitiesService
-                .getProductComponentQuantities(technology, BigDecimal.ONE, operationRunsFromProductionQuantities);
-
-        BigDecimal operationsRunsForOneMainProduct = operationRunsFromProductionQuantities.get(operationComponent.getId());
-        BigDecimal quantityOutputProductProduced = productQuantities.get(outputProduct);
+        BigDecimal operationsRunsForOneMainProduct = productQuantitiesAndOperationRuns.getOperationRuns().get(operationComponent.getId());
+        BigDecimal quantityOutputProductProduced = productQuantitiesAndOperationRuns.getProductQuantities().get(new OperationProductComponentHolder(outputProduct));
         BigDecimal nextOperationAfterProducedQuantity = BigDecimalUtils
                 .convertNullToZero(operationComponent.getDecimalField(TechnologyOperationComponentFieldsTNFO.NEXT_OPERATION_AFTER_PRODUCED_QUANTITY));
         if (nextOperationAfterProducedQuantity.compareTo(productComponentQuantity) >= 0) {

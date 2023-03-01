@@ -23,38 +23,21 @@
  */
 package com.qcadoo.mes.productionScheduling.listeners;
 
-import java.math.BigDecimal;
-import java.text.DecimalFormat;
-import java.text.NumberFormat;
-import java.text.ParsePosition;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-
-import com.qcadoo.mes.technologies.dto.OperationProductComponentWithQuantityContainer;
-import org.apache.commons.lang3.Validate;
-import org.joda.time.DateTime;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
-
-import com.google.common.collect.Maps;
 import com.qcadoo.localization.api.utils.DateUtils;
 import com.qcadoo.mes.basic.ShiftsServiceImpl;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.operationTimeCalculations.OperationWorkTime;
 import com.qcadoo.mes.operationTimeCalculations.OperationWorkTimeService;
 import com.qcadoo.mes.operationTimeCalculations.OrderRealizationTimeService;
+import com.qcadoo.mes.operationTimeCalculations.constants.OperCompTimeCalculationsFields;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.productionLines.constants.ProductionLinesConstants;
 import com.qcadoo.mes.productionScheduling.constants.OrderFieldsPS;
 import com.qcadoo.mes.technologies.ProductQuantitiesService;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
+import com.qcadoo.mes.technologies.dto.ProductQuantitiesHolder;
 import com.qcadoo.mes.technologies.states.constants.TechnologyState;
-import com.qcadoo.mes.operationTimeCalculations.constants.OperCompTimeCalculationsFields;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -66,6 +49,20 @@ import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.LookupComponent;
 import com.qcadoo.view.constants.QcadooViewConstants;
+import org.apache.commons.lang3.Validate;
+import org.joda.time.DateTime;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
+
+import java.math.BigDecimal;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
+import java.text.ParsePosition;
+import java.util.Date;
+import java.util.List;
+import java.util.Optional;
 
 @Service
 public class OrderTimePredictionListeners {
@@ -236,12 +233,11 @@ public class OrderTimePredictionListeners {
                 .get(ProductionLinesConstants.PLUGIN_IDENTIFIER, ProductionLinesConstants.MODEL_PRODUCTION_LINE)
                 .get((Long) productionLineLookup.getFieldValue());
 
-        final Map<Long, BigDecimal> operationRuns = Maps.newHashMap();
 
-        OperationProductComponentWithQuantityContainer productComponentQuantities = productQuantitiesService.
-                getProductComponentQuantities(technology, quantity, operationRuns);
+        ProductQuantitiesHolder productQuantitiesAndOperationRuns = productQuantitiesService.
+                getProductComponentQuantities(technology, quantity);
 
-        OperationWorkTime workTime = operationWorkTimeService.estimateTotalWorkTimeForTechnology(technology, operationRuns,
+        OperationWorkTime workTime = operationWorkTimeService.estimateTotalWorkTimeForTechnology(technology, productQuantitiesAndOperationRuns.getOperationRuns(),
                 includeTpz, includeAdditionalTime, true);
 
         laborWorkTimeField.setFieldValue(workTime.getLaborWorkTime());
@@ -249,7 +245,7 @@ public class OrderTimePredictionListeners {
 
         int maxPathTime = orderRealizationTimeService.estimateOperationTimeConsumption(null, null,
                 technology.getTreeField(TechnologyFields.OPERATION_COMPONENTS).getRoot(), includeTpz,
-                includeAdditionalTime, false, productionLine, productComponentQuantities, operationRuns);
+                includeAdditionalTime, false, productionLine, productQuantitiesAndOperationRuns);
 
         if (maxPathTime > OrderRealizationTimeService.MAX_REALIZATION_TIME) {
             state.addMessage("orders.validate.global.error.RealizationTimeIsToLong", MessageType.FAILURE);

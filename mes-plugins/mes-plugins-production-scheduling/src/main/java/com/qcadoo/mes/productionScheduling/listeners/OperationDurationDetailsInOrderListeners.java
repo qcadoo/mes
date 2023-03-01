@@ -23,41 +23,28 @@
  */
 package com.qcadoo.mes.productionScheduling.listeners;
 
-import java.math.BigDecimal;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-
-import com.qcadoo.mes.technologies.dto.OperationProductComponentWithQuantityContainer;
-import org.apache.commons.lang3.Validate;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
-
 import com.google.common.collect.Maps;
 import com.qcadoo.mes.basic.constants.ProductFamilyElementType;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.operationTimeCalculations.OperationWorkTime;
 import com.qcadoo.mes.operationTimeCalculations.OperationWorkTimeService;
 import com.qcadoo.mes.operationTimeCalculations.OrderRealizationTimeService;
+import com.qcadoo.mes.operationTimeCalculations.constants.OperCompTimeCalculationsFields;
 import com.qcadoo.mes.operationTimeCalculations.constants.OperationTimeCalculationsConstants;
+import com.qcadoo.mes.operationTimeCalculations.constants.OrderTimeCalculationFields;
 import com.qcadoo.mes.orders.TechnologyServiceO;
 import com.qcadoo.mes.orders.constants.OperationalTaskFields;
 import com.qcadoo.mes.orders.constants.OperationalTaskType;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
-import com.qcadoo.mes.orders.constants.SchedulePositionFields;
 import com.qcadoo.mes.productionLines.constants.ProductionLinesConstants;
 import com.qcadoo.mes.productionScheduling.ProductionSchedulingService;
 import com.qcadoo.mes.productionScheduling.constants.OrderFieldsPS;
-import com.qcadoo.mes.operationTimeCalculations.constants.OrderTimeCalculationFields;
 import com.qcadoo.mes.technologies.ProductQuantitiesService;
 import com.qcadoo.mes.technologies.TechnologyService;
 import com.qcadoo.mes.technologies.constants.OperationProductOutComponentFields;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
-import com.qcadoo.mes.operationTimeCalculations.constants.OperCompTimeCalculationsFields;
+import com.qcadoo.mes.technologies.dto.ProductQuantitiesHolder;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -68,8 +55,18 @@ import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.LookupComponent;
-import com.qcadoo.view.api.utils.NumberGeneratorService;
 import com.qcadoo.view.constants.QcadooViewConstants;
+import org.apache.commons.lang3.Validate;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
+
+import java.math.BigDecimal;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 @Service
 public class OperationDurationDetailsInOrderListeners {
@@ -172,13 +169,11 @@ public class OperationDurationDetailsInOrderListeners {
         boolean includeTpz = "1".equals(includeTpzField.getFieldValue());
         boolean includeAdditionalTime = "1".equals(includeAdditionalTimeField.getFieldValue());
 
-        final Map<Long, BigDecimal> operationRuns = Maps.newHashMap();
-
-        OperationProductComponentWithQuantityContainer productComponentQuantities = productQuantitiesService.getProductComponentQuantities(technology, quantity, operationRuns);
+        ProductQuantitiesHolder productQuantitiesAndOperationRuns = productQuantitiesService.getProductComponentQuantities(technology, quantity);
 
         operationWorkTimeService.deleteOperCompTimeCalculations(order);
 
-        OperationWorkTime workTime = operationWorkTimeService.estimateTotalWorkTimeForOrder(order, operationRuns, includeTpz,
+        OperationWorkTime workTime = operationWorkTimeService.estimateTotalWorkTimeForOrder(order, productQuantitiesAndOperationRuns.getOperationRuns(), includeTpz,
                 includeAdditionalTime, true);
 
         fillWorkTimeFields(viewDefinitionState, workTime);
@@ -187,7 +182,7 @@ public class OperationDurationDetailsInOrderListeners {
 
         int maxPathTime = orderRealizationTimeService.estimateOperationTimeConsumption(null, order,
                 technology.getTreeField(TechnologyFields.OPERATION_COMPONENTS).getRoot(), includeTpz,
-                includeAdditionalTime, true, productionLine, productComponentQuantities, operationRuns);
+                includeAdditionalTime, true, productionLine, productQuantitiesAndOperationRuns);
 
         if (maxPathTime > OrderRealizationTimeService.MAX_REALIZATION_TIME) {
             state.addMessage("orders.validate.global.error.RealizationTimeIsToLong", MessageType.FAILURE);
