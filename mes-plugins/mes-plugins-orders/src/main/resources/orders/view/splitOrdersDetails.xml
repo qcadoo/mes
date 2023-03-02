@@ -1,0 +1,251 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    ***************************************************************************
+    Copyright (c) 2010 Qcadoo Limited
+    Project: Qcadoo MES
+    Version: 1.4
+
+    This file is part of Qcadoo.
+
+    Qcadoo is free software; you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as published
+    by the Free Software Foundation; either version 3 of the License,
+    or (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty
+    of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+    See the GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+    ***************************************************************************
+
+-->
+<view defaultAuthorizationRole="ROLE_ORDERS_VIEW" name="splitOrdersDetails"
+      modelName="splitOrderHelper"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
+      xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd">
+
+    <component type="window" name="window" reference="window">
+
+        <ribbon>
+            <template name="standardFormTemplate" includeItems="navigation.back"/>
+            <group name="split">
+                <bigButton name="splitOrders" icon="genealogyIcon24.png">
+                    <script>
+                        <![CDATA[
+					        this.addOnChangeListener({
+						        onClick: function() {
+							        if(window.canClose()) {
+							            if (window.confirm("#{translate(orders.splitOrdersDetails.window.ribbon.split.splitOrders.confirm)}")) {
+								            #{form}.performEvent('splitOrders', []);
+								        }
+							        }
+						        }
+					        });
+					        #{form}.addOnChangeListener({
+								onSetValue: function(value) {
+									var generated = #{generated}.getValue().content.value;
+
+                                    if (generated && generated == true) {
+									    #{window}.performBackWithoutConfirm();
+									}
+								}
+							});
+				        ]]>
+                    </script>
+                </bigButton>
+
+                <bigButton name="fillDates" icon="calendarIcon24.png"
+                           action="#{form}.fireEvent(fillDates)"/>
+            </group>
+        </ribbon>
+
+        <windowTab name="mainTab">
+            <component type="form" name="form" reference="form">
+                <component type="checkbox" name="generated" defaultVisible="false"
+                           reference="generated" defaultEnabled="false"/>
+                <component type="gridLayout" name="datesGridLayout"
+                           columns="4" rows="1" hasBorders="false">
+                    <layoutElement column="1" row="1">
+                        <component type="calendar" name="dateFrom" field="dateFrom"
+                                   reference="dateFromTemplate">
+                            <option type="labelWidth" value="30"/>
+                            <option type="withTimePicker" value="true"/>
+                        </component>
+                    </layoutElement>
+                    <layoutElement column="2" row="1">
+                        <component type="calendar" name="dateTo" field="dateTo"
+                                   reference="dateToTemplate">
+                            <option type="labelWidth" value="30"/>
+                            <option type="withTimePicker" value="true"/>
+                        </component>
+                    </layoutElement>
+                </component>
+
+                <component type="awesomeDynamicList" name="parents"
+                           source="#{form}.parents"
+                           reference="parents">
+                    <option type="hasBorder" value="true"/>
+                    <option type="hasButtons" value="false"/>
+
+                    <components>
+                        <component type="gridLayout" name="parentGridLayout"
+                                   columns="17" rows="2" hasBorders="false">
+                            <layoutElement column="1" row="1" width="3">
+
+                                <component type="input" name="number" defaultEnabled="never"
+                                           field="number" reference="number">
+                                    <option type="alignment" value="right"/>
+                                    <option type="labelWidth" value="25"/>
+                                </component>
+                            </layoutElement>
+
+                            <layoutElement column="4" row="1" width="4">
+
+                                <component type="input" name="name" defaultEnabled="never"
+                                           field="name" reference="name">
+                                    <option type="labelWidth" value="25"/>
+                                </component>
+                            </layoutElement>
+
+                            <layoutElement column="8" row="1" width="3">
+                                <component type="calendar" name="dateFrom" field="dateFrom" defaultEnabled="never"
+                                           reference="dateFrom">
+                                    <option type="labelWidth" value="30"/>
+                                    <option type="withTimePicker" value="true"/>
+
+                                </component>
+                            </layoutElement>
+
+                            <layoutElement column="11" row="1" width="3">
+                                <component type="calendar" name="dateTo" field="dateTo" defaultEnabled="never"
+                                           reference="dateTo">
+                                    <option type="labelWidth" value="30"/>
+                                    <option type="withTimePicker" value="true"/>
+                                </component>
+                            </layoutElement>
+
+                            <layoutElement column="14" row="1" width="3">
+
+                                <component type="input" name="plannedQuantity" defaultEnabled="never"
+                                           field="plannedQuantity" reference="plannedQuantity">
+                                    <option type="alignment" value="right"/>
+                                </component>
+                            </layoutElement>
+                            <layoutElement column="17" row="1">
+
+                                <component type="input" name="unit" defaultEnabled="never"
+                                           field="unit" reference="unit">
+                                    <option type="labelWidth" value="30"/>
+                                </component>
+                            </layoutElement>
+
+
+                            <layoutElement column="1" row="2" width="17">
+
+                                <component type="borderLayout" name="splitOrdersBorderLayout">
+
+                                    <component type="awesomeDynamicList"
+                                               name="childes"
+                                               source="childes"
+                                               reference="childes">
+                                        <option type="hasBorder" value="false"/>
+                                        <option type="hasButtons" value="true"/>
+
+                                        <components>
+
+                                            <component type="gridLayout" name="childGridLayout"
+                                                       columns="17" rows="1">
+
+                                                <layoutElement column="1" row="1" width="3">
+
+                                                    <component type="input" name="number" defaultEnabled="never"
+                                                               field="number" reference="splitNumber">
+                                                        <option type="alignment" value="right"/>
+                                                        <option type="labelWidth" value="25"/>
+                                                    </component>
+                                                </layoutElement>
+
+                                                <layoutElement column="4" row="1" width="4">
+
+                                                    <component type="input" name="name" defaultEnabled="never"
+                                                               field="name" reference="splitName">
+                                                        <option type="labelWidth" value="25"/>
+                                                    </component>
+                                                </layoutElement>
+
+                                                <layoutElement column="8" row="1" width="3">
+                                                    <component type="calendar" name="dateFrom" field="dateFrom"
+                                                               reference="splitDateFrom">
+                                                        <option type="labelWidth" value="30"/>
+                                                        <option type="withTimePicker" value="true"/>
+
+                                                    </component>
+                                                </layoutElement>
+
+                                                <layoutElement column="11" row="1" width="3">
+                                                    <component type="calendar" name="dateTo" field="dateTo"
+                                                               reference="splitDateTo">
+                                                        <option type="labelWidth" value="30"/>
+                                                        <option type="withTimePicker" value="true"/>
+                                                    </component>
+                                                </layoutElement>
+
+                                                <layoutElement column="14" row="1" width="3">
+
+                                                    <component type="input" name="plannedQuantity"
+                                                               field="plannedQuantity" reference="splitPlannedQuantity">
+                                                        <option type="alignment" value="right"/>
+                                                        <listener event="onInputChange" method="onPlannedQuantityChange"
+                                                                  class="com.qcadoo.mes.orders.listeners.SplitOrdersListeners"/>
+                                                    </component>
+                                                </layoutElement>
+                                                <layoutElement column="17" row="1">
+
+                                                    <component type="input" name="unit" defaultEnabled="never"
+                                                               field="unit" reference="splitUnit">
+                                                        <option type="labelWidth" value="30"/>
+                                                    </component>
+                                                </layoutElement>
+                                            </component>
+                                        </components>
+
+                                        <listener event="onAddRow"
+                                                  class="com.qcadoo.mes.orders.listeners.SplitOrdersListeners"
+                                                  method="onAddOrder"/>
+
+                                        <listener event="onDeleteRow"
+                                                  class="com.qcadoo.mes.orders.listeners.SplitOrdersListeners"
+                                                  method="onDeleteRow"/>
+
+                                    </component>
+
+                                    <option type="label" value="splitOrdersLabel"/>
+                                </component>
+                            </layoutElement>
+
+                        </component>
+
+                    </components>
+                </component>
+
+
+                <listener event="splitOrders"
+                          class="com.qcadoo.mes.orders.listeners.SplitOrdersListeners"
+                          method="splitOrders"/>
+                <listener event="fillDates"
+                          class="com.qcadoo.mes.orders.listeners.SplitOrdersListeners"
+                          method="fillDates"/>
+
+
+                <option type="header" value="true"/>
+                <option type="expression" value="' '"/>
+            </component>
+        </windowTab>
+
+    </component>
+</view>

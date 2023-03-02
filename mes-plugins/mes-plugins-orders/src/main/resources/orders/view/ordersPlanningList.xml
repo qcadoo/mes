@@ -112,6 +112,12 @@
                 <bigButton name="changeDates" icon="calendarIcon24.png" state="disabled"
                            action="#{grid}.fireEvent(changeDates)"/>
             </group>
+            <group name="split">
+                <bigButton name="splitOrdersParts" icon="genealogyIcon24.png"
+                           action="#{grid}.fireEvent(splitOrdersParts)"/>
+                <bigButton name="splitOrders" icon="genealogyIcon24.png"
+                           action="#{grid}.fireEvent(splitOrders)"/>
+            </group>
             <group name="categories">
                 <bigButton name="setCategory" icon="genealogyIcon24.png" state="disabled"
                            action="#{grid}.fireEvent(setCategory)"/>
@@ -132,6 +138,8 @@
 					var interruptOrder = #{window}.getRibbonItem("status.interruptOrder");
 					var changeDates = #{window}.getRibbonItem("dates.changeDates");
 					var setCategory = #{window}.getRibbonItemOrNull("categories.setCategory");
+					var splitOrdersParts = #{window}.getRibbonItemOrNull("split.splitOrdersParts");
+					var splitOrders = #{window}.getRibbonItemOrNull("split.splitOrders");
 
 					var listener = {
 						onChange: function(selectedEntitiesArray) {
@@ -143,6 +151,8 @@
 								if (copyButton) copyButton.disable();
 								changeDates.disable();
 								setCategory.disable("#{translate(orders.orders.ribbon.message.setCategory)}");
+								splitOrdersParts.disable("#{translate(orders.orders.ribbon.message.splitOrdersParts)}");
+								splitOrders.disable("#{translate(orders.orders.ribbon.message.splitOrders)}");
 							} else {
 								setCategory.enable("#{translate(orders.orders.ribbon.message.setCategory)}");
 
@@ -160,6 +170,10 @@
 								if (selectedEntitiesArray.length == 1 || noDifferentStates) {
 									var selectedEntityStatus = selectedEntitiesArray[0].fields.state;
 									if (selectedEntityStatus == '01pending') {
+
+									    splitOrdersParts.enable("#{translate(orders.orders.ribbon.message.splitOrdersParts)}");
+								        splitOrders.enable("#{translate(orders.orders.ribbon.message.splitOrders)}");
+
 										acceptOrder.enable();
 										acceptOrder.state = "accept";
 										acceptOrder.setLabel("#{translate(orders.ordersPlanningList.window.ribbon.status.acceptOrder)}");
@@ -342,6 +356,12 @@
             <listener event="setCategory"
                       class="com.qcadoo.mes.orders.listeners.OrdersPlanningListListeners"
                       method="setCategory"/>
+            <listener event="splitOrdersParts"
+                      class="com.qcadoo.mes.orders.listeners.OrdersPlanningListListeners"
+                      method="splitOrdersParts"/>
+            <listener event="splitOrders"
+                      class="com.qcadoo.mes.orders.listeners.OrdersPlanningListListeners"
+                      method="splitOrders"/>
         </component>
 
         <option type="fixedHeight" value="true"/>
