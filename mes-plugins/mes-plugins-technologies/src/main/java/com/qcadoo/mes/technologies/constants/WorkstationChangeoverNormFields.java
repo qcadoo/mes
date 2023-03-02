@@ -49,4 +49,6 @@ public final class WorkstationChangeoverNormFields {
 
     public static final String IS_PARALLEL = "isParallel";
 
+    public static final String ACTIVE = "active";
+
 }

@@ -1,10 +1,7 @@
 package com.qcadoo.mes.orders;
 
 import com.google.common.collect.Lists;
-import com.qcadoo.mes.basic.constants.AttributeDataType;
-import com.qcadoo.mes.basic.constants.AttributeFields;
-import com.qcadoo.mes.basic.constants.ProductAttributeValueFields;
-import com.qcadoo.mes.basic.constants.ProductFields;
+import com.qcadoo.mes.basic.constants.*;
 import com.qcadoo.mes.orders.constants.*;
 import com.qcadoo.mes.orders.states.constants.OperationalTaskStateStringValues;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
@@ -13,10 +10,7 @@ import com.qcadoo.mes.technologies.constants.WorkstationChangeoverNormFields;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.search.JoinType;
-import com.qcadoo.model.api.search.SearchOrders;
-import com.qcadoo.model.api.search.SearchProjections;
-import com.qcadoo.model.api.search.SearchRestrictions;
+import com.qcadoo.model.api.search.*;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -189,9 +183,11 @@ public class WorkstationChangeoverService {
     }
 
     public boolean hasWorkstationChangeoverNorms(final Entity workstation) {
-        Entity workstationChangeoverNorm = getWorkstationChangeoverNormDD().find()
-                .createAlias(WorkstationChangeoverNormFields.WORKSTATION, WorkstationChangeoverNormFields.WORKSTATION, JoinType.LEFT)
-                .add(SearchRestrictions.eq(WorkstationChangeoverNormFields.WORKSTATION + L_DOT + L_ID, workstation.getId()))
+        SearchCriteriaBuilder searchCriteriaBuilder = getWorkstationChangeoverNormDD().find();
+
+        addWorkstationSearchRestrictions(searchCriteriaBuilder, workstation);
+
+        Entity workstationChangeoverNorm = searchCriteriaBuilder.add(SearchRestrictions.eq(WorkstationChangeoverNormFields.ACTIVE, true))
                 .setProjection(SearchProjections.alias(SearchProjections.countDistinct(L_ID), L_COUNT))
                 .addOrder(SearchOrders.desc(L_COUNT)).setMaxResults(1).uniqueResult();
 
@@ -201,12 +197,38 @@ public class WorkstationChangeoverService {
     }
 
     public List<Entity> findWorkstationChangeoverNorms(final Entity workstation, final Entity attribute) {
-        return getWorkstationChangeoverNormDD().find()
-                .createAlias(WorkstationChangeoverNormFields.WORKSTATION, WorkstationChangeoverNormFields.WORKSTATION, JoinType.LEFT)
-                .createAlias(WorkstationChangeoverNormFields.ATTRIBUTE, WorkstationChangeoverNormFields.ATTRIBUTE, JoinType.LEFT)
-                .add(SearchRestrictions.eq(WorkstationChangeoverNormFields.WORKSTATION + L_DOT + L_ID, workstation.getId()))
-                .add(SearchRestrictions.eq(WorkstationChangeoverNormFields.ATTRIBUTE + L_DOT + L_ID, attribute.getId()))
+        SearchCriteriaBuilder searchCriteriaBuilder = getWorkstationChangeoverNormDD().find();
+
+        addWorkstationSearchRestrictions(searchCriteriaBuilder, workstation);
+        addAttributeSearchRestrictions(searchCriteriaBuilder, attribute);
+
+        return searchCriteriaBuilder.add(SearchRestrictions.eq(WorkstationChangeoverNormFields.ACTIVE, true))
                 .list().getEntities();
+    }
+
+    private void addWorkstationSearchRestrictions(final SearchCriteriaBuilder searchCriteriaBuilder, final Entity workstation) {
+        if (Objects.nonNull(workstation)) {
+            Entity workstationType = workstation.getBelongsToField(WorkstationFields.WORKSTATION_TYPE);
+
+            if (Objects.nonNull(workstationType)) {
+                searchCriteriaBuilder.createAlias(WorkstationChangeoverNormFields.WORKSTATION, WorkstationChangeoverNormFields.WORKSTATION, JoinType.LEFT);
+                searchCriteriaBuilder.createAlias(WorkstationChangeoverNormFields.WORKSTATION_TYPE, WorkstationChangeoverNormFields.WORKSTATION_TYPE, JoinType.LEFT);
+                searchCriteriaBuilder.add(SearchRestrictions.or(
+                        SearchRestrictions.eq(WorkstationChangeoverNormFields.WORKSTATION + L_DOT + L_ID, workstation.getId()),
+                        SearchRestrictions.eq(WorkstationChangeoverNormFields.WORKSTATION_TYPE + L_DOT + L_ID, workstationType.getId())
+                ));
+            } else {
+                searchCriteriaBuilder.createAlias(WorkstationChangeoverNormFields.WORKSTATION, WorkstationChangeoverNormFields.WORKSTATION, JoinType.LEFT);
+                searchCriteriaBuilder.add(SearchRestrictions.eq(WorkstationChangeoverNormFields.WORKSTATION + L_DOT + L_ID, workstation.getId()));
+            }
+        }
+    }
+
+    private void addAttributeSearchRestrictions(final SearchCriteriaBuilder searchCriteriaBuilder, final Entity attribute) {
+        if (Objects.nonNull(attribute)) {
+                searchCriteriaBuilder.createAlias(WorkstationChangeoverNormFields.ATTRIBUTE, WorkstationChangeoverNormFields.ATTRIBUTE, JoinType.LEFT);
+                searchCriteriaBuilder.add(SearchRestrictions.eq(WorkstationChangeoverNormFields.ATTRIBUTE + L_DOT + L_ID, attribute.getId()));
+        }
     }
 
     public Optional<Entity> getOperationalTask(final String number) {

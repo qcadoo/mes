@@ -9,6 +9,16 @@ import org.springframework.stereotype.Service;
 @Service
 public class WorkstationChangeoverDetailsListeners {
 
+    public void clearOperationalTasksFields(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        LookupComponent fromAttributeValueLookup = (LookupComponent) view.getComponentByReference(WorkstationChangeoverNormFields.FROM_ATTRIBUTE_VALUE);
+        LookupComponent toAttributeValueLookup = (LookupComponent) view.getComponentByReference(WorkstationChangeoverNormFields.TO_ATTRIBUTE_VALUE);
+
+        fromAttributeValueLookup.setFieldValue(null);
+        fromAttributeValueLookup.requestComponentUpdateState();
+        toAttributeValueLookup.setFieldValue(null);
+        toAttributeValueLookup.requestComponentUpdateState();
+    }
+
     public void clearAttributeValueLookups(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         LookupComponent fromAttributeValueLookup = (LookupComponent) view.getComponentByReference(WorkstationChangeoverNormFields.FROM_ATTRIBUTE_VALUE);
         LookupComponent toAttributeValueLookup = (LookupComponent) view.getComponentByReference(WorkstationChangeoverNormFields.TO_ATTRIBUTE_VALUE);
@@ -18,5 +28,7 @@ public class WorkstationChangeoverDetailsListeners {
         toAttributeValueLookup.setFieldValue(null);
         toAttributeValueLookup.requestComponentUpdateState();
     }
+
+
 
 }
