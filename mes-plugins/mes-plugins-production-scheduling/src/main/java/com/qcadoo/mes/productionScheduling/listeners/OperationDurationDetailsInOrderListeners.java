@@ -28,7 +28,6 @@ import com.qcadoo.mes.basic.constants.ProductFamilyElementType;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.operationTimeCalculations.OperationWorkTime;
 import com.qcadoo.mes.operationTimeCalculations.OperationWorkTimeService;
-import com.qcadoo.mes.operationTimeCalculations.OrderRealizationTimeService;
 import com.qcadoo.mes.operationTimeCalculations.constants.OperCompTimeCalculationsFields;
 import com.qcadoo.mes.operationTimeCalculations.constants.OperationTimeCalculationsConstants;
 import com.qcadoo.mes.operationTimeCalculations.constants.OrderTimeCalculationFields;
@@ -38,13 +37,12 @@ import com.qcadoo.mes.orders.constants.OperationalTaskType;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.mes.productionLines.constants.ProductionLinesConstants;
+import com.qcadoo.mes.productionScheduling.OrderRealizationTimeService;
 import com.qcadoo.mes.productionScheduling.ProductionSchedulingService;
 import com.qcadoo.mes.productionScheduling.constants.OrderFieldsPS;
-import com.qcadoo.mes.technologies.ProductQuantitiesService;
 import com.qcadoo.mes.technologies.TechnologyService;
 import com.qcadoo.mes.technologies.constants.OperationProductOutComponentFields;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
-import com.qcadoo.mes.technologies.dto.ProductQuantitiesHolder;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -62,7 +60,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
-import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -79,9 +76,6 @@ public class OperationDurationDetailsInOrderListeners {
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
-
-    @Autowired
-    private ProductQuantitiesService productQuantitiesService;
 
     @Autowired
     private OrderRealizationTimeService orderRealizationTimeService;
@@ -140,8 +134,6 @@ public class OperationDurationDetailsInOrderListeners {
             return;
         }
 
-        FieldComponent plannedQuantityField = (FieldComponent) viewDefinitionState
-                .getComponentByReference(OrderFields.PLANNED_QUANTITY);
         FieldComponent productionLineLookup = (FieldComponent) viewDefinitionState
                 .getComponentByReference(OrderFields.PRODUCTION_LINE);
         FieldComponent generatedEndDateField = (FieldComponent) viewDefinitionState
@@ -162,18 +154,14 @@ public class OperationDurationDetailsInOrderListeners {
         // copy of technology from order
         Entity technology = order.getBelongsToField(OrderFields.TECHNOLOGY);
         Validate.notNull(technology, "technology is null");
-        BigDecimal quantity = orderRealizationTimeService.getBigDecimalFromField(plannedQuantityField.getFieldValue(),
-                viewDefinitionState.getLocale());
 
         // Included in work time
         boolean includeTpz = "1".equals(includeTpzField.getFieldValue());
         boolean includeAdditionalTime = "1".equals(includeAdditionalTimeField.getFieldValue());
 
-        ProductQuantitiesHolder productQuantitiesAndOperationRuns = productQuantitiesService.getProductComponentQuantities(technology, quantity);
-
         operationWorkTimeService.deleteOperCompTimeCalculations(order);
 
-        OperationWorkTime workTime = operationWorkTimeService.estimateTotalWorkTimeForOrder(order, productQuantitiesAndOperationRuns.getOperationRuns(), includeTpz,
+        OperationWorkTime workTime = orderRealizationTimeService.estimateTotalWorkTimeForOrder(order, includeTpz,
                 includeAdditionalTime, true);
 
         fillWorkTimeFields(viewDefinitionState, workTime);
@@ -182,7 +170,7 @@ public class OperationDurationDetailsInOrderListeners {
 
         int maxPathTime = orderRealizationTimeService.estimateOperationTimeConsumption(null, order,
                 technology.getTreeField(TechnologyFields.OPERATION_COMPONENTS).getRoot(), includeTpz,
-                includeAdditionalTime, true, productionLine, productQuantitiesAndOperationRuns);
+                includeAdditionalTime, true, productionLine, Optional.empty());
 
         if (maxPathTime > OrderRealizationTimeService.MAX_REALIZATION_TIME) {
             state.addMessage("orders.validate.global.error.RealizationTimeIsToLong", MessageType.FAILURE);
@@ -218,9 +206,9 @@ public class OperationDurationDetailsInOrderListeners {
                     .get(OperationTimeCalculationsConstants.PLUGIN_PRODUCTION_SCHEDULING_IDENTIFIER,
                             OperationTimeCalculationsConstants.MODEL_ORDER_TIME_CALCULATION)
                     .find().add(SearchRestrictions.belongsTo(OrderTimeCalculationFields.ORDER, order)).setMaxResults(1).uniqueResult();
-            order.setField(OrderFields.START_DATE, orderRealizationTimeService
+            order.setField(OrderFields.START_DATE, operationWorkTimeService
                     .setDateToField(orderTimeCalculation.getDateField(OrderTimeCalculationFields.EFFECTIVE_DATE_FROM)));
-            order.setField(OrderFieldsPS.GENERATED_END_DATE, orderRealizationTimeService
+            order.setField(OrderFieldsPS.GENERATED_END_DATE, operationWorkTimeService
                     .setDateToField(orderTimeCalculation.getDateField(OrderTimeCalculationFields.EFFECTIVE_DATE_TO)));
             order = order.getDataDefinition().save(order);
             orderForm.setEntity(order);

@@ -113,7 +113,7 @@ public class OperationalTaskHooks {
             additionalTime = techOperCompWorkstationTime.get()
                     .getIntegerField(TechOperCompWorkstationTimeFields.TIME_NEXT_OPERATION);
         } else {
-            OperationWorkTime operationWorkTime = operationWorkTimeService.estimateTechOperationWorkTime(
+            OperationWorkTime operationWorkTime = operationWorkTimeService.estimateOperationWorkTime(null,
                     technologyOperationComponent,
                     BigDecimalUtils.convertNullToZero(productQuantitiesAndOperationRuns.getOperationRuns().get(technologyOperationComponent.getId())), includeTpz, false,
                     false, staffFactor);

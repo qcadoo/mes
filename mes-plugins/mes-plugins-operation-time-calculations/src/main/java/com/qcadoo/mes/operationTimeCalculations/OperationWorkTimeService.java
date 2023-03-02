@@ -27,6 +27,7 @@ import com.qcadoo.mes.operationTimeCalculations.dto.OperationTimesContainer;
 import com.qcadoo.model.api.Entity;
 
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -39,15 +40,12 @@ public interface OperationWorkTimeService {
             final BigDecimal neededNumberOfCycles, final boolean includeTpz, final boolean includeAdditionalTime,
             Entity techOperCompWorkstationTime, BigDecimal staffFactor);
 
-    OperationWorkTime estimateTechOperationWorkTime(final Entity operationComponent, final BigDecimal neededNumberOfCycles,
-            final boolean includeTpz, final boolean includeAdditionalTime, final boolean saved, final BigDecimal staffFactor);
+    OperationWorkTime estimateOperationWorkTime(final Entity order, final Entity operationComponent, final BigDecimal neededNumberOfCycles,
+                                                final boolean includeTpz, final boolean includeAdditionalTime, final boolean saved, final BigDecimal staffFactor);
 
     OperationTimesContainer estimateOperationsWorkTimes(final List<Entity> operationComponents,
             Map<Long, BigDecimal> operationRuns, final boolean includeTpz, final boolean includeAdditionalTime,
             final boolean saved);
-
-    OperationWorkTime estimateTotalWorkTime(final List<Entity> operationComponents, final Map<Long, BigDecimal> operationRuns,
-            final boolean includeTpz, final boolean includeAdditionalTime, final boolean saved);
 
     Entity createOrGetOperCompTimeCalculation(Entity order, Entity technologyOperationComponent);
 
@@ -57,12 +55,11 @@ public interface OperationWorkTimeService {
 
     void deletePlanOperCompTimeCalculations(Entity productionLineSchedule, Entity order, Entity productionLine);
 
-    OperationWorkTime estimateTotalWorkTimeForOrder(final Entity order, final Map<Long, BigDecimal> operationRuns,
-            final boolean includeTpz, final boolean includeAdditionalTime, final boolean saved);
-
     OperationWorkTime estimateTotalWorkTimeForTechnology(final Entity technology, final Map<Long, BigDecimal> operationRuns,
             final boolean includeTpz, final boolean includeAdditionalTime, final boolean saved);
 
     BigDecimal getQuantityCyclesNeededToProducedNextOperationAfterProducedQuantity(Entity operationComponent, BigDecimal operationRuns,
                                                                                    BigDecimal productComponentQuantity, Entity outputProduct);
+
+    Object setDateToField(final Date date);
 }

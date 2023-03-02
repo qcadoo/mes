@@ -28,7 +28,7 @@ import com.qcadoo.mes.basic.ShiftsServiceImpl;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.operationTimeCalculations.OperationWorkTime;
 import com.qcadoo.mes.operationTimeCalculations.OperationWorkTimeService;
-import com.qcadoo.mes.operationTimeCalculations.OrderRealizationTimeService;
+import com.qcadoo.mes.productionScheduling.OrderRealizationTimeService;
 import com.qcadoo.mes.operationTimeCalculations.constants.OperCompTimeCalculationsFields;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.productionLines.constants.ProductionLinesConstants;
@@ -86,7 +86,8 @@ public class OrderTimePredictionListeners {
     @Autowired
     private OperationWorkTimeService operationWorkTimeService;
 
-    public void clearValueOnTechnologyChange(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+    public void clearValueOnTechnologyChange(final ViewDefinitionState view, final ComponentState state,
+                                             final String[] args) {
         LookupComponent technologyLookup = (LookupComponent) view.getComponentByReference(OrderFields.TECHNOLOGY);
         Entity technology = technologyLookup.getEntity();
 
@@ -245,7 +246,7 @@ public class OrderTimePredictionListeners {
 
         int maxPathTime = orderRealizationTimeService.estimateOperationTimeConsumption(null, null,
                 technology.getTreeField(TechnologyFields.OPERATION_COMPONENTS).getRoot(), includeTpz,
-                includeAdditionalTime, false, productionLine, productQuantitiesAndOperationRuns);
+                includeAdditionalTime, false, productionLine, Optional.of(productQuantitiesAndOperationRuns));
 
         if (maxPathTime > OrderRealizationTimeService.MAX_REALIZATION_TIME) {
             state.addMessage("orders.validate.global.error.RealizationTimeIsToLong", MessageType.FAILURE);
@@ -264,7 +265,7 @@ public class OrderTimePredictionListeners {
                 } else {
                     Date stopTime = shiftsService.findDateToForProductionLine(startTime, maxPathTime, productionLine);
 
-                    dateToField.setFieldValue(orderRealizationTimeService.setDateToField(stopTime));
+                    dateToField.setFieldValue(operationWorkTimeService.setDateToField(stopTime));
 
                     Optional<DateTime> startTimeOptional = shiftsService.getNearestWorkingDate(new DateTime(startTime),
                             productionLine);
@@ -293,7 +294,8 @@ public class OrderTimePredictionListeners {
         }
     }
 
-    private void scheduleOperationComponents(final Long technologyId, final Date startDate, final Entity productionLine) {
+    private void scheduleOperationComponents(final Long technologyId, final Date startDate,
+                                             final Entity productionLine) {
         Entity technology = dataDefinitionService
                 .get(TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_TECHNOLOGY).get(technologyId);
 

@@ -12,7 +12,6 @@ import org.springframework.stereotype.Service;
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.basic.ShiftsService;
 import com.qcadoo.mes.operationTimeCalculations.OperationWorkTimeService;
-import com.qcadoo.mes.operationTimeCalculations.OrderRealizationTimeService;
 import com.qcadoo.mes.operationTimeCalculations.constants.OperCompTimeCalculationsFields;
 import com.qcadoo.mes.operationTimeCalculations.constants.OperationTimeCalculationsConstants;
 import com.qcadoo.mes.operationTimeCalculations.constants.OrderTimeCalculationFields;
@@ -79,7 +78,7 @@ public class ProductionSchedulingService {
         Entity productionLine = order.getBelongsToField(OrderFields.PRODUCTION_LINE);
 
         Entity orderTimeCalculation = scheduleOperationsInOrder(null, order, technology, orderStartDate, productionLine);
-        order.setField(OrderFieldsPS.GENERATED_END_DATE, orderRealizationTimeService
+        order.setField(OrderFieldsPS.GENERATED_END_DATE, operationWorkTimeService
                 .setDateToField(orderTimeCalculation.getDateField(OrderTimeCalculationFields.EFFECTIVE_DATE_TO)));
     }
 

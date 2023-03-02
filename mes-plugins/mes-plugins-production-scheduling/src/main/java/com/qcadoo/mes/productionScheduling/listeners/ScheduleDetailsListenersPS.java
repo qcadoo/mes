@@ -124,7 +124,7 @@ public class ScheduleDetailsListenersPS {
             for (Entity operationComponent : operationComponents) {
                 BigDecimal operationComponentRuns = basicProductionCountingService.getOperationComponentRuns(order, operationComponent);
                 BigDecimal staffFactor = normService.getStaffFactor(operationComponent, operationComponent.getIntegerField(TechnologyOperationComponentFieldsTNFO.OPTIMAL_STAFF));
-                OperationWorkTime operationWorkTime = operationWorkTimeService.estimateTechOperationWorkTime(operationComponent,
+                OperationWorkTime operationWorkTime = operationWorkTimeService.estimateOperationWorkTime(null, operationComponent,
                         operationComponentRuns, includeTpz, false, false, staffFactor);
                 Entity schedulePosition = createSchedulePosition(schedule, schedulePositionDD, order, operationComponent,
                         operationWorkTime, operationComponentRuns);
@@ -330,7 +330,7 @@ public class ScheduleDetailsListenersPS {
                     includeTpz, true, techOperCompWorkstationTime.get(),
                     staffFactor);
         } else {
-            partialOperationWorkTime = operationWorkTimeService.estimateTechOperationWorkTime(operationComponent,
+            partialOperationWorkTime = operationWorkTimeService.estimateOperationWorkTime(null, operationComponent,
                     partialOperationComponentRuns, includeTpz, true, false, staffFactor);
         }
         return partialOperationWorkTime.getMachineWorkTime();
