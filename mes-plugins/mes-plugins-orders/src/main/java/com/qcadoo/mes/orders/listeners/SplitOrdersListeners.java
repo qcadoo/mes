@@ -60,7 +60,6 @@ public class SplitOrdersListeners {
 
         try {
 
-            //trySplitOrders(splitEntity);
             Entity helper = splitForm.getEntity().getDataDefinition().get(splitForm.getEntityId());
             Integer parts = helper.getIntegerField(SplitOrderHelperConstants.PARTS);
             List<Entity> parents = helper.getHasManyField(SplitOrderHelperConstants.PARENTS);
