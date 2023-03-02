@@ -73,8 +73,7 @@ public class ProductQuantitiesServiceImpl implements ProductQuantitiesService {
         return new ProductQuantitiesHolder(productQuantities, operationRuns);
     }
 
-    @Override
-    public OperationProductComponentWithQuantityContainer getProductComponentQuantities(final Entity technology,
+    private OperationProductComponentWithQuantityContainer getProductComponentQuantities(final Entity technology,
                                                                                         final BigDecimal givenQuantity, final Map<Long, BigDecimal> operationRuns) {
         Set<OperationProductComponentHolder> nonComponents = Sets.newHashSet();
 
@@ -846,54 +845,6 @@ public class ProductQuantitiesServiceImpl implements ProductQuantitiesService {
 
             productWithQuantities.put(product.getId(), newQuantity);
         }
-    }
-
-    @Override
-    public Entity getOutputProductsFromOperationComponent(final Entity operationComponent) {
-        final List<Entity> operationProductOutComponents = operationComponent
-                .getHasManyField(TechnologyOperationComponentFields.OPERATION_PRODUCT_OUT_COMPONENTS);
-
-        if (operationProductOutComponents.isEmpty()) {
-            return null;
-        }
-
-        final Entity parentOperation = operationComponent.getBelongsToField(TechnologyOperationComponentFields.PARENT);
-
-        if (Objects.isNull(parentOperation)) {
-            Entity technology = operationComponent.getBelongsToField(TechnologyOperationComponentFields.TECHNOLOGY);
-            Entity technologyProduct = technology.getBelongsToField(TechnologyFields.PRODUCT);
-
-            for (Entity product : operationProductOutComponents) {
-                if (product.getBelongsToField(ProductComponentFields.PRODUCT).getId().equals(technologyProduct.getId())) {
-                    return product;
-                }
-            }
-        } else {
-            final List<Entity> parentOperationProductInComponents = parentOperation
-                    .getHasManyField(TechnologyOperationComponentFields.OPERATION_PRODUCT_IN_COMPONENTS);
-
-            for (Entity operationProductOutComponent : operationProductOutComponents) {
-                if (findProductParentOperation(operationProductOutComponent, parentOperationProductInComponents)) {
-                    return operationProductOutComponent;
-                }
-            }
-        }
-
-        return null;
-    }
-
-    private boolean findProductParentOperation(final Entity operationProductOutComponent,
-                                               final List<Entity> parentOperationProductInComponents) {
-        for (Entity parentOperationProductInComponent : parentOperationProductInComponents) {
-            Entity parentProduct = getOperationProductProduct(parentOperationProductInComponent);
-            Entity currentProduct = operationProductOutComponent.getBelongsToField(OperationProductOutComponentFields.PRODUCT);
-
-            if (Objects.nonNull(parentProduct) && parentProduct.getId().equals(currentProduct.getId())) {
-                return true;
-            }
-        }
-
-        return false;
     }
 
     private Entity getOperationProductProduct(final Entity operationProductComponent) {

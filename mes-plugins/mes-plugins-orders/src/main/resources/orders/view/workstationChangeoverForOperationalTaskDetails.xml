@@ -69,8 +69,8 @@
                                     <option type="fieldCode" value="number"/>
 
                                     <listener event="onSelectedEntityChange"
-                                              class="com.qcadoo.view.api.listeners.RerenderListener"
-                                              method="onChangeRerender"/>
+                                              class="com.qcadoo.mes.orders.listeners.WorkstationChangeoverForOperationalTaskDetailsListeners"
+                                              method="clearOperationalTasksFields"/>
                                 </component>
                             </layoutElement>
                         </component>

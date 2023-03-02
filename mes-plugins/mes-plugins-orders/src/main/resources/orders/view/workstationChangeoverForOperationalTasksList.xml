@@ -90,9 +90,19 @@
 
             <option type="fullscreen" value="true"/>
             <option type="multiselect" value="true"/>
+
+            <listener event="onSelect"
+                      class="com.qcadoo.view.api.listeners.RerenderListener"
+                      method="onChangeRerender"/>
         </component>
 
         <option type="fixedHeight" value="true"/>
         <option type="header" value="false"/>
     </component>
+
+    <hooks>
+        <beforeRender
+                class="com.qcadoo.mes.orders.hooks.WorkstationChangeoverForOperationalTasksListHooks"
+                method="onBeforeRender"/>
+    </hooks>
 </view>

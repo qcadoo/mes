@@ -10,12 +10,13 @@ import com.qcadoo.mes.orders.constants.WorkstationChangeoverForOperationalTaskFi
 import com.qcadoo.mes.orders.criteriaModifiers.OperationalTaskCriteriaModifiers;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ViewDefinitionState;
-import com.qcadoo.view.api.components.CheckBoxComponent;
-import com.qcadoo.view.api.components.FieldComponent;
-import com.qcadoo.view.api.components.FormComponent;
-import com.qcadoo.view.api.components.LookupComponent;
+import com.qcadoo.view.api.components.*;
 import com.qcadoo.view.api.components.lookup.FilterValueHolder;
+import com.qcadoo.view.api.ribbon.Ribbon;
+import com.qcadoo.view.api.ribbon.RibbonActionItem;
+import com.qcadoo.view.api.ribbon.RibbonGroup;
 import com.qcadoo.view.constants.QcadooViewConstants;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -26,6 +27,10 @@ import java.util.Optional;
 @Service
 public class WorkstationChangeoverForOperationalTaskDetailsHooks {
 
+    private static final String L_ACTIONS = "actions";
+
+    private static final String L_COPY = "copy";
+
     private static final String L_CURRENT_OPERATIONAL_TASK_NUMBER = "currentOperationalTaskNumber";
 
     @Autowired
@@ -35,19 +40,7 @@ public class WorkstationChangeoverForOperationalTaskDetailsHooks {
         setFieldsAndLookups(view);
         setFieldsRequired(view);
         setLookupsEnabledAndFilterValueHolders(view);
-    }
-
-    private void setFieldsRequired(final ViewDefinitionState view) {
-        FieldComponent numberField = (FieldComponent) view.getComponentByReference(WorkstationChangeoverForOperationalTaskFields.NUMBER);
-        LookupComponent currentOperationalTaskLookup = (LookupComponent) view.getComponentByReference(WorkstationChangeoverForOperationalTaskFields.CURRENT_OPERATIONAL_TASK);
-        FieldComponent changeoverTypeField = (FieldComponent) view.getComponentByReference(WorkstationChangeoverForOperationalTaskFields.CHANGEOVER_TYPE);
-
-        String changeoverType = (String) changeoverTypeField.getFieldValue();
-
-        boolean isOwn = WorkstationChangeoverForOperationalTaskChangeoverType.OWN.getStringValue().equals(changeoverType);
-
-        numberField.setRequired(true);
-        currentOperationalTaskLookup.setRequired(isOwn);
+        setRibbonState(view);
     }
 
     private void setFieldsAndLookups(final ViewDefinitionState view) {
@@ -74,7 +67,7 @@ public class WorkstationChangeoverForOperationalTaskDetailsHooks {
         boolean isOwn = WorkstationChangeoverForOperationalTaskChangeoverType.OWN.getStringValue().equals(changeoverType);
 
         if (isOwn) {
-            if (Objects.nonNull(currentOperationalTaskNumber)) {
+            if (StringUtils.isNotEmpty(currentOperationalTaskNumber)) {
                 Optional<Entity> mayBeOperationalTask = workstationChangeoverService.getOperationalTask(currentOperationalTaskNumber);
 
                 if (mayBeOperationalTask.isPresent()) {
@@ -104,7 +97,7 @@ public class WorkstationChangeoverForOperationalTaskDetailsHooks {
         setChangeOverType(changeoverTypeField, changeoverType);
     }
 
-    private void setCurrentOperationalTask(final ViewDefinitionState view, final Entity currentOperationalTask) {
+    public void setCurrentOperationalTask(final ViewDefinitionState view, final Entity currentOperationalTask) {
         LookupComponent currentOperationalTaskLookup = (LookupComponent) view.getComponentByReference(WorkstationChangeoverForOperationalTaskFields.CURRENT_OPERATIONAL_TASK);
         FieldComponent currentOperationalTaskNameField = (FieldComponent) view.getComponentByReference(WorkstationChangeoverForOperationalTaskFields.CURRENT_OPERATIONAL_TASK_NAME);
         LookupComponent currentOperationalTaskOrderLookup = (LookupComponent) view.getComponentByReference(WorkstationChangeoverForOperationalTaskFields.CURRENT_OPERATIONAL_TASK_ORDER);
@@ -145,7 +138,7 @@ public class WorkstationChangeoverForOperationalTaskDetailsHooks {
         currentOperationalTaskFinishDateField.requestComponentUpdateState();
     }
 
-    private void setPreviousOperationalTask(final ViewDefinitionState view, final Entity previousOperationalTask) {
+    public void setPreviousOperationalTask(final ViewDefinitionState view, final Entity previousOperationalTask) {
         LookupComponent previousOperationalTaskLookup = (LookupComponent) view.getComponentByReference(WorkstationChangeoverForOperationalTaskFields.PREVIOUS_OPERATIONAL_TASK);
         FieldComponent previousOperationalTaskNameField = (FieldComponent) view.getComponentByReference(WorkstationChangeoverForOperationalTaskFields.PREVIOUS_OPERATIONAL_TASK_NAME);
         LookupComponent previousOperationalTaskOrderLookup = (LookupComponent) view.getComponentByReference(WorkstationChangeoverForOperationalTaskFields.PREVIOUS_OPERATIONAL_TASK_ORDER);
@@ -211,8 +204,22 @@ public class WorkstationChangeoverForOperationalTaskDetailsHooks {
         changeoverTypeField.requestComponentUpdateState();
     }
 
+    private void setFieldsRequired(final ViewDefinitionState view) {
+        FieldComponent numberField = (FieldComponent) view.getComponentByReference(WorkstationChangeoverForOperationalTaskFields.NUMBER);
+        LookupComponent currentOperationalTaskLookup = (LookupComponent) view.getComponentByReference(WorkstationChangeoverForOperationalTaskFields.CURRENT_OPERATIONAL_TASK);
+        FieldComponent changeoverTypeField = (FieldComponent) view.getComponentByReference(WorkstationChangeoverForOperationalTaskFields.CHANGEOVER_TYPE);
+
+        String changeoverType = (String) changeoverTypeField.getFieldValue();
+
+        boolean isOwn = WorkstationChangeoverForOperationalTaskChangeoverType.OWN.getStringValue().equals(changeoverType);
+
+        numberField.setRequired(true);
+        currentOperationalTaskLookup.setRequired(isOwn);
+    }
+
     private void setLookupsEnabledAndFilterValueHolders(final ViewDefinitionState view) {
         LookupComponent workstationLookup = (LookupComponent) view.getComponentByReference(WorkstationChangeoverForOperationalTaskFields.WORKSTATION);
+        FieldComponent currentOperationalTaskNumberField = (FieldComponent) view.getComponentByReference(L_CURRENT_OPERATIONAL_TASK_NUMBER);
         LookupComponent currentOperationalTaskLookup = (LookupComponent) view.getComponentByReference(WorkstationChangeoverForOperationalTaskFields.CURRENT_OPERATIONAL_TASK);
         LookupComponent previousOperationalTaskLookup = (LookupComponent) view.getComponentByReference(WorkstationChangeoverForOperationalTaskFields.PREVIOUS_OPERATIONAL_TASK);
         FieldComponent changeoverTypeField = (FieldComponent) view.getComponentByReference(WorkstationChangeoverForOperationalTaskFields.CHANGEOVER_TYPE);
@@ -221,14 +228,16 @@ public class WorkstationChangeoverForOperationalTaskDetailsHooks {
         LookupComponent toAttributeValueLookup = (LookupComponent) view.getComponentByReference(WorkstationChangeoverForOperationalTaskFields.TO_ATTRIBUTE_VALUE);
         CheckBoxComponent isParallelCheckbox = (CheckBoxComponent) view.getComponentByReference(WorkstationChangeoverForOperationalTaskFields.IS_PARALLEL);
 
+        String currentOperationalTaskNumber = (String) currentOperationalTaskNumberField.getFieldValue();
         String changeoverType = (String) changeoverTypeField.getFieldValue();
 
         boolean isOwn = WorkstationChangeoverForOperationalTaskChangeoverType.OWN.getStringValue().equals(changeoverType);
+        boolean isCurrentOperationalTaskNumberEmpty = StringUtils.isEmpty(currentOperationalTaskNumber);
 
-        workstationLookup.setEnabled(isOwn);
+        workstationLookup.setEnabled(isOwn && isCurrentOperationalTaskNumberEmpty);
         workstationLookup.requestComponentUpdateState();
 
-        currentOperationalTaskLookup.setEnabled(isOwn);
+        currentOperationalTaskLookup.setEnabled(isOwn && isCurrentOperationalTaskNumberEmpty);
         currentOperationalTaskLookup.requestComponentUpdateState();
 
         Entity workstation = workstationLookup.getEntity();
@@ -252,6 +261,8 @@ public class WorkstationChangeoverForOperationalTaskDetailsHooks {
             filterValueHolder.put(OperationalTaskCriteriaModifiers.L_WORKSTATION_ID, workstation.getId());
         } else {
             filterValueHolder.remove(OperationalTaskCriteriaModifiers.L_WORKSTATION_ID);
+
+            lookupComponent.setFieldValue(null);
         }
 
         lookupComponent.setFilterValue(filterValueHolder);
@@ -269,6 +280,26 @@ public class WorkstationChangeoverForOperationalTaskDetailsHooks {
 
         lookupComponent.setFilterValue(filterValueHolder);
         lookupComponent.requestComponentUpdateState();
+    }
+
+    private void setRibbonState(final ViewDefinitionState view) {
+        WindowComponent window = (WindowComponent) view.getComponentByReference(QcadooViewConstants.L_WINDOW);
+
+        Ribbon ribbon = window.getRibbon();
+        RibbonGroup actionsRibbonGroup = ribbon.getGroupByName(L_ACTIONS);
+        RibbonActionItem copyRibbonActionItem = actionsRibbonGroup.getItemByName(L_COPY);
+
+        FormComponent workstationChangeoverForOperationalTaskForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
+
+        Entity workstationChangeoverForOperationalTask = workstationChangeoverForOperationalTaskForm.getEntity();
+
+        String changeoverType = workstationChangeoverForOperationalTask.getStringField(WorkstationChangeoverForOperationalTaskFields.CHANGEOVER_TYPE);
+
+        boolean isSaved = Objects.nonNull(workstationChangeoverForOperationalTask.getId());
+        boolean isOwn = WorkstationChangeoverForOperationalTaskChangeoverType.OWN.getStringValue().equals(changeoverType);
+
+        copyRibbonActionItem.setEnabled(isSaved && isOwn);
+        copyRibbonActionItem.requestUpdate(true);
     }
 
 }

@@ -19,7 +19,7 @@ import org.springframework.stereotype.Service;
 import java.util.Objects;
 
 @Service
-public class WorkstationChangeoverHooks {
+public class WorkstationChangeoverNormHooks {
 
     private static final String L_DASH = "-";
 

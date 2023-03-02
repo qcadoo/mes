@@ -2,6 +2,7 @@ package com.qcadoo.mes.orders.listeners;
 
 import com.qcadoo.localization.api.utils.DateUtils;
 import com.qcadoo.mes.orders.constants.WorkstationChangeoverForOperationalTaskFields;
+import com.qcadoo.mes.orders.hooks.WorkstationChangeoverForOperationalTaskDetailsHooks;
 import com.qcadoo.model.api.IntegerUtils;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
@@ -9,6 +10,7 @@ import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.LookupComponent;
 import org.joda.time.DateTime;
 import org.joda.time.Seconds;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -16,6 +18,14 @@ import java.util.Objects;
 
 @Service
 public class WorkstationChangeoverForOperationalTaskDetailsListeners {
+
+    @Autowired
+    private WorkstationChangeoverForOperationalTaskDetailsHooks workstationChangeoverForOperationalTaskDetailsHooks;
+
+    public void clearOperationalTasksFields(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        workstationChangeoverForOperationalTaskDetailsHooks.setCurrentOperationalTask(view, null);
+        workstationChangeoverForOperationalTaskDetailsHooks.setPreviousOperationalTask(view, null);
+    }
 
     public void clearAttributeValueLookups(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         LookupComponent fromAttributeValueLookup = (LookupComponent) view.getComponentByReference(WorkstationChangeoverForOperationalTaskFields.FROM_ATTRIBUTE_VALUE);

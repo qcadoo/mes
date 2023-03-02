@@ -25,11 +25,13 @@ package com.qcadoo.mes.timeNormsForOperations.listeners;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields.OPERATION;
+import static com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperationComponentFieldsTNFO.ALL;
 import static com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperationComponentFieldsTNFO.ARE_PRODUCT_QUANTITIES_DIVISIBLE;
 import static com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperationComponentFieldsTNFO.IS_TJ_DIVISIBLE;
 import static com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperationComponentFieldsTNFO.NEXT_OPERATION_AFTER_PRODUCED_QUANTITY;
 import static com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperationComponentFieldsTNFO.NEXT_OPERATION_AFTER_PRODUCED_TYPE;
 import static com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperationComponentFieldsTNFO.PRODUCTION_IN_ONE_CYCLE;
+import static com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperationComponentFieldsTNFO.SPECIFIED;
 import static com.qcadoo.mes.timeNormsForOperations.constants.TimeNormsConstants.FIELDS_OPERATION;
 import static com.qcadoo.view.api.ComponentState.MessageType.INFO;
 import static com.qcadoo.view.api.ComponentState.MessageType.SUCCESS;
@@ -131,7 +133,7 @@ public class TechnologyOperCompDetailsListenersTNFO {
         }
 
         if (source.getField(NEXT_OPERATION_AFTER_PRODUCED_TYPE) == null) {
-            toc.setField(NEXT_OPERATION_AFTER_PRODUCED_TYPE, "01all");
+            toc.setField(NEXT_OPERATION_AFTER_PRODUCED_TYPE, ALL);
         }
 
         if (source.getField(PRODUCTION_IN_ONE_CYCLE) == null) {
@@ -154,7 +156,7 @@ public class TechnologyOperCompDetailsListenersTNFO {
         }
 
         if (source.getField(NEXT_OPERATION_AFTER_PRODUCED_TYPE) == null) {
-            view.getComponentByReference(NEXT_OPERATION_AFTER_PRODUCED_TYPE).setFieldValue("01all");
+            view.getComponentByReference(NEXT_OPERATION_AFTER_PRODUCED_TYPE).setFieldValue(ALL);
         }
 
         if (source.getField(PRODUCTION_IN_ONE_CYCLE) == null) {
@@ -180,7 +182,7 @@ public class TechnologyOperCompDetailsListenersTNFO {
         FieldComponent nextOperationAfterProducedQuantityUNIT = (FieldComponent) viewDefinitionState
                 .getComponentByReference(TechnologyOperationComponentFieldsTNFO.NEXT_OPERATION_AFTER_PRODUCED_QUANTITY_UNIT);
 
-        boolean visibilityValue = "02specified".equals(nextOperationAfterProducedType.getFieldValue());
+        boolean visibilityValue = SPECIFIED.equals(nextOperationAfterProducedType.getFieldValue());
         nextOperationAfterProducedQuantity.setVisible(visibilityValue);
         nextOperationAfterProducedQuantity.setEnabled(visibilityValue);
         nextOperationAfterProducedQuantityUNIT.setVisible(visibilityValue);
@@ -196,7 +198,7 @@ public class TechnologyOperCompDetailsListenersTNFO {
         FieldComponent nextOperationAfterProducedQuantityUNIT = (FieldComponent) viewDefinitionState
                 .getComponentByReference(TechnologyOperationComponentFieldsTNFO.NEXT_OPERATION_AFTER_PRODUCED_QUANTITY_UNIT);
 
-        boolean visibilityValue = "02specified".equals(nextOperationAfterProducedType.getFieldValue());
+        boolean visibilityValue = SPECIFIED.equals(nextOperationAfterProducedType.getFieldValue());
         nextOperationAfterProducedQuantity.setVisible(visibilityValue);
         nextOperationAfterProducedQuantity.setEnabled(visibilityValue);
         nextOperationAfterProducedQuantityUNIT.setVisible(visibilityValue);

@@ -714,7 +714,7 @@ function goToProductionTrackingTerminal(orderId, operationalTaskId, workstationN
 
 function printLabel(orderId) {
     let url = "orders/ordersLabelReport.pdf?id=" + orderId;
-    goToPage(url, false);
+    window.open(url, '_blank');
 }
 
 function showMessage(type, title, content, autoClose) {

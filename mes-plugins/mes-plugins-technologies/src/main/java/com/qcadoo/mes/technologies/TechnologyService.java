@@ -376,7 +376,6 @@ public class TechnologyService {
      * @param technologyOperationComponent
      * @return productOutComponent. Assuming operation can have only one product/intermediate.
      */
-    // TODO dev_team introduce MainTocOutputProductProvider
     public Entity getMainOutputProductComponent(final Entity technologyOperationComponent) {
         Entity parentTechnologyOperationComponent = technologyOperationComponent
                 .getBelongsToField(TechnologyOperationComponentFields.PARENT);

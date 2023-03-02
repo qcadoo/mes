@@ -2,7 +2,6 @@ package com.qcadoo.mes.orders.hooks;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.basic.ShiftsService;
 import com.qcadoo.mes.newstates.StateExecutorService;
@@ -19,13 +18,13 @@ import com.qcadoo.mes.productionLines.constants.WorkstationFieldsPL;
 import com.qcadoo.mes.technologies.ProductQuantitiesService;
 import com.qcadoo.mes.technologies.constants.OperationFields;
 import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
+import com.qcadoo.mes.technologies.dto.ProductQuantitiesHolder;
 import com.qcadoo.mes.timeNormsForOperations.NormService;
 import com.qcadoo.mes.timeNormsForOperations.constants.TechOperCompWorkstationTimeFields;
 import com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperationComponentFieldsTNFO;
 import com.qcadoo.model.api.BigDecimalUtils;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.NumberService;
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
 import org.joda.time.Seconds;
@@ -38,9 +37,6 @@ import java.util.stream.Collectors;
 
 @Service
 public class OperationalTaskHooks {
-
-    @Autowired
-    private NumberService numberService;
 
     @Autowired
     private ParameterService parameterService;
@@ -98,10 +94,8 @@ public class OperationalTaskHooks {
         Entity parameter = parameterService.getParameter();
         boolean includeTpz = parameter.getBooleanField("includeTpzSG");
         Entity technology = technologyOperationComponent.getBelongsToField(TechnologyOperationComponentFields.TECHNOLOGY);
-        final Map<Long, BigDecimal> operationRuns = Maps.newHashMap();
 
-        productQuantitiesService.getProductComponentQuantities(technology, order.getDecimalField(OrderFields.PLANNED_QUANTITY),
-                operationRuns);
+        ProductQuantitiesHolder productQuantitiesAndOperationRuns = productQuantitiesService.getProductComponentQuantities(technology, order.getDecimalField(OrderFields.PLANNED_QUANTITY));
 
         Optional<Entity> techOperCompWorkstationTime = normService.getTechOperCompWorkstationTime(technologyOperationComponent, workstation);
         BigDecimal staffFactor = normService.getStaffFactor(technologyOperationComponent, operationalTask.getIntegerField(OperationalTaskFields.ACTUAL_STAFF));
@@ -112,16 +106,16 @@ public class OperationalTaskHooks {
         if (techOperCompWorkstationTime.isPresent()) {
             OperationWorkTime operationWorkTime = operationWorkTimeService.estimateTechOperationWorkTimeForWorkstation(
                     technologyOperationComponent,
-                    BigDecimalUtils.convertNullToZero(operationRuns.get(technologyOperationComponent.getId())), includeTpz, false,
+                    BigDecimalUtils.convertNullToZero(productQuantitiesAndOperationRuns.getOperationRuns().get(technologyOperationComponent.getId())), includeTpz, false,
                     techOperCompWorkstationTime.get(), staffFactor);
 
             machineWorkTime = operationWorkTime.getMachineWorkTime();
             additionalTime = techOperCompWorkstationTime.get()
                     .getIntegerField(TechOperCompWorkstationTimeFields.TIME_NEXT_OPERATION);
         } else {
-            OperationWorkTime operationWorkTime = operationWorkTimeService.estimateTechOperationWorkTime(
+            OperationWorkTime operationWorkTime = operationWorkTimeService.estimateOperationWorkTime(null,
                     technologyOperationComponent,
-                    BigDecimalUtils.convertNullToZero(operationRuns.get(technologyOperationComponent.getId())), includeTpz, false,
+                    BigDecimalUtils.convertNullToZero(productQuantitiesAndOperationRuns.getOperationRuns().get(technologyOperationComponent.getId())), includeTpz, false,
                     false, staffFactor);
 
             machineWorkTime = operationWorkTime.getMachineWorkTime();
@@ -300,7 +294,7 @@ public class OperationalTaskHooks {
                 Date startDateFromDB = operationalTaskFromDB.getDateField(OperationalTaskFields.START_DATE);
 
                 if (Objects.isNull(workstationFromDB) || !workstation.getId().equals(workstationFromDB.getId())
-                    || Objects.isNull(startDateFromDB) || !startDate.equals(startDateFromDB)) {
+                        || Objects.isNull(startDateFromDB) || !startDate.equals(startDateFromDB)) {
                     setWorkstationChangeoverForOperationalTasksAndUpdateDates(operationalTask);
                 }
             } else {
@@ -319,7 +313,7 @@ public class OperationalTaskHooks {
                 Date startDate = operationalTask.getDateField(OperationalTaskFields.START_DATE);
                 Date finishDate = operationalTask.getDateField(OperationalTaskFields.FINISH_DATE);
 
-                Integer duration = Seconds.secondsBetween(new DateTime(startDate), new DateTime(finishDate)).getSeconds();
+                int duration = Seconds.secondsBetween(new DateTime(startDate), new DateTime(finishDate)).getSeconds();
 
                 startDate = mayBeMaxFinishDate.get();
                 finishDate = new DateTime(startDate).plusSeconds(duration).toDate();
@@ -334,7 +328,7 @@ public class OperationalTaskHooks {
 
     private Optional<Date> getWorkstationChangeoverForOperationalTasksMaxFinishDate(final List<Entity> workstationChangeoverForOperationalTasks) {
         return workstationChangeoverForOperationalTasks.stream().map(workstationChangeoverForOperationalTask ->
-                workstationChangeoverForOperationalTask.getDateField(WorkstationChangeoverForOperationalTaskFields.FINISH_DATE))
+                        workstationChangeoverForOperationalTask.getDateField(WorkstationChangeoverForOperationalTaskFields.FINISH_DATE))
                 .max(Date::compareTo);
     }
 
