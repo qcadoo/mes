@@ -87,6 +87,12 @@ public final class OrdersConstants {
 
     public static final String MODEL_WORKSTATION_CHANGEOVER_FOR_OPERATIONAL_TASK_DTO = "workstationChangeoverForOperationalTaskDto";
 
+    public static final String MODEL_SPLIT_ORDER_HELPER = "splitOrderHelper";
+
+    public static final String MODEL_SPLIT_ORDER_PARENT = "splitOrderParent";
+
+    public static final String MODEL_SPLIT_ORDER_CHILD = "splitOrderChild";
+
     // VIEW
 
     public static final String VIEW_ORDER_TECHNOLOGICAL_PROCESSES_ANALYSIS = "orderTechnologicalProcessesAnalysis";

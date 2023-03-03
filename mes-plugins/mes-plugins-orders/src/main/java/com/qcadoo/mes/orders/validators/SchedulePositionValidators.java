@@ -1,17 +1,5 @@
 package com.qcadoo.mes.orders.validators;
 
-import java.sql.Timestamp;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.stream.Collectors;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
-import org.springframework.stereotype.Service;
-
 import com.google.common.collect.Maps;
 import com.qcadoo.mes.basic.constants.WorkstationFields;
 import com.qcadoo.mes.basic.constants.WorkstationTypeFields;
@@ -27,6 +15,13 @@ import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.plugin.api.PluginManager;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.stereotype.Service;
+
+import java.sql.Timestamp;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class SchedulePositionValidators {
@@ -237,7 +232,7 @@ public class SchedulePositionValidators {
         return true;
     }
 
-    public Date getChildrenMaxEndTime(Entity position) {
+    private Date getChildrenMaxEndTime(Entity position) {
         Entity schedule = position.getBelongsToField(SchedulePositionFields.SCHEDULE);
         Map<String, Object> parameters = Maps.newHashMap();
         parameters.put(SCHEDULE_ID, schedule.getId());

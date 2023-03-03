@@ -88,7 +88,7 @@ public class TechnologyOperationComponentDetailsHooks {
         FieldComponent nextOperationAfterProducedQuantityUNIT = (FieldComponent) viewDefinitionState
                 .getComponentByReference(NEXT_OPERATION_AFTER_PRODUCED_QUANTITY_UNIT);
 
-        if ("02specified".equals(nextOperationAfterProducedType.getFieldValue())) {
+        if (SPECIFIED.equals(nextOperationAfterProducedType.getFieldValue())) {
             nextOperationAfterProducedQuantity.setVisible(true);
             nextOperationAfterProducedQuantity.setEnabled(true);
             nextOperationAfterProducedQuantityUNIT.setVisible(true);
@@ -119,8 +119,8 @@ public class TechnologyOperationComponentDetailsHooks {
         productionInOneCycle.setEnabled(true);
 
         nextOperationAfterProducedType.setEnabled(true);
-        if (!"02specified".equals(value)) {
-            nextOperationAfterProducedType.setFieldValue("01all");
+        if (!SPECIFIED.equals(value)) {
+            nextOperationAfterProducedType.setFieldValue(ALL);
         }
         timeNextOperation.setEnabled(true);
         if ("1".equals(areProductQuantitiesDivisible.getFieldValue())) {

@@ -24,6 +24,7 @@
 package com.qcadoo.mes.ordersForSubproductsGeneration.listeners;
 
 import com.google.common.collect.Lists;
+import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.materialRequirementCoverageForOrder.MaterialRequirementCoverageForOrderService;
 import com.qcadoo.mes.materialRequirementCoverageForOrder.constans.CoverageForOrderFields;
@@ -33,6 +34,7 @@ import com.qcadoo.mes.orderSupplies.coverage.MaterialRequirementCoverageHelper;
 import com.qcadoo.mes.orderSupplies.coverage.MaterialRequirementCoverageService;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
+import com.qcadoo.mes.orders.states.constants.OrderStateStringValues;
 import com.qcadoo.mes.ordersForSubproductsGeneration.OrdersForSubproductsGenerationService;
 import com.qcadoo.mes.ordersForSubproductsGeneration.constants.CoverageForOrderFieldsOFSPG;
 import com.qcadoo.mes.ordersForSubproductsGeneration.constants.OrderFieldsOFSPG;
@@ -49,9 +51,12 @@ import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.constants.QcadooViewConstants;
 
+import java.math.BigDecimal;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
@@ -59,6 +64,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Service;
+
+import static java.util.stream.Collectors.groupingBy;
 
 @Service
 public class OrdersForSubproductsGenerationListeners {
@@ -70,6 +77,8 @@ public class OrdersForSubproductsGenerationListeners {
     private static final String L_ORDERS_GROUP = "ordersGroup";
 
     private static final String L_ORDERS = "orders";
+    public static final String L_MERGING_ORDERS_FOR_COMPONENTS = "mergingOrdersForComponents";
+    public static final String L_NUMBER = "number";
 
     @Autowired
     private OrdersForSubproductsGenerationService ordersForSubproductsGenerationService;
@@ -85,6 +94,9 @@ public class OrdersForSubproductsGenerationListeners {
 
     @Autowired
     private MaterialRequirementCoverageHelper materialRequirementCoverageHelper;
+
+    @Autowired
+    private ParameterService parameterService;
 
     public final void generateSimpleOrdersForSubProducts(final ViewDefinitionState view, final ComponentState state,
             final String[] args) {
@@ -157,6 +169,62 @@ public class OrdersForSubproductsGenerationListeners {
         }
 
         if (generatedOrders > 0) {
+
+            if(parameterService.getParameter().getBooleanField(L_MERGING_ORDERS_FOR_COMPONENTS)) {
+
+                List<Long> rootOrdersIds = orders.stream().map(Entity::getId).collect(Collectors.toList());
+
+                List<Entity> generatedSubOrders = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER)
+                        .find()
+                        .createAlias(OrderFieldsOFSPG.ROOT, OrderFieldsOFSPG.ROOT, JoinType.LEFT)
+                        .add(SearchRestrictions.in(OrderFieldsOFSPG.ROOT + ".id", rootOrdersIds))
+                        .add(SearchRestrictions.eq(OrderFields.STATE, OrderStateStringValues.PENDING))
+                        .list().getEntities();
+
+                Map<Entity, List<Entity>> ordersByProduct = generatedSubOrders.stream().collect(groupingBy(o -> o.getBelongsToField(OrderFields.PRODUCT)));
+
+                List<String> ordersMergedSuccess = Lists.newArrayList();
+                List<String> ordersMergedFailure = Lists.newArrayList();
+
+                ordersByProduct.forEach((product, ordersForProduct) -> {
+
+                    if(ordersForProduct.size() > 1) {
+
+                        Entity orderGroup = ordersForProduct.get(0).getBelongsToField(L_ORDERS_GROUP);
+                        String number = orderGroup.getStringField(L_NUMBER) + "-" + product.getStringField(ProductFields.NUMBER);
+
+                        BigDecimal plannedQuantity = ordersForProduct.stream()
+                                .map(x -> x.getDecimalField(OrderFields.PLANNED_QUANTITY))
+                                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+
+                        Entity mergedOrder = ordersForProduct.get(0);
+                        mergedOrder.setField(OrderFields.NUMBER, number);
+                        mergedOrder.setField(OrderFields.PLANNED_QUANTITY, plannedQuantity);
+                        mergedOrder.setField(OrderFieldsOFSPG.ROOT, null);
+                        mergedOrder.setField(OrderFieldsOFSPG.PARENT, null);
+                        Entity saved = mergedOrder.getDataDefinition().save(mergedOrder);
+                        if(saved.isValid()) {
+                            ordersMergedSuccess.add(number);
+                            ordersForProduct.stream().filter(o -> !o.getId().equals(mergedOrder.getId())).forEach(o -> o.getDataDefinition().delete(o.getId()));
+                        } else {
+                            ordersMergedFailure.add(number);
+                        }
+                    }
+
+                });
+
+                if(!ordersMergedSuccess.isEmpty()) {
+                    state.addMessage("ordersForSubproductsGeneration.generationSubOrdersAction.ordersMergedMessageSuccess",
+                            ComponentState.MessageType.SUCCESS, false, String.join(", ", ordersMergedSuccess));
+                }
+
+                if(!ordersMergedFailure.isEmpty()) {
+                    state.addMessage("ordersForSubproductsGeneration.generationSubOrdersAction.ordersMergedMessageFailure",
+                            ComponentState.MessageType.FAILURE, false, String.join(", ", ordersMergedFailure));
+                }
+
+            }
             state.addMessage("ordersForSubproductsGeneration.generationSubOrdersAction.generatedMessageSuccess",
                     ComponentState.MessageType.SUCCESS, false, generatedOrders.toString());
         } else {

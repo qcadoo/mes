@@ -24,34 +24,19 @@
     ***************************************************************************
 
 -->
-<model name="workstationChangeoverNorm" activable="true"
+<model name="splitOrderHelper"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
        xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
 
     <fields>
-        <string name="name" unique="true">
-            <validatesLength max="1024"/>
-        </string>
-        <string name="description">
-            <validatesLength max="2048"/>
-        </string>
-        <belongsTo name="workstationType" model="workstationType" plugin="basic"/>
-        <belongsTo name="workstation" model="workstation" plugin="basic"/>
-        <belongsTo name="attribute" model="attribute" plugin="basic" required="true"/>
-        <enum name="changeoverType" values="01anyChange,02betweenValues"
-              default="01anyChange" required="true"/>
-        <belongsTo name="fromAttributeValue" model="attributeValue" plugin="basic"/>
-        <belongsTo name="toAttributeValue" model="attributeValue" plugin="basic"/>
-        <integer name="duration" required="true"/>
-        <boolean name="isParallel"/>
+        <integer name="parts" >
+            <validatesRange from="1" exclusively="true"/>
+            <validatesRange to="10" />
+        </integer>
+        <datetime name="dateFrom"/>
+        <datetime name="dateTo"/>
+        <hasMany name="parents" joinField="splitOrderHelper" model="splitOrderParent"
+                 cascade="delete"/>
     </fields>
 
-    <hooks>
-        <validatesWith class="com.qcadoo.mes.technologies.hooks.WorkstationChangeoverNormHooks"
-                method="validatesWith"/>
-        <onSave class="com.qcadoo.mes.technologies.hooks.WorkstationChangeoverNormHooks"
-                method="onSave"/>
-    </hooks>
-
-    <identifier expression="#name"/>
 </model>

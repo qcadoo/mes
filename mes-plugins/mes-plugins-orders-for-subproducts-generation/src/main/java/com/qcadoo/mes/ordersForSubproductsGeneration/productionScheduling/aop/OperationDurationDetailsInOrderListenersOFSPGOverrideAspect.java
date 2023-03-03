@@ -23,44 +23,24 @@
  */
 package com.qcadoo.mes.ordersForSubproductsGeneration.productionScheduling.aop;
 
-import java.math.BigDecimal;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.stream.Collectors;
-
-import org.apache.commons.lang3.Validate;
-import org.aspectj.lang.ProceedingJoinPoint;
-import org.aspectj.lang.annotation.Around;
-import org.aspectj.lang.annotation.Aspect;
-import org.aspectj.lang.annotation.Pointcut;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Configurable;
-import org.springframework.util.StringUtils;
-
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import com.qcadoo.mes.operationTimeCalculations.OperationWorkTime;
 import com.qcadoo.mes.operationTimeCalculations.OperationWorkTimeService;
-import com.qcadoo.mes.operationTimeCalculations.OrderRealizationTimeService;
+import com.qcadoo.mes.operationTimeCalculations.constants.OperCompTimeCalculationsFields;
 import com.qcadoo.mes.operationTimeCalculations.constants.OperationTimeCalculationsConstants;
+import com.qcadoo.mes.operationTimeCalculations.constants.OrderTimeCalculationFields;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.mes.ordersForSubproductsGeneration.constants.OrdersForSubproductsGenerationConstans;
 import com.qcadoo.mes.ordersForSubproductsGeneration.productionScheduling.OrdersByLevel;
 import com.qcadoo.mes.ordersForSubproductsGeneration.productionScheduling.ProductionSchedulingForComponentsService;
 import com.qcadoo.mes.productionLines.constants.ProductionLinesConstants;
+import com.qcadoo.mes.productionScheduling.OrderRealizationTimeService;
 import com.qcadoo.mes.productionScheduling.ProductionSchedulingService;
 import com.qcadoo.mes.productionScheduling.constants.OrderFieldsPS;
-import com.qcadoo.mes.operationTimeCalculations.constants.OrderTimeCalculationFields;
-import com.qcadoo.mes.technologies.ProductQuantitiesService;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
 import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
-import com.qcadoo.mes.operationTimeCalculations.constants.OperCompTimeCalculationsFields;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -74,6 +54,17 @@ import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.LookupComponent;
 import com.qcadoo.view.constants.QcadooViewConstants;
+import org.apache.commons.lang3.Validate;
+import org.aspectj.lang.ProceedingJoinPoint;
+import org.aspectj.lang.annotation.Around;
+import org.aspectj.lang.annotation.Aspect;
+import org.aspectj.lang.annotation.Pointcut;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Configurable;
+import org.springframework.util.StringUtils;
+
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Aspect
 @Configurable
@@ -88,9 +79,6 @@ public class OperationDurationDetailsInOrderListenersOFSPGOverrideAspect {
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
-
-    @Autowired
-    private ProductQuantitiesService productQuantitiesService;
 
     @Autowired
     private OrderRealizationTimeService orderRealizationTimeService;
@@ -135,7 +123,7 @@ public class OperationDurationDetailsInOrderListenersOFSPGOverrideAspect {
                 .getComponentByReference("calculatedFinishAllOrders");
         FieldComponent stopTimeField = (FieldComponent) viewDefinitionState.getComponentByReference(L_STOP_TIME);
 
-        startTimeField.setFieldValue(orderRealizationTimeService.setDateToField(startTimeOrder));
+        startTimeField.setFieldValue(operationWorkTimeService.setDateToField(startTimeOrder));
         stopTimeField.setFieldValue(generatedEndDateField.getFieldValue());
 
         state.performEvent(viewDefinitionState, "save");
@@ -173,8 +161,6 @@ public class OperationDurationDetailsInOrderListenersOFSPGOverrideAspect {
             return;
         }
 
-        FieldComponent plannedQuantityField = (FieldComponent) viewDefinitionState
-                .getComponentByReference(OrderFields.PLANNED_QUANTITY);
         FieldComponent generatedEndDateField = (FieldComponent) viewDefinitionState
                 .getComponentByReference(OrderFieldsPS.GENERATED_END_DATE);
         FieldComponent calculatedFinishAllOrdersField = (FieldComponent) viewDefinitionState
@@ -197,20 +183,14 @@ public class OperationDurationDetailsInOrderListenersOFSPGOverrideAspect {
         // copy of technology from order
         Entity technology = order.getBelongsToField(OrderFields.TECHNOLOGY);
         Validate.notNull(technology, "technology is null");
-        BigDecimal quantity = orderRealizationTimeService.getBigDecimalFromField(plannedQuantityField.getFieldValue(),
-                viewDefinitionState.getLocale());
 
         // Included in work time
         boolean includeTpz = "1".equals(includeTpzField.getFieldValue());
         boolean includeAdditionalTime = "1".equals(includeAdditionalTimeField.getFieldValue());
 
-        final Map<Long, BigDecimal> operationRuns = Maps.newHashMap();
-
-        productQuantitiesService.getProductComponentQuantities(technology, quantity, operationRuns);
-
         operationWorkTimeService.deleteOperCompTimeCalculations(order);
 
-        OperationWorkTime workTime = operationWorkTimeService.estimateTotalWorkTimeForOrder(order, operationRuns, includeTpz,
+        OperationWorkTime workTime = orderRealizationTimeService.estimateTotalWorkTimeForOrder(order, includeTpz,
                 includeAdditionalTime, true);
 
         List<Entity> orders = getOrderAndSubOrders(order.getId());
@@ -230,14 +210,12 @@ public class OperationDurationDetailsInOrderListenersOFSPGOverrideAspect {
 
             for (Entity o : ords.getOrders()) {
                 Entity t = o.getBelongsToField(OrderFields.TECHNOLOGY);
-                final Map<Long, BigDecimal> oR = Maps.newHashMap();
 
-                productQuantitiesService.getProductComponentQuantities(t, quantity, oR);
-                operationWorkTimeService.estimateTotalWorkTimeForOrder(o, oR, includeTpz, includeAdditionalTime, true);
+                orderRealizationTimeService.estimateTotalWorkTimeForOrder(o, includeTpz, includeAdditionalTime, true);
 
-                int maxPathTime = orderRealizationTimeService.estimateMaxOperationTimeConsumptionForWorkstation(null, o,
-                        t.getTreeField(TechnologyFields.OPERATION_COMPONENTS).getRoot(), quantity, includeTpz,
-                        includeAdditionalTime, productionLine);
+                int maxPathTime = orderRealizationTimeService.estimateOperationTimeConsumption(null, o,
+                        t.getTreeField(TechnologyFields.OPERATION_COMPONENTS).getRoot(), includeTpz,
+                        includeAdditionalTime, true, productionLine, Optional.empty());
 
                 if (maxPathTime > OrderRealizationTimeService.MAX_REALIZATION_TIME) {
                     state.addMessage("orders.validate.global.error.RealizationTimeIsToLong", ComponentState.MessageType.FAILURE);
@@ -296,14 +274,14 @@ public class OperationDurationDetailsInOrderListenersOFSPGOverrideAspect {
                     .find().add(SearchRestrictions.belongsTo("order", order)).setMaxResults(1).uniqueResult();
 
             Date startTimeOrders = findCalculatedStartAllOrders(order);
-            order.setField("calculatedStartAllOrders", orderRealizationTimeService.setDateToField(startTimeOrders));
-            calculatedStartAllOrdersField.setFieldValue(orderRealizationTimeService.setDateToField(startTimeOrders));
+            order.setField("calculatedStartAllOrders", operationWorkTimeService.setDateToField(startTimeOrders));
+            calculatedStartAllOrdersField.setFieldValue(operationWorkTimeService.setDateToField(startTimeOrders));
 
             Date finishDate = orderTimeCalculation.getDateField(OrderTimeCalculationFields.EFFECTIVE_DATE_TO);
-            generatedEndDateField.setFieldValue(orderRealizationTimeService.setDateToField(finishDate));
-            calculatedFinishAllOrdersField.setFieldValue(orderRealizationTimeService.setDateToField(finishDate));
+            generatedEndDateField.setFieldValue(operationWorkTimeService.setDateToField(finishDate));
+            calculatedFinishAllOrdersField.setFieldValue(operationWorkTimeService.setDateToField(finishDate));
 
-            order.setField("calculatedFinishAllOrders", orderRealizationTimeService.setDateToField(finishDate));
+            order.setField("calculatedFinishAllOrders", operationWorkTimeService.setDateToField(finishDate));
 
             order = order.getDataDefinition().save(order);
             orderForm.setEntity(order);
@@ -415,7 +393,7 @@ public class OperationDurationDetailsInOrderListenersOFSPGOverrideAspect {
         orderTimeCalculation.setField(OrderTimeCalculationFields.EFFECTIVE_DATE_TO,
                 operationEndDates.stream().max(Comparator.naturalOrder()).get());
         orderTimeCalculation.getDataDefinition().save(orderTimeCalculation);
-        order.setField(OrderFieldsPS.GENERATED_END_DATE, orderRealizationTimeService
+        order.setField(OrderFieldsPS.GENERATED_END_DATE, operationWorkTimeService
                 .setDateToField(orderTimeCalculation.getDateField(OrderTimeCalculationFields.EFFECTIVE_DATE_TO)));
 
         return orderFinishDate;

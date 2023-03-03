@@ -40,7 +40,7 @@ public class OperationProductComponentWithQuantityContainer {
 
     private final Map<OperationProductComponentHolder, BigDecimal> operationProductComponentWithQuantities;
 
-    private List<OperationProductComponentMessage> messages = Lists.newArrayList();
+    private final List<OperationProductComponentMessage> messages = Lists.newArrayList();
 
     private List<Entity> sizeGroups = Lists.newArrayList();
 

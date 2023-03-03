@@ -38,20 +38,6 @@ import java.util.Set;
 
 public interface ProductQuantitiesService {
 
-    /**
-     * @param technology
-     *            Given technology
-     * @param givenQuantity
-     *            How many products, that are outcomes of this technology, we want.
-     * @param operationRuns
-     *            Method takes an empty map and puts here info on how many certain operations (operationComponents) have to be
-     *            run.
-     * @return Map with operationProductComponents (in or out) as the keys and its quantities as the values. Be aware that
-     *         products that are the same, but are related to different operations are here as different entries.
-     */
-    OperationProductComponentWithQuantityContainer getProductComponentQuantities(final Entity technology,
-            final BigDecimal givenQuantity, Map<Long, BigDecimal> operationRuns);
-
     ProductQuantitiesHolder getProductComponentQuantities(final Entity technology, final BigDecimal givenQuantity);
 
     /**
@@ -155,15 +141,6 @@ public interface ProductQuantitiesService {
      */
     void addProductQuantitiesToList(final Entry<OperationProductComponentHolder, BigDecimal> productComponentQuantity,
             final Map<Long, BigDecimal> productQuantities);
-
-    /**
-     * @param operationComponent
-     *            Operation Component
-     * @return
-     * @deprecated use com.qcadoo.mes.technologies.tree.traversing.MainOutputProductCriteriaBuilder
-     */
-    @Deprecated
-    Entity getOutputProductsFromOperationComponent(final Entity operationComponent);
 
     /**
      * @param technology

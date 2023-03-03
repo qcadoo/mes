@@ -24,43 +24,30 @@
     ***************************************************************************
 
 -->
-<model name="schedulePosition"
+<model name="splitOrderParent"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
        xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
 
     <fields>
-        <belongsTo name="schedule" model="schedule"/>
-        <belongsTo name="technologyOperationComponent" plugin="technologies" model="technologyOperationComponent"/>
-        <belongsTo name="order" model="order"/>
-        <belongsTo name="product" plugin="basic" model="product"/>
-        <belongsTo name="workstation" plugin="basic" model="workstation"/>
-        <belongsTo name="staff" model="staff" plugin="basic"/>
-        <decimal name="quantity">
+        <belongsTo name="splitOrderHelper" model="splitOrderHelper" plugin="orders"/>
+        <belongsTo name="order" model="order" plugin="orders"/>
+        <string name="number" required="true">
+            <validatesLength max="255"/>
+        </string>
+        <string name="name" required="true">
+            <validatesLength max="1024"/>
+        </string>
+        <datetime name="dateFrom"/>
+        <datetime name="dateTo"/>
+        <decimal name="plannedQuantity" required="true">
             <validatesRange from="0" exclusively="true"/>
-            <validatesUnscaledValue max="9"/>
-            <validatesScale max="5"/>
-        </decimal>
-        <integer name="additionalTime" default="0" />
-        <integer name="machineWorkTime" default="0" />
-        <integer name="laborWorkTime" default="0" />
-        <datetime name="startTime"/>
-        <datetime name="endTime"/>
-        <decimal name="operationRuns">
             <validatesUnscaledValue max="7"/>
             <validatesScale max="5"/>
         </decimal>
-        <decimal name="partialOperationRuns">
-            <validatesUnscaledValue max="7"/>
-            <validatesScale max="5"/>
-        </decimal>
+        <dictionary name="unit" dictionary="units"/>
 
-        <hasMany name="operationalTasks" model="operationalTask" joinField="schedulePosition"/>
+        <hasMany name="childes" joinField="splitOrderParent" model="splitOrderChild"
+                 cascade="delete"/>
     </fields>
-
-    <hooks>
-        <validatesWith
-                class="com.qcadoo.mes.orders.validators.SchedulePositionValidators"
-                method="onValidate"/>
-    </hooks>
 
 </model>

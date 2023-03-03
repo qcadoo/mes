@@ -30,4 +30,6 @@ public class SchedulePositionFields {
     public static final String SCHEDULE = "schedule";
 
     public static final String OPERATION_RUNS = "operationRuns";
+
+    public static final String PARTIAL_OPERATION_RUNS = "partialOperationRuns";
 }

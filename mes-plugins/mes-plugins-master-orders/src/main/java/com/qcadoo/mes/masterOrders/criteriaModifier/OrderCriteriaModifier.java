@@ -23,7 +23,9 @@
  */
 package com.qcadoo.mes.masterOrders.criteriaModifier;
 
+import com.qcadoo.mes.masterOrders.constants.OrderFieldsMO;
 import com.qcadoo.mes.orders.constants.OrderFields;
+import com.qcadoo.model.api.search.JoinType;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.view.api.components.LookupComponent;
@@ -33,17 +35,28 @@ import org.springframework.stereotype.Service;
 @Service
 public class OrderCriteriaModifier {
 
-    private static final String MASTER_ORDER_NUMBER_FILTER_VALUE = "masterOrderNumber";
+    public static final String MASTER_ORDER_ID = "masterOrderId";
+
+    public static final String MASTER_ORDER_NUMBER_FILTER_VALUE = "masterOrderNumber";
+
+    public void filterByMasterOrder(final SearchCriteriaBuilder scb, final FilterValueHolder filterValueHolder) {
+        if (filterValueHolder.has(MASTER_ORDER_ID)) {
+            scb.createAlias(OrderFieldsMO.MASTER_ORDER, OrderFieldsMO.MASTER_ORDER, JoinType.LEFT);
+
+            scb.add(SearchRestrictions.eq(OrderFieldsMO.MASTER_ORDER + ".id", filterValueHolder.getLong(MASTER_ORDER_ID)));
+        } else {
+            scb.add(SearchRestrictions.idEq(-1L));
+        }
+    }
 
     public void filterByMasterOrderNumber(final SearchCriteriaBuilder scb, final FilterValueHolder filterValueHolder) {
-
-        if(filterValueHolder.has(MASTER_ORDER_NUMBER_FILTER_VALUE)){
+        if (filterValueHolder.has(MASTER_ORDER_NUMBER_FILTER_VALUE)) {
             String masterOrderNumber = filterValueHolder.getString(MASTER_ORDER_NUMBER_FILTER_VALUE);
             scb.add(SearchRestrictions.like(OrderFields.NUMBER, masterOrderNumber + "%"));
         }
     }
 
-    public void putMasterOrderNumberFilter(final LookupComponent lookupComponent, final String masterOrderNumber){
+    public void putMasterOrderNumberFilter(final LookupComponent lookupComponent, final String masterOrderNumber) {
         FilterValueHolder valueHolder = lookupComponent.getFilterValue();
         valueHolder.put(MASTER_ORDER_NUMBER_FILTER_VALUE, masterOrderNumber);
         lookupComponent.setFilterValue(valueHolder);

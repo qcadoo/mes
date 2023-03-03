@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    ***************************************************************************
+    Copyright (c) 2010 Qcadoo Limited
+    Project: Qcadoo MES
+    Version: 1.4
+
+    This file is part of Qcadoo.
+
+    Qcadoo is free software; you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as published
+    by the Free Software Foundation; either version 3 of the License,
+    or (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty
+    of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+    See the GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+    ***************************************************************************
+
+-->
+<view defaultAuthorizationRole="ROLE_ORDERS_VIEW" name="divideOrdersDetails"
+      modelName="splitOrderHelper"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
+      xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd">
+
+    <component type="window" name="window" reference="window">
+
+        <ribbon>
+            <template name="standardFormTemplate" includeItems="navigation.back"/>
+            <group name="split">
+                <bigButton name="divideOrders" icon="genealogyIcon24.png">
+                    <script>
+                        <![CDATA[
+					        this.addOnChangeListener({
+						        onClick: function() {
+
+								    #{form}.performEvent('divideOrders', []);
+
+						        }
+					        });
+					        #{form}.addOnChangeListener({
+								onSetValue: function(value) {
+									var generated = #{generated}.getValue().content.value;
+
+                                    if (generated && generated == true) {
+									    #{window}.performBackWithoutConfirm();
+									}
+								}
+							});
+				        ]]>
+                    </script>
+                </bigButton>
+
+            </group>
+        </ribbon>
+
+        <windowTab name="mainTab">
+            <component type="form" name="form" reference="form">
+
+                <component type="checkbox" name="generated" defaultVisible="false"
+                           reference="generated" defaultEnabled="false"/>
+
+                <component type="gridLayout" name="datesGridLayout"
+                           columns="2" rows="1" hasBorders="false">
+                    <layoutElement column="1" row="1">
+
+                        <component type="input" name="parts" hasDescription="true"
+                                   field="parts" reference="parts">
+                            <option type="alignment" value="right"/>
+                            <option type="labelWidth" value="70"/>
+                        </component>
+                    </layoutElement>
+                </component>
+
+
+                <listener event="divideOrders"
+                          class="com.qcadoo.mes.orders.listeners.SplitOrdersListeners"
+                          method="divideOrders"/>
+
+                <option type="header" value="true"/>
+                <option type="expression" value="' '"/>
+            </component>
+        </windowTab>
+
+    </component>
+</view>

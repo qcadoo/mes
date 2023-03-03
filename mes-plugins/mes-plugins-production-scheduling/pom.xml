@@ -30,7 +30,12 @@
 			<artifactId>mes-plugins-operation-time-calculations</artifactId>
 			<version>1.5-SNAPSHOT</version>
 		</dependency>
-	</dependencies>
+        <dependency>
+            <groupId>com.qcadoo.mes</groupId>
+            <artifactId>mes-plugins-basic-production-counting</artifactId>
+            <version>1.5-SNAPSHOT</version>
+        </dependency>
+    </dependencies>
 
 	<build>
 		<plugins>

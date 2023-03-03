@@ -105,9 +105,12 @@
                                model="technologyDto" plugin="technologies" defaultVisible="false" persistent="false"
                                hasLabel="false">
                         <option type="column" name="name" fields="name" link="true"/>
-                        <option type="column" name="productNumber" fields="productNumber" link="true"/>
-                        <option type="searchable" value="number,name,productNumber"/>
-                        <option type="orderable" value="number,name,productNumber"/>
+                        <option type="column" name="master" fields="master" link="true"/>
+                        <option type="column" name="technologyGroupNumber" fields="technologyGroupNumber"/>
+                        <option type="column" name="productNumber" fields="productNumber"/>
+                        <option type="column" name="productGlobalTypeOfMaterial" fields="productGlobalTypeOfMaterial"/>
+                        <option type="searchable" value="number,name,master,technologyGroupNumber,productNumber,productGlobalTypeOfMaterial"/>
+                        <option type="orderable" value="number,name,master,technologyGroupNumber,productNumber,productGlobalTypeOfMaterial"/>
                         <option type="multiselect" value="true"/>
                         <option type="expression"
                                 value="#number"/>

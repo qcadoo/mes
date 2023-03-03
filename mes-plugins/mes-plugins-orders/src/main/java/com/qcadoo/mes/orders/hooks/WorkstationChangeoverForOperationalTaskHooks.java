@@ -22,9 +22,24 @@ public class WorkstationChangeoverForOperationalTaskHooks {
     public boolean validatesWith(final DataDefinition workstationChangeoverForOperationalTaskDD, final Entity workstationChangeoverForOperationalTask) {
         boolean isValid = true;
 
+        isValid = isValid && validateOperationalTask(workstationChangeoverForOperationalTaskDD, workstationChangeoverForOperationalTask);
         isValid = isValid && validateDates(workstationChangeoverForOperationalTaskDD, workstationChangeoverForOperationalTask);
 
         return isValid;
+    }
+
+    private boolean validateOperationalTask(final DataDefinition workstationChangeoverForOperationalTaskDD, final Entity workstationChangeoverForOperationalTask) {
+        Entity currentOperationalTask = workstationChangeoverForOperationalTask.getBelongsToField(WorkstationChangeoverForOperationalTaskFields.CURRENT_OPERATIONAL_TASK);
+        Entity previousOperationalTask = workstationChangeoverForOperationalTask.getBelongsToField(WorkstationChangeoverForOperationalTaskFields.PREVIOUS_OPERATIONAL_TASK);
+
+        if (Objects.isNull(currentOperationalTask) || Objects.isNull(previousOperationalTask)) {
+            workstationChangeoverForOperationalTask.addError(workstationChangeoverForOperationalTaskDD.getField(WorkstationChangeoverForOperationalTaskFields.CURRENT_OPERATIONAL_TASK),
+                    "qcadooView.validate.field.error.missing");
+
+            return false;
+        }
+
+        return true;
     }
 
     private boolean validateDates(final DataDefinition workstationChangeoverForOperationalTaskDD, final Entity workstationChangeoverForOperationalTask) {

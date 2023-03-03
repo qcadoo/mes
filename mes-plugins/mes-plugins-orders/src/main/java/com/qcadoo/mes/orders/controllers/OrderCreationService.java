@@ -1,5 +1,7 @@
 package com.qcadoo.mes.orders.controllers;
 
+import static com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperationComponentFieldsTNFO.ALL;
+
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.qcadoo.commons.functional.Either;
@@ -99,8 +101,6 @@ public class OrderCreationService {
     private static final String L_PRODUCTION_COUNTING_QUANTITIES = "productionCountingQuantities";
 
     private static final String L_OPERATION = "operation";
-
-    private static final String L_ALL = "01all";
 
     private static final String L_TECHNOLOGY_OPERATION_COMPONENT = "technologyOperationComponent";
 
@@ -496,7 +496,7 @@ public class OrderCreationService {
             }
 
             if (Objects.isNull(operation.getField(NEXT_OPERATION_AFTER_PRODUCED_TYPE))) {
-                technologyOperationComponent.setField(NEXT_OPERATION_AFTER_PRODUCED_TYPE, L_ALL);
+                technologyOperationComponent.setField(NEXT_OPERATION_AFTER_PRODUCED_TYPE, ALL);
             }
 
             if (Objects.isNull(operation.getField(PRODUCTION_IN_ONE_CYCLE))) {
@@ -609,7 +609,7 @@ public class OrderCreationService {
         }
 
         if (Objects.isNull(operation.getField(NEXT_OPERATION_AFTER_PRODUCED_TYPE))) {
-            technologyOperationComponent.setField(NEXT_OPERATION_AFTER_PRODUCED_TYPE, L_ALL);
+            technologyOperationComponent.setField(NEXT_OPERATION_AFTER_PRODUCED_TYPE, ALL);
         }
 
         if (Objects.isNull(operation.getField(PRODUCTION_IN_ONE_CYCLE))) {

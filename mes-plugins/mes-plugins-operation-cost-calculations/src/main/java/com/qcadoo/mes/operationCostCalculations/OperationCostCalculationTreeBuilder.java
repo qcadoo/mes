@@ -41,6 +41,8 @@ import static com.google.common.base.Preconditions.checkArgument;
 import static com.qcadoo.mes.costNormsForOperation.constants.CostNormsForOperationConstants.MODEL_CALCULATION_OPERATION_COMPONENT;
 import static com.qcadoo.mes.costNormsForOperation.constants.CostNormsForOperationConstants.PLUGIN_IDENTIFIER;
 import static com.qcadoo.mes.technologies.constants.TechnologyFields.OPERATION_COMPONENTS;
+import static com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperationComponentFieldsTNFO.ALL;
+import static com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperationComponentFieldsTNFO.NEXT_OPERATION_AFTER_PRODUCED_TYPE;
 
 @Service
 public class OperationCostCalculationTreeBuilder {
@@ -110,9 +112,9 @@ public class OperationCostCalculationTreeBuilder {
 
         calculationOperationComponent.setField(L_OPERATION, operationComponent.getBelongsToField(L_OPERATION));
         calculationOperationComponent.setField(
-                "nextOperationAfterProducedType",
-                operationComponent.getField("nextOperationAfterProducedType") == null ? "01all" : operationComponent
-                        .getField("nextOperationAfterProducedType"));
+                NEXT_OPERATION_AFTER_PRODUCED_TYPE,
+                operationComponent.getField(NEXT_OPERATION_AFTER_PRODUCED_TYPE) == null ? ALL : operationComponent
+                        .getField(NEXT_OPERATION_AFTER_PRODUCED_TYPE));
 
         if (!TechnologiesConstants.MODEL_TECHNOLOGY_OPERATION_COMPONENT.equals(sourceDD.getName())) {
             LOG.error("incorrect model!");

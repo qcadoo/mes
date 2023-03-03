@@ -108,7 +108,12 @@
                     </script>
                 </smallButton>
             </group>
-
+            <group name="split">
+                <bigButton name="splitOrdersParts" icon="genealogyIcon24.png"
+                           action="#{grid}.fireEvent(splitOrdersParts)"/>
+                <bigButton name="splitOrders" icon="genealogyIcon24.png"
+                           action="#{grid}.fireEvent(splitOrders)"/>
+            </group>
             <group name="actions" defaultAuthorizationRole="ROLE_SUPERADMIN">
                 <bigButton name="generateProductionCounting" icon="calendarIcon24.png"
                            action="#{grid}.fireEvent(generateProductionCounting)"/>
@@ -123,6 +128,8 @@
 					var acceptOrder = #{window}.getRibbonItem("status.acceptOrder");
 					var declineOrder = #{window}.getRibbonItem("status.declineOrder");
 					var interruptOrder = #{window}.getRibbonItem("status.interruptOrder");
+					var splitOrdersParts = #{window}.getRibbonItemOrNull("split.splitOrdersParts");
+					var splitOrders = #{window}.getRibbonItemOrNull("split.splitOrders");
 
 					var listener = {
 						onChange: function(selectedEntitiesArray) {
@@ -134,6 +141,8 @@
 								    deleteButton.disable();
 								if (copyButton)
 								    copyButton.disable();
+								splitOrdersParts.disable("#{translate(orders.orders.ribbon.message.splitOrdersParts)}");
+								splitOrders.disable("#{translate(orders.orders.ribbon.message.splitOrders)}");
 							} else {
 							    var noDifferentStates = true;
 
@@ -149,6 +158,9 @@
 									var selectedEntityStatus = selectedEntitiesArray[0].fields.state;
 
 									if (selectedEntityStatus == '01pending') {
+										 splitOrdersParts.enable("#{translate(orders.orders.ribbon.message.splitOrdersParts)}");
+								        splitOrders.enable("#{translate(orders.orders.ribbon.message.splitOrders)}");
+
 										acceptOrder.enable();
 										acceptOrder.state = "accept";
 										acceptOrder.setLabel("#{translate(orders.ordersPlanningList.window.ribbon.status.acceptOrder)}");
@@ -257,6 +269,12 @@
 
             <listener event="changeState" class="com.qcadoo.mes.orders.listeners.OrdersListListeners" method="changeState"/>
             <listener event="generateProductionCounting" class="com.qcadoo.mes.orders.listeners.OrdersListListeners" method="generateProductionCounting"/>
+            <listener event="splitOrdersParts"
+                      class="com.qcadoo.mes.orders.listeners.OrdersPlanningListListeners"
+                      method="splitOrdersParts"/>
+            <listener event="splitOrders"
+                      class="com.qcadoo.mes.orders.listeners.OrdersPlanningListListeners"
+                      method="splitOrders"/>
         </component>
 
         <option type="fixedHeight" value="true"/>

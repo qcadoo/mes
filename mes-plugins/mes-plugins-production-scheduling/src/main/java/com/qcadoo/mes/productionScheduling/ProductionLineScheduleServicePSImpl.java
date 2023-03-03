@@ -23,29 +23,17 @@
  */
 package com.qcadoo.mes.productionScheduling;
 
-import java.math.BigDecimal;
-import java.util.Date;
-import java.util.Map;
-import java.util.Objects;
-import java.util.stream.Collectors;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.annotation.Order;
-import org.springframework.stereotype.Service;
-
 import com.qcadoo.mes.lineChangeoverNorms.constants.LineChangeoverNormsFields;
 import com.qcadoo.mes.lineChangeoverNormsForOrders.LineChangeoverNormsForOrdersService;
 import com.qcadoo.mes.lineChangeoverNormsForOrders.constants.ProductionLineSchedulePositionFieldsLCNFO;
 import com.qcadoo.mes.operationTimeCalculations.OperationWorkTimeService;
-import com.qcadoo.mes.operationTimeCalculations.OrderRealizationTimeService;
 import com.qcadoo.mes.operationTimeCalculations.constants.OperCompTimeCalculationsFields;
 import com.qcadoo.mes.operationTimeCalculations.constants.OperationTimeCalculationsConstants;
-import com.qcadoo.mes.orders.ProductionLineScheduleServicePS;
-import com.qcadoo.mes.orders.constants.OrderFields;
-import com.qcadoo.mes.orders.constants.ProductionLineSchedulePositionFields;
-import com.qcadoo.mes.orders.listeners.ProductionLinePositionNewData;
 import com.qcadoo.mes.operationTimeCalculations.constants.OrderTimeCalculationFields;
 import com.qcadoo.mes.operationTimeCalculations.constants.PlanOrderTimeCalculationFields;
+import com.qcadoo.mes.orders.ProductionLineScheduleServicePS;
+import com.qcadoo.mes.orders.constants.ProductionLineSchedulePositionFields;
+import com.qcadoo.mes.orders.listeners.ProductionLinePositionNewData;
 import com.qcadoo.mes.productionScheduling.constants.ProductionSchedulingConstants;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
 import com.qcadoo.model.api.DataDefinition;
@@ -53,6 +41,15 @@ import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.plugin.api.RunIfEnabled;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.annotation.Order;
+import org.springframework.stereotype.Service;
+
+import java.util.Date;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @Order(1)
@@ -78,12 +75,12 @@ public class ProductionLineScheduleServicePSImpl implements ProductionLineSchedu
                                                     Entity productionLine, Date finishDate, Entity position, Entity technology, Entity previousOrder) {
         Entity productionLineSchedule = position.getBelongsToField(ProductionLineSchedulePositionFields.PRODUCTION_LINE_SCHEDULE);
         Entity order = position.getBelongsToField(ProductionLineSchedulePositionFields.ORDER);
-        BigDecimal plannedQuantity = order.getDecimalField(OrderFields.PLANNED_QUANTITY);
+
         operationWorkTimeService.deletePlanOperCompTimeCalculations(productionLineSchedule, order, productionLine);
 
-        int maxPathTime = orderRealizationTimeService.estimateMaxOperationTimeConsumptionForWorkstation(productionLineSchedule, order,
+        int maxPathTime = orderRealizationTimeService.estimateOperationTimeConsumption(productionLineSchedule, order,
                 technology.getTreeField(TechnologyFields.OPERATION_COMPONENTS).getRoot(),
-                plannedQuantity, true, true, productionLine);
+                 true, true, true, productionLine, Optional.empty());
 
         if (maxPathTime != 0 && maxPathTime <= OrderRealizationTimeService.MAX_REALIZATION_TIME) {
             Entity changeover = lineChangeoverNormsForOrdersService.getChangeover(previousOrder, technology, productionLine);
