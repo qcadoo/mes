@@ -98,7 +98,7 @@
                                     method="showForProductCalculatedType"/>
 
                             <listener event="onSelectedEntityChange"
-                                      class="com.qcadoo.mes.technologies.listeners.WorkstationChangeoverDetailsListeners"
+                                      class="com.qcadoo.mes.technologies.listeners.WorkstationChangeoverNormDetailsListeners"
                                       method="clearAttributeValueLookups"/>
                         </component>
                     </layoutElement>
@@ -106,7 +106,7 @@
                         <component type="select" name="changeoverType" field="changeoverType" reference="changeoverType"
                                    hasDescription="true">
                             <listener event="onSelectedEntityChange"
-                                      class="com.qcadoo.mes.technologies.listeners.WorkstationChangeoverDetailsListeners"
+                                      class="com.qcadoo.mes.technologies.listeners.WorkstationChangeoverNormDetailsListeners"
                                       method="clearAttributeValueLookups"/>
                         </component>
                     </layoutElement>
