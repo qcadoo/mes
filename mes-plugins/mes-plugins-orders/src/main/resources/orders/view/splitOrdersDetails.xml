@@ -39,11 +39,9 @@
                         <![CDATA[
 					        this.addOnChangeListener({
 						        onClick: function() {
-							        if(window.canClose()) {
-							            if (window.confirm("#{translate(orders.splitOrdersDetails.window.ribbon.split.splitOrders.confirm)}")) {
-								            #{form}.performEvent('splitOrders', []);
-								        }
-							        }
+							        if (window.confirm("#{translate(orders.splitOrdersDetails.window.ribbon.split.splitOrders.confirm)}")) {
+								        #{form}.performEvent('splitOrders', []);
+								    }
 						        }
 					        });
 					        #{form}.addOnChangeListener({
