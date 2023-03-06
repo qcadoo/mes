@@ -1,4 +1,4 @@
-package com.qcadoo.mes.orders.states;
+package com.qcadoo.mes.productionScheduling.states;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

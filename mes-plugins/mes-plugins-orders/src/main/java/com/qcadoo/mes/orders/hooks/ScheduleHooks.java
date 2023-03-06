@@ -1,28 +1,22 @@
 package com.qcadoo.mes.orders.hooks;
 
-import java.util.Collections;
-import java.util.Objects;
-
+import com.qcadoo.mes.orders.constants.ScheduleFields;
+import com.qcadoo.mes.orders.states.constants.ScheduleStateStringValues;
+import com.qcadoo.model.api.DataDefinition;
+import com.qcadoo.model.api.Entity;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Service;
 
-import com.qcadoo.mes.newstates.StateExecutorService;
-import com.qcadoo.mes.orders.constants.ScheduleFields;
-import com.qcadoo.mes.orders.states.ScheduleServiceMarker;
-import com.qcadoo.mes.orders.states.constants.ScheduleStateStringValues;
-import com.qcadoo.model.api.DataDefinition;
-import com.qcadoo.model.api.Entity;
+import java.util.Collections;
+import java.util.Objects;
 
 @Service
 public class ScheduleHooks {
 
     @Autowired
     private NamedParameterJdbcTemplate jdbcTemplate;
-
-    @Autowired
-    private StateExecutorService stateExecutorService;
 
     public void onCreate(final DataDefinition scheduleDD, final Entity schedule) {
         setInitialState(schedule);
@@ -33,7 +27,7 @@ public class ScheduleHooks {
     }
 
     private void setInitialState(final Entity schedule) {
-        stateExecutorService.buildInitial(ScheduleServiceMarker.class, schedule, ScheduleStateStringValues.DRAFT);
+        schedule.setField(ScheduleFields.STATE, ScheduleStateStringValues.DRAFT);
     }
 
     public void onSave(final DataDefinition scheduleDD, final Entity schedule) {

@@ -1,13 +1,15 @@
-package com.qcadoo.mes.orders.states;
+package com.qcadoo.mes.productionScheduling.states;
 
 import com.qcadoo.mes.newstates.BasicStateService;
 import com.qcadoo.mes.orders.TechnologyServiceO;
 import com.qcadoo.mes.orders.constants.*;
 import com.qcadoo.mes.orders.hooks.OperationalTaskHooks;
-import com.qcadoo.mes.orders.hooks.OrderHooks;
+import com.qcadoo.mes.orders.states.OperationalTaskOrderStateService;
+import com.qcadoo.mes.orders.states.ProductionLineScheduleStateService;
 import com.qcadoo.mes.orders.states.constants.OperationalTaskStateStringValues;
 import com.qcadoo.mes.orders.states.constants.OrderStateStringValues;
 import com.qcadoo.mes.orders.states.constants.ScheduleStateStringValues;
+import com.qcadoo.mes.productionScheduling.hooks.OperationalTaskHooksPS;
 import com.qcadoo.mes.states.StateChangeEntityDescriber;
 import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
 import com.qcadoo.model.api.DataDefinition;
@@ -51,7 +53,10 @@ public class ScheduleStateService extends BasicStateService implements ScheduleS
     private OperationalTaskHooks operationalTaskHooks;
 
     @Autowired
-    private OrderHooks orderHooks;
+    private OperationalTaskHooksPS operationalTaskHooksPS;
+
+    @Autowired
+    private ProductionLineScheduleStateService productionLineScheduleStateService;
 
     @Override
     public StateChangeEntityDescriber getChangeEntityDescriber() {
@@ -214,8 +219,8 @@ public class ScheduleStateService extends BasicStateService implements ScheduleS
             Date startTime = getOrderStartTime(entity, order);
             Date endTime = getOrderEndTime(entity, order);
             Entity orderFromDB = order.getDataDefinition().get(order.getId());
-            setOrderDateFrom(order, startTime, orderFromDB);
-            setOrderDateTo(order, endTime, orderFromDB);
+            productionLineScheduleStateService.setOrderDateFrom(order, startTime, orderFromDB);
+            productionLineScheduleStateService.setOrderDateTo(order, endTime, orderFromDB);
             order.getDataDefinition().fastSave(order);
         }
     }
@@ -242,28 +247,6 @@ public class ScheduleStateService extends BasicStateService implements ScheduleS
                         .add(rowCount()))
                 .addOrder(SearchOrders.asc(SchedulePositionFields.START_TIME)).setMaxResults(1).uniqueResult();
         return schedulePositionMinStartTimeEntity.getDateField(SchedulePositionFields.START_TIME);
-    }
-
-    public void setOrderDateTo(Entity order, Date endTime, Entity orderFromDB) {
-        Date finishDateDB = new Date();
-        if (orderFromDB.getDateField(OrderFields.FINISH_DATE) != null) {
-            finishDateDB = orderFromDB.getDateField(OrderFields.FINISH_DATE);
-        }
-        if (!finishDateDB.equals(endTime)) {
-            order.setField(OrderFields.FINISH_DATE, endTime);
-            orderHooks.copyEndDate(order.getDataDefinition(), order);
-        }
-    }
-
-    public void setOrderDateFrom(Entity order, Date startTime, Entity orderFromDB) {
-        Date startDateDB = new Date();
-        if (orderFromDB.getDateField(OrderFields.START_DATE) != null) {
-            startDateDB = orderFromDB.getDateField(OrderFields.START_DATE);
-        }
-        if (!startDateDB.equals(startTime)) {
-            order.setField(OrderFields.START_DATE, startTime);
-            orderHooks.copyStartDate(order.getDataDefinition(), order);
-        }
     }
 
     private void generateOperationalTasks(Entity schedule) {
@@ -293,7 +276,7 @@ public class ScheduleStateService extends BasicStateService implements ScheduleS
             maybeDivision.ifPresent(d -> operationalTask.setField(OperationalTaskFields.DIVISION, d));
             operationalTaskHooks.setInitialState(operationalTask);
             operationalTaskHooks.fillNameAndDescription(operationalTask);
-            operationalTaskHooks.setStaff(operationalTaskDD, operationalTask);
+            operationalTaskHooksPS.setStaff(operationalTaskDD, operationalTask);
             operationalTaskDD.fastSave(operationalTask);
         }
         schedule.addGlobalMessage("productionScheduling.operationDurationDetailsInOrder.info.operationalTasksCreated");

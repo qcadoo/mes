@@ -58,6 +58,10 @@
             <plugin>technologies</plugin>
             <version>[1.4.0</version>
         </dependency>
+        <dependency>
+            <plugin>timeNormsForOperations</plugin>
+            <version>[0.4.0</version>
+        </dependency>
     </dependencies>
 
     <modules>

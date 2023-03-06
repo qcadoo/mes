@@ -1,4 +1,4 @@
-package com.qcadoo.mes.orders.states;
+package com.qcadoo.mes.productionScheduling.states;
 
 import com.qcadoo.mes.newstates.StateService;
 
