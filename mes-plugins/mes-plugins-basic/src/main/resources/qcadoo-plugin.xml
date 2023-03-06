@@ -247,6 +247,7 @@
         <security:role identifier="ROLE_WMS"/>
 
         <security:role identifier="ROLE_TECHNOLOGICAL_PROCESSES"/>
+        <security:role identifier="ROLE_ORDER_TECHNOLOGICAL_PROCESSES"/>
 
         <security:role identifier="ROLE_CLEAN_EXTERNAL_NUMBER"/>
 
