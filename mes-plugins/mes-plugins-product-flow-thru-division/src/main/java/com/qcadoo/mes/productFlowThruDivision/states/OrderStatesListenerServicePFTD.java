@@ -29,8 +29,10 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 import com.qcadoo.commons.functional.Either;
 import com.qcadoo.mes.basic.ParameterService;
+import com.qcadoo.mes.basic.constants.CurrencyFields;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.basic.constants.UnitConversionItemFieldsB;
+import com.qcadoo.mes.basic.util.CurrencyService;
 import com.qcadoo.mes.basicProductionCounting.constants.BasicProductionCountingConstants;
 import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityFields;
 import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityRole;
@@ -55,6 +57,7 @@ import com.qcadoo.mes.productionCounting.utils.ProductionTrackingDocumentsHelper
 import com.qcadoo.mes.states.StateChangeContext;
 import com.qcadoo.mes.states.StateEnum;
 import com.qcadoo.mes.states.messages.constants.StateMessageType;
+import com.qcadoo.model.api.BigDecimalUtils;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -99,6 +102,9 @@ public class OrderStatesListenerServicePFTD {
     private UnitConversionService unitConversionService;
 
     @Autowired
+    private CurrencyService currencyService;
+
+    @Autowired
     private ParameterService parameterService;
 
     @Autowired
@@ -124,78 +130,126 @@ public class OrderStatesListenerServicePFTD {
 
     public void acceptInboundDocumentsForOrder(final StateChangeContext stateChangeContext) {
         String receiptOfProducts = parameterService.getParameter().getStringField(ParameterFieldsPC.RECEIPT_OF_PRODUCTS);
+
         if (ReceiptOfProducts.END_OF_THE_ORDER.getStringValue().equals(receiptOfProducts)) {
             Entity order = stateChangeContext.getOwner();
+
             String priceBasedOn = parameterService.getParameter().getStringField(ParameterFieldsPC.PRICE_BASED_ON);
-            boolean isNominalProductCost = priceBasedOn != null
+
+            boolean isNominalProductCost = Objects.nonNull(priceBasedOn)
                     && priceBasedOn.equals(PriceBasedOn.NOMINAL_PRODUCT_COST.getStringValue());
+
             if (!isNominalProductCost) {
                 order = updateCostsInOrder(order);
+
                 productionTrackingListenerServicePFTD.updateCostsForOrder(order);
+
                 fillRealProductionCost(order);
+
                 stateChangeContext.setOwner(order);
             }
 
             Either<String, Void> result = tryAcceptInboundDocumentsFor(order);
+
             if (result.isLeft()) {
                 stateChangeContext.addMessage(result.getLeft(), StateMessageType.FAILURE);
             }
         }
     }
 
-    public Entity updateCostsInOrder(Entity order) {
+    public Entity updateCostsInOrder(final Entity order) {
         List<Entity> orderMaterialsCosts = orderMaterialsCostDataGenerator.generateUpdatedMaterialsListFor(order);
+
         order.setField(OrderFieldsCNFM.TECHNOLOGY_INST_OPER_PRODUCT_IN_COMPS, orderMaterialsCosts);
+
         return order.getDataDefinition().save(order);
     }
 
-    public void fillRealProductionCost(Entity order) {
+    public void fillRealProductionCost(final Entity order) {
         order.setField("productPricePerUnit", realProductionCostService.calculateRealProductionCost(order));
     }
 
     @Transactional(/* isolation = Isolation.READ_UNCOMMITTED */)
     private Either<String, Void> tryAcceptInboundDocumentsFor(final Entity order) {
-
         updateDocumentQuantities(order);
 
-        DataDefinition documentDD = dataDefinitionService.get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER,
-                MaterialFlowResourcesConstants.MODEL_DOCUMENT);
+        DataDefinition documentDD = getDocumentDD();
 
         SearchResult searchResult = documentDD.find().add(SearchRestrictions.belongsTo(DocumentFieldsPFTD.ORDER, order))
                 .add(SearchRestrictions.eq(DocumentFields.TYPE, DocumentType.INTERNAL_INBOUND.getStringValue())).list();
 
         String priceBasedOn = parameterService.getParameter().getStringField(ParameterFieldsPC.PRICE_BASED_ON);
-        boolean isNominalProductCost = priceBasedOn != null
+
+        boolean isNominalProductCost = Objects.nonNull(priceBasedOn)
                 && priceBasedOn.equals(PriceBasedOn.NOMINAL_PRODUCT_COST.getStringValue());
-        Optional<BigDecimal> price = Optional.empty();
-        if (!isNominalProductCost) {
-            price = Optional.ofNullable(order.getDecimalField("productPricePerUnit"));
+
+        Optional<BigDecimal> price;
+
+        if (isNominalProductCost) {
+            price = Optional.ofNullable(getNominalCost(order.getBelongsToField(OrderFields.PRODUCT)));
+        } else {
+            price = Optional.ofNullable(realProductionCostService.calculateRealProductionCost(order));
         }
 
         for (Entity document : searchResult.getEntities()) {
-            if (!isNominalProductCost) {
-                fillInDocumentPositionsPrice(document, order.getBelongsToField(OrderFields.PRODUCT), price);
-            }
+            fillInDocumentPositionsPrice(document, order.getBelongsToField(OrderFields.PRODUCT), price);
+            
             if (DocumentState.of(document) == DocumentState.ACCEPTED) {
                 LOG.warn("Document {} already accepted.", document.getId());
                 continue;
             }
 
             Entity acceptedDocument = acceptInboundDocument(document);
+
             if (!acceptedDocument.isValid()) {
                 documentStateChangeService.buildFailureStateChange(acceptedDocument.getId());
+
                 for (ErrorMessage error : acceptedDocument.getGlobalErrors()) {
                     order.addGlobalError(error.getMessage(), error.getVars());
                 }
+
                 order.addGlobalError(L_ACCEPT_INBOUND_DOCUMENT_ERROR);
+
                 return Either.left(L_ACCEPT_INBOUND_DOCUMENT_ERROR);
             }
         }
+
         Either<String, Void> documentsForNotUsedMaterials = createDocumentsForNotUsedMaterials(order);
+
         if (documentsForNotUsedMaterials.isLeft()) {
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
         }
+
         return documentsForNotUsedMaterials;
+    }
+
+    private BigDecimal getNominalCost(final Entity product) {
+        BigDecimal nominalCost = BigDecimalUtils.convertNullToZero(product.getDecimalField("nominalCost"));
+        Entity currency = product.getBelongsToField("nominalCostCurrency");
+
+        if (Objects.nonNull(currency) && CurrencyService.PLN.equals(currencyService.getCurrencyAlphabeticCode())
+                && !CurrencyService.PLN.equals(currency.getStringField(CurrencyFields.ALPHABETIC_CODE))) {
+            nominalCost = currencyService.getConvertedValue(nominalCost, currency);
+        }
+
+        return nominalCost;
+    }
+
+    private void fillInDocumentPositionsPrice(final Entity document, final Entity orderProduct, final Optional<BigDecimal> price) {
+        Preconditions.checkNotNull(orderProduct, "Can't find order product.");
+        Preconditions.checkNotNull(orderProduct.getId(), "Can't find order product.");
+
+        for (Entity position : document.getHasManyField(DocumentFields.POSITIONS)) {
+            if (orderProduct.getId().equals(position.getBelongsToField(PositionFields.PRODUCT).getId())) {
+                position.setField(PositionFields.PRICE, price.orElse(BigDecimal.ZERO));
+
+                if (DocumentState.of(document) == DocumentState.ACCEPTED) {
+                    updatePriceInResource(position, price.orElse(BigDecimal.ZERO));
+                }
+
+                position.getDataDefinition().save(position);
+            }
+        }
     }
 
     private Either<String, Void> createDocumentsForNotUsedMaterials(final Entity order) {
@@ -204,15 +258,19 @@ public class OrderStatesListenerServicePFTD {
                 ProductionCountingQuantityFieldsPFTD.COMPONENTS_LOCATION);
 
         for (Object inLocation : groupedProductionCountingQuantities.keySet()) {
-            if (inLocation != null) {
-                List<Entity> list = new ArrayList<Entity>();
+            if (Objects.nonNull(inLocation)) {
+                List<Entity> list = Lists.newArrayList();
+
                 list.addAll((Collection<Entity>) groupedProductionCountingQuantities.get(inLocation));
+
                 MultiMap groupedByOutputLocation = groupProductionCountingQuantitiesByField(list,
                         ProductionCountingQuantityFieldsPFTD.COMPONENTS_OUTPUT_LOCATION);
+
                 for (Object outLocation : groupedByOutputLocation.keySet()) {
-                    if (outLocation != null) {
+                    if (Objects.nonNull(outLocation)) {
                         Either<String, Void> isValid = createTransferDocumentsForUnusedMaterials((Entity) outLocation,
                                 (Entity) inLocation, getProductsAndQuantitiesMap(groupedByOutputLocation, order), order);
+
                         if (isValid.isLeft()) {
                             return isValid;
                         }
@@ -220,21 +278,26 @@ public class OrderStatesListenerServicePFTD {
                 }
             }
         }
+
         return Either.right(null);
     }
 
     private Map<Entity, BigDecimal> getProductsAndQuantitiesMap(final MultiMap groupedProductQuantities, final Entity order) {
-        Map<Entity, BigDecimal> map = new HashMap<Entity, BigDecimal>();
+        Map<Entity, BigDecimal> map = Maps.newHashMap();
+
         for (Object pcq : groupedProductQuantities.values()) {
             Entity product = ((Entity) pcq).getBelongsToField(ProductionCountingQuantityFields.PRODUCT);
+
             BigDecimal quantityTaken = getProductQuantityTakenForOrder(product.getId(), order.getId());
             BigDecimal quantityUsed = getProductQuantityUsedInOrder(product.getId(), order.getId());
+
             BigDecimal diff = quantityTaken.subtract(quantityUsed);
+
             if (diff.compareTo(BigDecimal.ZERO) > 0) {
                 map.put(product, diff);
             }
-
         }
+
         return map;
     }
 
@@ -245,63 +308,77 @@ public class OrderStatesListenerServicePFTD {
         if (products.isEmpty()) {
             return Either.right(null);
         }
+
         for (Map.Entry<Entity, BigDecimal> entry : products.entrySet()) {
             Entity product = entry.getKey();
             BigDecimal quantity = entry.getValue();
+
             if (quantity.compareTo(BigDecimal.ZERO) > 0) {
                 BigDecimal givenQuantity = quantity;
                 String givenUnit = product.getStringField(ProductFields.ADDITIONAL_UNIT);
                 BigDecimal conversion = BigDecimal.ONE;
+
                 if (!StringUtils.isEmpty(givenUnit)) {
                     PossibleUnitConversions unitConversions = unitConversionService.getPossibleConversions(
                             product.getStringField(ProductFields.UNIT), searchCriteriaBuilder -> searchCriteriaBuilder
                                     .add(SearchRestrictions.belongsTo(UnitConversionItemFieldsB.PRODUCT, product)));
+
                     if (unitConversions.isDefinedFor(givenUnit)) {
                         givenQuantity = unitConversions.convertTo(quantity, givenUnit);
                         conversion = unitConversions.asUnitToConversionMap().get(givenUnit);
-
                     }
                 } else {
                     givenUnit = product.getStringField(ProductFields.UNIT);
                 }
+
                 Entity position = document.createPosition(product, quantity, givenQuantity, givenUnit, conversion, null, null,
                         null, null, null);
+
                 document.addPosition(position);
             }
         }
 
         Entity acceptedDocument = acceptTransferDocument(document, order);
+
         if (!acceptedDocument.isValid()) {
             for (ErrorMessage error : acceptedDocument.getGlobalErrors()) {
                 order.addGlobalError(error.getMessage(), error.getVars());
             }
+
             order.addGlobalError(L_ACCEPT_INBOUND_DOCUMENT_ERROR);
+
             return Either.left(L_ACCEPT_INBOUND_DOCUMENT_ERROR);
         }
+
         return Either.right(null);
     }
 
     private Entity acceptTransferDocument(DocumentBuilder document, final Entity order) {
         document.setAccepted();
+
         document.setField(DocumentFields.TIME, new Date());
         document.setField(DocumentFieldsPFTD.ORDER, order);
+
         return document.build();
     }
 
-    private MultiMap groupProductionCountingQuantitiesByField(final List<Entity> productionCountingQuantities,
-                                                              final String field) {
+    private MultiMap groupProductionCountingQuantitiesByField(final List<Entity> productionCountingQuantities, final String field) {
         MultiMap map = new MultiHashMap();
+
         for (Entity pcq : productionCountingQuantities) {
             Entity entity = pcq.getBelongsToField(field);
+
             map.put(entity, pcq);
         }
+
         return map;
     }
 
     private List<Entity> getUniqueProductionCountingQuantitiesForOrder(final Entity order) {
         Map<Entity, Entity> quantities = Maps.newHashMap();
-        SearchCriteriaBuilder scb = dataDefinitionService.get(BasicProductionCountingConstants.PLUGIN_IDENTIFIER,
-                BasicProductionCountingConstants.MODEL_PRODUCTION_COUNTING_QUANTITY).find();
+
+        SearchCriteriaBuilder scb = getProductionCountingQuantityDD().find();
+
         scb.add(SearchRestrictions.belongsTo(ProductionCountingQuantityFields.ORDER, order))
                 .add(SearchRestrictions.eq(ProductionCountingQuantityFields.ROLE,
                         ProductionCountingQuantityRole.USED.getStringValue()))
@@ -311,96 +388,90 @@ public class OrderStatesListenerServicePFTD {
         for (Entity pcq : scb.list().getEntities()) {
             quantities.put(pcq.getBelongsToField(ProductionCountingQuantityFields.PRODUCT), pcq);
         }
+
         return Lists.newArrayList(quantities.values());
     }
 
     private BigDecimal getProductQuantityTakenForOrder(final Long productId, final Long orderId) {
-        DataDefinition issueDD = dataDefinitionService.get(ProductFlowThruDivisionConstants.PLUGIN_IDENTIFIER,
-                ProductFlowThruDivisionConstants.MODEL_ISSUE);
-
-        SearchQueryBuilder searchQueryBuilder = issueDD.find("SELECT SUM(issue.issueQuantity) AS totalQuantity "
+        String hql = "SELECT SUM(issue.issueQuantity) AS totalQuantity "
                 + "FROM #productFlowThruDivision_issue issue JOIN issue.warehouseIssue AS warehouseIssue "
                 + "WHERE warehouseIssue.order = :order_id AND issue.product = :product_id AND issue.issued = :issued "
-                + "GROUP BY warehouseIssue.order, issue.product, issue.issued");
+                + "GROUP BY warehouseIssue.order, issue.product, issue.issued";
+
+        SearchQueryBuilder searchQueryBuilder = getIssueDD().find(hql);
 
         searchQueryBuilder.setLong("order_id", orderId);
         searchQueryBuilder.setLong("product_id", productId);
         searchQueryBuilder.setBoolean("issued", true);
+
         Entity result = searchQueryBuilder.setMaxResults(1).uniqueResult();
-        return result != null ? result.getDecimalField("totalQuantity") : BigDecimal.ZERO;
+
+        return Objects.nonNull(result) ? result.getDecimalField("totalQuantity") : BigDecimal.ZERO;
     }
 
+
     private BigDecimal getProductQuantityUsedInOrder(final Long productId, final Long orderId) {
-        DataDefinition trackingOpicDD = dataDefinitionService.get(ProductionCountingConstants.PLUGIN_IDENTIFIER,
-                ProductionCountingConstants.MODEL_TRACKING_OPERATION_PRODUCT_IN_COMPONENT);
         String hql = "SELECT opic.usedQuantity AS quantity "
                 + "FROM #productionCounting_trackingOperationProductInComponent opic "
                 + "JOIN opic.productionTracking AS pt WHERE pt.state != '04corrected' "
                 + "AND pt.order = :order_id AND opic.product = :product_id AND opic.usedQuantity IS NOT NULL "
                 + "GROUP BY pt.order, opic.product, opic.usedQuantity";
-        SearchQueryBuilder scb = trackingOpicDD.find(hql);
+
+        SearchQueryBuilder scb = getTrackingOperationProductInComponentDD().find(hql);
+
         scb.setLong("order_id", orderId);
         scb.setLong("product_id", productId);
+
         List<Entity> results = scb.list().getEntities();
+
         return results.stream().map(entity -> entity.getDecimalField("quantity")).filter(Objects::nonNull).reduce(BigDecimal.ZERO,
                 BigDecimal::add);
     }
 
-    private void fillInDocumentPositionsPrice(Entity document, Entity orderProduct, Optional<BigDecimal> price) {
-        Preconditions.checkNotNull(orderProduct, "Can't find order product.");
-        Preconditions.checkNotNull(orderProduct.getId(), "Can't find order product.");
-        for (Entity position : document.getHasManyField(DocumentFields.POSITIONS)) {
-            if (orderProduct.getId().equals(position.getBelongsToField(PositionFields.PRODUCT).getId())) {
-
-                position.setField(PositionFields.PRICE, price.orElse(BigDecimal.ZERO));
-                if (DocumentState.of(document) == DocumentState.ACCEPTED) {
-                    updatePriceInResource(position, price.orElse(BigDecimal.ZERO));
-                }
-                position.getDataDefinition().save(position);
-            }
-        }
-    }
 
     private void updatePriceInResource(final Entity position, final BigDecimal price) {
         if (StringUtils.isNotEmpty(position.getStringField(PositionFields.RESOURCE_RECEIPT_DOCUMENT))) {
-            Entity resource = dataDefinitionService
-                    .get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER, MaterialFlowResourcesConstants.MODEL_RESOURCE)
-                    .get(Long.valueOf(position.getStringField(PositionFields.RESOURCE_RECEIPT_DOCUMENT)));
-            if (resource != null) {
+            Entity resource = getResourceDD().get(Long.valueOf(position.getStringField(PositionFields.RESOURCE_RECEIPT_DOCUMENT)));
+
+            if (Objects.nonNull(resource)) {
                 resource.setField(ResourceFields.PRICE, price);
+
                 resource.getDataDefinition().save(resource);
             }
         }
     }
 
-    private Entity acceptInboundDocument(Entity document) {
+    private Entity acceptInboundDocument(final Entity document) {
         document.setField(DocumentFields.STATE, DocumentState.ACCEPTED.getStringValue());
         document.setField(DocumentFields.TIME, new Date());
+
         Entity savedDocument = document.getDataDefinition().save(document);
+
         if (savedDocument.isValid()) {
             resourceManagementService.createResourcesForReceiptDocuments(savedDocument);
         }
+
         return savedDocument;
     }
 
-    private void updateDocumentQuantities(Entity order) {
-
-        DataDefinition ptDD = dataDefinitionService.get(ProductionCountingConstants.PLUGIN_IDENTIFIER,
-                ProductionCountingConstants.MODEL_PRODUCTION_TRACKING);
-        List<Entity> productionTrackings = ptDD.find()
+    private void updateDocumentQuantities(final Entity order) {
+        List<Entity> productionTrackings = getProductionTrackingDD().find()
                 .add(SearchRestrictions.belongsTo(ProductionTrackingFields.ORDER, order))
                 .add(SearchRestrictions.eq(ProductionTrackingFields.STATE, ProductionTrackingStateStringValues.ACCEPTED))
                 .list().getEntities();
 
         List<Entity> trackingOperationProductOutComponents = Lists.newArrayList();
+
         for (Entity productionTracking : productionTrackings) {
             trackingOperationProductOutComponents.addAll(Lists.newArrayList(productionTracking.getHasManyField(ProductionTrackingFields.TRACKING_OPERATION_PRODUCT_OUT_COMPONENTS)));
         }
+
         Multimap<Long, Entity> groupedRecordOutProducts = productionTrackingDocumentsHelper
                 .fillFromBPCProductOut(trackingOperationProductOutComponents, order, true);
 
         for (Long warehouseId : groupedRecordOutProducts.keySet()) {
             Entity locationTo = getLocationDD().get(warehouseId);
+
             List<Entity> finalProductRecord = Lists.newArrayList();
 
             Collection<Entity> intermediateRecords = Lists.newArrayList();
@@ -431,12 +502,13 @@ public class OrderStatesListenerServicePFTD {
                 }
             }
         }
-
     }
 
-    public void checkMaterialAvailability(StateChangeContext stateChangeContext) {
+    public void checkMaterialAvailability(final StateChangeContext stateChangeContext) {
         Entity order = stateChangeContext.getOwner();
+
         StateEnum targetState = stateChangeContext.getStateEnumValue(stateChangeContext.getDescriber().getTargetStateFieldName());
+
         Entity technology = order.getBelongsToField(OrderFields.TECHNOLOGY);
 
         String momentOfValidation = parameterService.getParameter().getStringField(ParameterFieldsPFTD.MOMENT_OF_VALIDATION);
@@ -448,6 +520,7 @@ public class OrderStatesListenerServicePFTD {
             message = "productFlowThruDivision.order.state.inProgress.error.missingComponents";
             messageShort = "productFlowThruDivision.order.state.inProgress.error.missingComponentsShort";
         }
+
         if (order.getField(OrderFieldsPFTD.IGNORE_MISSING_COMPONENTS) != null
                 && !order.getBooleanField(OrderFieldsPFTD.IGNORE_MISSING_COMPONENTS) && technology != null
                 && (OrderState.ACCEPTED == targetState
@@ -474,8 +547,9 @@ public class OrderStatesListenerServicePFTD {
         }
     }
 
-    public void createCumulatedInternalOutboundDocument(StateChangeContext stateChangeContext) {
+    public void createCumulatedInternalOutboundDocument(final StateChangeContext stateChangeContext) {
         Entity order = stateChangeContext.getOwner();
+
         productionCountingDocumentService.createCumulatedInternalOutboundDocument(order);
     }
 
@@ -483,12 +557,38 @@ public class OrderStatesListenerServicePFTD {
         return order.getBelongsToField(OrderFields.PRODUCT).getId().equals(product.getId());
     }
 
+    private DataDefinition getLocationDD() {
+        return dataDefinitionService.get(MaterialFlowConstants.PLUGIN_IDENTIFIER, MaterialFlowConstants.MODEL_LOCATION);
+    }
+
     private DataDefinition getDocumentDD() {
         return dataDefinitionService.get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER,
                 MaterialFlowResourcesConstants.MODEL_DOCUMENT);
     }
 
-    private DataDefinition getLocationDD() {
-        return dataDefinitionService.get(MaterialFlowConstants.PLUGIN_IDENTIFIER, MaterialFlowConstants.MODEL_LOCATION);
+    private DataDefinition getProductionTrackingDD() {
+        return dataDefinitionService.get(ProductionCountingConstants.PLUGIN_IDENTIFIER,
+                ProductionCountingConstants.MODEL_PRODUCTION_TRACKING);
     }
+
+    private DataDefinition getTrackingOperationProductInComponentDD() {
+        return dataDefinitionService.get(ProductionCountingConstants.PLUGIN_IDENTIFIER,
+                ProductionCountingConstants.MODEL_TRACKING_OPERATION_PRODUCT_IN_COMPONENT);
+    }
+
+    private DataDefinition getProductionCountingQuantityDD() {
+        return dataDefinitionService.get(BasicProductionCountingConstants.PLUGIN_IDENTIFIER,
+                BasicProductionCountingConstants.MODEL_PRODUCTION_COUNTING_QUANTITY);
+    }
+
+    private DataDefinition getIssueDD() {
+        return dataDefinitionService.get(ProductFlowThruDivisionConstants.PLUGIN_IDENTIFIER,
+                ProductFlowThruDivisionConstants.MODEL_ISSUE);
+    }
+
+    private DataDefinition getResourceDD() {
+        return dataDefinitionService
+                .get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER, MaterialFlowResourcesConstants.MODEL_RESOURCE);
+    }
+
 }
