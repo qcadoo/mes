@@ -67,10 +67,12 @@
         <manyToMany name="workers" plugin="basic" model="staff"
                     joinField="operationalTasksStaff" copyable="true"/>
 
+        <boolean name="shouldSkip" persistent="false"/>
+
         <hasMany name="currentWorkstationChangeoverForOperationalTasks" model="workstationChangeoverForOperationalTask"
-                 joinField="currentOperationalTask"/>
+                 joinField="currentOperationalTask" cascade="delete"/>
         <hasMany name="previousWorkstationChangeoverForOperationalTasks" model="workstationChangeoverForOperationalTask"
-                 joinField="previousOperationalTask"/>
+                 joinField="previousOperationalTask" cascade="delete"/>
     </fields>
 
     <hooks>
@@ -80,6 +82,7 @@
         <onCreate class="com.qcadoo.mes.orders.hooks.OperationalTaskHooks" method="onCreate"/>
         <onSave class="com.qcadoo.mes.orders.hooks.OperationalTaskHooks" method="onSave"/>
         <onCopy class="com.qcadoo.mes.orders.hooks.OperationalTaskHooks" method="onCopy"/>
+        <onDelete class="com.qcadoo.mes.orders.hooks.OperationalTaskHooks" method="onDelete"/>
     </hooks>
 
     <identifier expression="#number + ' - ' + #name"/>

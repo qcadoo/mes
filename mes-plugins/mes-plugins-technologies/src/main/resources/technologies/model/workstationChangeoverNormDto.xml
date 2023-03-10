@@ -24,7 +24,7 @@
     ***************************************************************************
 
 -->
-<model name="workstationChangeoverNorm" activable="true"
+<model name="workstationChangeoverNormDto" activable="true"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
        xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
 
@@ -35,23 +35,21 @@
         <string name="description">
             <validatesLength max="2048"/>
         </string>
-        <belongsTo name="workstationType" model="workstationType" plugin="basic"/>
-        <belongsTo name="workstation" model="workstation" plugin="basic"/>
+        <integer name="workstationType_id"/>
+        <string name="workstationTypeNumber"/>
+        <integer name="workstation_id"/>
+        <string name="workstationNumber"/>
         <enum name="changeoverType" values="01anyChange,02betweenValues"
               default="01anyChange" required="true"/>
-        <belongsTo name="attribute" model="attribute" plugin="basic" required="true"/>
-        <belongsTo name="fromAttributeValue" model="attributeValue" plugin="basic"/>
-        <belongsTo name="toAttributeValue" model="attributeValue" plugin="basic"/>
+        <integer name="attribute_id"/>
+        <string name="attributeNumber"/>
+        <string name="fromAttributeValueValue"/>
+        <string name="toAttributeValueValue"/>
         <integer name="duration" required="true"/>
         <boolean name="isParallel"/>
     </fields>
 
-    <hooks>
-        <validatesWith class="com.qcadoo.mes.technologies.hooks.WorkstationChangeoverNormHooks"
-                method="validatesWith"/>
-        <onSave class="com.qcadoo.mes.technologies.hooks.WorkstationChangeoverNormHooks"
-                method="onSave"/>
-    </hooks>
+    <hooks/>
 
-    <identifier expression="#name"/>
+    <masterModel plugin="orders" model="workstationChangeoverNorm"/>
 </model>
