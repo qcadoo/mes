@@ -1,4 +1,4 @@
-package com.qcadoo.mes.orders;
+package com.qcadoo.mes.orders.services;
 
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.basic.constants.AttributeDataType;
@@ -32,8 +32,6 @@ public class WorkstationChangeoverService {
     private static final String L_DOT = ".";
 
     private static final String L_ID = "id";
-
-    private static final String L_COUNT = "count";
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
