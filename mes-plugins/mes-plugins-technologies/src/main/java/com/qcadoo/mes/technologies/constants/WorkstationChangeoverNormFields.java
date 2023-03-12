@@ -37,9 +37,9 @@ public final class WorkstationChangeoverNormFields {
 
     public static final String WORKSTATION = "workstation";
 
-    public static final String ATTRIBUTE = "attribute";
-
     public static final String CHANGEOVER_TYPE = "changeoverType";
+
+    public static final String ATTRIBUTE = "attribute";
 
     public static final String FROM_ATTRIBUTE_VALUE = "fromAttributeValue";
 

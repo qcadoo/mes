@@ -2,7 +2,7 @@ package com.qcadoo.mes.orders.hooks;
 
 import com.qcadoo.localization.api.utils.DateUtils;
 import com.qcadoo.mes.basic.criteriaModifiers.AttributeValueCriteriaModifiers;
-import com.qcadoo.mes.orders.WorkstationChangeoverService;
+import com.qcadoo.mes.orders.services.WorkstationChangeoverService;
 import com.qcadoo.mes.orders.constants.OperationalTaskFields;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.constants.WorkstationChangeoverForOperationalTaskChangeoverType;
