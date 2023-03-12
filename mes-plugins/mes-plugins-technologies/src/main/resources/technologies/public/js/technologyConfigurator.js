@@ -1559,6 +1559,13 @@ QCD.technologyConfigurator = (function () {
                 });
         } else {
 
+            var operationId;
+            $.each(QCD.technologyConfiguratorContext.technologyOperations, function (i, e) {
+                if (e.index == QCD.technologyConfiguratorContext.technology.currentTOCIndex) {
+                    operationId = e.operationId;
+                }
+            });
+
             var $workstationsByPage = $("#workstationItems")
                 .bootstrapTable({
                     url: 'rest/workstationsByPage',
@@ -1568,8 +1575,8 @@ QCD.technologyConfigurator = (function () {
                             offset: p.offset,
                             sort: p.sort,
                             order: p.order,
-                            search: p.search
-
+                            search: p.search,
+                            operation: operationId
                         };
                     },
                     uniqueId: 'id',

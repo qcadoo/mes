@@ -10,6 +10,7 @@ import com.qcadoo.mes.basic.controllers.dataProvider.responses.WorkstationsRespo
 import com.qcadoo.mes.productionLines.constants.ProductionLineFields;
 import com.qcadoo.mes.productionLines.controller.dataProvider.ProductionLineDto;
 import com.qcadoo.mes.technologies.OperationComponentDataProvider;
+import com.qcadoo.mes.technologies.constants.OperationFields;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
 import com.qcadoo.model.api.DataDefinitionService;
@@ -195,6 +196,14 @@ public class DataProviderForTechnology {
         return workstationEntities.stream().map(w -> w.getId()).collect(Collectors.toList());
     }
 
+
+    public List<Long> getWorkstationsIdsForOperation(Long operationId) {
+        Entity operation = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
+                TechnologiesConstants.MODEL_OPERATION).get(operationId);
+        List<Entity> workstationEntities = operation.getHasManyField(OperationFields.WORKSTATIONS);
+        return workstationEntities.stream().map(w -> w.getId()).collect(Collectors.toList());
+    }
+
     public WorkstationsResponse getWorkstations(String query, Long tocId) {
         StringBuilder queryBuilder = new StringBuilder();
         queryBuilder.append("Select id as id, number as number, name as name From basic_workstation WHERE ");
@@ -221,7 +230,7 @@ public class DataProviderForTechnology {
         return workstationsResponse;
     }
 
-    public WorkstationsGridResponse getWorkstations(int limit, int offset, String sort, String order, String search, Long tocId) {
+    public WorkstationsGridResponse getWorkstations(int limit, int offset, String sort, String order, String search, Long tocId, Long operation) {
         StringBuilder query = new StringBuilder();
         query.append("Select w.id as id, w.number as number, w.name as name From basic_workstation w WHERE ");
         query.append(" w.active = true ");
@@ -231,8 +240,8 @@ public class DataProviderForTechnology {
         queryCount.append("From basic_workstation w WHERE w.active = true  ");
         Map<String, Object> parameters = Maps.newHashMap();
 
-        appendWorkstationConditions(tocId, search, query, parameters);
-        appendWorkstationConditions(tocId, search, queryCount, parameters);
+        appendWorkstationConditions(tocId, operation, search, query, parameters);
+        appendWorkstationConditions(tocId, operation,search, queryCount, parameters);
 
         if (StringUtils.isNotEmpty(sort)) {
             query.append(" ORDER BY " + sort + " " + order);
@@ -247,7 +256,7 @@ public class DataProviderForTechnology {
         return new WorkstationsGridResponse(countRecords, workstations);
     }
 
-    private void appendWorkstationConditions(Long tocId, String search, StringBuilder query, Map<String, Object> parameters) {
+    private void appendWorkstationConditions(Long tocId, Long operation, String search, StringBuilder query, Map<String, Object> parameters) {
         if (StringUtils.isNotEmpty(search)) {
             query.append(" AND (");
             query.append("UPPER(w.number) LIKE '%").append(search.toUpperCase()).append("%' OR ");
@@ -256,6 +265,16 @@ public class DataProviderForTechnology {
         }
         if (Objects.nonNull(tocId)) {
             List<Long> ids = getWorkstationsIds(tocId);
+            if (ids.isEmpty()) {
+                query.append(" AND w.id = -1 ");
+            } else {
+                query.append(" AND w.id in (:ids) ");
+                parameters.put("ids", ids);
+            }
+        }
+
+        if (Objects.nonNull(operation)) {
+            List<Long> ids = getWorkstationsIdsForOperation(operation);
             if (ids.isEmpty()) {
                 query.append(" AND w.id = -1 ");
             } else {
