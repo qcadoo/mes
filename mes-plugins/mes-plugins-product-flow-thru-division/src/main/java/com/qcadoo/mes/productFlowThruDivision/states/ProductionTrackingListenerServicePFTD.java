@@ -23,20 +23,6 @@
  */
 package com.qcadoo.mes.productFlowThruDivision.states;
 
-import java.math.BigDecimal;
-import java.util.*;
-import java.util.stream.Collectors;
-
-import com.qcadoo.mes.basicProductionCounting.constants.BasicProductionCountingConstants;
-import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityFields;
-import com.qcadoo.mes.productFlowThruDivision.constants.*;
-import com.qcadoo.mes.productionCounting.constants.*;
-import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.interceptor.TransactionAspectSupport;
-
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
@@ -46,36 +32,40 @@ import com.qcadoo.mes.basic.constants.CurrencyFields;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.basic.constants.UnitConversionItemFieldsB;
 import com.qcadoo.mes.basic.util.CurrencyService;
+import com.qcadoo.mes.basicProductionCounting.constants.BasicProductionCountingConstants;
+import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityFields;
 import com.qcadoo.mes.costNormsForMaterials.CostNormsForMaterialsService;
 import com.qcadoo.mes.costNormsForMaterials.constants.OrderFieldsCNFM;
 import com.qcadoo.mes.costNormsForMaterials.orderRawMaterialCosts.domain.ProductWithQuantityAndCost;
 import com.qcadoo.mes.materialFlow.constants.LocationFields;
 import com.qcadoo.mes.materialFlow.constants.MaterialFlowConstants;
-import com.qcadoo.mes.materialFlowResources.constants.DocumentFields;
-import com.qcadoo.mes.materialFlowResources.constants.DocumentState;
-import com.qcadoo.mes.materialFlowResources.constants.DocumentType;
-import com.qcadoo.mes.materialFlowResources.constants.MaterialFlowResourcesConstants;
-import com.qcadoo.mes.materialFlowResources.constants.PositionAttributeValueFields;
-import com.qcadoo.mes.materialFlowResources.constants.PositionFields;
+import com.qcadoo.mes.materialFlowResources.constants.*;
 import com.qcadoo.mes.materialFlowResources.service.DocumentBuilder;
 import com.qcadoo.mes.materialFlowResources.service.DocumentManagementService;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.states.constants.OrderState;
+import com.qcadoo.mes.productFlowThruDivision.constants.DocumentFieldsPFTD;
+import com.qcadoo.mes.productFlowThruDivision.constants.ProductionCountingQuantityFieldsPFTD;
+import com.qcadoo.mes.productFlowThruDivision.constants.ProductionFlowComponent;
 import com.qcadoo.mes.productionCounting.ProductionTrackingService;
+import com.qcadoo.mes.productionCounting.constants.*;
 import com.qcadoo.mes.productionCounting.states.constants.ProductionTrackingStateStringValues;
 import com.qcadoo.mes.productionCounting.utils.OrderClosingHelper;
 import com.qcadoo.mes.productionCounting.utils.ProductionTrackingDocumentsHelper;
-import com.qcadoo.model.api.BigDecimalUtils;
-import com.qcadoo.model.api.DataDefinition;
-import com.qcadoo.model.api.DataDefinitionService;
-import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.NumberService;
+import com.qcadoo.model.api.*;
 import com.qcadoo.model.api.search.SearchQueryBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
-import com.qcadoo.model.api.search.SearchResult;
 import com.qcadoo.model.api.units.PossibleUnitConversions;
 import com.qcadoo.model.api.units.UnitConversionService;
 import com.qcadoo.model.api.validators.ErrorMessage;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
+
+import java.math.BigDecimal;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public final class ProductionTrackingListenerServicePFTD {
@@ -840,32 +830,35 @@ public final class ProductionTrackingListenerServicePFTD {
     }
 
     public void updateCostsForOrder(final Entity order) {
-        DataDefinition positionDD = getPositionDD();
-
-        SearchQueryBuilder searchQueryBuilder = positionDD
-                .find("SELECT pr.id AS product, SUM(p.quantity) AS quantity, SUM(p.quantity * p.price) AS price "
-                        + "FROM #materialFlowResources_position p JOIN p.document AS d join p.product AS pr "
-                        + "WHERE d.order = :order_id AND d.type = :type " + "GROUP BY d.order, d.type, pr.id");
+        SearchQueryBuilder searchQueryBuilder = getPositionDD()
+                .find("SELECT prod.id AS product, SUM(position.quantity) AS quantity, SUM(position.quantity * position.price) AS price "
+                        + "FROM #materialFlowResources_position position "
+                        + "JOIN position.document AS document "
+                        + "JOIN position.product AS prod "
+                        + "WHERE document.order = :order_id AND document.type = :type "
+                        + "GROUP BY document.order, document.type, prod.id");
 
         searchQueryBuilder.setLong("order_id", order.getId());
         searchQueryBuilder.setString("type", DocumentType.INTERNAL_OUTBOUND.getStringValue());
 
-        SearchResult result = searchQueryBuilder.list();
+        List<Entity> positions = searchQueryBuilder.list().getEntities();
 
-        List<ProductWithQuantityAndCost> productsWithQuantitiesAndCosts = Lists.newArrayList();
+        if (!positions.isEmpty()) {
+            List<ProductWithQuantityAndCost> productsWithQuantitiesAndCosts = Lists.newArrayList();
 
-        for (Entity costsForProduct : result.getEntities()) {
-            Long product = (Long) costsForProduct.getField(PositionFields.PRODUCT);
-            BigDecimal quantity = costsForProduct.getDecimalField(PositionFields.QUANTITY);
-            BigDecimal cost = costsForProduct.getDecimalField(PositionFields.PRICE);
+            for (Entity position : positions) {
+                Long product = (Long) position.getField(PositionFields.PRODUCT);
+                BigDecimal quantity = position.getDecimalField(PositionFields.QUANTITY);
+                BigDecimal cost = position.getDecimalField(PositionFields.PRICE);
 
-            productsWithQuantitiesAndCosts.add(new ProductWithQuantityAndCost(product, quantity, cost));
+                productsWithQuantitiesAndCosts.add(new ProductWithQuantityAndCost(product, quantity, cost));
+            }
+
+            List<Entity> technologyInstOperProductInComps = costNormsForMaterialsService.updateCostsForProductInOrder(order,
+                    productsWithQuantitiesAndCosts);
+
+            order.setField(OrderFieldsCNFM.TECHNOLOGY_INST_OPER_PRODUCT_IN_COMPS, technologyInstOperProductInComps);
         }
-
-        List<Entity> updatedCosts = costNormsForMaterialsService.updateCostsForProductInOrder(order,
-                productsWithQuantitiesAndCosts);
-
-        order.setField(OrderFieldsCNFM.TECHNOLOGY_INST_OPER_PRODUCT_IN_COMPS, updatedCosts);
     }
 
     private DataDefinition getDocumentDD() {
