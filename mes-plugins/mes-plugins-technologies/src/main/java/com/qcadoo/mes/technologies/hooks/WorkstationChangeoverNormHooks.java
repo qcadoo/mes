@@ -9,6 +9,7 @@ import com.qcadoo.mes.technologies.constants.WorkstationChangeoverNormChangeover
 import com.qcadoo.mes.technologies.constants.WorkstationChangeoverNormFields;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.search.JoinType;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import org.apache.commons.lang3.StringUtils;
@@ -20,6 +21,10 @@ import java.util.Objects;
 
 @Service
 public class WorkstationChangeoverNormHooks {
+
+    private static final String L_DOT = ".";
+
+    private static final String L_ID = "id";
 
     private static final String L_DASH = "-";
 
@@ -82,20 +87,25 @@ public class WorkstationChangeoverNormHooks {
         SearchCriteriaBuilder searchCriteriaBuilder = workstationChangeoverNormDD.find();
 
         if (Objects.nonNull(workstationType)) {
-            searchCriteriaBuilder.add(SearchRestrictions.belongsTo(WorkstationChangeoverNormFields.WORKSTATION_TYPE, workstationType));
+            searchCriteriaBuilder.createAlias(WorkstationChangeoverNormFields.WORKSTATION_TYPE, WorkstationChangeoverNormFields.WORKSTATION_TYPE, JoinType.LEFT);
+            searchCriteriaBuilder.add(SearchRestrictions.eq(WorkstationChangeoverNormFields.WORKSTATION_TYPE + L_DOT + L_ID, workstationType.getId()));
         }
         if (Objects.nonNull(workstation)) {
-            searchCriteriaBuilder.add(SearchRestrictions.belongsTo(WorkstationChangeoverNormFields.WORKSTATION, workstation));
+            searchCriteriaBuilder.createAlias(WorkstationChangeoverNormFields.WORKSTATION, WorkstationChangeoverNormFields.WORKSTATION, JoinType.LEFT);
+            searchCriteriaBuilder.add(SearchRestrictions.eq(WorkstationChangeoverNormFields.WORKSTATION + L_DOT + L_ID, workstation.getId()));
         }
         if (Objects.nonNull(attribute)) {
-            searchCriteriaBuilder.add(SearchRestrictions.belongsTo(WorkstationChangeoverNormFields.ATTRIBUTE, attribute));
+            searchCriteriaBuilder.createAlias(WorkstationChangeoverNormFields.ATTRIBUTE, WorkstationChangeoverNormFields.ATTRIBUTE, JoinType.LEFT);
+            searchCriteriaBuilder.add(SearchRestrictions.eq(WorkstationChangeoverNormFields.ATTRIBUTE + L_DOT + L_ID, attribute.getId()));
         }
 
         searchCriteriaBuilder.add(SearchRestrictions.eq(WorkstationChangeoverNormFields.CHANGEOVER_TYPE, changeoverType));
 
         if (WorkstationChangeoverNormChangeoverType.BETWEEN_VALUES.getStringValue().equals(changeoverType)) {
-            searchCriteriaBuilder.add(SearchRestrictions.belongsTo(WorkstationChangeoverNormFields.FROM_ATTRIBUTE_VALUE, fromAttributeValue));
-            searchCriteriaBuilder.add(SearchRestrictions.belongsTo(WorkstationChangeoverNormFields.TO_ATTRIBUTE_VALUE, toAttributeValue));
+            searchCriteriaBuilder.createAlias(WorkstationChangeoverNormFields.FROM_ATTRIBUTE_VALUE, WorkstationChangeoverNormFields.FROM_ATTRIBUTE_VALUE, JoinType.LEFT);
+            searchCriteriaBuilder.add(SearchRestrictions.eq(WorkstationChangeoverNormFields.FROM_ATTRIBUTE_VALUE + L_DOT + L_ID, fromAttributeValue.getId()));
+            searchCriteriaBuilder.createAlias(WorkstationChangeoverNormFields.TO_ATTRIBUTE_VALUE, WorkstationChangeoverNormFields.TO_ATTRIBUTE_VALUE, JoinType.LEFT);
+            searchCriteriaBuilder.add(SearchRestrictions.eq(WorkstationChangeoverNormFields.TO_ATTRIBUTE_VALUE + L_DOT + L_ID, toAttributeValue.getId()));
         }
 
         if (Objects.nonNull(workstationChangeoverNormId)) {

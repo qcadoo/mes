@@ -613,9 +613,24 @@
                             class="com.qcadoo.mes.orders.listeners.ProductDetailsListenersO"
                             method="showOrdersWithProductPlanned"/>
 
+        <view:view-listener plugin="technologies" view="workstationChangeoverNormsList"
+                            component="grid" event="onSelect"
+                            class="com.qcadoo.view.api.listeners.RerenderListener"
+                            method="onChangeRerender"/>
+
         <view:view-hook plugin="basic" view="productDetails"
                         type="beforeRender"
                         class="com.qcadoo.mes.orders.hooks.ProductDetailsViewHooksO"
+                        method="updateRibbonState"/>
+
+        <view:view-hook plugin="technologies" view="workstationChangeoverNormDetails"
+                        type="beforeRender"
+                        class="com.qcadoo.mes.orders.hooks.WorkstationChangeoverNormDetailsHooksO"
+                        method="updateRibbonState"/>
+
+        <view:view-hook plugin="technologies" view="workstationChangeoverNormsList"
+                        type="beforeRender"
+                        class="com.qcadoo.mes.orders.hooks.WorkstationChangeoverNormsListHooksO"
                         method="updateRibbonState"/>
 
         <view:view-hook plugin="orders" view="ordersParameters"

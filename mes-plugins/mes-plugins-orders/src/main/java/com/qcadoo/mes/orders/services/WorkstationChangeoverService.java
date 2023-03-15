@@ -15,6 +15,7 @@ import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.JoinType;
 import com.qcadoo.model.api.search.SearchOrders;
+import com.qcadoo.model.api.search.SearchProjections;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +33,8 @@ public class WorkstationChangeoverService {
     private static final String L_DOT = ".";
 
     private static final String L_ID = "id";
+
+    private static final String L_COUNT = "count";
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
@@ -196,7 +199,7 @@ public class WorkstationChangeoverService {
             return Optional.ofNullable(getOperationalTaskDD().find()
                     .createAlias(OperationalTaskFields.WORKSTATION, OperationalTaskFields.WORKSTATION, JoinType.LEFT)
                     .add(SearchRestrictions.eq(OperationalTaskFields.WORKSTATION + L_DOT + L_ID, workstation.getId()))
-                    .add(SearchRestrictions.lt(OperationalTaskFields.FINISH_DATE, startDate))
+                    .add(SearchRestrictions.le(OperationalTaskFields.FINISH_DATE, startDate))
                     .addOrder(SearchOrders.desc(OperationalTaskFields.FINISH_DATE)).setMaxResults(1).uniqueResult());
         } else {
             return Optional.empty();
@@ -211,7 +214,7 @@ public class WorkstationChangeoverService {
             return Optional.ofNullable(getOperationalTaskDD().find()
                     .createAlias(OperationalTaskFields.WORKSTATION, OperationalTaskFields.WORKSTATION, JoinType.LEFT)
                     .add(SearchRestrictions.eq(OperationalTaskFields.WORKSTATION + L_DOT + L_ID, workstation.getId()))
-                    .add(SearchRestrictions.lt(OperationalTaskFields.FINISH_DATE, startDate))
+                    .add(SearchRestrictions.le(OperationalTaskFields.FINISH_DATE, startDate))
                     .add(SearchRestrictions.idNe(skipOperationalTask.getId()))
                     .addOrder(SearchOrders.desc(OperationalTaskFields.FINISH_DATE)).setMaxResults(1).uniqueResult());
         } else {
@@ -226,7 +229,19 @@ public class WorkstationChangeoverService {
         return getOperationalTaskDD().find()
                 .createAlias(OperationalTaskFields.WORKSTATION, OperationalTaskFields.WORKSTATION, JoinType.LEFT)
                 .add(SearchRestrictions.eq(OperationalTaskFields.WORKSTATION + L_DOT + L_ID, workstation.getId()))
-                .add(SearchRestrictions.lt(OperationalTaskFields.FINISH_DATE, startDate)).list().getEntities();
+                .add(SearchRestrictions.le(OperationalTaskFields.FINISH_DATE, startDate)).list().getEntities();
+    }
+
+    public boolean hasWorkstationChangeoverForOperationalTasks(final Entity workstationChangeoverNorm) {
+        Entity workstationChangeoverForOperationalTask = getWorkstationChangeoverForOperationalTaskDD().find()
+                .createAlias(WorkstationChangeoverForOperationalTaskFields.WORKSTATION_CHANGEOVER_NORM, WorkstationChangeoverForOperationalTaskFields.WORKSTATION_CHANGEOVER_NORM, JoinType.LEFT)
+                .add(SearchRestrictions.eq(WorkstationChangeoverForOperationalTaskFields.WORKSTATION_CHANGEOVER_NORM + L_DOT + L_ID, workstationChangeoverNorm.getId()))
+                .setProjection(SearchProjections.alias(SearchProjections.countDistinct(L_ID), L_COUNT))
+                .addOrder(SearchOrders.desc(L_COUNT)).setMaxResults(1).uniqueResult();
+
+        Long countValue = (Long) workstationChangeoverForOperationalTask.getField(L_COUNT);
+
+        return countValue > 0;
     }
 
     public List<Entity> getWorkstationChangeoverForOperationalTasksDtos(final Entity workstation) {
@@ -245,11 +260,11 @@ public class WorkstationChangeoverService {
         return dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_OPERATIONAL_TASK);
     }
 
-    private DataDefinition getWorkstationChangeoverForOperationalTaskDD() {
+    public DataDefinition getWorkstationChangeoverForOperationalTaskDD() {
         return dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_WORKSTATION_CHANGEOVER_FOR_OPERATIONAL_TASK);
     }
 
-    private DataDefinition getWorkstationChangeoverForOperationalTaskDtoDD() {
+    public DataDefinition getWorkstationChangeoverForOperationalTaskDtoDD() {
         return dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_WORKSTATION_CHANGEOVER_FOR_OPERATIONAL_TASK_DTO);
     }
 
