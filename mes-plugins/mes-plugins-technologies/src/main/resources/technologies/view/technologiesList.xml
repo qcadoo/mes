@@ -96,6 +96,9 @@
             <script>
                 <![CDATA[
 					var toggleRibbonItems = ["actions.delete"];
+
+					var fillQualityCard = #{window}.getRibbonItemOrNull("qualityCard.fillQualityCard");
+
 					var technologyConfiguratorButton = #{window}.getRibbonItemOrNull("action.technologyConfigurator");
                     technologyConfiguratorButton.enable("#{translate(technologies.menu.technology.technologyConfigurator.description)}");
 
@@ -129,6 +132,9 @@
 						getRibbonItem("status.checkTechnology").disable();
 						getRibbonItem("action.changeParameters").disable();
 						getRibbonItem("attachments.addAttachments").disable();
+						if(fillQualityCard) {
+						    fillQualityCard.disable();
+						}
 					}
 
 					function updateRibbon(selectedEntitiesArray) {
@@ -141,6 +147,10 @@
 						var isSynchronized = isSomeSynchronized(selectedEntitiesArray);
 						var allMaster = isAllMaster(selectedEntitiesArray);
 						var allNotMaster = isAllNotMaster(selectedEntitiesArray);
+
+                        if(fillQualityCard) {
+						    fillQualityCard.disable();
+						}
 
 						for (var elementKey in toggleRibbonItems) {
 							var ribbonItem = getRibbonItem(toggleRibbonItems[elementKey]);
@@ -209,6 +219,9 @@
 						checkState.confirmMessage = "#{translate(technologies.technologyDetails.window.ribbon.status.confirm.checked)}";
 
 						if (state == "01draft") {
+						    if(fillQualityCard) {
+						        fillQualityCard.enable();
+						    }
 							acceptState.enable();
 							cancelState.enable();
 							checkState.enable();
