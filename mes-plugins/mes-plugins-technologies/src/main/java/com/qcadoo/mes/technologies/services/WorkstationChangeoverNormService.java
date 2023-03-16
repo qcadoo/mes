@@ -92,11 +92,11 @@ public class WorkstationChangeoverNormService {
         }
     }
 
-    private DataDefinition getWorkstationChangeoverNormDD() {
+    public DataDefinition getWorkstationChangeoverNormDD() {
         return dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_WORKSTATION_CHANGEOVER_NORM);
     }
 
-    private DataDefinition getWorkstationChangeoverNormDtoDD() {
+    public DataDefinition getWorkstationChangeoverNormDtoDD() {
         return dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_WORKSTATION_CHANGEOVER_NORM_DTO);
     }
 

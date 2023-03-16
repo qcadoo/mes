@@ -35,6 +35,7 @@ import com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperationCompon
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.search.JoinType;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import org.apache.commons.lang3.StringUtils;
@@ -53,11 +54,15 @@ import static com.qcadoo.model.api.search.SearchProjections.rowCount;
 @Service
 public class OperationalTaskValidators {
 
+    private static final String L_DOT = ".";
+
+    private static final String L_ID = "id";
+
+    private static final String L_COUNT = "count";
+
     private static final String L_NAME_IS_BLANK_MESSAGE = "orders.operationalTask.error.nameIsBlank";
 
     private static final String L_WRONG_DATES_ORDER_MESSAGE = "orders.operationalTask.error.finishDateIsEarlier";
-
-    private static final String L_COUNT = "count";
 
     @Autowired
     private OperationalTasksService operationalTasksService;
@@ -68,7 +73,6 @@ public class OperationalTaskValidators {
     public boolean onValidate(final DataDefinition operationalTaskDD, final Entity operationalTask) {
         boolean isValid = hasName(operationalTaskDD, operationalTask);
         isValid = isValid && datesAreInCorrectOrder(operationalTaskDD, operationalTask);
-        isValid = isValid && datesAreCorrect(operationalTaskDD, operationalTask);
         isValid = isValid && checkIfOrderHasTechnology(operationalTaskDD, operationalTask);
         isValid = isValid && checkIfFieldSet(operationalTaskDD, operationalTask);
         isValid = isValid && checkIfAlreadyExists(operationalTaskDD, operationalTask);
@@ -108,7 +112,7 @@ public class OperationalTaskValidators {
         return true;
     }
 
-    private boolean datesAreCorrect(final DataDefinition operationalTaskDD, final Entity operationalTask) {
+    public boolean datesAreCorrect(final DataDefinition operationalTaskDD, final Entity operationalTask) {
         Entity technologyOperationComponent = operationalTask
                 .getBelongsToField(OperationalTaskFields.TECHNOLOGY_OPERATION_COMPONENT);
 
@@ -219,8 +223,10 @@ public class OperationalTaskValidators {
             Entity technologyOperationComponent = operationalTask.getBelongsToField(OperationalTaskFields.TECHNOLOGY_OPERATION_COMPONENT);
 
             SearchCriteriaBuilder searchCriteriaBuilder = operationalTaskDD.find()
-                    .add(SearchRestrictions.belongsTo(OperationalTaskFields.ORDER, order))
-                    .add(SearchRestrictions.belongsTo(OperationalTaskFields.TECHNOLOGY_OPERATION_COMPONENT, technologyOperationComponent))
+                    .createAlias(OperationalTaskFields.ORDER, OperationalTaskFields.ORDER, JoinType.LEFT)
+                    .createAlias(OperationalTaskFields.TECHNOLOGY_OPERATION_COMPONENT, OperationalTaskFields.TECHNOLOGY_OPERATION_COMPONENT, JoinType.LEFT)
+                    .add(SearchRestrictions.eq(OperationalTaskFields.ORDER + L_DOT + L_ID, order.getId()))
+                    .add(SearchRestrictions.eq(OperationalTaskFields.TECHNOLOGY_OPERATION_COMPONENT + L_DOT + L_ID, technologyOperationComponent.getId()))
                     .add(SearchRestrictions.in(OperationalTaskFields.STATE,
                             Lists.newArrayList(OperationalTaskStateStringValues.PENDING, OperationalTaskStateStringValues.STARTED,
                                     OperationalTaskStateStringValues.FINISHED)));
