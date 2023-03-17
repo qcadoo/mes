@@ -33,40 +33,6 @@
 
         <ribbon>
             <template name="standardFormTemplate"/>
-            <group name="status">
-                <smallButton name="approveSchedule" icon="acceptIcon16.png"
-                             state="disabled">
-                    <script>
-                        <![CDATA[
-					        this.addOnChangeListener({
-						        onClick: function() {
-							        if(window.canClose()) {
-							            if (window.confirm("#{translate(orders.scheduleDetails.window.ribbon.status.approveSchedule.confirm)}")) {
-								            #{form}.performEvent('changeState', ['02approved']);
-								        }
-							        }
-						        }
-					        });
-				        ]]>
-                    </script>
-                </smallButton>
-                <smallButton name="rejectSchedule" icon="deleteIcon16.png"
-                             state="disabled">
-                    <script>
-                        <![CDATA[
-					        this.addOnChangeListener({
-						        onClick: function() {
-							        if(window.canClose()) {
-							            if (window.confirm("#{translate(orders.scheduleDetails.window.ribbon.status.rejectSchedule.confirm)}")) {
-								            #{form}.performEvent('changeState', ['03rejected']);
-								        }
-							        }
-						        }
-					        });
-				        ]]>
-                    </script>
-                </smallButton>
-            </group>
         </ribbon>
 
         <windowTab name="mainTab">
@@ -212,13 +178,6 @@
                 <option type="header" value="true"/>
                 <option type="expression"
                         value="#number + ', ' + '@orders.schedule.state.value.' + #state"/>
-
-                <listener event="assignWorkersToOperations"
-                          class="com.qcadoo.mes.orders.listeners.ScheduleDetailsListeners"
-                          method="assignWorkersToOperations"/>
-                <listener event="changeState"
-                          class="com.qcadoo.mes.orders.listeners.ScheduleDetailsListeners"
-                          method="changeState"/>
             </component>
         </windowTab>
 

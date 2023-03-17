@@ -38,15 +38,24 @@
         <string name="description">
             <validatesLength max="2048"/>
         </string>
+        <integer name="workstation_id"/>
         <string name="workstationNumber"/>
 
+        <integer name="currentOperationalTask_id"/>
         <string name="currentOperationalTaskNumber"/>
         <string name="currentOperationalTaskName"/>
         <string name="currentOperationalTaskOrderNumber"/>
         <string name="currentOperationalTaskOrderProductNumber"/>
 
+        <integer name="previousOperationalTask_id"/>
+        <string name="previousOperationalTaskNumber"/>
+        <string name="previousOperationalTaskName"/>
+        <string name="previousOperationalTaskOrderNumber"/>
+        <string name="previousOperationalTaskOrderProductNumber"/>
+
         <enum name="changeoverType" values="01basedOnNorm,02own"
               default="01basedOnNorm" required="true"/>
+        <integer name="attribute_id"/>
         <string name="attributeNumber"/>
         <string name="fromAttributeValueValue"/>
         <string name="toAttributeValueValue"/>

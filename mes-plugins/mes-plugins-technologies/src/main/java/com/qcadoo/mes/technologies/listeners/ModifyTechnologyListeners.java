@@ -174,7 +174,15 @@ public class ModifyTechnologyListeners {
                     copyTechnology);
             Entity tech = copyTechnology.getDataDefinition().get(copyTechnology.getId());
             tech.setField(TechnologyFields.MASTER, Boolean.TRUE);
-            tech.getDataDefinition().save(tech);
+            Entity saved = tech.getDataDefinition().save(tech);
+
+            if(saved.isValid()) {
+                technologyStateChangeViewClient.changeState(new ViewContextHolder(view, state),
+                        TechnologyStateStringValues.OUTDATED, technology);
+            } else {
+                throw new IllegalStateException("There was a problem creating the technology");
+            }
+
             modifyTechnologyResult.addCreatedTechnology(tech.getStringField(TechnologyFields.NUMBER));
 
         } else {

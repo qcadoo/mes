@@ -3,26 +3,18 @@ package com.qcadoo.mes.orders.hooks;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.basic.ParameterService;
-import com.qcadoo.mes.basic.ShiftsService;
 import com.qcadoo.mes.newstates.StateExecutorService;
-import com.qcadoo.mes.operationTimeCalculations.OperationWorkTime;
-import com.qcadoo.mes.operationTimeCalculations.OperationWorkTimeService;
 import com.qcadoo.mes.orders.OperationalTasksService;
-import com.qcadoo.mes.orders.WorkstationChangeoverService;
 import com.qcadoo.mes.orders.constants.OperationalTaskFields;
 import com.qcadoo.mes.orders.constants.OrderFields;
+import com.qcadoo.mes.orders.constants.WorkstationChangeoverForOperationalTaskChangeoverType;
 import com.qcadoo.mes.orders.constants.WorkstationChangeoverForOperationalTaskFields;
+import com.qcadoo.mes.orders.services.WorkstationChangeoverService;
 import com.qcadoo.mes.orders.states.OperationalTasksServiceMarker;
 import com.qcadoo.mes.orders.states.constants.OperationalTaskStateStringValues;
-import com.qcadoo.mes.productionLines.constants.WorkstationFieldsPL;
-import com.qcadoo.mes.technologies.ProductQuantitiesService;
+import com.qcadoo.mes.orders.validators.OperationalTaskValidators;
 import com.qcadoo.mes.technologies.constants.OperationFields;
 import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
-import com.qcadoo.mes.technologies.dto.ProductQuantitiesHolder;
-import com.qcadoo.mes.timeNormsForOperations.NormService;
-import com.qcadoo.mes.timeNormsForOperations.constants.TechOperCompWorkstationTimeFields;
-import com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperationComponentFieldsTNFO;
-import com.qcadoo.model.api.BigDecimalUtils;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 import org.apache.commons.lang3.StringUtils;
@@ -31,8 +23,8 @@ import org.joda.time.Seconds;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
 import java.util.*;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 @Service
@@ -48,16 +40,7 @@ public class OperationalTaskHooks {
     private OperationalTasksService operationalTasksService;
 
     @Autowired
-    private OperationWorkTimeService operationWorkTimeService;
-
-    @Autowired
-    private ProductQuantitiesService productQuantitiesService;
-
-    @Autowired
-    private ShiftsService shiftsService;
-
-    @Autowired
-    private NormService normService;
+    private OperationalTaskValidators operationalTaskValidators;
 
     @Autowired
     private WorkstationChangeoverService workstationChangeoverService;
@@ -70,71 +53,18 @@ public class OperationalTaskHooks {
         setInitialState(operationalTask);
     }
 
+    public void setInitialState(final Entity operationalTask) {
+        stateExecutorService.buildInitial(OperationalTasksServiceMarker.class, operationalTask,
+                OperationalTaskStateStringValues.PENDING);
+    }
+
     public void onSave(final DataDefinition operationalTaskDD, final Entity operationalTask) {
         fillNameAndDescription(operationalTask);
+        setWorkstationChangeoverForOperationalTasks(operationalTask);
+
+        operationalTaskValidators.datesAreCorrect(operationalTaskDD, operationalTask);
+
         changeDateInOrder(operationalTask);
-        setStaff(operationalTaskDD, operationalTask);
-        setWorkstationChangeoverForOperationalTasks(operationalTaskDD, operationalTask);
-    }
-
-    private void updateFinishDate(final Entity operationalTask, final Entity technologyOperationComponent, final Integer actualStaff, final Entity operationalTaskDB) {
-        if (!Objects.isNull(technologyOperationComponent) && technologyOperationComponent
-                .getBooleanField(TechnologyOperationComponentFieldsTNFO.TJ_DECREASES_FOR_ENLARGED_STAFF) &&
-                (Objects.isNull(operationalTask.getId()) && !actualStaff.equals(technologyOperationComponent.getIntegerField(TechnologyOperationComponentFieldsTNFO.MIN_STAFF))
-                        || Objects.nonNull(operationalTaskDB) && actualStaff != operationalTaskDB.getIntegerField(OperationalTaskFields.ACTUAL_STAFF).intValue())) {
-            operationalTask.setField(OperationalTaskFields.FINISH_DATE,
-                    getFinishDate(operationalTask, technologyOperationComponent));
-        }
-    }
-
-    private Date getFinishDate(final Entity operationalTask, final Entity technologyOperationComponent) {
-        Entity order = operationalTask.getBelongsToField(OperationalTaskFields.ORDER);
-        Entity workstation = operationalTask.getBelongsToField(OperationalTaskFields.WORKSTATION);
-        Date startDate = operationalTask.getDateField(OperationalTaskFields.START_DATE);
-        Entity parameter = parameterService.getParameter();
-        boolean includeTpz = parameter.getBooleanField("includeTpzSG");
-        Entity technology = technologyOperationComponent.getBelongsToField(TechnologyOperationComponentFields.TECHNOLOGY);
-
-        ProductQuantitiesHolder productQuantitiesAndOperationRuns = productQuantitiesService.getProductComponentQuantities(technology, order.getDecimalField(OrderFields.PLANNED_QUANTITY));
-
-        Optional<Entity> techOperCompWorkstationTime = normService.getTechOperCompWorkstationTime(technologyOperationComponent, workstation);
-        BigDecimal staffFactor = normService.getStaffFactor(technologyOperationComponent, operationalTask.getIntegerField(OperationalTaskFields.ACTUAL_STAFF));
-
-        Integer machineWorkTime;
-        Integer additionalTime;
-
-        if (techOperCompWorkstationTime.isPresent()) {
-            OperationWorkTime operationWorkTime = operationWorkTimeService.estimateTechOperationWorkTimeForWorkstation(
-                    technologyOperationComponent,
-                    BigDecimalUtils.convertNullToZero(productQuantitiesAndOperationRuns.getOperationRuns().get(technologyOperationComponent.getId())), includeTpz, false,
-                    techOperCompWorkstationTime.get(), staffFactor);
-
-            machineWorkTime = operationWorkTime.getMachineWorkTime();
-            additionalTime = techOperCompWorkstationTime.get()
-                    .getIntegerField(TechOperCompWorkstationTimeFields.TIME_NEXT_OPERATION);
-        } else {
-            OperationWorkTime operationWorkTime = operationWorkTimeService.estimateOperationWorkTime(null,
-                    technologyOperationComponent,
-                    BigDecimalUtils.convertNullToZero(productQuantitiesAndOperationRuns.getOperationRuns().get(technologyOperationComponent.getId())), includeTpz, false,
-                    false, staffFactor);
-
-            machineWorkTime = operationWorkTime.getMachineWorkTime();
-            additionalTime = technologyOperationComponent.getIntegerField(TechnologyOperationComponentFieldsTNFO.TIME_NEXT_OPERATION);
-        }
-
-        Entity productionLine = null;
-
-        if (Objects.nonNull(workstation)) {
-            productionLine = workstation.getBelongsToField(WorkstationFieldsPL.PRODUCTION_LINE);
-        }
-
-        Date finishDate = shiftsService.findDateToForProductionLine(startDate, machineWorkTime, productionLine);
-
-        if (parameter.getBooleanField("includeAdditionalTimeSG")) {
-            finishDate = Date.from(finishDate.toInstant().plusSeconds(additionalTime));
-        }
-
-        return finishDate;
     }
 
     public void fillNameAndDescription(final Entity operationalTask) {
@@ -225,87 +155,126 @@ public class OperationalTaskHooks {
         }
     }
 
-    public void setStaff(final DataDefinition operationalTaskDD, final Entity operationalTask) {
-        Entity technologyOperationComponent = operationalTask
-                .getBelongsToField(OperationalTaskFields.TECHNOLOGY_OPERATION_COMPONENT);
-
-        int optimalStaff = getOptimalStaff(technologyOperationComponent);
-
-        Integer actualStaff = operationalTask.getIntegerField(OperationalTaskFields.ACTUAL_STAFF);
-
-        if (Objects.isNull(actualStaff)) {
-            actualStaff = optimalStaff;
-            operationalTask.setField(OperationalTaskFields.ACTUAL_STAFF, actualStaff);
-        }
-
-        List<Entity> workers = operationalTask.getManyToManyField(OperationalTaskFields.WORKERS);
-
-        Entity staff = operationalTask.getBelongsToField(OperationalTaskFields.STAFF);
-        Entity operationalTaskDB = null;
-
-        if (Objects.nonNull(operationalTask.getId())) {
-            operationalTaskDB = operationalTaskDD.get(operationalTask.getId());
-        }
-
-        if (workers.size() > 1 || workers.isEmpty() && Objects.nonNull(operationalTaskDB)
-                && !operationalTaskDB.getManyToManyField(OperationalTaskFields.WORKERS).isEmpty()) {
-            operationalTask.setField(OperationalTaskFields.STAFF, null);
-        } else if (Objects.nonNull(staff) && workers.size() <= 1) {
-            operationalTask.setField(OperationalTaskFields.WORKERS, Collections.singletonList(staff));
-        } else if (Objects.isNull(staff) && workers.size() == 1) {
-            if (Objects.nonNull(operationalTaskDB) && operationalTaskDB.getManyToManyField(OperationalTaskFields.WORKERS).size() != 1) {
-                operationalTask.setField(OperationalTaskFields.STAFF, workers.get(0));
-            } else {
-                operationalTask.setField(OperationalTaskFields.WORKERS, Collections.emptyList());
-            }
-        }
-
-        updateFinishDate(operationalTask, technologyOperationComponent, actualStaff, operationalTaskDB);
-
-        if (actualStaff != operationalTask.getManyToManyField(OperationalTaskFields.WORKERS).size()) {
-            operationalTask.addGlobalMessage(
-                    "orders.operationalTask.error.workersQuantityDifferentThanActualStaff");
-        }
-    }
-
-    private int getOptimalStaff(final Entity technologyOperationComponent) {
-        if (!Objects.isNull(technologyOperationComponent)) {
-            return technologyOperationComponent.getIntegerField(TechnologyOperationComponentFieldsTNFO.OPTIMAL_STAFF);
-        } else {
-            return 1;
-        }
-    }
-
-    private void setWorkstationChangeoverForOperationalTasks(final DataDefinition operationalTaskDD, final Entity operationalTask) {
+    private void setWorkstationChangeoverForOperationalTasks(final Entity operationalTask) {
+        Long operationalTaskId = operationalTask.getId();
+        boolean shouldSkip = operationalTask.getBooleanField(OperationalTaskFields.SHOULD_SKIP);
         Entity workstation = operationalTask.getBelongsToField(OperationalTaskFields.WORKSTATION);
         Date startDate = operationalTask.getDateField(OperationalTaskFields.START_DATE);
 
         if (Objects.isNull(workstation) || Objects.isNull(startDate)) {
-            List<Entity> currentWorkstationChangeoverForOperationalTasks = operationalTask.getHasManyField(OperationalTaskFields.CURRENT_WORKSTATION_CHANGEOVER_FOR_OPERATIONAL_TASKS);
-
-            currentWorkstationChangeoverForOperationalTasks.forEach(workstationChangeoverForOperationalTask ->
-                    workstationChangeoverForOperationalTask.getDataDefinition().delete(workstationChangeoverForOperationalTask.getId()));
+            deleteWorkstationChangeoverForOperationalTasks(operationalTask);
+            setPreviousWorkstationChangeoverForOperationalTasks(operationalTask, true);
         } else {
-            Long operationalTaskId = operationalTask.getId();
-
-            if (Objects.nonNull(operationalTaskId)) {
-                Entity operationalTaskFromDB = operationalTaskDD.get(operationalTaskId);
-                Entity workstationFromDB = operationalTaskFromDB.getBelongsToField(OperationalTaskFields.WORKSTATION);
-                Date startDateFromDB = operationalTaskFromDB.getDateField(OperationalTaskFields.START_DATE);
-
-                if (Objects.isNull(workstationFromDB) || !workstation.getId().equals(workstationFromDB.getId())
-                        || Objects.isNull(startDateFromDB) || !startDate.equals(startDateFromDB)) {
-                    setWorkstationChangeoverForOperationalTasksAndUpdateDates(operationalTask);
-                }
-            } else {
-                setWorkstationChangeoverForOperationalTasksAndUpdateDates(operationalTask);
+            if (!shouldSkip && (Objects.isNull(operationalTaskId) || checkIfOperationalTaskDataChanged(operationalTask, workstation, startDate))) {
+                setCurrentWorkstationChangeoverForOperationalTasks(operationalTask);
+                setPreviousWorkstationChangeoverForOperationalTasks(operationalTask, false);
             }
         }
     }
 
-    private void setWorkstationChangeoverForOperationalTasksAndUpdateDates(final Entity operationalTask) {
+    private boolean checkIfOperationalTaskDataChanged(final Entity operationalTask, final Entity workstation, final Date startDate) {
+        Entity operationalTaskFromDB = operationalTask.getDataDefinition().get(operationalTask.getId());
+        Entity workstationFromDB = operationalTaskFromDB.getBelongsToField(OperationalTaskFields.WORKSTATION);
+        Date startDateFromDB = operationalTaskFromDB.getDateField(OperationalTaskFields.START_DATE);
+
+        return Objects.isNull(workstationFromDB) || !workstation.getId().equals(workstationFromDB.getId())
+                || Objects.isNull(startDateFromDB) || !startDate.equals(startDateFromDB);
+    }
+
+    private void deleteWorkstationChangeoverForOperationalTasks(final Entity operationalTask) {
+        List<Entity> currentWorkstationChangeoverForOperationalTasks = operationalTask.getHasManyField(OperationalTaskFields.CURRENT_WORKSTATION_CHANGEOVER_FOR_OPERATIONAL_TASKS);
+
+        currentWorkstationChangeoverForOperationalTasks.forEach(workstationChangeoverForOperationalTask ->
+                workstationChangeoverForOperationalTask.getDataDefinition().delete(workstationChangeoverForOperationalTask.getId()));
+
+        List<Entity> previousWorkstationChangeoverForOperationalTasks = operationalTask.getHasManyField(OperationalTaskFields.PREVIOUS_WORKSTATION_CHANGEOVER_FOR_OPERATIONAL_TASKS);
+
+        previousWorkstationChangeoverForOperationalTasks.stream().filter(filterByChangeoverTypeOwn()).forEach(workstationChangeoverForOperationalTask ->
+                workstationChangeoverForOperationalTask.getDataDefinition().delete(workstationChangeoverForOperationalTask.getId()));
+    }
+
+    private Predicate<Entity> filterByChangeoverTypeOwn() {
+        return workstationChangeoverForOperationalTask -> WorkstationChangeoverForOperationalTaskChangeoverType.OWN.getStringValue().equals(workstationChangeoverForOperationalTask.getStringField(WorkstationChangeoverForOperationalTaskFields.CHANGEOVER_TYPE));
+    }
+
+    private void setCurrentWorkstationChangeoverForOperationalTasks(final Entity operationalTask) {
         List<Entity> workstationChangeoverForOperationalTasks = workstationChangeoverService.findWorkstationChangeoverForOperationalTasks(operationalTask);
 
+        setOperationalTaskDates(operationalTask, workstationChangeoverForOperationalTasks);
+
+        operationalTask.setField(OperationalTaskFields.CURRENT_WORKSTATION_CHANGEOVER_FOR_OPERATIONAL_TASKS, workstationChangeoverForOperationalTasks);
+    }
+
+    private void setPreviousWorkstationChangeoverForOperationalTasks(final Entity operationalTask, final boolean shouldSkip) {
+        List<Entity> previousWorkstationChangeoverForOperationalTasks = operationalTask.getHasManyField(OperationalTaskFields.PREVIOUS_WORKSTATION_CHANGEOVER_FOR_OPERATIONAL_TASKS);
+
+        previousWorkstationChangeoverForOperationalTasks.stream().filter(filterByChangeoverTypeBasedOnNorm()).forEach(workstationChangeoverForOperationalTask -> {
+            Entity currentOperationalTask = workstationChangeoverForOperationalTask.getBelongsToField(WorkstationChangeoverForOperationalTaskFields.CURRENT_OPERATIONAL_TASK);
+
+            currentOperationalTask.setField(OperationalTaskFields.SHOULD_SKIP, true);
+
+            setWorkstationChangeoverForOperationalTasksAndUpdateDates(currentOperationalTask, operationalTask, shouldSkip);
+        });
+    }
+
+    private Predicate<Entity> filterByChangeoverTypeBasedOnNorm() {
+        return workstationChangeoverForOperationalTask -> WorkstationChangeoverForOperationalTaskChangeoverType.BASED_ON_NORM.getStringValue().equals(workstationChangeoverForOperationalTask.getStringField(WorkstationChangeoverForOperationalTaskFields.CHANGEOVER_TYPE));
+    }
+
+    private void setWorkstationChangeoverForOperationalTasksAndUpdateDates(final Entity operationalTask, final Entity skipOperationalTask, final boolean shouldSkip) {
+        if (Objects.nonNull(operationalTask) && Objects.nonNull(skipOperationalTask)) {
+            Optional<Entity> mayBePreviousOperationalTask;
+
+            if (shouldSkip) {
+                mayBePreviousOperationalTask = workstationChangeoverService.findPreviousOperationalTask(operationalTask, skipOperationalTask);
+            } else {
+                if (checkIfWorkstationsAreSame(operationalTask, skipOperationalTask)) {
+                    List<Entity> previousOperationalTasks = filterOperationalTasks(workstationChangeoverService.getPreviousOperationalTasks(operationalTask), skipOperationalTask);
+
+                    if (checkIfDateIfBefore(operationalTask, skipOperationalTask)) {
+                        previousOperationalTasks.add(skipOperationalTask);
+                    }
+
+                    mayBePreviousOperationalTask = previousOperationalTasks.stream().max(Comparator.comparing(previousOperationalTask -> previousOperationalTask.getDateField(OperationalTaskFields.FINISH_DATE)));
+                } else {
+                    mayBePreviousOperationalTask = workstationChangeoverService.findPreviousOperationalTask(operationalTask, skipOperationalTask);
+                }
+            }
+
+            if (mayBePreviousOperationalTask.isPresent()) {
+                Entity previousOperationalTask = mayBePreviousOperationalTask.get();
+
+                List<Entity> workstationChangeoverForOperationalTasks = workstationChangeoverService.findWorkstationChangeoverForOperationalTasks(operationalTask, previousOperationalTask);
+
+                setOperationalTaskDates(operationalTask, workstationChangeoverForOperationalTasks);
+
+                operationalTask.setField(OperationalTaskFields.CURRENT_WORKSTATION_CHANGEOVER_FOR_OPERATIONAL_TASKS, workstationChangeoverForOperationalTasks);
+
+                operationalTask.getDataDefinition().save(operationalTask);
+            }
+        }
+    }
+
+    private List<Entity> filterOperationalTasks(final List<Entity> operationalTasks, final Entity skipOperationalTask) {
+        return operationalTasks.stream().filter(operationalTask -> !operationalTask.getId().equals(skipOperationalTask.getId())).collect(Collectors.toList());
+    }
+
+    private boolean checkIfWorkstationsAreSame(final Entity operationalTask, final Entity skipOperationalTask) {
+        Entity operationalTaskWorkstation = operationalTask.getBelongsToField(OperationalTaskFields.WORKSTATION);
+        Entity skipOperationalTaskWorkstation = skipOperationalTask.getBelongsToField(OperationalTaskFields.WORKSTATION);
+
+        return Objects.nonNull(operationalTaskWorkstation) && Objects.nonNull(skipOperationalTaskWorkstation) &&
+                operationalTaskWorkstation.getId().equals(skipOperationalTaskWorkstation.getId());
+    }
+
+    private boolean checkIfDateIfBefore(final Entity operationalTask, final Entity skipOperationalTask) {
+        Date operationalTaskStartDate = operationalTask.getDateField(OperationalTaskFields.START_DATE);
+        Date skipOperationalFinishDate = skipOperationalTask.getDateField(OperationalTaskFields.FINISH_DATE);
+
+        return skipOperationalFinishDate.before(operationalTaskStartDate);
+    }
+
+    private void setOperationalTaskDates(final Entity operationalTask, final List<Entity> workstationChangeoverForOperationalTasks) {
         if (!workstationChangeoverForOperationalTasks.isEmpty()) {
             Optional<Date> mayBeMaxFinishDate = getWorkstationChangeoverForOperationalTasksMaxFinishDate(workstationChangeoverForOperationalTasks);
 
@@ -322,8 +291,6 @@ public class OperationalTaskHooks {
                 operationalTask.setField(OperationalTaskFields.FINISH_DATE, finishDate);
             }
         }
-
-        operationalTask.setField(OperationalTaskFields.CURRENT_WORKSTATION_CHANGEOVER_FOR_OPERATIONAL_TASKS, workstationChangeoverForOperationalTasks);
     }
 
     private Optional<Date> getWorkstationChangeoverForOperationalTasksMaxFinishDate(final List<Entity> workstationChangeoverForOperationalTasks) {
@@ -332,9 +299,13 @@ public class OperationalTaskHooks {
                 .max(Date::compareTo);
     }
 
-    public void setInitialState(final Entity operationalTask) {
-        stateExecutorService.buildInitial(OperationalTasksServiceMarker.class, operationalTask,
-                OperationalTaskStateStringValues.PENDING);
+    public void onDelete(final DataDefinition operationalTaskDD, final Entity operationalTask) {
+        Entity workstation = operationalTask.getBelongsToField(OperationalTaskFields.WORKSTATION);
+        Date startDate = operationalTask.getDateField(OperationalTaskFields.START_DATE);
+
+        if (Objects.nonNull(workstation) && Objects.nonNull(startDate)) {
+            setPreviousWorkstationChangeoverForOperationalTasks(operationalTask, true);
+        }
     }
 
 }

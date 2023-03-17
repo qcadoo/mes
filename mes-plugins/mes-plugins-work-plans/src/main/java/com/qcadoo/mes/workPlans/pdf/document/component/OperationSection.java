@@ -28,15 +28,24 @@ import com.lowagie.text.Document;
 import com.lowagie.text.DocumentException;
 import com.lowagie.text.pdf.PdfWriter;
 import com.qcadoo.mes.basic.ParameterService;
+import com.qcadoo.mes.materialFlowResources.constants.PositionFields;
+import com.qcadoo.mes.materialFlowResources.constants.StorageLocationFields;
+import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
 import com.qcadoo.mes.workPlans.constants.ParameterFieldsWP;
 import com.qcadoo.mes.workPlans.pdf.document.operation.grouping.container.GroupingContainer;
 import com.qcadoo.mes.workPlans.pdf.document.operation.grouping.holder.OrderOperationComponent;
 import com.qcadoo.model.api.Entity;
 
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.List;
 import java.util.Locale;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import static java.util.Comparator.nullsFirst;
+import static java.util.Comparator.reverseOrder;
 
 @Component
 public class OperationSection {
@@ -66,8 +75,11 @@ public class OperationSection {
 
         for (String title : titleToOperationComponent.keySet()) {
             operationSectionHeader.print(document, title);
+            List<OrderOperationComponent> orderOperationComponents = groupingContainer.getTitleToOperationComponent().get(title);
 
-            for (OrderOperationComponent orderOperationComponent : groupingContainer.getTitleToOperationComponent().get(title)) {
+            orderOperationComponents.sort(Comparator.comparing(o -> o.getOperationComponent().getStringField(TechnologyOperationComponentFields.NODE_NUMBER), nullsFirst(reverseOrder())));
+
+            for (OrderOperationComponent orderOperationComponent : orderOperationComponents) {
                 operationOrderSection.print(workPlan, pdfWriter, groupingContainer, orderOperationComponent, document, locale);
                 if (generateEachOnSeparatePage()) {
                     document.newPage();

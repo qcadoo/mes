@@ -81,8 +81,9 @@ public final class TechnologyApiController {
                                                     @RequestParam(value = "offset") int offset, @RequestParam(value = "sort", required = false) String sort,
                                                     @RequestParam(value = "order", required = false) String order,
                                                     @RequestParam(value = "search", required = false) String search,
-                                                    @RequestParam(value = "tocId", required = false) Long tocId) {
-        return dataProvider.getWorkstations(limit, offset, sort, order, search, tocId);
+                                                    @RequestParam(value = "tocId", required = false) Long tocId,
+                                                    @RequestParam(value = "operation", required = false) Long operation) {
+        return dataProvider.getWorkstations(limit, offset, sort, order, search, tocId, operation);
     }
 
     @ResponseBody

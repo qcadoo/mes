@@ -22,6 +22,7 @@ import com.qcadoo.mes.technologies.controller.dataProvider.MaterialDto;
 import com.qcadoo.mes.technologies.states.aop.TechnologyStateChangeAspect;
 import com.qcadoo.mes.technologies.states.constants.TechnologyState;
 import com.qcadoo.mes.technologies.states.constants.TechnologyStateStringValues;
+import com.qcadoo.mes.technologies.tree.builder.api.TechnologyOperationComponent;
 import com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperationComponentFieldsTNFO;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
@@ -119,7 +120,7 @@ public class TechnologyCreationService {
         technology.setField(TechnologyFields.PRODUCT, product);
         technology.setField(TechnologyFields.EXTERNAL_SYNCHRONIZED, true);
         technology.setField(L_RANGE, range);
-
+        technology.setField(TechnologyFields.DESCRIPTION, technologyCreationRequest.getDescription());
         technology.setField("typeOfProductionRecording", parameter.getStringField("typeOfProductionRecording"));
 
         technology = technology.getDataDefinition().save(technology);

@@ -318,6 +318,12 @@
                     </script>
                 </bigButton>
             </group>
+            <group name="split">
+                <bigButton name="splitOrdersParts" icon="genealogyIcon24.png"
+                           action="#{form}.fireEvent(splitOrdersParts)"/>
+                <bigButton name="splitOrders" icon="genealogyIcon24.png"
+                           action="#{form}.fireEvent(splitOrders)"/>
+            </group>
         </ribbon>
 
         <windowTab name="mainTab">
@@ -331,6 +337,8 @@
                         var acceptOrder = #{window}.getRibbonItemOrNull("status.acceptOrder");
                         var declineOrder = #{window}.getRibbonItemOrNull("status.declineOrder");
                         var interruptOrder = #{window}.getRibbonItemOrNull("status.interruptOrder");
+                        var splitOrdersParts = #{window}.getRibbonItemOrNull("split.splitOrdersParts");
+					    var splitOrders = #{window}.getRibbonItemOrNull("split.splitOrders");
 
                         this.addOnChangeListener({
                             onSetValue: function(value) {
@@ -354,7 +362,13 @@
                                 if (!state) {
                                     return;
                                 }
+
+                                splitOrdersParts.disable("#{translate(orders.orders.ribbon.message.splitOrdersParts)}");
+								splitOrders.disable("#{translate(orders.orders.ribbon.message.splitOrders)}");
+
                                 if (state == "01pending") {
+                                    splitOrdersParts.enable("#{translate(orders.orders.ribbon.message.splitOrdersParts)}");
+								    splitOrders.enable("#{translate(orders.orders.ribbon.message.splitOrders)}");
                                     acceptOrder.enable();
                                     acceptOrder.state = "accept";
                                     acceptOrder.setLabel("#{translate(orders.orderDetails.window.ribbon.status.acceptOrder)}");
@@ -419,6 +433,8 @@
                                     acceptOrder.disable();
                                     declineOrder.disable();
                                     interruptOrder.disable();
+                                    splitOrdersParts.disable("#{translate(orders.orders.ribbon.message.splitOrdersParts)}");
+								    splitOrders.disable("#{translate(orders.orders.ribbon.message.splitOrders)}");
                                 }
                             }
                         });
@@ -703,6 +719,15 @@
                           class="com.qcadoo.mes.orders.listeners.OrderDetailsListeners"/>
                 <listener event="downloadAttachment" method="downloadAttachment"
                           class="com.qcadoo.mes.basic.listeners.AttachmentsListeners"/>
+
+                <listener event="splitOrdersParts"
+                          class="com.qcadoo.mes.orders.listeners.OrderDetailsListeners"
+                          method="splitOrdersParts"/>
+
+                <listener event="splitOrders"
+                          class="com.qcadoo.mes.orders.listeners.OrderDetailsListeners"
+                          method="splitOrders"/>
+
             </component>
             <component type="input" name="oldTechnologyId" reference="oldTechnologyId" defaultVisible="false"/>
         </windowTab>

@@ -1,14 +1,5 @@
 package com.qcadoo.mes.orders.controllers.dataProvider;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.BeanPropertyRowMapper;
-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
-import org.springframework.stereotype.Service;
-
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.qcadoo.mes.basic.ParameterService;
@@ -22,6 +13,14 @@ import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.security.api.SecurityService;
 import com.qcadoo.security.constants.QcadooSecurityConstants;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 @Service
 public class DashboardKanbanDataProvider {
@@ -134,10 +133,12 @@ public class DashboardKanbanDataProvider {
         query += dashboardOrderSorting;
 
         if (L_START_DATE.equals(dashboardOrderSorting)) {
-            query += " DESC";
+            query += " DESC ";
         } else {
-            query += " ASC";
+            query += " ASC ";
         }
+
+        query += "LIMIT 50";
 
         return query;
     }
@@ -228,7 +229,8 @@ public class DashboardKanbanDataProvider {
 
         query += "AND date_trunc('day', operationaltaskdto.startdate) <= current_date AND current_date <= date_trunc('day', operationaltaskdto.finishdate) ";
         query += additionalRestrictions;
-        query += "ORDER BY operationaltaskdto.workstationnumber, operationaltaskdto.startdate";
+        query += "ORDER BY operationaltaskdto.workstationnumber, operationaltaskdto.startdate ";
+        query += "LIMIT 50";
 
         return query;
     }

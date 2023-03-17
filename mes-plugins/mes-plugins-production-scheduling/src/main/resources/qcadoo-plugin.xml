@@ -125,6 +125,25 @@
 		<model:model-field plugin="basic" model="parameter">
 			<model:boolean name="includeAdditionalTimePS"/>
 		</model:model-field>
+
+		<model:model-hook plugin="orders" model="operationalTask">
+			<model:onSave
+					class="com.qcadoo.mes.productionScheduling.hooks.OperationalTaskHooksPS"
+					method="setStaff"/>
+		</model:model-hook>
+
+		<model:model-hook plugin="orders" model="schedule">
+			<model:onCreate
+					class="com.qcadoo.mes.productionScheduling.hooks.ScheduleHooksPS"
+					method="onCreate"/>
+		</model:model-hook>
+
+		<model:model-hook plugin="orders" model="schedule">
+			<model:onCopy
+					class="com.qcadoo.mes.productionScheduling.hooks.ScheduleHooksPS"
+					method="onCopy"/>
+		</model:model-hook>
+
 		<menu:menu-category name="calculations" />
 
 		<menu:menu-item view="orderTimePrediction" name="orderTimePrediction"
@@ -137,6 +156,7 @@
 		<view:view-tab resource="view/tabExtensions/scheduleDetails.xml" />
 
 		<view:view-ribbon-group resource="view/ribbonExtensions/orderDetails.xml" />
+		<view:view-ribbon-group resource="view/ribbonExtensions/scheduleDetails.xml" />
 
 		<view:view-hook plugin="orders" view="orderDetails"
 			type="beforeRender" class="com.qcadoo.mes.productionScheduling.hooks.OrderDetailsHooksPS"
@@ -160,9 +180,17 @@
             class="com.qcadoo.mes.productionScheduling.listeners.ScheduleDetailsListenersPS"
             method="assignOperationsToWorkstations"/>
 		<view:view-listener plugin="orders" view="scheduleDetails"
+			component="form" event="assignWorkersToOperations"
+			class="com.qcadoo.mes.productionScheduling.listeners.ScheduleDetailsListenersPS"
+			method="assignWorkersToOperations"/>
+		<view:view-listener plugin="orders" view="scheduleDetails"
 			component="form" event="generatePlan"
 			class="com.qcadoo.mes.productionScheduling.listeners.ScheduleDetailsListenersPS"
 			method="generatePlan" />
+		<view:view-listener plugin="orders" view="scheduleDetails"
+			component="form" event="changeState"
+			class="com.qcadoo.mes.productionScheduling.listeners.ScheduleDetailsListenersPS"
+			method="changeState"/>
 	</modules>
 
 	<features>

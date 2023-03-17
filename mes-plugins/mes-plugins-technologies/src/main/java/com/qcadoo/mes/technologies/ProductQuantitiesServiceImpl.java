@@ -430,7 +430,7 @@ public class ProductQuantitiesServiceImpl implements ProductQuantitiesService {
                                 .allMatch(a -> allProductAttributeValuesId.stream()
                                         .anyMatch(b -> b.equals(a)));
 
-                        if (isSame && !hasNotCalculatedElements && attributeValuesId.size() == allProductAttributeValuesId.size()) {
+                        if (isSame && !hasNotCalculatedElements) {
                             if (Objects.nonNull(specificProductId)) {
                                 moreThanOneSpecificProduct = true;
 

@@ -1,16 +1,22 @@
-package com.qcadoo.mes.orders;
+package com.qcadoo.mes.orders.services;
 
 import com.google.common.collect.Lists;
-import com.qcadoo.mes.basic.constants.*;
+import com.qcadoo.mes.basic.constants.AttributeDataType;
+import com.qcadoo.mes.basic.constants.AttributeFields;
+import com.qcadoo.mes.basic.constants.ProductAttributeValueFields;
+import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.orders.constants.*;
 import com.qcadoo.mes.orders.states.constants.OperationalTaskStateStringValues;
-import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.mes.technologies.constants.WorkstationChangeoverNormChangeoverType;
 import com.qcadoo.mes.technologies.constants.WorkstationChangeoverNormFields;
+import com.qcadoo.mes.technologies.services.WorkstationChangeoverNormService;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.search.*;
+import com.qcadoo.model.api.search.JoinType;
+import com.qcadoo.model.api.search.SearchOrders;
+import com.qcadoo.model.api.search.SearchProjections;
+import com.qcadoo.model.api.search.SearchRestrictions;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -33,6 +39,9 @@ public class WorkstationChangeoverService {
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
+    @Autowired
+    private WorkstationChangeoverNormService workstationChangeoverNormService;
+
     public List<Entity> findWorkstationChangeoverForOperationalTasks(final Entity operationalTask) {
         List<Entity> workstationChangeoverForOperationalTasks = Lists.newArrayList();
 
@@ -52,7 +61,7 @@ public class WorkstationChangeoverService {
 
         Entity workstation = operationalTask.getBelongsToField(OperationalTaskFields.WORKSTATION);
 
-        if (hasWorkstationChangeoverNorms(workstation)) {
+        if (workstationChangeoverNormService.hasWorkstationChangeoverNorms(workstation)) {
             Date startDate = operationalTask.getDateField(OperationalTaskFields.START_DATE);
 
             Entity currentOperationalTaskOrder = operationalTask.getBelongsToField(OperationalTaskFields.ORDER);
@@ -72,7 +81,7 @@ public class WorkstationChangeoverService {
                         filterProductAttributeValuesWithAttribute(previousProductAttributeValue, attribute)).collect(Collectors.toList());
 
                 if (!filteredProductAttributeValues.isEmpty()) {
-                    List<Entity> workstationChangeoverNorms = findWorkstationChangeoverNorms(workstation, attribute);
+                    List<Entity> workstationChangeoverNorms = workstationChangeoverNormService.findWorkstationChangeoverNorms(workstation, attribute);
 
                     workstationChangeoverNorms.forEach(workstationChangeoverNorm -> {
                         String changeoverType = workstationChangeoverNorm.getStringField(WorkstationChangeoverNormFields.CHANGEOVER_TYPE);
@@ -182,61 +191,6 @@ public class WorkstationChangeoverService {
         return workstationChangeoverForOperationalTask;
     }
 
-    public boolean hasWorkstationChangeoverNorms(final Entity workstation) {
-        SearchCriteriaBuilder searchCriteriaBuilder = getWorkstationChangeoverNormDD().find();
-
-        addWorkstationSearchRestrictions(searchCriteriaBuilder, workstation);
-
-        Entity workstationChangeoverNorm = searchCriteriaBuilder.add(SearchRestrictions.eq(WorkstationChangeoverNormFields.ACTIVE, true))
-                .setProjection(SearchProjections.alias(SearchProjections.countDistinct(L_ID), L_COUNT))
-                .addOrder(SearchOrders.desc(L_COUNT)).setMaxResults(1).uniqueResult();
-
-        Long countValue = (Long) workstationChangeoverNorm.getField(L_COUNT);
-
-        return countValue > 0;
-    }
-
-    public List<Entity> findWorkstationChangeoverNorms(final Entity workstation, final Entity attribute) {
-        SearchCriteriaBuilder searchCriteriaBuilder = getWorkstationChangeoverNormDD().find();
-
-        addWorkstationSearchRestrictions(searchCriteriaBuilder, workstation);
-        addAttributeSearchRestrictions(searchCriteriaBuilder, attribute);
-
-        return searchCriteriaBuilder.add(SearchRestrictions.eq(WorkstationChangeoverNormFields.ACTIVE, true))
-                .list().getEntities();
-    }
-
-    private void addWorkstationSearchRestrictions(final SearchCriteriaBuilder searchCriteriaBuilder, final Entity workstation) {
-        if (Objects.nonNull(workstation)) {
-            Entity workstationType = workstation.getBelongsToField(WorkstationFields.WORKSTATION_TYPE);
-
-            if (Objects.nonNull(workstationType)) {
-                searchCriteriaBuilder.createAlias(WorkstationChangeoverNormFields.WORKSTATION, WorkstationChangeoverNormFields.WORKSTATION, JoinType.LEFT);
-                searchCriteriaBuilder.createAlias(WorkstationChangeoverNormFields.WORKSTATION_TYPE, WorkstationChangeoverNormFields.WORKSTATION_TYPE, JoinType.LEFT);
-                searchCriteriaBuilder.add(SearchRestrictions.or(
-                        SearchRestrictions.eq(WorkstationChangeoverNormFields.WORKSTATION + L_DOT + L_ID, workstation.getId()),
-                        SearchRestrictions.eq(WorkstationChangeoverNormFields.WORKSTATION_TYPE + L_DOT + L_ID, workstationType.getId())
-                ));
-            } else {
-                searchCriteriaBuilder.createAlias(WorkstationChangeoverNormFields.WORKSTATION, WorkstationChangeoverNormFields.WORKSTATION, JoinType.LEFT);
-                searchCriteriaBuilder.add(SearchRestrictions.eq(WorkstationChangeoverNormFields.WORKSTATION + L_DOT + L_ID, workstation.getId()));
-            }
-        }
-    }
-
-    private void addAttributeSearchRestrictions(final SearchCriteriaBuilder searchCriteriaBuilder, final Entity attribute) {
-        if (Objects.nonNull(attribute)) {
-                searchCriteriaBuilder.createAlias(WorkstationChangeoverNormFields.ATTRIBUTE, WorkstationChangeoverNormFields.ATTRIBUTE, JoinType.LEFT);
-                searchCriteriaBuilder.add(SearchRestrictions.eq(WorkstationChangeoverNormFields.ATTRIBUTE + L_DOT + L_ID, attribute.getId()));
-        }
-    }
-
-    public Optional<Entity> getOperationalTask(final String number) {
-        return Optional.ofNullable(getOperationalTaskDD().find().add(SearchRestrictions.eq(OperationalTaskFields.NUMBER, number))
-                .add(SearchRestrictions.not(SearchRestrictions.in(OperationalTaskFields.STATE, Lists.newArrayList(OperationalTaskStateStringValues.FINISHED, OperationalTaskStateStringValues.REJECTED))))
-                .setMaxResults(1).uniqueResult());
-    }
-
     public Optional<Entity> findPreviousOperationalTask(final Entity operationalTask) {
         if (Objects.nonNull(operationalTask)) {
             Entity workstation = operationalTask.getBelongsToField(OperationalTaskFields.WORKSTATION);
@@ -245,23 +199,73 @@ public class WorkstationChangeoverService {
             return Optional.ofNullable(getOperationalTaskDD().find()
                     .createAlias(OperationalTaskFields.WORKSTATION, OperationalTaskFields.WORKSTATION, JoinType.LEFT)
                     .add(SearchRestrictions.eq(OperationalTaskFields.WORKSTATION + L_DOT + L_ID, workstation.getId()))
-                    .add(SearchRestrictions.lt(OperationalTaskFields.FINISH_DATE, startDate))
+                    .add(SearchRestrictions.le(OperationalTaskFields.FINISH_DATE, startDate))
                     .addOrder(SearchOrders.desc(OperationalTaskFields.FINISH_DATE)).setMaxResults(1).uniqueResult());
         } else {
             return Optional.empty();
         }
     }
 
+    public Optional<Entity> findPreviousOperationalTask(final Entity operationalTask, final Entity skipOperationalTask) {
+        if (Objects.nonNull(operationalTask)) {
+            Entity workstation = operationalTask.getBelongsToField(OperationalTaskFields.WORKSTATION);
+            Date startDate = operationalTask.getDateField(OperationalTaskFields.START_DATE);
+
+            return Optional.ofNullable(getOperationalTaskDD().find()
+                    .createAlias(OperationalTaskFields.WORKSTATION, OperationalTaskFields.WORKSTATION, JoinType.LEFT)
+                    .add(SearchRestrictions.eq(OperationalTaskFields.WORKSTATION + L_DOT + L_ID, workstation.getId()))
+                    .add(SearchRestrictions.le(OperationalTaskFields.FINISH_DATE, startDate))
+                    .add(SearchRestrictions.idNe(skipOperationalTask.getId()))
+                    .addOrder(SearchOrders.desc(OperationalTaskFields.FINISH_DATE)).setMaxResults(1).uniqueResult());
+        } else {
+            return Optional.empty();
+        }
+    }
+
+    public List<Entity> getPreviousOperationalTasks(final Entity operationalTask) {
+        Entity workstation = operationalTask.getBelongsToField(OperationalTaskFields.WORKSTATION);
+        Date startDate = operationalTask.getDateField(OperationalTaskFields.START_DATE);
+
+        return getOperationalTaskDD().find()
+                .createAlias(OperationalTaskFields.WORKSTATION, OperationalTaskFields.WORKSTATION, JoinType.LEFT)
+                .add(SearchRestrictions.eq(OperationalTaskFields.WORKSTATION + L_DOT + L_ID, workstation.getId()))
+                .add(SearchRestrictions.le(OperationalTaskFields.FINISH_DATE, startDate)).list().getEntities();
+    }
+
+    public boolean hasWorkstationChangeoverForOperationalTasks(final Entity workstationChangeoverNorm) {
+        Entity workstationChangeoverForOperationalTask = getWorkstationChangeoverForOperationalTaskDD().find()
+                .createAlias(WorkstationChangeoverForOperationalTaskFields.WORKSTATION_CHANGEOVER_NORM, WorkstationChangeoverForOperationalTaskFields.WORKSTATION_CHANGEOVER_NORM, JoinType.LEFT)
+                .add(SearchRestrictions.eq(WorkstationChangeoverForOperationalTaskFields.WORKSTATION_CHANGEOVER_NORM + L_DOT + L_ID, workstationChangeoverNorm.getId()))
+                .setProjection(SearchProjections.alias(SearchProjections.countDistinct(L_ID), L_COUNT))
+                .addOrder(SearchOrders.desc(L_COUNT)).setMaxResults(1).uniqueResult();
+
+        Long countValue = (Long) workstationChangeoverForOperationalTask.getField(L_COUNT);
+
+        return countValue > 0;
+    }
+
+    public List<Entity> getWorkstationChangeoverForOperationalTasksDtos(final Entity workstation) {
+        return getWorkstationChangeoverForOperationalTaskDtoDD().find().add(
+                SearchRestrictions.eq(WorkstationChangeoverForOperationalTaskDtoFields.WORKSTATION_ID, workstation.getId().intValue())
+        ).list().getEntities();
+    }
+
+    public Optional<Entity> getOperationalTask(final String number) {
+        return Optional.ofNullable(getOperationalTaskDD().find().add(SearchRestrictions.eq(OperationalTaskFields.NUMBER, number))
+                .add(SearchRestrictions.not(SearchRestrictions.in(OperationalTaskFields.STATE, Lists.newArrayList(OperationalTaskStateStringValues.FINISHED, OperationalTaskStateStringValues.REJECTED))))
+                .setMaxResults(1).uniqueResult());
+    }
+
     private DataDefinition getOperationalTaskDD() {
         return dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_OPERATIONAL_TASK);
     }
 
-    private DataDefinition getWorkstationChangeoverForOperationalTaskDD() {
+    public DataDefinition getWorkstationChangeoverForOperationalTaskDD() {
         return dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_WORKSTATION_CHANGEOVER_FOR_OPERATIONAL_TASK);
     }
 
-    private DataDefinition getWorkstationChangeoverNormDD() {
-        return dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_WORKSTATION_CHANGEOVER_NORM);
+    public DataDefinition getWorkstationChangeoverForOperationalTaskDtoDD() {
+        return dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_WORKSTATION_CHANGEOVER_FOR_OPERATIONAL_TASK_DTO);
     }
 
 }

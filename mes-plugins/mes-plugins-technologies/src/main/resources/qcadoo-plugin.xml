@@ -122,6 +122,7 @@
         <model:model model="productDataAttachment" resource="model/productDataAttachment.xml"/>
 
         <model:model model="workstationChangeoverNorm" resource="model/workstationChangeoverNorm.xml"/>
+        <model:model model="workstationChangeoverNormDto" resource="model/workstationChangeoverNormDto.xml"/>
         <model:model model="workstationStateChange" resource="model/workstationStateChange.xml"/>
 
         <model:dictionary name="sampling"/>

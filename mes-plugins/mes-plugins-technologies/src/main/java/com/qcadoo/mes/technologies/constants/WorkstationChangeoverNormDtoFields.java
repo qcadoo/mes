@@ -21,43 +21,25 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.orders.constants;
+package com.qcadoo.mes.technologies.constants;
 
-public final class WorkstationChangeoverForOperationalTaskDtoFields {
+public final class WorkstationChangeoverNormDtoFields {
 
-    private WorkstationChangeoverForOperationalTaskDtoFields() {
+    private WorkstationChangeoverNormDtoFields() {
 
     }
-
-    public static final String NUMBER = "number";
 
     public static final String NAME = "name";
 
     public static final String DESCRIPTION = "description";
 
+    public static final String WORKSTATION_TYPE_ID = "workstationType_id";
+
+    public static final String WORKSTATION_TYPE_NUMBER = "workstationTypeNumber";
+
     public static final String WORKSTATION_ID = "workstation_id";
 
     public static final String WORKSTATION_NUMBER = "workstationNumber";
-
-    public static final String CURRENT_OPERATIONAL_TASK_ID = "currentOperationalTaskNumber_id";
-
-    public static final String CURRENT_OPERATIONAL_TASK_NUMBER = "currentOperationalTaskNumber";
-
-    public static final String CURRENT_OPERATIONAL_TASK_NAME = "currentOperationalTaskName";
-
-    public static final String CURRENT_OPERATIONAL_TASK_ORDER_NUMBER = "currentOperationalTaskOrderNumber";
-
-    public static final String CURRENT_OPERATIONAL_TASK_ORDER_PRODUCT_NUMBER = "currentOperationalTaskOrderProductNumber";
-
-    public static final String PREVIOUS_OPERATIONAL_TASK_ID = "previousOperationalTaskNumber_id";
-
-    public static final String PREVIOUS_OPERATIONAL_TASK_NUMBER = "previousOperationalTaskNumber";
-
-    public static final String PREVIOUS_OPERATIONAL_TASK_NAME = "previousOperationalTaskName";
-
-    public static final String PREVIOUS_OPERATIONAL_TASK_ORDER_NUMBER = "previousOperationalTaskOrderNumber";
-
-    public static final String PREVIOUS_OPERATIONAL_TASK_ORDER_PRODUCT_NUMBER = "previousOperationalTaskOrderProductNumber";
 
     public static final String CHANGEOVER_TYPE = "changeoverType";
 
@@ -69,12 +51,10 @@ public final class WorkstationChangeoverForOperationalTaskDtoFields {
 
     public static final String TO_ATTRIBUTE_VALUE_VALUE = "toAttributeValueValue";
 
-    public static final String START_DATE = "startDate";
-
-    public static final String FINISH_DATE = "finishDate";
-
     public static final String DURATION = "duration";
 
     public static final String IS_PARALLEL = "isParallel";
+
+    public static final String ACTIVE = "active";
 
 }

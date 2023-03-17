@@ -1,19 +1,17 @@
 package com.qcadoo.mes.orders.states;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.qcadoo.mes.newstates.BasicStateService;
 import com.qcadoo.mes.orders.ProductionLineScheduleServicePPSExecutorService;
 import com.qcadoo.mes.orders.ProductionLineScheduleServicePSExecutorService;
-import com.qcadoo.mes.orders.constants.DurationOfOrderCalculatedOnBasis;
-import com.qcadoo.mes.orders.constants.OrderFields;
-import com.qcadoo.mes.orders.constants.ProductionLineScheduleFields;
-import com.qcadoo.mes.orders.constants.ProductionLineSchedulePositionFields;
-import com.qcadoo.mes.orders.constants.ProductionLineScheduleStateChangeFields;
+import com.qcadoo.mes.orders.constants.*;
+import com.qcadoo.mes.orders.hooks.OrderHooks;
 import com.qcadoo.mes.orders.states.constants.ScheduleStateStringValues;
 import com.qcadoo.mes.states.StateChangeEntityDescriber;
 import com.qcadoo.model.api.Entity;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.Date;
 
 @Service
 public class ProductionLineScheduleStateService extends BasicStateService implements ProductionLineScheduleServiceMarker {
@@ -27,13 +25,13 @@ public class ProductionLineScheduleStateService extends BasicStateService implem
     @Autowired
     private ProductionLineScheduleServicePSExecutorService productionLineScheduleServicePSExecutorService;
 
+    @Autowired
+    private OrderHooks orderHooks;
+
     @Override
     public StateChangeEntityDescriber getChangeEntityDescriber() {
         return productionLineScheduleStateChangeDescriber;
     }
-
-    @Autowired
-    private ScheduleStateService scheduleStateService;
 
     @Override
     public Entity onBeforeSave(Entity entity, String sourceState, String targetState, Entity stateChangeEntity,
@@ -55,14 +53,36 @@ public class ProductionLineScheduleStateService extends BasicStateService implem
         return entity;
     }
 
+    public void setOrderDateTo(Entity order, Date endTime, Entity orderFromDB) {
+        Date finishDateDB = new Date();
+        if (orderFromDB.getDateField(OrderFields.FINISH_DATE) != null) {
+            finishDateDB = orderFromDB.getDateField(OrderFields.FINISH_DATE);
+        }
+        if (!finishDateDB.equals(endTime)) {
+            order.setField(OrderFields.FINISH_DATE, endTime);
+            orderHooks.copyEndDate(order.getDataDefinition(), order);
+        }
+    }
+
+    public void setOrderDateFrom(Entity order, Date startTime, Entity orderFromDB) {
+        Date startDateDB = new Date();
+        if (orderFromDB.getDateField(OrderFields.START_DATE) != null) {
+            startDateDB = orderFromDB.getDateField(OrderFields.START_DATE);
+        }
+        if (!startDateDB.equals(startTime)) {
+            order.setField(OrderFields.START_DATE, startTime);
+            orderHooks.copyStartDate(order.getDataDefinition(), order);
+        }
+    }
+
     private void updateOrderDates(Entity entity) {
         String durationOfOrderCalculatedOnBasis = entity.getStringField(ProductionLineScheduleFields.DURATION_OF_ORDER_CALCULATED_ON_BASIS);
         for (Entity position : entity.getHasManyField(ProductionLineScheduleFields.POSITIONS)) {
             Entity order = position.getBelongsToField(ProductionLineSchedulePositionFields.ORDER);
             Entity productionLine = position.getBelongsToField(ProductionLineSchedulePositionFields.PRODUCTION_LINE);
             Entity orderFromDB = order.getDataDefinition().get(order.getId());
-            scheduleStateService.setOrderDateFrom(order, position.getDateField(ProductionLineSchedulePositionFields.START_TIME), orderFromDB);
-            scheduleStateService.setOrderDateTo(order, position.getDateField(ProductionLineSchedulePositionFields.END_TIME), orderFromDB);
+            setOrderDateFrom(order, position.getDateField(ProductionLineSchedulePositionFields.START_TIME), orderFromDB);
+            setOrderDateTo(order, position.getDateField(ProductionLineSchedulePositionFields.END_TIME), orderFromDB);
             order.setField(OrderFields.PRODUCTION_LINE, productionLine);
             order.getDataDefinition().fastSave(order);
             if (DurationOfOrderCalculatedOnBasis.TIME_CONSUMING_TECHNOLOGY.getStringValue()

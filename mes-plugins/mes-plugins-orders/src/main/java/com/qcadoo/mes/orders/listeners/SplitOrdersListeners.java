@@ -37,6 +37,7 @@ public class SplitOrdersListeners {
     private static final String L_GENERATED = "generated";
 
     private static final DecimalFormat threeCharacterNumber = new DecimalFormat("000");
+    public static final String ORDERS_GROUP = "ordersGroup";
 
 
     @Autowired
@@ -104,6 +105,7 @@ public class SplitOrdersListeners {
                                     additionalUnitService.getAdditionalUnit(product),
                                     numberService.setScaleWithDefaultMathContext(newPlannedQuantity),
                                     product.getStringField(ProductFields.UNIT))));
+                    entity.setField(ORDERS_GROUP, order.getBelongsToField(ORDERS_GROUP));
 
                     entity = entity.getDataDefinition().save(entity);
                     if(!entity.isValid()) {
@@ -169,6 +171,8 @@ public class SplitOrdersListeners {
                                 product.getStringField(ProductFields.UNIT))));
                 entity.setField(OrderFields.DATE_FROM, child.getDateField(SplitOrderChildConstants.DATE_FROM));
                 entity.setField(OrderFields.DATE_TO, child.getDateField(SplitOrderChildConstants.DATE_TO));
+                entity.setField(ORDERS_GROUP, order.getBelongsToField(ORDERS_GROUP));
+
                 entity = entity.getDataDefinition().save(entity);
                 if(!entity.isValid()) {
                     throw new IllegalStateException("Undone split orders");
