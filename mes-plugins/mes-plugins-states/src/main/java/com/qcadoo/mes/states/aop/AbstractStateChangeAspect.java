@@ -27,6 +27,7 @@ import static com.qcadoo.mes.states.constants.StateChangeStatus.SUCCESSFUL;
 
 import java.util.Date;
 
+import com.google.common.collect.Lists;
 import org.apache.log4j.Logger;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.DeclarePrecedence;
@@ -66,6 +67,8 @@ public abstract class AbstractStateChangeAspect implements StateChangeService {
         } catch (Exception exception) {
             LOGGER.warn("Can't perform state change", exception);
             stateChangeContext.setStatus(StateChangeStatus.FAILURE);
+            final String messagesFieldName = stateChangeContext.getDescriber().getMessagesFieldName();
+            stateChangeContext.setField(messagesFieldName, Lists.newArrayList());
             stateChangeContext.addMessage("states.messages.change.failure.internalServerError", StateMessageType.FAILURE);
             stateChangeContext.save();
             throw new StateChangeException(exception);
