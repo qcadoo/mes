@@ -515,6 +515,8 @@ public class TechnologyValidationService {
             return true;
         }
 
+        //metoda rzuca wyjątkiem - przez co zawiesza się przejście stanu
+        //fixem jest oifowanie wyżej
         final Entity outputProduct = technologyService
                 .getMainOutputProductComponent(technologyOperationComponent);
 

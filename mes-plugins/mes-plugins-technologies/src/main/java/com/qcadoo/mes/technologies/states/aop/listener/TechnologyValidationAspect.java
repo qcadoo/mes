@@ -29,6 +29,8 @@ import com.qcadoo.mes.states.annotation.RunForStateTransition;
 import com.qcadoo.mes.states.annotation.RunForStateTransitions;
 import com.qcadoo.mes.states.annotation.RunInPhase;
 import com.qcadoo.mes.states.aop.AbstractStateListenerAspect;
+import com.qcadoo.mes.states.constants.StateChangeStatus;
+import com.qcadoo.mes.states.messages.constants.MessageFields;
 import com.qcadoo.mes.states.messages.constants.StateMessageType;
 import com.qcadoo.mes.technologies.constants.ParameterFieldsT;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
@@ -48,6 +50,9 @@ import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.annotation.Pointcut;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
+
+import static com.qcadoo.mes.states.messages.constants.StateMessageType.FAILURE;
+import static com.qcadoo.mes.states.messages.constants.StateMessageType.VALIDATION_ERROR;
 
 @Aspect
 @Configurable
@@ -113,7 +118,9 @@ public class TechnologyValidationAspect extends AbstractStateListenerAspect {
         }
 
         if (PluginUtils.isEnabled("timeNormsForOperations")) {
-            technologyValidationService.checkIfTreeOperationIsValid(stateChangeContext);
+            if (!StateChangeStatus.FAILURE.equals(stateChangeContext.getStatus())) {
+                technologyValidationService.checkIfTreeOperationIsValid(stateChangeContext);
+            }
         }
 
         if(parameter.getBooleanField(ParameterFieldsT.CHECK_FOR_THE_EXISTENCE_OF_INPUT_PRODUCT_PRICES)) {
