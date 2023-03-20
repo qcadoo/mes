@@ -84,7 +84,6 @@ public class ProductionLineScheduleService {
             Entity previousOrderFromDB = getPreviousOrderFromDB(productionLine, orderStartDate);
             if (previousOrderFromDB != null) {
                 previousOrder = previousOrderFromDB;
-                productionLinesOrders.put(productionLine.getId(), previousOrder);
             }
         }
         return previousOrder;
@@ -98,7 +97,7 @@ public class ProductionLineScheduleService {
                         productionLine))
                 .add(SearchRestrictions.or(SearchRestrictions.ne(OrderFields.STATE, OrderState.DECLINED.getStringValue()),
                         SearchRestrictions.ne(OrderFields.STATE, OrderState.ABANDONED.getStringValue())))
-                .add(SearchRestrictions.lt(OrderFields.FINISH_DATE, orderStartDate))
+                .add(SearchRestrictions.le(OrderFields.FINISH_DATE, orderStartDate))
                 .addOrder(SearchOrders.desc(OrderFields.FINISH_DATE)).setMaxResults(1).uniqueResult();
     }
 }

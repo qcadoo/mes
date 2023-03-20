@@ -1,6 +1,9 @@
 package com.qcadoo.mes.productionScheduling.listeners;
 
+import com.qcadoo.model.api.Entity;
+
 import java.util.Date;
+import java.util.List;
 
 class PositionNewData {
 
@@ -14,13 +17,16 @@ class PositionNewData {
 
     private Date finishDate;
 
+    private List<Entity> workstationChangeovers;
+
     public PositionNewData(Integer laborWorkTime, Integer machineWorkTime, Integer additionalTime, Date newStartDate,
-            Date newFinishDate) {
+                           Date newFinishDate, List<Entity> workstationChangeovers) {
         this.laborWorkTime = laborWorkTime;
         this.machineWorkTime = machineWorkTime;
         this.additionalTime = additionalTime;
-        startDate = newStartDate;
-        finishDate = newFinishDate;
+        this.startDate = newStartDate;
+        this.finishDate = newFinishDate;
+        this.workstationChangeovers = workstationChangeovers;
     }
 
     public Integer getLaborWorkTime() {
@@ -61,5 +67,13 @@ class PositionNewData {
 
     public void setFinishDate(Date finishDate) {
         this.finishDate = finishDate;
+    }
+
+    public List<Entity> getWorkstationChangeovers() {
+        return workstationChangeovers;
+    }
+
+    public void setWorkstationChangeovers(List<Entity> workstationChangeovers) {
+        this.workstationChangeovers = workstationChangeovers;
     }
 }

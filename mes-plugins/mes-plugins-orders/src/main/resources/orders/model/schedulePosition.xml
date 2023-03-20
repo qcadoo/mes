@@ -55,6 +55,10 @@
         </decimal>
 
         <hasMany name="operationalTasks" model="operationalTask" joinField="schedulePosition"/>
+        <hasMany name="currentWorkstationChangeoverForSchedulePositions" model="workstationChangeoverForSchedulePosition"
+                 joinField="currentSchedulePosition" cascade="delete"/>
+        <hasMany name="previousWorkstationChangeoverForSchedulePositions" model="workstationChangeoverForSchedulePosition"
+                 joinField="previousSchedulePosition" cascade="delete"/>
     </fields>
 
     <hooks>

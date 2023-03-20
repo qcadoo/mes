@@ -32,4 +32,8 @@ public class SchedulePositionFields {
     public static final String OPERATION_RUNS = "operationRuns";
 
     public static final String PARTIAL_OPERATION_RUNS = "partialOperationRuns";
+
+    public static final String CURRENT_WORKSTATION_CHANGEOVER_FOR_SCHEDULE_POSITIONS = "currentWorkstationChangeoverForSchedulePositions";
+
+    public static final String OPERATIONAL_TASKS = "operationalTasks";
 }

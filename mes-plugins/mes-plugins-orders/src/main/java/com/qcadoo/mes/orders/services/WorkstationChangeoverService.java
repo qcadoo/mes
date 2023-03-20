@@ -6,6 +6,7 @@ import com.qcadoo.mes.basic.constants.AttributeFields;
 import com.qcadoo.mes.basic.constants.ProductAttributeValueFields;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.orders.constants.*;
+import com.qcadoo.mes.orders.states.constants.OperationalTaskState;
 import com.qcadoo.mes.orders.states.constants.OperationalTaskStateStringValues;
 import com.qcadoo.mes.technologies.constants.WorkstationChangeoverNormChangeoverType;
 import com.qcadoo.mes.technologies.constants.WorkstationChangeoverNormFields;
@@ -41,6 +42,88 @@ public class WorkstationChangeoverService {
 
     @Autowired
     private WorkstationChangeoverNormService workstationChangeoverNormService;
+
+    public List<Entity> findWorkstationChangeoversForSchedulePosition(final Date startDate, final Entity workstation,
+                                                                      final Entity schedulePosition,
+                                                                      final Entity previousSchedulePosition) {
+        List<Entity> workstationChangeovers = Lists.newArrayList();
+
+        if (workstationChangeoverNormService.hasWorkstationChangeoverNorms(workstation)) {
+            Entity previousProduct = null;
+            Entity previousOperationalTask = null;
+            if (previousSchedulePosition != null) {
+                previousProduct = previousSchedulePosition.getBelongsToField(SchedulePositionFields.ORDER).getBelongsToField(OrderFields.PRODUCT);
+            } else {
+                previousOperationalTask = getPreviousOperationalTask(workstation, startDate);
+                if (previousOperationalTask != null) {
+                    previousProduct = previousOperationalTask.getBelongsToField(OperationalTaskFields.ORDER).getBelongsToField(OrderFields.PRODUCT);
+                }
+            }
+            if (previousProduct != null) {
+                Entity currentProduct = schedulePosition.getBelongsToField(SchedulePositionFields.ORDER).getBelongsToField(OrderFields.PRODUCT);
+
+                List<Entity> currentProductAttributeValues = getProductAttributeValuesWithDataTypeCalculated(currentProduct);
+                List<Entity> previousProductAttributeValues = getProductAttributeValuesWithDataTypeCalculated(previousProduct);
+
+                for (Entity currentProductAttributeValue : currentProductAttributeValues) {
+                    Entity attribute = currentProductAttributeValue.getBelongsToField(ProductAttributeValueFields.ATTRIBUTE);
+                    Entity attributeValue = currentProductAttributeValue.getBelongsToField(ProductAttributeValueFields.ATTRIBUTE_VALUE);
+
+                    List<Entity> filteredProductAttributeValues = previousProductAttributeValues.stream().filter(previousProductAttributeValue ->
+                            filterProductAttributeValuesWithAttribute(previousProductAttributeValue, attribute)).collect(Collectors.toList());
+
+                    if (!filteredProductAttributeValues.isEmpty()) {
+                        List<Entity> workstationChangeoverNorms = workstationChangeoverNormService.findWorkstationChangeoverNorms(workstation, attribute);
+
+                        for (Entity workstationChangeoverNorm : workstationChangeoverNorms) {
+                            String changeoverType = workstationChangeoverNorm.getStringField(WorkstationChangeoverNormFields.CHANGEOVER_TYPE);
+
+                            if (WorkstationChangeoverNormChangeoverType.BETWEEN_VALUES.getStringValue().equals(changeoverType)) {
+                                Entity fromAttributeValue = workstationChangeoverNorm.getBelongsToField(WorkstationChangeoverNormFields.FROM_ATTRIBUTE_VALUE);
+                                Entity toAttributeValue = workstationChangeoverNorm.getBelongsToField(WorkstationChangeoverNormFields.TO_ATTRIBUTE_VALUE);
+
+                                if (attributeValue.getId().equals(toAttributeValue.getId())) {
+                                    if (filteredProductAttributeValues.stream().anyMatch(previousProductAttributeValue ->
+                                            filterProductAttributeValuesWithAttributeValue(previousProductAttributeValue, fromAttributeValue))) {
+                                        Entity workstationChangeover = createWorkstationChangeoverForSchedulePosition(schedulePosition, previousSchedulePosition, workstationChangeoverNorm, previousOperationalTask);
+
+                                        workstationChangeovers.add(workstationChangeover);
+                                    }
+                                }
+                            } else {
+                                Entity workstationChangeover = createWorkstationChangeoverForSchedulePosition(schedulePosition, previousSchedulePosition, workstationChangeoverNorm, previousOperationalTask);
+
+                                workstationChangeovers.add(workstationChangeover);
+                            }
+                        }
+                    }
+                }
+            }
+
+            updateWorkstationChangeoversDates(workstationChangeovers, startDate);
+        }
+
+        return workstationChangeovers;
+    }
+
+    public Optional<Date> getWorkstationChangeoversMaxFinishDate(final List<Entity> workstationChangeovers) {
+        return workstationChangeovers.stream().map(workstationChangeover ->
+                        workstationChangeover.getDateField(WorkstationChangeoverForOperationalTaskFields.FINISH_DATE))
+                .max(Date::compareTo);
+    }
+
+    private Entity createWorkstationChangeoverForSchedulePosition(final Entity currentSchedulePosition, final Entity previousSchedulePosition,
+                                                                  final Entity workstationChangeoverNorm,
+                                                                  final Entity previousOperationalTask) {
+        Entity workstationChangeoverForSchedulePosition = getWorkstationChangeoverForSchedulePositionDD().create();
+
+        workstationChangeoverForSchedulePosition.setField(WorkstationChangeoverForSchedulePositionFields.WORKSTATION_CHANGEOVER_NORM, workstationChangeoverNorm);
+        workstationChangeoverForSchedulePosition.setField(WorkstationChangeoverForSchedulePositionFields.CURRENT_SCHEDULE_POSITION, currentSchedulePosition);
+        workstationChangeoverForSchedulePosition.setField(WorkstationChangeoverForSchedulePositionFields.PREVIOUS_SCHEDULE_POSITION, previousSchedulePosition);
+        workstationChangeoverForSchedulePosition.setField(WorkstationChangeoverForSchedulePositionFields.PREVIOUS_OPERATIONAL_TASK, previousOperationalTask);
+
+        return workstationChangeoverForSchedulePosition;
+    }
 
     public List<Entity> findWorkstationChangeoverForOperationalTasks(final Entity operationalTask) {
         List<Entity> workstationChangeoverForOperationalTasks = Lists.newArrayList();
@@ -107,17 +190,17 @@ public class WorkstationChangeoverService {
                 }
             });
 
-            updateWorkstationChangeoverForOperationalTasksDates(workstationChangeoverForOperationalTasks, startDate);
+            updateWorkstationChangeoversDates(workstationChangeoverForOperationalTasks, startDate);
         }
 
         return workstationChangeoverForOperationalTasks;
     }
 
-    private void updateWorkstationChangeoverForOperationalTasksDates(final List<Entity> workstationChangeoverForOperationalTasks, final Date startDate) {
+    private void updateWorkstationChangeoversDates(final List<Entity> workstationChangeoverForOperationalTasks, final Date startDate) {
         Date lastStartDate = startDate;
 
         for (Entity workstationChangeoverForOperationalTask : workstationChangeoverForOperationalTasks.stream().filter(this::isNotParallel).collect(Collectors.toList())) {
-            Integer duration = workstationChangeoverForOperationalTask.getIntegerField(WorkstationChangeoverForOperationalTaskFields.DURATION);
+            Integer duration = workstationChangeoverForOperationalTask.getBelongsToField(WorkstationChangeoverForOperationalTaskFields.WORKSTATION_CHANGEOVER_NORM).getIntegerField(WorkstationChangeoverNormFields.DURATION);
             Date finishDate = new DateTime(lastStartDate).plusSeconds(duration).toDate();
 
             workstationChangeoverForOperationalTask.setField(WorkstationChangeoverForOperationalTaskFields.START_DATE, lastStartDate);
@@ -127,7 +210,7 @@ public class WorkstationChangeoverService {
         }
 
         for (Entity workstationChangeoverForOperationalTask : workstationChangeoverForOperationalTasks.stream().filter(this::isParallel).collect(Collectors.toList())) {
-            Integer duration = workstationChangeoverForOperationalTask.getIntegerField(WorkstationChangeoverForOperationalTaskFields.DURATION);
+            Integer duration = workstationChangeoverForOperationalTask.getBelongsToField(WorkstationChangeoverForOperationalTaskFields.WORKSTATION_CHANGEOVER_NORM).getIntegerField(WorkstationChangeoverNormFields.DURATION);
             Date finishDate = new DateTime(startDate).plusSeconds(duration).toDate();
 
             workstationChangeoverForOperationalTask.setField(WorkstationChangeoverForOperationalTaskFields.START_DATE, startDate);
@@ -244,6 +327,18 @@ public class WorkstationChangeoverService {
         return countValue > 0;
     }
 
+    private Entity getPreviousOperationalTask(Entity workstation,
+                                              final Date operationalTaskStartDate) {
+        return dataDefinitionService
+                .get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_OPERATIONAL_TASK)
+                .find()
+                .createAlias(OperationalTaskFields.WORKSTATION, OperationalTaskFields.WORKSTATION, JoinType.LEFT)
+                .add(SearchRestrictions.eq(OperationalTaskFields.WORKSTATION + L_DOT + L_ID, workstation.getId()))
+                .add(SearchRestrictions.ne(OperationalTaskFields.STATE, OperationalTaskState.REJECTED.getStringValue()))
+                .add(SearchRestrictions.le(OperationalTaskFields.FINISH_DATE, operationalTaskStartDate))
+                .addOrder(SearchOrders.desc(OperationalTaskFields.FINISH_DATE)).setMaxResults(1).uniqueResult();
+    }
+
     public List<Entity> getWorkstationChangeoverForOperationalTasksDtos(final Entity workstation) {
         return getWorkstationChangeoverForOperationalTaskDtoDD().find().add(
                 SearchRestrictions.eq(WorkstationChangeoverForOperationalTaskDtoFields.WORKSTATION_ID, workstation.getId().intValue())
@@ -262,6 +357,10 @@ public class WorkstationChangeoverService {
 
     public DataDefinition getWorkstationChangeoverForOperationalTaskDD() {
         return dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_WORKSTATION_CHANGEOVER_FOR_OPERATIONAL_TASK);
+    }
+
+    private DataDefinition getWorkstationChangeoverForSchedulePositionDD() {
+        return dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_WORKSTATION_CHANGEOVER_FOR_SCHEDULE_POSITION);
     }
 
     public DataDefinition getWorkstationChangeoverForOperationalTaskDtoDD() {
