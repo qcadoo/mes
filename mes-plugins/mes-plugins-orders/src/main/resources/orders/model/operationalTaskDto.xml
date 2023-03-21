@@ -36,8 +36,10 @@
 		<enum name="state" values="01pending,02started,03finished,04rejected"/>
 		<datetime name="startDate" />
 		<datetime name="finishDate" />
+		<integer name="actualStaff"/>
 		<string name="staffName"/>
 		<string name="divisionNumber" />
+		<string name="productionLineNumber" />
 		<string name="workstationNumber" />
 		<integer name="workstationId"/>
 		<integer name="orderId"/>
