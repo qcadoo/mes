@@ -37,8 +37,6 @@ public final class WorkstationChangeoverForSchedulePositionFields {
 
     public static final String WORKSTATION_CHANGEOVER_NORM = "workstationChangeoverNorm";
 
-    public static final String DURATION = "duration";
-
     public static final String START_DATE = "startDate";
 
     public static final String FINISH_DATE = "finishDate";

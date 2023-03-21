@@ -51,10 +51,6 @@ import static java.util.Map.Entry.comparingByValue;
 @Service
 public class ScheduleDetailsListenersPS {
 
-    private static final String L_DOT = ".";
-
-    private static final String L_ID = "id";
-
     private static final Logger LOG = LoggerFactory.getLogger(ScheduleDetailsListenersPS.class);
 
     private static final String ORDERS_FOR_SUBPRODUCTS_GENERATION = "ordersForSubproductsGeneration";
