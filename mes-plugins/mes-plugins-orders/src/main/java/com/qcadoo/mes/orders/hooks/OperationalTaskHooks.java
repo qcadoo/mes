@@ -181,7 +181,7 @@ public class OperationalTaskHooks {
                 || Objects.isNull(startDateFromDB) || !startDate.equals(startDateFromDB);
     }
 
-    private void deleteWorkstationChangeoverForOperationalTasks(final Entity operationalTask) {
+    public void deleteWorkstationChangeoverForOperationalTasks(final Entity operationalTask) {
         List<Entity> currentWorkstationChangeoverForOperationalTasks = operationalTask.getHasManyField(OperationalTaskFields.CURRENT_WORKSTATION_CHANGEOVER_FOR_OPERATIONAL_TASKS);
 
         currentWorkstationChangeoverForOperationalTasks.forEach(workstationChangeoverForOperationalTask ->
@@ -205,7 +205,7 @@ public class OperationalTaskHooks {
         operationalTask.setField(OperationalTaskFields.CURRENT_WORKSTATION_CHANGEOVER_FOR_OPERATIONAL_TASKS, workstationChangeoverForOperationalTasks);
     }
 
-    private void setPreviousWorkstationChangeoverForOperationalTasks(final Entity operationalTask, final boolean shouldSkip) {
+    public void setPreviousWorkstationChangeoverForOperationalTasks(final Entity operationalTask, final boolean shouldSkip) {
         List<Entity> previousWorkstationChangeoverForOperationalTasks = operationalTask.getHasManyField(OperationalTaskFields.PREVIOUS_WORKSTATION_CHANGEOVER_FOR_OPERATIONAL_TASKS);
 
         previousWorkstationChangeoverForOperationalTasks.stream().filter(filterByChangeoverTypeBasedOnNorm()).forEach(workstationChangeoverForOperationalTask -> {
