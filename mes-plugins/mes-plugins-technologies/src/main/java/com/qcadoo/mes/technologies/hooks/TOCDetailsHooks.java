@@ -88,10 +88,17 @@ public class TOCDetailsHooks {
 
             ribbon.getGroups().stream().filter(group -> !group.getName().equals(L_NAVIGATION))
                     .forEach(group -> group.getItems().forEach(item -> {
-                        item.setEnabled(false);
-                        item.requestUpdate(true);
+                        if(!item.getName().equals("save") && !item.getName().equals("saveBack")) {
+                            item.setEnabled(false);
+                            item.requestUpdate(true);
+                        }
                     }));
             form.setFormEnabled(false);
+            FieldComponent attachment = (FieldComponent) view.getComponentByReference(TechnologyOperationComponentFields.ATTACHMENT);
+            attachment.setEnabled(true);
+            attachment.requestComponentUpdateState();
+            GridComponent workstationsGrid = (GridComponent) view.getComponentByReference("workstations");
+            workstationsGrid.setEnabled(false);
         }
     }
 

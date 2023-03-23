@@ -158,6 +158,11 @@
 
         <view:view-ribbon-group resource="view/ribbonExtensions/ordersPlanningList.xml"/>
 
+        <view:view-hook plugin="technologies"
+                        view="technologyOperationComponentDetails" type="beforeRender"
+                        class="com.qcadoo.mes.cmmsMachineParts.hooks.TechnologyOperationComponentDetailsHooksCMP"
+                        method="onBeforeRender" />
+
         <!-- view extensions -->
 
         <!-- model -->

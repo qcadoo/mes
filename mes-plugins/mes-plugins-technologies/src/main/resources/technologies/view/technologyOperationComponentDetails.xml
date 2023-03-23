@@ -77,7 +77,7 @@
                         <component type="textarea" name="comment" field="comment"/>
                     </layoutElement>
                     <layoutElement column="1" row="4">
-                        <component type="file" name="attachment" field="attachment"/>
+                        <component type="file" name="attachment" field="attachment" reference="attachment"/>
                     </layoutElement>
                 </component>
 

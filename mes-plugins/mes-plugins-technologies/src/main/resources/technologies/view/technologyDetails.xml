@@ -452,6 +452,7 @@
                             <option type="canHaveChildren" value="false"/>
                         </dataType>
 
+                        <option type="offPermanentlyDisabled" value="true"/>
                         <option type="selectableWhenDisabled" value="true"/>
                         <option type="hasCustomActionButton" value="true"/>
                         <option type="customActionIcon" value="clearIcon16_dis.png"/>
