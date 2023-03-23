@@ -115,6 +115,7 @@
 
         <model:model model="workstationChangeoverForOperationalTask" resource="model/workstationChangeoverForOperationalTask.xml"/>
         <model:model model="workstationChangeoverForOperationalTaskDto" resource="model/workstationChangeoverForOperationalTaskDto.xml"/>
+        <model:model model="workstationChangeoverForSchedulePosition" resource="model/workstationChangeoverForSchedulePosition.xml"/>
 
         <model:model model="splitOrderHelper" resource="model/splitOrderHelper.xml"/>
         <model:model model="splitOrderParent" resource="model/splitOrderParent.xml"/>
@@ -515,6 +516,11 @@
         <model:model-field plugin="technologies" model="workstationChangeoverNorm">
             <model:hasMany name="workstationChangeoverForOperationalTasks" plugin="orders"
                            model="workstationChangeoverForOperationalTask" joinField="workstationChangeoverNorm"/>
+        </model:model-field>
+
+        <model:model-field plugin="technologies" model="workstationChangeoverNorm">
+            <model:hasMany name="workstationChangeoverForSchedulePositions" plugin="orders"
+                           model="workstationChangeoverForSchedulePosition" joinField="workstationChangeoverNorm"/>
         </model:model-field>
 
         <model:model-enum-value plugin="basic" model="log" enum="logType" value="orderImport"/>

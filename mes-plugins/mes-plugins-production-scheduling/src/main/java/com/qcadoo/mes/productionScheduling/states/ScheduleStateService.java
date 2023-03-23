@@ -12,6 +12,7 @@ import com.qcadoo.mes.orders.states.constants.ScheduleStateStringValues;
 import com.qcadoo.mes.productionScheduling.hooks.OperationalTaskHooksPS;
 import com.qcadoo.mes.states.StateChangeEntityDescriber;
 import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
+import com.qcadoo.mes.technologies.constants.WorkstationChangeoverNormFields;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -22,6 +23,7 @@ import com.qcadoo.model.api.search.SearchRestrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -252,7 +254,7 @@ public class ScheduleStateService extends BasicStateService implements ScheduleS
     private void generateOperationalTasks(Entity schedule) {
         DataDefinition operationalTaskDD = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER,
                 OrdersConstants.MODEL_OPERATIONAL_TASK);
-        for (Entity position : schedule.getHasManyField(ScheduleFields.POSITIONS)) {
+        for (Entity position : schedule.getHasManyField(ScheduleFields.POSITIONS).stream().sorted(Comparator.comparing(e -> e.getDateField(SchedulePositionFields.START_TIME))).collect(Collectors.toList())) {
             Entity operationalTask = operationalTaskDD.create();
             operationalTask.setField(OperationalTaskFields.START_DATE, position.getField(SchedulePositionFields.START_TIME));
             operationalTask.setField(OperationalTaskFields.FINISH_DATE, position.getField(SchedulePositionFields.END_TIME));
@@ -273,13 +275,64 @@ public class ScheduleStateService extends BasicStateService implements ScheduleS
             operationalTask.setField(OperationalTaskFields.SCHEDULE_POSITION, position);
 
             Optional<Entity> maybeDivision = technologyServiceO.extractDivision(technology, technologyOperationComponent);
-            maybeDivision.ifPresent(d -> operationalTask.setField(OperationalTaskFields.DIVISION, d));
+            if (maybeDivision.isPresent()) {
+                operationalTask.setField(OperationalTaskFields.DIVISION, maybeDivision.get());
+            }
             operationalTaskHooks.setInitialState(operationalTask);
             operationalTaskHooks.fillNameAndDescription(operationalTask);
             operationalTaskHooksPS.setStaff(operationalTaskDD, operationalTask);
-            operationalTaskDD.fastSave(operationalTask);
+            operationalTask = operationalTaskDD.fastSave(operationalTask);
+            List<Entity> workstationChangeovers = position.getHasManyField(SchedulePositionFields.CURRENT_WORKSTATION_CHANGEOVER_FOR_SCHEDULE_POSITIONS);
+            for (Entity workstationChangeover : workstationChangeovers) {
+                createWorkstationChangeoverForOperationalTask(operationalTask, workstationChangeover);
+            }
         }
         schedule.addGlobalMessage("productionScheduling.operationDurationDetailsInOrder.info.operationalTasksCreated");
+    }
+
+    private void createWorkstationChangeoverForOperationalTask(final Entity currentOperationalTask,
+                                                               final Entity workstationChangeover) {
+        DataDefinition dataDefinition = getWorkstationChangeoverForOperationalTaskDD();
+        Entity workstationChangeoverForOperationalTask = dataDefinition.create();
+
+        Entity workstationChangeoverNorm = workstationChangeover.getBelongsToField(WorkstationChangeoverForSchedulePositionFields.WORKSTATION_CHANGEOVER_NORM);
+        String name = workstationChangeoverNorm.getStringField(WorkstationChangeoverNormFields.NAME);
+        String description = workstationChangeoverNorm.getStringField(WorkstationChangeoverNormFields.DESCRIPTION);
+        Entity workstation = workstationChangeoverNorm.getBelongsToField(WorkstationChangeoverNormFields.WORKSTATION);
+        Entity attribute = workstationChangeoverNorm.getBelongsToField(WorkstationChangeoverNormFields.ATTRIBUTE);
+        Entity fromAttributeValue = workstationChangeoverNorm.getBelongsToField(WorkstationChangeoverNormFields.FROM_ATTRIBUTE_VALUE);
+        Entity toAttributeValue = workstationChangeoverNorm.getBelongsToField(WorkstationChangeoverNormFields.TO_ATTRIBUTE_VALUE);
+        Integer duration = workstationChangeoverNorm.getIntegerField(WorkstationChangeoverNormFields.DURATION);
+        boolean isParallel = workstationChangeoverNorm.getBooleanField(WorkstationChangeoverNormFields.IS_PARALLEL);
+
+        Entity previousSchedulePosition = workstationChangeover.getBelongsToField(WorkstationChangeoverForSchedulePositionFields.PREVIOUS_SCHEDULE_POSITION);
+        Entity previousOperationalTask;
+        if (previousSchedulePosition != null) {
+            previousOperationalTask = previousSchedulePosition.getHasManyField(SchedulePositionFields.OPERATIONAL_TASKS).get(0);
+        } else {
+            previousOperationalTask = workstationChangeover.getBelongsToField(WorkstationChangeoverForSchedulePositionFields.PREVIOUS_OPERATIONAL_TASK);
+        }
+
+        workstationChangeoverForOperationalTask.setField(WorkstationChangeoverForOperationalTaskFields.NAME, name);
+        workstationChangeoverForOperationalTask.setField(WorkstationChangeoverForOperationalTaskFields.DESCRIPTION, description);
+        workstationChangeoverForOperationalTask.setField(WorkstationChangeoverForOperationalTaskFields.WORKSTATION, workstation);
+        workstationChangeoverForOperationalTask.setField(WorkstationChangeoverForOperationalTaskFields.ATTRIBUTE, attribute);
+        workstationChangeoverForOperationalTask.setField(WorkstationChangeoverForOperationalTaskFields.FROM_ATTRIBUTE_VALUE, fromAttributeValue);
+        workstationChangeoverForOperationalTask.setField(WorkstationChangeoverForOperationalTaskFields.TO_ATTRIBUTE_VALUE, toAttributeValue);
+        workstationChangeoverForOperationalTask.setField(WorkstationChangeoverForOperationalTaskFields.WORKSTATION_CHANGEOVER_NORM, workstationChangeoverNorm);
+        workstationChangeoverForOperationalTask.setField(WorkstationChangeoverForOperationalTaskFields.CURRENT_OPERATIONAL_TASK, currentOperationalTask);
+        workstationChangeoverForOperationalTask.setField(WorkstationChangeoverForOperationalTaskFields.PREVIOUS_OPERATIONAL_TASK, previousOperationalTask);
+        workstationChangeoverForOperationalTask.setField(WorkstationChangeoverForOperationalTaskFields.CHANGEOVER_TYPE, WorkstationChangeoverForOperationalTaskChangeoverType.BASED_ON_NORM.getStringValue());
+        workstationChangeoverForOperationalTask.setField(WorkstationChangeoverForOperationalTaskFields.DURATION, duration);
+        workstationChangeoverForOperationalTask.setField(WorkstationChangeoverForOperationalTaskFields.IS_PARALLEL, isParallel);
+        workstationChangeoverForOperationalTask.setField(WorkstationChangeoverForOperationalTaskFields.START_DATE, workstationChangeover.getDateField(WorkstationChangeoverForSchedulePositionFields.START_DATE));
+        workstationChangeoverForOperationalTask.setField(WorkstationChangeoverForOperationalTaskFields.FINISH_DATE, workstationChangeover.getDateField(WorkstationChangeoverForSchedulePositionFields.FINISH_DATE));
+
+        dataDefinition.save(workstationChangeoverForOperationalTask);
+    }
+
+    private DataDefinition getWorkstationChangeoverForOperationalTaskDD() {
+        return dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_WORKSTATION_CHANGEOVER_FOR_OPERATIONAL_TASK);
     }
 
 }

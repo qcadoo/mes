@@ -181,7 +181,7 @@ public class OperationalTaskHooks {
                 || Objects.isNull(startDateFromDB) || !startDate.equals(startDateFromDB);
     }
 
-    private void deleteWorkstationChangeoverForOperationalTasks(final Entity operationalTask) {
+    public void deleteWorkstationChangeoverForOperationalTasks(final Entity operationalTask) {
         List<Entity> currentWorkstationChangeoverForOperationalTasks = operationalTask.getHasManyField(OperationalTaskFields.CURRENT_WORKSTATION_CHANGEOVER_FOR_OPERATIONAL_TASKS);
 
         currentWorkstationChangeoverForOperationalTasks.forEach(workstationChangeoverForOperationalTask ->
@@ -205,7 +205,7 @@ public class OperationalTaskHooks {
         operationalTask.setField(OperationalTaskFields.CURRENT_WORKSTATION_CHANGEOVER_FOR_OPERATIONAL_TASKS, workstationChangeoverForOperationalTasks);
     }
 
-    private void setPreviousWorkstationChangeoverForOperationalTasks(final Entity operationalTask, final boolean shouldSkip) {
+    public void setPreviousWorkstationChangeoverForOperationalTasks(final Entity operationalTask, final boolean shouldSkip) {
         List<Entity> previousWorkstationChangeoverForOperationalTasks = operationalTask.getHasManyField(OperationalTaskFields.PREVIOUS_WORKSTATION_CHANGEOVER_FOR_OPERATIONAL_TASKS);
 
         previousWorkstationChangeoverForOperationalTasks.stream().filter(filterByChangeoverTypeBasedOnNorm()).forEach(workstationChangeoverForOperationalTask -> {
@@ -276,7 +276,7 @@ public class OperationalTaskHooks {
 
     private void setOperationalTaskDates(final Entity operationalTask, final List<Entity> workstationChangeoverForOperationalTasks) {
         if (!workstationChangeoverForOperationalTasks.isEmpty()) {
-            Optional<Date> mayBeMaxFinishDate = getWorkstationChangeoverForOperationalTasksMaxFinishDate(workstationChangeoverForOperationalTasks);
+            Optional<Date> mayBeMaxFinishDate = workstationChangeoverService.getWorkstationChangeoversMaxFinishDate(workstationChangeoverForOperationalTasks);
 
             if (mayBeMaxFinishDate.isPresent()) {
                 Date startDate = operationalTask.getDateField(OperationalTaskFields.START_DATE);
@@ -291,12 +291,6 @@ public class OperationalTaskHooks {
                 operationalTask.setField(OperationalTaskFields.FINISH_DATE, finishDate);
             }
         }
-    }
-
-    private Optional<Date> getWorkstationChangeoverForOperationalTasksMaxFinishDate(final List<Entity> workstationChangeoverForOperationalTasks) {
-        return workstationChangeoverForOperationalTasks.stream().map(workstationChangeoverForOperationalTask ->
-                        workstationChangeoverForOperationalTask.getDateField(WorkstationChangeoverForOperationalTaskFields.FINISH_DATE))
-                .max(Date::compareTo);
     }
 
     public void onDelete(final DataDefinition operationalTaskDD, final Entity operationalTask) {

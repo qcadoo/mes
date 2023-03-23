@@ -85,6 +85,8 @@ public final class OrdersConstants {
 
     public static final String MODEL_WORKSTATION_CHANGEOVER_FOR_OPERATIONAL_TASK = "workstationChangeoverForOperationalTask";
 
+    public static final String MODEL_WORKSTATION_CHANGEOVER_FOR_SCHEDULE_POSITION = "workstationChangeoverForSchedulePosition";
+
     public static final String MODEL_WORKSTATION_CHANGEOVER_FOR_OPERATIONAL_TASK_DTO = "workstationChangeoverForOperationalTaskDto";
 
     public static final String MODEL_SPLIT_ORDER_HELPER = "splitOrderHelper";

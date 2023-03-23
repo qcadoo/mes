@@ -11,6 +11,7 @@ import com.qcadoo.mes.newstates.StateExecutorService;
 import com.qcadoo.mes.operationTimeCalculations.OperationWorkTime;
 import com.qcadoo.mes.operationTimeCalculations.OperationWorkTimeService;
 import com.qcadoo.mes.orders.constants.*;
+import com.qcadoo.mes.orders.services.WorkstationChangeoverService;
 import com.qcadoo.mes.orders.validators.SchedulePositionValidators;
 import com.qcadoo.mes.productionLines.constants.WorkstationFieldsPL;
 import com.qcadoo.mes.productionScheduling.states.ScheduleServiceMarker;
@@ -86,6 +87,9 @@ public class ScheduleDetailsListenersPS {
 
     @Autowired
     private StateExecutorService stateExecutorService;
+
+    @Autowired
+    private WorkstationChangeoverService workstationChangeoverService;
 
     @Transactional
     public void generatePlan(final ViewDefinitionState view, final ComponentState state, final String[] args) {
@@ -170,6 +174,7 @@ public class ScheduleDetailsListenersPS {
         long startAll = System.currentTimeMillis();
         Entity schedule = ((FormComponent) state).getEntity();
         Map<Long, Date> workstationsFinishDates = Maps.newHashMap();
+        Map<Long, Entity> workstationsPositions = Maps.newHashMap();
         Set<Long> ordersToAvoid = Sets.newHashSet();
         List<Long> positionsIds = sortPositionsForWorkstations(schedule.getId());
         Date scheduleStartTime = schedule.getDateField(ScheduleFields.START_TIME);
@@ -189,7 +194,7 @@ public class ScheduleDetailsListenersPS {
             Map<Long, PositionNewData> operationWorkstationsPositionNewData = Maps.newHashMap();
 
             boolean allMachineWorkTimesEqualsZero = getWorkstationsNewFinishDate(workstationsFinishDates, scheduleStartTime,
-                    position, workstations, operationWorkstationsPositionNewData);
+                    position, workstations, operationWorkstationsPositionNewData, workstationsPositions);
 
             if (allMachineWorkTimesEqualsZero) {
                 ordersToAvoid.add(order.getId());
@@ -200,7 +205,7 @@ public class ScheduleDetailsListenersPS {
                     .equals(schedule.getStringField(ScheduleFields.WORKSTATION_ASSIGN_CRITERION))) {
                 operationWorkstationsPositionNewData.entrySet().stream()
                         .min(Comparator.comparing(e -> e.getValue().getFinishDate()))
-                        .ifPresent(entry -> updatePositionWorkstationAndDates(entry, workstationsFinishDates, position));
+                        .ifPresent(entry -> updatePositionWorkstationAndDates(entry, workstationsFinishDates, position, workstationsPositions));
             } else {
                 Map.Entry<Long, PositionNewData> firstEntry;
                 if (workstationsFinishDates.isEmpty()) {
@@ -210,7 +215,7 @@ public class ScheduleDetailsListenersPS {
                             .filter(entry -> workstationsFinishDates.containsKey(entry.getKey())).findFirst()
                             .orElse(operationWorkstationsPositionNewData.entrySet().iterator().next());
                 }
-                updatePositionWorkstationAndDates(firstEntry, workstationsFinishDates, position);
+                updatePositionWorkstationAndDates(firstEntry, workstationsFinishDates, position, workstationsPositions);
             }
             long finish = System.currentTimeMillis();
             LOG.info("Plan for shift - workstation assignment: {}s.", (finish - start) / 1000);
@@ -222,7 +227,8 @@ public class ScheduleDetailsListenersPS {
     private boolean getWorkstationsNewFinishDate(Map<Long, Date> workstationsFinishDates, Date scheduleStartTime,
                                                  Entity position,
                                                  List<Entity> workstations,
-                                                 Map<Long, PositionNewData> operationWorkstationsPositionNewData) {
+                                                 Map<Long, PositionNewData> operationWorkstationsPositionNewData,
+                                                 Map<Long, Entity> workstationsPositions) {
         Entity schedule = position.getBelongsToField(SchedulePositionFields.SCHEDULE);
         Entity technologyOperationComponent = position.getBelongsToField(SchedulePositionFields.TECHNOLOGY_OPERATION_COMPONENT);
         BigDecimal staffFactor = normService.getStaffFactor(technologyOperationComponent, technologyOperationComponent.getIntegerField(TechnologyOperationComponentFieldsTNFO.OPTIMAL_STAFF));
@@ -250,6 +256,9 @@ public class ScheduleDetailsListenersPS {
             }
             Date finishDate = getFinishDate(workstationsFinishDates, scheduleStartTime, schedule, workstation);
             finishDate = getFinishDateWithChildren(position, finishDate);
+            Entity previousPosition = workstationsPositions.get(workstation.getId());
+            List<Entity> workstationChangeovers = workstationChangeoverService.findWorkstationChangeoversForSchedulePosition(finishDate, workstation, position, previousPosition);
+            finishDate = getFinisDateWithChangeovers(finishDate, workstationChangeovers);
             DateTime finishDateTime = new DateTime(finishDate);
             Entity productionLine = workstation.getBelongsToField(WorkstationFieldsPL.PRODUCTION_LINE);
             Date newStartDate = shiftsService
@@ -260,10 +269,20 @@ public class ScheduleDetailsListenersPS {
                 newFinishDate = Date.from(newFinishDate.toInstant().plusSeconds(additionalTime));
             }
             PositionNewData positionNewData = new PositionNewData(laborWorkTime, machineWorkTime, additionalTime, newStartDate,
-                    newFinishDate);
+                    newFinishDate, workstationChangeovers);
             operationWorkstationsPositionNewData.put(workstation.getId(), positionNewData);
         }
         return allMachineWorkTimesEqualsZero;
+    }
+
+    private Date getFinisDateWithChangeovers(Date finishDate, List<Entity> workstationChangeovers) {
+        if (!workstationChangeovers.isEmpty()) {
+            Optional<Date> mayBeMaxFinishDate = workstationChangeoverService.getWorkstationChangeoversMaxFinishDate(workstationChangeovers);
+            if (mayBeMaxFinishDate.isPresent()) {
+                finishDate = mayBeMaxFinishDate.get();
+            }
+        }
+        return finishDate;
     }
 
     private Date getFinishDateWithChildren(Entity position, Date finishDate) {
@@ -373,7 +392,8 @@ public class ScheduleDetailsListenersPS {
     }
 
     private void updatePositionWorkstationAndDates(Map.Entry<Long, PositionNewData> entry,
-                                                   Map<Long, Date> workstationsFinishDates, Entity position) {
+                                                   Map<Long, Date> workstationsFinishDates, Entity position,
+                                                   Map<Long, Entity> workstationsPositions) {
         PositionNewData positionNewData = entry.getValue();
         workstationsFinishDates.put(entry.getKey(), positionNewData.getFinishDate());
         position.setField(SchedulePositionFields.WORKSTATION, entry.getKey());
@@ -383,7 +403,9 @@ public class ScheduleDetailsListenersPS {
         position.setField(SchedulePositionFields.LABOR_WORK_TIME, positionNewData.getLaborWorkTime());
         position.setField(SchedulePositionFields.MACHINE_WORK_TIME, positionNewData.getMachineWorkTime());
         position.setField(SchedulePositionFields.ADDITIONAL_TIME, positionNewData.getAdditionalTime());
-        position.getDataDefinition().fastSave(position);
+        position.setField(SchedulePositionFields.CURRENT_WORKSTATION_CHANGEOVER_FOR_SCHEDULE_POSITIONS, positionNewData.getWorkstationChangeovers());
+        position = position.getDataDefinition().fastSave(position);
+        workstationsPositions.put(entry.getKey(), position);
     }
 
     private List<Long> sortPositionsForWorkstations(Long scheduleId) {
@@ -416,7 +438,8 @@ public class ScheduleDetailsListenersPS {
     }
 
     @Transactional
-    public void assignWorkersToOperations(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+    public void assignWorkersToOperations(final ViewDefinitionState view, final ComponentState state,
+                                          final String[] args) {
         long start = System.currentTimeMillis();
         Entity schedule = ((FormComponent) state).getEntity();
         String scheduleWorkerAssignCriterion = schedule.getStringField(ScheduleFields.WORKER_ASSIGN_CRITERION);
@@ -455,7 +478,9 @@ public class ScheduleDetailsListenersPS {
     }
 
     private Optional<Map.Entry<Long, Date>> getFirstEntryOptional(String scheduleWorkerAssignCriterion,
-                                                                  Map<Long, Long> workstationLastWorkers, Entity workstation, Map<Long, Date> operationWorkersFinishDates) {
+                                                                  Map<Long, Long> workstationLastWorkers,
+                                                                  Entity workstation,
+                                                                  Map<Long, Date> operationWorkersFinishDates) {
         Long workstationLastWorkerId = workstationLastWorkers.get(workstation.getId());
         Optional<Map.Entry<Long, Date>> firstEntryOptional = operationWorkersFinishDates.entrySet().stream()
                 .filter(entry -> entry.getKey().equals(workstationLastWorkerId)).findFirst();
@@ -529,7 +554,8 @@ public class ScheduleDetailsListenersPS {
         }
     }
 
-    private void updatePositionWorker(Map<Long, Date> workersFinishDates, Map<Long, Long> workstationLastWorkers, Entity position,
+    private void updatePositionWorker(Map<Long, Date> workersFinishDates, Map<Long, Long> workstationLastWorkers,
+                                      Entity position,
                                       Entity workstation, Map.Entry<Long, Date> firstEntry) {
         workersFinishDates.put(firstEntry.getKey(), position.getDateField(SchedulePositionFields.END_TIME));
         workstationLastWorkers.put(workstation.getId(), firstEntry.getKey());
