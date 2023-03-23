@@ -66,13 +66,8 @@ public class WorkstationChangeoverService {
                 List<Entity> previousProductAttributeValues = getProductAttributeValuesWithDataTypeCalculated(previousProduct);
 
                 for (Entity currentProductAttributeValue : currentProductAttributeValues) {
-                    Entity attribute = currentProductAttributeValue.getBelongsToField(ProductAttributeValueFields.ATTRIBUTE);
-                    Entity attributeValue = currentProductAttributeValue.getBelongsToField(ProductAttributeValueFields.ATTRIBUTE_VALUE);
-
-                    List<Entity> filteredProductAttributeValues = previousProductAttributeValues.stream().filter(previousProductAttributeValue ->
-                            filterProductAttributeValuesWithAttribute(previousProductAttributeValue, attribute)).collect(Collectors.toList());
-
-                    createChangeoversForAttribute(workstation, schedulePosition, previousSchedulePosition, workstationChangeovers, previousOperationalTask, attribute, attributeValue, filteredProductAttributeValues);
+                    createChangeoversForAttribute(workstation, schedulePosition, previousSchedulePosition, workstationChangeovers,
+                            previousOperationalTask, previousProductAttributeValues, currentProductAttributeValue);
                 }
             }
 
@@ -85,8 +80,13 @@ public class WorkstationChangeoverService {
     private void createChangeoversForAttribute(Entity workstation, Entity schedulePosition,
                                                Entity previousSchedulePosition,
                                                List<Entity> workstationChangeovers, Entity previousOperationalTask,
-                                               Entity attribute,
-                                               Entity attributeValue, List<Entity> filteredProductAttributeValues) {
+                                               List<Entity> previousProductAttributeValues,
+                                               Entity currentProductAttributeValue) {
+        Entity attribute = currentProductAttributeValue.getBelongsToField(ProductAttributeValueFields.ATTRIBUTE);
+        Entity attributeValue = currentProductAttributeValue.getBelongsToField(ProductAttributeValueFields.ATTRIBUTE_VALUE);
+
+        List<Entity> filteredProductAttributeValues = previousProductAttributeValues.stream().filter(previousProductAttributeValue ->
+                filterProductAttributeValuesWithAttribute(previousProductAttributeValue, attribute)).collect(Collectors.toList());
         if (!filteredProductAttributeValues.isEmpty()) {
             List<Entity> workstationChangeoverNorms = workstationChangeoverNormService.findWorkstationChangeoverNorms(workstation, attribute);
 

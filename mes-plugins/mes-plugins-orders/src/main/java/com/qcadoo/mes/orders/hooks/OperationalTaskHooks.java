@@ -155,7 +155,7 @@ public class OperationalTaskHooks {
         }
     }
 
-    private void setWorkstationChangeoverForOperationalTasks(final Entity operationalTask) {
+    public void setWorkstationChangeoverForOperationalTasks(final Entity operationalTask) {
         Long operationalTaskId = operationalTask.getId();
         boolean shouldSkip = operationalTask.getBooleanField(OperationalTaskFields.SHOULD_SKIP);
         Entity workstation = operationalTask.getBelongsToField(OperationalTaskFields.WORKSTATION);
