@@ -91,7 +91,7 @@ public final class ParameterFieldsO {
 
     public static final String ALLOW_CHANGE_OR_DELETE_ORDER_TECHNOLOGICAL_PROCESS = "allowChangeOrDeleteOrderTechnologicalProcess";
 
-    public static final String setOrderDatesBasedOnTaskDates = "setOrderDatesBasedOnTaskDates";
+    public static final String SET_ORDER_DATES_BASED_ON_TASK_DATES = "setOrderDatesBasedOnTaskDates";
 
     public static final String AUTOMATICALLY_GENERATE_TASKS_FOR_ORDER = "automaticallyGenerateTasksForOrder";
 
