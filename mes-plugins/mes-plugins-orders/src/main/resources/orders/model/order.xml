@@ -167,6 +167,7 @@
         <boolean name="finalProductionTracking" copyable="false" default="false"/>
 
         <boolean name="generatePPS" persistent="false" default="false"/>
+        <boolean name="regeneratePQC" persistent="false" default="false"/>
 
         <boolean name="newVersionTechnologySet" persistent="false" default="false"/>
 
@@ -197,6 +198,9 @@
         <manyToMany name="staff" model="staff" plugin="basic" joinField="orders" copyable="true"/>
 
         <hasMany name="orderAttachments" joinField="order" model="orderAttachment" cascade="delete" copyable="true"/>
+
+        <hasMany name="splitOrderParents" joinField="order" model="splitOrderParent"
+                 cascade="delete"/>
     </fields>
 
     <hooks>

@@ -222,6 +222,8 @@
 									acceptOrder.disable("#{translate(orders.orders.ribbon.message.ordersWithDifferentStatesSelected)}");
 									declineOrder.disable("#{translate(orders.orders.ribbon.message.ordersWithDifferentStatesSelected)}");
 									interruptOrder.disable("#{translate(orders.orders.ribbon.message.ordersWithDifferentStatesSelected)}");
+									splitOrdersParts.disable("#{translate(orders.orders.ribbon.message.splitOrdersParts)}");
+								    splitOrders.disable("#{translate(orders.orders.ribbon.message.splitOrders)}");
 								}
 								copyButton.enable();
 								var canNotDelete = false;
