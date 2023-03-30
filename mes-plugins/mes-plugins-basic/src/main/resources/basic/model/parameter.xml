@@ -25,43 +25,49 @@
 
 -->
 <model name="parameter" deletable="false" cacheable="true"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
-	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
+       xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
 
-	<fields>
-		<belongsTo name="country" plugin="basic" model="country" />
-		<belongsTo name="currency" plugin="basic" model="currency" />
-		<dictionary name="unit" dictionary="units" />
-		<string name="additionalTextInFooter">
-			<validatesLength max="128" />
-		</string>
-		<belongsTo name="company" plugin="basic" model="company" />
-		<hasMany name="reportColumnWidths" joinField="parameter"
-			model="reportColumnWidth" cascade="delete" copyable="true" />
-		<boolean name="exportToPdfOnlyVisibleColumns" default="false" />
-		<boolean name="exportToCsvOnlyVisibleColumns" default="false" />
-		<boolean name="copyAttributesToSizeProducts" default="false" />
-		<boolean name="copyNominalCostFamilyOfProductsSizes" default="false" />
-		<boolean name="manyArticlesWithTheSameEAN" default="false" />
-		<enum name="dashboardShowForProduct" required="true" values="01number,02name,03both" default="01number"/>
-		<enum name="quantityMadeOnTheBasisOfDashboard" required="true" values="01approvedProduction,02reportedProduction" default="01approvedProduction"/>
-		<enum name="dashboardOrderSorting" required="true" values="01startDate,02finishDate" default="01startDate"/>
+    <fields>
+        <belongsTo name="country" plugin="basic" model="country"/>
+        <belongsTo name="currency" plugin="basic" model="currency"/>
+        <dictionary name="unit" dictionary="units"/>
+        <string name="additionalTextInFooter">
+            <validatesLength max="128"/>
+        </string>
+        <belongsTo name="company" plugin="basic" model="company"/>
+        <hasMany name="reportColumnWidths" joinField="parameter"
+                 model="reportColumnWidth" cascade="delete" copyable="true"/>
+        <boolean name="exportToPdfOnlyVisibleColumns" default="false"/>
+        <boolean name="exportToCsvOnlyVisibleColumns" default="false"/>
+        <boolean name="copyAttributesToSizeProducts" default="false"/>
+        <boolean name="copyNominalCostFamilyOfProductsSizes" default="false"/>
+        <boolean name="manyArticlesWithTheSameEAN" default="false"/>
+        <enum name="dashboardShowForProduct" required="true" values="01number,02name,03both" default="01number"/>
+        <enum name="quantityMadeOnTheBasisOfDashboard" required="true"
+              values="01approvedProduction,02reportedProduction" default="01approvedProduction"/>
+        <enum name="dashboardOrderSorting" required="true" values="01startDate,02finishDate" default="01startDate"/>
 
-		<hasMany name="dashboardButtons" model="dashboardButton"
-				 joinField="parameter" cascade="delete" copyable="true" />
-		<file name="logo"/>
-		<integer name="numberOfficeLicenses" required="true" default="1">
-			<validatesRange from="0" exclusively="true"/>
-		</integer>
-		<integer name="numberTerminalLicenses" required="true" default="1">
-			<validatesRange from="0"/>
-		</integer>
-		<enum name="typeTerminalLicenses" required="true" values="01upToTenEmployees,02from11to50Employees,03over51Employees" default="01upToTenEmployees"/>
-	</fields>
+        <hasMany name="dashboardButtons" model="dashboardButton"
+                 joinField="parameter" cascade="delete" copyable="true"/>
+        <file name="logo"/>
+        <integer name="numberOfficeLicenses" required="true" default="1">
+            <validatesRange from="0" exclusively="true"/>
+        </integer>
+        <integer name="numberTerminalLicenses" required="true" default="1">
+            <validatesRange from="0"/>
+        </integer>
+        <enum name="typeTerminalLicenses" required="true"
+              values="01upToTenEmployees,02from11to50Employees,03over51Employees" default="01upToTenEmployees"/>
 
-	<hooks>
-		<onCreate class="com.qcadoo.mes.basic.hooks.ParameterModelHooks"
-			method="setDefaultValues" />
-	</hooks>
+        <enum name="tasksSelectionBy" required="true"
+              values="01orderDate,02taskDate,03taskStartDate"
+              default="01orderDate"/>
+    </fields>
+
+    <hooks>
+        <onCreate class="com.qcadoo.mes.basic.hooks.ParameterModelHooks"
+                  method="setDefaultValues"/>
+    </hooks>
 
 </model>

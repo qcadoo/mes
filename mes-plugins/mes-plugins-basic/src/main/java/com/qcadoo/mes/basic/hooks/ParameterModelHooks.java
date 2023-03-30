@@ -40,6 +40,7 @@ public class ParameterModelHooks {
 
     private static final String L_RELEASE_OF_MATERIALS = "releaseOfMaterials";
     private static final String L_RECEIPT_OF_PRODUCTS = "receiptOfProducts";
+    public static final String TASKS_SELECTION_BY = "tasksSelectionBy";
 
     @Autowired
     private CurrencyService currencyService;
@@ -54,6 +55,7 @@ public class ParameterModelHooks {
         parameter.setField(L_RECEIPT_OF_PRODUCTS, "01onAcceptanceRegistrationRecord");
         parameter.setField(ParameterFields.NUMBER_TERMINAL_LICENSES, 1);
         parameter.setField(ParameterFields.NUMBER_OFFICE_LICENSES, 1);
+        parameter.setField(TASKS_SELECTION_BY, "01orderDate");
     }
 
 }
