@@ -138,7 +138,7 @@ public class DashboardKanbanDataProvider {
             query += " ASC ";
         }
 
-        query += "LIMIT 50";
+        query += "LIMIT 200";
 
         return query;
     }
@@ -230,7 +230,7 @@ public class DashboardKanbanDataProvider {
         query += "AND date_trunc('day', operationaltaskdto.startdate) <= current_date AND current_date <= date_trunc('day', operationaltaskdto.finishdate) ";
         query += additionalRestrictions;
         query += "ORDER BY operationaltaskdto.workstationnumber, operationaltaskdto.startdate ";
-        query += "LIMIT 50";
+        query += "LIMIT 200";
 
         return query;
     }

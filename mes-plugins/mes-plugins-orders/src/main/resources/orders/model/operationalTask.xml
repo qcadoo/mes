@@ -73,6 +73,8 @@
                  joinField="currentOperationalTask" cascade="delete"/>
         <hasMany name="previousWorkstationChangeoverForOperationalTasks" model="workstationChangeoverForOperationalTask"
                  joinField="previousOperationalTask" cascade="delete"/>
+        <hasMany name="previousWorkstationChangeoverForSchedulePositions" model="workstationChangeoverForSchedulePosition"
+                 joinField="previousOperationalTask" cascade="delete"/>
     </fields>
 
     <hooks>

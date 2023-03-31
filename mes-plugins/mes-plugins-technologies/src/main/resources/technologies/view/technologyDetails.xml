@@ -145,16 +145,6 @@
 									return;
 								}
 
-                                if ((isTemplateAccepted == '1') || (state == "02accepted")) {
-                                    #{attachmentsGrid}.setEnabled(false);
-                                    $("input","#fileupload").prop('disabled',true);
-                                    $('#fileupload').fileupload({dropZone: null});
-                                } else {
-                                    #{attachmentsGrid}.setEnabled(true);
-                                    $("input","#fileupload").prop('disabled',false);
-                                    $('#fileupload').fileupload({dropZone: $('#dropzone')});
-                                }
-
 								updateRibbon(state);
 							}
 						});
@@ -452,6 +442,7 @@
                             <option type="canHaveChildren" value="false"/>
                         </dataType>
 
+                        <option type="offPermanentlyDisabled" value="true"/>
                         <option type="selectableWhenDisabled" value="true"/>
                         <option type="hasCustomActionButton" value="true"/>
                         <option type="customActionIcon" value="clearIcon16_dis.png"/>

@@ -1,10 +1,21 @@
 package com.qcadoo.mes.orders.states;
 
-import java.lang.reflect.InvocationTargetException;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
-
+import com.qcadoo.mes.basic.ParameterService;
+import com.qcadoo.mes.basic.ShiftsService;
+import com.qcadoo.mes.newstates.StateExecutorService;
+import com.qcadoo.mes.orders.constants.*;
+import com.qcadoo.mes.orders.hooks.OperationalTaskHooks;
+import com.qcadoo.mes.orders.listeners.OrderDetailsListeners;
+import com.qcadoo.mes.orders.states.constants.OperationalTaskStateStringValues;
+import com.qcadoo.mes.states.StateChangeContext;
+import com.qcadoo.mes.states.constants.StateChangeStatus;
+import com.qcadoo.mes.states.messages.constants.StateMessageType;
+import com.qcadoo.model.api.DataDefinition;
+import com.qcadoo.model.api.DataDefinitionService;
+import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.search.JoinType;
+import com.qcadoo.model.api.search.SearchRestrictions;
+import com.qcadoo.security.api.SecurityService;
 import org.apache.commons.beanutils.MethodUtils;
 import org.hibernate.Query;
 import org.hibernate.classic.Session;
@@ -14,34 +25,21 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.util.FieldUtils;
 import org.springframework.stereotype.Service;
 
-import com.qcadoo.mes.basic.ParameterService;
-import com.qcadoo.mes.basic.ShiftsService;
-import com.qcadoo.mes.newstates.StateExecutorService;
-import com.qcadoo.mes.orders.constants.OperationalTaskFields;
-import com.qcadoo.mes.orders.constants.OrderFields;
-import com.qcadoo.mes.orders.constants.OrdersConstants;
-import com.qcadoo.mes.orders.constants.ScheduleFields;
-import com.qcadoo.mes.orders.listeners.OrderDetailsListeners;
-import com.qcadoo.mes.orders.states.constants.OperationalTaskStateStringValues;
-import com.qcadoo.mes.states.StateChangeContext;
-import com.qcadoo.mes.states.constants.StateChangeStatus;
-import com.qcadoo.mes.states.messages.constants.StateMessageType;
-import com.qcadoo.model.api.DataDefinition;
-import com.qcadoo.model.api.DataDefinitionService;
-import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.search.SearchRestrictions;
-import com.qcadoo.security.api.SecurityService;
+import java.lang.reflect.InvocationTargetException;
+import java.util.Date;
+import java.util.List;
+import java.util.Objects;
 
 @Service
 public class OperationalTaskOrderStateService {
 
     private static final Logger LOG = LoggerFactory.getLogger(OperationalTaskOrderStateService.class);
 
-    public static final String FOR_EACH = "03forEach";
+    private static final String L_FOR_EACH = "03forEach";
 
-    public static final String L_TYPE_OF_PRODUCTION_RECORDING = "typeOfProductionRecording";
+    private static final String L_TYPE_OF_PRODUCTION_RECORDING = "typeOfProductionRecording";
 
-    public static final String ORDER_ID = "orderId";
+    private static final String L_ORDER_ID = "orderId";
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
@@ -56,36 +54,74 @@ public class OperationalTaskOrderStateService {
     private ParameterService parameterService;
 
     @Autowired
-    private OrderDetailsListeners orderDetailsListeners;
+    private ShiftsService shiftsService;
 
     @Autowired
     private OperationalTaskStateChangeDescriber operationalTaskStateChangeDescriber;
 
     @Autowired
-    private ShiftsService shiftsService;
+    private OperationalTaskHooks operationalTaskHooks;
 
-    public void startOperationalTask(StateChangeContext stateChangeContext) {
+    @Autowired
+    private OrderDetailsListeners orderDetailsListeners;
+
+    public void startOperationalTask(final StateChangeContext stateChangeContext) {
         try {
             changeOperationalTaskState(stateChangeContext,
                     "UPDATE com.qcadoo.model.beans.orders.OrdersOperationalTask SET state = '02started' WHERE order_id = :orderId");
         } catch (Exception exc) {
             stateChangeContext.addMessage("orders.operationalTask.error.startOperationalTask", StateMessageType.FAILURE);
             stateChangeContext.setStatus(StateChangeStatus.FAILURE);
+
             LOG.error("Error when start operational task.", exc);
         }
     }
 
-    private void changeOperationalTaskState(StateChangeContext stateChangeContext, String updateOTHQL) {
+    public void rejectOperationalTask(final StateChangeContext stateChangeContext) {
+        try {
+            Entity order = stateChangeContext.getOwner();
+
+            List<Entity> operationalTasks = order.getHasManyField(OrderFields.OPERATIONAL_TASKS);
+
+            operationalTasks.forEach(this::resetWorkstationChangeoverForOperationalTasks);
+
+            changeOperationalTaskState(stateChangeContext,
+                    "UPDATE com.qcadoo.model.beans.orders.OrdersOperationalTask SET state = '04rejected' WHERE order_id = :orderId");
+        } catch (Exception exc) {
+            stateChangeContext.addMessage("orders.operationalTask.error.rejectOperationalTask", StateMessageType.FAILURE);
+            stateChangeContext.setStatus(StateChangeStatus.FAILURE);
+
+            LOG.error("Error when reject operational task.", exc);
+        }
+    }
+
+    public void finishOperationalTask(final StateChangeContext stateChangeContext) {
+        try {
+            changeOperationalTaskState(stateChangeContext,
+                    "UPDATE com.qcadoo.model.beans.orders.OrdersOperationalTask SET state = '03finished' WHERE order_id = :orderId AND state = '02started'");
+        } catch (Exception exc) {
+            stateChangeContext.addMessage("orders.operationalTask.error.finishOperationalTask", StateMessageType.FAILURE);
+            stateChangeContext.setStatus(StateChangeStatus.FAILURE);
+
+            LOG.error("Error when finish operational task.", exc);
+        }
+    }
+
+    private void changeOperationalTaskState(final StateChangeContext stateChangeContext, final String updateOTHQL) {
         Entity order = stateChangeContext.getOwner();
+
         Session currentSession = getCurrentSession();
+
         Query updateOTQuery = currentSession.createQuery(updateOTHQL);
-        updateOTQuery.setLong(ORDER_ID, order.getId());
+
+        updateOTQuery.setLong(L_ORDER_ID, order.getId());
+
         updateOTQuery.executeUpdate();
     }
 
     private Session getCurrentSession() {
-        DataDefinition dataDefinition = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER,
-                OrdersConstants.MODEL_OPERATIONAL_TASK);
+        DataDefinition dataDefinition = getOperationalTaskDD();
+
         Object dataAccessService = FieldUtils.getProtectedFieldValue("dataAccessService", dataDefinition);
         Object hibernateService = FieldUtils.getProtectedFieldValue("hibernateService", dataAccessService);
 
@@ -96,67 +132,60 @@ public class OperationalTaskOrderStateService {
         }
     }
 
-    public void rejectOperationalTasksForSchedule(Entity schedule) {
+    public void generateOperationalTasks(StateChangeContext stateChangeContext) {
+        if (parameterService.getParameter().getBooleanField(ParameterFieldsO.AUTOMATICALLY_GENERATE_TASKS_FOR_ORDER)) {
+            Entity order = stateChangeContext.getOwner();
+
+            if (L_FOR_EACH.equals(order.getStringField(L_TYPE_OF_PRODUCTION_RECORDING))
+                    && order.getHasManyField(OrderFields.OPERATIONAL_TASKS).isEmpty()) {
+                orderDetailsListeners.createOperationalTasksForOrder(order, true);
+            }
+        }
+    }
+
+    public void rejectOperationalTasksForSchedule(final Entity schedule) {
         String userLogin = securityService.getCurrentUserName();
         Entity shift = shiftsService.getShiftFromDateWithTime(new Date());
+
         List<Entity> positions = schedule.getHasManyField(ScheduleFields.POSITIONS);
+
         try {
-            for (Entity pos : positions) {
-                Entity operationalTask = dataDefinitionService
-                        .get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_OPERATIONAL_TASK).find()
-                        .add(SearchRestrictions.belongsTo(OperationalTaskFields.SCHEDULE_POSITION, pos)).setMaxResults(1)
-                        .uniqueResult();
+            DataDefinition operationalTaskDD = getOperationalTaskDD();
+
+            for (Entity position : positions) {
+                Entity operationalTask = operationalTaskDD.find()
+                        .createAlias(OperationalTaskFields.SCHEDULE_POSITION, OperationalTaskFields.SCHEDULE_POSITION, JoinType.LEFT)
+                        .add(SearchRestrictions.eq(OperationalTaskFields.SCHEDULE_POSITION + "." + "id", position.getId()))
+                        .setMaxResults(1).uniqueResult();
+
                 if (Objects.nonNull(operationalTask)) {
-                    Entity context = stateExecutorService.buildStateChangeEntity(operationalTaskStateChangeDescriber,
+                    Entity operationalTaskStateChange = stateExecutorService.buildStateChangeEntity(operationalTaskStateChangeDescriber,
                             operationalTask, userLogin, operationalTask.getStringField(OperationalTaskFields.STATE),
                             OperationalTaskStateStringValues.REJECTED, shift);
-                    context.setField("status", StateChangeStatus.SUCCESSFUL.getStringValue());
-                    context.getDataDefinition().fastSave(context);
+
+                    operationalTaskStateChange.setField(OperationalTaskStateChangeFields.STATUS, StateChangeStatus.SUCCESSFUL.getStringValue());
+                    operationalTaskStateChange.getDataDefinition().fastSave(operationalTaskStateChange);
+
                     operationalTask.setField(OperationalTaskFields.STATE, OperationalTaskStateStringValues.REJECTED);
                     operationalTask.getDataDefinition().fastSave(operationalTask);
+
+                    resetWorkstationChangeoverForOperationalTasks(operationalTask);
                 }
             }
         } catch (Exception exc) {
             schedule.addGlobalError("orders.operationalTask.error.rejectOperationalTask");
+
             LOG.error("Error when reject operational task.", exc);
-
         }
     }
 
-    public void rejectOperationalTask(StateChangeContext stateChangeContext) {
-        try {
-            changeOperationalTaskState(stateChangeContext,
-                    "UPDATE com.qcadoo.model.beans.orders.OrdersOperationalTask SET state = '04rejected' WHERE order_id = :orderId");
-        } catch (Exception exc) {
-            stateChangeContext.addMessage("orders.operationalTask.error.rejectOperationalTask", StateMessageType.FAILURE);
-            stateChangeContext.setStatus(StateChangeStatus.FAILURE);
-            LOG.error("Error when reject operational task.", exc);
-
-        }
+    private void resetWorkstationChangeoverForOperationalTasks(final Entity operationalTask) {
+        operationalTaskHooks.deleteWorkstationChangeoverForOperationalTasks(operationalTask);
+        operationalTaskHooks.setPreviousWorkstationChangeoverForOperationalTasks(operationalTask, true);
     }
 
-    public void finishOperationalTask(StateChangeContext stateChangeContext) {
-        try {
-            changeOperationalTaskState(stateChangeContext,
-                    "UPDATE com.qcadoo.model.beans.orders.OrdersOperationalTask SET state = '03finished' WHERE order_id = :orderId AND state = '02started'");
-        } catch (Exception exc) {
-            stateChangeContext.addMessage("orders.operationalTask.error.finishOperationalTask", StateMessageType.FAILURE);
-            stateChangeContext.setStatus(StateChangeStatus.FAILURE);
-            LOG.error("Error when finish operational task.", exc);
-
-        }
+    private DataDefinition getOperationalTaskDD() {
+        return dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_OPERATIONAL_TASK);
     }
 
-    public void generateOperationalTasks(StateChangeContext stateChangeContext) {
-        if (parameterService.getParameter().getBooleanField("automaticallyGenerateTasksForOrder")) {
-            Entity order = stateChangeContext.getOwner();
-
-            if (FOR_EACH.equals(order.getStringField(L_TYPE_OF_PRODUCTION_RECORDING))
-                    && order.getHasManyField(OrderFields.OPERATIONAL_TASKS).isEmpty()) {
-                orderDetailsListeners.createOperationalTasksForOrder(order, true);
-            }
-
-        }
-
-    }
 }

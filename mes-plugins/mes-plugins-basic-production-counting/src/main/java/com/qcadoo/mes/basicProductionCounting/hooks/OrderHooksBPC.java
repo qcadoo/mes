@@ -104,7 +104,7 @@ public class OrderHooksBPC {
         Entity technologyDb = order.getDataDefinition().get(order.getId()).getBelongsToField(OrderFields.TECHNOLOGY);
         Entity productDb = order.getDataDefinition().get(order.getId()).getBelongsToField(OrderFields.PRODUCT);
         if (Objects.isNull(technologyDb) || !technology.getId().equals(technologyDb.getId())
-                || !product.getId().equals(productDb.getId())) {
+                || !product.getId().equals(productDb.getId()) || order.getBooleanField("regeneratePQC")) {
             return true;
         }
         return false;

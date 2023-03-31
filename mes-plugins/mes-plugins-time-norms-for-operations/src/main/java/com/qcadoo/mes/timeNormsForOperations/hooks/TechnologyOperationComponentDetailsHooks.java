@@ -23,28 +23,40 @@
  */
 package com.qcadoo.mes.timeNormsForOperations.hooks;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.technologies.TechnologyService;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
+import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
+import com.qcadoo.mes.technologies.states.constants.TechnologyState;
 import com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperationComponentFieldsTNFO;
+import com.qcadoo.model.api.DataDefinition;
+import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
 import com.qcadoo.view.api.ComponentState.MessageType;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
+import com.qcadoo.view.api.components.GridComponent;
 import com.qcadoo.view.constants.QcadooViewConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 import static com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperationComponentFieldsTNFO.*;
 
 @Service
 public class TechnologyOperationComponentDetailsHooks {
+
+    private List<String> references = Lists.newArrayList("tpz", "productionInOneCycle", "productionInOneCycleUNIT", "tj",
+            "timeNextOperation", "pieceworkProduction", "areProductQuantitiesDivisible", "isTjDivisible", "minStaff", "optimalStaff",
+            "tjDecreasesForEnlargedStaff", "machineUtilization", "laborUtilization", "nextOperationAfterProducedType",
+            "nextOperationAfterProducedQuantity", "nextOperationAfterProducedQuantityUNIT");
 
     @Autowired
     private TechnologyService technologyService;
@@ -52,10 +64,26 @@ public class TechnologyOperationComponentDetailsHooks {
     @Autowired
     private NumberService numberService;
 
+    @Autowired
+    private DataDefinitionService dataDefinitionService;
+
     public void checkOperationOutputQuantities(final ViewDefinitionState view) {
         FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         if (form.getEntityId() == null) {
             return;
+        }
+        Entity toc = form.getEntity();
+        toc = getTechnologyOperationComponentDD().get(toc.getId());
+
+        Entity technology = toc.getBelongsToField(TechnologyOperationComponentFields.TECHNOLOGY);
+
+        if (!TechnologyState.DRAFT.getStringValue().equals(technology.getStringField(TechnologyFields.STATE))) {
+            for (String reference : references) {
+                FieldComponent field = (FieldComponent) view.getComponentByReference(reference);
+                field.setEnabled(false);
+            }
+            GridComponent techOperCompWorkstationTimesGrid = (GridComponent) view.getComponentByReference("techOperCompWorkstationTimes");
+            techOperCompWorkstationTimesGrid.setEnabled(false);
         }
 
         Entity operationComponent = form.getEntity();
@@ -151,5 +179,10 @@ public class TechnologyOperationComponentDetailsHooks {
             component.setFieldValue(unit);
             component.requestComponentUpdateState();
         }
+    }
+
+    private DataDefinition getTechnologyOperationComponentDD() {
+        return dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
+                TechnologiesConstants.MODEL_TECHNOLOGY_OPERATION_COMPONENT);
     }
 }

@@ -91,9 +91,15 @@ public final class ParameterFieldsO {
 
     public static final String ALLOW_CHANGE_OR_DELETE_ORDER_TECHNOLOGICAL_PROCESS = "allowChangeOrDeleteOrderTechnologicalProcess";
 
-    public static final String SCHEDULE_SORT_ORDER = "scheduleSortOrder";
+    public static final String SET_ORDER_DATES_BASED_ON_TASK_DATES = "setOrderDatesBasedOnTaskDates";
+
+    public static final String AUTOMATICALLY_GENERATE_TASKS_FOR_ORDER = "automaticallyGenerateTasksForOrder";
+
+    public static final String COMPLETE_STATION_AND_EMPLOYEE_IN_GENERATED_TASKS = "completeStationAndEmployeeInGeneratedTasks";
 
     public static final String AUTOMATICALLY_GENERATE_PROCESSES_FOR_ORDER = "automaticallyGenerateProcessesForOrder";
+
+    public static final String SCHEDULE_SORT_ORDER = "scheduleSortOrder";
 
     public static final String INCLUDE_TPZ_S = "includeTpzS";
 

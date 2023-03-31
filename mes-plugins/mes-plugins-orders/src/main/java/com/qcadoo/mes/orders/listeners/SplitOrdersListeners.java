@@ -79,6 +79,7 @@ public class SplitOrdersListeners {
 
 
                 Entity order = parent.getBelongsToField(SplitOrderParentConstants.ORDER);
+                Entity technology = order.getBelongsToField(OrderFields.TECHNOLOGY);
                 Entity product = order.getBelongsToField(OrderFields.PRODUCT);
 
                 String numberPrefix = parent.getStringField(SplitOrderParentConstants.NUMBER) + "-";
@@ -106,6 +107,7 @@ public class SplitOrdersListeners {
                                     numberService.setScaleWithDefaultMathContext(newPlannedQuantity),
                                     product.getStringField(ProductFields.UNIT))));
                     entity.setField(ORDERS_GROUP, order.getBelongsToField(ORDERS_GROUP));
+                    entity.setField("regeneratePQC", true);
 
                     entity = entity.getDataDefinition().save(entity);
                     if(!entity.isValid()) {
@@ -172,7 +174,7 @@ public class SplitOrdersListeners {
                 entity.setField(OrderFields.DATE_FROM, child.getDateField(SplitOrderChildConstants.DATE_FROM));
                 entity.setField(OrderFields.DATE_TO, child.getDateField(SplitOrderChildConstants.DATE_TO));
                 entity.setField(ORDERS_GROUP, order.getBelongsToField(ORDERS_GROUP));
-
+                entity.setField("regeneratePQC", true);
                 entity = entity.getDataDefinition().save(entity);
                 if(!entity.isValid()) {
                     throw new IllegalStateException("Undone split orders");

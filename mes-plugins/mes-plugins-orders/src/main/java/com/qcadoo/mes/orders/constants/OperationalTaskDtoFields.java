@@ -49,6 +49,8 @@ public final class OperationalTaskDtoFields {
 
     public static final String WORKSTATION_NUMBER = "workstationNumber";
 
+    public static final String PRODUCTION_LINE_NUMBER = "productionLineNumber";
+
     public static final String WORKSTATION_ID = "workstationId";
 
     public static final String ORDER_ID = "orderId";
@@ -74,5 +76,7 @@ public final class OperationalTaskDtoFields {
     public static final String DONE_IN_PERCENTAGE = "doneInPercentage";
 
     public static final String ORDER_PRODUCT_NUMBER = "orderProductNumber";
+
+    public static final String ACTUAL_STAFF = "actualStaff";
 
 }

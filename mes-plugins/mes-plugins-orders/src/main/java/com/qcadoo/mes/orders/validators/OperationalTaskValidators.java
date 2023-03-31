@@ -33,7 +33,6 @@ import com.qcadoo.mes.orders.states.constants.OperationalTaskStateStringValues;
 import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
 import com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperationComponentFieldsTNFO;
 import com.qcadoo.model.api.DataDefinition;
-import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.JoinType;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
@@ -66,9 +65,6 @@ public class OperationalTaskValidators {
 
     @Autowired
     private OperationalTasksService operationalTasksService;
-
-    @Autowired
-    private DataDefinitionService dataDefinitionService;
 
     public boolean onValidate(final DataDefinition operationalTaskDD, final Entity operationalTask) {
         boolean isValid = hasName(operationalTaskDD, operationalTask);
