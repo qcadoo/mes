@@ -32,6 +32,7 @@ import com.qcadoo.mes.productionScheduling.OrderRealizationTimeService;
 import com.qcadoo.mes.operationTimeCalculations.constants.OperCompTimeCalculationsFields;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.productionLines.constants.ProductionLinesConstants;
+import com.qcadoo.mes.productionScheduling.ProductionSchedulingService;
 import com.qcadoo.mes.productionScheduling.constants.OrderFieldsPS;
 import com.qcadoo.mes.technologies.ProductQuantitiesService;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
@@ -85,6 +86,9 @@ public class OrderTimePredictionListeners {
 
     @Autowired
     private OperationWorkTimeService operationWorkTimeService;
+
+    @Autowired
+    private ProductionSchedulingService productionSchedulingService;
 
     public void clearValueOnTechnologyChange(final ViewDefinitionState view, final ComponentState state,
                                              final String[] args) {
@@ -330,9 +334,13 @@ public class OrderTimePredictionListeners {
                 duration = duration + 1;
             }
 
-            Date dateFrom = shiftsService.findDateToForProductionLine(startDate, offset, productionLine);
+            Date dateFrom = productionSchedulingService.getStartDate(productionLine, startDate, offset);
 
-            Date dateTo = shiftsService.findDateToForProductionLine(startDate, offset + duration, productionLine);
+            if (dateFrom == null) {
+                continue;
+            }
+
+            Date dateTo = productionSchedulingService.getFinishDate(productionLine, startDate, (long) offset + duration);
 
             operCompTimeCalculation.setField(OperCompTimeCalculationsFields.EFFECTIVE_DATE_FROM, dateFrom);
             operCompTimeCalculation.setField(OperCompTimeCalculationsFields.EFFECTIVE_DATE_TO, dateTo);

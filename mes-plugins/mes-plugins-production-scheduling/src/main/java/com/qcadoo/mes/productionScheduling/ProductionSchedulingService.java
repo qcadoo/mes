@@ -36,9 +36,6 @@ public class ProductionSchedulingService {
     private DataDefinitionService dataDefinitionService;
 
     @Autowired
-    private OrderRealizationTimeService orderRealizationTimeService;
-
-    @Autowired
     private OperationWorkTimeService operationWorkTimeService;
 
     public Date getFinishDate(Entity productionLine, Date orderStartDate, long seconds) {
