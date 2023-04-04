@@ -28,20 +28,24 @@ import com.qcadoo.mes.basic.ShiftsServiceImpl;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.operationTimeCalculations.OperationWorkTime;
 import com.qcadoo.mes.operationTimeCalculations.OperationWorkTimeService;
-import com.qcadoo.mes.productionScheduling.OrderRealizationTimeService;
 import com.qcadoo.mes.operationTimeCalculations.constants.OperCompTimeCalculationsFields;
+import com.qcadoo.mes.operationTimeCalculations.constants.OperationTimeCalculationsConstants;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.productionLines.constants.ProductionLinesConstants;
+import com.qcadoo.mes.productionScheduling.OrderRealizationTimeService;
 import com.qcadoo.mes.productionScheduling.ProductionSchedulingService;
 import com.qcadoo.mes.productionScheduling.constants.OrderFieldsPS;
 import com.qcadoo.mes.technologies.ProductQuantitiesService;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
+import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
 import com.qcadoo.mes.technologies.dto.ProductQuantitiesHolder;
 import com.qcadoo.mes.technologies.states.constants.TechnologyState;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.search.JoinType;
+import com.qcadoo.model.api.search.SearchOrders;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ComponentState.MessageType;
@@ -63,10 +67,15 @@ import java.text.NumberFormat;
 import java.text.ParsePosition;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
 public class OrderTimePredictionListeners {
+
+    private static final String L_DOT = ".";
+
+    private static final String L_ID = "id";
 
     private static final String L_PRODUCTION_SCHEDULING_ERROR_FIELD_REQUIRED = "productionScheduling.error.fieldRequired";
 
@@ -275,7 +284,7 @@ public class OrderTimePredictionListeners {
                             productionLine);
 
                     startTimeOptional.ifPresent(e -> {
-                        scheduleOperationComponents(technology.getId(), startTime, productionLine);
+                        scheduleOperationComponents(technology, startTime, productionLine);
                         orderForm.addMessage("orders.dateFrom.info.dateFromSetToFirstPossible", MessageType.INFO, false);
                     });
 
@@ -298,28 +307,21 @@ public class OrderTimePredictionListeners {
         }
     }
 
-    private void scheduleOperationComponents(final Long technologyId, final Date startDate,
+    private void scheduleOperationComponents(final Entity technology, final Date startDate,
                                              final Entity productionLine) {
-        Entity technology = dataDefinitionService
-                .get(TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_TECHNOLOGY).get(technologyId);
 
-        if (technology == null) {
-            return;
-        }
+        DataDefinition operCompTimeCalculationDD = dataDefinitionService.get(OperationTimeCalculationsConstants.PLUGIN_PRODUCTION_SCHEDULING_IDENTIFIER,
+                OperationTimeCalculationsConstants.MODEL_OPER_COMP_TIME_CALCULATION);
 
-        DataDefinition technologyOperationComponentDD = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
-                TechnologiesConstants.MODEL_TECHNOLOGY_OPERATION_COMPONENT);
+        List<Entity> operCompTimeCalculations = operCompTimeCalculationDD.find()
+                .createAlias(OperCompTimeCalculationsFields.TECHNOLOGY_OPERATION_COMPONENT, OperCompTimeCalculationsFields.TECHNOLOGY_OPERATION_COMPONENT, JoinType.INNER)
+                .createAlias(OperCompTimeCalculationsFields.TECHNOLOGY_OPERATION_COMPONENT + L_DOT + TechnologyOperationComponentFields.TECHNOLOGY, TechnologyOperationComponentFields.TECHNOLOGY,
+                        JoinType.INNER)
+                .add(SearchRestrictions.eq(TechnologyOperationComponentFields.TECHNOLOGY + L_DOT + L_ID, technology.getId()))
+                .add(SearchRestrictions.isNull(OperationTimeCalculationsConstants.MODEL_ORDER_TIME_CALCULATION))
+                .addOrder(SearchOrders.asc(OperCompTimeCalculationsFields.OPERATION_OFF_SET)).list().getEntities();
 
-        List<Entity> operations = technologyOperationComponentDD.find()
-                .add(SearchRestrictions.belongsTo(TechnologiesConstants.MODEL_TECHNOLOGY, technology)).list().getEntities();
-
-        for (Entity operation : operations) {
-            Entity operCompTimeCalculation = operationWorkTimeService.createOrGetOperCompTimeCalculation(null, operation);
-
-            if (operCompTimeCalculation == null) {
-                continue;
-            }
-
+        for (Entity operCompTimeCalculation : operCompTimeCalculations) {
             Integer offset = (Integer) operCompTimeCalculation.getField(OperCompTimeCalculationsFields.OPERATION_OFF_SET);
             Integer duration = (Integer) operCompTimeCalculation
                     .getField(OperCompTimeCalculationsFields.EFFECTIVE_OPERATION_REALIZATION_TIME);
@@ -342,11 +344,14 @@ public class OrderTimePredictionListeners {
 
             Date dateTo = productionSchedulingService.getFinishDate(productionLine, startDate, (long) offset + duration);
 
+            Date childrenEndTime = productionSchedulingService.getChildrenMaxEndTime(null, operCompTimeCalculation.getBelongsToField(OperCompTimeCalculationsFields.TECHNOLOGY_OPERATION_COMPONENT));
+            if (!Objects.isNull(childrenEndTime) && childrenEndTime.after(dateTo)) {
+                dateTo = childrenEndTime;
+            }
             operCompTimeCalculation.setField(OperCompTimeCalculationsFields.EFFECTIVE_DATE_FROM, dateFrom);
             operCompTimeCalculation.setField(OperCompTimeCalculationsFields.EFFECTIVE_DATE_TO, dateTo);
 
             operCompTimeCalculation.getDataDefinition().save(operCompTimeCalculation);
         }
     }
-
 }

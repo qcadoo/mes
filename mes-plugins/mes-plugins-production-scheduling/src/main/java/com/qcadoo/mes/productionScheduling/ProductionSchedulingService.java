@@ -1,15 +1,7 @@
 package com.qcadoo.mes.productionScheduling;
 
-import java.util.Comparator;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
-
-import org.joda.time.DateTime;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.qcadoo.mes.basic.ShiftsService;
 import com.qcadoo.mes.operationTimeCalculations.OperationWorkTimeService;
 import com.qcadoo.mes.operationTimeCalculations.constants.OperCompTimeCalculationsFields;
@@ -17,17 +9,27 @@ import com.qcadoo.mes.operationTimeCalculations.constants.OperationTimeCalculati
 import com.qcadoo.mes.operationTimeCalculations.constants.OrderTimeCalculationFields;
 import com.qcadoo.mes.operationTimeCalculations.constants.PlanOrderTimeCalculationFields;
 import com.qcadoo.mes.orders.constants.OrderFields;
-import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.mes.productionScheduling.constants.OrderFieldsPS;
-import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
-import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.search.JoinType;
+import com.qcadoo.model.api.search.SearchOrders;
 import com.qcadoo.model.api.search.SearchRestrictions;
+import org.joda.time.DateTime;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.stereotype.Service;
+
+import java.sql.Timestamp;
+import java.util.*;
 
 @Service
 public class ProductionSchedulingService {
+
+    private static final String L_DOT = ".";
+
+    private static final String L_ID = "id";
 
     @Autowired
     private ShiftsService shiftsService;
@@ -37,6 +39,9 @@ public class ProductionSchedulingService {
 
     @Autowired
     private OperationWorkTimeService operationWorkTimeService;
+
+    @Autowired
+    private NamedParameterJdbcTemplate jdbcTemplate;
 
     public Date getFinishDate(Entity productionLine, Date orderStartDate, long seconds) {
         return shiftsService.findDateToForProductionLine(orderStartDate, seconds,
@@ -58,51 +63,45 @@ public class ProductionSchedulingService {
         }
     }
 
-    public void scheduleOrder(final Long orderId) {
-        Entity order = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(orderId);
-
-        if (order == null) {
-            return;
-        }
-
-        Entity technology = order.getBelongsToField(OrderFields.TECHNOLOGY);
-
-        if (technology == null) {
-            return;
-        }
-
+    public void scheduleOrder(final Entity order) {
         Date orderStartDate = order.getDateField(OrderFields.START_DATE);
         Entity productionLine = order.getBelongsToField(OrderFields.PRODUCTION_LINE);
 
-        Entity orderTimeCalculation = scheduleOperationsInOrder(null, order, technology, orderStartDate, productionLine);
+        Entity orderTimeCalculation = scheduleOperationsInOrder(null, order, orderStartDate, productionLine);
         order.setField(OrderFieldsPS.GENERATED_END_DATE, operationWorkTimeService
                 .setDateToField(orderTimeCalculation.getDateField(OrderTimeCalculationFields.EFFECTIVE_DATE_TO)));
     }
 
-    public Entity scheduleOperationsInOrder(Entity productionLineSchedule, Entity order, Entity technology, Date orderStartDate, Entity productionLine) {
+    public Entity scheduleOperationsInOrder(Entity productionLineSchedule, Entity order,
+                                            Date orderStartDate, Entity productionLine) {
         List<Date> operationStartDates = Lists.newArrayList();
         List<Date> operationEndDates = Lists.newArrayList();
+        DataDefinition operCompTimeCalculationDD;
+        List<Entity> operCompTimeCalculations;
+        if (productionLineSchedule == null) {
+            operCompTimeCalculationDD = dataDefinitionService.get(OperationTimeCalculationsConstants.PLUGIN_PRODUCTION_SCHEDULING_IDENTIFIER,
+                    OperationTimeCalculationsConstants.MODEL_OPER_COMP_TIME_CALCULATION);
 
-        DataDefinition technologyOperationComponentDD = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
-                TechnologiesConstants.MODEL_TECHNOLOGY_OPERATION_COMPONENT);
+            operCompTimeCalculations = operCompTimeCalculationDD.find()
+                    .createAlias(OperationTimeCalculationsConstants.MODEL_ORDER_TIME_CALCULATION, OperationTimeCalculationsConstants.MODEL_ORDER_TIME_CALCULATION, JoinType.INNER)
+                    .createAlias(OperationTimeCalculationsConstants.MODEL_ORDER_TIME_CALCULATION + L_DOT + OrderTimeCalculationFields.ORDER, OrderTimeCalculationFields.ORDER,
+                            JoinType.INNER)
+                    .add(SearchRestrictions.eq(OrderTimeCalculationFields.ORDER + L_DOT + L_ID, order.getId()))
+                    .addOrder(SearchOrders.asc(OperCompTimeCalculationsFields.OPERATION_OFF_SET)).list().getEntities();
+        } else {
+            operCompTimeCalculationDD = dataDefinitionService.get(OperationTimeCalculationsConstants.PLUGIN_PRODUCTION_SCHEDULING_IDENTIFIER,
+                    OperationTimeCalculationsConstants.MODEL_PLAN_OPER_COMP_TIME_CALCULATION);
+            operCompTimeCalculations = operCompTimeCalculationDD.find()
+                    .createAlias(OperationTimeCalculationsConstants.MODEL_PLAN_ORDER_TIME_CALCULATION, OperationTimeCalculationsConstants.MODEL_PLAN_ORDER_TIME_CALCULATION, JoinType.INNER)
+                    .createAlias(OperationTimeCalculationsConstants.MODEL_PLAN_ORDER_TIME_CALCULATION + L_DOT + OrderTimeCalculationFields.ORDER, OrderTimeCalculationFields.ORDER,
+                            JoinType.INNER)
+                    .add(SearchRestrictions.eq(OrderTimeCalculationFields.ORDER + L_DOT + L_ID, order.getId()))
+                    .add(SearchRestrictions.belongsTo(PlanOrderTimeCalculationFields.PRODUCTION_LINE_SCHEDULE, productionLineSchedule))
+                    .add(SearchRestrictions.belongsTo(PlanOrderTimeCalculationFields.PRODUCTION_LINE, productionLine))
+                    .addOrder(SearchOrders.asc(OperCompTimeCalculationsFields.OPERATION_OFF_SET)).list().getEntities();
+        }
 
-        List<Entity> operations = technologyOperationComponentDD.find()
-                .add(SearchRestrictions.belongsTo(TechnologyOperationComponentFields.TECHNOLOGY, technology)).list()
-                .getEntities();
-
-
-        for (Entity operation : operations) {
-            Entity operCompTimeCalculation;
-            if (productionLineSchedule == null) {
-                operCompTimeCalculation = operationWorkTimeService.createOrGetOperCompTimeCalculation(order, operation);
-            } else {
-                operCompTimeCalculation = operationWorkTimeService.createOrGetPlanOperCompTimeCalculation(productionLineSchedule, order, productionLine, operation);
-            }
-
-            if (operCompTimeCalculation == null) {
-                continue;
-            }
-
+        for (Entity operCompTimeCalculation : operCompTimeCalculations) {
             Integer offset = operCompTimeCalculation.getIntegerField(OperCompTimeCalculationsFields.OPERATION_OFF_SET);
             Integer duration = operCompTimeCalculation
                     .getIntegerField(OperCompTimeCalculationsFields.EFFECTIVE_OPERATION_REALIZATION_TIME);
@@ -125,7 +124,15 @@ public class ProductionSchedulingService {
             }
 
             Date dateTo = getFinishDate(productionLine, orderStartDate, (long) offset + duration);
-
+            Date childrenEndTime;
+            if (productionLineSchedule == null) {
+                childrenEndTime = getChildrenMaxEndTime(order, operCompTimeCalculation.getBelongsToField(OperCompTimeCalculationsFields.TECHNOLOGY_OPERATION_COMPONENT));
+            } else {
+                childrenEndTime = getPlanChildrenMaxEndTime(productionLineSchedule, order, productionLine, operCompTimeCalculation.getBelongsToField(OperCompTimeCalculationsFields.TECHNOLOGY_OPERATION_COMPONENT));
+            }
+            if (!Objects.isNull(childrenEndTime) && childrenEndTime.after(dateTo)) {
+                dateTo = childrenEndTime;
+            }
             operCompTimeCalculation.setField(OperCompTimeCalculationsFields.EFFECTIVE_DATE_FROM, dateFrom);
             operCompTimeCalculation.setField(OperCompTimeCalculationsFields.EFFECTIVE_DATE_TO, dateTo);
             operationStartDates.add(dateFrom);
@@ -151,5 +158,39 @@ public class ProductionSchedulingService {
         orderTimeCalculation.setField(OrderTimeCalculationFields.EFFECTIVE_DATE_TO,
                 operationEndDates.stream().max(Comparator.naturalOrder()).get());
         return orderTimeCalculation.getDataDefinition().save(orderTimeCalculation);
+    }
+
+    private Date getPlanChildrenMaxEndTime(Entity productionLineSchedule, Entity order, Entity productionLine,Entity technologyOperationComponent) {
+        Map<String, Object> parameters = Maps.newHashMap();
+        parameters.put("productionLineScheduleId", productionLineSchedule.getId());
+        parameters.put("orderId", order.getId());
+        parameters.put("productionLineId", productionLine.getId());
+        parameters.put("tocId", technologyOperationComponent.getId());
+        StringBuilder query = new StringBuilder("SELECT MAX(poctc.effectivedateto) ")
+                .append("FROM productionscheduling_planopercomptimecalculation poctc ")
+                .append("JOIN technologies_technologyoperationcomponent toc ON poctc.technologyoperationcomponent_id = toc.id ")
+                .append("JOIN productionscheduling_planordertimecalculation potc ON potc.id = poctc.ordertimecalculation_id ")
+                .append("WHERE toc.parent_id = :tocId AND potc.order_id = :orderId ")
+                .append("AND potc.productionlineschedule_id = :productionLineScheduleId AND potc.productionline_id = :productionLineId ");
+
+        return jdbcTemplate.queryForObject(query.toString(), parameters, Timestamp.class);
+    }
+
+    public Date getChildrenMaxEndTime(Entity order, Entity technologyOperationComponent) {
+        Map<String, Object> parameters = Maps.newHashMap();
+        parameters.put("tocId", technologyOperationComponent.getId());
+        StringBuilder query = new StringBuilder("SELECT MAX(octc.effectivedateto) ")
+                .append("FROM productionscheduling_opercomptimecalculation octc ")
+                .append("JOIN technologies_technologyoperationcomponent toc ON octc.technologyoperationcomponent_id = toc.id ")
+                .append("LEFT JOIN productionscheduling_ordertimecalculation otc ON otc.id = octc.ordertimecalculation_id ")
+                .append("WHERE toc.parent_id = :tocId ");
+        if (order == null) {
+            query.append("AND octc.ordertimecalculation_id IS NULL ");
+        } else {
+            parameters.put("orderId", order.getId());
+            query.append("AND otc.order_id = :orderId ");
+        }
+
+        return jdbcTemplate.queryForObject(query.toString(), parameters, Timestamp.class);
     }
 }

@@ -232,7 +232,7 @@ public class SchedulePositionValidators {
         return true;
     }
 
-    private Date getChildrenMaxEndTime(Entity position) {
+    public Date getChildrenMaxEndTime(Entity position) {
         Entity schedule = position.getBelongsToField(SchedulePositionFields.SCHEDULE);
         Map<String, Object> parameters = Maps.newHashMap();
         parameters.put(SCHEDULE_ID, schedule.getId());

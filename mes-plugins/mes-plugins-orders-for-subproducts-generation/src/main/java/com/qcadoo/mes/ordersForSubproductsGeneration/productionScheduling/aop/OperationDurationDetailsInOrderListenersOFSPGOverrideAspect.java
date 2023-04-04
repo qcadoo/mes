@@ -180,7 +180,6 @@ public class OperationDurationDetailsInOrderListenersOFSPGOverrideAspect {
         Entity order = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER)
                 .get(orderForm.getEntity().getId());
 
-        // copy of technology from order
         Entity technology = order.getBelongsToField(OrderFields.TECHNOLOGY);
         Validate.notNull(technology, "technology is null");
 
@@ -271,7 +270,7 @@ public class OperationDurationDetailsInOrderListenersOFSPGOverrideAspect {
             Entity orderTimeCalculation = dataDefinitionService
                     .get(OperationTimeCalculationsConstants.PLUGIN_PRODUCTION_SCHEDULING_IDENTIFIER,
                             OperationTimeCalculationsConstants.MODEL_ORDER_TIME_CALCULATION)
-                    .find().add(SearchRestrictions.belongsTo("order", order)).setMaxResults(1).uniqueResult();
+                    .find().add(SearchRestrictions.belongsTo(OrderTimeCalculationFields.ORDER, order)).setMaxResults(1).uniqueResult();
 
             Date startTimeOrders = findCalculatedStartAllOrders(order);
             order.setField("calculatedStartAllOrders", operationWorkTimeService.setDateToField(startTimeOrders));
@@ -387,7 +386,7 @@ public class OperationDurationDetailsInOrderListenersOFSPGOverrideAspect {
 
         Entity orderTimeCalculation = dataDefinitionService
                 .get(OperationTimeCalculationsConstants.PLUGIN_PRODUCTION_SCHEDULING_IDENTIFIER, OperationTimeCalculationsConstants.MODEL_ORDER_TIME_CALCULATION)
-                .find().add(SearchRestrictions.belongsTo("order", order)).setMaxResults(1).uniqueResult();
+                .find().add(SearchRestrictions.belongsTo(OrderTimeCalculationFields.ORDER, order)).setMaxResults(1).uniqueResult();
         orderTimeCalculation.setField(OrderTimeCalculationFields.EFFECTIVE_DATE_FROM,
                 operationStartDates.stream().min(Comparator.naturalOrder()).get());
         orderTimeCalculation.setField(OrderTimeCalculationFields.EFFECTIVE_DATE_TO,
