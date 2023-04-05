@@ -54,6 +54,11 @@
         <integer name="numberOfficeLicenses" required="true" default="1">
             <validatesRange from="0" exclusively="true"/>
         </integer>
+
+        <integer name="numberVisibleOrdersTasksOnDashboard" required="true" default="50">
+            <validatesRange from="0" to="500" exclusively="true"/>
+        </integer>
+
         <integer name="numberTerminalLicenses" required="true" default="1">
             <validatesRange from="0"/>
         </integer>
