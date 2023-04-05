@@ -151,7 +151,6 @@ public class OperationDurationDetailsInOrderListeners {
         Entity order = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER)
                 .get(orderForm.getEntity().getId());
 
-        // copy of technology from order
         Entity technology = order.getBelongsToField(OrderFields.TECHNOLOGY);
         Validate.notNull(technology, "technology is null");
 
@@ -189,7 +188,7 @@ public class OperationDurationDetailsInOrderListeners {
 
                     generatedEndDateField.setFieldValue(null);
                 } else {
-                    productionSchedulingService.scheduleOrder(order.getId());
+                    productionSchedulingService.scheduleOrder(order);
 
                     isGenerated = true;
                 }

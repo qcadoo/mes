@@ -173,6 +173,12 @@
 								<option type="column" name="machineWorkTime" fields="machineWorkTime"
 										expression="T(com.qcadoo.view.api.utils.TimeConverterService).convertTimeToString(#machineWorkTime)"/>
 
+								<option type="column" name="operationOffSet" fields="operationOffSet"
+										expression="T(com.qcadoo.view.api.utils.TimeConverterService).convertTimeToString(#operationOffSet)"/>
+
+								<option type="column" name="effectiveOperationRealizationTime" fields="effectiveOperationRealizationTime"
+										expression="T(com.qcadoo.view.api.utils.TimeConverterService).convertTimeToString(#effectiveOperationRealizationTime)"/>
+
 								<option type="order" column="effectiveDateFrom" direction="asc"/>
 
 								<option type="searchable" value="nodeNumber, number, name, effectiveDateFrom, effectiveDateTo"/>
