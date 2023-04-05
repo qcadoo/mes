@@ -38,9 +38,7 @@ import com.qcadoo.mes.productionLines.constants.ProductionLinesConstants;
 import com.qcadoo.mes.productionScheduling.OrderRealizationTimeService;
 import com.qcadoo.mes.productionScheduling.ProductionSchedulingService;
 import com.qcadoo.mes.productionScheduling.constants.OrderFieldsPS;
-import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
-import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -136,7 +134,8 @@ public class OperationDurationDetailsInOrderListenersOFSPGOverrideAspect {
     }
 
     @Around("generateRealizationTimeE(viewDefinitionState, state, args)")
-    public void aroundGenerateRealizationTime(final ProceedingJoinPoint pjp, final ViewDefinitionState viewDefinitionState,
+    public void aroundGenerateRealizationTime(final ProceedingJoinPoint pjp,
+                                              final ViewDefinitionState viewDefinitionState,
                                               final ComponentState state, final String[] args) throws Throwable {
         CheckBoxComponent component = (CheckBoxComponent) viewDefinitionState
                 .getComponentByReference("includeOrdersForComponent");
@@ -317,35 +316,14 @@ public class OperationDurationDetailsInOrderListenersOFSPGOverrideAspect {
     }
 
     private Date scheduleOperationsInOrder(final Entity order, final Date currentDateTo) {
-        if (order == null) {
-            return null;
-        }
-
-        Entity technology = order.getBelongsToField(OrderFields.TECHNOLOGY);
-
-        if (technology == null) {
-            return null;
-        }
-
         List<Date> operationStartDates = Lists.newArrayList();
         List<Date> operationEndDates = Lists.newArrayList();
 
-        DataDefinition technologyOperationComponentDD = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
-                TechnologiesConstants.MODEL_TECHNOLOGY_OPERATION_COMPONENT);
-
-        List<Entity> operations = technologyOperationComponentDD.find()
-                .add(SearchRestrictions.belongsTo(TechnologyOperationComponentFields.TECHNOLOGY, technology)).list()
-                .getEntities();
-
         Date orderFinishDate = currentDateTo;
 
-        for (Entity operation : operations) {
-            Entity operCompTimeCalculation = operationWorkTimeService.createOrGetOperCompTimeCalculation(order, operation);
+        List<Entity> operCompTimeCalculations = productionSchedulingService.getOperCompTimeCalculations(order);
 
-            if (operCompTimeCalculation == null) {
-                continue;
-            }
-
+        for (Entity operCompTimeCalculation : operCompTimeCalculations) {
             Integer offset = operCompTimeCalculation.getIntegerField(OperCompTimeCalculationsFields.OPERATION_OFF_SET);
             Integer duration = operCompTimeCalculation
                     .getIntegerField(OperCompTimeCalculationsFields.EFFECTIVE_OPERATION_REALIZATION_TIME);
@@ -368,6 +346,10 @@ public class OperationDurationDetailsInOrderListenersOFSPGOverrideAspect {
             }
 
             Date dateTo = productionSchedulingService.getFinishDate(order.getBelongsToField(OrderFields.PRODUCTION_LINE), currentDateTo, (long) offset + duration);
+            Date childrenEndTime = productionSchedulingService.getChildrenMaxEndTime(order, operCompTimeCalculation.getBelongsToField(OperCompTimeCalculationsFields.TECHNOLOGY_OPERATION_COMPONENT));
+            if (!Objects.isNull(childrenEndTime) && childrenEndTime.after(dateTo)) {
+                dateTo = childrenEndTime;
+            }
 
             operCompTimeCalculation.setField(OperCompTimeCalculationsFields.EFFECTIVE_DATE_FROM, dateFrom);
             operCompTimeCalculation.setField(OperCompTimeCalculationsFields.EFFECTIVE_DATE_TO, dateTo);
@@ -377,9 +359,7 @@ public class OperationDurationDetailsInOrderListenersOFSPGOverrideAspect {
 
             operCompTimeCalculation.getDataDefinition().save(operCompTimeCalculation);
 
-            if (Objects.isNull(orderFinishDate)) {
-                orderFinishDate = dateTo;
-            } else if (dateTo.after(orderFinishDate)) {
+            if (Objects.isNull(orderFinishDate) || dateTo.after(orderFinishDate)) {
                 orderFinishDate = dateTo;
             }
         }
