@@ -10,7 +10,6 @@ import com.qcadoo.mes.operationTimeCalculations.constants.OrderTimeCalculationFi
 import com.qcadoo.mes.operationTimeCalculations.constants.PlanOrderTimeCalculationFields;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.productionScheduling.constants.OrderFieldsPS;
-import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.JoinType;
@@ -76,22 +75,12 @@ public class ProductionSchedulingService {
                                             Date orderStartDate, Entity productionLine) {
         List<Date> operationStartDates = Lists.newArrayList();
         List<Date> operationEndDates = Lists.newArrayList();
-        DataDefinition operCompTimeCalculationDD;
         List<Entity> operCompTimeCalculations;
         if (productionLineSchedule == null) {
-            operCompTimeCalculationDD = dataDefinitionService.get(OperationTimeCalculationsConstants.PLUGIN_PRODUCTION_SCHEDULING_IDENTIFIER,
-                    OperationTimeCalculationsConstants.MODEL_OPER_COMP_TIME_CALCULATION);
-
-            operCompTimeCalculations = operCompTimeCalculationDD.find()
-                    .createAlias(OperationTimeCalculationsConstants.MODEL_ORDER_TIME_CALCULATION, OperationTimeCalculationsConstants.MODEL_ORDER_TIME_CALCULATION, JoinType.INNER)
-                    .createAlias(OperationTimeCalculationsConstants.MODEL_ORDER_TIME_CALCULATION + L_DOT + OrderTimeCalculationFields.ORDER, OrderTimeCalculationFields.ORDER,
-                            JoinType.INNER)
-                    .add(SearchRestrictions.eq(OrderTimeCalculationFields.ORDER + L_DOT + L_ID, order.getId()))
-                    .addOrder(SearchOrders.asc(OperCompTimeCalculationsFields.OPERATION_OFF_SET)).list().getEntities();
+            operCompTimeCalculations = getOperCompTimeCalculations(order);
         } else {
-            operCompTimeCalculationDD = dataDefinitionService.get(OperationTimeCalculationsConstants.PLUGIN_PRODUCTION_SCHEDULING_IDENTIFIER,
-                    OperationTimeCalculationsConstants.MODEL_PLAN_OPER_COMP_TIME_CALCULATION);
-            operCompTimeCalculations = operCompTimeCalculationDD.find()
+            operCompTimeCalculations = dataDefinitionService.get(OperationTimeCalculationsConstants.PLUGIN_PRODUCTION_SCHEDULING_IDENTIFIER,
+                            OperationTimeCalculationsConstants.MODEL_PLAN_OPER_COMP_TIME_CALCULATION).find()
                     .createAlias(OperationTimeCalculationsConstants.MODEL_PLAN_ORDER_TIME_CALCULATION, OperationTimeCalculationsConstants.MODEL_PLAN_ORDER_TIME_CALCULATION, JoinType.INNER)
                     .createAlias(OperationTimeCalculationsConstants.MODEL_PLAN_ORDER_TIME_CALCULATION + L_DOT + OrderTimeCalculationFields.ORDER, OrderTimeCalculationFields.ORDER,
                             JoinType.INNER)
@@ -124,15 +113,7 @@ public class ProductionSchedulingService {
             }
 
             Date dateTo = getFinishDate(productionLine, orderStartDate, (long) offset + duration);
-            Date childrenEndTime;
-            if (productionLineSchedule == null) {
-                childrenEndTime = getChildrenMaxEndTime(order, operCompTimeCalculation.getBelongsToField(OperCompTimeCalculationsFields.TECHNOLOGY_OPERATION_COMPONENT));
-            } else {
-                childrenEndTime = getPlanChildrenMaxEndTime(productionLineSchedule, order, productionLine, operCompTimeCalculation.getBelongsToField(OperCompTimeCalculationsFields.TECHNOLOGY_OPERATION_COMPONENT));
-            }
-            if (!Objects.isNull(childrenEndTime) && childrenEndTime.after(dateTo)) {
-                dateTo = childrenEndTime;
-            }
+            dateTo = getFinishDateWithChildren(productionLineSchedule, order, productionLine, operCompTimeCalculation.getBelongsToField(OperCompTimeCalculationsFields.TECHNOLOGY_OPERATION_COMPONENT), dateTo);
             operCompTimeCalculation.setField(OperCompTimeCalculationsFields.EFFECTIVE_DATE_FROM, dateFrom);
             operCompTimeCalculation.setField(OperCompTimeCalculationsFields.EFFECTIVE_DATE_TO, dateTo);
             operationStartDates.add(dateFrom);
@@ -160,7 +141,32 @@ public class ProductionSchedulingService {
         return orderTimeCalculation.getDataDefinition().save(orderTimeCalculation);
     }
 
-    private Date getPlanChildrenMaxEndTime(Entity productionLineSchedule, Entity order, Entity productionLine,Entity technologyOperationComponent) {
+    public List<Entity> getOperCompTimeCalculations(Entity order) {
+        return dataDefinitionService.get(OperationTimeCalculationsConstants.PLUGIN_PRODUCTION_SCHEDULING_IDENTIFIER,
+                        OperationTimeCalculationsConstants.MODEL_OPER_COMP_TIME_CALCULATION).find()
+                .createAlias(OperationTimeCalculationsConstants.MODEL_ORDER_TIME_CALCULATION, OperationTimeCalculationsConstants.MODEL_ORDER_TIME_CALCULATION, JoinType.INNER)
+                .createAlias(OperationTimeCalculationsConstants.MODEL_ORDER_TIME_CALCULATION + L_DOT + OrderTimeCalculationFields.ORDER, OrderTimeCalculationFields.ORDER,
+                        JoinType.INNER)
+                .add(SearchRestrictions.eq(OrderTimeCalculationFields.ORDER + L_DOT + L_ID, order.getId()))
+                .addOrder(SearchOrders.asc(OperCompTimeCalculationsFields.OPERATION_OFF_SET)).list().getEntities();
+    }
+
+    private Date getFinishDateWithChildren(Entity productionLineSchedule, Entity order, Entity productionLine,
+                                           Entity technologyOperationComponent, Date dateTo) {
+        Date childrenEndTime;
+        if (productionLineSchedule == null) {
+            childrenEndTime = getChildrenMaxEndTime(order, technologyOperationComponent);
+        } else {
+            childrenEndTime = getPlanChildrenMaxEndTime(productionLineSchedule, order, productionLine, technologyOperationComponent);
+        }
+        if (!Objects.isNull(childrenEndTime) && childrenEndTime.after(dateTo)) {
+            return childrenEndTime;
+        }
+        return dateTo;
+    }
+
+    private Date getPlanChildrenMaxEndTime(Entity productionLineSchedule, Entity order, Entity productionLine,
+                                           Entity technologyOperationComponent) {
         Map<String, Object> parameters = Maps.newHashMap();
         parameters.put("productionLineScheduleId", productionLineSchedule.getId());
         parameters.put("orderId", order.getId());
