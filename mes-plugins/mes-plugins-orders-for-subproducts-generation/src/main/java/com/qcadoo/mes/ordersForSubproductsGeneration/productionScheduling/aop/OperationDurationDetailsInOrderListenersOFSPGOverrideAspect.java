@@ -255,15 +255,25 @@ public class OperationDurationDetailsInOrderListenersOFSPGOverrideAspect {
             }
         }
 
-        if (dateFromSetToFirstPossible) {
-            orderForm.addMessage("orders.dateFrom.info.dateFromSetToFirstPossible", ComponentState.MessageType.INFO,
-                    false);
-        }
+        addDateFromSetToFirstPossibleMessage(orderForm, dateFromSetToFirstPossible);
 
         fillWorkTimeFields(viewDefinitionState, workTime);
 
         generatedEndDateField.requestComponentUpdateState();
 
+        setDates(viewDefinitionState, state, orderForm, generatedEndDateField, calculatedFinishAllOrdersField, calculatedStartAllOrdersField, isGenerated, order);
+    }
+
+    private void addDateFromSetToFirstPossibleMessage(FormComponent orderForm, boolean dateFromSetToFirstPossible) {
+        if (dateFromSetToFirstPossible) {
+            orderForm.addMessage("orders.dateFrom.info.dateFromSetToFirstPossible", ComponentState.MessageType.INFO,
+                    false);
+        }
+    }
+
+    private void setDates(ViewDefinitionState viewDefinitionState, ComponentState state, FormComponent orderForm,
+                          FieldComponent generatedEndDateField, FieldComponent calculatedFinishAllOrdersField,
+                          FieldComponent calculatedStartAllOrdersField, boolean isGenerated, Entity order) {
         if (isGenerated) {
             order = getActualOrderWithChanges(order);
             Entity orderTimeCalculation = dataDefinitionService
@@ -324,44 +334,7 @@ public class OperationDurationDetailsInOrderListenersOFSPGOverrideAspect {
         List<Entity> operCompTimeCalculations = productionSchedulingService.getOperCompTimeCalculations(order);
 
         for (Entity operCompTimeCalculation : operCompTimeCalculations) {
-            Integer offset = operCompTimeCalculation.getIntegerField(OperCompTimeCalculationsFields.OPERATION_OFF_SET);
-            Integer duration = operCompTimeCalculation
-                    .getIntegerField(OperCompTimeCalculationsFields.EFFECTIVE_OPERATION_REALIZATION_TIME);
-
-            operCompTimeCalculation.setField(OperCompTimeCalculationsFields.EFFECTIVE_DATE_FROM, null);
-            operCompTimeCalculation.setField(OperCompTimeCalculationsFields.EFFECTIVE_DATE_TO, null);
-
-            if (offset == null || duration == null) {
-                continue;
-            }
-
-            if (duration.equals(0)) {
-                duration = duration + 1;
-            }
-
-            Date dateFrom = productionSchedulingService.getStartDate(order.getBelongsToField(OrderFields.PRODUCTION_LINE), currentDateTo, offset);
-
-            if (dateFrom == null) {
-                continue;
-            }
-
-            Date dateTo = productionSchedulingService.getFinishDate(order.getBelongsToField(OrderFields.PRODUCTION_LINE), currentDateTo, (long) offset + duration);
-            Date childrenEndTime = productionSchedulingService.getChildrenMaxEndTime(order, operCompTimeCalculation.getBelongsToField(OperCompTimeCalculationsFields.TECHNOLOGY_OPERATION_COMPONENT));
-            if (!Objects.isNull(childrenEndTime) && childrenEndTime.after(dateTo)) {
-                dateTo = childrenEndTime;
-            }
-
-            operCompTimeCalculation.setField(OperCompTimeCalculationsFields.EFFECTIVE_DATE_FROM, dateFrom);
-            operCompTimeCalculation.setField(OperCompTimeCalculationsFields.EFFECTIVE_DATE_TO, dateTo);
-
-            operationStartDates.add(dateFrom);
-            operationEndDates.add(dateTo);
-
-            operCompTimeCalculation.getDataDefinition().save(operCompTimeCalculation);
-
-            if (Objects.isNull(orderFinishDate) || dateTo.after(orderFinishDate)) {
-                orderFinishDate = dateTo;
-            }
+            orderFinishDate = calculateDates(order, currentDateTo, operationStartDates, operationEndDates, orderFinishDate, operCompTimeCalculation);
         }
 
         Entity orderTimeCalculation = dataDefinitionService
@@ -375,6 +348,50 @@ public class OperationDurationDetailsInOrderListenersOFSPGOverrideAspect {
         order.setField(OrderFieldsPS.GENERATED_END_DATE, operationWorkTimeService
                 .setDateToField(orderTimeCalculation.getDateField(OrderTimeCalculationFields.EFFECTIVE_DATE_TO)));
 
+        return orderFinishDate;
+    }
+
+    private Date calculateDates(Entity order, Date currentDateTo, List<Date> operationStartDates,
+                                List<Date> operationEndDates,
+                                Date orderFinishDate, Entity operCompTimeCalculation) {
+        Integer offset = operCompTimeCalculation.getIntegerField(OperCompTimeCalculationsFields.OPERATION_OFF_SET);
+        Integer duration = operCompTimeCalculation
+                .getIntegerField(OperCompTimeCalculationsFields.EFFECTIVE_OPERATION_REALIZATION_TIME);
+
+        operCompTimeCalculation.setField(OperCompTimeCalculationsFields.EFFECTIVE_DATE_FROM, null);
+        operCompTimeCalculation.setField(OperCompTimeCalculationsFields.EFFECTIVE_DATE_TO, null);
+
+        if (offset == null || duration == null) {
+            return orderFinishDate;
+        }
+
+        if (duration.equals(0)) {
+            duration = duration + 1;
+        }
+
+        Date dateFrom = productionSchedulingService.getStartDate(order.getBelongsToField(OrderFields.PRODUCTION_LINE), currentDateTo, offset);
+
+        if (dateFrom == null) {
+            return orderFinishDate;
+        }
+
+        Date dateTo = productionSchedulingService.getFinishDate(order.getBelongsToField(OrderFields.PRODUCTION_LINE), currentDateTo, (long) offset + duration);
+        Date childrenEndTime = productionSchedulingService.getChildrenMaxEndTime(order, operCompTimeCalculation.getBelongsToField(OperCompTimeCalculationsFields.TECHNOLOGY_OPERATION_COMPONENT));
+        if (!Objects.isNull(childrenEndTime) && childrenEndTime.after(dateTo)) {
+            dateTo = childrenEndTime;
+        }
+
+        operCompTimeCalculation.setField(OperCompTimeCalculationsFields.EFFECTIVE_DATE_FROM, dateFrom);
+        operCompTimeCalculation.setField(OperCompTimeCalculationsFields.EFFECTIVE_DATE_TO, dateTo);
+
+        operationStartDates.add(dateFrom);
+        operationEndDates.add(dateTo);
+
+        operCompTimeCalculation.getDataDefinition().save(operCompTimeCalculation);
+
+        if (Objects.isNull(orderFinishDate) || dateTo.after(orderFinishDate)) {
+            return dateTo;
+        }
         return orderFinishDate;
     }
 
