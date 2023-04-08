@@ -28,15 +28,14 @@ import com.qcadoo.commons.functional.Either;
 import com.qcadoo.mes.basic.imports.helpers.CellErrorsAccessor;
 import com.qcadoo.mes.basic.imports.helpers.CellParser;
 import com.qcadoo.model.api.BigDecimalUtils;
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
 import java.util.Locale;
 import java.util.function.Consumer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.stereotype.Component;
 
 @Component
 public class BigDecimalCellParser implements CellParser {
@@ -48,6 +47,8 @@ public class BigDecimalCellParser implements CellParser {
     private static final String L_POLISH_DECIMAL_PATTERN = "^-?\\d+(,\\d+)?$";
 
     private static final String L_ENGLISH_DECIMAL_PATTERN = "^-?\\d+(\\.\\d+)?$";
+
+    private static final String L_CHINESE_DECIMAL_PATTERN = "^-?\\d+(\\.\\d+)?$";
 
     @Override
     public void parse(final String cellValue, final String dependentCellValue, final CellErrorsAccessor errorsAccessor, final Consumer<Object> valueConsumer) {
@@ -68,6 +69,7 @@ public class BigDecimalCellParser implements CellParser {
         String language = locale.getLanguage();
 
         Locale polish = new Locale("pl");
+        Locale chinese = new Locale("cn");
 
         Pattern decimalPattern;
 
@@ -75,6 +77,8 @@ public class BigDecimalCellParser implements CellParser {
             decimalPattern = Pattern.compile(L_POLISH_DECIMAL_PATTERN);
         } else if (Locale.ENGLISH.getLanguage().equals(language)) {
             decimalPattern = Pattern.compile(L_ENGLISH_DECIMAL_PATTERN);
+        } else if (chinese.getLanguage().equals(language)) {
+            decimalPattern = Pattern.compile(L_CHINESE_DECIMAL_PATTERN);
         } else {
             throw new IllegalStateException("Encountered unsupported language: " + language);
         }
