@@ -14,10 +14,7 @@ import com.qcadoo.mes.technologies.services.WorkstationChangeoverNormService;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.search.JoinType;
-import com.qcadoo.model.api.search.SearchOrders;
-import com.qcadoo.model.api.search.SearchProjections;
-import com.qcadoo.model.api.search.SearchRestrictions;
+import com.qcadoo.model.api.search.*;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -315,11 +312,13 @@ public class WorkstationChangeoverService {
             Entity workstation = operationalTask.getBelongsToField(OperationalTaskFields.WORKSTATION);
             Date startDate = operationalTask.getDateField(OperationalTaskFields.START_DATE);
 
-            return Optional.ofNullable(getOperationalTaskDD().find()
-                    .createAlias(OperationalTaskFields.WORKSTATION, OperationalTaskFields.WORKSTATION, JoinType.LEFT)
-                    .add(SearchRestrictions.eq(OperationalTaskFields.WORKSTATION + L_DOT + L_ID, workstation.getId()))
-                    .add(SearchRestrictions.le(OperationalTaskFields.FINISH_DATE, startDate))
-                    .addOrder(SearchOrders.desc(OperationalTaskFields.FINISH_DATE)).setMaxResults(1).uniqueResult());
+            SearchCriteriaBuilder searchCriteriaBuilder = getOperationalTaskDD().find();
+
+            addWorkstationAndDateSearchRestrictions(searchCriteriaBuilder, workstation, startDate);
+
+            return Optional.ofNullable(searchCriteriaBuilder
+                    .addOrder(SearchOrders.desc(OperationalTaskFields.FINISH_DATE))
+                    .setMaxResults(1).uniqueResult());
         } else {
             return Optional.empty();
         }
@@ -331,12 +330,13 @@ public class WorkstationChangeoverService {
             Entity workstation = operationalTask.getBelongsToField(OperationalTaskFields.WORKSTATION);
             Date startDate = operationalTask.getDateField(OperationalTaskFields.START_DATE);
 
-            return Optional.ofNullable(getOperationalTaskDD().find()
-                    .createAlias(OperationalTaskFields.WORKSTATION, OperationalTaskFields.WORKSTATION, JoinType.LEFT)
-                    .add(SearchRestrictions.eq(OperationalTaskFields.WORKSTATION + L_DOT + L_ID, workstation.getId()))
-                    .add(SearchRestrictions.le(OperationalTaskFields.FINISH_DATE, startDate))
-                    .add(SearchRestrictions.idNe(skipOperationalTask.getId()))
-                    .addOrder(SearchOrders.desc(OperationalTaskFields.FINISH_DATE)).setMaxResults(1).uniqueResult());
+            SearchCriteriaBuilder searchCriteriaBuilder = getOperationalTaskDD().find();
+
+            addWorkstationAndDateSearchRestrictions(searchCriteriaBuilder, workstation, startDate);
+
+            return Optional.ofNullable(searchCriteriaBuilder.add(SearchRestrictions.idNe(skipOperationalTask.getId()))
+                    .addOrder(SearchOrders.desc(OperationalTaskFields.FINISH_DATE))
+                    .setMaxResults(1).uniqueResult());
         } else {
             return Optional.empty();
         }
@@ -346,10 +346,28 @@ public class WorkstationChangeoverService {
         Entity workstation = operationalTask.getBelongsToField(OperationalTaskFields.WORKSTATION);
         Date startDate = operationalTask.getDateField(OperationalTaskFields.START_DATE);
 
-        return getOperationalTaskDD().find()
-                .createAlias(OperationalTaskFields.WORKSTATION, OperationalTaskFields.WORKSTATION, JoinType.LEFT)
-                .add(SearchRestrictions.eq(OperationalTaskFields.WORKSTATION + L_DOT + L_ID, workstation.getId()))
-                .add(SearchRestrictions.le(OperationalTaskFields.FINISH_DATE, startDate)).list().getEntities();
+        SearchCriteriaBuilder searchCriteriaBuilder = getOperationalTaskDD().find();
+
+        addWorkstationAndDateSearchRestrictions(searchCriteriaBuilder, workstation, startDate);
+
+        return searchCriteriaBuilder.addOrder(SearchOrders.desc(OperationalTaskFields.FINISH_DATE))
+                .list().getEntities();
+    }
+
+    private Entity getPreviousOperationalTask(final Entity workstation, final Date operationalTaskStartDate) {
+        SearchCriteriaBuilder searchCriteriaBuilder = getOperationalTaskDD().find();
+
+        addWorkstationAndDateSearchRestrictions(searchCriteriaBuilder, workstation, operationalTaskStartDate);
+
+        return searchCriteriaBuilder.addOrder(SearchOrders.desc(OperationalTaskFields.FINISH_DATE))
+                .setMaxResults(1).uniqueResult();
+    }
+
+    private void addWorkstationAndDateSearchRestrictions(final SearchCriteriaBuilder searchCriteriaBuilder, final Entity workstation, final Date startDate) {
+        searchCriteriaBuilder.createAlias(OperationalTaskFields.WORKSTATION, OperationalTaskFields.WORKSTATION, JoinType.LEFT);
+        searchCriteriaBuilder.add(SearchRestrictions.eq(OperationalTaskFields.WORKSTATION + L_DOT + L_ID, workstation.getId()));
+        searchCriteriaBuilder.add(SearchRestrictions.ne(OperationalTaskFields.STATE, OperationalTaskState.REJECTED.getStringValue()));
+        searchCriteriaBuilder.add(SearchRestrictions.le(OperationalTaskFields.FINISH_DATE, startDate));
     }
 
     public boolean hasWorkstationChangeoverForOperationalTasks(final Entity workstationChangeoverNorm) {
@@ -362,18 +380,6 @@ public class WorkstationChangeoverService {
         Long countValue = (Long) workstationChangeoverForOperationalTask.getField(L_COUNT);
 
         return countValue > 0;
-    }
-
-    private Entity getPreviousOperationalTask(Entity workstation,
-                                              final Date operationalTaskStartDate) {
-        return dataDefinitionService
-                .get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_OPERATIONAL_TASK)
-                .find()
-                .createAlias(OperationalTaskFields.WORKSTATION, OperationalTaskFields.WORKSTATION, JoinType.LEFT)
-                .add(SearchRestrictions.eq(OperationalTaskFields.WORKSTATION + L_DOT + L_ID, workstation.getId()))
-                .add(SearchRestrictions.ne(OperationalTaskFields.STATE, OperationalTaskState.REJECTED.getStringValue()))
-                .add(SearchRestrictions.le(OperationalTaskFields.FINISH_DATE, operationalTaskStartDate))
-                .addOrder(SearchOrders.desc(OperationalTaskFields.FINISH_DATE)).setMaxResults(1).uniqueResult();
     }
 
     public Optional<Entity> getOperationalTask(final String number) {
