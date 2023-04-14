@@ -41,6 +41,9 @@
         <string name="defaultTechnology" persistent="false">
             <validatesLength max="2048"/>
         </string>
+
+        <string name="additionalFinalProducts"/>
+
         <string name="commentReasonTypeCorrectionDateFrom"/>
         <string name="commentReasonTypeCorrectionDateTo"/>
         <string name="commentReasonDeviationEffectiveStart"/>

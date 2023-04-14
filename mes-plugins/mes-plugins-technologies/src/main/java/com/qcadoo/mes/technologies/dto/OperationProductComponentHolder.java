@@ -24,6 +24,7 @@
 package com.qcadoo.mes.technologies.dto;
 
 import com.qcadoo.mes.technologies.constants.OperationProductInComponentFields;
+import com.qcadoo.mes.technologies.constants.OperationProductOutComponentFields;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 
@@ -64,6 +65,8 @@ public class OperationProductComponentHolder {
 
     private final ProductMaterialType productMaterialType;
 
+    private final Boolean waste;
+
     public OperationProductComponentHolder(final Entity operationProductComponent) {
         Entity product = operationProductComponent.getBelongsToField(L_PRODUCT);
         Entity technologyOperationComponent = operationProductComponent.getBelongsToField(L_OPERATION_COMPONENT);
@@ -98,11 +101,14 @@ public class OperationProductComponentHolder {
                 this.attributeId = null;
                 this.attributeDD = null;
             }
+            this.waste = false;
         } else {
             this.technologyInputProductTypeId = null;
             this.technologyInputProductTypeDD = null;
             this.attributeId = null;
             this.attributeDD = null;
+            this.waste = operationProductComponent.getBooleanField(OperationProductOutComponentFields.WASTE);
+
         }
         this.operationProductComponentId = operationProductComponent.getId();
         this.operationProductComponentDD = operationProductComponent.getDataDefinition();
@@ -120,6 +126,8 @@ public class OperationProductComponentHolder {
         this.technologyOperationComponentDD = technologyOperationComponent.getDataDefinition();
         this.entityType = entityType;
         this.productMaterialType = ProductMaterialType.NONE;
+        this.waste = false;
+
         this.productionCountingQuantityId = null;
         if (entityType.getStringValue().equals(
                 OperationProductComponentEntityType.OPERATION_PRODUCT_IN_COMPONENT.getStringValue())) {
@@ -141,6 +149,7 @@ public class OperationProductComponentHolder {
                 this.attributeId = null;
                 this.attributeDD = null;
             }
+
         } else {
             this.technologyInputProductTypeId = null;
             this.technologyInputProductTypeDD = null;
@@ -179,6 +188,14 @@ public class OperationProductComponentHolder {
 
         this.operationProductComponentId = null;
         this.operationProductComponentDD = null;
+
+        if (entityType.getStringValue().equals(
+                OperationProductComponentEntityType.OPERATION_PRODUCT_IN_COMPONENT.getStringValue())) {
+            this.waste = false;
+
+        } else {
+            this.waste = ProductMaterialType.WASTE.equals(productMaterialType);
+        }
     }
 
     public OperationProductComponentHolder(final Long productId, final Long technologyOperationComponentId,
@@ -197,6 +214,7 @@ public class OperationProductComponentHolder {
         this.technologyInputProductTypeDD = null;
         this.attributeId = null;
         this.attributeDD = null;
+        this.waste = false;
     }
 
     public Long getProductId() {
@@ -277,6 +295,10 @@ public class OperationProductComponentHolder {
 
     public DataDefinition getOperationProductComponentDD() {
         return operationProductComponentDD;
+    }
+
+    public Boolean isWaste() {
+        return waste;
     }
 
     @Override

@@ -393,6 +393,7 @@
         <view:view resource="view/operationGroupsList.xml"/>
         <view:view resource="view/operationGroupDetails.xml"/>
         <view:view resource="view/technologiesList.xml"/>
+        <view:view resource="view/productTechnologiesList.xml"/>
         <view:view resource="view/technologiesAttachments.xml"/>
         <view:view resource="view/operationProductInComponentsImport.xml"/>
         <view:view resource="view/technologyDetails.xml"/>

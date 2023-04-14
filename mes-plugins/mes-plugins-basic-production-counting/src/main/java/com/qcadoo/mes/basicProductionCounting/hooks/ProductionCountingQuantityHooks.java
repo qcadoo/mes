@@ -28,7 +28,10 @@ import static com.qcadoo.model.api.search.SearchOrders.asc;
 import java.util.List;
 import java.util.Objects;
 
+import com.google.common.base.Strings;
+import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.basicProductionCounting.ProductionCountingQuantityChangeService;
+import com.qcadoo.mes.orders.constants.OrderFields;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

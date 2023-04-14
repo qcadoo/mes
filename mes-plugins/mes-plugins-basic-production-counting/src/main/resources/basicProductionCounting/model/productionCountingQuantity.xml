@@ -43,7 +43,7 @@
 
         <enum name="role" values="01used,02produced" default="01used"
                       required="true" />
-        <enum name="typeOfMaterial" values="01component,02intermediate,03finalProduct,04waste"
+        <enum name="typeOfMaterial" values="01component,02intermediate,03finalProduct,04waste,05additionalFinalProduct"
                       default="01component" required="true" />
         <boolean name="isNonComponent" default="false" required="true" />
 

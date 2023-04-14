@@ -34,6 +34,7 @@ import com.qcadoo.mes.technologies.constants.*;
 import com.qcadoo.mes.technologies.dto.OperationProductComponentHolder;
 import com.qcadoo.mes.technologies.dto.OperationProductComponentWithQuantityContainer;
 import com.qcadoo.model.api.*;
+import com.qcadoo.model.api.search.JoinType;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchOrders;
 import com.qcadoo.model.api.search.SearchRestrictions;
@@ -129,6 +130,16 @@ public class BasicProductionCountingServiceImpl implements BasicProductionCounti
         saveBasicProductionCounting(order, productionCountingQuantities, basicProductionCounting,
                 order.getBelongsToField(OrderFields.PRODUCT));
 
+
+        List<Entity> additionalFinalProducts = productionCountingQuantities.stream().filter(pcq -> pcq.getStringField(ProductionCountingQuantityFields.TYPE_OF_MATERIAL)
+                        .equals(ProductionCountingQuantityTypeOfMaterial.ADDITIONAL_FINAL_PRODUCT.getStringValue())).map(pcq -> pcq.getBelongsToField(ProductionCountingQuantityFields.PRODUCT))
+                .collect(Collectors.toList());
+        String additionalFinalProductsNumbers = additionalFinalProducts.stream()
+                .map(p -> p.getStringField(ProductFields.NUMBER) + " - " + p.getStringField(ProductFields.NAME))
+                .collect(Collectors.joining("\n"));
+
+        order.setField(OrderFields.ADDITIONAL_FINAL_PRODUCTS, additionalFinalProductsNumbers);
+
         return productComponentQuantities;
     }
 
@@ -171,9 +182,11 @@ public class BasicProductionCountingServiceImpl implements BasicProductionCounti
                 .filter(pcq -> pcq.getStringField(ProductionCountingQuantityFields.ROLE).equals(
                         ProductionCountingQuantityRole.USED.getStringValue())
                         || (pcq.getStringField(ProductionCountingQuantityFields.ROLE).equals(
-                        ProductionCountingQuantityRole.PRODUCED.getStringValue()) && pcq.getStringField(
+                        ProductionCountingQuantityRole.PRODUCED.getStringValue()) && (pcq.getStringField(
                         ProductionCountingQuantityFields.TYPE_OF_MATERIAL).equals(
-                        ProductionCountingQuantityTypeOfMaterial.WASTE.getStringValue()))).collect(Collectors.toList());
+                        ProductionCountingQuantityTypeOfMaterial.WASTE.getStringValue()) || pcq.getStringField(
+                        ProductionCountingQuantityFields.TYPE_OF_MATERIAL).equals(
+                        ProductionCountingQuantityTypeOfMaterial.ADDITIONAL_FINAL_PRODUCT.getStringValue())))).collect(Collectors.toList());
 
         Set<Long> alreadyAddedProducts = Sets.newHashSet();
 
@@ -212,9 +225,10 @@ public class BasicProductionCountingServiceImpl implements BasicProductionCounti
             String role = getRole(operationProductComponentHolder);
 
             boolean isNonComponent = nonComponents.contains(operationProductComponentHolder);
+            boolean isWaste = operationProductComponentHolder.isWaste();
 
             Entity productionCountingQuantity = prepareProductionCountingQuantity(order, technologyOperationComponent, attribute,
-                    technologyInputProductType, operationProductComponent, product, role, isNonComponent, plannedQuantity);
+                    technologyInputProductType, operationProductComponent, product, role, isNonComponent, plannedQuantity, isWaste);
             productionCountingQuantities.add(productionCountingQuantity);
         }
 
@@ -253,7 +267,7 @@ public class BasicProductionCountingServiceImpl implements BasicProductionCounti
 
     private Entity prepareProductionCountingQuantity(final Entity order, final Entity technologyOperationComponent, final Entity attribute,
                                                      final Entity technologyInputProductType, final Entity operationProductComponent, Entity product, final String role,
-                                                     final boolean isNonComponent, final BigDecimal plannedQuantity) {
+                                                     final boolean isNonComponent, final BigDecimal plannedQuantity, final boolean isWaste) {
         Entity productionCountingQuantity = getProductionCountingQuantityDD().create();
 
         productionCountingQuantity.setField(ProductionCountingQuantityFields.TECHNOLOGY_OPERATION_COMPONENT,
@@ -264,7 +278,7 @@ public class BasicProductionCountingServiceImpl implements BasicProductionCounti
         productionCountingQuantity.setField(ProductionCountingQuantityFields.ATTRIBUTE, attribute);
         productionCountingQuantity.setField(ProductionCountingQuantityFields.ROLE, role);
         productionCountingQuantity.setField(ProductionCountingQuantityFields.TYPE_OF_MATERIAL,
-                getTypeOfMaterial(order, technologyOperationComponent, product, role, isNonComponent));
+                getTypeOfMaterial(order, technologyOperationComponent, product, role, isNonComponent, isWaste));
         productionCountingQuantity.setField(ProductionCountingQuantityFields.IS_NON_COMPONENT, isNonComponent);
         productionCountingQuantity.setField(ProductionCountingQuantityFields.PLANNED_QUANTITY,
                 numberService.setScaleWithDefaultMathContext(plannedQuantity));
@@ -288,7 +302,7 @@ public class BasicProductionCountingServiceImpl implements BasicProductionCounti
     }
 
     private String getTypeOfMaterial(final Entity order, final Entity technologyOperationComponent, final Entity product,
-                                     final String role, boolean isNonComponent) {
+                                     final String role, boolean isNonComponent, boolean isWaste) {
         if (isNonComponent) {
             return ProductionCountingQuantityTypeOfMaterial.INTERMEDIATE.getStringValue();
         } else if (isRoleProduced(role)) {
@@ -296,8 +310,10 @@ public class BasicProductionCountingServiceImpl implements BasicProductionCounti
                 return ProductionCountingQuantityTypeOfMaterial.FINAL_PRODUCT.getStringValue();
             } else if (checkIfProductAlreadyExists(technologyOperationComponent, product)) {
                 return ProductionCountingQuantityTypeOfMaterial.INTERMEDIATE.getStringValue();
-            } else {
+            } else if (isWaste) {
                 return ProductionCountingQuantityTypeOfMaterial.WASTE.getStringValue();
+            } else {
+                return ProductionCountingQuantityTypeOfMaterial.ADDITIONAL_FINAL_PRODUCT.getStringValue();
             }
         } else {
             return ProductionCountingQuantityTypeOfMaterial.COMPONENT.getStringValue();
@@ -460,6 +476,20 @@ public class BasicProductionCountingServiceImpl implements BasicProductionCounti
     }
 
     @Override
+    public List<Entity> getAdditionalFinalProducts(final Entity order) {
+        SearchCriteriaBuilder scb = getProductionCountingQuantityDD()
+                .find()
+                .createAlias(ProductionCountingQuantityFields.ORDER, "o", JoinType.LEFT)
+                .add(SearchRestrictions.eq("o.id", order.getId()))
+                .add(SearchRestrictions.eq(ProductionCountingQuantityFields.ROLE,
+                        ProductionCountingQuantityRole.PRODUCED.getStringValue()))
+                .add(SearchRestrictions.eq(ProductionCountingQuantityFields.TYPE_OF_MATERIAL, ProductionCountingQuantityTypeOfMaterial.ADDITIONAL_FINAL_PRODUCT.getStringValue()));
+
+        return scb.list().getEntities().stream().map(pcq -> pcq.getBelongsToField(ProductionCountingQuantityFields.PRODUCT)).collect(Collectors.toList());
+
+    }
+
+    @Override
     public List<Entity> getUsedMaterialsFromProductionCountingQuantities(final Entity order) {
         return getUsedMaterialsFromProductionCountingQuantities(order, false);
     }
@@ -589,7 +619,8 @@ public class BasicProductionCountingServiceImpl implements BasicProductionCounti
             rowStyles.add(RowStyle.GREEN_BACKGROUND);
         } else if (ProductionCountingQuantityTypeOfMaterial.INTERMEDIATE.getStringValue().equals(typeOfMaterial)) {
             rowStyles.add(RowStyle.BLUE_BACKGROUND);
-        } else if (ProductionCountingQuantityTypeOfMaterial.FINAL_PRODUCT.getStringValue().equals(typeOfMaterial)) {
+        } else if (ProductionCountingQuantityTypeOfMaterial.FINAL_PRODUCT.getStringValue().equals(typeOfMaterial)
+                || ProductionCountingQuantityTypeOfMaterial.ADDITIONAL_FINAL_PRODUCT.getStringValue().equals(typeOfMaterial)) {
             rowStyles.add(RowStyle.YELLOW_BACKGROUND);
         } else {
             rowStyles.add(RowStyle.BROWN_BACKGROUND);

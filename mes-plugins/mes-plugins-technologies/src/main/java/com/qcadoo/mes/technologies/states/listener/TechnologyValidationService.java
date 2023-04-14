@@ -132,6 +132,7 @@ public class TechnologyValidationService {
 
         final Entity savedTechnology = technology.getDataDefinition().get(technology.getId());
         final EntityTree operationComponents = savedTechnology.getTreeField(TechnologyFields.OPERATION_COMPONENTS);
+        final EntityTreeNode root = operationComponents.getRoot();
 
         for (Entity operationComponent : operationComponents) {
             List<Entity> operationProductOutComponents = operationComponent
@@ -140,7 +141,7 @@ public class TechnologyValidationService {
             long notWasteCount = operationProductOutComponents.stream()
                     .filter(operationProductOutComponent -> !operationProductOutComponent.getBooleanField(OperationProductOutComponentFields.WASTE)).count();
 
-            if (notWasteCount > 1 || notWasteCount == 0) {
+            if ((!operationComponent.getId().equals(root.getId()) && notWasteCount > 1) || notWasteCount == 0) {
                 stateChangeContext.addValidationError(
                         "technologies.technology.validate.global.error.noProductsWithWasteFlagNotMarked",
                         operationComponent.getBelongsToField(TechnologyOperationComponentFields.OPERATION)

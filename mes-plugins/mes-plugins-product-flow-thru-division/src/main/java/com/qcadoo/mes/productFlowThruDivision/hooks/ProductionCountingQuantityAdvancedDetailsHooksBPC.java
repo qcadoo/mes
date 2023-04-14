@@ -3,19 +3,19 @@
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo Framework
  * Version: 1.4
- *
+ * <p>
  * This file is part of Qcadoo.
- *
+ * <p>
  * Qcadoo is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation; either version 3 of the License,
  * or (at your option) any later version.
- *
+ * <p>
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty
  * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU Affero General Public License for more details.
- *
+ * <p>
  * You should have received a copy of the GNU Affero General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
@@ -85,7 +85,7 @@ public class ProductionCountingQuantityAdvancedDetailsHooksBPC {
         wasteReceptionWarehouseLookup.requestComponentUpdateState();
 
         if (ProductionCountingQuantityRole.PRODUCED.getStringValue().equals(role)
-                && (ProductionCountingQuantityTypeOfMaterial.FINAL_PRODUCT.getStringValue().equals(type))) {
+                && (ProductionCountingQuantityTypeOfMaterial.FINAL_PRODUCT.getStringValue().equals(type) || ProductionCountingQuantityTypeOfMaterial.ADDITIONAL_FINAL_PRODUCT.getStringValue().equals(type))) {
             productsInputLocationLookup.setEnabled(true);
             productsInputLocationLookup.setRequired(true);
             productsInputLocationLookup.requestComponentUpdateState();
@@ -156,7 +156,7 @@ public class ProductionCountingQuantityAdvancedDetailsHooksBPC {
                 }
 
                 if (ProductionCountingQuantityRole.PRODUCED.getStringValue().equals(role)
-                        && ProductionCountingQuantityTypeOfMaterial.FINAL_PRODUCT.getStringValue().equals(type)) {
+                        && (ProductionCountingQuantityTypeOfMaterial.FINAL_PRODUCT.getStringValue().equals(type) || ProductionCountingQuantityTypeOfMaterial.ADDITIONAL_FINAL_PRODUCT.getStringValue().equals(type))) {
                     productsInputLocationLookup
                             .setFieldValue(technology.getBelongsToField(TechnologyFieldsPFTD.PRODUCTS_INPUT_LOCATION).getId());
                     productsInputLocationLookup.requestComponentUpdateState();
@@ -204,7 +204,7 @@ public class ProductionCountingQuantityAdvancedDetailsHooksBPC {
                             productsFlowLocationLookup.requestComponentUpdateState();
                         }
                         if (ProductionCountingQuantityRole.PRODUCED.getStringValue().equals(role)
-                                && ProductionCountingQuantityTypeOfMaterial.FINAL_PRODUCT.getStringValue().equals(type)
+                                && (ProductionCountingQuantityTypeOfMaterial.FINAL_PRODUCT.getStringValue().equals(type) || ProductionCountingQuantityTypeOfMaterial.ADDITIONAL_FINAL_PRODUCT.getStringValue().equals(type))
                                 && division.getBelongsToField(TechnologyFieldsPFTD.PRODUCTS_INPUT_LOCATION) != null) {
                             productsInputLocationLookup.setFieldValue(
                                     division.getBelongsToField(DivisionFieldsPFTD.PRODUCTS_INPUT_LOCATION).getId());
@@ -227,7 +227,7 @@ public class ProductionCountingQuantityAdvancedDetailsHooksBPC {
 
         if (ProductionCountingQuantityTypeOfMaterial.INTERMEDIATE.getStringValue().equals(type)
                 && TypeOfProductionRecording.CUMULATED.getStringValue()
-                        .equals(order.getStringField(OrderFieldsPC.TYPE_OF_PRODUCTION_RECORDING))) {
+                .equals(order.getStringField(OrderFieldsPC.TYPE_OF_PRODUCTION_RECORDING))) {
             select.setFieldValue(ProductionFlowComponent.WITHIN_THE_PROCESS.getStringValue());
             select.setEnabled(false);
             select.requestComponentUpdateState();

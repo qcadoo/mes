@@ -163,4 +163,6 @@ public final class OrderFields {
 
     public static final String EXPIRATION_DATE = "expirationDate";
 
+    public static final String ADDITIONAL_FINAL_PRODUCTS = "additionalFinalProducts";
+
 }

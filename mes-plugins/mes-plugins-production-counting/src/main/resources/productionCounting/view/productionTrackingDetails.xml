@@ -540,6 +540,8 @@
                         <option type="column" name="wastesQuantity" fields="wastesQuantity" width="70"/>
                         <option type="column" name="unit" fields="productUnit"
                                 link="false" width="50"/>
+                        <option type="column" name="typeOfMaterial" fields="typeOfMaterial"
+                                link="false" width="100"/>
 
                         <option type="correspondingView"
                                 value="productionCounting/trackingOperationProductOutComponentDetails"/>
@@ -549,9 +551,9 @@
                         <option type="order" column="number" direction="desc"/>
 
                         <option type="searchable"
-                                value="number,name,plannedQuantity,usedQuantity,unit,producedSum,wastesSum,remainingQuantity,wastesQuantity"/>
+                                value="number,name,plannedQuantity,usedQuantity,unit,producedSum,wastesSum,remainingQuantity,wastesQuantity,typeOfMaterial"/>
                         <option type="orderable"
-                                value="number,name,plannedQuantity,usedQuantity,unit,producedSum,wastesSum,remainingQuantity,wastesQuantity"/>
+                                value="number,name,plannedQuantity,usedQuantity,unit,producedSum,wastesSum,remainingQuantity,wastesQuantity,typeOfMaterial"/>
 
                         <option type="creatable" value="false"/>
                         <option type="deletable" value="false"/>

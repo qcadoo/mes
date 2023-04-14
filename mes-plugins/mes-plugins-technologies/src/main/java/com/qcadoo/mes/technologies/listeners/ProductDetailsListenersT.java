@@ -112,18 +112,13 @@ public class ProductDetailsListenersT {
             return;
         }
 
-        Map<String, String> filters = Maps.newHashMap();
-        filters.put("productNumber", applyInOperator(productNumber));
-
-        Map<String, Object> gridOptions = Maps.newHashMap();
-        gridOptions.put(L_FILTERS, filters);
-
         Map<String, Object> parameters = Maps.newHashMap();
-        parameters.put(L_GRID_OPTIONS, gridOptions);
+
+        parameters.put("window.productId", product.getId());
 
         parameters.put(L_WINDOW_ACTIVE_MENU, "technology.technologies");
 
-        String url = "../page/technologies/technologiesList.html";
+        String url = "../page/technologies/productTechnologiesList.html";
         view.redirectTo(url, false, true, parameters);
     }
 
