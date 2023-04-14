@@ -38,7 +38,7 @@
         <enum name="productGlobalTypeOfMaterial" values="01component,02intermediate,03finalProduct,04waste,05package"/>
         <decimal name="quantity"/>
         <string name="productUnit"/>
-        <string name="productCategory"/>
+        <dictionary name="productCategory" dictionary="categories"/>
         <decimal name="quantityInAdditionalUnit"/>
         <string name="givenUnit"/>
         <decimal name="conversion"/>
