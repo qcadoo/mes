@@ -23,20 +23,22 @@
  */
 package com.qcadoo.mes.techSubcontrForNegot.aop;
 
-import static com.qcadoo.mes.techSubcontrForNegot.constants.RequestForQuotationProductFieldsTSFN.OPERATION;
-import static com.qcadoo.mes.techSubcontracting.constants.OperationFieldsTS.OPERATION_COMPANIES;
-import static com.qcadoo.mes.techSubcontracting.constants.OperationGroupFieldsTS.OPERATION_GROUP_COMPANIES;
-import static com.qcadoo.mes.technologies.constants.OperationFields.OPERATION_GROUP;
-
-import java.util.List;
-
+import com.google.common.collect.Lists;
+import com.qcadoo.mes.techSubcontrForNegot.constants.TechSubcontrForNegotConstants;
+import com.qcadoo.mes.techSubcontracting.constants.CompanyOperationFields;
+import com.qcadoo.mes.techSubcontracting.constants.CompanyOperationGroupFields;
+import com.qcadoo.mes.techSubcontracting.constants.OperationFieldsTS;
+import com.qcadoo.mes.techSubcontracting.constants.OperationGroupFieldsTS;
+import com.qcadoo.model.api.Entity;
+import com.qcadoo.plugin.api.PluginStateResolver;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.google.common.collect.Lists;
-import com.qcadoo.mes.techSubcontrForNegot.constants.TechSubcontrForNegotConstants;
-import com.qcadoo.model.api.Entity;
-import com.qcadoo.plugin.api.PluginStateResolver;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import static com.qcadoo.mes.techSubcontrForNegot.constants.RequestForQuotationProductFieldsTSFN.OPERATION;
+import static com.qcadoo.mes.technologies.constants.OperationFields.OPERATION_GROUP;
 
 @Service
 public class NegotiationServiceImplTSFNOverrideUtil {
@@ -60,24 +62,25 @@ public class NegotiationServiceImplTSFNOverrideUtil {
     }
 
     private void addCompaniesWhichExecutesOperation(final List<Entity> companies, final Entity operation) {
-        List<Entity> operationCompanies = operation.getManyToManyField(OPERATION_COMPANIES);
+        List<Entity> operationCompanies = operation.getHasManyField(OperationFieldsTS.COMPANIES);
 
         if (!operationCompanies.isEmpty()) {
-            companies.addAll(operationCompanies);
+            companies.addAll(operationCompanies.stream().map(e -> e.getBelongsToField(CompanyOperationFields.COMPANY)).collect(Collectors.toList()));
         }
 
         Entity operationGroup = operation.getBelongsToField(OPERATION_GROUP);
 
         if (operationGroup != null) {
-            List<Entity> operationGroupCompanies = operationGroup.getManyToManyField(OPERATION_GROUP_COMPANIES);
+            List<Entity> operationGroupCompanies = operationGroup.getHasManyField(OperationGroupFieldsTS.COMPANIES);
 
             if (!operationGroupCompanies.isEmpty()) {
-                companies.addAll(operationGroupCompanies);
+                companies.addAll(operationGroupCompanies.stream().map(e -> e.getBelongsToField(CompanyOperationGroupFields.COMPANY)).collect(Collectors.toList()));
             }
         }
     }
 
-    public void fillRequestForQuotationProductOperation(final Entity negotiationProduct, final Entity requestForQuotationProduct) {
+    public void fillRequestForQuotationProductOperation(final Entity negotiationProduct,
+                                                        final Entity requestForQuotationProduct) {
         requestForQuotationProduct.setField(OPERATION, negotiationProduct.getBelongsToField(OPERATION));
     }
 

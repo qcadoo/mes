@@ -162,10 +162,6 @@ public class OperationDurationDetailsInOrderListenersOFSPGOverrideAspect {
 
         FieldComponent generatedEndDateField = (FieldComponent) viewDefinitionState
                 .getComponentByReference(OrderFieldsPS.GENERATED_END_DATE);
-        FieldComponent calculatedFinishAllOrdersField = (FieldComponent) viewDefinitionState
-                .getComponentByReference("calculatedFinishAllOrders");
-        FieldComponent calculatedStartAllOrdersField = (FieldComponent) viewDefinitionState
-                .getComponentByReference("calculatedStartAllOrders");
         FieldComponent includeTpzField = (FieldComponent) viewDefinitionState.getComponentByReference(OrderFieldsPS.INCLUDE_TPZ);
         FieldComponent includeAdditionalTimeField = (FieldComponent) viewDefinitionState
                 .getComponentByReference(OrderFieldsPS.INCLUDE_ADDITIONAL_TIME);
@@ -261,7 +257,7 @@ public class OperationDurationDetailsInOrderListenersOFSPGOverrideAspect {
 
         generatedEndDateField.requestComponentUpdateState();
 
-        setDates(viewDefinitionState, state, orderForm, generatedEndDateField, calculatedFinishAllOrdersField, calculatedStartAllOrdersField, isGenerated, order);
+        setDates(viewDefinitionState, state, orderForm, generatedEndDateField, isGenerated, order);
     }
 
     private void addDateFromSetToFirstPossibleMessage(FormComponent orderForm, boolean dateFromSetToFirstPossible) {
@@ -272,8 +268,7 @@ public class OperationDurationDetailsInOrderListenersOFSPGOverrideAspect {
     }
 
     private void setDates(ViewDefinitionState viewDefinitionState, ComponentState state, FormComponent orderForm,
-                          FieldComponent generatedEndDateField, FieldComponent calculatedFinishAllOrdersField,
-                          FieldComponent calculatedStartAllOrdersField, boolean isGenerated, Entity order) {
+                          FieldComponent generatedEndDateField, boolean isGenerated, Entity order) {
         if (isGenerated) {
             order = getActualOrderWithChanges(order);
             Entity orderTimeCalculation = dataDefinitionService
@@ -283,10 +278,14 @@ public class OperationDurationDetailsInOrderListenersOFSPGOverrideAspect {
 
             Date startTimeOrders = findCalculatedStartAllOrders(order);
             order.setField("calculatedStartAllOrders", operationWorkTimeService.setDateToField(startTimeOrders));
+            FieldComponent calculatedStartAllOrdersField = (FieldComponent) viewDefinitionState
+                    .getComponentByReference("calculatedStartAllOrders");
             calculatedStartAllOrdersField.setFieldValue(operationWorkTimeService.setDateToField(startTimeOrders));
 
             Date finishDate = orderTimeCalculation.getDateField(OrderTimeCalculationFields.EFFECTIVE_DATE_TO);
             generatedEndDateField.setFieldValue(operationWorkTimeService.setDateToField(finishDate));
+            FieldComponent calculatedFinishAllOrdersField = (FieldComponent) viewDefinitionState
+                    .getComponentByReference("calculatedFinishAllOrders");
             calculatedFinishAllOrdersField.setFieldValue(operationWorkTimeService.setDateToField(finishDate));
 
             order.setField("calculatedFinishAllOrders", operationWorkTimeService.setDateToField(finishDate));

@@ -23,14 +23,17 @@
  */
 package com.qcadoo.mes.techSubcontracting.constants;
 
-public final class OperationFieldsTS {
+public final class CompanyOperationGroupFields {
 
-    private OperationFieldsTS() {
+
+    private CompanyOperationGroupFields() {
 
     }
 
-    public static final String IS_SUBCONTRACTING = "isSubcontracting";
+    public static final String COMPANY = "company";
 
-    public static final String COMPANIES = "companies";
+    public static final String OPERATION_GROUP = "operationGroup";
+
+    public static final String IS_DEFAULT = "isDefault";
 
 }

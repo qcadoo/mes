@@ -33,33 +33,21 @@
 		<component type="flowGridLayout" name="performsGridLayout"
 			columns="2" rows="3">
 			<layoutElement column="1" row="1" minHeight="3">
-				<component type="lookup" name="operationGroupsLookup" reference="operationGroupsLookup"
-					field="#{form}.operationGroups" defaultVisible="false" persistent="false"
-					hasLabel="false">
-					
-					<option type="column" name="name" fields="name" link="true"
-						width="100" />
-
-					<option type="searchable" value="number,name" />
-					<option type="orderable" value="number,name" />
-
-					<option type="expression"
-						value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name" />
-					<option type="fieldCode" value="number" />
-
-					<option type="multiselect" value="true" />
-				</component>
 				<component type="grid" name="operationGroups" reference="operationGroups"
 					source="#{form}.operationGroups">
-					<option type="column" name="number" fields="number" width="50" />
-					<option type="column" name="name" fields="name" width="100" />
+					<option type="column" name="operationGroupNumber" fields="operationGroup"
+							expression="#operationGroup['number']" link="true" width="50" />
+					<option type="column" name="operationGroupName" fields="operationGroup"
+							expression="#operationGroup['name']" link="true" width="100" />
+					<option type="column" name="isDefault" fields="isDefault" width="30"/>
 
-					<option type="order" column="number" direction="desc" />
-					<option type="searchable" value="number,name" />
-					<option type="orderable" value="number,name" />
-					
-					<option type="weakRelation" value="true" />
-					<option type="correspondingLookup" value="operationGroupsLookup" />
+					<option type="order" column="operationGroupNumber" direction="desc" />
+					<option type="searchable" value="operationGroupNumber,operationGroupName,isDefault" />
+					<option type="orderable" value="operationGroupNumber,operationGroupName,isDefault" />
+
+					<option type="correspondingView" value="techSubcontracting/companyOperationGroupDetails" />
+					<option type="correspondingComponent" value="form" />
+					<option type="correspondingViewInModal" value="true" />
 
 					<option type="creatable" value="true" />
 					<option type="deletable" value="true" />
@@ -68,35 +56,23 @@
 				</component>
 			</layoutElement>
 			<layoutElement column="2" row="1" minHeight="3">
-				<component type="lookup" name="operationsLookup" reference="operationsLookup"
-					field="#{form}.operations" defaultVisible="false" persistent="false"
-					hasLabel="false">
-					
-					<option type="column" name="name" fields="name" link="true"
-						width="100" />
-
-					<option type="searchable" value="number,name" />
-					<option type="orderable" value="number,name" />
-
-					<option type="expression"
-						value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name" />
-					<option type="fieldCode" value="number" />
-
-					<option type="multiselect" value="true" />
-				</component>
 				<component type="grid" name="operations" reference="operations"
 					source="#{form}.operations">
-					<option type="column" name="number" fields="number" width="50" />
-					<option type="column" name="name" fields="name" width="100" />
+					<option type="column" name="operationNumber" fields="operation"
+							expression="#operation['number']" link="true" width="50" />
+					<option type="column" name="operationName" fields="operation"
+							expression="#operation['name']" link="true" width="100" />
+					<option type="column" name="isDefault" fields="isDefault" width="30"/>
 
-					<option type="order" column="number" direction="desc" />
+					<option type="order" column="operationNumber" direction="desc" />
 					
-					<option type="searchable" value="number,name" />
-					<option type="orderable" value="number,name" />
-					
-					<option type="weakRelation" value="true" />
-					<option type="correspondingLookup" value="operationsLookup" />
-						
+					<option type="searchable" value="operationNumber,operationName,isDefault" />
+					<option type="orderable" value="operationNumber,operationName,isDefault" />
+
+					<option type="correspondingView" value="techSubcontracting/companyOperationDetails" />
+					<option type="correspondingComponent" value="form" />
+					<option type="correspondingViewInModal" value="true" />
+
 					<option type="creatable" value="true" />
 					<option type="deletable" value="true" />
 					<option type="fullscreen" value="true" />
