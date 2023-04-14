@@ -71,8 +71,9 @@ public class ProductionLineScheduleServicePSImpl implements ProductionLineSchedu
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
-    public void createProductionLinePositionNewData(Map<Long, ProductionLinePositionNewData> orderProductionLinesPositionNewData,
-                                                    Entity productionLine, Date finishDate, Entity position, Entity technology, Entity previousOrder) {
+    public void createProductionLinePositionNewData(
+            Map<Long, ProductionLinePositionNewData> orderProductionLinesPositionNewData,
+            Entity productionLine, Date finishDate, Entity position, Entity technology, Entity previousOrder) {
         Entity productionLineSchedule = position.getBelongsToField(ProductionLineSchedulePositionFields.PRODUCTION_LINE_SCHEDULE);
         Entity order = position.getBelongsToField(ProductionLineSchedulePositionFields.ORDER);
 
@@ -80,7 +81,7 @@ public class ProductionLineScheduleServicePSImpl implements ProductionLineSchedu
 
         int maxPathTime = orderRealizationTimeService.estimateOperationTimeConsumption(productionLineSchedule, order,
                 technology.getTreeField(TechnologyFields.OPERATION_COMPONENTS).getRoot(),
-                 true, true, true, productionLine, Optional.empty());
+                true, true, true, productionLine, Optional.empty());
 
         if (maxPathTime != 0 && maxPathTime <= OrderRealizationTimeService.MAX_REALIZATION_TIME) {
             Entity changeover = lineChangeoverNormsForOrdersService.getChangeover(previousOrder, technology, productionLine);
@@ -88,7 +89,7 @@ public class ProductionLineScheduleServicePSImpl implements ProductionLineSchedu
                 finishDate = Date.from(finishDate.toInstant().plusSeconds(changeover.getIntegerField(LineChangeoverNormsFields.DURATION)));
             }
 
-            Entity orderTimeCalculation = productionSchedulingService.scheduleOperationsInOrder(productionLineSchedule, order, technology, finishDate, productionLine);
+            Entity orderTimeCalculation = productionSchedulingService.scheduleOperationsInOrder(productionLineSchedule, order, finishDate, productionLine);
 
             ProductionLinePositionNewData productionLinePositionNewData = new ProductionLinePositionNewData(orderTimeCalculation.getDateField(OrderTimeCalculationFields.EFFECTIVE_DATE_FROM),
                     orderTimeCalculation.getDateField(OrderTimeCalculationFields.EFFECTIVE_DATE_TO), changeover);

@@ -35,6 +35,8 @@ public class DashboardKanbanDataProvider {
 
     private static final String L_START_DATE = "startDate";
 
+    public static final int DEFAULT_RECORDS_LIMIT = 50;
+
     @Autowired
     private NamedParameterJdbcTemplate jdbcTemplate;
 
@@ -138,7 +140,7 @@ public class DashboardKanbanDataProvider {
             query += " ASC ";
         }
 
-        query += "LIMIT 200";
+        query += "LIMIT " + getRecordsLimit();
 
         return query;
     }
@@ -230,9 +232,14 @@ public class DashboardKanbanDataProvider {
         query += "AND date_trunc('day', operationaltaskdto.startdate) <= current_date AND current_date <= date_trunc('day', operationaltaskdto.finishdate) ";
         query += additionalRestrictions;
         query += "ORDER BY operationaltaskdto.workstationnumber, operationaltaskdto.startdate ";
-        query += "LIMIT 200";
+        query += "LIMIT " + getRecordsLimit();
 
         return query;
     }
 
+
+    private Integer getRecordsLimit() {
+        Integer numberVisibleOrdersTasksOnDashboard = parameterService.getParameter().getIntegerField("numberVisibleOrdersTasksOnDashboard");
+        return Objects.isNull(numberVisibleOrdersTasksOnDashboard) ? DEFAULT_RECORDS_LIMIT : numberVisibleOrdersTasksOnDashboard;
+    }
 }

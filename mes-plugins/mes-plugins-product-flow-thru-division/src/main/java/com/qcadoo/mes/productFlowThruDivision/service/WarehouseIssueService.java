@@ -204,8 +204,9 @@ public class WarehouseIssueService {
             Entity order = getOrderDD().get(warehouseIssue.getBelongsToField(WarehouseIssueFields.ORDER).getId());
 
             if (order != null) {
-                BigDecimal quantityPerUnit = productToIssue.getDecimalField(ProductsToIssueFields.DEMAND_QUANTITY).divide(
-                        order.getDecimalField(OrderFields.PLANNED_QUANTITY), numberService.getMathContext());
+                BigDecimal quantityPerUnit = numberService
+                        .setScaleWithDefaultMathContext(productToIssue.getDecimalField(ProductsToIssueFields.DEMAND_QUANTITY).divide(
+                                order.getDecimalField(OrderFields.PLANNED_QUANTITY), numberService.getMathContext()));
 
                 issue.setField(IssueFields.QUANTITY_PER_UNIT, quantityPerUnit);
             }

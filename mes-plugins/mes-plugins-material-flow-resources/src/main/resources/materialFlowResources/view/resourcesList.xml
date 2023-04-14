@@ -83,6 +83,8 @@
             <option type="column" name="productNumber" fields="productNumber" link="true" width="100"/>
             <option type="column" name="productName" fields="productName" link="true" width="110"/>
             <option type="column" name="productGlobalTypeOfMaterial" fields="productGlobalTypeOfMaterial" width="85"/>
+            <option type="column" name="productCategory" fields="productCategory" width="85"/>
+
             <option type="column" name="quantity" fields="quantity" width="100"/>
             <option type="column" name="productUnit" fields="productUnit" width="50"/>
             <option type="column" name="quantityInAdditionalUnit" fields="quantityInAdditionalUnit"/>
@@ -116,9 +118,12 @@
             <option type="order" column="productNumber" direction="asc"/>
 
             <option type="searchable"
-                    value="locationNumber,locationName,productNumber,productName,productGlobalTypeOfMaterial,quantity,productUnit,reservedQuantity,availableQuantity,price,time,productionDate,expirationDate,batch,isCorrected,storageLocation,number,quantityInAdditionalUnit,givenUnit,additionalCode,conversion,palletNumber,typeOfPallet,userName,waste,deliveryNumber,supplierNumber,value,qualityRating,blockedForQualityControl"/>
+                    value="productCategory,locationNumber,locationName,productNumber,productName,productGlobalTypeOfMaterial,quantity,productUnit,reservedQuantity,availableQuantity,price,time,productionDate,expirationDate,batch,isCorrected,storageLocation,number,quantityInAdditionalUnit,givenUnit,additionalCode,conversion,palletNumber,typeOfPallet,userName,waste,deliveryNumber,supplierNumber,value,qualityRating,blockedForQualityControl"/>
             <option type="orderable"
-                    value="locationNumber,locationName,productNumber,productName,productGlobalTypeOfMaterial,quantity,productUnit,reservedQuantity,availableQuantity,price,time,productionDate,expirationDate,batch,isCorrected,storageLocation,number,quantityInAdditionalUnit,givenUnit,additionalCode,conversion,palletNumber,typeOfPallet,userName,waste,deliveryNumber,supplierNumber,value,qualityRating,blockedForQualityControl"/>
+                    value="productCategory,locationNumber,locationName,productNumber,productName,productGlobalTypeOfMaterial,quantity,productUnit,reservedQuantity,availableQuantity,price,time,productionDate,expirationDate,batch,isCorrected,storageLocation,number,quantityInAdditionalUnit,givenUnit,additionalCode,conversion,palletNumber,typeOfPallet,userName,waste,deliveryNumber,supplierNumber,value,qualityRating,blockedForQualityControl"/>
+
+            <option type="defaultVisibleColumns" value="locationNumber,locationName,productNumber,productName,productGlobalTypeOfMaterial,quantity,productUnit,reservedQuantity,availableQuantity,
+                            price,time,productionDate,expirationDate,batch,isCorrected,storageLocation,number,quantityInAdditionalUnit,givenUnit,additionalCode,conversion,palletNumber,typeOfPallet,userName,waste,deliveryNumber,supplierNumber,value,qualityRating,blockedForQualityControl"/>
 
             <option type="correspondingView" value="materialFlowResources/resourceDetails"/>
             <option type="correspondingViewInModal" value="true"/>

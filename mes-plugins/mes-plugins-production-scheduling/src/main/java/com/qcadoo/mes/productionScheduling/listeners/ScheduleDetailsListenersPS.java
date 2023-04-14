@@ -268,6 +268,10 @@ public class ScheduleDetailsListenersPS {
             if (schedule.getBooleanField(ScheduleFields.ADDITIONAL_TIME_EXTENDS_OPERATION)) {
                 newFinishDate = Date.from(newFinishDate.toInstant().plusSeconds(additionalTime));
             }
+            Date childrenEndTime = schedulePositionValidators.getChildrenMaxEndTime(position);
+            if (!Objects.isNull(childrenEndTime) && childrenEndTime.after(newFinishDate)) {
+                newFinishDate = childrenEndTime;
+            }
             PositionNewData positionNewData = new PositionNewData(laborWorkTime, machineWorkTime, additionalTime, newStartDate,
                     newFinishDate, workstationChangeovers);
             operationWorkstationsPositionNewData.put(workstation.getId(), positionNewData);
