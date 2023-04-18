@@ -457,6 +457,12 @@
                     method="checkIfTechnologyIsPrototypeForOrders"/>
         </model:model-hook>
 
+        <model:model-hook plugin="technologies" model="technology">
+            <model:onSave
+                    class="com.qcadoo.mes.orders.hooks.TechnologyHooksO"
+                    method="onSave"/>
+        </model:model-hook>
+
         <model:model-field plugin="basic" model="product">
             <model:hasMany name="orderTechnologicalProcesses" plugin="orders" model="orderTechnologicalProcess" joinField="product"/>
         </model:model-field>

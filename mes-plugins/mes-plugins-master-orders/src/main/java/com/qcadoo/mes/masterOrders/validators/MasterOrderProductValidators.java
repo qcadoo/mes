@@ -23,6 +23,7 @@
  */
 package com.qcadoo.mes.masterOrders.validators;
 
+import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.basic.constants.ProductFamilyElementType;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.masterOrders.constants.MasterOrderProductFields;
@@ -55,6 +56,9 @@ public class MasterOrderProductValidators {
 
     @Autowired
     private MasterOrderOrdersDataProvider masterOrderOrdersDataProvider;
+
+    @Autowired
+    private ParameterService parameterService;
 
     public boolean onValidate(final DataDefinition masterOrderProductDD, final Entity masterOrderProduct) {
         boolean isValid = checkIfEntityAlreadyExistsForProductAndMasterOrder(masterOrderProductDD, masterOrderProduct);
@@ -124,6 +128,10 @@ public class MasterOrderProductValidators {
     public boolean checkIfCanChangeTechnology(final DataDefinition masterOrderProductDD, final FieldDefinition fieldDefinition,
                                               final Entity masterOrderProduct, final Object fieldOldValue, final Object fieldNewValue) {
         if (masterOrderProduct.getId() == null) {
+            return true;
+        }
+
+        if(masterOrderProduct.getBooleanField("isUpdateTechnologiesOnPendingOrders")) {
             return true;
         }
 
