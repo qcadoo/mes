@@ -100,6 +100,7 @@ public class TechnologyHooksO {
         if (savedMop.isValid()) {
             for (Entity order : orders) {
                 order.setField(OrderFields.TECHNOLOGY, technology);
+                order.setField(OrderFields.TECHNOLOGY_PROTOTYPE, technology);
                 order.setField(REGENERATE_PQC, true);
                 order.setField(IS_UPDATE_TECHNOLOGIES_ON_PENDING_ORDERS, true);
                 Entity savedOrder = order.getDataDefinition().save(order);
@@ -115,10 +116,12 @@ public class TechnologyHooksO {
                 .add(SearchRestrictions.eq("product.id", product.getId()))
                 .add(SearchRestrictions.eq(OrderFields.STATE, OrderStateStringValues.PENDING))
                 .add(SearchRestrictions.isNull("masterOrder"))
-                .add(SearchRestrictions.isNotNull(OrderFields.TECHNOLOGY)).list().getEntities();
+                .list().getEntities();
         for (Entity order : orders) {
             if (order.getHasManyField("children").isEmpty()) {
                 order.setField(OrderFields.TECHNOLOGY, technology);
+                order.setField(OrderFields.TECHNOLOGY_PROTOTYPE, technology);
+
                 order.setField(REGENERATE_PQC, true);
                 Entity savedOrder = order.getDataDefinition().save(order);
             }
