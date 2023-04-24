@@ -39,6 +39,24 @@
 
             <template name="standardGridTemplate" excludeItems="actions.new,actions.copy,actions.delete"/>
 
+            <group name="report">
+                <bigButton name="printManifestoReport" icon="pdfIcon24.png" state="disabled">
+                    <script>
+                        <![CDATA[
+                            this.enable("#{translate(basicProductionCounting.detailedProductionCountingAndProgressList.window.ribbon.report.printManifestoReport.label)}");
+                            this.addOnChangeListener({
+                                onClick: function() {
+                                    #{order}.performEvent({
+                                        name : 'printManifestoReport',
+                                        args : ['pdf']
+                                    });
+                                }
+                            });
+                        ]]>
+                    </script>
+                </bigButton>
+            </group>
+
             <group name="replacements">
                 <bigButton name="useReplacement" icon="copyIcon24.png"
                            state="disabled">
@@ -47,7 +65,7 @@
 							this.addOnChangeListener({
 								onClick: function() {
 									if (window.canClose()) {
-									#{form}.performEvent('useReplacement', []);
+									    #{form}.performEvent('useReplacement', []);
 									}
 								}
 							});
@@ -66,6 +84,8 @@
 
                 <listener event="performActionOnBack" method="performActionOnBack"
                           class="com.qcadoo.mes.basicProductionCounting.hooks.DetailedProductionCountingAndProgressListHooks"/>
+                <listener event="printManifestoReport" method="printManifestoReport"
+                          class="com.qcadoo.mes.basicProductionCounting.listeners.DetailedProductionCountingAndProgressListListeners"/>
             </component>
             <component type="form" name="basicProductionCounting"
                        reference="form">
@@ -75,83 +95,78 @@
                            model="productionCountingQuantityDto">
                     <script>
                         <![CDATA[
-					var resourceIssueButton = #{window}.getRibbonItemOrNull("issue.resourceIssue");
-					var useReplacementBtn = #{window}.getRibbonItemOrNull("replacements.useReplacement");
+                            var resourceIssueButton = #{window}.getRibbonItemOrNull("issue.resourceIssue");
+                            var useReplacementBtn = #{window}.getRibbonItemOrNull("replacements.useReplacement");
 
-					var listener = {
-						onChange: function(selectedEntitiesArray) {
-							 var state = #{state}.getValue().content.value;
+                            var listener = {
+                                onChange: function(selectedEntitiesArray) {
+                                     var state = #{state}.getValue().content.value;
 
-						 if (useReplacementBtn && selectedEntitiesArray.length == 1 && selectedEntitiesArray[0].fields.replacement == 1
-						 	&& selectedEntitiesArray[0].fields.typeOfMaterial == '01component' && selectedEntitiesArray[0].fields.role == '01used'
-						 	&& state != '05declined' && state != '07abandoned' && state != '04completed') {
-                                            useReplacementBtn.enable("#{translate(productionCounting.productionTrackingDetails.window.ribbon.useReplacement.label)}");
-                                        } else {
-                                            useReplacementBtn.disable("#{translate(productionCounting.productionTrackingDetails.window.ribbon.useReplacement.label)}");
+                                if (useReplacementBtn && selectedEntitiesArray.length == 1 && selectedEntitiesArray[0].fields.replacement == 1
+                                    && selectedEntitiesArray[0].fields.typeOfMaterial == '01component' && selectedEntitiesArray[0].fields.role == '01used'
+                                    && state != '05declined' && state != '07abandoned' && state != '04completed') {
+                                                    useReplacementBtn.enable("#{translate(productionCounting.productionTrackingDetails.window.ribbon.useReplacement.label)}");
+                                                } else {
+                                                    useReplacementBtn.disable("#{translate(productionCounting.productionTrackingDetails.window.ribbon.useReplacement.label)}");
+                                                }
+
+                                     if(state == '01pending' || state == '04completed' || state == '05declined' || state == '07abandoned') {
+                                        if (resourceIssueButton) {
+                                            resourceIssueButton.disable("#{translate(basicProductionCounting.detailedProductionCountingAndProgressList.resourceIssue.description)}");
+                                        }
+                                        return;
+
+                                     }
+                                    if (!selectedEntitiesArray || selectedEntitiesArray.length == 0) {
+                                        if (resourceIssueButton) {
+                                            resourceIssueButton.disable("#{translate(basicProductionCounting.detailedProductionCountingAndProgressList.resourceIssue.description)}");
+                                        }
+                                    } else {
+                                        var onlyOneRole = true;
+                                        var onlyOneTypeOfMaterial = true;
+                                        if(selectedEntitiesArray.length > 1) {
+                                            for (var i = selectedEntitiesArray.length-1 ; i > 0 ; i--) {
+                                                if (selectedEntitiesArray[i-1].fields.role != selectedEntitiesArray[i].fields.role) {
+                                                    onlyOneRole = false;
+                                                    break;
+                                                }
+                                                if (selectedEntitiesArray[i-1].fields.typeOfMaterial != selectedEntitiesArray[i].fields.typeOfMaterial) {
+                                                    onlyOneTypeOfMaterial = false;
+                                                    break;
+                                                }
+                                            }
                                         }
 
-							 if(state == '01pending' || state == '04completed' || state == '05declined' || state == '07abandoned') {
-							 	if (resourceIssueButton) {
-									resourceIssueButton.disable("#{translate(basicProductionCounting.detailedProductionCountingAndProgressList.resourceIssue.description)}");
-								}
-								return;
+                                        if (onlyOneRole && onlyOneTypeOfMaterial) {
+                                            var selectedEntityRole = selectedEntitiesArray[0].fields.role;
+                                            var selectedEntityMaterial = selectedEntitiesArray[0].fields.typeOfMaterial;
+                                            if (selectedEntityRole == '01used' && selectedEntityMaterial == '01component') {
+                                                if (resourceIssueButton) {
+                                                    resourceIssueButton.enable("#{translate(basicProductionCounting.detailedProductionCountingAndProgressList.resourceIssue.description)}");
+                                                }
+                                            } else {
+                                                if (resourceIssueButton) {
+                                                    resourceIssueButton.disable("#{translate(basicProductionCounting.detailedProductionCountingAndProgressList.resourceIssue.description)}");
+                                                }
+                                            }
+                                        } else {
+                                            if (resourceIssueButton) {
+                                                resourceIssueButton.disable("#{translate(basicProductionCounting.detailedProductionCountingAndProgressList.resourceIssue.description)}");
+                                            }
+                                        }
+                                    }
+                                }
+                            }
 
-							 }
-							if (!selectedEntitiesArray || selectedEntitiesArray.length == 0) {
-								if (resourceIssueButton) {
-									resourceIssueButton.disable("#{translate(basicProductionCounting.detailedProductionCountingAndProgressList.resourceIssue.description)}");
-								}
-							} else {
-								var onlyOneRole = true;
-								var onlyOneTypeOfMaterial = true;
-								if(selectedEntitiesArray.length > 1) {
-									for (var i = selectedEntitiesArray.length-1 ; i > 0 ; i--) {
-										if (selectedEntitiesArray[i-1].fields.role != selectedEntitiesArray[i].fields.role) {
-											onlyOneRole = false;
-											break;
-										}
-										if (selectedEntitiesArray[i-1].fields.typeOfMaterial != selectedEntitiesArray[i].fields.typeOfMaterial) {
-											onlyOneTypeOfMaterial = false;
-											break;
-										}
-									}
-								}
-
-								if (onlyOneRole && onlyOneTypeOfMaterial) {
-									var selectedEntityRole = selectedEntitiesArray[0].fields.role;
-									var selectedEntityMaterial = selectedEntitiesArray[0].fields.typeOfMaterial;
-									if (selectedEntityRole == '01used' && selectedEntityMaterial == '01component') {
-										if (resourceIssueButton) {
-											resourceIssueButton.enable("#{translate(basicProductionCounting.detailedProductionCountingAndProgressList.resourceIssue.description)}");
-										}
-									} else {
-										if (resourceIssueButton) {
-											resourceIssueButton.disable("#{translate(basicProductionCounting.detailedProductionCountingAndProgressList.resourceIssue.description)}");
-										}
-									}
-								} else {
-									if (resourceIssueButton) {
-										resourceIssueButton.disable("#{translate(basicProductionCounting.detailedProductionCountingAndProgressList.resourceIssue.description)}");
-									}
-								}
-
-							}
-
-
-
-						}
-					}
-
-					this.addOnChangeListener(listener);
-
+                            this.addOnChangeListener(listener);
                                 var that = this;
                                 this.onDeleteButtonClicked = function () {
                                     var selectedEntities = #{grid}.getValue().content.selectedEntities;
                                     if (window.confirm("#{translate(qcadooView.grid.confirmDeleteMessage)}" + "?")) {
                                         #{grid}.fireEvent(null,'removeSelectedProductionCountingQuantities',[selectedEntities]);
                                     }
-                                };
-                            ]]>
+                            };
+                        ]]>
                     </script>
                     <option type="column" name="productNumber" fields="productNumber"
                             link="true" width="70"/>
@@ -178,9 +193,9 @@
                     <option type="order" column="productNumber" direction="asc"/>
 
                     <option type="searchable" value="replacement,productNumber,productName,technologyInputProductTypeName,replacementTo,nodeNumber,operationNumber,operationName,role,
-					typeOfMaterial,plannedQuantity,usedQuantity,producedQuantity,productUnit"/>
+					    typeOfMaterial,plannedQuantity,usedQuantity,producedQuantity,productUnit"/>
                     <option type="orderable" value="replacement,productNumber,productName,technologyInputProductTypeName,replacementTo,nodeNumber,operationNumber,operationName,role,
-					typeOfMaterial,plannedQuantity,usedQuantity,producedQuantity,productUnit"/>
+					    typeOfMaterial,plannedQuantity,usedQuantity,producedQuantity,productUnit"/>
 
                     <option type="correspondingView"
                             value="basicProductionCounting/productionCountingQuantityAdvancedDetails"/>
