@@ -29,8 +29,38 @@ public final class ProductionCountingQuantityDtoFields {
 
     }
 
+    public static final String ORDER = "order";
+
+    public static final String ORDER_ID = "orderId";
+
+    public static final String PRODUCT_ID = "productId";
+
+    public static final String PRODUCT_NUMBER = "productNumber";
+
+    public static final String PRODUCT_NAME = "productName";
+
+    public static final String REPLACEMENT_TO = "replacementTo";
+
+    public static final String PRODUCT_UNIT = "productUnit";
+
+    public static final String NODE_NUMBER = "nodeNumber";
+
+    public static final String OPERATION_NUMBER = "operationNumber";
+
+    public static final String OPERATION_NAME = "operationName";
+
+    public static final String TECHNOLOGY_INPUT_PRODUCT_TYPE_NAME = "technologyInputProductTypeName";
+
+    public static final String ROLE = "role";
+
+    public static final String TYPE_OF_MATERIAL = "typeOfMaterial";
+
+    public static final String PLANNED_QUANTITY = "plannedQuantity";
+
     public static final String USED_QUANTITY = "usedQuantity";
 
     public static final String PRODUCED_QUANTITY = "producedQuantity";
+
+    public static final String REPLACEMENT = "replacement";
 
 }
