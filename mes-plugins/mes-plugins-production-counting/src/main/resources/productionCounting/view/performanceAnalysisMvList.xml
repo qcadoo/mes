@@ -1,0 +1,218 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    ***************************************************************************
+    Copyright (c) 2010 Qcadoo Limited
+    Project: Qcadoo MES
+    Version: 1.4
+
+    This file is part of Qcadoo.
+
+    Qcadoo is free software; you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as published
+    by the Free Software Foundation; either version 3 of the License,
+    or (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty
+    of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+    See the GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+    ***************************************************************************
+
+-->
+<view defaultAuthorizationRole="ROLE_ANALYSIS_VIEWER" name="performanceAnalysisMvList"
+      modelName="performanceAnalysisMv"
+      menuAccessible="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns="http://schema.qcadoo.org/view"
+      xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd">
+
+    <component type="window" name="window" reference="window">
+
+        <ribbon>
+            <group name="actions">
+                <bigButton name="refresh" icon="updateIcon24.png" state="enabled" action="#{grid}.performRefresh;"
+                           accesskey="r"/>
+            </group>
+            <group name="actions">
+                <bigButton name="refreshPerformanceAnalysisMV" icon="generateIcon24.png">
+                    <script>
+                        <![CDATA[
+							this.addOnChangeListener({
+								onClick: function() {
+									if(window.canClose()) {
+										#{grid}.performEvent('refreshPerformanceAnalysisMV', []);
+									}
+								}
+							});
+						]]>
+                    </script>
+                </bigButton>
+            </group>
+            <group name="genericExport">
+                <smallButton name="csv" state="enabled" icon="exportToCsvIcon16.png">
+                    <script>
+                        <![CDATA[
+                            this.addOnChangeListener({
+                                onClick: function() {
+                                    #{grid}.performEvent('exportToCsv', [], 'exportToCsv');
+                                }
+                            });
+                        ]]>
+                    </script>
+                </smallButton>
+                <smallButton name="pdf" state="enabled" icon="pdfIcon16.png">
+                    <script>
+                        <![CDATA[
+                            this.addOnChangeListener({
+                                onClick: function() {
+                                    #{grid}.performEvent('exportToPdf', [], 'exportToPdf');
+                                }
+                            });
+                        ]]>
+                    </script>
+                </smallButton>
+            </group>
+            <group name="analysis">
+                <bigButton name="showDetails" icon="generateIcon24.png">
+                    <script>
+                        <![CDATA[
+							this.addOnChangeListener({
+								onClick: function() {
+									if(window.canClose()) {
+										#{grid}.performEvent('showDetails', []);
+									}
+								}
+							});
+
+                            #{grid}.addOnChangeListener({
+                                onChange: function(selectedArray) {
+                                    var tooltipMessage = "#{translate(productionCounting.analysis.ribbon.message.selectOneRecord)}";
+                                    if (selectedArray.length === 0) {
+                                        this.disable(tooltipMessage);
+                                    } else {
+                                        this.enable(tooltipMessage);
+                                    }
+                                }
+                            });
+						]]>
+                    </script>
+                </bigButton>
+                <bigButton name="calculateTotalTime" icon="generateIcon24.png">
+                    <script>
+                        <![CDATA[
+							this.addOnChangeListener({
+								onClick: function() {
+									if(window.canClose()) {
+										#{grid}.performEvent('calculateTotalTime', []);
+									}
+								}
+							});
+						]]>
+                    </script>
+                </bigButton>
+            </group>
+        </ribbon>
+
+        <component type="flowGridLayout" name="flowGridLayout" columns="1"
+                   rows="5">
+            <layoutElement column="1" row="1">
+                <component type="gridLayout" name="gridLayout" columns="4"
+                           rows="1">
+                    <layoutElement column="1" row="1">
+                        <component type="time" name="totalTimeBasedOnNorms" reference="totalTimeBasedOnNorms"
+                                   defaultEnabled="never"/>
+                    </layoutElement>
+                    <layoutElement column="2" row="1">
+                        <component type="time" name="totalLaborTime" reference="totalLaborTime"
+                                   defaultEnabled="never"/>
+                    </layoutElement>
+                    <layoutElement column="3" row="1">
+                        <component type="time" name="totalDeviationTime" reference="totalDeviationTime"
+                                   defaultEnabled="never"/>
+                    </layoutElement>
+                    <layoutElement column="4" row="1">
+                        <component type="input" name="totalPerformance" reference="totalPerformance"
+                                   defaultEnabled="never">
+                            <option type="alignment" value="right"/>
+                        </component>
+                    </layoutElement>
+                </component>
+            </layoutElement>
+            <layoutElement column="1" row="2" minHeight="4">
+                <component type="grid" name="performanceAnalysisList"
+                           reference="grid">
+
+                    <option type="column" name="productionLineNumber" fields="productionLineNumber"
+                            width="90"/>
+                    <option type="column" name="staffName" fields="staffName"
+                            width="120"/>
+                    <option type="column" name="doneQuantity" fields="doneQuantity"
+                            width="60"/>
+                    <option type="column" name="productionLineQuantity" fields="productionLineQuantity"
+                            width="40"/>
+                    <option type="column" name="assortmentQuantity" fields="assortmentQuantity"
+                            width="40"/>
+                    <option type="column" name="performance" fields="performance"
+                            width="60"/>
+                    <option type="column" name="dailyPerformance" fields="dailyPerformance"
+                            width="60"/>
+                    <option type="column" name="shiftName" fields="shiftName"
+                            width="40"/>
+                    <option type="column" name="timeRangeFrom" fields="timeRangeFrom"
+                            width="80"/>
+                    <option type="column" name="timeRangeTo" fields="timeRangeTo"
+                            width="80"/>
+                    <option type="column" name="timeBasedOnNormsSum" fields="timeBasedOnNormsSum"
+                            width="80"
+                            expression="T(com.qcadoo.view.api.utils.TimeConverterService).convertTimeToString(#timeBasedOnNormsSum)"/>
+                    <option type="column" name="laborTimeSum" fields="laborTimeSum"
+                            width="80"
+                            expression="T(com.qcadoo.view.api.utils.TimeConverterService).convertTimeToString(#laborTimeSum)"/>
+                    <option type="column" name="timeDeviation" fields="timeDeviation"
+                            width="80"
+                            expression="T(com.qcadoo.view.api.utils.TimeConverterService).convertTimeToString(#timeDeviation)"/>
+
+                    <option type="order" column="timeRangeFrom" direction="desc"/>
+
+                    <option type="searchable"
+                            value="productionLineNumber,staffName,doneQuantity,productionLineQuantity,assortmentQuantity,performance,dailyPerformance,shiftName,timeRangeFrom,timeRangeTo"/>
+                    <option type="multiSearch"
+                            value="productionLineNumber,staffName,doneQuantity,productionLineQuantity,assortmentQuantity,performance,dailyPerformance,shiftName,timeRangeFrom,timeRangeTo"/>
+                    <option type="orderable"
+                            value="productionLineNumber,staffName,doneQuantity,productionLineQuantity,assortmentQuantity,performance,dailyPerformance,shiftName,timeRangeFrom,timeRangeTo"/>
+
+                    <option type="footerRow" value="true"/>
+                    <option type="columnsToSummaryTime" value="timeBasedOnNormsSum,laborTimeSum,timeDeviation"/>
+
+                    <option type="fullscreen" value="true"/>
+                    <option type="fixedHeight" value="true"/>
+
+                    <option type="suppressSelectEvent" value="true"/>
+
+                    <listener event="showDetails"
+                              class="com.qcadoo.mes.productionCounting.listeners.PerformanceAnalysisListeners"
+                              method="showDetails"/>
+
+                    <listener event="calculateTotalTime"
+                              class="com.qcadoo.mes.productionCounting.listeners.PerformanceAnalysisListeners"
+                              method="calculateTotalTime"/>
+
+                    <listener event="refreshPerformanceAnalysisMV"
+                              class="com.qcadoo.mes.productionCounting.listeners.PerformanceAnalysisListeners"
+                              method="refreshPerformanceAnalysisMV"/>
+                </component>
+            </layoutElement>
+        </component>
+
+        <option type="fixedHeight" value="true"/>
+
+        <option type="header" value="false"/>
+    </component>
+
+    <hooks/>
+
+</view>

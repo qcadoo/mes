@@ -113,6 +113,7 @@
         <model:model model="trackingOperationProductOutComponentDto"
                      resource="model/trackingOperationProductOutComponentDto.xml"/>
 
+        <model:model model="performanceAnalysisMv" resource="model/performanceAnalysisMv.xml"/>
         <model:model model="performanceAnalysisDto" resource="model/performanceAnalysisDto.xml"/>
         <model:model model="performanceAnalysisDetailDto" resource="model/performanceAnalysisDetailDto.xml"/>
 
@@ -464,6 +465,9 @@
         <menu:menu-item name="performanceAnalysis" category="analysis"
                         view="performanceAnalysisList" defaultAuthorizationRole="ROLE_ANALYSIS_VIEWER"/>
 
+        <menu:menu-item name="performanceAnalysisMv" category="analysis"
+                        view="performanceAnalysisMvList" defaultAuthorizationRole="ROLE_ANALYSIS_VIEWER"/>
+
         <menu:menu-item name="productionAnalysis" category="analysis"
                         view="productionAnalysisList" defaultAuthorizationRole="ROLE_ANALYSIS_VIEWER"/>
 
@@ -526,6 +530,7 @@
         <view:view resource="view/productionTrackingsForProductList.xml"/>
         <view:view resource="view/productionTrackingsForProductGroupedList.xml"/>
 
+        <view:view resource="view/performanceAnalysisMvList.xml"/>
         <view:view resource="view/performanceAnalysisList.xml"/>
         <view:view resource="view/performanceAnalysisDetails.xml"/>
 
