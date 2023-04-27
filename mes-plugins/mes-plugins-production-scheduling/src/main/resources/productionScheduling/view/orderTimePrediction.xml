@@ -181,8 +181,8 @@
 
 								<option type="order" column="effectiveDateFrom" direction="asc"/>
 
-								<option type="searchable" value="nodeNumber, number, name, effectiveDateFrom, effectiveDateTo"/>
-								<option type="orderable" value="nodeNumber, number, name, effectiveDateFrom, effectiveDateTo"/>
+								<option type="searchable" value="effectiveDateFrom, effectiveDateTo"/>
+								<option type="orderable" value="effectiveDateFrom, effectiveDateTo"/>
 
 								<option type="correspondingView"
 										value="technologies/technologyOperationComponentDetails"/>

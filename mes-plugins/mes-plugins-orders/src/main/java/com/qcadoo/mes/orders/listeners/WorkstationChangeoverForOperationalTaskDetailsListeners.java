@@ -23,8 +23,8 @@ public class WorkstationChangeoverForOperationalTaskDetailsListeners {
     private WorkstationChangeoverForOperationalTaskDetailsHooks workstationChangeoverForOperationalTaskDetailsHooks;
 
     public void clearOperationalTasksFields(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        workstationChangeoverForOperationalTaskDetailsHooks.setCurrentOperationalTask(view, null);
-        workstationChangeoverForOperationalTaskDetailsHooks.setPreviousOperationalTask(view, null);
+        workstationChangeoverForOperationalTaskDetailsHooks.setCurrentOperationalTask(view, null, true);
+        workstationChangeoverForOperationalTaskDetailsHooks.setPreviousOperationalTask(view, null, true);
     }
 
     public void clearAttributeValueLookups(final ViewDefinitionState view, final ComponentState state, final String[] args) {
