@@ -177,6 +177,10 @@ public class ProductionTrackingHooks {
         }
 
         if (Objects.isNull(productionTracking.getId())) {
+            if(parameterService.getParameter().getBooleanField("justOne")) {
+                productionTracking.setField(ProductionTrackingFields.LAST_TRACKING, Boolean.TRUE);
+            }
+
             Entity user = userService.find(productionTracking.getStringField("createUser"));
             String worker = StringUtils.EMPTY;
 

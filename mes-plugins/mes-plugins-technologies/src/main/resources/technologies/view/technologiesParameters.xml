@@ -91,6 +91,12 @@
                             <option type="labelWidth" value="60"/>
                         </component>
                     </layoutElement>
+                    <layoutElement column="2" row="1">
+                        <component type="checkbox" name="updateTechnologiesOnPendingOrders" field="#{form}.updateTechnologiesOnPendingOrders"
+                                   reference="updateTechnologiesOnPendingOrders" hasDescription="true">
+                            <option type="labelWidth" value="60"/>
+                        </component>
+                    </layoutElement>
                 </component>
 
                 <option type="header" value="true"/>

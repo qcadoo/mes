@@ -203,8 +203,7 @@ public class ChangeTechnologyParametersListeners {
                         toc.getDataDefinition().save(toc);
                     });
                 }
-                technologyStateChangeViewClient.changeState(new ViewContextHolder(view, state),
-                        TechnologyStateStringValues.OUTDATED, technology);
+
                 Entity savedTech = copyTechnologyDb.getDataDefinition().get(copyTechnologyDb.getId());
                 if (savedTech.isValid()) {
                     technologyStateChangeViewClient.changeState(new ViewContextHolder(view, state),
@@ -215,6 +214,8 @@ public class ChangeTechnologyParametersListeners {
                 } else {
                     throw new IllegalStateException("There was a problem creating the technology");
                 }
+                technologyStateChangeViewClient.changeState(new ViewContextHolder(view, state),
+                        TechnologyStateStringValues.OUTDATED, technology);
             } else {
                 throw new IllegalStateException("There was a problem creating the technology");
             }

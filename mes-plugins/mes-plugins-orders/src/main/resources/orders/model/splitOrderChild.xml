@@ -30,7 +30,7 @@
 
     <fields>
 
-        <belongsTo name="splitOrderParent" model="splitOrderParent" required="true"/>
+        <belongsTo name="splitOrderParent" model="splitOrderParent"/>
 
         <string name="number" required="true">
             <validatesLength max="255"/>

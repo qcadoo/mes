@@ -30,7 +30,7 @@
                  view="orderDetails">
 
 	<group name="materialRequirement">
-		<bigButton name="materialRequirement" icon="genealogyClockIcon24.png" state="disabled">
+		<smallButton name="materialRequirement" icon="genealogyClockIcon16.png" state="disabled">
 			<script>
 				<![CDATA[
 					this.addOnChangeListener({
@@ -42,6 +42,6 @@
 					});	
 				]]>
 			</script>
-		</bigButton>
+		</smallButton>
 	</group>
 </ribbonExtension>

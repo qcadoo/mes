@@ -30,7 +30,7 @@
     view="orderDetails">
 
      <group name="stoppage" defaultAuthorizationRole="ROLE_STOPPAGES">
-          <bigButton name="stoppage" action="#{form}.fireEvent(showStoppage);" state="disabled" icon="../../../../../stoppage/public/css/icons/iconStop24.png">
+          <smallButton name="stoppage" action="#{form}.fireEvent(showStoppage);" state="disabled" icon="../../../../../stoppage/public/css/icons/iconStop16.png">
           	<script>
 				<![CDATA[
 					#{form}.addOnChangeListener({
@@ -47,6 +47,6 @@
 					});					
 				]]>
 			</script>
-          </bigButton>          
+          </smallButton>
      </group>
 </ribbonExtension>

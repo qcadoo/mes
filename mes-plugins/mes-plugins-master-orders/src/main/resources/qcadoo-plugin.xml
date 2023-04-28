@@ -29,6 +29,7 @@
         xmlns:model="http://schema.qcadoo.org/modules/model" xmlns:view="http://schema.qcadoo.org/modules/view"
         xmlns:menu="http://schema.qcadoo.org/modules/menu"
         xmlns:localization="http://schema.qcadoo.org/modules/localization"
+        xmlns:custom="http://schema.qcadoo.org/modules/custom"
         xsi:schemaLocation="http://schema.qcadoo.org/plugin
        http://schema.qcadoo.org/plugin.xsd
        http://schema.qcadoo.org/modules/model
@@ -38,7 +39,9 @@
        http://schema.qcadoo.org/modules/localization
        http://schema.qcadoo.org/modules/localization.xsd
        http://schema.qcadoo.org/modules/menu
-       http://schema.qcadoo.org/modules/menu.xsd">
+       http://schema.qcadoo.org/modules/menu.xsd
+       http://schema.qcadoo.org/modules/custom
+       http://schema.qcadoo.org/modules/custom.xsd">
 
     <information>
         <name>Qcadoo MES :: Plugins :: Sales orders</name>
@@ -403,7 +406,7 @@
                             method="outsourceProcessingComponent"/>
 
         <view:resource uri="public/**/*"/>
-
+        <custom:custom class="com.qcadoo.mes.masterOrders.MasterOrdersLoaderModule" />
     </modules>
 
     <features>

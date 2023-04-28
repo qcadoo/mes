@@ -30,7 +30,7 @@
 	view="orderDetails">
 
 	<group name="orderProgressPlans" defaultAuthorizationRole="ROLE_PRODUCTION_PER_SHIFT">
-		<bigButton name="productionPerShift" icon="genealogyClockIcon24.png" state="disabled">
+		<smallButton name="productionPerShift" icon="genealogyClockIcon16.png" state="disabled">
 			<script>
 				<![CDATA[
 					this.addOnChangeListener({
@@ -42,6 +42,6 @@
 					});	
 				]]>
 			</script>
-		</bigButton>
+		</smallButton>
 	</group>
 </ribbonExtension>

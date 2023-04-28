@@ -29,6 +29,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import com.qcadoo.mes.productionCounting.states.constants.ProductionTrackingStateStringValues;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -388,17 +389,25 @@ public class ProductionTrackingDetailsListeners {
     }
 
     public void checkJustOne(final ViewDefinitionState view, final ComponentState componentState, final String[] args) {
+        FormComponent productionTrackingForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
+        Entity productionTracking = productionTrackingForm.getEntity();
+        String state = productionTracking.getStringField(ProductionTrackingFields.STATE);
+
+        boolean isDraft = (ProductionTrackingStateStringValues.DRAFT.equals(state));
         FieldComponent lastTrackingField = (FieldComponent) view.getComponentByReference(ProductionTrackingFields.LAST_TRACKING);
 
-        Entity parameter = parameterService.getParameter();
+        if (isDraft) {
+            Entity parameter = parameterService.getParameter();
+            boolean justOne = parameter.getBooleanField(ParameterFieldsPC.JUST_ONE);
 
-        boolean justOne = parameter.getBooleanField(ParameterFieldsPC.JUST_ONE);
-
-        if (justOne) {
-            lastTrackingField.setFieldValue(true);
-            lastTrackingField.setEnabled(false);
+            if (justOne) {
+                lastTrackingField.setFieldValue(true);
+                lastTrackingField.setEnabled(false);
+            } else {
+                lastTrackingField.setEnabled(true);
+            }
         } else {
-            lastTrackingField.setEnabled(true);
+            lastTrackingField.setEnabled(false);
         }
 
         lastTrackingField.requestComponentUpdateState();
