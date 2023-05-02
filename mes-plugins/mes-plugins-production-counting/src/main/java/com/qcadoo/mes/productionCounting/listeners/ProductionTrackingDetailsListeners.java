@@ -114,6 +114,23 @@ public class ProductionTrackingDetailsListeners {
     @Autowired
     private OperationalTasksService operationalTasksService;
 
+    public void copyProductionTracking(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        if (parameterService.getParameter().getBooleanField(ParameterFieldsPC.JUST_ONE)) {
+            view.addMessage("productionCounting.productionTracking.messages.error.canExistOnlyOneProductionTrackingRecord", ComponentState.MessageType.FAILURE, false);
+            return;
+        }
+        FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
+        form.performEvent(view, "copy");
+    }
+
+    public void copyProductionTrackings(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        if (parameterService.getParameter().getBooleanField(ParameterFieldsPC.JUST_ONE)) {
+            view.addMessage("productionCounting.productionTracking.messages.error.canExistOnlyOneProductionTrackingRecord", ComponentState.MessageType.FAILURE, false);
+            return;
+        }
+        state.performEvent(view, "copy");
+    }
+
     public void useReplacement(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         GridComponent trackingOperationProductInComponentsGrid = (GridComponent) view
                 .getComponentByReference(ProductionTrackingFields.TRACKING_OPERATION_PRODUCT_IN_COMPONENTS);

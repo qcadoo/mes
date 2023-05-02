@@ -93,4 +93,6 @@ public final class ProductionTrackingFields {
 
     public static final String COMMENTS = "comments";
 
+    public static final String ON_CORRECTION_PROCESS = "onCorrectionProcess";
+
 }

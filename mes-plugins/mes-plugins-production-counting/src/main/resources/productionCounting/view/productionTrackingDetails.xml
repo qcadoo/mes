@@ -32,8 +32,89 @@
     <component type="window" name="window" reference="window">
 
         <ribbon>
-            <template name="standardFormTemplate"/>
 
+            <group name="navigation">
+                <bigButton name="back" icon="backIcon24.png" state="enabled" action="#{window}.performBack" />
+            </group>
+
+            <group name="actions">
+                <bigButton name="save" icon="saveIcon24.png" state="enabled" action="#{form}.performSave;" accesskey="s" />
+                <smallButton name="saveBack" icon="saveBackIcon16.png" state="enabled" action="#{form}.performSave; #{window}.performBack;" />
+                <smallButton name="saveNew" icon="saveNewIcon16.png" state="enabled" action="#{form}.performSaveAndClear;" />
+                <smallButton name="copy" icon="copyIcon16.png"  accesskey="c">
+                    <script>
+                        <![CDATA[
+                             this.addOnChangeListener({
+                                onClick: function() {
+                                    #{form}.performEvent('copyProductionTracking', []);
+                                }
+
+                            });
+ #{form}.addOnChangeListener({
+					onSetValue: function(value) {
+						if (!value || !value.content)
+							return;
+						if (value.content.entityId) {
+							this.enable();
+						} else {
+							this.disable();
+						}
+					}
+				});
+                        ]]>
+                    </script>
+                </smallButton>
+                <smallButton name="delete" icon="deleteIcon16.png" state="disabled" action="#{form}.performDelete;" accesskey="d">
+                    <script><![CDATA[
+                #{form}.addOnChangeListener({
+					onSetValue: function(value) {
+						if (!value || !value.content)
+							return;
+						if (value.content.entityId) {
+							this.enable();
+						} else {
+							this.disable();
+						}
+					}
+				});
+			]]></script>
+                </smallButton>
+                <smallButton name="cancel" icon="cancelIcon16.png" state="enabled" action="#{form}.performCancel;" accesskey="x" />
+                <smallButton name="refresh" icon="updateIcon16.png" state="enabled" action="#{form}.performRefresh;" accesskey="r" />
+            </group>
+
+            <group name="states" if="#view.getComponentByReference('form').dataDefinition.activable">
+                <smallButton name="activate" icon="unactiveVisibleIcon.png" state="disabled" action="#{form}.performActivate;">
+                    <script><![CDATA[
+				#{form}.addOnChangeListener({
+					onSetValue: function(value) {
+						if (!value || !value.content)
+							return;
+						if (value.content.entityId && !value.content.isActive) {
+							this.enable();
+						} else {
+							this.disable();
+						}
+					}
+				});
+			]]></script>
+                </smallButton>
+                <smallButton name="deactivate" icon="unactiveNotVisibleIcon.png" state="disabled" action="#{form}.performDeactivate;">
+                    <script><![CDATA[
+                #{form}.addOnChangeListener({
+					onSetValue: function(value) {
+						if (!value || !value.content)
+							return;
+						if (value.content.entityId && value.content.isActive) {
+							this.enable();
+						} else {
+							this.disable();
+						}
+					}
+				});
+			]]></script>
+                </smallButton>
+            </group>
             <group name="status">
                 <smallButton name="acceptTracking" icon="startIcon16.png"
                              state="disabled">
@@ -486,6 +567,10 @@
                 <listener event="changeTrackingState"
                           class="com.qcadoo.mes.productionCounting.listeners.ProductionTrackingDetailsListeners"
                           method="changeTrackingState"/>
+
+                <listener event="copyProductionTracking"
+                          class="com.qcadoo.mes.productionCounting.listeners.ProductionTrackingDetailsListeners"
+                          method="copyProductionTracking"/>
 
                 <listener event="copyPlannedQuantityToUsedQuantity"
                           class="com.qcadoo.mes.productionCounting.listeners.ProductionTrackingDetailsListeners"

@@ -80,9 +80,15 @@ public class ProductionTrackingValidators {
 
     private boolean checkIfIsOne(DataDefinition productionTrackingDD, Entity productionTracking) {
 
+        if (Objects.nonNull(productionTracking.getBelongsToField(ProductionTrackingFields.CORRECTION))
+                || productionTracking.getBooleanField(ProductionTrackingFields.IS_CORRECTION)
+                || productionTracking.getBooleanField(ProductionTrackingFields.IS_CORRECTED)) {
+            return true;
+        }
+
         boolean justOne = parameterService.getParameter().getBooleanField(ParameterFieldsPC.JUST_ONE);
 
-        if (!justOne || productionTracking.getBooleanField(ProductionTrackingFields.IS_CORRECTED)) {
+        if (!justOne) {
             return true;
         }
 
@@ -98,12 +104,12 @@ public class ProductionTrackingValidators {
             scb.createAlias(ProductionTrackingFields.TECHNOLOGY_OPERATION_COMPONENT, "toc", JoinType.LEFT)
                     .add(SearchRestrictions.eq("toc.id", toc.getId()));
         }
-        if(Objects.nonNull(productionTracking.getId())) {
+        if (Objects.nonNull(productionTracking.getId())) {
             scb.add(SearchRestrictions.idNe(productionTracking.getId()));
         }
 
         List<Entity> entities = scb.list().getEntities();
-        if(!entities.isEmpty()) {
+        if (!entities.isEmpty()) {
             productionTracking.addGlobalError("productionCounting.productionTracking.messages.error.canExistOnlyOneProductionTrackingRecord", false);
             return false;
         }
