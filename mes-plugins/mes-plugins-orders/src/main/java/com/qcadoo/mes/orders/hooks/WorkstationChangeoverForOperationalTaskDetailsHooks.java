@@ -91,13 +91,13 @@ public class WorkstationChangeoverForOperationalTaskDetailsHooks {
             }
         }
 
-        setCurrentOperationalTask(view, currentOperationalTask);
-        setPreviousOperationalTask(view, previousOperationalTask);
+        setCurrentOperationalTask(view, currentOperationalTask, view.isViewAfterRedirect());
+        setPreviousOperationalTask(view, previousOperationalTask, true);
 
         setChangeOverType(changeoverTypeField, changeoverType);
     }
 
-    public void setCurrentOperationalTask(final ViewDefinitionState view, final Entity currentOperationalTask) {
+    public void setCurrentOperationalTask(final ViewDefinitionState view, final Entity currentOperationalTask, final boolean shouldClear) {
         LookupComponent currentOperationalTaskLookup = (LookupComponent) view.getComponentByReference(WorkstationChangeoverForOperationalTaskFields.CURRENT_OPERATIONAL_TASK);
         FieldComponent currentOperationalTaskNameField = (FieldComponent) view.getComponentByReference(WorkstationChangeoverForOperationalTaskFields.CURRENT_OPERATIONAL_TASK_NAME);
         LookupComponent currentOperationalTaskOrderLookup = (LookupComponent) view.getComponentByReference(WorkstationChangeoverForOperationalTaskFields.CURRENT_OPERATIONAL_TASK_ORDER);
@@ -124,8 +124,10 @@ public class WorkstationChangeoverForOperationalTaskDetailsHooks {
             finishDate = currentOperationalTask.getDateField(OperationalTaskFields.FINISH_DATE);
         }
 
-        currentOperationalTaskLookup.setFieldValue(operationalTaskId);
-        currentOperationalTaskLookup.requestComponentUpdateState();
+        if (shouldClear) {
+            currentOperationalTaskLookup.setFieldValue(operationalTaskId);
+            currentOperationalTaskLookup.requestComponentUpdateState();
+        }
         currentOperationalTaskNameField.setFieldValue(name);
         currentOperationalTaskNameField.requestComponentUpdateState();
         currentOperationalTaskOrderLookup.setFieldValue(orderId);
@@ -138,7 +140,7 @@ public class WorkstationChangeoverForOperationalTaskDetailsHooks {
         currentOperationalTaskFinishDateField.requestComponentUpdateState();
     }
 
-    public void setPreviousOperationalTask(final ViewDefinitionState view, final Entity previousOperationalTask) {
+    public void setPreviousOperationalTask(final ViewDefinitionState view, final Entity previousOperationalTask, final boolean shouldClear) {
         LookupComponent previousOperationalTaskLookup = (LookupComponent) view.getComponentByReference(WorkstationChangeoverForOperationalTaskFields.PREVIOUS_OPERATIONAL_TASK);
         FieldComponent previousOperationalTaskNameField = (FieldComponent) view.getComponentByReference(WorkstationChangeoverForOperationalTaskFields.PREVIOUS_OPERATIONAL_TASK_NAME);
         LookupComponent previousOperationalTaskOrderLookup = (LookupComponent) view.getComponentByReference(WorkstationChangeoverForOperationalTaskFields.PREVIOUS_OPERATIONAL_TASK_ORDER);
@@ -165,8 +167,10 @@ public class WorkstationChangeoverForOperationalTaskDetailsHooks {
             finishDate = previousOperationalTask.getDateField(OperationalTaskFields.FINISH_DATE);
         }
 
-        previousOperationalTaskLookup.setFieldValue(operationalTaskId);
-        previousOperationalTaskLookup.requestComponentUpdateState();
+        if (shouldClear) {
+            previousOperationalTaskLookup.setFieldValue(operationalTaskId);
+            previousOperationalTaskLookup.requestComponentUpdateState();
+        }
         previousOperationalTaskNameField.setFieldValue(name);
         previousOperationalTaskNameField.requestComponentUpdateState();
         previousOperationalTaskOrderLookup.setFieldValue(orderId);

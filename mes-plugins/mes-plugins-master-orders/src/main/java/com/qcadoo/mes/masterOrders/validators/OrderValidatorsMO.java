@@ -117,6 +117,10 @@ public class OrderValidatorsMO {
             return true;
         }
 
+        if(order.getBooleanField("isUpdateTechnologiesOnPendingOrders")) {
+            return true;
+        }
+
         StringBuilder query = new StringBuilder();
 
         query.append("SELECT masterOrder.id as masterOrderId, masterOrder.number as masterOrderNumber, ");

@@ -3,19 +3,19 @@
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
  * Version: 1.4
- *
+ * <p>
  * This file is part of Qcadoo.
- *
+ * <p>
  * Qcadoo is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation; either version 3 of the License,
  * or (at your option) any later version.
- *
+ * <p>
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty
  * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU Affero General Public License for more details.
- *
+ * <p>
  * You should have received a copy of the GNU Affero General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
@@ -23,25 +23,28 @@
  */
 package com.qcadoo.mes.productionCounting.validators;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.qcadoo.commons.functional.Either;
 import com.qcadoo.localization.api.utils.DateUtils;
+import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.states.constants.OrderStateStringValues;
 import com.qcadoo.mes.productionCounting.ProductionCountingService;
 import com.qcadoo.mes.productionCounting.ProductionTrackingService;
 import com.qcadoo.mes.productionCounting.constants.OrderFieldsPC;
+import com.qcadoo.mes.productionCounting.constants.ParameterFieldsPC;
 import com.qcadoo.mes.productionCounting.constants.ProductionTrackingFields;
 import com.qcadoo.mes.productionCounting.constants.TypeOfProductionRecording;
 import com.qcadoo.mes.productionCounting.states.constants.ProductionTrackingStateStringValues;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 
-import java.util.Date;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
+import com.qcadoo.model.api.search.JoinType;
+import com.qcadoo.model.api.search.SearchCriteriaBuilder;
+import com.qcadoo.model.api.search.SearchRestrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -57,6 +60,9 @@ public class ProductionTrackingValidators {
     @Autowired
     private ProductionTrackingService productionTrackingService;
 
+    @Autowired
+    private ParameterService parameterService;
+
     public boolean validatesWith(final DataDefinition productionTrackingDD, final Entity productionTracking) {
         Entity order = productionTracking.getBelongsToField(ProductionTrackingFields.ORDER);
 
@@ -68,22 +74,60 @@ public class ProductionTrackingValidators {
         isValid = isValid && checkTimeRange(productionTrackingDD, productionTracking);
         isValid = isValid && checkIfOperationIsSet(productionTrackingDD, productionTracking);
         isValid = isValid && checkIfExpirationDateTheSameForOrder(productionTrackingDD, productionTracking);
-
+        isValid = isValid && checkIfIsOne(productionTrackingDD, productionTracking);
         return isValid;
+    }
+
+    private boolean checkIfIsOne(DataDefinition productionTrackingDD, Entity productionTracking) {
+
+        if (Objects.nonNull(productionTracking.getBelongsToField(ProductionTrackingFields.CORRECTION))
+                || productionTracking.getBooleanField(ProductionTrackingFields.IS_CORRECTION)
+                || productionTracking.getBooleanField(ProductionTrackingFields.IS_CORRECTED)) {
+            return true;
+        }
+
+        boolean justOne = parameterService.getParameter().getBooleanField(ParameterFieldsPC.JUST_ONE);
+
+        if (!justOne) {
+            return true;
+        }
+
+        SearchCriteriaBuilder scb = productionTrackingDD.find()
+                .createAlias(ProductionTrackingFields.ORDER, "o", JoinType.LEFT)
+                .add(SearchRestrictions.eq("o.id", productionTracking.getBelongsToField(ProductionTrackingFields.ORDER).getId()))
+                .add(SearchRestrictions.in(ProductionTrackingFields.STATE,
+                        Lists.newArrayList(ProductionTrackingStateStringValues.DRAFT, ProductionTrackingStateStringValues.ACCEPTED,
+                                ProductionTrackingStateStringValues.PENDING)));
+
+        Entity toc = productionTracking.getBelongsToField(ProductionTrackingFields.TECHNOLOGY_OPERATION_COMPONENT);
+        if (Objects.nonNull(toc)) {
+            scb.createAlias(ProductionTrackingFields.TECHNOLOGY_OPERATION_COMPONENT, "toc", JoinType.LEFT)
+                    .add(SearchRestrictions.eq("toc.id", toc.getId()));
+        }
+        if (Objects.nonNull(productionTracking.getId())) {
+            scb.add(SearchRestrictions.idNe(productionTracking.getId()));
+        }
+
+        List<Entity> entities = scb.list().getEntities();
+        if (!entities.isEmpty()) {
+            productionTracking.addGlobalError("productionCounting.productionTracking.messages.error.canExistOnlyOneProductionTrackingRecord", false);
+            return false;
+        }
+        return true;
     }
 
     private boolean checkIfExpirationDateTheSameForOrder(final DataDefinition productionTrackingDD, final Entity productionTracking) {
         Entity order = productionTracking.getBelongsToField(ProductionTrackingFields.ORDER);
         Entity batch = productionTracking.getBelongsToField(ProductionTrackingFields.BATCH);
         Entity toc = productionTracking.getBelongsToField(ProductionTrackingFields.TECHNOLOGY_OPERATION_COMPONENT);
-        Either<Boolean,Optional<Date>> maybeExpirationDayFilled = productionTrackingService.findExpirationDate(productionTracking, order, toc, batch);
-        if(Objects.nonNull(maybeExpirationDayFilled)) {
+        Either<Boolean, Optional<Date>> maybeExpirationDayFilled = productionTrackingService.findExpirationDate(productionTracking, order, toc, batch);
+        if (Objects.nonNull(maybeExpirationDayFilled)) {
             Date expirationDate = productionTracking.getDateField(ProductionTrackingFields.EXPIRATION_DATE);
 
-            if(maybeExpirationDayFilled.isLeft() && Objects.nonNull(expirationDate)) {
+            if (maybeExpirationDayFilled.isLeft() && Objects.nonNull(expirationDate)) {
                 productionTracking.addError(productionTrackingDD.getField(ProductionTrackingFields.EXPIRATION_DATE),
                         "productionCounting.productionTracking.messages.error.expirationDateNotFilled");
-            } else if (maybeExpirationDayFilled.isRight() && maybeExpirationDayFilled.getRight().isPresent()){
+            } else if (maybeExpirationDayFilled.isRight() && maybeExpirationDayFilled.getRight().isPresent()) {
                 Date alreadyDefinedExpirationDate = maybeExpirationDayFilled.getRight().get();
 
                 if (Objects.isNull(expirationDate) || !alreadyDefinedExpirationDate.equals(expirationDate)) {
@@ -123,7 +167,7 @@ public class ProductionTrackingValidators {
     }
 
     private boolean checkTypeOfProductionRecording(final DataDefinition productionTrackingDD, final Entity productionTracking,
-            final Entity order) {
+                                                   final Entity order) {
         if (order == null) {
             return true;
         }
@@ -133,7 +177,7 @@ public class ProductionTrackingValidators {
     }
 
     private boolean isValidTypeOfProductionRecording(final DataDefinition productionTrackingDD, final Entity productionTracking,
-            final String typeOfProductionRecording) {
+                                                     final String typeOfProductionRecording) {
         boolean isValid = true;
 
         if (productionCountingService.checkIfTypeOfProductionRecordingIsEmptyOrBasic(typeOfProductionRecording)) {
@@ -151,9 +195,8 @@ public class ProductionTrackingValidators {
     }
 
 
-
     private boolean checkIfOrderIsStarted(final DataDefinition productionTrackingDD, final Entity productionTracking,
-            final Entity order) {
+                                          final Entity order) {
         boolean isStarted = true;
 
         String state = productionTracking.getStringField(ProductionTrackingFields.STATE);

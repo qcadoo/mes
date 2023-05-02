@@ -50,6 +50,12 @@ public class PerformanceAnalysisListeners {
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
+    public void refreshPerformanceAnalysisMV(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        jdbcTemplate.queryForObject("SELECT refreshPerformanceAnalysisMV()",
+                Maps.newHashMap()
+                , Object.class);
+    }
+
     public void showDetails(final ViewDefinitionState view, final ComponentState state, final String[] args) {
 
         GridComponent performanceAnalysisGrid = (GridComponent) view.getComponentByReference(QcadooViewConstants.L_GRID);

@@ -319,9 +319,9 @@
                 </bigButton>
             </group>
             <group name="split">
-                <bigButton name="splitOrdersParts" icon="genealogyIcon24.png"
+                <smallButton name="splitOrdersParts" icon="genealogyIcon16.png"
                            action="#{form}.fireEvent(splitOrdersParts)"/>
-                <bigButton name="splitOrders" icon="genealogyIcon24.png"
+                <smallButton name="splitOrders" icon="genealogyIcon16.png"
                            action="#{form}.fireEvent(splitOrders)"/>
             </group>
         </ribbon>

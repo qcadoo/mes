@@ -285,8 +285,10 @@ public class ProductionTrackingServiceImpl implements ProductionTrackingService 
                 .uniqueResult();
         if (correctedProductionTracking != null) {
             correctedProductionTracking.setField(ProductionTrackingFields.CORRECTION, null);
+            correctedProductionTracking.setField(ProductionTrackingFields.ON_CORRECTION_PROCESS, true);
             changeState(correctedProductionTracking, ProductionTrackingState.ACCEPTED);
             correctingProductionTracking.setField(ProductionTrackingFields.IS_CORRECTION, false);
+            correctedProductionTracking.setField(ProductionTrackingFields.ON_CORRECTION_PROCESS, false);
             correctingProductionTracking = correctingProductionTracking.getDataDefinition().save(correctingProductionTracking);
             if(updateOrderReportedQuantity) {
                 productionTrackingListenerService.updateOrderReportedQuantityAfterRemoveCorrection(correctedProductionTracking);

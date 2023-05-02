@@ -29,7 +29,7 @@
 	plugin="orders"
 	view="orderDetails">
 	<group name="operationDuration">
-		<bigButton name="operationDuration" icon="iconProducts24.png" state="disabled" >
+		<smallButton name="operationDuration" icon="iconProducts16.png" state="disabled" >
 			<script>
 				<![CDATA[
 					this.addOnChangeListener({
@@ -41,6 +41,6 @@
 					});	
 				]]>
 			</script>	
-		</bigButton>
+		</smallButton>
 	</group>
 </ribbonExtension>

@@ -171,6 +171,7 @@
 
         <boolean name="generatePPS" persistent="false" default="false"/>
         <boolean name="regeneratePQC" persistent="false" default="false"/>
+        <boolean name="isUpdateTechnologiesOnPendingOrders" persistent="false" default="false"/>
 
         <boolean name="newVersionTechnologySet" persistent="false" default="false"/>
 

@@ -36,6 +36,8 @@ public class OrdersLoaderModule extends Module {
 
     public static final String BASIC_DASHBOARD_BUTTON_IDENTIFIER_ORDERS_SCHEDULES_LIST = "basic.dashboardButton.identifier.orders.schedulesList";
 
+    public static final String BASIC_DASHBOARD_BUTTON_IDENTIFIER_ORDERS_PRODUCTION_LINE_SCHEDULES_LIST = "basic.dashboardButton.identifier.orders.productionLineSchedulesList";
+
     public static final String BASIC_DASHBOARD_BUTTON_IDENTIFIER_ORDERS_ORDERS_PLANNING_LIST = "basic.dashboardButton.identifier.orders.ordersPlanningList";
 
     public static final String BASIC_DASHBOARD_BUTTON_IDENTIFIER_ORDERS_OPERATIONAL_TASKS_LIST = "basic.dashboardButton.identifier.orders.operationalTasksList";
@@ -48,6 +50,8 @@ public class OrdersLoaderModule extends Module {
     public void multiTenantEnable() {
         dashboardButtonService.addButton(BASIC_DASHBOARD_BUTTON_IDENTIFIER_ORDERS_SCHEDULES_LIST,
                 "/qcadooView/public/css/core/images/dashboard/schedules.png", OrdersConstants.PLUGIN_IDENTIFIER, "schedulesList");
+        dashboardButtonService.addButton(BASIC_DASHBOARD_BUTTON_IDENTIFIER_ORDERS_PRODUCTION_LINE_SCHEDULES_LIST,
+                "/qcadooView/public/css/core/images/dashboard/schedules.png", OrdersConstants.PLUGIN_IDENTIFIER, "productionLineSchedulesList");
         dashboardButtonService.addButton(BASIC_DASHBOARD_BUTTON_IDENTIFIER_ORDERS_ORDERS_PLANNING_LIST,
                 "/qcadooView/public/css/core/images/dashboard/orders.png", OrdersConstants.PLUGIN_IDENTIFIER,
                 "productionOrdersPlanning");
@@ -60,6 +64,7 @@ public class OrdersLoaderModule extends Module {
     @Override
     public void multiTenantDisable() {
         dashboardButtonService.deleteButton(BASIC_DASHBOARD_BUTTON_IDENTIFIER_ORDERS_SCHEDULES_LIST);
+        dashboardButtonService.deleteButton(BASIC_DASHBOARD_BUTTON_IDENTIFIER_ORDERS_PRODUCTION_LINE_SCHEDULES_LIST);
         dashboardButtonService.deleteButton(BASIC_DASHBOARD_BUTTON_IDENTIFIER_ORDERS_ORDERS_PLANNING_LIST);
         dashboardButtonService.deleteButton(BASIC_DASHBOARD_BUTTON_IDENTIFIER_ORDERS_OPERATIONAL_TASKS_LIST);
     }

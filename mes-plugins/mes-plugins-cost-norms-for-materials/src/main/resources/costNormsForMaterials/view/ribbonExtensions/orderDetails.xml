@@ -30,7 +30,7 @@
     view="orderDetails">
 
 	<group name="materials" defaultAuthorizationRole="ROLE_BASE_FUNCTIONALITY">
-		<bigButton name="viewCosts" icon="calculateTimeIcon24.png" state="disabled">
+		<smallButton name="viewCosts" icon="calculateTimeIcon16.png" state="disabled">
 			<script>
 				<![CDATA[
 					this.addOnChangeListener({
@@ -42,6 +42,6 @@
 					});		
 				]]>
 			</script>
-		</bigButton>
+		</smallButton>
 	</group>
 </ribbonExtension>
