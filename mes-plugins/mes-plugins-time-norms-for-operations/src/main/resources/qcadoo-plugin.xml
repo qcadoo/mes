@@ -127,44 +127,37 @@
 				<model:validatesRange from="1"/>
 			</model:integer>
 		</model:model-field>
-		<model:model-field model="operation" plugin="technologies">
+		<model:model-field plugin="technologies" model="operation">
 			<model:boolean name="pieceworkProduction" default="false"/>
 		</model:model-field>
 
-		<model:model-field plugin="technologies"
-			model="technologyOperationComponent">
+		<model:model-field plugin="technologies" model="technologyOperationComponent">
 			<model:integer name="tpz" required="true" default="0" />
 		</model:model-field>
-		<model:model-field plugin="technologies"
-			model="technologyOperationComponent">
+		<model:model-field plugin="technologies" model="technologyOperationComponent">
 			<model:integer name="tj" required="true" default="0" />
 		</model:model-field>
-		<model:model-field plugin="technologies"
-			model="technologyOperationComponent">
+		<model:model-field plugin="technologies" model="technologyOperationComponent">
 			<model:decimal name="productionInOneCycle" required="true"
 				default="1">
 				<model:validatesRange from="0" exclusively="true" />
 			</model:decimal>
 		</model:model-field>
-		<model:model-field plugin="technologies"
-			model="technologyOperationComponent">
+		<model:model-field plugin="technologies" model="technologyOperationComponent">
 			<model:enum values="01all,02specified" name="nextOperationAfterProducedType"
 				default="01all" required="true" />
 		</model:model-field>
-		<model:model-field plugin="technologies"
-			model="technologyOperationComponent">
+		<model:model-field plugin="technologies" model="technologyOperationComponent">
 			<model:decimal name="nextOperationAfterProducedQuantity"
 				default="0" required="true">
 				<model:validatesRange from="0" />
 			</model:decimal>
 		</model:model-field>
-		<model:model-field plugin="technologies"
-			model="technologyOperationComponent">
+		<model:model-field plugin="technologies" model="technologyOperationComponent">
 			<model:integer name="timeNextOperation" required="true"
 				default="0" />
 		</model:model-field>
-		<model:model-field plugin="technologies"
-			model="technologyOperationComponent">
+		<model:model-field plugin="technologies" model="technologyOperationComponent">
 			<model:decimal name="machineUtilization" required="true"
 				default="1.0">
 				<model:validatesRange from="0" />
@@ -172,8 +165,7 @@
 				<model:validatesScale max="5" />
 			</model:decimal>
 		</model:model-field>
-		<model:model-field plugin="technologies"
-			model="technologyOperationComponent">
+		<model:model-field plugin="technologies" model="technologyOperationComponent">
 			<model:decimal name="laborUtilization" required="true"
 				default="1.0">
 				<model:validatesRange from="0" />
@@ -181,27 +173,22 @@
 				<model:validatesScale max="5" />
 			</model:decimal>
 		</model:model-field>
-		<model:model-field plugin="technologies"
-			model="technologyOperationComponent">
+		<model:model-field plugin="technologies" model="technologyOperationComponent">
 			<model:dictionary name="productionInOneCycleUNIT"
 				dictionary="units" required="true" />
 		</model:model-field>
-		<model:model-field plugin="technologies"
-			model="technologyOperationComponent">
+		<model:model-field plugin="technologies" model="technologyOperationComponent">
 			<model:integer name="duration" required="true" default="0" />
 		</model:model-field>
-		<model:model-field plugin="technologies"
-			model="technologyOperationComponent">
+		<model:model-field plugin="technologies" model="technologyOperationComponent">
 			<model:integer name="machineWorkTime" required="true"
 				default="0" />
 		</model:model-field>
-		<model:model-field plugin="technologies"
-			model="technologyOperationComponent">
+		<model:model-field plugin="technologies" model="technologyOperationComponent">
 			<model:integer name="laborWorkTime" required="true"
 				default="0" />
 		</model:model-field>
-		<model:model-field plugin="technologies"
-			model="technologyOperationComponent">
+		<model:model-field plugin="technologies" model="technologyOperationComponent">
 			<model:dictionary name="nextOperationAfterProducedQuantityUNIT"
 				dictionary="units" required="true" />
 		</model:model-field>
@@ -218,12 +205,11 @@
 				<model:validatesRange from="1"/>
 			</model:integer>
 		</model:model-field>
-		<model:model-field model="technologyOperationComponent" plugin="technologies">
+		<model:model-field plugin="technologies" model="technologyOperationComponent">
 			<model:boolean name="pieceworkProduction" default="false"/>
 		</model:model-field>
 	
-		<model:model-field plugin="technologies"
-			model="technologyOperationComponent">
+		<model:model-field plugin="technologies" model="technologyOperationComponent">
 			<model:belongsTo name="techOperCompTimeCalculation"
 				plugin="timeNormsForOperations" model="techOperCompTimeCalculation"
 				copyable="false" />
@@ -262,54 +248,48 @@
 				method="setProductionInOneCycleUNIT" />
 		</model:model-hook>
 
-		<model:model-hook plugin="technologies"
-			model="technologyOperationComponent">
+		<model:model-hook plugin="technologies" model="technologyOperationComponent">
 			<model:onCreate
 				class="com.qcadoo.mes.timeNormsForOperations.hooks.TechnologyOperationComponentHooksTNFO"
 				method="copyTimeNormsToTechnologyOperationComponent" />
 		</model:model-hook>
-		<model:model-hook plugin="technologies"
-			model="technologyOperationComponent">
+		<model:model-hook plugin="technologies" model="technologyOperationComponent">
 			<model:onCreate
 				class="com.qcadoo.mes.timeNormsForOperations.hooks.TechnologyOperationComponentHooksTNFO"
 				method="onCreate" />
 		</model:model-hook>
-		<model:model-hook plugin="technologies"
-			model="technologyOperationComponent">
+		<model:model-hook plugin="technologies" model="technologyOperationComponent">
 			<model:onCreate
 				class="com.qcadoo.mes.timeNormsForOperations.hooks.TechnologyOperationComponentHooksTNFO"
 				method="createTechOperCompTimeCalculations" />
 		</model:model-hook>
-		<model:model-hook plugin="technologies"
-			model="technologyOperationComponent">
+		<model:model-hook plugin="technologies" model="technologyOperationComponent">
 			<model:onCopy
 				class="com.qcadoo.mes.timeNormsForOperations.hooks.TechnologyOperationComponentHooksTNFO"
 				method="createTechOperCompTimeCalculations" />
 		</model:model-hook>
-		<model:model-hook plugin="technologies"
-			model="technologyOperationComponent">
+		<model:model-hook plugin="technologies" model="technologyOperationComponent">
 			<model:onDelete
 				class="com.qcadoo.mes.timeNormsForOperations.hooks.TechnologyOperationComponentHooksTNFO"
 				method="onDelete" />
 		</model:model-hook>
-		<model:model-hook plugin="technologies"
-            model="technologyOperationComponent">
+		<model:model-hook plugin="technologies" model="technologyOperationComponent">
 			<model:onSave
 					class="com.qcadoo.mes.timeNormsForOperations.hooks.TechnologyOperationComponentHooksTNFO"
 					method="onSave" />
 		</model:model-hook>
-		<model:model-hook model="technologyOperationComponent" plugin="technologies">
+		<model:model-hook plugin="technologies" model="technologyOperationComponent">
 			<model:validatesWith
 					class="com.qcadoo.mes.timeNormsForOperations.hooks.TechnologyOperationComponentHooksTNFO"
 					method="validatesWith"/>
 		</model:model-hook>
-		<model:model-hook plugin="technologies"
-            model="operation">
+
+		<model:model-hook plugin="technologies" model="operation">
 			<model:onSave
 					class="com.qcadoo.mes.timeNormsForOperations.hooks.OperationModelHooksTNFO"
 					method="onSave" />
 		</model:model-hook>
-		<model:model-hook model="operation" plugin="technologies">
+		<model:model-hook plugin="technologies" model="operation">
 			<model:validatesWith
 					class="com.qcadoo.mes.timeNormsForOperations.hooks.OperationModelHooksTNFO"
 					method="validatesWith"/>
@@ -317,6 +297,7 @@
 
 		<view:view resource="view/operationWorkstationTimeDetails.xml"/>
 		<view:view resource="view/techOperCompWorkstationTimeDetails.xml"/>
+
 		<view:view-tab resource="view/tabExtensions/operationDetails.xml" />
 
 		<view:view-grid-column view="operationsList" component="grid" plugin="technologies">
@@ -361,32 +342,37 @@
 			class="com.qcadoo.mes.timeNormsForOperations.hooks.OperationDetailsHooksTNFO"
 			method="setDefaultUnit" />
 	
-		<view:view-hook plugin="technologies"
-			view="technologyOperationComponentDetails" type="beforeRender"
+		<view:view-hook plugin="technologies" view="technologyOperationComponentDetails"
+			type="beforeRender"
 			class="com.qcadoo.mes.timeNormsForOperations.hooks.TechnologyOperationComponentDetailsHooks"
 			method="updateNextOperationAfterProducedQuantityFieldStateonWindowLoad" />
 	
-		<view:view-hook plugin="technologies"
-			view="technologyOperationComponentDetails" type="beforeRender"
+		<view:view-hook plugin="technologies" view="technologyOperationComponentDetails"
+			type="beforeRender"
 			class="com.qcadoo.mes.timeNormsForOperations.hooks.TechnologyOperationComponentDetailsHooks"
 			method="updateFieldsStateOnWindowLoad" />
 	
-		<view:view-hook plugin="technologies"
-			view="technologyOperationComponentDetails" type="beforeRender"
+		<view:view-hook plugin="technologies" view="technologyOperationComponentDetails"
+			type="beforeRender"
 			class="com.qcadoo.mes.timeNormsForOperations.hooks.TechnologyOperationComponentDetailsHooks"
 			method="checkOperationOutputQuantities" />
-	
+
+		<view:view-hook plugin="technologies" view="technologiesList"
+			type="beforeRender"
+			class="com.qcadoo.mes.timeNormsForOperations.hooks.TechnologiesListHooksTNFO"
+			method="toggleCopyTimeNormsFromOperationForTechnologiesButton"/>
+
 		<view:view-listener plugin="basic" view="productDetails"
 			component="form" event="save"
 			class="com.qcadoo.mes.timeNormsForOperations.validators.ProductValidatorsTNFO"
 			method="checkIfUnitChangeDoesNotCorruptAnyTechnology" />
-	
+
 		<view:view-listener plugin="technologies"
 			view="technologyOperationComponentDetails" component="operation"
 			event="onSelectedEntityChange"
 			class="com.qcadoo.mes.timeNormsForOperations.listeners.TechnologyOperCompDetailsListenersTNFO"
 			method="inheritOperationNormValues" />
-	
+
 		<view:view-listener plugin="technologies"
 			view="technologyOperationComponentDetails" component="form"
 			event="copyTimeNormsFromOperation"
@@ -399,9 +385,6 @@
 	        class="com.qcadoo.mes.timeNormsForOperations.listeners.TechnologyOperCompDetailsListenersTNFO"
 	        method="copyTimeNormsFromOperationForTechnologies" />
 
-		<view:view-hook plugin="technologies" view="technologiesList"
-		                type="beforeRender" class="com.qcadoo.mes.timeNormsForOperations.hooks.TechnologiesListHooksTNFO"
-		                method="toggleCopyTimeNormsFromOperationForTechnologiesButton"/>
 	</modules>
 
 	<features>

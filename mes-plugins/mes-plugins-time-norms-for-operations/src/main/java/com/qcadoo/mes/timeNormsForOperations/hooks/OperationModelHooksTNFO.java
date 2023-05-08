@@ -23,16 +23,6 @@
  */
 package com.qcadoo.mes.timeNormsForOperations.hooks;
 
-import static com.qcadoo.mes.timeNormsForOperations.constants.OperationFieldsTFNO.OPERATION_WORKSTATION_TIMES;
-
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
-import java.util.stream.Collectors;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.beust.jcommander.internal.Lists;
 import com.google.common.collect.Sets;
 import com.qcadoo.mes.basic.constants.ProductFields;
@@ -44,6 +34,15 @@ import com.qcadoo.mes.timeNormsForOperations.constants.TimeNormsConstants;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import static com.qcadoo.mes.timeNormsForOperations.constants.OperationFieldsTFNO.OPERATION_WORKSTATION_TIMES;
 
 @Service
 public class OperationModelHooksTNFO {
@@ -51,23 +50,25 @@ public class OperationModelHooksTNFO {
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
-    public void setProductionInOneCycleUNIT(final DataDefinition dataDefinition, final Entity operation) {
+    public void setProductionInOneCycleUNIT(final DataDefinition operationDD, final Entity operation) {
         Entity product = operation.getBelongsToField(OperationFields.PRODUCT);
-        if (!Objects.isNull(product)) {
+
+        if (Objects.nonNull(product)) {
             operation.setField(TechnologyOperationComponentFieldsTNFO.PRODUCTION_IN_ONE_CYCLE_UNIT,
                     product.getField(ProductFields.UNIT));
         }
     }
 
-    public void onSave(final DataDefinition dataDefinition, final Entity operation) {
-        if (operation.getId() != null) {
+    public void onSave(final DataDefinition operationDD, final Entity operation) {
+        if (Objects.nonNull(operation.getId())) {
             Set<Long> tocWorkstationsIds = operation.getManyToManyField(OperationFields.WORKSTATIONS).stream().map(Entity::getId)
                     .collect(Collectors.toSet());
-            Set<Long> oldTocWorkstationsIds = dataDefinition.get(operation.getId())
+            Set<Long> oldTocWorkstationsIds = operationDD.get(operation.getId())
                     .getManyToManyField(OperationFields.WORKSTATIONS).stream().map(Entity::getId).collect(Collectors.toSet());
 
             Set<Long> removedWorkstationsIds = Sets.difference(oldTocWorkstationsIds, tocWorkstationsIds);
             List<Long> operWorkstationTimesIdsToRemove = Lists.newArrayList();
+
             for (Long id : removedWorkstationsIds) {
                 for (Entity operWorkstationTime : operation.getHasManyField(OPERATION_WORKSTATION_TIMES)) {
                     if (operWorkstationTime.getBelongsToField(OperationWorkstationTimeFields.WORKSTATION).getId().equals(id)) {
@@ -78,9 +79,7 @@ public class OperationModelHooksTNFO {
             }
 
             if (!operWorkstationTimesIdsToRemove.isEmpty()) {
-                DataDefinition operWorkstationTimeDD = dataDefinitionService.get(TimeNormsConstants.PLUGIN_IDENTIFIER,
-                        TimeNormsConstants.OPERATION_WORKSTATION_TIME);
-                operWorkstationTimeDD.delete(operWorkstationTimesIdsToRemove.toArray(new Long[0]));
+                getOperationWorkstationTimeDD().delete(operWorkstationTimesIdsToRemove.toArray(new Long[0]));
             }
         }
     }
@@ -88,26 +87,38 @@ public class OperationModelHooksTNFO {
     public boolean validatesWith(final DataDefinition dataDefinition, final Entity entity) {
         Integer minStaff = entity.getIntegerField(OperationFieldsTFNO.MIN_STAFF);
         Integer optimalStaff = entity.getIntegerField(OperationFieldsTFNO.OPTIMAL_STAFF);
-        if (minStaff == null) {
+
+        if (Objects.isNull(minStaff)) {
             entity.addError(dataDefinition.getField(OperationFieldsTFNO.MIN_STAFF),
                     "qcadooView.validate.field.error.missing");
+
             return false;
         }
-        if (optimalStaff == null) {
+        if (Objects.isNull(optimalStaff)) {
             entity.addError(dataDefinition.getField(OperationFieldsTFNO.OPTIMAL_STAFF),
                     "qcadooView.validate.field.error.missing");
+
             return false;
         }
         if (minStaff > optimalStaff) {
             entity.addError(dataDefinition.getField(OperationFieldsTFNO.OPTIMAL_STAFF),
                     "technologies.technologyOperationComponent.validation.error.optimalStaffMustNotBeLessThanMinimumStaff");
+
             return false;
         }
         if (optimalStaff % minStaff != 0) {
             entity.addError(dataDefinition.getField(OperationFieldsTFNO.OPTIMAL_STAFF),
                     "technologies.technologyOperationComponent.validation.error.optimalStaffMustBeMultipleMinStaff", String.valueOf(minStaff));
+
             return false;
         }
+
         return true;
     }
+
+    private DataDefinition getOperationWorkstationTimeDD() {
+        return dataDefinitionService.get(TimeNormsConstants.PLUGIN_IDENTIFIER,
+                TimeNormsConstants.OPERATION_WORKSTATION_TIME);
+    }
+
 }
