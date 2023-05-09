@@ -19,7 +19,7 @@
                     </script>
                 </bigButton>
             </group>
-            <group name="processes">
+            <group name="processes" defaultAuthorizationRole="ROLE_ORDER_TECHNOLOGICAL_PROCESSES">
                 <bigButton name="showPackageProcesses" icon="genealogyIcon24.png">
                     <script>
                         <![CDATA[
