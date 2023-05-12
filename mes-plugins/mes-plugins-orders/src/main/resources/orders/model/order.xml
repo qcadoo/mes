@@ -42,7 +42,7 @@
             <validatesLength max="2048"/>
         </string>
 
-        <string name="additionalFinalProducts"/>
+        <string name="additionalFinalProducts" copyable="false"/>
 
         <string name="commentReasonTypeCorrectionDateFrom"/>
         <string name="commentReasonTypeCorrectionDateTo"/>

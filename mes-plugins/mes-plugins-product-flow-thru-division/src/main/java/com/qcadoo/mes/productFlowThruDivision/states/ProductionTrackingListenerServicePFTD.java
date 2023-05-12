@@ -23,6 +23,7 @@
  */
 package com.qcadoo.mes.productFlowThruDivision.states;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
@@ -510,7 +511,8 @@ public final class ProductionTrackingListenerServicePFTD {
         String priceBasedOn = parameterService.getParameter().getStringField(ParameterFieldsPC.PRICE_BASED_ON);
 
         boolean isNominalProductCost = Objects.nonNull(priceBasedOn)
-                && PriceBasedOn.NOMINAL_PRODUCT_COST.getStringValue().equals(priceBasedOn);
+                && PriceBasedOn.NOMINAL_PRODUCT_COST.getStringValue().equals(priceBasedOn)
+                || !Strings.isNullOrEmpty(order.getStringField(OrderFields.ADDITIONAL_FINAL_PRODUCTS));
 
         if (cleanPositionsQuantity) {
             positions.forEach(position -> {
@@ -711,7 +713,9 @@ public final class ProductionTrackingListenerServicePFTD {
         String priceBasedOn = parameterService.getParameter().getStringField(ParameterFieldsPC.PRICE_BASED_ON);
 
         boolean isNominalProductCost = Objects.nonNull(priceBasedOn)
-                && priceBasedOn.equals(PriceBasedOn.NOMINAL_PRODUCT_COST.getStringValue());
+                && priceBasedOn.equals(PriceBasedOn.NOMINAL_PRODUCT_COST.getStringValue())
+                || !Strings.isNullOrEmpty(order.getStringField(OrderFields.ADDITIONAL_FINAL_PRODUCTS));
+
 
         return createInternalInboundDocumentForFinalProducts(locationTo, order, trackingOperationProductOutComponents, isNominalProductCost, user);
     }
