@@ -45,6 +45,5 @@ public final class OperationFieldsTFNO {
 
     public static final String OPTIMAL_STAFF = "optimalStaff";
 
-
     public static final String PIECEWORK_PRODUCTION = "pieceworkProduction";
 }

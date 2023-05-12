@@ -23,29 +23,27 @@
  */
 package com.qcadoo.mes.technologies.imports.operation;
 
-import java.math.BigDecimal;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.basic.constants.ParameterFields;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.basic.imports.services.XlsxImportService;
-import com.qcadoo.mes.productionLines.constants.DivisionFieldsPL;
-import com.qcadoo.mes.productionLines.constants.WorkstationFieldsPL;
 import com.qcadoo.mes.technologies.constants.AssignedToOperation;
 import com.qcadoo.mes.technologies.constants.OperationFields;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
+import java.util.Objects;
 
 @Service
 public class OperationXlsxImportService extends XlsxImportService {
 
+    public static final String L_MIN_STAFF = "minStaff";
+
+    public static final String L_OPTIMAL_STAFF = "optimalStaff";
     private static final String L_PRODUCTION_IN_ONE_CYCLE = "productionInOneCycle";
 
     public static final String L_PRODUCTION_IN_ONE_CYCLE_UNIT = "productionInOneCycleUNIT";
@@ -64,7 +62,9 @@ public class OperationXlsxImportService extends XlsxImportService {
 
     private void setRequiredFields(final Entity operation) {
         operation.setField(OperationFields.ASSIGNED_TO_OPERATION, AssignedToOperation.WORKSTATIONS.getStringValue());
-        operation.setField(OperationFields.QUANTITY_OF_WORKSTATIONS, BigDecimal.ONE);
+        operation.setField(OperationFields.QUANTITY_OF_WORKSTATIONS,1);
+        operation.setField(L_MIN_STAFF, 1);
+        operation.setField(L_OPTIMAL_STAFF, 1);
     }
 
     @Override

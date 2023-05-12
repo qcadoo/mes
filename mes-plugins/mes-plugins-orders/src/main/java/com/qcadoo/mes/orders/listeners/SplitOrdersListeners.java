@@ -78,7 +78,6 @@ public class SplitOrdersListeners {
 
                 BigDecimal rest = quantity.subtract(newPlannedQuantity.multiply(new BigDecimal(parts), MathContext.DECIMAL64));
 
-
                 Entity order = parent.getBelongsToField(SplitOrderParentConstants.ORDER);
                 Entity technology = order.getBelongsToField(OrderFields.TECHNOLOGY);
                 Entity product = order.getBelongsToField(OrderFields.PRODUCT);
@@ -202,6 +201,10 @@ public class SplitOrdersListeners {
                     throw new IllegalStateException("Undone split orders");
                 }
             }
+            order.setField(OrderFields.START_DATE, null);
+            order.setField(OrderFields.FINISH_DATE, null);
+            order.setField(OrderFields.DATE_FROM, null);
+            order.setField(OrderFields.DATE_TO, null);
             order.setField(OrderFields.DATE_FROM, parent.getDateField(SplitOrderParentConstants.DATE_FROM));
             order.setField(OrderFields.DATE_TO, parent.getDateField(SplitOrderParentConstants.DATE_TO));
             order.setField(OrderFields.PLANNED_QUANTITY, parent.getDecimalField(SplitOrderChildConstants.PLANNED_QUANTITY));
@@ -236,7 +239,15 @@ public class SplitOrdersListeners {
                 if (Objects.nonNull(dateFrom) && Objects.nonNull(dateTo) && (dateFrom.after(dateTo) || dateFrom.equals(dateTo))) {
                     child.addError(child.getDataDefinition().getField(SplitOrderChildConstants.DATE_TO), "orders.validate.global.error.datesOrder");
                     isValid = false;
+                } else {
+                    Entity validate = child.getDataDefinition().validate(child);
+                    if(!validate.isValid()) {
+                        child = validate;
+                        isValid = false;
+                    }
                 }
+
+
             }
         }
         return isValid;

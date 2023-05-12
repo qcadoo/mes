@@ -30,6 +30,9 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import com.qcadoo.mes.basic.ParameterService;
+import com.qcadoo.mes.basic.constants.ParameterFields;
+import com.qcadoo.mes.productionCounting.constants.*;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -43,14 +46,6 @@ import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuanti
 import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityRole;
 import com.qcadoo.mes.newstates.StateExecutorService;
 import com.qcadoo.mes.orders.constants.OrderFields;
-import com.qcadoo.mes.productionCounting.constants.OrderFieldsPC;
-import com.qcadoo.mes.productionCounting.constants.ProductionCountingConstants;
-import com.qcadoo.mes.productionCounting.constants.ProductionTrackingFields;
-import com.qcadoo.mes.productionCounting.constants.StaffWorkTimeFields;
-import com.qcadoo.mes.productionCounting.constants.TrackingOperationProductInComponentFields;
-import com.qcadoo.mes.productionCounting.constants.TrackingOperationProductOutComponentFields;
-import com.qcadoo.mes.productionCounting.constants.TypeOfProductionRecording;
-import com.qcadoo.mes.productionCounting.constants.UsedBatchFields;
 import com.qcadoo.mes.productionCounting.newstates.ProductionTrackingStateServiceMarker;
 import com.qcadoo.mes.productionCounting.states.constants.ProductionTrackingState;
 import com.qcadoo.mes.productionCounting.states.constants.ProductionTrackingStateStringValues;
@@ -113,6 +108,9 @@ public class ProductionTrackingServiceImpl implements ProductionTrackingService 
 
     @Autowired
     private ProductionTrackingListenerService productionTrackingListenerService;
+
+    @Autowired
+    private ParameterService parameterService;
 
     @Override
     public void setTimeAndPieceworkComponentsVisible(final ViewDefinitionState view, final Entity order) {
@@ -285,8 +283,13 @@ public class ProductionTrackingServiceImpl implements ProductionTrackingService 
                 .uniqueResult();
         if (correctedProductionTracking != null) {
             correctedProductionTracking.setField(ProductionTrackingFields.CORRECTION, null);
+            correctedProductionTracking.setField(ProductionTrackingFields.ON_CORRECTION_PROCESS, true);
+            if(parameterService.getParameter().getBooleanField(ParameterFieldsPC.JUST_ONE)) {
+                correctedProductionTracking.setField(ProductionTrackingFields.LAST_TRACKING, true);
+            }
             changeState(correctedProductionTracking, ProductionTrackingState.ACCEPTED);
             correctingProductionTracking.setField(ProductionTrackingFields.IS_CORRECTION, false);
+            correctedProductionTracking.setField(ProductionTrackingFields.ON_CORRECTION_PROCESS, false);
             correctingProductionTracking = correctingProductionTracking.getDataDefinition().save(correctingProductionTracking);
             if(updateOrderReportedQuantity) {
                 productionTrackingListenerService.updateOrderReportedQuantityAfterRemoveCorrection(correctedProductionTracking);
