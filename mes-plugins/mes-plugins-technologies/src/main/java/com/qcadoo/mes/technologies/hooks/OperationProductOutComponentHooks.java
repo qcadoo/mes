@@ -75,16 +75,25 @@ public class OperationProductOutComponentHooks {
     }
 
     public boolean checkIfWasteProductsIsRightMarked(final DataDefinition operationProductInComponentDD, final Entity operationProductOutComponent) {
-        if (operationProductOutComponent.getBooleanField(OperationProductOutComponentFields.WASTE)) {
-            return true;
-        }
 
         Entity operationComponent = operationProductOutComponent.getBelongsToField(OperationProductOutComponentFields.OPERATION_COMPONENT);
         Entity technology = operationComponent.getBelongsToField(TechnologyOperationComponentFields.TECHNOLOGY);
+        Entity product = technology.getBelongsToField(TechnologyFields.PRODUCT);
+
         final EntityTree operationComponents = technology.getTreeField(TechnologyFields.OPERATION_COMPONENTS);
         final EntityTreeNode root = operationComponents.getRoot();
 
         if(root.getId().equals(operationComponent.getId())) {
+            Entity opocProduct = operationProductOutComponent.getBelongsToField(OperationProductOutComponentFields.PRODUCT);
+            if(Objects.nonNull(opocProduct) && operationProductOutComponent.getBooleanField(OperationProductOutComponentFields.WASTE)
+                && product.getId().equals(opocProduct.getId())) {
+                operationProductOutComponent.addError(operationProductInComponentDD.getField(OperationProductOutComponentFields.WASTE), "technologies.technology.validate.global.error.theFinalProductCannotBeMarkedAsWaste");
+                return false;
+            }
+            return true;
+        }
+
+        if (operationProductOutComponent.getBooleanField(OperationProductOutComponentFields.WASTE)) {
             return true;
         }
 

@@ -111,6 +111,7 @@ public class TechnologyValidationAspect extends AbstractStateListenerAspect {
         technologyValidationService.checkIfTechnologyHasAtLeastOneComponent(stateChangeContext);
         technologyValidationService.checkTopComponentsProducesProductForTechnology(stateChangeContext);
         technologyValidationService.checkIfOperationsUsesSubOperationsProds(stateChangeContext);
+        technologyValidationService.checkIfOperationsUsesSubOperationsWasteProds(stateChangeContext);
         technologyValidationService.checkTechnologyCycles(stateChangeContext);
 
         if (TechnologyStateStringValues.ACCEPTED.equals(targetState)) {
