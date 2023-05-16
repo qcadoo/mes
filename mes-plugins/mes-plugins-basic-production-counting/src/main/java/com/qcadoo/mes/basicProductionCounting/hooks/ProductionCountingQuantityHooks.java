@@ -3,19 +3,19 @@
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
  * Version: 1.4
- *
+ * <p>
  * This file is part of Qcadoo.
- *
+ * <p>
  * Qcadoo is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation; either version 3 of the License,
  * or (at your option) any later version.
- *
+ * <p>
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty
  * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU Affero General Public License for more details.
- *
+ * <p>
  * You should have received a copy of the GNU Affero General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
@@ -27,6 +27,7 @@ import static com.qcadoo.model.api.search.SearchOrders.asc;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import com.google.common.base.Strings;
 import com.qcadoo.mes.basic.constants.ProductFields;
@@ -131,6 +132,25 @@ public class ProductionCountingQuantityHooks {
 
     public boolean onDelete(final DataDefinition productionCountingQuantityDD, final Entity productionCountingQuantity) {
         productionCountingQuantityChangeService.addRemoveEntry(productionCountingQuantity);
+        if (productionCountingQuantity.getStringField(ProductionCountingQuantityFields.TYPE_OF_MATERIAL)
+                .equals(ProductionCountingQuantityTypeOfMaterial.ADDITIONAL_FINAL_PRODUCT.getStringValue())) {
+            Entity order = productionCountingQuantity.getBelongsToField(ProductionCountingQuantityFields.ORDER);
+
+            Entity p = productionCountingQuantity.getBelongsToField(ProductionCountingQuantityFields.PRODUCT);
+
+            List<Entity> additionalFinalProducts = order.getHasManyField(OrderFieldsBPC.PRODUCTION_COUNTING_QUANTITIES).stream().filter(pcq -> pcq.getStringField(ProductionCountingQuantityFields.TYPE_OF_MATERIAL)
+                            .equals(ProductionCountingQuantityTypeOfMaterial.ADDITIONAL_FINAL_PRODUCT.getStringValue()))
+                    .filter(pcq -> !pcq.getBelongsToField(ProductionCountingQuantityFields.PRODUCT).getId().equals(p.getId()))
+                    .map(pcq -> pcq.getBelongsToField(ProductionCountingQuantityFields.PRODUCT))
+                    .collect(Collectors.toList());
+
+            String additionalFinalProductsNumbers = additionalFinalProducts.stream()
+                    .map(prod -> prod.getStringField(ProductFields.NUMBER) + " - " + prod.getStringField(ProductFields.NAME))
+                    .collect(Collectors.joining("\n"));
+
+            order.setField(OrderFields.ADDITIONAL_FINAL_PRODUCTS, additionalFinalProductsNumbers);
+            order.getDataDefinition().fastSave(order);
+        }
         return deleteBasicProductionCounting(productionCountingQuantity);
     }
 
@@ -163,7 +183,7 @@ public class ProductionCountingQuantityHooks {
     }
 
     private boolean checkIfShouldFillBasicProductionCounting(final Entity order, final Entity product,
-            final String typeOfMaterial, final String role) {
+                                                             final String typeOfMaterial, final String role) {
         return (Objects.nonNull(order) && Objects.nonNull(product) && !checkIfBasicProductionCountingIsEmpty(order)
                 && (checkIfIsUsed(role) || (checkIfIsProduced(role) && checkIfIsWaste(typeOfMaterial))));
     }

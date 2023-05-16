@@ -27,10 +27,9 @@ import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuanti
 import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityRole;
 import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityTypeOfMaterial;
 import com.qcadoo.mes.basicProductionCounting.hooks.util.ProductionProgressModifyLockHelper;
-import com.qcadoo.model.api.BigDecimalUtils;
-import com.qcadoo.model.api.DataDefinition;
-import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.FieldDefinition;
+import com.qcadoo.mes.orders.constants.OrderFields;
+import com.qcadoo.mes.technologies.constants.TechnologyFields;
+import com.qcadoo.model.api.*;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.model.api.search.SearchResult;
@@ -191,7 +190,36 @@ public class ProductionCountingQuantityValidators {
 
                     return false;
                 }
+                if (!checkIfFinalProductAddedToMainOperation(productionCountingQuantityDD, productionCountingQuantity)) {
+                    productionCountingQuantity.addError(
+                            productionCountingQuantityDD.getField(ProductionCountingQuantityFields.TYPE_OF_MATERIAL),
+                            "basicProductionCounting.productionCountingQuantity.typeOfMaterial.error.additionalFinalProductsNotInRootOperation");
+
+                    return false;
+                }
             }
+        }
+
+        return true;
+    }
+
+    private boolean checkIfFinalProductAddedToMainOperation(DataDefinition productionCountingQuantityDD, Entity productionCountingQuantity) {
+        String typeOfMaterial = productionCountingQuantity.getStringField(ProductionCountingQuantityFields.TYPE_OF_MATERIAL);
+
+        Entity toc = productionCountingQuantity.getBelongsToField(ProductionCountingQuantityFields.TECHNOLOGY_OPERATION_COMPONENT);
+
+        if(!isTypeOfMaterialAdditionalFinalProduct(typeOfMaterial) || Objects.isNull(toc)) {
+            return true;
+        }
+
+        Entity order = productionCountingQuantity.getBelongsToField(ProductionCountingQuantityFields.ORDER);
+        Entity technology = order.getBelongsToField(OrderFields.TECHNOLOGY);
+
+        EntityTree treeField = technology.getTreeField(TechnologyFields.OPERATION_COMPONENTS);
+        EntityTreeNode root = treeField.getRoot();
+
+        if(!root.getId().equals(toc.getId())) {
+            return false;
         }
 
         return true;
@@ -232,7 +260,12 @@ public class ProductionCountingQuantityValidators {
     }
 
     private boolean isTypeOfMaterialFinalProduct(final String typeOfMaterial) {
-        return ProductionCountingQuantityTypeOfMaterial.FINAL_PRODUCT.getStringValue().equals(typeOfMaterial);
+        return ProductionCountingQuantityTypeOfMaterial.FINAL_PRODUCT.getStringValue().equals(typeOfMaterial)
+                || ProductionCountingQuantityTypeOfMaterial.ADDITIONAL_FINAL_PRODUCT.getStringValue().equals(typeOfMaterial);
+    }
+
+    private boolean isTypeOfMaterialAdditionalFinalProduct(final String typeOfMaterial) {
+        return ProductionCountingQuantityTypeOfMaterial.ADDITIONAL_FINAL_PRODUCT.getStringValue().equals(typeOfMaterial);
     }
 
     private boolean isTypeOfMaterialWaste(final String typeOfMaterial) {
