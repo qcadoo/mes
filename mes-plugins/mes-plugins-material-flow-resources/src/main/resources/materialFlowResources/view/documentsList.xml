@@ -112,8 +112,10 @@
             <option type="fullscreen" value="true"/>
             <option type="multiselect" value="true"/>
 
+<!--
             <criteriaModifier class="com.qcadoo.mes.materialFlowResources.criteriaModifiers.DocumentsCriteriaModifier"
                               method="hideDraftDocumentsWithOrder"/>
+-->
 
             <listener event="createResourcesForDocuments"
                       class="com.qcadoo.mes.materialFlowResources.listeners.DocumentsListListeners"

@@ -54,7 +54,8 @@ public class ProductionCountingQuantityValidatorsPFTD {
                         L_QCADOO_VIEW_VALIDATE_FIELD_ERROR_MISSING);
             }
             if (ProductionCountingQuantityRole.PRODUCED.getStringValue().equals(role)
-                    && ProductionCountingQuantityTypeOfMaterial.FINAL_PRODUCT.getStringValue().equals(typeOfMaterial)
+                    && (ProductionCountingQuantityTypeOfMaterial.FINAL_PRODUCT.getStringValue().equals(typeOfMaterial)
+                        || ProductionCountingQuantityTypeOfMaterial.ADDITIONAL_FINAL_PRODUCT.getStringValue().equals(typeOfMaterial))
                     && productionCountingQuantity
                             .getBelongsToField(ProductionCountingQuantityFieldsPFTD.PRODUCTS_INPUT_LOCATION) == null) {
                 productionCountingQuantity.addError(

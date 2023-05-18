@@ -3,19 +3,19 @@
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
  * Version: 1.4
- *
+ * <p>
  * This file is part of Qcadoo.
- *
+ * <p>
  * Qcadoo is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation; either version 3 of the License,
  * or (at your option) any later version.
- *
+ * <p>
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty
  * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU Affero General Public License for more details.
- *
+ * <p>
  * You should have received a copy of the GNU Affero General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
@@ -62,7 +62,7 @@ public class ProductionCountingQuantityValidators {
     }
 
     private boolean checkIfMaterialExists(final DataDefinition productionCountingQuantityDD,
-            final Entity productionCountingQuantity) {
+                                          final Entity productionCountingQuantity) {
         if (Objects.nonNull(
                 productionCountingQuantity.getBelongsToField(ProductionCountingQuantityFields.TECHNOLOGY_OPERATION_COMPONENT))) {
             List<Entity> productionCountingQuantities = productionCountingQuantityDD.find()
@@ -101,7 +101,7 @@ public class ProductionCountingQuantityValidators {
     }
 
     private boolean checkTypeOfProductionRecording(DataDefinition productionCountingQuantityDD,
-            Entity productionCountingQuantity) {
+                                                   Entity productionCountingQuantity) {
         String typeOfProductionRecording = productionCountingQuantity.getBelongsToField(ProductionCountingQuantityFields.ORDER)
                 .getStringField(L_TYPE_OF_PRODUCTION_RECORDING);
         if (L_FOR_EACH.equals(typeOfProductionRecording) && Objects.isNull(
@@ -116,9 +116,9 @@ public class ProductionCountingQuantityValidators {
     }
 
     public boolean validatePlannedQuantity(final DataDefinition productionCountingQuantityDD,
-            final FieldDefinition plannedQuantityFieldDefinition, final Entity productionCountingQuantity, final Object oldValue,
-            final Object newValue) {
-        if(!ProductionCountingQuantityTypeOfMaterial.COMPONENT.getStringValue()
+                                           final FieldDefinition plannedQuantityFieldDefinition, final Entity productionCountingQuantity, final Object oldValue,
+                                           final Object newValue) {
+        if (!ProductionCountingQuantityTypeOfMaterial.COMPONENT.getStringValue()
                 .equals(productionCountingQuantity.getStringField(ProductionCountingQuantityFields.TYPE_OF_MATERIAL))
                 && BigDecimalUtils.valueEquals(BigDecimal.ZERO, (BigDecimal) newValue)) {
             productionCountingQuantity.addError(plannedQuantityFieldDefinition,
@@ -141,7 +141,7 @@ public class ProductionCountingQuantityValidators {
     }
 
     private boolean checkRoleAndTypeOfMaterial(final DataDefinition productionCountingQuantityDD,
-            final Entity productionCountingQuantity) {
+                                               final Entity productionCountingQuantity) {
         String role = productionCountingQuantity.getStringField(ProductionCountingQuantityFields.ROLE);
         String typeOfMaterial = productionCountingQuantity.getStringField(ProductionCountingQuantityFields.TYPE_OF_MATERIAL);
 
@@ -183,7 +183,7 @@ public class ProductionCountingQuantityValidators {
                     return false;
                 }
             } else if (isTypeOfMaterialFinalProduct(typeOfMaterial)) {
-                if (!checkIfAnotherFinalProductExists(productionCountingQuantityDD, productionCountingQuantity)) {
+                if (isMainTypeOfMaterialFinalProduct(typeOfMaterial) && !checkIfAnotherFinalProductExists(productionCountingQuantityDD, productionCountingQuantity)) {
                     productionCountingQuantity.addError(
                             productionCountingQuantityDD.getField(ProductionCountingQuantityFields.TYPE_OF_MATERIAL),
                             "basicProductionCounting.productionCountingQuantity.typeOfMaterial.error.anotherFinalProductExists");
@@ -208,7 +208,7 @@ public class ProductionCountingQuantityValidators {
 
         Entity toc = productionCountingQuantity.getBelongsToField(ProductionCountingQuantityFields.TECHNOLOGY_OPERATION_COMPONENT);
 
-        if(!isTypeOfMaterialAdditionalFinalProduct(typeOfMaterial) || Objects.isNull(toc)) {
+        if (!isTypeOfMaterialAdditionalFinalProduct(typeOfMaterial) || Objects.isNull(toc)) {
             return true;
         }
 
@@ -218,7 +218,7 @@ public class ProductionCountingQuantityValidators {
         EntityTree treeField = technology.getTreeField(TechnologyFields.OPERATION_COMPONENTS);
         EntityTreeNode root = treeField.getRoot();
 
-        if(!root.getId().equals(toc.getId())) {
+        if (!root.getId().equals(toc.getId())) {
             return false;
         }
 
@@ -226,7 +226,7 @@ public class ProductionCountingQuantityValidators {
     }
 
     private boolean checkIfAnotherFinalProductExists(final DataDefinition productionCountingQuantityDD,
-            final Entity productionCountingQuantity) {
+                                                     final Entity productionCountingQuantity) {
         Entity order = productionCountingQuantity.getBelongsToField(ProductionCountingQuantityFields.ORDER);
 
         SearchCriteriaBuilder searchCriteriaBuilder = productionCountingQuantityDD.find()
@@ -262,6 +262,10 @@ public class ProductionCountingQuantityValidators {
     private boolean isTypeOfMaterialFinalProduct(final String typeOfMaterial) {
         return ProductionCountingQuantityTypeOfMaterial.FINAL_PRODUCT.getStringValue().equals(typeOfMaterial)
                 || ProductionCountingQuantityTypeOfMaterial.ADDITIONAL_FINAL_PRODUCT.getStringValue().equals(typeOfMaterial);
+    }
+
+    private boolean isMainTypeOfMaterialFinalProduct(final String typeOfMaterial) {
+        return ProductionCountingQuantityTypeOfMaterial.FINAL_PRODUCT.getStringValue().equals(typeOfMaterial);
     }
 
     private boolean isTypeOfMaterialAdditionalFinalProduct(final String typeOfMaterial) {

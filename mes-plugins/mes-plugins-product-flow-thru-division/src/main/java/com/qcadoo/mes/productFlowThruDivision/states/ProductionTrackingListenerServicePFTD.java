@@ -35,6 +35,7 @@ import com.qcadoo.mes.basic.constants.UnitConversionItemFieldsB;
 import com.qcadoo.mes.basic.util.CurrencyService;
 import com.qcadoo.mes.basicProductionCounting.constants.BasicProductionCountingConstants;
 import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityFields;
+import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityTypeOfMaterial;
 import com.qcadoo.mes.costNormsForMaterials.CostNormsForMaterialsService;
 import com.qcadoo.mes.costNormsForMaterials.constants.OrderFieldsCNFM;
 import com.qcadoo.mes.costNormsForMaterials.orderRawMaterialCosts.domain.ProductWithQuantityAndCost;
@@ -431,14 +432,13 @@ public final class ProductionTrackingListenerServicePFTD {
                                                                          final Collection<Entity> trackingOperationProductOutComponents, final Entity user) {
         String receiptOfProducts = parameterService.getParameter().getStringField(ParameterFieldsPC.RECEIPT_OF_PRODUCTS);
 
-        List<Entity> finalProductRecord = null;
+        List<Entity> finalProductRecord = Lists.newArrayList();
 
         Collection<Entity> intermediateRecords = Lists.newArrayList();
 
         for (Entity trackingOperationProductOutComponent : trackingOperationProductOutComponents) {
-            if (isFinalProductForOrder(order,
-                    trackingOperationProductOutComponent.getBelongsToField(TrackingOperationProductOutComponentFields.PRODUCT))) {
-                finalProductRecord = Lists.newArrayList(trackingOperationProductOutComponent);
+            if (isFinalProductOrWasteForOrder(trackingOperationProductOutComponent)) {
+                finalProductRecord.add(trackingOperationProductOutComponent);
             } else {
                 intermediateRecords.add(trackingOperationProductOutComponent);
             }
@@ -834,6 +834,13 @@ public final class ProductionTrackingListenerServicePFTD {
     private boolean isFinalProductForOrder(final Entity order, final Entity product) {
         return order.getBelongsToField(OrderFields.PRODUCT).getId().equals(product.getId());
     }
+
+    private boolean isFinalProductOrWasteForOrder(final Entity toc) {
+        return toc.getStringField(TrackingOperationProductOutComponentFields.TYPE_OF_MATERIAL).equals(ProductionCountingQuantityTypeOfMaterial.FINAL_PRODUCT.getStringValue()) ||
+                toc.getStringField(TrackingOperationProductOutComponentFields.TYPE_OF_MATERIAL).equals(ProductionCountingQuantityTypeOfMaterial.ADDITIONAL_FINAL_PRODUCT.getStringValue()) ||
+                toc.getStringField(TrackingOperationProductOutComponentFields.TYPE_OF_MATERIAL).equals(ProductionCountingQuantityTypeOfMaterial.WASTE.getStringValue());
+    }
+
 
     public void updateCostsForOrder(final Entity order) {
         SearchQueryBuilder searchQueryBuilder = getPositionDD()

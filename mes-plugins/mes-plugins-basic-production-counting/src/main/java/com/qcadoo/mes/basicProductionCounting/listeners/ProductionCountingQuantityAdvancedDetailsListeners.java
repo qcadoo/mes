@@ -27,6 +27,7 @@ import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.basicProductionCounting.BasicProductionCountingService;
+import com.qcadoo.mes.basicProductionCounting.constants.OrderFieldsBPC;
 import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityFields;
 import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityTypeOfMaterial;
 import com.qcadoo.mes.orders.constants.OrderFields;
@@ -39,6 +40,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class  ProductionCountingQuantityAdvancedDetailsListeners {
@@ -71,17 +73,19 @@ public class  ProductionCountingQuantityAdvancedDetailsListeners {
         if(productionCountingQuantity.getStringField(ProductionCountingQuantityFields.TYPE_OF_MATERIAL)
                 .equals(ProductionCountingQuantityTypeOfMaterial.ADDITIONAL_FINAL_PRODUCT.getStringValue())) {
             Entity order = productionCountingQuantity.getBelongsToField(ProductionCountingQuantityFields.ORDER);
-            String additionalFinalProducts = order.getStringField(OrderFields.ADDITIONAL_FINAL_PRODUCTS);
-
-            if(!Strings.isNullOrEmpty(additionalFinalProducts)) {
-                additionalFinalProducts = additionalFinalProducts + "\n";
-            } else {
-                additionalFinalProducts = "";
-            }
 
             Entity p = productionCountingQuantity.getBelongsToField(ProductionCountingQuantityFields.PRODUCT);
-            additionalFinalProducts = String.format("%s%s - %s", additionalFinalProducts, p.getStringField(ProductFields.NUMBER), p.getStringField(ProductFields.NAME));
-            order.setField(OrderFields.ADDITIONAL_FINAL_PRODUCTS, additionalFinalProducts);
+
+            List<Entity> additionalFinalProducts = order.getHasManyField(OrderFieldsBPC.PRODUCTION_COUNTING_QUANTITIES).stream().filter(pcq -> pcq.getStringField(ProductionCountingQuantityFields.TYPE_OF_MATERIAL)
+                            .equals(ProductionCountingQuantityTypeOfMaterial.ADDITIONAL_FINAL_PRODUCT.getStringValue()))
+                    .map(pcq -> pcq.getBelongsToField(ProductionCountingQuantityFields.PRODUCT))
+                    .collect(Collectors.toList());
+
+            String additionalFinalProductsNumbers = additionalFinalProducts.stream()
+                    .map(prod -> prod.getStringField(ProductFields.NUMBER) + " - " + prod.getStringField(ProductFields.NAME))
+                    .collect(Collectors.joining("\n"));
+
+            order.setField(OrderFields.ADDITIONAL_FINAL_PRODUCTS, additionalFinalProductsNumbers);
             order.getDataDefinition().fastSave(order);
         }
 
