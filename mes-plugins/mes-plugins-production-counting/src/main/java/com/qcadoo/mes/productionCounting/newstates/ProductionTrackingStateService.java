@@ -91,6 +91,7 @@ public class ProductionTrackingStateService extends BasicStateService implements
                     productionTrackingListenerService.onChangeFromAcceptedToDeclined(entity);
                 }
                 productionTrackingListenerService.updateOrderReportedQuantity(entity);
+                productionTrackingListenerService.unMarakLastTracking(entity);
                 break;
 
             case ProductionTrackingStateStringValues.CORRECTED:

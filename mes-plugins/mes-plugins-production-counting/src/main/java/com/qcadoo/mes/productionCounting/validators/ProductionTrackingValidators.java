@@ -75,7 +75,38 @@ public class ProductionTrackingValidators {
         isValid = isValid && checkIfOperationIsSet(productionTrackingDD, productionTracking);
         isValid = isValid && checkIfExpirationDateTheSameForOrder(productionTrackingDD, productionTracking);
         isValid = isValid && checkIfIsOne(productionTrackingDD, productionTracking);
+        isValid = isValid && checkIfIsLastTracking(productionTrackingDD, productionTracking);
         return isValid;
+    }
+
+    private boolean checkIfIsLastTracking(final DataDefinition productionTrackingDD, final Entity productionTracking) {
+        if(!productionTracking.getBooleanField(ProductionTrackingFields.LAST_TRACKING)) {
+            return true;
+        }
+
+        SearchCriteriaBuilder scb = productionTrackingDD.find()
+                .createAlias(ProductionTrackingFields.ORDER, "o", JoinType.LEFT)
+                .add(SearchRestrictions.eq(ProductionTrackingFields.LAST_TRACKING, Boolean.TRUE))
+                .add(SearchRestrictions.eq("o.id", productionTracking.getBelongsToField(ProductionTrackingFields.ORDER).getId()))
+                .add(SearchRestrictions.in(ProductionTrackingFields.STATE,
+                        Lists.newArrayList(ProductionTrackingStateStringValues.DRAFT, ProductionTrackingStateStringValues.ACCEPTED,
+                                ProductionTrackingStateStringValues.PENDING)));
+
+        Entity toc = productionTracking.getBelongsToField(ProductionTrackingFields.TECHNOLOGY_OPERATION_COMPONENT);
+        if (Objects.nonNull(toc)) {
+            scb.createAlias(ProductionTrackingFields.TECHNOLOGY_OPERATION_COMPONENT, "toc", JoinType.LEFT)
+                    .add(SearchRestrictions.eq("toc.id", toc.getId()));
+        }
+        if (Objects.nonNull(productionTracking.getId())) {
+            scb.add(SearchRestrictions.idNe(productionTracking.getId()));
+        }
+
+        List<Entity> entities = scb.list().getEntities();
+        if (!entities.isEmpty()) {
+            productionTracking.addGlobalError("productionCounting.productionTracking.messages.error.canExistOnlyOneFinalTracking", false);
+            return false;
+        }
+        return true;
     }
 
     private boolean checkIfIsOne(DataDefinition productionTrackingDD, Entity productionTracking) {

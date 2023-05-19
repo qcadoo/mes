@@ -708,6 +708,10 @@ public final class ProductionTrackingListenerService {
         fillOrderReportedQuantity(productionTracking, new Substraction());
     }
 
+    public void unMarakLastTracking(Entity entity) {
+        entity.setField(ProductionTrackingFields.LAST_TRACKING, Boolean.FALSE);
+    }
+
     private interface Operation {
 
         BigDecimal perform(BigDecimal argument1, BigDecimal argument2);
