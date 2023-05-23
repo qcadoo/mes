@@ -462,9 +462,6 @@
                                  method="validatesWith"/>
         </model:model-hook>
 
-        <menu:menu-item name="performanceAnalysis" category="analysis"
-                        view="performanceAnalysisList" defaultAuthorizationRole="ROLE_ANALYSIS_VIEWER"/>
-
         <menu:menu-item name="performanceAnalysisMv" category="analysis"
                         view="performanceAnalysisMvList" defaultAuthorizationRole="ROLE_ANALYSIS_VIEWER"/>
 
@@ -531,7 +528,6 @@
         <view:view resource="view/productionTrackingsForProductGroupedList.xml"/>
 
         <view:view resource="view/performanceAnalysisMvList.xml"/>
-        <view:view resource="view/performanceAnalysisList.xml"/>
         <view:view resource="view/performanceAnalysisDetails.xml"/>
 
         <view:view resource="view/finalProductAnalysisGenerator.xml"/>
