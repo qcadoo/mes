@@ -69,8 +69,15 @@ public class ProductionTrackingStateService extends BasicStateService implements
     @Override
     public Entity onBeforeSave(Entity entity, String sourceState, String targetState, Entity stateChangeEntity,
                                StateChangeEntityDescriber describer) {
+
         if (ProductionTrackingStateStringValues.DRAFT.equals(sourceState)) {
             productionTrackingListenerService.onLeavingDraft(entity);
+        }
+
+        switch (targetState) {
+            case ProductionTrackingStateStringValues.DECLINED:
+                productionTrackingListenerService.unMarakLastTracking(entity);
+                break;
         }
 
         return entity;
@@ -91,7 +98,6 @@ public class ProductionTrackingStateService extends BasicStateService implements
                     productionTrackingListenerService.onChangeFromAcceptedToDeclined(entity);
                 }
                 productionTrackingListenerService.updateOrderReportedQuantity(entity);
-                productionTrackingListenerService.unMarakLastTracking(entity);
                 break;
 
             case ProductionTrackingStateStringValues.CORRECTED:
