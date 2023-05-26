@@ -129,6 +129,13 @@ public final class ProductionTrackingListenerService {
         checkIfBatchEvidenceSet(productionTracking);
     }
 
+
+    public void validationOnDecline(Entity productionTracking) {
+        if(parameterService.getParameter().getBooleanField(ParameterFieldsPC.JUST_ONE)) {
+            productionTracking.addGlobalError("productionCounting.productionTracking.error.registrationRecordCouldNotBeRejectedForJustOne");
+        }
+    }
+
     private void checkIfProductionOrderIsValid(final Entity productionTracking) {
         Entity order = productionTracking.getBelongsToField(ProductionTrackingFields.ORDER);
         Entity validatedOrder = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).validate(order);
@@ -699,6 +706,10 @@ public final class ProductionTrackingListenerService {
         updateProductionCountingQuantitySubtraction(productionTracking, new Substraction());
         setOrderDoneAndWastesQuantity(productionTracking, new Substraction());
         fillOrderReportedQuantity(productionTracking, new Substraction());
+    }
+
+    public void unMarakLastTracking(Entity entity) {
+        entity.setField(ProductionTrackingFields.LAST_TRACKING, Boolean.FALSE);
     }
 
     private interface Operation {

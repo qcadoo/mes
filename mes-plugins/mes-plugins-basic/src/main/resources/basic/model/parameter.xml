@@ -43,6 +43,7 @@
         <boolean name="copyAttributesToSizeProducts" default="false"/>
         <boolean name="copyNominalCostFamilyOfProductsSizes" default="false"/>
         <boolean name="manyArticlesWithTheSameEAN" default="false"/>
+        <boolean name="noExchangeRateDownload" default="false"/>
         <enum name="dashboardShowForProduct" required="true" values="01number,02name,03both" default="01number"/>
         <enum name="quantityMadeOnTheBasisOfDashboard" required="true"
               values="01approvedProduction,02reportedProduction" default="01approvedProduction"/>
@@ -73,6 +74,9 @@
     <hooks>
         <onCreate class="com.qcadoo.mes.basic.hooks.ParameterModelHooks"
                   method="setDefaultValues"/>
+
+        <onSave class="com.qcadoo.mes.basic.hooks.ParameterModelHooks"
+                  method="onSave"/>
     </hooks>
 
 </model>

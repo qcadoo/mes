@@ -35,6 +35,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Optional;
 
 import static com.qcadoo.mes.basic.constants.BasicConstants.PLUGIN_IDENTIFIER;
@@ -102,5 +103,14 @@ public class CurrencyService {
 
     private boolean exRateExists(final BigDecimal exRate) {
         return exRate.compareTo(BigDecimal.ZERO) > 0;
+    }
+
+    public void clearExchangeRate() {
+        DataDefinition currencyDataDef = dataDefinitionService.get(PLUGIN_IDENTIFIER, BasicConstants.MODEL_CURRENCY);
+        List<Entity> entities = currencyDataDef.find().list().getEntities();
+        entities.forEach(c -> {
+            c.setField(CurrencyFields.EXCHANGE_RATE, BigDecimal.ONE);
+            currencyDataDef.save(c);
+        });
     }
 }

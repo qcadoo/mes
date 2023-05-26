@@ -27,6 +27,7 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 
+import com.qcadoo.mes.basic.constants.ParameterFields;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -45,19 +46,25 @@ public class ExchangeRatesUpdateServiceImpl implements ExchangeRatesUpdateServic
 
     private final DataDefinitionService dataDefinitionService;
 
+    private final ParameterService parameterService;
+
     @Autowired
     public ExchangeRatesUpdateServiceImpl(ExchangeRatesNbpService nbpService,
-            DataDefinitionService dataDefinitionService) {
+                                          DataDefinitionService dataDefinitionService,
+                                          ParameterService parameterService) {
         this.nbpService = nbpService;
         this.dataDefinitionService = dataDefinitionService;
+        this.parameterService = parameterService;
     }
 
     @Override
     @Async
     @Scheduled(cron = ExchangeRatesNbpService.CRON_LAST_ALL)
     public void update() {
-        updateEntitiesExchangeRates(nbpService.get(ExchangeRatesNbpService.NbpProperties.LAST_A));
-        updateEntitiesExchangeRates(nbpService.get(ExchangeRatesNbpService.NbpProperties.LAST_B));
+        if(!parameterService.getParameter().getBooleanField(ParameterFields.NO_EXCHANGE_RATE_DOWNLOAD)) {
+            updateEntitiesExchangeRates(nbpService.get(ExchangeRatesNbpService.NbpProperties.LAST_A));
+            updateEntitiesExchangeRates(nbpService.get(ExchangeRatesNbpService.NbpProperties.LAST_B));
+        }
     }
 
     private void updateEntitiesExchangeRates(Map<String, BigDecimal> exRates) {
