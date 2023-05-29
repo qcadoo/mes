@@ -810,9 +810,10 @@ public final class ProductionTrackingListenerServicePFTD {
         String receiptOfProducts = parameterService.getParameter().getStringField(ParameterFieldsPC.RECEIPT_OF_PRODUCTS);
 
         if (ReceiptOfProducts.ON_ACCEPTANCE_REGISTRATION_RECORD.getStringValue().equals(receiptOfProducts)
-                && (OrderState.COMPLETED.equals(OrderState.of(order)) || !isFinalProduct || isBasedOnNominalCost
-                || orderClosingHelper.orderShouldBeClosedWithRecalculate(productionTracking))
-                || orderClosingHelper.orderShouldBeClosedWithRecalculate(productionTracking)) {
+                    && (OrderState.COMPLETED.equals(OrderState.of(order)) || !isFinalProduct || isBasedOnNominalCost
+                    || orderClosingHelper.orderShouldBeClosedWithRecalculate(productionTracking))
+                || (ReceiptOfProducts.ON_ACCEPTANCE_REGISTRATION_RECORD.getStringValue().equals(receiptOfProducts)
+                    && orderClosingHelper.orderShouldBeClosedWithRecalculate(productionTracking))) {
             internalInboundBuilder.setAccepted();
         }
 

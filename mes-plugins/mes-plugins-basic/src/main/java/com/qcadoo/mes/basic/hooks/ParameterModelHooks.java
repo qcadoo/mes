@@ -25,6 +25,7 @@ package com.qcadoo.mes.basic.hooks;
 
 import java.util.Currency;
 import java.util.Locale;
+import java.util.Objects;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -45,6 +46,19 @@ public class ParameterModelHooks {
 
     @Autowired
     private CurrencyService currencyService;
+
+
+    public void onSave(final DataDefinition parameterDD, final Entity parameter) {
+
+        if(Objects.isNull(parameter.getId())) {
+            return;
+        }
+
+        Entity parameterDb = parameter.getDataDefinition().get(parameter.getId());
+        if(parameter.getBooleanField(ParameterFields.NO_EXCHANGE_RATE_DOWNLOAD) && !parameterDb.getBooleanField(ParameterFields.NO_EXCHANGE_RATE_DOWNLOAD)) {
+            currencyService.clearExchangeRate();
+        }
+    }
 
     public void setDefaultValues(final DataDefinition parameterDD, final Entity parameter) {
         String defaultCurrencyAlphabeticCode = Currency.getInstance(Locale.getDefault()).getCurrencyCode();

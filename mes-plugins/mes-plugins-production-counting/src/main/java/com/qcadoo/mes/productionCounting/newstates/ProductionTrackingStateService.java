@@ -52,10 +52,14 @@ public class ProductionTrackingStateService extends BasicStateService implements
 
     @Override
     public Entity onValidate(Entity entity, String sourceState, String targetState, Entity stateChangeEntity,
-            StateChangeEntityDescriber describer) {
+                             StateChangeEntityDescriber describer) {
         switch (targetState) {
             case ProductionTrackingStateStringValues.ACCEPTED:
                 productionTrackingListenerService.validationOnAccept(entity);
+                break;
+
+            case ProductionTrackingStateStringValues.DECLINED:
+                productionTrackingListenerService.validationOnDecline(entity);
                 break;
         }
 
@@ -64,9 +68,16 @@ public class ProductionTrackingStateService extends BasicStateService implements
 
     @Override
     public Entity onBeforeSave(Entity entity, String sourceState, String targetState, Entity stateChangeEntity,
-            StateChangeEntityDescriber describer) {
+                               StateChangeEntityDescriber describer) {
+
         if (ProductionTrackingStateStringValues.DRAFT.equals(sourceState)) {
             productionTrackingListenerService.onLeavingDraft(entity);
+        }
+
+        switch (targetState) {
+            case ProductionTrackingStateStringValues.DECLINED:
+                productionTrackingListenerService.unMarakLastTracking(entity);
+                break;
         }
 
         return entity;
@@ -74,7 +85,7 @@ public class ProductionTrackingStateService extends BasicStateService implements
 
     @Override
     public Entity onAfterSave(Entity entity, String sourceState, String targetState, Entity stateChangeEntity,
-            StateChangeEntityDescriber describer) {
+                              StateChangeEntityDescriber describer) {
         switch (targetState) {
             case ProductionTrackingStateStringValues.ACCEPTED:
                 productionTrackingListenerService.onAccept(entity);

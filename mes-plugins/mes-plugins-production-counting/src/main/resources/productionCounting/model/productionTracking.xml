@@ -41,7 +41,7 @@
 		<boolean name="lastStateChangeFails" default="false" copyable="false"/>
 		<boolean name="isExternalSynchronized" default="true"
 				 copyable="false"/>
-		<boolean name="lastTracking"/>
+		<boolean name="lastTracking" copyable="false"/>
 
 		<enum name="state" values="01draft,02accepted,03declined,04corrected,05pending"
 			  default="01draft" required="true"/>
