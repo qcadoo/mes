@@ -54,6 +54,7 @@ import com.qcadoo.mes.productionCounting.states.constants.ProductionTrackingStat
 import com.qcadoo.mes.productionCounting.utils.OrderClosingHelper;
 import com.qcadoo.mes.productionCounting.utils.ProductionTrackingDocumentsHelper;
 import com.qcadoo.model.api.*;
+import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchQueryBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.model.api.units.PossibleUnitConversions;
@@ -805,12 +806,29 @@ public final class ProductionTrackingListenerServicePFTD {
 
         String receiptOfProducts = parameterService.getParameter().getStringField(ParameterFieldsPC.RECEIPT_OF_PRODUCTS);
 
-        if (ReceiptOfProducts.ON_ACCEPTANCE_REGISTRATION_RECORD.getStringValue().equals(receiptOfProducts)
-                    && (OrderState.COMPLETED.equals(OrderState.of(order)) || !isFinalProduct || isBasedOnNominalCost
+        if ((OrderState.COMPLETED.equals(OrderState.of(order)) || !isFinalProduct || isBasedOnNominalCost
                     || orderClosingHelper.orderShouldBeClosedWithRecalculate(productionTracking))
-                || (ReceiptOfProducts.ON_ACCEPTANCE_REGISTRATION_RECORD.getStringValue().equals(receiptOfProducts)
-                    && orderClosingHelper.orderShouldBeClosedWithRecalculate(productionTracking))) {
-            internalInboundBuilder.setAccepted();
+                || orderClosingHelper.orderShouldBeClosedWithRecalculate(productionTracking)) {
+
+            if (ReceiptOfProducts.ON_ACCEPTANCE_REGISTRATION_RECORD.getStringValue().equals(receiptOfProducts)) {
+                internalInboundBuilder.setAccepted();
+            } else if (ReceiptOfProducts.END_OF_THE_ORDER.getStringValue().equals(receiptOfProducts) && isFinalProduct && orderClosingHelper.orderShouldBeClosedWithRecalculate(productionTracking)) {
+
+                SearchCriteriaBuilder scb =  dataDefinitionService.get(ProductionCountingConstants.PLUGIN_IDENTIFIER,
+                                ProductionCountingConstants.MODEL_PRODUCTION_TRACKING).find()
+                        .add(SearchRestrictions.belongsTo(ProductionTrackingFields.ORDER, order))
+                        .add(SearchRestrictions.eq(ProductionTrackingFields.STATE, ProductionTrackingStateStringValues.ACCEPTED));
+
+                Entity toc = productionTracking.getBelongsToField(ProductionTrackingFields.TECHNOLOGY_OPERATION_COMPONENT);
+                if(Objects.nonNull(toc)) {
+                    scb.add(SearchRestrictions.belongsTo(ProductionTrackingFields.TECHNOLOGY_OPERATION_COMPONENT, toc));
+                }
+
+                List<Entity> entities = scb.list().getEntities();
+                if(entities.isEmpty()) {
+                    internalInboundBuilder.setAccepted();
+                }
+            }
         }
 
         return internalInboundBuilder.buildWithEntityRuntimeException();
