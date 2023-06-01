@@ -88,6 +88,8 @@
 
         <dictionary name="contractorCategory" dictionary="contractorCategory" persistent="false"/>
 
+        <boolean name="wms" copyable="false" default="false"/>
+        <enum name="stateInWMS" values="01waiting,02inProgress,03realized" copyable="false"/>
     </fields>
     <hooks>
         <onCreate class="com.qcadoo.mes.deliveries.hooks.DeliveryHooks"
