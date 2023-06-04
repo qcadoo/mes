@@ -15,6 +15,7 @@ public class ProducedQuantity {
     private BigDecimal producedQuantity;
 
     private BigDecimal wastesQuantity;
+    private BigDecimal additionalFinalProductsQuantity;
 
     private BigDecimal producedWastes;
 
@@ -92,6 +93,14 @@ public class ProducedQuantity {
 
     public void setProductUnit(String productUnit) {
         this.productUnit = productUnit;
+    }
+
+    public BigDecimal getAdditionalFinalProductsQuantity() {
+        return additionalFinalProductsQuantity;
+    }
+
+    public void setAdditionalFinalProductsQuantity(BigDecimal additionalFinalProductsQuantity) {
+        this.additionalFinalProductsQuantity = additionalFinalProductsQuantity;
     }
 
     @Override

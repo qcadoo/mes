@@ -78,6 +78,8 @@
 
         <string name="obtainedMasterOrderNumber"/>
         <string name="technologyGroupNumber"/>
+        <enum name="typeOfMaterial" values="02intermediate,03finalProduct,04waste,05additionalFinalProduct"
+              default="01component" />
     </fields>
 
 </model>

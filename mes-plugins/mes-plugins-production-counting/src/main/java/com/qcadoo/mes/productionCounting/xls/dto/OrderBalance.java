@@ -70,6 +70,16 @@ public class OrderBalance {
 
     private BigDecimal sellPrice;
 
+    private String additionalFinalProducts;
+
+    public String getAdditionalFinalProducts() {
+        return additionalFinalProducts;
+    }
+
+    public void setAdditionalFinalProducts(String additionalFinalProducts) {
+        this.additionalFinalProducts = additionalFinalProducts;
+    }
+
     public String getOrderNumber() {
         return orderNumber;
     }

@@ -2,6 +2,7 @@ package com.qcadoo.mes.productionCounting.xls;
 
 import java.util.List;
 
+import com.qcadoo.mes.productionCounting.xls.dto.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -11,15 +12,6 @@ import org.springframework.stereotype.Repository;
 import com.qcadoo.mes.costCalculation.constants.MaterialCostsUsed;
 import com.qcadoo.mes.costCalculation.constants.SourceOfOperationCosts;
 import com.qcadoo.mes.productionCounting.constants.ProductionBalanceFields;
-import com.qcadoo.mes.productionCounting.xls.dto.AdditionalCost;
-import com.qcadoo.mes.productionCounting.xls.dto.LaborTime;
-import com.qcadoo.mes.productionCounting.xls.dto.LaborTimeDetails;
-import com.qcadoo.mes.productionCounting.xls.dto.MaterialCost;
-import com.qcadoo.mes.productionCounting.xls.dto.OrderBalance;
-import com.qcadoo.mes.productionCounting.xls.dto.PieceworkDetails;
-import com.qcadoo.mes.productionCounting.xls.dto.ProducedQuantity;
-import com.qcadoo.mes.productionCounting.xls.dto.ProductionCost;
-import com.qcadoo.mes.productionCounting.xls.dto.Stoppage;
 import com.qcadoo.model.api.Entity;
 
 @Repository
@@ -41,7 +33,10 @@ class ProductionBalanceRepository {
         query.append("COALESCE(prodWaste.producedWastes, 0) AS producedWastes, ");
         appendProducedQuantity(query);
         query.append("- MIN(o.plannedQuantity) AS deviation, ");
-        query.append("prod.unit AS productUnit ");
+        query.append("prod.unit AS productUnit, ");
+        query.append("(SELECT COALESCE(SUM(stopoc.usedquantity), 0) FROM productioncounting_productiontracking spt " +
+                "LEFT JOIN productioncounting_trackingoperationproductoutcomponent stopoc ON stopoc.productiontracking_id = spt.id " +
+                "WHERE  spt.order_id = o.id AND spt.state = '02accepted' and  stopoc.typeofmaterial = '05additionalFinalProduct') as additionalFinalProductsQuantity ");
         query.append("FROM orders_order o ");
         query.append("JOIN basic_product prod ON o.product_id = prod.id ");
         query.append("LEFT JOIN productioncounting_productiontracking pt ON pt.order_id = o.id AND pt.state = '02accepted' ");
@@ -59,11 +54,39 @@ class ProductionBalanceRepository {
         query.append(
                 "GROUP BY orderId, wastePtOrderId) prodWaste ON prodWaste.orderId = o.id AND prodWaste.wastePtOrderId = o.id ");
         appendWhereClause(query);
-        query.append("GROUP BY orderNumber, productNumber, productName, productUnit, prodWaste.producedWastes ");
+        query.append("GROUP BY o.id, orderNumber, productNumber, productName, productUnit, prodWaste.producedWastes ");
         query.append("ORDER BY orderNumber ");
 
         return jdbcTemplate.query(query.toString(), new MapSqlParameterSource("ordersIds", ordersIds),
                 BeanPropertyRowMapper.newInstance(ProducedQuantity.class));
+    }
+
+
+    public List<OrderProduct> getOrderProducts(List<Long> ordersIds) {
+        StringBuilder query = new StringBuilder();
+        query.append("SELECT ");
+        query.append("o.number AS orderNumber, ");
+        query.append("topoc.typeofmaterial as productType, ");
+        query.append("prod.number AS productNumber, ");
+        query.append("prod.name AS productName, ");
+        query.append("MIN(o.plannedquantity) AS plannedQuantity, ");
+        appendProducedQuantity(query);
+        query.append("AS producedQuantity, ");
+        appendProducedQuantity(query);
+        query.append("- MIN(o.plannedQuantity) AS deviation, ");
+        query.append("prod.unit AS productUnit ");
+        query.append("FROM orders_order o ");
+        query.append("LEFT JOIN productioncounting_productiontracking pt ON pt.order_id = o.id AND pt.state = '02accepted' ");
+        query.append(
+                "LEFT JOIN productioncounting_trackingoperationproductoutcomponent topoc ON topoc.productiontracking_id = pt.id ");
+        query.append("LEFT JOIN basic_product prod ON prod.id = topoc.product_id ");
+
+        appendWhereClause(query);
+        query.append("GROUP BY orderNumber, productType, productNumber, productName, productUnit ");
+        query.append("ORDER BY orderNumber ");
+
+        return jdbcTemplate.query(query.toString(), new MapSqlParameterSource("ordersIds", ordersIds),
+                BeanPropertyRowMapper.newInstance(OrderProduct.class));
     }
 
     private void appendProducedQuantity(StringBuilder query) {
@@ -911,6 +934,7 @@ class ProductionBalanceRepository {
         query.append("o.id AS orderId, ");
         query.append("o.root_id AS rootId, ");
         query.append("o.number AS orderNumber, ");
+        query.append("o.additionalFinalProducts AS additionalFinalProducts, ");
         query.append("prod.number AS productNumber, ");
         query.append("prod.name AS productName, ");
         query.append("prod.unit AS productUnit, ");
@@ -1036,6 +1060,7 @@ class ProductionBalanceRepository {
         query.append("prod.id AS productId, ");
         query.append("prod.number AS productNumber, ");
         query.append("prod.name AS productName, ");
+        query.append("o.additionalFinalProducts AS additionalFinalProducts, ");
         appendProducedQuantity(query);
         query.append("AS producedQuantity, ");
         appendMaterialCostMargin(entity, query);
@@ -1080,7 +1105,7 @@ class ProductionBalanceRepository {
         query.append("JOIN order_balance_rec obr ON obr.order_id = o.id ");
         appendWhereClause(query);
         query.append("AND o.root_id IS NULL ");
-        query.append("GROUP BY orderNumber, productId, productNumber, productName ");
+        query.append("GROUP BY orderNumber, productId, productNumber, productName, additionalFinalProducts ");
         query.append("ORDER BY orderNumber ");
 
         return jdbcTemplate.query(query.toString(), new MapSqlParameterSource("ordersIds", ordersIds),
@@ -1353,4 +1378,5 @@ class ProductionBalanceRepository {
         return jdbcTemplate.query(query.toString(), new MapSqlParameterSource("ordersIds", ordersIds),
                 BeanPropertyRowMapper.newInstance(AdditionalCost.class));
     }
+
 }
