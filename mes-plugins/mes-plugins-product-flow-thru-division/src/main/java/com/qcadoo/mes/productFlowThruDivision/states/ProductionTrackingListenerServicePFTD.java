@@ -54,6 +54,7 @@ import com.qcadoo.mes.productionCounting.states.constants.ProductionTrackingStat
 import com.qcadoo.mes.productionCounting.utils.OrderClosingHelper;
 import com.qcadoo.mes.productionCounting.utils.ProductionTrackingDocumentsHelper;
 import com.qcadoo.model.api.*;
+import com.qcadoo.model.api.search.JoinType;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchQueryBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
@@ -814,14 +815,20 @@ public final class ProductionTrackingListenerServicePFTD {
                 internalInboundBuilder.setAccepted();
             } else if (ReceiptOfProducts.END_OF_THE_ORDER.getStringValue().equals(receiptOfProducts) && isFinalProduct && orderClosingHelper.orderShouldBeClosedWithRecalculate(productionTracking)) {
 
-                SearchCriteriaBuilder scb =  dataDefinitionService.get(ProductionCountingConstants.PLUGIN_IDENTIFIER,
-                                ProductionCountingConstants.MODEL_PRODUCTION_TRACKING).find()
-                        .add(SearchRestrictions.belongsTo(ProductionTrackingFields.ORDER, order))
-                        .add(SearchRestrictions.eq(ProductionTrackingFields.STATE, ProductionTrackingStateStringValues.ACCEPTED));
+                SearchCriteriaBuilder scb = dataDefinitionService
+                        .get(ProductionCountingConstants.PLUGIN_IDENTIFIER,
+                                ProductionCountingConstants.MODEL_TRACKING_OPERATION_PRODUCT_OUT_COMPONENT)
+                        .find()
+                        .createAlias(TrackingOperationProductOutComponentFields.PRODUCTION_TRACKING, "pTracking", JoinType.INNER)
+                        .add(SearchRestrictions.belongsTo("pTracking." + ProductionTrackingFields.ORDER, order))
+                        .add(SearchRestrictions.in("pTracking." + ProductionTrackingFields.STATE, Lists.newArrayList(
+                                ProductionTrackingStateStringValues.ACCEPTED)))
+                        .add(SearchRestrictions.isNotNull(TrackingOperationProductOutComponentFields.USED_QUANTITY));
+
 
                 Entity toc = productionTracking.getBelongsToField(ProductionTrackingFields.TECHNOLOGY_OPERATION_COMPONENT);
                 if(Objects.nonNull(toc)) {
-                    scb.add(SearchRestrictions.belongsTo(ProductionTrackingFields.TECHNOLOGY_OPERATION_COMPONENT, toc));
+                    scb.add(SearchRestrictions.belongsTo("pTracking." + ProductionTrackingFields.TECHNOLOGY_OPERATION_COMPONENT, toc));
                 }
 
                 List<Entity> entities = scb.list().getEntities();
