@@ -65,4 +65,12 @@ public final class OrderedProductFields {
 
     public static final String ADD_BATCH = "addBatch";
 
+    public static final String PICKING_DATE = "pickingDate";
+
+    public static final String PICKING_WORKER = "pickingWorker";
+
+    public static final String WMS_STORAGE_LOCATION = "wmsStorageLocation";
+
+    public static final String WMS_DELIVERED_QUANTITY = "wmsDeliveredQuantity";
+
 }

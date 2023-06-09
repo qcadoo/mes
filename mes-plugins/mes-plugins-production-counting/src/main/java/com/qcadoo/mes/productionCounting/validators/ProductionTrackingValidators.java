@@ -80,7 +80,7 @@ public class ProductionTrackingValidators {
     }
 
     private boolean checkIfIsLastTracking(final DataDefinition productionTrackingDD, final Entity productionTracking) {
-        if(!productionTracking.getBooleanField(ProductionTrackingFields.LAST_TRACKING)) {
+        if(!productionTracking.getBooleanField(ProductionTrackingFields.LAST_TRACKING) || productionTracking.getBooleanField(ProductionTrackingFields.ON_UNCORRECTION_PROCESS) ) {
             return true;
         }
 
