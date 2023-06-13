@@ -81,4 +81,8 @@ public final class DeliveryFields {
 
     public static final String CONTRACTOR_CATEGORY = "contractorCategory";
 
+    public static final String WMS = "wms";
+
+    public static final String STATE_IN_WMS = "stateInWMS";
+
 }

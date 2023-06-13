@@ -5502,7 +5502,12 @@ CREATE TABLE public.deliveries_delivery (
     entityversion bigint DEFAULT 0,
     positionsfile character varying(255),
     paymentform character varying(255),
-    salesplan_id bigint
+    salesplan_id bigint,
+    wms boolean DEFAULT false,
+    stateinwms character varying(255),
+    datesendtowms timestamp without time zone,
+    pickingworker character varying(255),
+    dateconfirmationofcompletion timestamp without time zone
 );
 
 
@@ -14369,7 +14374,11 @@ CREATE TABLE public.deliveries_orderedproduct (
     additionaldeliveredquantity numeric,
     batchnumber character varying(255),
     batch_id bigint,
-    qualitycard_id bigint
+    qualitycard_id bigint,
+    pickingdate timestamp without time zone,
+    pickingworker_id bigint,
+    wmsdeliveredquantity numeric(12,5),
+    wmsstoragelocation_id bigint
 );
 
 
@@ -38076,7 +38085,7 @@ COPY public.deliveries_deliveredproductreservation (id, deliveredproduct_id, loc
 -- Data for Name: deliveries_delivery; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.deliveries_delivery (id, number, name, description, supplier_id, deliverydate, deliveryaddress, relateddelivery_id, currency_id, externalnumber, externalsynchronized, state, location_id, active, createdate, updatedate, createuser, updateuser, synchronizationstatus, entityversion, positionsfile, paymentform, salesplan_id) FROM stdin;
+COPY public.deliveries_delivery (id, number, name, description, supplier_id, deliverydate, deliveryaddress, relateddelivery_id, currency_id, externalnumber, externalsynchronized, state, location_id, active, createdate, updatedate, createuser, updateuser, synchronizationstatus, entityversion, positionsfile, paymentform, salesplan_id, wms, stateinwms, datesendtowms, pickingworker, dateconfirmationofcompletion) FROM stdin;
 \.
 
 
@@ -38108,7 +38117,7 @@ COPY public.deliveries_deliverystatechange (id, dateandtime, sourcestate, target
 -- Data for Name: deliveries_orderedproduct; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.deliveries_orderedproduct (id, delivery_id, product_id, orderedquantity, priceperunit, totalprice, description, succession, operation_id, offer_id, actualversion, entityversion, additionalquantity, conversion, additionalcode_id, deliveredquantity, additionaldeliveredquantity, batchnumber, batch_id, qualitycard_id) FROM stdin;
+COPY public.deliveries_orderedproduct (id, delivery_id, product_id, orderedquantity, priceperunit, totalprice, description, succession, operation_id, offer_id, actualversion, entityversion, additionalquantity, conversion, additionalcode_id, deliveredquantity, additionaldeliveredquantity, batchnumber, batch_id, qualitycard_id, pickingdate, pickingworker_id, wmsdeliveredquantity, wmsstoragelocation_id) FROM stdin;
 \.
 
 
@@ -61474,6 +61483,14 @@ ALTER TABLE ONLY public.deliveries_orderedproduct
 
 
 --
+-- Name: deliveries_orderedproduct orderedproduct_pickingworker_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.deliveries_orderedproduct
+    ADD CONSTRAINT orderedproduct_pickingworker_fkey FOREIGN KEY (pickingworker_id) REFERENCES public.basic_staff(id) DEFERRABLE;
+
+
+--
 -- Name: deliveries_orderedproduct orderedproduct_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -61487,6 +61504,14 @@ ALTER TABLE ONLY public.deliveries_orderedproduct
 
 ALTER TABLE ONLY public.deliveries_orderedproduct
     ADD CONSTRAINT orderedproduct_qualitycard_fkey FOREIGN KEY (qualitycard_id) REFERENCES public.technologies_qualitycard(id) DEFERRABLE;
+
+
+--
+-- Name: deliveries_orderedproduct orderedproduct_wmsstoragelocation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.deliveries_orderedproduct
+    ADD CONSTRAINT orderedproduct_wmsstoragelocation_fkey FOREIGN KEY (wmsstoragelocation_id) REFERENCES public.materialflowresources_storagelocation(id) DEFERRABLE;
 
 
 --

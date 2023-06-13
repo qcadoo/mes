@@ -99,6 +99,7 @@
 		<boolean name="fromTerminal" default="false" persistent="false"/>
 		<boolean name="isCorrected" default="false"/>
 		<boolean name="undergoingCorrection" default="false" persistent="false"/>
+		<boolean name="onUnCorrectionProcess" default="false" persistent="false"/>
 
 		<hasMany name="productionTrackingAttachments" joinField="productionTracking" model="productionTrackingAttachment" cascade="delete"/>
 		<boolean name="pieceworkProduction" default="false" persistent="false"/>
