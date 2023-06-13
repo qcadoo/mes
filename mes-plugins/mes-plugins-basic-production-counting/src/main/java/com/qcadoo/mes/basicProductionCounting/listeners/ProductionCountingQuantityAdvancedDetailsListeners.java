@@ -23,9 +23,14 @@
  */
 package com.qcadoo.mes.basicProductionCounting.listeners;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
+import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.basicProductionCounting.BasicProductionCountingService;
+import com.qcadoo.mes.basicProductionCounting.constants.OrderFieldsBPC;
 import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityFields;
+import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityTypeOfMaterial;
+import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
@@ -35,9 +40,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
-public class ProductionCountingQuantityAdvancedDetailsListeners {
+public class  ProductionCountingQuantityAdvancedDetailsListeners {
 
     private static final String L_PLANNED_QUANTITY_UNIT = "plannedQuantityUnit";
 
@@ -54,6 +60,7 @@ public class ProductionCountingQuantityAdvancedDetailsListeners {
         state.performEvent(view, L_SAVE, args);
         FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         Entity productionCountingQuantity = form.getEntity();
+        fillOrderAdditionalProductField(productionCountingQuantity);
         afterSave(productionCountingQuantity);
     }
 
@@ -61,7 +68,28 @@ public class ProductionCountingQuantityAdvancedDetailsListeners {
     public void afterSave(Entity productionCountingQuantity) {
 
     }
+    private void fillOrderAdditionalProductField(Entity productionCountingQuantity) {
 
+        if(productionCountingQuantity.getStringField(ProductionCountingQuantityFields.TYPE_OF_MATERIAL)
+                .equals(ProductionCountingQuantityTypeOfMaterial.ADDITIONAL_FINAL_PRODUCT.getStringValue())) {
+            Entity order = productionCountingQuantity.getBelongsToField(ProductionCountingQuantityFields.ORDER);
+
+            Entity p = productionCountingQuantity.getBelongsToField(ProductionCountingQuantityFields.PRODUCT);
+
+            List<Entity> additionalFinalProducts = order.getHasManyField(OrderFieldsBPC.PRODUCTION_COUNTING_QUANTITIES).stream().filter(pcq -> pcq.getStringField(ProductionCountingQuantityFields.TYPE_OF_MATERIAL)
+                            .equals(ProductionCountingQuantityTypeOfMaterial.ADDITIONAL_FINAL_PRODUCT.getStringValue()))
+                    .map(pcq -> pcq.getBelongsToField(ProductionCountingQuantityFields.PRODUCT))
+                    .collect(Collectors.toList());
+
+            String additionalFinalProductsNumbers = additionalFinalProducts.stream()
+                    .map(prod -> prod.getStringField(ProductFields.NUMBER) + " - " + prod.getStringField(ProductFields.NAME))
+                    .collect(Collectors.joining("\n"));
+
+            order.setField(OrderFields.ADDITIONAL_FINAL_PRODUCTS, additionalFinalProductsNumbers);
+            order.getDataDefinition().fastSave(order);
+        }
+
+    }
     public void fillUnitFields(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         List<String> referenceNames = Lists.newArrayList(L_PLANNED_QUANTITY_UNIT, L_USED_QUANTITY_UNIT, L_PRODUCED_QUANTITY_UNIT);
 

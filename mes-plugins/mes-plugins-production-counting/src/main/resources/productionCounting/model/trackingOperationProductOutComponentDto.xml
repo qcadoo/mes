@@ -41,6 +41,8 @@
         <decimal name="remainingQuantity"/>
         <decimal name="usedQuantity"/>
         <decimal name="wastesQuantity"/>
+        <enum name="typeOfMaterial" values="02intermediate,03finalProduct,04waste,05additionalFinalProduct"
+              default="01component" />
     </fields>
 
     <masterModel plugin="productionCounting" model="trackingOperationProductOutComponent"/>

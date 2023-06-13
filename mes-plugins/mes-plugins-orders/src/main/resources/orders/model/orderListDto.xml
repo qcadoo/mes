@@ -45,6 +45,8 @@
         <boolean name="workPlanDelivered" default="false"/>
         <string name="productNumber"/>
         <string name="productName"/>
+        <string name="additionalFinalProducts"/>
+
         <string name="unit"/>
         <string name="technologyNumber"/>
         <string name="masterOrderNumber"/>

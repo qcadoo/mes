@@ -105,6 +105,8 @@
                     <option type="column" name="wastesQuantity" fields="wastesQuantity" width="55"/>
                     <option type="column" name="doneQuantity" fields="doneQuantity" width="100"/>
                     <option type="column" name="productUnit" fields="productUnit" width="50"/>
+                    <option type="column" name="typeOfMaterial" fields="typeOfMaterial"
+                            link="false" width="100"/>
                     <option type="column" name="staffName" fields="staffName" width="100"/>
                     <option type="column" name="shiftName" fields="shiftName" width="53"/>
                     <option type="column" name="timeRangeFrom" fields="timeRangeFrom" width="100"/>
@@ -118,11 +120,11 @@
                     <option type="order" column="productionLineNumber" direction="asc"/>
 
                     <option type="searchable"
-                            value="productionLineNumber,companyNumber,assortmentName,productNumber,productName,sizeNumber,usedQuantity,wastesQuantity,doneQuantity,productUnit,staffName,shiftName,timeRangeFrom,timeRangeTo,generatorName,orderNumber,obtainedMasterOrderNumber,technologyGroupNumber,causeOfWastes"/>
+                            value="typeOfMaterial,productionLineNumber,companyNumber,assortmentName,productNumber,productName,sizeNumber,usedQuantity,wastesQuantity,doneQuantity,productUnit,staffName,shiftName,timeRangeFrom,timeRangeTo,generatorName,orderNumber,obtainedMasterOrderNumber,technologyGroupNumber,causeOfWastes"/>
                     <option type="multiSearch"
-                            value="productionLineNumber,companyNumber,assortmentName,productNumber,productName,sizeNumber,usedQuantity,wastesQuantity,doneQuantity,productUnit,staffName,shiftName,timeRangeFrom,timeRangeTo,generatorName,orderNumber,obtainedMasterOrderNumber,technologyGroupNumber,causeOfWastes"/>
+                            value="typeOfMaterial,productionLineNumber,companyNumber,assortmentName,productNumber,productName,sizeNumber,usedQuantity,wastesQuantity,doneQuantity,productUnit,staffName,shiftName,timeRangeFrom,timeRangeTo,generatorName,orderNumber,obtainedMasterOrderNumber,technologyGroupNumber,causeOfWastes"/>
                     <option type="orderable"
-                            value="productionLineNumber,companyNumber,assortmentName,productNumber,productName,sizeNumber,usedQuantity,wastesQuantity,doneQuantity,productUnit,staffName,shiftName,timeRangeFrom,timeRangeTo,generatorName,orderNumber,obtainedMasterOrderNumber,technologyGroupNumber,causeOfWastes"/>
+                            value="typeOfMaterial,productionLineNumber,companyNumber,assortmentName,productNumber,productName,sizeNumber,usedQuantity,wastesQuantity,doneQuantity,productUnit,staffName,shiftName,timeRangeFrom,timeRangeTo,generatorName,orderNumber,obtainedMasterOrderNumber,technologyGroupNumber,causeOfWastes"/>
 
                     <option type="footerRow" value="true"/>
                     <option type="columnsToSummary" value="usedQuantity,wastesQuantity,doneQuantity"/>

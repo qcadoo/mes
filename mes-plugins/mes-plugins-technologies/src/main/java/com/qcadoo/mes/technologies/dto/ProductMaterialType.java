@@ -27,7 +27,8 @@ import org.apache.commons.lang3.StringUtils;
 
 public enum ProductMaterialType {
 
-    COMPONENT("01component"), INTERMEDIATE("02intermediate"), FINAL_PRODUCT("03finalProduct"), WASTE("04waste"), NONE("");
+    COMPONENT("01component"), INTERMEDIATE("02intermediate"), FINAL_PRODUCT("03finalProduct"), WASTE("04waste"),
+    ADDITIONAL_FINAL_PRODUCT("05additionalFinalProduct"), NONE("");
 
     private final String productMaterialType;
 
@@ -50,6 +51,8 @@ public enum ProductMaterialType {
             return FINAL_PRODUCT;
         } else if ("04waste".equals(productMaterialType)) {
             return WASTE;
+        }else if ("05additionalFinalProduct".equals(productMaterialType)) {
+            return ADDITIONAL_FINAL_PRODUCT;
         }
 
         throw new IllegalStateException("Unsupported ProductMaterialType: " + productMaterialType);

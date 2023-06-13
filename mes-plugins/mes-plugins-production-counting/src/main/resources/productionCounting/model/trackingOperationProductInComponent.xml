@@ -50,7 +50,7 @@
         </decimal>
         <dictionary name="givenUnit" dictionary="units"/>
 
-        <enum name="typeOfMaterial" values="01component,02intermediate,03finalProduct,04waste"
+        <enum name="typeOfMaterial" values="01component,02intermediate,03finalProduct,04waste,05additionalFinalProduct"
               default="01component" />
 
         <boolean name="wasteUsed" default="false"/>

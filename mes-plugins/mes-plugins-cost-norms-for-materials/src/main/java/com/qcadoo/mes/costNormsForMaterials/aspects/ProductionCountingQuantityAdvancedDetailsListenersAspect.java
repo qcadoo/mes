@@ -35,6 +35,7 @@ public class ProductionCountingQuantityAdvancedDetailsListenersAspect {
     @Around("afterSave(productionCountingQuantity)")
     public void aroundAfterSave(final ProceedingJoinPoint pjp, final Entity productionCountingQuantity) throws Throwable {
         Entity order = productionCountingQuantity.getBelongsToField(ProductionCountingQuantityFields.ORDER);
+        Entity orderDb = order.getDataDefinition().get(order.getId());
         updateMaterialCosts(order);
     }
 

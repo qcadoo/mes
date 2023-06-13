@@ -24,7 +24,9 @@
 package com.qcadoo.mes.basicProductionCounting.constants;
 
 public enum ProductionCountingQuantityTypeOfMaterial {
-    COMPONENT("01component"), INTERMEDIATE("02intermediate"), FINAL_PRODUCT("03finalProduct"), WASTE("04waste");
+    COMPONENT("01component"), INTERMEDIATE("02intermediate"),
+    FINAL_PRODUCT("03finalProduct"), WASTE("04waste"),
+    ADDITIONAL_FINAL_PRODUCT("05additionalFinalProduct");
 
     private final String productionCountingQuantityTypeOfMaterial;
 
@@ -45,6 +47,8 @@ public enum ProductionCountingQuantityTypeOfMaterial {
             return FINAL_PRODUCT;
         } else if ("04waste".equals(string)) {
             return WASTE;
+        } else if ("05additionalFinalProduct".equals(string)) {
+            return ADDITIONAL_FINAL_PRODUCT;
         }
 
         throw new IllegalStateException("Unsupported ProductionCountingQuantityTypeOfMaterial: "

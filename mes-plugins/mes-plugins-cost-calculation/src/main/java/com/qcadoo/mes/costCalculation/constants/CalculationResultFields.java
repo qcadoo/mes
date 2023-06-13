@@ -63,4 +63,6 @@ public final class CalculationResultFields {
 
     public static final String NO_MATERIAL_PRICE = "noMaterialPrice";
 
+    public static final String ADDITIONAL_PRODUCTS_QUANTITY = "additionalProductsQuantity";
+
 }

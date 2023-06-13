@@ -138,6 +138,8 @@ public interface BasicProductionCountingService {
      */
     List<Entity> getUsedMaterialsFromProductionCountingQuantities(final Entity order, final boolean onlyComponents);
 
+    List<Entity> getAdditionalFinalProducts(final Entity order);
+
     /**
      * Get needed product quantites from production counting quantities
      *
