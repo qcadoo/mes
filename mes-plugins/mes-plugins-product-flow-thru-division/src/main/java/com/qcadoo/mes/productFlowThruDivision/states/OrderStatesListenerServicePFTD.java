@@ -479,7 +479,7 @@ public class OrderStatesListenerServicePFTD {
 
             Collection<Entity> intermediateRecords = Lists.newArrayList();
 
-            for (Entity trackingOperationProductOutComponent : trackingOperationProductOutComponents) {
+            for (Entity trackingOperationProductOutComponent : groupedRecordOutProducts.get(warehouseId)) {
                 if (isFinalProductOrWasteForOrder(trackingOperationProductOutComponent)) {
                     finalProductRecord.add(trackingOperationProductOutComponent);
                 } else {
