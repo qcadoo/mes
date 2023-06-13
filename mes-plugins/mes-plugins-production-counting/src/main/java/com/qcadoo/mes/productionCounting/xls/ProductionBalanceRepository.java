@@ -24,6 +24,7 @@ class ProductionBalanceRepository {
         StringBuilder query = new StringBuilder();
         query.append("SELECT ");
         query.append("o.number AS orderNumber, ");
+        query.append("o.additionalFinalProducts AS additionalFinalProducts, ");
         query.append("prod.number AS productNumber, ");
         query.append("prod.name AS productName, ");
         query.append("MIN(o.plannedquantity) AS plannedQuantity, ");
@@ -67,19 +68,18 @@ class ProductionBalanceRepository {
         query.append("SELECT ");
         query.append("o.number AS orderNumber, ");
         query.append("topoc.typeofmaterial as productType, ");
-        query.append("prod.number AS productNumber, ");
-        query.append("prod.name AS productName, ");
-        query.append("MIN(o.plannedquantity) AS plannedQuantity, ");
+        query.append("topoc.productnumber AS productNumber, ");
+        query.append("topoc.productname AS productName, ");
+        query.append("MIN(topoc.plannedquantity) AS plannedQuantity, ");
         appendProducedQuantity(query);
         query.append("AS producedQuantity, ");
         appendProducedQuantity(query);
-        query.append("- MIN(o.plannedQuantity) AS deviation, ");
-        query.append("prod.unit AS productUnit ");
+        query.append("- MIN(topoc.plannedQuantity) AS deviation, ");
+        query.append("topoc.productUnit AS productUnit ");
         query.append("FROM orders_order o ");
         query.append("LEFT JOIN productioncounting_productiontracking pt ON pt.order_id = o.id AND pt.state = '02accepted' ");
         query.append(
-                "LEFT JOIN productioncounting_trackingoperationproductoutcomponent topoc ON topoc.productiontracking_id = pt.id ");
-        query.append("LEFT JOIN basic_product prod ON prod.id = topoc.product_id ");
+                "LEFT JOIN productioncounting_trackingoperationproductoutcomponentdto topoc ON topoc.productiontrackingid = pt.id ");
 
         appendWhereClause(query);
         query.append("GROUP BY orderNumber, productType, productNumber, productName, productUnit ");

@@ -86,6 +86,10 @@
             <validatesUnscaledValue max="14" />
             <validatesScale max="5" />
         </decimal>
+        <decimal name="additionalProductsQuantity" persistent="false">
+            <validatesUnscaledValue max="14" />
+            <validatesScale max="5" />
+        </decimal>
         <boolean name="noMaterialPrice" default="false" />
     </fields>
     <hooks>

@@ -10,6 +10,8 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import com.qcadoo.mes.technologies.constants.*;
+import com.qcadoo.model.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -19,21 +21,9 @@ import com.qcadoo.mes.costCalculation.print.dto.ComponentCostKey;
 import com.qcadoo.mes.costCalculation.print.dto.ComponentsCalculationHolder;
 import com.qcadoo.mes.costNormsForOperation.constants.CalculationOperationComponentFields;
 import com.qcadoo.mes.technologies.ProductQuantitiesWithComponentsService;
-import com.qcadoo.mes.technologies.constants.MrpAlgorithm;
-import com.qcadoo.mes.technologies.constants.OperationProductInComponentFields;
-import com.qcadoo.mes.technologies.constants.ProductBySizeGroupFields;
-import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
-import com.qcadoo.mes.technologies.constants.TechnologyInputProductTypeFields;
-import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
 import com.qcadoo.mes.technologies.dto.OperationProductComponentHolder;
 import com.qcadoo.mes.technologies.tree.ProductStructureTreeService;
 import com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperationComponentFieldsTNFO;
-import com.qcadoo.model.api.BigDecimalUtils;
-import com.qcadoo.model.api.DataDefinition;
-import com.qcadoo.model.api.DataDefinitionService;
-import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.EntityTree;
-import com.qcadoo.model.api.NumberService;
 
 @Service
 public class CostCalculationComponentsService {
@@ -155,7 +145,21 @@ public class CostCalculationComponentsService {
         addLaborCost(costCalculation, allOperationComponents, calculationOperationComponents);
         fillComponentsQuantity(components, technology, quantity);
         fillComponentsCosts(operationComponents, components, allOperationComponents, quantity);
+        fillAdditionalProductsMark(components);
         return groupComponentCosts(components);
+    }
+
+    private void fillAdditionalProductsMark(List<ComponentsCalculationHolder> components) {
+        for (ComponentsCalculationHolder component : components) {
+            List<Entity> outProducts = component.getToc()
+                    .getHasManyField(TechnologyOperationComponentFields.OPERATION_PRODUCT_OUT_COMPONENTS)
+                    .stream().filter(op -> !op.getBooleanField(OperationProductOutComponentFields.WASTE)).collect(Collectors.toList());
+
+           if (outProducts.size() > 1) {
+               component.setAdditionalProducts(true);
+           }
+        }
+
     }
 
     private Collection<ComponentsCalculationHolder> groupComponentCosts(List<ComponentsCalculationHolder> components) {
