@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import com.google.common.base.Strings;
@@ -1133,7 +1134,9 @@ public class ProductionBalanceXlsService extends XlsDocumentService {
 
     private void createNumericCell(StylesContainer stylesContainer, HSSFRow row, int column, BigDecimal value, boolean bold) {
         HSSFCell cell = row.createCell(column, HSSFCell.CELL_TYPE_NUMERIC);
-        cell.setCellValue(numberService.setScaleWithDefaultMathContext(value, 2).doubleValue());
+        if(Objects.nonNull(value)) {
+            cell.setCellValue(numberService.setScaleWithDefaultMathContext(value, 2).doubleValue());
+        }
         if (bold) {
             cell.setCellStyle(StylesContainer.aligned(stylesContainer.numberBoldStyle, HorizontalAlignment.RIGHT));
         } else {
