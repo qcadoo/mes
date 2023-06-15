@@ -66,13 +66,13 @@ public class DetailedProductionCountingAndProgressListenersBPC {
                     order.addGlobalError(error.getMessage(), false, error.getVars());
                 } else {
                     errorsDisplayed = false;
-                    order.addGlobalError(error.getMessage(), error.getVars());
+                    order.addGlobalError(error.getMessage(), false, error.getVars());
                 }
             }
 
             if (!errorsDisplayed) {
                 order.addGlobalError(
-                        "productFlowThruDivision.productionCountingQuantity.productionCountingQuantityError.createInternalOutboundDocument");
+                        "productFlowThruDivision.productionCountingQuantity.productionCountingQuantityError.createInternalOutboundDocument", false);
             }
             formComponent.setEntity(order);
         }
