@@ -75,8 +75,9 @@ public class CostCalculationService {
                 numberService.setScaleWithDefaultMathContext(materialCosts, 2));
         calculationResult.setField(CalculationResultFields.LABOUR_COST,
                 numberService.setScaleWithDefaultMathContext(labourCost, 2));
-        calculationResult.setField(CalculationResultFields.ADDITIONAL_PRODUCTS_QUANTITY, additionalProductsQuantity);
-        return calculationResultDD.save(calculationResult);
+        Entity calculationResultSaved = calculationResultDD.save(calculationResult);
+        calculationResultSaved.setField(CalculationResultFields.ADDITIONAL_PRODUCTS_QUANTITY, additionalProductsQuantity);
+        return calculationResultSaved;
     }
 
     private void calculateResults(final Entity costCalculation, final Entity calculationResult, final BigDecimal quantity,
