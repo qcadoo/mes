@@ -65,24 +65,19 @@ class ProductionBalanceRepository {
 
     public List<OrderProduct> getOrderProducts(List<Long> ordersIds) {
         StringBuilder query = new StringBuilder();
-        query.append("SELECT ");
-        query.append("o.number AS orderNumber, ");
-        query.append("topoc.typeofmaterial as productType, ");
-        query.append("topoc.productnumber AS productNumber, ");
-        query.append("topoc.productname AS productName, ");
-        query.append("MIN(topoc.plannedquantity) AS plannedQuantity, ");
-        appendProducedQuantity(query);
-        query.append("AS producedQuantity, ");
-        appendProducedQuantity(query);
-        query.append("- MIN(topoc.plannedQuantity) AS deviation, ");
-        query.append("topoc.productUnit AS productUnit ");
-        query.append("FROM orders_order o ");
-        query.append("LEFT JOIN productioncounting_productiontracking pt ON pt.order_id = o.id AND pt.state = '02accepted' ");
-        query.append(
-                "LEFT JOIN productioncounting_trackingoperationproductoutcomponentdto topoc ON topoc.productiontrackingid = pt.id ");
-
-        appendWhereClause(query);
-        query.append("GROUP BY orderNumber, productType, productNumber, productName, productUnit ");
+        query.append("SELECT \n" +
+                "o.number AS orderNumber,\n" +
+                "p.number AS productNumber,\n" +
+                "p.name AS productName,\n" +
+                "pcq.typeofmaterial AS productType, \n" +
+                "pcq.plannedquantity AS plannedQuantity, \n" +
+                "COALESCE(pcq.producedquantity, 0) AS producedQuantity,\n" +
+                "COALESCE(pcq.producedquantity, 0) - pcq.plannedquantity as deviation,\n" +
+                "p.unit productUnit\n" +
+                "FROM basicproductioncounting_productioncountingquantity pcq\n" +
+                "LEFT JOIN basic_product p ON pcq.product_id = p.id\n" +
+                "LEFT JOIN orders_order o ON pcq.order_id = o.id\n" +
+                "WHERE o.id IN (:ordersIds)  AND pcq.typeofmaterial::text = ANY (ARRAY['05additionalFinalProduct'::character varying::text, '03finalProduct'::character varying::text, '04waste'::character varying::text]) AND pcq.role::text = '02produced'::text \n ");
         query.append("ORDER BY orderNumber ");
 
         return jdbcTemplate.query(query.toString(), new MapSqlParameterSource("ordersIds", ordersIds),
