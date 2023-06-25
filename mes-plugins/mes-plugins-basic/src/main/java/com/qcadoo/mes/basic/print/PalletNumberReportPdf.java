@@ -121,8 +121,8 @@ public class PalletNumberReportPdf extends ReportPdfView {
         Paragraph numberParagraph = new Paragraph(new Phrase(number, FontUtils.getDejavuBold140Dark()));
 
         numberParagraph.setAlignment(Element.ALIGN_CENTER);
-        numberParagraph.setSpacingBefore(0F);
-        numberParagraph.setSpacingAfter(40F);
+        numberParagraph.setSpacingBefore(spacingBefore);
+        numberParagraph.setSpacingAfter(spacingAfter);
         numberParagraph.setLeading(0, 0);
 
         return numberParagraph;
