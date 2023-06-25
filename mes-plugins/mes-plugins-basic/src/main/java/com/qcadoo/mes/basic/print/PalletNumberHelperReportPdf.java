@@ -24,6 +24,8 @@
 package com.qcadoo.mes.basic.print;
 
 import com.lowagie.text.*;
+import com.lowagie.text.pdf.Barcode128;
+import com.lowagie.text.pdf.PdfContentByte;
 import com.lowagie.text.pdf.PdfWriter;
 import com.lowagie.text.pdf.draw.LineSeparator;
 import com.qcadoo.localization.api.TranslationService;
@@ -42,6 +44,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 
 import static com.google.common.base.Preconditions.checkState;
 
@@ -55,92 +58,6 @@ public class PalletNumberHelperReportPdf extends ReportPdfView {
     private PalletNumbersService palletNumbersService;
 
     @Override
-    protected String addContent(final Document document, final Map<String, Object> model, final Locale locale,
-            final PdfWriter writer) throws DocumentException, IOException {
-        checkState(model.get("id") != null, "Unable to generate report for unsaved offer! (missing id)");
-
-        Long palletNumberHelperId = Long.valueOf(model.get("id").toString());
-
-        Entity palletNumberHelper = palletNumbersService.getPalletNumberHelper(palletNumberHelperId);
-
-        if (palletNumberHelper != null) {
-            List<Entity> palletNumbers = palletNumberHelper.getManyToManyField(PalletNumberHelperFields.PALLET_NUMBERS);
-
-            addPalletNumbers(document, palletNumbersService.getNumbers(palletNumbers));
-        }
-
-        return translationService.translate("basic.palletNumberHelper.report.fileName", locale, palletNumberHelperId.toString());
-    }
-
-    private void addPalletNumbers(final Document document, final List<String> numbers) throws DocumentException {
-        int i = 0;
-
-        for (String number : numbers) {
-            if (i % 2 == 0) {
-                Paragraph firstNumberParagraph = new Paragraph(new Phrase(number, FontUtils.getDejavuBold140Dark()));
-                firstNumberParagraph.setLeading(0, 0);
-                Paragraph numberSmallParagraph = new Paragraph(new Phrase(buildSmallNumber(number),
-                        FontUtils.getDejavuBold10Dark()));
-                numberSmallParagraph.setLeading(0, 0);
-
-                firstNumberParagraph.setAlignment(Element.ALIGN_CENTER);
-                firstNumberParagraph.setSpacingAfter(20F);
-                numberSmallParagraph.setAlignment(Element.ALIGN_CENTER);
-                numberSmallParagraph.setSpacingBefore(60F);
-                numberSmallParagraph.setSpacingAfter(100F);
-
-                if (i == 0) {
-                    Paragraph newLineParagraph = new Paragraph(new Phrase("\n"));
-
-                    newLineParagraph.setSpacingAfter(150F);
-
-                    document.add(newLineParagraph);
-                }
-
-                document.add(firstNumberParagraph);
-                document.add(numberSmallParagraph);
-
-                LineSeparator lineSeparator = new LineSeparator(1, 100f, ColorUtils.getLineDarkColor(), Element.ALIGN_LEFT, 0);
-                document.add(lineSeparator);
-            }
-
-            if (i % 2 != 0) {
-                Paragraph secondNumberParagraph = new Paragraph(new Phrase(number, FontUtils.getDejavuBold140Dark()));
-                Paragraph numSmallParagraph = new Paragraph(new Phrase(buildSmallNumber(number), FontUtils.getDejavuBold10Dark()));
-                secondNumberParagraph.setSpacingBefore(160F);
-                secondNumberParagraph.setAlignment(Element.ALIGN_CENTER);
-                secondNumberParagraph.setSpacingAfter(20F);
-                numSmallParagraph.setAlignment(Element.ALIGN_CENTER);
-                numSmallParagraph.setSpacingBefore(60F);
-                numSmallParagraph.setSpacingAfter(0F);
-
-                secondNumberParagraph.setLeading(0, 0);
-                numSmallParagraph.setLeading(0, 0);
-                document.add(secondNumberParagraph);
-
-                document.add(numSmallParagraph);
-
-                if (i < numbers.size() - 1) {
-                    document.newPage();
-                    Paragraph newp = new Paragraph(new Phrase("\n", FontUtils.getDejavuBold10Dark()));
-                    newp.setSpacingAfter(150F);
-                    document.add(newp);
-                }
-            }
-
-            i++;
-        }
-    }
-
-    private String buildSmallNumber(String number) {
-        StringBuffer small = new StringBuffer();
-        small.append("*");
-        small.append(number);
-        small.append("*");
-        return small.toString();
-    }
-
-    @Override
     protected final void addTitle(final Document document, final Locale locale) {
         document.addTitle(translationService.translate("basic.palletNumber.report.title", locale));
     }
@@ -148,6 +65,108 @@ public class PalletNumberHelperReportPdf extends ReportPdfView {
     @Override
     protected void setPageEvent(final PdfWriter writer) {
         writer.setPageEvent(new PdfPageNumbering(new Footer(), false, false));
+    }
+
+    @Override
+    protected String addContent(final Document document, final Map<String, Object> model, final Locale locale,
+            final PdfWriter writer) throws DocumentException, IOException {
+        checkState(Objects.nonNull(model.get("id")), "Unable to generate report for unsaved offer! (missing id)");
+
+        Long palletNumberHelperId = Long.valueOf(model.get("id").toString());
+
+        Entity palletNumberHelper = palletNumbersService.getPalletNumberHelper(palletNumberHelperId);
+
+        if (Objects.nonNull(palletNumberHelper)) {
+            List<Entity> palletNumbers = palletNumberHelper.getManyToManyField(PalletNumberHelperFields.PALLET_NUMBERS);
+
+            addPalletNumbers(document, writer, palletNumbersService.getNumbers(palletNumbers));
+        }
+
+        return translationService.translate("basic.palletNumberHelper.report.fileName", locale, palletNumberHelperId.toString());
+    }
+
+    private void addPalletNumbers(final Document document, final PdfWriter writer, final List<String> numbers) throws DocumentException {
+        int i = 0;
+
+        for (String number : numbers) {
+            if (i % 2 == 0) {
+                if (i == 0) {
+                    Paragraph newLineParagraph = createNewLineParagraph(0F, 150F);
+
+                    document.add(newLineParagraph);
+                }
+
+                Paragraph firstNumberParagraph = createNumberParagraph(number, 0F, 40F);
+                Image numberImage = createNumberImage(writer, number);
+                Paragraph spacingParagraph = createNewLineParagraph(0F, 85F);
+                LineSeparator lineSeparator = createLineSeparator();
+
+                document.add(firstNumberParagraph);
+                document.add(numberImage);
+                document.add(spacingParagraph);
+                document.add(lineSeparator);
+            }
+
+            if (i % 2 != 0) {
+                Paragraph secondNumberParagraph = createNumberParagraph(number, 180F, 40F);
+                Image numberImage = createNumberImage(writer, number);
+
+                document.add(secondNumberParagraph);
+                document.add(numberImage);
+
+                if (i < numbers.size() - 1) {
+                    document.newPage();
+
+                    Paragraph newLineParagraph = createNewLineParagraph(0F, 150F);
+
+                    document.add(newLineParagraph);
+                }
+            }
+
+            i++;
+        }
+    }
+
+    private static Paragraph createNewLineParagraph(final float spacingBefore, final float spacingAfter) {
+        Paragraph newLineParagraph = new Paragraph(new Phrase("\n"));
+
+        newLineParagraph.setSpacingBefore(spacingBefore);
+        newLineParagraph.setSpacingAfter(spacingAfter);
+
+        return newLineParagraph;
+    }
+
+    private static Paragraph createNumberParagraph(final String number, final float spacingBefore, final float spacingAfter) {
+        Paragraph numberParagraph = new Paragraph(new Phrase(number, FontUtils.getDejavuBold140Dark()));
+
+        numberParagraph.setAlignment(Element.ALIGN_CENTER);
+        numberParagraph.setSpacingBefore(spacingBefore);
+        numberParagraph.setSpacingAfter(spacingAfter);
+        numberParagraph.setLeading(0, 0);
+
+        return numberParagraph;
+    }
+
+    private Image createNumberImage(final PdfWriter writer, final String code) {
+        Barcode128 code128 = new Barcode128();
+
+        code128.setCode(code);
+        code128.setBarHeight(50F);
+        code128.setX(3F);
+        code128.setSize(16F);
+        code128.setFont(null);
+
+        PdfContentByte cb = writer.getDirectContent();
+
+        Image numberImage = code128.createImageWithBarcode(cb, null, null);
+
+        numberImage.setAlignment(Element.ALIGN_CENTER);
+
+        return numberImage;
+    }
+
+    private static LineSeparator createLineSeparator() {
+        return new LineSeparator(1, 100F, ColorUtils.getLineDarkColor(), Element.ALIGN_LEFT, 0);
     }
 
 }

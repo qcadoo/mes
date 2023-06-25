@@ -225,7 +225,7 @@ public class ProductionCountingDocumentService {
                 Entity emptyDocumentForErrorHandling = documentBuilder.createDocument(userService.getCurrentUserEntity());
                 emptyDocumentForErrorHandling.setNotValid();
                 emptyDocumentForErrorHandling.addGlobalError(
-                        "productFlowThruDivision.productionCountingQuantity.productionCountingQuantityError.emptyPosition",
+                        "productFlowThruDivision.productionCountingQuantity.productionCountingQuantityError.emptyPosition", false,
                         entry.getProduct().getStringField(ProductFields.NUMBER));
 
                 throw new DocumentBuildException(emptyDocumentForErrorHandling, Lists.newArrayList());

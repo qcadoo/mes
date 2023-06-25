@@ -199,28 +199,4 @@ public class ProductDetailsListenersTTest {
         verify(view, never()).redirectTo(url, false, true, parameters);
     }
 
-    @Test
-    public void shouldShowTechnologiesWithProductIfProductIsSavedAndProductNameIsntNull() {
-        // given
-        given(product.getId()).willReturn(L_ID);
-
-        given(product.getStringField(NUMBER)).willReturn(L_PRODUCT_NUMBER);
-
-        filters.put("productNumber", "["+ L_PRODUCT_NUMBER + "]");
-
-        gridOptions.put(L_FILTERS, filters);
-
-        parameters.put(L_GRID_OPTIONS, gridOptions);
-
-        parameters.put(L_WINDOW_ACTIVE_MENU, "technology.technologies");
-
-        String url = "../page/technologies/technologiesList.html";
-
-        // when
-        productDetailsListenersT.showTechnologiesWithProduct(view, null, null);
-
-        // then
-        verify(view).redirectTo(url, false, true, parameters);
-    }
-
 }

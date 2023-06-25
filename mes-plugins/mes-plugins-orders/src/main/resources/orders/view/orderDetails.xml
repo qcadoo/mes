@@ -580,7 +580,11 @@
                             <option type="label" value="predefinedTechnologyLabel"/>
                         </component>
                     </layoutElement>
-                    <layoutElement column="2" row="4">
+                    <layoutElement column="2" row="4" height="2">
+                        <component type="textarea" name="additionalFinalProducts" field="additionalFinalProducts"
+                                   reference="additionalFinalProducts" defaultEnabled="never"/>
+                    </layoutElement>
+                    <layoutElement column="2" row="6">
                         <component type="lookup" name="productionLine"
                                    reference="productionLine" field="productionLine">
                             <option type="column" name="name" fields="name" link="true"
@@ -602,7 +606,7 @@
                                       method="onProductionLineChange"/>
                         </component>
                     </layoutElement>
-                    <layoutElement column="2" row="5">
+                    <layoutElement column="2" row="7">
                         <component type="gridLayout" name="basicUnitGrid"
                                    columns="7" rows="1" hasBorders="false">
                             <layoutElement column="1" width="6" row="1">
@@ -623,7 +627,7 @@
                             </layoutElement>
                         </component>
                     </layoutElement>
-                    <layoutElement column="2" row="6">
+                    <layoutElement column="2" row="8">
                         <component type="gridLayout" name="additionalUnitGrid"
                                    columns="7" rows="1" hasBorders="false">
                             <layoutElement column="1" width="6" row="1">
@@ -647,7 +651,7 @@
                             </layoutElement>
                         </component>
                     </layoutElement>
-                    <layoutElement column="2" row="7">
+                    <layoutElement column="2" row="9">
                         <component type="gridLayout" name="doneQuantityGrid"
                                    columns="7" rows="1" hasBorders="false">
                             <layoutElement column="1" width="6" row="1">
@@ -666,7 +670,7 @@
                             </layoutElement>
                         </component>
                     </layoutElement>
-                    <layoutElement column="2" row="8">
+                    <layoutElement column="2" row="10">
                         <component type="select" name="state" field="state"
                                    reference="state" defaultVisible="false"/>
                         <component type="select" name="typeOfProductionRecording" field="typeOfProductionRecording"

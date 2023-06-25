@@ -24,6 +24,7 @@
 package com.qcadoo.mes.productFlowThruDivision.states;
 
 import com.google.common.base.Preconditions;
+import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
@@ -137,7 +138,8 @@ public class OrderStatesListenerServicePFTD {
             String priceBasedOn = parameterService.getParameter().getStringField(ParameterFieldsPC.PRICE_BASED_ON);
 
             boolean isNominalProductCost = Objects.nonNull(priceBasedOn)
-                    && priceBasedOn.equals(PriceBasedOn.NOMINAL_PRODUCT_COST.getStringValue());
+                    && priceBasedOn.equals(PriceBasedOn.NOMINAL_PRODUCT_COST.getStringValue())
+                    || !Strings.isNullOrEmpty(order.getStringField(OrderFields.ADDITIONAL_FINAL_PRODUCTS));
 
             if (!isNominalProductCost) {
                 order = updateCostsInOrder(order);
@@ -181,7 +183,8 @@ public class OrderStatesListenerServicePFTD {
         String priceBasedOn = parameterService.getParameter().getStringField(ParameterFieldsPC.PRICE_BASED_ON);
 
         boolean isNominalProductCost = Objects.nonNull(priceBasedOn)
-                && priceBasedOn.equals(PriceBasedOn.NOMINAL_PRODUCT_COST.getStringValue());
+                && priceBasedOn.equals(PriceBasedOn.NOMINAL_PRODUCT_COST.getStringValue())
+                || !Strings.isNullOrEmpty(order.getStringField(OrderFields.ADDITIONAL_FINAL_PRODUCTS));
 
         Optional<BigDecimal> price;
 
@@ -476,9 +479,8 @@ public class OrderStatesListenerServicePFTD {
 
             Collection<Entity> intermediateRecords = Lists.newArrayList();
 
-            for (Entity trackingOperationProductOutComponent : trackingOperationProductOutComponents) {
-                if (isFinalProductForOrder(order,
-                        trackingOperationProductOutComponent.getBelongsToField(TrackingOperationProductOutComponentFields.PRODUCT))) {
+            for (Entity trackingOperationProductOutComponent : groupedRecordOutProducts.get(warehouseId)) {
+                if (isFinalProductOrWasteForOrder(trackingOperationProductOutComponent)) {
                     finalProductRecord.add(trackingOperationProductOutComponent);
                 } else {
                     intermediateRecords.add(trackingOperationProductOutComponent);
@@ -553,8 +555,10 @@ public class OrderStatesListenerServicePFTD {
         productionCountingDocumentService.createCumulatedInternalOutboundDocument(order);
     }
 
-    private boolean isFinalProductForOrder(final Entity order, final Entity product) {
-        return order.getBelongsToField(OrderFields.PRODUCT).getId().equals(product.getId());
+    private boolean isFinalProductOrWasteForOrder(final Entity toc) {
+        return toc.getStringField(TrackingOperationProductOutComponentFields.TYPE_OF_MATERIAL).equals(ProductionCountingQuantityTypeOfMaterial.FINAL_PRODUCT.getStringValue()) ||
+                toc.getStringField(TrackingOperationProductOutComponentFields.TYPE_OF_MATERIAL).equals(ProductionCountingQuantityTypeOfMaterial.ADDITIONAL_FINAL_PRODUCT.getStringValue()) ||
+                toc.getStringField(TrackingOperationProductOutComponentFields.TYPE_OF_MATERIAL).equals(ProductionCountingQuantityTypeOfMaterial.WASTE.getStringValue());
     }
 
     private DataDefinition getLocationDD() {

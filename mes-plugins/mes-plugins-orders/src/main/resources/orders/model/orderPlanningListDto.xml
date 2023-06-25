@@ -46,6 +46,8 @@
         <string name="orderCategory"/>
         <string name="productNumber"/>
         <string name="productName"/>
+        <string name="additionalFinalProducts"/>
+
         <string name="unit"/>
         <string name="unitForAdditionalUnit"/>
         <string name="technologyNumber"/>

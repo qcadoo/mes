@@ -3,19 +3,19 @@
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
  * Version: 1.4
- *
+ * <p>
  * This file is part of Qcadoo.
- *
+ * <p>
  * Qcadoo is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation; either version 3 of the License,
  * or (at your option) any later version.
- *
+ * <p>
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty
  * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU Affero General Public License for more details.
- *
+ * <p>
  * You should have received a copy of the GNU Affero General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
@@ -132,6 +132,7 @@ public class TechnologyValidationService {
 
         final Entity savedTechnology = technology.getDataDefinition().get(technology.getId());
         final EntityTree operationComponents = savedTechnology.getTreeField(TechnologyFields.OPERATION_COMPONENTS);
+        final EntityTreeNode root = operationComponents.getRoot();
 
         for (Entity operationComponent : operationComponents) {
             List<Entity> operationProductOutComponents = operationComponent
@@ -140,7 +141,7 @@ public class TechnologyValidationService {
             long notWasteCount = operationProductOutComponents.stream()
                     .filter(operationProductOutComponent -> !operationProductOutComponent.getBooleanField(OperationProductOutComponentFields.WASTE)).count();
 
-            if (notWasteCount > 1 || notWasteCount == 0) {
+            if ((!operationComponent.getId().equals(root.getId()) && notWasteCount > 1) || notWasteCount == 0) {
                 stateChangeContext.addValidationError(
                         "technologies.technology.validate.global.error.noProductsWithWasteFlagNotMarked",
                         operationComponent.getBelongsToField(TechnologyOperationComponentFields.OPERATION)
@@ -287,6 +288,93 @@ public class TechnologyValidationService {
         return checkIfOperationsUsesSubOperationsProds(null, technologyForm, technology);
     }
 
+    public boolean checkIfOperationsUsesSubOperationsWasteProds(final StateChangeContext stateChangeContext) {
+        Entity technology = stateChangeContext.getOwner();
+
+        final DataDefinition technologyDD = technology.getDataDefinition();
+        final Entity savedTechnology = technologyDD.get(technology.getId());
+
+        return checkIfOperationsUsesSubOperationsWasteProds(stateChangeContext, savedTechnology);
+    }
+
+    public boolean checkIfOperationsUsesSubOperationsWasteProds(final StateChangeContext stateChangeContext, final Entity technology) {
+        final EntityTree operationComponents = technology.getTreeField(TechnologyFields.OPERATION_COMPONENTS);
+
+        Set<Entity> operations = checkIfConsumesSubOpsWasteProds(operationComponents);
+
+
+        if (!operations.isEmpty()) {
+            StringBuilder levels = new StringBuilder();
+
+            for (Entity operation : operations) {
+                if (levels.length() != 0) {
+                    levels.append(", ");
+                }
+
+                levels.append(operation.getStringField(TechnologyOperationComponentFields.NODE_NUMBER));
+            }
+            stateChangeContext.addFieldValidationError(TechnologyFields.OPERATION_COMPONENTS,
+                    L_TECHNOLOGIES_TECHNOLOGY_VALIDATE_GLOBAL_ERROR_TREE_IS_NOT_VALID);
+            stateChangeContext.addMessage(
+                    "technologies.technology.validate.global.error.operationDontConsumeSubOperationsWasteProducts",
+                    StateMessageType.FAILURE, false, levels.toString());
+            return false;
+        }
+
+
+        return true;
+
+    }
+
+    private Set<Entity> checkIfConsumesSubOpsWasteProds(EntityTree operationComponents) {
+        Set<Entity> operations = Sets.newHashSet();
+
+        for (Entity operationComponent : operationComponents) {
+            final Entity parent = operationComponent.getBelongsToField(TechnologyOperationComponentFields.PARENT);
+
+            if (Objects.isNull(parent)) {
+                continue;
+            }
+
+            final EntityList operationProductInComponents = parent
+                    .getHasManyField(TechnologyOperationComponentFields.OPERATION_PRODUCT_IN_COMPONENTS);
+            final EntityList operationProductOutComponents = operationComponent
+                    .getHasManyField(TechnologyOperationComponentFields.OPERATION_PRODUCT_OUT_COMPONENTS);
+
+            if (Objects.isNull(operationProductInComponents)) {
+                operations.add(parent);
+
+                continue;
+            }
+
+            if (operationProductInComponents.isEmpty()) {
+                operations.add(parent);
+
+                continue;
+            }
+
+            if (Objects.isNull(operationProductOutComponents)) {
+                operations.add(operationComponent);
+
+                continue;
+            }
+
+            if (operationProductOutComponents.isEmpty()) {
+                operations.add(operationComponent);
+
+                continue;
+            }
+
+            if (checkIfAtLeastOneWasteElement(operationProductOutComponents, operationProductInComponents)) {
+                operations.add(operationComponent);
+            }
+
+        }
+
+        return operations;
+
+    }
+
     private boolean checkIfOperationsUsesSubOperationsProds(final StateChangeContext stateChangeContext,
                                                             final FormComponent technologyForm, final Entity technology) {
         final EntityTree operationComponents = technology.getTreeField(TechnologyFields.OPERATION_COMPONENTS);
@@ -395,6 +483,22 @@ public class TechnologyValidationService {
 
                 if (Objects.nonNull(product) && product.getId().equals(
                         operationProductOutComponent.getBelongsToField(OperationProductOutComponentFields.PRODUCT).getId())) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    private boolean checkIfAtLeastOneWasteElement(final List<Entity> operationProductOutComponents,
+                                                  final List<Entity> operationProductInComponents) {
+        for (Entity operationProductOutComponent : operationProductOutComponents) {
+            for (Entity operationProductInComponent : operationProductInComponents) {
+                Entity product = operationProductInComponent.getBelongsToField(OperationProductInComponentFields.PRODUCT);
+
+                if (Objects.nonNull(product) && product.getId().equals(
+                        operationProductOutComponent.getBelongsToField(OperationProductOutComponentFields.PRODUCT).getId()) && operationProductOutComponent.getBooleanField(OperationProductOutComponentFields.WASTE)) {
                     return true;
                 }
             }

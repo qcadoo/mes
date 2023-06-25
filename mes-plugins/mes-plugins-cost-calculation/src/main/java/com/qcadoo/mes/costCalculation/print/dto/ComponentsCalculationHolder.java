@@ -16,6 +16,7 @@ public class ComponentsCalculationHolder {
     private BigDecimal costPerUnit;
     private BigDecimal quantity;
     private String technologyInputProductType;
+    private Boolean additionalProducts = false;
 
     public ComponentsCalculationHolder(final Entity toc, final Entity product, Entity technology) {
         this.toc = toc;
@@ -77,6 +78,14 @@ public class ComponentsCalculationHolder {
 
     public void setTechnologyInputProductType(String technologyInputProductType) {
         this.technologyInputProductType = technologyInputProductType;
+    }
+
+    public Boolean getAdditionalProducts() {
+        return additionalProducts;
+    }
+
+    public void setAdditionalProducts(Boolean fasAdditionalProducts) {
+        this.additionalProducts = fasAdditionalProducts;
     }
 
     @Override public boolean equals(Object o) {

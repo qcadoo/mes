@@ -173,7 +173,7 @@
                     <option type="column" name="productName" fields="productName"
                             link="true" width="100"/>
                     <option type="column" name="technologyInputProductTypeName" fields="technologyInputProductTypeName"
-                            link="true" width="100"/>
+                            link="true" width="60"/>
                     <option type="column" name="nodeNumber" fields="nodeNumber"
                             link="true" width="40"/>
                     <option type="column" name="operationNumber" fields="operationNumber"
@@ -182,14 +182,14 @@
                             link="true" width="50"/>
                     <option type="column" name="role" fields="role" link="true" width="40"/>
                     <option type="column" name="typeOfMaterial" fields="typeOfMaterial"
-                            link="true" width="40"/>
+                            link="true" width="60"/>
                     <option type="column" name="plannedQuantity" fields="plannedQuantity" width="30"/>
                     <option type="column" name="usedQuantity" fields="usedQuantity" width="30"/>
                     <option type="column" name="producedQuantity" fields="producedQuantity" width="30"/>
                     <option type="column" name="productUnit" fields="productUnit"
                             width="20"/>
-                    <option type="column" name="replacement" fields="replacement" width="100"/>
-                    <option type="column" name="replacementTo" fields="replacementTo" width="100"/>
+                    <option type="column" name="replacement" fields="replacement" width="30"/>
+                    <option type="column" name="replacementTo" fields="replacementTo" width="80"/>
                     <option type="order" column="productNumber" direction="asc"/>
 
                     <option type="searchable" value="replacement,productNumber,productName,technologyInputProductTypeName,replacementTo,nodeNumber,operationNumber,operationName,role,

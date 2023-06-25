@@ -6,6 +6,15 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import com.google.common.base.Strings;
+import com.qcadoo.mes.basicProductionCounting.BasicProductionCountingService;
+import com.qcadoo.mes.basicProductionCounting.BasicProductionCountingServiceImpl;
+import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityTypeOfMaterial;
+import com.qcadoo.mes.costCalculation.print.dto.TechnologyProduct;
+import com.qcadoo.mes.technologies.ProductQuantitiesService;
+import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
+import com.qcadoo.mes.technologies.dto.OperationProductComponentHolder;
+import com.qcadoo.mes.technologies.dto.ProductQuantitiesHolder;
 import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFCellStyle;
 import org.apache.poi.hssf.usermodel.HSSFRow;
@@ -18,6 +27,7 @@ import org.apache.poi.ss.usermodel.HorizontalAlignment;
 import org.apache.poi.ss.usermodel.IndexedColors;
 import org.apache.poi.ss.usermodel.VerticalAlignment;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Service;
 
 import com.google.common.collect.Lists;
@@ -77,8 +87,11 @@ public class CostCalculationXlsService extends XlsDocumentService {
     @Autowired
     private TechnologyService technologyService;
 
+    @Autowired
+    private ProductQuantitiesService productQuantitiesService;
+
     private static final List<String> CALCULATION_RESULTS_HEADERS = Lists.newArrayList("technologyNumber", "technologyName",
-            "productNumber", "quantity", "unit", "materialCosts", "labourCost", "productionCosts", "materialCostMargin",
+            "productNumber", "quantity", "unit", "additionalProductsQuantity", "materialCosts", "labourCost", "productionCosts", "materialCostMargin",
             "materialCostMarginValue", "labourCostMargin", "labourCostMarginValue", "additionalOverhead", "totalCost",
             "registrationPrice", "registrationPriceOverhead", "registrationPriceOverheadValue", "technicalProductionCost",
             "technicalProductionCostOverhead", "technicalProductionCostOverheadValue", "totalManufacturingCost", "profit",
@@ -110,12 +123,52 @@ public class CostCalculationXlsService extends XlsDocumentService {
         List<Entity> calculationOperationComponents = Lists.newArrayList();
         List<Entity> calculationResults = Lists.newArrayList();
         Map<Long, Boolean> hasComponents = Maps.newHashMap();
+        List<TechnologyProduct> technologyProducts = Lists.newArrayList();
+
         boolean includeComponents = entity.getBooleanField(CostCalculationFields.INCLUDE_COMPONENTS);
 
         HSSFSheet sheet = workbook.getSheetAt(0);
         final FontsContainer fontsContainer = new FontsContainer(sheet.getWorkbook());
         final StylesContainer stylesContainer = new StylesContainer(sheet.getWorkbook(), fontsContainer);
         for (Entity technology : entity.getHasManyField(CostCalculationFields.TECHNOLOGIES)) {
+
+            ProductQuantitiesHolder productComponentQuantities = productQuantitiesService.getProductComponentQuantities(technology, entity.getDecimalField(CostCalculationFields.QUANTITY));
+            Map<OperationProductComponentHolder, BigDecimal> productQuantities = productComponentQuantities.getProductQuantities();
+            for (Map.Entry<OperationProductComponentHolder, BigDecimal> entry : productQuantities.entrySet()) {
+
+                if (!entry.getKey().isEntityTypeSame(TechnologiesConstants.MODEL_OPERATION_PRODUCT_OUT_COMPONENT)) {
+                    continue;
+                }
+
+                OperationProductComponentHolder operationProductComponentHolder = entry.getKey();
+                Entity product = operationProductComponentHolder.getProduct();
+                if (product == null) {
+                    continue;
+                }
+
+                Entity technologyOperationComponent = operationProductComponentHolder.getTechnologyOperationComponent();
+                Entity root = technology.getTreeField(TechnologyFields.OPERATION_COMPONENTS).getRoot();
+                if (!technologyOperationComponent.getId().equals(root.getId())) {
+                    continue;
+                }
+
+                TechnologyProduct technologyProduct = new TechnologyProduct();
+                technologyProduct.setTechnologyNumber(technology.getStringField(TechnologyFields.NUMBER));
+                technologyProduct.setProductName(product.getStringField(ProductFields.NAME));
+                technologyProduct.setProductNumber(product.getStringField(ProductFields.NUMBER));
+                technologyProduct.setProductQuantity(entry.getValue());
+                technologyProduct.setUnit(product.getStringField(ProductFields.UNIT));
+
+                if (operationProductComponentHolder.isWaste()) {
+                    technologyProduct.setProductType(ProductionCountingQuantityTypeOfMaterial.WASTE.getStringValue());
+                } else if (product.getId().equals(technology.getBelongsToField(TechnologyFields.PRODUCT).getId())) {
+                    technologyProduct.setProductType(ProductionCountingQuantityTypeOfMaterial.FINAL_PRODUCT.getStringValue());
+                } else {
+                    technologyProduct.setProductType(ProductionCountingQuantityTypeOfMaterial.ADDITIONAL_FINAL_PRODUCT.getStringValue());
+                }
+                technologyProducts.add(technologyProduct);
+            }
+
             List<CostCalculationMaterial> technologyMaterialCosts = costCalculationMaterialsService
                     .getSortedMaterialsFromProductQuantities(entity, technology);
             materialCosts.addAll(technologyMaterialCosts);
@@ -146,8 +199,13 @@ public class CostCalculationXlsService extends XlsDocumentService {
                         .forEach(e -> e.setField(CalculationOperationComponentFields.TECHNOLOGY, technology));
                 calculationOperationComponents.addAll(technologyCalculationOperationComponents);
             }
+            BigDecimal additionalProductsQuantity = technologyProducts
+                    .stream()
+                    .filter(tp -> tp.getProductType().equals(ProductionCountingQuantityTypeOfMaterial.ADDITIONAL_FINAL_PRODUCT.getStringValue()))
+                    .map(TechnologyProduct::getProductQuantity).reduce(BigDecimal.ZERO, BigDecimal::add);
+
             calculationResults.add(costCalculationService.createCalculationResults(entity, technology,
-                    technologyMaterialsCostsSum, labourCost, noMaterialPrice));
+                    technologyMaterialsCostsSum, labourCost, additionalProductsQuantity, noMaterialPrice));
         }
         if (includeComponents) {
             for (Entity technology : entity.getHasManyField(CostCalculationFields.TECHNOLOGIES)) {
@@ -160,10 +218,18 @@ public class CostCalculationXlsService extends XlsDocumentService {
             createComponentCosts(entity, componentCosts);
         }
         createCalculationResultsSheet(sheet, entity, calculationResults, hasComponents, stylesContainer, locale);
+
+        createTechnologyProductsSheet(technologyProducts,
+                createSheet(workbook,
+                        translationService.translate("costCalculation.costCalculation.report.xls.sheet.technologyProducts", locale)),
+                locale);
+
         createMaterialCostsSheet(materialCosts,
                 createSheet(workbook,
                         translationService.translate("costCalculation.costCalculation.report.xls.sheet.materialCosts", locale)),
                 locale);
+
+
         createMaterialsBySizeSheet(entity,
                 createSheet(workbook,
                         translationService.translate("costCalculation.costCalculation.report.xls.sheet.materialsBySize", locale)),
@@ -207,39 +273,40 @@ public class CostCalculationXlsService extends XlsDocumentService {
             createRegularCell(stylesContainer, row, 2, product.getStringField(ProductFields.NUMBER));
             createNumericCell(stylesContainer, row, 3, costCalculation.getDecimalField(CostCalculationFields.QUANTITY));
             createRegularCell(stylesContainer, row, 4, product.getStringField(ProductFields.UNIT));
-            createNumericCell(stylesContainer, row, 5, calculationResult.getDecimalField(CalculationResultFields.MATERIAL_COSTS));
-            createNumericCell(stylesContainer, row, 6, calculationResult.getDecimalField(CalculationResultFields.LABOUR_COST));
-            createNumericCell(stylesContainer, row, 7,
-                    calculationResult.getDecimalField(CalculationResultFields.PRODUCTION_COSTS));
+            createNumericCell(stylesContainer, row, 5, calculationResult.getDecimalField(CalculationResultFields.ADDITIONAL_PRODUCTS_QUANTITY));
+            createNumericCell(stylesContainer, row, 6, calculationResult.getDecimalField(CalculationResultFields.MATERIAL_COSTS));
+            createNumericCell(stylesContainer, row, 7, calculationResult.getDecimalField(CalculationResultFields.LABOUR_COST));
             createNumericCell(stylesContainer, row, 8,
-                    costCalculation.getDecimalField(CostCalculationFields.MATERIAL_COST_MARGIN));
+                    calculationResult.getDecimalField(CalculationResultFields.PRODUCTION_COSTS));
             createNumericCell(stylesContainer, row, 9,
-                    calculationResult.getDecimalField(CalculationResultFields.MATERIAL_COST_MARGIN_VALUE));
+                    costCalculation.getDecimalField(CostCalculationFields.MATERIAL_COST_MARGIN));
             createNumericCell(stylesContainer, row, 10,
-                    costCalculation.getDecimalField(CostCalculationFields.PRODUCTION_COST_MARGIN));
+                    calculationResult.getDecimalField(CalculationResultFields.MATERIAL_COST_MARGIN_VALUE));
             createNumericCell(stylesContainer, row, 11,
-                    calculationResult.getDecimalField(CalculationResultFields.LABOUR_COST_MARGIN_VALUE));
+                    costCalculation.getDecimalField(CostCalculationFields.PRODUCTION_COST_MARGIN));
             createNumericCell(stylesContainer, row, 12,
+                    calculationResult.getDecimalField(CalculationResultFields.LABOUR_COST_MARGIN_VALUE));
+            createNumericCell(stylesContainer, row, 13,
                     costCalculation.getDecimalField(CostCalculationFields.ADDITIONAL_OVERHEAD));
-            createNumericCell(stylesContainer, row, 13, calculationResult.getDecimalField(CalculationResultFields.TOTAL_COST));
-            createNumericCell(stylesContainer, row, 14,
-                    calculationResult.getDecimalField(CalculationResultFields.REGISTRATION_PRICE));
+            createNumericCell(stylesContainer, row, 14, calculationResult.getDecimalField(CalculationResultFields.TOTAL_COST));
             createNumericCell(stylesContainer, row, 15,
-                    costCalculation.getDecimalField(CostCalculationFields.REGISTRATION_PRICE_OVERHEAD));
+                    calculationResult.getDecimalField(CalculationResultFields.REGISTRATION_PRICE));
             createNumericCell(stylesContainer, row, 16,
-                    calculationResult.getDecimalField(CalculationResultFields.REGISTRATION_PRICE_OVERHEAD_VALUE));
+                    costCalculation.getDecimalField(CostCalculationFields.REGISTRATION_PRICE_OVERHEAD));
             createNumericCell(stylesContainer, row, 17,
-                    calculationResult.getDecimalField(CalculationResultFields.TECHNICAL_PRODUCTION_COST));
+                    calculationResult.getDecimalField(CalculationResultFields.REGISTRATION_PRICE_OVERHEAD_VALUE));
             createNumericCell(stylesContainer, row, 18,
-                    costCalculation.getDecimalField(CostCalculationFields.TECHNICAL_PRODUCTION_COST_OVERHEAD));
+                    calculationResult.getDecimalField(CalculationResultFields.TECHNICAL_PRODUCTION_COST));
             createNumericCell(stylesContainer, row, 19,
-                    calculationResult.getDecimalField(CalculationResultFields.TECHNICAL_PRODUCTION_COST_OVERHEAD_VALUE));
+                    costCalculation.getDecimalField(CostCalculationFields.TECHNICAL_PRODUCTION_COST_OVERHEAD));
             createNumericCell(stylesContainer, row, 20,
+                    calculationResult.getDecimalField(CalculationResultFields.TECHNICAL_PRODUCTION_COST_OVERHEAD_VALUE));
+            createNumericCell(stylesContainer, row, 21,
                     calculationResult.getDecimalField(CalculationResultFields.TOTAL_MANUFACTURING_COST));
-            createNumericCell(stylesContainer, row, 21, costCalculation.getDecimalField(CostCalculationFields.PROFIT));
-            createNumericCell(stylesContainer, row, 22, calculationResult.getDecimalField(CalculationResultFields.PROFIT_VALUE));
-            createNumericCell(stylesContainer, row, 23, calculationResult.getDecimalField(CalculationResultFields.SELLING_PRICE));
-            createRegularCell(stylesContainer, row, 24,
+            createNumericCell(stylesContainer, row, 22, costCalculation.getDecimalField(CostCalculationFields.PROFIT));
+            createNumericCell(stylesContainer, row, 23, calculationResult.getDecimalField(CalculationResultFields.PROFIT_VALUE));
+            createNumericCell(stylesContainer, row, 24, calculationResult.getDecimalField(CalculationResultFields.SELLING_PRICE));
+            createRegularCell(stylesContainer, row, 25,
                     containsComponents ? translationService.translate("qcadooView.true", locale)
                             : translationService.translate("qcadooView.false", locale));
             rowIndex++;
@@ -248,6 +315,44 @@ public class CostCalculationXlsService extends XlsDocumentService {
         for (int i = 0; i < CALCULATION_RESULTS_HEADERS.size(); i++) {
             sheet.autoSizeColumn(i, false);
         }
+    }
+
+
+    private void createTechnologyProductsSheet(List<TechnologyProduct> technologyProducts, HSSFSheet sheet, Locale locale) {
+        final FontsContainer fontsContainer = new FontsContainer(sheet.getWorkbook());
+        final StylesContainer stylesContainer = new StylesContainer(sheet.getWorkbook(), fontsContainer);
+        final int rowOffset = 1;
+        HSSFRow row = sheet.createRow(0);
+        createHeaderCell(stylesContainer, row, translationService
+                .translate("costCalculation.costCalculation.report.xls.sheet.technologyProducts.technologyNumber", locale), 0);
+        createHeaderCell(stylesContainer, row, translationService
+                .translate("costCalculation.costCalculation.report.xls.sheet.technologyProducts.productType", locale), 1);
+        createHeaderCell(stylesContainer, row, translationService
+                .translate("costCalculation.costCalculation.report.xls.sheet.technologyProducts.productNumber", locale), 2);
+        createHeaderCell(stylesContainer, row, translationService
+                .translate("costCalculation.costCalculation.report.xls.sheet.technologyProducts.productName", locale), 3);
+        createHeaderCell(stylesContainer, row, translationService
+                .translate("costCalculation.costCalculation.report.xls.sheet.technologyProducts.productQuantity", locale), 4);
+        createHeaderCell(stylesContainer, row, translationService
+                .translate("costCalculation.costCalculation.report.xls.sheet.technologyProducts.unit", locale), 5);
+
+
+        int rowCounter = 0;
+
+        for (TechnologyProduct technologyProduct : technologyProducts) {
+            row = sheet.createRow(rowOffset + rowCounter);
+            createRegularCell(stylesContainer, row, 0, technologyProduct.getTechnologyNumber());
+            createRegularCell(stylesContainer, row, 1, translationService.translate("basicProductionCounting.productionCountingQuantity.typeOfMaterial.value." + technologyProduct.getProductType(), locale));
+            createRegularCell(stylesContainer, row, 2, technologyProduct.getProductNumber());
+            createRegularCell(stylesContainer, row, 3, technologyProduct.getProductName());
+            createNumericCell(stylesContainer, row, 4, technologyProduct.getProductQuantity());
+            createRegularCell(stylesContainer, row, 5, technologyProduct.getUnit());
+            rowCounter++;
+        }
+        for (int i = 0; i <= 9; i++) {
+            sheet.autoSizeColumn(i, false);
+        }
+
     }
 
     private void createMaterialCostsSheet(List<CostCalculationMaterial> materialCosts, HSSFSheet sheet, Locale locale) {
@@ -449,19 +554,21 @@ public class CostCalculationXlsService extends XlsDocumentService {
                 .translate("costCalculation.costCalculation.report.xls.sheet.componentCosts.componentNumber", locale), 2);
         createHeaderCell(stylesContainer, row, translationService
                 .translate("costCalculation.costCalculation.report.xls.sheet.componentCosts.componentName", locale), 3);
+        createHeaderCell(stylesContainer, row, translationService
+                .translate("costCalculation.costCalculation.report.xls.sheet.componentCosts.additionalProducts", locale), 4);
         createHeaderCell(stylesContainer, row,
                 translationService.translate("costCalculation.costCalculation.report.xls.sheet.componentCosts.quantity", locale),
-                4);
+                5);
         createHeaderCell(stylesContainer, row,
-                translationService.translate("costCalculation.costCalculation.report.xls.sheet.componentCosts.unit", locale), 5);
+                translationService.translate("costCalculation.costCalculation.report.xls.sheet.componentCosts.unit", locale), 6);
         createHeaderCell(stylesContainer, row, translationService
-                .translate("costCalculation.costCalculation.report.xls.sheet.componentCosts.materialCost", locale), 6);
+                .translate("costCalculation.costCalculation.report.xls.sheet.componentCosts.materialCost", locale), 7);
         createHeaderCell(stylesContainer, row, translationService
-                .translate("costCalculation.costCalculation.report.xls.sheet.componentCosts.labourCost", locale), 7);
+                .translate("costCalculation.costCalculation.report.xls.sheet.componentCosts.labourCost", locale), 8);
         createHeaderCell(stylesContainer, row, translationService
-                .translate("costCalculation.costCalculation.report.xls.sheet.componentCosts.sumOfCosts", locale), 8);
+                .translate("costCalculation.costCalculation.report.xls.sheet.componentCosts.sumOfCosts", locale), 9);
         createHeaderCell(stylesContainer, row, translationService
-                .translate("costCalculation.costCalculation.report.xls.sheet.componentCosts.costPerUnit", locale), 9);
+                .translate("costCalculation.costCalculation.report.xls.sheet.componentCosts.costPerUnit", locale), 10);
 
         int rowCounter = 0;
 
@@ -471,12 +578,13 @@ public class CostCalculationXlsService extends XlsDocumentService {
             createRegularCell(stylesContainer, row, 1, componentCost.getTechnologyInputProductType());
             createRegularCell(stylesContainer, row, 2, componentCost.getProduct().getStringField(ProductFields.NUMBER));
             createRegularCell(stylesContainer, row, 3, componentCost.getProduct().getStringField(ProductFields.NAME));
-            createNumericCell(stylesContainer, row, 4, componentCost.getQuantity());
-            createRegularCell(stylesContainer, row, 5, componentCost.getProduct().getStringField(ProductFields.UNIT));
-            createNumericCell(stylesContainer, row, 6, componentCost.getMaterialCost());
-            createNumericCell(stylesContainer, row, 7, componentCost.getLaborCost());
-            createNumericCell(stylesContainer, row, 8, componentCost.getSumOfCost());
-            createNumericCell(stylesContainer, row, 9, componentCost.getCostPerUnit());
+            createRegularCell(stylesContainer, row, 4, toYesOrNoFromString(componentCost.getAdditionalProducts(), LocaleContextHolder.getLocale()));
+            createNumericCell(stylesContainer, row, 5, componentCost.getQuantity());
+            createRegularCell(stylesContainer, row, 6, componentCost.getProduct().getStringField(ProductFields.UNIT));
+            createNumericCell(stylesContainer, row, 7, componentCost.getMaterialCost());
+            createNumericCell(stylesContainer, row, 8, componentCost.getLaborCost());
+            createNumericCell(stylesContainer, row, 9, componentCost.getSumOfCost());
+            createNumericCell(stylesContainer, row, 10, componentCost.getCostPerUnit());
             rowCounter++;
         }
 
@@ -484,6 +592,12 @@ public class CostCalculationXlsService extends XlsDocumentService {
             sheet.autoSizeColumn(i, false);
         }
     }
+
+    private String toYesOrNoFromString(Boolean additionalFinalProducts, Locale locale) {
+        return additionalFinalProducts ? translationService.translate("qcadooView.true", locale)
+                : translationService.translate("qcadooView.false", locale);
+    }
+
 
     private HSSFCell createRegularCell(StylesContainer stylesContainer, HSSFRow row, int column, String content) {
         HSSFCell cell = row.createCell(column);

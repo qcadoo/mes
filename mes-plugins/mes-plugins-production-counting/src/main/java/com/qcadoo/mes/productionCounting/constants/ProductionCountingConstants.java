@@ -73,6 +73,8 @@ public final class ProductionCountingConstants {
 
     public static final String VIEW_EMPLOYEE_WORKING_TIME_SETTLEMENT = "employeeWorkingTimeSettlement";
 
+    public static final String VIEW_EMPLOYEE_PIECEWORK_SETTLEMENT = "employeePieceworkSettlement";
+
     public static final String VIEW_OPERATION_DURATION_ANALYSIS = "operationDurationAnalysis";
 
     public static final String VIEW_PRODUCTION_BALANCE_ANALYSIS = "productionBalanceAnalysis";

@@ -53,10 +53,12 @@ public class OrderHooksBPC {
         if (Objects.nonNull(order.getBelongsToField(OrderFields.TECHNOLOGY))) {
             boolean shouldCreateProductionCounting = checkIfShouldCreateProductionCounting(order);
             if (shouldCreateProductionCounting) {
+                order.setField(OrderFields.ADDITIONAL_FINAL_PRODUCTS, null);
                 OperationProductComponentWithQuantityContainer operationProductComponentWithQuantityContainer = basicProductionCountingService
                         .createProductionCounting(order);
                 addMessagesIfExists(order, operationProductComponentWithQuantityContainer);
             } else if (checkIfShouldReCreateProductionCounting(order)) {
+                order.setField(OrderFields.ADDITIONAL_FINAL_PRODUCTS, null);
                 for (Entity pcq : order.getHasManyField(OrderFieldsBPC.PRODUCTION_COUNTING_QUANTITIES)) {
                     pcq.getDataDefinition().delete(pcq.getId());
                 }
@@ -79,6 +81,7 @@ public class OrderHooksBPC {
                 updateProducedQuantity(order);
             }
         } else if (Objects.nonNull(order.getId())) {
+            order.setField(OrderFields.ADDITIONAL_FINAL_PRODUCTS, null);
             order.setField(OrderFieldsBPC.BASIC_PRODUCTION_COUNTINGS, Lists.newArrayList());
             order.setField(OrderFieldsBPC.PRODUCTION_COUNTING_OPERATION_RUNS, Lists.newArrayList());
             order.setField(OrderFieldsBPC.PRODUCTION_COUNTING_QUANTITIES, Lists.newArrayList());
