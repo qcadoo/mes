@@ -83,6 +83,8 @@
         <localization:translation path="locales"/>
         <localization:translation-group name="employeeWorkingTimeSettlement"
                                         prefix="productionCounting.validate.global.error.employeeWorkingTimeSettlement"/>
+        <localization:translation-group name="employeePieceworkSettlement"
+                                        prefix="productionCounting.validate.global.error.employeePieceworkSettlement"/>
         <localization:translation-group name="operationDurationAnalysis"
                                         prefix="productionCounting.validate.global.error.operationDurationAnalysis"/>
         <localization:translation-group name="productionBalanceAnalysis"
@@ -477,6 +479,8 @@
 
         <menu:menu-item-url name="employeeWorkingTimeSettlement" category="analysis"
                             url="/employeeWorkingTimeSettlement.html" defaultAuthorizationRole="ROLE_ANALYSIS_VIEWER"/>
+        <menu:menu-item-url name="employeePieceworkSettlement" category="analysis"
+                            url="/employeePieceworkSettlement.html" defaultAuthorizationRole="ROLE_ANALYSIS_VIEWER"/>
 
         <menu:menu-item name="productionBalance" category="analysis"
                         view="productionBalancesList" defaultAuthorizationRole="ROLE_PRODUCTION_COUNTING"/>
@@ -554,6 +558,7 @@
         <view:view resource="view/usedBatchDetails.xml"/>
 
         <view:view resource="view/employeeWorkingTimeSettlement.xml"/>
+        <view:view resource="view/employeePieceworkSettlement.xml"/>
 
         <view:view resource="view/productionCountingParameters.xml"/>
         <view:view resource="view/productionAnalysisParameters.xml"/>
