@@ -63,8 +63,7 @@
                 <layoutElement column="1" row="2" width="7">
                     <component type="lookup" name="attributeValue" reference="attributeValue"
                                field="attributeValue" defaultVisible="false">
-                        <option type="column" name="value" fields="value" link="value"
-                                width="200"/>
+
                         <option type="column" name="description" fields="description" link="true"
                                 width="300"/>
 
