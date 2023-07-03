@@ -554,8 +554,12 @@ public class OrderDetailsListeners {
         Map<String, String> filters = Maps.newHashMap();
         filters.put("orderNumber", applyInOperator(orderFromDB.getStringField(OrderFields.NUMBER)));
 
+        Map<String, Object> configuration = Maps.newHashMap();
+        configuration.put("onlyContextFilters", true);
+
         Map<String, Object> gridOptions = Maps.newHashMap();
         gridOptions.put(L_FILTERS, filters);
+        gridOptions.put("configuration", configuration);
 
         Map<String, Object> parameters = Maps.newHashMap();
         parameters.put(L_GRID_OPTIONS, gridOptions);
