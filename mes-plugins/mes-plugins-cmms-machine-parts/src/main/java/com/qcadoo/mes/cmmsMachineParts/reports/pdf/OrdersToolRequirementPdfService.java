@@ -50,6 +50,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -248,7 +251,7 @@ public final class OrdersToolRequirementPdfService extends PdfDocumentService {
     private boolean checkIfAddDate(final Long actualDate, final Date date) {
         return Objects.isNull(date) && Objects.nonNull(actualDate)
                 || Objects.nonNull(date) && Objects.isNull(actualDate)
-                || Objects.nonNull(date) && !actualDate.equals(date.getTime());
+                || Objects.nonNull(date) && !Instant.ofEpochMilli(actualDate).atZone(ZoneId.systemDefault()).toLocalDate().atStartOfDay().isEqual(Instant.ofEpochMilli(date.getTime()).atZone(ZoneId.systemDefault()).toLocalDate().atStartOfDay());
     }
 
     @Override
