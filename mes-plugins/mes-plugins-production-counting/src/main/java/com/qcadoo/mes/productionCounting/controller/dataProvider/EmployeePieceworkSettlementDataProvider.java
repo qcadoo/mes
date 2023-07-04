@@ -11,6 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Service;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -75,11 +77,15 @@ public class EmployeePieceworkSettlementDataProvider implements AnalysisDataProv
         return columns;
     }
 
-    public String validate(final String dateFrom, final String dateTo) {
+    public String validate(final String dateFrom, final String dateTo) throws ParseException {
         if (dateFrom.isEmpty() || dateTo.isEmpty()) {
             return "productionCounting.validate.global.error.employeePieceworkSettlement.datesCannotBeEmpty";
         }
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
 
+        if (formatter.parse(dateTo).compareTo(formatter.parse(dateFrom)) < 0) {
+            return "productionCounting.validate.global.error.employeePieceworkSettlement.dateFromCantBeGreaterThanDateTo";
+        }
         return "";
     }
 

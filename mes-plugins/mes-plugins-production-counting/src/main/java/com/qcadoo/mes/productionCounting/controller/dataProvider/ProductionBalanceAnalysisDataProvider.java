@@ -63,6 +63,7 @@ public class ProductionBalanceAnalysisDataProvider implements AnalysisDataProvid
     @Autowired
     private TranslationService translationService;
 
+
     public List<ColumnDTO> getColumns(final Locale locale) {
         List<ColumnDTO> columns = Lists.newArrayList();
 
@@ -146,12 +147,12 @@ public class ProductionBalanceAnalysisDataProvider implements AnalysisDataProvid
 
     public String validate(final String dateFrom, final String dateTo) throws ParseException {
         if (dateFrom.isEmpty() || dateTo.isEmpty()) {
-            return "productionCounting.validate.global.error.operationDurationAnalysis.datesCannotBeEmpty";
+            return "productionCounting.validate.global.error.productionBalanceAnalysis.datesCannotBeEmpty";
         }
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
 
         if (formatter.parse(dateTo).compareTo(formatter.parse(dateFrom)) < 0) {
-            return "productionCounting.validate.global.error.operationDurationAnalysis.dateFromCantBeGreaterThanDateTo";
+            return "productionCounting.validate.global.error.productionBalanceAnalysis.dateFromCantBeGreaterThanDateTo";
         }
 
         return "";

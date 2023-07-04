@@ -1,5 +1,7 @@
 package com.qcadoo.mes.productionCounting.controller.dataProvider;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -87,9 +89,14 @@ public class EmployeeWorkingTimeSettlementDataProvider implements AnalysisDataPr
         return columns;
     }
 
-    public String validate(String dateFrom, String dateTo) {
+    public String validate(String dateFrom, String dateTo) throws ParseException {
         if (dateFrom.isEmpty() || dateTo.isEmpty()) {
             return "productionCounting.validate.global.error.employeeWorkingTimeSettlement.datesCannotBeEmpty";
+        }
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+
+        if (formatter.parse(dateTo).compareTo(formatter.parse(dateFrom)) < 0) {
+            return "productionCounting.validate.global.error.employeeWorkingTimeSettlement.dateFromCantBeGreaterThanDateTo";
         }
         return "";
     }

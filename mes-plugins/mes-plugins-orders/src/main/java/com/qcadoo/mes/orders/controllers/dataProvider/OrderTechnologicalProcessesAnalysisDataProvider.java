@@ -1,5 +1,7 @@
 package com.qcadoo.mes.orders.controllers.dataProvider;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -113,11 +115,16 @@ public class OrderTechnologicalProcessesAnalysisDataProvider implements Analysis
         return columns;
     }
 
-    public String validate(final String dateFrom, final String dateTo) {
+    public String validate(final String dateFrom, final String dateTo) throws ParseException {
         if (dateFrom.isEmpty() || dateTo.isEmpty()) {
             return "orderTechnologicalProcessesAnalysis.validate.global.error.orderTechnologicalProcessesAnalysis.datesCannotBeEmpty";
         }
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
 
+        if (formatter.parse(dateTo).compareTo(formatter.parse(dateFrom)) < 0) {
+            return "orderTechnologicalProcessesAnalysis.validate.global.error.orderTechnologicalProcessesAnalysis.dateFromCantBeGreaterThanDateTo";
+
+        }
         return "";
     }
 
