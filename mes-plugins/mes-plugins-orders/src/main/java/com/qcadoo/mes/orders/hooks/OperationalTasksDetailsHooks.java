@@ -32,11 +32,13 @@ import com.qcadoo.mes.orders.constants.OperationalTaskFields;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.mes.orders.criteriaModifiers.OperationalTaskDetailsCriteriaModifiers;
+import com.qcadoo.mes.orders.states.constants.OperationalTaskState;
 import com.qcadoo.mes.orders.states.constants.OperationalTaskStateStringValues;
 import com.qcadoo.mes.technologies.constants.OperationFields;
 import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
 import com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperationComponentFieldsTNFO;
 import com.qcadoo.model.api.*;
+import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.*;
@@ -87,6 +89,21 @@ public class OperationalTasksDetailsHooks {
 
     @Autowired
     private NumberGeneratorService numberGeneratorService;
+
+    public void customRestrictionAfterRedirectFromOrder(final ViewDefinitionState view) {
+        if(view.isViewAfterRedirect() && Objects.nonNull(view.getJsonContext()) && view.getJsonContext().has("window.fromOrderDetails")) {
+            GridComponent grid = (GridComponent) view.getComponentByReference(QcadooViewConstants.L_GRID);
+
+            grid.removeFilterForField(OperationalTaskFields.STATE);
+
+            grid.setCustomRestriction(searchBuilder -> searchBuilder.add(SearchRestrictions.or(
+                    SearchRestrictions.eq(OperationalTaskFields.STATE, OperationalTaskState.PENDING.getStringValue()),
+                    SearchRestrictions.eq(OperationalTaskFields.STATE, OperationalTaskState.FINISHED.getStringValue()),
+                    SearchRestrictions.eq(OperationalTaskFields.STATE, OperationalTaskState.REJECTED.getStringValue()),
+                    SearchRestrictions.eq(OperationalTaskFields.STATE, OperationalTaskState.STARTED.getStringValue()))));
+            view.getJsonContext().remove("window.fromOrderDetails");
+        }
+    }
 
     public void onBeforeRender(final ViewDefinitionState view) {
         fetchNumberFromDatabase(view);
