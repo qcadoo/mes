@@ -59,6 +59,8 @@ public final class OperationalTaskDtoFields {
 
     public static final String TOC_ID = "tocId";
 
+    public static final String OPERATION_ID = "operationId";
+
     public static final String TECHNOLOGY_OPERATION_COMPONENT_NODE_NUMBER = "technologyOperationComponentNodeNumber";
 
     public static final String PRODUCT_NUMBER = "productNumber";

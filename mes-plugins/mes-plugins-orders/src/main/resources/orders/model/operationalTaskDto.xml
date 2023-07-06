@@ -25,37 +25,38 @@
 
 -->
 <model name="operationalTaskDto" auditable="false" deletable="false" insertable="false" updatable="false"
-	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
-	   xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
+       xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
 
-	<fields>
-		<string name="number" />
-		<string name="name" />
-		<string name="description" />
-		<enum name="type" values="01otherCase,02executionOperationInOrder" />
-		<enum name="state" values="01pending,02started,03finished,04rejected"/>
-		<datetime name="startDate" />
-		<datetime name="finishDate" />
-		<integer name="actualStaff"/>
-		<string name="staffName"/>
-		<string name="divisionNumber" />
-		<string name="productionLineNumber" />
-		<string name="workstationNumber" />
-		<integer name="workstationId"/>
-		<integer name="orderId"/>
-		<string name="orderNumber"/>
-		<integer name="tocId"/>
-		<string name="technologyOperationComponentNodeNumber"/>
-		<string name="productNumber"/>
-		<string name="productName"/>
-		<string name="productUnit"/>
-		<decimal name="plannedQuantity"/>
-		<decimal name="usedQuantity"/>
-		<decimal name="remainingQuantity"/>
-		<decimal name="doneInPercentage"/>
-	</fields>
+    <fields>
+        <string name="number"/>
+        <string name="name"/>
+        <string name="description"/>
+        <enum name="type" values="01otherCase,02executionOperationInOrder"/>
+        <enum name="state" values="01pending,02started,03finished,04rejected"/>
+        <datetime name="startDate"/>
+        <datetime name="finishDate"/>
+        <integer name="actualStaff"/>
+        <string name="staffName"/>
+        <string name="divisionNumber"/>
+        <string name="productionLineNumber"/>
+        <string name="workstationNumber"/>
+        <integer name="workstationId"/>
+        <integer name="orderId"/>
+        <string name="orderNumber"/>
+        <integer name="tocId"/>
+        <integer name="operationId"/>
+        <string name="technologyOperationComponentNodeNumber"/>
+        <string name="productNumber"/>
+        <string name="productName"/>
+        <string name="productUnit"/>
+        <decimal name="plannedQuantity"/>
+        <decimal name="usedQuantity"/>
+        <decimal name="remainingQuantity"/>
+        <decimal name="doneInPercentage"/>
+    </fields>
 
-	<hooks/>
+    <hooks/>
 
-	<masterModel plugin="orders" model="operationalTask" />
+    <masterModel plugin="orders" model="operationalTask"/>
 </model>

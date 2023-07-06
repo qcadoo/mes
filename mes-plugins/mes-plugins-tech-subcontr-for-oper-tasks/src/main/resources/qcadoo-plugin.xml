@@ -64,6 +64,10 @@
 	<modules>
 		<localization:translation path="locales" />
 
+		<model:model-field plugin="orders" model="operationalTaskDto">
+			<boolean name="technologyOperationComponentIsSubcontracting"/>
+		</model:model-field>
+
 		<model:model-field plugin="orders" model="operationalTaskWithColorDto">
 			<boolean name="technologyOperationComponentIsSubcontracting"/>
 		</model:model-field>

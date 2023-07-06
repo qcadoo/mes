@@ -31,6 +31,8 @@ public final class OperationFieldsTS {
 
     public static final String IS_SUBCONTRACTING = "isSubcontracting";
 
+    public static final String UNIT_COST = "unitCost";
+
     public static final String COMPANIES = "companies";
 
 }
