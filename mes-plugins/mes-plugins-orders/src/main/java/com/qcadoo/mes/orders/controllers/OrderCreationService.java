@@ -54,8 +54,6 @@ import java.util.stream.Collectors;
 @Service
 public class OrderCreationService {
 
-    private static final String IS_SUBCONTRACTED = "isSubcontracted";
-
     private static final String IGNORE_MISSING_COMPONENTS = "ignoreMissingComponents";
 
     private static final String L_RANGE = "range";
@@ -183,7 +181,6 @@ public class OrderCreationService {
         order.setField(OrderFields.DATE_TO, orderCreationRequest.getFinishDate());
 
         order.setField(OrderFields.EXTERNAL_SYNCHRONIZED, true);
-        order.setField(IS_SUBCONTRACTED, false);
         order.setField(OrderFields.STATE, OrderStateStringValues.PENDING);
         order.setField(OrderFields.PLANNED_QUANTITY, orderCreationRequest.getQuantity());
         order.setField(OrderFields.DESCRIPTION,

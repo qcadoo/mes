@@ -53,8 +53,6 @@ import com.qcadoo.view.api.utils.NumberGeneratorService;
 @Service
 public class OrdersFromMOProductsGenerationService {
 
-    private static final String L_IS_SUBCONTRACTED = "isSubcontracted";
-
     private static final String L_CREATE_COLLECTIVE_ORDERS = "createCollectiveOrders";
 
     private static final String L_MASTER_ORDER_POSITION_STATUS = "masterOrderPositionStatus";
@@ -447,7 +445,6 @@ public class OrdersFromMOProductsGenerationService {
         order.setField(OrderFields.DIVISION, orderService.getDivision(technology));
 
         order.setField(OrderFields.EXTERNAL_SYNCHRONIZED, true);
-        order.setField(L_IS_SUBCONTRACTED, false);
         order.setField(OrderFields.STATE, OrderStateStringValues.PENDING);
 
         if (realizationFromStock) {
