@@ -1,7 +1,7 @@
 /**
  * ***************************************************************************
  * Copyright (c) 2010 Qcadoo Limited
- * Project: Qcadoo MES
+ * Project: Qcadoo Framework
  * Version: 1.4
  *
  * This file is part of Qcadoo.
@@ -21,16 +21,17 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.techSubcontracting.constants;
+package com.qcadoo.mes.basic.criteriaModifiers;
 
-public final class TechnologyOperationComponentFieldsTS {
+import com.qcadoo.mes.basic.constants.CompanyFields;
+import com.qcadoo.model.api.search.SearchCriteriaBuilder;
+import com.qcadoo.model.api.search.SearchRestrictions;
+import org.springframework.stereotype.Service;
 
-    private TechnologyOperationComponentFieldsTS() {
-
+@Service
+public class CompanyCriteriaModifiers {
+    public void restrictExternalNumber(final SearchCriteriaBuilder scb) {
+        scb.add(SearchRestrictions.isNotNull(CompanyFields.EXTERNAL_NUMBER));
     }
-
-    public static final String IS_SUBCONTRACTING = "isSubcontracting";
-
-    public static final String UNIT_COST = "unitCost";
 
 }

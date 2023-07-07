@@ -30,6 +30,7 @@ public class LinesProducedQuantitiesChartViewController {
         Map<String, String> chartTranslations = translationService.getMessagesGroup("linesProducedQuantitiesChart", locale);
 
         chartTranslations.putAll(translationService.getMessagesGroup("commons", locale));
+        chartTranslations.putAll(translationService.getMessagesGroup("productionCounting", locale));
 
         mav.addObject("chartTranslations", chartTranslations);
 

@@ -51,8 +51,6 @@ public final class OrderListDtoFields {
 
     public static final String PLANNED_QUANTITY_FOR_ADDITIONAL_UNIT = "plannedQuantityForAdditionalUnit";
 
-    public static final String IS_SUBCONTRACTED = "isSubcontracted";
-
     public static final String WORK_PLAN_DELIVERED = "workPlanDelivered";
 
     public static final String PRODUCT_NUMBER = "productNumber";

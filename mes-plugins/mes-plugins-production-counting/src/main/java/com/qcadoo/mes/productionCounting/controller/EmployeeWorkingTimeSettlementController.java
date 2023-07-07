@@ -1,5 +1,6 @@
 package com.qcadoo.mes.productionCounting.controller;
 
+import java.text.ParseException;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -37,7 +38,7 @@ public class EmployeeWorkingTimeSettlementController {
 
     @ResponseBody
     @RequestMapping(value = "/validate", method = RequestMethod.GET, produces = MediaType.TEXT_PLAIN_VALUE)
-    public String validate(@RequestParam String dateFrom, @RequestParam String dateTo) {
+    public String validate(@RequestParam String dateFrom, @RequestParam String dateTo) throws ParseException {
         return employeeWorkingTimeSettlementDataProvider.validate(dateFrom, dateTo);
     }
 

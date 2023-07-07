@@ -62,6 +62,9 @@
         <manyToMany name="workstations" plugin="basic" model="workstation" joinField="companies" cascade="nullify"/>
         <manyToMany name="subassemblies" plugin="basic" model="subassembly" joinField="companies" cascade="nullify"/>
 
+        <hasMany name="employees" plugin="basic" model="staff" joinField="workFor"
+                 cascade="delete"/>
+
         <hasMany name="producedProducts" plugin="basic" model="product" joinField="producer"
                  cascade="nullify"/>
 
@@ -75,6 +78,7 @@
                  cascade="delete"/>
 
         <dictionary name="contractorCategory" dictionary="contractorCategory"/>
+
         <boolean name="isSetFieldsFromParameter"
                  persistent="false"/>
 

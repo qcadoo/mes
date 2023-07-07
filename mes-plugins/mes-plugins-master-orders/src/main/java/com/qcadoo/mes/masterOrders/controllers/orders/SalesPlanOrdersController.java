@@ -30,8 +30,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @Controller
 public class SalesPlanOrdersController {
 
-    private static final String IS_SUBCONTRACTED = "isSubcontracted";
-
     private static final String IGNORE_MISSING_COMPONENTS = "ignoreMissingComponents";
 
     private static final String L_AUTOMATICALLY_GENERATE_ORDERS_FOR_COMPONENTS = "automaticallyGenerateOrdersForComponents";

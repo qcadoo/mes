@@ -31,4 +31,8 @@ public final class TechSubcontractingConstants {
 
     public static final String PLUGIN_IDENTIFIER = "techSubcontracting";
 
+    public static final String MODEL_COMPANY_OPERATION = "companyOperation";
+
+    public static final String MODEL_COMPANY_OPERATION_GROUP = "companyOperationGroup";
+
 }

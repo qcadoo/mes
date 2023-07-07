@@ -1965,6 +1965,38 @@ $$;
 
 
 --
+-- Name: generate_sub_order_number(); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION public.generate_sub_order_number() RETURNS text
+    LANGUAGE plpgsql
+    AS $$
+    DECLARE
+        _pattern text;
+        _sequence_value numeric;
+        _seq text;
+        _number text;
+
+    BEGIN
+        _pattern := '#seq';
+
+        SELECT nextval('sub_order_number_seq') INTO _sequence_value;
+
+        _seq := to_char(_sequence_value, 'fm000000');
+
+        IF _seq LIKE '%#%' THEN
+            _seq := _sequence_value;
+        END IF;
+
+        _number := _pattern;
+        _number := replace(_number, '#seq', _seq);
+
+        RETURN _number;
+    END;
+$$;
+
+
+--
 -- Name: generate_technological_process_list_number(); Type: FUNCTION; Schema: public; Owner: -
 --
 
@@ -5349,7 +5381,6 @@ CREATE TABLE public.arch_orders_order (
     plannedfinishallorders timestamp without time zone,
     plannedstartallorders timestamp without time zone,
     calculatedfinishallorders timestamp without time zone,
-    issubcontracted boolean DEFAULT false,
     registerfilled boolean,
     workplandelivered boolean DEFAULT false,
     calculatedstartallorders timestamp without time zone,
@@ -5573,9 +5604,7 @@ CREATE TABLE public.subcontractorportal_suborder (
     description text,
     datefrom timestamp without time zone,
     dateto timestamp without time zone,
-    planneddatefrom timestamp without time zone,
-    planneddateto timestamp without time zone,
-    status character varying(255),
+    state character varying(255),
     company_id bigint,
     active boolean DEFAULT true,
     changedby_id bigint,
@@ -6362,7 +6391,6 @@ CREATE MATERIALIZED VIEW public.arch_mv_orders_orderlistdto AS
     ordersorder.state,
     ordersorder.externalnumber,
     ordersorder.externalsynchronized,
-    ordersorder.issubcontracted,
     ordersorder.plannedquantity,
     ordersorder.donequantity,
     ordersorder.workplandelivered,
@@ -6711,7 +6739,8 @@ CREATE TABLE public.technologies_operation (
     minstaff integer DEFAULT 1,
     optimalstaff integer DEFAULT 1,
     pieceworkproduction boolean DEFAULT false,
-    piecerate_id bigint
+    piecerate_id bigint,
+    unitcost numeric(12,5)
 );
 
 
@@ -6766,7 +6795,8 @@ CREATE TABLE public.technologies_technologyoperationcomponent (
     minstaff integer DEFAULT 1,
     optimalstaff integer DEFAULT 1,
     pieceworkproduction boolean DEFAULT false,
-    piecerate_id bigint
+    piecerate_id bigint,
+    unitcost numeric(12,5)
 );
 
 
@@ -6902,7 +6932,6 @@ CREATE VIEW public.arch_orders_orderlistdto AS
     arch_mv_orders_orderlistdto.state,
     arch_mv_orders_orderlistdto.externalnumber,
     arch_mv_orders_orderlistdto.externalsynchronized,
-    arch_mv_orders_orderlistdto.issubcontracted,
     arch_mv_orders_orderlistdto.plannedquantity,
     arch_mv_orders_orderlistdto.donequantity,
     arch_mv_orders_orderlistdto.workplandelivered,
@@ -9395,7 +9424,6 @@ CREATE TABLE public.orders_order (
     plannedfinishallorders timestamp without time zone,
     plannedstartallorders timestamp without time zone,
     calculatedfinishallorders timestamp without time zone,
-    issubcontracted boolean DEFAULT false,
     registerfilled boolean,
     workplandelivered boolean DEFAULT false,
     calculatedstartallorders timestamp without time zone,
@@ -10367,7 +10395,6 @@ CREATE TABLE public.basic_parameter (
     takeactualprogressinworkplans boolean,
     confectionplanrequirereasontypethreshold numeric(12,5),
     confectionplancorrectionreasontype character varying(255),
-    autogeneratesuborders boolean DEFAULT false,
     automaticsavecoverage boolean,
     externaldeliveriesextension boolean DEFAULT false,
     warehouse_id bigint,
@@ -11987,7 +12014,8 @@ CREATE TABLE public.orders_operationaltask (
     product_id bigint,
     scheduleposition_id bigint,
     division_id bigint,
-    actualstaff integer
+    actualstaff integer,
+    suborder_id bigint
 );
 
 
@@ -21637,6 +21665,7 @@ CREATE VIEW public.orders_operationaltaskdto AS
     (ordersorder.id)::integer AS orderid,
     ordersorder.number AS ordernumber,
     (technologyoperationcomponent.id)::integer AS tocid,
+    (technologyoperationcomponent.operation_id)::integer AS operationid,
     technologyoperationcomponent.nodenumber AS technologyoperationcomponentnodenumber,
     technologyoperationcomponent.issubcontracting AS technologyoperationcomponentissubcontracting,
     (product.number)::text AS productnumber,
@@ -21645,7 +21674,8 @@ CREATE VIEW public.orders_operationaltaskdto AS
     NULL::numeric AS plannedquantity,
     NULL::numeric AS usedquantity,
     NULL::numeric AS remainingquantity,
-    NULL::numeric AS doneinpercentage
+    NULL::numeric AS doneinpercentage,
+    NULL::integer AS suborderid
    FROM (((((((public.orders_operationaltask operationaltask
      LEFT JOIN public.basic_staff staff ON ((staff.id = operationaltask.staff_id)))
      LEFT JOIN public.basic_division division ON ((operationaltask.division_id = division.id)))
@@ -21673,6 +21703,7 @@ UNION ALL
     (ordersorder.id)::integer AS orderid,
     ordersorder.number AS ordernumber,
     (technologyoperationcomponent.id)::integer AS tocid,
+    (technologyoperationcomponent.operation_id)::integer AS operationid,
     technologyoperationcomponent.nodenumber AS technologyoperationcomponentnodenumber,
     technologyoperationcomponent.issubcontracting AS technologyoperationcomponentissubcontracting,
     (product.number)::text AS productnumber,
@@ -21681,7 +21712,8 @@ UNION ALL
     productioncountingquantitydto.plannedquantity,
     GREATEST(productioncountingquantitydto.producedquantity, (0)::numeric) AS usedquantity,
     GREATEST((COALESCE(productioncountingquantitydto.plannedquantity, (0)::numeric) - COALESCE(productioncountingquantitydto.producedquantity, (0)::numeric)), (0)::numeric) AS remainingquantity,
-    ceil(((COALESCE(productioncountingquantitydto.producedquantity, (0)::numeric) * (100)::numeric) / productioncountingquantitydto.plannedquantity)) AS doneinpercentage
+    ceil(((COALESCE(productioncountingquantitydto.producedquantity, (0)::numeric) * (100)::numeric) / productioncountingquantitydto.plannedquantity)) AS doneinpercentage,
+    (operationaltask.suborder_id)::integer AS suborderid
    FROM ((((((((public.orders_operationaltask operationaltask
      LEFT JOIN public.basic_staff staff ON ((staff.id = operationaltask.staff_id)))
      LEFT JOIN public.basic_division division ON ((operationaltask.division_id = division.id)))
@@ -21764,8 +21796,8 @@ CREATE VIEW public.orders_operationaltaskwithcolordto AS
     operationaltask.finishdate,
     ots.staffname,
     division.number AS divisionnumber,
-    workstation.number AS workstationnumber,
     (workstation.id)::integer AS workstationid,
+    workstation.number AS workstationnumber,
     (ordersorder.id)::integer AS orderid,
     ordersorder.number AS ordernumber,
     (technologyoperationcomponent.id)::integer AS tocid,
@@ -21783,7 +21815,9 @@ CREATE VIEW public.orders_operationaltaskwithcolordto AS
     (orderproduct.number)::text AS orderproductnumber,
     (orderproduct.name)::text AS orderproductname,
     operationaltask.actualstaff,
-    NULL::numeric AS wastesquantity
+    NULL::numeric AS wastesquantity,
+    NULL::integer AS suborder_id,
+    NULL::text AS subordernumber
    FROM (((((((public.orders_operationaltask operationaltask
      LEFT JOIN operational_task_staff ots ON ((operationaltask.id = ots.operationaltask_id)))
      LEFT JOIN public.basic_division division ON ((operationaltask.division_id = division.id)))
@@ -21804,8 +21838,8 @@ UNION ALL
     operationaltask.finishdate,
     ots.staffname,
     division.number AS divisionnumber,
-    workstation.number AS workstationnumber,
     (workstation.id)::integer AS workstationid,
+    workstation.number AS workstationnumber,
     (ordersorder.id)::integer AS orderid,
     ordersorder.number AS ordernumber,
     (technologyoperationcomponent.id)::integer AS tocid,
@@ -21834,8 +21868,10 @@ UNION ALL
     (orderproduct.number)::text AS orderproductnumber,
     (orderproduct.name)::text AS orderproductname,
     operationaltask.actualstaff,
-    sum((COALESCE(trackingoperationproductoutcomponent.wastesquantity, (0)::numeric))::numeric(14,5)) AS wastesquantity
-   FROM ((((((((((public.orders_operationaltask operationaltask
+    sum((COALESCE(trackingoperationproductoutcomponent.wastesquantity, (0)::numeric))::numeric(14,5)) AS wastesquantity,
+    (suborder.id)::integer AS suborder_id,
+    (suborder.number)::text AS subordernumber
+   FROM (((((((((((public.orders_operationaltask operationaltask
      LEFT JOIN operational_task_staff ots ON ((operationaltask.id = ots.operationaltask_id)))
      LEFT JOIN public.basic_division division ON ((operationaltask.division_id = division.id)))
      LEFT JOIN public.basic_workstation workstation ON ((workstation.id = operationaltask.workstation_id)))
@@ -21846,8 +21882,9 @@ UNION ALL
      LEFT JOIN public.basicproductioncounting_productioncountingquantitydto productioncountingquantitydto ON (((productioncountingquantitydto.orderid = ordersorder.id) AND (productioncountingquantitydto.tocid = technologyoperationcomponent.id) AND ((productioncountingquantitydto.role)::text = '02produced'::text) AND (((productioncountingquantitydto.typeofmaterial)::text = '02intermediate'::text) OR ((productioncountingquantitydto.typeofmaterial)::text = '03finalProduct'::text)))))
      LEFT JOIN public.productioncounting_productiontracking productiontracking ON (((productiontracking.order_id = ordersorder.id) AND (productiontracking.technologyoperationcomponent_id = technologyoperationcomponent.id) AND ((productiontracking.state)::text = ('02accepted'::character varying)::text))))
      LEFT JOIN public.productioncounting_trackingoperationproductoutcomponent trackingoperationproductoutcomponent ON (((trackingoperationproductoutcomponent.productiontracking_id = productiontracking.id) AND (trackingoperationproductoutcomponent.product_id = product.id))))
+     LEFT JOIN public.subcontractorportal_suborder suborder ON ((suborder.id = operationaltask.suborder_id)))
   WHERE ((operationaltask.type)::text = '02executionOperationInOrder'::text)
-  GROUP BY operationaltask.id, operationaltask.number, operationaltask.name, operationaltask.description, operationaltask.type, operationaltask.state, operationaltask.startdate, operationaltask.finishdate, ots.staffname, division.number, workstation.number, ((workstation.id)::integer), ((ordersorder.id)::integer), ordersorder.number, ((technologyoperationcomponent.id)::integer), technologyoperationcomponent.nodenumber, technologyoperationcomponent.issubcontracting, (product.number)::text, (product.name)::text, (product.unit)::text, productioncountingquantitydto.plannedquantity, (orderproduct.number)::text, (orderproduct.name)::text, operationaltask.actualstaff;
+  GROUP BY operationaltask.id, operationaltask.number, operationaltask.name, operationaltask.description, operationaltask.type, operationaltask.state, operationaltask.startdate, operationaltask.finishdate, ots.staffname, division.number, ((workstation.id)::integer), workstation.number, ((ordersorder.id)::integer), ordersorder.number, ((technologyoperationcomponent.id)::integer), technologyoperationcomponent.nodenumber, technologyoperationcomponent.issubcontracting, (product.number)::text, (product.name)::text, (product.unit)::text, productioncountingquantitydto.plannedquantity, (orderproduct.number)::text, (orderproduct.name)::text, operationaltask.actualstaff, ((suborder.id)::integer), (suborder.number)::text;
 
 
 --
@@ -21987,7 +22024,6 @@ CREATE VIEW public.orders_orderlistdto AS
     ordersorder.state,
     ordersorder.externalnumber,
     ordersorder.externalsynchronized,
-    ordersorder.issubcontracted,
     ordersorder.plannedquantity,
     ordersorder.donequantity,
     ordersorder.workplandelivered,
@@ -22169,7 +22205,6 @@ CREATE VIEW public.orders_orderplanninglistdto AS
     ordersorder.state,
     ordersorder.externalnumber,
     ordersorder.externalsynchronized,
-    ordersorder.issubcontracted,
     ordersorder.plannedquantity,
     ordersorder.workplandelivered,
     ordersorder.ordercategory,
@@ -25785,7 +25820,7 @@ CREATE VIEW public.productioncounting_employeepieceworksettlementdto AS
           ORDER BY piecerateitem_1.datefrom DESC
          LIMIT 1) piecerateitem ON ((1 = 1)))
   WHERE (((productiontracking.state)::text = '02accepted'::text) AND ((ordersorder.typeofproductionrecording)::text = '02cumulated'::text) AND (technology.pieceworkproduction = true))
-  GROUP BY (((staff.name)::text || ' '::text) || (staff.surname)::text), productiontracking.shiftstartday, productiontracking.createdate, shift.name, ordersorder.number, NULL::text, product.number, product.name
+  GROUP BY (((staff.name)::text || ' '::text) || (staff.surname)::text), COALESCE(productiontracking.shiftstartday, (productiontracking.createdate)::date), shift.name, ordersorder.number, NULL::text, product.number, product.name
 UNION ALL
  SELECT (((staff.name)::text || ' '::text) || (staff.surname)::text) AS worker,
     COALESCE(productiontracking.shiftstartday, (productiontracking.createdate)::date) AS date,
@@ -25812,7 +25847,7 @@ UNION ALL
           ORDER BY piecerateitem_1.datefrom DESC
          LIMIT 1) piecerateitem ON ((1 = 1)))
   WHERE (((productiontracking.state)::text = '02accepted'::text) AND ((ordersorder.typeofproductionrecording)::text = '03forEach'::text) AND (technologyoperationcomponent.pieceworkproduction = true))
-  GROUP BY (((staff.name)::text || ' '::text) || (staff.surname)::text), productiontracking.shiftstartday, productiontracking.createdate, shift.name, ordersorder.number, operation.number, product.number, product.name;
+  GROUP BY (((staff.name)::text || ' '::text) || (staff.surname)::text), COALESCE(productiontracking.shiftstartday, (productiontracking.createdate)::date), shift.name, ordersorder.number, operation.number, product.number, product.name;
 
 
 --
@@ -28893,22 +28928,32 @@ ALTER SEQUENCE public.stoppage_stoppagereason_id_seq OWNED BY public.stoppage_st
 
 
 --
--- Name: subcontractorportal_cost; Type: TABLE; Schema: public; Owner: -
+-- Name: sub_order_number_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
-CREATE TABLE public.subcontractorportal_cost (
+CREATE SEQUENCE public.sub_order_number_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: subcontractorportal_subordercost; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.subcontractorportal_subordercost (
     id bigint NOT NULL,
-    unit character varying(20),
-    operation character varying(255),
-    ordernumber character varying(255),
-    plannedquantity numeric(14,5) DEFAULT (0)::numeric,
     deliveredquantity numeric(14,5) DEFAULT (0)::numeric,
     unitprice numeric(14,5) DEFAULT (0)::numeric,
     totalprice numeric(14,5) DEFAULT (0)::numeric,
     suborder_id bigint,
     product_id bigint,
     active boolean DEFAULT true,
-    entityversion bigint DEFAULT 0
+    entityversion bigint DEFAULT 0,
+    operationaltask_id bigint,
+    order_id bigint
 );
 
 
@@ -28928,14 +28973,14 @@ CREATE SEQUENCE public.subcontractorportal_cost_id_seq
 -- Name: subcontractorportal_cost_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
-ALTER SEQUENCE public.subcontractorportal_cost_id_seq OWNED BY public.subcontractorportal_cost.id;
+ALTER SEQUENCE public.subcontractorportal_cost_id_seq OWNED BY public.subcontractorportal_subordercost.id;
 
 
 --
--- Name: subcontractorportal_event; Type: TABLE; Schema: public; Owner: -
+-- Name: subcontractorportal_suborderevent; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE public.subcontractorportal_event (
+CREATE TABLE public.subcontractorportal_suborderevent (
     id bigint NOT NULL,
     date timestamp without time zone,
     prevvalue character varying(255),
@@ -28965,14 +29010,14 @@ CREATE SEQUENCE public.subcontractorportal_event_id_seq
 -- Name: subcontractorportal_event_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
-ALTER SEQUENCE public.subcontractorportal_event_id_seq OWNED BY public.subcontractorportal_event.id;
+ALTER SEQUENCE public.subcontractorportal_event_id_seq OWNED BY public.subcontractorportal_suborderevent.id;
 
 
 --
--- Name: subcontractorportal_message; Type: TABLE; Schema: public; Owner: -
+-- Name: subcontractorportal_subordermessage; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE public.subcontractorportal_message (
+CREATE TABLE public.subcontractorportal_subordermessage (
     id bigint NOT NULL,
     date date,
     createdat timestamp without time zone,
@@ -29001,7 +29046,7 @@ CREATE SEQUENCE public.subcontractorportal_message_id_seq
 -- Name: subcontractorportal_message_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
-ALTER SEQUENCE public.subcontractorportal_message_id_seq OWNED BY public.subcontractorportal_message.id;
+ALTER SEQUENCE public.subcontractorportal_message_id_seq OWNED BY public.subcontractorportal_subordermessage.id;
 
 
 --
@@ -29047,10 +29092,10 @@ ALTER SEQUENCE public.subcontractorportal_operation_id_seq OWNED BY public.subco
 
 
 --
--- Name: subcontractorportal_realisation; Type: TABLE; Schema: public; Owner: -
+-- Name: subcontractorportal_suborderrealisation; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE public.subcontractorportal_realisation (
+CREATE TABLE public.subcontractorportal_suborderrealisation (
     id bigint NOT NULL,
     date date,
     producedquantity numeric(12,5),
@@ -29078,7 +29123,7 @@ CREATE SEQUENCE public.subcontractorportal_realisation_id_seq
 -- Name: subcontractorportal_realisation_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
-ALTER SEQUENCE public.subcontractorportal_realisation_id_seq OWNED BY public.subcontractorportal_realisation.id;
+ALTER SEQUENCE public.subcontractorportal_realisation_id_seq OWNED BY public.subcontractorportal_suborderrealisation.id;
 
 
 --
@@ -29136,6 +29181,25 @@ ALTER SEQUENCE public.subcontractorportal_suborderattachment_id_seq OWNED BY pub
 
 
 --
+-- Name: subcontractorportal_subordercost_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.subcontractorportal_subordercost_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: subcontractorportal_subordercost_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.subcontractorportal_subordercost_id_seq OWNED BY public.subcontractorportal_subordercost.id;
+
+
+--
 -- Name: subcontractorportal_suborderinput; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -29146,12 +29210,102 @@ CREATE TABLE public.subcontractorportal_suborderinput (
     deliveredquantity numeric(14,5),
     remainingquantity numeric(14,5),
     product_id bigint,
-    storage_id bigint,
+    location_id bigint,
     suborder_id bigint,
     active boolean DEFAULT true,
     operations character varying(20),
     entityversion bigint DEFAULT 0
 );
+
+
+--
+-- Name: subcontractorportal_suborderoutput; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.subcontractorportal_suborderoutput (
+    id bigint NOT NULL,
+    unit character varying(20),
+    plannedquantity numeric(14,5) DEFAULT (0)::numeric,
+    deliveredquantity numeric(14,5) DEFAULT (0)::numeric,
+    producedquantity numeric(14,5) DEFAULT (0)::numeric,
+    remainingquantity numeric(14,5) DEFAULT (0)::numeric,
+    unitprice numeric(14,5) DEFAULT (0)::numeric,
+    createdmanually boolean DEFAULT false,
+    product_id bigint,
+    location_id bigint,
+    suborder_id bigint,
+    active boolean DEFAULT true,
+    operations character varying(20),
+    entityversion bigint DEFAULT 0
+);
+
+
+--
+-- Name: subcontractorportal_suborderdto; Type: VIEW; Schema: public; Owner: -
+--
+
+CREATE VIEW public.subcontractorportal_suborderdto AS
+ WITH suborderinputsum AS (
+         SELECT subcontractorportal_suborderinput.suborder_id,
+            sum(subcontractorportal_suborderinput.plannedquantity) AS plannedreleasequantity,
+            sum(subcontractorportal_suborderinput.deliveredquantity) AS releasequantity
+           FROM public.subcontractorportal_suborderinput
+          GROUP BY subcontractorportal_suborderinput.suborder_id
+        ), suborderoutputsum AS (
+         SELECT subcontractorportal_suborderoutput.suborder_id,
+            sum(subcontractorportal_suborderoutput.plannedquantity) AS plannedreceiptquantity,
+            sum(subcontractorportal_suborderoutput.deliveredquantity) AS receiptquantity
+           FROM public.subcontractorportal_suborderoutput
+          GROUP BY subcontractorportal_suborderoutput.suborder_id
+        )
+ SELECT suborder.id,
+    suborder.active,
+    suborder.number,
+    (company.id)::integer AS companyid,
+    company.name AS companyname,
+    suborder.datefrom,
+    suborder.dateto,
+    suborder.description,
+    suborder.state,
+    COALESCE(suborderinputsum.plannedreleasequantity, (0)::numeric) AS plannedreleasequantity,
+    COALESCE(suborderinputsum.releasequantity, (0)::numeric) AS releasequantity,
+    COALESCE(suborderoutputsum.plannedreceiptquantity, (0)::numeric) AS plannedreceiptquantity,
+    COALESCE(suborderoutputsum.receiptquantity, (0)::numeric) AS receiptquantity
+   FROM (((public.subcontractorportal_suborder suborder
+     LEFT JOIN public.basic_company company ON ((company.id = suborder.company_id)))
+     LEFT JOIN suborderinputsum suborderinputsum ON ((suborderinputsum.suborder_id = suborder.id)))
+     LEFT JOIN suborderoutputsum suborderoutputsum ON ((suborderoutputsum.suborder_id = suborder.id)));
+
+
+--
+-- Name: subcontractorportal_suborderdto_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.subcontractorportal_suborderdto_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: subcontractorportal_suborderevent_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.subcontractorportal_suborderevent_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: subcontractorportal_suborderevent_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.subcontractorportal_suborderevent_id_seq OWNED BY public.subcontractorportal_suborderevent.id;
 
 
 --
@@ -29171,6 +29325,25 @@ CREATE SEQUENCE public.subcontractorportal_suborderinput_id_seq
 --
 
 ALTER SEQUENCE public.subcontractorportal_suborderinput_id_seq OWNED BY public.subcontractorportal_suborderinput.id;
+
+
+--
+-- Name: subcontractorportal_subordermessage_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.subcontractorportal_subordermessage_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: subcontractorportal_subordermessage_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.subcontractorportal_subordermessage_id_seq OWNED BY public.subcontractorportal_subordermessage.id;
 
 
 --
@@ -29217,28 +29390,6 @@ ALTER SEQUENCE public.subcontractorportal_suborderoperation_id_seq OWNED BY publ
 
 
 --
--- Name: subcontractorportal_suborderoutput; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.subcontractorportal_suborderoutput (
-    id bigint NOT NULL,
-    unit character varying(20),
-    plannedquantity numeric(14,5) DEFAULT (0)::numeric,
-    deliveredquantity numeric(14,5) DEFAULT (0)::numeric,
-    producedquantity numeric(14,5) DEFAULT (0)::numeric,
-    remainingquantity numeric(14,5) DEFAULT (0)::numeric,
-    unitprice numeric(14,5) DEFAULT (0)::numeric,
-    createdmanually boolean DEFAULT false,
-    product_id bigint,
-    storage_id bigint,
-    suborder_id bigint,
-    active boolean DEFAULT true,
-    operations character varying(20),
-    entityversion bigint DEFAULT 0
-);
-
-
---
 -- Name: subcontractorportal_suborderoutput_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
@@ -29255,6 +29406,61 @@ CREATE SEQUENCE public.subcontractorportal_suborderoutput_id_seq
 --
 
 ALTER SEQUENCE public.subcontractorportal_suborderoutput_id_seq OWNED BY public.subcontractorportal_suborderoutput.id;
+
+
+--
+-- Name: subcontractorportal_suborderrealisation_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.subcontractorportal_suborderrealisation_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: subcontractorportal_suborderrealisation_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.subcontractorportal_suborderrealisation_id_seq OWNED BY public.subcontractorportal_suborderrealisation.id;
+
+
+--
+-- Name: subcontractorportal_suborderstatechange; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.subcontractorportal_suborderstatechange (
+    id bigint NOT NULL,
+    dateandtime timestamp without time zone,
+    sourcestate character varying(255),
+    targetstate character varying(255),
+    status character varying(255),
+    phase integer,
+    worker character varying(255),
+    suborder_id bigint,
+    shift_id bigint
+);
+
+
+--
+-- Name: subcontractorportal_suborderstatechange_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.subcontractorportal_suborderstatechange_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: subcontractorportal_suborderstatechange_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.subcontractorportal_suborderstatechange_id_seq OWNED BY public.subcontractorportal_suborderstatechange.id;
 
 
 --
@@ -35267,38 +35473,10 @@ ALTER TABLE ONLY public.stoppage_stoppagereason ALTER COLUMN id SET DEFAULT next
 
 
 --
--- Name: subcontractorportal_cost id; Type: DEFAULT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.subcontractorportal_cost ALTER COLUMN id SET DEFAULT nextval('public.subcontractorportal_cost_id_seq'::regclass);
-
-
---
--- Name: subcontractorportal_event id; Type: DEFAULT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.subcontractorportal_event ALTER COLUMN id SET DEFAULT nextval('public.subcontractorportal_event_id_seq'::regclass);
-
-
---
--- Name: subcontractorportal_message id; Type: DEFAULT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.subcontractorportal_message ALTER COLUMN id SET DEFAULT nextval('public.subcontractorportal_message_id_seq'::regclass);
-
-
---
 -- Name: subcontractorportal_operation id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.subcontractorportal_operation ALTER COLUMN id SET DEFAULT nextval('public.subcontractorportal_operation_id_seq'::regclass);
-
-
---
--- Name: subcontractorportal_realisation id; Type: DEFAULT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.subcontractorportal_realisation ALTER COLUMN id SET DEFAULT nextval('public.subcontractorportal_realisation_id_seq'::regclass);
 
 
 --
@@ -35316,10 +35494,31 @@ ALTER TABLE ONLY public.subcontractorportal_suborderattachment ALTER COLUMN id S
 
 
 --
+-- Name: subcontractorportal_subordercost id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.subcontractorportal_subordercost ALTER COLUMN id SET DEFAULT nextval('public.subcontractorportal_subordercost_id_seq'::regclass);
+
+
+--
+-- Name: subcontractorportal_suborderevent id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.subcontractorportal_suborderevent ALTER COLUMN id SET DEFAULT nextval('public.subcontractorportal_suborderevent_id_seq'::regclass);
+
+
+--
 -- Name: subcontractorportal_suborderinput id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.subcontractorportal_suborderinput ALTER COLUMN id SET DEFAULT nextval('public.subcontractorportal_suborderinput_id_seq'::regclass);
+
+
+--
+-- Name: subcontractorportal_subordermessage id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.subcontractorportal_subordermessage ALTER COLUMN id SET DEFAULT nextval('public.subcontractorportal_subordermessage_id_seq'::regclass);
 
 
 --
@@ -35334,6 +35533,20 @@ ALTER TABLE ONLY public.subcontractorportal_suborderoperation ALTER COLUMN id SE
 --
 
 ALTER TABLE ONLY public.subcontractorportal_suborderoutput ALTER COLUMN id SET DEFAULT nextval('public.subcontractorportal_suborderoutput_id_seq'::regclass);
+
+
+--
+-- Name: subcontractorportal_suborderrealisation id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.subcontractorportal_suborderrealisation ALTER COLUMN id SET DEFAULT nextval('public.subcontractorportal_suborderrealisation_id_seq'::regclass);
+
+
+--
+-- Name: subcontractorportal_suborderstatechange id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.subcontractorportal_suborderstatechange ALTER COLUMN id SET DEFAULT nextval('public.subcontractorportal_suborderstatechange_id_seq'::regclass);
 
 
 --
@@ -36349,7 +36562,7 @@ COPY public.arch_orders_operationaltask (id, number, name, description, typetask
 -- Data for Name: arch_orders_order; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.arch_orders_order (id, number, name, description, commentreasontypecorrectiondatefrom, commentreasontypecorrectiondateto, commentreasondeviationeffectivestart, commentreasondeviationeffectiveend, externalnumber, commentreasontypedeviationsquantity, datefrom, dateto, effectivedatefrom, effectivedateto, deadline, correcteddatefrom, correcteddateto, startdate, finishdate, state, company_id, product_id, technology_id, productionline_id, plannedquantity, donequantity, externalsynchronized, commissionedplannedquantity, commissionedcorrectedquantity, amountofproductproduced, remainingamountofproducttoproduce, ownlinechangeoverduration, registerproductiontime, justone, registerquantityinproduct, laborworktime, includetpz, inputproductsrequiredfortype, generatedenddate, machineworktime, ownlinechangeover, autocloseorder, registerquantityoutproduct, operationdurationquantityunit, realizationtime, calculate, includeadditionaltime, allowtoclose, typeofproductionrecording, masterorder_id, active, productpriceperunit, trackingrecordtreatment, failuresyncmessage, targetstate, ignorerequiredcomponents, automaticallymoveoverusage, updatecomponentsavailability, ordertype, technologyprototype_id, level, parent_id, ignoremissingcomponents, masterorderproduct_id, dateschanged, sourcecorrecteddatefrom, sourcecorrecteddateto, sourcestartdate, sourcefinishdate, batchnumber, root_id, includeordersforcomponent, plannedfinishallorders, plannedstartallorders, calculatedfinishallorders, issubcontracted, registerfilled, workplandelivered, calculatedstartallorders, scadacreatedorupdatestate, entityversion, workertochange, masterorderproductcomponent_id, wastesquantity, existsrepairorders, ordercategory, address_id, finalproductiontracking, updatefinishdate, ordersgroup_id, plannedquantityforadditionalunit, directadditionalcost, directadditionalcostdescription, archived, division_id) FROM stdin;
+COPY public.arch_orders_order (id, number, name, description, commentreasontypecorrectiondatefrom, commentreasontypecorrectiondateto, commentreasondeviationeffectivestart, commentreasondeviationeffectiveend, externalnumber, commentreasontypedeviationsquantity, datefrom, dateto, effectivedatefrom, effectivedateto, deadline, correcteddatefrom, correcteddateto, startdate, finishdate, state, company_id, product_id, technology_id, productionline_id, plannedquantity, donequantity, externalsynchronized, commissionedplannedquantity, commissionedcorrectedquantity, amountofproductproduced, remainingamountofproducttoproduce, ownlinechangeoverduration, registerproductiontime, justone, registerquantityinproduct, laborworktime, includetpz, inputproductsrequiredfortype, generatedenddate, machineworktime, ownlinechangeover, autocloseorder, registerquantityoutproduct, operationdurationquantityunit, realizationtime, calculate, includeadditionaltime, allowtoclose, typeofproductionrecording, masterorder_id, active, productpriceperunit, trackingrecordtreatment, failuresyncmessage, targetstate, ignorerequiredcomponents, automaticallymoveoverusage, updatecomponentsavailability, ordertype, technologyprototype_id, level, parent_id, ignoremissingcomponents, masterorderproduct_id, dateschanged, sourcecorrecteddatefrom, sourcecorrecteddateto, sourcestartdate, sourcefinishdate, batchnumber, root_id, includeordersforcomponent, plannedfinishallorders, plannedstartallorders, calculatedfinishallorders, registerfilled, workplandelivered, calculatedstartallorders, scadacreatedorupdatestate, entityversion, workertochange, masterorderproductcomponent_id, wastesquantity, existsrepairorders, ordercategory, address_id, finalproductiontracking, updatefinishdate, ordersgroup_id, plannedquantityforadditionalunit, directadditionalcost, directadditionalcostdescription, archived, division_id) FROM stdin;
 \.
 
 
@@ -37433,8 +37646,8 @@ COPY public.basic_palletnumberhelper (id, quantity, active, createdate, updateda
 -- Data for Name: basic_parameter; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.basic_parameter (id, country_id, currency_id, unit, additionaltextinfooter, company_id, registerproductiontime, reasonneededwhendelayedeffectivedatefrom, earliereffectivedatetotime, reasonneededwhencorrectingtherequestedvolume, reasonneededwhencorrectingdateto, reasonneededwhenchangingstatetodeclined, imageurlinworkplan, hidedescriptioninworkplans, defaultproductionline_id, reasonneededwhenearliereffectivedateto, earliereffectivedatefromtime, defaultaddress, allowquantitychangeinacceptedorder, reasonneededwhendelayedeffectivedateto, justone, registerquantityinproduct, reasonneededwhenchangingstatetointerrupted, registerquantityoutproduct, dontprintordersinworkplans, location_id, typeofproductionrecording, dontprintinputproductsinworkplans, delayedeffectivedatefromtime, hideemptycolumnsfororders, reasonneededwhenchangingstatetoabandoned, autocloseorder, allowtoclose, dontprintoutputproductsinworkplans, inputproductsrequiredfortype, otheraddress, reasonneededwhenearliereffectivedatefrom, defaultdescription, delayedeffectivedatetotime, hidetechnologyandorderinworkplans, reasonneededwhencorrectingdatefrom, ssccnumberprefix, lowerlimit, negativetrend, upperlimit, positivetrend, dueweight, printoperationatfirstpageinworkplans, averagelaborhourlycostpb, materialcostsusedpb, additionaloverheadpb, materialcostmarginpb, includetpzpb, productioncostmarginpb, averagemachinehourlycostpb, includeadditionaltimepb, batchnumberuniqueness, defaultcoveragefromdays, includedraftdeliveries, coveragetype, hideemptycolumnsforoffers, hideemptycolumnsforrequests, validateproductionrecordtimes, workstationsquantityfromproductionline, allowtechnologytreechangeinpendingorder, lockproductionprogress, hidebarcodeoperationcomponentinworkplans, ignoremissingcomponents, additionaloutputrows, additionalinputrows, allowmultipleregisteringtimeforworker, pricebasedon, takeactualprogressinworkplans, confectionplanrequirereasontypethreshold, confectionplancorrectionreasontype, autogeneratesuborders, automaticsavecoverage, externaldeliveriesextension, warehouse_id, documentstate, positivepurchaseprice, sameordernumber, automaticdeliveriesminstate, possibleworktimedeviation, ordersincludeperiod, includerequirements, entityversion, labelsbtpath, profitpb, registrationpriceoverheadpb, sourceofoperationcostspb, acceptanceevents, useblackbox, generatewarehouseissuestoorders, daysbeforeorderstart, issuelocation_id, consumptionofrawmaterialsbasedonstandards, documentpositionparameters_id, includecomponents, warehouseissuesreservestates, drawndocuments, generatewarehouseissuestodeliveries, issuedquantityuptoneed, documentsstatus, warehouseissueproductssource, productstoissue, trackingcorrectionrecalculatepps, deliveredbiggerthanordered, ordersganttparameters_id, additionalimage, esilcointegrationdir, autorecalculateorder, ppsisautomatic, ppsproducedamountrecalculateplan, ppsalgorithm, baselinkerparameters_id, technologiesgeneratorcopyproductsize, cartonlabelsbtpath, esilcodispositionshiftlocation_id, maxproductsquantity, allowerrorsinmasterorderpositions, companyname_id, hideassignedstaff, fillorderdescriptionbasedontechnologydescription, allowanomalycreationonacceptancerecord, esilcoaccountwithreservationlocation_id, includelevelandsuffix, orderedproductsunit, allowincompleteunits, acceptrecordsfromterminal, allowchangestousedquantityonterminal, includeadditionaltimeps, includetpzps, ordersgenerationnotcompletedates, canchangeprodlineforacceptedorders, generateeachonseparatepage, includewagegroups, ordersgeneratedbycoverage, automaticallygenerateordersforcomponents, seteffectivedatefromoninprogress, seteffectivedatetooncompleted, copydescription, exporttopdfonlyvisiblecolumns, additionalcartonlabelsquantity, maxcartonlabelsquantity, exporttocsvonlyvisiblecolumns, flagpercentageofexecutionwithcolor, opertaskflagpercentexecutionwithcolor, automaticclosingoforderwithingroups, copynotesfrommasterorderposition, manuallysendwarehousedocuments, realizationfromstock, alwaysorderitemswithpersonalization, selectorder, availabilityofrawmaterials, selectoperationaltask, stoppages, repair, employeeprogress, includeunacceptableproduction, calculateamounttimeemployeesonacceptancerecord, notshowtasksdownloadedbyanotheremployee, createcollectiveorders, completemasterorderafterorderingpositions, hideorderedproductworkplan, selectiontasksbyorderdateinterminal, showprogress, showdelays, requiresupplieridentification, numberpattern_id, generatebatchfororderedproduct, generatebatchoforderedproduct, acceptbatchtrackingwhenclosingorder, completewarehousesflowwhilechecking, qualitycontrol, finalqualitycontrolwithoutresources, terminalproductattribute_id, oeefor, oeeworktimefrom, range, division_id, showqronordersgrouppdf, advisestartdateoftheorder, orderstartdatebasedon, showchartondashboard, whattoshowondashboard, dashboardoperation_id, dashboardcomponentslocation_id, dashboardproductsinputlocation_id, momentofvalidation, moveproductstosubsequentoperations, demandcausesofwastes, wmsapk, wmsversion, applicationconfigured, materialcostsused, usenominalcostpricenotspecified, sourceofoperationcosts, standardlaborcost_id, averagemachinehourlycost, averagelaborhourlycost, includetpz, includeadditionaltime, materialcostmargin, productioncostmargin, additionaloverhead, registrationpriceoverhead, profit, applicationconfigurationfinished, generatepacksfororders, includepacksgeneratingprocessesfororder, optimalpacksize, restfeedinglastpack, deliveryusenominalcostwhenpricenotspecified, deliverypricefillbasedon, allowcheckedtechnologywithoutinproducts, requireassortment, changeorderdatesbasedonchangegroupdates, acceptedtechnologymarkedasdefault, terminalscanning, processsource, showproductdescriptiononordersgrouppdf, attributeonordersgrouppdf_id, copyattributestosizeproducts, materialcostsusedmc, usenominalcostpricenotspecifiedmc, productattribute_id, materialattribute_id, attributeonthelabel_id, requiretypeoffault, workingstationinputtype, allowchangeordeleteordertechnologicalprocess, technicalproductioncostoverhead, technicalproductioncostoverheadpb, synchronizeadditionalproductdata, processterminalplaceofperformance, emptylabelbtpath, schedulesortorder, workstationassigncriterion, workerassigncriterion, scheduleforbuffer, additionaltimeextendsoperation, synchronizeproductcategory, completenominalcostinarticleandproducts, copynominalcostfamilyofproductssizes, onlypackagesinproduction, bufferstationsshowninchart, allowtilelengthtobeedited, analyzeavailableresources, analyzeplannedquantity, analyzemaxquantity, numberpatternordergroup_id, otcopydescriptionfromproductionorder, setorderdatesbasedontaskdates, automaticallygeneratetasksfororder, automaticallygenerateprocessesfororder, includeadditionaltimesg, includetpzsg, includetpzs, dashboardshowforproduct, dashboardshowdescription, receivedeliveryinordercurrency, sortbyproducttypepriorityordersgrouppdf, attributeonordersgrouprequirementpdf_id, quantitymadeonthebasisofdashboard, producingmorethanplanned, logo, synchronizemasterorderattributes, synchronizedocumentpositionattributes, dashboardordersorting, completestationandemployeeingeneratedtasks, considerexceptionswhenpromptingcurrentshift, productionorderedquantityclosestheorder, receiptofproducts, releaseofmaterials, considerminimumstocklevelwhencreatingproductionorders, fillorderdescriptionbasedonproductdescription, ganttrunadjusterror, checkfortheexistenceofinputproductprices, automaticupdatecostnorms, costssource, automaticreleaseaftergeneration, analyzeactualstaff, analyzeactualstaffmaxquantity, analyzegetquantityfromshiftassignment, setmasterorderdatebasedonorderdates, notshowtasksblockedbyprevious, promptdefaultlinefromtechnology, numberofficelicenses, numberterminallicenses, typeterminallicenses, notshoworderfilters, notincludedateswhenretrievingorders, requirequalityrating, synchronizeproductsize, masterorderreleaselocation_id, demandworkstation, skipfinishedtasks, onlyonebatchtrackingfororder, producedbatchfromordertrackingrecord, packaginglocation_id, includeworkstationongetrrforot, notincludeworkstationwhensearchingot, generatetransferdocumentsonrepair, howmanydaysrecalculateplan, operationproductindefaultquantity, operationproductoutdefaultquantity, manyarticleswiththesameean, includeincalculationdeliveries, transferordersgrouptoordersforcomponents, automaticallyusethebatchplannedinorder, productdeliverybatchevidence, productdeliverybatchnumberpattern_id, showmachineperiodregistration, mergingordersforcomponents, tasksselectionby, recalculateplantasksorder, numbervisibleorderstasksondashboard, updatetechnologiesonpendingorders, sharingregistrationrecord, noexchangeratedownload) FROM stdin;
-1	\N	39	一块	\N	1	t	f	0	f	f	f	\N	f	1	f	0	\N	t	f	f	t	f	t	f	\N	02cumulated	f	0	f	f	f	f	f	01startOrder	\N	f	\N	0	f	f	0005900125	\N	\N	\N	\N	\N	f	\N	06costForOrder	\N	\N	f	\N	\N	f	01globally	14	f	\N	f	f	f	f	f	f	f	t	\N	\N	f	01nominalProductCost	f	\N	\N	f	f	\N	\N	01draft	f	f	f	\N	\N	f	0	\N	\N	\N	02parameters	f	\N	f	\N	\N	t	1	f	f	01transfer	f	f	01accepted	01order	01allInputProducts	f	t	\N	\N	\N	f	f	f	\N	\N	\N	\N	\N	150	\N	\N	f	t	f	\N	t	\N	f	f	t	f	f	f	t	f	f	f	f	f	f	t	f	50	3000	f	t	t	f	f	f	f	f	t	f	t	t	t	f	t	f	f	f	f	f	f	f	f	f	\N	\N	f	f	t	t	f	\N	01productionLine	01staffWorkTimes	01oneDivision	\N	f	t	03endDateLastOrderOnTheLine	t	01orders	\N	\N	\N	01orderAcceptance	t	f	\N	\N	f	01nominal	f	01technologyOperation	\N	\N	\N	f	f	0.00000	0.00000	0.00000	0.00000	0.00000	f	f	f	\N	\N	f	01lastPurchasePrice	f	f	f	f	01operationNumber	01orderPackages	f	\N	f	01nominal	f	\N	\N	\N	f	01scanTheNumber	f	0.00000	0.00000	f	01workstation	\N	01desc	01shortestTime	01workstationLastOperatorLatestFinished	f	t	t	f	f	f	f	f	f	f	\N	\N	f	f	f	f	\N	\N	t	01number	f	f	t	\N	01approvedProduction	t	\N	f	f	01startDate	f	f	f	01onAcceptanceRegistrationRecord	01onAcceptanceRegistrationRecord	f	f	t	f	f	01mes	f	f	\N	f	f	f	t	10000	10000	03over51Employees	f	f	t	f	\N	f	f	f	f	\N	f	f	t	7	\N	\N	f	01confirmedDeliveries	f	f	f	\N	f	f	02taskDate	01operationsLevelAndTasksStartDate	50	f	f	f
+COPY public.basic_parameter (id, country_id, currency_id, unit, additionaltextinfooter, company_id, registerproductiontime, reasonneededwhendelayedeffectivedatefrom, earliereffectivedatetotime, reasonneededwhencorrectingtherequestedvolume, reasonneededwhencorrectingdateto, reasonneededwhenchangingstatetodeclined, imageurlinworkplan, hidedescriptioninworkplans, defaultproductionline_id, reasonneededwhenearliereffectivedateto, earliereffectivedatefromtime, defaultaddress, allowquantitychangeinacceptedorder, reasonneededwhendelayedeffectivedateto, justone, registerquantityinproduct, reasonneededwhenchangingstatetointerrupted, registerquantityoutproduct, dontprintordersinworkplans, location_id, typeofproductionrecording, dontprintinputproductsinworkplans, delayedeffectivedatefromtime, hideemptycolumnsfororders, reasonneededwhenchangingstatetoabandoned, autocloseorder, allowtoclose, dontprintoutputproductsinworkplans, inputproductsrequiredfortype, otheraddress, reasonneededwhenearliereffectivedatefrom, defaultdescription, delayedeffectivedatetotime, hidetechnologyandorderinworkplans, reasonneededwhencorrectingdatefrom, ssccnumberprefix, lowerlimit, negativetrend, upperlimit, positivetrend, dueweight, printoperationatfirstpageinworkplans, averagelaborhourlycostpb, materialcostsusedpb, additionaloverheadpb, materialcostmarginpb, includetpzpb, productioncostmarginpb, averagemachinehourlycostpb, includeadditionaltimepb, batchnumberuniqueness, defaultcoveragefromdays, includedraftdeliveries, coveragetype, hideemptycolumnsforoffers, hideemptycolumnsforrequests, validateproductionrecordtimes, workstationsquantityfromproductionline, allowtechnologytreechangeinpendingorder, lockproductionprogress, hidebarcodeoperationcomponentinworkplans, ignoremissingcomponents, additionaloutputrows, additionalinputrows, allowmultipleregisteringtimeforworker, pricebasedon, takeactualprogressinworkplans, confectionplanrequirereasontypethreshold, confectionplancorrectionreasontype, automaticsavecoverage, externaldeliveriesextension, warehouse_id, documentstate, positivepurchaseprice, sameordernumber, automaticdeliveriesminstate, possibleworktimedeviation, ordersincludeperiod, includerequirements, entityversion, labelsbtpath, profitpb, registrationpriceoverheadpb, sourceofoperationcostspb, acceptanceevents, useblackbox, generatewarehouseissuestoorders, daysbeforeorderstart, issuelocation_id, consumptionofrawmaterialsbasedonstandards, documentpositionparameters_id, includecomponents, warehouseissuesreservestates, drawndocuments, generatewarehouseissuestodeliveries, issuedquantityuptoneed, documentsstatus, warehouseissueproductssource, productstoissue, trackingcorrectionrecalculatepps, deliveredbiggerthanordered, ordersganttparameters_id, additionalimage, esilcointegrationdir, autorecalculateorder, ppsisautomatic, ppsproducedamountrecalculateplan, ppsalgorithm, baselinkerparameters_id, technologiesgeneratorcopyproductsize, cartonlabelsbtpath, esilcodispositionshiftlocation_id, maxproductsquantity, allowerrorsinmasterorderpositions, companyname_id, hideassignedstaff, fillorderdescriptionbasedontechnologydescription, allowanomalycreationonacceptancerecord, esilcoaccountwithreservationlocation_id, includelevelandsuffix, orderedproductsunit, allowincompleteunits, acceptrecordsfromterminal, allowchangestousedquantityonterminal, includeadditionaltimeps, includetpzps, ordersgenerationnotcompletedates, canchangeprodlineforacceptedorders, generateeachonseparatepage, includewagegroups, ordersgeneratedbycoverage, automaticallygenerateordersforcomponents, seteffectivedatefromoninprogress, seteffectivedatetooncompleted, copydescription, exporttopdfonlyvisiblecolumns, additionalcartonlabelsquantity, maxcartonlabelsquantity, exporttocsvonlyvisiblecolumns, flagpercentageofexecutionwithcolor, opertaskflagpercentexecutionwithcolor, automaticclosingoforderwithingroups, copynotesfrommasterorderposition, manuallysendwarehousedocuments, realizationfromstock, alwaysorderitemswithpersonalization, selectorder, availabilityofrawmaterials, selectoperationaltask, stoppages, repair, employeeprogress, includeunacceptableproduction, calculateamounttimeemployeesonacceptancerecord, notshowtasksdownloadedbyanotheremployee, createcollectiveorders, completemasterorderafterorderingpositions, hideorderedproductworkplan, selectiontasksbyorderdateinterminal, showprogress, showdelays, requiresupplieridentification, numberpattern_id, generatebatchfororderedproduct, generatebatchoforderedproduct, acceptbatchtrackingwhenclosingorder, completewarehousesflowwhilechecking, qualitycontrol, finalqualitycontrolwithoutresources, terminalproductattribute_id, oeefor, oeeworktimefrom, range, division_id, showqronordersgrouppdf, advisestartdateoftheorder, orderstartdatebasedon, showchartondashboard, whattoshowondashboard, dashboardoperation_id, dashboardcomponentslocation_id, dashboardproductsinputlocation_id, momentofvalidation, moveproductstosubsequentoperations, demandcausesofwastes, wmsapk, wmsversion, applicationconfigured, materialcostsused, usenominalcostpricenotspecified, sourceofoperationcosts, standardlaborcost_id, averagemachinehourlycost, averagelaborhourlycost, includetpz, includeadditionaltime, materialcostmargin, productioncostmargin, additionaloverhead, registrationpriceoverhead, profit, applicationconfigurationfinished, generatepacksfororders, includepacksgeneratingprocessesfororder, optimalpacksize, restfeedinglastpack, deliveryusenominalcostwhenpricenotspecified, deliverypricefillbasedon, allowcheckedtechnologywithoutinproducts, requireassortment, changeorderdatesbasedonchangegroupdates, acceptedtechnologymarkedasdefault, terminalscanning, processsource, showproductdescriptiononordersgrouppdf, attributeonordersgrouppdf_id, copyattributestosizeproducts, materialcostsusedmc, usenominalcostpricenotspecifiedmc, productattribute_id, materialattribute_id, attributeonthelabel_id, requiretypeoffault, workingstationinputtype, allowchangeordeleteordertechnologicalprocess, technicalproductioncostoverhead, technicalproductioncostoverheadpb, synchronizeadditionalproductdata, processterminalplaceofperformance, emptylabelbtpath, schedulesortorder, workstationassigncriterion, workerassigncriterion, scheduleforbuffer, additionaltimeextendsoperation, synchronizeproductcategory, completenominalcostinarticleandproducts, copynominalcostfamilyofproductssizes, onlypackagesinproduction, bufferstationsshowninchart, allowtilelengthtobeedited, analyzeavailableresources, analyzeplannedquantity, analyzemaxquantity, numberpatternordergroup_id, otcopydescriptionfromproductionorder, setorderdatesbasedontaskdates, automaticallygeneratetasksfororder, automaticallygenerateprocessesfororder, includeadditionaltimesg, includetpzsg, includetpzs, dashboardshowforproduct, dashboardshowdescription, receivedeliveryinordercurrency, sortbyproducttypepriorityordersgrouppdf, attributeonordersgrouprequirementpdf_id, quantitymadeonthebasisofdashboard, producingmorethanplanned, logo, synchronizemasterorderattributes, synchronizedocumentpositionattributes, dashboardordersorting, completestationandemployeeingeneratedtasks, considerexceptionswhenpromptingcurrentshift, productionorderedquantityclosestheorder, receiptofproducts, releaseofmaterials, considerminimumstocklevelwhencreatingproductionorders, fillorderdescriptionbasedonproductdescription, ganttrunadjusterror, checkfortheexistenceofinputproductprices, automaticupdatecostnorms, costssource, automaticreleaseaftergeneration, analyzeactualstaff, analyzeactualstaffmaxquantity, analyzegetquantityfromshiftassignment, setmasterorderdatebasedonorderdates, notshowtasksblockedbyprevious, promptdefaultlinefromtechnology, numberofficelicenses, numberterminallicenses, typeterminallicenses, notshoworderfilters, notincludedateswhenretrievingorders, requirequalityrating, synchronizeproductsize, masterorderreleaselocation_id, demandworkstation, skipfinishedtasks, onlyonebatchtrackingfororder, producedbatchfromordertrackingrecord, packaginglocation_id, includeworkstationongetrrforot, notincludeworkstationwhensearchingot, generatetransferdocumentsonrepair, howmanydaysrecalculateplan, operationproductindefaultquantity, operationproductoutdefaultquantity, manyarticleswiththesameean, includeincalculationdeliveries, transferordersgrouptoordersforcomponents, automaticallyusethebatchplannedinorder, productdeliverybatchevidence, productdeliverybatchnumberpattern_id, showmachineperiodregistration, mergingordersforcomponents, tasksselectionby, recalculateplantasksorder, numbervisibleorderstasksondashboard, updatetechnologiesonpendingorders, sharingregistrationrecord, noexchangeratedownload) FROM stdin;
+1	\N	39	一块	\N	1	t	f	0	f	f	f	\N	f	1	f	0	\N	t	f	f	t	f	t	f	\N	02cumulated	f	0	f	f	f	f	f	01startOrder	\N	f	\N	0	f	f	0005900125	\N	\N	\N	\N	\N	f	\N	06costForOrder	\N	\N	f	\N	\N	f	01globally	14	f	\N	f	f	f	f	f	f	f	t	\N	\N	f	01nominalProductCost	f	\N	\N	f	\N	\N	01draft	f	f	f	\N	\N	f	0	\N	\N	\N	02parameters	f	\N	f	\N	\N	t	1	f	f	01transfer	f	f	01accepted	01order	01allInputProducts	f	t	\N	\N	\N	f	f	f	\N	\N	\N	\N	\N	150	\N	\N	f	t	f	\N	t	\N	f	f	t	f	f	f	t	f	f	f	f	f	f	t	f	50	3000	f	t	t	f	f	f	f	f	t	f	t	t	t	f	t	f	f	f	f	f	f	f	f	f	\N	\N	f	f	t	t	f	\N	01productionLine	01staffWorkTimes	01oneDivision	\N	f	t	03endDateLastOrderOnTheLine	t	01orders	\N	\N	\N	01orderAcceptance	t	f	\N	\N	f	01nominal	f	01technologyOperation	\N	\N	\N	f	f	0.00000	0.00000	0.00000	0.00000	0.00000	f	f	f	\N	\N	f	01lastPurchasePrice	f	f	f	f	01operationNumber	01orderPackages	f	\N	f	01nominal	f	\N	\N	\N	f	01scanTheNumber	f	0.00000	0.00000	f	01workstation	\N	01desc	01shortestTime	01workstationLastOperatorLatestFinished	f	t	t	f	f	f	f	f	f	f	\N	\N	f	f	f	f	\N	\N	t	01number	f	f	t	\N	01approvedProduction	t	\N	f	f	01startDate	f	f	f	01onAcceptanceRegistrationRecord	01onAcceptanceRegistrationRecord	f	f	t	f	f	01mes	f	f	\N	f	f	f	t	10000	10000	03over51Employees	f	f	t	f	\N	f	f	f	f	\N	f	f	t	7	\N	\N	f	01confirmedDeliveries	f	f	f	\N	f	f	02taskDate	01operationsLevelAndTasksStartDate	50	f	f	f
 \.
 
 
@@ -40654,7 +40867,7 @@ COPY public.orders_changedateshelper (id, datefrom, dateto, commentreasontypecor
 -- Data for Name: orders_operationaltask; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.orders_operationaltask (id, number, name, description, type, startdate, finishdate, order_id, entityversion, staff_id, workstation_id, state, technologyoperationcomponent_id, product_id, scheduleposition_id, division_id, actualstaff) FROM stdin;
+COPY public.orders_operationaltask (id, number, name, description, type, startdate, finishdate, order_id, entityversion, staff_id, workstation_id, state, technologyoperationcomponent_id, product_id, scheduleposition_id, division_id, actualstaff, suborder_id) FROM stdin;
 \.
 
 
@@ -40670,7 +40883,7 @@ COPY public.orders_operationaltaskstatechange (id, dateandtime, sourcestate, tar
 -- Data for Name: orders_order; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.orders_order (id, number, name, description, commentreasontypecorrectiondatefrom, commentreasontypecorrectiondateto, commentreasondeviationeffectivestart, commentreasondeviationeffectiveend, externalnumber, commentreasontypedeviationsquantity, datefrom, dateto, effectivedatefrom, effectivedateto, deadline, correcteddatefrom, correcteddateto, startdate, finishdate, state, company_id, product_id, technology_id, productionline_id, plannedquantity, donequantity, externalsynchronized, commissionedplannedquantity, commissionedcorrectedquantity, amountofproductproduced, remainingamountofproducttoproduce, ownlinechangeoverduration, registerproductiontime, registerquantityinproduct, laborworktime, includetpz, inputproductsrequiredfortype, generatedenddate, machineworktime, ownlinechangeover, registerquantityoutproduct, operationdurationquantityunit, realizationtime, calculate, includeadditionaltime, typeofproductionrecording, masterorder_id, active, productpriceperunit, failuresyncmessage, targetstate, ignorerequiredcomponents, automaticallymoveoverusage, updatecomponentsavailability, technologyprototype_id, level, parent_id, ignoremissingcomponents, masterorderproduct_id, dateschanged, sourcecorrecteddatefrom, sourcecorrecteddateto, sourcestartdate, sourcefinishdate, batchnumber, root_id, includeordersforcomponent, plannedfinishallorders, plannedstartallorders, calculatedfinishallorders, issubcontracted, registerfilled, workplandelivered, calculatedstartallorders, scadacreatedorupdatestate, entityversion, workertochange, masterorderproductcomponent_id, wastesquantity, existsrepairorders, ordercategory, address_id, finalproductiontracking, updatefinishdate, ordersgroup_id, plannedquantityforadditionalunit, division_id, salesplan_id, reportedproductionquantity, expirationdate, additionalfinalproducts) FROM stdin;
+COPY public.orders_order (id, number, name, description, commentreasontypecorrectiondatefrom, commentreasontypecorrectiondateto, commentreasondeviationeffectivestart, commentreasondeviationeffectiveend, externalnumber, commentreasontypedeviationsquantity, datefrom, dateto, effectivedatefrom, effectivedateto, deadline, correcteddatefrom, correcteddateto, startdate, finishdate, state, company_id, product_id, technology_id, productionline_id, plannedquantity, donequantity, externalsynchronized, commissionedplannedquantity, commissionedcorrectedquantity, amountofproductproduced, remainingamountofproducttoproduce, ownlinechangeoverduration, registerproductiontime, registerquantityinproduct, laborworktime, includetpz, inputproductsrequiredfortype, generatedenddate, machineworktime, ownlinechangeover, registerquantityoutproduct, operationdurationquantityunit, realizationtime, calculate, includeadditionaltime, typeofproductionrecording, masterorder_id, active, productpriceperunit, failuresyncmessage, targetstate, ignorerequiredcomponents, automaticallymoveoverusage, updatecomponentsavailability, technologyprototype_id, level, parent_id, ignoremissingcomponents, masterorderproduct_id, dateschanged, sourcecorrecteddatefrom, sourcecorrecteddateto, sourcestartdate, sourcefinishdate, batchnumber, root_id, includeordersforcomponent, plannedfinishallorders, plannedstartallorders, calculatedfinishallorders, registerfilled, workplandelivered, calculatedstartallorders, scadacreatedorupdatestate, entityversion, workertochange, masterorderproductcomponent_id, wastesquantity, existsrepairorders, ordercategory, address_id, finalproductiontracking, updatefinishdate, ordersgroup_id, plannedquantityforadditionalunit, division_id, salesplan_id, reportedproductionquantity, expirationdate, additionalfinalproducts) FROM stdin;
 \.
 
 
@@ -41950,6 +42163,9 @@ COPY public.qcadooview_alert (id, message, type, expirationdate, sound) FROM std
 COPY public.qcadooview_category (id, pluginidentifier, name, succession, authrole, entityversion) FROM stdin;
 2	qcadooView	home	2	\N	0
 3	basic	companyStructure	3	ROLE_COMPANY_STRUCTURE	0
+21	basic	parameters	20	\N	0
+1	qcadooView	administration	1	ROLE_HOME_PROFILE	0
+22	esilco	esilcoReports	21	\N	0
 17	basic	calendars	4	ROLE_SHIFTS	0
 18	basic	staff	5	\N	0
 4	basic	basic	6	\N	0
@@ -41957,6 +42173,8 @@ COPY public.qcadooview_category (id, pluginidentifier, name, succession, authrol
 5	technologies	technology	8	ROLE_TECHNOLOGIES	0
 6	materialFlow	materialFlow	9	\N	0
 9	materialRequirements	requirements	10	\N	0
+23	masterOrders	sales	11	\N	0
+7	orders	orders	11	ROLE_PLANNING_MENU	0
 8	orders	ordersTracking	12	ROLE_ORDERS_TRACKING	0
 10	lineChangeoverNorms	calculations	13	\N	0
 11	advancedGenealogy	advancedGenealogy	14	ROLE_GENEALOGY	0
@@ -41965,10 +42183,6 @@ COPY public.qcadooview_category (id, pluginidentifier, name, succession, authrol
 14	subcontractorPortal	subcontractors	17	ROLE_SUBCONTRACTOR	0
 15	productionCounting	analysis	18	ROLE_ANALYSIS_VIEWER	0
 16	arch	archives	19	\N	0
-21	basic	parameters	20	\N	0
-1	qcadooView	administration	1	ROLE_HOME_PROFILE	0
-22	esilco	esilcoReports	21	\N	0
-7	orders	orders	11	ROLE_PLANNING_MENU	0
 \.
 
 
@@ -42020,8 +42234,6 @@ COPY public.qcadooview_item (id, pluginidentifier, name, active, category_id, vi
 65	supplyNegotiations	offersItems	t	9	65	9	ROLE_REQUIREMENTS	0
 67	supplyNegotiations	requestsForQuotation	t	9	67	10	ROLE_REQUIREMENTS	0
 64	supplyNegotiations	negotiation	t	9	64	11	ROLE_REQUIREMENTS	0
-77	masterOrders	masterOrders	t	7	77	2	ROLE_PLANNING	0
-76	masterOrders	masterOrderPositions	t	7	76	3	ROLE_PLANNING	0
 97	workPlans	workPlans	t	7	97	12	ROLE_PLANNING	0
 106	deviationCausesReporting	deviationsReport	t	7	105	18	ROLE_PLANNING	0
 93	productionCounting	productionTrackingForProduct	t	8	93	7	ROLE_PRODUCTION_TRACKING	0
@@ -42116,7 +42328,6 @@ COPY public.qcadooview_item (id, pluginidentifier, name, active, category_id, vi
 189	ordersGroups	ordersGroupMaterialRequirementsList	t	9	188	4	ROLE_REQUIREMENTS	0
 171	basicProductionCounting	productionCountingQuantityList	t	9	170	5	ROLE_BASE_FUNCTIONALITY	0
 172	esilco	outOfStockList	t	9	171	16	ROLE_REQUIREMENTS	0
-181	masterOrders	salesPlansList	t	7	180	1	ROLE_PLANNING	0
 187	orders	orderPacksList	t	7	186	11	ROLE_PLANNING	0
 63	stoppage	stoppages	t	8	63	3	ROLE_STOPPAGES	0
 190	urcProductionCounting	processConfirmationTerminal	t	8	189	5	ROLE_PROCESS_CONFIRMATION_TERMINAL	0
@@ -42177,6 +42388,9 @@ COPY public.qcadooview_item (id, pluginidentifier, name, active, category_id, vi
 192	orders	orderTechnologicalProcessWastesList	t	8	191	6	ROLE_ORDER_TECHNOLOGICAL_PROCESSES	0
 216	productionCounting	performanceAnalysisMv	t	15	215	16	ROLE_ANALYSIS_VIEWER	0
 217	productionCounting	employeePieceworkSettlement	t	15	216	17	ROLE_ANALYSIS_VIEWER	0
+77	masterOrders	masterOrders	t	23	77	2	ROLE_PLANNING	0
+76	masterOrders	masterOrderPositions	t	23	76	3	ROLE_PLANNING	0
+181	masterOrders	salesPlansList	t	23	180	1	ROLE_PLANNING	0
 \.
 
 
@@ -42558,30 +42772,6 @@ COPY public.stoppage_stoppagereason (id, name, description) FROM stdin;
 
 
 --
--- Data for Name: subcontractorportal_cost; Type: TABLE DATA; Schema: public; Owner: -
---
-
-COPY public.subcontractorportal_cost (id, unit, operation, ordernumber, plannedquantity, deliveredquantity, unitprice, totalprice, suborder_id, product_id, active, entityversion) FROM stdin;
-\.
-
-
---
--- Data for Name: subcontractorportal_event; Type: TABLE DATA; Schema: public; Owner: -
---
-
-COPY public.subcontractorportal_event (id, date, prevvalue, currvalue, type, action, staff_id, suborder_id, active, entityversion) FROM stdin;
-\.
-
-
---
--- Data for Name: subcontractorportal_message; Type: TABLE DATA; Schema: public; Owner: -
---
-
-COPY public.subcontractorportal_message (id, date, createdat, description, staff_id, company_id, suborder_id, active, entityversion) FROM stdin;
-\.
-
-
---
 -- Data for Name: subcontractorportal_operation; Type: TABLE DATA; Schema: public; Owner: -
 --
 
@@ -42590,18 +42780,10 @@ COPY public.subcontractorportal_operation (id, orderid, operationid, cost, numbe
 
 
 --
--- Data for Name: subcontractorportal_realisation; Type: TABLE DATA; Schema: public; Owner: -
---
-
-COPY public.subcontractorportal_realisation (id, date, producedquantity, remainingquantity, product_id, suborder_id, active, entityversion) FROM stdin;
-\.
-
-
---
 -- Data for Name: subcontractorportal_suborder; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.subcontractorportal_suborder (id, number, ordernumber, description, datefrom, dateto, planneddatefrom, planneddateto, status, company_id, active, changedby_id, hasoperations, entityversion) FROM stdin;
+COPY public.subcontractorportal_suborder (id, number, ordernumber, description, datefrom, dateto, state, company_id, active, changedby_id, hasoperations, entityversion) FROM stdin;
 \.
 
 
@@ -42614,10 +42796,34 @@ COPY public.subcontractorportal_suborderattachment (id, attachment, name, ext, s
 
 
 --
+-- Data for Name: subcontractorportal_subordercost; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY public.subcontractorportal_subordercost (id, deliveredquantity, unitprice, totalprice, suborder_id, product_id, active, entityversion, operationaltask_id, order_id) FROM stdin;
+\.
+
+
+--
+-- Data for Name: subcontractorportal_suborderevent; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY public.subcontractorportal_suborderevent (id, date, prevvalue, currvalue, type, action, staff_id, suborder_id, active, entityversion) FROM stdin;
+\.
+
+
+--
 -- Data for Name: subcontractorportal_suborderinput; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.subcontractorportal_suborderinput (id, unit, plannedquantity, deliveredquantity, remainingquantity, product_id, storage_id, suborder_id, active, operations, entityversion) FROM stdin;
+COPY public.subcontractorportal_suborderinput (id, unit, plannedquantity, deliveredquantity, remainingquantity, product_id, location_id, suborder_id, active, operations, entityversion) FROM stdin;
+\.
+
+
+--
+-- Data for Name: subcontractorportal_subordermessage; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY public.subcontractorportal_subordermessage (id, date, createdat, description, staff_id, company_id, suborder_id, active, entityversion) FROM stdin;
 \.
 
 
@@ -42633,7 +42839,23 @@ COPY public.subcontractorportal_suborderoperation (id, orderid, operationid, cos
 -- Data for Name: subcontractorportal_suborderoutput; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.subcontractorportal_suborderoutput (id, unit, plannedquantity, deliveredquantity, producedquantity, remainingquantity, unitprice, createdmanually, product_id, storage_id, suborder_id, active, operations, entityversion) FROM stdin;
+COPY public.subcontractorportal_suborderoutput (id, unit, plannedquantity, deliveredquantity, producedquantity, remainingquantity, unitprice, createdmanually, product_id, location_id, suborder_id, active, operations, entityversion) FROM stdin;
+\.
+
+
+--
+-- Data for Name: subcontractorportal_suborderrealisation; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY public.subcontractorportal_suborderrealisation (id, date, producedquantity, remainingquantity, product_id, suborder_id, active, entityversion) FROM stdin;
+\.
+
+
+--
+-- Data for Name: subcontractorportal_suborderstatechange; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY public.subcontractorportal_suborderstatechange (id, dateandtime, sourcestate, targetstate, status, phase, worker, suborder_id, shift_id) FROM stdin;
 \.
 
 
@@ -42819,7 +43041,7 @@ COPY public.technologies_modifytechnologyhelper (id, remove, addnew, replace, se
 -- Data for Name: technologies_operation; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.technologies_operation (id, number, name, comment, workstationtype_id, attachment, areproductquantitiesdivisible, istjdivisible, operationgroup_id, imageurlinworkplan, productioninonecycle, laborhourlycost, laborutilization, nextoperationafterproducedtype, nextoperationafterproducedquantityunit, machinehourlycost, tj, nextoperationafterproducedquantity, machineutilization, timenextoperation, tpz, productioninonecycleunit, active, issubcontracting, assignedtooperation, quantityofworkstations, division_id, showinproductdata, productdatanumber, entityversion, product_id, createoperationoutput, tjdecreasesforenlargedstaff, minstaff, optimalstaff, pieceworkproduction, piecerate_id) FROM stdin;
+COPY public.technologies_operation (id, number, name, comment, workstationtype_id, attachment, areproductquantitiesdivisible, istjdivisible, operationgroup_id, imageurlinworkplan, productioninonecycle, laborhourlycost, laborutilization, nextoperationafterproducedtype, nextoperationafterproducedquantityunit, machinehourlycost, tj, nextoperationafterproducedquantity, machineutilization, timenextoperation, tpz, productioninonecycleunit, active, issubcontracting, assignedtooperation, quantityofworkstations, division_id, showinproductdata, productdatanumber, entityversion, product_id, createoperationoutput, tjdecreasesforenlargedstaff, minstaff, optimalstaff, pieceworkproduction, piecerate_id, unitcost) FROM stdin;
 \.
 
 
@@ -43003,7 +43225,7 @@ COPY public.technologies_technologyinputproducttype (id, name, averageprice, cre
 -- Data for Name: technologies_technologyoperationcomponent; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.technologies_technologyoperationcomponent (id, technology_id, operation_id, parent_id, entitytype, priority, nodenumber, comment, attachment, areproductquantitiesdivisible, istjdivisible, tpz, laborworktime, productioninonecycleunit, nextoperationafterproducedquantityunit, nextoperationafterproducedquantity, nextoperationafterproducedtype, machineutilization, timenextoperation, machineworktime, productioninonecycle, laborutilization, duration, tj, machinehourlycost, laborhourlycost, issubcontracting, assignedtooperation, workstationtype_id, quantityofworkstations, createdate, updatedate, createuser, updateuser, techopercomptimecalculation_id, hascorrections, division_id, showinproductdata, productdatanumber, entityversion, technologicalprocesslist_id, technologicalprocesslistassignmentdate, tjdecreasesforenlargedstaff, minstaff, optimalstaff, pieceworkproduction, piecerate_id) FROM stdin;
+COPY public.technologies_technologyoperationcomponent (id, technology_id, operation_id, parent_id, entitytype, priority, nodenumber, comment, attachment, areproductquantitiesdivisible, istjdivisible, tpz, laborworktime, productioninonecycleunit, nextoperationafterproducedquantityunit, nextoperationafterproducedquantity, nextoperationafterproducedtype, machineutilization, timenextoperation, machineworktime, productioninonecycle, laborutilization, duration, tj, machinehourlycost, laborhourlycost, issubcontracting, assignedtooperation, workstationtype_id, quantityofworkstations, createdate, updatedate, createuser, updateuser, techopercomptimecalculation_id, hascorrections, division_id, showinproductdata, productdatanumber, entityversion, technologicalprocesslist_id, technologicalprocesslistassignmentdate, tjdecreasesforenlargedstaff, minstaff, optimalstaff, pieceworkproduction, piecerate_id, unitcost) FROM stdin;
 \.
 
 
@@ -47537,7 +47759,7 @@ SELECT pg_catalog.setval('public.qcadooview_alert_id_seq', 1, false);
 -- Name: qcadooview_category_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('public.qcadooview_category_id_seq', 22, true);
+SELECT pg_catalog.setval('public.qcadooview_category_id_seq', 23, true);
 
 
 --
@@ -47751,6 +47973,13 @@ SELECT pg_catalog.setval('public.stoppage_stoppagereason_id_seq', 2, false);
 
 
 --
+-- Name: sub_order_number_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('public.sub_order_number_seq', 1, false);
+
+
+--
 -- Name: subcontractorportal_cost_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
@@ -47800,10 +48029,38 @@ SELECT pg_catalog.setval('public.subcontractorportal_suborderattachment_id_seq',
 
 
 --
+-- Name: subcontractorportal_subordercost_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('public.subcontractorportal_subordercost_id_seq', 1, false);
+
+
+--
+-- Name: subcontractorportal_suborderdto_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('public.subcontractorportal_suborderdto_id_seq', 1, false);
+
+
+--
+-- Name: subcontractorportal_suborderevent_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('public.subcontractorportal_suborderevent_id_seq', 1, false);
+
+
+--
 -- Name: subcontractorportal_suborderinput_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
 SELECT pg_catalog.setval('public.subcontractorportal_suborderinput_id_seq', 1, false);
+
+
+--
+-- Name: subcontractorportal_subordermessage_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('public.subcontractorportal_subordermessage_id_seq', 1, false);
 
 
 --
@@ -47818,6 +48075,20 @@ SELECT pg_catalog.setval('public.subcontractorportal_suborderoperation_id_seq', 
 --
 
 SELECT pg_catalog.setval('public.subcontractorportal_suborderoutput_id_seq', 1, false);
+
+
+--
+-- Name: subcontractorportal_suborderrealisation_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('public.subcontractorportal_suborderrealisation_id_seq', 1, false);
+
+
+--
+-- Name: subcontractorportal_suborderstatechange_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('public.subcontractorportal_suborderstatechange_id_seq', 1, false);
 
 
 --
@@ -52898,26 +53169,26 @@ ALTER TABLE ONLY public.stoppage_stoppagereason
 
 
 --
--- Name: subcontractorportal_cost subcontractorportal_cost_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: subcontractorportal_subordercost subcontractorportal_cost_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.subcontractorportal_cost
+ALTER TABLE ONLY public.subcontractorportal_subordercost
     ADD CONSTRAINT subcontractorportal_cost_pkey PRIMARY KEY (id);
 
 
 --
--- Name: subcontractorportal_event subcontractorportal_event_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: subcontractorportal_suborderevent subcontractorportal_event_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.subcontractorportal_event
+ALTER TABLE ONLY public.subcontractorportal_suborderevent
     ADD CONSTRAINT subcontractorportal_event_pkey PRIMARY KEY (id);
 
 
 --
--- Name: subcontractorportal_message subcontractorportal_message_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: subcontractorportal_subordermessage subcontractorportal_message_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.subcontractorportal_message
+ALTER TABLE ONLY public.subcontractorportal_subordermessage
     ADD CONSTRAINT subcontractorportal_message_pkey PRIMARY KEY (id);
 
 
@@ -52930,10 +53201,10 @@ ALTER TABLE ONLY public.subcontractorportal_operation
 
 
 --
--- Name: subcontractorportal_realisation subcontractorportal_realisation_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: subcontractorportal_suborderrealisation subcontractorportal_realisation_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.subcontractorportal_realisation
+ALTER TABLE ONLY public.subcontractorportal_suborderrealisation
     ADD CONSTRAINT subcontractorportal_realisation_pkey PRIMARY KEY (id);
 
 
@@ -52983,6 +53254,14 @@ ALTER TABLE ONLY public.subcontractorportal_suborderoutput
 
 ALTER TABLE ONLY public.subcontractorportal_subordertmp
     ADD CONSTRAINT subcontractorportal_subordertmp_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: subcontractorportal_suborderstatechange suborderstatechange_suborderstatechange_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.subcontractorportal_suborderstatechange
+    ADD CONSTRAINT suborderstatechange_suborderstatechange_pkey PRIMARY KEY (id);
 
 
 --
@@ -57246,18 +57525,18 @@ ALTER TABLE ONLY public.arch_goodfood_confectionprotocolstatechange
 
 
 --
--- Name: subcontractorportal_cost cost_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: subcontractorportal_subordercost cost_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.subcontractorportal_cost
+ALTER TABLE ONLY public.subcontractorportal_subordercost
     ADD CONSTRAINT cost_product_fkey FOREIGN KEY (product_id) REFERENCES public.basic_product(id) DEFERRABLE;
 
 
 --
--- Name: subcontractorportal_cost cost_suborder_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: subcontractorportal_subordercost cost_suborder_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.subcontractorportal_cost
+ALTER TABLE ONLY public.subcontractorportal_subordercost
     ADD CONSTRAINT cost_suborder_fkey FOREIGN KEY (suborder_id) REFERENCES public.subcontractorportal_suborder(id) DEFERRABLE;
 
 
@@ -58470,18 +58749,18 @@ ALTER TABLE ONLY public.materialflowresources_documentstatechange
 
 
 --
--- Name: subcontractorportal_event event_staff_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: subcontractorportal_suborderevent event_staff_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.subcontractorportal_event
+ALTER TABLE ONLY public.subcontractorportal_suborderevent
     ADD CONSTRAINT event_staff_fkey FOREIGN KEY (staff_id) REFERENCES public.basic_staff(id) DEFERRABLE;
 
 
 --
--- Name: subcontractorportal_event event_suborder_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: subcontractorportal_suborderevent event_suborder_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.subcontractorportal_event
+ALTER TABLE ONLY public.subcontractorportal_suborderevent
     ADD CONSTRAINT event_suborder_fkey FOREIGN KEY (suborder_id) REFERENCES public.subcontractorportal_suborder(id) DEFERRABLE;
 
 
@@ -60230,10 +60509,10 @@ ALTER TABLE ONLY public.arch_states_message
 
 
 --
--- Name: subcontractorportal_message message_company_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: subcontractorportal_subordermessage message_company_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.subcontractorportal_message
+ALTER TABLE ONLY public.subcontractorportal_subordermessage
     ADD CONSTRAINT message_company_fkey FOREIGN KEY (company_id) REFERENCES public.basic_company(id) DEFERRABLE;
 
 
@@ -60446,18 +60725,18 @@ ALTER TABLE ONLY public.arch_states_message
 
 
 --
--- Name: subcontractorportal_message message_staff_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: subcontractorportal_subordermessage message_staff_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.subcontractorportal_message
+ALTER TABLE ONLY public.subcontractorportal_subordermessage
     ADD CONSTRAINT message_staff_fkey FOREIGN KEY (staff_id) REFERENCES public.basic_staff(id) DEFERRABLE;
 
 
 --
--- Name: subcontractorportal_message message_suborder_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: subcontractorportal_subordermessage message_suborder_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.subcontractorportal_message
+ALTER TABLE ONLY public.subcontractorportal_subordermessage
     ADD CONSTRAINT message_suborder_fkey FOREIGN KEY (suborder_id) REFERENCES public.subcontractorportal_suborder(id) DEFERRABLE;
 
 
@@ -61011,6 +61290,14 @@ ALTER TABLE ONLY public.jointable_operationaltask_staff
 
 ALTER TABLE ONLY public.jointable_operationaltask_staff
     ADD CONSTRAINT operationaltask_staff_staff FOREIGN KEY (staff_id) REFERENCES public.basic_staff(id) DEFERRABLE;
+
+
+--
+-- Name: orders_operationaltask operationaltask_suborder_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.orders_operationaltask
+    ADD CONSTRAINT operationaltask_suborder_fkey FOREIGN KEY (suborder_id) REFERENCES public.subcontractorportal_suborder(id) DEFERRABLE;
 
 
 --
@@ -65062,18 +65349,18 @@ ALTER TABLE ONLY public.qualitycontrol_qualitydeliveredproduct
 
 
 --
--- Name: subcontractorportal_realisation realisation_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: subcontractorportal_suborderrealisation realisation_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.subcontractorportal_realisation
+ALTER TABLE ONLY public.subcontractorportal_suborderrealisation
     ADD CONSTRAINT realisation_product_fkey FOREIGN KEY (product_id) REFERENCES public.basic_product(id) DEFERRABLE;
 
 
 --
--- Name: subcontractorportal_realisation realisation_suborder_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: subcontractorportal_suborderrealisation realisation_suborder_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.subcontractorportal_realisation
+ALTER TABLE ONLY public.subcontractorportal_suborderrealisation
     ADD CONSTRAINT realisation_suborder_fkey FOREIGN KEY (suborder_id) REFERENCES public.subcontractorportal_suborder(id) DEFERRABLE;
 
 
@@ -66630,6 +66917,22 @@ ALTER TABLE ONLY public.subcontractorportal_suborderattachment
 
 
 --
+-- Name: subcontractorportal_subordercost subordercost_operationaltask_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.subcontractorportal_subordercost
+    ADD CONSTRAINT subordercost_operationaltask_fkey FOREIGN KEY (operationaltask_id) REFERENCES public.orders_operationaltask(id) DEFERRABLE;
+
+
+--
+-- Name: subcontractorportal_subordercost subordercost_order_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.subcontractorportal_subordercost
+    ADD CONSTRAINT subordercost_order_fkey FOREIGN KEY (order_id) REFERENCES public.orders_order(id) DEFERRABLE;
+
+
+--
 -- Name: subcontractorportal_suborderinput suborderinput_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -66642,7 +66945,7 @@ ALTER TABLE ONLY public.subcontractorportal_suborderinput
 --
 
 ALTER TABLE ONLY public.subcontractorportal_suborderinput
-    ADD CONSTRAINT suborderinput_storage_fkey FOREIGN KEY (storage_id) REFERENCES public.materialflow_location(id) DEFERRABLE;
+    ADD CONSTRAINT suborderinput_storage_fkey FOREIGN KEY (location_id) REFERENCES public.materialflow_location(id) DEFERRABLE;
 
 
 --
@@ -66690,7 +66993,7 @@ ALTER TABLE ONLY public.subcontractorportal_suborderoutput
 --
 
 ALTER TABLE ONLY public.subcontractorportal_suborderoutput
-    ADD CONSTRAINT suborderoutput_storage_fkey FOREIGN KEY (storage_id) REFERENCES public.materialflow_location(id) DEFERRABLE;
+    ADD CONSTRAINT suborderoutput_storage_fkey FOREIGN KEY (location_id) REFERENCES public.materialflow_location(id) DEFERRABLE;
 
 
 --
@@ -66731,6 +67034,22 @@ ALTER TABLE ONLY public.ordersforsubproductsgeneration_suborders
 
 ALTER TABLE ONLY public.arch_ordersforsubproductsgeneration_suborders
     ADD CONSTRAINT suborders_ordersgroup_fkey FOREIGN KEY (ordersgroup_id) REFERENCES public.arch_ordersgroups_ordersgroup(id) DEFERRABLE;
+
+
+--
+-- Name: subcontractorportal_suborderstatechange suborderstatechange_shift_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.subcontractorportal_suborderstatechange
+    ADD CONSTRAINT suborderstatechange_shift_fkey FOREIGN KEY (shift_id) REFERENCES public.basic_shift(id) DEFERRABLE;
+
+
+--
+-- Name: subcontractorportal_suborderstatechange suborderstatechange_suborder_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.subcontractorportal_suborderstatechange
+    ADD CONSTRAINT suborderstatechange_suborder_fkey FOREIGN KEY (suborder_id) REFERENCES public.subcontractorportal_suborder(id) DEFERRABLE;
 
 
 --

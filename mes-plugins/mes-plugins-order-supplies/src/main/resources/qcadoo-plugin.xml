@@ -184,6 +184,12 @@
         <view:view-tab resource="view/tabExtensions/supplyParametersForMinimalStates.xml"/>
 
         <model:model-field plugin="orders" model="order">
+            <model:hasMany name="coverageAnalysisForOrders"
+                           model="coverageAnalysisForOrder" plugin="orderSupplies" joinField="order"
+                           cascade="delete" copyable="false"/>
+        </model:model-field>
+
+        <model:model-field plugin="orders" model="order">
             <model:hasMany name="coverageProductLoggings"
                            model="coverageProductLogging" plugin="orderSupplies" joinField="order"
                            cascade="delete" copyable="false"/>

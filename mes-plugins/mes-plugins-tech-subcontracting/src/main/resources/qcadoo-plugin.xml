@@ -80,6 +80,13 @@
 			<model:boolean name="isSubcontracting" default="false" />
 		</model:model-field>
 		<model:model-field plugin="technologies" model="operation">
+			<model:decimal name="unitCost" default="0">
+				<model:validatesUnscaledValue max="7"/>
+				<model:validatesScale max="5"/>
+				<model:validatesRange from="0"/>
+			</model:decimal>
+		</model:model-field>
+		<model:model-field plugin="technologies" model="operation">
 			<model:hasMany name="companies" joinField="operation"
 				plugin="techSubcontracting" model="companyOperation" />
 		</model:model-field>
@@ -87,7 +94,14 @@
 		<model:model-field plugin="technologies" model="technologyOperationComponent">
 			<model:boolean name="isSubcontracting" default="false" />
 		</model:model-field>
-		
+		<model:model-field plugin="technologies" model="technologyOperationComponent">
+			<model:decimal name="unitCost" default="0">
+				<model:validatesUnscaledValue max="7"/>
+				<model:validatesScale max="5"/>
+				<model:validatesRange from="0"/>
+			</model:decimal>
+		</model:model-field>
+
 		<model:model-field plugin="technologies" model="operationGroup">
 			<model:hasMany name="companies" joinField="operationGroup"
 				plugin="techSubcontracting" model="companyOperationGroup" />

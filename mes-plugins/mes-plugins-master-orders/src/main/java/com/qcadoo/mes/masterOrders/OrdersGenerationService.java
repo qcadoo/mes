@@ -39,8 +39,6 @@ import static com.qcadoo.mes.orders.constants.OrderFields.PRODUCTION_LINE;
 @Service
 public class OrdersGenerationService {
 
-    private static final String IS_SUBCONTRACTED = "isSubcontracted";
-
     private static final String IGNORE_MISSING_COMPONENTS = "ignoreMissingComponents";
 
     private static final String L_AUTOMATICALLY_GENERATE_ORDERS_FOR_COMPONENTS = "automaticallyGenerateOrdersForComponents";
@@ -191,7 +189,6 @@ public class OrdersGenerationService {
         order.setField(OrderFields.DATE_FROM, dateFrom);
         order.setField(OrderFields.DATE_TO, dateTo);
         order.setField(OrderFields.EXTERNAL_SYNCHRONIZED, true);
-        order.setField(IS_SUBCONTRACTED, false);
         order.setField(OrderFields.STATE, OrderStateStringValues.PENDING);
         order.setField(OrderFields.PLANNED_QUANTITY, plannedQuantity);
 

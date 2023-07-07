@@ -28,6 +28,7 @@ public class OperationDurationAnalysisViewController {
                 ProductionCountingConstants.VIEW_OPERATION_DURATION_ANALYSIS, Collections.emptyMap(), locale);
 
         Map<String, String> slickGridTranslations = translationService.getMessagesGroup("slickGrid", locale);
+        slickGridTranslations.putAll(translationService.getMessagesGroup("productionCounting", locale));
 
         slickGridTranslations.putAll(translationService.getMessagesGroup("commons", locale));
         slickGridTranslations.putAll(translationService.getMessagesGroup("operationDurationAnalysis", locale));

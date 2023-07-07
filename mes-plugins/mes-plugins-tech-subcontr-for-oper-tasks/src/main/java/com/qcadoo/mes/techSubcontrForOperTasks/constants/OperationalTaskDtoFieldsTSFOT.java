@@ -21,16 +21,14 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.techSubcontracting.constants;
+package com.qcadoo.mes.techSubcontrForOperTasks.constants;
 
-public final class TechnologyOperationComponentFieldsTS {
+public final class OperationalTaskDtoFieldsTSFOT {
 
-    private TechnologyOperationComponentFieldsTS() {
+    private OperationalTaskDtoFieldsTSFOT() {
 
     }
 
-    public static final String IS_SUBCONTRACTING = "isSubcontracting";
-
-    public static final String UNIT_COST = "unitCost";
+    public static final String TECHNOLOGY_OPERATION_COMPONENT_IS_SUBCONTRACTING = "technologyOperationComponentIsSubcontracting";
 
 }

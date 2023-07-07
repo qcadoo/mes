@@ -101,7 +101,30 @@
 			]]></script>
                 </smallButton>
             </group>
-
+            <group name="genericExport">
+                <smallButton name="csv" state="enabled" icon="exportToCsvIcon16.png">
+                    <script>
+                        <![CDATA[
+					this.addOnChangeListener({
+						onClick: function() {
+							#{grid}.performEvent('exportToCsv', [], 'exportToCsv');
+						}
+					});
+				]]>
+                    </script>
+                </smallButton>
+                <smallButton name="pdf" state="enabled" icon="pdfIcon16.png">
+                    <script>
+                        <![CDATA[
+					this.addOnChangeListener({
+						onClick: function() {
+							#{grid}.performEvent('exportToPdf', [], 'exportToPdf');
+						}
+					});
+				]]>
+                    </script>
+                </smallButton>
+            </group>
             <group name="status">
                 <smallButton name="acceptTracking" icon="startIcon16.png"
                              state="disabled">

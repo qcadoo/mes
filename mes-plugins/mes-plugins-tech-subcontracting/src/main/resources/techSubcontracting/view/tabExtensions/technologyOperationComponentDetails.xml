@@ -25,18 +25,27 @@
 
 -->
 <windowTabExtension xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xmlns="http://schema.qcadoo.org/modules/windowTabExtension"
-	xsi:schemaLocation="http://schema.qcadoo.org/modules/windowTabExtension http://schema.qcadoo.org/modules/windowTabExtension.xsd"
-	plugin="technologies" view="technologyOperationComponentDetails">
+                    xmlns="http://schema.qcadoo.org/modules/windowTabExtension"
+                    xsi:schemaLocation="http://schema.qcadoo.org/modules/windowTabExtension http://schema.qcadoo.org/modules/windowTabExtension.xsd"
+                    plugin="technologies" view="technologyOperationComponentDetails">
 
-	<windowTab name="techSubcontractingTab" reference="techSubcontractingTab">
-		<component type="gridLayout" name="gridLayout"
-			hasBorders="false" columns="2" rows="1">
-			<layoutElement column="1" row="1">
-				<component type="checkbox" name="isSubcontracting" field="#{form}.isSubcontracting"
-					reference="isSubcontracting" hasDescription="true" />
-			</layoutElement>
-		</component>
-	</windowTab>
+    <windowTab name="techSubcontractingTab" reference="techSubcontractingTab">
+        <component type="gridLayout" name="gridLayout"
+                   hasBorders="false" columns="3" rows="2">
+            <layoutElement column="1" row="1">
+                <component type="checkbox" name="isSubcontracting" field="#{form}.isSubcontracting"
+                           reference="isSubcontracting" hasDescription="true">
+                    <option type="labelWidth" value="55"/>
+                </component>
+            </layoutElement>
+            <layoutElement column="1" row="2">
+                <component type="input" name="unitCost" field="#{form}.unitCost"
+                           reference="unitCost" hasDescription="true">
+                    <option type="labelWidth" value="55"/>
+                    <option type="alignment" value="right"/>
+                </component>
+            </layoutElement>
+        </component>
+    </windowTab>
 
 </windowTabExtension>
