@@ -92,6 +92,11 @@ public class TechnologyValidationAspect extends AbstractStateListenerAspect {
             return;
         }
 
+
+        if (technologyValidationService.checkIfRootOperationIsSubOrder(stateChangeContext)) {
+            return;
+        }
+
         Entity technology = stateChangeContext.getOwner();
         String targetState = stateChangeContext.getStateChangeEntity().getStringField(TechnologyStateChangeFields.TARGET_STATE);
         Entity parameter = parameterService.getParameter();

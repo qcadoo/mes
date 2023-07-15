@@ -36,6 +36,7 @@ import com.qcadoo.mes.technologies.tree.ProductStructureTreeService;
 import com.qcadoo.mes.technologies.tree.TechnologyTreeValidationService;
 import com.qcadoo.model.api.*;
 import com.qcadoo.model.api.validators.ErrorMessage;
+import com.qcadoo.plugin.api.PluginUtils;
 import com.qcadoo.view.api.ComponentState.MessageType;
 import com.qcadoo.view.api.components.FormComponent;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -153,6 +154,21 @@ public class TechnologyValidationService {
         }
 
         return true;
+    }
+
+    public boolean checkIfRootOperationIsSubOrder(StateChangeContext stateChangeContext) {
+        if(PluginUtils.isEnabled("techSubcontracting")) {
+            Entity technology = stateChangeContext.getOwner();
+            final EntityTree operationComponents = technology.getTreeField(TechnologyFields.OPERATION_COMPONENTS);
+            final EntityTreeNode root = operationComponents.getRoot();
+            if(root.getBooleanField("isSubcontracting")) {
+                stateChangeContext.addValidationError(
+                        "technologies.technology.validate.global.error.rootOperationIsSubOrder");
+                return false;
+            }
+        }
+
+        return false;
     }
 
     public void checkIfEveryOperationHasInComponents(final StateChangeContext stateChangeContext) {

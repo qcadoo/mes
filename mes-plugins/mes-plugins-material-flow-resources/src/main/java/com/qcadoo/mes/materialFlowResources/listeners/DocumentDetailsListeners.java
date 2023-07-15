@@ -33,6 +33,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
+import com.qcadoo.mes.materialFlowResources.service.*;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.exception.LockAcquisitionException;
 import org.json.JSONObject;
@@ -55,12 +56,6 @@ import com.qcadoo.mes.materialFlowResources.constants.PositionFields;
 import com.qcadoo.mes.materialFlowResources.constants.ResourceFields;
 import com.qcadoo.mes.materialFlowResources.exceptions.InvalidResourceException;
 import com.qcadoo.mes.materialFlowResources.print.DispositionOrderPdfService;
-import com.qcadoo.mes.materialFlowResources.service.DocumentErrorsLogger;
-import com.qcadoo.mes.materialFlowResources.service.DocumentService;
-import com.qcadoo.mes.materialFlowResources.service.DocumentStateChangeService;
-import com.qcadoo.mes.materialFlowResources.service.ReceiptDocumentForReleaseHelper;
-import com.qcadoo.mes.materialFlowResources.service.ResourceManagementService;
-import com.qcadoo.mes.materialFlowResources.service.ResourceStockService;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -117,6 +112,9 @@ public class DocumentDetailsListeners {
 
     @Autowired
     private DocumentStateChangeService documentStateChangeService;
+
+    @Autowired
+    private List<AfterDocumentAcceptListener> afterDocumentAcceptListeners;
 
     public void showProductAttributes(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         List<String> ids = Arrays.asList(args[0].replace("[", "").replace("]", "").replaceAll("\"", "").split("\\s*,\\s*"));
@@ -349,6 +347,10 @@ public class DocumentDetailsListeners {
 
             documentService.updateOrdersGroupIssuedMaterials(
                     document.getBelongsToField(OrdersGroupIssuedMaterialFields.ORDERS_GROUP), null);
+
+            for (AfterDocumentAcceptListener afterDocumentAcceptListener : afterDocumentAcceptListeners) {
+                afterDocumentAcceptListener.run(document);
+            }
 
             String successMessage = String.format("DOCUMENT ACCEPT SUCCESS: id = %d number = %s", document.getId(),
                     document.getStringField(DocumentFields.NUMBER));
