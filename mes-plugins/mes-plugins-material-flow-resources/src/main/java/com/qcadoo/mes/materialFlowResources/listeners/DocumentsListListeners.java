@@ -23,6 +23,7 @@ package com.qcadoo.mes.materialFlowResources.listeners;
 
 import java.util.List;
 
+import com.qcadoo.mes.materialFlowResources.service.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,11 +36,6 @@ import com.qcadoo.mes.materialFlowResources.constants.DocumentFields;
 import com.qcadoo.mes.materialFlowResources.constants.DocumentState;
 import com.qcadoo.mes.materialFlowResources.constants.MaterialFlowResourcesConstants;
 import com.qcadoo.mes.materialFlowResources.constants.OrdersGroupIssuedMaterialFields;
-import com.qcadoo.mes.materialFlowResources.service.DocumentErrorsLogger;
-import com.qcadoo.mes.materialFlowResources.service.DocumentService;
-import com.qcadoo.mes.materialFlowResources.service.DocumentStateChangeService;
-import com.qcadoo.mes.materialFlowResources.service.ReceiptDocumentForReleaseHelper;
-import com.qcadoo.mes.materialFlowResources.service.ResourceManagementService;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -78,6 +74,10 @@ public class DocumentsListListeners {
 
     @Autowired
     private DocumentStateChangeService documentStateChangeService;
+
+    @Autowired
+    private List<AfterDocumentAcceptListener> afterDocumentAcceptListeners;
+
 
     public void createResourcesForDocuments(final ViewDefinitionState view, final ComponentState componentState,
             final String[] args) {
@@ -173,6 +173,10 @@ public class DocumentsListListeners {
                 documentErrorsLogger.saveResourceStockLackErrorsToSystemLogs(document);
 
                 documentStateChangeService.buildFailureStateChangeAfterRollback(document.getId());
+
+                for (AfterDocumentAcceptListener afterDocumentAcceptListener : afterDocumentAcceptListeners) {
+                    afterDocumentAcceptListener.run(document);
+                }
 
                 document.getGlobalErrors().forEach(gridComponent::addMessage);
                 document.getErrors().values().forEach(gridComponent::addMessage);

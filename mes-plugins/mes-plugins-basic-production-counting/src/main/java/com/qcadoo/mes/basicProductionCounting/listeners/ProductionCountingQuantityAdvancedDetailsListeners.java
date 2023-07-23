@@ -68,6 +68,7 @@ public class  ProductionCountingQuantityAdvancedDetailsListeners {
     public void afterSave(Entity productionCountingQuantity) {
 
     }
+
     private void fillOrderAdditionalProductField(Entity productionCountingQuantity) {
 
         if(productionCountingQuantity.getStringField(ProductionCountingQuantityFields.TYPE_OF_MATERIAL)
