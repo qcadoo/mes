@@ -147,6 +147,28 @@ public class OrderExternalServiceCostDetailsListeners {
         }
     }
 
+    public final void calculateUnitCost(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        FieldComponent quantityField = (FieldComponent) view.getComponentByReference(OrderExternalServiceCostFields.QUANTITY);
+        FieldComponent unitCostField = (FieldComponent) view.getComponentByReference(OrderExternalServiceCostFields.UNIT_COST);
+        FieldComponent totalCostField = (FieldComponent) view.getComponentByReference(OrderExternalServiceCostFields.TOTAL_COST);
+
+        if (isValidDecimalField(view, Lists.newArrayList(OrderExternalServiceCostFields.QUANTITY, OrderExternalServiceCostFields.UNIT_COST, OrderExternalServiceCostFields.TOTAL_COST))) {
+            if (StringUtils.isNotEmpty((String) quantityField.getFieldValue()) && StringUtils.isNotEmpty((String) totalCostField.getFieldValue())) {
+                BigDecimal quantity = getBigDecimalFromField(quantityField, LocaleContextHolder.getLocale());
+                BigDecimal totalCost = getBigDecimalFromField(unitCostField, LocaleContextHolder.getLocale());
+
+                if (BigDecimal.ZERO.compareTo(quantity) == 0) {
+                    view.addMessage("techSubcontracting.orderExternalServiceCost.message.quantityIsZero", ComponentState.MessageType.INFO);
+                } else {
+                    BigDecimal unitCost = totalCost.divide(quantity, numberService.getMathContext());
+
+                    unitCostField.setFieldValue(numberService.formatWithMinimumFractionDigits(unitCost, 0));
+                    unitCostField.requestComponentUpdateState();
+                }
+            }
+        }
+    }
+
     private boolean isValidDecimalField(final ViewDefinitionState view, final List<String> fieldNames) {
         boolean isValid = true;
 

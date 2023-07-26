@@ -113,6 +113,9 @@
                         <component type="input" name="totalCost" field="totalCost"
                                    reference="totalCost">
                             <option type="alignment" value="right"/>
+
+                            <listener event="onInputChange" method="calculateUnitCost"
+                                      class="com.qcadoo.mes.techSubcontracting.listeners.OrderExternalServiceCostDetailsListeners"/>
                         </component>
                     </layoutElement>
                 </component>
