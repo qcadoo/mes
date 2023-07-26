@@ -36,6 +36,10 @@
                 <component type="checkbox" name="isSubcontracting" field="#{form}.isSubcontracting"
                            reference="isSubcontracting" hasDescription="true">
                     <option type="labelWidth" value="55"/>
+
+                    <listener event="onChange"
+                              class="com.qcadoo.mes.techSubcontracting.listeners.OperationDetailsListenersTS"
+                              method="onIsSubcontractingChange"/>
                 </component>
             </layoutElement>
             <layoutElement column="1" row="2">

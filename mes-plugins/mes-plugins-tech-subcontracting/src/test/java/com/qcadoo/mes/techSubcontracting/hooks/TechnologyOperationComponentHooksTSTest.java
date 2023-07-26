@@ -23,19 +23,19 @@
  */
 package com.qcadoo.mes.techSubcontracting.hooks;
 
-import static com.qcadoo.mes.techSubcontracting.constants.TechnologyOperationComponentFieldsTS.IS_SUBCONTRACTING;
-import static com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields.OPERATION;
-import static org.mockito.Mockito.when;
+import com.qcadoo.mes.techSubcontracting.constants.OperationFieldsTS;
+import com.qcadoo.mes.techSubcontracting.constants.TechnologyOperationComponentFieldsTS;
+import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
+import com.qcadoo.model.api.DataDefinition;
+import com.qcadoo.model.api.Entity;
 import junit.framework.Assert;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
-import com.qcadoo.model.api.DataDefinition;
-import com.qcadoo.model.api.Entity;
+import static org.mockito.Mockito.when;
 
 public class TechnologyOperationComponentHooksTSTest {
 
@@ -51,58 +51,56 @@ public class TechnologyOperationComponentHooksTSTest {
     public void init() {
         technologyOperationComponentHooksTS = new TechnologyOperationComponentHooksTS();
         MockitoAnnotations.initMocks(this);
-        when(technologyOperationComponent.getBelongsToField(OPERATION)).thenReturn(operation);
-        when(technologyOperationComponent.getField(IS_SUBCONTRACTING)).thenReturn(null);
+        when(technologyOperationComponent.getBelongsToField(TechnologyOperationComponentFields.OPERATION)).thenReturn(operation);
+        when(technologyOperationComponent.getField(TechnologyOperationComponentFieldsTS.IS_SUBCONTRACTING)).thenReturn(null);
     }
 
     @Test
     public void shouldSetTrueFromLowerInstance() throws Exception {
         // given
-        when(technologyOperationComponent.getField(IS_SUBCONTRACTING)).thenReturn(null);
-        when(operation.getBooleanField(IS_SUBCONTRACTING)).thenReturn(true);
+        when(technologyOperationComponent.getField(TechnologyOperationComponentFieldsTS.IS_SUBCONTRACTING)).thenReturn(null);
+        when(operation.getBooleanField(OperationFieldsTS.IS_SUBCONTRACTING)).thenReturn(true);
         // when
-        technologyOperationComponentHooksTS.copySubstractingFieldFromLowerInstance(technologyOperationComponentDD,
+        technologyOperationComponentHooksTS.copySubcontractingFieldsFromLowerInstance(technologyOperationComponentDD,
                 technologyOperationComponent);
         // then
-        Mockito.verify(technologyOperationComponent).setField(IS_SUBCONTRACTING, true);
+        Mockito.verify(technologyOperationComponent).setField(TechnologyOperationComponentFieldsTS.IS_SUBCONTRACTING, true);
     }
 
     @Test
     public void shouldSetFalseFromLowerInstance() throws Exception {
         // given
-        when(technologyOperationComponent.getField(IS_SUBCONTRACTING)).thenReturn(null);
-        when(operation.getBooleanField("isSubcontracting")).thenReturn(false);
+        when(technologyOperationComponent.getField(TechnologyOperationComponentFieldsTS.IS_SUBCONTRACTING)).thenReturn(null);
+        when(operation.getBooleanField(OperationFieldsTS.IS_SUBCONTRACTING)).thenReturn(false);
         // when
-        technologyOperationComponentHooksTS.copySubstractingFieldFromLowerInstance(technologyOperationComponentDD,
+        technologyOperationComponentHooksTS.copySubcontractingFieldsFromLowerInstance(technologyOperationComponentDD,
                 technologyOperationComponent);
         // then
-        Mockito.verify(technologyOperationComponent).setField(IS_SUBCONTRACTING, false);
+        Mockito.verify(technologyOperationComponent).setField(TechnologyOperationComponentFieldsTS.IS_SUBCONTRACTING, false);
     }
 
     @Test
     public final void shouldCopyFalseValueFromFieldFromTheSameLevel() throws Exception {
         // given
-        when(technologyOperationComponent.getBooleanField(IS_SUBCONTRACTING)).thenReturn(false);
+        when(technologyOperationComponent.getBooleanField(TechnologyOperationComponentFieldsTS.IS_SUBCONTRACTING)).thenReturn(false);
         // when
-        technologyOperationComponentHooksTS.copySubstractingFieldFromLowerInstance(technologyOperationComponentDD,
+        technologyOperationComponentHooksTS.copySubcontractingFieldsFromLowerInstance(technologyOperationComponentDD,
                 technologyOperationComponent);
         // then
-        boolean isSubcontracting = technologyOperationComponent.getBooleanField(IS_SUBCONTRACTING);
+        boolean isSubcontracting = technologyOperationComponent.getBooleanField(TechnologyOperationComponentFieldsTS.IS_SUBCONTRACTING);
         Assert.assertEquals(false, isSubcontracting);
-
     }
 
     @Test
     public final void shouldCopyTrueValueFromFieldFromTheSameLevel() throws Exception {
         // given
-        when(technologyOperationComponent.getBooleanField(IS_SUBCONTRACTING)).thenReturn(true);
+        when(technologyOperationComponent.getBooleanField(TechnologyOperationComponentFieldsTS.IS_SUBCONTRACTING)).thenReturn(true);
         // when
-        technologyOperationComponentHooksTS.copySubstractingFieldFromLowerInstance(technologyOperationComponentDD,
+        technologyOperationComponentHooksTS.copySubcontractingFieldsFromLowerInstance(technologyOperationComponentDD,
                 technologyOperationComponent);
         // then
-        boolean isSubcontracting = technologyOperationComponent.getBooleanField(IS_SUBCONTRACTING);
+        boolean isSubcontracting = technologyOperationComponent.getBooleanField(TechnologyOperationComponentFieldsTS.IS_SUBCONTRACTING);
         Assert.assertEquals(true, isSubcontracting);
-
     }
 
 }

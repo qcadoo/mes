@@ -21,20 +21,29 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.techSubcontracting.constants;
+package com.qcadoo.mes.techSubcontracting.hooks;
 
-public final class TechSubcontractingConstants {
+import com.qcadoo.mes.techSubcontracting.constants.OperationFieldsTS;
+import com.qcadoo.view.api.ViewDefinitionState;
+import com.qcadoo.view.api.components.CheckBoxComponent;
+import com.qcadoo.view.api.components.FieldComponent;
+import org.springframework.stereotype.Service;
 
-    private TechSubcontractingConstants() {
+@Service
+public class OperationDetailsHooksTS {
 
+    public void setUnitCostField(final ViewDefinitionState view) {
+        CheckBoxComponent isSubcontractingCheckBox = (CheckBoxComponent) view.getComponentByReference(OperationFieldsTS.IS_SUBCONTRACTING);
+        FieldComponent unitCostField = (FieldComponent) view.getComponentByReference(OperationFieldsTS.UNIT_COST);
+
+        boolean isChecked = isSubcontractingCheckBox.isChecked();
+
+        if (!isChecked) {
+            unitCostField.setFieldValue(null);
+        }
+
+        unitCostField.setEnabled(isChecked);
+        unitCostField.requestComponentUpdateState();
     }
-
-    public static final String PLUGIN_IDENTIFIER = "techSubcontracting";
-
-    public static final String MODEL_COMPANY_OPERATION = "companyOperation";
-
-    public static final String MODEL_COMPANY_OPERATION_GROUP = "companyOperationGroup";
-
-    public static final String MODEL_ORDER_EXTERNAL_SERVICE_COST = "orderExternalServiceCost";
 
 }

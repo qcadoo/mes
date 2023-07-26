@@ -33,4 +33,6 @@ public final class TechnologyOperationComponentFieldsTS {
 
     public static final String UNIT_COST = "unitCost";
 
+    public static final String ORDER_EXTERNAL_SERVICE_COSTS = "orderExternalServiceCosts";
+
 }

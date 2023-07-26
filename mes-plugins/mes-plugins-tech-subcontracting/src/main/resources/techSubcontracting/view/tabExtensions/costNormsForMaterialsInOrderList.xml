@@ -29,24 +29,28 @@
                     xsi:schemaLocation="http://schema.qcadoo.org/modules/windowTabExtension http://schema.qcadoo.org/modules/windowTabExtension.xsd"
                     plugin="costNormsForMaterials" view="costNormsForMaterialsInOrderList">
 
-	<windowTab name="orderAdditionalDirectCosts">
-		<component type="gridLayout" name="orderAdditionalDirectCostLayout" columns="1"
-		           rows="1">
+	<windowTab name="orderExternalServiceCosts">
+		<component type="gridLayout" name="orderExternalServicesCostLayout" columns="1"
+				   rows="1">
 			<layoutElement column="1" row="1">
-				<component type="grid" name="orderAdditionalDirectCosts" reference="orderAdditionalDirectCosts"
-				           source="#{order}.orderAdditionalDirectCosts">
-					<option type="column" name="additionalDirectCostNumber" fields="additionalDirectCost"
-					        expression="#additionalDirectCost.get('number')" link="true" width="100"/>
-					<option type="column" name="additionalDirectCostName" fields="additionalDirectCost"
-					        expression="#additionalDirectCost.get('name')" link="true" width="150"/>
-					<option type="column" name="actualCost" fields="actualCost" link="true" width="50"/>
+				<component type="grid" name="orderExternalServiceCosts" reference="orderExternalServiceCosts"
+						   source="#{order}.orderExternalServiceCosts">
+					<option type="column" name="operationNumber" fields="technologyOperationComponent"
+							expression="#technologyOperationComponent?.get('operation').get('number')" link="true" width="150"/>
+					<option type="column" name="productNumber" fields="product"
+							expression="#product?.get('number')" link="true" width="100"/>
+					<option type="column" name="unitCost" fields="unitCost" width="75"/>
+					<option type="column" name="quantity" fields="quantity" width="50"/>
+					<option type="column" name="productUnit" fields="product"
+							expression="#product['unit']"	width="50"/>
+					<option type="column" name="totalCost" fields="totalCost"  width="75"/>
 
-					<option type="order" column="additionalDirectCostNumber" direction="asc"/>
+					<option type="order" column="operationNumber" direction="asc"/>
 
-					<option type="searchable" value="additionalDirectCostNumber,additionalDirectCostName,actualCost"/>
-					<option type="orderable" value="additionalDirectCostNumber,additionalDirectCostName,actualCost"/>
+					<option type="searchable" value="operationNumber,productNumber,unitCost,quantity,productUnit,totalCost"/>
+					<option type="orderable" value="operationNumber,productNumber,unitCost,quantity,productUnit,totalCost"/>
 
-					<option type="correspondingView" value="costCalculation/orderAdditionalDirectCostDetails" />
+					<option type="correspondingView" value="techSubcontracting/orderExternalServiceCostDetails" />
 					<option type="correspondingComponent" value="form" />
 					<option type="correspondingViewInModal" value="true" />
 
@@ -59,5 +63,5 @@
 			</layoutElement>
 		</component>
 	</windowTab>
-
+	
 </windowTabExtension>

@@ -23,18 +23,12 @@
  */
 package com.qcadoo.mes.techSubcontracting.constants;
 
-public final class TechSubcontractingConstants {
+public final class OrderFieldsTS {
 
-    private TechSubcontractingConstants() {
+    private OrderFieldsTS() {
 
     }
 
-    public static final String PLUGIN_IDENTIFIER = "techSubcontracting";
-
-    public static final String MODEL_COMPANY_OPERATION = "companyOperation";
-
-    public static final String MODEL_COMPANY_OPERATION_GROUP = "companyOperationGroup";
-
-    public static final String MODEL_ORDER_EXTERNAL_SERVICE_COST = "orderExternalServiceCost";
+    public static final String ORDER_EXTERNAL_SERVICE_COSTS = "orderExternalServiceCosts";
 
 }

@@ -21,20 +21,14 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.techSubcontracting.constants;
+package com.qcadoo.mes.costCalculation.constants;
 
-public final class TechSubcontractingConstants {
+public final class TechnologyOperationComponentFieldsCC {
 
-    private TechSubcontractingConstants() {
+    private TechnologyOperationComponentFieldsCC() {
 
     }
 
-    public static final String PLUGIN_IDENTIFIER = "techSubcontracting";
-
-    public static final String MODEL_COMPANY_OPERATION = "companyOperation";
-
-    public static final String MODEL_COMPANY_OPERATION_GROUP = "companyOperationGroup";
-
-    public static final String MODEL_ORDER_EXTERNAL_SERVICE_COST = "orderExternalServiceCost";
+    public static final String ADDITIONAL_DIRECT_COSTS = "additionalDirectCosts";
 
 }
