@@ -45,11 +45,17 @@ public class OrderExternalServiceCostHooks {
     }
 
     public void onSave(final DataDefinition orderExternalServiceCostDD, final Entity orderExternalServiceCost) {
-        BigDecimal quantity = BigDecimalUtils.convertNullToZero(orderExternalServiceCost.getDecimalField(OrderExternalServiceCostFields.QUANTITY));
-        BigDecimal unitCost = BigDecimalUtils.convertNullToZero(orderExternalServiceCost.getDecimalField(OrderExternalServiceCostFields.UNIT_COST));
-        BigDecimal totalCost = quantity.multiply(unitCost, numberService.getMathContext());
+        setTotalCost(orderExternalServiceCost);
+    }
 
-        orderExternalServiceCost.setField(OrderExternalServiceCostFields.TOTAL_COST, numberService.setScaleWithDefaultMathContext(totalCost));
+    private void setTotalCost(final Entity orderExternalServiceCost) {
+        if (Objects.isNull(orderExternalServiceCost.getDecimalField(OrderExternalServiceCostFields.TOTAL_COST))) {
+            BigDecimal quantity = BigDecimalUtils.convertNullToZero(orderExternalServiceCost.getDecimalField(OrderExternalServiceCostFields.QUANTITY));
+            BigDecimal unitCost = BigDecimalUtils.convertNullToZero(orderExternalServiceCost.getDecimalField(OrderExternalServiceCostFields.UNIT_COST));
+            BigDecimal totalCost = quantity.multiply(unitCost, numberService.getMathContext());
+
+            orderExternalServiceCost.setField(OrderExternalServiceCostFields.TOTAL_COST, numberService.setScaleWithDefaultMathContext(totalCost));
+        }
     }
 
     private void setIsAddedManually(final Entity orderExternalServiceCost) {

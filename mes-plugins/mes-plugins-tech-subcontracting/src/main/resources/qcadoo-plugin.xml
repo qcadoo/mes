@@ -115,17 +115,17 @@
 
         <model:model-field model="product" plugin="basic">
             <model:hasMany name="orderExternalServiceCosts" plugin="techSubcontracting" model="orderExternalServiceCost"
-                           joinField="product" cascade="delete" copyable="true"/>
+                           joinField="product" cascade="delete"/>
         </model:model-field>
 
         <model:model-field model="technologyOperationComponent" plugin="technologies">
             <model:hasMany name="orderExternalServiceCosts" plugin="techSubcontracting" model="orderExternalServiceCost"
-                           joinField="technologyOperationComponent" cascade="delete" copyable="true"/>
+                           joinField="technologyOperationComponent" cascade="delete"/>
         </model:model-field>
 
         <model:model-field model="order" plugin="orders">
             <model:hasMany name="orderExternalServiceCosts" plugin="techSubcontracting" model="orderExternalServiceCost"
-                           joinField="order" cascade="delete" copyable="true"/>
+                           joinField="order" cascade="delete"/>
         </model:model-field>
 
         <model:model-hook plugin="technologies" model="technologyOperationComponent">

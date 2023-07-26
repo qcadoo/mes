@@ -42,8 +42,22 @@ import java.util.Objects;
 public class OrderExternalServiceCostDetailsHooks {
 
     public void onBeforeRender(final ViewDefinitionState view) {
+        setFormEnabled(view);
         setTechnologyOperationComponentLookup(view);
         setQuantityUnit(view);
+    }
+
+    private void setFormEnabled(final ViewDefinitionState view) {
+        FormComponent orderExternalServiceCostForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
+
+        Entity orderExternalServiceCost = orderExternalServiceCostForm.getPersistedEntityWithIncludedFormValues();
+
+        if (Objects.nonNull(orderExternalServiceCost)) {
+            boolean isSaved = Objects.nonNull(orderExternalServiceCost.getId());
+            boolean isAddedManually = orderExternalServiceCost.getBooleanField(OrderExternalServiceCostFields.IS_ADDED_MANUALLY);
+
+            orderExternalServiceCostForm.setFormEnabled(!isSaved || isAddedManually);
+        }
     }
 
     private void setTechnologyOperationComponentLookup(final ViewDefinitionState view) {
