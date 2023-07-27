@@ -49,10 +49,13 @@
             <validatesUnscaledValue max="7"/>
             <validatesScale max="5"/>
         </decimal>
-        <boolean name="isAddedManually" default="true"/>
+        <boolean name="isAddedManually" default="true" copyable="false"/>
     </fields>
 
     <hooks>
+        <validatesWith
+                class="com.qcadoo.mes.techSubcontracting.hooks.OrderExternalServiceCostHooks"
+                method="validatesWith"/>
         <onCreate
                 class="com.qcadoo.mes.techSubcontracting.hooks.OrderExternalServiceCostHooks"
                 method="onCreate"/>

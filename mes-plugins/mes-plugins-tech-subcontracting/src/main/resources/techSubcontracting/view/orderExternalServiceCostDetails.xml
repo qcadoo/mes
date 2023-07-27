@@ -97,7 +97,7 @@
                                     <option type="alignment" value="right"/>
                                     <option type="labelWidth" value="40"/>
 
-                                    <listener event="onInputChange" method="calculateTotalCost"
+                                    <listener event="onInputChange" method="calculateCosts"
                                               class="com.qcadoo.mes.techSubcontracting.listeners.OrderExternalServiceCostDetailsListeners"/>
                                 </component>
                             </layoutElement>
