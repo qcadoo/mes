@@ -175,6 +175,9 @@ public class OrderExternalServiceCostDetailsListeners {
 
                 if (BigDecimal.ZERO.compareTo(quantity) == 0) {
                     view.addMessage("techSubcontracting.orderExternalServiceCost.message.quantityIsZero", ComponentState.MessageType.INFO);
+
+                    totalCostField.setFieldValue(numberService.formatWithMinimumFractionDigits(BigDecimal.ZERO, 0));
+                    totalCostField.requestComponentUpdateState();
                 } else {
                     BigDecimal unitCost = totalCost.divide(quantity, numberService.getMathContext());
 
