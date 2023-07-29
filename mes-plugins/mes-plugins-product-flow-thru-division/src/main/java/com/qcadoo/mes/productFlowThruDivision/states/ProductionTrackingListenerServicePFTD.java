@@ -447,7 +447,7 @@ public final class ProductionTrackingListenerServicePFTD {
         }
 
         if (ReceiptOfProducts.ON_ACCEPTANCE_REGISTRATION_RECORD.getStringValue().equals(receiptOfProducts)) {
-            if (Objects.nonNull(finalProductRecord)) {
+            if (Objects.nonNull(finalProductRecord) && !finalProductRecord.isEmpty()) {
                 Entity inboundForFinalProduct = createInternalInboundDocumentForFinalProducts(locationTo, order,
                         finalProductRecord, true, user);
 
