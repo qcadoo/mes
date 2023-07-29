@@ -606,10 +606,12 @@ public class ProductQuantitiesServiceImpl implements ProductQuantitiesService {
             }
         }
 
-        for (Entity child : entitiesById.get(operationComponent.getId()).getHasManyField(
-                TechnologyOperationComponentFields.CHILDREN)) {
-            traverseProductQuantitiesAndOperationRuns(technology, entitiesById, givenQuantity, child, operationComponent,
-                    operationProductComponentWithQuantityContainer, nonComponents, operationRuns);
+        Entity operationComponentEntity = entitiesById.get(operationComponent.getId());
+        if (operationComponentEntity != null) {
+            for (Entity child : operationComponentEntity.getHasManyField(TechnologyOperationComponentFields.CHILDREN)) {
+                traverseProductQuantitiesAndOperationRuns(technology, entitiesById, givenQuantity, child, operationComponent,
+                        operationProductComponentWithQuantityContainer, nonComponents, operationRuns);
+            }
         }
     }
 
