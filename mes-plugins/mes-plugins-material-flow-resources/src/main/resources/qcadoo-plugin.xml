@@ -93,6 +93,7 @@
         <model:model model="productStorageLocationHistory" resource="model/productStorageLocationHistory.xml"/>
         <model:model model="storageLocationDto" resource="model/storageLocationDto.xml"/>
         <model:model model="storageLocationHelper" resource="model/storageLocationHelper.xml"/>
+        <model:model model="storageLocationNumberHelper" resource="model/storageLocationNumberHelper.xml"/>
         <model:model model="palletStorageStateDto" resource="model/palletStorageStateDto.xml"/>
         <model:model model="palletStorageStateDetailsDto" resource="model/palletStorageStateDetailsDto.xml"/>
         <model:model model="palletMoveHelper" resource="model/palletMoveHelper.xml"/>

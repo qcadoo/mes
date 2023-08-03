@@ -61,6 +61,10 @@ public final class MaterialFlowResourcesConstants {
 
     public static final String MODEL_STORAGE_LOCATION = "storageLocation";
 
+    public static final String MODEL_STORAGE_LOCATION_HELPER = "storageLocationHelper";
+
+    public static final String MODEL_STORAGE_LOCATION_NUMBER_HELPER = "storageLocationNumberHelper";
+
     public static final String MODEL_DOCUMENT_POSITION_PARAMETERS = "documentPositionParameters";
 
     public static final String MODEL_DOCUMENT_POSITION_PARAMETERS_ITEM = "documentPositionParametersItem";

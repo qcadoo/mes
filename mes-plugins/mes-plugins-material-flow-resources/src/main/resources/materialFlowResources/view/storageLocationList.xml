@@ -33,6 +33,7 @@
     <component type="window" name="window">
         <ribbon>
             <template name="standardGridTemplate" />
+
             <group name="actions">
                 <bigButton name="addMulti" icon="genealogyIcon24.png"
                            action="#{grid}.fireEvent(redirectToAddManyStorageLocations);">
@@ -41,15 +42,14 @@
                            action="#{grid}.fireEvent(importCurrentList);">
                 </bigButton>
             </group>
+
+            <group name="print">
+                <bigButton name="printStorageLocationNumbersReport" icon="pdfIcon24.png"
+                           state="enabled" action="#{grid}.fireEvent(printStorageLocationNumbersReport);"/>
+            </group>
         </ribbon>
 
         <component type="grid" name="grid" reference="grid">
-            <listener event="redirectToAddManyStorageLocations" method="redirectToAddManyStorageLocations"
-                      class="com.qcadoo.mes.materialFlowResources.listeners.StorageLocationsListener"/>
-
-            <listener event="importCurrentList" method="importCurrentList"
-                      class="com.qcadoo.mes.materialFlowResources.listeners.StorageLocationsListener"/>
-
             <option type="column" name="number" fields="number" link="true"
                     width="150" />
             <option type="column" name="locationNumber" fields="location"
@@ -76,11 +76,26 @@
 
             <option type="fullscreen" value="true" />
             <option type="multiselect" value="true" />
+
             <criteriaModifier class="com.qcadoo.mes.materialFlowResources.criteriaModifiers.StorageLocationsCriteriaModifier"
                               method="restrictToUserLocations"/>
+
+            <listener event="redirectToAddManyStorageLocations" method="redirectToAddManyStorageLocations"
+                      class="com.qcadoo.mes.materialFlowResources.listeners.StorageLocationsListListener"/>
+
+            <listener event="importCurrentList" method="importCurrentList"
+                      class="com.qcadoo.mes.materialFlowResources.listeners.StorageLocationsListListener"/>
+
+            <listener event="printStorageLocationNumbersReport" method="printStorageLocationNumbersReport"
+                      class="com.qcadoo.mes.materialFlowResources.listeners.StorageLocationsListListener"/>
         </component>
 
         <option type="fixedHeight" value="true" />
         <option type="header" value="false" />
     </component>
+
+    <hooks>
+        <beforeRender class="com.qcadoo.mes.materialFlowResources.hooks.StorageLocationsListHooks"
+                      method="onBeforeRender"/>
+    </hooks>
 </view>
