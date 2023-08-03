@@ -28,6 +28,8 @@ public class MaterialCost {
 
     private BigDecimal realCost;
 
+    private BigDecimal averagePriceSubcontractor;
+
     private BigDecimal valueDeviation;
 
     private BigDecimal usedWasteQuantity;
@@ -162,5 +164,13 @@ public class MaterialCost {
 
     public void setCostCurrencyId(Long costCurrencyId) {
         this.costCurrencyId = costCurrencyId;
+    }
+
+    public BigDecimal getAveragePriceSubcontractor() {
+        return averagePriceSubcontractor;
+    }
+
+    public void setAveragePriceSubcontractor(BigDecimal averagePriceSubcontractor) {
+        this.averagePriceSubcontractor = averagePriceSubcontractor;
     }
 }

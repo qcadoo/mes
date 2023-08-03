@@ -36,7 +36,7 @@ public final class CostNormsForMaterialsConstants {
 
     // OTHER
     public static final Set<String> CURRENCY_FIELDS_ORDER = Sets.newHashSet("costForOrderCurrency", "averageOfferCostCurrency",
-            "lastOfferCostCurrency");
+            "lastOfferCostCurrency", "averagePriceSubcontractorCurrency");
 
     private CostNormsForMaterialsConstants() {
     }

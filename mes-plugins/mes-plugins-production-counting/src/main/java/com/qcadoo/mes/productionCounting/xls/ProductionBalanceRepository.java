@@ -235,7 +235,7 @@ class ProductionBalanceRepository {
             appendUsedQuantity(query);
             query.append("<> 0 THEN ");
             appendPlannedQuantity(query);
-            query.append("* COALESCE(MIN(tiopic.costfororder), 0) / ");
+            query.append("* (COALESCE(MIN(tiopic.costfororder), 0) + (MIN(q.plannedQuantity - q.childsQuantity) * COALESCE(MIN(tiopic.averagepricesubcontractor), 0))) / ");
             appendUsedQuantity(query);
             query.append("ELSE 0 END ");
         } else {
@@ -249,7 +249,7 @@ class ProductionBalanceRepository {
     private void appendRealCost(final StringBuilder query, final Entity entity) {
         if (MaterialCostsUsed.COST_FOR_ORDER.getStringValue()
                 .equals(entity.getStringField(ProductionBalanceFields.MATERIAL_COSTS_USED))) {
-            query.append("COALESCE(MIN(tiopic.costfororder), 0) ");
+            query.append("COALESCE(MIN(tiopic.costfororder), 0) + (MIN(q.plannedQuantity - q.childsQuantity) * COALESCE(MIN(tiopic.averagepricesubcontractor), 0)) ");
         } else {
             String componentPriceClause = evaluateComponentPrice(
                     entity.getStringField(ProductionBalanceFields.MATERIAL_COSTS_USED));

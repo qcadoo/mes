@@ -63,6 +63,7 @@
         <string name="palletNumber"/>
         <integer name="documentId"/>
         <integer name="orderId"/>
+        <integer name="subOrderId"/>
         <string name="resourceNumber"/>
         <string name="staff"/>
     </fields>
