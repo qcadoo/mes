@@ -46,30 +46,53 @@ public final class OrderBalanceFields {
     public static final String PRODUCT_UNIT = "productUnit";
 
     public static final String PLANNED_MATERIAL_COSTS = "plannedMaterialCosts";
+
     public static final String MATERIAL_COSTS = "materialCosts";
 
     public static final String MATERIAL_COSTS_DEVIATION = "materialCostsDeviation";
 
     public static final String PLANNED_PRODUCTION_COSTS = "plannedProductionCosts";
+
     public static final String PRODUCTION_COSTS = "productionCosts";
 
     public static final String PRODUCTION_COSTS_DEVIATION = "productionCostsDeviation";
+
     public static final String TECHNICAL_PRODUCTION_COSTS = "technicalProductionCosts";
+
     public static final String MATERIAL_COST_MARGIN = "materialCostMargin";
+
     public static final String MATERIAL_COST_MARGIN_VALUE = "materialCostMarginValue";
+
     public static final String PRODUCTION_COST_MARGIN = "productionCostMargin";
+
     public static final String PRODUCTION_COST_MARGIN_VALUE = "productionCostMarginValue";
+
     public static final String ADDITIONAL_OVERHEAD = "additionalOverhead";
+
     public static final String DIRECT_ADDITIONAL_COST = "directAdditionalCost";
+
+    public static final String EXTERNAL_SERVICES_COST = "externalServicesCost";
+
     public static final String TOTAL_COSTS = "totalCosts";
+
     public static final String REGISTRATION_PRICE = "registrationPrice";
+
     public static final String REGISTRATION_PRICE_OVERHEAD = "registrationPriceOverhead";
+
     public static final String REGISTRATION_PRICE_OVERHEAD_VALUE = "registrationPriceOverheadValue";
+
     public static final String REAL_PRODUCTION_COSTS = "realProductionCosts";
+
     public static final String TECHNICAL_PRODUCTION_COST_OVERHEAD = "technicalProductionCostOverhead";
+
     public static final String TECHNICAL_PRODUCTION_COST_OVERHEAD_VALUE = "technicalProductionCostOverheadValue";
+
     public static final String TOTAL_MANUFACTURING_COST = "totalManufacturingCost";
+
     public static final String PROFIT = "profit";
+
     public static final String PROFIT_VALUE = "profitValue";
+
     public static final String SELL_PRICE = "sellPrice";
+
 }

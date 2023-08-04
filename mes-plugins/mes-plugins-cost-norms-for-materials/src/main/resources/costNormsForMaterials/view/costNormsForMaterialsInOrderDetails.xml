@@ -40,7 +40,7 @@
 		<windowTab name="mainTab" reference="mainTab">
 			<component type="form" name="form" reference="form">
 				<component type="gridLayout" name="costNormsForProductsGridLayout"
-						   hasBorders="false" columns="3" rows="11">
+						   hasBorders="false" columns="3" rows="12">
 					<layoutElement column="1" row="1">
 						<component type="lookup" name="product" field="product"
 								   reference="product" defaultEnabled="false">
@@ -150,9 +150,9 @@
 						</component>
 					</layoutElement>
 
-					<layoutElement column="1" row="6">
+					<layoutElement column="1" row="6" height="2">
 						<component type="gridLayout" name="costForOrderGridLayout"
-								   columns="4" rows="1">
+								   columns="4" rows="2">
 							<layoutElement column="1" row="1" width="3">
 								<component type="input" name="costForOrder" reference="costForOrder"
 										   field="costForOrder">
@@ -163,9 +163,21 @@
 								<component type="input" name="costForOrderCurrency"
 										   reference="costForOrderCurrency" hasLabel="false" defaultEnabled="never"/>
 							</layoutElement>
+
+							<layoutElement column="1" row="2" width="3">
+								<component type="input" name="averagePriceSubcontractor" reference="averagePriceSubcontractor"
+										   field="averagePriceSubcontractor">
+									<option type="alignment" value="right"/>
+								</component>
+							</layoutElement>
+							<layoutElement column="4" row="2">
+								<component type="input" name="averagePriceSubcontractorCurrency"
+										   reference="averagePriceSubcontractorCurrency" hasLabel="false" defaultEnabled="never"/>
+							</layoutElement>
+
 						</component>
 					</layoutElement>
-					<layoutElement column="1" row="7" height="5" width="2">
+					<layoutElement column="1" row="8" height="5" width="2">
 						<component type="grid" name="positions" reference="positions" model="positionDto"
 								   plugin="materialFlowResources">
 

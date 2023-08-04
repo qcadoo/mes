@@ -51,6 +51,7 @@
         <decimal name="productionCostMarginValue"/>
         <decimal name="additionalOverhead"/>
         <decimal name="directAdditionalCost"/>
+        <decimal name="externalServicesCost"/>
         <decimal name="totalCosts"/>
         <decimal name="registrationPrice"/>
         <decimal name="registrationPriceOverhead"/>

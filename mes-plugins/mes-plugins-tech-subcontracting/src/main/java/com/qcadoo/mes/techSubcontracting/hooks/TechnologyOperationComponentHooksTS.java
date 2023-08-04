@@ -23,34 +23,32 @@
  */
 package com.qcadoo.mes.techSubcontracting.hooks;
 
-import static com.qcadoo.mes.techSubcontracting.constants.TechnologyOperationComponentFieldsTS.IS_SUBCONTRACTING;
-import static com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields.OPERATION;
-
-import org.springframework.stereotype.Service;
-
+import com.qcadoo.mes.techSubcontracting.constants.OperationFieldsTS;
+import com.qcadoo.mes.techSubcontracting.constants.TechnologyOperationComponentFieldsTS;
+import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
+import org.springframework.stereotype.Service;
+
+import java.util.Objects;
 
 @Service
 public class TechnologyOperationComponentHooksTS {
 
-    public void copySubstractingFieldFromLowerInstance(final DataDefinition technologyOperationComponentDD,
-            final Entity technologyOperationComponent) {
-        if (!shouldCopyFromLowerInstance(technologyOperationComponent)) {
-            return;
-        }
-        Entity operation = technologyOperationComponent.getBelongsToField(OPERATION);
-        if (operation != null) {
-            technologyOperationComponent.setField(IS_SUBCONTRACTING, operation.getBooleanField(IS_SUBCONTRACTING));
+    public void copySubcontractingFieldsFromLowerInstance(final DataDefinition technologyOperationComponentDD,
+                                                          final Entity technologyOperationComponent) {
+        if (shouldCopyFromLowerInstance(technologyOperationComponent)) {
+            Entity operation = technologyOperationComponent.getBelongsToField(TechnologyOperationComponentFields.OPERATION);
+
+            if (Objects.nonNull(operation)) {
+                technologyOperationComponent.setField(TechnologyOperationComponentFieldsTS.IS_SUBCONTRACTING, operation.getBooleanField(OperationFieldsTS.IS_SUBCONTRACTING));
+                technologyOperationComponent.setField(TechnologyOperationComponentFieldsTS.UNIT_COST, operation.getDecimalField(OperationFieldsTS.UNIT_COST));
+            }
         }
     }
 
     private boolean shouldCopyFromLowerInstance(final Entity technologyOperationComponent) {
-        // we can't use here getBooleanField() method!!!!
-        if (technologyOperationComponent.getField(IS_SUBCONTRACTING) != null) {
-            return false;
-        }
-        return true;
+        return Objects.isNull(technologyOperationComponent.getField(TechnologyOperationComponentFieldsTS.IS_SUBCONTRACTING));
     }
 
 }

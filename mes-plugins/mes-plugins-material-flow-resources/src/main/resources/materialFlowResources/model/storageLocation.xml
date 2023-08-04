@@ -27,9 +27,10 @@
 <model name="storageLocation" activable="true" auditable="true"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
        xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
+
     <fields>
         <string name="number" required="true" unique="true">
-            <validatesLength max="1024"/>
+            <validatesLength max="48"/>
         </string>
 
         <belongsTo name="location" model="location" plugin="materialFlow" required="true"/>
@@ -41,26 +42,33 @@
             <validatesScale max="0"/>
         </decimal>
 
-        <hasMany name="positions" model="position" cascade="nullify" copyable="false" joinField="storageLocation"/>
-        <hasMany name="resources" model="resource" cascade="nullify" copyable="false" joinField="storageLocation"/>
-        <hasMany name="oldResourceCorrections" model="resourceCorrection" cascade="nullify" copyable="false"
-                 joinField="oldStorageLocation"/>
-        <hasMany name="newResourceCorrections" model="resourceCorrection" cascade="nullify" copyable="false"
-                 joinField="newStorageLocation"/>
+        <hasMany name="positions" model="position" joinField="storageLocation"
+                 cascade="nullify" copyable="false" />
+        <hasMany name="resources" model="resource" joinField="storageLocation"
+                 cascade="nullify" copyable="false" />
+        <hasMany name="oldResourceCorrections" model="resourceCorrection" joinField="oldStorageLocation"
+                 cascade="nullify" copyable="false"/>
+        <hasMany name="newResourceCorrections" model="resourceCorrection" joinField="newStorageLocation"
+                 cascade="nullify" copyable="false"/>
 
         <boolean name="highStorageLocation" default="false"/>
 
-        <hasMany name="history" model="storageLocationHistory" cascade="delete" copyable="false" joinField="storageLocation"/>
-        <hasMany name="productFromHistory" model="productStorageLocationHistory" cascade="delete" copyable="false"
-                 joinField="storageLocationFrom"/>
-        <hasMany name="productToHistory" model="productStorageLocationHistory" cascade="delete" copyable="false"
-                 joinField="storageLocationTo"/>
+        <hasMany name="history" model="storageLocationHistory" joinField="storageLocation"
+                 cascade="delete" copyable="false"/>
+        <hasMany name="productFromHistory" model="productStorageLocationHistory" joinField="storageLocationFrom"
+                 cascade="delete" copyable="false"/>
+        <hasMany name="productToHistory" model="productStorageLocationHistory" joinField="storageLocationTo"
+                 cascade="delete" copyable="false"/>
 
-        <manyToMany name="stocktakings" model="stocktaking" joinField="storageLocations" copyable="false" cascade="nullify"/>
-        <manyToMany name="warehouseStockReports" model="warehouseStockReport" joinField="storageLocations" copyable="false"
-                    cascade="nullify"/>
+        <manyToMany name="stocktakings" model="stocktaking" joinField="storageLocations"
+                    copyable="false" cascade="nullify"/>
+        <manyToMany name="warehouseStockReports" model="warehouseStockReport" joinField="storageLocations"
+                    copyable="false" cascade="nullify"/>
 
+        <manyToMany name="storageLocationNumberHelpers" model="storageLocationNumberHelper" joinField="palletNumbers"
+                    copyable="false" cascade="nullify" />
     </fields>
+
     <hooks>
         <validatesWith
                 class="com.qcadoo.mes.materialFlowResources.validators.StorageLocationModelValidators"

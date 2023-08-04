@@ -48,6 +48,8 @@ public class OrderBalance {
 
     private BigDecimal directAdditionalCost;
 
+    private BigDecimal externalServicesCost;
+
     private BigDecimal totalCosts;
 
     private BigDecimal registrationPrice;
@@ -76,7 +78,7 @@ public class OrderBalance {
         return additionalFinalProducts;
     }
 
-    public void setAdditionalFinalProducts(String additionalFinalProducts) {
+    public void setAdditionalFinalProducts(final String additionalFinalProducts) {
         this.additionalFinalProducts = additionalFinalProducts;
     }
 
@@ -84,7 +86,7 @@ public class OrderBalance {
         return orderNumber;
     }
 
-    public void setOrderNumber(String orderNumber) {
+    public void setOrderNumber(final String orderNumber) {
         this.orderNumber = orderNumber;
     }
 
@@ -92,7 +94,7 @@ public class OrderBalance {
         return productNumber;
     }
 
-    public void setProductNumber(String productNumber) {
+    public void setProductNumber(final String productNumber) {
         this.productNumber = productNumber;
     }
 
@@ -100,7 +102,7 @@ public class OrderBalance {
         return productName;
     }
 
-    public void setProductName(String productName) {
+    public void setProductName(final String productName) {
         this.productName = productName;
     }
 
@@ -108,7 +110,7 @@ public class OrderBalance {
         return producedQuantity;
     }
 
-    public void setProducedQuantity(BigDecimal producedQuantity) {
+    public void setProducedQuantity(final BigDecimal producedQuantity) {
         this.producedQuantity = producedQuantity;
     }
 
@@ -116,7 +118,7 @@ public class OrderBalance {
         return materialCosts;
     }
 
-    public void setMaterialCosts(BigDecimal materialCosts) {
+    public void setMaterialCosts(final BigDecimal materialCosts) {
         this.materialCosts = materialCosts;
     }
 
@@ -124,7 +126,7 @@ public class OrderBalance {
         return productionCosts;
     }
 
-    public void setProductionCosts(BigDecimal productionCosts) {
+    public void setProductionCosts(final BigDecimal productionCosts) {
         this.productionCosts = productionCosts;
     }
 
@@ -132,7 +134,7 @@ public class OrderBalance {
         return technicalProductionCosts;
     }
 
-    public void setTechnicalProductionCosts(BigDecimal technicalProductionCosts) {
+    public void setTechnicalProductionCosts(final BigDecimal technicalProductionCosts) {
         this.technicalProductionCosts = technicalProductionCosts;
     }
 
@@ -140,7 +142,7 @@ public class OrderBalance {
         return materialCostMargin;
     }
 
-    public void setMaterialCostMargin(BigDecimal materialCostMargin) {
+    public void setMaterialCostMargin(final BigDecimal materialCostMargin) {
         this.materialCostMargin = materialCostMargin;
     }
 
@@ -148,7 +150,7 @@ public class OrderBalance {
         return materialCostMarginValue;
     }
 
-    public void setMaterialCostMarginValue(BigDecimal materialCostMarginValue) {
+    public void setMaterialCostMarginValue(final BigDecimal materialCostMarginValue) {
         this.materialCostMarginValue = materialCostMarginValue;
     }
 
@@ -156,7 +158,7 @@ public class OrderBalance {
         return productionCostMargin;
     }
 
-    public void setProductionCostMargin(BigDecimal productionCostMargin) {
+    public void setProductionCostMargin(final BigDecimal productionCostMargin) {
         this.productionCostMargin = productionCostMargin;
     }
 
@@ -164,7 +166,7 @@ public class OrderBalance {
         return productionCostMarginValue;
     }
 
-    public void setProductionCostMarginValue(BigDecimal productionCostMarginValue) {
+    public void setProductionCostMarginValue(final BigDecimal productionCostMarginValue) {
         this.productionCostMarginValue = productionCostMarginValue;
     }
 
@@ -172,7 +174,7 @@ public class OrderBalance {
         return additionalOverhead;
     }
 
-    public void setAdditionalOverhead(BigDecimal additionalOverhead) {
+    public void setAdditionalOverhead(final BigDecimal additionalOverhead) {
         this.additionalOverhead = additionalOverhead;
     }
 
@@ -180,15 +182,23 @@ public class OrderBalance {
         return directAdditionalCost;
     }
 
-    public void setDirectAdditionalCost(BigDecimal directAdditionalCost) {
+    public void setDirectAdditionalCost(final BigDecimal directAdditionalCost) {
         this.directAdditionalCost = directAdditionalCost;
+    }
+
+    public BigDecimal getExternalServicesCost() {
+        return externalServicesCost;
+    }
+
+    public void setExternalServicesCost(final BigDecimal externalServicesCost) {
+        this.externalServicesCost = externalServicesCost;
     }
 
     public BigDecimal getTotalCosts() {
         return totalCosts;
     }
 
-    public void setTotalCosts(BigDecimal totalCosts) {
+    public void setTotalCosts(final BigDecimal totalCosts) {
         this.totalCosts = totalCosts;
     }
 
@@ -196,7 +206,7 @@ public class OrderBalance {
         return registrationPrice;
     }
 
-    public void setRegistrationPrice(BigDecimal registrationPrice) {
+    public void setRegistrationPrice(final BigDecimal registrationPrice) {
         this.registrationPrice = registrationPrice;
     }
 
@@ -204,7 +214,7 @@ public class OrderBalance {
         return registrationPriceOverhead;
     }
 
-    public void setRegistrationPriceOverhead(BigDecimal registrationPriceOverhead) {
+    public void setRegistrationPriceOverhead(final BigDecimal registrationPriceOverhead) {
         this.registrationPriceOverhead = registrationPriceOverhead;
     }
 
@@ -212,7 +222,7 @@ public class OrderBalance {
         return registrationPriceOverheadValue;
     }
 
-    public void setRegistrationPriceOverheadValue(BigDecimal registrationPriceOverheadValue) {
+    public void setRegistrationPriceOverheadValue(final BigDecimal registrationPriceOverheadValue) {
         this.registrationPriceOverheadValue = registrationPriceOverheadValue;
     }
 
@@ -220,7 +230,7 @@ public class OrderBalance {
         return realProductionCosts;
     }
 
-    public void setRealProductionCosts(BigDecimal realProductionCosts) {
+    public void setRealProductionCosts(final BigDecimal realProductionCosts) {
         this.realProductionCosts = realProductionCosts;
     }
 
@@ -228,7 +238,7 @@ public class OrderBalance {
         return profit;
     }
 
-    public void setProfit(BigDecimal profit) {
+    public void setProfit(final BigDecimal profit) {
         this.profit = profit;
     }
 
@@ -236,7 +246,7 @@ public class OrderBalance {
         return profitValue;
     }
 
-    public void setProfitValue(BigDecimal profitValue) {
+    public void setProfitValue(final BigDecimal profitValue) {
         this.profitValue = profitValue;
     }
 
@@ -244,7 +254,7 @@ public class OrderBalance {
         return sellPrice;
     }
 
-    public void setSellPrice(BigDecimal sellPrice) {
+    public void setSellPrice(final BigDecimal sellPrice) {
         this.sellPrice = sellPrice;
     }
 
@@ -252,7 +262,7 @@ public class OrderBalance {
         return orderId;
     }
 
-    public void setOrderId(Long orderId) {
+    public void setOrderId(final Long orderId) {
         this.orderId = orderId;
     }
 
@@ -260,7 +270,7 @@ public class OrderBalance {
         return rootId;
     }
 
-    public void setRootId(Long rootId) {
+    public void setRootId(final Long rootId) {
         this.rootId = rootId;
     }
 
@@ -268,7 +278,7 @@ public class OrderBalance {
         return productId;
     }
 
-    public void setProductId(Long productId) {
+    public void setProductId(final Long productId) {
         this.productId = productId;
     }
 
@@ -276,7 +286,7 @@ public class OrderBalance {
         return technicalProductionCostOverhead;
     }
 
-    public void setTechnicalProductionCostOverhead(BigDecimal technicalProductionCostOverhead) {
+    public void setTechnicalProductionCostOverhead(final BigDecimal technicalProductionCostOverhead) {
         this.technicalProductionCostOverhead = technicalProductionCostOverhead;
     }
 
@@ -284,7 +294,7 @@ public class OrderBalance {
         return technicalProductionCostOverheadValue;
     }
 
-    public void setTechnicalProductionCostOverheadValue(BigDecimal technicalProductionCostOverheadValue) {
+    public void setTechnicalProductionCostOverheadValue(final BigDecimal technicalProductionCostOverheadValue) {
         this.technicalProductionCostOverheadValue = technicalProductionCostOverheadValue;
     }
 
@@ -292,7 +302,7 @@ public class OrderBalance {
         return totalManufacturingCost;
     }
 
-    public void setTotalManufacturingCost(BigDecimal totalManufacturingCost) {
+    public void setTotalManufacturingCost(final BigDecimal totalManufacturingCost) {
         this.totalManufacturingCost = totalManufacturingCost;
     }
 
@@ -300,7 +310,7 @@ public class OrderBalance {
         return productUnit;
     }
 
-    public void setProductUnit(String productUnit) {
+    public void setProductUnit(final String productUnit) {
         this.productUnit = productUnit;
     }
 
@@ -308,7 +318,7 @@ public class OrderBalance {
         return plannedQuantity;
     }
 
-    public void setPlannedQuantity(BigDecimal plannedQuantity) {
+    public void setPlannedQuantity(final BigDecimal plannedQuantity) {
         this.plannedQuantity = plannedQuantity;
     }
 
@@ -316,7 +326,7 @@ public class OrderBalance {
         return deviation;
     }
 
-    public void setDeviation(BigDecimal deviation) {
+    public void setDeviation(final BigDecimal deviation) {
         this.deviation = deviation;
     }
 
@@ -324,7 +334,7 @@ public class OrderBalance {
         return plannedMaterialCosts;
     }
 
-    public void setPlannedMaterialCosts(BigDecimal plannedMaterialCosts) {
+    public void setPlannedMaterialCosts(final BigDecimal plannedMaterialCosts) {
         this.plannedMaterialCosts = plannedMaterialCosts;
     }
 
@@ -332,7 +342,7 @@ public class OrderBalance {
         return materialCostsDeviation;
     }
 
-    public void setMaterialCostsDeviation(BigDecimal materialCostsDeviation) {
+    public void setMaterialCostsDeviation(final BigDecimal materialCostsDeviation) {
         this.materialCostsDeviation = materialCostsDeviation;
     }
 
@@ -340,7 +350,7 @@ public class OrderBalance {
         return plannedProductionCosts;
     }
 
-    public void setPlannedProductionCosts(BigDecimal plannedProductionCosts) {
+    public void setPlannedProductionCosts(final BigDecimal plannedProductionCosts) {
         this.plannedProductionCosts = plannedProductionCosts;
     }
 
@@ -348,7 +358,8 @@ public class OrderBalance {
         return productionCostsDeviation;
     }
 
-    public void setProductionCostsDeviation(BigDecimal productionCostsDeviation) {
+    public void setProductionCostsDeviation(final BigDecimal productionCostsDeviation) {
         this.productionCostsDeviation = productionCostsDeviation;
     }
+
 }

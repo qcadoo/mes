@@ -25,6 +25,8 @@ package com.qcadoo.mes.costNormsForMaterials.hooks;
 
 import static com.qcadoo.mes.costNormsForMaterials.constants.CostNormsForMaterialsConstants.CURRENCY_FIELDS_ORDER;
 
+import com.google.common.collect.ImmutableList;
+import com.qcadoo.mes.orders.constants.OrderFields;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -43,6 +45,10 @@ import com.qcadoo.view.api.components.LookupComponent;
 import com.qcadoo.view.api.components.lookup.FilterValueHolder;
 import com.qcadoo.view.constants.QcadooViewConstants;
 
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
+
 @Service
 public class TechnologyInstOperProductInCompDetailsHooks {
 
@@ -51,6 +57,8 @@ public class TechnologyInstOperProductInCompDetailsHooks {
     private static final String ORDER_ID = "orderId";
 
     private static final String L_COST_FOR_NUMBER_UNIT = "costForNumberUnit";
+    public static final String L_SUB_ORDER = "subOrder";
+    public static final String SUB_ORDER_IDS = "subOrderIds";
 
     @Autowired
     private ProductDetailsHooksCNFP productDetailsHooksCNFP;
@@ -114,12 +122,23 @@ public class TechnologyInstOperProductInCompDetailsHooks {
 
     public void setCriteriaModifiersParameters(final ViewDefinitionState view) {
         FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
+        GridComponent positions = (GridComponent) view.getComponentByReference("positions");
+        FilterValueHolder filterValueHolder = positions.getFilterValue();
+
         Entity technologyInstOperProductInComp = form.getEntity();
         Entity product = technologyInstOperProductInComp.getBelongsToField(TechnologyInstOperProductInCompFields.PRODUCT);
         Entity order = technologyInstOperProductInComp.getBelongsToField(TechnologyInstOperProductInCompFields.ORDER);
 
-        GridComponent positions = (GridComponent) view.getComponentByReference("positions");
-        FilterValueHolder filterValueHolder = positions.getFilterValue();
+        List<Entity> operationalTasks = order.getHasManyField(OrderFields.OPERATIONAL_TASKS);
+        if(!operationalTasks.isEmpty()) {
+            List<Long> subOrders = operationalTasks.stream()
+                    .filter(ot -> Objects.nonNull(ot.getBelongsToField(L_SUB_ORDER)))
+                    .map(ot -> ot.getBelongsToField(L_SUB_ORDER))
+                    .map(so -> so.getId())
+                    .collect(Collectors.toList());
+            filterValueHolder.put(SUB_ORDER_IDS, ImmutableList.copyOf(subOrders));
+        }
+
         filterValueHolder.put(PRODUCT_NUMBER, product.getStringField(ProductFields.NUMBER));
         filterValueHolder.put(ORDER_ID, order.getId().intValue());
         positions.setFilterValue(filterValueHolder);

@@ -35,4 +35,6 @@ public final class TechSubcontractingConstants {
 
     public static final String MODEL_COMPANY_OPERATION_GROUP = "companyOperationGroup";
 
+    public static final String MODEL_ORDER_EXTERNAL_SERVICE_COST = "orderExternalServiceCost";
+
 }
