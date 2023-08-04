@@ -1997,6 +1997,38 @@ $$;
 
 
 --
+-- Name: generate_suborderissuedproductsreport_number(); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION public.generate_suborderissuedproductsreport_number() RETURNS text
+    LANGUAGE plpgsql
+    AS $$
+    DECLARE
+        _pattern text;
+        _sequence_value numeric;
+        _seq text;
+        _number text;
+
+    BEGIN
+        _pattern := '#seq';
+
+        SELECT nextval('subcontractorportal_suborderissuedproductsreport_number_seq') INTO _sequence_value;
+
+        _seq := to_char(_sequence_value, 'fm000000');
+
+        IF _seq LIKE '%#%' THEN
+            _seq := _sequence_value;
+        END IF;
+
+        _number := _pattern;
+        _number := replace(_number, '#seq', _seq);
+
+        RETURN _number;
+    END;
+$$;
+
+
+--
 -- Name: generate_technological_process_list_number(); Type: FUNCTION; Schema: public; Owner: -
 --
 
@@ -3707,6 +3739,7 @@ CREATE TABLE public.arch_costnormsformaterials_technologyinstoperproductincomp (
     lastoffercost numeric(12,5),
     averageoffercost numeric(12,5),
     entityversion bigint DEFAULT 0,
+    averagepricesubcontractor numeric(12,5) DEFAULT 0,
     archived boolean DEFAULT false
 );
 
@@ -13689,7 +13722,8 @@ CREATE TABLE public.costnormsformaterials_technologyinstoperproductincomp (
     order_id bigint,
     product_id bigint,
     costfororder numeric(12,5) DEFAULT (0)::numeric,
-    entityversion bigint DEFAULT 0
+    entityversion bigint DEFAULT 0,
+    averagepricesubcontractor numeric(12,5) DEFAULT 0
 );
 
 
@@ -17791,6 +17825,16 @@ CREATE TABLE public.jointable_stocktaking_storagelocation (
 
 
 --
+-- Name: jointable_storagelocation_storagelocationnumberhelper; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.jointable_storagelocation_storagelocationnumberhelper (
+    storagelocation_id bigint NOT NULL,
+    storagelocationnumberhelper_id bigint NOT NULL
+);
+
+
+--
 -- Name: jointable_storagelocation_warehousestockreport; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -19952,7 +19996,8 @@ CREATE VIEW public.materialflowresources_positiondto AS
     "position".resourcenumber,
     additionalcode.code AS additionalcode,
     "position".sellingprice,
-    (((staff.surname)::text || ' '::text) || (staff.name)::text) AS staff
+    (((staff.surname)::text || ' '::text) || (staff.name)::text) AS staff,
+    (document.suborder_id)::integer AS suborderid
    FROM ((((((((((((((((public.materialflowresources_position "position"
      LEFT JOIN public.materialflowresources_document document ON ((document.id = "position".document_id)))
      LEFT JOIN public.materialflow_location locationfrom ON ((locationfrom.id = document.locationfrom_id)))
@@ -20736,6 +20781,34 @@ CREATE SEQUENCE public.materialflowresources_storagelocationhistory_id_seq
 --
 
 ALTER SEQUENCE public.materialflowresources_storagelocationhistory_id_seq OWNED BY public.materialflowresources_storagelocationhistory.id;
+
+
+--
+-- Name: materialflowresources_storagelocationnumberhelper; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.materialflowresources_storagelocationnumberhelper (
+    id bigint NOT NULL
+);
+
+
+--
+-- Name: materialflowresources_storagelocationnumberhelper_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.materialflowresources_storagelocationnumberhelper_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: materialflowresources_storagelocationnumberhelper_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.materialflowresources_storagelocationnumberhelper_id_seq OWNED BY public.materialflowresources_storagelocationnumberhelper.id;
 
 
 --
@@ -26064,7 +26137,8 @@ CREATE TABLE public.productioncounting_orderbalance (
     totalmanufacturingcost numeric(12,5),
     profit numeric(12,5),
     profitvalue numeric(12,5),
-    sellprice numeric(12,5)
+    sellprice numeric(12,5),
+    externalservicescost numeric(12,5)
 );
 
 
@@ -29328,6 +29402,57 @@ ALTER SEQUENCE public.subcontractorportal_suborderinput_id_seq OWNED BY public.s
 
 
 --
+-- Name: subcontractorportal_suborderissuedproductsreport; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.subcontractorportal_suborderissuedproductsreport (
+    id bigint NOT NULL,
+    number character varying(256),
+    name character varying(1024),
+    datefrom date,
+    dateto date,
+    company_id bigint,
+    withoutfinishedsuborders boolean DEFAULT false,
+    withoutfullyreceivedsuborders boolean DEFAULT false,
+    generated boolean,
+    worker character varying(255),
+    date timestamp without time zone,
+    filename character varying(255)
+);
+
+
+--
+-- Name: subcontractorportal_suborderissuedproductsreport_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.subcontractorportal_suborderissuedproductsreport_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: subcontractorportal_suborderissuedproductsreport_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.subcontractorportal_suborderissuedproductsreport_id_seq OWNED BY public.subcontractorportal_suborderissuedproductsreport.id;
+
+
+--
+-- Name: subcontractorportal_suborderissuedproductsreport_number_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.subcontractorportal_suborderissuedproductsreport_number_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
 -- Name: subcontractorportal_subordermessage_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
@@ -31413,6 +31538,41 @@ CREATE SEQUENCE public.techsubcontracting_companyoperationgroup_id_seq
 --
 
 ALTER SEQUENCE public.techsubcontracting_companyoperationgroup_id_seq OWNED BY public.techsubcontracting_companyoperationgroup.id;
+
+
+--
+-- Name: techsubcontracting_orderexternalservicecost; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.techsubcontracting_orderexternalservicecost (
+    id bigint NOT NULL,
+    order_id bigint,
+    technologyoperationcomponent_id bigint,
+    product_id bigint,
+    quantity numeric(12,5),
+    unitcost numeric(12,5),
+    totalcost numeric(12,5),
+    isaddedmanually boolean DEFAULT true
+);
+
+
+--
+-- Name: techsubcontracting_orderexternalservicecost_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.techsubcontracting_orderexternalservicecost_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: techsubcontracting_orderexternalservicecost_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.techsubcontracting_orderexternalservicecost_id_seq OWNED BY public.techsubcontracting_orderexternalservicecost.id;
 
 
 --
@@ -34423,6 +34583,13 @@ ALTER TABLE ONLY public.materialflowresources_storagelocationhistory ALTER COLUM
 
 
 --
+-- Name: materialflowresources_storagelocationnumberhelper id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.materialflowresources_storagelocationnumberhelper ALTER COLUMN id SET DEFAULT nextval('public.materialflowresources_storagelocationnumberhelper_id_seq'::regclass);
+
+
+--
 -- Name: materialflowresources_warehousestockreport id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -35515,6 +35682,13 @@ ALTER TABLE ONLY public.subcontractorportal_suborderinput ALTER COLUMN id SET DE
 
 
 --
+-- Name: subcontractorportal_suborderissuedproductsreport id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.subcontractorportal_suborderissuedproductsreport ALTER COLUMN id SET DEFAULT nextval('public.subcontractorportal_suborderissuedproductsreport_id_seq'::regclass);
+
+
+--
 -- Name: subcontractorportal_subordermessage id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -35900,6 +36074,13 @@ ALTER TABLE ONLY public.techsubcontracting_companyoperationgroup ALTER COLUMN id
 
 
 --
+-- Name: techsubcontracting_orderexternalservicecost id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.techsubcontracting_orderexternalservicecost ALTER COLUMN id SET DEFAULT nextval('public.techsubcontracting_orderexternalservicecost_id_seq'::regclass);
+
+
+--
 -- Name: timegapspreview_timegap id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -36242,7 +36423,7 @@ COPY public.arch_costcalculation_costcalculation (id, number, product_id, defaul
 -- Data for Name: arch_costnormsformaterials_technologyinstoperproductincomp; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.arch_costnormsformaterials_technologyinstoperproductincomp (id, order_id, product_id, costfornumber, nominalcost, lastpurchasecost, averagecost, costfororder, lastoffercost, averageoffercost, entityversion, archived) FROM stdin;
+COPY public.arch_costnormsformaterials_technologyinstoperproductincomp (id, order_id, product_id, costfornumber, nominalcost, lastpurchasecost, averagecost, costfororder, lastoffercost, averageoffercost, entityversion, averagepricesubcontractor, archived) FROM stdin;
 \.
 
 
@@ -38209,7 +38390,7 @@ COPY public.costcalculation_standardlaborcost (id, number, name, laborcost) FROM
 -- Data for Name: costnormsformaterials_technologyinstoperproductincomp; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.costnormsformaterials_technologyinstoperproductincomp (id, order_id, product_id, costfororder, entityversion) FROM stdin;
+COPY public.costnormsformaterials_technologyinstoperproductincomp (id, order_id, product_id, costfororder, entityversion, averagepricesubcontractor) FROM stdin;
 \.
 
 
@@ -40259,6 +40440,14 @@ COPY public.jointable_stocktaking_storagelocation (stocktaking_id, storagelocati
 
 
 --
+-- Data for Name: jointable_storagelocation_storagelocationnumberhelper; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY public.jointable_storagelocation_storagelocationnumberhelper (storagelocation_id, storagelocationnumberhelper_id) FROM stdin;
+\.
+
+
+--
 -- Data for Name: jointable_storagelocation_warehousestockreport; Type: TABLE DATA; Schema: public; Owner: -
 --
 
@@ -40722,6 +40911,14 @@ COPY public.materialflowresources_storagelocationhelper (id, prefix, number, loc
 --
 
 COPY public.materialflowresources_storagelocationhistory (id, storagelocation_id, productfrom_id, productto_id, createdate, updatedate, createuser, updateuser) FROM stdin;
+\.
+
+
+--
+-- Data for Name: materialflowresources_storagelocationnumberhelper; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY public.materialflowresources_storagelocationnumberhelper (id) FROM stdin;
 \.
 
 
@@ -41455,7 +41652,7 @@ COPY public.productioncounting_lackreason (id, lack_id, causeofwastes, descripti
 -- Data for Name: productioncounting_orderbalance; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.productioncounting_orderbalance (id, productionbalance_id, ordernumber, productnumber, productname, plannedquantity, producedquantity, deviation, productunit, plannedmaterialcosts, materialcosts, materialcostsdeviation, plannedproductioncosts, productioncosts, productioncostsdeviation, technicalproductioncosts, materialcostmargin, materialcostmarginvalue, productioncostmargin, productioncostmarginvalue, additionaloverhead, directadditionalcost, totalcosts, registrationprice, registrationpriceoverhead, registrationpriceoverheadvalue, realproductioncosts, technicalproductioncostoverhead, technicalproductioncostoverheadvalue, totalmanufacturingcost, profit, profitvalue, sellprice) FROM stdin;
+COPY public.productioncounting_orderbalance (id, productionbalance_id, ordernumber, productnumber, productname, plannedquantity, producedquantity, deviation, productunit, plannedmaterialcosts, materialcosts, materialcostsdeviation, plannedproductioncosts, productioncosts, productioncostsdeviation, technicalproductioncosts, materialcostmargin, materialcostmarginvalue, productioncostmargin, productioncostmarginvalue, additionaloverhead, directadditionalcost, totalcosts, registrationprice, registrationpriceoverhead, registrationpriceoverheadvalue, realproductioncosts, technicalproductioncostoverhead, technicalproductioncostoverheadvalue, totalmanufacturingcost, profit, profitvalue, sellprice, externalservicescost) FROM stdin;
 \.
 
 
@@ -42391,6 +42588,8 @@ COPY public.qcadooview_item (id, pluginidentifier, name, active, category_id, vi
 77	masterOrders	masterOrders	t	23	77	2	ROLE_PLANNING	0
 76	masterOrders	masterOrderPositions	t	23	76	3	ROLE_PLANNING	0
 181	masterOrders	salesPlansList	t	23	180	1	ROLE_PLANNING	0
+218	scheduleGantt	workstationsWorkChart	t	3	217	7	ROLE_COMPANY_STRUCTURE	0
+219	subcontractorPortal	subOrderIssuedProductsReportsList	t	15	218	18	ROLE_ANALYSIS_VIEWER	0
 \.
 
 
@@ -42598,7 +42797,9 @@ COPY public.qcadooview_view (id, pluginidentifier, name, view, url, entityversio
 213	basic	pieceRateList	pieceRateList	\N	0
 214	orders	workstationChangeoverForOperationalTasksList	workstationChangeoverForOperationalTasksList	\N	0
 215	productionCounting	performanceAnalysisMvList	performanceAnalysisMvList	\N	0
-216	productionCounting	employeePieceworkSettlement		./employeePieceworkSettlement.html	0
+217	scheduleGantt	workstationsWorkChart		/workstationsWorkChart.html	0
+216	productionCounting	employeePieceworkSettlement		/employeePieceworkSettlement.html	0
+218	subcontractorPortal	subOrderIssuedProductsReportsList	subOrderIssuedProductsReportsList	\N	0
 \.
 
 
@@ -42816,6 +43017,14 @@ COPY public.subcontractorportal_suborderevent (id, date, prevvalue, currvalue, t
 --
 
 COPY public.subcontractorportal_suborderinput (id, unit, plannedquantity, deliveredquantity, remainingquantity, product_id, location_id, suborder_id, active, operations, entityversion) FROM stdin;
+\.
+
+
+--
+-- Data for Name: subcontractorportal_suborderissuedproductsreport; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY public.subcontractorportal_suborderissuedproductsreport (id, number, name, datefrom, dateto, company_id, withoutfinishedsuborders, withoutfullyreceivedsuborders, generated, worker, date, filename) FROM stdin;
 \.
 
 
@@ -43298,6 +43507,14 @@ COPY public.techsubcontracting_companyoperation (id, company_id, operation_id, i
 --
 
 COPY public.techsubcontracting_companyoperationgroup (id, company_id, operationgroup_id, isdefault) FROM stdin;
+\.
+
+
+--
+-- Data for Name: techsubcontracting_orderexternalservicecost; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY public.techsubcontracting_orderexternalservicecost (id, order_id, technologyoperationcomponent_id, product_id, quantity, unitcost, totalcost, isaddedmanually) FROM stdin;
 \.
 
 
@@ -46433,6 +46650,13 @@ SELECT pg_catalog.setval('public.materialflowresources_storagelocationhistory_id
 
 
 --
+-- Name: materialflowresources_storagelocationnumberhelper_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('public.materialflowresources_storagelocationnumberhelper_id_seq', 1, false);
+
+
+--
 -- Name: materialflowresources_warehousestock_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
@@ -47766,14 +47990,14 @@ SELECT pg_catalog.setval('public.qcadooview_category_id_seq', 23, true);
 -- Name: qcadooview_item_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('public.qcadooview_item_id_seq', 217, true);
+SELECT pg_catalog.setval('public.qcadooview_item_id_seq', 219, true);
 
 
 --
 -- Name: qcadooview_view_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('public.qcadooview_view_id_seq', 216, true);
+SELECT pg_catalog.setval('public.qcadooview_view_id_seq', 218, true);
 
 
 --
@@ -48054,6 +48278,20 @@ SELECT pg_catalog.setval('public.subcontractorportal_suborderevent_id_seq', 1, f
 --
 
 SELECT pg_catalog.setval('public.subcontractorportal_suborderinput_id_seq', 1, false);
+
+
+--
+-- Name: subcontractorportal_suborderissuedproductsreport_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('public.subcontractorportal_suborderissuedproductsreport_id_seq', 1, false);
+
+
+--
+-- Name: subcontractorportal_suborderissuedproductsreport_number_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('public.subcontractorportal_suborderissuedproductsreport_number_seq', 1, false);
 
 
 --
@@ -48516,6 +48754,13 @@ SELECT pg_catalog.setval('public.techsubcontracting_companyoperation_id_seq', 1,
 --
 
 SELECT pg_catalog.setval('public.techsubcontracting_companyoperationgroup_id_seq', 1, false);
+
+
+--
+-- Name: techsubcontracting_orderexternalservicecost_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('public.techsubcontracting_orderexternalservicecost_id_seq', 1, false);
 
 
 --
@@ -51441,6 +51686,14 @@ ALTER TABLE ONLY public.jointable_stocktaking_storagelocation
 
 
 --
+-- Name: jointable_storagelocation_storagelocationnumberhelper jointable_storagelocation_storagelocationnumberhelper_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.jointable_storagelocation_storagelocationnumberhelper
+    ADD CONSTRAINT jointable_storagelocation_storagelocationnumberhelper_pkey PRIMARY KEY (storagelocation_id, storagelocationnumberhelper_id);
+
+
+--
 -- Name: jointable_storagelocation_warehousestockreport jointable_storagelocation_warehousestockreport_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -51862,6 +52115,14 @@ ALTER TABLE ONLY public.materialflowresources_storagelocationhelper
 
 ALTER TABLE ONLY public.materialflowresources_storagelocationhistory
     ADD CONSTRAINT materialflowresources_storagelocationhistory_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: materialflowresources_storagelocationnumberhelper materialflowresources_storagelocationnumberhelper_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.materialflowresources_storagelocationnumberhelper
+    ADD CONSTRAINT materialflowresources_storagelocationnumberhelper_pkey PRIMARY KEY (id);
 
 
 --
@@ -53233,6 +53494,14 @@ ALTER TABLE ONLY public.subcontractorportal_suborderinput
 
 
 --
+-- Name: subcontractorportal_suborderissuedproductsreport subcontractorportal_suborderissuedproductsreport_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.subcontractorportal_suborderissuedproductsreport
+    ADD CONSTRAINT subcontractorportal_suborderissuedproductsreport_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: subcontractorportal_suborderoperation subcontractorportal_suborderoperation_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -53630,6 +53899,14 @@ ALTER TABLE ONLY public.techsubcontracting_companyoperation
 
 ALTER TABLE ONLY public.techsubcontracting_companyoperationgroup
     ADD CONSTRAINT techsubcontracting_companyoperationgroup_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: techsubcontracting_orderexternalservicecost techsubcontracting_orderexternalservicecost_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.techsubcontracting_orderexternalservicecost
+    ADD CONSTRAINT techsubcontracting_orderexternalservicecost_pkey PRIMARY KEY (id);
 
 
 --
@@ -61925,6 +62202,30 @@ ALTER TABLE ONLY public.deliveries_orderedproductreservation
 
 
 --
+-- Name: techsubcontracting_orderexternalservicecost orderexternalservicecost_order_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.techsubcontracting_orderexternalservicecost
+    ADD CONSTRAINT orderexternalservicecost_order_fkey FOREIGN KEY (order_id) REFERENCES public.orders_order(id) DEFERRABLE;
+
+
+--
+-- Name: techsubcontracting_orderexternalservicecost orderexternalservicecost_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.techsubcontracting_orderexternalservicecost
+    ADD CONSTRAINT orderexternalservicecost_product_fkey FOREIGN KEY (product_id) REFERENCES public.basic_product(id) DEFERRABLE;
+
+
+--
+-- Name: techsubcontracting_orderexternalservicecost orderexternalservicecost_technologyoperationcomponent_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.techsubcontracting_orderexternalservicecost
+    ADD CONSTRAINT orderexternalservicecost_technologyoperationcomponent_fkey FOREIGN KEY (technologyoperationcomponent_id) REFERENCES public.technologies_technologyoperationcomponent(id) DEFERRABLE;
+
+
+--
 -- Name: orders_orderpack orderpack_order_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -66565,6 +66866,22 @@ ALTER TABLE ONLY public.ordersgroups_sizegroupcolor
 
 
 --
+-- Name: jointable_storagelocation_storagelocationnumberhelper sl_storagelocationnumberhelper_storagelocation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.jointable_storagelocation_storagelocationnumberhelper
+    ADD CONSTRAINT sl_storagelocationnumberhelper_storagelocation_fkey FOREIGN KEY (storagelocation_id) REFERENCES public.materialflowresources_storagelocation(id) DEFERRABLE;
+
+
+--
+-- Name: jointable_storagelocation_storagelocationnumberhelper sl_storagelocationnumberhelper_storagelocationnumberhelper_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.jointable_storagelocation_storagelocationnumberhelper
+    ADD CONSTRAINT sl_storagelocationnumberhelper_storagelocationnumberhelper_fkey FOREIGN KEY (storagelocationnumberhelper_id) REFERENCES public.materialflowresources_storagelocationnumberhelper(id) DEFERRABLE;
+
+
+--
 -- Name: cmmsmachineparts_sourcecost sourcecost_factory_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -66954,6 +67271,14 @@ ALTER TABLE ONLY public.subcontractorportal_suborderinput
 
 ALTER TABLE ONLY public.subcontractorportal_suborderinput
     ADD CONSTRAINT suborderinput_suborder_fkey FOREIGN KEY (suborder_id) REFERENCES public.subcontractorportal_suborder(id) DEFERRABLE;
+
+
+--
+-- Name: subcontractorportal_suborderissuedproductsreport suborderissuedproductsreport_company_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.subcontractorportal_suborderissuedproductsreport
+    ADD CONSTRAINT suborderissuedproductsreport_company_fkey FOREIGN KEY (company_id) REFERENCES public.basic_company(id) DEFERRABLE;
 
 
 --
