@@ -30,7 +30,7 @@
 
     <fields>
         <string name="number" required="true" unique="true">
-            <validatesLength max="1024"/>
+            <validatesLength max="48"/>
         </string>
 
         <belongsTo name="location" model="location" plugin="materialFlow" required="true"/>

@@ -148,7 +148,15 @@ public class StorageLocationNumberHelperReportPdf extends ReportPdfView {
     }
 
     private static Paragraph createNumberParagraph(final String number, final float spacingBefore, final float spacingAfter) {
-        Paragraph numberParagraph = new Paragraph(new Phrase(number, FontUtils.getDejavuBold60Dark()));
+        Font font;
+
+        if (number.length() > 40) {
+            font =  FontUtils.getDejavuBold14Dark();
+        } else {
+            font = FontUtils.getDejavuBold19Dark();
+        }
+
+        Paragraph numberParagraph = new Paragraph(new Phrase(number, font));
 
         numberParagraph.setAlignment(Element.ALIGN_CENTER);
         numberParagraph.setSpacingBefore(spacingBefore);
@@ -162,14 +170,24 @@ public class StorageLocationNumberHelperReportPdf extends ReportPdfView {
         String number = location.getStringField(LocationFields.NUMBER);
         String name = location.getStringField(LocationFields.NAME);
 
-        Paragraph numberParagraph = new Paragraph(new Phrase(number + " - " + name, FontUtils.getDejavuBold19Light()));
+        String numberAndName = number + " - " + name;
 
-        numberParagraph.setAlignment(Element.ALIGN_CENTER);
-        numberParagraph.setSpacingBefore(spacingBefore);
-        numberParagraph.setSpacingAfter(spacingAfter);
-        numberParagraph.setLeading(0, 0);
+        Font font;
 
-        return numberParagraph;
+        if (number.length() > 50) {
+            font =  FontUtils.getDejavuBold11Dark();
+        } else {
+            font = FontUtils.getDejavuBold14Dark();
+        }
+
+        Paragraph numberAndNameParagraph = new Paragraph(new Phrase(numberAndName, font));
+
+        numberAndNameParagraph.setAlignment(Element.ALIGN_CENTER);
+        numberAndNameParagraph.setSpacingBefore(spacingBefore);
+        numberAndNameParagraph.setSpacingAfter(spacingAfter);
+        numberAndNameParagraph.setLeading(0, 0);
+
+        return numberAndNameParagraph;
     }
 
     private Image createNumberImage(final PdfWriter writer, final String code) {
@@ -177,8 +195,8 @@ public class StorageLocationNumberHelperReportPdf extends ReportPdfView {
 
         code128.setCode(code);
         code128.setBarHeight(50F);
-        code128.setX(3F);
-        code128.setSize(16F);
+        code128.setX(1.0F);
+        code128.setSize(5F);
         code128.setFont(null);
 
         PdfContentByte cb = writer.getDirectContent();

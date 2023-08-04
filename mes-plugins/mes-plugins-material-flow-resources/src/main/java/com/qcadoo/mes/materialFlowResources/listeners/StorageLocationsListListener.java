@@ -1,5 +1,7 @@
 package com.qcadoo.mes.materialFlowResources.listeners;
 
+import com.beust.jcommander.internal.Lists;
+import com.lowagie.text.pdf.Barcode128;
 import com.qcadoo.mes.materialFlowResources.constants.MaterialFlowResourcesConstants;
 import com.qcadoo.mes.materialFlowResources.constants.StorageLocationFields;
 import com.qcadoo.mes.materialFlowResources.constants.StorageLocationHelperFields;
@@ -175,12 +177,28 @@ public class StorageLocationsListListener {
         List<Entity> storageLocations = getStorageLocations(storageLocationIds);
 
         if (!storageLocations.isEmpty()) {
-            Entity storageLocationNumberHelper = createStorageLocationNumberHelper(storageLocations);
+            List<String> invalidNumbers = Lists.newArrayList();
 
-            if (Objects.nonNull(storageLocationNumberHelper)) {
-                Long storageLocationNumberHelperId = storageLocationNumberHelper.getId();
+            storageLocations.forEach(storageLocation -> {
+                String number = storageLocation.getStringField(StorageLocationFields.NUMBER);
 
-                view.redirectTo("/materialFlowResources/storageLocationNumberHelperReport.pdf?id=" + storageLocationNumberHelperId, true, false);
+                try {
+                    String text = Barcode128.getRawText(number, false);
+                } catch (RuntimeException exception) {
+                    invalidNumbers.add(number);
+                }
+            });
+
+            if (invalidNumbers.isEmpty()) {
+                Entity storageLocationNumberHelper = createStorageLocationNumberHelper(storageLocations);
+
+                if (Objects.nonNull(storageLocationNumberHelper)) {
+                    Long storageLocationNumberHelperId = storageLocationNumberHelper.getId();
+
+                    view.redirectTo("/materialFlowResources/storageLocationNumberHelperReport.pdf?id=" + storageLocationNumberHelperId, true, false);
+                }
+            } else {
+                view.addMessage("materialFlowResources.storageLocation.report.number.invalidCharacters", ComponentState.MessageType.FAILURE, String.join(", ", invalidNumbers));
             }
         }
     }
