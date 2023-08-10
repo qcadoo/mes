@@ -9,7 +9,7 @@
         <version>1.5-SNAPSHOT-DEV</version>
     </parent>
 
-    <artifactId>mes-plugins-cmms-workstation-parts</artifactId>
+    <artifactId>mes-plugins-cmms-machine-parts</artifactId>
     <groupId>com.qcadoo.mes</groupId>
 
     <name>Qcadoo MES :: Plugins :: CMMS Machine Parts</name>
