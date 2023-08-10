@@ -185,7 +185,7 @@ public class OrderDetailsListeners {
     public void onTechnologyChange(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         setDefaultNameUsingTechnology(view, state, args);
 
-        LookupComponent technologyLookup = (LookupComponent) view.getComponentByReference(OrderFields.TECHNOLOGY_PROTOTYPE);
+        LookupComponent technologyLookup = (LookupComponent) view.getComponentByReference(OrderFields.TECHNOLOGY);
         Entity technology = technologyLookup.getEntity();
 
         if (Objects.nonNull(technology)) {
@@ -219,7 +219,7 @@ public class OrderDetailsListeners {
         }
 
         LookupComponent productLookup = (LookupComponent) view.getComponentByReference(OrderFields.PRODUCT);
-        LookupComponent technologyLookup = (LookupComponent) view.getComponentByReference(OrderFields.TECHNOLOGY_PROTOTYPE);
+        LookupComponent technologyLookup = (LookupComponent) view.getComponentByReference(OrderFields.TECHNOLOGY);
         FieldComponent nameField = (FieldComponent) view.getComponentByReference(OrderFields.NAME);
 
         Entity product = productLookup.getEntity();
@@ -231,40 +231,6 @@ public class OrderDetailsListeners {
 
         Locale locale = state.getLocale();
         nameField.setFieldValue(orderService.makeDefaultName(product, technology, locale));
-    }
-
-    public void showCopyOfTechnology(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        Long orderId = (Long) state.getFieldValue();
-
-        if (Objects.nonNull(orderId)) {
-            Entity order = orderService.getOrder(orderId);
-
-            LookupComponent patternTechnologyLookup = (LookupComponent) view
-                    .getComponentByReference(OrderFields.TECHNOLOGY_PROTOTYPE);
-
-            if (Objects.isNull(patternTechnologyLookup.getEntity())) {
-                state.addMessage("order.technology.patternTechnology.not.set", MessageType.INFO);
-
-                return;
-            }
-
-            if (!patternTechnologyLookup.getEntity().getBelongsToField(TechnologyFields.PRODUCT)
-                    .equals(order.getBelongsToField(OrderFields.PRODUCT))) {
-                state.addMessage("order.technology.patternTechnology.productGroupTechnology.set", MessageType.INFO);
-
-                return;
-            }
-
-            Long technologyId = order.getBelongsToField(OrderFields.TECHNOLOGY).getId();
-
-            Map<String, Object> parameters = Maps.newHashMap();
-
-            parameters.put("form.id", technologyId);
-            parameters.put("form.orderId", order.getId());
-
-            String url = "/page/orders/copyOfTechnologyDetails.html";
-            view.redirectTo(url, false, true, parameters);
-        }
     }
 
     public void showTechnology(final ViewDefinitionState view, final ComponentState state, final String[] args) {
@@ -395,7 +361,7 @@ public class OrderDetailsListeners {
 
     public void changeOrderProduct(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         LookupComponent productLookup = (LookupComponent) view.getComponentByReference(OrderFields.PRODUCT);
-        LookupComponent technologyLookup = (LookupComponent) view.getComponentByReference(OrderFields.TECHNOLOGY_PROTOTYPE);
+        LookupComponent technologyLookup = (LookupComponent) view.getComponentByReference(OrderFields.TECHNOLOGY);
         FieldComponent defaultTechnologyField = (FieldComponent) view.getComponentByReference(OrderFields.DEFAULT_TECHNOLOGY);
 
         Entity product = productLookup.getEntity();

@@ -52,9 +52,7 @@
 						<option type="expression"
 							value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name" />
 						<option type="fieldCode" value="number" />
-						
-						<criteriaModifier class="com.qcadoo.mes.technologies.criteriaModifiers.TechnologyCriteriaModifiers" method="showPatternTechnology" />
-						
+
 						<listener event="onSelectedEntityChange"
 							class="com.qcadoo.mes.productionScheduling.listeners.OrderTimePredictionListeners"
 							method="clearValueOnTechnologyChange" />

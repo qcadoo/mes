@@ -378,7 +378,7 @@ public class MaterialRequirementCoverageForOrderServiceImpl implements MaterialR
         List<Entity> technologiesForProduct = dataDefinitionService
                 .get(TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_TECHNOLOGY).find()
                 .add(SearchRestrictions.belongsTo(TechnologyFields.PRODUCT, product))
-                .add(SearchRestrictions.isNull(TechnologyFields.TECHNOLOGY_TYPE))
+                .add(SearchRestrictions.eq(TechnologyFields.ACTIVE, true))
                 .add(SearchRestrictions.or(
                         SearchRestrictions.eq(TechnologyFields.STATE, TechnologyState.ACCEPTED.getStringValue()),
                         SearchRestrictions.eq(TechnologyFields.STATE, TechnologyState.CHECKED.getStringValue())))

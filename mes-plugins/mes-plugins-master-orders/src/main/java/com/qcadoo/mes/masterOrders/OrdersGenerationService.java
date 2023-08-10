@@ -183,7 +183,7 @@ public class OrdersGenerationService {
                 numberGeneratorService.generateNumber(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER));
         order.setField(OrderFields.NAME, orderService.makeDefaultName(product, technology, LocaleContextHolder.getLocale()));
         order.setField(OrderFields.PRODUCT, product);
-        order.setField(OrderFields.TECHNOLOGY_PROTOTYPE, technology);
+        order.setField(OrderFields.TECHNOLOGY, technology);
         order.setField(OrderFields.PRODUCTION_LINE, orderService.getProductionLine(technology));
         order.setField(OrderFields.DIVISION, orderService.getDivision(technology));
         order.setField(OrderFields.DATE_FROM, dateFrom);
@@ -284,8 +284,8 @@ public class OrdersGenerationService {
     }
 
     private Integer getChangeoverDurationInMillis(final Entity previousOrder, final Entity nextOrder) {
-        Entity fromTechnology = previousOrder.getBelongsToField(OrderFields.TECHNOLOGY_PROTOTYPE);
-        Entity toTechnology = nextOrder.getBelongsToField(OrderFields.TECHNOLOGY_PROTOTYPE);
+        Entity fromTechnology = previousOrder.getBelongsToField(OrderFields.TECHNOLOGY);
+        Entity toTechnology = nextOrder.getBelongsToField(OrderFields.TECHNOLOGY);
         Entity productionLine = nextOrder.getBelongsToField(PRODUCTION_LINE);
         Entity changeover = changeoverNormsService.getMatchingChangeoverNorms(fromTechnology, toTechnology, productionLine);
 

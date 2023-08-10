@@ -101,8 +101,8 @@ public class OrderDetailsHooksMO {
         FieldComponent dateFromField = (FieldComponent) view.getComponentByReference(OrderFields.DATE_FROM);
         FieldComponent dateToField = (FieldComponent) view.getComponentByReference(OrderFields.DATE_TO);
         LookupComponent productLookup = (LookupComponent) view.getComponentByReference(OrderFields.PRODUCT);
-        LookupComponent technologyPrototypeLookup = (LookupComponent) view
-                .getComponentByReference(OrderFields.TECHNOLOGY_PROTOTYPE);
+        LookupComponent technologyLookup = (LookupComponent) view
+                .getComponentByReference(OrderFields.TECHNOLOGY);
         FieldComponent plannedQuantityField = (FieldComponent) view.getComponentByReference(OrderFields.PLANNED_QUANTITY);
         FieldComponent descriptionField = (FieldComponent) view.getComponentByReference(OrderFields.DESCRIPTION);
 
@@ -173,9 +173,9 @@ public class OrderDetailsHooksMO {
             Entity productComponentDB = productComponent.getDataDefinition().get(productComponent.getId());
             Entity masterOrderTechnology = productComponentDB.getBelongsToField(MasterOrderProductFields.TECHNOLOGY);
             if (view.isViewAfterRedirect() && masterOrderTechnology != null) {
-                technologyPrototypeLookup.setFieldValue(masterOrderTechnology.getId());
-                technologyPrototypeLookup.requestComponentUpdateState();
-                technologyPrototypeLookup.performEvent(view, "onSelectedEntityChange", "");
+                technologyLookup.setFieldValue(masterOrderTechnology.getId());
+                technologyLookup.requestComponentUpdateState();
+                technologyLookup.performEvent(view, "onSelectedEntityChange", "");
             }
             String orderDescription = ordersFromMOProductsGenerationService.buildDescription(parameter, masterOrder,
                     productComponentDB, masterOrderTechnology, product);

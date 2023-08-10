@@ -553,8 +553,8 @@
                                                defaultEnabled="false"/>
                                 </layoutElement>
                                 <layoutElement column="1" row="2">
-                                    <component type="lookup" name="technology" reference="technologyPrototype"
-                                               field="technologyPrototype">
+                                    <component type="lookup" name="technology" reference="technology"
+                                               field="technology">
                                         <option type="column" name="name" fields="name" link="true"
                                                 width="300"/>
                                         <option type="column" name="state" fields="state"/>
@@ -568,7 +568,7 @@
 
                                         <criteriaModifier
                                                 class="com.qcadoo.mes.orders.criteriaModifiers.TechnologyCriteriaModifiersO"
-                                                method="showAcceptedPatternTechnologyForProduct"/>
+                                                method="showAcceptedTechnologyForProduct"/>
 
                                         <listener event="onSelectedEntityChange"
                                                   class="com.qcadoo.mes.orders.listeners.OrderDetailsListeners"
@@ -707,8 +707,6 @@
                 <listener event="changeState"
                           class="com.qcadoo.mes.orders.listeners.OrderDetailsListeners"
                           method="changeState"/>
-                <listener event="showCopyOfTechnology" method="showCopyOfTechnology"
-                          class="com.qcadoo.mes.orders.listeners.OrderDetailsListeners"/>
                 <listener event="showOrderParameters" method="showOrderParameters"
                           class="com.qcadoo.mes.orders.listeners.OrderDetailsListeners"/>
                 <listener event="printOrderReport" method="printOrderReport"

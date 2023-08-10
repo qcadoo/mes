@@ -92,7 +92,7 @@ public class OrderDetailsHooks {
     private static final String L_COMMENT_REASON_TYPE_DEVIATIONS_OF_EFFECTIVE_END = "commentReasonTypeDeviationsOfEffectiveEnd";
 
     private static final List<String> L_PREDEFINED_TECHNOLOGY_FIELDS = Lists.newArrayList("defaultTechnology",
-            "technologyPrototype", "predefinedTechnology");
+            "technology", "predefinedTechnology");
 
     private static final String L_DONE_IN_PERCENTAGE = "doneInPercentage";
 
@@ -239,7 +239,7 @@ public class OrderDetailsHooks {
         if (Objects.isNull(orderForm.getEntityId()) && view.isViewAfterRedirect()) {
             LookupComponent productionLineLookup = (LookupComponent) view.getComponentByReference(OrderFields.PRODUCTION_LINE);
             LookupComponent technologyLookup = (LookupComponent) view
-                    .getComponentByReference(OrderFields.TECHNOLOGY_PROTOTYPE);
+                    .getComponentByReference(OrderFields.TECHNOLOGY);
             Entity technology = technologyLookup.getEntity();
             Entity productionLine = orderService.getProductionLine(technology);
 
@@ -278,7 +278,7 @@ public class OrderDetailsHooks {
 
     public void fillDefaultTechnology(final ViewDefinitionState view) {
         LookupComponent productLookup = (LookupComponent) view.getComponentByReference(OrderFields.PRODUCT);
-        LookupComponent technologyLookup = (LookupComponent) view.getComponentByReference(OrderFields.TECHNOLOGY_PROTOTYPE);
+        LookupComponent technologyLookup = (LookupComponent) view.getComponentByReference(OrderFields.TECHNOLOGY);
         FieldComponent defaultTechnologyField = (FieldComponent) view.getComponentByReference(OrderFields.DEFAULT_TECHNOLOGY);
 
         Entity product = productLookup.getEntity();
@@ -339,7 +339,7 @@ public class OrderDetailsHooks {
 
     public void disableTechnologiesIfProductDoesNotAny(final ViewDefinitionState view) {
         LookupComponent productLookup = (LookupComponent) view.getComponentByReference(OrderFields.PRODUCT);
-        LookupComponent technologyLookup = (LookupComponent) view.getComponentByReference(OrderFields.TECHNOLOGY_PROTOTYPE);
+        LookupComponent technologyLookup = (LookupComponent) view.getComponentByReference(OrderFields.TECHNOLOGY);
         FieldComponent defaultTechnologyField = (FieldComponent) view.getComponentByReference(OrderFields.DEFAULT_TECHNOLOGY);
         FieldComponent plannedQuantity = (FieldComponent) view.getComponentByReference(OrderFields.PLANNED_QUANTITY);
 
@@ -750,7 +750,7 @@ public class OrderDetailsHooks {
     }
 
     public void fillOrderDescription(final ViewDefinitionState view) {
-        LookupComponent technologyLookup = (LookupComponent) view.getComponentByReference(OrderFields.TECHNOLOGY_PROTOTYPE);
+        LookupComponent technologyLookup = (LookupComponent) view.getComponentByReference(OrderFields.TECHNOLOGY);
         LookupComponent productLookup = (LookupComponent) view.getComponentByReference(OrderFields.PRODUCT);
         FieldComponent descriptionField = (FieldComponent) view.getComponentByReference(OrderFields.DESCRIPTION);
         FormComponent orderForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);

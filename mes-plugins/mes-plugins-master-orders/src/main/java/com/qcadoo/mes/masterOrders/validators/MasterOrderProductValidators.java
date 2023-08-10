@@ -147,7 +147,7 @@ public class MasterOrderProductValidators {
         Entity product = masterOrderProduct.getBelongsToField(MasterOrderProductFields.PRODUCT);
 
         Collection<String> unsupportedOrderNumbers = masterOrderOrdersDataProvider.findBelongingOrderNumbers(masterOrder,
-                and(belongsTo(OrderFields.PRODUCT, product), not(belongsTo(OrderFields.TECHNOLOGY_PROTOTYPE, newTechnology))));
+                and(belongsTo(OrderFields.PRODUCT, product), not(belongsTo(OrderFields.TECHNOLOGY, newTechnology))));
 
         if (unsupportedOrderNumbers.isEmpty()) {
             return true;

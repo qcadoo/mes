@@ -99,8 +99,7 @@ public class TechnologyModelHooks {
             technology.setField(MASTER, false);
             return;
         }
-        if (!technology.getStringField(TechnologyFields.STATE).equals(TechnologyState.ACCEPTED.getStringValue())
-                || technology.getStringField(TechnologyFields.TECHNOLOGY_TYPE) != null) {
+        if (!technology.getStringField(TechnologyFields.STATE).equals(TechnologyState.ACCEPTED.getStringValue())) {
             return;
         }
         SearchCriteriaBuilder searchCriteries = technologyDD.find();

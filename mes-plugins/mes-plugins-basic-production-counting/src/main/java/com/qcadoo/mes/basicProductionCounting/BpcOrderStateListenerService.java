@@ -43,10 +43,10 @@ public class BpcOrderStateListenerService {
     public void onAccept(final StateChangeContext stateChangeContext) {
         final Entity order = stateChangeContext.getOwner();
         final Entity technology = order.getBelongsToField(OrderFields.TECHNOLOGY);
-        final Entity technologyPrototype = order.getBelongsToField(OrderFields.TECHNOLOGY_PROTOTYPE);
+        final Entity technologyDb = order.getDataDefinition().get(order.getId()).getBelongsToField(OrderFields.TECHNOLOGY);
 
-        if (Objects.nonNull(technology.getId()) && Objects.nonNull(technologyPrototype.getId())
-                && !technology.getId().equals(technologyPrototype.getId())) {
+        if (Objects.nonNull(technology.getId()) && Objects.nonNull(technologyDb.getId())
+                && !technology.getId().equals(technologyDb.getId())) {
             for (Entity pcq : order.getHasManyField(OrderFieldsBPC.PRODUCTION_COUNTING_QUANTITIES)) {
                 pcq.getDataDefinition().delete(pcq.getId());
             }

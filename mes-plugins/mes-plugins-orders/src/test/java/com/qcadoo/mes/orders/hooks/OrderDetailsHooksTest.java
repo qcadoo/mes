@@ -216,7 +216,7 @@ public class OrderDetailsHooksTest {
     public void shouldNotFillDefaultTechnologyIfThereIsNoDefaultTechnology() throws Exception {
         // given
         given(view.getComponentByReference(OrderFields.PRODUCT)).willReturn(productLookup);
-        given(view.getComponentByReference(OrderFields.TECHNOLOGY_PROTOTYPE)).willReturn(technologyLookup);
+        given(view.getComponentByReference(OrderFields.TECHNOLOGY)).willReturn(technologyLookup);
         given(view.getComponentByReference(OrderFields.DEFAULT_TECHNOLOGY)).willReturn(defaultTechnologyField);
 
         given(productLookup.getEntity()).willReturn(product);
@@ -235,7 +235,7 @@ public class OrderDetailsHooksTest {
     public void shouldFillDefaultTechnology() throws Exception {
         // given
         given(view.getComponentByReference(OrderFields.PRODUCT)).willReturn(productLookup);
-        given(view.getComponentByReference(OrderFields.TECHNOLOGY_PROTOTYPE)).willReturn(technologyLookup);
+        given(view.getComponentByReference(OrderFields.TECHNOLOGY)).willReturn(technologyLookup);
         given(view.getComponentByReference(OrderFields.DEFAULT_TECHNOLOGY)).willReturn(defaultTechnologyField);
 
         given(productLookup.getEntity()).willReturn(product);
@@ -256,7 +256,7 @@ public class OrderDetailsHooksTest {
         // given
         given(view.getComponentByReference(OrderFields.PRODUCT)).willReturn(productLookup);
         given(view.getComponentByReference(OrderFields.DEFAULT_TECHNOLOGY)).willReturn(defaultTechnologyField);
-        given(view.getComponentByReference(OrderFields.TECHNOLOGY_PROTOTYPE)).willReturn(technologyLookup);
+        given(view.getComponentByReference(OrderFields.TECHNOLOGY)).willReturn(technologyLookup);
         given(view.getComponentByReference(OrderFields.PLANNED_QUANTITY)).willReturn(plannedQuantityField);
 
         given(productLookup.getEntity()).willReturn(null);
@@ -275,7 +275,7 @@ public class OrderDetailsHooksTest {
         // given
         given(view.getComponentByReference(OrderFields.PRODUCT)).willReturn(productLookup);
         given(view.getComponentByReference(OrderFields.DEFAULT_TECHNOLOGY)).willReturn(defaultTechnologyField);
-        given(view.getComponentByReference(OrderFields.TECHNOLOGY_PROTOTYPE)).willReturn(technologyLookup);
+        given(view.getComponentByReference(OrderFields.TECHNOLOGY)).willReturn(technologyLookup);
         given(view.getComponentByReference(OrderFields.PLANNED_QUANTITY)).willReturn(plannedQuantityField);
 
         given(productLookup.getEntity()).willReturn(product);
@@ -303,7 +303,7 @@ public class OrderDetailsHooksTest {
         // given
         given(view.getComponentByReference(OrderFields.PRODUCT)).willReturn(productLookup);
         given(view.getComponentByReference(OrderFields.DEFAULT_TECHNOLOGY)).willReturn(defaultTechnologyField);
-        given(view.getComponentByReference(OrderFields.TECHNOLOGY_PROTOTYPE)).willReturn(technologyLookup);
+        given(view.getComponentByReference(OrderFields.TECHNOLOGY)).willReturn(technologyLookup);
         given(view.getComponentByReference(OrderFields.PLANNED_QUANTITY)).willReturn(plannedQuantityField);
 
         given(productLookup.getEntity()).willReturn(product);

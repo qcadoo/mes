@@ -47,7 +47,6 @@ public class ProductDataTechnologyModifiers {
 
         scb.add(SearchRestrictions.in(TechnologyFields.STATE,
                 Lists.newArrayList(TechnologyStateStringValues.ACCEPTED, TechnologyStateStringValues.CHECKED)));
-        scb.add(SearchRestrictions.isNull(TechnologyFields.TECHNOLOGY_TYPE));
 
         if (Objects.nonNull(productId)) {
             scb.add(SearchRestrictions.belongsTo(TechnologyFields.PRODUCT, BasicConstants.PLUGIN_IDENTIFIER,

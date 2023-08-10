@@ -37,9 +37,6 @@
             <validatesLength max="2048"/>
         </string>
 
-        <enum name="technologyType" values="01patternTechnology,02ownTechnology"/>
-        <belongsTo name="technologyPrototype" model="technology"/>
-
         <belongsTo name="product" plugin="basic" model="product"
                    lazy="false" required="true"/>
 

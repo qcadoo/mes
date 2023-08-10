@@ -36,7 +36,6 @@
         <enum name="technologyState" values="01draft,02accepted,03declined,04outdated,05checked"/>
         <boolean name="masterTechnology"/>
         <boolean name="activeTechnology"/>
-        <string name="technologyType"/>
     </fields>
 
     <hooks/>

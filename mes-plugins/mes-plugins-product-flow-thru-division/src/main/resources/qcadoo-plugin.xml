@@ -551,7 +551,6 @@
         <view:view-tab resource="view/tabExtensions/divisionDetails.xml"/>
         <view:view-tab resource="view/tabExtensions/locationDetails.xml"/>
         <view:view-tab resource="view/tabExtensions/technologyDetails.xml"/>
-        <view:view-tab resource="view/tabExtensions/copyOfTechnologyDetails.xml"/>
         <view:view-tab resource="view/tabExtensions/orderMaterialAvailability.xml"/>
         <view:view-tab resource="view/tabExtensions/ordersParameters.xml"/>
         <view:view-tab resource="view/tabExtensions/supplyParameters.xml"/>
@@ -584,11 +583,6 @@
                         type="beforeRender"
                         class="com.qcadoo.mes.productFlowThruDivision.hooks.LocationDetailsPFTD"
                         method="changeDivisionsTabAndGridVisibility"/>
-
-        <view:view-hook plugin="orders" view="copyOfTechnologyDetails"
-                        type="beforeRender"
-                        class="com.qcadoo.mes.productFlowThruDivision.hooks.TechnologyDetailsHooksPFTD"
-                        method="onBeforeRender"/>
 
         <view:view-hook plugin="technologies" view="technologyDetails"
                         type="beforeRender"
@@ -667,7 +661,6 @@
         <view:view-ribbon-group resource="view/ribbonExtensions/orderDetails.xml"/>
         <view:view-ribbon-group resource="view/ribbonExtensions/operationalTaskDetails.xml"/>
         <view:view-ribbon-group resource="view/ribbonExtensions/technologyDetails.xml"/>
-        <view:view-ribbon-group resource="view/ribbonExtensions/copyOfTechnologyDetails.xml"/>
         <view:view-ribbon-group resource="view/ribbonExtensions/productionTrackingDetails.xml"/>
         <view:view-ribbon-group resource="view/ribbonExtensions/costNormsForMaterialsInOrderList.xml"/>
         <view:view-ribbon-group resource="view/ribbonExtensions/detailedProductionCountingAndProgressList.xml"/>
@@ -722,11 +715,6 @@
                             component="form" event="addMultipleProductionLines"
                             class="com.qcadoo.mes.productFlowThruDivision.listeners.TechnologyDetailsListenersPFTD"
                             method="addMultipleProductionLines"/>
-
-        <view:view-listener plugin="orders" view="copyOfTechnologyDetails"
-                            component="form" event="fillLocationsInComponents"
-                            class="com.qcadoo.mes.productFlowThruDivision.listeners.TechnologyDetailsListenersPFTD"
-                            method="fillLocationsInComponents"/>
 
         <view:view-listener plugin="basicProductionCounting" view="productionCountingQuantityAdvancedDetails"
                             component="role" event="onSelectedEntityChange"

@@ -201,8 +201,8 @@ public class PPSReportXlsHelper {
             return null;
         }
 
-        Entity fromTechnology = previousOrder.getBelongsToField(OrderFields.TECHNOLOGY_PROTOTYPE);
-        Entity toTechnology = order.getBelongsToField(OrderFields.TECHNOLOGY_PROTOTYPE);
+        Entity fromTechnology = previousOrder.getBelongsToField(OrderFields.TECHNOLOGY);
+        Entity toTechnology = order.getBelongsToField(OrderFields.TECHNOLOGY);
         Entity productionLine = order.getBelongsToField(PRODUCTION_LINE);
 
         return changeoverNormsService.getMatchingChangeoverNorms(fromTechnology, toTechnology, productionLine);

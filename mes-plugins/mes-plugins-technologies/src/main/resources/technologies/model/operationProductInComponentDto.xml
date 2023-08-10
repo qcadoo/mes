@@ -43,7 +43,6 @@
         <integer name="technologyId"/>
         <string name="technologyName"/>
         <string name="technologyNumber"/>
-        <string name="technologyType"/>
         <priority name="priority"/>
         <decimal name="quantity"/>
         <boolean name="hasAcceptedTechnology"/>

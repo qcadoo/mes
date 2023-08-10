@@ -92,32 +92,6 @@ public class OperationDurationDetailsInOrderListeners {
     @Autowired
     private TechnologyService technologyService;
 
-    public void showCopyOfTechnology(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        Long orderId = (Long) state.getFieldValue();
-
-        if (orderId != null) {
-            Entity order = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(orderId);
-
-            Entity technologyPrototype = order.getBelongsToField(OrderFields.TECHNOLOGY_PROTOTYPE);
-            if (technologyPrototype == null) {
-                state.addMessage("order.technology.patternTechnology.not.set", MessageType.INFO);
-                return;
-            }
-            if (!technologyPrototype.getBelongsToField(TechnologyFields.PRODUCT)
-                    .equals(order.getBelongsToField(OrderFields.PRODUCT))) {
-                state.addMessage("order.technology.patternTechnology.productGroupTechnology.set", MessageType.INFO);
-                return;
-            }
-
-            Long technologyId = order.getBelongsToField(OrderFields.TECHNOLOGY).getId();
-            Map<String, Object> parameters = Maps.newHashMap();
-            parameters.put("form.id", technologyId);
-
-            String url = "../page/orders/copyOfTechnologyDetails.html";
-            view.redirectTo(url, false, true, parameters);
-        }
-    }
-
     @Transactional
     public void generateRealizationTime(final ViewDefinitionState viewDefinitionState, final ComponentState state,
                                         final String[] args) {

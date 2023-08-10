@@ -81,7 +81,9 @@
 
         <belongsTo name="technology" plugin="technologies" model="technology"/>
 
+<!--
         <belongsTo name="technologyPrototype" plugin="technologies" model="technology"/>
+-->
 
         <belongsTo name="productionLine" plugin="productionLines"
                    model="productionLine"/>

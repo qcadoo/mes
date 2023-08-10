@@ -146,7 +146,7 @@ public class WarehouseIssueGenerator {
                 SearchCriteriaBuilder scb = getTechnologyDD().find().setProjection(SearchProjections.id())
                         .add(SearchRestrictions.belongsTo(TechnologyFields.PRODUCT,
                                 cProduct.getBelongsToField(ProductionCountingQuantityFields.PRODUCT)))
-                        .add(SearchRestrictions.isNull(TechnologyFields.TECHNOLOGY_TYPE))
+                        .add(SearchRestrictions.eq(TechnologyFields.ACTIVE, true))
                         .add(SearchRestrictions.eq(TechnologyFields.STATE, TechnologyState.ACCEPTED.getStringValue()))
                         .add(SearchRestrictions.eq(TechnologyFields.MASTER, true));
 

@@ -81,7 +81,7 @@ public class OrderValidatorsMOTest {
     private Entity order, masterOrder;
 
     @Mock
-    private Entity product, company, technology, technologyPrototype, productMO, companyMO, technologyMO;
+    private Entity product, company, technology, productMO, companyMO, technologyMO;
 
     @Mock
     private SearchCriterion technologyIsNullRestriction, technologyIsEmptyOrMatchTechPrototypeRestriction;
@@ -99,7 +99,7 @@ public class OrderValidatorsMOTest {
         stubId(product, 3L);
         stubId(company, 4L);
         stubId(technology, 5L);
-        stubId(technologyPrototype, 6L);
+        stubId(technology, 6L);
         stubId(productMO, 7L);
         stubId(companyMO, 8L);
         stubId(technologyMO, 9L);
@@ -112,7 +112,6 @@ public class OrderValidatorsMOTest {
 
         stubBelongsToField(order, OrderFieldsMO.MASTER_ORDER, masterOrder);
         stubOrderProduct(product);
-        stubOrderTechnologyPrototype(technologyPrototype);
         stubOrderTechnology(mockEntity());
 
         stubMasterOrderProducts(EMPTY_ENTITY_LIST);
@@ -123,7 +122,7 @@ public class OrderValidatorsMOTest {
 
         given(isNull(MasterOrderProductFields.TECHNOLOGY)).willReturn(technologyIsNullRestriction);
         given(or(isNull(MasterOrderProductFields.TECHNOLOGY),
-                belongsTo(MasterOrderProductFields.TECHNOLOGY, technologyPrototype)))
+                belongsTo(MasterOrderProductFields.TECHNOLOGY, technology)))
                         .willReturn(technologyIsEmptyOrMatchTechPrototypeRestriction);
     }
 
@@ -133,10 +132,6 @@ public class OrderValidatorsMOTest {
 
     private void stubOrderTechnology(final Entity technology) {
         EntityTestUtils.stubBelongsToField(order, OrderFields.TECHNOLOGY, technology);
-    }
-
-    private void stubOrderTechnologyPrototype(final Entity technology) {
-        EntityTestUtils.stubBelongsToField(order, OrderFields.TECHNOLOGY_PROTOTYPE, technology);
     }
 
     private void stubMasterOrderProducts(final Collection<Entity> elements) {

@@ -43,7 +43,7 @@ public class OrderDetailsHooksLCNFO {
         if (order.getBelongsToField(OrderFields.PRODUCTION_LINE) == null) {
             return false;
         }
-        Entity patternTechnology = order.getBelongsToField(OrderFields.TECHNOLOGY_PROTOTYPE);
+        Entity patternTechnology = order.getBelongsToField(OrderFields.TECHNOLOGY);
         return patternTechnology != null;
     };
 
