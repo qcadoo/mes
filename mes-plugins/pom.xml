@@ -56,7 +56,7 @@
         <module>mes-plugins-tech-subcontr-for-production-counting</module>
         <module>mes-plugins-cat-numbers-in-deliveries</module>
         <module>mes-plugins-master-orders</module>
-        <module>mes-plugins-cmms-machine-parts</module>
+        <module>mes-plugins-cmms-workstation-parts</module>
         <module>mes-plugins-warehouse-minimal-state</module>
         <module>mes-plugins-advanced-genealogy</module>
         <module>mes-plugins-supply-negotiations</module>

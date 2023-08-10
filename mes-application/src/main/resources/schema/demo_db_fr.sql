@@ -41947,7 +41947,7 @@ COPY public.qcadoomodel_dictionaryitem (id, name, externalnumber, description, t
 30	Retards dans la livraison des matériaux	\N	\N	\N	7	t	0	f	5
 31	Matériaux défectueux	\N	\N	\N	7	t	0	f	4
 32	Surcharge des ressources de production	\N	\N	\N	7	t	0	f	6
-33	Dysfonctionnement de la machine	\N	\N	\N	7	t	0	f	3
+33	Dysfonctionnement de la workstation	\N	\N	\N	7	t	0	f	3
 34	Autres	\N	\N	\N	7	t	0	f	2
 35	imprimante universelle	\N	\N	01universalPrinter	\N	t	0	f	4
 36	une imprimante pour tout	\N	\N	02allPrinter	\N	t	0	f	5

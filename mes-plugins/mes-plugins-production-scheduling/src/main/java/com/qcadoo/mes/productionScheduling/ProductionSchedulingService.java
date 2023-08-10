@@ -81,12 +81,12 @@ public class ProductionSchedulingService {
         } else {
             operCompTimeCalculations = dataDefinitionService.get(OperationTimeCalculationsConstants.PLUGIN_PRODUCTION_SCHEDULING_IDENTIFIER,
                             OperationTimeCalculationsConstants.MODEL_PLAN_OPER_COMP_TIME_CALCULATION).find()
-                    .createAlias(OperationTimeCalculationsConstants.MODEL_PLAN_ORDER_TIME_CALCULATION, OperationTimeCalculationsConstants.MODEL_PLAN_ORDER_TIME_CALCULATION, JoinType.INNER)
-                    .createAlias(OperationTimeCalculationsConstants.MODEL_PLAN_ORDER_TIME_CALCULATION + L_DOT + OrderTimeCalculationFields.ORDER, OrderTimeCalculationFields.ORDER,
+                    .createAlias(OperationTimeCalculationsConstants.MODEL_ORDER_TIME_CALCULATION, OperationTimeCalculationsConstants.MODEL_ORDER_TIME_CALCULATION, JoinType.INNER)
+                    .createAlias(OperationTimeCalculationsConstants.MODEL_ORDER_TIME_CALCULATION + L_DOT + OrderTimeCalculationFields.ORDER, OrderTimeCalculationFields.ORDER,
                             JoinType.INNER)
                     .add(SearchRestrictions.eq(OrderTimeCalculationFields.ORDER + L_DOT + L_ID, order.getId()))
-                    .add(SearchRestrictions.belongsTo(PlanOrderTimeCalculationFields.PRODUCTION_LINE_SCHEDULE, productionLineSchedule))
-                    .add(SearchRestrictions.belongsTo(PlanOrderTimeCalculationFields.PRODUCTION_LINE, productionLine))
+                    .add(SearchRestrictions.belongsTo(OperationTimeCalculationsConstants.MODEL_ORDER_TIME_CALCULATION + L_DOT + PlanOrderTimeCalculationFields.PRODUCTION_LINE_SCHEDULE, productionLineSchedule))
+                    .add(SearchRestrictions.belongsTo(OperationTimeCalculationsConstants.MODEL_ORDER_TIME_CALCULATION + L_DOT + PlanOrderTimeCalculationFields.PRODUCTION_LINE, productionLine))
                     .addOrder(SearchOrders.asc(OperCompTimeCalculationsFields.OPERATION_OFF_SET)).list().getEntities();
         }
 
