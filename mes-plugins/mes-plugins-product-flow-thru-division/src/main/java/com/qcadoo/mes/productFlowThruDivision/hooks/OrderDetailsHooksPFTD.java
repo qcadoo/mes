@@ -76,7 +76,7 @@ public class OrderDetailsHooksPFTD {
             staffTab.setVisible(TypeOfProductionRecording.CUMULATED.getStringValue()
                     .equals(order.getStringField(OrderFieldsPC.TYPE_OF_PRODUCTION_RECORDING)));
             LookupComponent technologyLookup = (LookupComponent) view
-                    .getComponentByReference(OrderFields.TECHNOLOGY_PROTOTYPE);
+                    .getComponentByReference(OrderFields.TECHNOLOGY);
             LookupComponent productionLineLookup = (LookupComponent) view.getComponentByReference(OrderFields.PRODUCTION_LINE);
             Entity technology = technologyLookup.getEntity();
             Entity productionLine = productionLineLookup.getEntity();

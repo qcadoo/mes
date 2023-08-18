@@ -291,8 +291,8 @@ public class LineChangeoverNormsForOrderDetailsViewHooksTest {
         given(previousOrderLookup.getEntity()).willReturn(previousOrder);
         given(orderLookup.getEntity()).willReturn(order);
 
-        stubBelongsToField(previousOrder, OrderFields.TECHNOLOGY_PROTOTYPE, null);
-        stubBelongsToField(order, OrderFields.TECHNOLOGY_PROTOTYPE, null);
+        stubBelongsToField(previousOrder, OrderFields.TECHNOLOGY, null);
+        stubBelongsToField(order, OrderFields.TECHNOLOGY, null);
 
         // when
         lineChangeoverNormsForOrderDetailsViewHooks.fillLineChangeoverNorm(view);
@@ -316,8 +316,8 @@ public class LineChangeoverNormsForOrderDetailsViewHooksTest {
         given(previousOrderLookup.getEntity()).willReturn(previousOrder);
         given(orderLookup.getEntity()).willReturn(order);
 
-        stubBelongsToField(previousOrder, OrderFields.TECHNOLOGY_PROTOTYPE, fromTechnology);
-        stubBelongsToField(order, OrderFields.TECHNOLOGY_PROTOTYPE, toTechnology);
+        stubBelongsToField(previousOrder, OrderFields.TECHNOLOGY, fromTechnology);
+        stubBelongsToField(order, OrderFields.TECHNOLOGY, toTechnology);
 
         stubBelongsToField(order, OrderFields.PRODUCTION_LINE, productionLine);
 
@@ -343,8 +343,8 @@ public class LineChangeoverNormsForOrderDetailsViewHooksTest {
         given(previousOrderLookup.getEntity()).willReturn(previousOrder);
         given(orderLookup.getEntity()).willReturn(order);
 
-        stubBelongsToField(previousOrder, OrderFields.TECHNOLOGY_PROTOTYPE, fromTechnology);
-        stubBelongsToField(order, OrderFields.TECHNOLOGY_PROTOTYPE, toTechnology);
+        stubBelongsToField(previousOrder, OrderFields.TECHNOLOGY, fromTechnology);
+        stubBelongsToField(order, OrderFields.TECHNOLOGY, toTechnology);
 
         stubBelongsToField(order, OrderFields.PRODUCTION_LINE, productionLine);
 

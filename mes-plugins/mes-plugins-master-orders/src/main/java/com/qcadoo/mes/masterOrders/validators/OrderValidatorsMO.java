@@ -149,7 +149,7 @@ public class OrderValidatorsMO {
     }
 
     private boolean hasMatchingMasterOrderProducts(final Entity order, final Entity masterOrder) {
-        Entity orderTechnologyPrototype = order.getBelongsToField(OrderFields.TECHNOLOGY_PROTOTYPE);
+        Entity orderTechnology = order.getBelongsToField(OrderFields.TECHNOLOGY);
         Entity orderProduct = order.getBelongsToField(OrderFields.PRODUCT);
 
         SearchCriteriaBuilder masterCriteria = dataDefinitionService
@@ -161,11 +161,11 @@ public class OrderValidatorsMO {
                 "masterProducts", JoinType.INNER);
         masterProductsCriteria.add(belongsTo(MasterOrderProductFields.PRODUCT, orderProduct));
 
-        if (orderTechnologyPrototype == null) {
+        if (orderTechnology == null) {
             masterProductsCriteria.add(isNull(MasterOrderProductFields.TECHNOLOGY));
         } else {
             masterProductsCriteria.add(or(isNull(MasterOrderProductFields.TECHNOLOGY),
-                    belongsTo(MasterOrderProductFields.TECHNOLOGY, orderTechnologyPrototype)));
+                    belongsTo(MasterOrderProductFields.TECHNOLOGY, orderTechnology)));
         }
 
         return masterCriteria.setMaxResults(1).uniqueResult() != null;

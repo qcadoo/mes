@@ -440,7 +440,7 @@ public class OrdersFromMOProductsGenerationService {
         order.setField(OrderFields.NAME, generateOrderName(product, technology));
 
         order.setField(OrderFields.PRODUCT, product);
-        order.setField(OrderFields.TECHNOLOGY_PROTOTYPE, technology);
+        order.setField(OrderFields.TECHNOLOGY, technology);
         order.setField(OrderFields.PRODUCTION_LINE, orderService.getProductionLine(technology));
         order.setField(OrderFields.DIVISION, orderService.getDivision(technology));
 

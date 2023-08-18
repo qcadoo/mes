@@ -118,7 +118,8 @@ public class ProductStructureTreeService {
     }
 
     public Entity findTechnologyForProduct(final Entity product) {
-        return getTechnologyDD().find().add(SearchRestrictions.isNull(TechnologyFields.TECHNOLOGY_TYPE))
+        return getTechnologyDD().find()
+                .add(SearchRestrictions.eq(TechnologyFields.ACTIVE, true))
                 .add(SearchRestrictions.belongsTo(ProductStructureTreeNodeFields.PRODUCT, product))
                 .add(SearchRestrictions.or(SearchRestrictions.eq(TechnologyFields.STATE, TechnologyStateStringValues.ACCEPTED),
                         SearchRestrictions.eq(TechnologyFields.STATE, TechnologyStateStringValues.CHECKED)))

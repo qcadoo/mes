@@ -154,8 +154,6 @@ public class OrderXlsxImportService extends XlsxImportService {
                 }
             }
         }
-
-        order.setField(OrderFields.TECHNOLOGY_PROTOTYPE, order.getBelongsToField(OrderFields.TECHNOLOGY));
     }
 
     private boolean validateTechnologyStateAndProduct(final Entity technology, final Entity product) {

@@ -238,15 +238,4 @@ public class OrderHooksTest {
         verify(order).setField(OrderFields.DATE_TO, finishDate);
     }
 
-    @Test
-    public final void shouldNotSetCopyOfTechnology() {
-        // given
-        stubBelongsToField(order, OrderFields.TECHNOLOGY, null);
-
-        // when
-        orderHooks.setCopyOfTechnology(order);
-
-        // then
-        verify(order, never()).setField(eq(OrderFields.TECHNOLOGY), notNull());
-    }
 }

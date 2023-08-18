@@ -165,8 +165,6 @@ public class OrderHooks {
         setInitialState(orderDD, order);
         setCommissionedPlannedQuantity(orderDD, order);
 
-        order.setField(OrderFields.TECHNOLOGY, order.getField(OrderFields.TECHNOLOGY_PROTOTYPE));
-
         if (Objects.isNull(order.getField(OrderFields.EXTERNAL_SYNCHRONIZED))) {
             order.setField(OrderFields.EXTERNAL_SYNCHRONIZED, true);
         }
@@ -215,7 +213,6 @@ public class OrderHooks {
         copyProductQuantity(orderDD, order);
         onCorrectingTheRequestedVolume(orderDD, order);
         auditDatesChanges(order);
-        technologyServiceO.createOrUpdateTechnology(orderDD, order);
         setRemainingQuantity(order);
         setAdditionalFields(order);
         fillExpirationDate(order);
@@ -280,7 +277,6 @@ public class OrderHooks {
         setInitialState(orderDD, order);
         clearOrSetSpecyfiedValueOrderFieldsOnCopy(orderDD, order);
         setProductQuantity(orderDD, order);
-        setCopyOfTechnology(order);
         copyAttachments(order);
     }
 
@@ -384,7 +380,7 @@ public class OrderHooks {
         if (Objects.isNull(plannedQuantity)) {
             return;
         }
-        Entity technology = order.getBelongsToField(OrderFields.TECHNOLOGY_PROTOTYPE);
+        Entity technology = order.getBelongsToField(OrderFields.TECHNOLOGY);
 
         if (Objects.isNull(technology)) {
             return;
@@ -410,9 +406,9 @@ public class OrderHooks {
 
                 return false;
             }
-            if (!order.getBooleanField(OrderFields.NEW_VERSION_TECHNOLOGY_SET) && !order.getBelongsToField(OrderFields.TECHNOLOGY_PROTOTYPE)
-                    .equals(orderFromDB.getBelongsToField(OrderFields.TECHNOLOGY_PROTOTYPE))) {
-                order.addError(orderDD.getField(OrderFields.TECHNOLOGY_PROTOTYPE),
+            if (!order.getBooleanField(OrderFields.NEW_VERSION_TECHNOLOGY_SET) && !order.getBelongsToField(OrderFields.TECHNOLOGY)
+                    .equals(orderFromDB.getBelongsToField(OrderFields.TECHNOLOGY))) {
+                order.addError(orderDD.getField(OrderFields.TECHNOLOGY),
                         "orders.validate.global.error.operationalTasks.technologyChange");
 
                 return false;
@@ -945,18 +941,6 @@ public class OrderHooks {
         order.setField(OrderFields.COMMENT_REASON_DEVIATION_EFFECTIVE_END, null);
         order.setField(OrderFields.COMMENT_REASON_DEVIATION_EFFECTIVE_START, null);
         order.setField(OrderFields.COMMENT_REASON_TYPE_DEVIATIONS_QUANTITY, null);
-    }
-
-    void setCopyOfTechnology(final Entity order) {
-        Entity prototypeTechnology = order.getBelongsToField(OrderFields.TECHNOLOGY_PROTOTYPE);
-
-        if (Objects.nonNull(prototypeTechnology)
-                && TechnologyState.of(prototypeTechnology).compareTo(TechnologyState.ACCEPTED) == 0) {
-            order.setField(OrderFields.TECHNOLOGY, prototypeTechnology);
-        } else {
-            order.setField(OrderFields.TECHNOLOGY, null);
-            order.setField(OrderFields.TECHNOLOGY_PROTOTYPE, null);
-        }
     }
 
     public boolean onDelete(final DataDefinition orderDD, final Entity order) {

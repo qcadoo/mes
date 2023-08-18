@@ -82,47 +82,8 @@ public class TechnologyServiceO {
     @Autowired
     private BarcodeOperationComponentService barcodeOperationComponentService;
 
-
-    @Transactional
-    public void createOrUpdateTechnology(final DataDefinition orderDD, final Entity order) {
-        Entity technologyPrototype = order.getBelongsToField(OrderFields.TECHNOLOGY_PROTOTYPE);
-
-        if (technologyPrototype == null) {
-            removeTechnologyFromOrder(order);
-        } else {
-            createOrUpdateTechnologyForWithPatternTechnology(order, technologyPrototype);
-        }
-    }
-
-    @Transactional
-    public Entity createTechnologyIfPktDisabled(final DataDefinition orderDD, Entity order) {
-        if (!isTechnologyCopied(order)) {
-            order.setField("basicProductionCountings", Lists.newArrayList());
-            order.setField("productionCountingQuantities", Lists.newArrayList());
-            order.setField("productionCountingOperationRuns", Lists.newArrayList());
-            order = order.getDataDefinition().fastSave(order);
-            order = order.getDataDefinition().get(order.getId());
-            Entity technologyPrototype = order.getBelongsToField(OrderFields.TECHNOLOGY_PROTOTYPE);
-            order.setField(OrderFields.TECHNOLOGY, copyTechnology(order, technologyPrototype));
-            order = order.getDataDefinition().save(order);
-        }
-        barcodeOperationComponentService.removeBarcode(order);
-        return order;
-    }
-
     private void removeTechnologyFromOrder(final Entity order) {
         order.setField(OrderFields.TECHNOLOGY, null);
-    }
-
-    private void createOrUpdateTechnologyForWithPatternTechnology(final Entity order, final Entity technologyPrototype) {
-        if (isTechnologyCopied(order)) {
-            if (technologyWasChanged(order)) {
-                order.setField(OrderFields.TECHNOLOGY, technologyPrototype);
-                barcodeOperationComponentService.removeBarcode(order);
-            }
-        } else {
-            order.setField(OrderFields.TECHNOLOGY, technologyPrototype);
-        }
     }
 
     private Entity getExistingOrder(final Entity order) {
@@ -131,55 +92,6 @@ public class TechnologyServiceO {
         }
 
         return order.getDataDefinition().get(order.getId());
-    }
-
-    private boolean isTechnologyCopied(final Entity order) {
-        Entity technology = order.getBelongsToField(OrderFields.TECHNOLOGY);
-        Entity technologyPrototype = order.getBelongsToField(OrderFields.TECHNOLOGY_PROTOTYPE);
-
-        if (technology == null) {
-            return false;
-        }
-
-        return !Objects.equals(technology.getId(), technologyPrototype.getId());
-    }
-
-    private boolean technologyWasChanged(final Entity order) {
-        Entity existingOrder = getExistingOrder(order);
-
-        if (existingOrder == null) {
-            return false;
-        }
-
-        Entity technology = order.getBelongsToField(OrderFields.TECHNOLOGY_PROTOTYPE);
-        Entity existingOrderTechnology = existingOrder.getBelongsToField(OrderFields.TECHNOLOGY_PROTOTYPE);
-
-        if (existingOrderTechnology == null) {
-            return true;
-        }
-
-        if (!existingOrderTechnology.equals(technology)) {
-            return order.getBelongsToField(OrderFields.TECHNOLOGY) == null
-                    || existingOrder.getBelongsToField(OrderFields.TECHNOLOGY) != null;
-        } else {
-            return false;
-        }
-    }
-
-    private Entity copyTechnology(final Entity order, final Entity technologyPrototype) {
-        Entity copyOfTechnology = getTechnologyDD().create();
-
-        String number = generateNumberForTechnologyInOrder(order, technologyPrototype);
-
-        copyOfTechnology = copyOfTechnology.getDataDefinition().copy(technologyPrototype.getId()).get(0);
-
-        copyOfTechnology.setField(TechnologyFields.NUMBER, number);
-        copyOfTechnology.setField(TechnologyFields.TECHNOLOGY_PROTOTYPE, technologyPrototype);
-        copyOfTechnology.setField(TechnologyFields.TECHNOLOGY_TYPE, WITH_PATTERN_TECHNOLOGY);
-
-        copyOfTechnology = copyOfTechnology.getDataDefinition().save(copyOfTechnology);
-
-        return copyOfTechnology;
     }
 
     public DataDefinition getTechnologyDD() {
@@ -197,9 +109,9 @@ public class TechnologyServiceO {
 
     public Entity getDefaultTechnology(final Entity product) {
         SearchResult searchResult = getTechnologyDD().find()
-                .add(SearchRestrictions.eq(TechnologyFields.MASTER, true)).add(SearchRestrictions.eq("active", true))
+                .add(SearchRestrictions.eq(TechnologyFields.MASTER, true))
+                .add(SearchRestrictions.eq(TechnologyFields.ACTIVE, true))
                 .add(SearchRestrictions.belongsTo(TechnologyFields.PRODUCT, product))
-                .add(SearchRestrictions.isNull(TechnologyFields.TECHNOLOGY_TYPE))
                 .list();
 
         if (searchResult.getTotalNumberOfEntities() == 1) {
@@ -216,9 +128,10 @@ public class TechnologyServiceO {
 
     private Entity getParentDefaultTechnology(final Entity product) {
         SearchResult searchResult = getTechnologyDD().find()
-                .add(SearchRestrictions.eq(TechnologyFields.MASTER, true)).add(SearchRestrictions.eq("active", true))
+                .add(SearchRestrictions.eq(TechnologyFields.MASTER, true))
+                .add(SearchRestrictions.eq(TechnologyFields.ACTIVE, true))
                 .add(SearchRestrictions.belongsTo(TechnologyFields.PRODUCT, product))
-                .add(SearchRestrictions.isNull(TechnologyFields.TECHNOLOGY_TYPE)).list();
+                .list();
         if (searchResult.getTotalNumberOfEntities() == 1) {
             return searchResult.getEntities().get(0);
         } else {

@@ -41,7 +41,6 @@ public class TechnologyValidators {
 
     public boolean validatesWith(final DataDefinition technologyDD, final Entity technology) {
         boolean isValid = checkTechnologyDefault(technologyDD, technology);
-        isValid = isValid && checkTechnologyPrototypeState(technologyDD, technology);
         isValid = isValid && productService.checkIfProductIsNotRemoved(technologyDD, technology);
 
         return isValid;
@@ -55,25 +54,6 @@ public class TechnologyValidators {
         if (!hasInCorrectStateTechnologyForMaster(technology)) {
             technology.addError(technologyDD.getField(TechnologyFields.MASTER),
                     "technologies.technology.validate.global.error.default.incorrectState");
-
-            return false;
-        }
-
-        return true;
-    }
-
-    public boolean checkTechnologyPrototypeState(final DataDefinition technologyDD, final Entity technology) {
-        Entity technologyPrototype = technology.getBelongsToField(TechnologyFields.TECHNOLOGY_PROTOTYPE);
-
-        if (technologyPrototype == null) {
-            return true;
-        }
-
-        String state = technologyPrototype.getStringField(TechnologyFields.STATE);
-
-        if (!TechnologyState.CHECKED.getStringValue().equals(state) && !TechnologyState.ACCEPTED.getStringValue().equals(state)) {
-            technology.addError(technologyDD.getField(TechnologyFields.TECHNOLOGY_PROTOTYPE),
-                    "technologies.technology.validate.global.error.technologyPrototype.incorrectState");
 
             return false;
         }

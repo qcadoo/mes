@@ -214,7 +214,7 @@ public class OrdersForSubproductsGenerationService {
         order.setField(OrderFields.NAME, orderService.makeDefaultName(product, technology, locale));
         order.setField(OrderFields.PRODUCT, product);
 
-        order.setField(OrderFields.TECHNOLOGY_PROTOTYPE, technology);
+        order.setField(OrderFields.TECHNOLOGY, technology);
         getProductionLine(parentOrder, order, technology);
         getDivision(parentOrder, order, technology);
         order.setField(OrderFields.EXTERNAL_SYNCHRONIZED, true);
@@ -283,7 +283,7 @@ public class OrdersForSubproductsGenerationService {
         order.setField(OrderFields.NAME, orderService.makeDefaultName(product, technology, locale));
         order.setField(OrderFields.PRODUCT, product);
 
-        order.setField(OrderFields.TECHNOLOGY_PROTOTYPE, technology);
+        order.setField(OrderFields.TECHNOLOGY, technology);
         getProductionLine(parentOrder, order, technology);
         getDivision(parentOrder, order, technology);
         order.setField(OrderFields.EXTERNAL_SYNCHRONIZED, true);

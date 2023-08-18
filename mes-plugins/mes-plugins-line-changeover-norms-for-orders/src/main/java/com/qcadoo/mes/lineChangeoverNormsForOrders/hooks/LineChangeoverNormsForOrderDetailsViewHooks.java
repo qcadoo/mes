@@ -137,8 +137,8 @@ public class LineChangeoverNormsForOrderDetailsViewHooks {
             return null;
         }
 
-        Entity fromTechnology = extractTechnologyPrototypeFrom(previousOrderLookup.getEntity());
-        Entity toTechnology = extractTechnologyPrototypeFrom(order);
+        Entity fromTechnology = extractTechnologyFrom(previousOrderLookup.getEntity());
+        Entity toTechnology = extractTechnologyFrom(order);
 
         if (Objects.isNull(fromTechnology) || Objects.isNull(toTechnology)) {
             return null;
@@ -149,12 +149,12 @@ public class LineChangeoverNormsForOrderDetailsViewHooks {
         return changeoverNormsService.getMatchingChangeoverNorms(fromTechnology, toTechnology, productionLine);
     }
 
-    private Entity extractTechnologyPrototypeFrom(final Entity order) {
+    private Entity extractTechnologyFrom(final Entity order) {
         if (Objects.isNull(order)) {
             return null;
         }
 
-        return order.getBelongsToField(OrderFields.TECHNOLOGY_PROTOTYPE);
+        return order.getBelongsToField(OrderFields.TECHNOLOGY);
     }
 
     private void fillChangeoverNormFields(final ViewDefinitionState view, final Entity lineChangeoverNorm) {

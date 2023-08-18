@@ -34,35 +34,27 @@ import com.qcadoo.model.api.search.SearchRestrictions;
 @Service
 public class TechnologyCriteriaModifiers {
 
-    public void showPatternTechnology(final SearchCriteriaBuilder scb) {
-        scb.add(SearchRestrictions.isNull(TechnologyFields.TECHNOLOGY_TYPE));
-    }
-
     public void showPatternTechnologyFromOperationProductInComponentDto(final SearchCriteriaBuilder scb) {
-        scb.add(SearchRestrictions.isNull(TechnologyFields.TECHNOLOGY_TYPE)).add(SearchRestrictions.eq("activeTechnology", true));
+        scb.add(SearchRestrictions.eq("activeTechnology", true));
     }
 
     public void showAcceptedPatternTechnology(final SearchCriteriaBuilder scb) {
-        scb.add(SearchRestrictions.isNull(TechnologyFields.TECHNOLOGY_TYPE));
         scb.add(SearchRestrictions.or(SearchRestrictions.eq(TechnologyFields.STATE, TechnologyStateStringValues.ACCEPTED),
                 SearchRestrictions.and(SearchRestrictions.eq(TechnologyFields.TEMPLATE, true),
                         SearchRestrictions.eq(TechnologyFields.IS_TEMPLATE_ACCEPTED, true))));
     }
 
     public void showAcceptedAndCheckedPatternTechnology(final SearchCriteriaBuilder scb) {
-        scb.add(SearchRestrictions.isNull(TechnologyFields.TECHNOLOGY_TYPE));
         scb.add(SearchRestrictions.in(TechnologyFields.STATE,
                 Lists.newArrayList(TechnologyStateStringValues.ACCEPTED, TechnologyStateStringValues.CHECKED)));
     }
 
     public void showDraftAcceptedAndCheckedPatternTechnology(final SearchCriteriaBuilder scb) {
-        scb.add(SearchRestrictions.isNull(TechnologyFields.TECHNOLOGY_TYPE));
         scb.add(SearchRestrictions.in(TechnologyFields.STATE,
                 Lists.newArrayList(TechnologyStateStringValues.DRAFT, TechnologyStateStringValues.ACCEPTED, TechnologyStateStringValues.CHECKED)));
     }
 
     public void showPatternTechnologyWithoutGroup(final SearchCriteriaBuilder scb) {
-        scb.add(SearchRestrictions.isNull(TechnologyFields.TECHNOLOGY_TYPE))
-                .add(SearchRestrictions.isNull(TechnologyFields.TECHNOLOGY_GROUP));
+        scb.add(SearchRestrictions.isNull(TechnologyFields.TECHNOLOGY_GROUP));
     }
 }

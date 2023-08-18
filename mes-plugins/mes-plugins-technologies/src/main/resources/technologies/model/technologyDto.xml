@@ -31,7 +31,6 @@
     <fields>
         <string name="number" />
         <string name="name" />
-        <string name="technologyType" />
         <enum name="state" values="01draft,02accepted,03declined,04outdated,05checked" />
         <boolean name="externalSynchronized" default="true" copyable="false"/>
         <boolean name="master" default="false" copyable="false"/>

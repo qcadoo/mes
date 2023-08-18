@@ -399,7 +399,7 @@ public class TechnologyExportService {
     }
 
     private List<Entity> findAcceptedTechnologies() {
-        return getTechnologyDD().find().add(SearchRestrictions.isNull(TechnologyFields.TECHNOLOGY_TYPE))
+        return getTechnologyDD().find()
                 .add(SearchRestrictions.eq(TechnologyFields.STATE, TechnologyStateStringValues.ACCEPTED))
                 .add(SearchRestrictions.eq(TechnologyFields.ACTIVE, true))
                 .addOrder(SearchOrders.asc(TechnologyFields.NUMBER))
@@ -407,7 +407,7 @@ public class TechnologyExportService {
     }
 
     private List<Entity> findNotAcceptedTechnologies() {
-        return getTechnologyDD().find().add(SearchRestrictions.isNull(TechnologyFields.TECHNOLOGY_TYPE))
+        return getTechnologyDD().find()
                 .add(SearchRestrictions.ne(TechnologyFields.STATE, TechnologyStateStringValues.ACCEPTED))
                 .add(SearchRestrictions.eq(TechnologyFields.ACTIVE, true))
                 .addOrder(SearchOrders.asc(TechnologyFields.NUMBER))

@@ -104,8 +104,6 @@
                 <option type="weakRelation" value="true"/>
                 <option type="correspondingLookup" value="technologiesLookup"/>
 
-                <criteriaModifier class="com.qcadoo.mes.technologies.criteriaModifiers.TechnologyCriteriaModifiers"
-                                  method="showPatternTechnology"/>
             </component>
         </windowTab>
 

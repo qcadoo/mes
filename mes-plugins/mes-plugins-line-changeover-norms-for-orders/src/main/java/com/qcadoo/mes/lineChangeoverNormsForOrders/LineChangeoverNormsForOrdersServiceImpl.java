@@ -143,13 +143,13 @@ public class LineChangeoverNormsForOrdersServiceImpl implements LineChangeoverNo
 
     private void setUpTechnologyFields(final Entity order, final FieldComponent technologyNumberField,
                                        final FieldComponent technologyGroupNumberField) {
-        Entity technologyPrototype = order.getBelongsToField(OrderFields.TECHNOLOGY_PROTOTYPE);
+        Entity technology = order.getBelongsToField(OrderFields.TECHNOLOGY);
 
-        String technologyNumber = extractTechnologyNumberFrom(technologyPrototype);
+        String technologyNumber = extractTechnologyNumberFrom(technology);
         technologyNumberField.setFieldValue(technologyNumber);
         technologyNumberField.requestComponentUpdateState();
 
-        String technologyGroupNumber = extractTechnologyGroupNumberFrom(technologyPrototype);
+        String technologyGroupNumber = extractTechnologyGroupNumberFrom(technology);
         technologyGroupNumberField.setFieldValue(technologyGroupNumber);
         technologyGroupNumberField.requestComponentUpdateState();
     }

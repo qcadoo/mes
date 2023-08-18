@@ -173,7 +173,7 @@ public class OrderCreationService {
         order.setField(OrderFields.NAME, orderService.makeDefaultName(product, technology, LocaleContextHolder.getLocale()));
 
         order.setField(OrderFields.PRODUCT, product);
-        order.setField(OrderFields.TECHNOLOGY_PROTOTYPE, technology);
+        order.setField(OrderFields.TECHNOLOGY, technology);
         order.setField(OrderFields.PRODUCTION_LINE, productionLine);
         order.setField(OrderFields.DIVISION, orderService.getDivision(technology));
 

@@ -111,8 +111,8 @@ public class WorkPlanDetailsHooks {
             return;
         }
         for (Entity order : orders) {
-            if(order.isActive() && order.getBelongsToField(OrderFields.TECHNOLOGY_PROTOTYPE) != null) {
-                technologyIDs.add(order.getBelongsToField(OrderFields.TECHNOLOGY_PROTOTYPE).getId());
+            if(order.isActive() && order.getBelongsToField(OrderFields.TECHNOLOGY) != null) {
+                technologyIDs.add(order.getBelongsToField(OrderFields.TECHNOLOGY).getId());
             }
         }
         GridComponent atachmentsGrid = (GridComponent) view.getComponentByReference(L_ATTCHMENT_GRID);

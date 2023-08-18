@@ -54,7 +54,7 @@ public class OrderDetailsHookLCNFOTest {
     private OrderDetailsRibbonHelper orderDetailsRibbonHelper;
 
     @Mock
-    private Entity order, productionLine, technologyPrototype;
+    private Entity order, productionLine, technology;
 
     @Mock
     private ViewDefinitionState view;
@@ -71,8 +71,8 @@ public class OrderDetailsHookLCNFOTest {
         ReflectionTestUtils.setField(orderDetailsHooksLCNFO, "orderDetailsRibbonHelper", orderDetailsRibbonHelper);
     }
 
-    private void stubTechnologyPrototype(final Entity technology, final Entity productionLine) {
-        EntityTestUtils.stubBelongsToField(order, OrderFields.TECHNOLOGY_PROTOTYPE, technology);
+    private void stubTechnology(final Entity technology, final Entity productionLine) {
+        EntityTestUtils.stubBelongsToField(order, OrderFields.TECHNOLOGY, technology);
         EntityTestUtils.stubBelongsToField(order, OrderFields.PRODUCTION_LINE, productionLine);
 
     }
@@ -90,10 +90,10 @@ public class OrderDetailsHookLCNFOTest {
 
         assertFalse(predicate.apply(null));
 
-        stubTechnologyPrototype(null, null);
+        stubTechnology(null, null);
         assertFalse(predicate.apply(order));
 
-        stubTechnologyPrototype(technologyPrototype, productionLine);
+        stubTechnology(technology, productionLine);
         assertTrue(predicate.apply(order));
     }
 }

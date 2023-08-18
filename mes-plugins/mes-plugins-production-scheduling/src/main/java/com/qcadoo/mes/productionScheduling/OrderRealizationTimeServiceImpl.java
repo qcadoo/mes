@@ -142,8 +142,7 @@ public class OrderRealizationTimeServiceImpl implements OrderRealizationTimeServ
     }
 
     private Integer retrieveWorkstationTypesCount(final Entity operationComponent, final Entity productionLine) {
-        if (StringUtils.isEmpty(operationComponent.getBelongsToField(TechnologyOperationComponentFields.TECHNOLOGY)
-                .getStringField(TechnologyFields.TECHNOLOGY_TYPE))) {
+
             if (parameterService.getParameter().getBooleanField("workstationsQuantityFromProductionLine")) {
                 return productionLinesService.getWorkstationTypesCount(operationComponent, productionLine);
             } else {
@@ -151,11 +150,6 @@ public class OrderRealizationTimeServiceImpl implements OrderRealizationTimeServ
                         operationComponent.getIntegerField(TechnologyOperationComponentFields.QUANTITY_OF_WORKSTATIONS));
 
             }
-        } else {
-            return getIntegerValue(
-                    operationComponent.getIntegerField(TechnologyOperationComponentFields.QUANTITY_OF_WORKSTATIONS));
-        }
-
     }
 
     private int evaluateOperationDurationOutOfCycles(final BigDecimal cycles, final Entity operationComponent,

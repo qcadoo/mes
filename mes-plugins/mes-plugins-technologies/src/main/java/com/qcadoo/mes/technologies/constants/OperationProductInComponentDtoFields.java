@@ -53,7 +53,6 @@ public final class OperationProductInComponentDtoFields {
 
     public static final String TECHNOLOGY_NUMBER = "technologyNumber";
 
-    public static final String TECHNOLOGY_TYPE = "technologyType";
 
     public static final String PRIORITY = "priority";
 

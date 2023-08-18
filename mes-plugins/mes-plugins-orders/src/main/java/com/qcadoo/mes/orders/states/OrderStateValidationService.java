@@ -42,12 +42,12 @@ public class OrderStateValidationService {
     private static final String ENTITY_IS_NULL = "entity is null";
 
     public void validationOnAccepted(final StateChangeContext stateChangeContext) {
-        final List<String> references = Arrays.asList(DATE_TO, DATE_FROM, PRODUCTION_LINE, TECHNOLOGY_PROTOTYPE);
+        final List<String> references = Arrays.asList(DATE_TO, DATE_FROM, PRODUCTION_LINE, TECHNOLOGY);
         checkRequired(references, stateChangeContext);
     }
 
     public void validationOnInProgress(final StateChangeContext stateChangeContext) {
-        final List<String> references = Arrays.asList(DATE_TO, DATE_FROM, TECHNOLOGY_PROTOTYPE);
+        final List<String> references = Arrays.asList(DATE_TO, DATE_FROM, TECHNOLOGY);
         checkRequired(references, stateChangeContext);
     }
 

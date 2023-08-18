@@ -33,10 +33,6 @@ public final class TechnologyFields {
 
     public static final String NAME = "name";
 
-    public static final String TECHNOLOGY_TYPE = "technologyType";
-
-    public static final String TECHNOLOGY_PROTOTYPE = "technologyPrototype";
-
     public static final String PRODUCT = "product";
 
     public static final String TECHNOLOGY_GROUP = "technologyGroup";

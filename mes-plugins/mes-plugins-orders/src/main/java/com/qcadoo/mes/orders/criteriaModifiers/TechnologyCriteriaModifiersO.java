@@ -45,23 +45,14 @@ public class TechnologyCriteriaModifiersO {
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
-    public void showTechnologyForProduct(final SearchCriteriaBuilder scb, final FilterValueHolder filterValue) {
-        Long productId = filterValue.getLong(PRODUCT_PARAMETER);
-        scb.add(SearchRestrictions.belongsTo(TechnologyFields.PRODUCT, BasicConstants.PLUGIN_IDENTIFIER,
-                BasicConstants.MODEL_PRODUCT, productId));
-        addTechnologyTypeCriteria(scb);
-    }
-
-    public void showAcceptedPatternTechnologyForProduct(final SearchCriteriaBuilder scb, final FilterValueHolder filterValue) {
+    public void showAcceptedTechnologyForProduct(final SearchCriteriaBuilder scb, final FilterValueHolder filterValue) {
         addProductCriteria(scb, filterValue);
-        addTechnologyTypeCriteria(scb);
         scb.add(SearchRestrictions.eq(TechnologyFields.STATE, TechnologyStateStringValues.ACCEPTED));
     }
 
-    public void showAcceptedAndCheckedPatternTechnologyForProduct(final SearchCriteriaBuilder scb,
+    public void showAcceptedAndCheckedTechnologyForProduct(final SearchCriteriaBuilder scb,
             final FilterValueHolder filterValue) {
         addProductCriteria(scb, filterValue);
-        addTechnologyTypeCriteria(scb);
         scb.add(SearchRestrictions.in(TechnologyFields.STATE,
                 Lists.newArrayList(TechnologyStateStringValues.ACCEPTED, TechnologyStateStringValues.CHECKED)));
     }
@@ -82,10 +73,6 @@ public class TechnologyCriteriaModifiersO {
             scb.add(SearchRestrictions.belongsTo(TechnologyFields.PRODUCT, BasicConstants.PLUGIN_IDENTIFIER,
                     BasicConstants.MODEL_PRODUCT, 0L));
         }
-    }
-
-    private void addTechnologyTypeCriteria(SearchCriteriaBuilder scb) {
-        scb.add(SearchRestrictions.isNull(TechnologyFields.TECHNOLOGY_TYPE));
     }
 
 }

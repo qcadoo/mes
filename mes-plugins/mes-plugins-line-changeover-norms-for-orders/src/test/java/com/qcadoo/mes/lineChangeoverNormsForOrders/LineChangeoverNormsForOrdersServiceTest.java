@@ -69,7 +69,7 @@ public class LineChangeoverNormsForOrdersServiceTest {
     private TranslationService translationService;
 
     @Mock
-    private Entity previousOrder, order, technologyPrototype, technologyGroup, productionLine;
+    private Entity previousOrder, order, technology, technologyGroup, productionLine;
 
     @Mock
     private ViewDefinitionState view;
@@ -97,7 +97,7 @@ public class LineChangeoverNormsForOrdersServiceTest {
         stubDateField(order, OrderFields.CORRECTED_DATE_TO, null);
         stubDateField(order, OrderFields.DATE_TO, null);
 
-        stubStringField(technologyPrototype, TechnologyFields.NUMBER, NOT_EMPTY_NUMBER);
+        stubStringField(technology, TechnologyFields.NUMBER, NOT_EMPTY_NUMBER);
         stubStringField(technologyGroup, TechnologyGroupFields.NUMBER, NOT_EMPTY_NUMBER);
 
         given(view.getComponentByReference(LineChangeoverNormsForOrdersConstants.PREVIOUS_ORDER_FIELDS.get(0))).willReturn(
@@ -162,7 +162,7 @@ public class LineChangeoverNormsForOrdersServiceTest {
     public void shouldFillOrderFormIfFormIsNotNullAndTechnologyIsNull() {
         // given
         stubOrderLookupEntity(order);
-        stubBelongsToField(order, OrderFields.TECHNOLOGY_PROTOTYPE, null);
+        stubBelongsToField(order, OrderFields.TECHNOLOGY, null);
 
         // when
         lineChangeoverNormsForOrdersService.fillOrderForm(view, LineChangeoverNormsForOrdersConstants.ORDER_FIELDS);
@@ -181,8 +181,8 @@ public class LineChangeoverNormsForOrdersServiceTest {
     public void shouldFillOrderFormIfFormIsNotNullAndTechnologyIsNotNullAndTechnologyGroupIsNull() {
         // given
         stubOrderLookupEntity(order);
-        stubBelongsToField(order, OrderFields.TECHNOLOGY_PROTOTYPE, technologyPrototype);
-        stubBelongsToField(technologyPrototype, TechnologyFields.TECHNOLOGY_GROUP, null);
+        stubBelongsToField(order, OrderFields.TECHNOLOGY, technology);
+        stubBelongsToField(technology, TechnologyFields.TECHNOLOGY_GROUP, null);
 
         // when
         lineChangeoverNormsForOrdersService.fillOrderForm(view, LineChangeoverNormsForOrdersConstants.ORDER_FIELDS);
@@ -200,8 +200,8 @@ public class LineChangeoverNormsForOrdersServiceTest {
     public void shouldFillOrderFormIfFormIsNotNullAndTechnologyIsNotNullAndTechnologyGroupIsNotNull() {
         // given
         stubOrderLookupEntity(order);
-        stubBelongsToField(order, OrderFields.TECHNOLOGY_PROTOTYPE, technologyPrototype);
-        stubBelongsToField(technologyPrototype, TechnologyFields.TECHNOLOGY_GROUP, technologyGroup);
+        stubBelongsToField(order, OrderFields.TECHNOLOGY, technology);
+        stubBelongsToField(technology, TechnologyFields.TECHNOLOGY_GROUP, technologyGroup);
 
         // when
         lineChangeoverNormsForOrdersService.fillOrderForm(view, LineChangeoverNormsForOrdersConstants.ORDER_FIELDS);
@@ -218,8 +218,8 @@ public class LineChangeoverNormsForOrdersServiceTest {
     public void shouldFillOrderFormIfFormIsNotNullAndTechnologyIsNotNullAndTechnologyGroupIsNotNullAndEffectiveDateFromIsNotNull() {
         // given
         stubOrderLookupEntity(order);
-        stubBelongsToField(order, OrderFields.TECHNOLOGY_PROTOTYPE, technologyPrototype);
-        stubBelongsToField(technologyPrototype, TechnologyFields.TECHNOLOGY_GROUP, technologyGroup);
+        stubBelongsToField(order, OrderFields.TECHNOLOGY, technology);
+        stubBelongsToField(technology, TechnologyFields.TECHNOLOGY_GROUP, technologyGroup);
 
         stubDateField(order, OrderFields.EFFECTIVE_DATE_FROM, DATE_TIME_EARLY.toDate());
 
@@ -238,8 +238,8 @@ public class LineChangeoverNormsForOrdersServiceTest {
     public void shouldFillOrderFormIfFormIsNotNullAndTechnologyIsNotNullAndTechnologyGroupIsNotNullAndCorrectedDateFromIsNotNull() {
         // given
         stubOrderLookupEntity(order);
-        stubBelongsToField(order, OrderFields.TECHNOLOGY_PROTOTYPE, technologyPrototype);
-        stubBelongsToField(technologyPrototype, TechnologyFields.TECHNOLOGY_GROUP, technologyGroup);
+        stubBelongsToField(order, OrderFields.TECHNOLOGY, technology);
+        stubBelongsToField(technology, TechnologyFields.TECHNOLOGY_GROUP, technologyGroup);
 
         stubDateField(order, OrderFields.CORRECTED_DATE_FROM, DATE_TIME_EARLY.toDate());
 
@@ -258,8 +258,8 @@ public class LineChangeoverNormsForOrdersServiceTest {
     public void shouldFillOrderFormIfFormIsNotNullAndTechnologyIsNotNullAndTechnologyGroupIsNotNullAndDateFromIsNotNull() {
         // given
         stubOrderLookupEntity(order);
-        stubBelongsToField(order, OrderFields.TECHNOLOGY_PROTOTYPE, technologyPrototype);
-        stubBelongsToField(technologyPrototype, TechnologyFields.TECHNOLOGY_GROUP, technologyGroup);
+        stubBelongsToField(order, OrderFields.TECHNOLOGY, technology);
+        stubBelongsToField(technology, TechnologyFields.TECHNOLOGY_GROUP, technologyGroup);
 
         stubDateField(order, OrderFields.DATE_FROM, DATE_TIME_EARLY.toDate());
 
@@ -278,8 +278,8 @@ public class LineChangeoverNormsForOrdersServiceTest {
     public void shouldFillPreviousOrderFormIfFormIsNotNullAndTechnologyIsNotNullAndTechnologyGroupIsNotNullAndEffectiveDateToIsNotNull() {
         // given
         stubOrderLookupEntity(order);
-        stubBelongsToField(order, OrderFields.TECHNOLOGY_PROTOTYPE, technologyPrototype);
-        stubBelongsToField(technologyPrototype, TechnologyFields.TECHNOLOGY_GROUP, technologyGroup);
+        stubBelongsToField(order, OrderFields.TECHNOLOGY, technology);
+        stubBelongsToField(technology, TechnologyFields.TECHNOLOGY_GROUP, technologyGroup);
 
         stubDateField(order, OrderFields.EFFECTIVE_DATE_TO, DATE_TIME_LATE.toDate());
 
@@ -298,8 +298,8 @@ public class LineChangeoverNormsForOrdersServiceTest {
     public void shouldFillPreviousOrderFormIfFormIsNotNullAndTechnologyIsNotNullAndTechnologyGroupIsNotNullAndCorrectedDateToIsNotNull() {
         // given
         stubOrderLookupEntity(order);
-        stubBelongsToField(order, OrderFields.TECHNOLOGY_PROTOTYPE, technologyPrototype);
-        stubBelongsToField(technologyPrototype, TechnologyFields.TECHNOLOGY_GROUP, technologyGroup);
+        stubBelongsToField(order, OrderFields.TECHNOLOGY, technology);
+        stubBelongsToField(technology, TechnologyFields.TECHNOLOGY_GROUP, technologyGroup);
 
         stubDateField(order, OrderFields.CORRECTED_DATE_TO, DATE_TIME_LATE.toDate());
 
@@ -318,8 +318,8 @@ public class LineChangeoverNormsForOrdersServiceTest {
     public void shouldFillPreviousOrderFormIfFormIsNotNullAndTechnologyIsNotNullAndTechnologyGroupIsNotNullAndDateToIsNotNull() {
         // given
         stubOrderLookupEntity(order);
-        stubBelongsToField(order, OrderFields.TECHNOLOGY_PROTOTYPE, technologyPrototype);
-        stubBelongsToField(technologyPrototype, TechnologyFields.TECHNOLOGY_GROUP, technologyGroup);
+        stubBelongsToField(order, OrderFields.TECHNOLOGY, technology);
+        stubBelongsToField(technology, TechnologyFields.TECHNOLOGY_GROUP, technologyGroup);
 
         stubDateField(order, OrderFields.DATE_TO, DATE_TIME_LATE.toDate());
 

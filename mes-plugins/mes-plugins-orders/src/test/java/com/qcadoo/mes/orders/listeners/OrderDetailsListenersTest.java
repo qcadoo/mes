@@ -47,7 +47,7 @@ public class OrderDetailsListenersTest {
 
     private LookupComponent product;
 
-    private FieldComponent technologyPrototype, defaultTechnology;
+    private FieldComponent technology, defaultTechnology;
 
     private ViewDefinitionState viewDefinitionState;
 
@@ -59,7 +59,7 @@ public class OrderDetailsListenersTest {
         dataDefinitionService = mock(DataDefinitionService.class, RETURNS_DEEP_STUBS);
         technologyServiceO = mock(TechnologyServiceO.class, RETURNS_DEEP_STUBS);
         product = mock(LookupComponent.class);
-        technologyPrototype = mock(FieldComponent.class);
+        technology = mock(FieldComponent.class);
         defaultTechnology = mock(FieldComponent.class);
         viewDefinitionState = mock(ViewDefinitionState.class);
         state = mock(ComponentState.class);
@@ -68,24 +68,7 @@ public class OrderDetailsListenersTest {
         setField(orderDetailsListeners, "technologyServiceO", technologyServiceO);
 
         given(viewDefinitionState.getComponentByReference("product")).willReturn(product);
-        given(viewDefinitionState.getComponentByReference("technologyPrototype")).willReturn(technologyPrototype);
+        given(viewDefinitionState.getComponentByReference("technology")).willReturn(technology);
         given(viewDefinitionState.getComponentByReference("defaultTechnology")).willReturn(defaultTechnology);
     }
-
-    /*
-     * @Test public void shouldChangeOrderProductToNull() throws Exception { // given given(product.getEntity()).willReturn(null);
-     * // when orderDetailsListeners.changeOrderProduct(viewDefinitionState, state, new String[0]); // then
-     * verify(defaultTechnology).setFieldValue(""); verify(technologyPrototype).setFieldValue(null); }
-     * @Test public void shouldChangeOrderProductWithoutDefaultTechnology() throws Exception { // given Entity productEntity =
-     * mock(Entity.class); given(product.getEntity()).willReturn(productEntity);
-     * given(technologyServiceO.getDefaultTechnology(productEntity)).willReturn(null); // when
-     * orderDetailsListeners.changeOrderProduct(viewDefinitionState, state, new String[0]); // then
-     * verify(defaultTechnology).setFieldValue(""); verify(technologyPrototype).setFieldValue(null); }
-     * @Test public void shouldChangeOrderProductWithDefaultTechnology() throws Exception { // given Entity productEntity =
-     * mock(Entity.class); Entity technologyEntity = mock(Entity.class); given(product.getEntity()).willReturn(productEntity);
-     * given(technologyServiceO.getDefaultTechnology(productEntity)).willReturn(technologyEntity);
-     * given(technologyEntity.getId()).willReturn(117L); // when orderDetailsListeners.changeOrderProduct(viewDefinitionState,
-     * state, new String[0]); // then verify(defaultTechnology).setFieldValue("");
-     * verify(technologyPrototype).setFieldValue(117L); }
-     */
 }

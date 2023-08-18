@@ -89,7 +89,7 @@
                         <option type="fieldCode" value="number"/>
                         <criteriaModifier
                                 class="com.qcadoo.mes.orders.criteriaModifiers.TechnologyCriteriaModifiersO"
-                                method="showAcceptedPatternTechnologyForProduct"/>
+                                method="showAcceptedTechnologyForProduct"/>
                     </component>
                 </layoutElement>
             </component>

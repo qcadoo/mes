@@ -55,9 +55,9 @@ public class OrderHooksPC {
 
     public void onSave(final DataDefinition orderDD, final Entity order) {
         if (Objects.nonNull(order.getId())) {
-            Entity technology = order.getBelongsToField(OrderFields.TECHNOLOGY_PROTOTYPE);
+            Entity technology = order.getBelongsToField(OrderFields.TECHNOLOGY);
             Entity orderFromDB = orderService.getOrder(order.getId());
-            Entity technologyDB = orderFromDB.getBelongsToField(OrderFields.TECHNOLOGY_PROTOTYPE);
+            Entity technologyDB = orderFromDB.getBelongsToField(OrderFields.TECHNOLOGY);
 
             if (Objects.nonNull(technology) && Objects.nonNull(technologyDB)
                     && !technology.getId().equals(technologyDB.getId())) {
@@ -67,7 +67,7 @@ public class OrderHooksPC {
     }
 
     public void onCreate(final DataDefinition orderDD, final Entity order) {
-        Entity technology = order.getBelongsToField(OrderFields.TECHNOLOGY_PROTOTYPE);
+        Entity technology = order.getBelongsToField(OrderFields.TECHNOLOGY);
 
         if (Objects.nonNull(technology)) {
             setOrderWithTechnologyProductionCountingValues(orderDD, order, technology);

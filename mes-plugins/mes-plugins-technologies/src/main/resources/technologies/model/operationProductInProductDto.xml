@@ -46,7 +46,6 @@
         <decimal name="quantity"/>
         <boolean name="sizeProduct"/>
         <boolean name="activeTechnology"/>
-        <string name="technologyType"/>
 
         <enum name="technologyState" values="01draft,02accepted,03declined,04outdated,05checked"/>
         <string name="productNumber"/>

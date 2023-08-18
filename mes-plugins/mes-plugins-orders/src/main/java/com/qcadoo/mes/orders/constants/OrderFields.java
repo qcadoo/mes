@@ -75,7 +75,8 @@ public final class OrderFields {
 
     public static final String TECHNOLOGY = "technology";
 
-    public static final String TECHNOLOGY_PROTOTYPE = "technologyPrototype";
+    //TODO remove
+   // public static final String TECHNOLOGY_PROTOTYPE = "technologyPrototype";
 
     public static final String PRODUCTION_LINE = "productionLine";
 

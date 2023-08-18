@@ -52,7 +52,6 @@ public class TechnologyCriteriaModifiersMO {
 
     public void showAcceptedTechnologyForComponent(final SearchCriteriaBuilder scb, final FilterValueHolder filterValue) {
         scb.add(SearchRestrictions.eq(TechnologyFields.STATE, TechnologyStateStringValues.ACCEPTED))
-                .add(SearchRestrictions.isNull(TechnologyFields.TECHNOLOGY_TYPE))
                 .add(SearchRestrictions.eq(TechnologyFields.ACTIVE, true));
 
         Set<Long> technologyIds = Sets.newHashSet();
