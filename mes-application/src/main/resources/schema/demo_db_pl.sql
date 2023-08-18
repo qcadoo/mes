@@ -14779,10 +14779,10 @@ ALTER SEQUENCE public.esilco_importpositionerror_id_seq OWNED BY public.esilco_i
 
 
 --
--- Name: esilco_outofstock; Type: TABLE; Schema: public; Owner: -
+-- Name: mobilewms_outofstock; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE public.esilco_outofstock (
+CREATE TABLE public.mobilewms_outofstock (
     id bigint NOT NULL,
     location_id bigint,
     product_id bigint,
@@ -14811,7 +14811,7 @@ CREATE SEQUENCE public.esilco_outofstock_id_seq
 -- Name: esilco_outofstock_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
-ALTER SEQUENCE public.esilco_outofstock_id_seq OWNED BY public.esilco_outofstock.id;
+ALTER SEQUENCE public.esilco_outofstock_id_seq OWNED BY public.mobilewms_outofstock.id;
 
 
 --
@@ -14885,10 +14885,10 @@ ALTER SEQUENCE public.esilco_printdocuments_id_seq OWNED BY public.esilco_printd
 
 
 --
--- Name: esilco_wmsdocumentpart; Type: TABLE; Schema: public; Owner: -
+-- Name: mobilewms_wmsdocumentpart; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE public.esilco_wmsdocumentpart (
+CREATE TABLE public.mobilewms_wmsdocumentpart (
     id bigint NOT NULL,
     number character varying(255),
     additionalinfo character varying(255),
@@ -14919,14 +14919,14 @@ CREATE SEQUENCE public.esilco_wmsdocumentpart_id_seq
 -- Name: esilco_wmsdocumentpart_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
-ALTER SEQUENCE public.esilco_wmsdocumentpart_id_seq OWNED BY public.esilco_wmsdocumentpart.id;
+ALTER SEQUENCE public.esilco_wmsdocumentpart_id_seq OWNED BY public.mobilewms_wmsdocumentpart.id;
 
 
 --
--- Name: esilco_wmsdocumenttype; Type: TABLE; Schema: public; Owner: -
+-- Name: mobilewms_wmsdocumenttype; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE public.esilco_wmsdocumenttype (
+CREATE TABLE public.mobilewms_wmsdocumenttype (
     id bigint NOT NULL,
     type character varying(255),
     parameter_id bigint
@@ -14949,14 +14949,14 @@ CREATE SEQUENCE public.esilco_wmsdocumenttype_id_seq
 -- Name: esilco_wmsdocumenttype_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
-ALTER SEQUENCE public.esilco_wmsdocumenttype_id_seq OWNED BY public.esilco_wmsdocumenttype.id;
+ALTER SEQUENCE public.esilco_wmsdocumenttype_id_seq OWNED BY public.mobilewms_wmsdocumenttype.id;
 
 
 --
--- Name: esilco_wmslocation; Type: TABLE; Schema: public; Owner: -
+-- Name: mobilewms_wmslocation; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE public.esilco_wmslocation (
+CREATE TABLE public.mobilewms_wmslocation (
     id bigint NOT NULL,
     location_id bigint,
     parameter_id bigint
@@ -14979,14 +14979,14 @@ CREATE SEQUENCE public.esilco_wmslocation_id_seq
 -- Name: esilco_wmslocation_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
-ALTER SEQUENCE public.esilco_wmslocation_id_seq OWNED BY public.esilco_wmslocation.id;
+ALTER SEQUENCE public.esilco_wmslocation_id_seq OWNED BY public.mobilewms_wmslocation.id;
 
 
 --
--- Name: esilco_wmsposition; Type: TABLE; Schema: public; Owner: -
+-- Name: mobilewms_wmsposition; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE public.esilco_wmsposition (
+CREATE TABLE public.mobilewms_wmsposition (
     id bigint NOT NULL,
     productnumber character varying(255),
     storagelocationnumber character varying(255),
@@ -15019,7 +15019,7 @@ CREATE SEQUENCE public.esilco_wmsposition_id_seq
 -- Name: esilco_wmsposition_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
-ALTER SEQUENCE public.esilco_wmsposition_id_seq OWNED BY public.esilco_wmsposition.id;
+ALTER SEQUENCE public.esilco_wmsposition_id_seq OWNED BY public.mobilewms_wmsposition.id;
 
 
 --
@@ -21077,6 +21077,101 @@ CREATE SEQUENCE public.materialrequirements_materialrequirement_id_seq
 --
 
 ALTER SEQUENCE public.materialrequirements_materialrequirement_id_seq OWNED BY public.materialrequirements_materialrequirement.id;
+
+
+--
+-- Name: mobilewms_outofstock_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.mobilewms_outofstock_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: mobilewms_outofstock_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.mobilewms_outofstock_id_seq OWNED BY public.mobilewms_outofstock.id;
+
+
+--
+-- Name: mobilewms_wmsdocumentpart_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.mobilewms_wmsdocumentpart_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: mobilewms_wmsdocumentpart_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.mobilewms_wmsdocumentpart_id_seq OWNED BY public.mobilewms_wmsdocumentpart.id;
+
+
+--
+-- Name: mobilewms_wmsdocumenttype_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.mobilewms_wmsdocumenttype_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: mobilewms_wmsdocumenttype_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.mobilewms_wmsdocumenttype_id_seq OWNED BY public.mobilewms_wmsdocumenttype.id;
+
+
+--
+-- Name: mobilewms_wmslocation_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.mobilewms_wmslocation_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: mobilewms_wmslocation_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.mobilewms_wmslocation_id_seq OWNED BY public.mobilewms_wmslocation.id;
+
+
+--
+-- Name: mobilewms_wmsposition_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.mobilewms_wmsposition_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: mobilewms_wmsposition_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.mobilewms_wmsposition_id_seq OWNED BY public.mobilewms_wmsposition.id;
 
 
 --
@@ -30341,7 +30436,6 @@ SELECT
     NULL::character varying(255) AS technologynumber,
     NULL::boolean AS mastertechnology,
     NULL::boolean AS activetechnology,
-    NULL::character varying(255) AS technologytype,
     NULL::boolean AS hasacceptedtechnology,
     NULL::boolean AS hascheckedtechnology,
     NULL::character varying(255) AS technologyinputproducttypename,
@@ -30382,7 +30476,6 @@ SELECT
     NULL::numeric(14,5) AS quantity,
     NULL::boolean AS mastertechnology,
     NULL::integer AS operationcomponentid,
-    NULL::character varying(255) AS technologytype,
     NULL::boolean AS activetechnology,
     NULL::boolean AS sizeproduct,
     NULL::integer AS productbysizegroupid,
@@ -30480,7 +30573,6 @@ CREATE VIEW public.technologies_operationtechnologydto AS
     t.name AS technologyname,
     t.state AS technologystate,
     t.master AS mastertechnology,
-    t.technologytype,
     t.active AS activetechnology,
     p.number AS technologyproductnumber,
     (toc.operation_id)::integer AS operationid,
@@ -30512,21 +30604,19 @@ CREATE VIEW public.technologies_pieceratetechnologydto AS
     t.name AS technologyname,
     t.state AS technologystate,
     t.master AS mastertechnology,
-    t.technologytype,
     t.active AS activetechnology,
     p.number AS technologyproductnumber,
     toc.piecerate_id
    FROM ((public.technologies_technologyoperationcomponent toc
      JOIN public.technologies_technology t ON ((toc.technology_id = t.id)))
      JOIN public.basic_product p ON ((p.id = t.product_id)))
-  GROUP BY toc.technology_id, t.number, t.name, t.state, t.master, t.technologytype, t.active, p.number, toc.piecerate_id
+  GROUP BY toc.technology_id, t.number, t.name, t.state, t.master, t.active, p.number, toc.piecerate_id
 UNION
  SELECT t.id,
     t.number AS technologynumber,
     t.name AS technologyname,
     t.state AS technologystate,
     t.master AS mastertechnology,
-    t.technologytype,
     t.active AS activetechnology,
     p.number AS technologyproductnumber,
     t.piecerate_id
@@ -31072,7 +31162,6 @@ SELECT
     NULL::character varying(255) AS technologygroupnumber,
     NULL::character varying(1024) AS divisionname,
     NULL::character varying(1024) AS productname,
-    NULL::character varying(255) AS technologytype,
     NULL::boolean AS active,
     NULL::numeric(12,5) AS standardperformance,
     NULL::character varying(255) AS generatorname,
@@ -33869,13 +33958,6 @@ ALTER TABLE ONLY public.esilco_importpositionerror ALTER COLUMN id SET DEFAULT n
 
 
 --
--- Name: esilco_outofstock id; Type: DEFAULT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.esilco_outofstock ALTER COLUMN id SET DEFAULT nextval('public.esilco_outofstock_id_seq'::regclass);
-
-
---
 -- Name: esilco_picksreport id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -33887,34 +33969,6 @@ ALTER TABLE ONLY public.esilco_picksreport ALTER COLUMN id SET DEFAULT nextval('
 --
 
 ALTER TABLE ONLY public.esilco_printdocuments ALTER COLUMN id SET DEFAULT nextval('public.esilco_printdocuments_id_seq'::regclass);
-
-
---
--- Name: esilco_wmsdocumentpart id; Type: DEFAULT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.esilco_wmsdocumentpart ALTER COLUMN id SET DEFAULT nextval('public.esilco_wmsdocumentpart_id_seq'::regclass);
-
-
---
--- Name: esilco_wmsdocumenttype id; Type: DEFAULT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.esilco_wmsdocumenttype ALTER COLUMN id SET DEFAULT nextval('public.esilco_wmsdocumenttype_id_seq'::regclass);
-
-
---
--- Name: esilco_wmslocation id; Type: DEFAULT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.esilco_wmslocation ALTER COLUMN id SET DEFAULT nextval('public.esilco_wmslocation_id_seq'::regclass);
-
-
---
--- Name: esilco_wmsposition id; Type: DEFAULT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.esilco_wmsposition ALTER COLUMN id SET DEFAULT nextval('public.esilco_wmsposition_id_seq'::regclass);
 
 
 --
@@ -34636,6 +34690,41 @@ ALTER TABLE ONLY public.materialrequirementcoveragefororder_coverageproductloggi
 --
 
 ALTER TABLE ONLY public.materialrequirements_materialrequirement ALTER COLUMN id SET DEFAULT nextval('public.materialrequirements_materialrequirement_id_seq'::regclass);
+
+
+--
+-- Name: mobilewms_outofstock id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.mobilewms_outofstock ALTER COLUMN id SET DEFAULT nextval('public.mobilewms_outofstock_id_seq'::regclass);
+
+
+--
+-- Name: mobilewms_wmsdocumentpart id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.mobilewms_wmsdocumentpart ALTER COLUMN id SET DEFAULT nextval('public.mobilewms_wmsdocumentpart_id_seq'::regclass);
+
+
+--
+-- Name: mobilewms_wmsdocumenttype id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.mobilewms_wmsdocumenttype ALTER COLUMN id SET DEFAULT nextval('public.mobilewms_wmsdocumenttype_id_seq'::regclass);
+
+
+--
+-- Name: mobilewms_wmslocation id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.mobilewms_wmslocation ALTER COLUMN id SET DEFAULT nextval('public.mobilewms_wmslocation_id_seq'::regclass);
+
+
+--
+-- Name: mobilewms_wmsposition id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.mobilewms_wmsposition ALTER COLUMN id SET DEFAULT nextval('public.mobilewms_wmsposition_id_seq'::regclass);
 
 
 --
@@ -38584,14 +38673,6 @@ COPY public.esilco_importpositionerror (id, document_id, quantity, productcode, 
 
 
 --
--- Data for Name: esilco_outofstock; Type: TABLE DATA; Schema: public; Owner: -
---
-
-COPY public.esilco_outofstock (id, location_id, product_id, storagelocation_id, state, createdate, updatedate, createuser, updateuser) FROM stdin;
-\.
-
-
---
 -- Data for Name: esilco_picksreport; Type: TABLE DATA; Schema: public; Owner: -
 --
 
@@ -38604,38 +38685,6 @@ COPY public.esilco_picksreport (id, number, name, location_id, datefrom, dateto,
 --
 
 COPY public.esilco_printdocuments (id, active, createdate, updatedate, createuser, updateuser) FROM stdin;
-\.
-
-
---
--- Data for Name: esilco_wmsdocumentpart; Type: TABLE DATA; Schema: public; Owner: -
---
-
-COPY public.esilco_wmsdocumentpart (id, number, additionalinfo, part, company, stateinwms, pickingworker, document_id, parts, additionaldescription, differences) FROM stdin;
-\.
-
-
---
--- Data for Name: esilco_wmsdocumenttype; Type: TABLE DATA; Schema: public; Owner: -
---
-
-COPY public.esilco_wmsdocumenttype (id, type, parameter_id) FROM stdin;
-\.
-
-
---
--- Data for Name: esilco_wmslocation; Type: TABLE DATA; Schema: public; Owner: -
---
-
-COPY public.esilco_wmslocation (id, location_id, parameter_id) FROM stdin;
-\.
-
-
---
--- Data for Name: esilco_wmsposition; Type: TABLE DATA; Schema: public; Owner: -
---
-
-COPY public.esilco_wmsposition (id, productnumber, storagelocationnumber, batchnumber, cartons, rest, quantity, conversion, unit, pickingdate, documentpart_id, locationnumber, productname) FROM stdin;
 \.
 
 
@@ -40989,6 +41038,46 @@ COPY public.materialrequirements_materialrequirement (id, name, number, date, wo
 
 
 --
+-- Data for Name: mobilewms_outofstock; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY public.mobilewms_outofstock (id, location_id, product_id, storagelocation_id, state, createdate, updatedate, createuser, updateuser) FROM stdin;
+\.
+
+
+--
+-- Data for Name: mobilewms_wmsdocumentpart; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY public.mobilewms_wmsdocumentpart (id, number, additionalinfo, part, company, stateinwms, pickingworker, document_id, parts, additionaldescription, differences) FROM stdin;
+\.
+
+
+--
+-- Data for Name: mobilewms_wmsdocumenttype; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY public.mobilewms_wmsdocumenttype (id, type, parameter_id) FROM stdin;
+\.
+
+
+--
+-- Data for Name: mobilewms_wmslocation; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY public.mobilewms_wmslocation (id, location_id, parameter_id) FROM stdin;
+\.
+
+
+--
+-- Data for Name: mobilewms_wmsposition; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY public.mobilewms_wmsposition (id, productnumber, storagelocationnumber, batchnumber, cartons, rest, quantity, conversion, unit, pickingdate, documentpart_id, locationnumber, productname) FROM stdin;
+\.
+
+
+--
 -- Data for Name: nutritionfacts_nutrientcalculation; Type: TABLE DATA; Schema: public; Owner: -
 --
 
@@ -42105,6 +42194,7 @@ COPY public.qcadooplugin_plugin (id, identifier, version, state, issystem, entit
 155	qualityControl	1.5.0	ENABLED	f	0	\N	\N
 154	scheduleGantt	1.5.0	ENABLED	f	0	\N	Commercial
 156	oee	1.5.0	ENABLED	f	0	\N	\N
+159	mobileWMS	1.5.0	DISABLED	f	0	\N	\N
 \.
 
 
@@ -42524,7 +42614,6 @@ COPY public.qcadooview_item (id, pluginidentifier, name, active, category_id, vi
 13	basic	divisions	t	3	13	2	ROLE_COMPANY_STRUCTURE	0
 189	ordersGroups	ordersGroupMaterialRequirementsList	t	9	188	4	ROLE_REQUIREMENTS	0
 171	basicProductionCounting	productionCountingQuantityList	t	9	170	5	ROLE_BASE_FUNCTIONALITY	0
-172	esilco	outOfStockList	t	9	171	16	ROLE_REQUIREMENTS	0
 187	orders	orderPacksList	t	7	186	11	ROLE_PLANNING	0
 63	stoppage	stoppages	t	8	63	3	ROLE_STOPPAGES	0
 190	urcProductionCounting	processConfirmationTerminal	t	8	189	5	ROLE_PROCESS_CONFIRMATION_TERMINAL	0
@@ -42590,6 +42679,7 @@ COPY public.qcadooview_item (id, pluginidentifier, name, active, category_id, vi
 181	masterOrders	salesPlansList	t	23	180	1	ROLE_PLANNING	0
 218	scheduleGantt	workstationsWorkChart	t	3	217	7	ROLE_COMPANY_STRUCTURE	0
 219	subcontractorPortal	subOrderIssuedProductsReportsList	t	15	218	18	ROLE_ANALYSIS_VIEWER	0
+172	mobileWMS	outOfStockList	t	9	171	16	ROLE_REQUIREMENTS	0
 \.
 
 
@@ -42752,7 +42842,6 @@ COPY public.qcadooview_view (id, pluginidentifier, name, view, url, entityversio
 168	materialFlowResources	materialFlowResourcesParameters	\N	/materialFlowResourcesParameters.html	0
 169	productionCounting	productionCountingParameters	\N	/productionCountingParameters.html	0
 170	basicProductionCounting	productionCountingQuantityList	productionCountingQuantityList	\N	0
-171	esilco	outOfStockList	outOfStockList	\N	0
 172	productionCounting	productionAnalysisParameters	\N	/productionAnalysisParameters.html	0
 173	esilco	picksReportsList	picksReportsList	\N	0
 174	esilco	workerStatsReportsList	workerStatsReportsList	\N	0
@@ -42800,6 +42889,7 @@ COPY public.qcadooview_view (id, pluginidentifier, name, view, url, entityversio
 217	scheduleGantt	workstationsWorkChart		/workstationsWorkChart.html	0
 216	productionCounting	employeePieceworkSettlement		/employeePieceworkSettlement.html	0
 218	subcontractorPortal	subOrderIssuedProductsReportsList	subOrderIssuedProductsReportsList	\N	0
+171	mobileWMS	outOfStockList	outOfStockList	\N	0
 \.
 
 
@@ -46727,6 +46817,41 @@ SELECT pg_catalog.setval('public.materialrequirements_materialrequirement_id_seq
 
 
 --
+-- Name: mobilewms_outofstock_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('public.mobilewms_outofstock_id_seq', 1, false);
+
+
+--
+-- Name: mobilewms_wmsdocumentpart_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('public.mobilewms_wmsdocumentpart_id_seq', 1, false);
+
+
+--
+-- Name: mobilewms_wmsdocumenttype_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('public.mobilewms_wmsdocumenttype_id_seq', 1, false);
+
+
+--
+-- Name: mobilewms_wmslocation_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('public.mobilewms_wmslocation_id_seq', 1, false);
+
+
+--
+-- Name: mobilewms_wmsposition_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('public.mobilewms_wmsposition_id_seq', 1, false);
+
+
+--
 -- Name: model_card_number_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
@@ -47934,7 +48059,7 @@ SELECT pg_catalog.setval('public.qcadoomodel_unitconversionitem_id_seq', 10, fal
 -- Name: qcadooplugin_plugin_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('public.qcadooplugin_plugin_id_seq', 158, true);
+SELECT pg_catalog.setval('public.qcadooplugin_plugin_id_seq', 159, true);
 
 
 --
@@ -50862,10 +50987,10 @@ ALTER TABLE ONLY public.esilco_importpositionerror
 
 
 --
--- Name: esilco_outofstock esilco_outofstock_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: mobilewms_outofstock esilco_outofstock_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.esilco_outofstock
+ALTER TABLE ONLY public.mobilewms_outofstock
     ADD CONSTRAINT esilco_outofstock_pkey PRIMARY KEY (id);
 
 
@@ -50886,34 +51011,34 @@ ALTER TABLE ONLY public.esilco_printdocuments
 
 
 --
--- Name: esilco_wmsdocumentpart esilco_wmsdocumentpart_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: mobilewms_wmsdocumentpart esilco_wmsdocumentpart_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.esilco_wmsdocumentpart
+ALTER TABLE ONLY public.mobilewms_wmsdocumentpart
     ADD CONSTRAINT esilco_wmsdocumentpart_pkey PRIMARY KEY (id);
 
 
 --
--- Name: esilco_wmsdocumenttype esilco_wmsdocumenttype_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: mobilewms_wmsdocumenttype esilco_wmsdocumenttype_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.esilco_wmsdocumenttype
+ALTER TABLE ONLY public.mobilewms_wmsdocumenttype
     ADD CONSTRAINT esilco_wmsdocumenttype_pkey PRIMARY KEY (id);
 
 
 --
--- Name: esilco_wmslocation esilco_wmslocation_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: mobilewms_wmslocation esilco_wmslocation_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.esilco_wmslocation
+ALTER TABLE ONLY public.mobilewms_wmslocation
     ADD CONSTRAINT esilco_wmslocation_pkey PRIMARY KEY (id);
 
 
 --
--- Name: esilco_wmsposition esilco_wmsposition_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: mobilewms_wmsposition esilco_wmsposition_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.esilco_wmsposition
+ALTER TABLE ONLY public.mobilewms_wmsposition
     ADD CONSTRAINT esilco_wmsposition_pkey PRIMARY KEY (id);
 
 
@@ -56236,6 +56361,45 @@ UNION
 
 
 --
+-- Name: technologies_technologydto _RETURN; Type: RULE; Schema: public; Owner: -
+--
+
+CREATE OR REPLACE VIEW public.technologies_technologydto AS
+ SELECT technology.id,
+    technology.name,
+    technology.number,
+    technology.externalsynchronized,
+    technology.master,
+    technology.state,
+    product.number AS productnumber,
+    product.globaltypeofmaterial AS productglobaltypeofmaterial,
+    technologygroup.number AS technologygroupnumber,
+    division.name AS divisionname,
+    product.name AS productname,
+    technology.active,
+    tpl.standardperformance,
+    generatorcontext.number AS generatorname,
+    (count(technologyattachment.id) <> 0) AS attachmentsexists,
+    technologystatechange.dateandtime,
+    productionline.number AS productionlinenumber,
+    assortment.name AS assortmentname,
+    qualitycard.number AS qualitycardnumber,
+    technology.istemplateaccepted
+   FROM ((((((((((public.technologies_technology technology
+     LEFT JOIN public.basic_product product ON ((product.id = technology.product_id)))
+     LEFT JOIN public.basic_assortment assortment ON ((assortment.id = product.assortment_id)))
+     LEFT JOIN public.basic_division division ON ((division.id = technology.division_id)))
+     LEFT JOIN public.technologies_technologygroup technologygroup ON ((technologygroup.id = technology.technologygroup_id)))
+     LEFT JOIN public.technologies_technologyattachment technologyattachment ON ((technologyattachment.technology_id = technology.id)))
+     LEFT JOIN public.technologiesgenerator_generatorcontext generatorcontext ON ((generatorcontext.id = technology.generatorcontext_id)))
+     LEFT JOIN public.technologies_technologystatechange technologystatechange ON (((technologystatechange.technology_id = technology.id) AND ((technologystatechange.status)::text = '03successful'::text) AND (technologystatechange.sourcestate IS NULL) AND ((technologystatechange.targetstate)::text = '01draft'::text))))
+     LEFT JOIN public.technologies_qualitycard qualitycard ON ((qualitycard.id = technology.qualitycard_id)))
+     LEFT JOIN public.productflowthrudivision_technologyproductionline tpl ON (((tpl.technology_id = technology.id) AND tpl.master)))
+     LEFT JOIN public.productionlines_productionline productionline ON ((productionline.id = tpl.productionline_id)))
+  GROUP BY technology.id, product.number, product.globaltypeofmaterial, technologygroup.number, division.name, product.name, generatorcontext.number, technologystatechange.dateandtime, tpl.standardperformance, productionline.number, assortment.name, qualitycard.number;
+
+
+--
 -- Name: technologies_operationproductincomponentdto _RETURN; Type: RULE; Schema: public; Owner: -
 --
 
@@ -56261,7 +56425,6 @@ CREATE OR REPLACE VIEW public.technologies_operationproductincomponentdto AS
     technology.number AS technologynumber,
     technology.master AS mastertechnology,
     technology.active AS activetechnology,
-    technology.technologytype,
     (count(technologyaccepted.id) > 0) AS hasacceptedtechnology,
     (count(technologychecked.id) > 0) AS hascheckedtechnology,
     technologyinputproducttype.name AS technologyinputproducttypename,
@@ -56277,10 +56440,10 @@ CREATE OR REPLACE VIEW public.technologies_operationproductincomponentdto AS
      LEFT JOIN public.basic_product technology_product ON ((technology_product.id = technology.product_id)))
      LEFT JOIN public.basic_model model ON ((model.id = technology_product.model_id)))
      LEFT JOIN public.basic_assortment assortment ON ((assortment.id = technology_product.assortment_id)))
-     LEFT JOIN public.technologies_technology technologyaccepted ON (((technologyaccepted.product_id = operationproductincomponent.product_id) AND (technologyaccepted.technologytype IS NULL) AND (technologyaccepted.active = true) AND ((technologyaccepted.state)::text = '02accepted'::text))))
-     LEFT JOIN public.technologies_technology technologychecked ON (((technologychecked.product_id = operationproductincomponent.product_id) AND (technologychecked.technologytype IS NULL) AND (technologychecked.active = true) AND ((technologychecked.state)::text = '05checked'::text))))
+     LEFT JOIN public.technologies_technology technologyaccepted ON (((technologyaccepted.product_id = operationproductincomponent.product_id) AND (technologyaccepted.active = true) AND ((technologyaccepted.state)::text = '02accepted'::text))))
+     LEFT JOIN public.technologies_technology technologychecked ON (((technologychecked.product_id = operationproductincomponent.product_id) AND (technologychecked.active = true) AND ((technologychecked.state)::text = '05checked'::text))))
      LEFT JOIN public.technologies_technologyinputproducttype technologyinputproducttype ON ((technologyinputproducttype.id = operationproductincomponent.technologyinputproducttype_id)))
-  GROUP BY operationproductincomponent.id, technologyoperationcomponent.id, product.id, product.number, product.name, product.unit, operationproductincomponent.quantity, operationproductincomponent.priority, operationproductincomponent.itemnumberintheexplodedview, technology.name, technology.number, technology.state, technology.master, operation.name, technology.active, technology.technologytype, technology.id, technologyinputproducttype.name, technology_product.number, model.name, assortment.name;
+  GROUP BY operationproductincomponent.id, technologyoperationcomponent.id, product.id, product.number, product.name, product.unit, operationproductincomponent.quantity, operationproductincomponent.priority, operationproductincomponent.itemnumberintheexplodedview, technology.name, technology.number, technology.state, technology.master, operation.name, technology.active, technology.id, technologyinputproducttype.name, technology_product.number, model.name, assortment.name;
 
 
 --
@@ -56301,7 +56464,6 @@ CREATE OR REPLACE VIEW public.technologies_operationproductinproductdto AS
     technologies_operationproductincomponentdto.quantity,
     technologies_operationproductincomponentdto.mastertechnology,
     technologies_operationproductincomponentdto.operationcomponentid,
-    technologies_operationproductincomponentdto.technologytype,
     technologies_operationproductincomponentdto.activetechnology,
     false AS sizeproduct,
     NULL::integer AS productbysizegroupid,
@@ -56324,7 +56486,6 @@ UNION ALL
     operationproductincomponent.quantity,
     technology.master AS mastertechnology,
     (technologyoperationcomponent.id)::integer AS operationcomponentid,
-    technology.technologytype,
     technology.active AS activetechnology,
     true AS sizeproduct,
     (productbysizegroup.id)::integer AS productbysizegroupid,
@@ -56342,47 +56503,7 @@ UNION ALL
      LEFT JOIN public.basic_model model ON ((model.id = technology_product.model_id)))
      LEFT JOIN public.basic_assortment assortment ON ((assortment.id = technology_product.assortment_id)))
      LEFT JOIN public.technologies_technologyinputproducttype technologyinputproducttype ON ((technologyinputproducttype.id = operationproductincomponent.technologyinputproducttype_id)))
-  GROUP BY productbysizegroup.id, operationproductincomponent.id, technologyoperationcomponent.id, product.id, product.number, product.name, product.unit, operationproductincomponent.quantity, operationproductincomponent.priority, operationproductincomponent.itemnumberintheexplodedview, technology.name, technology.number, technology.state, technology.master, operation.name, technology.active, technology.technologytype, technology.id, technologyinputproducttype.name, technology_product.number, model.name, assortment.name;
-
-
---
--- Name: technologies_technologydto _RETURN; Type: RULE; Schema: public; Owner: -
---
-
-CREATE OR REPLACE VIEW public.technologies_technologydto AS
- SELECT technology.id,
-    technology.name,
-    technology.number,
-    technology.externalsynchronized,
-    technology.master,
-    technology.state,
-    product.number AS productnumber,
-    product.globaltypeofmaterial AS productglobaltypeofmaterial,
-    technologygroup.number AS technologygroupnumber,
-    division.name AS divisionname,
-    product.name AS productname,
-    technology.technologytype,
-    technology.active,
-    tpl.standardperformance,
-    generatorcontext.number AS generatorname,
-    (count(technologyattachment.id) <> 0) AS attachmentsexists,
-    technologystatechange.dateandtime,
-    productionline.number AS productionlinenumber,
-    assortment.name AS assortmentname,
-    qualitycard.number AS qualitycardnumber,
-    technology.istemplateaccepted
-   FROM ((((((((((public.technologies_technology technology
-     LEFT JOIN public.basic_product product ON ((product.id = technology.product_id)))
-     LEFT JOIN public.basic_assortment assortment ON ((assortment.id = product.assortment_id)))
-     LEFT JOIN public.basic_division division ON ((division.id = technology.division_id)))
-     LEFT JOIN public.technologies_technologygroup technologygroup ON ((technologygroup.id = technology.technologygroup_id)))
-     LEFT JOIN public.technologies_technologyattachment technologyattachment ON ((technologyattachment.technology_id = technology.id)))
-     LEFT JOIN public.technologiesgenerator_generatorcontext generatorcontext ON ((generatorcontext.id = technology.generatorcontext_id)))
-     LEFT JOIN public.technologies_technologystatechange technologystatechange ON (((technologystatechange.technology_id = technology.id) AND ((technologystatechange.status)::text = '03successful'::text) AND (technologystatechange.sourcestate IS NULL) AND ((technologystatechange.targetstate)::text = '01draft'::text))))
-     LEFT JOIN public.technologies_qualitycard qualitycard ON ((qualitycard.id = technology.qualitycard_id)))
-     LEFT JOIN public.productflowthrudivision_technologyproductionline tpl ON (((tpl.technology_id = technology.id) AND tpl.master)))
-     LEFT JOIN public.productionlines_productionline productionline ON ((productionline.id = tpl.productionline_id)))
-  GROUP BY technology.id, product.number, product.globaltypeofmaterial, technologygroup.number, division.name, product.name, generatorcontext.number, technologystatechange.dateandtime, tpl.standardperformance, productionline.number, assortment.name, qualitycard.number;
+  GROUP BY productbysizegroup.id, operationproductincomponent.id, technologyoperationcomponent.id, product.id, product.number, product.name, product.unit, operationproductincomponent.quantity, operationproductincomponent.priority, operationproductincomponent.itemnumberintheexplodedview, technology.name, technology.number, technology.state, technology.master, operation.name, technology.active, technology.id, technologyinputproducttype.name, technology_product.number, model.name, assortment.name;
 
 
 --
@@ -62722,26 +62843,26 @@ ALTER TABLE ONLY public.jointable_staff_workerstatsreport
 
 
 --
--- Name: esilco_outofstock outofstock_location_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: mobilewms_outofstock outofstock_location_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.esilco_outofstock
+ALTER TABLE ONLY public.mobilewms_outofstock
     ADD CONSTRAINT outofstock_location_fkey FOREIGN KEY (location_id) REFERENCES public.materialflow_location(id) DEFERRABLE;
 
 
 --
--- Name: esilco_outofstock outofstock_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: mobilewms_outofstock outofstock_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.esilco_outofstock
+ALTER TABLE ONLY public.mobilewms_outofstock
     ADD CONSTRAINT outofstock_product_fkey FOREIGN KEY (product_id) REFERENCES public.basic_product(id) DEFERRABLE;
 
 
 --
--- Name: esilco_outofstock outofstock_storagelocation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: mobilewms_outofstock outofstock_storagelocation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.esilco_outofstock
+ALTER TABLE ONLY public.mobilewms_outofstock
     ADD CONSTRAINT outofstock_storagelocation_fkey FOREIGN KEY (storagelocation_id) REFERENCES public.materialflowresources_storagelocation(id) DEFERRABLE;
 
 
@@ -63718,7 +63839,7 @@ ALTER TABLE ONLY public.masterorders_position_warehousestatehelper
 --
 
 ALTER TABLE ONLY public.materialflowresources_position
-    ADD CONSTRAINT position_wmsposition_fkey FOREIGN KEY (wmsposition_id) REFERENCES public.esilco_wmsposition(id) DEFERRABLE;
+    ADD CONSTRAINT position_wmsposition_fkey FOREIGN KEY (wmsposition_id) REFERENCES public.mobilewms_wmsposition(id) DEFERRABLE;
 
 
 --
@@ -68298,43 +68419,43 @@ ALTER TABLE ONLY public.materialflowresources_warehousestockreport
 
 
 --
--- Name: esilco_wmsdocumentpart wmsdocumentpart_document_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: mobilewms_wmsdocumentpart wmsdocumentpart_document_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.esilco_wmsdocumentpart
+ALTER TABLE ONLY public.mobilewms_wmsdocumentpart
     ADD CONSTRAINT wmsdocumentpart_document_fkey FOREIGN KEY (document_id) REFERENCES public.materialflowresources_document(id) DEFERRABLE;
 
 
 --
--- Name: esilco_wmsdocumenttype wmsdocumenttype_parameter_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: mobilewms_wmsdocumenttype wmsdocumenttype_parameter_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.esilco_wmsdocumenttype
+ALTER TABLE ONLY public.mobilewms_wmsdocumenttype
     ADD CONSTRAINT wmsdocumenttype_parameter_fkey FOREIGN KEY (parameter_id) REFERENCES public.basic_parameter(id) DEFERRABLE;
 
 
 --
--- Name: esilco_wmslocation wmslocation_location_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: mobilewms_wmslocation wmslocation_location_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.esilco_wmslocation
+ALTER TABLE ONLY public.mobilewms_wmslocation
     ADD CONSTRAINT wmslocation_location_fkey FOREIGN KEY (location_id) REFERENCES public.materialflow_location(id) DEFERRABLE;
 
 
 --
--- Name: esilco_wmslocation wmslocation_parameter_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: mobilewms_wmslocation wmslocation_parameter_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.esilco_wmslocation
+ALTER TABLE ONLY public.mobilewms_wmslocation
     ADD CONSTRAINT wmslocation_parameter_fkey FOREIGN KEY (parameter_id) REFERENCES public.basic_parameter(id) DEFERRABLE;
 
 
 --
--- Name: esilco_wmsposition wmsposition_documentpart_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: mobilewms_wmsposition wmsposition_documentpart_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.esilco_wmsposition
-    ADD CONSTRAINT wmsposition_documentpart_fkey FOREIGN KEY (documentpart_id) REFERENCES public.esilco_wmsdocumentpart(id) DEFERRABLE;
+ALTER TABLE ONLY public.mobilewms_wmsposition
+    ADD CONSTRAINT wmsposition_documentpart_fkey FOREIGN KEY (documentpart_id) REFERENCES public.mobilewms_wmsdocumentpart(id) DEFERRABLE;
 
 
 --
