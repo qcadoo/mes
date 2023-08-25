@@ -105,6 +105,7 @@ class ProductionBalanceRepository {
         query.append(
                 "LEFT JOIN productioncounting_trackingoperationproductincomponent topic ON topic.productiontracking_id = pt.id AND topic.product_id = p.id ");
         query.append("GROUP BY o.id, o.number, p.number, p.name, p.unit, topic.wasteunit, q.replacementTo) ");
+
         query.append("UNION ");
         appendForEachPlannedQuantities(query);
         appendMaterialCostsSelectionClause(query, entity);

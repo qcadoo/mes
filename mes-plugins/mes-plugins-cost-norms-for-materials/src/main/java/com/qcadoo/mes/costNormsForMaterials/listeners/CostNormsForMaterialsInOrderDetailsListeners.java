@@ -1,5 +1,6 @@
 package com.qcadoo.mes.costNormsForMaterials.listeners;
 
+import com.qcadoo.model.api.search.SearchCriterion;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.materialFlowResources.constants.DocumentType;
@@ -35,8 +36,11 @@ public class CostNormsForMaterialsInOrderDetailsListeners {
             List<Long> subOrderIds = filterValue.getListOfLongs(SUB_ORDER_IDS);
             if(Objects.nonNull(subOrderIds) && !subOrderIds.isEmpty()) {
                 scb.add(SearchRestrictions.eq(PRODUCT_NUMBER, filterValue.getString(PRODUCT_NUMBER)));
-                scb.add(SearchRestrictions.eq(DOCUMENT_TYPE, DocumentType.RELEASE.getStringValue()));
-                scb.add(in(SUB_ORDER_ID, subOrderIds.stream().map(Long::intValue).collect(Collectors.toList())));
+
+                SearchCriterion release = SearchRestrictions.and(SearchRestrictions.eq(DOCUMENT_TYPE, DocumentType.RELEASE.getStringValue()), in(SUB_ORDER_ID, subOrderIds.stream().map(Long::intValue).collect(Collectors.toList())));
+                SearchCriterion intOut = SearchRestrictions.and(SearchRestrictions.eq(ORDER_ID, filterValue.getInteger(ORDER_ID)), SearchRestrictions.eq(DOCUMENT_TYPE, DocumentType.INTERNAL_OUTBOUND.getStringValue()));
+
+                scb.add(SearchRestrictions.or(release, intOut));
             } else {
                 scb.add(SearchRestrictions.eq(DOCUMENT_ID, 0));
             }
