@@ -170,14 +170,12 @@ public class ReservationsServiceForProductsToIssue {
     private BigDecimal calculateIssuedQuantityForProduct(Entity productToIssue) {
         Entity warehouseIssue = productToIssue.getBelongsToField(ProductsToIssueFields.WAREHOUSE_ISSUE);
         Entity product = productToIssue.getBelongsToField(ProductsToIssueFields.PRODUCT);
-        Entity additionalCode = productToIssue.getBelongsToField(ProductsToIssueFields.ADDITIONAL_CODE);
         Entity location = productToIssue.getBelongsToField(ProductsToIssueFields.LOCATION);
         BigDecimal conversion = productToIssue.getDecimalField(ProductsToIssueFields.CONVERSION);
 
         SearchCriteriaBuilder findIssue = getIssueDD().find();
         findIssue.add(SearchRestrictions.belongsTo(IssueFields.WAREHOUSE_ISSUE, warehouseIssue));
         findIssue.add(SearchRestrictions.belongsTo(IssueFields.PRODUCT, product));
-        findIssue.add(SearchRestrictions.belongsTo(IssueFields.ADDITIONAL_CODE, additionalCode));
         findIssue.add(SearchRestrictions.belongsTo(IssueFields.LOCATION, location));
         findIssue.add(SearchRestrictions.eq(IssueFields.CONVERSION, conversion));
         findIssue.add(SearchRestrictions.eq(IssueFields.ISSUED, Boolean.TRUE));
@@ -194,8 +192,6 @@ public class ReservationsServiceForProductsToIssue {
         find.add(SearchRestrictions.belongsTo(ProductsToIssueFields.WAREHOUSE_ISSUE,
                 issue.getBelongsToField(IssueFields.WAREHOUSE_ISSUE)));
         find.add(SearchRestrictions.belongsTo(ProductsToIssueFields.PRODUCT, issue.getBelongsToField(IssueFields.PRODUCT)));
-        find.add(SearchRestrictions.belongsTo(ProductsToIssueFields.ADDITIONAL_CODE,
-                issue.getBelongsToField(IssueFields.ADDITIONAL_CODE)));
         find.add(SearchRestrictions.belongsTo(ProductsToIssueFields.LOCATION, issue.getBelongsToField(IssueFields.LOCATION)));
         find.add(SearchRestrictions.eq(ProductsToIssueFields.CONVERSION, issue.getField(IssueFields.CONVERSION)));
         find.setMaxResults(1);

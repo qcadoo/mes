@@ -314,8 +314,6 @@
         <model:model model="subassemblyAttachment" resource="model/subassemblyAttachment.xml"/>
         <model:model model="subassemblyToWorkstationHelper" resource="model/subassemblyToWorkstationHelper.xml"/>
 
-        <model:model model="additionalCode" resource="model/additionalCode.xml"/>
-
         <model:model model="palletNumber" resource="model/palletNumber.xml"/>
         <model:model model="palletNumberHelper" resource="model/palletNumberHelper.xml"/>
 

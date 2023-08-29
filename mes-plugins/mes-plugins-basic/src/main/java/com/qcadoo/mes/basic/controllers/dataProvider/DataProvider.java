@@ -1,40 +1,16 @@
 package com.qcadoo.mes.basic.controllers.dataProvider;
 
-import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.basic.constants.SubassemblyFields;
 import com.qcadoo.mes.basic.constants.WorkstationFields;
-import com.qcadoo.mes.basic.controllers.dataProvider.dto.AbstractDTO;
-import com.qcadoo.mes.basic.controllers.dataProvider.dto.AdditionalCodeDTO;
-import com.qcadoo.mes.basic.controllers.dataProvider.dto.AttribiuteValueDTO;
-import com.qcadoo.mes.basic.controllers.dataProvider.dto.CountryDto;
-import com.qcadoo.mes.basic.controllers.dataProvider.dto.FactoryDto;
-import com.qcadoo.mes.basic.controllers.dataProvider.dto.FaultTypeDto;
-import com.qcadoo.mes.basic.controllers.dataProvider.dto.PalletNumberDTO;
-import com.qcadoo.mes.basic.controllers.dataProvider.dto.ProductDTO;
-import com.qcadoo.mes.basic.controllers.dataProvider.dto.SubassemblyDto;
-import com.qcadoo.mes.basic.controllers.dataProvider.dto.WorkstationTypeDto;
+import com.qcadoo.mes.basic.controllers.dataProvider.dto.*;
 import com.qcadoo.mes.basic.controllers.dataProvider.requests.FaultTypeRequest;
-import com.qcadoo.mes.basic.controllers.dataProvider.responses.CountriesGridResponse;
-import com.qcadoo.mes.basic.controllers.dataProvider.responses.CountriesResponse;
-import com.qcadoo.mes.basic.controllers.dataProvider.responses.DataResponse;
-import com.qcadoo.mes.basic.controllers.dataProvider.responses.FactoriesResponse;
-import com.qcadoo.mes.basic.controllers.dataProvider.responses.FaultTypeResponse;
-import com.qcadoo.mes.basic.controllers.dataProvider.responses.ProductsGridResponse;
-import com.qcadoo.mes.basic.controllers.dataProvider.responses.SubassembliesResponse;
-import com.qcadoo.mes.basic.controllers.dataProvider.responses.WorkstationTypesResponse;
+import com.qcadoo.mes.basic.controllers.dataProvider.responses.*;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.DictionaryService;
 import com.qcadoo.model.api.Entity;
-
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.stream.Collectors;
-
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
@@ -42,6 +18,12 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.stereotype.Service;
+
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Service
 public class DataProvider {
@@ -65,23 +47,6 @@ public class DataProvider {
     private String prepareProductsQueryWithLimit(int limit) {
         return "SELECT product.id AS id, product.number AS code, product.number AS number, product.unit AS unit, product.name AS name "
                 + "FROM basic_product product WHERE product.active = true AND product.number ilike :query LIMIT " + limit + ";";
-    }
-
-    private String prepareAdditionalCodeQuery(final String productnumber) {
-        String productNumberCondition = Strings.isNullOrEmpty(productnumber) ? "" : "AND product.number = '" + productnumber
-                + "'";
-
-        return "SELECT additionalcode.id AS id, additionalcode.code AS code, product.number AS productnumber "
-                + "FROM basic_additionalcode additionalcode "
-                + "JOIN basic_product product ON (additionalcode.product_id = product.id " + productNumberCondition + ")"
-                + "WHERE additionalcode.code ilike :query;";
-    }
-
-    private String prepareAdditionalCodeQueryWithLimit(int limit) {
-        return "SELECT additionalcode.id AS id, additionalcode.code AS code, product.number AS productnumber "
-                + "FROM basic_additionalcode additionalcode "
-                + "JOIN basic_product product ON (additionalcode.product_id = product.id AND (product.number = :productnumber OR COALESCE(:productnumber,'')='' ))"
-                + "WHERE additionalcode.code ilike :query LIMIT " + limit + ";";
     }
 
     private String preparePalletNumbersQuery() {
@@ -124,11 +89,6 @@ public class DataProvider {
 
     public DataResponse getProductsResponseByQuery(final String query) {
         return getDataResponse(query, prepareProductsQuery(), getProductsByQuery(query), Maps.newHashMap());
-    }
-
-    public DataResponse getAdditionalCodesResponseByQuery(final String query, final String productnumber) {
-        return getDataResponse(query, prepareAdditionalCodeQuery(productnumber), getAdditionalCodesByQuery(query, productnumber),
-                Maps.newHashMap());
     }
 
     public DataResponse getPalletNumbersResponseByQuery(final String query) {
@@ -232,33 +192,6 @@ public class DataProvider {
         List<AbstractDTO> products = jdbcTemplate.query(_query, nParameters, new BeanPropertyRowMapper(ProductDTO.class));
 
         return products;
-    }
-
-    public List<AdditionalCodeDTO> getAllAdditionalCodes(final String sidx, final String sord) {
-        // TODO sort
-        String _query = "SELECT additionalcode.id AS id, additionalcode.code AS code, product.number AS productnumber "
-                + "FROM basic_additionalcode additionalcode "
-                + "JOIN basic_product product ON (additionalcode.product_id = product.id);";
-
-        List<AdditionalCodeDTO> codes = jdbcTemplate.query(_query, new MapSqlParameterSource(Collections.EMPTY_MAP),
-                new BeanPropertyRowMapper(AdditionalCodeDTO.class));
-
-        return codes;
-    }
-
-    public List<AbstractDTO> getAdditionalCodesByQuery(final String query, final String productnumber) {
-        String _query = prepareAdditionalCodeQueryWithLimit(MAX_RESULTS);
-
-        Map<String, Object> parameters = Maps.newHashMap();
-        String ilikeQuery = buildConditionParameterForIlike(query);
-        parameters.put("query", ilikeQuery);
-        parameters.put("productnumber", productnumber);
-
-        SqlParameterSource nParameters = new MapSqlParameterSource(parameters);
-
-        List<AbstractDTO> codes = jdbcTemplate.query(_query, nParameters, new BeanPropertyRowMapper(AdditionalCodeDTO.class));
-
-        return codes;
     }
 
     public List<PalletNumberDTO> getAllPalletNumbers(final String sidx, final String sord) {

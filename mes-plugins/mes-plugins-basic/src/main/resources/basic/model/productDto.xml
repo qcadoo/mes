@@ -42,7 +42,6 @@
         <string name="norm"/>
         <string name="supplier"/>
         <string name="sizeNumber"/>
-        <string name="additionalCodes"/>
         <boolean name="hasAttachments"/>
         <string name="unit"/>
         <string name="additionalUnit"/>

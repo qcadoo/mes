@@ -55,8 +55,6 @@ public final class DeliveredProductDtoFields {
 
     public static final String TOTAL_PRICE = "totalPrice";
 
-    public static final String ADDITIONAL_CODE = "additionalCode";
-
     public static final String STORAGE_LOCATION_NUMBER = "storageLocationNumber";
 
     public static final String PALLET_NUMBER = "palletNumber";

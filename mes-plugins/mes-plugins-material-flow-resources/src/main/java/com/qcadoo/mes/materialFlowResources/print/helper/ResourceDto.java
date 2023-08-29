@@ -19,30 +19,12 @@ public class ResourceDto {
     private String givenUnit;
     private Long storageLocationId;
     private String storageLocationNumber;
-    private Long additionalCodeId;
-    private String additionalCodeCode;
     private Long productId;
     private String productNumber;
     private String productName;
     private Long palletNumberId;
     private String palletNumberNumber;
     private String batch;
-
-    public String getAdditionalCodeCode() {
-        return additionalCodeCode;
-    }
-
-    public void setAdditionalCodeCode(String additionalCodeCode) {
-        this.additionalCodeCode = additionalCodeCode;
-    }
-
-    public Long getAdditionalCodeId() {
-        return additionalCodeId;
-    }
-
-    public void setAdditionalCodeId(Long additionalCodeId) {
-        this.additionalCodeId = additionalCodeId;
-    }
 
     public BigDecimal getAvailableQuantity() {
         return availableQuantity;
@@ -206,8 +188,6 @@ public class ResourceDto {
                 Objects.equals(number, that.number) &&
                 Objects.equals(storageLocationId, that.storageLocationId) &&
                 Objects.equals(storageLocationNumber, that.storageLocationNumber) &&
-                Objects.equals(additionalCodeId, that.additionalCodeId) &&
-                Objects.equals(additionalCodeCode, that.additionalCodeCode) &&
                 Objects.equals(productId, that.productId) &&
                 Objects.equals(productNumber, that.productNumber) &&
                 Objects.equals(palletNumberId, that.palletNumberId) &&
@@ -216,7 +196,7 @@ public class ResourceDto {
     }
 
     @Override public int hashCode() {
-        return Objects.hash(id, number, storageLocationId, storageLocationNumber, additionalCodeId, additionalCodeCode, productId,
+        return Objects.hash(id, number, storageLocationId, storageLocationNumber, productId,
                 productNumber, palletNumberId, batch, palletNumberNumber);
     }
 }

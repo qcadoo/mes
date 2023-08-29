@@ -66,16 +66,12 @@ public class DeliveredProductDetailsListeners {
         LookupComponent productLookup = (LookupComponent) view.getComponentByReference(DeliveredProductFields.PRODUCT);
         Entity product = productLookup.getEntity();
 
-        LookupComponent additionalCodeLookup = (LookupComponent) view
-                .getComponentByReference(DeliveredProductFields.ADDITIONAL_CODE);
         LookupComponent storageLocationLookup = (LookupComponent) view
                 .getComponentByReference(DeliveredProductFields.STORAGE_LOCATION);
 
         if (Objects.nonNull(product)) {
-            filterByProduct(additionalCodeLookup, product.getId());
             filterByProduct(storageLocationLookup, product.getId());
         } else {
-            clearAndDisable(additionalCodeLookup);
             clearAndDisable(storageLocationLookup);
         }
 

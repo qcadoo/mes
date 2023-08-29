@@ -481,8 +481,6 @@ public class DeliveryDetailsListeners {
 
             if (!result.isEmpty()) {
                 String numbersFilter = orderedProductGrid.getFilters().get("productNumber");
-                String numberAndAdditionalCodeFilter = orderedProductGrid.getFilters()
-                        .get("mergedProductNumberAndAdditionalCode");
 
                 if (StringUtils.isNotBlank(numbersFilter) && numbersFilter.startsWith("[") && numbersFilter.endsWith("]")) {
                     List<String> numbersOrder = Lists.newArrayList(numbersFilter.replace("[", "").replace("]", "").split(","));
@@ -490,21 +488,6 @@ public class DeliveryDetailsListeners {
                     result.sort((o1, o2) -> {
                         String number1 = o1.getBelongsToField(OrderedProductFields.PRODUCT).getStringField(ProductFields.NUMBER);
                         String number2 = o2.getBelongsToField(OrderedProductFields.PRODUCT).getStringField(ProductFields.NUMBER);
-
-                        return Integer.valueOf(numbersOrder.indexOf(number1)).compareTo(numbersOrder.indexOf(number2));
-                    });
-                } else if (StringUtils.isNotBlank(numberAndAdditionalCodeFilter) && numberAndAdditionalCodeFilter.startsWith("[")
-                        && numberAndAdditionalCodeFilter.endsWith("]")) {
-                    List<String> numbersOrder = Lists
-                            .newArrayList(numberAndAdditionalCodeFilter.replace("[", "").replace("]", "").split(","));
-
-                    result.sort((o1, o2) -> {
-                        String number1 = Optional.ofNullable(o1.getBelongsToField(OrderedProductFields.ADDITIONAL_CODE))
-                                .map(ac -> ac.getStringField(AdditionalCodeFields.CODE))
-                                .orElse(o1.getBelongsToField(OrderedProductFields.PRODUCT).getStringField(ProductFields.NUMBER));
-                        String number2 = Optional.ofNullable(o2.getBelongsToField(OrderedProductFields.ADDITIONAL_CODE))
-                                .map(ac -> ac.getStringField(AdditionalCodeFields.CODE))
-                                .orElse(o2.getBelongsToField(OrderedProductFields.PRODUCT).getStringField(ProductFields.NUMBER));
 
                         return Integer.valueOf(numbersOrder.indexOf(number1)).compareTo(numbersOrder.indexOf(number2));
                     });
@@ -527,9 +510,8 @@ public class DeliveryDetailsListeners {
             additionalUnit = unit;
         }
 
-        Entity additionalCode = orderedProduct.getBelongsToField(OrderedProductFields.ADDITIONAL_CODE);
         BigDecimal alreadyAssignedQuantity = deliveredProductMultiPositionService.countAlreadyAssignedQuantity(orderedProduct,
-                additionalCode, orderedProduct.getBelongsToField(L_OFFER), deliveredProducts);
+                orderedProduct.getBelongsToField(L_OFFER), deliveredProducts);
         BigDecimal quantity = orderedProduct.getDecimalField(OrderedProductFields.ORDERED_QUANTITY)
                 .subtract(alreadyAssignedQuantity);
 
@@ -546,8 +528,6 @@ public class DeliveryDetailsListeners {
         deliveredProductMultiPosition.setField(DeliveredProductMultiPositionFields.ADDITIONAL_UNIT, additionalUnit);
         deliveredProductMultiPosition.setField(DeliveredProductMultiPositionFields.QUANTITY, quantity);
         deliveredProductMultiPosition.setField(DeliveredProductMultiPositionFields.ADDITIONAL_QUANTITY, additionalQuantity);
-        deliveredProductMultiPosition.setField(DeliveredProductMultiPositionFields.ADDITIONAL_CODE,
-                orderedProduct.getBelongsToField(OrderedProductFields.ADDITIONAL_CODE));
         deliveredProductMultiPosition.setField(DeliveredProductMultiPositionFields.BATCH,
                 orderedProduct.getBelongsToField(OrderedProductFields.BATCH));
         deliveredProductMultiPosition.setField(DeliveredProductMultiPositionFields.CONVERSION, conversion);
@@ -602,8 +582,6 @@ public class DeliveryDetailsListeners {
         Entity product = orderedProduct.getBelongsToField(OrderedProductFields.PRODUCT);
 
         deliveredProduct.setField(DeliveredProductFields.PRODUCT, product);
-        deliveredProduct.setField(DeliveredProductFields.ADDITIONAL_CODE,
-                orderedProduct.getBelongsToField(OrderedProductFields.ADDITIONAL_CODE));
         deliveredProduct.setField(DeliveredProductFields.BATCH, orderedProduct.getBelongsToField(OrderedProductFields.BATCH));
         BigDecimal conversion = orderedProduct.getDecimalField(OrderedProductFields.CONVERSION);
         deliveredProduct.setField(DeliveredProductFields.CONVERSION, conversion);
@@ -733,17 +711,8 @@ public class DeliveryDetailsListeners {
     }
 
     private boolean checkIfProductsAreSame(final Entity orderedProduct, final Entity deliveredProduct) {
-        Entity orderedAdditionalCode = orderedProduct.getBelongsToField(OrderedProductFields.ADDITIONAL_CODE);
-        Entity deliveredAdditionalCode = deliveredProduct.getBelongsToField(DeliveredProductFields.ADDITIONAL_CODE);
-
-        boolean additionalCodesMatching = Objects.isNull(orderedAdditionalCode) && Objects.isNull(deliveredAdditionalCode);
-
-        if (Objects.nonNull(orderedAdditionalCode) && Objects.nonNull(deliveredAdditionalCode)) {
-            additionalCodesMatching = orderedAdditionalCode.getId().equals(deliveredAdditionalCode.getId());
-        }
-
         return (orderedProduct.getBelongsToField(OrderedProductFields.PRODUCT).getId()
-                .equals(deliveredProduct.getBelongsToField(DeliveredProductFields.PRODUCT).getId())) && additionalCodesMatching;
+                .equals(deliveredProduct.getBelongsToField(DeliveredProductFields.PRODUCT).getId()));
     }
 
     private Entity createOrderedProduct(final Entity orderedProduct, final BigDecimal orderedQuantity,
@@ -754,8 +723,6 @@ public class DeliveryDetailsListeners {
         BigDecimal conversion = orderedProduct.getDecimalField(OrderedProductFields.CONVERSION);
 
         newOrderedProduct.setField(OrderedProductFields.PRODUCT, product);
-        newOrderedProduct.setField(OrderedProductFields.ADDITIONAL_CODE,
-                orderedProduct.getBelongsToField(OrderedProductFields.ADDITIONAL_CODE));
         newOrderedProduct.setField(OrderedProductFields.ORDERED_QUANTITY,
                 numberService.setScaleWithDefaultMathContext(orderedQuantity));
         newOrderedProduct.setField(OrderedProductFields.TOTAL_PRICE,

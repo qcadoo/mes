@@ -42,7 +42,6 @@
             <option type="column" name="storageLocationNumber" fields="storageLocationNumber" width="100"/>
             <option type="column" name="productNumber" fields="productNumber" width="100"/>
             <option type="column" name="productName" fields="productName" width="100"/>
-            <option type="column" name="additionalCode" fields="additionalCode" width="100"/>
             <option type="column" name="resourceQuantity" fields="resourceQuantity" width="100"/>
             <option type="column" name="productUnit" fields="productUnit" width="70"/>
             <option type="column" name="quantityInAdditionalUnit" fields="quantityInAdditionalUnit" width="100"/>
@@ -52,9 +51,9 @@
             <option type="footerRow" value="true"/>
             <option type="columnsToSummary" value="resourceQuantity,quantityInAdditionalUnit"/>
             <option type="searchable"
-                    value="locationNumber,storageLocationNumber,productNumber,productName,additionalCode,resourceQuantity,productUnit,quantityInAdditionalUnit,productAdditionalUnit"/>
+                    value="locationNumber,storageLocationNumber,productNumber,productName,resourceQuantity,productUnit,quantityInAdditionalUnit,productAdditionalUnit"/>
             <option type="orderable"
-                    value="locationNumber,storageLocationNumber,productNumber,productName,additionalCode,resourceQuantity,productUnit,quantityInAdditionalUnit,productAdditionalUnit"/>
+                    value="locationNumber,storageLocationNumber,productNumber,productName,resourceQuantity,productUnit,quantityInAdditionalUnit,productAdditionalUnit"/>
 
             <option type="fullscreen" value="true"/>
             <option type="multiselect" value="true"/>

@@ -90,44 +90,40 @@
                             <option type="hasButtons" value="false"/>
                             <header>
                                 <component type="gridLayout" name="headerGridLayout"
-                                           columns="17" rows="1" fixedRowHeight="false">
+                                           columns="15" rows="1" fixedRowHeight="false">
                                     <layoutElement column="1" row="1" width="4">
                                         <component type="label" name="productLabel"/>
                                     </layoutElement>
                                     <layoutElement column="5" row="1" width="2">
-                                        <component type="label" name="additionalCodeLabel"/>
-                                    </layoutElement>
-                                    <layoutElement column="7" row="1" width="2">
                                         <component type="label" name="warehouseIssueLabel"/>
                                     </layoutElement>
-                                    <layoutElement column="9" row="1" width="1">
+                                    <layoutElement column="7" row="1" width="1">
                                         <component type="label" name="demandQuantityLabel"/>
                                     </layoutElement>
-                                    <layoutElement column="10" row="1" width="2">
+                                    <layoutElement column="8" row="1" width="2">
                                         <component type="label" name="quantityToIssueLabel"/>
                                     </layoutElement>
-                                    <layoutElement column="12" row="1" width="1">
+                                    <layoutElement column="10" row="1" width="1">
                                         <component type="label" name="correctionQuantity"/>
                                     </layoutElement>
-                                    <layoutElement column="13" row="1" width="2">
+                                    <layoutElement column="11" row="1" width="2">
                                         <component type="label" name="correctionQuantityInAdditionalUnit"/>
                                     </layoutElement>
-                                    <layoutElement column="15" row="1" width="1">
+                                    <layoutElement column="13" row="1" width="1">
                                         <component type="label" name="conversionLabel"/>
                                     </layoutElement>
-                                    <layoutElement column="16" row="1" width="1">
+                                    <layoutElement column="14" row="1" width="1">
                                         <component type="label" name="unitLabel"/>
                                     </layoutElement>
-                                    <layoutElement column="17" row="1" width="1">
+                                    <layoutElement column="15" row="1" width="1">
                                         <component type="label" name="additionalUnitLabel"/>
                                     </layoutElement>
                                 </component>
                             </header>
                             <components>
                                 <component type="gridLayout" name="gridLayout"
-                                           columns="17" rows="1" fixedRowHeight="false">
+                                           columns="15" rows="1" fixedRowHeight="false">
                                     <layoutElement column="1" row="1" width="4">
-
                                         <component type="lookup" name="location" field="location"
                                                    reference="location" hasLabel="false" defaultEnabled="never" defaultVisible="false">
 
@@ -148,16 +144,6 @@
                                         </component>
                                     </layoutElement>
                                     <layoutElement column="5" row="1" width="2">
-                                        <component type="lookup" name="additionalCode" field="additionalCode"
-                                                   reference="additionalCode" hasLabel="false" defaultEnabled="never">
-                                            <option type="searchable" value="code"/>
-                                            <option type="orderable" value="code"/>
-                                            <option type="expression"
-                                                    value="'&lt;b&gt;' + #code"/>
-                                            <option type="fieldCode" value="code"/>
-                                        </component>
-                                    </layoutElement>
-                                    <layoutElement column="7" row="1" width="2">
                                         <component type="lookup" name="warehouseIssue" reference="warehouseIssue"
                                                    field="warehouseIssue" hasLabel="false" defaultEnabled="never">
 
@@ -176,19 +162,19 @@
                                             <option type="fieldCode" value="issued"/>
                                         </component>
                                     </layoutElement>
-                                    <layoutElement column="9" row="1" width="1">
+                                    <layoutElement column="7" row="1" width="1">
                                         <component type="input" name="demandQuantity" field="demandQuantity"
                                                    reference="demandQuantity" defaultEnabled="never" hasLabel="false">
                                             <option type="alignment" value="right"/>
                                         </component>
                                     </layoutElement>
-                                    <layoutElement column="10" row="1" width="2">
+                                    <layoutElement column="8" row="1" width="2">
                                         <component type="input" name="quantityToIssue" field="quantityToIssue"
                                                    reference="quantityToIssue" hasLabel="false" defaultEnabled="never">
                                             <option type="alignment" value="right"/>
                                         </component>
                                     </layoutElement>
-                                    <layoutElement column="12" row="1" width="1">
+                                    <layoutElement column="10" row="1" width="1">
                                         <component type="input" name="correctionQuantity" field="correctionQuantity"
                                                    reference="correctionQuantity" hasLabel="false">
                                             <option type="alignment" value="right"/>
@@ -198,7 +184,7 @@
                                                       method="quantityChanged"/>
                                         </component>
                                     </layoutElement>
-                                    <layoutElement column="13" row="1" width="2">
+                                    <layoutElement column="11" row="1" width="2">
                                         <component type="input" name="correctionQuantityInAdditionalUnit" field="correctionQuantityInAdditionalUnit"
                                                    reference="correctionQuantityInAdditionalUnit" hasLabel="false">
                                             <option type="alignment" value="right"/>
@@ -208,20 +194,20 @@
                                                       method="additionalQuantityChanged"/>
                                         </component>
                                     </layoutElement>
-                                    <layoutElement column="15" row="1" width="1">
+                                    <layoutElement column="13" row="1" width="1">
                                         <component type="input" name="conversion" field="conversion"
                                                    reference="conversion" hasLabel="false"
                                                    defaultEnabled="never">
                                             <option type="alignment" value="right"/>
                                         </component>
                                     </layoutElement>
-                                    <layoutElement column="16" row="1" width="1">
+                                    <layoutElement column="14" row="1" width="1">
                                         <component type="input" name="unit"
                                                    reference="unit" defaultEnabled="false" hasLabel="false">
                                             <option type="textRepresentationOnDisabled" value="true"/>
                                         </component>
                                     </layoutElement>
-                                    <layoutElement column="17" row="1" width="1">
+                                    <layoutElement column="15" row="1" width="1">
                                         <component type="input" name="additionalUnit"
                                                    reference="additionalUnit" defaultEnabled="false" hasLabel="false">
                                             <option type="textRepresentationOnDisabled" value="true"/>

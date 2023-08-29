@@ -468,35 +468,6 @@
             </component>
         </windowTab>
 
-        <windowTab name="additionalCodes">
-            <component type="gridLayout" name="additionalCodesGridLayout"
-                       columns="3" rows="1">
-                <layoutElement column="1" row="1">
-                    <component type="borderLayout" name="additionalCodesBorderLayout">
-                        <component type="awesomeDynamicList" name="additionalCodes"
-                                   source="#{form}.additionalCodes" reference="additionalCodes">
-                            <option type="hasBorder" value="false"/>
-                            <option type="hasButtons" value="true"/>
-
-                            <components>
-                                <component type="gridLayout" name="additionalCodeGridLayout"
-                                           columns="1" rows="1">
-                                    <layoutElement column="1" row="1">
-                                        <component type="input" name="code" field="code"
-                                                   reference="code" hasLabel="false">
-                                        </component>
-                                    </layoutElement>
-                                </component>
-
-                            </components>
-                        </component>
-
-                        <option type="label" value="additionalCodes"/>
-                    </component>
-                </layoutElement>
-            </component>
-        </windowTab>
-
         <windowTab name="attachments">
             <component type="gridLayout" name="attachmentsLayout" columns="3"
                        rows="6" hasBorders="false">

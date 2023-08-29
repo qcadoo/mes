@@ -23,65 +23,37 @@
  */
 package com.qcadoo.mes.deliveries;
 
-import java.math.BigDecimal;
-import java.text.DecimalFormat;
-import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Locale;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
-
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.advancedGenealogy.constants.BatchFields;
 import com.qcadoo.mes.basic.CompanyService;
 import com.qcadoo.mes.basic.ParameterService;
-import com.qcadoo.mes.basic.constants.BasicConstants;
-import com.qcadoo.mes.basic.constants.CompanyFields;
-import com.qcadoo.mes.basic.constants.CurrencyFields;
-import com.qcadoo.mes.basic.constants.ProductFamilyElementType;
-import com.qcadoo.mes.basic.constants.ProductFields;
+import com.qcadoo.mes.basic.constants.*;
 import com.qcadoo.mes.basic.util.CurrencyService;
-import com.qcadoo.mes.deliveries.constants.ColumnForDeliveriesFields;
-import com.qcadoo.mes.deliveries.constants.ColumnForOrdersFields;
-import com.qcadoo.mes.deliveries.constants.CompanyProductFields;
-import com.qcadoo.mes.deliveries.constants.DefaultAddressType;
-import com.qcadoo.mes.deliveries.constants.DeliveredProductFields;
-import com.qcadoo.mes.deliveries.constants.DeliveriesConstants;
-import com.qcadoo.mes.deliveries.constants.DeliveryFields;
-import com.qcadoo.mes.deliveries.constants.OrderedProductFields;
-import com.qcadoo.mes.deliveries.constants.ParameterDeliveryOrderColumnFields;
-import com.qcadoo.mes.deliveries.constants.ParameterFieldsD;
+import com.qcadoo.mes.deliveries.constants.*;
 import com.qcadoo.mes.deliveries.print.DeliveryProduct;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
-import com.qcadoo.model.api.search.JoinType;
-import com.qcadoo.model.api.search.SearchCriteriaBuilder;
-import com.qcadoo.model.api.search.SearchCriterion;
-import com.qcadoo.model.api.search.SearchOrders;
-import com.qcadoo.model.api.search.SearchRestrictions;
+import com.qcadoo.model.api.search.*;
 import com.qcadoo.plugin.api.PluginUtils;
 import com.qcadoo.security.api.SecurityService;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ComponentState.MessageType;
 import com.qcadoo.view.api.ViewDefinitionState;
-import com.qcadoo.view.api.components.FieldComponent;
-import com.qcadoo.view.api.components.FormComponent;
-import com.qcadoo.view.api.components.GridComponent;
-import com.qcadoo.view.api.components.LookupComponent;
-import com.qcadoo.view.api.components.WindowComponent;
+import com.qcadoo.view.api.components.*;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.api.ribbon.RibbonGroup;
 import com.qcadoo.view.constants.QcadooViewConstants;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
+import java.text.DecimalFormat;
+import java.text.ParseException;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class DeliveriesServiceImpl implements DeliveriesService {
@@ -909,13 +881,11 @@ public class DeliveriesServiceImpl implements DeliveriesService {
         Entity product = deliveredProduct.getBelongsToField(DeliveredProductFields.PRODUCT);
         String batchNumber = deliveredProduct.getStringField(OrderedProductFields.BATCH_NUMBER);
         Entity batch = deliveredProduct.getBelongsToField(DeliveredProductFields.BATCH);
-        Entity additionalCode = deliveredProduct.getBelongsToField(DeliveredProductFields.ADDITIONAL_CODE);
         Entity offer = deliveredProduct.getBelongsToField(L_OFFER);
         Entity operation = deliveredProduct.getBelongsToField(L_OPERATION);
 
         searchCriteriaBuilder.add(SearchRestrictions.belongsTo(OrderedProductFields.DELIVERY, delivery))
-                .add(SearchRestrictions.belongsTo(OrderedProductFields.PRODUCT, product))
-                .add(SearchRestrictions.belongsTo(OrderedProductFields.ADDITIONAL_CODE, additionalCode));
+                .add(SearchRestrictions.belongsTo(OrderedProductFields.PRODUCT, product));
 
         if (Objects.nonNull(batchCustomSearchCriterion)) {
             searchCriteriaBuilder.createAlias(DeliveredProductFields.BATCH, OrderedProductFields.BATCH, JoinType.LEFT)
@@ -979,13 +949,11 @@ public class DeliveriesServiceImpl implements DeliveriesService {
         Entity product = deliveredProduct.getBelongsToField(DeliveredProductFields.PRODUCT);
         String batchNumber = deliveredProduct.getStringField(DeliveredProductFields.BATCH_NUMBER);
         Entity batch = deliveredProduct.getBelongsToField(DeliveredProductFields.BATCH);
-        Entity additionalCode = deliveredProduct.getBelongsToField(DeliveredProductFields.ADDITIONAL_CODE);
         Entity offer = deliveredProduct.getBelongsToField(L_OFFER);
         Entity operation = deliveredProduct.getBelongsToField(L_OPERATION);
 
         searchCriteriaBuilder.add(SearchRestrictions.belongsTo(DeliveredProductFields.DELIVERY, delivery))
-                .add(SearchRestrictions.belongsTo(DeliveredProductFields.PRODUCT, product))
-                .add(SearchRestrictions.belongsTo(DeliveredProductFields.ADDITIONAL_CODE, additionalCode));
+                .add(SearchRestrictions.belongsTo(DeliveredProductFields.PRODUCT, product));
 
         if (Objects.nonNull(batchCustomSearchCriterion)) {
             searchCriteriaBuilder.createAlias(DeliveredProductFields.BATCH, DeliveredProductFields.BATCH, JoinType.LEFT)

@@ -35,8 +35,6 @@
         <belongsTo name="product" model="product" plugin="basic"
                    required="true"/>
 
-        <belongsTo name="additionalCode" model="additionalCode" plugin="basic"/>
-
         <decimal name="correctionQuantity" required="true">
             <validatesRange from="0" exclusively="true"/>
             <validatesUnscaledValue max="7"/>

@@ -241,8 +241,6 @@ public class ProductsToIssueHelperDetailsListeners {
 
                     BigDecimal demandQuantity = productToIssue.getDecimalField(ProductsToIssueFields.DEMAND_QUANTITY);
                     BigDecimal issuedQuantity = productToIssue.getDecimalField(ProductsToIssueFields.ISSUE_QUANTITY);
-                    issue.setField(IssueFields.ADDITIONAL_CODE,
-                            productToIssue.getBelongsToField(ProductsToIssueFields.ADDITIONAL_CODE));
                     issue.setField(IssueFields.STORAGE_LOCATION,
                             productToIssue.getBelongsToField(ProductsToIssueFields.STORAGE_LOCATION));
                     BigDecimal quantityPerUnit = null;

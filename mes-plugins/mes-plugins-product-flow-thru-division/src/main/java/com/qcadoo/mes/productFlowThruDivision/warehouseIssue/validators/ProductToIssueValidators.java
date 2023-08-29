@@ -129,8 +129,6 @@ public class ProductToIssueValidators {
                 productToIssue.getBelongsToField(ProductsToIssueFields.PRODUCT)));
         scb.add(SearchRestrictions.belongsTo(ProductsToIssueFields.LOCATION,
                 productToIssue.getBelongsToField(ProductsToIssueFields.LOCATION)));
-        scb.add(SearchRestrictions.belongsTo(ProductsToIssueFields.ADDITIONAL_CODE,
-                productToIssue.getBelongsToField(ProductsToIssueFields.ADDITIONAL_CODE)));
         scb.add(SearchRestrictions.belongsTo(ProductsToIssueFields.WAREHOUSE_ISSUE,
                 productToIssue.getBelongsToField(ProductsToIssueFields.WAREHOUSE_ISSUE)));
 

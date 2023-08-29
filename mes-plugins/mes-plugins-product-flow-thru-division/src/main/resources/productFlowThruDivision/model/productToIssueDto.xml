@@ -49,9 +49,7 @@
         <decimal name="quantityToIssueInAddUnit"/>
         <string name="unit"/>
         <string name="unitAdditional"/>
-        <string name="additionalCode"/>
         <string name="storageLocationNumber"/>
-        <string name="mergedProductNumberAndAdditionalCode"/>
         <boolean name="issued" default="false"/>
         <decimal name="correction"/>
     </fields>

@@ -25,7 +25,6 @@ package com.qcadoo.mes.materialFlowResources.print.helper;
 
 import com.google.common.base.Strings;
 import com.qcadoo.mes.advancedGenealogy.constants.BatchFields;
-import com.qcadoo.mes.basic.constants.AdditionalCodeFields;
 import com.qcadoo.mes.basic.constants.PalletNumberFields;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.materialFlowResources.constants.DocumentFields;
@@ -33,6 +32,7 @@ import com.qcadoo.mes.materialFlowResources.constants.PositionFields;
 import com.qcadoo.mes.materialFlowResources.constants.StorageLocationFields;
 import com.qcadoo.model.api.BigDecimalUtils;
 import com.qcadoo.model.api.Entity;
+import org.apache.commons.lang3.StringUtils;
 
 import java.math.BigDecimal;
 import java.math.MathContext;
@@ -42,7 +42,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
-import org.apache.commons.lang3.StringUtils;
 import static com.qcadoo.model.api.BigDecimalUtils.convertNullToZero;
 
 public class PositionDataProvider {
@@ -118,13 +117,6 @@ public class PositionDataProvider {
         String typeOfallet = position.getStringField(PositionFields.TYPE_OF_PALLET);
 
         return typeOfallet == null ? "" : typeOfallet;
-    }
-
-    public static String additionalCode(final Entity position) {
-        Entity additionalCode = position.getBelongsToField(PositionFields.ADDITIONAL_CODE);
-        String productNumber = position.getBelongsToField(PositionFields.PRODUCT).getStringField(ProductFields.NUMBER);
-
-        return additionalCode == null ? productNumber : additionalCode.getStringField(AdditionalCodeFields.CODE);
     }
 
     public static String productionDate(final Entity position) {
@@ -302,16 +294,6 @@ public class PositionDataProvider {
     public static String storageLocation(Entity position) {
         Entity storageLocation = position.getBelongsToField(PositionFields.STORAGE_LOCATION);
         return storageLocation != null ? storageLocation.getStringField(StorageLocationFields.NUMBER) : StringUtils.EMPTY;
-    }
-
-    public static String productNumberAndAdditionalCode(Entity position) {
-        Entity product = position.getBelongsToField(PositionFields.PRODUCT);
-
-        Entity additionalCode = position.getBelongsToField(PositionFields.ADDITIONAL_CODE);
-        String productNumber = product.getStringField(ProductFields.NUMBER);
-
-        return additionalCode == null ? productNumber : productNumber + "\n"
-                + additionalCode.getStringField(AdditionalCodeFields.CODE);
     }
 
     public static String productName(Entity position) {

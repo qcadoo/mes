@@ -1,16 +1,5 @@
 package com.qcadoo.mes.productFlowThruDivision.deliveries.states;
 
-import java.math.BigDecimal;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.stereotype.Service;
-
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
@@ -40,6 +29,12 @@ import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.model.api.validators.ErrorMessage;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
+import java.util.*;
 
 @Service
 public class DeliveryStatePFTDService {
@@ -123,12 +118,10 @@ public class DeliveryStatePFTDService {
             Entity productToIssue = getProductsToIssueDD().create();
 
             productToIssue.setField(ProductsToIssueFields.PRODUCT, product);
-            productToIssue.setField(ProductsToIssueFields.ADDITIONAL_CODE, key.getAdditionalCode());
             productToIssue.setField(ProductsToIssueFields.CONVERSION, key.getConversion());
             productToIssue.setField(ProductsToIssueFields.LOCATION, location);
 
-            if (productAlreadyCreated(createdProductsToIssue, product.getId(),
-                    Optional.ofNullable(key.getAdditionalCode()).orElse(productToIssue).getId(), location.getId(),
+            if (productAlreadyCreated(createdProductsToIssue, product.getId(), location.getId(),
                     key.getConversion())) {
                 warehouseIssue = createNewWarehouseIssue(placeOfIssue, delivery);
 
@@ -178,14 +171,9 @@ public class DeliveryStatePFTDService {
         }
     }
 
-    private boolean productAlreadyCreated(final List<Entity> createdProductsToIssue, final Long productId,
-            final Long additionalCodeId, final Long locationId, final BigDecimal conversion) {
-        Entity productsToIssue = getProductsToIssueDD().create();
-
+    private boolean productAlreadyCreated(final List<Entity> createdProductsToIssue, final Long productId, final Long locationId, final BigDecimal conversion) {
         return createdProductsToIssue.stream().anyMatch(createdProduct -> Objects
                 .equals(createdProduct.getBelongsToField(ProductsToIssueFields.PRODUCT).getId(), productId)
-                && Objects.equals(Optional.ofNullable(createdProduct.getBelongsToField(ProductsToIssueFields.ADDITIONAL_CODE))
-                        .orElse(productsToIssue).getId(), additionalCodeId)
                 && Objects.equals(createdProduct.getBelongsToField(ProductsToIssueFields.LOCATION).getId(), locationId)
                 && conversion.compareTo(createdProduct.getDecimalField(ProductsToIssueFields.CONVERSION)) != 0);
     }
@@ -218,10 +206,9 @@ public class DeliveryStatePFTDService {
         reservations.forEach(res -> {
             Entity deliveredProduct = res.getBelongsToField(DeliveredProductReservationFields.DELIVERED_PRODUCT);
             Entity product = deliveredProduct.getBelongsToField(DeliveredProductFields.PRODUCT);
-            Entity additionalCode = deliveredProduct.getBelongsToField(DeliveredProductFields.ADDITIONAL_CODE);
             BigDecimal conversion = deliveredProduct.getDecimalField(DeliveredProductFields.CONVERSION);
 
-            DeliveredProductReservationKeyObject key = new DeliveredProductReservationKeyObject(product, additionalCode,
+            DeliveredProductReservationKeyObject key = new DeliveredProductReservationKeyObject(product,
                     conversion);
             DeliveredProductReservationObject value = new DeliveredProductReservationObject(deliveredProduct, res);
 

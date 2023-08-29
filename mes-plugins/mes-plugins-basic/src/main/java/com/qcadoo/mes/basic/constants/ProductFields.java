@@ -63,8 +63,6 @@ public final class ProductFields {
 
     public static final String CONVERSION = "conversion";
 
-    public static final String ADDITIONAL_CODES = "additionalCodes";
-
     public static final String ASSORTMENT = "assortment";
 
     public static final String PRODUCT_ATTRIBUTE_VALUES = "productAttributeValues";

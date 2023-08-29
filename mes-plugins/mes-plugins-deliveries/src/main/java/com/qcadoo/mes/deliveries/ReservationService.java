@@ -1,34 +1,24 @@
 package com.qcadoo.mes.deliveries;
 
+import com.google.common.collect.Lists;
+import com.qcadoo.mes.basic.CalculationQuantityService;
+import com.qcadoo.mes.basic.constants.ProductFields;
+import com.qcadoo.mes.deliveries.constants.*;
+import com.qcadoo.mes.materialFlow.constants.LocationFields;
+import com.qcadoo.model.api.*;
+import com.qcadoo.model.api.search.SearchCriteriaBuilder;
+import com.qcadoo.model.api.search.SearchCriterion;
+import com.qcadoo.model.api.search.SearchRestrictions;
+import com.qcadoo.plugin.api.PluginUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import com.google.common.collect.Lists;
-import com.qcadoo.mes.basic.CalculationQuantityService;
-import com.qcadoo.mes.basic.constants.ProductFields;
-import com.qcadoo.mes.deliveries.constants.DeliveredProductFields;
-import com.qcadoo.mes.deliveries.constants.DeliveredProductReservationFields;
-import com.qcadoo.mes.deliveries.constants.DeliveriesConstants;
-import com.qcadoo.mes.deliveries.constants.DeliveryFields;
-import com.qcadoo.mes.deliveries.constants.OrderedProductFields;
-import com.qcadoo.mes.deliveries.constants.OrderedProductReservationFields;
-import com.qcadoo.mes.materialFlow.constants.LocationFields;
-import com.qcadoo.model.api.DataDefinition;
-import com.qcadoo.model.api.DataDefinitionService;
-import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.EntityList;
-import com.qcadoo.model.api.FieldDefinition;
-import com.qcadoo.model.api.search.SearchCriteriaBuilder;
-import com.qcadoo.model.api.search.SearchCriterion;
-import com.qcadoo.model.api.search.SearchRestrictions;
-import com.qcadoo.plugin.api.PluginUtils;
 
 @Service
 public class ReservationService {
@@ -161,7 +151,6 @@ public class ReservationService {
 
     private Entity findOrderedProductForProduct(final Entity deliveredProduct) {
         Entity delivery = deliveredProduct.getBelongsToField(DeliveredProductFields.DELIVERY);
-        Entity additionalCode = deliveredProduct.getBelongsToField(DeliveredProductFields.ADDITIONAL_CODE);
         Entity product = deliveredProduct.getBelongsToField(DeliveredProductFields.PRODUCT);
         Entity batch = deliveredProduct.getBelongsToField(DeliveredProductFields.BATCH);
 
@@ -173,11 +162,6 @@ public class ReservationService {
             findOrderedProduct.add(SearchRestrictions.isNull(OrderedProductFields.BATCH));
         } else {
             findOrderedProduct.add(SearchRestrictions.belongsTo(OrderedProductFields.BATCH, batch));
-        }
-        if (Objects.isNull(additionalCode)) {
-            findOrderedProduct.add(SearchRestrictions.isNull(OrderedProductFields.ADDITIONAL_CODE));
-        } else {
-            findOrderedProduct.add(SearchRestrictions.belongsTo(OrderedProductFields.ADDITIONAL_CODE, additionalCode));
         }
         if (PluginUtils.isEnabled("supplyNegotiations")) {
             findOrderedProduct.add(SearchRestrictions.belongsTo(OFFER, deliveredProduct.getBelongsToField(OFFER)));
@@ -191,7 +175,6 @@ public class ReservationService {
 
     private List<Entity> findPresentDeliveredProductForProductReservations(final Entity deliveredProduct) {
         Entity delivery = deliveredProduct.getBelongsToField(DeliveredProductFields.DELIVERY);
-        Entity additionalCode = deliveredProduct.getBelongsToField(DeliveredProductFields.ADDITIONAL_CODE);
         Entity batch = deliveredProduct.getBelongsToField(DeliveredProductFields.BATCH);
 
         SearchCriteriaBuilder findDeliveredProducts = delivery.getHasManyField(DeliveryFields.DELIVERED_PRODUCTS).find();
@@ -203,11 +186,6 @@ public class ReservationService {
             findDeliveredProducts.add(SearchRestrictions.isNull(DeliveredProductFields.BATCH));
         } else {
             findDeliveredProducts.add(SearchRestrictions.belongsTo(DeliveredProductFields.BATCH, batch));
-        }
-        if (Objects.isNull(additionalCode)) {
-            findDeliveredProducts.add(SearchRestrictions.isNull(DeliveredProductFields.ADDITIONAL_CODE));
-        } else {
-            findDeliveredProducts.add(SearchRestrictions.belongsTo(DeliveredProductFields.ADDITIONAL_CODE, additionalCode));
         }
         if (PluginUtils.isEnabled("supplyNegotiations")) {
             findDeliveredProducts.add(SearchRestrictions.belongsTo(OFFER, deliveredProduct.getBelongsToField(OFFER)));
@@ -241,8 +219,7 @@ public class ReservationService {
         if (Objects.nonNull(orderedProduct.getId())) {
             Entity orderedProductFromDB = orderedProduct.getDataDefinition().get(orderedProduct.getId());
 
-            List<String> fieldNames = Lists.newArrayList(OrderedProductFields.ORDERED_QUANTITY, OrderedProductFields.PRODUCT,
-                    OrderedProductFields.ADDITIONAL_CODE);
+            List<String> fieldNames = Lists.newArrayList(OrderedProductFields.ORDERED_QUANTITY, OrderedProductFields.PRODUCT);
 
             for (String fieldName : fieldNames) {
                 if (notEquals(orderedProduct.getField(fieldName), orderedProductFromDB.getField(fieldName))) {
@@ -261,8 +238,7 @@ public class ReservationService {
             Entity deliveredProductFromDB = deliveredProduct.getDataDefinition().get(deliveredProduct.getId());
 
             List<String> fieldNames = Arrays.asList(DeliveredProductFields.DELIVERED_QUANTITY,
-                    DeliveredProductFields.DAMAGED_QUANTITY, DeliveredProductFields.PRODUCT,
-                    DeliveredProductFields.ADDITIONAL_CODE, DeliveredProductFields.IS_WASTE);
+                    DeliveredProductFields.DAMAGED_QUANTITY, DeliveredProductFields.PRODUCT, DeliveredProductFields.IS_WASTE);
 
             for (String fieldName : fieldNames) {
                 if (notEquals(deliveredProduct.getField(fieldName), deliveredProductFromDB.getField(fieldName))) {

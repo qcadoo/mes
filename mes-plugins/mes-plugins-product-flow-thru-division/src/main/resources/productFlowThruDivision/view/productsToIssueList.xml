@@ -72,7 +72,6 @@
             <option type="column" name="orderStartDate" fields="orderStartDate" width="100"/>
             <option type="column" name="productNumber" fields="productNumber"/>
             <option type="column" name="productName" fields="productName" width="170"/>
-            <option type="column" name="additionalCode" fields="additionalCode" width="50"/>
             <option type="column" name="demandQuantity" fields="demandQuantity" width="50"/>
             <option type="column" name="correction" fields="correction"/>
             <option type="column" name="quantityPerUnit" fields="quantityPerUnit" width="80"/>
@@ -89,10 +88,10 @@
             <option type="order" column="issueNumber" direction="desc"/>
 
             <option type="searchable"
-                    value="issueNumber,locationFromNumber,locationToNumber,orderNumber,orderStartDate,productNumber,productName,demandQuantity,quantityPerUnit,issuedQuantity,quantityToIssue,quantityInLocationFrom,quantityInLocationTo,unit,unitAdditional,issued,additionalCode,storageLocationNumber,unitAdditional,conversion,quantityToIssueInAddUnit,correction"/>
+                    value="issueNumber,locationFromNumber,locationToNumber,orderNumber,orderStartDate,productNumber,productName,demandQuantity,quantityPerUnit,issuedQuantity,quantityToIssue,quantityInLocationFrom,quantityInLocationTo,unit,unitAdditional,issued,storageLocationNumber,unitAdditional,conversion,quantityToIssueInAddUnit,correction"/>
 
             <option type="orderable"
-                    value="issueNumber,locationFromNumber,locationToNumber,orderNumber,orderStartDate,productNumber,productName,demandQuantity,quantityPerUnit,issuedQuantity,quantityToIssue,quantityInLocationFrom,quantityInLocationTo,unit,issued,unitAdditional,additionalCode,storageLocationNumber,unitAdditional,conversion,quantityToIssueInAddUnit,correction"/>
+                    value="issueNumber,locationFromNumber,locationToNumber,orderNumber,orderStartDate,productNumber,productName,demandQuantity,quantityPerUnit,issuedQuantity,quantityToIssue,quantityInLocationFrom,quantityInLocationTo,unit,issued,unitAdditional,storageLocationNumber,unitAdditional,conversion,quantityToIssueInAddUnit,correction"/>
 
             <option type="fullscreen" value="true"/>
             <option type="multiselect" value="true"/>

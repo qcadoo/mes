@@ -179,7 +179,6 @@ public class WarehouseIssueService {
         issue.setField(IssueFields.PRODUCT_IN_COMPONENT,
                 productToIssue.getBelongsToField(ProductsToIssueFields.PRODUCT_IN_COMPONENT));
         issue.setField(IssueFields.ISSUED, false);
-        issue.setField(IssueFields.ADDITIONAL_CODE, productToIssue.getBelongsToField(ProductsToIssueFields.ADDITIONAL_CODE));
         issue.setField(IssueFields.STORAGE_LOCATION, productToIssue.getBelongsToField(ProductsToIssueFields.STORAGE_LOCATION));
 
         BigDecimal demandQuantity = productToIssue.getDecimalField(ProductsToIssueFields.DEMAND_QUANTITY);
@@ -510,8 +509,6 @@ public class WarehouseIssueService {
                 issue.getBelongsToField(ProductsToIssueFields.PRODUCT)));
         scb.add(SearchRestrictions.belongsTo(ProductsToIssueFields.LOCATION,
                 issue.getBelongsToField(ProductsToIssueFields.LOCATION)));
-        scb.add(SearchRestrictions.belongsTo(ProductsToIssueFields.ADDITIONAL_CODE,
-                issue.getBelongsToField(ProductsToIssueFields.ADDITIONAL_CODE)));
         scb.add(SearchRestrictions.belongsTo(ProductsToIssueFields.WAREHOUSE_ISSUE,
                 issue.getBelongsToField(ProductsToIssueFields.WAREHOUSE_ISSUE)));
 

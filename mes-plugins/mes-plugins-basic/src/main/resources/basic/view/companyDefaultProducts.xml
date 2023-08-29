@@ -86,10 +86,10 @@
                         <option type="order" column="name" direction="asc"/>
 
                         <option type="searchable"
-                                value="number,name,globalTypeOfMaterial,category,ean,parent,assortment,externalNumber,hasAttachments,additionalCodes"/>
+                                value="number,name,globalTypeOfMaterial,category,ean,parent,assortment,externalNumber,hasAttachments"/>
 
                         <option type="orderable"
-                                value="number,name,globalTypeOfMaterial,category,ean,parent,assortment,externalNumber,hasAttachments,additionalCodes"/>
+                                value="number,name,globalTypeOfMaterial,category,ean,parent,assortment,externalNumber,hasAttachments"/>
 
                         <option type="activable" value="false"/>
                         <option type="fullscreen" value="true"/>

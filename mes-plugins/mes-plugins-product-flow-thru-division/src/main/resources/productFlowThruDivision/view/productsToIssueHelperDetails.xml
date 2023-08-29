@@ -161,7 +161,6 @@
                                 <component type="gridLayout" name="gridLayout"
                                            columns="34" rows="1" fixedRowHeight="false">
                                     <layoutElement column="1" row="1" width="7">
-
                                         <component type="hidden" name="productsToIssueId"
                                                    field="productsToIssueId" reference="productsToIssueId"
                                                    persistent="false"/>
@@ -187,15 +186,6 @@
                                             <listener event="onSelectedEntityChange"
                                                       class="com.qcadoo.mes.productFlowThruDivision.warehouseIssue.listeners.ProductsToIssueHelperDetailsListeners"
                                                       method="updateQuantities"/>
-                                        </component>
-                                        <component type="lookup" name="additionalCode" field="additionalCode"
-                                                   reference="additionalCode" defaultEnabled="never"
-                                                   defaultVisible="false">
-                                            <option type="searchable" value="code"/>
-                                            <option type="orderable" value="code"/>
-                                            <option type="expression"
-                                                    value="'&lt;b&gt;' + #code"/>
-                                            <option type="fieldCode" value="code"/>
                                         </component>
                                     </layoutElement>
                                     <layoutElement column="8" row="1" width="3">

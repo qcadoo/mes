@@ -43,7 +43,6 @@
         <decimal name="conversion"/>
         <decimal name="pricePerUnit"/>
         <decimal name="totalPrice"/>
-        <string name="additionalCode"/>
         <string name="storageLocationNumber"/>
         <string name="palletNumber"/>
         <string name="palletType"/>

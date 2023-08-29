@@ -36,7 +36,7 @@
         <windowTab name="mainTab">
             <component type="form" name="form" reference="form">
                 <component type="gridLayout" name="gridLayout" columns="5"
-                           rows="6">
+                           rows="5">
                     <layoutElement column="1" row="1" width="4">
                         <component type="lookup" name="product" field="product"
                                    reference="product">
@@ -54,19 +54,6 @@
                         </component>
                     </layoutElement>
                     <layoutElement column="1" row="2" width="4">
-                        <component type="lookup" name="additionalCode" field="additionalCode"
-                                   reference="additionalCode" defaultEnabled="false">
-                            <option type="searchable" value="code"/>
-                            <option type="orderable" value="code"/>
-                            <option type="expression"
-                                    value="'&lt;b&gt;' + #code"/>
-                            <option type="fieldCode" value="code"/>
-                            <criteriaModifier
-                                    class="com.qcadoo.mes.productFlowThruDivision.warehouseIssue.criteriaModifiers.AdditionalCodeCriteriaModifiersPFTD"
-                                    method="showForProduct"/>
-                        </component>
-                    </layoutElement>
-                    <layoutElement column="1" row="3" width="4">
                         <component type="lookup" name="location" reference="location"
                                    field="location">
                             <option type="column" name="name" fields="name" link="true"/>
@@ -83,7 +70,7 @@
                                       method="onLocationSelect"/>
                         </component>
                     </layoutElement>
-                    <layoutElement column="1" row="4" width="4">
+                    <layoutElement column="1" row="3" width="4">
                         <component type="lookup" name="storageLocation" field="storageLocation"
                                    reference="storageLocation" defaultEnabled="false">
                             <option type="column" fields="location" name="location" link="true"
@@ -99,27 +86,27 @@
                                     method="showStorageLocationsForProductAndLocation"/>
                         </component>
                     </layoutElement>
-                    <layoutElement column="1" row="5" width="4">
+                    <layoutElement column="1" row="4" width="4">
                         <component type="input" name="demandQuantity" field="demandQuantity"
                                    reference="demandQuantity" defaultEnabled="never">
                             <option type="alignment" value="right"/>
                             <option type="labelWidth" value="45"/>
                         </component>
                     </layoutElement>
-                    <layoutElement column="5" row="5">
+                    <layoutElement column="5" row="4">
                         <component type="input" name="demandQuantityUnit"
                                    reference="demandQuantityUnit" defaultEnabled="false" hasLabel="false">
                             <option type="textRepresentationOnDisabled" value="true"/>
                         </component>
                     </layoutElement>
-                    <layoutElement column="1" row="6" width="4">
+                    <layoutElement column="1" row="5" width="4">
                         <component type="input" name="issueQuantity" field="issueQuantity"
                                    reference="issueQuantity">
                             <option type="alignment" value="right"/>
                             <option type="labelWidth" value="45"/>
                         </component>
                     </layoutElement>
-                    <layoutElement column="5" row="6">
+                    <layoutElement column="5" row="5">
                         <component type="input" name="issueQuantityUnit"
                                    reference="issueQuantityUnit" defaultEnabled="false" hasLabel="false">
                             <option type="textRepresentationOnDisabled" value="true"/>
