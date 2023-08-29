@@ -166,10 +166,10 @@ public class WarehouseStockPdfReportService extends PdfDocumentService {
         alignments.put(translationService.translate("materialFlowResources.warehouseStockReport.report.data.pallet", locale),
                 HeaderAlignment.RIGHT);
 
-        header.add(translationService.translate("materialFlowResources.warehouseStockReport.report.data.productNumberAndCode",
+        header.add(translationService.translate("materialFlowResources.warehouseStockReport.report.data.productNumber",
                 locale));
         alignments.put(translationService.translate(
-                "materialFlowResources.warehouseStockReport.report.data.productNumberAndCode", locale), HeaderAlignment.RIGHT);
+                "materialFlowResources.warehouseStockReport.report.data.productNumber", locale), HeaderAlignment.RIGHT);
 
         header.add(translationService.translate("materialFlowResources.warehouseStockReport.report.data.productName", locale));
         alignments.put(

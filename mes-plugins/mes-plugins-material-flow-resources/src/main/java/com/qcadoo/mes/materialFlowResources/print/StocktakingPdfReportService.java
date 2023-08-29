@@ -146,9 +146,9 @@ public class StocktakingPdfReportService extends PdfDocumentService {
         alignments.put(translationService.translate("materialFlowResources.stocktaking.report.data.pallet", locale),
                 HeaderAlignment.RIGHT);
 
-        header.add(translationService.translate("materialFlowResources.stocktaking.report.data.productNumberAndCode", locale));
+        header.add(translationService.translate("materialFlowResources.stocktaking.report.data.productNumber", locale));
         alignments.put(
-                translationService.translate("materialFlowResources.stocktaking.report.data.productNumberAndCode", locale),
+                translationService.translate("materialFlowResources.stocktaking.report.data.productNumber", locale),
                 HeaderAlignment.RIGHT);
 
         header.add(translationService.translate("materialFlowResources.stocktaking.report.data.productName", locale));
