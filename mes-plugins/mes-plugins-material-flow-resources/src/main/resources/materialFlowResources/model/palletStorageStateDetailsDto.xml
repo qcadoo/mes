@@ -31,7 +31,6 @@
         <string name="resourceNumber"/>
         <string name="productNumber"/>
         <string name="productName"/>
-        <string name="additionalCode"/>
         <decimal name="quantity">
             <validatesRange from="0" exclusively="false"/>
             <validatesUnscaledValue max="9"/>

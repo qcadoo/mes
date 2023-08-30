@@ -1,24 +1,5 @@
 package com.qcadoo.mes.materialFlowResources;
 
-import static com.qcadoo.mes.materialFlowResources.listeners.DocumentsListListeners.ESILCO;
-
-import java.math.BigDecimal;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.stream.Collectors;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.jdbc.core.BeanPropertyRowMapper;
-import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
-import org.springframework.stereotype.Repository;
-import org.springframework.util.StringUtils;
-
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
@@ -35,6 +16,19 @@ import com.qcadoo.mes.materialFlowResources.constants.DocumentType;
 import com.qcadoo.mes.materialFlowResources.dto.ColumnProperties;
 import com.qcadoo.mes.materialFlowResources.service.ReservationsService;
 import com.qcadoo.plugin.api.PluginManager;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.stereotype.Repository;
+import org.springframework.util.StringUtils;
+
+import java.math.BigDecimal;
+import java.util.*;
+import java.util.stream.Collectors;
+
+import static com.qcadoo.mes.materialFlowResources.listeners.DocumentsListListeners.ESILCO;
 
 @Repository
 public class DocumentPositionService {
@@ -92,12 +86,11 @@ public class DocumentPositionService {
             });
 
         }
-        String query = "SELECT %s FROM ( SELECT p.*, p.document_id AS document, product.number AS product, product.name AS productName, product.unit, additionalcode.code AS additionalcode, "
+        String query = "SELECT %s FROM ( SELECT p.*, p.document_id AS document, product.number AS product, product.name AS productName, product.unit, "
                 + "palletnumber.number AS palletnumber, location.number AS storagelocation, resource.number AS resource, batch.number as batch, batch.id as batchId, \n"
                 + "(coalesce(r1.resourcesCount,0) < 2 AND p.quantity >= coalesce(resource.quantity,0)) AS lastResource, p.pickingdate AS pickingDate, staff.name || ' ' || staff.surname AS pickingWorker "
                 + attrQueryPart.toString() + "	FROM materialflowresources_position p\n"
                 + "	LEFT JOIN basic_product product ON (p.product_id = product.id)\n"
-                + "	LEFT JOIN basic_additionalcode additionalcode ON (p.additionalcode_id = additionalcode.id)\n"
                 + "	LEFT JOIN basic_palletnumber palletnumber ON (p.palletnumber_id = palletnumber.id)\n"
                 + "	LEFT JOIN materialflowresources_resource resource ON (p.resource_id = resource.id)\n"
                 + "	LEFT JOIN advancedgenealogy_batch batch ON (p.batch_id = batch.id)\n"
@@ -142,7 +135,6 @@ public class DocumentPositionService {
             documentPositionDTO.setNumber(resultSet.getInt("number"));
             documentPositionDTO.setProduct(resultSet.getString("product"));
             documentPositionDTO.setProductName(resultSet.getString("productName"));
-            documentPositionDTO.setAdditionalCode(resultSet.getString("additionalCode"));
             documentPositionDTO.setQuantity(resultSet.getBigDecimal("quantity"));
             documentPositionDTO.setRestAfterShiftDisposition(resultSet.getBigDecimal("restAfterShiftDisposition"));
             documentPositionDTO.setRestAfterShiftDispositionAddUnit(resultSet.getBigDecimal("restAfterShiftDispositionAddUnit"));
@@ -374,10 +366,9 @@ public class DocumentPositionService {
     }
 
     public void updateDocumentPositionsNumbers(final Long documentId) {
-        String query = "SELECT p.*, p.document_id AS document, product.number AS product, product.unit, additionalcode.code AS additionalcode, palletnumber.number AS palletnumber, "
+        String query = "SELECT p.*, p.document_id AS document, product.number AS product, product.unit, palletnumber.number AS palletnumber, "
                 + "location.number AS storagelocationnumber\n" + "	FROM materialflowresources_position p\n"
                 + "	LEFT JOIN basic_product product ON (p.product_id = product.id)\n"
-                + "	LEFT JOIN basic_additionalcode additionalcode ON (p.additionalcode_id = additionalcode.id)\n"
                 + "	LEFT JOIN basic_palletnumber palletnumber ON (p.palletnumber_id = palletnumber.id)\n"
                 + "	LEFT JOIN materialflowresources_storagelocation location ON (p.storagelocation_id = location.id) WHERE p.document_id = :documentId ORDER BY p.id";
 
@@ -553,9 +544,7 @@ public class DocumentPositionService {
         }
     }
 
-    public ResourceDTO getResource(final Long document, final String product, final BigDecimal conversion,
-            final String additionalCode, Long batchId) {
-        boolean useAdditionalCode = org.apache.commons.lang3.StringUtils.isNotEmpty(additionalCode);
+    public ResourceDTO getResource(final Long document, final String product, final BigDecimal conversion, Long batchId) {
         boolean useBatch = Objects.nonNull(batchId);
 
         Map<String, Object> filter = Maps.newHashMap();
@@ -564,23 +553,14 @@ public class DocumentPositionService {
         filter.put("conversion", conversion);
         filter.put("context", document);
 
-        if (useAdditionalCode) {
-            filter.put("add_code", additionalCode);
-        }
-
         if (useBatch) {
             filter.put("batch", batchId);
         }
 
-        String query = positionResourcesHelper.getResourceQuery(document, false, useAdditionalCode, useBatch);
+        String query = positionResourcesHelper.getResourceQuery(document, false, useBatch);
 
         List<ResourceDTO> batches = jdbcTemplate.query(query, filter, new BeanPropertyRowMapper(ResourceDTO.class));
 
-        if (batches.isEmpty() && useAdditionalCode) {
-            query = positionResourcesHelper.getResourceQuery(document, false, false, useBatch);
-
-            batches = jdbcTemplate.query(query, filter, new BeanPropertyRowMapper(ResourceDTO.class));
-        }
         batches = batches.stream().filter(resource -> resource.getAvailableQuantity().compareTo(BigDecimal.ZERO) > 0)
                 .collect(Collectors.toList());
 
@@ -592,7 +572,7 @@ public class DocumentPositionService {
     }
 
     public List<AbstractDTO> getResources(final Long document, final String q, final String product, final BigDecimal conversion,
-            boolean useAdditionalCode, final String additionalCode, boolean useBatch, Long batchId) {
+            boolean useBatch, Long batchId) {
         if (Strings.isNullOrEmpty(q) || Strings.isNullOrEmpty(product)) {
             return Lists.newArrayList();
         } else {
@@ -603,39 +583,32 @@ public class DocumentPositionService {
             paramMap.put("conversion", conversion);
             paramMap.put("context", document);
 
-            if (useAdditionalCode) {
-                paramMap.put("add_code", additionalCode);
-            }
-
             if (useBatch) {
                 paramMap.put("batch", batchId);
             }
 
-            String query = positionResourcesHelper.getResourceQuery(document, true, useAdditionalCode, useBatch);
+            String query = positionResourcesHelper.getResourceQuery(document, true, useBatch);
 
             return jdbcTemplate.query(query, paramMap, new BeanPropertyRowMapper(ResourceDTO.class));
         }
     }
 
     public DataResponse getResourcesResponse(final Long document, final String q, final String product,
-            final BigDecimal conversion, final String additionalCode, Long batchId, boolean shouldCheckMaxResults) {
+            final BigDecimal conversion, Long batchId, boolean shouldCheckMaxResults) {
         if (Strings.isNullOrEmpty(product)) {
             return new DataResponse(Lists.newArrayList(), 0);
         }
 
-        boolean useAdditionalCode = org.apache.commons.lang3.StringUtils.isNotEmpty(additionalCode);
         boolean useBatch = Objects.nonNull(batchId);
 
         String ilikeValue = "%" + q + "%";
         ilikeValue = ilikeValue.replace("*", "%");
         ilikeValue = ilikeValue.replace("%%", "%");
-        List<AbstractDTO> entities = getResources(document, ilikeValue, product, conversion, useAdditionalCode, additionalCode,
+        List<AbstractDTO> entities = getResources(document, ilikeValue, product, conversion,
                 useBatch, batchId);
 
-        if (entities.isEmpty() && useAdditionalCode) {
-            useAdditionalCode = false;
-
-            entities = getResources(document, ilikeValue, product, conversion, false, additionalCode, useBatch, batchId);
+        if (entities.isEmpty()) {
+            entities = getResources(document, ilikeValue, product, conversion, useBatch, batchId);
         }
 
         Map<String, Object> paramMap = Maps.newHashMap();
@@ -644,25 +617,20 @@ public class DocumentPositionService {
         paramMap.put("conversion", conversion);
         paramMap.put("context", document);
 
-        if (useAdditionalCode) {
-            paramMap.put("add_code", additionalCode);
-        }
-
         if (useBatch) {
             paramMap.put("batch", batchId);
         }
 
-        String preparedQuery = positionResourcesHelper.getResourceQuery(document, true, useAdditionalCode, useBatch);
+        String preparedQuery = positionResourcesHelper.getResourceQuery(document, true, useBatch);
 
         return dataProvider.getDataResponse(ilikeValue, preparedQuery, entities, paramMap, shouldCheckMaxResults);
     }
 
     public ResourceDTO getResourceByNumber(final String resource) {
-        String query = "SELECT r.*, batch.number as batch, sl.number AS storageLocation, pn.number AS palletNumber, ac.code AS additionalCode, \n"
+        String query = "SELECT r.*, batch.number as batch, sl.number AS storageLocation, pn.number AS palletNumber, \n"
                 + "coalesce(r1.resourcesCount,0) < 2 AS lastResource " + "FROM materialflowresources_resource r \n"
                 + "LEFT JOIN (SELECT palletnumber_id, count(id) as resourcesCount FROM materialflowresources_resource GROUP BY palletnumber_id) r1 ON r1.palletnumber_id = r.palletnumber_id \n"
                 + "LEFT JOIN materialflowresources_storagelocation sl ON sl.id = storageLocation_id \n"
-                + "LEFT JOIN basic_additionalcode ac ON ac.id = additionalcode_id \n"
                 + "LEFT JOIN advancedgenealogy_batch batch ON batch.id = r.batch_id \n"
                 + "LEFT JOIN basic_palletnumber pn ON pn.id = r.palletnumber_id WHERE r.number = :resource";
 

@@ -211,16 +211,14 @@ public class DeliveredProductAddMultiListeners {
 
             if (position.isValid()) {
                 Entity product = position.getBelongsToField(DeliveredProductMultiPositionFields.PRODUCT);
-                Entity additionalCode = position.getBelongsToField(DeliveredProductMultiPositionFields.ADDITIONAL_CODE);
                 Date expirationDate = position.getDateField(DeliveredProductMultiPositionFields.EXPIRATION_DATE);
 
                 if (multiProductContainer
-                        .checkIfExists(new DeliveredMultiProduct(mapToId(product), mapToId(additionalCode), expirationDate))) {
+                        .checkIfExists(new DeliveredMultiProduct(mapToId(product), expirationDate))) {
                     position.addError(deliveredProductMultiPositionDD.getField(DeliveredProductMultiPositionFields.PRODUCT),
                             L_DELIVERIES_DELIVERED_PRODUCT_MULTI_ERROR_PRODUCT_EXISTS);
                 } else {
-                    DeliveredMultiProduct deliveredMultiProduct = new DeliveredMultiProduct(mapToId(product),
-                            mapToId(additionalCode), expirationDate);
+                    DeliveredMultiProduct deliveredMultiProduct = new DeliveredMultiProduct(mapToId(product), expirationDate);
 
                     multiProductContainer.addProduct(deliveredMultiProduct);
                 }
@@ -302,8 +300,6 @@ public class DeliveredProductAddMultiListeners {
                 position.getBelongsToField(DeliveredProductMultiPositionFields.BATCH));
         deliveredProduct.setField(DeliveredProductFields.ADDITIONAL_UNIT,
                 position.getStringField(DeliveredProductMultiPositionFields.ADDITIONAL_UNIT));
-        deliveredProduct.setField(DeliveredProductFields.ADDITIONAL_CODE,
-                position.getBelongsToField(DeliveredProductMultiPositionFields.ADDITIONAL_CODE));
         BigDecimal pricePerUnit = position.getDecimalField(DeliveredProductMultiPositionFields.PRICE_PER_UNIT);
         deliveredProduct.setField(DeliveredProductFields.PRICE_PER_UNIT, pricePerUnit);
         if (pricePerUnit != null) {
@@ -322,38 +318,6 @@ public class DeliveredProductAddMultiListeners {
         return deliveredProduct;
     }
 
-    public void additionalCodeChanged(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        Entity delivery = extractDeliveryEntityFromView(view);
-
-        AwesomeDynamicListComponent deliveredProductMultiPositions = (AwesomeDynamicListComponent) view
-                .getComponentByReference(DeliveredProductMultiFields.DELIVERED_PRODUCT_MULTI_POSITIONS);
-
-        List<FormComponent> deliveredProductMultiPositionsFormComponents = deliveredProductMultiPositions.getFormComponents();
-
-        for (FormComponent deliveredProductMultiPositionsFormComponent : deliveredProductMultiPositionsFormComponents) {
-            Entity deliveredProductMultiPosition = deliveredProductMultiPositionsFormComponent.getEntity();
-
-            LookupComponent additionalCodeLookup = (LookupComponent) deliveredProductMultiPositionsFormComponent
-                    .findFieldComponentByName(DeliveredProductMultiPositionFields.ADDITIONAL_CODE);
-
-            if (additionalCodeLookup.getUuid().equals(state.getUuid())) {
-                recalculateQuantities(delivery, deliveredProductMultiPosition);
-
-                FieldComponent quantityField = deliveredProductMultiPositionsFormComponent
-                        .findFieldComponentByName(DeliveredProductMultiPositionFields.QUANTITY);
-                quantityField.setFieldValue(numberService.formatWithMinimumFractionDigits(
-                        deliveredProductMultiPosition.getField(DeliveredProductMultiPositionFields.QUANTITY), 0));
-                quantityField.requestComponentUpdateState();
-
-                FieldComponent additionalQuantityField = deliveredProductMultiPositionsFormComponent
-                        .findFieldComponentByName(DeliveredProductMultiPositionFields.ADDITIONAL_QUANTITY);
-                additionalQuantityField.setFieldValue(numberService.formatWithMinimumFractionDigits(
-                        deliveredProductMultiPosition.getField(DeliveredProductMultiPositionFields.ADDITIONAL_QUANTITY), 0));
-                additionalQuantityField.requestComponentUpdateState();
-            }
-        }
-    }
-
     public void productChanged(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         Entity delivery = extractDeliveryEntityFromView(view);
 
@@ -369,19 +333,15 @@ public class DeliveredProductAddMultiListeners {
 
             LookupComponent productLookup = (LookupComponent) deliveredProductMultiPositionsFormComponent
                     .findFieldComponentByName(DeliveredProductMultiPositionFields.PRODUCT);
-            LookupComponent additionalCodeLookup = (LookupComponent) deliveredProductMultiPositionsFormComponent
-                    .findFieldComponentByName(DeliveredProductMultiPositionFields.ADDITIONAL_CODE);
             LookupComponent batchLookup = (LookupComponent) deliveredProductMultiPositionsFormComponent
                     .findFieldComponentByName(DeliveredProductMultiPositionFields.BATCH);
             FieldComponent conversionField = deliveredProductMultiPositionsFormComponent
                     .findFieldComponentByName(DeliveredProductMultiPositionFields.CONVERSION);
 
             if (productLookup.getUuid().equals(state.getUuid())) {
-                deliveredProductMultiPosition.setField(DeliveredProductMultiPositionFields.ADDITIONAL_CODE, null);
                 recalculateQuantities(delivery, deliveredProductMultiPosition);
 
                 deliveredProductAddMultiHooks.boldRequired(deliveredProductMultiPositionsFormComponent);
-                deliveredProductAddMultiHooks.filterAdditionalCode(additionalCodeLookup, product);
                 deliveredProductAddMultiHooks.filterBatch(batchLookup, product);
 
                 if (Objects.nonNull(product)) {
@@ -428,8 +388,6 @@ public class DeliveredProductAddMultiListeners {
 
     private void recalculateQuantities(final Entity delivery, final Entity deliveredProductMultiPosition) {
         Entity product = deliveredProductMultiPosition.getBelongsToField(DeliveredProductMultiPositionFields.PRODUCT);
-        Entity additionalCode = deliveredProductMultiPosition
-                .getBelongsToField(DeliveredProductMultiPositionFields.ADDITIONAL_CODE);
         BigDecimal conversion = BigDecimal.ONE;
 
         if (Objects.nonNull(product)) {
@@ -444,10 +402,9 @@ public class DeliveredProductAddMultiListeners {
                 }
             }
 
-            BigDecimal orderedQuantity = deliveredProductMultiPositionService.findOrderedQuantity(delivery, product,
-                    additionalCode);
+            BigDecimal orderedQuantity = deliveredProductMultiPositionService.findOrderedQuantity(delivery, product);
             BigDecimal alreadyAssignedQuantity = deliveredProductMultiPositionService.countAlreadyAssignedQuantityForProduct(
-                    product, additionalCode, deliveredProductMultiPosition.getBelongsToField(L_OFFER),
+                    product, deliveredProductMultiPosition.getBelongsToField(L_OFFER),
                     delivery.getHasManyField(DeliveryFields.DELIVERED_PRODUCTS));
 
             BigDecimal quantity = orderedQuantity.subtract(alreadyAssignedQuantity, numberService.getMathContext());

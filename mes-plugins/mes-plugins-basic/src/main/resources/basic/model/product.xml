@@ -66,7 +66,6 @@
         <decimal name="conversion" persistent="false">
             <validatesRange from="0" exclusively="true"/>
         </decimal>
-        <hasMany name="additionalCodes" model="additionalCode" joinField="product" cascade="delete"/>
         <belongsTo name="assortment" model="assortment"/>
 
         <hasMany name="productAttachments" joinField="product" model="productAttachment" cascade="delete"/>
@@ -93,8 +92,6 @@
                        method="validateAdditionalUnit"/>
         <validatesWith class="com.qcadoo.mes.basic.hooks.ProductHooks"
                        method="checkIfParentIsFamily"/>
-        <validatesWith class="com.qcadoo.mes.basic.hooks.ProductHooks"
-                       method="validateCodeUniqueness"/>
         <validatesWith class="com.qcadoo.mes.basic.hooks.ProductHooks"
                        method="validateProductAttributeValues"/>
 

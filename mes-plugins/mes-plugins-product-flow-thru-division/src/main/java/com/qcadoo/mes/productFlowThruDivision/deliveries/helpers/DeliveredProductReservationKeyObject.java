@@ -11,17 +11,11 @@ public class DeliveredProductReservationKeyObject {
 
     private final Entity product;
 
-    private final Long additionalCodeId;
-
-    private final Entity additionalCode;
-
     private final BigDecimal conversion;
 
-    public DeliveredProductReservationKeyObject(Entity product, Entity additionalCode, BigDecimal conversion) {
+    public DeliveredProductReservationKeyObject(Entity product, BigDecimal conversion) {
         this.productId = toId(product);
-        this.additionalCodeId = toId(additionalCode);
         this.product = product;
-        this.additionalCode = additionalCode;
         this.conversion = conversion;
     }
 
@@ -40,14 +34,6 @@ public class DeliveredProductReservationKeyObject {
         return product;
     }
 
-    public Long getAdditionalCodeId() {
-        return additionalCodeId;
-    }
-
-    public Entity getAdditionalCode() {
-        return additionalCode;
-    }
-
     public BigDecimal getConversion() {
         return conversion;
     }
@@ -59,11 +45,10 @@ public class DeliveredProductReservationKeyObject {
             return false;
         DeliveredProductReservationKeyObject that = (DeliveredProductReservationKeyObject) o;
         return Objects.equal(productId, that.productId) &&
-                Objects.equal(additionalCodeId, that.additionalCodeId) &&
                 Objects.equal(conversion, that.conversion);
     }
 
     @Override public int hashCode() {
-        return Objects.hashCode(productId, additionalCodeId, conversion);
+        return Objects.hashCode(productId, conversion);
     }
 }

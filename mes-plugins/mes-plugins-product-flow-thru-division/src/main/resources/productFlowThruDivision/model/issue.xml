@@ -39,8 +39,6 @@
 
         <belongsTo name="storageLocation" model="storageLocation" plugin="materialFlowResources"/>
 
-        <belongsTo name="additionalCode" model="additionalCode" plugin="basic"/>
-
         <belongsTo name="document" model="document" plugin="materialFlowResources"/>
 
         <decimal name="demandQuantity">

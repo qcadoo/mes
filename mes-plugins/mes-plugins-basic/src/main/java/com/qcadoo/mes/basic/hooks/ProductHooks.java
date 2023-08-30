@@ -28,7 +28,6 @@ import com.qcadoo.mes.basic.constants.*;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.model.constants.UnitConversionItemFields;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
@@ -190,20 +189,6 @@ public class ProductHooks {
         return true;
     }
 
-    public boolean validateCodeUniqueness(final DataDefinition productDD, final Entity product) {
-        Entity duplicateCode = getAdditionalCodeDD().find()
-                .add(SearchRestrictions.eq(AdditionalCodeFields.CODE, product.getStringField(ProductFields.NUMBER)))
-                .setMaxResults(1).uniqueResult();
-
-        if (Objects.nonNull(duplicateCode)) {
-            product.addError(productDD.getField(ProductFields.NUMBER), "qcadooView.validate.field.error.duplicated");
-
-            return false;
-        }
-
-        return true;
-    }
-
     public boolean validateProductAttributeValues(final DataDefinition productDD, final Entity product) {
         String entityType = product.getStringField(ProductFields.ENTITY_TYPE);
         List<Entity> productAttributeValues = product.getHasManyField(ProductFields.PRODUCT_ATTRIBUTE_VALUES);
@@ -228,10 +213,6 @@ public class ProductHooks {
         FilterValueHolder holder = parentLookup.getFilterValue();
         holder.put(ProductFields.MACHINE_PART, product.getBooleanField(ProductFields.MACHINE_PART));
         parentLookup.setFilterValue(holder);
-    }
-
-    private DataDefinition getAdditionalCodeDD() {
-        return dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_ADDITIONAL_CODE);
     }
 
 }

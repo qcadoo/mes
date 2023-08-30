@@ -84,7 +84,6 @@
             <option type="column" name="expirationDate" fields="expirationDate" width="60"/>
             <option type="column" name="productionDate" fields="productionDate" width="60"/>
             <option type="column" name="storageLocation" fields="storageLocation" width="70"/>
-            <option type="column" name="additionalCode" fields="additionalCode"/>
             <option type="column" name="waste" fields="waste" width="30"/>
             <option type="column" name="state" fields="state" width="70"/>
             <option type="column" name="palletType" fields="palletType" width="50"/>
@@ -92,9 +91,9 @@
             <option type="order" column="documentDate" direction="desc"/>
 
             <option type="searchable"
-                    value="value,sellingPrice,locationFrom,locationTo,productNumber,productName,productGlobalTypeOfMaterial,productCategory,quantity,givenQuantity,givenUnit,conversion,documentType,documentNumber,documentName,company,batch,expirationDate,productionDate,storageLocation,additionalCode,state,waste,documentDate,price,palletType,palletNumber,address,staff,resourceNumber"/>
+                    value="value,sellingPrice,locationFrom,locationTo,productNumber,productName,productGlobalTypeOfMaterial,productCategory,quantity,givenQuantity,givenUnit,conversion,documentType,documentNumber,documentName,company,batch,expirationDate,productionDate,storageLocation,state,waste,documentDate,price,palletType,palletNumber,address,staff,resourceNumber"/>
             <option type="orderable"
-                    value="value,sellingPrice,locationFrom,locationTo,productNumber,productName,productGlobalTypeOfMaterial,productCategory,quantity,givenQuantity,givenUnit,conversion,documentType,documentNumber,documentName,company,batch,expirationDate,productionDate,storageLocation,additionalCode,state,waste,documentDate,price,palletNumber,palletNumber,address,staff,resourceNumber"/>
+                    value="value,sellingPrice,locationFrom,locationTo,productNumber,productName,productGlobalTypeOfMaterial,productCategory,quantity,givenQuantity,givenUnit,conversion,documentType,documentNumber,documentName,company,batch,expirationDate,productionDate,storageLocation,state,waste,documentDate,price,palletNumber,palletNumber,address,staff,resourceNumber"/>
 
             <option type="creatable" value="false"/>
             <option type="deletable" value="false"/>

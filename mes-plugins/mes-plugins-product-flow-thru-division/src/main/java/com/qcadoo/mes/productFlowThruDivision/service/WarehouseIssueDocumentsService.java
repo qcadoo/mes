@@ -264,7 +264,6 @@ public class WarehouseIssueDocumentsService {
 
             position.setField(PositionFields.QUANTITY, quantity);
             position.setField(PositionFields.PRODUCT, product);
-            position.setField(PositionFields.ADDITIONAL_CODE, issue.getBelongsToField(IssueFields.ADDITIONAL_CODE));
 
             if (documentBuilder.getDocumentType().getStringValue().equals(DocumentType.INTERNAL_INBOUND.getStringValue())
                     || documentBuilder.getDocumentType().getStringValue().equals(DocumentType.RECEIPT.getStringValue())) {

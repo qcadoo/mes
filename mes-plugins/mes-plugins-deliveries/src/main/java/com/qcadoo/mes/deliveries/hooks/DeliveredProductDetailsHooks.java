@@ -269,18 +269,12 @@ public class DeliveredProductDetailsHooks {
         LookupComponent productLookup = (LookupComponent) view.getComponentByReference(DeliveredProductFields.PRODUCT);
         LookupComponent storageLocationsLookup = (LookupComponent) view
                 .getComponentByReference(DeliveredProductFields.STORAGE_LOCATION);
-        LookupComponent additionalCodeLookup = (LookupComponent) view
-                .getComponentByReference(DeliveredProductFields.ADDITIONAL_CODE);
 
         Entity deliveredProductEntity = deliveredProductForm.getEntity();
         Entity product = productLookup.getEntity();
 
         Entity delivery = deliveredProductEntity.getBelongsToField(DeliveredProductFields.DELIVERY);
         Entity location = delivery.getBelongsToField(DeliveryFields.LOCATION);
-
-        if (Objects.nonNull(product)) {
-            filterBy(additionalCodeLookup, DeliveredProductFields.PRODUCT, product.getId());
-        }
 
         if (Objects.nonNull(product) && Objects.nonNull(location)) {
             filterBy(storageLocationsLookup, L_LOCATION, location.getId());

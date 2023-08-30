@@ -1,7 +1,6 @@
 package com.qcadoo.mes.materialFlowResources.print.helper;
 
 import com.google.common.base.Objects;
-import com.google.common.base.Strings;
 
 import java.math.BigDecimal;
 
@@ -19,8 +18,6 @@ public class Position {
 
     private BigDecimal quantity;
 
-    private String additionalCode;
-
     private String productName;
 
     private String unit;
@@ -30,14 +27,13 @@ public class Position {
     private String batch;
 
     public Position(String index, Long product, String storageLocation, String typeOfPallet, String palletNumber,
-            BigDecimal quantity, String additionalCode, String productName, String unit, String targetPallet, String batch) {
+            BigDecimal quantity, String productName, String unit, String targetPallet, String batch) {
         this.index = index;
         this.product = product;
         this.storageLocation = storageLocation;
         this.typeOfPallet = typeOfPallet;
         this.palletNumber = palletNumber;
         this.quantity = quantity;
-        this.additionalCode = additionalCode;
         this.productName = productName;
         this.unit = unit;
         this.targetPallet = targetPallet;
@@ -74,14 +70,6 @@ public class Position {
 
     public BigDecimal getQuantity() {
         return quantity;
-    }
-
-    public String getAdditionalCode() {
-        return additionalCode;
-    }
-
-    public String getAdditionalCodeAndBatch() {
-        return additionalCode + "\n" + Strings.nullToEmpty(batch);
     }
 
     public String getProductName() {

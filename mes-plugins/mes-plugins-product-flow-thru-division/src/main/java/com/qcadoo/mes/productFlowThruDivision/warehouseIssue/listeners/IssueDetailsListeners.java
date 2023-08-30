@@ -19,7 +19,6 @@ public class IssueDetailsListeners {
 
     public void onProductSelect(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         issueCommonDetailsHelper.clearStorageLocationLookup(view);
-        issueCommonDetailsHelper.clearAdditionalCodeLookup(view);
         issueDetailsHooks.onBeforeRender(view);
     }
 

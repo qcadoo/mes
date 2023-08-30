@@ -47,8 +47,6 @@ public final class DeliveredProductFields {
 
     public static final String STORAGE_LOCATION = "storageLocation";
 
-    public static final String ADDITIONAL_CODE = "additionalCode";
-
     public static final String BATCH_NUMBER = "batchNumber";
 
     public static final String BATCH = "batch";

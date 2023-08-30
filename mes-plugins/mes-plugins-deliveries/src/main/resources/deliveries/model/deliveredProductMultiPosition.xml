@@ -43,7 +43,6 @@
 		<belongsTo name="batch" model="batch" plugin="advancedGenealogy"/>
 		<string name="unit"/>
 		<string name="additionalUnit" />
-        <belongsTo name="additionalCode" model="additionalCode" plugin="basic"/>
 		<decimal name="pricePerUnit">
 			<validatesRange from="0"/>
 		</decimal>

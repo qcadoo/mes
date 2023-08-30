@@ -3,11 +3,7 @@ package com.qcadoo.mes.materialFlowResources.print;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.lowagie.text.Document;
-import com.lowagie.text.DocumentException;
-import com.lowagie.text.Element;
-import com.lowagie.text.Phrase;
-import com.lowagie.text.Rectangle;
+import com.lowagie.text.*;
 import com.lowagie.text.pdf.PdfPCell;
 import com.lowagie.text.pdf.PdfPTable;
 import com.qcadoo.localization.api.TranslationService;
@@ -22,21 +18,16 @@ import com.qcadoo.report.api.FontUtils;
 import com.qcadoo.report.api.pdf.HeaderAlignment;
 import com.qcadoo.report.api.pdf.PdfDocumentService;
 import com.qcadoo.report.api.pdf.PdfHelper;
-
-import java.math.BigDecimal;
-import java.util.Date;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Objects;
-import java.util.stream.Collectors;
-
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class WarehouseStockPdfReportService extends PdfDocumentService {
@@ -95,7 +86,7 @@ public class WarehouseStockPdfReportService extends PdfDocumentService {
             dataTable.getDefaultCell().enableBorderSide(PdfPCell.TOP);
 
             dataTable.addCell(new Phrase(extractPalletNumber(resource), FontUtils.getDejavuRegular10Dark()));
-            dataTable.addCell(new Phrase(extractProductNumberAndCode(resource), FontUtils.getDejavuRegular10Dark()));
+            dataTable.addCell(new Phrase(extractProductNumber(resource), FontUtils.getDejavuRegular10Dark()));
             dataTable.getDefaultCell().setHorizontalAlignment(Element.ALIGN_LEFT);
             dataTable.addCell(new Phrase(extractProductName(resource), FontUtils.getDejavuRegular7Dark()));
             dataTable.getDefaultCell().setHorizontalAlignment(Element.ALIGN_RIGHT);
@@ -157,14 +148,8 @@ public class WarehouseStockPdfReportService extends PdfDocumentService {
         return StringUtils.isNoneBlank(resource.getPalletNumberNumber()) ? resource.getPalletNumberNumber() : "";
     }
 
-    private String extractProductNumberAndCode(Resource resource) {
-        StringBuilder text = new StringBuilder("");
-        text.append(resource.getProductNumber());
-        if (StringUtils.isNoneBlank(resource.getAdditionalCodeCode())) {
-            text.append("\n");
-            text.append(resource.getAdditionalCodeCode());
-        }
-        return text.toString();
+    private String extractProductNumber(Resource resource) {
+        return resource.getProductNumber();
     }
 
     private PdfPTable prepareDataTable(Locale locale) {
@@ -181,10 +166,10 @@ public class WarehouseStockPdfReportService extends PdfDocumentService {
         alignments.put(translationService.translate("materialFlowResources.warehouseStockReport.report.data.pallet", locale),
                 HeaderAlignment.RIGHT);
 
-        header.add(translationService.translate("materialFlowResources.warehouseStockReport.report.data.productNumberAndCode",
+        header.add(translationService.translate("materialFlowResources.warehouseStockReport.report.data.productNumber",
                 locale));
         alignments.put(translationService.translate(
-                "materialFlowResources.warehouseStockReport.report.data.productNumberAndCode", locale), HeaderAlignment.RIGHT);
+                "materialFlowResources.warehouseStockReport.report.data.productNumber", locale), HeaderAlignment.RIGHT);
 
         header.add(translationService.translate("materialFlowResources.warehouseStockReport.report.data.productName", locale));
         alignments.put(

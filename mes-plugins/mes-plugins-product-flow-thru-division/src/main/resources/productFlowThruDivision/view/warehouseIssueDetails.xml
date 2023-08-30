@@ -407,8 +407,6 @@
                         expression="#product['number']" width="50" link="true"/>
                 <option type="column" name="productName" fields="product"
                         expression="#product['name']" width="75" link="true"/>
-                <option type="column" name="additionalCode" fields="additionalCode"
-                        expression="#additionalCode['code']" width="40"/>
                 <option type="column" name="demandQuantity" fields="demandQuantity"
                         width="40"/>
                 <option type="column" name="additionalDemandQuantity" fields="additionalDemandQuantity"
@@ -432,9 +430,9 @@
                 <option type="order" column="productNumber" direction="desc"/>
 
                 <option type="searchable"
-                        value="productNumber,productName,demandQuantity,correction,locationsQuantity,issueQuantity,productUnit,location,storageLocation,additionalCode,additionalDemandQuantity,conversion"/>
+                        value="productNumber,productName,demandQuantity,correction,locationsQuantity,issueQuantity,productUnit,location,storageLocation,additionalDemandQuantity,conversion"/>
                 <option type="orderable"
-                        value="productNumber,productName,demandQuantity,correction,locationsQuantity,issueQuantity,productUnit,location,storageLocation,additionalCode,additionalDemandQuantity,conversion"/>
+                        value="productNumber,productName,demandQuantity,correction,locationsQuantity,issueQuantity,productUnit,location,storageLocation,additionalDemandQuantity,conversion"/>
 
                 <option type="correspondingView" value="productFlowThruDivision/productToIssueDetails"/>
                 <option type="correspondingComponent" value="form"/>
@@ -456,8 +454,6 @@
                         expression="#product['number']" width="50" link="true"/>
                 <option type="column" name="productName" fields="product"
                         expression="#product['name']" width="75" link="true"/>
-                <option type="column" name="additionalCode" fields="additionalCode"
-                        expression="#additionalCode['code']" width="50"/>
                 <option type="column" name="demandQuantity" fields="demandQuantity"
                         width="35"/>
                 <option type="column" name="additionalDemandQuantity" fields="additionalDemandQuantity"
@@ -479,9 +475,9 @@
                 <option type="order" column="productNumber" direction="desc"/>
 
                 <option type="searchable"
-                        value="productNumber,productName,demandQuantity,locationsQuantity,issueQuantity,productUnit,location,issued,storageLocation,additionalCode,additionalDemandQuantity,conversion"/>
+                        value="productNumber,productName,demandQuantity,locationsQuantity,issueQuantity,productUnit,location,issued,storageLocation,additionalDemandQuantity,conversion"/>
                 <option type="orderable"
-                        value="productNumber,productName,demandQuantity,locationsQuantity,issueQuantity,productUnit,location,issued,storageLocation,additionalCode,additionalDemandQuantity,conversion"/>
+                        value="productNumber,productName,demandQuantity,locationsQuantity,issueQuantity,productUnit,location,issued,storageLocation,additionalDemandQuantity,conversion"/>
 
                 <option type="correspondingView" value="productFlowThruDivision/issueDetails"/>
                 <option type="correspondingComponent" value="form"/>
@@ -509,8 +505,6 @@
                         expression="#product['number']" width="50"/>
                 <option type="column" name="productName" fields="product"
                         expression="#product['name']" width="75" />
-                <option type="column" name="additionalCode" fields="additionalCode"
-                        expression="#additionalCode['code']" width="50"/>
                 <option type="column" name="location" fields="location"
                         expression="#location['number']" width="35"/>
                 <option type="column" name="correctionQuantity" fields="correctionQuantity"
@@ -523,9 +517,9 @@
                 <option type="order" column="productNumber" direction="desc"/>
 
                 <option type="searchable"
-                        value="productNumber,productName,additionalCode,location,correctionQuantity,createDate,description"/>
+                        value="productNumber,productName,location,correctionQuantity,createDate,description"/>
                 <option type="orderable"
-                        value="productNumber,productName,additionalCode,location,correctionQuantity,createDate,description"/>
+                        value="productNumber,productName,location,correctionQuantity,createDate,description"/>
 
                 <option type="fullscreen" value="true"/>
                 <option type="multiselect" value="true"/>

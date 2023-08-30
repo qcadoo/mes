@@ -110,7 +110,6 @@ public class ProductToIssueCorrectionService {
     private void createOrUpdateCorrectedProductToIssue(List<Entity> correctedProductsToIssue, final Entity locationTo,
             final Entity warehouseIssue, final Entity correction) {
         Entity product = correction.getBelongsToField(ProductToIssueCorrectionFields.PRODUCT);
-        Entity additionalCode = correction.getBelongsToField(ProductToIssueCorrectionFields.ADDITIONAL_CODE);
 
         BigDecimal conversion = correction.getDecimalField(ProductToIssueCorrectionFields.CONVERSION);
         BigDecimal correctionQuantity = correction.getDecimalField(ProductToIssueCorrectionFields.CORRECTION_QUANTITY);
@@ -119,11 +118,7 @@ public class ProductToIssueCorrectionService {
 
         Optional<Entity> existingProductToIssue = correctedProductsToIssue.stream().filter(p -> p
                 .getBelongsToField(ProductsToIssueFields.PRODUCT).getId().equals(product.getId())
-                && p.getDecimalField(ProductsToIssueFields.CONVERSION).compareTo(conversion) == 0
-                && (Objects.isNull(p.getBelongsToField(ProductsToIssueFields.ADDITIONAL_CODE)) && Objects.isNull(additionalCode)
-                        || (Objects.nonNull(p.getBelongsToField(ProductsToIssueFields.ADDITIONAL_CODE))
-                                && Objects.nonNull(additionalCode) && p.getBelongsToField(ProductsToIssueFields.ADDITIONAL_CODE)
-                                        .getId().equals(additionalCode.getId()))))
+                && p.getDecimalField(ProductsToIssueFields.CONVERSION).compareTo(conversion) == 0)
                 .findAny();
 
         if (existingProductToIssue.isPresent()) {
@@ -139,7 +134,6 @@ public class ProductToIssueCorrectionService {
             Entity productToIssue = getProductsToIssueDD().create();
 
             productToIssue.setField(ProductsToIssueFields.PRODUCT, product);
-            productToIssue.setField(ProductsToIssueFields.ADDITIONAL_CODE, additionalCode);
             productToIssue.setField(ProductsToIssueFields.WAREHOUSE_ISSUE, warehouseIssue);
             productToIssue.setField(ProductsToIssueFields.DEMAND_QUANTITY, correctionQuantity);
             productToIssue.setField(ProductsToIssueFields.ADDITIONAL_DEMAND_QUANTITY, correctionQuantityInAdditionalUnit);

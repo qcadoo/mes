@@ -26,34 +26,16 @@ package com.qcadoo.mes.materialFlowResources.print;
 import com.google.common.collect.ComparisonChain;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.lowagie.text.Chunk;
-import com.lowagie.text.Document;
-import com.lowagie.text.DocumentException;
-import com.lowagie.text.Element;
-import com.lowagie.text.Paragraph;
-import com.lowagie.text.Phrase;
-import com.lowagie.text.Rectangle;
-import com.lowagie.text.pdf.PdfContentByte;
-import com.lowagie.text.pdf.PdfPCell;
-import com.lowagie.text.pdf.PdfPTable;
-import com.lowagie.text.pdf.PdfPageEventHelper;
-import com.lowagie.text.pdf.PdfWriter;
+import com.lowagie.text.*;
+import com.lowagie.text.pdf.*;
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.advancedGenealogy.constants.BatchFields;
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.basic.constants.PalletNumberFields;
 import com.qcadoo.mes.basic.constants.ProductFields;
-import com.qcadoo.mes.materialFlowResources.constants.DocumentFields;
-import com.qcadoo.mes.materialFlowResources.constants.MaterialFlowResourcesConstants;
-import com.qcadoo.mes.materialFlowResources.constants.PositionFields;
-import com.qcadoo.mes.materialFlowResources.constants.ResourceFields;
-import com.qcadoo.mes.materialFlowResources.constants.StorageLocationFields;
-import com.qcadoo.mes.materialFlowResources.print.helper.DocumentDataProvider;
+import com.qcadoo.mes.materialFlowResources.constants.*;
+import com.qcadoo.mes.materialFlowResources.print.helper.*;
 import com.qcadoo.mes.materialFlowResources.print.helper.DocumentPdfHelper.HeaderPair;
-import com.qcadoo.mes.materialFlowResources.print.helper.Position;
-import com.qcadoo.mes.materialFlowResources.print.helper.PositionBuilder;
-import com.qcadoo.mes.materialFlowResources.print.helper.PositionDataProvider;
-import com.qcadoo.mes.materialFlowResources.print.helper.PositionsHolder;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -65,20 +47,12 @@ import com.qcadoo.report.api.FontUtils;
 import com.qcadoo.report.api.pdf.HeaderAlignment;
 import com.qcadoo.report.api.pdf.PdfDocumentWithWriterService;
 import com.qcadoo.report.api.pdf.PdfHelper;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Objects;
-
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.*;
 
 @Service
 public class DispositionOrderPdfService extends PdfDocumentWithWriterService {
@@ -175,7 +149,7 @@ public class DispositionOrderPdfService extends PdfDocumentWithWriterService {
             positionsTable.addCell(createCell(position.getStorageLocation(), Element.ALIGN_LEFT));
             positionsTable.addCell(createCell(position.getPalletNumber(), Element.ALIGN_LEFT));
             positionsTable.addCell(createCell(position.getTypeOfPallet(), Element.ALIGN_LEFT));
-            positionsTable.addCell(createCell(position.getAdditionalCodeAndBatch(), Element.ALIGN_LEFT));
+            positionsTable.addCell(createCell(position.getBatch(), Element.ALIGN_LEFT));
             positionsTable.addCell(createCell(position.getProductName(), Element.ALIGN_LEFT));
             positionsTable.addCell(createCell(PositionDataProvider.quantity(position.getQuantity()), Element.ALIGN_LEFT));
             positionsTable.addCell(createCell(position.getUnit(), Element.ALIGN_LEFT));
@@ -197,7 +171,7 @@ public class DispositionOrderPdfService extends PdfDocumentWithWriterService {
             builder.setIndex(PositionDataProvider.index(position)).setStorageLocation(getDataForStorageLocation(position))
                     .setPalletNumber(PositionDataProvider.palletNumber(position))
                     .setTypeOfPallet(PositionDataProvider.typeOfPallet(position))
-                    .setAdditionalCode(PositionDataProvider.additionalCode(position)).setProductName(getDataForProduct(position))
+                    .setProductName(getDataForProduct(position))
                     .setQuantity(position.getDecimalField(PositionFields.QUANTITY)).setUnit(PositionDataProvider.unit(position))
                     .setProduct(position.getBelongsToField(PositionFields.PRODUCT).getId());
             if(Objects.nonNull(position.getBelongsToField(PositionFields.BATCH))) {
@@ -269,7 +243,7 @@ public class DispositionOrderPdfService extends PdfDocumentWithWriterService {
         headerLabels.put(translationService.translate(L_POSITION_HEADER_PREFIX + "batch", locale), HeaderAlignment.LEFT);
         headerLabels.put(translationService.translate(L_POSITION_HEADER_PREFIX + "pallet", locale), HeaderAlignment.LEFT);
         headerLabels.put(translationService.translate(L_POSITION_HEADER_PREFIX + "typeOfPallet", locale), HeaderAlignment.LEFT);
-        headerLabels.put(translationService.translate(L_POSITION_HEADER_PREFIX + "additionalCodeBatch", locale), HeaderAlignment.LEFT);
+        headerLabels.put(translationService.translate(L_POSITION_HEADER_PREFIX + "batch", locale), HeaderAlignment.LEFT);
         headerLabels.put(translationService.translate(L_POSITION_HEADER_PREFIX + "product", locale), HeaderAlignment.LEFT);
         headerLabels.put(translationService.translate(L_POSITION_HEADER_PREFIX + "quantity", locale), HeaderAlignment.LEFT);
         headerLabels.put(translationService.translate(L_POSITION_HEADER_PREFIX + "unit", locale), HeaderAlignment.LEFT);

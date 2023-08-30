@@ -23,15 +23,14 @@
  */
 package com.qcadoo.mes.techSubcontrForDeliveries.aop;
 
-import static com.qcadoo.mes.techSubcontrForDeliveries.constants.DeliveredProductFieldsTSFD.OPERATION;
-
-import java.math.BigDecimal;
-
-import org.springframework.stereotype.Service;
-
 import com.qcadoo.mes.deliveries.constants.DeliveredProductFields;
 import com.qcadoo.mes.deliveries.constants.OrderedProductFields;
 import com.qcadoo.model.api.Entity;
+import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
+
+import static com.qcadoo.mes.techSubcontrForDeliveries.constants.DeliveredProductFieldsTSFD.OPERATION;
 
 @Service
 public class DeliveryDetailsListenersTSFDOverrideUtil {
@@ -46,14 +45,8 @@ public class DeliveryDetailsListenersTSFDOverrideUtil {
     }
 
     private boolean checkIfProductsAreSame(final Entity orderedProduct, final Entity deliveredProduct) {
-        Entity orderedAdditionalCode = orderedProduct.getBelongsToField(OrderedProductFields.ADDITIONAL_CODE);
-        Entity deliveredAdditionalCode = deliveredProduct.getBelongsToField(DeliveredProductFields.ADDITIONAL_CODE);
-        boolean additionalCodesMatching = orderedAdditionalCode == null && deliveredAdditionalCode == null;
-        if (orderedAdditionalCode != null && deliveredAdditionalCode != null) {
-            additionalCodesMatching = orderedAdditionalCode.getId().equals(deliveredAdditionalCode.getId());
-        }
         return (orderedProduct.getBelongsToField(OrderedProductFields.PRODUCT).getId()
-                .equals(deliveredProduct.getBelongsToField(DeliveredProductFields.PRODUCT).getId())) && additionalCodesMatching;
+                .equals(deliveredProduct.getBelongsToField(DeliveredProductFields.PRODUCT).getId()));
     }
 
     private boolean checkIfOperationsAreSame(final Entity orderedProduct, final Entity deliveredProduct) {

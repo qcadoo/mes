@@ -6,8 +6,6 @@ public final class ProductToIssueCorrectionFields {
 
     }
 
-    public static final String ADDITIONAL_CODE = "additionalCode";
-
     public static final String CONVERSION = "conversion";
 
     public static final String CORRECTION_QUANTITY = "correctionQuantity";

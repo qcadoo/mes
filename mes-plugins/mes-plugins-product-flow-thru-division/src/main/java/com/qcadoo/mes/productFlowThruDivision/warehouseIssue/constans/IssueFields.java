@@ -29,8 +29,6 @@ public final class IssueFields {
 
 	}
 
-	public static final String ADDITIONAL_CODE = "additionalCode";
-
 	public static final String ADDITIONAL_DEMAND_QUANTITY = "additionalDemandQuantity";
 
 	public static final String CONVERSION = "conversion";

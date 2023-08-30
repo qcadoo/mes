@@ -59,8 +59,6 @@ public final class ResourceFields {
 
     public static final String QUANTITY_IN_ADDITIONAL_UNIT = "quantityInAdditionalUnit";
 
-    public static final String ADDITIONAL_CODE = "additionalCode";
-
     public static final String CONVERSION = "conversion";
 
     public static final String PALLET_NUMBER = "palletNumber";

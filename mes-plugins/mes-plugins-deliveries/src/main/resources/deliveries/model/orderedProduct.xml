@@ -58,7 +58,6 @@
         <string name="description">
             <validatesLength max="2048"/>
         </string>
-        <belongsTo name="additionalCode" model="additionalCode" plugin="basic"/>
         <hasMany name="reservations" model="orderedProductReservation"
                  joinField="orderedProduct" cascade="delete" copyable="true"/>
 

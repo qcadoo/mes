@@ -48,7 +48,6 @@ public class ProductsToIssueDetailsListeners {
 
     public void onProductSelect(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         issueCommonDetailsHelper.clearStorageLocationLookup(view);
-        issueCommonDetailsHelper.clearAdditionalCodeLookup(view);
         issueCommonDetailsHelper.fillStorageLocation(view);
         productToIssueDetailsHooks.onBeforeRender(view);
         fillAdditionalUnit(view);

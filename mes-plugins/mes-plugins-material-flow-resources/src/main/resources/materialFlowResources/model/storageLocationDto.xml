@@ -34,7 +34,6 @@
         <string name="storageLocationNumber"/>
         <string name="productNumber"/>
         <string name="productName"/>
-        <string name="additionalCode"/>
         <decimal name="resourceQuantity"/>
         <string name="productUnit"/>
         <decimal name="quantityInAdditionalUnit"/>

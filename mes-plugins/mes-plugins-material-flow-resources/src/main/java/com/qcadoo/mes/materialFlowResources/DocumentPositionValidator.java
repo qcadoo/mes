@@ -15,17 +15,6 @@ import com.qcadoo.mes.basic.controllers.dataProvider.responses.DataResponse;
 import com.qcadoo.mes.materialFlowResources.constants.DocumentState;
 import com.qcadoo.mes.materialFlowResources.constants.DocumentType;
 import com.qcadoo.model.api.BigDecimalUtils;
-
-import java.math.BigDecimal;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.i18n.LocaleContextHolder;
@@ -35,6 +24,12 @@ import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class DocumentPositionValidator {
@@ -85,7 +80,6 @@ public class DocumentPositionValidator {
             }
 
             errors.addAll(validateConversion(position));
-            errors.addAll(validateAdditionalCode(position));
             errors.addAll(validatePrice(position));
             errors.addAll(validateSellingPrice(position));
             errors.addAll(validateQuantity(position));
@@ -326,7 +320,7 @@ public class DocumentPositionValidator {
             boolean find = false;
 
             DataResponse resourcesResponse = documentPositionService.getResourcesResponse(position.getDocument(), "",
-                    position.getProduct(), position.getConversion(), position.getAdditionalCode(), position.getBatchId(), false);
+                    position.getProduct(), position.getConversion(), position.getBatchId(), false);
 
             List<? extends AbstractDTO> resources = resourcesResponse.getEntities();
 
@@ -458,36 +452,11 @@ public class DocumentPositionValidator {
         }
     }
 
-    private Collection<? extends String> validateAdditionalCode(final DocumentPositionDTO position) {
-        String additionalCode = position.getAdditionalCode();
-
-        if (!StringUtils.isEmpty(additionalCode)) {
-            try {
-                Map<String, Object> filters = Maps.newHashMap();
-
-                filters.put("code", additionalCode);
-                filters.put("productNumber", position.getProduct());
-
-                Long additionalCodeId = jdbcTemplate
-                        .queryForObject(
-                                "SELECT additionalcode.id FROM basic_additionalcode additionalcode WHERE additionalcode.code = :code "
-                                        + "AND additionalcode.product_id IN (SELECT id FROM basic_product WHERE number = :productNumber)",
-                                filters, Long.class);
-
-            } catch (EmptyResultDataAccessException e) {
-                return Lists.newArrayList("documentGrid.error.position.additionalCode.doesntMatch");
-            }
-        }
-
-        return Lists.newArrayList();
-    }
-
     private Map<String, Object> tryMapDocumentPositionVOToParams(final DocumentPositionDTO vo, final List<String> errors) {
         Map<String, Object> params = Maps.newHashMap();
 
         params.put("id", vo.getId());
         params.put("product_id", tryGetProductIdByNumber(vo.getProduct(), errors));
-        params.put("additionalcode_id", tryGetAdditionalCodeIdByCode(vo.getAdditionalCode(), errors));
         params.put("quantity", vo.getQuantity());
         params.put("givenquantity", vo.getGivenquantity());
         params.put("givenunit", vo.getGivenunit());
@@ -539,24 +508,6 @@ public class DocumentPositionValidator {
             return productId;
         } catch (EmptyResultDataAccessException e) {
             errors.add(String.format("Nie znaleziono takiego produktu: '%s'.", productNumber));
-
-            return null;
-        }
-    }
-
-    private Long tryGetAdditionalCodeIdByCode(final String additionalCode, final List<String> errors) {
-        if (Strings.isNullOrEmpty(additionalCode)) {
-            return null;
-        }
-
-        try {
-            Long additionalCodeId = jdbcTemplate.queryForObject(
-                    "SELECT additionalcode.id FROM basic_additionalcode additionalcode WHERE additionalcode.code = :code",
-                    Collections.singletonMap("code", additionalCode), Long.class);
-
-            return additionalCodeId;
-        } catch (EmptyResultDataAccessException e) {
-            errors.add(String.format("Nie znaleziono takiego dodatkowego kodu: '%s'.", additionalCode));
 
             return null;
         }

@@ -122,8 +122,6 @@ public class ProductToIssueCorrectionHelperHooks {
         correction.setField(ProductToIssueCorrectionFields.CONVERSION, conversion);
         correction.setField(ProductToIssueCorrectionFields.LOCATION,
                 productToIssue.getBelongsToField(ProductsToIssueFields.LOCATION));
-        correction.setField(ProductToIssueCorrectionFields.ADDITIONAL_CODE,
-                productToIssue.getBelongsToField(ProductsToIssueFields.ADDITIONAL_CODE));
         return correction;
     }
 

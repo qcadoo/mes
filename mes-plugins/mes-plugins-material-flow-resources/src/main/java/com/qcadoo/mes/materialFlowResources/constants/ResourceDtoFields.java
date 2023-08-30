@@ -69,8 +69,6 @@ public final class ResourceDtoFields {
 
     public static final String STORAGE_LOCATION_NUMBER = "storageLocationNumber";
 
-    public static final String ADDITIONAL_CODE = "additionalCode";
-
     public static final String PALLET_NUMBER = "palletNumber";
 
     public static final String TYPE_OF_PALLET = "typeOfPallet";
@@ -84,8 +82,6 @@ public final class ResourceDtoFields {
     public static final String DELIVERY_NUMBER = "deliveryNumber";
 
     public static final String DOCUMENT_NUMBER = "documentNumber";
-
-    public static final String MERGED_PRODUCT_NUMBER_AND_ADDITIONAL_CODE = "mergedProductNumberAndAdditionalCode";
 
     public static final String POSITION_ADD_MULTI_HELPER = "positionAddMultiHelper";
 

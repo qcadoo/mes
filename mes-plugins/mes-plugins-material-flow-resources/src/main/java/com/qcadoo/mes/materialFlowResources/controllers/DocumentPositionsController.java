@@ -108,22 +108,21 @@ public class DocumentPositionsController {
     @ResponseBody
     @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE, value = "resource")
     public ResourceDTO getResourceForProduct(@RequestParam("context") Long document, @RequestParam("product") String product,
-            @RequestParam("conversion") BigDecimal conversion, @RequestParam("ac") String additionalCode, @RequestParam("batchId") Long batchId) {
+            @RequestParam("conversion") BigDecimal conversion, @RequestParam("batchId") Long batchId) {
         if(Objects.nonNull(batchId) && batchId == 0) {
             batchId = null;
         }
-        return documentPositionService.getResource(document, product, conversion, additionalCode, batchId);
+        return documentPositionService.getResource(document, product, conversion, batchId);
     }
 
     @ResponseBody
     @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE, value = "resources")
     public DataResponse getResources(@RequestParam("query") String query, @RequestParam("product") String product,
-            @RequestParam("conversion") BigDecimal conversion, @RequestParam("context") Long document,
-            @RequestParam("ac") String additionalCode, @RequestParam("batchId") Long batchId) {
+            @RequestParam("conversion") BigDecimal conversion, @RequestParam("context") Long document, @RequestParam("batchId") Long batchId) {
         if(Objects.nonNull(batchId) && batchId == 0) {
             batchId = null;
         }
-        return documentPositionService.getResourcesResponse(document, query, product, conversion, additionalCode, batchId,true);
+        return documentPositionService.getResourcesResponse(document, query, product, conversion, batchId,true);
     }
 
     @ResponseBody

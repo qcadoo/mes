@@ -318,7 +318,6 @@ public class ProductsToIssueDetailsHooks {
         issue.setField(IssueFields.DEMAND_QUANTITY, demandQuantity);
         issue.setField(IssueFields.QUANTITY_PER_UNIT, quantityPerUnit);
         issue.setField(IssueFields.ISSUE_QUANTITY, issueQuantity);
-        issue.setField(IssueFields.ADDITIONAL_CODE, productToIssue.getBelongsToField(ProductsToIssueFields.ADDITIONAL_CODE));
         issue.setField(IssueFields.STORAGE_LOCATION, productToIssue.getBelongsToField(ProductsToIssueFields.STORAGE_LOCATION));
         issue.setField(IssueFields.ISSUED, false);
         issue.setField(IssueFields.ISSUE_QUANTITY_ADDITIONAL_UNIT, issuedQuantityAdditionalUnit);

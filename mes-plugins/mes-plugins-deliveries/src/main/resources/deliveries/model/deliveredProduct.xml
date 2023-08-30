@@ -48,7 +48,6 @@
         <belongsTo name="palletNumber" model="palletNumber" plugin="basic"/>
         <dictionary name="palletType" dictionary="typeOfPallet"/>
         <belongsTo name="storageLocation" model="storageLocation" plugin="materialFlowResources"/>
-        <belongsTo name="additionalCode" model="additionalCode" plugin="basic"/>
         <string name="batchNumber"/>
         <belongsTo name="batch" model="batch" plugin="advancedGenealogy"/>
 
