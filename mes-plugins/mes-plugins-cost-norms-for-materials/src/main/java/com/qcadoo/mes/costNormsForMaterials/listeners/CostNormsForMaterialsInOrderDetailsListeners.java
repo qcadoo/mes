@@ -42,13 +42,20 @@ public class CostNormsForMaterialsInOrderDetailsListeners {
 
                 scb.add(SearchRestrictions.or(release, intOut));
             } else {
-                scb.add(SearchRestrictions.eq(DOCUMENT_ID, 0));
+                appendBaseCriteria(scb, filterValue);
             }
-        } else if  (filterValue.has(PRODUCT_NUMBER) && filterValue.has(ORDER_ID)) {
+        } else {
+            appendBaseCriteria(scb, filterValue);
+        }
+
+    }
+
+    private void appendBaseCriteria(SearchCriteriaBuilder scb, FilterValueHolder filterValue) {
+        if(filterValue.has(PRODUCT_NUMBER) && filterValue.has(ORDER_ID)) {
             scb.add(SearchRestrictions.eq(PRODUCT_NUMBER, filterValue.getString(PRODUCT_NUMBER)));
             scb.add(SearchRestrictions.eq(ORDER_ID, filterValue.getInteger(ORDER_ID)));
             scb.add(SearchRestrictions.eq(DOCUMENT_TYPE, DocumentType.INTERNAL_OUTBOUND.getStringValue()));
-        } else {
+        }else {
             scb.add(SearchRestrictions.eq(DOCUMENT_ID, 0));
         }
     }

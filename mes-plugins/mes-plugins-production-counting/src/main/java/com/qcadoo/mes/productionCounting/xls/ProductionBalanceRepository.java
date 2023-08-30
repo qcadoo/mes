@@ -109,17 +109,13 @@ class ProductionBalanceRepository {
         query.append("UNION ");
         appendForEachPlannedQuantities(query);
         appendMaterialCostsSelectionClause(query, entity);
-        query.append("q.replacementTo AS replacementTo, ");
-        query.append("op.number AS operationNumber ");
+        query.append("NULL AS replacementTo, ");
+        query.append("q.operations AS operationNumber ");
         appendMaterialCostsFromClause(query, entity);
-        query.append("JOIN technologies_operation op ON q.operation_id = op.id ");
-        query.append(
-                "JOIN technologies_technologyoperationcomponent toc ON toc.operation_id = op.id AND o.technology_id = toc.technology_id ");
-        query.append(
-                "LEFT JOIN productioncounting_productiontracking pt ON pt.order_id = o.id AND pt.technologyoperationcomponent_id = toc.id AND pt.state = '02accepted' ");
+        query.append("LEFT JOIN productioncounting_productiontracking pt ON pt.order_id = o.id AND pt.state = '02accepted' ");
         query.append(
                 "LEFT JOIN productioncounting_trackingoperationproductincomponent topic ON topic.productiontracking_id = pt.id AND topic.product_id = p.id ");
-        query.append("GROUP BY o.id, o.number, op.number, p.number, p.name, p.unit, topic.wasteunit, q.replacementTo) ");
+        query.append("GROUP BY o.id, o.number, p.number, p.name, p.unit, topic.wasteunit, q.replacementTo, q.operations) ");
         query.append("ORDER BY orderNumber, operationNumber, productNumber ");
 
         return jdbcTemplate.query(query.toString(), new MapSqlParameterSource("ordersIds", ordersIds),
@@ -128,9 +124,9 @@ class ProductionBalanceRepository {
 
     private void appendForEachPlannedQuantities(final StringBuilder query) {
         query.append(
-                "(WITH planned_quantity (order_id, operation_id, product_id, plannedQuantity, usedQuantity, childsQuantity, replacementTo) AS (SELECT ");
+                "(WITH planned_quantity (order_id, operations, product_id, plannedQuantity, usedQuantity, childsQuantity, replacementTo) AS (SELECT ");
         query.append("o.id AS orderId, ");
-        query.append("toc.operation_id AS operationId, ");
+        query.append("STRING_AGG (op.number, ', ') operations, ");
         query.append("p.id AS productId, ");
         query.append("COALESCE(SUM(pcq.plannedquantity), 0) AS plannedQuantity, ");
         query.append("COALESCE(SUM(pcq.usedquantity), 0) AS usedQuantity, ");
@@ -142,11 +138,12 @@ class ProductionBalanceRepository {
         query.append("JOIN basic_product p ON pcq.product_id = p.id ");
         query.append("LEFT JOIN technologies_technology t ON t.product_id = p.id AND t.master = TRUE ");
         query.append("JOIN technologies_technologyoperationcomponent toc ON pcq.technologyoperationcomponent_id = toc.id ");
+        query.append("JOIN technologies_operation op ON op.id = toc.operation_id ");
         appendWhereClause(query);
         query.append("AND o.typeofproductionrecording = '03forEach' ");
         query.append("AND pcq.role = '01used' AND pcq.typeofmaterial = '01component' AND (t.id IS NULL ");
         query.append("OR t.id IS NOT NULL) ");
-        query.append("GROUP BY o.id, toc.operation_id, p.id, replacementto.number) ");
+        query.append("GROUP BY o.id, p.id, replacementto.number) ");
     }
 
     private void appendCumulatedPlannedQuantities(final StringBuilder query) {
@@ -236,7 +233,7 @@ class ProductionBalanceRepository {
             appendUsedQuantity(query);
             query.append("<> 0 THEN ");
             appendPlannedQuantity(query);
-            query.append("* (COALESCE(MIN(tiopic.costfororder), 0) + (MIN(q.plannedQuantity - q.childsQuantity) * COALESCE(MIN(tiopic.averagepricesubcontractor), 0))) / ");
+            query.append("* COALESCE(MIN(tiopic.costfororder), 0) / ");
             appendUsedQuantity(query);
             query.append("ELSE 0 END ");
         } else {
@@ -250,7 +247,7 @@ class ProductionBalanceRepository {
     private void appendRealCost(final StringBuilder query, final Entity entity) {
         if (MaterialCostsUsed.COST_FOR_ORDER.getStringValue()
                 .equals(entity.getStringField(ProductionBalanceFields.MATERIAL_COSTS_USED))) {
-            query.append("COALESCE(MIN(tiopic.costfororder), 0) + (MIN(q.plannedQuantity - q.childsQuantity) * COALESCE(MIN(tiopic.averagepricesubcontractor), 0)) ");
+            query.append("COALESCE(MIN(tiopic.costfororder), 0) ");
         } else {
             String componentPriceClause = evaluateComponentPrice(
                     entity.getStringField(ProductionBalanceFields.MATERIAL_COSTS_USED));
