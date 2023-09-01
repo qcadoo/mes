@@ -35,7 +35,6 @@
 		<enum name="type"
 			  values="01failure,02other"
 			  default="01failure" required="true"/>
-		<boolean name="createFailure" default="false"/>
 	</fields>
 	<hooks />
 </model>
