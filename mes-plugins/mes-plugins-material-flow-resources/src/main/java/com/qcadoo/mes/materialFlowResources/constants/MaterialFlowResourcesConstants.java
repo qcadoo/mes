@@ -84,5 +84,6 @@ public final class MaterialFlowResourcesConstants {
     public static final String VIEW_RESOURCES_ATTRIBUTES = "resourcesAttributes";
 
     public static final String VIEW_DOCUMENT_POSITIONS_ATTRIBUTES = "documentPositionsAttributes";
+    public static final String MODEL_STORAGE_LOCATION_DTO = "storageLocationDto";
 
 }

@@ -26,11 +26,13 @@ package com.qcadoo.mes.materialFlowResources;
 import static com.qcadoo.mes.basic.constants.ProductFields.UNIT;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import com.qcadoo.mes.materialFlowResources.constants.StorageLocationDtoFields;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -183,6 +185,42 @@ public class MaterialFlowResourcesServiceImpl implements MaterialFlowResourcesSe
         currencyField.requestComponentUpdateState();
     }
 
+    //This service method is created for WMS
+    @Override
+    public List<QuantityDto> getQuantitiesForProductsAndLocationWMS(final List<String> productNumbers, final Long materialFlowLocationId) {
+        List<QuantityDto> quantityDtoList = new ArrayList<>();
+
+        if (!productNumbers.isEmpty()) {
+            StringBuilder query = new StringBuilder();
+
+            query.append("SELECT ");
+            query.append("\"productnumber\" as productNumber, \"resourcequantity\" as quantity, \"quantityinadditionalunit\" as additionalQuantity ");
+            query.append("FROM materialFlowResources_storageLocationDto as storageLocationDto ");
+            query.append("WHERE storageLocationDto.productnumber IN (:productNumbers) ");
+            query.append("AND storageLocationDto.location_id = :materialFlowLocationId ");
+
+            SearchQueryBuilder searchQueryBuilder = getStorageLocationDtoDD().find(query.toString());
+
+            searchQueryBuilder.setParameterList("productNumbers", productNumbers);
+            searchQueryBuilder.setParameter("materialFlowLocationId", materialFlowLocationId);
+
+            List<Entity> quantityDtoEntities = searchQueryBuilder.list().getEntities();
+
+            if (!quantityDtoEntities.isEmpty()) {
+                quantityDtoEntities.forEach(quantityDtoEntity -> quantityDtoList.add(
+                        new QuantityDto(
+                                quantityDtoEntity.getStringField(StorageLocationDtoFields.PRODUCT_NUMBER),
+                                quantityDtoEntity.getDecimalField(StorageLocationDtoFields.RESOURCE_QUANTITY),
+                                quantityDtoEntity.getDecimalField(StorageLocationDtoFields.QUANTITY_IN_ADDITIONAL_UNIT)
+                        )
+                ));
+            }
+
+            return quantityDtoList;
+        }
+        return quantityDtoList;
+    }
+
     private DataDefinition getProductDD() {
         return dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PRODUCT);
     }
@@ -199,6 +237,11 @@ public class MaterialFlowResourcesServiceImpl implements MaterialFlowResourcesSe
     private DataDefinition getResourceStockDtoDD() {
         return dataDefinitionService.get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER,
                 MaterialFlowResourcesConstants.MODEL_RESOURCE_STOCK_DTO);
+    }
+
+    private DataDefinition getStorageLocationDtoDD() {
+        return dataDefinitionService.get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER,
+                MaterialFlowResourcesConstants.MODEL_STORAGE_LOCATION_DTO);
     }
 
 }
