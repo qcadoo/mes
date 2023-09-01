@@ -54,9 +54,10 @@ public class RealProductionCostDataProvider {
     }
 
     public BigDecimal getPriceSubcontractor(final Entity order) {
-        BigDecimal sum = BigDecimal.ZERO;
+        BigDecimal sumForAll = BigDecimal.ZERO;
         List<Entity> inComps = order.getHasManyField(OrderFieldsCNFM.TECHNOLOGY_INST_OPER_PRODUCT_IN_COMPS);
         for (Entity inComp : inComps) {
+
             if (Objects.nonNull(inComp.getDecimalField(TechnologyInstOperProductInCompFields.AVERAGE_PRICE_SUBCONTRACTOR))) {
                 List<Entity> entities = dataDefinitionService.get(BasicProductionCountingConstants.PLUGIN_IDENTIFIER, BasicProductionCountingConstants.MODEL_PRODUCTION_COUNTING_QUANTITY)
                         .find()
@@ -69,15 +70,16 @@ public class RealProductionCostDataProvider {
                         .add(SearchRestrictions.belongsTo(ProductionCountingQuantityFields.PRODUCT, inComp.getBelongsToField(TechnologyInstOperProductInCompFields.PRODUCT)))
                         .list().getEntities();
 
-                sum = entities.stream().map(e -> e.getDecimalField(ProductionCountingQuantityFields.USED_QUANTITY))
+                BigDecimal sum = entities.stream().map(e -> e.getDecimalField(ProductionCountingQuantityFields.USED_QUANTITY))
                         .filter(Objects::nonNull)
                         .reduce(BigDecimal.ZERO, BigDecimal::add);
 
                 sum = sum.multiply(inComp.getDecimalField(TechnologyInstOperProductInCompFields.AVERAGE_PRICE_SUBCONTRACTOR), numberService.getMathContext());
+                sumForAll = sumForAll.add(sum, numberService.getMathContext());
             }
         }
 
-        return sum;
+        return sumForAll;
     }
 
     public BigDecimal getLaborCost(final Entity order) {
