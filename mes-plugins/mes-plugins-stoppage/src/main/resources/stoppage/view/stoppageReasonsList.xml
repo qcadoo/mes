@@ -37,11 +37,12 @@
 
         <component type="grid" name="stoppageReasons" reference="grid">
             <option type="column" name="name" fields="name" link="true"/>
+            <option type="column" name="type" fields="type"/>
             <option type="column" name="description" fields="description"/>
             <option type="order" column="name" direction="asc"/>
 
-            <option type="searchable" value="name,description"/>
-            <option type="orderable" value="name,description"/>
+            <option type="searchable" value="name,description,type"/>
+            <option type="orderable" value="name,descriptiontype"/>
 
             <option type="correspondingView" value="stoppage/stoppageReasonDetails"/>
             <option type="correspondingComponent" value="form"/>

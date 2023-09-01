@@ -389,7 +389,20 @@ public class DataProvider {
 
             return new FaultTypeResponse(types);
         } else {
-            return new FaultTypeResponse(Lists.newArrayList());
+            Map<String, Object> parameters = Maps.newHashMap();
+
+            StringBuilder query = new StringBuilder();
+
+            query.append("SELECT distinct ft.id as id, ft.name as name, ft.name as number ");
+            query.append("FROM basic_faulttype ft ");
+            query.append("LEFT JOIN jointable_faulttype_subassembly fs ON fs.faulttype_id = ft.id ");
+            query.append("LEFT JOIN jointable_faulttype_workstationtype fwt ON fwt.faulttype_id = ft.id ");
+            query.append("WHERE ft.active AND ( ft.isdefault OR ft.appliesTo in ('01workstationOrSubassembly','02workstationType','') OR ft.appliesTo is null) ");
+            query.append("ORDER BY ft.name ");
+            List<FaultTypeDto> types = jdbcTemplate.query(query.toString(), parameters, new BeanPropertyRowMapper(
+                    FaultTypeDto.class));
+
+            return new FaultTypeResponse(types);
         }
 
     }

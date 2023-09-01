@@ -32,6 +32,9 @@
 		<string name="description">
 			<validatesLength max="1024"/>
 		</string>
+		<enum name="type"
+			  values="01failure,02other"
+			  default="01failure" required="true"/>
 		<boolean name="createFailure" default="false"/>
 	</fields>
 	<hooks />

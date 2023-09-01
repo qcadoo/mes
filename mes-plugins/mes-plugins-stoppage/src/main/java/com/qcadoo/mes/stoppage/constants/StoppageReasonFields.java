@@ -9,6 +9,6 @@ public final class StoppageReasonFields {
 
     public static final String DESCRIPTION = "description";
 
-    public static final String CREATE_FAILURE = "createFailure";
+    public static final String TYPE = "type";
 
 }
