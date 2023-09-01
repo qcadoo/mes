@@ -84,7 +84,6 @@
                     <option type="column" name="resourceNumber" fields="resourceNumber"/>
                     <option type="column" name="productNumber" fields="productNumber"/>
                     <option type="column" name="productName" fields="productName"/>
-                    <option type="column" name="additionalCode" fields="additionalCode"/>
                     <option type="column" name="quantity" fields="quantity"/>
                     <option type="column" name="unit" fields="unit"/>
                     <option type="column" name="additionalQuantity" fields="additionalQuantity"/>
@@ -96,11 +95,11 @@
                     <option type="order" column="assortmentName" direction="asc"/>
 
                     <option type="searchable"
-                            value="resourceNumber,productNumber,productName,additionalCode,quantity,unit,additionalQuantity,additionalUnit,expirationDate"/>
+                            value="resourceNumber,productNumber,productName,quantity,unit,additionalQuantity,additionalUnit,expirationDate"/>
                     <option type="multiSearch"
-                            value="resourceNumber,productNumber,productName,additionalCode,quantity,unit,additionalQuantity,additionalUnit,expirationDate"/>
+                            value="resourceNumber,productNumber,productName,quantity,unit,additionalQuantity,additionalUnit,expirationDate"/>
                     <option type="orderable"
-                            value="resourceNumber,productNumber,productName,additionalCode,quantity,unit,additionalQuantity,additionalUnit,expirationDate"/>
+                            value="resourceNumber,productNumber,productName,quantity,unit,additionalQuantity,additionalUnit,expirationDate"/>
 
                     <option type="footerRow" value="true" />
                     <option type="columnsToSummary" value="quantity,additionalQuantity"/>

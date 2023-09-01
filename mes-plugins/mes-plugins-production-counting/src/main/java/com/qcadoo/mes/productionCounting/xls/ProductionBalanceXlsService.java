@@ -4,7 +4,16 @@ import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.basic.constants.CurrencyFields;
+import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.basic.util.CurrencyService;
+import com.qcadoo.mes.basicProductionCounting.constants.BasicProductionCountingConstants;
+import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityFields;
+import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityRole;
+import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityTypeOfMaterial;
+import com.qcadoo.mes.costCalculation.constants.MaterialCostsUsed;
+import com.qcadoo.mes.costNormsForMaterials.constants.OrderFieldsCNFM;
+import com.qcadoo.mes.costNormsForMaterials.constants.TechnologyInstOperProductInCompFields;
+import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.mes.productionCounting.constants.OrderBalanceFields;
 import com.qcadoo.mes.productionCounting.constants.ProductionBalanceFields;
 import com.qcadoo.mes.productionCounting.constants.ProductionCountingConstants;
@@ -13,6 +22,8 @@ import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
+import com.qcadoo.model.api.search.JoinType;
+import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.report.api.xls.XlsDocumentService;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.hssf.usermodel.*;
@@ -22,14 +33,13 @@ import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
 public class ProductionBalanceXlsService extends XlsDocumentService {
+
+    private static final String L_DOT = ".";
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
@@ -95,6 +105,10 @@ public class ProductionBalanceXlsService extends XlsDocumentService {
                 locale);
 
         List<MaterialCost> materialCosts = productionBalanceRepository.getMaterialCosts(entity, ordersIds);
+        if (MaterialCostsUsed.COST_FOR_ORDER.getStringValue()
+                .equals(entity.getStringField(ProductionBalanceFields.MATERIAL_COSTS_USED))) {
+            addSubcontractorCosts(materialCosts);
+        }
         recalculateMaterialCostsWithCurrencies(materialCosts);
         createMaterialCostsSheet(materialCosts, createSheet(workbook,
                         translationService.translate("productionCounting.productionBalance.report.xls.sheet.materialCosts", locale)),
@@ -146,6 +160,7 @@ public class ProductionBalanceXlsService extends XlsDocumentService {
                         translationService.translate("productionCounting.productionBalance.report.xls.sheet.productsBalance", locale)),
                 locale);
     }
+
 
     private void createOrderProductsSheet(final List<OrderProduct> orderProducts, final HSSFSheet sheet, final Locale locale) {
         final FontsContainer fontsContainer = new FontsContainer(sheet.getWorkbook());
@@ -261,6 +276,52 @@ public class ProductionBalanceXlsService extends XlsDocumentService {
                     numberService.setScaleWithDefaultMathContext(oBalance.getSellPrice(), 2));
 
             orderBalanceDD.save(orderBalance);
+        }
+    }
+
+    private void addSubcontractorCosts(List<MaterialCost> materialCosts) {
+
+        Map<Long, List<MaterialCost>> materialCostsByOrderId = materialCosts.stream()
+                .collect(Collectors.groupingBy(MaterialCost::getOrderId));
+
+        for (Map.Entry<Long, List<MaterialCost>> entry : materialCostsByOrderId.entrySet()) {
+            Long orderId = entry.getKey();
+            List<MaterialCost> costs = entry.getValue();
+            Map<String, List<MaterialCost>> materialCostsByProduct = costs.stream()
+                    .collect(Collectors.groupingBy(MaterialCost::getProductNumber));
+
+            Entity order = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(orderId);
+            BigDecimal sum = BigDecimal.ZERO;
+            List<Entity> inComps = order.getHasManyField(OrderFieldsCNFM.TECHNOLOGY_INST_OPER_PRODUCT_IN_COMPS);
+            for (Entity inComp : inComps) {
+                if (Objects.nonNull(inComp.getDecimalField(TechnologyInstOperProductInCompFields.AVERAGE_PRICE_SUBCONTRACTOR))) {
+                    Entity product = inComp.getBelongsToField(TechnologyInstOperProductInCompFields.PRODUCT);
+                    List<Entity> entities = dataDefinitionService.get(BasicProductionCountingConstants.PLUGIN_IDENTIFIER, BasicProductionCountingConstants.MODEL_PRODUCTION_COUNTING_QUANTITY)
+                            .find()
+                            .createAlias(ProductionCountingQuantityFields.TECHNOLOGY_OPERATION_COMPONENT,
+                                    ProductionCountingQuantityFields.TECHNOLOGY_OPERATION_COMPONENT, JoinType.LEFT)
+                            .add(SearchRestrictions.eq(ProductionCountingQuantityFields.TECHNOLOGY_OPERATION_COMPONENT + L_DOT + "isSubcontracting", Boolean.TRUE))
+                            .add(SearchRestrictions.eq(ProductionCountingQuantityFields.ROLE, ProductionCountingQuantityRole.USED.getStringValue()))
+                            .add(SearchRestrictions.eq(ProductionCountingQuantityFields.TYPE_OF_MATERIAL, ProductionCountingQuantityTypeOfMaterial.COMPONENT.getStringValue()))
+                            .add(SearchRestrictions.belongsTo(ProductionCountingQuantityFields.ORDER, order))
+                            .add(SearchRestrictions.belongsTo(ProductionCountingQuantityFields.PRODUCT, product))
+                            .list().getEntities();
+
+                    sum = entities.stream().map(e -> e.getDecimalField(ProductionCountingQuantityFields.USED_QUANTITY))
+                            .filter(Objects::nonNull)
+                            .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+                    sum = sum.multiply(inComp.getDecimalField(TechnologyInstOperProductInCompFields.AVERAGE_PRICE_SUBCONTRACTOR), numberService.getMathContext());
+
+                    List<MaterialCost> materialCostsForProduct = materialCostsByProduct.get(product.getStringField(ProductFields.NUMBER));
+                    if (Objects.nonNull(materialCostsForProduct))
+                        for (MaterialCost materialCost : materialCostsForProduct) {
+                            BigDecimal newRealCost = materialCost.getRealCost().add(sum, numberService.getMathContext());
+                            materialCost.setRealCost(newRealCost);
+                        }
+                }
+            }
+
         }
     }
 

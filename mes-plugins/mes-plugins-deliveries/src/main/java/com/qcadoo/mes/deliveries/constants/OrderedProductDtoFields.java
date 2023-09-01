@@ -61,8 +61,6 @@ public final class OrderedProductDtoFields {
 
     public static final String DESCRIPTION = "description";
 
-    public static final String ADDITIONAL_CODE = "additionalCode";
-
     public static final String OFFER_NUMBER = "offerNumber";
 
     public static final String PRODUCT_NORM = "productNorm";
@@ -88,8 +86,6 @@ public final class OrderedProductDtoFields {
     public static final String NEGOTIATION_NUMBER = "negotiationNumber";
 
     public static final String DELIVERY_ACTIVE = "deliveryActive";
-
-    public static final String MERGED_PRODUCT_NUMBER_AND_ADDITIONAL_CODE = "mergedProductNumberAndAdditionalCode";
 
     public static final String HAS_ATTACHMENTS = "hasAttachments";
 

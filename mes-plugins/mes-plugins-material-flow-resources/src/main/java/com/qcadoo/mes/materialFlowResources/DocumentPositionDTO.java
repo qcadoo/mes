@@ -22,8 +22,6 @@ public class DocumentPositionDTO {
 
     private String productName;
 
-    private String additionalCode;
-
     @JsonDeserialize(using = BigDecimalDeserializer.class)
     private BigDecimal quantity;
 
@@ -130,14 +128,6 @@ public class DocumentPositionDTO {
 
     public void setProductName(String productName) {
         this.productName = productName;
-    }
-
-    public String getAdditionalCode() {
-        return additionalCode;
-    }
-
-    public void setAdditionalCode(String additionalCode) {
-        this.additionalCode = additionalCode;
     }
 
     public BigDecimal getQuantity() {
@@ -282,7 +272,6 @@ public class DocumentPositionDTO {
         hash = 67 * hash + Objects.hashCode(this.id);
         hash = 67 * hash + Objects.hashCode(this.document);
         hash = 67 * hash + Objects.hashCode(this.product);
-        hash = 67 * hash + Objects.hashCode(this.additionalCode);
         hash = 67 * hash + Objects.hashCode(this.quantity);
         hash = 67 * hash + Objects.hashCode(this.unit);
         hash = 67 * hash + Objects.hashCode(this.givenquantity);
@@ -322,9 +311,6 @@ public class DocumentPositionDTO {
             return false;
         }
         if (!Objects.equals(this.product, other.product)) {
-            return false;
-        }
-        if (!Objects.equals(this.additionalCode, other.additionalCode)) {
             return false;
         }
         if (!Objects.equals(this.quantity, other.quantity)) {
@@ -389,8 +375,8 @@ public class DocumentPositionDTO {
 
     @Override
     public String toString() {
-        return "DocumentPositionDTO{" + "id=" + id + ", document=" + document + ", product=" + product + ", additional_code="
-                + additionalCode + ", quantity=" + quantity + ", unit=" + unit + ", givenquantity=" + givenquantity
+        return "DocumentPositionDTO{" + "id=" + id + ", document=" + document + ", product=" + product
+                + ", quantity=" + quantity + ", unit=" + unit + ", givenquantity=" + givenquantity
                 + ", givenunit=" + givenunit + ", conversion=" + conversion + ", expirationDate=" + expirationDate
                 + ", productionDate=" + productionDate + ", pallet=" + palletNumber + ", type_of_pallet=" + typeOfPallet
                 + ", storage_location=" + storageLocation + ", price=" + price + ", batch=" + batch + ", resource=" + resource

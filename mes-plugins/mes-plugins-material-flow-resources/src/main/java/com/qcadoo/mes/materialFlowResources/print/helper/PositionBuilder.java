@@ -16,8 +16,6 @@ public class PositionBuilder {
 
     private BigDecimal quantity;
 
-    private String additionalCode;
-
     private String productName;
 
     private String unit;
@@ -56,11 +54,6 @@ public class PositionBuilder {
         return this;
     }
 
-    public PositionBuilder setAdditionalCode(String additionalCode) {
-        this.additionalCode = additionalCode;
-        return this;
-    }
-
     public PositionBuilder setProductName(String productName) {
         this.productName = productName;
         return this;
@@ -82,7 +75,7 @@ public class PositionBuilder {
     }
 
     public Position createPosition() {
-        return new Position(index, product, storageLocation, typeOfPallet, palletNumber, quantity, additionalCode, productName,
+        return new Position(index, product, storageLocation, typeOfPallet, palletNumber, quantity, productName,
                 unit, targetPallet, batch);
     }
 }

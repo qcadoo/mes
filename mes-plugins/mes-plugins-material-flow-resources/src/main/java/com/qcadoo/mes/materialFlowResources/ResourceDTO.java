@@ -14,10 +14,6 @@ public class ResourceDTO implements AbstractDTO {
 
     private String number;
 
-    private String additionalCode;
-
-    private String ac;
-
     private String batch;
 
     private Long batchId;
@@ -78,14 +74,6 @@ public class ResourceDTO implements AbstractDTO {
 
     public void setNumber(String number) {
         this.number = number;
-    }
-
-    public String getAdditionalCode() {
-        return additionalCode;
-    }
-
-    public void setAdditionalCode(String additionalCode) {
-        this.additionalCode = additionalCode;
     }
 
     public String getBatch() {
@@ -190,14 +178,6 @@ public class ResourceDTO implements AbstractDTO {
 
     public void setTypeOfPallet(String typeOfPallet) {
         this.typeOfPallet = typeOfPallet;
-    }
-
-    public String getAc() {
-        return ac;
-    }
-
-    public void setAc(String ac) {
-        this.ac = ac;
     }
 
     public Boolean isWaste() {

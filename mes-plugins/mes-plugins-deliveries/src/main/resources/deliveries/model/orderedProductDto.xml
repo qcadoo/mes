@@ -46,7 +46,6 @@
         <decimal name="pricePerUnit"/>
         <decimal name="totalPrice"/>
         <string name="description"/>
-        <string name="additionalCode"/>
         <string name="offerNumber"/>
         <string name="productNorm"/>
         <string name="operationNumber"/>
@@ -60,7 +59,6 @@
         <string name="supplierName"/>
         <string name="negotiationNumber"/>
         <boolean name="deliveryActive"/>
-        <string name="mergedProductNumberAndAdditionalCode"/>
         <boolean name="hasAttachments"/>
         <string name="batchNumber"/>
         <string name="qualityCardNumber"/>

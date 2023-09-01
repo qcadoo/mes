@@ -69,19 +69,22 @@ final class OrderMaterialsCostsDataGeneratorImpl implements OrderMaterialsCostDa
                 .map(EntityUtils.getBelongsToFieldExtractor(TechnologyInstOperProductInCompFields.PRODUCT)::apply)
                 .map(EntityUtils.getIdExtractor()::apply).collect(Collectors.toSet());
 
-        List<Entity> allOrderMaterialCosts = basicProductionCountingService
+        Set<Entity> allOrderMaterialCosts = basicProductionCountingService
                 .getUsedMaterialsFromProductionCountingQuantities(order, true)
                 .stream()
                 .map(material -> orderMaterialCostsEntityBuilder.create(order,
-                        material.getBelongsToField(ProductionCountingQuantityFields.PRODUCT))).collect(Collectors.toList());
+                        material.getBelongsToField(ProductionCountingQuantityFields.PRODUCT))).collect(Collectors.toSet());
+
 
         final Set<Long> allMaterialCostIds = allOrderMaterialCosts.stream()
                 .map(EntityUtils.getBelongsToFieldExtractor(TechnologyInstOperProductInCompFields.PRODUCT)::apply)
                 .map(EntityUtils.getIdExtractor()::apply).collect(Collectors.toSet());
+
         List<Entity> mergedOrderMaterialCosts = existingOrderMaterialCosts
                 .stream()
                 .filter(materialCost -> allMaterialCostIds.contains(materialCost.getBelongsToField(
                         TechnologyInstOperProductInCompFields.PRODUCT).getId())).collect(Collectors.toList());
+
         mergedOrderMaterialCosts.addAll(allOrderMaterialCosts
                 .stream()
                 .filter(materialCost -> !existingMaterialCostIds.contains(materialCost.getBelongsToField(

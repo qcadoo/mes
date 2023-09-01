@@ -34,8 +34,6 @@
         <belongsTo name="product" model="product" plugin="basic"
                    required="true"/>
 
-        <belongsTo name="additionalCode" model="additionalCode" plugin="basic"/>
-
         <belongsTo name="productInComponent" plugin="technologies"
                    model="operationProductInComponent"/>
 

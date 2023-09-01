@@ -1,10 +1,5 @@
 package com.qcadoo.mes.productFlowThruDivision.warehouseIssue;
 
-import java.util.Optional;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.qcadoo.mes.materialFlowResources.constants.MaterialFlowResourcesConstants;
 import com.qcadoo.mes.materialFlowResources.constants.StorageLocationFields;
 import com.qcadoo.mes.productFlowThruDivision.warehouseIssue.constans.ProductsToIssueFields;
@@ -18,15 +13,15 @@ import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.LookupComponent;
 import com.qcadoo.view.api.components.lookup.FilterValueHolder;
 import com.qcadoo.view.constants.QcadooViewConstants;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.Optional;
 
 @Service
 public class IssueCommonDetailsHelper {
 
     public static final String STORAGE_LOCATION = "storageLocation";
-
-    public static final String ADDITIONAL_CODE = "additionalCode";
-
-
 
     public static final String PRODUCT = "product";
 
@@ -40,13 +35,6 @@ public class IssueCommonDetailsHelper {
         storageLocationLookup.setFieldValue(null);
         storageLocationLookup.requestComponentUpdateState();
     }
-
-    public void clearAdditionalCodeLookup(final ViewDefinitionState view) {
-        LookupComponent additionalCodeLookup = (LookupComponent) view.getComponentByReference(ADDITIONAL_CODE);
-        additionalCodeLookup.setFieldValue(null);
-        additionalCodeLookup.requestComponentUpdateState();
-    }
-
 
     public void fillStorageLocation(ViewDefinitionState view) {
         FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
@@ -65,7 +53,6 @@ public class IssueCommonDetailsHelper {
                 storageLocationLookup.requestComponentUpdateState();
             }
         }
-
     }
 
     public void setFilterValue(final ViewDefinitionState view) {
@@ -76,26 +63,20 @@ public class IssueCommonDetailsHelper {
 
         LookupComponent storageLocationLookup = (LookupComponent) view.getComponentByReference(
                 IssueCommonDetailsHelper.STORAGE_LOCATION);
+
         FilterValueHolder filter = storageLocationLookup.getFilterValue();
-        LookupComponent additionalCodeLookup = (LookupComponent) view.getComponentByReference(ADDITIONAL_CODE);
-        FilterValueHolder additionalCodeFilter = additionalCodeLookup.getFilterValue();
         if (product != null) {
             filter.put(PRODUCT, product.getId());
-            additionalCodeFilter.put(PRODUCT, product.getId());
         } else if(filter.has(PRODUCT)){
             filter.remove(PRODUCT);
-            additionalCodeFilter.remove(PRODUCT);
         }
         if (warehouse != null) {
             filter.remove(LOCATION);
             filter.put(LOCATION, warehouse.getId());
         }
+
         storageLocationLookup.setFilterValue(filter);
-
-        additionalCodeLookup.setFilterValue(additionalCodeFilter);
-
     }
-
 
     public DataDefinition getStorageLocationDD() {
         return dataDefinitionService

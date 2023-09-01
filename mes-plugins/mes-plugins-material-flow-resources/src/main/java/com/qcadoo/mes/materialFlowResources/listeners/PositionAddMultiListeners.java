@@ -1,27 +1,9 @@
 package com.qcadoo.mes.materialFlowResources.listeners;
 
-import java.math.BigDecimal;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.basic.constants.ProductFields;
-import com.qcadoo.mes.materialFlowResources.constants.DocumentFields;
-import com.qcadoo.mes.materialFlowResources.constants.DocumentType;
-import com.qcadoo.mes.materialFlowResources.constants.LocationFieldsMFR;
-import com.qcadoo.mes.materialFlowResources.constants.MaterialFlowResourcesConstants;
-import com.qcadoo.mes.materialFlowResources.constants.PositionFields;
-import com.qcadoo.mes.materialFlowResources.constants.ResourceFields;
-import com.qcadoo.mes.materialFlowResources.constants.ResourceStockDtoFields;
-import com.qcadoo.model.api.BigDecimalUtils;
-import com.qcadoo.model.api.DataDefinition;
-import com.qcadoo.model.api.DataDefinitionService;
-import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.NumberService;
+import com.qcadoo.mes.materialFlowResources.constants.*;
+import com.qcadoo.model.api.*;
 import com.qcadoo.model.api.exception.EntityRuntimeException;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.view.api.ComponentState;
@@ -30,6 +12,13 @@ import com.qcadoo.view.api.components.CheckBoxComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.GridComponent;
 import com.qcadoo.view.constants.QcadooViewConstants;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
 
 @Service
 public class PositionAddMultiListeners {
@@ -118,7 +107,6 @@ public class PositionAddMultiListeners {
         newPosition.setField(PositionFields.RESOURCE, resource);
         newPosition.setField(PositionFields.RESOURCE_NUMBER, resource.getStringField(ResourceFields.NUMBER));
         newPosition.setField(PositionFields.STORAGE_LOCATION, resource.getField(ResourceFields.STORAGE_LOCATION));
-        newPosition.setField(PositionFields.ADDITIONAL_CODE, resource.getField(ResourceFields.ADDITIONAL_CODE));
         newPosition.setField(PositionFields.CONVERSION, conversion);
         newPosition.setField(PositionFields.PALLET_NUMBER, resource.getField(ResourceFields.PALLET_NUMBER));
         newPosition.setField(PositionFields.TYPE_OF_PALLET, resource.getField(ResourceFields.TYPE_OF_PALLET));

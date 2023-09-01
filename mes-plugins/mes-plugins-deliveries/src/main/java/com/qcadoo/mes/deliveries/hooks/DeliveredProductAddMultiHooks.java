@@ -75,8 +75,6 @@ public class DeliveredProductAddMultiHooks {
             FieldComponent unitField = formComponent.findFieldComponentByName(DeliveredProductMultiPositionFields.UNIT);
             FieldComponent additionalUnitField = formComponent
                     .findFieldComponentByName(DeliveredProductMultiPositionFields.ADDITIONAL_UNIT);
-            LookupComponent additionalCodeLookup = (LookupComponent) formComponent
-                    .findFieldComponentByName(DeliveredProductMultiPositionFields.ADDITIONAL_CODE);
             FieldComponent ordinalField = formComponent.findFieldComponentByName(DeliveredProductMultiPositionFields.ORDINAL);
             LookupComponent batchLookup = (LookupComponent) formComponent
                     .findFieldComponentByName(DeliveredProductMultiPositionFields.BATCH);
@@ -88,7 +86,6 @@ public class DeliveredProductAddMultiHooks {
 
             Entity product = productLookup.getEntity();
 
-            filterAdditionalCode(additionalCodeLookup, product);
             filterBatch(batchLookup, product);
 
             String unit = (String) unitField.getFieldValue();
@@ -141,22 +138,6 @@ public class DeliveredProductAddMultiHooks {
 
             storageLocationLookup.setFilterValue(filterValueHolder);
             storageLocationLookup.requestComponentUpdateState();
-        }
-    }
-
-    public void filterAdditionalCode(final LookupComponent additionalCodeLookup, final Entity product) {
-        if (Objects.nonNull(product)) {
-            additionalCodeLookup.setEnabled(true);
-
-            FilterValueHolder filterValueHolder = additionalCodeLookup.getFilterValue();
-            filterValueHolder.put(L_PRODUCT, product.getId());
-
-            additionalCodeLookup.setFilterValue(filterValueHolder);
-            additionalCodeLookup.requestComponentUpdateState();
-        } else {
-            additionalCodeLookup.setFieldValue(null);
-            additionalCodeLookup.setEnabled(false);
-            additionalCodeLookup.requestComponentUpdateState();
         }
     }
 

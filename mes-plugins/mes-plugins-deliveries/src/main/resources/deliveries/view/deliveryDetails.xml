@@ -757,8 +757,6 @@
                                 width="80" authorizationRole="ROLE_DELIVERIES_PRICE"/>
                         <option type="column" name="description" fields="description"
                                 width="120"/>
-                        <option type="column" name="additionalCode" fields="additionalCode"
-                                width="80"/>
                         <option type="column" name="batchNumber" fields="batchNumber"
                                 width="80"/>
                         <option type="column" name="hasAttachments" fields="hasAttachments"
@@ -769,9 +767,9 @@
                         <option type="order" column="succession" direction="asc"/>
 
                         <option type="searchable"
-                                value="succession,productNumber,productName,orderedQuantity,deliveredQuantity,leftToReceiveQuantity,productUnit,minOrderQuantity,belowMinOrderQuantity,additionalQuantity,additionalDeliveredQuantity,additionalLeftToReceiveQuantity,pricePerUnit,totalPrice,description,additionalCode,batchNumber,hasAttachments,qualityCardNumber"/>
+                                value="succession,productNumber,productName,orderedQuantity,deliveredQuantity,leftToReceiveQuantity,productUnit,minOrderQuantity,belowMinOrderQuantity,additionalQuantity,additionalDeliveredQuantity,additionalLeftToReceiveQuantity,pricePerUnit,totalPrice,description,batchNumber,hasAttachments,qualityCardNumber"/>
                         <option type="orderable"
-                                value="succession,productNumber,productName,orderedQuantity,deliveredQuantity,leftToReceiveQuantity,productUnit,minOrderQuantity,belowMinOrderQuantity,additionalQuantity,additionalDeliveredQuantity,additionalLeftToReceiveQuantity,pricePerUnit,totalPrice,description,additionalCode,batchNumber,hasAttachments,qualityCardNumber"/>
+                                value="succession,productNumber,productName,orderedQuantity,deliveredQuantity,leftToReceiveQuantity,productUnit,minOrderQuantity,belowMinOrderQuantity,additionalQuantity,additionalDeliveredQuantity,additionalLeftToReceiveQuantity,pricePerUnit,totalPrice,description,batchNumber,hasAttachments,qualityCardNumber"/>
 
                         <option type="correspondingView" value="deliveries/orderedProductDetails"/>
                         <option type="correspondingComponent" value="form"/>
@@ -856,8 +854,6 @@
                                 width="80" authorizationRole="ROLE_DELIVERIES_PRICE"/>
                         <option type="column" name="totalPrice" fields="totalPrice"
                                 width="80" authorizationRole="ROLE_DELIVERIES_PRICE"/>
-                        <option type="column" name="additionalCode" fields="additionalCode"
-                                width="80"/>
                         <option type="column" name="storageLocationNumber" fields="storageLocationNumber"
                                 width="80"/>
                         <option type="column" name="palletNumber" fields="palletNumber"
@@ -878,9 +874,9 @@
                         <option type="order" column="succession" direction="asc"/>
 
                         <option type="searchable"
-                                value="succession,productNumber,productName,deliveredQuantity,damagedQuantity,productUnit,additionalQuantity,additionalUnit,conversion,pricePerUnit,totalPrice,additionalCode,storageLocationNumber,palletNumber,palletType,isWaste,batchNumber,damaged,hasReservations,expirationDate"/>
+                                value="succession,productNumber,productName,deliveredQuantity,damagedQuantity,productUnit,additionalQuantity,additionalUnit,conversion,pricePerUnit,totalPrice,storageLocationNumber,palletNumber,palletType,isWaste,batchNumber,damaged,hasReservations,expirationDate"/>
                         <option type="orderable"
-                                value="succession,productNumber,productName,deliveredQuantity,damagedQuantity,productUnit,additionalQuantity,additionalUnit,conversion,pricePerUnit,totalPrice,additionalCode,storageLocationNumber,palletNumber,palletType,isWaste,batchNumber,damaged,hasReservations,expirationDate"/>
+                                value="succession,productNumber,productName,deliveredQuantity,damagedQuantity,productUnit,additionalQuantity,additionalUnit,conversion,pricePerUnit,totalPrice,storageLocationNumber,palletNumber,palletType,isWaste,batchNumber,damaged,hasReservations,expirationDate"/>
 
                         <option type="correspondingView" value="deliveries/deliveredProductDetails"/>
                         <option type="correspondingComponent" value="form"/>

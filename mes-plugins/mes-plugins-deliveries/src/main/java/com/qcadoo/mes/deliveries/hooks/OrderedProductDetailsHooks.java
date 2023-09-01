@@ -34,7 +34,6 @@ import org.springframework.stereotype.Service;
 
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.advancedGenealogy.criteriaModifier.BatchCriteriaModifier;
-import com.qcadoo.mes.basic.constants.AdditionalCodeFields;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.deliveries.DeliveriesService;
 import com.qcadoo.mes.deliveries.constants.OrderedProductFields;
@@ -92,7 +91,6 @@ public class OrderedProductDetailsHooks {
         deliveriesService.fillUnitFields(view, OrderedProductFields.PRODUCT, referenceNames, additionalUnitNames);
 
         fillConversion(view);
-        fillAdditionalCodesLookup(view);
     }
 
     private void fillConversion(final ViewDefinitionState view) {
@@ -111,26 +109,6 @@ public class OrderedProductDetailsHooks {
                 conversionField.requestComponentUpdateState();
             }
         }
-    }
-
-    private void fillAdditionalCodesLookup(final ViewDefinitionState view) {
-        LookupComponent additionalCodeLookup = (LookupComponent) view
-                .getComponentByReference(OrderedProductFields.ADDITIONAL_CODE);
-        LookupComponent productLookup = (LookupComponent) view.getComponentByReference(OrderedProductFields.PRODUCT);
-
-        Entity product = productLookup.getEntity();
-
-        if (Objects.nonNull(product)) {
-            additionalCodeLookup.setEnabled(true);
-            FilterValueHolder filterValueHolder = additionalCodeLookup.getFilterValue();
-            filterValueHolder.put(AdditionalCodeFields.PRODUCT, product.getId());
-            additionalCodeLookup.setFilterValue(filterValueHolder);
-        } else {
-            additionalCodeLookup.setFieldValue(null);
-            additionalCodeLookup.setEnabled(false);
-        }
-
-        additionalCodeLookup.requestComponentUpdateState();
     }
 
     public void fillCurrencyFields(final ViewDefinitionState view) {

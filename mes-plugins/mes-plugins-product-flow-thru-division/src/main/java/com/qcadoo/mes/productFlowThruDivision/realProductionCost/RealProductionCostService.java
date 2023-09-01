@@ -29,7 +29,7 @@ public class RealProductionCostService {
         }
         return RealProductionCost.service(realProductionCostDataProvider, order).appendMaterialsCosts()
                 .appendMaterialsCostsMargin().appendLaborCosts().appendLaborCostsMargin().appendAdditionalDirectCosts()
-                .calculate();
+                .appendAveragePriceSubcontractor().calculate();
     }
 
     public void calculateRealProductionCost(final ViewDefinitionState view, final ComponentState componentState,

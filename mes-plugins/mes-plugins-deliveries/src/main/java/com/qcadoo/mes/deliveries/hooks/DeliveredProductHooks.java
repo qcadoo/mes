@@ -136,15 +136,6 @@ public class DeliveredProductHooks {
             return true;
         }
 
-        Entity deliveredProductDBAdditionalCode = deliveredProductDB.getBelongsToField(DeliveredProductFields.ADDITIONAL_CODE);
-        Entity deliveredProductAdditionalCode = deliveredProduct.getBelongsToField(DeliveredProductFields.ADDITIONAL_CODE);
-
-        if (Objects.isNull(deliveredProductDBAdditionalCode) != Objects.isNull(deliveredProductAdditionalCode)
-                || Objects.nonNull(deliveredProductDBAdditionalCode)
-                && !deliveredProductDBAdditionalCode.getId().equals(deliveredProductAdditionalCode.getId())) {
-            return true;
-        }
-
         Entity deliveredProductDBBatch = deliveredProductDB.getBelongsToField(DeliveredProductFields.BATCH);
         Entity deliveredProductBatch = deliveredProduct.getBelongsToField(DeliveredProductFields.BATCH);
 

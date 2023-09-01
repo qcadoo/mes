@@ -7,21 +7,15 @@ import java.util.Date;
 public class DeliveredMultiProduct {
 
     private final Long productId;
-    private final Long additionalCodeId;
     private final Date expirationDate;
 
-    public DeliveredMultiProduct(Long productId, Long additionalCodeId, Date expirationDate) {
+    public DeliveredMultiProduct(Long productId, Date expirationDate) {
         this.productId = productId;
-        this.additionalCodeId = additionalCodeId;
         this.expirationDate = expirationDate;
     }
 
     public Long getProductId() {
         return productId;
-    }
-
-    public Long getAdditionalCodeId() {
-        return additionalCodeId;
     }
 
     public Date getExpirationDate() {
@@ -35,11 +29,10 @@ public class DeliveredMultiProduct {
             return false;
         DeliveredMultiProduct that = (DeliveredMultiProduct) o;
         return Objects.equal(productId, that.productId) &&
-                Objects.equal(additionalCodeId, that.additionalCodeId) &&
                 Objects.equal(expirationDate, that.expirationDate);
     }
 
     @Override public int hashCode() {
-        return Objects.hashCode(productId, additionalCodeId, expirationDate);
+        return Objects.hashCode(productId, expirationDate);
     }
 }

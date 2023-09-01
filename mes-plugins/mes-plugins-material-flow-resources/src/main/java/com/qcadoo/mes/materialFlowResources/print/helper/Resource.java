@@ -19,8 +19,6 @@ public class Resource {
     private String givenUnit;
     private Long storageLocationId;
     private String storageLocationNumber;
-    private Long additionalCodeId;
-    private String additionalCodeCode;
     private Long productId;
     private String productNumber;
     private String productName;
@@ -42,30 +40,12 @@ public class Resource {
         this.givenUnit = dto.getGivenUnit();
         this.storageLocationId = dto.getStorageLocationId();
         this.storageLocationNumber = dto.getStorageLocationNumber();
-        this.additionalCodeId = dto.getAdditionalCodeId();
-        this.additionalCodeCode = dto.getAdditionalCodeCode();
         this.productId = dto.getProductId();
         this.productNumber = dto.getProductNumber();
         this.productName = dto.getProductName();
         this.palletNumberId = dto.getPalletNumberId();
         this.palletNumberNumber = dto.getPalletNumberNumber();
         this.batch = dto.getBatch();
-    }
-
-    public String getAdditionalCodeCode() {
-        return additionalCodeCode;
-    }
-
-    public void setAdditionalCodeCode(String additionalCodeCode) {
-        this.additionalCodeCode = additionalCodeCode;
-    }
-
-    public Long getAdditionalCodeId() {
-        return additionalCodeId;
-    }
-
-    public void setAdditionalCodeId(Long additionalCodeId) {
-        this.additionalCodeId = additionalCodeId;
     }
 
     public BigDecimal getAvailableQuantity() {
@@ -229,13 +209,12 @@ public class Resource {
         return Objects.equals(expirationDate, resource.expirationDate) &&
                 Objects.equals(conversion, resource.conversion) &&
                 Objects.equals(storageLocationId, resource.storageLocationId) &&
-                Objects.equals(additionalCodeId, resource.additionalCodeId) &&
                 Objects.equals(productId, resource.productId) &&
                 Objects.equals(palletNumberId, resource.palletNumberId) &&
                 Objects.equals(batch, resource.batch);
     }
 
     @Override public int hashCode() {
-        return Objects.hash(expirationDate, conversion, storageLocationId, additionalCodeId, productId, palletNumberId, batch);
+        return Objects.hash(expirationDate, conversion, storageLocationId, productId, palletNumberId, batch);
     }
 }

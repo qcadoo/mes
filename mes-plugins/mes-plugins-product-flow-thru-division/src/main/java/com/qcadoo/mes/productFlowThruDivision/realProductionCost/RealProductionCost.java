@@ -30,6 +30,7 @@ public class RealProductionCost {
         IMaterialsCostsMargin appendMaterialsCosts();
     }
 
+
     public interface IMaterialsCostsMargin {
 
         ILaborCosts appendMaterialsCostsMargin();
@@ -47,7 +48,12 @@ public class RealProductionCost {
 
     public interface IAdditionalDirectCosts {
 
-        ICalculate appendAdditionalDirectCosts();
+        IAaveragePriceSubcontractor appendAdditionalDirectCosts();
+    }
+
+    public interface IAaveragePriceSubcontractor {
+
+        ICalculate appendAveragePriceSubcontractor();
     }
 
     public interface ICalculate {
@@ -56,7 +62,7 @@ public class RealProductionCost {
     }
 
     private static class Builder implements IMaterialsCosts, IMaterialsCostsMargin, ILaborCosts, ILaborCostsMargin,
-            IAdditionalDirectCosts, ICalculate {
+            IAdditionalDirectCosts, IAaveragePriceSubcontractor, ICalculate {
 
         private RealProductionCost realProductionCost = new RealProductionCost();
 
@@ -118,12 +124,19 @@ public class RealProductionCost {
         }
 
         @Override
-        public ICalculate appendAdditionalDirectCosts() {
+        public IAaveragePriceSubcontractor appendAdditionalDirectCosts() {
             realProductionCost.value = realProductionCost.value.add(realProductionCost.order
                     .getHasManyField(OrderFieldsCC.ORDER_ADDITIONAL_DIRECT_COSTS).stream()
                     .filter(e -> e.getDecimalField(OrderAdditionalDirectCostFields.ACTUAL_COST) != null)
                     .map(e -> e.getDecimalField(OrderAdditionalDirectCostFields.ACTUAL_COST)).reduce(BigDecimal.ZERO, BigDecimal::add));
 
+            return this;
+        }
+
+        @Override
+        public ICalculate appendAveragePriceSubcontractor() {
+            BigDecimal priceSubcontractor = realProductionCost.dataProvider.getPriceSubcontractor(realProductionCost.order);
+            realProductionCost.value = realProductionCost.value.add(priceSubcontractor);
             return this;
         }
     }

@@ -86,7 +86,6 @@ public class OrderedProductDetailsListeners {
         orderedProductDetailsHooks.fillUnitFields(view);
 
         fillAdditionalUnit(view);
-        clearAdditionalCode(view);
     }
 
     private void fillAdditionalUnit(final ViewDefinitionState view) {
@@ -110,14 +109,6 @@ public class OrderedProductDetailsListeners {
 
             quantityChange(view, null, null);
         }
-    }
-
-    private void clearAdditionalCode(final ViewDefinitionState view) {
-        LookupComponent additionalCodeLookup = (LookupComponent) view
-                .getComponentByReference(OrderedProductFields.ADDITIONAL_CODE);
-
-        additionalCodeLookup.setFieldValue(null);
-        additionalCodeLookup.requestComponentUpdateState();
     }
 
     private BigDecimal getConversion(final Entity product, final String unit, final String additionalUnit) {

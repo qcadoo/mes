@@ -37,13 +37,17 @@
 
         <component type="form" name="stoppageReason" reference="form">
             <component type="gridLayout" name="gridLayout" columns="2"
-                       rows="3">
+                       rows="4">
                 <layoutElement column="1" row="1">
                     <component type="input" name="name" field="name" />
                 </layoutElement>
                 <layoutElement column="1" row="2" height="2">
                     <component type="textarea" name="description" field="description"
                                reference="description"/>
+                </layoutElement>
+                <layoutElement column="1" row="4">
+                    <component type="checkbox" name="createFailure" field="createFailure"
+                               reference="createFailure"/>
                 </layoutElement>
             </component>
 

@@ -1,6 +1,10 @@
 package com.qcadoo.mes.productFlowThruDivision.realProductionCost;
 
 import com.qcadoo.mes.basic.ParameterService;
+import com.qcadoo.mes.basicProductionCounting.constants.BasicProductionCountingConstants;
+import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityFields;
+import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityRole;
+import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityTypeOfMaterial;
 import com.qcadoo.mes.costCalculation.constants.SourceOfOperationCosts;
 import com.qcadoo.mes.costNormsForMaterials.constants.OrderFieldsCNFM;
 import com.qcadoo.mes.costNormsForMaterials.constants.TechnologyInstOperProductInCompFields;
@@ -11,6 +15,8 @@ import com.qcadoo.model.api.BigDecimalUtils;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
+import com.qcadoo.model.api.search.JoinType;
+import com.qcadoo.model.api.search.SearchRestrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -22,7 +28,7 @@ import java.util.Objects;
 @Service
 public class RealProductionCostDataProvider {
 
-    public static final String L_TYPE_OF_PRODUCTION_RECORDING = "typeOfProductionRecording";
+    private static final String L_DOT = ".";
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
@@ -45,6 +51,33 @@ public class RealProductionCostDataProvider {
     public BigDecimal getMaterialCostMargin(final BigDecimal materialCost, final BigDecimal margin) {
         return materialCost.multiply(BigDecimalUtils.convertNullToZero(margin).divide(new BigDecimal(100l)),
                 numberService.getMathContext());
+    }
+
+    public BigDecimal getPriceSubcontractor(final Entity order) {
+        BigDecimal sum = BigDecimal.ZERO;
+        List<Entity> inComps = order.getHasManyField(OrderFieldsCNFM.TECHNOLOGY_INST_OPER_PRODUCT_IN_COMPS);
+        for (Entity inComp : inComps) {
+            if (Objects.nonNull(inComp.getDecimalField(TechnologyInstOperProductInCompFields.AVERAGE_PRICE_SUBCONTRACTOR))) {
+                List<Entity> entities = dataDefinitionService.get(BasicProductionCountingConstants.PLUGIN_IDENTIFIER, BasicProductionCountingConstants.MODEL_PRODUCTION_COUNTING_QUANTITY)
+                        .find()
+                        .createAlias(ProductionCountingQuantityFields.TECHNOLOGY_OPERATION_COMPONENT,
+                                ProductionCountingQuantityFields.TECHNOLOGY_OPERATION_COMPONENT, JoinType.LEFT)
+                        .add(SearchRestrictions.eq(ProductionCountingQuantityFields.TECHNOLOGY_OPERATION_COMPONENT + L_DOT + "isSubcontracting", Boolean.TRUE))
+                        .add(SearchRestrictions.eq(ProductionCountingQuantityFields.ROLE, ProductionCountingQuantityRole.USED.getStringValue()))
+                        .add(SearchRestrictions.eq(ProductionCountingQuantityFields.TYPE_OF_MATERIAL, ProductionCountingQuantityTypeOfMaterial.COMPONENT.getStringValue()))
+                        .add(SearchRestrictions.belongsTo(ProductionCountingQuantityFields.ORDER, order))
+                        .add(SearchRestrictions.belongsTo(ProductionCountingQuantityFields.PRODUCT, inComp.getBelongsToField(TechnologyInstOperProductInCompFields.PRODUCT)))
+                        .list().getEntities();
+
+                sum = entities.stream().map(e -> e.getDecimalField(ProductionCountingQuantityFields.USED_QUANTITY))
+                        .filter(Objects::nonNull)
+                        .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+                sum = sum.multiply(inComp.getDecimalField(TechnologyInstOperProductInCompFields.AVERAGE_PRICE_SUBCONTRACTOR), numberService.getMathContext());
+            }
+        }
+
+        return sum;
     }
 
     public BigDecimal getLaborCost(final Entity order) {
@@ -148,8 +181,8 @@ public class RealProductionCostDataProvider {
         return numberService.getMathContext();
     }
 
-    private Long nullLongToZero(Long obj){
-        if(Objects.isNull(obj)){
+    private Long nullLongToZero(Long obj) {
+        if (Objects.isNull(obj)) {
             return 0L;
         }
         return obj;

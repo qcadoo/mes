@@ -51,7 +51,6 @@
         <date name="expirationDate"/>
         <string name="batchNumber"/>
         <string name="storageLocationNumber"/>
-        <string name="additionalCode"/>
         <string name="palletNumber"/>
         <string name="typeOfPallet"/>
         <string name="qualityRating"/>
@@ -61,7 +60,6 @@
         <string name="deliveryNumber"/>
         <string name="supplierNumber"/>
         <string name="documentNumber"/>
-        <string name="mergedProductNumberAndAdditionalCode"/>
         <belongsTo name="positionAddMultiHelper" model="positionAddMultiHelper"/>
         <boolean name="blockedForQualityControl"/>
         <decimal name="colorResourcesAfterDeadline"/>

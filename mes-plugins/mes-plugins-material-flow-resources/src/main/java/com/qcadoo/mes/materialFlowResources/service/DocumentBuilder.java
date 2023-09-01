@@ -23,27 +23,22 @@
  */
 package com.qcadoo.mes.materialFlowResources.service;
 
+import com.google.common.base.Preconditions;
+import com.google.common.collect.Lists;
+import com.qcadoo.mes.basic.constants.ProductFields;
+import com.qcadoo.mes.materialFlowResources.constants.*;
+import com.qcadoo.mes.materialFlowResources.exceptions.DocumentBuildException;
+import com.qcadoo.model.api.DataDefinition;
+import com.qcadoo.model.api.DataDefinitionService;
+import com.qcadoo.model.api.Entity;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
+
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Consumer;
-
-import org.springframework.transaction.interceptor.TransactionAspectSupport;
-
-import com.google.common.base.Preconditions;
-import com.google.common.collect.Lists;
-import com.qcadoo.mes.basic.constants.ProductFields;
-import com.qcadoo.mes.materialFlowResources.constants.DocumentFields;
-import com.qcadoo.mes.materialFlowResources.constants.DocumentState;
-import com.qcadoo.mes.materialFlowResources.constants.DocumentType;
-import com.qcadoo.mes.materialFlowResources.constants.MaterialFlowResourcesConstants;
-import com.qcadoo.mes.materialFlowResources.constants.PositionFields;
-import com.qcadoo.mes.materialFlowResources.exceptions.DocumentBuildException;
-import com.qcadoo.model.api.DataDefinition;
-import com.qcadoo.model.api.DataDefinitionService;
-import com.qcadoo.model.api.Entity;
 
 public class DocumentBuilder {
 
@@ -178,12 +173,12 @@ public class DocumentBuilder {
     public DocumentBuilder addPosition(final Entity product, final BigDecimal quantity, final BigDecimal givenQuantity,
             final String givenUnit, final BigDecimal conversion, final BigDecimal price, final Entity batch,
             final Date productionDate, final Date expirationDate, final Entity resource, final Entity storageLocation,
-            final Entity palletNumber, final String typeOfPallet, final Entity additionalCode, final boolean isWaste) {
+            final Entity palletNumber, final String typeOfPallet, final boolean isWaste) {
         Preconditions.checkArgument(product != null, "Product argument is required.");
         Preconditions.checkArgument(quantity != null, "Quantity argument is required.");
 
         Entity position = createPosition(product, quantity, givenQuantity, givenUnit, conversion, price, batch, productionDate,
-                expirationDate, resource, storageLocation, palletNumber, typeOfPallet, additionalCode, isWaste);
+                expirationDate, resource, storageLocation, palletNumber, typeOfPallet, isWaste);
 
         positions.add(position);
 
@@ -193,13 +188,13 @@ public class DocumentBuilder {
     public DocumentBuilder addPosition(final Entity product, final BigDecimal quantity, final BigDecimal givenQuantity,
             final String givenUnit, final BigDecimal conversion, final BigDecimal price, final Entity batch,
             final Date productionDate, final Date expirationDate, final Entity resource, final Entity storageLocation,
-            final Entity palletNumber, final String typeOfPallet, final Entity additionalCode, final boolean isWaste,
+            final Entity palletNumber, final String typeOfPallet, final boolean isWaste,
             final String qualityRating, List<Entity> attributes) {
         Preconditions.checkArgument(product != null, "Product argument is required.");
         Preconditions.checkArgument(quantity != null, "Quantity argument is required.");
 
         Entity position = createPosition(product, quantity, givenQuantity, givenUnit, conversion, price, batch, productionDate,
-                expirationDate, resource, storageLocation, palletNumber, typeOfPallet, additionalCode, isWaste);
+                expirationDate, resource, storageLocation, palletNumber, typeOfPallet, isWaste);
 
         position.setField(PositionFields.POSITION_ATTRIBUTE_VALUES, attributes);
         position.setField(PositionFields.QUALITY_RATING, qualityRating);
@@ -270,14 +265,13 @@ public class DocumentBuilder {
     public Entity createPosition(final Entity product, final BigDecimal quantity, final BigDecimal givenQuantity,
             final String givenUnit, final BigDecimal conversion, final BigDecimal price, final Entity batch,
             final Date productionDate, final Date expirationDate, final Entity resource, final Entity storageLocation,
-            final Entity palletNumber, final String typeOfPallet, final Entity additionalCode, final boolean isWaste) {
+            final Entity palletNumber, final String typeOfPallet, final boolean isWaste) {
         Entity position = createPosition(product, quantity, givenQuantity, givenUnit, conversion, price, batch, productionDate,
                 expirationDate, resource);
 
         position.setField(PositionFields.STORAGE_LOCATION, storageLocation);
         position.setField(PositionFields.PALLET_NUMBER, palletNumber);
         position.setField(PositionFields.TYPE_OF_PALLET, typeOfPallet);
-        position.setField(PositionFields.ADDITIONAL_CODE, additionalCode);
         position.setField(PositionFields.WASTE, isWaste);
 
         return position;

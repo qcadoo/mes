@@ -23,21 +23,6 @@
  */
 package com.qcadoo.mes.materialFlowResources.service;
 
-import java.math.BigDecimal;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-
-import org.apache.commons.lang3.StringUtils;
-import org.hibernate.exception.LockAcquisitionException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Isolation;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
@@ -47,39 +32,32 @@ import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.basic.constants.ProductAttributeValueFields;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.materialFlowResources.DocumentPositionService;
-import com.qcadoo.mes.materialFlowResources.constants.DirectionConvertingQuantityAfterChangingConverter;
-import com.qcadoo.mes.materialFlowResources.constants.DocumentFields;
-import com.qcadoo.mes.materialFlowResources.constants.DocumentPositionParametersFields;
-import com.qcadoo.mes.materialFlowResources.constants.DocumentType;
-import com.qcadoo.mes.materialFlowResources.constants.LocationFieldsMFR;
-import com.qcadoo.mes.materialFlowResources.constants.MaterialFlowResourcesConstants;
-import com.qcadoo.mes.materialFlowResources.constants.ParameterFieldsMFR;
-import com.qcadoo.mes.materialFlowResources.constants.PositionAttributeValueFields;
-import com.qcadoo.mes.materialFlowResources.constants.PositionFields;
-import com.qcadoo.mes.materialFlowResources.constants.ReservationFields;
-import com.qcadoo.mes.materialFlowResources.constants.ResourceAttributeValueFields;
-import com.qcadoo.mes.materialFlowResources.constants.ResourceFields;
-import com.qcadoo.mes.materialFlowResources.constants.StorageLocationFields;
-import com.qcadoo.mes.materialFlowResources.constants.WarehouseAlgorithm;
+import com.qcadoo.mes.materialFlowResources.constants.*;
 import com.qcadoo.mes.materialFlowResources.exceptions.InvalidResourceException;
 import com.qcadoo.mes.materialFlowResources.helpers.NotEnoughResourcesErrorMessageCopyToEntityHelper;
 import com.qcadoo.mes.materialFlowResources.helpers.NotEnoughResourcesErrorMessageHolder;
 import com.qcadoo.mes.materialFlowResources.helpers.NotEnoughResourcesErrorMessageHolderFactory;
-import com.qcadoo.model.api.BigDecimalUtils;
-import com.qcadoo.model.api.DataDefinition;
-import com.qcadoo.model.api.DataDefinitionService;
-import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.NumberService;
-import com.qcadoo.model.api.search.SearchCriteriaBuilder;
-import com.qcadoo.model.api.search.SearchCriterion;
-import com.qcadoo.model.api.search.SearchOrder;
-import com.qcadoo.model.api.search.SearchOrders;
-import com.qcadoo.model.api.search.SearchRestrictions;
+import com.qcadoo.model.api.*;
+import com.qcadoo.model.api.search.*;
 import com.qcadoo.model.api.validators.ErrorMessage;
 import com.qcadoo.security.api.UserService;
 import com.qcadoo.security.constants.UserFields;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
+import org.apache.commons.lang3.StringUtils;
+import org.hibernate.exception.LockAcquisitionException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 
 @Service
 public class ResourceManagementServiceImpl implements ResourceManagementService {
@@ -177,7 +155,6 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
         resource.setField(ResourceFields.EXPIRATION_DATE, position.getField(PositionFields.EXPIRATION_DATE));
         resource.setField(ResourceFields.PRODUCTION_DATE, position.getField(PositionFields.PRODUCTION_DATE));
         resource.setField(ResourceFields.STORAGE_LOCATION, position.getField(PositionFields.STORAGE_LOCATION));
-        resource.setField(ResourceFields.ADDITIONAL_CODE, position.getField(PositionFields.ADDITIONAL_CODE));
         resource.setField(ResourceFields.PALLET_NUMBER, position.getField(PositionFields.PALLET_NUMBER));
         resource.setField(ResourceFields.TYPE_OF_PALLET, position.getField(PositionFields.TYPE_OF_PALLET));
         resource.setField(ResourceFields.WASTE, position.getField(PositionFields.WASTE));
@@ -264,7 +241,6 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
             newResource.setField(ResourceFields.PALLET_NUMBER, null);
         }
         newResource.setField(ResourceFields.TYPE_OF_PALLET, null);
-        newResource.setField(ResourceFields.ADDITIONAL_CODE, resource.getField(ResourceFields.ADDITIONAL_CODE));
         newResource.setField(ResourceFields.CONVERSION, resource.getField(ResourceFields.CONVERSION));
         newResource.setField(ResourceFields.GIVEN_UNIT, resource.getField(ResourceFields.GIVEN_UNIT));
         newResource.setField(ResourceFields.DELIVERY_NUMBER, resource.getField(ResourceFields.DELIVERY_NUMBER));
@@ -318,63 +294,23 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
         Multimap<Long, BigDecimal> result = ArrayListMultimap.create();
 
         for (Map.Entry<Entity, Entity> productAndPosition : productsAndPositions.entries()) {
-            Entity additionalCode = productAndPosition.getValue().getBelongsToField(PositionFields.ADDITIONAL_CODE);
             BigDecimal conversion = productAndPosition.getValue().getDecimalField(PositionFields.CONVERSION);
             Entity batch = productAndPosition.getValue().getBelongsToField(PositionFields.BATCH);
 
-            List<Entity> resources = Lists.newArrayList();
+            SearchCriteriaBuilder scb = getSearchCriteriaForResourceForProductAndWarehouse(productAndPosition.getKey(),
+                    warehouse);
 
-            if (additionalCode != null) {
-                SearchCriteriaBuilder scb = getSearchCriteriaForResourceForProductAndWarehouse(productAndPosition.getKey(),
-                        warehouse);
-
-                if (!StringUtils.isEmpty(productAndPosition.getKey().getStringField(ProductFields.ADDITIONAL_UNIT))) {
-                    scb.add(SearchRestrictions.eq(ResourceFields.CONVERSION, conversion));
-                } else {
-                    scb.add(SearchRestrictions.eq(ResourceFields.CONVERSION, BigDecimal.ONE));
-                }
-
-                if (Objects.nonNull(batch)) {
-                    scb.add(SearchRestrictions.belongsTo(ResourceFields.BATCH, batch));
-                }
-                resources = scb.add(SearchRestrictions.belongsTo(ResourceFields.ADDITIONAL_CODE, additionalCode)).list()
-                        .getEntities();
-
-                scb = getSearchCriteriaForResourceForProductAndWarehouse(productAndPosition.getKey(), warehouse);
-
-                if (!StringUtils.isEmpty(productAndPosition.getKey().getStringField(ProductFields.ADDITIONAL_UNIT))) {
-                    scb.add(SearchRestrictions.eq(ResourceFields.CONVERSION, conversion));
-                } else {
-                    scb.add(SearchRestrictions.eq(ResourceFields.CONVERSION, BigDecimal.ONE));
-                }
-
-                if (Objects.nonNull(batch)) {
-                    scb.add(SearchRestrictions.belongsTo(ResourceFields.BATCH, batch));
-                }
-
-                resources
-                        .addAll(scb
-                                .add(SearchRestrictions.or(SearchRestrictions.isNull(ResourceFields.ADDITIONAL_CODE),
-                                        SearchRestrictions.ne("additionalCode.id", additionalCode.getId())))
-                                .list().getEntities());
+            if (Objects.nonNull(batch)) {
+                scb.add(SearchRestrictions.belongsTo(ResourceFields.BATCH, batch));
             }
 
-            if (resources.isEmpty()) {
-                SearchCriteriaBuilder scb = getSearchCriteriaForResourceForProductAndWarehouse(productAndPosition.getKey(),
-                        warehouse);
-
-                if (Objects.nonNull(batch)) {
-                    scb.add(SearchRestrictions.belongsTo(ResourceFields.BATCH, batch));
-                }
-
-                if (!StringUtils.isEmpty(productAndPosition.getKey().getStringField(ProductFields.ADDITIONAL_UNIT))) {
-                    scb.add(SearchRestrictions.eq(ResourceFields.CONVERSION, conversion));
-                } else {
-                    scb.add(SearchRestrictions.eq(ResourceFields.CONVERSION, BigDecimal.ONE));
-                }
-
-                resources = scb.list().getEntities();
+            if (!StringUtils.isEmpty(productAndPosition.getKey().getStringField(ProductFields.ADDITIONAL_UNIT))) {
+                scb.add(SearchRestrictions.eq(ResourceFields.CONVERSION, conversion));
+            } else {
+                scb.add(SearchRestrictions.eq(ResourceFields.CONVERSION, BigDecimal.ONE));
             }
+
+            List<Entity> resources = scb.list().getEntities();
 
             if (result.containsKey(productAndPosition.getKey().getId())) {
                 BigDecimal currentQuantity = result.get(productAndPosition.getKey().getId()).stream().reduce(BigDecimal.ZERO,
@@ -499,7 +435,6 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
         position.setField(PositionFields.RESOURCE, newPosition.getField(PositionFields.RESOURCE));
         position.setField(PositionFields.RESOURCE_NUMBER, newPosition.getField(PositionFields.RESOURCE_NUMBER));
         position.setField(PositionFields.STORAGE_LOCATION, newPosition.getField(PositionFields.STORAGE_LOCATION));
-        position.setField(PositionFields.ADDITIONAL_CODE, newPosition.getField(PositionFields.ADDITIONAL_CODE));
         position.setField(PositionFields.CONVERSION, newPosition.getField(PositionFields.CONVERSION));
         position.setField(PositionFields.PALLET_NUMBER, newPosition.getField(PositionFields.PALLET_NUMBER));
         position.setField(PositionFields.TYPE_OF_PALLET, newPosition.getField(PositionFields.TYPE_OF_PALLET));
@@ -851,7 +786,6 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
         List<Entity> resources = Lists.newArrayList();
 
         Entity resource = position.getBelongsToField(PositionFields.RESOURCE);
-        Entity additionalCode = position.getBelongsToField(PositionFields.ADDITIONAL_CODE);
 
         if (resource != null && resource.getId() != null) {
             resource = dataDefinitionService
@@ -871,20 +805,20 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
 
             resources.add(resource);
         } else if (WarehouseAlgorithm.FIFO.equals(warehouseAlgorithm)) {
-            resources = getResourcesForLocationAndProductFIFO(warehouse, product, additionalCode, position);
+            resources = getResourcesForLocationAndProductFIFO(warehouse, product, position);
         } else if (WarehouseAlgorithm.LIFO.equals(warehouseAlgorithm)) {
-            resources = getResourcesForLocationAndProductLIFO(warehouse, product, additionalCode, position);
+            resources = getResourcesForLocationAndProductLIFO(warehouse, product, position);
         } else if (WarehouseAlgorithm.FEFO.equals(warehouseAlgorithm)) {
-            resources = getResourcesForLocationAndProductFEFO(warehouse, product, additionalCode, position);
+            resources = getResourcesForLocationAndProductFEFO(warehouse, product, position);
         } else if (WarehouseAlgorithm.LEFO.equals(warehouseAlgorithm)) {
-            resources = getResourcesForLocationAndProductLEFO(warehouse, product, additionalCode, position);
+            resources = getResourcesForLocationAndProductLEFO(warehouse, product, position);
         }
 
         return resources;
     }
 
     private List<Entity> getResourcesForLocationCommonCodeConversion(final Entity warehouse, final Entity product,
-            final Entity additionalCode, final Entity position, final boolean resourceIrrespectiveOfConversion,
+            final Entity position, final boolean resourceIrrespectiveOfConversion,
             final SearchOrder... searchOrders) {
 
         class SearchCriteriaHelper {
@@ -928,27 +862,16 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
             }
         }
 
-        List<Entity> resources = Lists.newArrayList();
+        List<Entity> resources;
 
-        if (additionalCode != null) {
-            resources = new SearchCriteriaHelper()
-                    .getAllThatSatisfies(SearchRestrictions.belongsTo(ResourceFields.ADDITIONAL_CODE, additionalCode));
-
-            resources.addAll(new SearchCriteriaHelper()
-                    .getAllThatSatisfies(SearchRestrictions.or(SearchRestrictions.isNull(ResourceFields.ADDITIONAL_CODE),
-                            SearchRestrictions.ne("additionalCode.id", additionalCode.getId()))));
-        }
-
-        if (resources.isEmpty()) {
-            resources = new SearchCriteriaHelper().getAll();
-        }
+        resources = new SearchCriteriaHelper().getAll();
 
         return resources;
     }
 
     private List<Entity> getResourcesForLocationCommonCode(final Entity warehouse, final Entity product,
-            final Entity additionalCode, final Entity position, final SearchOrder... searchOrders) {
-        List<Entity> resources = getResourcesForLocationCommonCodeConversion(warehouse, product, additionalCode, position, false,
+            final Entity position, final SearchOrder... searchOrders) {
+        List<Entity> resources = getResourcesForLocationCommonCodeConversion(warehouse, product, position, false,
                 searchOrders);
 
         Entity documentPositionParameters = parameterService.getParameter()
@@ -958,7 +881,7 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
                 .getBooleanField(DocumentPositionParametersFields.FILL_RESOURCE_IRRESPECTIVE_OF_CONVERSION);
 
         if (fillResourceIrrespectiveOfConversion) {
-            resources.addAll(getResourcesForLocationCommonCodeConversion(warehouse, product, additionalCode, position, true,
+            resources.addAll(getResourcesForLocationCommonCodeConversion(warehouse, product, position, true,
                     searchOrders));
         }
 
@@ -966,26 +889,26 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
     }
 
     private List<Entity> getResourcesForLocationAndProductFIFO(final Entity warehouse, final Entity product,
-            final Entity additionalCode, final Entity position) {
-        return getResourcesForLocationCommonCode(warehouse, product, additionalCode, position,
+            final Entity position) {
+        return getResourcesForLocationCommonCode(warehouse, product, position,
                 SearchOrders.asc(ResourceFields.TIME));
     }
 
     private List<Entity> getResourcesForLocationAndProductLIFO(final Entity warehouse, final Entity product,
-            final Entity additionalCode, final Entity position) {
-        return getResourcesForLocationCommonCode(warehouse, product, additionalCode, position,
+            final Entity position) {
+        return getResourcesForLocationCommonCode(warehouse, product, position,
                 SearchOrders.desc(ResourceFields.TIME));
     }
 
     private List<Entity> getResourcesForLocationAndProductFEFO(final Entity warehouse, final Entity product,
-            final Entity additionalCode, final Entity position) {
-        return getResourcesForLocationCommonCode(warehouse, product, additionalCode, position,
+            final Entity position) {
+        return getResourcesForLocationCommonCode(warehouse, product, position,
                 SearchOrders.asc(ResourceFields.EXPIRATION_DATE), SearchOrders.asc(ResourceFields.AVAILABLE_QUANTITY));
     }
 
     private List<Entity> getResourcesForLocationAndProductLEFO(final Entity warehouse, final Entity product,
-            final Entity additionalCode, final Entity position) {
-        return getResourcesForLocationCommonCode(warehouse, product, additionalCode, position,
+            final Entity position) {
+        return getResourcesForLocationCommonCode(warehouse, product, position,
                 SearchOrders.desc(ResourceFields.EXPIRATION_DATE), SearchOrders.asc(ResourceFields.AVAILABLE_QUANTITY));
     }
 
@@ -1137,7 +1060,6 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
         newPosition.setField(PositionFields.RESOURCE, null);
         newPosition.setField(PositionFields.RESOURCE_NUMBER, resource.getStringField(ResourceFields.NUMBER));
         newPosition.setField(PositionFields.STORAGE_LOCATION, resource.getField(ResourceFields.STORAGE_LOCATION));
-        newPosition.setField(PositionFields.ADDITIONAL_CODE, resource.getField(ResourceFields.ADDITIONAL_CODE));
         newPosition.setField(PositionFields.CONVERSION, resource.getField(ResourceFields.CONVERSION));
         newPosition.setField(PositionFields.PALLET_NUMBER, resource.getField(ResourceFields.PALLET_NUMBER));
         newPosition.setField(PositionFields.TYPE_OF_PALLET, resource.getField(ResourceFields.TYPE_OF_PALLET));

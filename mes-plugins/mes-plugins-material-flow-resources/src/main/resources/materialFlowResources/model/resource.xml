@@ -58,7 +58,6 @@
             <validatesUnscaledValue max="9"/>
             <validatesScale max="5"/>
         </decimal>
-        <belongsTo name="additionalCode" model="additionalCode" plugin="basic"/>
         <decimal name="conversion" default="0"/>
         <belongsTo name="palletNumber" model="palletNumber" plugin="basic"/>
         <dictionary name="typeOfPallet" dictionary="typeOfPallet"/>

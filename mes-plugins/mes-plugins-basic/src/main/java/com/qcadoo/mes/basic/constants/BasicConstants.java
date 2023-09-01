@@ -34,8 +34,6 @@ public final class BasicConstants {
     // MODEL
     public static final String MODEL_PRODUCT_ATTACHMENT = "productAttachment";
 
-    public static final String MODEL_ADDITIONAL_CODE = "additionalCode";
-
     public static final String MODEL_ASSORTMENT = "assortment";
 
     public static final String MODEL_CREW = "crew";
