@@ -34,4 +34,5 @@ public final class ScheduleFields {
     public static final String INCLUDE_TPZ = "includeTpz";
 
     public static final String ONLY_WORKSTATIONS_OF_LINE_FROM_ORDER = "onlyWorkstationsOfLineFromOrder";
+    public static final String TOKEN = "token";
 }

@@ -63,6 +63,9 @@
                  persistent="false"/>
         <boolean name="isSetFieldsFromParameter"
                  persistent="false"/>
+        <string name="token" unique="true">
+            <validatesLength max="36" />
+        </string>
     </fields>
 
     <hooks>
