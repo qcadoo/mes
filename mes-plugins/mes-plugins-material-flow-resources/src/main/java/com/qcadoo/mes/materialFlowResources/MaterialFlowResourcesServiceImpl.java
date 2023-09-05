@@ -34,6 +34,8 @@ import java.util.stream.Collectors;
 
 import com.qcadoo.mes.materialFlowResources.constants.StorageLocationDtoFields;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Service;
 
 import com.google.common.collect.Maps;
@@ -68,6 +70,8 @@ public class MaterialFlowResourcesServiceImpl implements MaterialFlowResourcesSe
 
     @Autowired
     private CurrencyService currencyService;
+    @Autowired
+    private NamedParameterJdbcTemplate jdbcTemplate;
 
     @Override
     public List<Entity> getWarehouseLocationsFromDB() {
@@ -185,36 +189,25 @@ public class MaterialFlowResourcesServiceImpl implements MaterialFlowResourcesSe
         currencyField.requestComponentUpdateState();
     }
 
-    //This service method is created for WMS
     @Override
     public List<QuantityDto> getQuantitiesForProductsAndLocationWMS(final List<String> productNumbers, final Long materialFlowLocationId) {
         List<QuantityDto> quantityDtoList = new ArrayList<>();
+        Map<String, Object> params = Maps.newHashMap();
 
         if (!productNumbers.isEmpty()) {
-            StringBuilder query = new StringBuilder();
+            StringBuilder prepareQuery = new StringBuilder();
 
-            query.append("SELECT ");
-            query.append("\"productnumber\" as productNumber, \"resourcequantity\" as quantity, \"quantityinadditionalunit\" as additionalQuantity ");
-            query.append("FROM materialFlowResources_storageLocationDto as storageLocationDto ");
-            query.append("WHERE storageLocationDto.productnumber IN (:productNumbers) ");
-            query.append("AND storageLocationDto.location_id = :materialFlowLocationId ");
+            prepareQuery.append("SELECT ");
+            prepareQuery.append("storageLocationDto.productnumber as productNumber, storageLocationDto.resourcequantity as quantity, storageLocationDto.quantityinadditionalunit as additionalQuantity ");
+            prepareQuery.append("FROM materialFlowResources_storageLocationDto as storageLocationDto ");
+            prepareQuery.append("WHERE storageLocationDto.productnumber IN (:productNumbers) ");
+            prepareQuery.append("AND storageLocationDto.location_id = :materialFlowLocationId ");
 
-            SearchQueryBuilder searchQueryBuilder = getStorageLocationDtoDD().find(query.toString());
+            params.put("productNumbers", productNumbers);
+            params.put("materialFlowLocationId", materialFlowLocationId);
 
-            searchQueryBuilder.setParameterList("productNumbers", productNumbers);
-            searchQueryBuilder.setParameter("materialFlowLocationId", materialFlowLocationId);
+            quantityDtoList = jdbcTemplate.query(String.valueOf(prepareQuery), params, new BeanPropertyRowMapper(QuantityDto.class));
 
-            List<Entity> quantityDtoEntities = searchQueryBuilder.list().getEntities();
-
-            if (!quantityDtoEntities.isEmpty()) {
-                quantityDtoEntities.forEach(quantityDtoEntity -> quantityDtoList.add(
-                        new QuantityDto(
-                                quantityDtoEntity.getStringField(StorageLocationDtoFields.PRODUCT_NUMBER),
-                                quantityDtoEntity.getDecimalField(StorageLocationDtoFields.RESOURCE_QUANTITY),
-                                quantityDtoEntity.getDecimalField(StorageLocationDtoFields.QUANTITY_IN_ADDITIONAL_UNIT)
-                        )
-                ));
-            }
 
             return quantityDtoList;
         }

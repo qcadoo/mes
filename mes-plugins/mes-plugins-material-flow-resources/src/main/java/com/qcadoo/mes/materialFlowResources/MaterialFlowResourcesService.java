@@ -53,7 +53,6 @@ public interface MaterialFlowResourcesService {
 
     void fillCurrencyFieldValues(final ViewDefinitionState view);
 
-    //interface method for WMS
     List<QuantityDto> getQuantitiesForProductsAndLocationWMS(final List<String> productNumbers, final Long materialFlowLocationId);
 
 }

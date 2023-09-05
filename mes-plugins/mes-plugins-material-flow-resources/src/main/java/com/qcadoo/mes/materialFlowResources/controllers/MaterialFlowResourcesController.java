@@ -26,28 +26,20 @@ package com.qcadoo.mes.materialFlowResources.controllers;
 import com.google.common.collect.ImmutableMap;
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.basic.constants.BasicConstants;
-import com.qcadoo.mes.materialFlowResources.MaterialFlowResourcesService;
-import com.qcadoo.mes.materialFlowResources.QuantityDto;
 import com.qcadoo.mes.materialFlowResources.constants.MaterialFlowResourcesConstants;
-import com.qcadoo.mes.materialFlowResources.constants.QuantityOfProductsRequest;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.crud.CrudService;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-
-import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @Controller
 public class MaterialFlowResourcesController {
@@ -60,8 +52,6 @@ public class MaterialFlowResourcesController {
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
-    @Autowired
-    private MaterialFlowResourcesService materialFlowResourcesService;
 
     @RequestMapping(value = MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER + "/document.pdf", method = RequestMethod.GET)
     public final ModelAndView documentPdf(@RequestParam("id") final String id) {
@@ -102,21 +92,5 @@ public class MaterialFlowResourcesController {
 
         return crudService.prepareView(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER, "materialFlowResourcesParameters",
                 arguments, locale);
-    }
-
-// This endpoint is used by WMS
-    @ResponseBody
-    @RequestMapping(value = "/getQuantitiesOfUnits", produces = APPLICATION_JSON_VALUE, method = RequestMethod.POST)
-    public ResponseEntity<List<QuantityDto>> quantityOfProducts(@RequestBody QuantityOfProductsRequest quantityOfProductsRequest) {
-        if (quantityOfProductsRequest != null) {
-
-            List<QuantityDto> quantityList = materialFlowResourcesService
-                    .getQuantitiesForProductsAndLocationWMS(
-                            quantityOfProductsRequest.getProductsNumberList(),
-                            quantityOfProductsRequest.getMaterialFlowLocationId());
-
-            return new ResponseEntity<>(quantityList, HttpStatus.OK);
-        }
-        return new ResponseEntity<>(new ArrayList<>(), HttpStatus.NO_CONTENT);
     }
 }
