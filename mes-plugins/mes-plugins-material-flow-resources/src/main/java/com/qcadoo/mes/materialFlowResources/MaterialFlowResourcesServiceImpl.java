@@ -232,9 +232,4 @@ public class MaterialFlowResourcesServiceImpl implements MaterialFlowResourcesSe
                 MaterialFlowResourcesConstants.MODEL_RESOURCE_STOCK_DTO);
     }
 
-    private DataDefinition getStorageLocationDtoDD() {
-        return dataDefinitionService.get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER,
-                MaterialFlowResourcesConstants.MODEL_STORAGE_LOCATION_DTO);
-    }
-
 }
