@@ -83,11 +83,6 @@
         <!--    orderProductResourceReservation  -->
         <model:model model="orderProductResourceReservation" resource="model/orderProductResourceReservation.xml"/>
 
-        <model:model-field plugin="orders" model="order">
-            <model:hasMany name="orderProductResourceReservations"
-                           model="orderProductResourceReservation" plugin="productFlowThruDivision" joinField="order"/>
-        </model:model-field>
-
         <model:model-field plugin="basicProductionCounting" model="productionCountingQuantity">
             <model:hasMany name="orderProductResourceReservations"
                            model="orderProductResourceReservation" plugin="productFlowThruDivision" joinField="productionCountingQuantity"/>
