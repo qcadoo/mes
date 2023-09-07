@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    ***************************************************************************
+    Copyright (c) 2010 Qcadoo Limited
+    Project: Qcadoo Framework
+    Version: 1.4
+
+    This file is part of Qcadoo.
+
+    Qcadoo is free software; you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as published
+    by the Free Software Foundation; either version 3 of the License,
+    or (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty
+    of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+    See the GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+    ***************************************************************************
+
+-->
+<view defaultAuthorizationRole="ROLE_BASE_FUNCTIONALITY" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns="http://schema.qcadoo.org/view"
+      xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
+      name="orderProductResourceReservationDetails" modelName="orderProductResourceReservation">
+
+    <component type="window" name="window">
+        <ribbon>
+            <template name="standardFormTemplate" excludeItems="actions.copy, actions.saveNew, actions.delete"/>
+        </ribbon>
+        <windowTab name="mainTab">
+            <component type="form" name="form" reference="form">
+                <component type="gridLayout" name="gridLayout" columns="5"
+                           rows="2" hasBorders="false">
+                    <layoutElement column="1" row="1" width="4">
+                        <component type="lookup" name="resource" field="resource"
+                                   reference="resource">
+                            <option type="column" name="number" fields="number" link="true"
+                                    width="150"/>
+
+                            <option type="column" name="availableQuantity" fields="availableQuantity" link="true"
+                                    width="70"/>
+                            <option type="column" name="givenUnit" fields="givenUnit" link="true"
+                                    width="50"/>
+                            <option type="column" name="batch" fields="batch" link="true" expression="#batch?.get('number')"
+                                    width="100"/>
+                            <option type="column" name="storageLocation" fields="storageLocation" expression="#storageLocation?.get('number')" link="true"
+                                    width="100"/>
+
+
+                            <option type="searchable" value="number,availableQuantity,givenUnit,batch,storageLocation"/>
+                            <option type="orderable" value="number,availableQuantity,givenUnit,batch,storageLocation"/>
+                            <option type="expression"
+                                    value="#number"/>
+                            <option type="fieldCode" value="number"/>
+
+                            <criteriaModifier
+                                    class="com.qcadoo.mes.productFlowThruDivision.criteriaModifiers.ResourceCriteriaModifiersPFTD"
+                                    method="filter"/>
+
+                            <listener event="onSelectedEntityChange" class="com.qcadoo.mes.productFlowThruDivision.hooks.OrderProductResourceReservationDetailsHooks"
+                                      method="onResourceChange"/>
+
+                        </component>
+                    </layoutElement>
+                    <layoutElement column="1" row="2" width="4">
+                        <component type="input" name="planedQuantity" field="planedQuantity"
+                                   reference="planedQuantity" >
+                            <option type="alignment" value="right"/>
+                        </component>
+                    </layoutElement>
+                    <layoutElement column="5" row="2">
+                        <component type="input" name="planedQuantityUnit"
+                                   reference="planedQuantityUnit" defaultEnabled="false" hasLabel="false">
+                            <option type="textRepresentationOnDisabled" value="true"/>
+                        </component>
+                    </layoutElement>
+
+                </component>
+
+                <option type="header" value="true"/>
+                <option type="expression" value="#product['name']"/>
+            </component>
+        </windowTab>
+
+    </component>
+
+    <hooks>
+        <beforeRender class="com.qcadoo.mes.productFlowThruDivision.hooks.OrderProductResourceReservationDetailsHooks"
+                      method="onBeforeRender"/>
+    </hooks>
+
+</view>

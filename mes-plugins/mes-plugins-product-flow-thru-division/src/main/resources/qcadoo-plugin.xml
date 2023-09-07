@@ -80,6 +80,26 @@
         <model:model model="modelCardProduct" resource="model/modelCardProduct.xml"/>
         <model:model model="technologyProductionLine" resource="model/technologyProductionLine.xml"/>
 
+        <!--    orderProductResourceReservation  -->
+        <model:model model="orderProductResourceReservation" resource="model/orderProductResourceReservation.xml"/>
+
+        <model:model-field plugin="orders" model="order">
+            <model:hasMany name="orderProductResourceReservations"
+                           model="orderProductResourceReservation" plugin="productFlowThruDivision" joinField="order"/>
+        </model:model-field>
+
+        <model:model-field plugin="basicProductionCounting" model="productionCountingQuantity">
+            <model:hasMany name="orderProductResourceReservations"
+                           model="orderProductResourceReservation" plugin="productFlowThruDivision" joinField="productionCountingQuantity"/>
+        </model:model-field>
+
+        <view:view resource="view/orderProductResourceReservationDetails.xml"/>
+
+
+
+
+        <!--    koniec orderProductResourceReservation  -->
+
         <model:model-field plugin="basic" model="division">
             <model:enum name="productionFlow" values="01warehouse,02withinTheProcess"
                         default="02withinTheProcess"/>
@@ -612,7 +632,7 @@
         <view:view-hook view="productionCountingQuantityAdvancedDetails" type="beforeRender"
                         plugin="basicProductionCounting"
                         class="com.qcadoo.mes.productFlowThruDivision.hooks.ProductionCountingQuantityAdvancedDetailsHooksBPC"
-                        method="setFlowTabState"/>
+                        method="onBeforeRender"/>
 
         <view:view-hook plugin="technologies" view="technologiesParameters"
                         type="beforeRender"
