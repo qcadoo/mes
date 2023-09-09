@@ -75,6 +75,10 @@ public class ProductionCountingQuantityAdvancedDetailsHooksBPC {
         ComponentState orderProductResourceReservationsTab = view.getComponentByReference("productResourceReservations");
         orderProductResourceReservationsTab.setVisible(ProductionCountingQuantityTypeOfMaterial.COMPONENT.getStringValue().equals(pcq.getStringField(ProductionCountingQuantityFields.TYPE_OF_MATERIAL)));
 
+        if(Objects.isNull(pcq.getId())) {
+            return;
+        }
+
         Entity product = pcq.getBelongsToField(ProductionCountingQuantityFields.PRODUCT);
 
         ComponentState productNumber = view.getComponentByReference("resourceProductNumber");

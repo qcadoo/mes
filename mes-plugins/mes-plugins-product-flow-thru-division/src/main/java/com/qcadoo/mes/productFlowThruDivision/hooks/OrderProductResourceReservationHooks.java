@@ -1,5 +1,6 @@
 package com.qcadoo.mes.productFlowThruDivision.hooks;
 
+import com.google.common.collect.Lists;
 import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityFields;
 import com.qcadoo.mes.materialFlowResources.constants.ResourceFields;
 import com.qcadoo.model.api.DataDefinition;
@@ -21,6 +22,12 @@ public class OrderProductResourceReservationHooks {
     public boolean validate(final DataDefinition dataDefinition, final Entity orderProductResourceReservation) {
 
         Entity resource = orderProductResourceReservation.getBelongsToField("resource");
+
+        if(Objects.isNull(resource)) {
+            orderProductResourceReservation.addError(dataDefinition.getField("resource"), "qcadooView.validate.field.error.missing");
+            return false;
+        }
+
         BigDecimal resourceQuantity = resource.getDecimalField(ResourceFields.AVAILABLE_QUANTITY);
         BigDecimal planedQuantity = orderProductResourceReservation.getDecimalField("planedQuantity");
         if (planedQuantity.compareTo(resourceQuantity) > 0) {
@@ -30,7 +37,7 @@ public class OrderProductResourceReservationHooks {
 
         Entity pcq = orderProductResourceReservation.getBelongsToField("productionCountingQuantity");
 
-        List<Entity> orderProductResourceReservations = pcq.getHasManyField("orderProductResourceReservations");
+        List<Entity> orderProductResourceReservations = Lists.newArrayList(pcq.getHasManyField("orderProductResourceReservations"));
 
         if (Objects.nonNull(orderProductResourceReservation.getId())) {
             orderProductResourceReservations = orderProductResourceReservations

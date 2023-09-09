@@ -45,7 +45,7 @@
 
                             <option type="column" name="availableQuantity" fields="availableQuantity" link="true"
                                     width="70"/>
-                            <option type="column" name="givenUnit" fields="givenUnit" link="true"
+                            <option type="column" name="givenUnit" fields="product" expression="#product?.get('unit')" link="true"
                                     width="50"/>
                             <option type="column" name="batch" fields="batch" link="true" expression="#batch?.get('number')"
                                     width="100"/>
