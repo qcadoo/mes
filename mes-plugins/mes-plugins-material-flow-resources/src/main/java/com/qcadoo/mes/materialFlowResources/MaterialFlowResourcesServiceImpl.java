@@ -204,7 +204,7 @@ public class MaterialFlowResourcesServiceImpl implements MaterialFlowResourcesSe
             prepareQuery.append("AND storageLocationDto.location_id = :materialFlowLocationId ");
 
             params.put("productNumbers", productNumbers);
-            params.put("materialFlowLocationId", materialFlowLocationId);
+            params.put("materialFlowLocationId", materialFlowLocationId.intValue());
 
             quantityDtoList = jdbcTemplate.query(String.valueOf(prepareQuery), params, new BeanPropertyRowMapper(QuantityDto.class));
 
@@ -212,6 +212,36 @@ public class MaterialFlowResourcesServiceImpl implements MaterialFlowResourcesSe
             return quantityDtoList;
         }
         return quantityDtoList;
+    }
+
+    @Override
+    public List<ResourcesQuantityDto> getResourceQuantities(final Long storageLocationId, final String productNumber) {
+        List<ResourcesQuantityDto> resourcesQuantityDtoList = new ArrayList<>();
+        Map<String, Object> params = Maps.newHashMap();
+
+        if (storageLocationId != null && productNumber != null) {
+            StringBuilder prepareQuery = new StringBuilder();
+
+            prepareQuery.append("SELECT DISTINCT ");
+            prepareQuery.append("resourcedto.number as resourceNumber, ");
+            prepareQuery.append("resourcedto.quantity as quantity, ");
+            prepareQuery.append("resourcedto.quantityinadditionalunit as additionalQuantity, ");
+            prepareQuery.append("internal.productunit as productUnit, ");
+            prepareQuery.append("internal.productadditionalunit as productAdditionalUnit ");
+            prepareQuery.append("FROM materialflowresources_resourcedto as resourcedto ");
+            prepareQuery.append("JOIN materialflowresources_storagelocationdto_internal as internal ");
+            prepareQuery.append("ON resourcedto.productnumber = internal.productnumber ");
+            prepareQuery.append("WHERE resourcedto.productnumber = :productNumber ");
+            prepareQuery.append("AND resourcedto.location_id = :storageLocationId");
+
+            params.put("storageLocationId", storageLocationId);
+            params.put("productNumber", productNumber);
+
+            resourcesQuantityDtoList = jdbcTemplate.query(String.valueOf(prepareQuery), params, new BeanPropertyRowMapper(ResourcesQuantityDto.class));
+
+            return resourcesQuantityDtoList;
+        }
+        return resourcesQuantityDtoList;
     }
 
     private DataDefinition getProductDD() {
