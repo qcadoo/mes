@@ -215,7 +215,7 @@ public class MaterialFlowResourcesServiceImpl implements MaterialFlowResourcesSe
         List<ResourcesQuantityDto> resourcesQuantityDtoList = new ArrayList<>();
         Map<String, Object> params = Maps.newHashMap();
 
-        if (storageLocationId != null && productNumber != null) {
+        if (storageLocationId != null && !productNumber.isEmpty() && productNumber != null) {
             StringBuilder prepareQuery = new StringBuilder();
 
             prepareQuery.append("SELECT DISTINCT ");
@@ -245,7 +245,7 @@ public class MaterialFlowResourcesServiceImpl implements MaterialFlowResourcesSe
         Map<String, Object> params = Maps.newHashMap();
 
 
-        if(resourceNumber != null) {
+        if(resourceNumber != null && resourceNumber.isEmpty()) {
             StringBuilder prepareQuery = new StringBuilder();
 
             prepareQuery.append("SELECT ");
@@ -262,6 +262,40 @@ public class MaterialFlowResourcesServiceImpl implements MaterialFlowResourcesSe
             return resourceDetailsDto;
         }
         return resourceDetailsDto;
+    }
+
+    @Override
+    public List<PalletNumberProductDTO> getProductsForPalletNumber(String palletNumber) {
+        List<PalletNumberProductDTO> palletNumberProductDTOList = new ArrayList<>();
+        Map<String, Object> params = Maps.newHashMap();
+
+        if(palletNumber != null && !palletNumber.isEmpty()) {
+            StringBuilder prepareQuery = new StringBuilder();
+
+            prepareQuery.append("SELECT ");
+            prepareQuery.append("palletstoragedto.storageLocationNumber as storageLocationNumber, ");
+            prepareQuery.append("palletstoragedto.locationNumber as locationNumber, ");
+            prepareQuery.append("resourcestockdto.product_id as productId, ");
+            prepareQuery.append("resourcestockdto.productNumber as productNumber, ");
+            prepareQuery.append("resourcestockdto.productName as productName, ");
+            prepareQuery.append("resourcestockdto.productUnit as productUnit, ");
+            prepareQuery.append("storagelocationdto.productAdditionalUnit as productAdditionalUnit, ");
+            prepareQuery.append("resourcestockdto.quantity as quantity, ");
+            prepareQuery.append("resourcestockdto.quantityInAdditionalUnit as quantityInAdditionalUnit, ");
+            prepareQuery.append("resourcestockdto.location_id as locationId ");
+            prepareQuery.append("from materialflowresources_resourcestockdto as resourcestockdto ");
+            prepareQuery.append("join materialflowresources_palletstoragestatedto as palletstoragedto ");
+            prepareQuery.append("on palletstoragedto.location_id = resourcestockdto.location_id ");
+            prepareQuery.append("join materialflowresources_storagelocationdto as storagelocationdto ");
+            prepareQuery.append("on palletstoragedto.location_id = storagelocationdto.location_id ");
+            prepareQuery.append("where palletstoragedto.palletnumber = :palletNumber ");
+
+            params.put("palletNumber", palletNumber);
+
+            palletNumberProductDTOList = jdbcTemplate.query(String.valueOf(prepareQuery), params, new BeanPropertyRowMapper(PalletNumberProductDTO.class));
+            return palletNumberProductDTOList;
+        }
+        return palletNumberProductDTOList;
     }
 
     private DataDefinition getProductDD() {

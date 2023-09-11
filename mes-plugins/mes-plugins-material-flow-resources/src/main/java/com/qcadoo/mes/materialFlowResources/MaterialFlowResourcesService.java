@@ -58,4 +58,6 @@ public interface MaterialFlowResourcesService {
     List<ResourcesQuantityDto> getResourceQuantities(final Long storageLocationId, final String productNumber);
 
     List<ResourceDetailsDto> getResourceDetails(String resourceNumber);
+
+    List<PalletNumberProductDTO> getProductsForPalletNumber(String palletNumber);
 }
