@@ -56,4 +56,6 @@ public interface MaterialFlowResourcesService {
     List<QuantityDto> getQuantitiesForProductsAndLocationWMS(final List<String> productNumbers, final Long materialFlowLocationId);
 
     List<ResourcesQuantityDto> getResourceQuantities(final Long storageLocationId, final String productNumber);
+
+    List<ResourceDetailsDto> getResourceDetails(String resourceNumber);
 }

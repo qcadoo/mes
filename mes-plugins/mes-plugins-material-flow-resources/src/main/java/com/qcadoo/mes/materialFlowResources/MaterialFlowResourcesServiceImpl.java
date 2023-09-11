@@ -26,13 +26,9 @@ package com.qcadoo.mes.materialFlowResources;
 import static com.qcadoo.mes.basic.constants.ProductFields.UNIT;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
-import com.qcadoo.mes.materialFlowResources.constants.StorageLocationDtoFields;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -242,6 +238,30 @@ public class MaterialFlowResourcesServiceImpl implements MaterialFlowResourcesSe
             return resourcesQuantityDtoList;
         }
         return resourcesQuantityDtoList;
+    }
+
+    public List<ResourceDetailsDto> getResourceDetails(final String resourceNumber) {
+        List<ResourceDetailsDto> resourceDetailsDto = new ArrayList<>();
+        Map<String, Object> params = Maps.newHashMap();
+
+
+        if(resourceNumber != null) {
+            StringBuilder prepareQuery = new StringBuilder();
+
+            prepareQuery.append("SELECT ");
+            prepareQuery.append("resourcedto.palletnumber as palletNumber, ");
+            prepareQuery.append("resourcedto.batchnumber as batchNumber, ");
+            prepareQuery.append("resourcedto.productiondate as productionDate, ");
+            prepareQuery.append("resourcedto.expirationdate as expirationDate ");
+            prepareQuery.append("FROM materialflowresources_resourcedto as resourcedto ");
+            prepareQuery.append("WHERE resourcedto.number = :resourceNumber");
+
+            params.put("resourceNumber", resourceNumber);
+
+            resourceDetailsDto = jdbcTemplate.query(String.valueOf(prepareQuery), params, new BeanPropertyRowMapper(ResourceDetailsDto.class));
+            return resourceDetailsDto;
+        }
+        return resourceDetailsDto;
     }
 
     private DataDefinition getProductDD() {
