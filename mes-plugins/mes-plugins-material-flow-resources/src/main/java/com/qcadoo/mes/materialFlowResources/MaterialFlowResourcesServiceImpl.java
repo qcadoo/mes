@@ -265,7 +265,7 @@ public class MaterialFlowResourcesServiceImpl implements MaterialFlowResourcesSe
     }
 
     @Override
-    public List<PalletNumberProductDTO> getProductsForPalletNumber(String palletNumber) {
+    public List<PalletNumberProductDTO> getProductsForPalletNumber(String palletNumber, List<String> userLocationNumbers) {
         List<PalletNumberProductDTO> palletNumberProductDTOList = new ArrayList<>();
         Map<String, Object> params = Maps.newHashMap();
 
@@ -289,8 +289,10 @@ public class MaterialFlowResourcesServiceImpl implements MaterialFlowResourcesSe
             prepareQuery.append("join materialflowresources_storagelocationdto as storagelocationdto ");
             prepareQuery.append("on palletstoragedto.location_id = storagelocationdto.location_id ");
             prepareQuery.append("where palletstoragedto.palletnumber = :palletNumber ");
+            prepareQuery.append("and resourcestockdto.locationNumber in (:userLocationNumbers)");
 
             params.put("palletNumber", palletNumber);
+            params.put("userLocationNumbers", userLocationNumbers);
 
             palletNumberProductDTOList = jdbcTemplate.query(String.valueOf(prepareQuery), params, new BeanPropertyRowMapper(PalletNumberProductDTO.class));
             return palletNumberProductDTOList;
