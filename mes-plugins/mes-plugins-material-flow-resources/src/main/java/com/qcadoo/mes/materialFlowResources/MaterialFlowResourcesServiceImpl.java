@@ -292,7 +292,7 @@ public class MaterialFlowResourcesServiceImpl implements MaterialFlowResourcesSe
             prepareQuery.append("and resourcestockdto.locationNumber in (:userLocationNumbers)");
 
             params.put("palletNumber", palletNumber);
-            params.put("userLocationNumbers", userLocationNumbers)
+            params.put("userLocationNumbers", userLocationNumbers);
 
             palletNumberProductDTOList = jdbcTemplate.query(String.valueOf(prepareQuery), params, new BeanPropertyRowMapper(PalletNumberProductDTO.class));
             return palletNumberProductDTOList;
