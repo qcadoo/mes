@@ -85,7 +85,7 @@
 
         <model:model-field plugin="basicProductionCounting" model="productionCountingQuantity">
             <model:hasMany name="orderProductResourceReservations"
-                           model="orderProductResourceReservation" plugin="productFlowThruDivision" joinField="productionCountingQuantity"/>
+                           model="orderProductResourceReservation" plugin="productFlowThruDivision" joinField="productionCountingQuantity" cascade="delete"/>
         </model:model-field>
 
         <view:view resource="view/orderProductResourceReservationDetails.xml"/>
@@ -445,7 +445,7 @@
         <model:model-hook plugin="basicProductionCounting" model="productionCountingQuantity">
             <model:validatesWith
                     class="com.qcadoo.mes.productFlowThruDivision.validators.ProductionCountingQuantityValidatorsPFTD"
-                    method="checkRequiredFields"/>
+                    method="validate"/>
         </model:model-hook>
 
         <model:model-hook plugin="technologies" model="technology">

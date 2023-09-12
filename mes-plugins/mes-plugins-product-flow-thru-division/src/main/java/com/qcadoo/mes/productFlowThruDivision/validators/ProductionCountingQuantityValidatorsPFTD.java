@@ -35,10 +35,45 @@ import com.qcadoo.mes.productFlowThruDivision.constants.ProductionFlowComponent;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.Objects;
+
 @Service
 public class ProductionCountingQuantityValidatorsPFTD {
 
     private static final String L_QCADOO_VIEW_VALIDATE_FIELD_ERROR_MISSING = "qcadooView.validate.field.error.missing";
+
+    public boolean validate(final DataDefinition dataDefinition, final Entity productionCountingQuantity) {
+
+        boolean isValid = checkRequiredFields(dataDefinition, productionCountingQuantity);
+        isValid = isValid && checkResourceReservationQuantity(dataDefinition, productionCountingQuantity);
+
+        return isValid;
+
+    }
+
+    private boolean checkResourceReservationQuantity(DataDefinition dataDefinition, Entity productionCountingQuantity) {
+        List<Entity> reservations = productionCountingQuantity.getHasManyField("orderProductResourceReservations");
+        if(reservations == null || reservations.isEmpty()) {
+            return true;
+        }
+
+        BigDecimal plannedQuantityFromResources =  productionCountingQuantity.getHasManyField("orderProductResourceReservations")
+                .stream()
+                .map(rr -> rr.getDecimalField("planedQuantity"))
+                .filter(Objects::nonNull).reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        BigDecimal plannedQuantity = productionCountingQuantity.getDecimalField(ProductionCountingQuantityFields.PLANNED_QUANTITY);
+
+        if (plannedQuantityFromResources.compareTo(plannedQuantity) > 0) {
+            productionCountingQuantity.addError(dataDefinition.getField(ProductionCountingQuantityFields.PLANNED_QUANTITY), "productFlowThruDivision.orderProductResourceReservation.error.productionCountingQuantity.plannedQuantityLowerThanReservedQuantity");
+            return false;
+        }
+
+
+        return true;
+    }
 
     public boolean checkRequiredFields(final DataDefinition dataDefinition, final Entity productionCountingQuantity) {
         String role = productionCountingQuantity.getStringField(ProductionCountingQuantityFields.ROLE);

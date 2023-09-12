@@ -1,5 +1,6 @@
 package com.qcadoo.mes.productFlowThruDivision.hooks;
 
+import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityFields;
 import com.qcadoo.mes.materialFlowResources.constants.ResourceFields;
 import com.qcadoo.mes.productFlowThruDivision.constants.ProductionCountingQuantityFieldsPFTD;
@@ -105,8 +106,7 @@ public class OrderProductResourceReservationDetailsHooks {
         if(resourceLookup.isEmpty()) {
             resourcePlannedQuantityUnit.setFieldValue(null);
         } else {
-            Entity resource = resourceLookup.getEntity();
-            resourcePlannedQuantityUnit.setFieldValue(resource.getStringField(ResourceFields.GIVEN_UNIT));
+            resourcePlannedQuantityUnit.setFieldValue(product.getStringField(ProductFields.UNIT));
         }
     }
 
