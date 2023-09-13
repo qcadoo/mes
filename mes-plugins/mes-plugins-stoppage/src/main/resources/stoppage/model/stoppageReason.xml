@@ -34,7 +34,7 @@
 		</string>
 		<enum name="type"
 			  values="01failure,02other"
-			  default="01failure" required="true"/>
+			  default="02other" required="true"/>
 	</fields>
 	<hooks />
 </model>
