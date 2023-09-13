@@ -245,7 +245,7 @@ public class MaterialFlowResourcesServiceImpl implements MaterialFlowResourcesSe
         Map<String, Object> params = Maps.newHashMap();
 
 
-        if(resourceNumber != null && resourceNumber.isEmpty()) {
+        if(resourceNumber != null && !resourceNumber.isEmpty()) {
             StringBuilder prepareQuery = new StringBuilder();
 
             prepareQuery.append("SELECT ");
