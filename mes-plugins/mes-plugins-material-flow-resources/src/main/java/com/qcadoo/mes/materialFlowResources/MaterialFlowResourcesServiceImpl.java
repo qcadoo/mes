@@ -29,6 +29,7 @@ import java.math.BigDecimal;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import com.qcadoo.mes.materialFlowResources.constants.StorageLocationsForProductDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -298,6 +299,64 @@ public class MaterialFlowResourcesServiceImpl implements MaterialFlowResourcesSe
             return palletNumberProductDTOList;
         }
         return palletNumberProductDTOList;
+    }
+
+    @Override
+    public List<SumOfProductsDto> getSumOfProducts(String productNumber, List<String> locationNumbers) {
+        List<SumOfProductsDto> list = new ArrayList<>();
+        Map<String, Object> params = Maps.newHashMap();
+
+        if(productNumber != null && !productNumber.isEmpty() && !locationNumbers.isEmpty()) {
+            StringBuilder prepareQuery = new StringBuilder();
+
+            prepareQuery.append("SELECT ");
+            prepareQuery.append("SUM (mfr.quantity) as quantitySum, ");
+            prepareQuery.append("SUM (mfr.quantityInAdditionalUnit) as additionalQuantitySum ");
+            prepareQuery.append("FROM materialflowresources_resourcedto as mfr ");
+            prepareQuery.append("WHERE mfr.productnumber = :productNumber ");
+            prepareQuery.append("AND mfr.locationNumber IN (:locationNumbers)");
+
+            params.put("productNumber", productNumber);
+            params.put("locationNumbers", locationNumbers);
+
+            list = jdbcTemplate.query(String.valueOf(prepareQuery), params, new BeanPropertyRowMapper(SumOfProductsDto.class));
+            return list;
+        }
+        return list;
+    }
+
+    @Override
+    public List<StorageLocationsForProductDto> getStoragesForProductNumber(String productNumber, List<String> locationNumbers) {
+        List<StorageLocationsForProductDto> list = new ArrayList<>();
+        Map<String, Object> params = Maps.newHashMap();
+
+        if(productNumber != null && !productNumber.isEmpty() && !locationNumbers.isEmpty()) {
+            StringBuilder prepareQuery = new StringBuilder();
+
+            prepareQuery.append("SELECT DISTINCT ");
+            prepareQuery.append("mfrs.location_id as locationId, ");
+            prepareQuery.append("mfrs.locationNumber as locationNumber, ");
+            prepareQuery.append("mfrs.product_id as productId, ");
+            prepareQuery.append("mfrs.productName as productName, ");
+            prepareQuery.append("mfrs.productUnit as unit, ");
+            prepareQuery.append("mfrs.quantity as quantity, ");
+            prepareQuery.append("sl.productAdditionalUnit as additionalUnit, ");
+            prepareQuery.append("mfrs.quantityinadditionalunit as additionalQuantity ");
+            prepareQuery.append("FROM materialflowresources_resourcestockdto as mfrs ");
+            prepareQuery.append("JOIN materialflowresources_storagelocationdto as sl ");
+            prepareQuery.append("ON mfrs.productnumber = sl.productnumber ");
+            prepareQuery.append("WHERE mfrs.productnumber = :productNumber ");
+            prepareQuery.append("AND mfrs.locationNumber IN (:locationNumbers) ");
+
+
+
+            params.put("productNumber", productNumber);
+            params.put("locationNumbers", locationNumbers);
+
+            list = jdbcTemplate.query(String.valueOf(prepareQuery), params, new BeanPropertyRowMapper(StorageLocationsForProductDto.class));
+            return list;
+        }
+        return list;
     }
 
     private DataDefinition getProductDD() {

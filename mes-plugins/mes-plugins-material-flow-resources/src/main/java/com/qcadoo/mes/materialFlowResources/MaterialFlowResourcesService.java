@@ -27,6 +27,7 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 
+import com.qcadoo.mes.materialFlowResources.constants.StorageLocationsForProductDto;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ViewDefinitionState;
 
@@ -60,4 +61,8 @@ public interface MaterialFlowResourcesService {
     List<ResourceDetailsDto> getResourceDetails(String resourceNumber);
 
     List<PalletNumberProductDTO> getProductsForPalletNumber(String palletNumber, List<String> userLocationNumbers);
+
+    List<SumOfProductsDto> getSumOfProducts(String productNumber, List<String> locationIds);
+
+    List<StorageLocationsForProductDto> getStoragesForProductNumber(String productNumber, List<String> locationIds);
 }
