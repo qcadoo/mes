@@ -25,23 +25,26 @@
 
 -->
 <model name="stoppageDto"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
-	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd"
-    activable="false" auditable="false" deletable="false" insertable="false" updatable="false">
-	<fields>
-		<string name="orderNumber"/>
-		<enum name="orderState" values="01pending,02accepted,03inProgress,04completed,05declined,06interrupted,07abandoned"/>
-		<string name="productionTrackingNumber"/>
-		<enum name="productionTrackingState" values="01draft,02accepted,03declined,04corrected,05pending"/>
-		<string name="reasonName"/>
-		<string name="description"/>
-		<datetime name="dateFrom"/>
-		<datetime name="dateTo"/>
-		<integer name="duration" />
-		<string name="divisionNumber"/>
-		<string name="productionLineNumber"/>
-		<string name="workstationNumber"/>
-		<string name="staffName"/>
-	</fields>
-	<masterModel plugin="stoppage" model="stoppage"/>
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
+       xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd"
+       activable="false" auditable="false" deletable="false" insertable="false" updatable="false">
+
+    <fields>
+        <string name="orderNumber"/>
+        <enum name="orderState"
+              values="01pending,02accepted,03inProgress,04completed,05declined,06interrupted,07abandoned"/>
+        <string name="productionTrackingNumber"/>
+        <enum name="productionTrackingState" values="01draft,02accepted,03declined,04corrected,05pending"/>
+        <string name="reasonName"/>
+        <string name="description"/>
+        <string name="duration"/>
+        <datetime name="dateFrom"/>
+        <datetime name="dateTo"/>
+        <string name="divisionNumber"/>
+        <string name="productionLineNumber"/>
+        <string name="workstationNumber"/>
+        <string name="staffName"/>
+    </fields>
+
+    <masterModel plugin="stoppage" model="stoppage"/>
 </model>
