@@ -373,6 +373,7 @@ public class MaterialFlowResourcesServiceImpl implements MaterialFlowResourcesSe
             prepareQuery.append("dto.productName as productName, ");
             prepareQuery.append("dto.productNumber as productNumber, ");
             prepareQuery.append("dto.locationNumber as locationNumber, ");
+            prepareQuery.append("dto.storageLocationNumber as storageLocationNumber, ");
             prepareQuery.append("dto.palletNumber as palletNumber, ");
             prepareQuery.append("dto.batchNumber as batchNumber, ");
             prepareQuery.append("dto.productionDate as productionDate, ");

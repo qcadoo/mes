@@ -6,6 +6,7 @@ import java.util.Date;
 public class ExtendedResourceDetailsDto {
     private String productName;
     private String locationNumber;
+    private String storageLocationNumber;
     private String productNumber;
     private String palletNumber;
     private String batchNumber;
@@ -15,6 +16,14 @@ public class ExtendedResourceDetailsDto {
     private BigDecimal quantity;
     private String unit;
     private BigDecimal additionalQuantity;
+
+    public String getStorageLocationNumber() {
+        return storageLocationNumber;
+    }
+
+    public void setStorageLocationNumber(String storageLocationNumber) {
+        this.storageLocationNumber = storageLocationNumber;
+    }
 
     public String getProductName() {
         return productName;
