@@ -336,6 +336,7 @@ public class MaterialFlowResourcesServiceImpl implements MaterialFlowResourcesSe
             prepareQuery.append("SELECT DISTINCT ");
             prepareQuery.append("mfrs.location_id as locationId, ");
             prepareQuery.append("mfrs.locationNumber as locationNumber, ");
+            prepareQuery.append("mfrs.locationName as locationName, ");
             prepareQuery.append("mfrs.product_id as productId, ");
             prepareQuery.append("mfrs.productName as productName, ");
             prepareQuery.append("mfrs.productUnit as unit, ");
@@ -357,6 +358,38 @@ public class MaterialFlowResourcesServiceImpl implements MaterialFlowResourcesSe
             return list;
         }
         return list;
+    }
+
+    @Override
+    public List<ExtendedResourceDetailsDto> getMoreResourceDetails(String resourceNumber) {
+        List<ExtendedResourceDetailsDto> resourceDetailsDto = new ArrayList<>();
+        Map<String, Object> params = Maps.newHashMap();
+
+
+        if(resourceNumber != null && !resourceNumber.isEmpty()) {
+            StringBuilder prepareQuery = new StringBuilder();
+
+            prepareQuery.append("SELECT ");
+            prepareQuery.append("dto.productName as productName, ");
+            prepareQuery.append("dto.productNumber as productNumber, ");
+            prepareQuery.append("dto.locationNumber as locationNumber, ");
+            prepareQuery.append("dto.palletNumber as palletNumber, ");
+            prepareQuery.append("dto.batchNumber as batchNumber, ");
+            prepareQuery.append("dto.productionDate as productionDate, ");
+            prepareQuery.append("dto.expirationDate as expirationDate, ");
+            prepareQuery.append("dto.givenUnit as additionalUnit, ");
+            prepareQuery.append("dto.quantity as quantity, ");
+            prepareQuery.append("dto.productUnit as unit, ");
+            prepareQuery.append("dto.quantityinadditionalunit as additionalQuantity ");
+            prepareQuery.append("FROM materialflowresources_resourcedto as dto ");
+            prepareQuery.append("WHERE dto.number = :resourceNumber");
+
+            params.put("resourceNumber", resourceNumber);
+
+            resourceDetailsDto = jdbcTemplate.query(String.valueOf(prepareQuery), params, new BeanPropertyRowMapper(ExtendedResourceDetailsDto.class));
+            return resourceDetailsDto;
+        }
+        return resourceDetailsDto;
     }
 
     private DataDefinition getProductDD() {

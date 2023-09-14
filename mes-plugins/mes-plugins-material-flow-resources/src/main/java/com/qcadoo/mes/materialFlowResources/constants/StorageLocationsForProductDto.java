@@ -5,12 +5,21 @@ import java.math.BigDecimal;
 public class StorageLocationsForProductDto {
     private Integer locationId;
     private Integer productId;
+    private String locationName;
     private String locationNumber;
     private String productName;
     private String unit;
     private BigDecimal quantity;
     private String additionalUnit;
     private BigDecimal additionalQuantity;
+
+    public String getLocationName() {
+        return locationName;
+    }
+
+    public void setLocationName(String locationName) {
+        this.locationName = locationName;
+    }
 
     public Integer getProductId() {
         return productId;
