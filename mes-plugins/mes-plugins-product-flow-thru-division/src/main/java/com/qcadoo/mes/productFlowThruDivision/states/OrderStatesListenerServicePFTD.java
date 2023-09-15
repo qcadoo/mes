@@ -34,6 +34,7 @@ import com.qcadoo.mes.basic.constants.CurrencyFields;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.basic.constants.UnitConversionItemFieldsB;
 import com.qcadoo.mes.basic.util.CurrencyService;
+import com.qcadoo.mes.basicProductionCounting.BasicProductionCountingService;
 import com.qcadoo.mes.basicProductionCounting.constants.BasicProductionCountingConstants;
 import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityFields;
 import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityRole;
@@ -52,16 +53,17 @@ import com.qcadoo.mes.productFlowThruDivision.OrderMaterialAvailability;
 import com.qcadoo.mes.productFlowThruDivision.constants.*;
 import com.qcadoo.mes.productFlowThruDivision.realProductionCost.RealProductionCostService;
 import com.qcadoo.mes.productFlowThruDivision.service.ProductionCountingDocumentService;
+import com.qcadoo.mes.productionCounting.ProductionCountingService;
 import com.qcadoo.mes.productionCounting.constants.*;
 import com.qcadoo.mes.productionCounting.states.constants.ProductionTrackingStateStringValues;
 import com.qcadoo.mes.productionCounting.utils.ProductionTrackingDocumentsHelper;
 import com.qcadoo.mes.states.StateChangeContext;
 import com.qcadoo.mes.states.StateEnum;
 import com.qcadoo.mes.states.messages.constants.StateMessageType;
-import com.qcadoo.model.api.BigDecimalUtils;
-import com.qcadoo.model.api.DataDefinition;
-import com.qcadoo.model.api.DataDefinitionService;
-import com.qcadoo.model.api.Entity;
+import com.qcadoo.mes.technologies.constants.OperationFields;
+import com.qcadoo.mes.technologies.constants.TechnologyFields;
+import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
+import com.qcadoo.model.api.*;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchQueryBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
@@ -128,6 +130,9 @@ public class OrderStatesListenerServicePFTD {
 
     @Autowired
     private ProductionTrackingDocumentsHelper productionTrackingDocumentsHelper;
+
+    @Autowired
+    private BasicProductionCountingService basicProductionCountingService;
 
     public void acceptInboundDocumentsForOrder(final StateChangeContext stateChangeContext) {
         String receiptOfProducts = parameterService.getParameter().getStringField(ParameterFieldsPC.RECEIPT_OF_PRODUCTS);
@@ -196,7 +201,7 @@ public class OrderStatesListenerServicePFTD {
 
         for (Entity document : searchResult.getEntities()) {
             fillInDocumentPositionsPrice(document, order.getBelongsToField(OrderFields.PRODUCT), price);
-            
+
             if (DocumentState.of(document) == DocumentState.ACCEPTED) {
                 LOG.warn("Document {} already accepted.", document.getId());
                 continue;
@@ -547,6 +552,34 @@ public class OrderStatesListenerServicePFTD {
                 }
             }
         }
+    }
+
+    public void checkOrderProductResourceReservationsInfo(final StateChangeContext stateChangeContext) {
+        Entity order = stateChangeContext.getOwner();
+        Entity technology = order.getBelongsToField(OrderFields.TECHNOLOGY);
+        List<Entity> tocs = technology.getHasManyField(TechnologyFields.OPERATION_COMPONENTS);
+        Optional<Entity> any = tocs.stream().map(toc -> toc.getBelongsToField(TechnologyOperationComponentFields.OPERATION)).filter(o -> o.getBooleanField(OperationFields.RESERVATION_RAW_MATERIAL_RESOURCE_REQUIRED)).findAny();
+        any.ifPresent(entity -> {
+            stateChangeContext.addMessage("productFlowThruDivision.orderProductResourceReservationDs.checkOrderProductResourceReservationsInfo", StateMessageType.INFO, false);
+        });
+    }
+
+    public void validateOrderProductResourceReservations(final StateChangeContext stateChangeContext) {
+        Entity order = stateChangeContext.getOwner();
+
+        List<Entity> usedMaterialsFromProductionCountingQuantities = basicProductionCountingService.getUsedMaterialsFromProductionCountingQuantities(order, true);
+
+        for (Entity pcq : usedMaterialsFromProductionCountingQuantities) {
+
+            Entity operation = pcq.getBelongsToField(ProductionCountingQuantityFields.TECHNOLOGY_OPERATION_COMPONENT).getBelongsToField(TechnologyOperationComponentFields.OPERATION);
+            if (operation.getBooleanField(OperationFields.RESERVATION_RAW_MATERIAL_RESOURCE_REQUIRED)
+                    && Objects.nonNull(pcq.getHasManyField("orderProductResourceReservations"))
+                    && pcq.getHasManyField("orderProductResourceReservations").isEmpty()) {
+                stateChangeContext.addMessage("productFlowThruDivision.orderProductResourceReservationDs.checkOrderProductResourceReservationsInfo", StateMessageType.FAILURE, false);
+                return;
+            }
+        }
+
     }
 
     public void createCumulatedInternalOutboundDocument(final StateChangeContext stateChangeContext) {

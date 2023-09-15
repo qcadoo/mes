@@ -25,14 +25,18 @@
 
 -->
 <model name="stoppageReason"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
-	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
-	<fields>
-		<string name="name" required="true" unique="true"/>
-		<string name="description">
-			<validatesLength max="1024"/>
-		</string>
-		<boolean name="createFailure" default="false"/>
-	</fields>
-	<hooks />
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
+       xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
+
+    <fields>
+        <string name="name" required="true" unique="true"/>
+        <string name="description">
+            <validatesLength max="1024"/>
+        </string>
+        <enum name="type"
+              values="01failure,02other"
+              default="02other" required="true"/>
+    </fields>
+
+    <hooks/>
 </model>

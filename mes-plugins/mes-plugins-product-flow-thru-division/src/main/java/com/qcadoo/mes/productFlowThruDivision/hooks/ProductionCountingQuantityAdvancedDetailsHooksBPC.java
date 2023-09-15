@@ -23,6 +23,15 @@
  */
 package com.qcadoo.mes.productFlowThruDivision.hooks;
 
+import com.beust.jcommander.internal.Lists;
+import com.qcadoo.localization.api.TranslationService;
+import com.qcadoo.mes.basic.constants.ProductFields;
+import com.qcadoo.mes.orders.states.constants.OrderStateStringValues;
+import com.qcadoo.model.api.NumberService;
+import com.qcadoo.view.api.ComponentState;
+import com.qcadoo.view.api.components.GridComponent;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityFields;
@@ -40,10 +49,52 @@ import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.LookupComponent;
 import com.qcadoo.view.constants.QcadooViewConstants;
 
+import java.util.List;
 import java.util.Objects;
 
 @Service
 public class ProductionCountingQuantityAdvancedDetailsHooksBPC {
+
+    @Autowired
+    private TranslationService translationService;
+
+    @Autowired
+    private NumberService numberService;
+
+    private List<String> orderStatusesToEdit = Lists.newArrayList(OrderStateStringValues.PENDING, OrderStateStringValues.ACCEPTED, OrderStateStringValues.IN_PROGRESS);
+    public void onBeforeRender(final ViewDefinitionState view) {
+        setFlowTabState(view);
+
+
+        FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
+
+        Entity pcq = form.getPersistedEntityWithIncludedFormValues();
+        Entity order = pcq.getBelongsToField(ProductionCountingQuantityFields.ORDER);
+
+
+        ComponentState orderProductResourceReservationsTab = view.getComponentByReference("productResourceReservations");
+        orderProductResourceReservationsTab.setVisible(ProductionCountingQuantityTypeOfMaterial.COMPONENT.getStringValue().equals(pcq.getStringField(ProductionCountingQuantityFields.TYPE_OF_MATERIAL)));
+
+        if(Objects.isNull(pcq.getId())) {
+            return;
+        }
+
+        Entity product = pcq.getBelongsToField(ProductionCountingQuantityFields.PRODUCT);
+
+        ComponentState productNumber = view.getComponentByReference("resourceProductNumber");
+        productNumber.setFieldValue(product.getStringField(ProductFields.NUMBER));
+
+        ComponentState resourcePlannedQuantity = view.getComponentByReference("resourcePlannedQuantity");
+        resourcePlannedQuantity.setFieldValue(numberService.formatWithMinimumFractionDigits(pcq.getDecimalField(ProductionCountingQuantityFields.PLANNED_QUANTITY), 0));
+
+        ComponentState resourcePlannedQuantityUnit = view.getComponentByReference("resourcePlannedQuantityUnit");
+        resourcePlannedQuantityUnit.setFieldValue(product.getStringField(ProductFields.UNIT));
+
+        GridComponent orderProductResourceReservationsGrid = (GridComponent) view.getComponentByReference("orderProductResourceReservations");
+        if(!orderStatusesToEdit.contains(order.getStringField(OrderFields.STATE))) {
+            orderProductResourceReservationsGrid.setEditable(false);
+        }
+    }
 
     public void setFlowTabState(final ViewDefinitionState view) {
         FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);

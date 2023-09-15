@@ -95,6 +95,7 @@ public class OrderStatesListenerAspectPFTD extends AbstractStateListenerAspect {
     @Before(PHASE_EXECUTION_POINTCUT)
     public void onAccepted(final StateChangeContext stateChangeContext, final int phase) {
         listenerService.checkMaterialAvailability(stateChangeContext);
+        listenerService.checkOrderProductResourceReservationsInfo(stateChangeContext);
     }
 
     @RunInPhase(OrderStateChangePhase.DEFAULT)
@@ -102,5 +103,7 @@ public class OrderStatesListenerAspectPFTD extends AbstractStateListenerAspect {
     @Before(PHASE_EXECUTION_POINTCUT)
     public void onInProgress(final StateChangeContext stateChangeContext, final int phase) {
         listenerService.checkMaterialAvailability(stateChangeContext);
+        listenerService.validateOrderProductResourceReservations(stateChangeContext);
     }
+    
 }

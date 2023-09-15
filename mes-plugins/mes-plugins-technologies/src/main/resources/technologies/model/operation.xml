@@ -76,7 +76,9 @@
         <hasMany name="technologicalProcessLists" model="technologicalProcessList" joinField="operation"/>
 
         <boolean name="showInProductData" default="false"/>
+        <boolean name="reservationRawMaterialResourceRequired" default="false"/>
         <decimal name="productDataNumber" default="0"/>
+
     </fields>
 
     <hooks>

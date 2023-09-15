@@ -113,6 +113,13 @@
                             <option type="fieldCode" value="number"/>
                         </component>
                     </layoutElement>
+
+                    <layoutElement column="2" row="4">
+                        <component type="checkbox" name="reservationRawMaterialResourceRequired" field="#{form}.reservationRawMaterialResourceRequired"
+                                   reference="reservationRawMaterialResourceRequired" defaultVisible="true" hasDescription="true">
+                        </component>
+                    </layoutElement>
+
                 </component>
 
                 <option type="header" value="true"/>

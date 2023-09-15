@@ -19,7 +19,7 @@ public class StoppageHooks {
 
     public boolean validatesWith(final DataDefinition dataDefinition, final Entity entity) {
 
-        if (L_STOPPAGE_REASON_OTHER.equals(entity.getBelongsToField(StoppageFields.STOPPAGE_REASON).getStringField(L_NAME))
+        if (L_STOPPAGE_REASON_OTHER.equals(entity.getBelongsToField(StoppageFields.REASON).getStringField(L_NAME))
                 && StringUtils.isEmpty(entity.getStringField(StoppageFields.DESCRIPTION))) {
             entity.addError(dataDefinition.getField(OrderFields.DESCRIPTION), "qcadooView.validate.field.error.missing");
             return false;

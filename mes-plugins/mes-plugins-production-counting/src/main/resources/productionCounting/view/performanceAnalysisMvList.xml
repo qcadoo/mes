@@ -167,23 +167,20 @@
                     <option type="column" name="timeRangeTo" fields="timeRangeTo"
                             width="80"/>
                     <option type="column" name="timeBasedOnNormsSum" fields="timeBasedOnNormsSum"
-                            width="80"
-                            expression="T(com.qcadoo.view.api.utils.TimeConverterService).convertTimeToString(#timeBasedOnNormsSum)"/>
+                            width="80"/>
                     <option type="column" name="laborTimeSum" fields="laborTimeSum"
-                            width="80"
-                            expression="T(com.qcadoo.view.api.utils.TimeConverterService).convertTimeToString(#laborTimeSum)"/>
+                            width="80"/>
                     <option type="column" name="timeDeviation" fields="timeDeviation"
-                            width="80"
-                            expression="T(com.qcadoo.view.api.utils.TimeConverterService).convertTimeToString(#timeDeviation)"/>
+                            width="80"/>
 
                     <option type="order" column="timeRangeFrom" direction="desc"/>
 
                     <option type="searchable"
-                            value="productionLineNumber,staffName,doneQuantity,productionLineQuantity,assortmentQuantity,performance,dailyPerformance,shiftName,timeRangeFrom,timeRangeTo"/>
+                            value="productionLineNumber,staffName,doneQuantity,productionLineQuantity,assortmentQuantity,performance,dailyPerformance,shiftName,timeRangeFrom,timeRangeTo,timeBasedOnNormsSum,laborTimeSum,timeDeviation"/>
                     <option type="multiSearch"
-                            value="productionLineNumber,staffName,doneQuantity,productionLineQuantity,assortmentQuantity,performance,dailyPerformance,shiftName,timeRangeFrom,timeRangeTo"/>
+                            value="productionLineNumber,staffName,doneQuantity,productionLineQuantity,assortmentQuantity,performance,dailyPerformance,shiftName,timeRangeFrom,timeRangeTo,timeBasedOnNormsSum,laborTimeSum,timeDeviation"/>
                     <option type="orderable"
-                            value="productionLineNumber,staffName,doneQuantity,productionLineQuantity,assortmentQuantity,performance,dailyPerformance,shiftName,timeRangeFrom,timeRangeTo"/>
+                            value="productionLineNumber,staffName,doneQuantity,productionLineQuantity,assortmentQuantity,performance,dailyPerformance,shiftName,timeRangeFrom,timeRangeTo,timeBasedOnNormsSum,laborTimeSum,timeDeviation"/>
 
                     <option type="footerRow" value="true"/>
                     <option type="columnsToSummaryTime" value="timeBasedOnNormsSum,laborTimeSum,timeDeviation"/>

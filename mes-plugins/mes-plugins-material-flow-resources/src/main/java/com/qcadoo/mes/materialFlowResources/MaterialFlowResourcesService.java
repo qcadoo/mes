@@ -27,6 +27,7 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 
+import com.qcadoo.mes.materialFlowResources.constants.StorageLocationsForProductDto;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ViewDefinitionState;
 
@@ -53,4 +54,17 @@ public interface MaterialFlowResourcesService {
 
     void fillCurrencyFieldValues(final ViewDefinitionState view);
 
+    List<QuantityDto> getQuantitiesForProductsAndLocationWMS(final List<String> productNumbers, final Long materialFlowLocationId);
+
+    List<ResourcesQuantityDto> getResourceQuantities(final Long storageLocationId, final String productNumber);
+
+    List<ResourceDetailsDto> getResourceDetails(String resourceNumber);
+
+    List<PalletNumberProductDTO> getProductsForPalletNumber(String palletNumber, List<String> userLocationNumbers);
+
+    List<SumOfProductsDto> getSumOfProducts(String productNumber, List<String> locationIds);
+
+    List<StorageLocationsForProductDto> getStoragesForProductNumber(String productNumber, List<String> locationIds);
+
+    List<ExtendedResourceDetailsDto> getMoreResourceDetails(String resourceNumber);
 }

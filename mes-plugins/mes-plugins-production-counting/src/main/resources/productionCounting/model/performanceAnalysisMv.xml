@@ -36,10 +36,11 @@
         <integer name="staff_id"/>
         <string name="staffName"/>
 
-        <integer name="timeBasedOnNormsSum"/>
-        <integer name="laborTimeSum"/>
+        <string name="timeBasedOnNormsSum"/>
+        <string name="laborTimeSum"/>
 
-        <integer name="timeDeviation"/>
+        <string name="timeDeviation"/>
+
         <decimal name="doneQuantity">
             <validatesRange from="0" exclusively="false"/>
             <validatesUnscaledValue max="9"/>

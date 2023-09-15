@@ -23,18 +23,18 @@ SET row_security = off;
 CREATE FUNCTION public.add_archived_column() RETURNS void
     LANGUAGE plpgsql
     AS $$
-	DECLARE
-		arch_table RECORD;
-	BEGIN
-		FOR arch_table IN SELECT * FROM information_schema.tables AS t
-			WHERE t.table_schema = 'public' AND t.table_type = 'BASE TABLE'
-				AND t.table_name LIKE 'arch_%'
-			ORDER BY t.table_name
-		LOOP
-			EXECUTE 'ALTER TABLE '|| arch_table.table_name ||' ADD COLUMN archived boolean';
-			EXECUTE 'ALTER TABLE '|| arch_table.table_name ||' ALTER COLUMN archived SET DEFAULT FALSE';
-		END LOOP;
-	END;
+DECLARE
+    arch_table RECORD;
+BEGIN
+    FOR arch_table IN SELECT * FROM information_schema.tables AS t
+                      WHERE t.table_schema = 'public' AND t.table_type = 'BASE TABLE'
+                        AND t.table_name LIKE 'arc2_%'
+                      ORDER BY t.table_name
+        LOOP
+            EXECUTE 'ALTER TABLE '|| arch_table.table_name ||' ADD COLUMN archived boolean';
+            EXECUTE 'ALTER TABLE '|| arch_table.table_name ||' ALTER COLUMN archived SET DEFAULT FALSE';
+        END LOOP;
+END;
 $$;
 
 
@@ -642,6 +642,30 @@ $$;
 
 
 --
+-- Name: drop_old_tables(); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION public.drop_old_tables() RETURNS void
+    LANGUAGE plpgsql
+    AS $$
+DECLARE
+    arch_table RECORD;
+
+BEGIN
+    FOR arch_table IN SELECT * FROM information_schema.tables AS t
+                      WHERE t.table_schema = 'public' AND t.table_type = 'BASE TABLE'
+                        AND t.table_name LIKE 'arch_%'
+                      ORDER BY t.table_name
+        LOOP
+
+            EXECUTE 'DROP TABLE ' || arch_table.table_name;
+
+        END LOOP;
+END;
+$$;
+
+
+--
 -- Name: drop_unused_sequences(); Type: FUNCTION; Schema: public; Owner: -
 --
 
@@ -662,6 +686,64 @@ CREATE FUNCTION public.drop_unused_sequences() RETURNS void
             END IF;
         END LOOP;
 
+    END;
+$$;
+
+
+--
+-- Name: duration_to_string(integer); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION public.duration_to_string(duration integer) RETURNS text
+    LANGUAGE plpgsql
+    AS $$
+    DECLARE
+        _duration text;
+        _minus boolean;
+		hours integer;
+		minutes integer;
+		seconds integer;
+
+    BEGIN
+        IF (duration IS NULL) THEN
+            _duration := '';
+        ELSE
+            IF (duration < 0) THEN
+                _minus := TRUE;
+
+                duration := -duration;
+            END IF;
+
+			hours := duration / 3600;
+            minutes := duration % 3600 / 60;
+            seconds := duration % 3600 % 60;
+
+			IF (_minus IS TRUE) THEN
+				_duration := '-';
+			ELSE
+				_duration := '';
+			END IF;
+
+			IF (hours < 10) THEN
+				_duration := _duration || '0' || hours || ':';
+			ELSE
+				_duration := _duration || hours || ':';
+			END IF;
+
+			IF (minutes < 10) THEN
+				_duration := _duration || '0' || minutes || ':';
+			ELSE
+				_duration := _duration || minutes || ':';
+			END IF;
+
+			IF (seconds < 10) THEN
+				_duration := _duration || '0' || seconds;
+			ELSE
+				_duration := _duration || seconds;
+			END IF;
+        END IF;
+
+        RETURN _duration;
     END;
 $$;
 
@@ -2415,25 +2497,25 @@ CREATE FUNCTION public.prepare_superadmin() RETURNS void
 CREATE FUNCTION public.refreshmaterializedviewforarchive() RETURNS void
     LANGUAGE plpgsql
     AS $$
-	DECLARE
+DECLARE
 
-	BEGIN
-		RAISE NOTICE '-- refresh materialized view arch_mv_masterorders_masterorderpositiondto';
-		EXECUTE 'refresh materialized view arch_mv_masterorders_masterorderpositiondto;';
-		RAISE NOTICE '-- refresh materialized view arch_mv_masterorders_masterorderdto';
-		EXECUTE 'refresh materialized view arch_mv_masterorders_masterorderdto;';
-		RAISE NOTICE '-- refresh materialized view arch_mv_orders_orderlistdto';
-		EXECUTE 'refresh materialized view arch_mv_orders_orderlistdto;';
-		RAISE NOTICE '-- refresh materialized view arch_mv_ordersgroups_mordersgroupdto';
-		EXECUTE 'refresh materialized view arch_mv_ordersgroups_mordersgroupdto;';
-		RAISE NOTICE '-- refresh materialized view arch_mv_productioncounting_productiontrackingdto';
-		EXECUTE 'refresh materialized view arch_mv_productioncounting_productiontrackingdto;';
-		RAISE NOTICE '-- refresh materialized view arch_mv_materialflowresources_positiondto';
-		EXECUTE 'refresh materialized view arch_mv_materialflowresources_positiondto;';
-		RAISE NOTICE '-- refresh materialized view mv_arch_materialflowresources_documentdto';
-		EXECUTE 'refresh materialized view arch_mv_materialflowresources_documentdto;';
-	END;
-    $$;
+BEGIN
+    RAISE NOTICE '-- refresh materialized view arch_mv_masterorders_masterorderpositiondto';
+    EXECUTE 'refresh materialized view arch_mv_masterorders_masterorderpositiondto;';
+    RAISE NOTICE '-- refresh materialized view arch_mv_masterorders_masterorderdto';
+    EXECUTE 'refresh materialized view arch_mv_masterorders_masterorderdto;';
+    RAISE NOTICE '-- refresh materialized view arch_mv_orders_orderlistdto';
+    EXECUTE 'refresh materialized view arch_mv_orders_orderlistdto;';
+    RAISE NOTICE '-- refresh materialized view arch_mv_ordersgroups_ordersgroupdto';
+    EXECUTE 'refresh materialized view arch_mv_ordersgroups_ordersgroupdto;';
+    RAISE NOTICE '-- refresh materialized view arch_mv_productioncounting_productiontrackingdto';
+    EXECUTE 'refresh materialized view arch_mv_productioncounting_productiontrackingdto;';
+    RAISE NOTICE '-- refresh materialized view arch_mv_materialflowresources_positiondto';
+    EXECUTE 'refresh materialized view arch_mv_materialflowresources_positiondto;';
+    RAISE NOTICE '-- refresh materialized view mv_arch_materialflowresources_documentdto';
+    EXECUTE 'refresh materialized view arch_mv_materialflowresources_documentdto;';
+END;
+$$;
 
 
 --
@@ -2728,6 +2810,58 @@ BEGIN
     RAISE NOTICE 'FINISH remove archived data';
 
 
+END;
+$$;
+
+
+--
+-- Name: remove_foregin_key(); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION public.remove_foregin_key() RETURNS void
+    LANGUAGE plpgsql
+    AS $$
+DECLARE
+    arch_table RECORD;
+    r RECORD;
+
+BEGIN
+    FOR arch_table IN SELECT * FROM information_schema.tables AS t
+                      WHERE t.table_schema = 'public' AND t.table_type = 'BASE TABLE'
+                        AND t.table_name LIKE 'arch_%'
+                      ORDER BY t.table_name
+        LOOP
+            for r in (select constraint_name from information_schema.table_constraints where table_schema = 'public' and table_name=arch_table.table_name AND constraint_type ='FOREIGN KEY') loop
+                    raise info '%','dropping '||r.constraint_name;
+                    EXECUTE 'ALTER TABLE ' || arch_table.table_name || ' DROP CONSTRAINT IF EXISTS ' || r.constraint_name;
+                end loop;
+
+        END LOOP;
+END;
+$$;
+
+
+--
+-- Name: rename_temp_to_arch(); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION public.rename_temp_to_arch() RETURNS void
+    LANGUAGE plpgsql
+    AS $$
+DECLARE
+    arch_table RECORD;
+    tablearch text;
+BEGIN
+    FOR arch_table IN SELECT * FROM information_schema.tables AS t
+                      WHERE t.table_schema = 'public' AND t.table_type = 'BASE TABLE'
+                        AND t.table_name LIKE 'arc2_%'
+                      ORDER BY t.table_name
+        LOOP
+            tablearch = REPLACE(arch_table.table_name, 'arc2_' ,'arch_');
+
+            EXECUTE 'ALTER TABLE ' || arch_table.table_name || ' RENAME TO ' || tablearch;
+
+        END LOOP;
 END;
 $$;
 
@@ -3317,9 +3451,9 @@ CREATE TABLE public.arch_advancedgenealogyfororders_genealogyproductincomponent 
     id bigint NOT NULL,
     trackingrecord_id bigint,
     technologyinstanceoperationcomponent_id bigint,
-    productincomponent_id bigint,
     technologyoperationcomponent_id bigint,
     entityversion bigint DEFAULT 0,
+    product_id bigint,
     archived boolean DEFAULT false
 );
 
@@ -3563,6 +3697,39 @@ ALTER SEQUENCE public.arch_basicproductioncounting_basicproductioncounting_id_se
 
 
 --
+-- Name: arch_basicproductioncounting_productioncountingattributevalue; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.arch_basicproductioncounting_productioncountingattributevalue (
+    id bigint NOT NULL,
+    productioncountingquantity_id bigint,
+    attribute_id bigint,
+    attributevalue_id bigint,
+    value character varying(255),
+    archived boolean DEFAULT false
+);
+
+
+--
+-- Name: arch_basicproductioncounting_productioncountingattributevalue_i; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.arch_basicproductioncounting_productioncountingattributevalue_i
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: arch_basicproductioncounting_productioncountingattributevalue_i; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.arch_basicproductioncounting_productioncountingattributevalue_i OWNED BY public.arch_basicproductioncounting_productioncountingattributevalue.id;
+
+
+--
 -- Name: arch_basicproductioncounting_productioncountingoperationrun; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -3612,10 +3779,16 @@ CREATE TABLE public.arch_basicproductioncounting_productioncountingquantity (
     componentsoutputlocation_id bigint,
     componentslocation_id bigint,
     productsinputlocation_id bigint,
-    productionflow character varying(255) DEFAULT '02withinTheProcess'::character varying,
+    productionflow character varying(255),
     productsflowlocation_id bigint,
     entityversion bigint DEFAULT 0,
-    set character varying(255),
+    replacementto_id bigint,
+    showmaterialcomponentinworkplan boolean DEFAULT false,
+    technologyinputproducttype_id bigint,
+    usedquantity numeric(14,5),
+    producedquantity numeric(14,5),
+    wastereceptionwarehouse_id bigint,
+    attribute_id bigint,
     archived boolean DEFAULT false
 );
 
@@ -3640,23 +3813,25 @@ ALTER SEQUENCE public.arch_basicproductioncounting_productioncountingquantity_id
 
 
 --
--- Name: arch_costcalculation_componentcost; Type: TABLE; Schema: public; Owner: -
+-- Name: arch_cdnrcgoodfood_cancelprotocol; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE public.arch_costcalculation_componentcost (
+CREATE TABLE public.arch_cdnrcgoodfood_cancelprotocol (
     id bigint NOT NULL,
-    costcalculation_id bigint,
-    product_id bigint,
-    priceperunit numeric(19,5),
+    extrusionprotocol_id bigint,
+    confectionprotocol_id bigint,
+    createdate timestamp without time zone,
+    laststatechangefailcause character varying(8192),
+    iscanceled boolean DEFAULT false,
     archived boolean DEFAULT false
 );
 
 
 --
--- Name: arch_costcalculation_componentcost_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+-- Name: arch_cdnrcgoodfood_cancelprotocol_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
-CREATE SEQUENCE public.arch_costcalculation_componentcost_id_seq
+CREATE SEQUENCE public.arch_cdnrcgoodfood_cancelprotocol_id_seq
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -3665,62 +3840,10 @@ CREATE SEQUENCE public.arch_costcalculation_componentcost_id_seq
 
 
 --
--- Name: arch_costcalculation_componentcost_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+-- Name: arch_cdnrcgoodfood_cancelprotocol_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
-ALTER SEQUENCE public.arch_costcalculation_componentcost_id_seq OWNED BY public.arch_costcalculation_componentcost.id;
-
-
---
--- Name: arch_costcalculation_costcalculation; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.arch_costcalculation_costcalculation (
-    id bigint NOT NULL,
-    number character varying(255),
-    product_id bigint,
-    defaulttechnology_id bigint,
-    technology_id bigint,
-    productionline_id bigint,
-    quantity numeric(12,5),
-    order_id bigint,
-    productioncostmargin numeric(19,5) DEFAULT (0)::numeric,
-    materialcostmargin numeric(19,5) DEFAULT (0)::numeric,
-    additionaloverhead numeric(19,5) DEFAULT (0)::numeric,
-    description character varying(255),
-    includetpz boolean DEFAULT true,
-    includeadditionaltime boolean DEFAULT false,
-    sourceofmaterialcosts character varying(255) DEFAULT '01currentGlobalDefinitionsInProduct'::character varying,
-    calculatematerialcostsmode character varying(255) DEFAULT 'nominal'::character varying,
-    date timestamp without time zone,
-    generated boolean,
-    filename character varying(255),
-    includecomponents boolean DEFAULT false,
-    entityversion bigint DEFAULT 0,
-    sourceofoperationcosts character varying(255),
-    registrationpriceoverhead numeric(19,5),
-    profit numeric(19,5),
-    archived boolean DEFAULT false
-);
-
-
---
--- Name: arch_costcalculation_costcalculation_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE public.arch_costcalculation_costcalculation_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: arch_costcalculation_costcalculation_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE public.arch_costcalculation_costcalculation_id_seq OWNED BY public.arch_costcalculation_costcalculation.id;
+ALTER SEQUENCE public.arch_cdnrcgoodfood_cancelprotocol_id_seq OWNED BY public.arch_cdnrcgoodfood_cancelprotocol.id;
 
 
 --
@@ -3731,13 +3854,7 @@ CREATE TABLE public.arch_costnormsformaterials_technologyinstoperproductincomp (
     id bigint NOT NULL,
     order_id bigint,
     product_id bigint,
-    costfornumber numeric(12,5) DEFAULT (1)::numeric,
-    nominalcost numeric(12,5) DEFAULT (0)::numeric,
-    lastpurchasecost numeric(12,5) DEFAULT (0)::numeric,
-    averagecost numeric(12,5) DEFAULT (0)::numeric,
     costfororder numeric(12,5) DEFAULT (0)::numeric,
-    lastoffercost numeric(12,5),
-    averageoffercost numeric(12,5),
     entityversion bigint DEFAULT 0,
     averagepricesubcontractor numeric(12,5) DEFAULT 0,
     archived boolean DEFAULT false
@@ -3761,98 +3878,6 @@ CREATE SEQUENCE public.arch_costnormsformaterials_technologyinstoperproductincom
 --
 
 ALTER SEQUENCE public.arch_costnormsformaterials_technologyinstoperproductincomp_id_s OWNED BY public.arch_costnormsformaterials_technologyinstoperproductincomp.id;
-
-
---
--- Name: arch_costnormsforoperation_calculationoperationcomponent; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.arch_costnormsforoperation_calculationoperationcomponent (
-    id bigint NOT NULL,
-    nodenumber character varying(255),
-    operation_id bigint,
-    technologyoperationcomponent_id bigint,
-    parent_id bigint,
-    entitytype character varying(255) DEFAULT 'operation'::character varying,
-    priority integer,
-    tpz integer,
-    tj integer,
-    areproductquantitiesdivisible boolean DEFAULT false,
-    istjdivisible boolean DEFAULT false,
-    machineutilization numeric(12,5),
-    laborutilization numeric(12,5),
-    productioninonecycle numeric(12,5) DEFAULT (1)::numeric,
-    nextoperationafterproducedtype character varying(255) DEFAULT '01all'::character varying,
-    nextoperationafterproducedquantity numeric(12,5),
-    timenextoperation integer,
-    operationoffset integer,
-    effectiveoperationrealizationtime integer,
-    effectivedatefrom timestamp without time zone,
-    effectivedateto timestamp without time zone,
-    duration integer DEFAULT 0,
-    machineworktime integer DEFAULT 0,
-    laborworktime integer DEFAULT 0,
-    operationcost numeric(12,5) DEFAULT (0)::numeric,
-    totalmachineoperationcost numeric(12,5) DEFAULT (0)::numeric,
-    totallaboroperationcost numeric(12,5) DEFAULT (0)::numeric,
-    laborhourlycost numeric(12,5) DEFAULT (0)::numeric,
-    machinehourlycost numeric(12,5) DEFAULT (0)::numeric,
-    costcalculation_id bigint,
-    entityversion bigint DEFAULT 0,
-    archived boolean DEFAULT false
-);
-
-
---
--- Name: arch_costnormsforoperation_calculationoperationcomponent_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE public.arch_costnormsforoperation_calculationoperationcomponent_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: arch_costnormsforoperation_calculationoperationcomponent_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE public.arch_costnormsforoperation_calculationoperationcomponent_id_seq OWNED BY public.arch_costnormsforoperation_calculationoperationcomponent.id;
-
-
---
--- Name: arch_esilco_importpositionerror; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.arch_esilco_importpositionerror (
-    id bigint NOT NULL,
-    document_id bigint,
-    quantity numeric(14,5),
-    productcode character varying(255),
-    name character varying(255),
-    archived boolean DEFAULT false
-);
-
-
---
--- Name: arch_esilco_importpositionerror_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE public.arch_esilco_importpositionerror_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: arch_esilco_importpositionerror_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE public.arch_esilco_importpositionerror_id_seq OWNED BY public.arch_esilco_importpositionerror.id;
 
 
 --
@@ -4292,6 +4317,7 @@ CREATE TABLE public.arch_goodfood_extrusionpouring (
     addedquantitymanual boolean DEFAULT false,
     addedquantityrelatesto character varying(255) DEFAULT '01mix'::character varying,
     mixwaterquantity numeric(12,5),
+    priority integer,
     archived boolean DEFAULT false
 );
 
@@ -4630,95 +4656,13 @@ ALTER SEQUENCE public.arch_goodfood_extrusiontakenoffmixingredient_id_seq OWNED 
 
 
 --
--- Name: arch_goodfood_label; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.arch_goodfood_label (
-    id bigint NOT NULL,
-    palletcontext_id bigint,
-    printedcount integer,
-    firstssccnumber character varying(20),
-    firstpalletnumber character varying(6),
-    lastssccnumber character varying(20),
-    lastpalletnumber character varying(6),
-    masterorder_id bigint,
-    productionline_id bigint,
-    batchnumber character varying(255),
-    bestbefore character varying(255),
-    registrationdate date,
-    active boolean DEFAULT true,
-    batch_id bigint,
-    state character varying(255) DEFAULT '01draft'::character varying,
-    entityversion bigint DEFAULT 0,
-    archived boolean DEFAULT false
-);
-
-
---
--- Name: arch_goodfood_label_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE public.arch_goodfood_label_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: arch_goodfood_label_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE public.arch_goodfood_label_id_seq OWNED BY public.arch_goodfood_label.id;
-
-
---
--- Name: arch_goodfood_labelstatechange; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.arch_goodfood_labelstatechange (
-    id bigint NOT NULL,
-    dateandtime timestamp without time zone,
-    sourcestate character varying(255),
-    targetstate character varying(255),
-    status character varying(255),
-    phase integer,
-    shift_id bigint,
-    worker character varying(255),
-    label_id bigint,
-    entityversion bigint DEFAULT 0,
-    archived boolean DEFAULT false
-);
-
-
---
--- Name: arch_goodfood_labelstatechange_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE public.arch_goodfood_labelstatechange_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: arch_goodfood_labelstatechange_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE public.arch_goodfood_labelstatechange_id_seq OWNED BY public.arch_goodfood_labelstatechange.id;
-
-
---
 -- Name: arch_goodfood_pallet; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE public.arch_goodfood_pallet (
     id bigint NOT NULL,
     palletcontext_id bigint,
-    label_id bigint,
+    palletlabel_id bigint,
     typeoflogistics character varying(255) DEFAULT '01fullPallet'::character varying,
     printedcount integer,
     ssccnumber character varying(20),
@@ -4760,6 +4704,88 @@ CREATE SEQUENCE public.arch_goodfood_pallet_id_seq
 --
 
 ALTER SEQUENCE public.arch_goodfood_pallet_id_seq OWNED BY public.arch_goodfood_pallet.id;
+
+
+--
+-- Name: arch_goodfood_palletlabel; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.arch_goodfood_palletlabel (
+    id bigint NOT NULL,
+    palletcontext_id bigint,
+    printedcount integer,
+    firstssccnumber character varying(20),
+    firstpalletnumber character varying(6),
+    lastssccnumber character varying(20),
+    lastpalletnumber character varying(6),
+    masterorder_id bigint,
+    productionline_id bigint,
+    batchnumber character varying(255),
+    bestbefore character varying(255),
+    registrationdate date,
+    active boolean DEFAULT true,
+    batch_id bigint,
+    state character varying(255) DEFAULT '01draft'::character varying,
+    entityversion bigint DEFAULT 0,
+    archived boolean DEFAULT false
+);
+
+
+--
+-- Name: arch_goodfood_palletlabel_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.arch_goodfood_palletlabel_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: arch_goodfood_palletlabel_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.arch_goodfood_palletlabel_id_seq OWNED BY public.arch_goodfood_palletlabel.id;
+
+
+--
+-- Name: arch_goodfood_palletlabelstatechange; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.arch_goodfood_palletlabelstatechange (
+    id bigint NOT NULL,
+    dateandtime timestamp without time zone,
+    sourcestate character varying(255),
+    targetstate character varying(255),
+    status character varying(255),
+    phase integer,
+    shift_id bigint,
+    worker character varying(255),
+    palletlabel_id bigint,
+    entityversion bigint DEFAULT 0,
+    archived boolean DEFAULT false
+);
+
+
+--
+-- Name: arch_goodfood_palletlabelstatechange_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.arch_goodfood_palletlabelstatechange_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: arch_goodfood_palletlabelstatechange_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.arch_goodfood_palletlabelstatechange_id_seq OWNED BY public.arch_goodfood_palletlabelstatechange.id;
 
 
 --
@@ -4851,8 +4877,12 @@ CREATE TABLE public.arch_integrationbartender_printlabelshelper (
     updateuser character varying(255),
     quantity integer,
     masterorder_id bigint,
-    archived boolean DEFAULT false,
-    printer_id bigint
+    printer_id bigint,
+    path character varying(255),
+    ssccnumbers text,
+    order_id bigint,
+    barcodeismasterorderid boolean DEFAULT false,
+    archived boolean DEFAULT false
 );
 
 
@@ -4882,14 +4912,11 @@ ALTER SEQUENCE public.arch_integrationbartender_printlabelshelper_id_seq OWNED B
 CREATE TABLE public.arch_integrationbartender_sendtoprint (
     id bigint NOT NULL,
     printlabelshelper_id bigint,
-    path character varying(255),
     createdate timestamp without time zone,
     updatedate timestamp without time zone,
     createuser character varying(255),
     updateuser character varying(255),
-    quantity integer,
-    archived boolean DEFAULT false,
-    printer_id bigint
+    archived boolean DEFAULT false
 );
 
 
@@ -4961,6 +4988,9 @@ CREATE TABLE public.arch_masterorders_masterorder (
     sendagaintoasanatries integer DEFAULT 0,
     asanastatecompleteddate timestamp without time zone,
     colourral character varying(255),
+    salesplan_id bigint,
+    materialsissued boolean DEFAULT false,
+    warehouseorder boolean DEFAULT false,
     archived boolean DEFAULT false
 );
 
@@ -5249,6 +5279,8 @@ CREATE TABLE public.arch_masterorders_masterorderproduct (
     lefttorelease numeric(14,5),
     comments text,
     masterorderpositionstatus character varying(255),
+    quantitytakenfromwarehouse numeric(14,5),
+    quantityremainingtoorder numeric(14,5),
     archived boolean DEFAULT false
 );
 
@@ -5270,6 +5302,107 @@ CREATE SEQUENCE public.arch_masterorders_masterorderproduct_id_seq
 --
 
 ALTER SEQUENCE public.arch_masterorders_masterorderproduct_id_seq OWNED BY public.arch_masterorders_masterorderproduct.id;
+
+
+--
+-- Name: arch_masterorders_masterorderproductattrvalue; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.arch_masterorders_masterorderproductattrvalue (
+    id bigint NOT NULL,
+    masterorderproduct_id bigint,
+    attribute_id bigint,
+    attributevalue_id bigint,
+    value character varying(255),
+    succession integer,
+    archived boolean DEFAULT false
+);
+
+
+--
+-- Name: arch_masterorders_masterorderproductattrvalue_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.arch_masterorders_masterorderproductattrvalue_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: arch_masterorders_masterorderproductattrvalue_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.arch_masterorders_masterorderproductattrvalue_id_seq OWNED BY public.arch_masterorders_masterorderproductattrvalue.id;
+
+
+--
+-- Name: arch_masterorders_productsbysizeentryhelper; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.arch_masterorders_productsbysizeentryhelper (
+    id bigint NOT NULL,
+    size_id bigint,
+    productsbysizehelper_id bigint,
+    quantity numeric(12,5),
+    product_id bigint,
+    archived boolean DEFAULT false
+);
+
+
+--
+-- Name: arch_masterorders_productsbysizeentryhelper_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.arch_masterorders_productsbysizeentryhelper_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: arch_masterorders_productsbysizeentryhelper_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.arch_masterorders_productsbysizeentryhelper_id_seq OWNED BY public.arch_masterorders_productsbysizeentryhelper.id;
+
+
+--
+-- Name: arch_masterorders_productsbysizehelper; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.arch_masterorders_productsbysizehelper (
+    id bigint NOT NULL,
+    product_id bigint,
+    totalquantity numeric(12,5),
+    masterorder_id bigint,
+    salesplan_id bigint,
+    ordersgroup_id bigint,
+    archived boolean DEFAULT false
+);
+
+
+--
+-- Name: arch_masterorders_productsbysizehelper_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.arch_masterorders_productsbysizehelper_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: arch_masterorders_productsbysizehelper_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.arch_masterorders_productsbysizehelper_id_seq OWNED BY public.arch_masterorders_productsbysizehelper.id;
 
 
 --
@@ -5310,8 +5443,20 @@ CREATE TABLE public.arch_materialflowresources_document (
     filename character varying(255),
     acceptationinprogress boolean DEFAULT false,
     externalnumber character varying(255),
-    archived boolean DEFAULT false,
-    issend boolean DEFAULT false
+    issend boolean DEFAULT false,
+    wms boolean DEFAULT false,
+    datesendtowms timestamp without time zone,
+    dateshipmenttocustomer date,
+    additionalinfo character varying(255),
+    stateinwms character varying(255),
+    pickingworker character varying(255),
+    dateconfirmationofcompletion timestamp without time zone,
+    locationchanged boolean DEFAULT false,
+    editinwms boolean DEFAULT true,
+    additionaldescription character varying(2048),
+    staff_id bigint,
+    ordersgroup_id bigint,
+    archived boolean DEFAULT false
 );
 
 
@@ -5372,7 +5517,6 @@ CREATE TABLE public.arch_orders_order (
     remainingamountofproducttoproduce numeric(12,5),
     ownlinechangeoverduration integer,
     registerproductiontime boolean,
-    justone boolean,
     registerquantityinproduct boolean,
     laborworktime integer,
     includetpz boolean,
@@ -5380,24 +5524,20 @@ CREATE TABLE public.arch_orders_order (
     generatedenddate timestamp without time zone,
     machineworktime integer,
     ownlinechangeover boolean DEFAULT false,
-    autocloseorder boolean,
     registerquantityoutproduct boolean,
     operationdurationquantityunit character varying(255),
     realizationtime integer,
     calculate boolean,
     includeadditionaltime boolean,
-    allowtoclose boolean,
     typeofproductionrecording character varying(255) DEFAULT '02cumulated'::character varying,
     masterorder_id bigint,
     active boolean DEFAULT true,
     productpriceperunit numeric(19,5),
-    trackingrecordtreatment character varying(255) DEFAULT '01duringProduction'::character varying,
     failuresyncmessage character varying(255),
     targetstate character varying(255),
     ignorerequiredcomponents boolean,
     automaticallymoveoverusage boolean DEFAULT false,
     updatecomponentsavailability boolean,
-    ordertype character varying(255) DEFAULT '01withPatternTechnology'::character varying,
     technologyprototype_id bigint,
     level integer,
     parent_id bigint,
@@ -5429,10 +5569,12 @@ CREATE TABLE public.arch_orders_order (
     updatefinishdate boolean DEFAULT false,
     ordersgroup_id bigint,
     plannedquantityforadditionalunit numeric,
-    directadditionalcost numeric,
-    directadditionalcostdescription character varying,
-    archived boolean DEFAULT false,
-    division_id bigint
+    division_id bigint,
+    salesplan_id bigint,
+    reportedproductionquantity numeric(12,5),
+    expirationdate date,
+    additionalfinalproducts character varying(255),
+    archived boolean DEFAULT false
 );
 
 
@@ -5682,8 +5824,7 @@ CREATE MATERIALIZED VIEW public.arch_mv_materialflowresources_documentdto AS
     ordersorder.number AS ordernumber,
     (suborder.id)::integer AS suborder_id,
     suborder.number AS subordernumber,
-    document.printed,
-    document.issend
+    document.printed
    FROM ((((((((((public.arch_materialflowresources_document document
      LEFT JOIN public.materialflow_location locationfrom ON ((locationfrom.id = document.locationfrom_id)))
      LEFT JOIN public.materialflow_location locationto ON ((locationto.id = document.locationto_id)))
@@ -5731,8 +5872,7 @@ CREATE VIEW public.arch_materialflowresources_documentdto AS
     arch_mv_materialflowresources_documentdto.ordernumber,
     arch_mv_materialflowresources_documentdto.suborder_id,
     arch_mv_materialflowresources_documentdto.subordernumber,
-    arch_mv_materialflowresources_documentdto.printed,
-    arch_mv_materialflowresources_documentdto.issend
+    arch_mv_materialflowresources_documentdto.printed
    FROM public.arch_mv_materialflowresources_documentdto;
 
 
@@ -5749,6 +5889,41 @@ CREATE SEQUENCE public.arch_materialflowresources_documentdto_id_seq
 
 
 --
+-- Name: arch_materialflowresources_documentstatechange; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.arch_materialflowresources_documentstatechange (
+    id bigint NOT NULL,
+    dateandtime timestamp without time zone,
+    document_id bigint,
+    sourcestate character varying(255),
+    targetstate character varying(255),
+    status character varying(255),
+    worker character varying(255),
+    archived boolean DEFAULT false
+);
+
+
+--
+-- Name: arch_materialflowresources_documentstatechange_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.arch_materialflowresources_documentstatechange_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: arch_materialflowresources_documentstatechange_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.arch_materialflowresources_documentstatechange_id_seq OWNED BY public.arch_materialflowresources_documentstatechange.id;
+
+
+--
 -- Name: arch_materialflowresources_position; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -5758,7 +5933,6 @@ CREATE TABLE public.arch_materialflowresources_position (
     product_id bigint,
     quantity numeric(14,5),
     price numeric(12,5) DEFAULT (0)::numeric,
-    batch character varying(255),
     productiondate date,
     expirationdate date,
     number integer,
@@ -5776,6 +5950,14 @@ CREATE TABLE public.arch_materialflowresources_position (
     resourcenumber character varying(255),
     externaldocumentnumber character varying(255),
     orderid integer,
+    sellingprice numeric(12,5) DEFAULT '0'::numeric,
+    batch_id bigint,
+    qualityrating character varying(255),
+    pickingdate timestamp without time zone,
+    pickingworker_id bigint,
+    wmsposition_id bigint,
+    restaftershiftdisposition numeric(14,5),
+    restaftershiftdispositionaddunit numeric(14,5),
     archived boolean DEFAULT false
 );
 
@@ -5797,6 +5979,39 @@ CREATE SEQUENCE public.arch_materialflowresources_position_id_seq
 --
 
 ALTER SEQUENCE public.arch_materialflowresources_position_id_seq OWNED BY public.arch_materialflowresources_position.id;
+
+
+--
+-- Name: arch_materialflowresources_positionattributevalue; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.arch_materialflowresources_positionattributevalue (
+    id bigint NOT NULL,
+    position_id bigint,
+    attribute_id bigint,
+    attributevalue_id bigint,
+    value character varying(255),
+    archived boolean DEFAULT false
+);
+
+
+--
+-- Name: arch_materialflowresources_positionattributevalue_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.arch_materialflowresources_positionattributevalue_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: arch_materialflowresources_positionattributevalue_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.arch_materialflowresources_positionattributevalue_id_seq OWNED BY public.arch_materialflowresources_positionattributevalue.id;
 
 
 --
@@ -5955,7 +6170,7 @@ CREATE MATERIALIZED VIEW public.arch_mv_materialflowresources_positiondto AS
             WHEN (address.name IS NULL) THEN (address.number)::text
             ELSE (((address.number)::text || ' - '::text) || (address.name)::text)
         END AS documentaddress,
-    "position".batch,
+    ''::text AS batch,
     storagelocation.number AS storagelocation,
     "position".waste,
     delivery.number AS deliverynumber,
@@ -6282,14 +6497,16 @@ CREATE TABLE public.arch_ordersgroups_ordersgroup (
     startdate timestamp without time zone,
     finishdate timestamp without time zone,
     deadline timestamp without time zone,
-    quantity numeric(12,5),
-    producedquantity numeric(12,5),
-    remainingquantity numeric(12,5),
+    quantity numeric(14,5),
+    producedquantity numeric(14,5),
+    remainingquantity numeric(14,5),
     state character varying(255) DEFAULT '01draft'::character varying,
     active boolean DEFAULT true,
     masterorder_id bigint,
     parent_id bigint,
-    remainingquantityinorders numeric,
+    remainingquantityinorders numeric(14,5),
+    description character varying(2048),
+    salesplan_id bigint,
     archived boolean DEFAULT false
 );
 
@@ -6606,6 +6823,11 @@ CREATE TABLE public.arch_productioncounting_productiontracking (
     iscorrection boolean DEFAULT false,
     planforordercompleted boolean DEFAULT false,
     workstation_id bigint,
+    batch_id bigint,
+    expirationdate date,
+    qualityrating character varying(255),
+    iscorrected boolean DEFAULT false,
+    comments character varying(2048),
     archived boolean DEFAULT false
 );
 
@@ -6627,8 +6849,11 @@ CREATE TABLE public.arch_productioncounting_trackingoperationproductoutcomponent
     entityversion bigint DEFAULT 0,
     wastesquantity numeric(14,5),
     typeofmaterial character varying(255) DEFAULT '01component'::character varying,
-    archived boolean DEFAULT false,
-    causeofwastes character varying(255)
+    storagelocation_id bigint,
+    causeofwastes character varying(255),
+    palletnumber_id bigint,
+    manyreasonsforlacks boolean DEFAULT false,
+    archived boolean DEFAULT false
 );
 
 
@@ -6758,7 +6983,8 @@ CREATE TABLE public.technologies_operation (
     optimalstaff integer DEFAULT 1,
     pieceworkproduction boolean DEFAULT false,
     piecerate_id bigint,
-    unitcost numeric(12,5)
+    unitcost numeric(12,5),
+    reservationrawmaterialresourcerequired boolean DEFAULT false
 );
 
 
@@ -6885,13 +7111,20 @@ CREATE TABLE public.arch_orders_operationaltask (
     number character varying(256),
     name character varying(1024),
     description character varying(1024),
-    typetask character varying(255),
+    type character varying(255),
     startdate timestamp without time zone,
     finishdate timestamp without time zone,
-    productionline_id bigint,
-    technologyinstanceoperationcomponent_id bigint,
     order_id bigint,
     entityversion bigint DEFAULT 0,
+    staff_id bigint,
+    workstation_id bigint,
+    state character varying(255) DEFAULT '01pending'::character varying,
+    technologyoperationcomponent_id bigint,
+    product_id bigint,
+    scheduleposition_id bigint,
+    division_id bigint,
+    actualstaff integer,
+    suborder_id bigint,
     archived boolean DEFAULT false
 );
 
@@ -6913,6 +7146,43 @@ CREATE SEQUENCE public.arch_orders_operationaltask_id_seq
 --
 
 ALTER SEQUENCE public.arch_orders_operationaltask_id_seq OWNED BY public.arch_orders_operationaltask.id;
+
+
+--
+-- Name: arch_orders_operationaltaskstatechange; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.arch_orders_operationaltaskstatechange (
+    id bigint NOT NULL,
+    dateandtime timestamp without time zone,
+    sourcestate character varying(255),
+    targetstate character varying(255),
+    status character varying(255),
+    phase integer,
+    worker character varying(255),
+    operationaltask_id bigint,
+    shift_id bigint,
+    archived boolean DEFAULT false
+);
+
+
+--
+-- Name: arch_orders_operationaltaskstatechange_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.arch_orders_operationaltaskstatechange_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: arch_orders_operationaltaskstatechange_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.arch_orders_operationaltaskstatechange_id_seq OWNED BY public.arch_orders_operationaltaskstatechange.id;
 
 
 --
@@ -6984,6 +7254,76 @@ CREATE SEQUENCE public.arch_orders_orderlistdto_id_seq
 
 
 --
+-- Name: arch_orders_orderpack; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.arch_orders_orderpack (
+    id bigint NOT NULL,
+    number character varying(255),
+    order_id bigint,
+    quantity numeric(12,5),
+    state character varying(255) DEFAULT '01pending'::character varying,
+    archived boolean DEFAULT false
+);
+
+
+--
+-- Name: arch_orders_orderpack_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.arch_orders_orderpack_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: arch_orders_orderpack_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.arch_orders_orderpack_id_seq OWNED BY public.arch_orders_orderpack.id;
+
+
+--
+-- Name: arch_orders_orderpackstatechange; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.arch_orders_orderpackstatechange (
+    id bigint NOT NULL,
+    dateandtime timestamp without time zone,
+    sourcestate character varying(255),
+    targetstate character varying(255),
+    status character varying(255),
+    phase integer,
+    worker character varying(255),
+    orderpack_id bigint,
+    shift_id bigint,
+    archived boolean DEFAULT false
+);
+
+
+--
+-- Name: arch_orders_orderpackstatechange_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.arch_orders_orderpackstatechange_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: arch_orders_orderpackstatechange_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.arch_orders_orderpackstatechange_id_seq OWNED BY public.arch_orders_orderpackstatechange.id;
+
+
+--
 -- Name: arch_orders_orderstatechange; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -7031,6 +7371,155 @@ CREATE SEQUENCE public.arch_orders_orderstatechange_id_seq
 --
 
 ALTER SEQUENCE public.arch_orders_orderstatechange_id_seq OWNED BY public.arch_orders_orderstatechange.id;
+
+
+--
+-- Name: arch_orders_ordertechnologicalprocess; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.arch_orders_ordertechnologicalprocess (
+    id bigint NOT NULL,
+    number character varying(255),
+    orderpack_id bigint,
+    order_id bigint,
+    product_id bigint,
+    operation_id bigint,
+    technologicalprocess_id bigint,
+    quantity numeric(12,5),
+    worker_id bigint,
+    date timestamp without time zone,
+    wastesquantity numeric(12,5),
+    technologyoperationcomponent_id bigint,
+    createdate timestamp without time zone,
+    archived boolean DEFAULT false
+);
+
+
+--
+-- Name: arch_orders_ordertechnologicalprocess_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.arch_orders_ordertechnologicalprocess_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: arch_orders_ordertechnologicalprocess_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.arch_orders_ordertechnologicalprocess_id_seq OWNED BY public.arch_orders_ordertechnologicalprocess.id;
+
+
+--
+-- Name: arch_orders_ordertechnologicalprocesspart; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.arch_orders_ordertechnologicalprocesspart (
+    id bigint NOT NULL,
+    number character varying(255),
+    quantity numeric(12,5),
+    ordertechnologicalprocess_id bigint,
+    archived boolean DEFAULT false
+);
+
+
+--
+-- Name: arch_orders_ordertechnologicalprocesspart_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.arch_orders_ordertechnologicalprocesspart_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: arch_orders_ordertechnologicalprocesspart_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.arch_orders_ordertechnologicalprocesspart_id_seq OWNED BY public.arch_orders_ordertechnologicalprocesspart.id;
+
+
+--
+-- Name: arch_orders_ordertechnologicalprocesswaste; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.arch_orders_ordertechnologicalprocesswaste (
+    id bigint NOT NULL,
+    number character varying(255),
+    ordertechnologicalprocess_id bigint,
+    orderpack_id bigint,
+    order_id bigint,
+    product_id bigint,
+    technologicalprocess_id bigint,
+    wastequantity numeric(12,5),
+    causeofwaste character varying(255),
+    worker_id bigint,
+    date timestamp without time zone,
+    description character varying(2048),
+    archived boolean DEFAULT false
+);
+
+
+--
+-- Name: arch_orders_ordertechnologicalprocesswaste_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.arch_orders_ordertechnologicalprocesswaste_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: arch_orders_ordertechnologicalprocesswaste_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.arch_orders_ordertechnologicalprocesswaste_id_seq OWNED BY public.arch_orders_ordertechnologicalprocesswaste.id;
+
+
+--
+-- Name: arch_orders_productionlinescheduleposition; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.arch_orders_productionlinescheduleposition (
+    id bigint NOT NULL,
+    productionlineschedule_id bigint,
+    order_id bigint,
+    productionline_id bigint,
+    linechangeovernorm_id bigint,
+    starttime timestamp without time zone,
+    endtime timestamp without time zone,
+    additionaltime integer DEFAULT 0,
+    archived boolean DEFAULT false
+);
+
+
+--
+-- Name: arch_orders_productionlinescheduleposition_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.arch_orders_productionlinescheduleposition_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: arch_orders_productionlinescheduleposition_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.arch_orders_productionlinescheduleposition_id_seq OWNED BY public.arch_orders_productionlinescheduleposition.id;
 
 
 --
@@ -7200,6 +7689,49 @@ ALTER SEQUENCE public.arch_orders_reasontypeofchangingorderstate_id_seq OWNED BY
 
 
 --
+-- Name: arch_orders_scheduleposition; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.arch_orders_scheduleposition (
+    id bigint NOT NULL,
+    schedule_id bigint,
+    technologyoperationcomponent_id bigint,
+    additionaltime integer DEFAULT 0,
+    machineworktime integer DEFAULT 0,
+    laborworktime integer DEFAULT 0,
+    order_id bigint,
+    product_id bigint,
+    workstation_id bigint,
+    quantity numeric(14,5),
+    starttime timestamp without time zone,
+    endtime timestamp without time zone,
+    staff_id bigint,
+    operationruns numeric(12,5),
+    partialoperationruns numeric(12,5),
+    archived boolean DEFAULT false
+);
+
+
+--
+-- Name: arch_orders_scheduleposition_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.arch_orders_scheduleposition_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: arch_orders_scheduleposition_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.arch_orders_scheduleposition_id_seq OWNED BY public.arch_orders_scheduleposition.id;
+
+
+--
 -- Name: arch_orders_typeofcorrectioncauses; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -7341,6 +7873,331 @@ CREATE SEQUENCE public.arch_ordersgroups_ordersgroupdto_id_seq
 
 
 --
+-- Name: arch_ordersgroups_ordersgroupissuedmaterial; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.arch_ordersgroups_ordersgroupissuedmaterial (
+    id bigint NOT NULL,
+    ordersgroup_id bigint,
+    product_id bigint,
+    quantity numeric(14,5),
+    value numeric(14,5),
+    averageprice numeric(11,2),
+    archived boolean DEFAULT false
+);
+
+
+--
+-- Name: arch_ordersgroups_ordersgroupissuedmaterial_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.arch_ordersgroups_ordersgroupissuedmaterial_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: arch_ordersgroups_ordersgroupissuedmaterial_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.arch_ordersgroups_ordersgroupissuedmaterial_id_seq OWNED BY public.arch_ordersgroups_ordersgroupissuedmaterial.id;
+
+
+--
+-- Name: arch_ordersgroups_ordersgroupissuedmaterialposition; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.arch_ordersgroups_ordersgroupissuedmaterialposition (
+    id bigint NOT NULL,
+    ordersgroupissuedmaterial_id bigint,
+    documentnumber character varying(255),
+    quantity numeric(14,5),
+    price numeric(14,5),
+    value numeric(14,5),
+    externaldocumentid character varying(255),
+    archived boolean DEFAULT false
+);
+
+
+--
+-- Name: arch_ordersgroups_ordersgroupissuedmaterialposition_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.arch_ordersgroups_ordersgroupissuedmaterialposition_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: arch_ordersgroups_ordersgroupissuedmaterialposition_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.arch_ordersgroups_ordersgroupissuedmaterialposition_id_seq OWNED BY public.arch_ordersgroups_ordersgroupissuedmaterialposition.id;
+
+
+--
+-- Name: arch_ordersgroups_ordersgroupmaterialrequirement; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.arch_ordersgroups_ordersgroupmaterialrequirement (
+    id bigint NOT NULL,
+    number character varying(256),
+    ordersgroup_id bigint,
+    generated boolean,
+    worker character varying(255),
+    date timestamp without time zone,
+    filename character varying(255),
+    archived boolean DEFAULT false
+);
+
+
+--
+-- Name: arch_ordersgroups_ordersgroupmaterialrequirement_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.arch_ordersgroups_ordersgroupmaterialrequirement_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: arch_ordersgroups_ordersgroupmaterialrequirement_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.arch_ordersgroups_ordersgroupmaterialrequirement_id_seq OWNED BY public.arch_ordersgroups_ordersgroupmaterialrequirement.id;
+
+
+--
+-- Name: arch_ordersgroups_ordersgroupmaterialrequirementproduct; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.arch_ordersgroups_ordersgroupmaterialrequirementproduct (
+    id bigint NOT NULL,
+    ordersgroupmaterialrequirement_id bigint,
+    product_id bigint,
+    quantity numeric(14,5),
+    currentstock numeric(14,5),
+    technologyinputproducttype_id bigint,
+    orderstartdate date,
+    division_id bigint,
+    location_id bigint,
+    issuedquantity numeric(14,5),
+    supplier_id bigint,
+    archived boolean DEFAULT false
+);
+
+
+--
+-- Name: arch_ordersgroups_ordersgroupmaterialrequirementproduct_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.arch_ordersgroups_ordersgroupmaterialrequirementproduct_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: arch_ordersgroups_ordersgroupmaterialrequirementproduct_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.arch_ordersgroups_ordersgroupmaterialrequirementproduct_id_seq OWNED BY public.arch_ordersgroups_ordersgroupmaterialrequirementproduct.id;
+
+
+--
+-- Name: arch_ordersgroups_ordersgroupproducedproduct; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.arch_ordersgroups_ordersgroupproducedproduct (
+    id bigint NOT NULL,
+    ordersgroup_id bigint,
+    product_id bigint,
+    location_id bigint,
+    document_id bigint,
+    quantity numeric(14,5),
+    accepted boolean DEFAULT false,
+    externaldocumentnumber character varying(255),
+    batch_id bigint,
+    archived boolean DEFAULT false
+);
+
+
+--
+-- Name: arch_ordersgroups_ordersgroupproducedproduct_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.arch_ordersgroups_ordersgroupproducedproduct_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: arch_ordersgroups_ordersgroupproducedproduct_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.arch_ordersgroups_ordersgroupproducedproduct_id_seq OWNED BY public.arch_ordersgroups_ordersgroupproducedproduct.id;
+
+
+--
+-- Name: arch_ordersgroups_ordersgroupproductstoissueentryhelper; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.arch_ordersgroups_ordersgroupproductstoissueentryhelper (
+    id bigint NOT NULL,
+    ordersgroupmaterialrequirementproduct_id bigint,
+    ordersgroupproductstoissuehelper_id bigint,
+    quantity numeric(12,5),
+    archived boolean DEFAULT false
+);
+
+
+--
+-- Name: arch_ordersgroups_ordersgroupproductstoissueentryhelper_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.arch_ordersgroups_ordersgroupproductstoissueentryhelper_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: arch_ordersgroups_ordersgroupproductstoissueentryhelper_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.arch_ordersgroups_ordersgroupproductstoissueentryhelper_id_seq OWNED BY public.arch_ordersgroups_ordersgroupproductstoissueentryhelper.id;
+
+
+--
+-- Name: arch_ordersgroups_ordersgroupproductstoissuehelper; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.arch_ordersgroups_ordersgroupproductstoissuehelper (
+    id bigint NOT NULL,
+    ordersgroupmaterialrequirement_id bigint,
+    archived boolean DEFAULT false
+);
+
+
+--
+-- Name: arch_ordersgroups_ordersgroupproductstoissuehelper_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.arch_ordersgroups_ordersgroupproductstoissuehelper_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: arch_ordersgroups_ordersgroupproductstoissuehelper_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.arch_ordersgroups_ordersgroupproductstoissuehelper_id_seq OWNED BY public.arch_ordersgroups_ordersgroupproductstoissuehelper.id;
+
+
+--
+-- Name: arch_ordersgroups_productionbalance; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.arch_ordersgroups_productionbalance (
+    id bigint NOT NULL,
+    number character varying(255),
+    name character varying(255),
+    generated boolean,
+    worker character varying(255),
+    date timestamp without time zone,
+    filename character varying(255),
+    ordersgroup_id bigint,
+    plannedmaterialcost character varying(255) DEFAULT '01nominal'::character varying,
+    usenominalcostpricenotspecified boolean DEFAULT false,
+    realmaterialcost character varying(255) DEFAULT '01ordersgroupsdocuments'::character varying,
+    orderedquantity numeric(14,5),
+    producedquantity numeric(14,5),
+    quantitydeviation numeric(14,5),
+    plannedcost numeric(14,5),
+    realcost numeric(14,5),
+    costdeviation numeric(14,5),
+    active boolean DEFAULT true,
+    archived boolean DEFAULT false
+);
+
+
+--
+-- Name: arch_ordersgroups_productionbalance_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.arch_ordersgroups_productionbalance_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: arch_ordersgroups_productionbalance_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.arch_ordersgroups_productionbalance_id_seq OWNED BY public.arch_ordersgroups_productionbalance.id;
+
+
+--
+-- Name: arch_ordersupplies_coverageanalysisfororder; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.arch_ordersupplies_coverageanalysisfororder (
+    id bigint NOT NULL,
+    order_id bigint,
+    orderedproduct_id bigint,
+    plannedquantity numeric(16,5),
+    coveragedegree character varying(255),
+    coveredfromtheday timestamp without time zone,
+    deliverytime timestamp without time zone,
+    componentsproductiondate timestamp without time zone,
+    materialrequirementcoverage_id bigint,
+    archived boolean DEFAULT false
+);
+
+
+--
+-- Name: arch_ordersupplies_coverageanalysisfororder_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.arch_ordersupplies_coverageanalysisfororder_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: arch_ordersupplies_coverageanalysisfororder_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.arch_ordersupplies_coverageanalysisfororder_id_seq OWNED BY public.arch_ordersupplies_coverageanalysisfororder.id;
+
+
+--
 -- Name: arch_ordersupplies_coveragelocation; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -7420,7 +8277,6 @@ CREATE TABLE public.arch_ordersupplies_coverageproduct (
     deliveredquantity numeric(16,5),
     locationsquantity numeric(16,5),
     state character varying(255),
-    negotiatedquantity numeric(16,5),
     issubcontracted boolean DEFAULT false,
     ispurchased boolean DEFAULT false,
     productnumber character varying(255),
@@ -7431,8 +8287,8 @@ CREATE TABLE public.arch_ordersupplies_coverageproduct (
     producequantity numeric(16,5),
     fromselectedorder boolean DEFAULT false,
     entityversion bigint DEFAULT 0,
-    allproductstype character varying(255),
     company_id bigint,
+    price numeric(12,5),
     archived boolean DEFAULT false
 );
 
@@ -7530,50 +8386,6 @@ ALTER SEQUENCE public.arch_ordersupplies_coverageproductselected_id_seq OWNED BY
 
 
 --
--- Name: arch_ordersupplies_coverageregister; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.arch_ordersupplies_coverageregister (
-    id bigint NOT NULL,
-    fromproductioncountingquantity boolean DEFAULT false,
-    product_id bigint,
-    productnumber character varying(255),
-    order_id bigint,
-    ordernumber character varying(255),
-    delivery_id bigint,
-    operation_id bigint,
-    technologyoperationcomponent_id bigint,
-    date timestamp without time zone,
-    quantity numeric(12,5),
-    productioncountingquantities numeric(12,5),
-    eventtype character varying(255),
-    state character varying(255),
-    entityversion bigint DEFAULT 0,
-    producttype character varying(255),
-    archived boolean DEFAULT false
-);
-
-
---
--- Name: arch_ordersupplies_coverageregister_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE public.arch_ordersupplies_coverageregister_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: arch_ordersupplies_coverageregister_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE public.arch_ordersupplies_coverageregister_id_seq OWNED BY public.arch_ordersupplies_coverageregister.id;
-
-
---
 -- Name: arch_ordersupplies_materialrequirementcoverage; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -7599,6 +8411,7 @@ CREATE TABLE public.arch_ordersupplies_materialrequirementcoverage (
     ordergenerationinprogress boolean DEFAULT false,
     forordersgroup_id bigint,
     ordersgroupsgenerated boolean DEFAULT false,
+    includeincalculationdeliveries character varying(255) DEFAULT '01confirmedDeliveries'::character varying,
     archived boolean DEFAULT false
 );
 
@@ -7681,6 +8494,10 @@ CREATE TABLE public.arch_productflowthrudivision_materialavailability (
     entityversion bigint DEFAULT 0,
     location_id bigint,
     availability character varying,
+    replacement boolean DEFAULT false,
+    batchesid character varying(255),
+    batches character varying(255),
+    batchesquantity numeric(19,5),
     archived boolean DEFAULT false
 );
 
@@ -8029,25 +8846,26 @@ ALTER SEQUENCE public.arch_productioncounting_anomalyreasoncontainer_id_seq OWNE
 
 
 --
--- Name: arch_productioncounting_productioncountingquantitysetcomponent; Type: TABLE; Schema: public; Owner: -
+-- Name: arch_productioncounting_lack; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE public.arch_productioncounting_productioncountingquantitysetcomponent (
+CREATE TABLE public.arch_productioncounting_lack (
     id bigint NOT NULL,
-    productioncountingquantity_id bigint,
-    product_id bigint,
-    quantityfromsets numeric(12,5),
-    plannedquantityfromproduct numeric(12,5),
-    outquantity numeric(12,5),
+    trackingoperationproductoutcomponent_id bigint,
+    lackquantity numeric(14,5),
+    createdate timestamp without time zone,
+    updatedate timestamp without time zone,
+    createuser character varying(255),
+    updateuser character varying(255),
     archived boolean DEFAULT false
 );
 
 
 --
--- Name: arch_productioncounting_productioncountingquantitysetcomponent_; Type: SEQUENCE; Schema: public; Owner: -
+-- Name: arch_productioncounting_lack_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
-CREATE SEQUENCE public.arch_productioncounting_productioncountingquantitysetcomponent_
+CREATE SEQUENCE public.arch_productioncounting_lack_id_seq
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -8056,10 +8874,43 @@ CREATE SEQUENCE public.arch_productioncounting_productioncountingquantitysetcomp
 
 
 --
--- Name: arch_productioncounting_productioncountingquantitysetcomponent_; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+-- Name: arch_productioncounting_lack_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
-ALTER SEQUENCE public.arch_productioncounting_productioncountingquantitysetcomponent_ OWNED BY public.arch_productioncounting_productioncountingquantitysetcomponent.id;
+ALTER SEQUENCE public.arch_productioncounting_lack_id_seq OWNED BY public.arch_productioncounting_lack.id;
+
+
+--
+-- Name: arch_productioncounting_prodoutresourceattrval; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.arch_productioncounting_prodoutresourceattrval (
+    id bigint NOT NULL,
+    trackingoperationproductoutcomponent_id bigint,
+    attribute_id bigint,
+    attributevalue_id bigint,
+    value character varying(255),
+    archived boolean DEFAULT false
+);
+
+
+--
+-- Name: arch_productioncounting_prodoutresourceattrval_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.arch_productioncounting_prodoutresourceattrval_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: arch_productioncounting_prodoutresourceattrval_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.arch_productioncounting_prodoutresourceattrval_id_seq OWNED BY public.arch_productioncounting_prodoutresourceattrval.id;
 
 
 --
@@ -8079,6 +8930,40 @@ CREATE SEQUENCE public.arch_productioncounting_productiontracking_id_seq
 --
 
 ALTER SEQUENCE public.arch_productioncounting_productiontracking_id_seq OWNED BY public.arch_productioncounting_productiontracking.id;
+
+
+--
+-- Name: arch_productioncounting_productiontrackingattachment; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.arch_productioncounting_productiontrackingattachment (
+    id bigint NOT NULL,
+    productiontracking_id bigint,
+    attachment character varying(255),
+    name character varying(255),
+    size numeric(12,5),
+    ext character varying(255),
+    archived boolean DEFAULT false
+);
+
+
+--
+-- Name: arch_productioncounting_productiontrackingattachment_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.arch_productioncounting_productiontrackingattachment_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: arch_productioncounting_productiontrackingattachment_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.arch_productioncounting_productiontrackingattachment_id_seq OWNED BY public.arch_productioncounting_productiontrackingattachment.id;
 
 
 --
@@ -8208,6 +9093,39 @@ ALTER SEQUENCE public.arch_productioncounting_staffworktime_id_seq OWNED BY publ
 
 
 --
+-- Name: arch_productioncounting_trackinginproductreplacementhelper; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.arch_productioncounting_trackinginproductreplacementhelper (
+    id bigint NOT NULL,
+    productiontracking_id bigint,
+    product_id bigint,
+    quantity numeric(14,5),
+    basicproduct_id bigint,
+    archived boolean DEFAULT false
+);
+
+
+--
+-- Name: arch_productioncounting_trackinginproductreplacementhelper_id_s; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.arch_productioncounting_trackinginproductreplacementhelper_id_s
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: arch_productioncounting_trackinginproductreplacementhelper_id_s; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.arch_productioncounting_trackinginproductreplacementhelper_id_s OWNED BY public.arch_productioncounting_trackinginproductreplacementhelper.id;
+
+
+--
 -- Name: arch_productioncounting_trackingoperationproductincomponent; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -8217,7 +9135,6 @@ CREATE TABLE public.arch_productioncounting_trackingoperationproductincomponent 
     product_id bigint,
     usedquantity numeric(14,5),
     balance numeric(14,5),
-    batch_id bigint,
     obtainedquantity numeric(14,5),
     remainedquantity numeric(14,5),
     effectiveusedquantity numeric(15,5),
@@ -8230,6 +9147,7 @@ CREATE TABLE public.arch_productioncounting_trackingoperationproductincomponent 
     wasteusedquantity numeric,
     wasteunit character varying,
     additionalinformation character varying,
+    replacementto_id bigint,
     archived boolean DEFAULT false
 );
 
@@ -8270,6 +9188,38 @@ CREATE SEQUENCE public.arch_productioncounting_trackingoperationproductoutcompon
 --
 
 ALTER SEQUENCE public.arch_productioncounting_trackingoperationproductoutcomponent_id OWNED BY public.arch_productioncounting_trackingoperationproductoutcomponent.id;
+
+
+--
+-- Name: arch_productioncounting_usedbatch; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.arch_productioncounting_usedbatch (
+    id bigint NOT NULL,
+    trackingoperationproductincomponent_id bigint,
+    batch_id bigint,
+    quantity numeric(14,5),
+    archived boolean DEFAULT false
+);
+
+
+--
+-- Name: arch_productioncounting_usedbatch_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.arch_productioncounting_usedbatch_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: arch_productioncounting_usedbatch_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.arch_productioncounting_usedbatch_id_seq OWNED BY public.arch_productioncounting_usedbatch.id;
 
 
 --
@@ -8346,11 +9296,9 @@ ALTER SEQUENCE public.arch_productionpershift_productionpershift_id_seq OWNED BY
 
 CREATE TABLE public.arch_productionpershift_progressforday (
     id bigint NOT NULL,
-    technologyinstanceoperationcomponent_id bigint,
     day integer,
     corrected boolean DEFAULT false,
     dateofday date,
-    technologyoperationcomponent_id bigint,
     actualdateofday date,
     entityversion bigint DEFAULT 0,
     productionpershift_id bigint,
@@ -8478,6 +9426,222 @@ CREATE SEQUENCE public.arch_productionscheduling_ordertimecalculation_id_seq
 --
 
 ALTER SEQUENCE public.arch_productionscheduling_ordertimecalculation_id_seq OWNED BY public.arch_productionscheduling_ordertimecalculation.id;
+
+
+--
+-- Name: arch_qualitycontrol_qualitycontrol; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.arch_qualitycontrol_qualitycontrol (
+    id bigint NOT NULL,
+    number character varying(255),
+    product_id bigint,
+    qualitycard_id bigint,
+    controltype character varying(255) DEFAULT '01final'::character varying,
+    batch_id bigint,
+    date date,
+    staff_id bigint,
+    order_id bigint,
+    qualityrating character varying(255),
+    state character varying(255) DEFAULT '01new'::character varying,
+    delivery_id bigint,
+    description character varying(2048),
+    archived boolean DEFAULT false
+);
+
+
+--
+-- Name: arch_qualitycontrol_qualitycontrol_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.arch_qualitycontrol_qualitycontrol_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: arch_qualitycontrol_qualitycontrol_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.arch_qualitycontrol_qualitycontrol_id_seq OWNED BY public.arch_qualitycontrol_qualitycontrol.id;
+
+
+--
+-- Name: arch_qualitycontrol_qualitycontrolattachment; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.arch_qualitycontrol_qualitycontrolattachment (
+    id bigint NOT NULL,
+    qualitycontrol_id bigint,
+    attachment character varying(255),
+    name character varying(255),
+    size numeric(12,5),
+    ext character varying(255),
+    archived boolean DEFAULT false
+);
+
+
+--
+-- Name: arch_qualitycontrol_qualitycontrolattachment_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.arch_qualitycontrol_qualitycontrolattachment_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: arch_qualitycontrol_qualitycontrolattachment_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.arch_qualitycontrol_qualitycontrolattachment_id_seq OWNED BY public.arch_qualitycontrol_qualitycontrolattachment.id;
+
+
+--
+-- Name: arch_qualitycontrol_qualitycontrolattributeprodtracking; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.arch_qualitycontrol_qualitycontrolattributeprodtracking (
+    id bigint NOT NULL,
+    productiontracking_id bigint,
+    attribute_id bigint,
+    attributevalue_id bigint,
+    value character varying(255),
+    fromtechnology boolean DEFAULT false,
+    moment character varying(255),
+    adddate timestamp without time zone,
+    archived boolean DEFAULT false
+);
+
+
+--
+-- Name: arch_qualitycontrol_qualitycontrolattributeprodtracking_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.arch_qualitycontrol_qualitycontrolattributeprodtracking_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: arch_qualitycontrol_qualitycontrolattributeprodtracking_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.arch_qualitycontrol_qualitycontrolattributeprodtracking_id_seq OWNED BY public.arch_qualitycontrol_qualitycontrolattributeprodtracking.id;
+
+
+--
+-- Name: arch_qualitycontrol_qualitycontrolattributevalue; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.arch_qualitycontrol_qualitycontrolattributevalue (
+    id bigint NOT NULL,
+    qualitycontrol_id bigint,
+    attribute_id bigint,
+    attributevalue_id bigint,
+    value character varying(255),
+    productiontracking_id bigint,
+    fromqualitycard boolean DEFAULT false,
+    priority integer,
+    archived boolean DEFAULT false
+);
+
+
+--
+-- Name: arch_qualitycontrol_qualitycontrolattributevalue_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.arch_qualitycontrol_qualitycontrolattributevalue_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: arch_qualitycontrol_qualitycontrolattributevalue_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.arch_qualitycontrol_qualitycontrolattributevalue_id_seq OWNED BY public.arch_qualitycontrol_qualitycontrolattributevalue.id;
+
+
+--
+-- Name: arch_qualitycontrol_qualitycontrolresource; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.arch_qualitycontrol_qualitycontrolresource (
+    id bigint NOT NULL,
+    resourcenumber character varying(255),
+    qualitycontrol_id bigint,
+    resource_id bigint,
+    archived boolean DEFAULT false
+);
+
+
+--
+-- Name: arch_qualitycontrol_qualitycontrolresource_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.arch_qualitycontrol_qualitycontrolresource_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: arch_qualitycontrol_qualitycontrolresource_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.arch_qualitycontrol_qualitycontrolresource_id_seq OWNED BY public.arch_qualitycontrol_qualitycontrolresource.id;
+
+
+--
+-- Name: arch_qualitycontrol_qualitycontrolstatechange; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.arch_qualitycontrol_qualitycontrolstatechange (
+    id bigint NOT NULL,
+    dateandtime timestamp without time zone,
+    sourcestate character varying(255),
+    targetstate character varying(255),
+    status character varying(255),
+    phase integer,
+    worker character varying(255),
+    qualitycontrol_id bigint,
+    shift_id bigint,
+    archived boolean DEFAULT false
+);
+
+
+--
+-- Name: arch_qualitycontrol_qualitycontrolstatechange_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.arch_qualitycontrol_qualitycontrolstatechange_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: arch_qualitycontrol_qualitycontrolstatechange_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.arch_qualitycontrol_qualitycontrolstatechange_id_seq OWNED BY public.arch_qualitycontrol_qualitycontrolstatechange.id;
 
 
 --
@@ -8633,7 +9797,7 @@ CREATE TABLE public.arch_states_message (
     offerstatechange_id bigint,
     negotiationstatechange_id bigint,
     warehouseissuestatechange_id bigint,
-    labelstatechange_id bigint,
+    palletlabelstatechange_id bigint,
     maintenanceeventstatechange_id bigint,
     entityversion bigint DEFAULT 0,
     plannedeventstatechange_id bigint,
@@ -8669,9 +9833,12 @@ CREATE TABLE public.arch_stoppage_stoppage (
     id bigint NOT NULL,
     order_id bigint,
     duration integer,
-    reason text,
-    active boolean DEFAULT true,
     entityversion bigint DEFAULT 0,
+    productiontracking_id bigint,
+    reason_id bigint,
+    description character varying(1024),
+    datefrom timestamp without time zone,
+    dateto timestamp without time zone,
     archived boolean DEFAULT false
 );
 
@@ -8727,78 +9894,6 @@ CREATE SEQUENCE public.arch_technologies_barcodeoperationcomponent_id_seq
 --
 
 ALTER SEQUENCE public.arch_technologies_barcodeoperationcomponent_id_seq OWNED BY public.arch_technologies_barcodeoperationcomponent.id;
-
-
---
--- Name: arch_technologies_technologyoperationcomponentmergeproductin; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.arch_technologies_technologyoperationcomponentmergeproductin (
-    id bigint NOT NULL,
-    operationcomponent_id bigint,
-    mergedoperationcomponent_id bigint,
-    mergedoperationproductcomponent_id bigint,
-    quantitychange numeric(12,5),
-    order_id bigint,
-    active boolean DEFAULT true,
-    entityversion bigint DEFAULT 0,
-    archived boolean DEFAULT false
-);
-
-
---
--- Name: arch_technologies_technologyoperationcomponentmergeproductin_id; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE public.arch_technologies_technologyoperationcomponentmergeproductin_id
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: arch_technologies_technologyoperationcomponentmergeproductin_id; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE public.arch_technologies_technologyoperationcomponentmergeproductin_id OWNED BY public.arch_technologies_technologyoperationcomponentmergeproductin.id;
-
-
---
--- Name: arch_technologies_technologyoperationcomponentmergeproductout; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.arch_technologies_technologyoperationcomponentmergeproductout (
-    id bigint NOT NULL,
-    operationcomponent_id bigint,
-    mergedoperationcomponent_id bigint,
-    mergedoperationproductcomponent_id bigint,
-    quantitychange numeric(12,5),
-    order_id bigint,
-    active boolean DEFAULT true,
-    entityversion bigint DEFAULT 0,
-    archived boolean DEFAULT false
-);
-
-
---
--- Name: arch_technologies_technologyoperationcomponentmergeproductout_i; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE public.arch_technologies_technologyoperationcomponentmergeproductout_i
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: arch_technologies_technologyoperationcomponentmergeproductout_i; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE public.arch_technologies_technologyoperationcomponentmergeproductout_i OWNED BY public.arch_technologies_technologyoperationcomponentmergeproductout.id;
 
 
 --
@@ -22976,7 +24071,8 @@ CREATE TABLE public.orders_schedule (
     scheduleforbuffer boolean DEFAULT false,
     additionaltimeextendsoperation boolean DEFAULT true,
     includetpz boolean DEFAULT true,
-    onlyworkstationsoflinefromorder boolean DEFAULT false
+    onlyworkstationsoflinefromorder boolean DEFAULT false,
+    token character varying(36)
 );
 
 
@@ -23930,7 +25026,7 @@ CREATE VIEW public.ordersgroups_plannedworkingtimeanalysisdto AS
     ordersgroup.quantity,
     first_value(product.unit) OVER (PARTITION BY ordersgroup.id ORDER BY ordersorder.id) AS unit,
     first_value(tpl.standardperformance) OVER (PARTITION BY ordersgroup.id ORDER BY ordersorder.id) AS performancenorm,
-    (((ordersgroup.quantity * (60)::numeric) / first_value(tpl.standardperformance) OVER (PARTITION BY ordersgroup.id ORDER BY ordersorder.id)))::integer AS timebasedonnorms,
+    public.duration_to_string((((ordersgroup.quantity * (60)::numeric) / first_value(tpl.standardperformance) OVER (PARTITION BY ordersgroup.id ORDER BY ordersorder.id)))::integer) AS timebasedonnorms,
     ((((ordersgroup.quantity * (60)::numeric) / first_value(tpl.standardperformance) OVER (PARTITION BY ordersgroup.id ORDER BY ordersorder.id)) / (((8 * 60) * 60))::numeric))::numeric(14,1) AS shiftquantity,
     ordersgroup.startdate,
     ordersgroup.finishdate,
@@ -23957,7 +25053,7 @@ UNION ALL
     ordersgroup.quantity,
     first_value(product.unit) OVER (PARTITION BY ordersgroup.id ORDER BY ordersorder.id) AS unit,
     first_value(tpl.standardperformance) OVER (PARTITION BY ordersgroup.id ORDER BY ordersorder.id) AS performancenorm,
-    (((ordersgroup.quantity * (60)::numeric) / first_value(tpl.standardperformance) OVER (PARTITION BY ordersgroup.id ORDER BY ordersorder.id)))::integer AS timebasedonnorms,
+    public.duration_to_string((((ordersgroup.quantity * (60)::numeric) / first_value(tpl.standardperformance) OVER (PARTITION BY ordersgroup.id ORDER BY ordersorder.id)))::integer) AS timebasedonnorms,
     ((((ordersgroup.quantity * (60)::numeric) / first_value(tpl.standardperformance) OVER (PARTITION BY ordersgroup.id ORDER BY ordersorder.id)) / (((8 * 60) * 60))::numeric))::numeric(14,1) AS shiftquantity,
     ordersgroup.startdate,
     ordersgroup.finishdate,
@@ -25076,6 +26172,40 @@ CREATE SEQUENCE public.productflowthrudivision_opertaskmaterialavailabilitydto_i
     NO MINVALUE
     NO MAXVALUE
     CACHE 1;
+
+
+--
+-- Name: productflowthrudivision_orderproductresourcereservation; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.productflowthrudivision_orderproductresourcereservation (
+    id bigint NOT NULL,
+    resource_id bigint,
+    resourcenumber character varying(255),
+    planedquantity numeric(12,5),
+    usedquantity numeric(12,5),
+    productioncountingquantity_id bigint,
+    priority integer
+);
+
+
+--
+-- Name: productflowthrudivision_orderproductresourcereservation_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.productflowthrudivision_orderproductresourcereservation_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: productflowthrudivision_orderproductresourcereservation_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.productflowthrudivision_orderproductresourcereservation_id_seq OWNED BY public.productflowthrudivision_orderproductresourcereservation.id;
 
 
 --
@@ -26251,9 +27381,9 @@ CREATE VIEW public.productioncounting_performanceanalysismv AS
     mv_productioncounting_performanceanalysisdto.productionlinenumber,
     mv_productioncounting_performanceanalysisdto.staff_id,
     mv_productioncounting_performanceanalysisdto.staffname,
-    mv_productioncounting_performanceanalysisdto.timebasedonnormssum,
-    mv_productioncounting_performanceanalysisdto.labortimesum,
-    mv_productioncounting_performanceanalysisdto.timedeviation,
+    public.duration_to_string(mv_productioncounting_performanceanalysisdto.timebasedonnormssum) AS timebasedonnormssum,
+    public.duration_to_string(mv_productioncounting_performanceanalysisdto.labortimesum) AS labortimesum,
+    public.duration_to_string(mv_productioncounting_performanceanalysisdto.timedeviation) AS timedeviation,
     mv_productioncounting_performanceanalysisdto.performance,
     mv_productioncounting_performanceanalysisdto.shift_id,
     mv_productioncounting_performanceanalysisdto.shiftname,
@@ -28955,7 +30085,7 @@ CREATE TABLE public.stoppage_stoppagereason (
     id bigint NOT NULL,
     name character varying(255),
     description character varying(1024),
-    createfailure boolean DEFAULT false
+    type character varying(255) DEFAULT '02other'::character varying
 );
 
 
@@ -28965,28 +30095,28 @@ CREATE TABLE public.stoppage_stoppagereason (
 
 CREATE VIEW public.stoppage_stoppagedto AS
  SELECT stoppage.id,
-    o.number AS ordernumber,
-    o.state AS orderstate,
-    pt.number AS productiontrackingnumber,
-    pt.state AS productiontrackingstate,
-    sr.name AS reasonname,
+    ordersorder.number AS ordernumber,
+    ordersorder.state AS orderstate,
+    productiontracking.number AS productiontrackingnumber,
+    productiontracking.state AS productiontrackingstate,
+    stoppagereason.name AS reasonname,
     stoppage.description,
-    stoppage.duration,
+    public.duration_to_string(stoppage.duration) AS duration,
     stoppage.datefrom,
     stoppage.dateto,
-    pl.number AS productionlinenumber,
+    productionline.number AS productionlinenumber,
     workstation.number AS workstationnumber,
     (((staff.name)::text || ' '::text) || (staff.surname)::text) AS staffname,
-    COALESCE(ptd.number, od.number) AS divisionnumber
+    COALESCE(productiontrackingdivision.number, orderdivision.number) AS divisionnumber
    FROM ((((((((public.stoppage_stoppage stoppage
-     JOIN public.orders_order o ON ((o.id = stoppage.order_id)))
-     JOIN public.stoppage_stoppagereason sr ON ((sr.id = stoppage.reason_id)))
-     LEFT JOIN public.productioncounting_productiontracking pt ON ((pt.id = stoppage.productiontracking_id)))
-     LEFT JOIN public.productionlines_productionline pl ON ((pl.id = o.productionline_id)))
-     LEFT JOIN public.basic_workstation workstation ON ((workstation.id = pt.workstation_id)))
-     LEFT JOIN public.basic_staff staff ON ((staff.id = pt.staff_id)))
-     LEFT JOIN public.basic_division ptd ON ((ptd.id = pt.division_id)))
-     LEFT JOIN public.basic_division od ON ((od.id = o.division_id)));
+     JOIN public.orders_order ordersorder ON ((ordersorder.id = stoppage.order_id)))
+     JOIN public.stoppage_stoppagereason stoppagereason ON ((stoppagereason.id = stoppage.reason_id)))
+     LEFT JOIN public.productioncounting_productiontracking productiontracking ON ((productiontracking.id = stoppage.productiontracking_id)))
+     LEFT JOIN public.productionlines_productionline productionline ON ((productionline.id = ordersorder.productionline_id)))
+     LEFT JOIN public.basic_workstation workstation ON ((workstation.id = productiontracking.workstation_id)))
+     LEFT JOIN public.basic_staff staff ON ((staff.id = productiontracking.staff_id)))
+     LEFT JOIN public.basic_division productiontrackingdivision ON ((productiontrackingdivision.id = productiontracking.division_id)))
+     LEFT JOIN public.basic_division orderdivision ON ((orderdivision.id = ordersorder.division_id)));
 
 
 --
@@ -32426,6 +33556,13 @@ ALTER TABLE ONLY public.arch_basicproductioncounting_basicproductioncounting ALT
 
 
 --
+-- Name: arch_basicproductioncounting_productioncountingattributevalue id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.arch_basicproductioncounting_productioncountingattributevalue ALTER COLUMN id SET DEFAULT nextval('public.arch_basicproductioncounting_productioncountingattributevalue_i'::regclass);
+
+
+--
 -- Name: arch_basicproductioncounting_productioncountingoperationrun id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -32440,17 +33577,10 @@ ALTER TABLE ONLY public.arch_basicproductioncounting_productioncountingquantity 
 
 
 --
--- Name: arch_costcalculation_componentcost id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: arch_cdnrcgoodfood_cancelprotocol id; Type: DEFAULT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.arch_costcalculation_componentcost ALTER COLUMN id SET DEFAULT nextval('public.arch_costcalculation_componentcost_id_seq'::regclass);
-
-
---
--- Name: arch_costcalculation_costcalculation id; Type: DEFAULT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_costcalculation_costcalculation ALTER COLUMN id SET DEFAULT nextval('public.arch_costcalculation_costcalculation_id_seq'::regclass);
+ALTER TABLE ONLY public.arch_cdnrcgoodfood_cancelprotocol ALTER COLUMN id SET DEFAULT nextval('public.arch_cdnrcgoodfood_cancelprotocol_id_seq'::regclass);
 
 
 --
@@ -32458,20 +33588,6 @@ ALTER TABLE ONLY public.arch_costcalculation_costcalculation ALTER COLUMN id SET
 --
 
 ALTER TABLE ONLY public.arch_costnormsformaterials_technologyinstoperproductincomp ALTER COLUMN id SET DEFAULT nextval('public.arch_costnormsformaterials_technologyinstoperproductincomp_id_s'::regclass);
-
-
---
--- Name: arch_costnormsforoperation_calculationoperationcomponent id; Type: DEFAULT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_costnormsforoperation_calculationoperationcomponent ALTER COLUMN id SET DEFAULT nextval('public.arch_costnormsforoperation_calculationoperationcomponent_id_seq'::regclass);
-
-
---
--- Name: arch_esilco_importpositionerror id; Type: DEFAULT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_esilco_importpositionerror ALTER COLUMN id SET DEFAULT nextval('public.arch_esilco_importpositionerror_id_seq'::regclass);
 
 
 --
@@ -32615,24 +33731,24 @@ ALTER TABLE ONLY public.arch_goodfood_extrusiontakenoffmixingredient ALTER COLUM
 
 
 --
--- Name: arch_goodfood_label id; Type: DEFAULT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_goodfood_label ALTER COLUMN id SET DEFAULT nextval('public.arch_goodfood_label_id_seq'::regclass);
-
-
---
--- Name: arch_goodfood_labelstatechange id; Type: DEFAULT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_goodfood_labelstatechange ALTER COLUMN id SET DEFAULT nextval('public.arch_goodfood_labelstatechange_id_seq'::regclass);
-
-
---
 -- Name: arch_goodfood_pallet id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.arch_goodfood_pallet ALTER COLUMN id SET DEFAULT nextval('public.arch_goodfood_pallet_id_seq'::regclass);
+
+
+--
+-- Name: arch_goodfood_palletlabel id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.arch_goodfood_palletlabel ALTER COLUMN id SET DEFAULT nextval('public.arch_goodfood_palletlabel_id_seq'::regclass);
+
+
+--
+-- Name: arch_goodfood_palletlabelstatechange id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.arch_goodfood_palletlabelstatechange ALTER COLUMN id SET DEFAULT nextval('public.arch_goodfood_palletlabelstatechange_id_seq'::regclass);
 
 
 --
@@ -32678,6 +33794,27 @@ ALTER TABLE ONLY public.arch_masterorders_masterorderproduct ALTER COLUMN id SET
 
 
 --
+-- Name: arch_masterorders_masterorderproductattrvalue id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.arch_masterorders_masterorderproductattrvalue ALTER COLUMN id SET DEFAULT nextval('public.arch_masterorders_masterorderproductattrvalue_id_seq'::regclass);
+
+
+--
+-- Name: arch_masterorders_productsbysizeentryhelper id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.arch_masterorders_productsbysizeentryhelper ALTER COLUMN id SET DEFAULT nextval('public.arch_masterorders_productsbysizeentryhelper_id_seq'::regclass);
+
+
+--
+-- Name: arch_masterorders_productsbysizehelper id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.arch_masterorders_productsbysizehelper ALTER COLUMN id SET DEFAULT nextval('public.arch_masterorders_productsbysizehelper_id_seq'::regclass);
+
+
+--
 -- Name: arch_materialflowresources_document id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -32685,10 +33822,24 @@ ALTER TABLE ONLY public.arch_materialflowresources_document ALTER COLUMN id SET 
 
 
 --
+-- Name: arch_materialflowresources_documentstatechange id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.arch_materialflowresources_documentstatechange ALTER COLUMN id SET DEFAULT nextval('public.arch_materialflowresources_documentstatechange_id_seq'::regclass);
+
+
+--
 -- Name: arch_materialflowresources_position id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.arch_materialflowresources_position ALTER COLUMN id SET DEFAULT nextval('public.arch_materialflowresources_position_id_seq'::regclass);
+
+
+--
+-- Name: arch_materialflowresources_positionattributevalue id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.arch_materialflowresources_positionattributevalue ALTER COLUMN id SET DEFAULT nextval('public.arch_materialflowresources_positionattributevalue_id_seq'::regclass);
 
 
 --
@@ -32727,6 +33878,13 @@ ALTER TABLE ONLY public.arch_orders_operationaltask ALTER COLUMN id SET DEFAULT 
 
 
 --
+-- Name: arch_orders_operationaltaskstatechange id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.arch_orders_operationaltaskstatechange ALTER COLUMN id SET DEFAULT nextval('public.arch_orders_operationaltaskstatechange_id_seq'::regclass);
+
+
+--
 -- Name: arch_orders_order id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -32734,10 +33892,52 @@ ALTER TABLE ONLY public.arch_orders_order ALTER COLUMN id SET DEFAULT nextval('p
 
 
 --
+-- Name: arch_orders_orderpack id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.arch_orders_orderpack ALTER COLUMN id SET DEFAULT nextval('public.arch_orders_orderpack_id_seq'::regclass);
+
+
+--
+-- Name: arch_orders_orderpackstatechange id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.arch_orders_orderpackstatechange ALTER COLUMN id SET DEFAULT nextval('public.arch_orders_orderpackstatechange_id_seq'::regclass);
+
+
+--
 -- Name: arch_orders_orderstatechange id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.arch_orders_orderstatechange ALTER COLUMN id SET DEFAULT nextval('public.arch_orders_orderstatechange_id_seq'::regclass);
+
+
+--
+-- Name: arch_orders_ordertechnologicalprocess id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.arch_orders_ordertechnologicalprocess ALTER COLUMN id SET DEFAULT nextval('public.arch_orders_ordertechnologicalprocess_id_seq'::regclass);
+
+
+--
+-- Name: arch_orders_ordertechnologicalprocesspart id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.arch_orders_ordertechnologicalprocesspart ALTER COLUMN id SET DEFAULT nextval('public.arch_orders_ordertechnologicalprocesspart_id_seq'::regclass);
+
+
+--
+-- Name: arch_orders_ordertechnologicalprocesswaste id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.arch_orders_ordertechnologicalprocesswaste ALTER COLUMN id SET DEFAULT nextval('public.arch_orders_ordertechnologicalprocesswaste_id_seq'::regclass);
+
+
+--
+-- Name: arch_orders_productionlinescheduleposition id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.arch_orders_productionlinescheduleposition ALTER COLUMN id SET DEFAULT nextval('public.arch_orders_productionlinescheduleposition_id_seq'::regclass);
 
 
 --
@@ -32776,6 +33976,13 @@ ALTER TABLE ONLY public.arch_orders_reasontypeofchangingorderstate ALTER COLUMN 
 
 
 --
+-- Name: arch_orders_scheduleposition id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.arch_orders_scheduleposition ALTER COLUMN id SET DEFAULT nextval('public.arch_orders_scheduleposition_id_seq'::regclass);
+
+
+--
 -- Name: arch_orders_typeofcorrectioncauses id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -32794,6 +34001,69 @@ ALTER TABLE ONLY public.arch_ordersforsubproductsgeneration_suborders ALTER COLU
 --
 
 ALTER TABLE ONLY public.arch_ordersgroups_ordersgroup ALTER COLUMN id SET DEFAULT nextval('public.arch_ordersgroups_ordersgroup_id_seq'::regclass);
+
+
+--
+-- Name: arch_ordersgroups_ordersgroupissuedmaterial id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.arch_ordersgroups_ordersgroupissuedmaterial ALTER COLUMN id SET DEFAULT nextval('public.arch_ordersgroups_ordersgroupissuedmaterial_id_seq'::regclass);
+
+
+--
+-- Name: arch_ordersgroups_ordersgroupissuedmaterialposition id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.arch_ordersgroups_ordersgroupissuedmaterialposition ALTER COLUMN id SET DEFAULT nextval('public.arch_ordersgroups_ordersgroupissuedmaterialposition_id_seq'::regclass);
+
+
+--
+-- Name: arch_ordersgroups_ordersgroupmaterialrequirement id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.arch_ordersgroups_ordersgroupmaterialrequirement ALTER COLUMN id SET DEFAULT nextval('public.arch_ordersgroups_ordersgroupmaterialrequirement_id_seq'::regclass);
+
+
+--
+-- Name: arch_ordersgroups_ordersgroupmaterialrequirementproduct id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.arch_ordersgroups_ordersgroupmaterialrequirementproduct ALTER COLUMN id SET DEFAULT nextval('public.arch_ordersgroups_ordersgroupmaterialrequirementproduct_id_seq'::regclass);
+
+
+--
+-- Name: arch_ordersgroups_ordersgroupproducedproduct id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.arch_ordersgroups_ordersgroupproducedproduct ALTER COLUMN id SET DEFAULT nextval('public.arch_ordersgroups_ordersgroupproducedproduct_id_seq'::regclass);
+
+
+--
+-- Name: arch_ordersgroups_ordersgroupproductstoissueentryhelper id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.arch_ordersgroups_ordersgroupproductstoissueentryhelper ALTER COLUMN id SET DEFAULT nextval('public.arch_ordersgroups_ordersgroupproductstoissueentryhelper_id_seq'::regclass);
+
+
+--
+-- Name: arch_ordersgroups_ordersgroupproductstoissuehelper id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.arch_ordersgroups_ordersgroupproductstoissuehelper ALTER COLUMN id SET DEFAULT nextval('public.arch_ordersgroups_ordersgroupproductstoissuehelper_id_seq'::regclass);
+
+
+--
+-- Name: arch_ordersgroups_productionbalance id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.arch_ordersgroups_productionbalance ALTER COLUMN id SET DEFAULT nextval('public.arch_ordersgroups_productionbalance_id_seq'::regclass);
+
+
+--
+-- Name: arch_ordersupplies_coverageanalysisfororder id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.arch_ordersupplies_coverageanalysisfororder ALTER COLUMN id SET DEFAULT nextval('public.arch_ordersupplies_coverageanalysisfororder_id_seq'::regclass);
 
 
 --
@@ -32829,13 +34099,6 @@ ALTER TABLE ONLY public.arch_ordersupplies_coverageproductlogging ALTER COLUMN i
 --
 
 ALTER TABLE ONLY public.arch_ordersupplies_coverageproductselected ALTER COLUMN id SET DEFAULT nextval('public.arch_ordersupplies_coverageproductselected_id_seq'::regclass);
-
-
---
--- Name: arch_ordersupplies_coverageregister id; Type: DEFAULT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_ordersupplies_coverageregister ALTER COLUMN id SET DEFAULT nextval('public.arch_ordersupplies_coverageregister_id_seq'::regclass);
 
 
 --
@@ -32916,10 +34179,17 @@ ALTER TABLE ONLY public.arch_productioncounting_anomalyreasoncontainer ALTER COL
 
 
 --
--- Name: arch_productioncounting_productioncountingquantitysetcomponent id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: arch_productioncounting_lack id; Type: DEFAULT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.arch_productioncounting_productioncountingquantitysetcomponent ALTER COLUMN id SET DEFAULT nextval('public.arch_productioncounting_productioncountingquantitysetcomponent_'::regclass);
+ALTER TABLE ONLY public.arch_productioncounting_lack ALTER COLUMN id SET DEFAULT nextval('public.arch_productioncounting_lack_id_seq'::regclass);
+
+
+--
+-- Name: arch_productioncounting_prodoutresourceattrval id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.arch_productioncounting_prodoutresourceattrval ALTER COLUMN id SET DEFAULT nextval('public.arch_productioncounting_prodoutresourceattrval_id_seq'::regclass);
 
 
 --
@@ -32927,6 +34197,13 @@ ALTER TABLE ONLY public.arch_productioncounting_productioncountingquantitysetcom
 --
 
 ALTER TABLE ONLY public.arch_productioncounting_productiontracking ALTER COLUMN id SET DEFAULT nextval('public.arch_productioncounting_productiontracking_id_seq'::regclass);
+
+
+--
+-- Name: arch_productioncounting_productiontrackingattachment id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.arch_productioncounting_productiontrackingattachment ALTER COLUMN id SET DEFAULT nextval('public.arch_productioncounting_productiontrackingattachment_id_seq'::regclass);
 
 
 --
@@ -32944,6 +34221,13 @@ ALTER TABLE ONLY public.arch_productioncounting_staffworktime ALTER COLUMN id SE
 
 
 --
+-- Name: arch_productioncounting_trackinginproductreplacementhelper id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.arch_productioncounting_trackinginproductreplacementhelper ALTER COLUMN id SET DEFAULT nextval('public.arch_productioncounting_trackinginproductreplacementhelper_id_s'::regclass);
+
+
+--
 -- Name: arch_productioncounting_trackingoperationproductincomponent id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -32955,6 +34239,13 @@ ALTER TABLE ONLY public.arch_productioncounting_trackingoperationproductincompon
 --
 
 ALTER TABLE ONLY public.arch_productioncounting_trackingoperationproductoutcomponent ALTER COLUMN id SET DEFAULT nextval('public.arch_productioncounting_trackingoperationproductoutcomponent_id'::regclass);
+
+
+--
+-- Name: arch_productioncounting_usedbatch id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.arch_productioncounting_usedbatch ALTER COLUMN id SET DEFAULT nextval('public.arch_productioncounting_usedbatch_id_seq'::regclass);
 
 
 --
@@ -32997,6 +34288,48 @@ ALTER TABLE ONLY public.arch_productionscheduling_opercomptimecalculation ALTER 
 --
 
 ALTER TABLE ONLY public.arch_productionscheduling_ordertimecalculation ALTER COLUMN id SET DEFAULT nextval('public.arch_productionscheduling_ordertimecalculation_id_seq'::regclass);
+
+
+--
+-- Name: arch_qualitycontrol_qualitycontrol id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.arch_qualitycontrol_qualitycontrol ALTER COLUMN id SET DEFAULT nextval('public.arch_qualitycontrol_qualitycontrol_id_seq'::regclass);
+
+
+--
+-- Name: arch_qualitycontrol_qualitycontrolattachment id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.arch_qualitycontrol_qualitycontrolattachment ALTER COLUMN id SET DEFAULT nextval('public.arch_qualitycontrol_qualitycontrolattachment_id_seq'::regclass);
+
+
+--
+-- Name: arch_qualitycontrol_qualitycontrolattributeprodtracking id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.arch_qualitycontrol_qualitycontrolattributeprodtracking ALTER COLUMN id SET DEFAULT nextval('public.arch_qualitycontrol_qualitycontrolattributeprodtracking_id_seq'::regclass);
+
+
+--
+-- Name: arch_qualitycontrol_qualitycontrolattributevalue id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.arch_qualitycontrol_qualitycontrolattributevalue ALTER COLUMN id SET DEFAULT nextval('public.arch_qualitycontrol_qualitycontrolattributevalue_id_seq'::regclass);
+
+
+--
+-- Name: arch_qualitycontrol_qualitycontrolresource id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.arch_qualitycontrol_qualitycontrolresource ALTER COLUMN id SET DEFAULT nextval('public.arch_qualitycontrol_qualitycontrolresource_id_seq'::regclass);
+
+
+--
+-- Name: arch_qualitycontrol_qualitycontrolstatechange id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.arch_qualitycontrol_qualitycontrolstatechange ALTER COLUMN id SET DEFAULT nextval('public.arch_qualitycontrol_qualitycontrolstatechange_id_seq'::regclass);
 
 
 --
@@ -33046,20 +34379,6 @@ ALTER TABLE ONLY public.arch_stoppage_stoppage ALTER COLUMN id SET DEFAULT nextv
 --
 
 ALTER TABLE ONLY public.arch_technologies_barcodeoperationcomponent ALTER COLUMN id SET DEFAULT nextval('public.arch_technologies_barcodeoperationcomponent_id_seq'::regclass);
-
-
---
--- Name: arch_technologies_technologyoperationcomponentmergeproductin id; Type: DEFAULT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_technologies_technologyoperationcomponentmergeproductin ALTER COLUMN id SET DEFAULT nextval('public.arch_technologies_technologyoperationcomponentmergeproductin_id'::regclass);
-
-
---
--- Name: arch_technologies_technologyoperationcomponentmergeproductout id; Type: DEFAULT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_technologies_technologyoperationcomponentmergeproductout ALTER COLUMN id SET DEFAULT nextval('public.arch_technologies_technologyoperationcomponentmergeproductout_i'::regclass);
 
 
 --
@@ -35086,6 +36405,13 @@ ALTER TABLE ONLY public.productflowthrudivision_opertaskmaterialavailability ALT
 
 
 --
+-- Name: productflowthrudivision_orderproductresourcereservation id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.productflowthrudivision_orderproductresourcereservation ALTER COLUMN id SET DEFAULT nextval('public.productflowthrudivision_orderproductresourcereservation_id_seq'::regclass);
+
+
+--
 -- Name: productflowthrudivision_productandquantityhelper id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -36341,7 +37667,7 @@ COPY public.arch_advancedgenealogyfororders_genealogyproductinbatch (id, worker,
 -- Data for Name: arch_advancedgenealogyfororders_genealogyproductincomponent; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.arch_advancedgenealogyfororders_genealogyproductincomponent (id, trackingrecord_id, technologyinstanceoperationcomponent_id, productincomponent_id, technologyoperationcomponent_id, entityversion, archived) FROM stdin;
+COPY public.arch_advancedgenealogyfororders_genealogyproductincomponent (id, trackingrecord_id, technologyinstanceoperationcomponent_id, technologyoperationcomponent_id, entityversion, product_id, archived) FROM stdin;
 \.
 
 
@@ -36394,6 +37720,14 @@ COPY public.arch_basicproductioncounting_basicproductioncounting (id, order_id, 
 
 
 --
+-- Data for Name: arch_basicproductioncounting_productioncountingattributevalue; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY public.arch_basicproductioncounting_productioncountingattributevalue (id, productioncountingquantity_id, attribute_id, attributevalue_id, value, archived) FROM stdin;
+\.
+
+
+--
 -- Data for Name: arch_basicproductioncounting_productioncountingoperationrun; Type: TABLE DATA; Schema: public; Owner: -
 --
 
@@ -36405,23 +37739,15 @@ COPY public.arch_basicproductioncounting_productioncountingoperationrun (id, ord
 -- Data for Name: arch_basicproductioncounting_productioncountingquantity; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.arch_basicproductioncounting_productioncountingquantity (id, order_id, product_id, plannedquantity, isnoncomponent, technologyoperationcomponent_id, basicproductioncounting_id, typeofmaterial, role, componentsoutputlocation_id, componentslocation_id, productsinputlocation_id, productionflow, productsflowlocation_id, entityversion, set, archived) FROM stdin;
+COPY public.arch_basicproductioncounting_productioncountingquantity (id, order_id, product_id, plannedquantity, isnoncomponent, technologyoperationcomponent_id, basicproductioncounting_id, typeofmaterial, role, componentsoutputlocation_id, componentslocation_id, productsinputlocation_id, productionflow, productsflowlocation_id, entityversion, replacementto_id, showmaterialcomponentinworkplan, technologyinputproducttype_id, usedquantity, producedquantity, wastereceptionwarehouse_id, attribute_id, archived) FROM stdin;
 \.
 
 
 --
--- Data for Name: arch_costcalculation_componentcost; Type: TABLE DATA; Schema: public; Owner: -
+-- Data for Name: arch_cdnrcgoodfood_cancelprotocol; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.arch_costcalculation_componentcost (id, costcalculation_id, product_id, priceperunit, archived) FROM stdin;
-\.
-
-
---
--- Data for Name: arch_costcalculation_costcalculation; Type: TABLE DATA; Schema: public; Owner: -
---
-
-COPY public.arch_costcalculation_costcalculation (id, number, product_id, defaulttechnology_id, technology_id, productionline_id, quantity, order_id, productioncostmargin, materialcostmargin, additionaloverhead, description, includetpz, includeadditionaltime, sourceofmaterialcosts, calculatematerialcostsmode, date, generated, filename, includecomponents, entityversion, sourceofoperationcosts, registrationpriceoverhead, profit, archived) FROM stdin;
+COPY public.arch_cdnrcgoodfood_cancelprotocol (id, extrusionprotocol_id, confectionprotocol_id, createdate, laststatechangefailcause, iscanceled, archived) FROM stdin;
 \.
 
 
@@ -36429,23 +37755,7 @@ COPY public.arch_costcalculation_costcalculation (id, number, product_id, defaul
 -- Data for Name: arch_costnormsformaterials_technologyinstoperproductincomp; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.arch_costnormsformaterials_technologyinstoperproductincomp (id, order_id, product_id, costfornumber, nominalcost, lastpurchasecost, averagecost, costfororder, lastoffercost, averageoffercost, entityversion, averagepricesubcontractor, archived) FROM stdin;
-\.
-
-
---
--- Data for Name: arch_costnormsforoperation_calculationoperationcomponent; Type: TABLE DATA; Schema: public; Owner: -
---
-
-COPY public.arch_costnormsforoperation_calculationoperationcomponent (id, nodenumber, operation_id, technologyoperationcomponent_id, parent_id, entitytype, priority, tpz, tj, areproductquantitiesdivisible, istjdivisible, machineutilization, laborutilization, productioninonecycle, nextoperationafterproducedtype, nextoperationafterproducedquantity, timenextoperation, operationoffset, effectiveoperationrealizationtime, effectivedatefrom, effectivedateto, duration, machineworktime, laborworktime, operationcost, totalmachineoperationcost, totallaboroperationcost, laborhourlycost, machinehourlycost, costcalculation_id, entityversion, archived) FROM stdin;
-\.
-
-
---
--- Data for Name: arch_esilco_importpositionerror; Type: TABLE DATA; Schema: public; Owner: -
---
-
-COPY public.arch_esilco_importpositionerror (id, document_id, quantity, productcode, name, archived) FROM stdin;
+COPY public.arch_costnormsformaterials_technologyinstoperproductincomp (id, order_id, product_id, costfororder, entityversion, averagepricesubcontractor, archived) FROM stdin;
 \.
 
 
@@ -36541,7 +37851,7 @@ COPY public.arch_goodfood_extrusionaddedmixingredient (id, extrusionaddedmixentr
 -- Data for Name: arch_goodfood_extrusionpouring; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.arch_goodfood_extrusionpouring (id, extrusionprotocol_id, finaladdedquantity, addedquantity, totalmixquantity, addedquantitymanual, addedquantityrelatesto, mixwaterquantity, archived) FROM stdin;
+COPY public.arch_goodfood_extrusionpouring (id, extrusionprotocol_id, finaladdedquantity, addedquantity, totalmixquantity, addedquantitymanual, addedquantityrelatesto, mixwaterquantity, priority, archived) FROM stdin;
 \.
 
 
@@ -36610,26 +37920,26 @@ COPY public.arch_goodfood_extrusiontakenoffmixingredient (id, extrusiontakenoffm
 
 
 --
--- Data for Name: arch_goodfood_label; Type: TABLE DATA; Schema: public; Owner: -
---
-
-COPY public.arch_goodfood_label (id, palletcontext_id, printedcount, firstssccnumber, firstpalletnumber, lastssccnumber, lastpalletnumber, masterorder_id, productionline_id, batchnumber, bestbefore, registrationdate, active, batch_id, state, entityversion, archived) FROM stdin;
-\.
-
-
---
--- Data for Name: arch_goodfood_labelstatechange; Type: TABLE DATA; Schema: public; Owner: -
---
-
-COPY public.arch_goodfood_labelstatechange (id, dateandtime, sourcestate, targetstate, status, phase, shift_id, worker, label_id, entityversion, archived) FROM stdin;
-\.
-
-
---
 -- Data for Name: arch_goodfood_pallet; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.arch_goodfood_pallet (id, palletcontext_id, label_id, typeoflogistics, printedcount, ssccnumber, palletnumber, secondpallet_id, state, isstateerror, stateerror, registrationdate, senddate, active, packagescount, laststatechangefails, laststatechangefailcause, externalnumber, externalsynchronized, eurocod, entityversion, sendagaintoblackbox, product_id, archived) FROM stdin;
+COPY public.arch_goodfood_pallet (id, palletcontext_id, palletlabel_id, typeoflogistics, printedcount, ssccnumber, palletnumber, secondpallet_id, state, isstateerror, stateerror, registrationdate, senddate, active, packagescount, laststatechangefails, laststatechangefailcause, externalnumber, externalsynchronized, eurocod, entityversion, sendagaintoblackbox, product_id, archived) FROM stdin;
+\.
+
+
+--
+-- Data for Name: arch_goodfood_palletlabel; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY public.arch_goodfood_palletlabel (id, palletcontext_id, printedcount, firstssccnumber, firstpalletnumber, lastssccnumber, lastpalletnumber, masterorder_id, productionline_id, batchnumber, bestbefore, registrationdate, active, batch_id, state, entityversion, archived) FROM stdin;
+\.
+
+
+--
+-- Data for Name: arch_goodfood_palletlabelstatechange; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY public.arch_goodfood_palletlabelstatechange (id, dateandtime, sourcestate, targetstate, status, phase, shift_id, worker, palletlabel_id, entityversion, archived) FROM stdin;
 \.
 
 
@@ -36653,7 +37963,7 @@ COPY public.arch_goodfood_printedlabel (id, cartonlabel, masterorder_id, ssccnum
 -- Data for Name: arch_integrationbartender_printlabelshelper; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.arch_integrationbartender_printlabelshelper (id, createdate, updatedate, createuser, updateuser, quantity, masterorder_id, archived, printer_id) FROM stdin;
+COPY public.arch_integrationbartender_printlabelshelper (id, createdate, updatedate, createuser, updateuser, quantity, masterorder_id, printer_id, path, ssccnumbers, order_id, barcodeismasterorderid, archived) FROM stdin;
 \.
 
 
@@ -36661,7 +37971,7 @@ COPY public.arch_integrationbartender_printlabelshelper (id, createdate, updated
 -- Data for Name: arch_integrationbartender_sendtoprint; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.arch_integrationbartender_sendtoprint (id, printlabelshelper_id, path, createdate, updatedate, createuser, updateuser, quantity, archived, printer_id) FROM stdin;
+COPY public.arch_integrationbartender_sendtoprint (id, printlabelshelper_id, createdate, updatedate, createuser, updateuser, archived) FROM stdin;
 \.
 
 
@@ -36669,7 +37979,7 @@ COPY public.arch_integrationbartender_sendtoprint (id, printlabelshelper_id, pat
 -- Data for Name: arch_masterorders_masterorder; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.arch_masterorders_masterorder (id, number, name, description, externalnumber, deadline, addmasterprefixtonumber, masterorderstate, company_id, externalsynchronized, generationdateoneec, cancelsynchronizationreason, active, pw2prod, batch_id, masterorderdefinition_id, startdate, finishdate, entityversion, sendagaintoblackbox, dateofreceipt, address_id, externalproductionorderid, ponumber, direction, createdate, updatedate, createuser, updateuser, deliverynotenumber, cancelsynchronizationtype, companypayer_id, productioncode, commissionnumber, machinetype, pipedriveupdate, state, asanataskid, asanatasknameupdated, asanataskcommentadded, sendagaintoasana, sendagaintoasanatries, asanastatecompleteddate, colourral, archived) FROM stdin;
+COPY public.arch_masterorders_masterorder (id, number, name, description, externalnumber, deadline, addmasterprefixtonumber, masterorderstate, company_id, externalsynchronized, generationdateoneec, cancelsynchronizationreason, active, pw2prod, batch_id, masterorderdefinition_id, startdate, finishdate, entityversion, sendagaintoblackbox, dateofreceipt, address_id, externalproductionorderid, ponumber, direction, createdate, updatedate, createuser, updateuser, deliverynotenumber, cancelsynchronizationtype, companypayer_id, productioncode, commissionnumber, machinetype, pipedriveupdate, state, asanataskid, asanatasknameupdated, asanataskcommentadded, sendagaintoasana, sendagaintoasanatries, asanastatecompleteddate, colourral, salesplan_id, materialsissued, warehouseorder, archived) FROM stdin;
 \.
 
 
@@ -36677,7 +37987,31 @@ COPY public.arch_masterorders_masterorder (id, number, name, description, extern
 -- Data for Name: arch_masterorders_masterorderproduct; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.arch_masterorders_masterorderproduct (id, product_id, technology_id, masterorder_id, masterorderquantity, cumulatedorderquantity, producedorderquantity, entityversion, lefttorelease, comments, masterorderpositionstatus, archived) FROM stdin;
+COPY public.arch_masterorders_masterorderproduct (id, product_id, technology_id, masterorder_id, masterorderquantity, cumulatedorderquantity, producedorderquantity, entityversion, lefttorelease, comments, masterorderpositionstatus, quantitytakenfromwarehouse, quantityremainingtoorder, archived) FROM stdin;
+\.
+
+
+--
+-- Data for Name: arch_masterorders_masterorderproductattrvalue; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY public.arch_masterorders_masterorderproductattrvalue (id, masterorderproduct_id, attribute_id, attributevalue_id, value, succession, archived) FROM stdin;
+\.
+
+
+--
+-- Data for Name: arch_masterorders_productsbysizeentryhelper; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY public.arch_masterorders_productsbysizeentryhelper (id, size_id, productsbysizehelper_id, quantity, product_id, archived) FROM stdin;
+\.
+
+
+--
+-- Data for Name: arch_masterorders_productsbysizehelper; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY public.arch_masterorders_productsbysizehelper (id, product_id, totalquantity, masterorder_id, salesplan_id, ordersgroup_id, archived) FROM stdin;
 \.
 
 
@@ -36685,7 +38019,15 @@ COPY public.arch_masterorders_masterorderproduct (id, product_id, technology_id,
 -- Data for Name: arch_materialflowresources_document; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.arch_materialflowresources_document (id, number, type, "time", state, locationfrom_id, locationto_id, user_id, delivery_id, active, createdate, updatedate, createuser, updateuser, order_id, description, suborder_id, company_id, maintenanceevent_id, entityversion, plannedevent_id, name, createlinkeddocument, linkeddocumentlocation_id, address_id, inbuffer, dispositionshift_id, positionsfile, printed, generationdate, filename, acceptationinprogress, externalnumber, archived, issend) FROM stdin;
+COPY public.arch_materialflowresources_document (id, number, type, "time", state, locationfrom_id, locationto_id, user_id, delivery_id, active, createdate, updatedate, createuser, updateuser, order_id, description, suborder_id, company_id, maintenanceevent_id, entityversion, plannedevent_id, name, createlinkeddocument, linkeddocumentlocation_id, address_id, inbuffer, dispositionshift_id, positionsfile, printed, generationdate, filename, acceptationinprogress, externalnumber, issend, wms, datesendtowms, dateshipmenttocustomer, additionalinfo, stateinwms, pickingworker, dateconfirmationofcompletion, locationchanged, editinwms, additionaldescription, staff_id, ordersgroup_id, archived) FROM stdin;
+\.
+
+
+--
+-- Data for Name: arch_materialflowresources_documentstatechange; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY public.arch_materialflowresources_documentstatechange (id, dateandtime, document_id, sourcestate, targetstate, status, worker, archived) FROM stdin;
 \.
 
 
@@ -36693,7 +38035,15 @@ COPY public.arch_materialflowresources_document (id, number, type, "time", state
 -- Data for Name: arch_materialflowresources_position; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.arch_materialflowresources_position (id, document_id, product_id, quantity, price, batch, productiondate, expirationdate, number, resource_id, givenunit, givenquantity, entityversion, storagelocation_id, conversion, palletnumber_id, typeofpallet, waste, resourcereceiptdocument, lastresource, resourcenumber, externaldocumentnumber, orderid, archived) FROM stdin;
+COPY public.arch_materialflowresources_position (id, document_id, product_id, quantity, price, productiondate, expirationdate, number, resource_id, givenunit, givenquantity, entityversion, storagelocation_id, conversion, palletnumber_id, typeofpallet, waste, resourcereceiptdocument, lastresource, resourcenumber, externaldocumentnumber, orderid, sellingprice, batch_id, qualityrating, pickingdate, pickingworker_id, wmsposition_id, restaftershiftdisposition, restaftershiftdispositionaddunit, archived) FROM stdin;
+\.
+
+
+--
+-- Data for Name: arch_materialflowresources_positionattributevalue; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY public.arch_materialflowresources_positionattributevalue (id, position_id, attribute_id, attributevalue_id, value, archived) FROM stdin;
 \.
 
 
@@ -36741,7 +38091,15 @@ COPY public.arch_materialrequirementcoveragefororder_coverageproductlogging (id,
 -- Data for Name: arch_orders_operationaltask; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.arch_orders_operationaltask (id, number, name, description, typetask, startdate, finishdate, productionline_id, technologyinstanceoperationcomponent_id, order_id, entityversion, archived) FROM stdin;
+COPY public.arch_orders_operationaltask (id, number, name, description, type, startdate, finishdate, order_id, entityversion, staff_id, workstation_id, state, technologyoperationcomponent_id, product_id, scheduleposition_id, division_id, actualstaff, suborder_id, archived) FROM stdin;
+\.
+
+
+--
+-- Data for Name: arch_orders_operationaltaskstatechange; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY public.arch_orders_operationaltaskstatechange (id, dateandtime, sourcestate, targetstate, status, phase, worker, operationaltask_id, shift_id, archived) FROM stdin;
 \.
 
 
@@ -36749,7 +38107,23 @@ COPY public.arch_orders_operationaltask (id, number, name, description, typetask
 -- Data for Name: arch_orders_order; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.arch_orders_order (id, number, name, description, commentreasontypecorrectiondatefrom, commentreasontypecorrectiondateto, commentreasondeviationeffectivestart, commentreasondeviationeffectiveend, externalnumber, commentreasontypedeviationsquantity, datefrom, dateto, effectivedatefrom, effectivedateto, deadline, correcteddatefrom, correcteddateto, startdate, finishdate, state, company_id, product_id, technology_id, productionline_id, plannedquantity, donequantity, externalsynchronized, commissionedplannedquantity, commissionedcorrectedquantity, amountofproductproduced, remainingamountofproducttoproduce, ownlinechangeoverduration, registerproductiontime, justone, registerquantityinproduct, laborworktime, includetpz, inputproductsrequiredfortype, generatedenddate, machineworktime, ownlinechangeover, autocloseorder, registerquantityoutproduct, operationdurationquantityunit, realizationtime, calculate, includeadditionaltime, allowtoclose, typeofproductionrecording, masterorder_id, active, productpriceperunit, trackingrecordtreatment, failuresyncmessage, targetstate, ignorerequiredcomponents, automaticallymoveoverusage, updatecomponentsavailability, ordertype, technologyprototype_id, level, parent_id, ignoremissingcomponents, masterorderproduct_id, dateschanged, sourcecorrecteddatefrom, sourcecorrecteddateto, sourcestartdate, sourcefinishdate, batchnumber, root_id, includeordersforcomponent, plannedfinishallorders, plannedstartallorders, calculatedfinishallorders, registerfilled, workplandelivered, calculatedstartallorders, scadacreatedorupdatestate, entityversion, workertochange, masterorderproductcomponent_id, wastesquantity, existsrepairorders, ordercategory, address_id, finalproductiontracking, updatefinishdate, ordersgroup_id, plannedquantityforadditionalunit, directadditionalcost, directadditionalcostdescription, archived, division_id) FROM stdin;
+COPY public.arch_orders_order (id, number, name, description, commentreasontypecorrectiondatefrom, commentreasontypecorrectiondateto, commentreasondeviationeffectivestart, commentreasondeviationeffectiveend, externalnumber, commentreasontypedeviationsquantity, datefrom, dateto, effectivedatefrom, effectivedateto, deadline, correcteddatefrom, correcteddateto, startdate, finishdate, state, company_id, product_id, technology_id, productionline_id, plannedquantity, donequantity, externalsynchronized, commissionedplannedquantity, commissionedcorrectedquantity, amountofproductproduced, remainingamountofproducttoproduce, ownlinechangeoverduration, registerproductiontime, registerquantityinproduct, laborworktime, includetpz, inputproductsrequiredfortype, generatedenddate, machineworktime, ownlinechangeover, registerquantityoutproduct, operationdurationquantityunit, realizationtime, calculate, includeadditionaltime, typeofproductionrecording, masterorder_id, active, productpriceperunit, failuresyncmessage, targetstate, ignorerequiredcomponents, automaticallymoveoverusage, updatecomponentsavailability, technologyprototype_id, level, parent_id, ignoremissingcomponents, masterorderproduct_id, dateschanged, sourcecorrecteddatefrom, sourcecorrecteddateto, sourcestartdate, sourcefinishdate, batchnumber, root_id, includeordersforcomponent, plannedfinishallorders, plannedstartallorders, calculatedfinishallorders, registerfilled, workplandelivered, calculatedstartallorders, scadacreatedorupdatestate, entityversion, workertochange, masterorderproductcomponent_id, wastesquantity, existsrepairorders, ordercategory, address_id, finalproductiontracking, updatefinishdate, ordersgroup_id, plannedquantityforadditionalunit, division_id, salesplan_id, reportedproductionquantity, expirationdate, additionalfinalproducts, archived) FROM stdin;
+\.
+
+
+--
+-- Data for Name: arch_orders_orderpack; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY public.arch_orders_orderpack (id, number, order_id, quantity, state, archived) FROM stdin;
+\.
+
+
+--
+-- Data for Name: arch_orders_orderpackstatechange; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY public.arch_orders_orderpackstatechange (id, dateandtime, sourcestate, targetstate, status, phase, worker, orderpack_id, shift_id, archived) FROM stdin;
 \.
 
 
@@ -36758,6 +38132,38 @@ COPY public.arch_orders_order (id, number, name, description, commentreasontypec
 --
 
 COPY public.arch_orders_orderstatechange (id, comment, reasonrequired, dateandtime, sourcestate, targetstate, status, phase, worker, order_id, shift_id, additionalinformation, sourcecorrecteddatefrom, sourcecorrecteddateto, sourcestartdate, sourcefinishdate, targetcorrecteddatefrom, targetcorrecteddateto, targetstartdate, targetfinishdate, dateschanged, entityversion, archived) FROM stdin;
+\.
+
+
+--
+-- Data for Name: arch_orders_ordertechnologicalprocess; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY public.arch_orders_ordertechnologicalprocess (id, number, orderpack_id, order_id, product_id, operation_id, technologicalprocess_id, quantity, worker_id, date, wastesquantity, technologyoperationcomponent_id, createdate, archived) FROM stdin;
+\.
+
+
+--
+-- Data for Name: arch_orders_ordertechnologicalprocesspart; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY public.arch_orders_ordertechnologicalprocesspart (id, number, quantity, ordertechnologicalprocess_id, archived) FROM stdin;
+\.
+
+
+--
+-- Data for Name: arch_orders_ordertechnologicalprocesswaste; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY public.arch_orders_ordertechnologicalprocesswaste (id, number, ordertechnologicalprocess_id, orderpack_id, order_id, product_id, technologicalprocess_id, wastequantity, causeofwaste, worker_id, date, description, archived) FROM stdin;
+\.
+
+
+--
+-- Data for Name: arch_orders_productionlinescheduleposition; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY public.arch_orders_productionlinescheduleposition (id, productionlineschedule_id, order_id, productionline_id, linechangeovernorm_id, starttime, endtime, additionaltime, archived) FROM stdin;
 \.
 
 
@@ -36802,6 +38208,14 @@ COPY public.arch_orders_reasontypeofchangingorderstate (id, orderstatechange_id,
 
 
 --
+-- Data for Name: arch_orders_scheduleposition; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY public.arch_orders_scheduleposition (id, schedule_id, technologyoperationcomponent_id, additionaltime, machineworktime, laborworktime, order_id, product_id, workstation_id, quantity, starttime, endtime, staff_id, operationruns, partialoperationruns, archived) FROM stdin;
+\.
+
+
+--
 -- Data for Name: arch_orders_typeofcorrectioncauses; Type: TABLE DATA; Schema: public; Owner: -
 --
 
@@ -36821,7 +38235,79 @@ COPY public.arch_ordersforsubproductsgeneration_suborders (id, order_id, ordersg
 -- Data for Name: arch_ordersgroups_ordersgroup; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.arch_ordersgroups_ordersgroup (id, number, assortment_id, productionline_id, startdate, finishdate, deadline, quantity, producedquantity, remainingquantity, state, active, masterorder_id, parent_id, remainingquantityinorders, archived) FROM stdin;
+COPY public.arch_ordersgroups_ordersgroup (id, number, assortment_id, productionline_id, startdate, finishdate, deadline, quantity, producedquantity, remainingquantity, state, active, masterorder_id, parent_id, remainingquantityinorders, description, salesplan_id, archived) FROM stdin;
+\.
+
+
+--
+-- Data for Name: arch_ordersgroups_ordersgroupissuedmaterial; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY public.arch_ordersgroups_ordersgroupissuedmaterial (id, ordersgroup_id, product_id, quantity, value, averageprice, archived) FROM stdin;
+\.
+
+
+--
+-- Data for Name: arch_ordersgroups_ordersgroupissuedmaterialposition; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY public.arch_ordersgroups_ordersgroupissuedmaterialposition (id, ordersgroupissuedmaterial_id, documentnumber, quantity, price, value, externaldocumentid, archived) FROM stdin;
+\.
+
+
+--
+-- Data for Name: arch_ordersgroups_ordersgroupmaterialrequirement; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY public.arch_ordersgroups_ordersgroupmaterialrequirement (id, number, ordersgroup_id, generated, worker, date, filename, archived) FROM stdin;
+\.
+
+
+--
+-- Data for Name: arch_ordersgroups_ordersgroupmaterialrequirementproduct; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY public.arch_ordersgroups_ordersgroupmaterialrequirementproduct (id, ordersgroupmaterialrequirement_id, product_id, quantity, currentstock, technologyinputproducttype_id, orderstartdate, division_id, location_id, issuedquantity, supplier_id, archived) FROM stdin;
+\.
+
+
+--
+-- Data for Name: arch_ordersgroups_ordersgroupproducedproduct; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY public.arch_ordersgroups_ordersgroupproducedproduct (id, ordersgroup_id, product_id, location_id, document_id, quantity, accepted, externaldocumentnumber, batch_id, archived) FROM stdin;
+\.
+
+
+--
+-- Data for Name: arch_ordersgroups_ordersgroupproductstoissueentryhelper; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY public.arch_ordersgroups_ordersgroupproductstoissueentryhelper (id, ordersgroupmaterialrequirementproduct_id, ordersgroupproductstoissuehelper_id, quantity, archived) FROM stdin;
+\.
+
+
+--
+-- Data for Name: arch_ordersgroups_ordersgroupproductstoissuehelper; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY public.arch_ordersgroups_ordersgroupproductstoissuehelper (id, ordersgroupmaterialrequirement_id, archived) FROM stdin;
+\.
+
+
+--
+-- Data for Name: arch_ordersgroups_productionbalance; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY public.arch_ordersgroups_productionbalance (id, number, name, generated, worker, date, filename, ordersgroup_id, plannedmaterialcost, usenominalcostpricenotspecified, realmaterialcost, orderedquantity, producedquantity, quantitydeviation, plannedcost, realcost, costdeviation, active, archived) FROM stdin;
+\.
+
+
+--
+-- Data for Name: arch_ordersupplies_coverageanalysisfororder; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY public.arch_ordersupplies_coverageanalysisfororder (id, order_id, orderedproduct_id, plannedquantity, coveragedegree, coveredfromtheday, deliverytime, componentsproductiondate, materialrequirementcoverage_id, archived) FROM stdin;
 \.
 
 
@@ -36845,7 +38331,7 @@ COPY public.arch_ordersupplies_coverageorderstate (id, materialrequirementcovera
 -- Data for Name: arch_ordersupplies_coverageproduct; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.arch_ordersupplies_coverageproduct (id, materialrequirementcoverage_id, product_id, lackfromdate, demandquantity, coveredquantity, reservemissingquantity, deliveredquantity, locationsquantity, state, negotiatedquantity, issubcontracted, ispurchased, productnumber, productname, productunit, producttype, planedquantity, producequantity, fromselectedorder, entityversion, allproductstype, company_id, archived) FROM stdin;
+COPY public.arch_ordersupplies_coverageproduct (id, materialrequirementcoverage_id, product_id, lackfromdate, demandquantity, coveredquantity, reservemissingquantity, deliveredquantity, locationsquantity, state, issubcontracted, ispurchased, productnumber, productname, productunit, producttype, planedquantity, producequantity, fromselectedorder, entityversion, company_id, price, archived) FROM stdin;
 \.
 
 
@@ -36866,18 +38352,10 @@ COPY public.arch_ordersupplies_coverageproductselected (id, coverageproduct_id, 
 
 
 --
--- Data for Name: arch_ordersupplies_coverageregister; Type: TABLE DATA; Schema: public; Owner: -
---
-
-COPY public.arch_ordersupplies_coverageregister (id, fromproductioncountingquantity, product_id, productnumber, order_id, ordernumber, delivery_id, operation_id, technologyoperationcomponent_id, date, quantity, productioncountingquantities, eventtype, state, entityversion, producttype, archived) FROM stdin;
-\.
-
-
---
 -- Data for Name: arch_ordersupplies_materialrequirementcoverage; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.arch_ordersupplies_materialrequirementcoverage (id, number, coveragetodate, actualdate, generateddate, generatedby, generated, saved, coveragetype, includedraftdeliveries, createdate, updatedate, createuser, updateuser, filename, automaticsavecoverage, order_id, entityversion, ordergenerationinprogress, forordersgroup_id, ordersgroupsgenerated, archived) FROM stdin;
+COPY public.arch_ordersupplies_materialrequirementcoverage (id, number, coveragetodate, actualdate, generateddate, generatedby, generated, saved, coveragetype, includedraftdeliveries, createdate, updatedate, createuser, updateuser, filename, automaticsavecoverage, order_id, entityversion, ordergenerationinprogress, forordersgroup_id, ordersgroupsgenerated, includeincalculationdeliveries, archived) FROM stdin;
 \.
 
 
@@ -36893,7 +38371,7 @@ COPY public.arch_productflowthrudivision_issue (id, warehouseissue_id, product_i
 -- Data for Name: arch_productflowthrudivision_materialavailability; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.arch_productflowthrudivision_materialavailability (id, order_id, product_id, availablequantity, requiredquantity, unit, entityversion, location_id, availability, archived) FROM stdin;
+COPY public.arch_productflowthrudivision_materialavailability (id, order_id, product_id, availablequantity, requiredquantity, unit, entityversion, location_id, availability, replacement, batchesid, batches, batchesquantity, archived) FROM stdin;
 \.
 
 
@@ -36962,10 +38440,18 @@ COPY public.arch_productioncounting_anomalyreasoncontainer (id, anomalyproductio
 
 
 --
--- Data for Name: arch_productioncounting_productioncountingquantitysetcomponent; Type: TABLE DATA; Schema: public; Owner: -
+-- Data for Name: arch_productioncounting_lack; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.arch_productioncounting_productioncountingquantitysetcomponent (id, productioncountingquantity_id, product_id, quantityfromsets, plannedquantityfromproduct, outquantity, archived) FROM stdin;
+COPY public.arch_productioncounting_lack (id, trackingoperationproductoutcomponent_id, lackquantity, createdate, updatedate, createuser, updateuser, archived) FROM stdin;
+\.
+
+
+--
+-- Data for Name: arch_productioncounting_prodoutresourceattrval; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY public.arch_productioncounting_prodoutresourceattrval (id, trackingoperationproductoutcomponent_id, attribute_id, attributevalue_id, value, archived) FROM stdin;
 \.
 
 
@@ -36973,7 +38459,15 @@ COPY public.arch_productioncounting_productioncountingquantitysetcomponent (id, 
 -- Data for Name: arch_productioncounting_productiontracking; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.arch_productioncounting_productiontracking (id, number, order_id, technologyinstanceoperationcomponent_id, shift_id, state, lasttracking, machinetime, labortime, staff_id, workstationtype_id, division_id, active, createdate, updatedate, createuser, updateuser, laststatechangefails, laststatechangefailcause, isexternalsynchronized, timerangefrom, timerangeto, shiftstartday, changeovertime, subcontractor_id, technologyoperationcomponent_id, entityversion, repairorder_id, correction_id, iscorrection, planforordercompleted, workstation_id, archived) FROM stdin;
+COPY public.arch_productioncounting_productiontracking (id, number, order_id, technologyinstanceoperationcomponent_id, shift_id, state, lasttracking, machinetime, labortime, staff_id, workstationtype_id, division_id, active, createdate, updatedate, createuser, updateuser, laststatechangefails, laststatechangefailcause, isexternalsynchronized, timerangefrom, timerangeto, shiftstartday, changeovertime, subcontractor_id, technologyoperationcomponent_id, entityversion, repairorder_id, correction_id, iscorrection, planforordercompleted, workstation_id, batch_id, expirationdate, qualityrating, iscorrected, comments, archived) FROM stdin;
+\.
+
+
+--
+-- Data for Name: arch_productioncounting_productiontrackingattachment; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY public.arch_productioncounting_productiontrackingattachment (id, productiontracking_id, attachment, name, size, ext, archived) FROM stdin;
 \.
 
 
@@ -36994,10 +38488,18 @@ COPY public.arch_productioncounting_staffworktime (id, productionrecord_id, work
 
 
 --
+-- Data for Name: arch_productioncounting_trackinginproductreplacementhelper; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY public.arch_productioncounting_trackinginproductreplacementhelper (id, productiontracking_id, product_id, quantity, basicproduct_id, archived) FROM stdin;
+\.
+
+
+--
 -- Data for Name: arch_productioncounting_trackingoperationproductincomponent; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.arch_productioncounting_trackingoperationproductincomponent (id, productiontracking_id, product_id, usedquantity, balance, batch_id, obtainedquantity, remainedquantity, effectiveusedquantity, givenunit, givenquantity, entityversion, typeofmaterial, wasteused, wasteusedonly, wasteusedquantity, wasteunit, additionalinformation, archived) FROM stdin;
+COPY public.arch_productioncounting_trackingoperationproductincomponent (id, productiontracking_id, product_id, usedquantity, balance, obtainedquantity, remainedquantity, effectiveusedquantity, givenunit, givenquantity, entityversion, typeofmaterial, wasteused, wasteusedonly, wasteusedquantity, wasteunit, additionalinformation, replacementto_id, archived) FROM stdin;
 \.
 
 
@@ -37005,7 +38507,15 @@ COPY public.arch_productioncounting_trackingoperationproductincomponent (id, pro
 -- Data for Name: arch_productioncounting_trackingoperationproductoutcomponent; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.arch_productioncounting_trackingoperationproductoutcomponent (id, productiontracking_id, product_id, usedquantity, balance, batch_id, wastedquantity, givenunit, givenquantity, entityversion, wastesquantity, typeofmaterial, archived, causeofwastes) FROM stdin;
+COPY public.arch_productioncounting_trackingoperationproductoutcomponent (id, productiontracking_id, product_id, usedquantity, balance, batch_id, wastedquantity, givenunit, givenquantity, entityversion, wastesquantity, typeofmaterial, storagelocation_id, causeofwastes, palletnumber_id, manyreasonsforlacks, archived) FROM stdin;
+\.
+
+
+--
+-- Data for Name: arch_productioncounting_usedbatch; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY public.arch_productioncounting_usedbatch (id, trackingoperationproductincomponent_id, batch_id, quantity, archived) FROM stdin;
 \.
 
 
@@ -37029,7 +38539,7 @@ COPY public.arch_productionpershift_productionpershift (id, order_id, plannedpro
 -- Data for Name: arch_productionpershift_progressforday; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.arch_productionpershift_progressforday (id, technologyinstanceoperationcomponent_id, day, corrected, dateofday, technologyoperationcomponent_id, actualdateofday, entityversion, productionpershift_id, archived) FROM stdin;
+COPY public.arch_productionpershift_progressforday (id, day, corrected, dateofday, actualdateofday, entityversion, productionpershift_id, archived) FROM stdin;
 \.
 
 
@@ -37054,6 +38564,54 @@ COPY public.arch_productionscheduling_opercomptimecalculation (id, ordertimecalc
 --
 
 COPY public.arch_productionscheduling_ordertimecalculation (id, order_id, effectivedatefrom, effectivedateto, archived) FROM stdin;
+\.
+
+
+--
+-- Data for Name: arch_qualitycontrol_qualitycontrol; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY public.arch_qualitycontrol_qualitycontrol (id, number, product_id, qualitycard_id, controltype, batch_id, date, staff_id, order_id, qualityrating, state, delivery_id, description, archived) FROM stdin;
+\.
+
+
+--
+-- Data for Name: arch_qualitycontrol_qualitycontrolattachment; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY public.arch_qualitycontrol_qualitycontrolattachment (id, qualitycontrol_id, attachment, name, size, ext, archived) FROM stdin;
+\.
+
+
+--
+-- Data for Name: arch_qualitycontrol_qualitycontrolattributeprodtracking; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY public.arch_qualitycontrol_qualitycontrolattributeprodtracking (id, productiontracking_id, attribute_id, attributevalue_id, value, fromtechnology, moment, adddate, archived) FROM stdin;
+\.
+
+
+--
+-- Data for Name: arch_qualitycontrol_qualitycontrolattributevalue; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY public.arch_qualitycontrol_qualitycontrolattributevalue (id, qualitycontrol_id, attribute_id, attributevalue_id, value, productiontracking_id, fromqualitycard, priority, archived) FROM stdin;
+\.
+
+
+--
+-- Data for Name: arch_qualitycontrol_qualitycontrolresource; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY public.arch_qualitycontrol_qualitycontrolresource (id, resourcenumber, qualitycontrol_id, resource_id, archived) FROM stdin;
+\.
+
+
+--
+-- Data for Name: arch_qualitycontrol_qualitycontrolstatechange; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY public.arch_qualitycontrol_qualitycontrolstatechange (id, dateandtime, sourcestate, targetstate, status, phase, worker, qualitycontrol_id, shift_id, archived) FROM stdin;
 \.
 
 
@@ -37093,7 +38651,7 @@ COPY public.arch_repairs_repairorderworktime (id, repairorder_id, staff_id, labo
 -- Data for Name: arch_states_message; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.arch_states_message (id, type, translationkey, translationargs, correspondfieldname, autoclose, productiontrackingstatechange_id, deliverystatechange_id, assignmenttoshiftstatechange_id, technologystatechange_id, orderstatechange_id, extrusionprotocolstatechange_id, confectionprotocolstatechange_id, palletstatechange_id, batchstatechange_id, trackingrecordstatechange_id, requestforquotationstatechange_id, offerstatechange_id, negotiationstatechange_id, warehouseissuestatechange_id, labelstatechange_id, maintenanceeventstatechange_id, entityversion, plannedeventstatechange_id, recurringeventstatechange_id, archived) FROM stdin;
+COPY public.arch_states_message (id, type, translationkey, translationargs, correspondfieldname, autoclose, productiontrackingstatechange_id, deliverystatechange_id, assignmenttoshiftstatechange_id, technologystatechange_id, orderstatechange_id, extrusionprotocolstatechange_id, confectionprotocolstatechange_id, palletstatechange_id, batchstatechange_id, trackingrecordstatechange_id, requestforquotationstatechange_id, offerstatechange_id, negotiationstatechange_id, warehouseissuestatechange_id, palletlabelstatechange_id, maintenanceeventstatechange_id, entityversion, plannedeventstatechange_id, recurringeventstatechange_id, archived) FROM stdin;
 \.
 
 
@@ -37101,7 +38659,7 @@ COPY public.arch_states_message (id, type, translationkey, translationargs, corr
 -- Data for Name: arch_stoppage_stoppage; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.arch_stoppage_stoppage (id, order_id, duration, reason, active, entityversion, archived) FROM stdin;
+COPY public.arch_stoppage_stoppage (id, order_id, duration, entityversion, productiontracking_id, reason_id, description, datefrom, dateto, archived) FROM stdin;
 \.
 
 
@@ -37110,22 +38668,6 @@ COPY public.arch_stoppage_stoppage (id, order_id, duration, reason, active, enti
 --
 
 COPY public.arch_technologies_barcodeoperationcomponent (id, operationcomponent_id, code, active, entityversion, order_id, archived) FROM stdin;
-\.
-
-
---
--- Data for Name: arch_technologies_technologyoperationcomponentmergeproductin; Type: TABLE DATA; Schema: public; Owner: -
---
-
-COPY public.arch_technologies_technologyoperationcomponentmergeproductin (id, operationcomponent_id, mergedoperationcomponent_id, mergedoperationproductcomponent_id, quantitychange, order_id, active, entityversion, archived) FROM stdin;
-\.
-
-
---
--- Data for Name: arch_technologies_technologyoperationcomponentmergeproductout; Type: TABLE DATA; Schema: public; Owner: -
---
-
-COPY public.arch_technologies_technologyoperationcomponentmergeproductout (id, operationcomponent_id, mergedoperationcomponent_id, mergedoperationproductcomponent_id, quantitychange, order_id, active, entityversion, archived) FROM stdin;
 \.
 
 
@@ -41213,7 +42755,7 @@ COPY public.orders_reasontypeofchangingorderstate (id, orderstatechange_id, reas
 -- Data for Name: orders_schedule; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.orders_schedule (id, number, name, starttime, state, sortorder, workstationassigncriterion, workerassigncriterion, approvetime, scheduleforbuffer, additionaltimeextendsoperation, includetpz, onlyworkstationsoflinefromorder) FROM stdin;
+COPY public.orders_schedule (id, number, name, starttime, state, sortorder, workstationassigncriterion, workerassigncriterion, approvetime, scheduleforbuffer, additionaltimeextendsoperation, includetpz, onlyworkstationsoflinefromorder, token) FROM stdin;
 \.
 
 
@@ -41514,6 +43056,14 @@ COPY public.productflowthrudivision_modelcardproduct (id, modelcard_id, product_
 --
 
 COPY public.productflowthrudivision_opertaskmaterialavailability (id, operationaltask_id, product_id, location_id, availablequantity, requiredquantity, unit, availability, replacement, batchesid, batches, batchesquantity, typeofmaterial, produced) FROM stdin;
+\.
+
+
+--
+-- Data for Name: productflowthrudivision_orderproductresourcereservation; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY public.productflowthrudivision_orderproductresourcereservation (id, resource_id, resourcenumber, planedquantity, usedquantity, productioncountingquantity_id, priority) FROM stdin;
 \.
 
 
@@ -42965,8 +44515,8 @@ COPY public.stoppage_stoppage (id, order_id, duration, entityversion, production
 -- Data for Name: stoppage_stoppagereason; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.stoppage_stoppagereason (id, name, description, createfailure) FROM stdin;
-1	Autres	\N	f
+COPY public.stoppage_stoppagereason (id, name, description, type) FROM stdin;
+1	Autres	\N	02other
 \.
 
 
@@ -43248,7 +44798,7 @@ COPY public.technologies_modifytechnologyhelper (id, remove, addnew, replace, se
 -- Data for Name: technologies_operation; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.technologies_operation (id, number, name, comment, workstationtype_id, attachment, areproductquantitiesdivisible, istjdivisible, operationgroup_id, imageurlinworkplan, productioninonecycle, laborhourlycost, laborutilization, nextoperationafterproducedtype, nextoperationafterproducedquantityunit, machinehourlycost, tj, nextoperationafterproducedquantity, machineutilization, timenextoperation, tpz, productioninonecycleunit, active, issubcontracting, assignedtooperation, quantityofworkstations, division_id, showinproductdata, productdatanumber, entityversion, product_id, createoperationoutput, tjdecreasesforenlargedstaff, minstaff, optimalstaff, pieceworkproduction, piecerate_id, unitcost) FROM stdin;
+COPY public.technologies_operation (id, number, name, comment, workstationtype_id, attachment, areproductquantitiesdivisible, istjdivisible, operationgroup_id, imageurlinworkplan, productioninonecycle, laborhourlycost, laborutilization, nextoperationafterproducedtype, nextoperationafterproducedquantityunit, machinehourlycost, tj, nextoperationafterproducedquantity, machineutilization, timenextoperation, tpz, productioninonecycleunit, active, issubcontracting, assignedtooperation, quantityofworkstations, division_id, showinproductdata, productdatanumber, entityversion, product_id, createoperationoutput, tjdecreasesforenlargedstaff, minstaff, optimalstaff, pieceworkproduction, piecerate_id, unitcost, reservationrawmaterialresourcerequired) FROM stdin;
 \.
 
 
@@ -43869,6 +45419,13 @@ SELECT pg_catalog.setval('public.arch_basicproductioncounting_basicproductioncou
 
 
 --
+-- Name: arch_basicproductioncounting_productioncountingattributevalue_i; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('public.arch_basicproductioncounting_productioncountingattributevalue_i', 1, false);
+
+
+--
 -- Name: arch_basicproductioncounting_productioncountingoperationrun_id_; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
@@ -43883,17 +45440,10 @@ SELECT pg_catalog.setval('public.arch_basicproductioncounting_productioncounting
 
 
 --
--- Name: arch_costcalculation_componentcost_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+-- Name: arch_cdnrcgoodfood_cancelprotocol_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('public.arch_costcalculation_componentcost_id_seq', 1, false);
-
-
---
--- Name: arch_costcalculation_costcalculation_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
---
-
-SELECT pg_catalog.setval('public.arch_costcalculation_costcalculation_id_seq', 1, false);
+SELECT pg_catalog.setval('public.arch_cdnrcgoodfood_cancelprotocol_id_seq', 1, false);
 
 
 --
@@ -43901,20 +45451,6 @@ SELECT pg_catalog.setval('public.arch_costcalculation_costcalculation_id_seq', 1
 --
 
 SELECT pg_catalog.setval('public.arch_costnormsformaterials_technologyinstoperproductincomp_id_s', 1, false);
-
-
---
--- Name: arch_costnormsforoperation_calculationoperationcomponent_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
---
-
-SELECT pg_catalog.setval('public.arch_costnormsforoperation_calculationoperationcomponent_id_seq', 1, false);
-
-
---
--- Name: arch_esilco_importpositionerror_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
---
-
-SELECT pg_catalog.setval('public.arch_esilco_importpositionerror_id_seq', 1, false);
 
 
 --
@@ -44058,24 +45594,24 @@ SELECT pg_catalog.setval('public.arch_goodfood_extrusiontakenoffmixingredient_id
 
 
 --
--- Name: arch_goodfood_label_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
---
-
-SELECT pg_catalog.setval('public.arch_goodfood_label_id_seq', 1, false);
-
-
---
--- Name: arch_goodfood_labelstatechange_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
---
-
-SELECT pg_catalog.setval('public.arch_goodfood_labelstatechange_id_seq', 1, false);
-
-
---
 -- Name: arch_goodfood_pallet_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
 SELECT pg_catalog.setval('public.arch_goodfood_pallet_id_seq', 1, false);
+
+
+--
+-- Name: arch_goodfood_palletlabel_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('public.arch_goodfood_palletlabel_id_seq', 1, false);
+
+
+--
+-- Name: arch_goodfood_palletlabelstatechange_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('public.arch_goodfood_palletlabelstatechange_id_seq', 1, false);
 
 
 --
@@ -44142,6 +45678,27 @@ SELECT pg_catalog.setval('public.arch_masterorders_masterorderproduct_id_seq', 1
 
 
 --
+-- Name: arch_masterorders_masterorderproductattrvalue_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('public.arch_masterorders_masterorderproductattrvalue_id_seq', 1, false);
+
+
+--
+-- Name: arch_masterorders_productsbysizeentryhelper_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('public.arch_masterorders_productsbysizeentryhelper_id_seq', 1, false);
+
+
+--
+-- Name: arch_masterorders_productsbysizehelper_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('public.arch_masterorders_productsbysizehelper_id_seq', 1, false);
+
+
+--
 -- Name: arch_materialflowresources_document_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
@@ -44156,10 +45713,24 @@ SELECT pg_catalog.setval('public.arch_materialflowresources_documentdto_id_seq',
 
 
 --
+-- Name: arch_materialflowresources_documentstatechange_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('public.arch_materialflowresources_documentstatechange_id_seq', 1, false);
+
+
+--
 -- Name: arch_materialflowresources_position_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
 SELECT pg_catalog.setval('public.arch_materialflowresources_position_id_seq', 1, false);
+
+
+--
+-- Name: arch_materialflowresources_positionattributevalue_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('public.arch_materialflowresources_positionattributevalue_id_seq', 1, false);
 
 
 --
@@ -44205,6 +45776,13 @@ SELECT pg_catalog.setval('public.arch_orders_operationaltask_id_seq', 1, false);
 
 
 --
+-- Name: arch_orders_operationaltaskstatechange_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('public.arch_orders_operationaltaskstatechange_id_seq', 1, false);
+
+
+--
 -- Name: arch_orders_order_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
@@ -44219,10 +45797,52 @@ SELECT pg_catalog.setval('public.arch_orders_orderlistdto_id_seq', 1, false);
 
 
 --
+-- Name: arch_orders_orderpack_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('public.arch_orders_orderpack_id_seq', 1, false);
+
+
+--
+-- Name: arch_orders_orderpackstatechange_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('public.arch_orders_orderpackstatechange_id_seq', 1, false);
+
+
+--
 -- Name: arch_orders_orderstatechange_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
 SELECT pg_catalog.setval('public.arch_orders_orderstatechange_id_seq', 1, false);
+
+
+--
+-- Name: arch_orders_ordertechnologicalprocess_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('public.arch_orders_ordertechnologicalprocess_id_seq', 1, false);
+
+
+--
+-- Name: arch_orders_ordertechnologicalprocesspart_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('public.arch_orders_ordertechnologicalprocesspart_id_seq', 1, false);
+
+
+--
+-- Name: arch_orders_ordertechnologicalprocesswaste_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('public.arch_orders_ordertechnologicalprocesswaste_id_seq', 1, false);
+
+
+--
+-- Name: arch_orders_productionlinescheduleposition_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('public.arch_orders_productionlinescheduleposition_id_seq', 1, false);
 
 
 --
@@ -44261,6 +45881,13 @@ SELECT pg_catalog.setval('public.arch_orders_reasontypeofchangingorderstate_id_s
 
 
 --
+-- Name: arch_orders_scheduleposition_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('public.arch_orders_scheduleposition_id_seq', 1, false);
+
+
+--
 -- Name: arch_orders_typeofcorrectioncauses_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
@@ -44296,6 +45923,69 @@ SELECT pg_catalog.setval('public.arch_ordersgroups_ordersgroupdto_id_seq', 1, fa
 
 
 --
+-- Name: arch_ordersgroups_ordersgroupissuedmaterial_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('public.arch_ordersgroups_ordersgroupissuedmaterial_id_seq', 1, false);
+
+
+--
+-- Name: arch_ordersgroups_ordersgroupissuedmaterialposition_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('public.arch_ordersgroups_ordersgroupissuedmaterialposition_id_seq', 1, false);
+
+
+--
+-- Name: arch_ordersgroups_ordersgroupmaterialrequirement_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('public.arch_ordersgroups_ordersgroupmaterialrequirement_id_seq', 1, false);
+
+
+--
+-- Name: arch_ordersgroups_ordersgroupmaterialrequirementproduct_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('public.arch_ordersgroups_ordersgroupmaterialrequirementproduct_id_seq', 1, false);
+
+
+--
+-- Name: arch_ordersgroups_ordersgroupproducedproduct_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('public.arch_ordersgroups_ordersgroupproducedproduct_id_seq', 1, false);
+
+
+--
+-- Name: arch_ordersgroups_ordersgroupproductstoissueentryhelper_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('public.arch_ordersgroups_ordersgroupproductstoissueentryhelper_id_seq', 1, false);
+
+
+--
+-- Name: arch_ordersgroups_ordersgroupproductstoissuehelper_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('public.arch_ordersgroups_ordersgroupproductstoissuehelper_id_seq', 1, false);
+
+
+--
+-- Name: arch_ordersgroups_productionbalance_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('public.arch_ordersgroups_productionbalance_id_seq', 1, false);
+
+
+--
+-- Name: arch_ordersupplies_coverageanalysisfororder_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('public.arch_ordersupplies_coverageanalysisfororder_id_seq', 1, false);
+
+
+--
 -- Name: arch_ordersupplies_coveragelocation_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
@@ -44328,13 +46018,6 @@ SELECT pg_catalog.setval('public.arch_ordersupplies_coverageproductlogging_id_se
 --
 
 SELECT pg_catalog.setval('public.arch_ordersupplies_coverageproductselected_id_seq', 1, false);
-
-
---
--- Name: arch_ordersupplies_coverageregister_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
---
-
-SELECT pg_catalog.setval('public.arch_ordersupplies_coverageregister_id_seq', 1, false);
 
 
 --
@@ -44415,10 +46098,17 @@ SELECT pg_catalog.setval('public.arch_productioncounting_anomalyreasoncontainer_
 
 
 --
--- Name: arch_productioncounting_productioncountingquantitysetcomponent_; Type: SEQUENCE SET; Schema: public; Owner: -
+-- Name: arch_productioncounting_lack_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('public.arch_productioncounting_productioncountingquantitysetcomponent_', 1, false);
+SELECT pg_catalog.setval('public.arch_productioncounting_lack_id_seq', 1, false);
+
+
+--
+-- Name: arch_productioncounting_prodoutresourceattrval_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('public.arch_productioncounting_prodoutresourceattrval_id_seq', 1, false);
 
 
 --
@@ -44426,6 +46116,13 @@ SELECT pg_catalog.setval('public.arch_productioncounting_productioncountingquant
 --
 
 SELECT pg_catalog.setval('public.arch_productioncounting_productiontracking_id_seq', 1, false);
+
+
+--
+-- Name: arch_productioncounting_productiontrackingattachment_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('public.arch_productioncounting_productiontrackingattachment_id_seq', 1, false);
 
 
 --
@@ -44450,6 +46147,13 @@ SELECT pg_catalog.setval('public.arch_productioncounting_staffworktime_id_seq', 
 
 
 --
+-- Name: arch_productioncounting_trackinginproductreplacementhelper_id_s; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('public.arch_productioncounting_trackinginproductreplacementhelper_id_s', 1, false);
+
+
+--
 -- Name: arch_productioncounting_trackingoperationproductincomponent_id_; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
@@ -44461,6 +46165,13 @@ SELECT pg_catalog.setval('public.arch_productioncounting_trackingoperationproduc
 --
 
 SELECT pg_catalog.setval('public.arch_productioncounting_trackingoperationproductoutcomponent_id', 1, false);
+
+
+--
+-- Name: arch_productioncounting_usedbatch_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('public.arch_productioncounting_usedbatch_id_seq', 1, false);
 
 
 --
@@ -44503,6 +46214,48 @@ SELECT pg_catalog.setval('public.arch_productionscheduling_opercomptimecalculati
 --
 
 SELECT pg_catalog.setval('public.arch_productionscheduling_ordertimecalculation_id_seq', 1, false);
+
+
+--
+-- Name: arch_qualitycontrol_qualitycontrol_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('public.arch_qualitycontrol_qualitycontrol_id_seq', 1, false);
+
+
+--
+-- Name: arch_qualitycontrol_qualitycontrolattachment_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('public.arch_qualitycontrol_qualitycontrolattachment_id_seq', 1, false);
+
+
+--
+-- Name: arch_qualitycontrol_qualitycontrolattributeprodtracking_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('public.arch_qualitycontrol_qualitycontrolattributeprodtracking_id_seq', 1, false);
+
+
+--
+-- Name: arch_qualitycontrol_qualitycontrolattributevalue_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('public.arch_qualitycontrol_qualitycontrolattributevalue_id_seq', 1, false);
+
+
+--
+-- Name: arch_qualitycontrol_qualitycontrolresource_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('public.arch_qualitycontrol_qualitycontrolresource_id_seq', 1, false);
+
+
+--
+-- Name: arch_qualitycontrol_qualitycontrolstatechange_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('public.arch_qualitycontrol_qualitycontrolstatechange_id_seq', 1, false);
 
 
 --
@@ -44552,20 +46305,6 @@ SELECT pg_catalog.setval('public.arch_stoppage_stoppage_id_seq', 1, false);
 --
 
 SELECT pg_catalog.setval('public.arch_technologies_barcodeoperationcomponent_id_seq', 1, false);
-
-
---
--- Name: arch_technologies_technologyoperationcomponentmergeproductin_id; Type: SEQUENCE SET; Schema: public; Owner: -
---
-
-SELECT pg_catalog.setval('public.arch_technologies_technologyoperationcomponentmergeproductin_id', 1, false);
-
-
---
--- Name: arch_technologies_technologyoperationcomponentmergeproductout_i; Type: SEQUENCE SET; Schema: public; Owner: -
---
-
-SELECT pg_catalog.setval('public.arch_technologies_technologyoperationcomponentmergeproductout_i', 1, false);
 
 
 --
@@ -47453,6 +49192,13 @@ SELECT pg_catalog.setval('public.productflowthrudivision_opertaskmaterialavailab
 
 
 --
+-- Name: productflowthrudivision_orderproductresourcereservation_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('public.productflowthrudivision_orderproductresourcereservation_id_seq', 1, false);
+
+
+--
 -- Name: productflowthrudivision_plannedconsumptioninorderdto_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
@@ -49016,43 +50762,1107 @@ ALTER TABLE ONLY public.advancedgenealogyfororders_genealogyproductincomponent
 
 
 --
--- Name: arch_advancedgenealogy_trackingrecord arch_advancedgenealogy_trackingrecord_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_advancedgenealogy_trackingrecord arc2_advancedgenealogy_trackingrecord_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.arch_advancedgenealogy_trackingrecord
-    ADD CONSTRAINT arch_advancedgenealogy_trackingrecord_pkey PRIMARY KEY (id);
+    ADD CONSTRAINT arc2_advancedgenealogy_trackingrecord_pkey PRIMARY KEY (id);
 
 
 --
--- Name: arch_advancedgenealogy_trackingrecordstatechange arch_advancedgenealogy_trackingrecordstatechange_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_advancedgenealogy_trackingrecordstatechange arc2_advancedgenealogy_trackingrecordstatechange_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.arch_advancedgenealogy_trackingrecordstatechange
-    ADD CONSTRAINT arch_advancedgenealogy_trackingrecordstatechange_pkey PRIMARY KEY (id);
+    ADD CONSTRAINT arc2_advancedgenealogy_trackingrecordstatechange_pkey PRIMARY KEY (id);
 
 
 --
--- Name: arch_advancedgenealogy_usedbatchsimple arch_advancedgenealogy_usedbatchsimple_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_advancedgenealogy_usedbatchsimple arc2_advancedgenealogy_usedbatchsimple_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.arch_advancedgenealogy_usedbatchsimple
-    ADD CONSTRAINT arch_advancedgenealogy_usedbatchsimple_pkey PRIMARY KEY (id);
+    ADD CONSTRAINT arc2_advancedgenealogy_usedbatchsimple_pkey PRIMARY KEY (id);
 
 
 --
--- Name: arch_advancedgenealogyfororders_genealogyproductinbatch arch_advancedgenealogyfororders_genealogyproductinbatch_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_advancedgenealogyfororders_genealogyproductinbatch arc2_advancedgenealogyfororders_genealogyproductinbatch_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.arch_advancedgenealogyfororders_genealogyproductinbatch
-    ADD CONSTRAINT arch_advancedgenealogyfororders_genealogyproductinbatch_pkey PRIMARY KEY (id);
+    ADD CONSTRAINT arc2_advancedgenealogyfororders_genealogyproductinbatch_pkey PRIMARY KEY (id);
 
 
 --
--- Name: arch_advancedgenealogyfororders_genealogyproductincomponent arch_advancedgenealogyfororders_genealogyproductincomponen_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_advancedgenealogyfororders_genealogyproductincomponent arc2_advancedgenealogyfororders_genealogyproductincomponen_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.arch_advancedgenealogyfororders_genealogyproductincomponent
-    ADD CONSTRAINT arch_advancedgenealogyfororders_genealogyproductincomponen_pkey PRIMARY KEY (id);
+    ADD CONSTRAINT arc2_advancedgenealogyfororders_genealogyproductincomponen_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: arch_assignmenttoshift_multiassignmenttoshift arc2_assignmenttoshift_multiassignmenttoshift_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.arch_assignmenttoshift_multiassignmenttoshift
+    ADD CONSTRAINT arc2_assignmenttoshift_multiassignmenttoshift_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: arch_assignmenttoshift_staffassignmenttoshift arc2_assignmenttoshift_staffassignmenttoshift_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.arch_assignmenttoshift_staffassignmenttoshift
+    ADD CONSTRAINT arc2_assignmenttoshift_staffassignmenttoshift_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: arch_avglaborcostcalcfororder_assignmentworkertoshift arc2_avglaborcostcalcfororder_assignmentworkertoshift_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.arch_avglaborcostcalcfororder_assignmentworkertoshift
+    ADD CONSTRAINT arc2_avglaborcostcalcfororder_assignmentworkertoshift_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: arch_avglaborcostcalcfororder_avglaborcostcalcfororder arc2_avglaborcostcalcfororder_avglaborcostcalcfororder_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.arch_avglaborcostcalcfororder_avglaborcostcalcfororder
+    ADD CONSTRAINT arc2_avglaborcostcalcfororder_avglaborcostcalcfororder_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: arch_basicproductioncounting_productioncountingquantity arc2_basicproductioncounting__order_id_technologyoperationc_key; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.arch_basicproductioncounting_productioncountingquantity
+    ADD CONSTRAINT arc2_basicproductioncounting__order_id_technologyoperationc_key UNIQUE (order_id, technologyoperationcomponent_id, product_id, technologyinputproducttype_id, role, typeofmaterial);
+
+
+--
+-- Name: arch_basicproductioncounting_basicproductioncounting arc2_basicproductioncounting_basicproductioncounting_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.arch_basicproductioncounting_basicproductioncounting
+    ADD CONSTRAINT arc2_basicproductioncounting_basicproductioncounting_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: arch_basicproductioncounting_productioncountingattributevalue arc2_basicproductioncounting_productioncountingattributeva_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.arch_basicproductioncounting_productioncountingattributevalue
+    ADD CONSTRAINT arc2_basicproductioncounting_productioncountingattributeva_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: arch_basicproductioncounting_productioncountingoperationrun arc2_basicproductioncounting_productioncountingoperationru_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.arch_basicproductioncounting_productioncountingoperationrun
+    ADD CONSTRAINT arc2_basicproductioncounting_productioncountingoperationru_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: arch_basicproductioncounting_productioncountingquantity arc2_basicproductioncounting_productioncountingquantity_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.arch_basicproductioncounting_productioncountingquantity
+    ADD CONSTRAINT arc2_basicproductioncounting_productioncountingquantity_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: arch_cdnrcgoodfood_cancelprotocol arc2_cdnrcgoodfood_cancelprotocol_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.arch_cdnrcgoodfood_cancelprotocol
+    ADD CONSTRAINT arc2_cdnrcgoodfood_cancelprotocol_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: arch_costnormsformaterials_technologyinstoperproductincomp arc2_costnormsformaterials_technologyinstoperproductincomp_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.arch_costnormsformaterials_technologyinstoperproductincomp
+    ADD CONSTRAINT arc2_costnormsformaterials_technologyinstoperproductincomp_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: arch_goodfood_confectionadditionalinputproduct arc2_goodfood_confectionadditionalinputproduct_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.arch_goodfood_confectionadditionalinputproduct
+    ADD CONSTRAINT arc2_goodfood_confectionadditionalinputproduct_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: arch_goodfood_confectionfilmproduct arc2_goodfood_confectionfilmproduct_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.arch_goodfood_confectionfilmproduct
+    ADD CONSTRAINT arc2_goodfood_confectionfilmproduct_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: arch_goodfood_confectionfilmproductentry arc2_goodfood_confectionfilmproductentry_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.arch_goodfood_confectionfilmproductentry
+    ADD CONSTRAINT arc2_goodfood_confectionfilmproductentry_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: arch_goodfood_confectioninputproduct arc2_goodfood_confectioninputproduct_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.arch_goodfood_confectioninputproduct
+    ADD CONSTRAINT arc2_goodfood_confectioninputproduct_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: arch_goodfood_confectionprotocol arc2_goodfood_confectionprotocol_externalnumber_key; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.arch_goodfood_confectionprotocol
+    ADD CONSTRAINT arc2_goodfood_confectionprotocol_externalnumber_key UNIQUE (externalnumber);
+
+
+--
+-- Name: arch_goodfood_confectionprotocol arc2_goodfood_confectionprotocol_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.arch_goodfood_confectionprotocol
+    ADD CONSTRAINT arc2_goodfood_confectionprotocol_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: arch_goodfood_confectionprotocolcorrect arc2_goodfood_confectionprotocolcorrect_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.arch_goodfood_confectionprotocolcorrect
+    ADD CONSTRAINT arc2_goodfood_confectionprotocolcorrect_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: arch_goodfood_confectionprotocolstatechange arc2_goodfood_confectionprotocolstatechange_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.arch_goodfood_confectionprotocolstatechange
+    ADD CONSTRAINT arc2_goodfood_confectionprotocolstatechange_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: arch_goodfood_confectionremainderinputproduct arc2_goodfood_confectionremainderinputproduct_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.arch_goodfood_confectionremainderinputproduct
+    ADD CONSTRAINT arc2_goodfood_confectionremainderinputproduct_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: arch_goodfood_confectionstaff arc2_goodfood_confectionstaff_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.arch_goodfood_confectionstaff
+    ADD CONSTRAINT arc2_goodfood_confectionstaff_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: arch_goodfood_extrusionaddedmixentry arc2_goodfood_extrusionaddedmixentry_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.arch_goodfood_extrusionaddedmixentry
+    ADD CONSTRAINT arc2_goodfood_extrusionaddedmixentry_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: arch_goodfood_extrusionaddedmixingredient arc2_goodfood_extrusionaddedmixingredient_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.arch_goodfood_extrusionaddedmixingredient
+    ADD CONSTRAINT arc2_goodfood_extrusionaddedmixingredient_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: arch_goodfood_extrusionpouring arc2_goodfood_extrusionpouring_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.arch_goodfood_extrusionpouring
+    ADD CONSTRAINT arc2_goodfood_extrusionpouring_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: arch_goodfood_extrusionpouringingredient arc2_goodfood_extrusionpouringingredient_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.arch_goodfood_extrusionpouringingredient
+    ADD CONSTRAINT arc2_goodfood_extrusionpouringingredient_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: arch_goodfood_extrusionpouringmix arc2_goodfood_extrusionpouringmix_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.arch_goodfood_extrusionpouringmix
+    ADD CONSTRAINT arc2_goodfood_extrusionpouringmix_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: arch_goodfood_extrusionprotocol arc2_goodfood_extrusionprotocol_externalnumber_key; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.arch_goodfood_extrusionprotocol
+    ADD CONSTRAINT arc2_goodfood_extrusionprotocol_externalnumber_key UNIQUE (externalnumber);
+
+
+--
+-- Name: arch_goodfood_extrusionprotocol arc2_goodfood_extrusionprotocol_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.arch_goodfood_extrusionprotocol
+    ADD CONSTRAINT arc2_goodfood_extrusionprotocol_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: arch_goodfood_extrusionprotocolcorrect arc2_goodfood_extrusionprotocolcorrect_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.arch_goodfood_extrusionprotocolcorrect
+    ADD CONSTRAINT arc2_goodfood_extrusionprotocolcorrect_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: arch_goodfood_extrusionprotocolstatechange arc2_goodfood_extrusionprotocolstatechange_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.arch_goodfood_extrusionprotocolstatechange
+    ADD CONSTRAINT arc2_goodfood_extrusionprotocolstatechange_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: arch_goodfood_extrusionsouse arc2_goodfood_extrusionsouse_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.arch_goodfood_extrusionsouse
+    ADD CONSTRAINT arc2_goodfood_extrusionsouse_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: arch_goodfood_extrusiontakenoffmixentry arc2_goodfood_extrusiontakenoffmixentry_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.arch_goodfood_extrusiontakenoffmixentry
+    ADD CONSTRAINT arc2_goodfood_extrusiontakenoffmixentry_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: arch_goodfood_extrusiontakenoffmixingredient arc2_goodfood_extrusiontakenoffmixingredient_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.arch_goodfood_extrusiontakenoffmixingredient
+    ADD CONSTRAINT arc2_goodfood_extrusiontakenoffmixingredient_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: arch_goodfood_pallet arc2_goodfood_pallet_externalnumber_key; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.arch_goodfood_pallet
+    ADD CONSTRAINT arc2_goodfood_pallet_externalnumber_key UNIQUE (externalnumber);
+
+
+--
+-- Name: arch_goodfood_pallet arc2_goodfood_pallet_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.arch_goodfood_pallet
+    ADD CONSTRAINT arc2_goodfood_pallet_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: arch_goodfood_palletlabel arc2_goodfood_palletlabel_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.arch_goodfood_palletlabel
+    ADD CONSTRAINT arc2_goodfood_palletlabel_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: arch_goodfood_palletlabelstatechange arc2_goodfood_palletlabelstatechange_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.arch_goodfood_palletlabelstatechange
+    ADD CONSTRAINT arc2_goodfood_palletlabelstatechange_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: arch_goodfood_palletstatechange arc2_goodfood_palletstatechange_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.arch_goodfood_palletstatechange
+    ADD CONSTRAINT arc2_goodfood_palletstatechange_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: arch_goodfood_printedlabel arc2_goodfood_printedlabel_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.arch_goodfood_printedlabel
+    ADD CONSTRAINT arc2_goodfood_printedlabel_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: arch_integrationbartender_printlabelshelper arc2_integrationbartender_printlabelshelper_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.arch_integrationbartender_printlabelshelper
+    ADD CONSTRAINT arc2_integrationbartender_printlabelshelper_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: arch_integrationbartender_sendtoprint arc2_integrationbartender_sendtoprint_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.arch_integrationbartender_sendtoprint
+    ADD CONSTRAINT arc2_integrationbartender_sendtoprint_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: arch_masterorders_masterorder arc2_masterorders_masterorder_externalnumber_key; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.arch_masterorders_masterorder
+    ADD CONSTRAINT arc2_masterorders_masterorder_externalnumber_key UNIQUE (externalnumber);
+
+
+--
+-- Name: arch_masterorders_masterorder arc2_masterorders_masterorder_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.arch_masterorders_masterorder
+    ADD CONSTRAINT arc2_masterorders_masterorder_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: arch_masterorders_masterorderproduct arc2_masterorders_masterorderproduct_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.arch_masterorders_masterorderproduct
+    ADD CONSTRAINT arc2_masterorders_masterorderproduct_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: arch_masterorders_masterorderproductattrvalue arc2_masterorders_masterorderproductattrvalue_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.arch_masterorders_masterorderproductattrvalue
+    ADD CONSTRAINT arc2_masterorders_masterorderproductattrvalue_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: arch_masterorders_productsbysizeentryhelper arc2_masterorders_productsbysizeentryhelper_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.arch_masterorders_productsbysizeentryhelper
+    ADD CONSTRAINT arc2_masterorders_productsbysizeentryhelper_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: arch_masterorders_productsbysizehelper arc2_masterorders_productsbysizehelper_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.arch_masterorders_productsbysizehelper
+    ADD CONSTRAINT arc2_masterorders_productsbysizehelper_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: arch_materialflowresources_document arc2_materialflowresources_document_number_key; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.arch_materialflowresources_document
+    ADD CONSTRAINT arc2_materialflowresources_document_number_key UNIQUE (number);
+
+
+--
+-- Name: arch_materialflowresources_document arc2_materialflowresources_document_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.arch_materialflowresources_document
+    ADD CONSTRAINT arc2_materialflowresources_document_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: arch_materialflowresources_documentstatechange arc2_materialflowresources_documentstatechange_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.arch_materialflowresources_documentstatechange
+    ADD CONSTRAINT arc2_materialflowresources_documentstatechange_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: arch_materialflowresources_position arc2_materialflowresources_position_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.arch_materialflowresources_position
+    ADD CONSTRAINT arc2_materialflowresources_position_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: arch_materialflowresources_positionattributevalue arc2_materialflowresources_positionattributevalue_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.arch_materialflowresources_positionattributevalue
+    ADD CONSTRAINT arc2_materialflowresources_positionattributevalue_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: arch_materialflowresources_reservation arc2_materialflowresources_reservation_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.arch_materialflowresources_reservation
+    ADD CONSTRAINT arc2_materialflowresources_reservation_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: arch_materialrequirementcoveragefororder_coveragefororder arc2_materialrequirementcoveragefororder_coveragefororder_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.arch_materialrequirementcoveragefororder_coveragefororder
+    ADD CONSTRAINT arc2_materialrequirementcoveragefororder_coveragefororder_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: arch_materialrequirementcoveragefororder_coveragelocation arc2_materialrequirementcoveragefororder_coveragelocation_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.arch_materialrequirementcoveragefororder_coveragelocation
+    ADD CONSTRAINT arc2_materialrequirementcoveragefororder_coveragelocation_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: arch_materialrequirementcoveragefororder_coverageproduct arc2_materialrequirementcoveragefororder_coverageproduct_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.arch_materialrequirementcoveragefororder_coverageproduct
+    ADD CONSTRAINT arc2_materialrequirementcoveragefororder_coverageproduct_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: arch_materialrequirementcoveragefororder_coverageproductlogging arc2_materialrequirementcoveragefororder_coverageproductlo_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.arch_materialrequirementcoveragefororder_coverageproductlogging
+    ADD CONSTRAINT arc2_materialrequirementcoveragefororder_coverageproductlo_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: arch_orders_operationaltask arc2_orders_operationaltask_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.arch_orders_operationaltask
+    ADD CONSTRAINT arc2_orders_operationaltask_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: arch_orders_operationaltaskstatechange arc2_orders_operationaltaskstatechange_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.arch_orders_operationaltaskstatechange
+    ADD CONSTRAINT arc2_orders_operationaltaskstatechange_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: arch_orders_order arc2_orders_order_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.arch_orders_order
+    ADD CONSTRAINT arc2_orders_order_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: arch_orders_orderpack arc2_orders_orderpack_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.arch_orders_orderpack
+    ADD CONSTRAINT arc2_orders_orderpack_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: arch_orders_orderpackstatechange arc2_orders_orderpackstatechange_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.arch_orders_orderpackstatechange
+    ADD CONSTRAINT arc2_orders_orderpackstatechange_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: arch_orders_orderstatechange arc2_orders_orderstatechange_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.arch_orders_orderstatechange
+    ADD CONSTRAINT arc2_orders_orderstatechange_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: arch_orders_ordertechnologicalprocess arc2_orders_ordertechnologicalprocess_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.arch_orders_ordertechnologicalprocess
+    ADD CONSTRAINT arc2_orders_ordertechnologicalprocess_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: arch_orders_ordertechnologicalprocesspart arc2_orders_ordertechnologicalprocesspart_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.arch_orders_ordertechnologicalprocesspart
+    ADD CONSTRAINT arc2_orders_ordertechnologicalprocesspart_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: arch_orders_ordertechnologicalprocesswaste arc2_orders_ordertechnologicalprocesswaste_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.arch_orders_ordertechnologicalprocesswaste
+    ADD CONSTRAINT arc2_orders_ordertechnologicalprocesswaste_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: arch_orders_productionlinescheduleposition arc2_orders_productionlinescheduleposition_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.arch_orders_productionlinescheduleposition
+    ADD CONSTRAINT arc2_orders_productionlinescheduleposition_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: arch_orders_reasontypecorrectiondatefrom arc2_orders_reasontypecorrectiondatefrom_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.arch_orders_reasontypecorrectiondatefrom
+    ADD CONSTRAINT arc2_orders_reasontypecorrectiondatefrom_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: arch_orders_reasontypecorrectiondateto arc2_orders_reasontypecorrectiondateto_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.arch_orders_reasontypecorrectiondateto
+    ADD CONSTRAINT arc2_orders_reasontypecorrectiondateto_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: arch_orders_reasontypedeviationeffectiveend arc2_orders_reasontypedeviationeffectiveend_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.arch_orders_reasontypedeviationeffectiveend
+    ADD CONSTRAINT arc2_orders_reasontypedeviationeffectiveend_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: arch_orders_reasontypedeviationeffectivestart arc2_orders_reasontypedeviationeffectivestart_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.arch_orders_reasontypedeviationeffectivestart
+    ADD CONSTRAINT arc2_orders_reasontypedeviationeffectivestart_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: arch_orders_reasontypeofchangingorderstate arc2_orders_reasontypeofchangingorderstate_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.arch_orders_reasontypeofchangingorderstate
+    ADD CONSTRAINT arc2_orders_reasontypeofchangingorderstate_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: arch_orders_scheduleposition arc2_orders_scheduleposition_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.arch_orders_scheduleposition
+    ADD CONSTRAINT arc2_orders_scheduleposition_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: arch_orders_typeofcorrectioncauses arc2_orders_typeofcorrectioncauses_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.arch_orders_typeofcorrectioncauses
+    ADD CONSTRAINT arc2_orders_typeofcorrectioncauses_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: arch_ordersforsubproductsgeneration_suborders arc2_ordersforsubproductsgeneration_suborders_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.arch_ordersforsubproductsgeneration_suborders
+    ADD CONSTRAINT arc2_ordersforsubproductsgeneration_suborders_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: arch_ordersgroups_ordersgroup arc2_ordersgroups_ordersgroup_number_key; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.arch_ordersgroups_ordersgroup
+    ADD CONSTRAINT arc2_ordersgroups_ordersgroup_number_key UNIQUE (number);
+
+
+--
+-- Name: arch_ordersgroups_ordersgroup arc2_ordersgroups_ordersgroup_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.arch_ordersgroups_ordersgroup
+    ADD CONSTRAINT arc2_ordersgroups_ordersgroup_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: arch_ordersgroups_ordersgroupissuedmaterial arc2_ordersgroups_ordersgroupissuedmaterial_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.arch_ordersgroups_ordersgroupissuedmaterial
+    ADD CONSTRAINT arc2_ordersgroups_ordersgroupissuedmaterial_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: arch_ordersgroups_ordersgroupissuedmaterialposition arc2_ordersgroups_ordersgroupissuedmaterialposition_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.arch_ordersgroups_ordersgroupissuedmaterialposition
+    ADD CONSTRAINT arc2_ordersgroups_ordersgroupissuedmaterialposition_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: arch_ordersgroups_ordersgroupmaterialrequirement arc2_ordersgroups_ordersgroupmaterialrequirement_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.arch_ordersgroups_ordersgroupmaterialrequirement
+    ADD CONSTRAINT arc2_ordersgroups_ordersgroupmaterialrequirement_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: arch_ordersgroups_ordersgroupmaterialrequirementproduct arc2_ordersgroups_ordersgroupmaterialrequirementproduct_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.arch_ordersgroups_ordersgroupmaterialrequirementproduct
+    ADD CONSTRAINT arc2_ordersgroups_ordersgroupmaterialrequirementproduct_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: arch_ordersgroups_ordersgroupproducedproduct arc2_ordersgroups_ordersgroupproducedproduct_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.arch_ordersgroups_ordersgroupproducedproduct
+    ADD CONSTRAINT arc2_ordersgroups_ordersgroupproducedproduct_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: arch_ordersgroups_ordersgroupproductstoissueentryhelper arc2_ordersgroups_ordersgroupproductstoissueentryhelper_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.arch_ordersgroups_ordersgroupproductstoissueentryhelper
+    ADD CONSTRAINT arc2_ordersgroups_ordersgroupproductstoissueentryhelper_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: arch_ordersgroups_ordersgroupproductstoissuehelper arc2_ordersgroups_ordersgroupproductstoissuehelper_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.arch_ordersgroups_ordersgroupproductstoissuehelper
+    ADD CONSTRAINT arc2_ordersgroups_ordersgroupproductstoissuehelper_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: arch_ordersgroups_productionbalance arc2_ordersgroups_productionbalance_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.arch_ordersgroups_productionbalance
+    ADD CONSTRAINT arc2_ordersgroups_productionbalance_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: arch_ordersupplies_coverageanalysisfororder arc2_ordersupplies_coverageanalysisfororder_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.arch_ordersupplies_coverageanalysisfororder
+    ADD CONSTRAINT arc2_ordersupplies_coverageanalysisfororder_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: arch_ordersupplies_coveragelocation arc2_ordersupplies_coveragelocation_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.arch_ordersupplies_coveragelocation
+    ADD CONSTRAINT arc2_ordersupplies_coveragelocation_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: arch_ordersupplies_coverageorderstate arc2_ordersupplies_coverageorderstate_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.arch_ordersupplies_coverageorderstate
+    ADD CONSTRAINT arc2_ordersupplies_coverageorderstate_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: arch_ordersupplies_coverageproduct arc2_ordersupplies_coverageproduct_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.arch_ordersupplies_coverageproduct
+    ADD CONSTRAINT arc2_ordersupplies_coverageproduct_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: arch_ordersupplies_coverageproductlogging arc2_ordersupplies_coverageproductlogging_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.arch_ordersupplies_coverageproductlogging
+    ADD CONSTRAINT arc2_ordersupplies_coverageproductlogging_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: arch_ordersupplies_coverageproductselected arc2_ordersupplies_coverageproductselected_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.arch_ordersupplies_coverageproductselected
+    ADD CONSTRAINT arc2_ordersupplies_coverageproductselected_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: arch_ordersupplies_materialrequirementcoverage arc2_ordersupplies_materialrequirementcoverage_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.arch_ordersupplies_materialrequirementcoverage
+    ADD CONSTRAINT arc2_ordersupplies_materialrequirementcoverage_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: arch_productflowthrudivision_issue arc2_productflowthrudivision_issue_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.arch_productflowthrudivision_issue
+    ADD CONSTRAINT arc2_productflowthrudivision_issue_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: arch_productflowthrudivision_materialavailability arc2_productflowthrudivision_materialavailability_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.arch_productflowthrudivision_materialavailability
+    ADD CONSTRAINT arc2_productflowthrudivision_materialavailability_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: arch_productflowthrudivision_productstoissue arc2_productflowthrudivision_productstoissue_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.arch_productflowthrudivision_productstoissue
+    ADD CONSTRAINT arc2_productflowthrudivision_productstoissue_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: arch_productflowthrudivision_producttoissuecorrection arc2_productflowthrudivision_producttoissuecorrection_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.arch_productflowthrudivision_producttoissuecorrection
+    ADD CONSTRAINT arc2_productflowthrudivision_producttoissuecorrection_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: arch_productflowthrudivision_warehouseissue arc2_productflowthrudivision_warehouseissue_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.arch_productflowthrudivision_warehouseissue
+    ADD CONSTRAINT arc2_productflowthrudivision_warehouseissue_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: arch_productflowthrudivision_warehouseissuestatechange arc2_productflowthrudivision_warehouseissuestatechange_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.arch_productflowthrudivision_warehouseissuestatechange
+    ADD CONSTRAINT arc2_productflowthrudivision_warehouseissuestatechange_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: arch_productioncounting_anomaly arc2_productioncounting_anomaly_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.arch_productioncounting_anomaly
+    ADD CONSTRAINT arc2_productioncounting_anomaly_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: arch_productioncounting_anomalyexplanation arc2_productioncounting_anomalyexplanation_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.arch_productioncounting_anomalyexplanation
+    ADD CONSTRAINT arc2_productioncounting_anomalyexplanation_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: arch_productioncounting_anomalyproductiontrackingentryhelper arc2_productioncounting_anomalyproductiontrackingentryhelp_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.arch_productioncounting_anomalyproductiontrackingentryhelper
+    ADD CONSTRAINT arc2_productioncounting_anomalyproductiontrackingentryhelp_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: arch_productioncounting_anomalyreasoncontainer arc2_productioncounting_anomalyreasoncontainer_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.arch_productioncounting_anomalyreasoncontainer
+    ADD CONSTRAINT arc2_productioncounting_anomalyreasoncontainer_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: arch_productioncounting_lack arc2_productioncounting_lack_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.arch_productioncounting_lack
+    ADD CONSTRAINT arc2_productioncounting_lack_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: arch_productioncounting_prodoutresourceattrval arc2_productioncounting_prodoutresourceattrval_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.arch_productioncounting_prodoutresourceattrval
+    ADD CONSTRAINT arc2_productioncounting_prodoutresourceattrval_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: arch_productioncounting_productiontracking arc2_productioncounting_productiontracking_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.arch_productioncounting_productiontracking
+    ADD CONSTRAINT arc2_productioncounting_productiontracking_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: arch_productioncounting_productiontrackingattachment arc2_productioncounting_productiontrackingattachment_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.arch_productioncounting_productiontrackingattachment
+    ADD CONSTRAINT arc2_productioncounting_productiontrackingattachment_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: arch_productioncounting_productiontrackingstatechange arc2_productioncounting_productiontrackingstatechange_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.arch_productioncounting_productiontrackingstatechange
+    ADD CONSTRAINT arc2_productioncounting_productiontrackingstatechange_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: arch_productioncounting_staffworktime arc2_productioncounting_staffworktime_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.arch_productioncounting_staffworktime
+    ADD CONSTRAINT arc2_productioncounting_staffworktime_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: arch_productioncounting_trackinginproductreplacementhelper arc2_productioncounting_trackinginproductreplacementhelper_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.arch_productioncounting_trackinginproductreplacementhelper
+    ADD CONSTRAINT arc2_productioncounting_trackinginproductreplacementhelper_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: arch_productioncounting_trackingoperationproductincomponent arc2_productioncounting_trackingoperationproductincomponen_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.arch_productioncounting_trackingoperationproductincomponent
+    ADD CONSTRAINT arc2_productioncounting_trackingoperationproductincomponen_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: arch_productioncounting_trackingoperationproductoutcomponent arc2_productioncounting_trackingoperationproductoutcompone_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.arch_productioncounting_trackingoperationproductoutcomponent
+    ADD CONSTRAINT arc2_productioncounting_trackingoperationproductoutcompone_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: arch_productioncounting_usedbatch arc2_productioncounting_usedbatch_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.arch_productioncounting_usedbatch
+    ADD CONSTRAINT arc2_productioncounting_usedbatch_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: arch_productionpershift_dailyprogress arc2_productionpershift_dailyprogress_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.arch_productionpershift_dailyprogress
+    ADD CONSTRAINT arc2_productionpershift_dailyprogress_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: arch_productionpershift_productionpershift arc2_productionpershift_productionpershift_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.arch_productionpershift_productionpershift
+    ADD CONSTRAINT arc2_productionpershift_productionpershift_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: arch_productionpershift_progressforday arc2_productionpershift_progressforday_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.arch_productionpershift_progressforday
+    ADD CONSTRAINT arc2_productionpershift_progressforday_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: arch_productionpershift_reasontypeofcorrectionplan arc2_productionpershift_reasontypeofcorrectionplan_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.arch_productionpershift_reasontypeofcorrectionplan
+    ADD CONSTRAINT arc2_productionpershift_reasontypeofcorrectionplan_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: arch_productionscheduling_opercomptimecalculation arc2_productionscheduling_opercomptimecalculation_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.arch_productionscheduling_opercomptimecalculation
+    ADD CONSTRAINT arc2_productionscheduling_opercomptimecalculation_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: arch_productionscheduling_ordertimecalculation arc2_productionscheduling_ordertimecalculation_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.arch_productionscheduling_ordertimecalculation
+    ADD CONSTRAINT arc2_productionscheduling_ordertimecalculation_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: arch_qualitycontrol_qualitycontrol arc2_qualitycontrol_qualitycontrol_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.arch_qualitycontrol_qualitycontrol
+    ADD CONSTRAINT arc2_qualitycontrol_qualitycontrol_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: arch_qualitycontrol_qualitycontrolattachment arc2_qualitycontrol_qualitycontrolattachment_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.arch_qualitycontrol_qualitycontrolattachment
+    ADD CONSTRAINT arc2_qualitycontrol_qualitycontrolattachment_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: arch_qualitycontrol_qualitycontrolattributeprodtracking arc2_qualitycontrol_qualitycontrolattributeprodtracking_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.arch_qualitycontrol_qualitycontrolattributeprodtracking
+    ADD CONSTRAINT arc2_qualitycontrol_qualitycontrolattributeprodtracking_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: arch_qualitycontrol_qualitycontrolattributevalue arc2_qualitycontrol_qualitycontrolattributevalue_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.arch_qualitycontrol_qualitycontrolattributevalue
+    ADD CONSTRAINT arc2_qualitycontrol_qualitycontrolattributevalue_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: arch_qualitycontrol_qualitycontrolresource arc2_qualitycontrol_qualitycontrolresource_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.arch_qualitycontrol_qualitycontrolresource
+    ADD CONSTRAINT arc2_qualitycontrol_qualitycontrolresource_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: arch_qualitycontrol_qualitycontrolstatechange arc2_qualitycontrol_qualitycontrolstatechange_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.arch_qualitycontrol_qualitycontrolstatechange
+    ADD CONSTRAINT arc2_qualitycontrol_qualitycontrolstatechange_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: arch_repairs_repairorder arc2_repairs_repairorder_number_key; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.arch_repairs_repairorder
+    ADD CONSTRAINT arc2_repairs_repairorder_number_key UNIQUE (number);
+
+
+--
+-- Name: arch_repairs_repairorder arc2_repairs_repairorder_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.arch_repairs_repairorder
+    ADD CONSTRAINT arc2_repairs_repairorder_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: arch_repairs_repairorderproduct arc2_repairs_repairorderproduct_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.arch_repairs_repairorderproduct
+    ADD CONSTRAINT arc2_repairs_repairorderproduct_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: arch_repairs_repairorderstatechange arc2_repairs_repairorderstatechange_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.arch_repairs_repairorderstatechange
+    ADD CONSTRAINT arc2_repairs_repairorderstatechange_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: arch_repairs_repairorderworktime arc2_repairs_repairorderworktime_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.arch_repairs_repairorderworktime
+    ADD CONSTRAINT arc2_repairs_repairorderworktime_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: arch_states_message arc2_states_message_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.arch_states_message
+    ADD CONSTRAINT arc2_states_message_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: arch_stoppage_stoppage arc2_stoppage_stoppage_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.arch_stoppage_stoppage
+    ADD CONSTRAINT arc2_stoppage_stoppage_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: arch_technologies_barcodeoperationcomponent arc2_technologies_barcodeoperationcomponent_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.arch_technologies_barcodeoperationcomponent
+    ADD CONSTRAINT arc2_technologies_barcodeoperationcomponent_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: arch_urcmaterialavailability_requiredcomponent arc2_urcmaterialavailability_requiredcomponent_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.arch_urcmaterialavailability_requiredcomponent
+    ADD CONSTRAINT arc2_urcmaterialavailability_requiredcomponent_pkey PRIMARY KEY (id);
 
 
 --
@@ -49061,846 +51871,6 @@ ALTER TABLE ONLY public.arch_advancedgenealogyfororders_genealogyproductincompon
 
 ALTER TABLE ONLY public.arch_archiving
     ADD CONSTRAINT arch_archiving_pkey PRIMARY KEY (id);
-
-
---
--- Name: arch_assignmenttoshift_multiassignmenttoshift arch_assignmenttoshift_multiassignmenttoshift_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_assignmenttoshift_multiassignmenttoshift
-    ADD CONSTRAINT arch_assignmenttoshift_multiassignmenttoshift_pkey PRIMARY KEY (id);
-
-
---
--- Name: arch_assignmenttoshift_staffassignmenttoshift arch_assignmenttoshift_staffassignmenttoshift_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_assignmenttoshift_staffassignmenttoshift
-    ADD CONSTRAINT arch_assignmenttoshift_staffassignmenttoshift_pkey PRIMARY KEY (id);
-
-
---
--- Name: arch_avglaborcostcalcfororder_assignmentworkertoshift arch_avglaborcostcalcfororder_assignmentworkertoshift_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_avglaborcostcalcfororder_assignmentworkertoshift
-    ADD CONSTRAINT arch_avglaborcostcalcfororder_assignmentworkertoshift_pkey PRIMARY KEY (id);
-
-
---
--- Name: arch_avglaborcostcalcfororder_avglaborcostcalcfororder arch_avglaborcostcalcfororder_avglaborcostcalcfororder_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_avglaborcostcalcfororder_avglaborcostcalcfororder
-    ADD CONSTRAINT arch_avglaborcostcalcfororder_avglaborcostcalcfororder_pkey PRIMARY KEY (id);
-
-
---
--- Name: arch_basicproductioncounting_productioncountingquantity arch_basicproductioncounting__order_id_technologyoperationc_key; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_basicproductioncounting_productioncountingquantity
-    ADD CONSTRAINT arch_basicproductioncounting__order_id_technologyoperationc_key UNIQUE (order_id, technologyoperationcomponent_id, product_id, role, typeofmaterial);
-
-
---
--- Name: arch_basicproductioncounting_basicproductioncounting arch_basicproductioncounting_basicproductioncounting_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_basicproductioncounting_basicproductioncounting
-    ADD CONSTRAINT arch_basicproductioncounting_basicproductioncounting_pkey PRIMARY KEY (id);
-
-
---
--- Name: arch_basicproductioncounting_productioncountingoperationrun arch_basicproductioncounting_productioncountingoperationru_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_basicproductioncounting_productioncountingoperationrun
-    ADD CONSTRAINT arch_basicproductioncounting_productioncountingoperationru_pkey PRIMARY KEY (id);
-
-
---
--- Name: arch_basicproductioncounting_productioncountingquantity arch_basicproductioncounting_productioncountingquantity_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_basicproductioncounting_productioncountingquantity
-    ADD CONSTRAINT arch_basicproductioncounting_productioncountingquantity_pkey PRIMARY KEY (id);
-
-
---
--- Name: arch_costcalculation_componentcost arch_costcalculation_componentcost_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_costcalculation_componentcost
-    ADD CONSTRAINT arch_costcalculation_componentcost_pkey PRIMARY KEY (id);
-
-
---
--- Name: arch_costcalculation_costcalculation arch_costcalculation_costcalculation_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_costcalculation_costcalculation
-    ADD CONSTRAINT arch_costcalculation_costcalculation_pkey PRIMARY KEY (id);
-
-
---
--- Name: arch_costnormsformaterials_technologyinstoperproductincomp arch_costnormsformaterials_technologyinstoperproductincomp_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_costnormsformaterials_technologyinstoperproductincomp
-    ADD CONSTRAINT arch_costnormsformaterials_technologyinstoperproductincomp_pkey PRIMARY KEY (id);
-
-
---
--- Name: arch_costnormsforoperation_calculationoperationcomponent arch_costnormsforoperation_calculationoperationcomponent_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_costnormsforoperation_calculationoperationcomponent
-    ADD CONSTRAINT arch_costnormsforoperation_calculationoperationcomponent_pkey PRIMARY KEY (id);
-
-
---
--- Name: arch_esilco_importpositionerror arch_esilco_importpositionerror_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_esilco_importpositionerror
-    ADD CONSTRAINT arch_esilco_importpositionerror_pkey PRIMARY KEY (id);
-
-
---
--- Name: arch_goodfood_confectionadditionalinputproduct arch_goodfood_confectionadditionalinputproduct_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_goodfood_confectionadditionalinputproduct
-    ADD CONSTRAINT arch_goodfood_confectionadditionalinputproduct_pkey PRIMARY KEY (id);
-
-
---
--- Name: arch_goodfood_confectionfilmproduct arch_goodfood_confectionfilmproduct_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_goodfood_confectionfilmproduct
-    ADD CONSTRAINT arch_goodfood_confectionfilmproduct_pkey PRIMARY KEY (id);
-
-
---
--- Name: arch_goodfood_confectionfilmproductentry arch_goodfood_confectionfilmproductentry_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_goodfood_confectionfilmproductentry
-    ADD CONSTRAINT arch_goodfood_confectionfilmproductentry_pkey PRIMARY KEY (id);
-
-
---
--- Name: arch_goodfood_confectioninputproduct arch_goodfood_confectioninputproduct_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_goodfood_confectioninputproduct
-    ADD CONSTRAINT arch_goodfood_confectioninputproduct_pkey PRIMARY KEY (id);
-
-
---
--- Name: arch_goodfood_confectionprotocol arch_goodfood_confectionprotocol_externalnumber_key; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_goodfood_confectionprotocol
-    ADD CONSTRAINT arch_goodfood_confectionprotocol_externalnumber_key UNIQUE (externalnumber);
-
-
---
--- Name: arch_goodfood_confectionprotocol arch_goodfood_confectionprotocol_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_goodfood_confectionprotocol
-    ADD CONSTRAINT arch_goodfood_confectionprotocol_pkey PRIMARY KEY (id);
-
-
---
--- Name: arch_goodfood_confectionprotocolcorrect arch_goodfood_confectionprotocolcorrect_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_goodfood_confectionprotocolcorrect
-    ADD CONSTRAINT arch_goodfood_confectionprotocolcorrect_pkey PRIMARY KEY (id);
-
-
---
--- Name: arch_goodfood_confectionprotocolstatechange arch_goodfood_confectionprotocolstatechange_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_goodfood_confectionprotocolstatechange
-    ADD CONSTRAINT arch_goodfood_confectionprotocolstatechange_pkey PRIMARY KEY (id);
-
-
---
--- Name: arch_goodfood_confectionremainderinputproduct arch_goodfood_confectionremainderinputproduct_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_goodfood_confectionremainderinputproduct
-    ADD CONSTRAINT arch_goodfood_confectionremainderinputproduct_pkey PRIMARY KEY (id);
-
-
---
--- Name: arch_goodfood_confectionstaff arch_goodfood_confectionstaff_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_goodfood_confectionstaff
-    ADD CONSTRAINT arch_goodfood_confectionstaff_pkey PRIMARY KEY (id);
-
-
---
--- Name: arch_goodfood_extrusionaddedmixentry arch_goodfood_extrusionaddedmixentry_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_goodfood_extrusionaddedmixentry
-    ADD CONSTRAINT arch_goodfood_extrusionaddedmixentry_pkey PRIMARY KEY (id);
-
-
---
--- Name: arch_goodfood_extrusionaddedmixingredient arch_goodfood_extrusionaddedmixingredient_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_goodfood_extrusionaddedmixingredient
-    ADD CONSTRAINT arch_goodfood_extrusionaddedmixingredient_pkey PRIMARY KEY (id);
-
-
---
--- Name: arch_goodfood_extrusionpouring arch_goodfood_extrusionpouring_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_goodfood_extrusionpouring
-    ADD CONSTRAINT arch_goodfood_extrusionpouring_pkey PRIMARY KEY (id);
-
-
---
--- Name: arch_goodfood_extrusionpouringingredient arch_goodfood_extrusionpouringingredient_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_goodfood_extrusionpouringingredient
-    ADD CONSTRAINT arch_goodfood_extrusionpouringingredient_pkey PRIMARY KEY (id);
-
-
---
--- Name: arch_goodfood_extrusionpouringmix arch_goodfood_extrusionpouringmix_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_goodfood_extrusionpouringmix
-    ADD CONSTRAINT arch_goodfood_extrusionpouringmix_pkey PRIMARY KEY (id);
-
-
---
--- Name: arch_goodfood_extrusionprotocol arch_goodfood_extrusionprotocol_externalnumber_key; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_goodfood_extrusionprotocol
-    ADD CONSTRAINT arch_goodfood_extrusionprotocol_externalnumber_key UNIQUE (externalnumber);
-
-
---
--- Name: arch_goodfood_extrusionprotocol arch_goodfood_extrusionprotocol_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_goodfood_extrusionprotocol
-    ADD CONSTRAINT arch_goodfood_extrusionprotocol_pkey PRIMARY KEY (id);
-
-
---
--- Name: arch_goodfood_extrusionprotocolcorrect arch_goodfood_extrusionprotocolcorrect_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_goodfood_extrusionprotocolcorrect
-    ADD CONSTRAINT arch_goodfood_extrusionprotocolcorrect_pkey PRIMARY KEY (id);
-
-
---
--- Name: arch_goodfood_extrusionprotocolstatechange arch_goodfood_extrusionprotocolstatechange_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_goodfood_extrusionprotocolstatechange
-    ADD CONSTRAINT arch_goodfood_extrusionprotocolstatechange_pkey PRIMARY KEY (id);
-
-
---
--- Name: arch_goodfood_extrusionsouse arch_goodfood_extrusionsouse_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_goodfood_extrusionsouse
-    ADD CONSTRAINT arch_goodfood_extrusionsouse_pkey PRIMARY KEY (id);
-
-
---
--- Name: arch_goodfood_extrusiontakenoffmixentry arch_goodfood_extrusiontakenoffmixentry_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_goodfood_extrusiontakenoffmixentry
-    ADD CONSTRAINT arch_goodfood_extrusiontakenoffmixentry_pkey PRIMARY KEY (id);
-
-
---
--- Name: arch_goodfood_extrusiontakenoffmixingredient arch_goodfood_extrusiontakenoffmixingredient_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_goodfood_extrusiontakenoffmixingredient
-    ADD CONSTRAINT arch_goodfood_extrusiontakenoffmixingredient_pkey PRIMARY KEY (id);
-
-
---
--- Name: arch_goodfood_label arch_goodfood_label_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_goodfood_label
-    ADD CONSTRAINT arch_goodfood_label_pkey PRIMARY KEY (id);
-
-
---
--- Name: arch_goodfood_labelstatechange arch_goodfood_labelstatechange_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_goodfood_labelstatechange
-    ADD CONSTRAINT arch_goodfood_labelstatechange_pkey PRIMARY KEY (id);
-
-
---
--- Name: arch_goodfood_pallet arch_goodfood_pallet_externalnumber_key; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_goodfood_pallet
-    ADD CONSTRAINT arch_goodfood_pallet_externalnumber_key UNIQUE (externalnumber);
-
-
---
--- Name: arch_goodfood_pallet arch_goodfood_pallet_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_goodfood_pallet
-    ADD CONSTRAINT arch_goodfood_pallet_pkey PRIMARY KEY (id);
-
-
---
--- Name: arch_goodfood_palletstatechange arch_goodfood_palletstatechange_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_goodfood_palletstatechange
-    ADD CONSTRAINT arch_goodfood_palletstatechange_pkey PRIMARY KEY (id);
-
-
---
--- Name: arch_goodfood_printedlabel arch_goodfood_printedlabel_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_goodfood_printedlabel
-    ADD CONSTRAINT arch_goodfood_printedlabel_pkey PRIMARY KEY (id);
-
-
---
--- Name: arch_integrationbartender_printlabelshelper arch_integrationbartender_printlabelshelper_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_integrationbartender_printlabelshelper
-    ADD CONSTRAINT arch_integrationbartender_printlabelshelper_pkey PRIMARY KEY (id);
-
-
---
--- Name: arch_integrationbartender_sendtoprint arch_integrationbartender_sendtoprint_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_integrationbartender_sendtoprint
-    ADD CONSTRAINT arch_integrationbartender_sendtoprint_pkey PRIMARY KEY (id);
-
-
---
--- Name: arch_masterorders_masterorder arch_masterorders_masterorder_externalnumber_key; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_masterorders_masterorder
-    ADD CONSTRAINT arch_masterorders_masterorder_externalnumber_key UNIQUE (externalnumber);
-
-
---
--- Name: arch_masterorders_masterorder arch_masterorders_masterorder_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_masterorders_masterorder
-    ADD CONSTRAINT arch_masterorders_masterorder_pkey PRIMARY KEY (id);
-
-
---
--- Name: arch_masterorders_masterorderproduct arch_masterorders_masterorderproduct_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_masterorders_masterorderproduct
-    ADD CONSTRAINT arch_masterorders_masterorderproduct_pkey PRIMARY KEY (id);
-
-
---
--- Name: arch_materialflowresources_document arch_materialflowresources_document_number_key; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_materialflowresources_document
-    ADD CONSTRAINT arch_materialflowresources_document_number_key UNIQUE (number);
-
-
---
--- Name: arch_materialflowresources_document arch_materialflowresources_document_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_materialflowresources_document
-    ADD CONSTRAINT arch_materialflowresources_document_pkey PRIMARY KEY (id);
-
-
---
--- Name: arch_materialflowresources_position arch_materialflowresources_position_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_materialflowresources_position
-    ADD CONSTRAINT arch_materialflowresources_position_pkey PRIMARY KEY (id);
-
-
---
--- Name: arch_materialflowresources_reservation arch_materialflowresources_reservation_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_materialflowresources_reservation
-    ADD CONSTRAINT arch_materialflowresources_reservation_pkey PRIMARY KEY (id);
-
-
---
--- Name: arch_materialrequirementcoveragefororder_coveragefororder arch_materialrequirementcoveragefororder_coveragefororder_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_materialrequirementcoveragefororder_coveragefororder
-    ADD CONSTRAINT arch_materialrequirementcoveragefororder_coveragefororder_pkey PRIMARY KEY (id);
-
-
---
--- Name: arch_materialrequirementcoveragefororder_coveragelocation arch_materialrequirementcoveragefororder_coveragelocation_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_materialrequirementcoveragefororder_coveragelocation
-    ADD CONSTRAINT arch_materialrequirementcoveragefororder_coveragelocation_pkey PRIMARY KEY (id);
-
-
---
--- Name: arch_materialrequirementcoveragefororder_coverageproduct arch_materialrequirementcoveragefororder_coverageproduct_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_materialrequirementcoveragefororder_coverageproduct
-    ADD CONSTRAINT arch_materialrequirementcoveragefororder_coverageproduct_pkey PRIMARY KEY (id);
-
-
---
--- Name: arch_materialrequirementcoveragefororder_coverageproductlogging arch_materialrequirementcoveragefororder_coverageproductlo_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_materialrequirementcoveragefororder_coverageproductlogging
-    ADD CONSTRAINT arch_materialrequirementcoveragefororder_coverageproductlo_pkey PRIMARY KEY (id);
-
-
---
--- Name: arch_orders_operationaltask arch_orders_operationaltask_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_orders_operationaltask
-    ADD CONSTRAINT arch_orders_operationaltask_pkey PRIMARY KEY (id);
-
-
---
--- Name: arch_orders_order arch_orders_order_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_orders_order
-    ADD CONSTRAINT arch_orders_order_pkey PRIMARY KEY (id);
-
-
---
--- Name: arch_orders_orderstatechange arch_orders_orderstatechange_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_orders_orderstatechange
-    ADD CONSTRAINT arch_orders_orderstatechange_pkey PRIMARY KEY (id);
-
-
---
--- Name: arch_orders_reasontypecorrectiondatefrom arch_orders_reasontypecorrectiondatefrom_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_orders_reasontypecorrectiondatefrom
-    ADD CONSTRAINT arch_orders_reasontypecorrectiondatefrom_pkey PRIMARY KEY (id);
-
-
---
--- Name: arch_orders_reasontypecorrectiondateto arch_orders_reasontypecorrectiondateto_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_orders_reasontypecorrectiondateto
-    ADD CONSTRAINT arch_orders_reasontypecorrectiondateto_pkey PRIMARY KEY (id);
-
-
---
--- Name: arch_orders_reasontypedeviationeffectiveend arch_orders_reasontypedeviationeffectiveend_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_orders_reasontypedeviationeffectiveend
-    ADD CONSTRAINT arch_orders_reasontypedeviationeffectiveend_pkey PRIMARY KEY (id);
-
-
---
--- Name: arch_orders_reasontypedeviationeffectivestart arch_orders_reasontypedeviationeffectivestart_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_orders_reasontypedeviationeffectivestart
-    ADD CONSTRAINT arch_orders_reasontypedeviationeffectivestart_pkey PRIMARY KEY (id);
-
-
---
--- Name: arch_orders_reasontypeofchangingorderstate arch_orders_reasontypeofchangingorderstate_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_orders_reasontypeofchangingorderstate
-    ADD CONSTRAINT arch_orders_reasontypeofchangingorderstate_pkey PRIMARY KEY (id);
-
-
---
--- Name: arch_orders_typeofcorrectioncauses arch_orders_typeofcorrectioncauses_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_orders_typeofcorrectioncauses
-    ADD CONSTRAINT arch_orders_typeofcorrectioncauses_pkey PRIMARY KEY (id);
-
-
---
--- Name: arch_ordersforsubproductsgeneration_suborders arch_ordersforsubproductsgeneration_suborders_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_ordersforsubproductsgeneration_suborders
-    ADD CONSTRAINT arch_ordersforsubproductsgeneration_suborders_pkey PRIMARY KEY (id);
-
-
---
--- Name: arch_ordersgroups_ordersgroup arch_ordersgroups_ordersgroup_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_ordersgroups_ordersgroup
-    ADD CONSTRAINT arch_ordersgroups_ordersgroup_pkey PRIMARY KEY (id);
-
-
---
--- Name: arch_ordersupplies_coveragelocation arch_ordersupplies_coveragelocation_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_ordersupplies_coveragelocation
-    ADD CONSTRAINT arch_ordersupplies_coveragelocation_pkey PRIMARY KEY (id);
-
-
---
--- Name: arch_ordersupplies_coverageorderstate arch_ordersupplies_coverageorderstate_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_ordersupplies_coverageorderstate
-    ADD CONSTRAINT arch_ordersupplies_coverageorderstate_pkey PRIMARY KEY (id);
-
-
---
--- Name: arch_ordersupplies_coverageproduct arch_ordersupplies_coverageproduct_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_ordersupplies_coverageproduct
-    ADD CONSTRAINT arch_ordersupplies_coverageproduct_pkey PRIMARY KEY (id);
-
-
---
--- Name: arch_ordersupplies_coverageproductlogging arch_ordersupplies_coverageproductlogging_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_ordersupplies_coverageproductlogging
-    ADD CONSTRAINT arch_ordersupplies_coverageproductlogging_pkey PRIMARY KEY (id);
-
-
---
--- Name: arch_ordersupplies_coverageproductselected arch_ordersupplies_coverageproductselected_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_ordersupplies_coverageproductselected
-    ADD CONSTRAINT arch_ordersupplies_coverageproductselected_pkey PRIMARY KEY (id);
-
-
---
--- Name: arch_ordersupplies_coverageregister arch_ordersupplies_coverageregister_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_ordersupplies_coverageregister
-    ADD CONSTRAINT arch_ordersupplies_coverageregister_pkey PRIMARY KEY (id);
-
-
---
--- Name: arch_ordersupplies_materialrequirementcoverage arch_ordersupplies_materialrequirementcoverage_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_ordersupplies_materialrequirementcoverage
-    ADD CONSTRAINT arch_ordersupplies_materialrequirementcoverage_pkey PRIMARY KEY (id);
-
-
---
--- Name: arch_productflowthrudivision_issue arch_productflowthrudivision_issue_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_productflowthrudivision_issue
-    ADD CONSTRAINT arch_productflowthrudivision_issue_pkey PRIMARY KEY (id);
-
-
---
--- Name: arch_productflowthrudivision_materialavailability arch_productflowthrudivision_materialavailability_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_productflowthrudivision_materialavailability
-    ADD CONSTRAINT arch_productflowthrudivision_materialavailability_pkey PRIMARY KEY (id);
-
-
---
--- Name: arch_productflowthrudivision_productstoissue arch_productflowthrudivision_productstoissue_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_productflowthrudivision_productstoissue
-    ADD CONSTRAINT arch_productflowthrudivision_productstoissue_pkey PRIMARY KEY (id);
-
-
---
--- Name: arch_productflowthrudivision_producttoissuecorrection arch_productflowthrudivision_producttoissuecorrection_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_productflowthrudivision_producttoissuecorrection
-    ADD CONSTRAINT arch_productflowthrudivision_producttoissuecorrection_pkey PRIMARY KEY (id);
-
-
---
--- Name: arch_productflowthrudivision_warehouseissue arch_productflowthrudivision_warehouseissue_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_productflowthrudivision_warehouseissue
-    ADD CONSTRAINT arch_productflowthrudivision_warehouseissue_pkey PRIMARY KEY (id);
-
-
---
--- Name: arch_productflowthrudivision_warehouseissuestatechange arch_productflowthrudivision_warehouseissuestatechange_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_productflowthrudivision_warehouseissuestatechange
-    ADD CONSTRAINT arch_productflowthrudivision_warehouseissuestatechange_pkey PRIMARY KEY (id);
-
-
---
--- Name: arch_productioncounting_anomaly arch_productioncounting_anomaly_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_productioncounting_anomaly
-    ADD CONSTRAINT arch_productioncounting_anomaly_pkey PRIMARY KEY (id);
-
-
---
--- Name: arch_productioncounting_anomalyexplanation arch_productioncounting_anomalyexplanation_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_productioncounting_anomalyexplanation
-    ADD CONSTRAINT arch_productioncounting_anomalyexplanation_pkey PRIMARY KEY (id);
-
-
---
--- Name: arch_productioncounting_anomalyproductiontrackingentryhelper arch_productioncounting_anomalyproductiontrackingentryhelp_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_productioncounting_anomalyproductiontrackingentryhelper
-    ADD CONSTRAINT arch_productioncounting_anomalyproductiontrackingentryhelp_pkey PRIMARY KEY (id);
-
-
---
--- Name: arch_productioncounting_anomalyreasoncontainer arch_productioncounting_anomalyreasoncontainer_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_productioncounting_anomalyreasoncontainer
-    ADD CONSTRAINT arch_productioncounting_anomalyreasoncontainer_pkey PRIMARY KEY (id);
-
-
---
--- Name: arch_productioncounting_productioncountingquantitysetcomponent arch_productioncounting_productioncountingquantitysetcompo_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_productioncounting_productioncountingquantitysetcomponent
-    ADD CONSTRAINT arch_productioncounting_productioncountingquantitysetcompo_pkey PRIMARY KEY (id);
-
-
---
--- Name: arch_productioncounting_productiontracking arch_productioncounting_productiontracking_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_productioncounting_productiontracking
-    ADD CONSTRAINT arch_productioncounting_productiontracking_pkey PRIMARY KEY (id);
-
-
---
--- Name: arch_productioncounting_productiontrackingstatechange arch_productioncounting_productiontrackingstatechange_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_productioncounting_productiontrackingstatechange
-    ADD CONSTRAINT arch_productioncounting_productiontrackingstatechange_pkey PRIMARY KEY (id);
-
-
---
--- Name: arch_productioncounting_staffworktime arch_productioncounting_staffworktime_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_productioncounting_staffworktime
-    ADD CONSTRAINT arch_productioncounting_staffworktime_pkey PRIMARY KEY (id);
-
-
---
--- Name: arch_productioncounting_trackingoperationproductincomponent arch_productioncounting_trackingoperationproductincomponen_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_productioncounting_trackingoperationproductincomponent
-    ADD CONSTRAINT arch_productioncounting_trackingoperationproductincomponen_pkey PRIMARY KEY (id);
-
-
---
--- Name: arch_productioncounting_trackingoperationproductoutcomponent arch_productioncounting_trackingoperationproductoutcompone_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_productioncounting_trackingoperationproductoutcomponent
-    ADD CONSTRAINT arch_productioncounting_trackingoperationproductoutcompone_pkey PRIMARY KEY (id);
-
-
---
--- Name: arch_productionpershift_dailyprogress arch_productionpershift_dailyprogress_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_productionpershift_dailyprogress
-    ADD CONSTRAINT arch_productionpershift_dailyprogress_pkey PRIMARY KEY (id);
-
-
---
--- Name: arch_productionpershift_productionpershift arch_productionpershift_productionpershift_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_productionpershift_productionpershift
-    ADD CONSTRAINT arch_productionpershift_productionpershift_pkey PRIMARY KEY (id);
-
-
---
--- Name: arch_productionpershift_progressforday arch_productionpershift_progressforday_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_productionpershift_progressforday
-    ADD CONSTRAINT arch_productionpershift_progressforday_pkey PRIMARY KEY (id);
-
-
---
--- Name: arch_productionpershift_reasontypeofcorrectionplan arch_productionpershift_reasontypeofcorrectionplan_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_productionpershift_reasontypeofcorrectionplan
-    ADD CONSTRAINT arch_productionpershift_reasontypeofcorrectionplan_pkey PRIMARY KEY (id);
-
-
---
--- Name: arch_productionscheduling_opercomptimecalculation arch_productionscheduling_opercomptimecalculation_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_productionscheduling_opercomptimecalculation
-    ADD CONSTRAINT arch_productionscheduling_opercomptimecalculation_pkey PRIMARY KEY (id);
-
-
---
--- Name: arch_productionscheduling_ordertimecalculation arch_productionscheduling_ordertimecalculation_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_productionscheduling_ordertimecalculation
-    ADD CONSTRAINT arch_productionscheduling_ordertimecalculation_pkey PRIMARY KEY (id);
-
-
---
--- Name: arch_repairs_repairorder arch_repairs_repairorder_number_key; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_repairs_repairorder
-    ADD CONSTRAINT arch_repairs_repairorder_number_key UNIQUE (number);
-
-
---
--- Name: arch_repairs_repairorder arch_repairs_repairorder_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_repairs_repairorder
-    ADD CONSTRAINT arch_repairs_repairorder_pkey PRIMARY KEY (id);
-
-
---
--- Name: arch_repairs_repairorderproduct arch_repairs_repairorderproduct_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_repairs_repairorderproduct
-    ADD CONSTRAINT arch_repairs_repairorderproduct_pkey PRIMARY KEY (id);
-
-
---
--- Name: arch_repairs_repairorderstatechange arch_repairs_repairorderstatechange_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_repairs_repairorderstatechange
-    ADD CONSTRAINT arch_repairs_repairorderstatechange_pkey PRIMARY KEY (id);
-
-
---
--- Name: arch_repairs_repairorderworktime arch_repairs_repairorderworktime_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_repairs_repairorderworktime
-    ADD CONSTRAINT arch_repairs_repairorderworktime_pkey PRIMARY KEY (id);
-
-
---
--- Name: arch_states_message arch_states_message_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_states_message
-    ADD CONSTRAINT arch_states_message_pkey PRIMARY KEY (id);
-
-
---
--- Name: arch_stoppage_stoppage arch_stoppage_stoppage_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_stoppage_stoppage
-    ADD CONSTRAINT arch_stoppage_stoppage_pkey PRIMARY KEY (id);
-
-
---
--- Name: arch_technologies_barcodeoperationcomponent arch_technologies_barcodeoperationcomponent_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_technologies_barcodeoperationcomponent
-    ADD CONSTRAINT arch_technologies_barcodeoperationcomponent_pkey PRIMARY KEY (id);
-
-
---
--- Name: arch_technologies_technologyoperationcomponentmergeproductin arch_technologies_technologyoperationcomponentmergeproduc_pkey1; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_technologies_technologyoperationcomponentmergeproductin
-    ADD CONSTRAINT arch_technologies_technologyoperationcomponentmergeproduc_pkey1 PRIMARY KEY (id);
-
-
---
--- Name: arch_technologies_technologyoperationcomponentmergeproductout arch_technologies_technologyoperationcomponentmergeproduct_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_technologies_technologyoperationcomponentmergeproductout
-    ADD CONSTRAINT arch_technologies_technologyoperationcomponentmergeproduct_pkey PRIMARY KEY (id);
-
-
---
--- Name: arch_urcmaterialavailability_requiredcomponent arch_urcmaterialavailability_requiredcomponent_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_urcmaterialavailability_requiredcomponent
-    ADD CONSTRAINT arch_urcmaterialavailability_requiredcomponent_pkey PRIMARY KEY (id);
 
 
 --
@@ -52784,6 +54754,14 @@ ALTER TABLE ONLY public.productflowthrudivision_opertaskmaterialavailability
 
 
 --
+-- Name: productflowthrudivision_orderproductresourcereservation productflowthrudivision_orderproductresourcereservation_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.productflowthrudivision_orderproductresourcereservation
+    ADD CONSTRAINT productflowthrudivision_orderproductresourcereservation_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: productflowthrudivision_productandquantityhelper productflowthrudivision_productandquantityhelper_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -54096,584 +56074,696 @@ ALTER TABLE ONLY public.workplans_workplanordercolumn
 
 
 --
--- Name: arch_assignmenttoshift_staffassignmenttoshif_masterorder_id_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: arc2_assignmenttoshift_staffassignmenttoshif_masterorder_id_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX arch_assignmenttoshift_staffassignmenttoshif_masterorder_id_idx ON public.arch_assignmenttoshift_staffassignmenttoshift USING btree (masterorder_id);
+CREATE INDEX arc2_assignmenttoshift_staffassignmenttoshif_masterorder_id_idx ON public.arch_assignmenttoshift_staffassignmenttoshift USING btree (masterorder_id);
 
 
 --
--- Name: arch_basicproductioncounting__technologyoperationcomponent__idx; Type: INDEX; Schema: public; Owner: -
+-- Name: arc2_basicproductioncounting__technologyoperationcomponent__idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX arch_basicproductioncounting__technologyoperationcomponent__idx ON public.arch_basicproductioncounting_productioncountingquantity USING btree (technologyoperationcomponent_id);
+CREATE INDEX arc2_basicproductioncounting__technologyoperationcomponent__idx ON public.arch_basicproductioncounting_productioncountingquantity USING btree (technologyoperationcomponent_id);
 
 
 --
--- Name: arch_basicproductioncounting__technologyoperationcomponent_idx1; Type: INDEX; Schema: public; Owner: -
+-- Name: arc2_basicproductioncounting__technologyoperationcomponent_idx1; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX arch_basicproductioncounting__technologyoperationcomponent_idx1 ON public.arch_basicproductioncounting_productioncountingoperationrun USING btree (technologyoperationcomponent_id);
+CREATE INDEX arc2_basicproductioncounting__technologyoperationcomponent_idx1 ON public.arch_basicproductioncounting_productioncountingoperationrun USING btree (technologyoperationcomponent_id);
 
 
 --
--- Name: arch_basicproductioncounting_basicproductioncoun_product_id_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: arc2_basicproductioncounting_basicproductioncoun_product_id_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX arch_basicproductioncounting_basicproductioncoun_product_id_idx ON public.arch_basicproductioncounting_basicproductioncounting USING btree (product_id);
+CREATE INDEX arc2_basicproductioncounting_basicproductioncoun_product_id_idx ON public.arch_basicproductioncounting_basicproductioncounting USING btree (product_id);
 
 
 --
--- Name: arch_basicproductioncounting_basicproductioncounti_order_id_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: arc2_basicproductioncounting_basicproductioncounti_order_id_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX arch_basicproductioncounting_basicproductioncounti_order_id_idx ON public.arch_basicproductioncounting_basicproductioncounting USING btree (order_id);
+CREATE INDEX arc2_basicproductioncounting_basicproductioncounti_order_id_idx ON public.arch_basicproductioncounting_basicproductioncounting USING btree (order_id);
 
 
 --
--- Name: arch_basicproductioncounting_pro_basicproductioncounting_id_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: arc2_basicproductioncounting_pro_basicproductioncounting_id_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX arch_basicproductioncounting_pro_basicproductioncounting_id_idx ON public.arch_basicproductioncounting_productioncountingquantity USING btree (basicproductioncounting_id);
+CREATE INDEX arc2_basicproductioncounting_pro_basicproductioncounting_id_idx ON public.arch_basicproductioncounting_productioncountingquantity USING btree (basicproductioncounting_id);
 
 
 --
--- Name: arch_basicproductioncounting_productioncount_typeofmaterial_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: arc2_basicproductioncounting_productioncou_replacementto_id_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX arch_basicproductioncounting_productioncount_typeofmaterial_idx ON public.arch_basicproductioncounting_productioncountingquantity USING btree (typeofmaterial);
+CREATE INDEX arc2_basicproductioncounting_productioncou_replacementto_id_idx ON public.arch_basicproductioncounting_productioncountingquantity USING btree (replacementto_id);
 
 
 --
--- Name: arch_basicproductioncounting_productioncountingope_order_id_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: arc2_basicproductioncounting_productioncount_typeofmaterial_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX arch_basicproductioncounting_productioncountingope_order_id_idx ON public.arch_basicproductioncounting_productioncountingoperationrun USING btree (order_id);
+CREATE INDEX arc2_basicproductioncounting_productioncount_typeofmaterial_idx ON public.arch_basicproductioncounting_productioncountingquantity USING btree (typeofmaterial);
 
 
 --
--- Name: arch_basicproductioncounting_productioncountingq_product_id_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: arc2_basicproductioncounting_productioncountingope_order_id_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX arch_basicproductioncounting_productioncountingq_product_id_idx ON public.arch_basicproductioncounting_productioncountingquantity USING btree (product_id);
+CREATE INDEX arc2_basicproductioncounting_productioncountingope_order_id_idx ON public.arch_basicproductioncounting_productioncountingoperationrun USING btree (order_id);
 
 
 --
--- Name: arch_basicproductioncounting_productioncountingqua_order_id_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: arc2_basicproductioncounting_productioncountingq_product_id_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX arch_basicproductioncounting_productioncountingqua_order_id_idx ON public.arch_basicproductioncounting_productioncountingquantity USING btree (order_id);
+CREATE INDEX arc2_basicproductioncounting_productioncountingq_product_id_idx ON public.arch_basicproductioncounting_productioncountingquantity USING btree (product_id);
 
 
 --
--- Name: arch_costnormsformaterials_technologyinstoperpro_product_id_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: arc2_basicproductioncounting_productioncountingqua_order_id_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX arch_costnormsformaterials_technologyinstoperpro_product_id_idx ON public.arch_costnormsformaterials_technologyinstoperproductincomp USING btree (product_id);
+CREATE INDEX arc2_basicproductioncounting_productioncountingqua_order_id_idx ON public.arch_basicproductioncounting_productioncountingquantity USING btree (order_id);
 
 
 --
--- Name: arch_costnormsformaterials_technologyinstoperprodu_order_id_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: arc2_costnormsformaterials_technologyinstoperpro_product_id_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX arch_costnormsformaterials_technologyinstoperprodu_order_id_idx ON public.arch_costnormsformaterials_technologyinstoperproductincomp USING btree (order_id);
+CREATE INDEX arc2_costnormsformaterials_technologyinstoperpro_product_id_idx ON public.arch_costnormsformaterials_technologyinstoperproductincomp USING btree (product_id);
 
 
 --
--- Name: arch_goodfood_confectioninputproduct_batch_id_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: arc2_costnormsformaterials_technologyinstoperprodu_order_id_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX arch_goodfood_confectioninputproduct_batch_id_idx ON public.arch_goodfood_confectioninputproduct USING btree (batch_id);
+CREATE INDEX arc2_costnormsformaterials_technologyinstoperprodu_order_id_idx ON public.arch_costnormsformaterials_technologyinstoperproductincomp USING btree (order_id);
 
 
 --
--- Name: arch_goodfood_confectioninputproduct_confectionprotocol_id_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: arc2_goodfood_confectioninputproduct_batch_id_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX arch_goodfood_confectioninputproduct_confectionprotocol_id_idx ON public.arch_goodfood_confectioninputproduct USING btree (confectionprotocol_id);
+CREATE INDEX arc2_goodfood_confectioninputproduct_batch_id_idx ON public.arch_goodfood_confectioninputproduct USING btree (batch_id);
 
 
 --
--- Name: arch_goodfood_confectionprotocol_confectioncontext_id_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: arc2_goodfood_confectioninputproduct_confectionprotocol_id_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX arch_goodfood_confectionprotocol_confectioncontext_id_idx ON public.arch_goodfood_confectionprotocol USING btree (confectioncontext_id);
+CREATE INDEX arc2_goodfood_confectioninputproduct_confectionprotocol_id_idx ON public.arch_goodfood_confectioninputproduct USING btree (confectionprotocol_id);
 
 
 --
--- Name: arch_goodfood_confectionprotocol_order_id_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: arc2_goodfood_confectionprotocol_confectioncontext_id_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX arch_goodfood_confectionprotocol_order_id_idx ON public.arch_goodfood_confectionprotocol USING btree (order_id);
+CREATE INDEX arc2_goodfood_confectionprotocol_confectioncontext_id_idx ON public.arch_goodfood_confectionprotocol USING btree (confectioncontext_id);
 
 
 --
--- Name: arch_goodfood_confectionprotocolstate_confectionprotocol_id_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: arc2_goodfood_confectionprotocol_order_id_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX arch_goodfood_confectionprotocolstate_confectionprotocol_id_idx ON public.arch_goodfood_confectionprotocolstatechange USING btree (confectionprotocol_id);
+CREATE INDEX arc2_goodfood_confectionprotocol_order_id_idx ON public.arch_goodfood_confectionprotocol USING btree (order_id);
 
 
 --
--- Name: arch_goodfood_confectionremainderinpu_confectionprotocol_id_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: arc2_goodfood_confectionprotocolstate_confectionprotocol_id_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX arch_goodfood_confectionremainderinpu_confectionprotocol_id_idx ON public.arch_goodfood_confectionremainderinputproduct USING btree (confectionprotocol_id);
+CREATE INDEX arc2_goodfood_confectionprotocolstate_confectionprotocol_id_idx ON public.arch_goodfood_confectionprotocolstatechange USING btree (confectionprotocol_id);
 
 
 --
--- Name: arch_goodfood_confectionstaff_confectionprotocol_id_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: arc2_goodfood_confectionremainderinpu_confectionprotocol_id_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX arch_goodfood_confectionstaff_confectionprotocol_id_idx ON public.arch_goodfood_confectionstaff USING btree (confectionprotocol_id);
+CREATE INDEX arc2_goodfood_confectionremainderinpu_confectionprotocol_id_idx ON public.arch_goodfood_confectionremainderinputproduct USING btree (confectionprotocol_id);
 
 
 --
--- Name: arch_goodfood_extrusionpouring_extrusionprotocol_id_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: arc2_goodfood_confectionstaff_confectionprotocol_id_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX arch_goodfood_extrusionpouring_extrusionprotocol_id_idx ON public.arch_goodfood_extrusionpouring USING btree (extrusionprotocol_id);
+CREATE INDEX arc2_goodfood_confectionstaff_confectionprotocol_id_idx ON public.arch_goodfood_confectionstaff USING btree (confectionprotocol_id);
 
 
 --
--- Name: arch_goodfood_extrusionpouringingredien_extrusionpouring_id_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: arc2_goodfood_extrusionpouring_extrusionprotocol_id_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX arch_goodfood_extrusionpouringingredien_extrusionpouring_id_idx ON public.arch_goodfood_extrusionpouringingredient USING btree (extrusionpouring_id);
+CREATE INDEX arc2_goodfood_extrusionpouring_extrusionprotocol_id_idx ON public.arch_goodfood_extrusionpouring USING btree (extrusionprotocol_id);
 
 
 --
--- Name: arch_goodfood_extrusionpouringingredient_batch_id_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: arc2_goodfood_extrusionpouringingredien_extrusionpouring_id_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX arch_goodfood_extrusionpouringingredient_batch_id_idx ON public.arch_goodfood_extrusionpouringingredient USING btree (batch_id);
+CREATE INDEX arc2_goodfood_extrusionpouringingredien_extrusionpouring_id_idx ON public.arch_goodfood_extrusionpouringingredient USING btree (extrusionpouring_id);
 
 
 --
--- Name: arch_goodfood_extrusionprotocol_extrusioncontext_id_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: arc2_goodfood_extrusionpouringingredient_batch_id_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX arch_goodfood_extrusionprotocol_extrusioncontext_id_idx ON public.arch_goodfood_extrusionprotocol USING btree (extrusioncontext_id);
+CREATE INDEX arc2_goodfood_extrusionpouringingredient_batch_id_idx ON public.arch_goodfood_extrusionpouringingredient USING btree (batch_id);
 
 
 --
--- Name: arch_goodfood_extrusionprotocol_order_id_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: arc2_goodfood_extrusionprotocol_extrusioncontext_id_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX arch_goodfood_extrusionprotocol_order_id_idx ON public.arch_goodfood_extrusionprotocol USING btree (order_id);
+CREATE INDEX arc2_goodfood_extrusionprotocol_extrusioncontext_id_idx ON public.arch_goodfood_extrusionprotocol USING btree (extrusioncontext_id);
 
 
 --
--- Name: arch_goodfood_extrusionprotocolstatech_extrusionprotocol_id_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: arc2_goodfood_extrusionprotocol_order_id_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX arch_goodfood_extrusionprotocolstatech_extrusionprotocol_id_idx ON public.arch_goodfood_extrusionprotocolstatechange USING btree (extrusionprotocol_id);
+CREATE INDEX arc2_goodfood_extrusionprotocol_order_id_idx ON public.arch_goodfood_extrusionprotocol USING btree (order_id);
 
 
 --
--- Name: arch_goodfood_label_batch_id_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: arc2_goodfood_extrusionprotocolstatech_extrusionprotocol_id_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX arch_goodfood_label_batch_id_idx ON public.arch_goodfood_label USING btree (batch_id);
+CREATE INDEX arc2_goodfood_extrusionprotocolstatech_extrusionprotocol_id_idx ON public.arch_goodfood_extrusionprotocolstatechange USING btree (extrusionprotocol_id);
 
 
 --
--- Name: arch_goodfood_label_masterorder_id_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: arc2_goodfood_pallet_palletcontext_id_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX arch_goodfood_label_masterorder_id_idx ON public.arch_goodfood_label USING btree (masterorder_id);
+CREATE INDEX arc2_goodfood_pallet_palletcontext_id_idx ON public.arch_goodfood_pallet USING btree (palletcontext_id);
 
 
 --
--- Name: arch_goodfood_label_palletcontext_id_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: arc2_goodfood_pallet_palletlabel_id_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX arch_goodfood_label_palletcontext_id_idx ON public.arch_goodfood_label USING btree (palletcontext_id);
+CREATE INDEX arc2_goodfood_pallet_palletlabel_id_idx ON public.arch_goodfood_pallet USING btree (palletlabel_id);
 
 
 --
--- Name: arch_goodfood_labelstatechange_label_id_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: arc2_goodfood_pallet_secondpallet_id_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX arch_goodfood_labelstatechange_label_id_idx ON public.arch_goodfood_labelstatechange USING btree (label_id);
+CREATE INDEX arc2_goodfood_pallet_secondpallet_id_idx ON public.arch_goodfood_pallet USING btree (secondpallet_id);
 
 
 --
--- Name: arch_goodfood_pallet_label_id_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: arc2_goodfood_palletlabel_batch_id_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX arch_goodfood_pallet_label_id_idx ON public.arch_goodfood_pallet USING btree (label_id);
+CREATE INDEX arc2_goodfood_palletlabel_batch_id_idx ON public.arch_goodfood_palletlabel USING btree (batch_id);
 
 
 --
--- Name: arch_goodfood_pallet_palletcontext_id_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: arc2_goodfood_palletlabel_masterorder_id_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX arch_goodfood_pallet_palletcontext_id_idx ON public.arch_goodfood_pallet USING btree (palletcontext_id);
+CREATE INDEX arc2_goodfood_palletlabel_masterorder_id_idx ON public.arch_goodfood_palletlabel USING btree (masterorder_id);
 
 
 --
--- Name: arch_goodfood_pallet_secondpallet_id_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: arc2_goodfood_palletlabel_palletcontext_id_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX arch_goodfood_pallet_secondpallet_id_idx ON public.arch_goodfood_pallet USING btree (secondpallet_id);
+CREATE INDEX arc2_goodfood_palletlabel_palletcontext_id_idx ON public.arch_goodfood_palletlabel USING btree (palletcontext_id);
 
 
 --
--- Name: arch_goodfood_palletstatechange_pallet_id_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: arc2_goodfood_palletlabelstatechange_palletlabel_id_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX arch_goodfood_palletstatechange_pallet_id_idx ON public.arch_goodfood_palletstatechange USING btree (pallet_id);
+CREATE INDEX arc2_goodfood_palletlabelstatechange_palletlabel_id_idx ON public.arch_goodfood_palletlabelstatechange USING btree (palletlabel_id);
 
 
 --
--- Name: arch_goodfood_printedlabel_masterorder_id_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: arc2_goodfood_palletstatechange_pallet_id_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX arch_goodfood_printedlabel_masterorder_id_idx ON public.arch_goodfood_printedlabel USING btree (masterorder_id);
+CREATE INDEX arc2_goodfood_palletstatechange_pallet_id_idx ON public.arch_goodfood_palletstatechange USING btree (pallet_id);
 
 
 --
--- Name: arch_goodfood_printedlabel_palletcontext_id_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: arc2_goodfood_printedlabel_masterorder_id_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX arch_goodfood_printedlabel_palletcontext_id_idx ON public.arch_goodfood_printedlabel USING btree (palletcontext_id);
+CREATE INDEX arc2_goodfood_printedlabel_masterorder_id_idx ON public.arch_goodfood_printedlabel USING btree (masterorder_id);
 
 
 --
--- Name: arch_integrationbartender_printlabelshelper_masterorder_id_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: arc2_goodfood_printedlabel_palletcontext_id_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX arch_integrationbartender_printlabelshelper_masterorder_id_idx ON public.arch_integrationbartender_printlabelshelper USING btree (masterorder_id);
+CREATE INDEX arc2_goodfood_printedlabel_palletcontext_id_idx ON public.arch_goodfood_printedlabel USING btree (palletcontext_id);
 
 
 --
--- Name: arch_integrationbartender_sendtoprint_printlabelshelper_id_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: arc2_integrationbartender_printlabelshelper_masterorder_id_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX arch_integrationbartender_sendtoprint_printlabelshelper_id_idx ON public.arch_integrationbartender_sendtoprint USING btree (printlabelshelper_id);
+CREATE INDEX arc2_integrationbartender_printlabelshelper_masterorder_id_idx ON public.arch_integrationbartender_printlabelshelper USING btree (masterorder_id);
 
 
 --
--- Name: arch_masterorders_masterorder_batch_id_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: arc2_integrationbartender_sendtoprint_printlabelshelper_id_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX arch_masterorders_masterorder_batch_id_idx ON public.arch_masterorders_masterorder USING btree (batch_id);
+CREATE INDEX arc2_integrationbartender_sendtoprint_printlabelshelper_id_idx ON public.arch_integrationbartender_sendtoprint USING btree (printlabelshelper_id);
 
 
 --
--- Name: arch_masterorders_masterorderproduct_masterorder_id_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: arc2_masterorders_masterorder_batch_id_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX arch_masterorders_masterorderproduct_masterorder_id_idx ON public.arch_masterorders_masterorderproduct USING btree (masterorder_id);
+CREATE INDEX arc2_masterorders_masterorder_batch_id_idx ON public.arch_masterorders_masterorder USING btree (batch_id);
 
 
 --
--- Name: arch_masterorders_masterorderproduct_product_id_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: arc2_masterorders_masterorderproduct_masterorder_id_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX arch_masterorders_masterorderproduct_product_id_idx ON public.arch_masterorders_masterorderproduct USING btree (product_id);
+CREATE INDEX arc2_masterorders_masterorderproduct_masterorder_id_idx ON public.arch_masterorders_masterorderproduct USING btree (masterorder_id);
 
 
 --
--- Name: arch_masterorders_masterorderproduct_technology_id_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: arc2_masterorders_masterorderproduct_product_id_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX arch_masterorders_masterorderproduct_technology_id_idx ON public.arch_masterorders_masterorderproduct USING btree (technology_id);
+CREATE INDEX arc2_masterorders_masterorderproduct_product_id_idx ON public.arch_masterorders_masterorderproduct USING btree (product_id);
 
 
 --
--- Name: arch_materialflowresources_document_order_id_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: arc2_masterorders_masterorderproduct_technology_id_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX arch_materialflowresources_document_order_id_idx ON public.arch_materialflowresources_document USING btree (order_id);
+CREATE INDEX arc2_masterorders_masterorderproduct_technology_id_idx ON public.arch_masterorders_masterorderproduct USING btree (technology_id);
 
 
 --
--- Name: arch_materialflowresources_position_document_id_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: arc2_materialflowresources_document_delivery_id_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX arch_materialflowresources_position_document_id_idx ON public.arch_materialflowresources_position USING btree (document_id);
+CREATE INDEX arc2_materialflowresources_document_delivery_id_idx ON public.arch_materialflowresources_document USING btree (delivery_id);
 
 
 --
--- Name: arch_materialflowresources_position_product_id_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: arc2_materialflowresources_document_dispositionshift_id_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX arch_materialflowresources_position_product_id_idx ON public.arch_materialflowresources_position USING btree (product_id);
+CREATE INDEX arc2_materialflowresources_document_dispositionshift_id_idx ON public.arch_materialflowresources_document USING btree (dispositionshift_id);
 
 
 --
--- Name: arch_materialflowresources_position_resource_id_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: arc2_materialflowresources_document_order_id_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX arch_materialflowresources_position_resource_id_idx ON public.arch_materialflowresources_position USING btree (resource_id);
+CREATE INDEX arc2_materialflowresources_document_order_id_idx ON public.arch_materialflowresources_document USING btree (order_id);
 
 
 --
--- Name: arch_orders_order_masterorder_id_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: arc2_materialflowresources_position_document_id_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX arch_orders_order_masterorder_id_idx ON public.arch_orders_order USING btree (masterorder_id);
+CREATE INDEX arc2_materialflowresources_position_document_id_idx ON public.arch_materialflowresources_position USING btree (document_id);
 
 
 --
--- Name: arch_orders_order_masterorderproductcomponent_id_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: arc2_materialflowresources_position_palletnumber_id_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX arch_orders_order_masterorderproductcomponent_id_idx ON public.arch_orders_order USING btree (masterorderproductcomponent_id);
+CREATE INDEX arc2_materialflowresources_position_palletnumber_id_idx ON public.arch_materialflowresources_position USING btree (palletnumber_id);
 
 
 --
--- Name: arch_orders_order_number_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: arc2_materialflowresources_position_product_id_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX arch_orders_order_number_idx ON public.arch_orders_order USING btree (number);
+CREATE INDEX arc2_materialflowresources_position_product_id_idx ON public.arch_materialflowresources_position USING btree (product_id);
 
 
 --
--- Name: arch_orders_order_ordersgroup_id_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: arc2_materialflowresources_position_resource_id_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX arch_orders_order_ordersgroup_id_idx ON public.arch_orders_order USING btree (ordersgroup_id);
+CREATE INDEX arc2_materialflowresources_position_resource_id_idx ON public.arch_materialflowresources_position USING btree (resource_id);
 
 
 --
--- Name: arch_orders_order_parent_id_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: arc2_materialrequirementcoveragefororder_covera_delivery_id_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX arch_orders_order_parent_id_idx ON public.arch_orders_order USING btree (parent_id);
+CREATE INDEX arc2_materialrequirementcoveragefororder_covera_delivery_id_idx ON public.arch_materialrequirementcoveragefororder_coverageproductlogging USING btree (delivery_id);
 
 
 --
--- Name: arch_orders_order_product_id_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: arc2_materialrequirementcoveragefororder_coverag_product_id_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX arch_orders_order_product_id_idx ON public.arch_orders_order USING btree (product_id);
+CREATE INDEX arc2_materialrequirementcoveragefororder_coverag_product_id_idx ON public.arch_materialrequirementcoveragefororder_coverageproduct USING btree (product_id);
 
 
 --
--- Name: arch_orders_order_root_id_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: arc2_materialrequirementcoveragefororder_coverage_order_id_idx1; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX arch_orders_order_root_id_idx ON public.arch_orders_order USING btree (root_id);
+CREATE INDEX arc2_materialrequirementcoveragefororder_coverage_order_id_idx1 ON public.arch_materialrequirementcoveragefororder_coverageproductlogging USING btree (order_id);
 
 
 --
--- Name: arch_orders_order_state_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: arc2_materialrequirementcoveragefororder_coveragep_order_id_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX arch_orders_order_state_idx ON public.arch_orders_order USING btree (state);
+CREATE INDEX arc2_materialrequirementcoveragefororder_coveragep_order_id_idx ON public.arch_materialrequirementcoveragefororder_coverageproduct USING btree (order_id);
 
 
 --
--- Name: arch_orders_order_technology_id_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: arc2_materialrequirementcoveragefororder_coverageproduct_id_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX arch_orders_order_technology_id_idx ON public.arch_orders_order USING btree (technology_id);
+CREATE INDEX arc2_materialrequirementcoveragefororder_coverageproduct_id_idx ON public.arch_materialrequirementcoveragefororder_coverageproductlogging USING btree (coverageproduct_id);
 
 
 --
--- Name: arch_orders_order_technologyprototype_id_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: arc2_orders_order_masterorder_id_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX arch_orders_order_technologyprototype_id_idx ON public.arch_orders_order USING btree (technologyprototype_id);
+CREATE INDEX arc2_orders_order_masterorder_id_idx ON public.arch_orders_order USING btree (masterorder_id);
 
 
 --
--- Name: arch_orders_orderstatechange_order_id_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: arc2_orders_order_masterorderproductcomponent_id_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX arch_orders_orderstatechange_order_id_idx ON public.arch_orders_orderstatechange USING btree (order_id);
+CREATE INDEX arc2_orders_order_masterorderproductcomponent_id_idx ON public.arch_orders_order USING btree (masterorderproductcomponent_id);
 
 
 --
--- Name: arch_ordersforsubproductsgeneration_suborder_ordersgroup_id_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: arc2_orders_order_number_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX arch_ordersforsubproductsgeneration_suborder_ordersgroup_id_idx ON public.arch_ordersforsubproductsgeneration_suborders USING btree (ordersgroup_id);
+CREATE INDEX arc2_orders_order_number_idx ON public.arch_orders_order USING btree (number);
 
 
 --
--- Name: arch_ordersgroups_ordersgroup_assortment_id_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: arc2_orders_order_ordersgroup_id_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX arch_ordersgroups_ordersgroup_assortment_id_idx ON public.arch_ordersgroups_ordersgroup USING btree (assortment_id);
+CREATE INDEX arc2_orders_order_ordersgroup_id_idx ON public.arch_orders_order USING btree (ordersgroup_id);
 
 
 --
--- Name: arch_ordersgroups_ordersgroup_masterorder_id_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: arc2_orders_order_parent_id_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX arch_ordersgroups_ordersgroup_masterorder_id_idx ON public.arch_ordersgroups_ordersgroup USING btree (masterorder_id);
+CREATE INDEX arc2_orders_order_parent_id_idx ON public.arch_orders_order USING btree (parent_id);
 
 
 --
--- Name: arch_ordersgroups_ordersgroup_number_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: arc2_orders_order_product_id_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE UNIQUE INDEX arch_ordersgroups_ordersgroup_number_idx ON public.arch_ordersgroups_ordersgroup USING btree (number);
+CREATE INDEX arc2_orders_order_product_id_idx ON public.arch_orders_order USING btree (product_id);
 
 
 --
--- Name: arch_ordersgroups_ordersgroup_parent_id_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: arc2_orders_order_productionline_id_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX arch_ordersgroups_ordersgroup_parent_id_idx ON public.arch_ordersgroups_ordersgroup USING btree (parent_id);
+CREATE INDEX arc2_orders_order_productionline_id_idx ON public.arch_orders_order USING btree (productionline_id);
 
 
 --
--- Name: arch_ordersupplies_coveragere_technologyoperationcomponent__idx; Type: INDEX; Schema: public; Owner: -
+-- Name: arc2_orders_order_root_id_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX arch_ordersupplies_coveragere_technologyoperationcomponent__idx ON public.arch_ordersupplies_coverageregister USING btree (technologyoperationcomponent_id);
+CREATE INDEX arc2_orders_order_root_id_idx ON public.arch_orders_order USING btree (root_id);
 
 
 --
--- Name: arch_ordersupplies_coverageregister_order_id_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: arc2_orders_order_state_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX arch_ordersupplies_coverageregister_order_id_idx ON public.arch_ordersupplies_coverageregister USING btree (order_id);
+CREATE INDEX arc2_orders_order_state_idx ON public.arch_orders_order USING btree (state);
 
 
 --
--- Name: arch_ordersupplies_coverageregister_product_id_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: arc2_orders_order_technology_id_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX arch_ordersupplies_coverageregister_product_id_idx ON public.arch_ordersupplies_coverageregister USING btree (product_id);
+CREATE INDEX arc2_orders_order_technology_id_idx ON public.arch_orders_order USING btree (technology_id);
 
 
 --
--- Name: arch_productioncounting_produ_technologyoperationcomponent__idx; Type: INDEX; Schema: public; Owner: -
+-- Name: arc2_orders_order_technologyprototype_id_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX arch_productioncounting_produ_technologyoperationcomponent__idx ON public.arch_productioncounting_productiontracking USING btree (technologyoperationcomponent_id);
+CREATE INDEX arc2_orders_order_technologyprototype_id_idx ON public.arch_orders_order USING btree (technologyprototype_id);
 
 
 --
--- Name: arch_productioncounting_productiontra_productiontracking_id_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: arc2_orders_orderstatechange_order_id_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX arch_productioncounting_productiontra_productiontracking_id_idx ON public.arch_productioncounting_productiontrackingstatechange USING btree (productiontracking_id);
+CREATE INDEX arc2_orders_orderstatechange_order_id_idx ON public.arch_orders_orderstatechange USING btree (order_id);
 
 
 --
--- Name: arch_productioncounting_productiontracking_correction_id_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: arc2_ordersforsubproductsgeneration_suborder_ordersgroup_id_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX arch_productioncounting_productiontracking_correction_id_idx ON public.arch_productioncounting_productiontracking USING btree (correction_id);
+CREATE INDEX arc2_ordersforsubproductsgeneration_suborder_ordersgroup_id_idx ON public.arch_ordersforsubproductsgeneration_suborders USING btree (ordersgroup_id);
 
 
 --
--- Name: arch_productioncounting_productiontracking_number_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: arc2_ordersgroups_ordersgroup_assortment_id_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX arch_productioncounting_productiontracking_number_idx ON public.arch_productioncounting_productiontracking USING btree (number);
+CREATE INDEX arc2_ordersgroups_ordersgroup_assortment_id_idx ON public.arch_ordersgroups_ordersgroup USING btree (assortment_id);
 
 
 --
--- Name: arch_productioncounting_productiontracking_order_id_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: arc2_ordersgroups_ordersgroup_masterorder_id_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX arch_productioncounting_productiontracking_order_id_idx ON public.arch_productioncounting_productiontracking USING btree (order_id);
+CREATE INDEX arc2_ordersgroups_ordersgroup_masterorder_id_idx ON public.arch_ordersgroups_ordersgroup USING btree (masterorder_id);
 
 
 --
--- Name: arch_productioncounting_productiontracking_state_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: arc2_ordersgroups_ordersgroup_number_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX arch_productioncounting_productiontracking_state_idx ON public.arch_productioncounting_productiontracking USING btree (state);
+CREATE INDEX arc2_ordersgroups_ordersgroup_number_idx ON public.arch_ordersgroups_ordersgroup USING btree (number);
 
 
 --
--- Name: arch_productioncounting_staffworktime_productionrecord_id_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: arc2_ordersgroups_ordersgroup_parent_id_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX arch_productioncounting_staffworktime_productionrecord_id_idx ON public.arch_productioncounting_staffworktime USING btree (productionrecord_id);
+CREATE INDEX arc2_ordersgroups_ordersgroup_parent_id_idx ON public.arch_ordersgroups_ordersgroup USING btree (parent_id);
 
 
 --
--- Name: arch_productioncounting_trackingoper_productiontracking_id_idx1; Type: INDEX; Schema: public; Owner: -
+-- Name: arc2_ordersupplies_coverageproduct_product_id_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX arch_productioncounting_trackingoper_productiontracking_id_idx1 ON public.arch_productioncounting_trackingoperationproductincomponent USING btree (productiontracking_id);
+CREATE INDEX arc2_ordersupplies_coverageproduct_product_id_idx ON public.arch_ordersupplies_coverageproduct USING btree (product_id);
 
 
 --
--- Name: arch_productioncounting_trackingopera_productiontracking_id_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: arc2_ordersupplies_coverageproductlogging_delivery_id_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX arch_productioncounting_trackingopera_productiontracking_id_idx ON public.arch_productioncounting_trackingoperationproductoutcomponent USING btree (productiontracking_id);
+CREATE INDEX arc2_ordersupplies_coverageproductlogging_delivery_id_idx ON public.arch_ordersupplies_coverageproductlogging USING btree (delivery_id);
 
 
 --
--- Name: arch_productioncounting_trackingoperationproduc_product_id_idx1; Type: INDEX; Schema: public; Owner: -
+-- Name: arc2_ordersupplies_coverageproductlogging_order_id_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX arch_productioncounting_trackingoperationproduc_product_id_idx1 ON public.arch_productioncounting_trackingoperationproductincomponent USING btree (product_id);
+CREATE INDEX arc2_ordersupplies_coverageproductlogging_order_id_idx ON public.arch_ordersupplies_coverageproductlogging USING btree (order_id);
 
 
 --
--- Name: arch_productioncounting_trackingoperationproduct_product_id_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: arc2_productflowthrudivision_issue_document_id_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX arch_productioncounting_trackingoperationproduct_product_id_idx ON public.arch_productioncounting_trackingoperationproductoutcomponent USING btree (product_id);
+CREATE INDEX arc2_productflowthrudivision_issue_document_id_idx ON public.arch_productflowthrudivision_issue USING btree (document_id);
 
 
 --
--- Name: arch_productioncounting_trackingoperationproductin_batch_id_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: arc2_productflowthrudivision_issue_product_id_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX arch_productioncounting_trackingoperationproductin_batch_id_idx ON public.arch_productioncounting_trackingoperationproductincomponent USING btree (batch_id);
+CREATE INDEX arc2_productflowthrudivision_issue_product_id_idx ON public.arch_productflowthrudivision_issue USING btree (product_id);
 
 
 --
--- Name: arch_productioncounting_trackingoperationproductou_batch_id_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: arc2_productflowthrudivision_issue_productincomponent_id_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX arch_productioncounting_trackingoperationproductou_batch_id_idx ON public.arch_productioncounting_trackingoperationproductoutcomponent USING btree (batch_id);
+CREATE INDEX arc2_productflowthrudivision_issue_productincomponent_id_idx ON public.arch_productflowthrudivision_issue USING btree (productincomponent_id);
 
 
 --
--- Name: arch_productionpershift_dailyprogress_progressforday_id_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: arc2_productflowthrudivision_materialavailabilit_product_id_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX arch_productionpershift_dailyprogress_progressforday_id_idx ON public.arch_productionpershift_dailyprogress USING btree (progressforday_id);
+CREATE INDEX arc2_productflowthrudivision_materialavailabilit_product_id_idx ON public.arch_productflowthrudivision_materialavailability USING btree (product_id);
 
 
 --
--- Name: arch_productionpershift_productionpershift_order_id_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: arc2_productflowthrudivision_materialavailability_order_id_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX arch_productionpershift_productionpershift_order_id_idx ON public.arch_productionpershift_productionpershift USING btree (order_id);
+CREATE INDEX arc2_productflowthrudivision_materialavailability_order_id_idx ON public.arch_productflowthrudivision_materialavailability USING btree (order_id);
 
 
 --
--- Name: arch_productionpershift_progr_technologyoperationcomponent__idx; Type: INDEX; Schema: public; Owner: -
+-- Name: arc2_productflowthrudivision_products_productincomponent_id_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX arch_productionpershift_progr_technologyoperationcomponent__idx ON public.arch_productionpershift_progressforday USING btree (technologyoperationcomponent_id);
+CREATE INDEX arc2_productflowthrudivision_products_productincomponent_id_idx ON public.arch_productflowthrudivision_productstoissue USING btree (productincomponent_id);
 
 
 --
--- Name: arch_productionpershift_progressforda_productionpershift_id_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: arc2_productflowthrudivision_productstoissue_product_id_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX arch_productionpershift_progressforda_productionpershift_id_idx ON public.arch_productionpershift_progressforday USING btree (productionpershift_id);
+CREATE INDEX arc2_productflowthrudivision_productstoissue_product_id_idx ON public.arch_productflowthrudivision_productstoissue USING btree (product_id);
 
 
 --
--- Name: arch_technologies_barcodeoperationcom_operationcomponent_id_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: arc2_productioncounting_produ_technologyoperationcomponent__idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX arch_technologies_barcodeoperationcom_operationcomponent_id_idx ON public.arch_technologies_barcodeoperationcomponent USING btree (operationcomponent_id);
+CREATE INDEX arc2_productioncounting_produ_technologyoperationcomponent__idx ON public.arch_productioncounting_productiontracking USING btree (technologyoperationcomponent_id);
 
 
 --
--- Name: arch_technologies_barcodeoperationcomponent_order_id_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: arc2_productioncounting_productiontra_productiontracking_id_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX arch_technologies_barcodeoperationcomponent_order_id_idx ON public.arch_technologies_barcodeoperationcomponent USING btree (order_id);
+CREATE INDEX arc2_productioncounting_productiontra_productiontracking_id_idx ON public.arch_productioncounting_productiontrackingstatechange USING btree (productiontracking_id);
+
+
+--
+-- Name: arc2_productioncounting_productiontracking_correction_id_idx; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX arc2_productioncounting_productiontracking_correction_id_idx ON public.arch_productioncounting_productiontracking USING btree (correction_id);
+
+
+--
+-- Name: arc2_productioncounting_productiontracking_number_idx; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX arc2_productioncounting_productiontracking_number_idx ON public.arch_productioncounting_productiontracking USING btree (number);
+
+
+--
+-- Name: arc2_productioncounting_productiontracking_order_id_idx; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX arc2_productioncounting_productiontracking_order_id_idx ON public.arch_productioncounting_productiontracking USING btree (order_id);
+
+
+--
+-- Name: arc2_productioncounting_productiontracking_state_idx; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX arc2_productioncounting_productiontracking_state_idx ON public.arch_productioncounting_productiontracking USING btree (state);
+
+
+--
+-- Name: arc2_productioncounting_staffworktime_productionrecord_id_idx; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX arc2_productioncounting_staffworktime_productionrecord_id_idx ON public.arch_productioncounting_staffworktime USING btree (productionrecord_id);
+
+
+--
+-- Name: arc2_productioncounting_trackingoper_productiontracking_id_idx1; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX arc2_productioncounting_trackingoper_productiontracking_id_idx1 ON public.arch_productioncounting_trackingoperationproductoutcomponent USING btree (productiontracking_id);
+
+
+--
+-- Name: arc2_productioncounting_trackingopera_productiontracking_id_idx; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX arc2_productioncounting_trackingopera_productiontracking_id_idx ON public.arch_productioncounting_trackingoperationproductincomponent USING btree (productiontracking_id);
+
+
+--
+-- Name: arc2_productioncounting_trackingoperationproduc_product_id_idx1; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX arc2_productioncounting_trackingoperationproduc_product_id_idx1 ON public.arch_productioncounting_trackingoperationproductoutcomponent USING btree (product_id);
+
+
+--
+-- Name: arc2_productioncounting_trackingoperationproduct_product_id_idx; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX arc2_productioncounting_trackingoperationproduct_product_id_idx ON public.arch_productioncounting_trackingoperationproductincomponent USING btree (product_id);
+
+
+--
+-- Name: arc2_productioncounting_trackingoperationproductou_batch_id_idx; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX arc2_productioncounting_trackingoperationproductou_batch_id_idx ON public.arch_productioncounting_trackingoperationproductoutcomponent USING btree (batch_id);
+
+
+--
+-- Name: arc2_productionpershift_dailyprogress_progressforday_id_idx; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX arc2_productionpershift_dailyprogress_progressforday_id_idx ON public.arch_productionpershift_dailyprogress USING btree (progressforday_id);
+
+
+--
+-- Name: arc2_productionpershift_productionpershift_order_id_idx; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX arc2_productionpershift_productionpershift_order_id_idx ON public.arch_productionpershift_productionpershift USING btree (order_id);
+
+
+--
+-- Name: arc2_productionpershift_progressforda_productionpershift_id_idx; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX arc2_productionpershift_progressforda_productionpershift_id_idx ON public.arch_productionpershift_progressforday USING btree (productionpershift_id);
+
+
+--
+-- Name: arc2_productionscheduling_ope_technologyoperationcomponent__idx; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX arc2_productionscheduling_ope_technologyoperationcomponent__idx ON public.arch_productionscheduling_opercomptimecalculation USING btree (technologyoperationcomponent_id);
+
+
+--
+-- Name: arc2_technologies_barcodeoperationcom_operationcomponent_id_idx; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX arc2_technologies_barcodeoperationcom_operationcomponent_id_idx ON public.arch_technologies_barcodeoperationcomponent USING btree (operationcomponent_id);
+
+
+--
+-- Name: arc2_technologies_barcodeoperationcomponent_order_id_idx; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX arc2_technologies_barcodeoperationcomponent_order_id_idx ON public.arch_technologies_barcodeoperationcomponent USING btree (order_id);
 
 
 --
@@ -55757,65 +57847,40 @@ CREATE OR REPLACE VIEW public.advancedgenealogy_batchdto AS
 
 
 --
--- Name: arch_masterorders_masterorderposition_manyproducts _RETURN; Type: RULE; Schema: public; Owner: -
+-- Name: basic_productdto _RETURN; Type: RULE; Schema: public; Owner: -
 --
 
-CREATE OR REPLACE VIEW public.arch_masterorders_masterorderposition_manyproducts AS
- SELECT masterorderproduct.id,
-    masterorderdefinition.number AS masterorderdefinitionnumber,
-    (masterorder.id)::integer AS masterorderid,
-    (masterorderproduct.product_id)::integer AS productid,
-    (masterorderproduct.id)::integer AS masterorderproductid,
-    masterorder.name,
-    masterorder.number,
-    masterorder.deadline,
-    masterorder.masterorderstate AS masterorderstatus,
-    masterorderproduct.masterorderpositionstatus,
-    COALESCE(masterorderproduct.masterorderquantity, (0)::numeric) AS masterorderquantity,
-    COALESCE(( SELECT sum(orders.plannedquantity) AS sum), (0)::numeric) AS cumulatedmasterorderquantity,
-    COALESCE(( SELECT sum(orders.donequantity) AS sum), (0)::numeric) AS producedorderquantity,
-        CASE
-            WHEN ((COALESCE(masterorderproduct.masterorderquantity, (0)::numeric) - COALESCE(( SELECT sum(orders.donequantity) AS sum), (0)::numeric)) > (0)::numeric) THEN (COALESCE(masterorderproduct.masterorderquantity, (0)::numeric) - COALESCE(( SELECT sum(orders.donequantity) AS sum), (0)::numeric))
-            ELSE (0)::numeric
-        END AS lefttorelease,
-    masterorderproduct.comments,
-    _product.number AS productnumber,
-    _product.name AS productname,
-    _product.unit,
-    technology.number AS technologyname,
-    company.name AS companyname,
-    masterorder.active,
-    companypayer.name AS companypayer,
+CREATE OR REPLACE VIEW public.basic_productdto AS
+ SELECT product.id,
+    product.number,
+    product.name,
+    product.globaltypeofmaterial,
+    product.category,
+    parent.name AS parentname,
+    product.ean,
+    product.externalnumber,
     assortment.name AS assortmentname,
-    masterorder.state,
-    masterorder.description
-   FROM ((((((((public.arch_masterorders_masterorderproduct masterorderproduct
-     LEFT JOIN public.arch_masterorders_masterorder masterorder ON ((masterorderproduct.masterorder_id = masterorder.id)))
-     LEFT JOIN public.masterorders_masterorderdefinition masterorderdefinition ON ((masterorderdefinition.id = masterorder.masterorderdefinition_id)))
-     LEFT JOIN public.basic_product _product ON ((_product.id = masterorderproduct.product_id)))
-     LEFT JOIN public.basic_company company ON ((company.id = masterorder.company_id)))
-     LEFT JOIN public.technologies_technology technology ON ((technology.id = masterorderproduct.technology_id)))
-     LEFT JOIN public.arch_orders_order orders ON (((orders.masterorder_id = masterorderproduct.masterorder_id) AND (orders.product_id = masterorderproduct.product_id))))
-     LEFT JOIN public.basic_company companypayer ON ((companypayer.id = masterorder.companypayer_id)))
-     LEFT JOIN public.basic_assortment assortment ON ((assortment.id = _product.assortment_id)))
-  GROUP BY masterorderdefinition.number, masterorder.id, masterorderproduct.product_id, masterorderproduct.id, masterorder.name, masterorder.deadline, masterorder.masterorderstate, masterorderproduct.masterorderpositionstatus, masterorderproduct.comments, _product.number, _product.name, _product.unit, technology.number, company.name, masterorder.active, companypayer.name, assortment.name;
-
-
---
--- Name: arch_ordersgroups_drafrptquantitydto _RETURN; Type: RULE; Schema: public; Owner: -
---
-
-CREATE OR REPLACE VIEW public.arch_ordersgroups_drafrptquantitydto AS
- SELECT DISTINCT ordersgroup.id,
-    ordersgroup.number,
-    COALESCE(sum(topoc.usedquantity), (0)::numeric) AS sum
-   FROM ((((public.arch_productioncounting_trackingoperationproductoutcomponent topoc
-     JOIN public.arch_productioncounting_productiontracking pt ON ((pt.id = topoc.productiontracking_id)))
-     JOIN public.arch_orders_order ord ON ((ord.id = pt.order_id)))
-     JOIN public.arch_ordersgroups_ordersgroup ordersgroup ON ((ord.ordersgroup_id = ordersgroup.id)))
-     JOIN public.basic_product product ON ((topoc.product_id = product.id)))
-  WHERE ((pt.state)::text = '01draft'::text)
-  GROUP BY ordersgroup.id;
+    model.name AS modelname,
+    product.norm,
+    size.number AS sizenumber,
+    (count(attachment.id) <> 0) AS hasattachments,
+    product.active,
+    product.unit,
+    product.additionalunit,
+    product.entitytype,
+    cmp.number AS supplier,
+    product.nominalcost,
+    product.lastpurchasecost,
+    np.number AS batchnumberpattern
+   FROM (((((((public.basic_product product
+     LEFT JOIN public.basic_product parent ON ((product.parent_id = parent.id)))
+     LEFT JOIN public.basic_assortment assortment ON ((product.assortment_id = assortment.id)))
+     LEFT JOIN public.basic_model model ON ((product.model_id = model.id)))
+     LEFT JOIN public.basic_productattachment attachment ON ((attachment.product_id = product.id)))
+     LEFT JOIN public.basic_size size ON ((size.id = product.size_id)))
+     LEFT JOIN public.basic_company cmp ON ((cmp.id = product.supplier_id)))
+     LEFT JOIN public.basic_numberpattern np ON ((np.id = product.batchnumberpattern_id)))
+  GROUP BY product.id, parent.name, assortment.name, model.name, size.number, cmp.number, np.number;
 
 
 --
@@ -55983,110 +58048,6 @@ CREATE OR REPLACE VIEW public.ordersgroups_drafrptquantitydto AS
      JOIN public.basic_product product ON ((topoc.product_id = product.id)))
   WHERE ((pt.state)::text = '01draft'::text)
   GROUP BY ordersgroup.id;
-
-
---
--- Name: productioncounting_productionanalysisdto _RETURN; Type: RULE; Schema: public; Owner: -
---
-
-CREATE OR REPLACE VIEW public.productioncounting_productionanalysisdto AS
- SELECT row_number() OVER () AS id,
-    bool_or(productiontracking.active) AS active,
-    (productionline.id)::integer AS productionline_id,
-    productionline.number AS productionlinenumber,
-    (basiccompany.id)::integer AS company_id,
-    basiccompany.number AS companynumber,
-    (staff.id)::integer AS staff_id,
-    (((staff.surname)::text || ' '::text) || (staff.name)::text) AS staffname,
-    (assortment.id)::integer AS assortment_id,
-    assortment.name AS assortmentname,
-    (product.id)::integer AS product_id,
-    product.number AS productnumber,
-    product.name AS productname,
-    product.unit AS productunit,
-    size.number AS sizenumber,
-    sum((COALESCE(trackingoperationproductoutcomponent.usedquantity, (0)::numeric))::numeric(14,5)) AS usedquantity,
-    sum((COALESCE(trackingoperationproductoutcomponent.wastesquantity, (0)::numeric))::numeric(14,5)) AS wastesquantity,
-    sum(((COALESCE(trackingoperationproductoutcomponent.usedquantity, (0)::numeric) + COALESCE(trackingoperationproductoutcomponent.wastesquantity, (0)::numeric)))::numeric(14,5)) AS donequantity,
-    trackingoperationproductoutcomponent.causeofwastes,
-    (shift.id)::integer AS shift_id,
-    shift.name AS shiftname,
-    (productiontracking.timerangefrom)::date AS timerangefrom,
-    (productiontracking.timerangeto)::date AS timerangeto,
-    (tcontext.id)::integer AS generator_id,
-    tcontext.number AS generatorname,
-    (ordersorder.id)::integer AS order_id,
-    ordersorder.number AS ordernumber,
-    COALESCE(masterorder.number, groupmasterorder.number) AS obtainedmasterordernumber,
-    technologygroup.number AS technologygroupnumber,
-    trackingoperationproductoutcomponent.typeofmaterial
-   FROM (((((((((((((((public.productioncounting_productiontracking productiontracking
-     LEFT JOIN public.orders_order ordersorder ON ((ordersorder.id = productiontracking.order_id)))
-     LEFT JOIN public.basic_company basiccompany ON ((basiccompany.id = ordersorder.company_id)))
-     LEFT JOIN public.productionlines_productionline productionline ON ((productionline.id = ordersorder.productionline_id)))
-     LEFT JOIN public.basic_staff staff ON ((staff.id = productiontracking.staff_id)))
-     LEFT JOIN public.productioncounting_trackingoperationproductoutcomponent trackingoperationproductoutcomponent ON ((trackingoperationproductoutcomponent.productiontracking_id = productiontracking.id)))
-     LEFT JOIN public.basic_product product ON ((product.id = trackingoperationproductoutcomponent.product_id)))
-     LEFT JOIN public.basic_assortment assortment ON ((assortment.id = product.assortment_id)))
-     LEFT JOIN public.basic_size size ON ((size.id = product.size_id)))
-     LEFT JOIN public.basic_shift shift ON ((shift.id = productiontracking.shift_id)))
-     LEFT JOIN public.technologies_technology technologyprototype ON ((ordersorder.technologyprototype_id = technologyprototype.id)))
-     LEFT JOIN public.technologiesgenerator_generatorcontext tcontext ON ((tcontext.id = technologyprototype.generatorcontext_id)))
-     LEFT JOIN public.masterorders_masterorder masterorder ON ((masterorder.id = ordersorder.masterorder_id)))
-     LEFT JOIN public.ordersgroups_ordersgroup ordersgroup ON ((ordersgroup.id = ordersorder.ordersgroup_id)))
-     LEFT JOIN public.masterorders_masterorder groupmasterorder ON ((groupmasterorder.id = ordersgroup.masterorder_id)))
-     LEFT JOIN public.technologies_technologygroup technologygroup ON ((technologyprototype.technologygroup_id = technologygroup.id)))
-  WHERE ((productiontracking.state)::text = ANY (ARRAY[('01draft'::character varying)::text, ('02accepted'::character varying)::text]))
-  GROUP BY productionline.id, basiccompany.id, staff.id, assortment.id, size.number, product.id, shift.id, trackingoperationproductoutcomponent.causeofwastes, ((productiontracking.timerangefrom)::date), ((productiontracking.timerangeto)::date), ordersorder.id, tcontext.id, masterorder.id, groupmasterorder.id, technologygroup.number, trackingoperationproductoutcomponent.typeofmaterial
-UNION ALL
- SELECT row_number() OVER () AS id,
-    bool_or(productiontracking.active) AS active,
-    (productionline.id)::integer AS productionline_id,
-    productionline.number AS productionlinenumber,
-    (basiccompany.id)::integer AS company_id,
-    basiccompany.number AS companynumber,
-    (staff.id)::integer AS staff_id,
-    (((staff.surname)::text || ' '::text) || (staff.name)::text) AS staffname,
-    (assortment.id)::integer AS assortment_id,
-    assortment.name AS assortmentname,
-    (product.id)::integer AS product_id,
-    product.number AS productnumber,
-    product.name AS productname,
-    product.unit AS productunit,
-    size.number AS sizenumber,
-    sum((COALESCE(trackingoperationproductoutcomponent.usedquantity, (0)::numeric))::numeric(14,5)) AS usedquantity,
-    sum((COALESCE(trackingoperationproductoutcomponent.wastesquantity, (0)::numeric))::numeric(14,5)) AS wastesquantity,
-    sum(((COALESCE(trackingoperationproductoutcomponent.usedquantity, (0)::numeric) + COALESCE(trackingoperationproductoutcomponent.wastesquantity, (0)::numeric)))::numeric(14,5)) AS donequantity,
-    trackingoperationproductoutcomponent.causeofwastes,
-    (shift.id)::integer AS shift_id,
-    shift.name AS shiftname,
-    (productiontracking.timerangefrom)::date AS timerangefrom,
-    (productiontracking.timerangeto)::date AS timerangeto,
-    (tcontext.id)::integer AS generator_id,
-    tcontext.number AS generatorname,
-    (ordersorder.id)::integer AS order_id,
-    ordersorder.number AS ordernumber,
-    COALESCE(masterorder.number, groupmasterorder.number) AS obtainedmasterordernumber,
-    technologygroup.number AS technologygroupnumber,
-    trackingoperationproductoutcomponent.typeofmaterial
-   FROM (((((((((((((((public.arch_productioncounting_productiontracking productiontracking
-     LEFT JOIN public.arch_orders_order ordersorder ON ((ordersorder.id = productiontracking.order_id)))
-     LEFT JOIN public.basic_company basiccompany ON ((basiccompany.id = ordersorder.company_id)))
-     LEFT JOIN public.productionlines_productionline productionline ON ((productionline.id = ordersorder.productionline_id)))
-     LEFT JOIN public.basic_staff staff ON ((staff.id = productiontracking.staff_id)))
-     LEFT JOIN public.arch_productioncounting_trackingoperationproductoutcomponent trackingoperationproductoutcomponent ON ((trackingoperationproductoutcomponent.productiontracking_id = productiontracking.id)))
-     LEFT JOIN public.basic_product product ON ((product.id = trackingoperationproductoutcomponent.product_id)))
-     LEFT JOIN public.basic_assortment assortment ON ((assortment.id = product.assortment_id)))
-     LEFT JOIN public.basic_size size ON ((size.id = product.size_id)))
-     LEFT JOIN public.basic_shift shift ON ((shift.id = productiontracking.shift_id)))
-     LEFT JOIN public.technologies_technology technologyprototype ON ((ordersorder.technologyprototype_id = technologyprototype.id)))
-     LEFT JOIN public.technologiesgenerator_generatorcontext tcontext ON ((tcontext.id = technologyprototype.generatorcontext_id)))
-     LEFT JOIN public.arch_masterorders_masterorder masterorder ON ((masterorder.id = ordersorder.masterorder_id)))
-     LEFT JOIN public.arch_ordersgroups_ordersgroup ordersgroup ON ((ordersgroup.id = ordersorder.ordersgroup_id)))
-     LEFT JOIN public.arch_masterorders_masterorder groupmasterorder ON ((groupmasterorder.id = ordersgroup.masterorder_id)))
-     LEFT JOIN public.technologies_technologygroup technologygroup ON ((technologyprototype.technologygroup_id = technologygroup.id)))
-  WHERE ((productiontracking.state)::text = ANY (ARRAY[('01draft'::character varying)::text, ('02accepted'::character varying)::text]))
-  GROUP BY productionline.id, basiccompany.id, staff.id, assortment.id, size.number, product.id, shift.id, trackingoperationproductoutcomponent.causeofwastes, ((productiontracking.timerangefrom)::date), ((productiontracking.timerangeto)::date), ordersorder.id, tcontext.id, masterorder.id, groupmasterorder.id, technologygroup.number, trackingoperationproductoutcomponent.typeofmaterial;
 
 
 --
@@ -56361,40 +58322,169 @@ CREATE OR REPLACE VIEW public.technologies_technologydto AS
 
 
 --
--- Name: basic_productdto _RETURN; Type: RULE; Schema: public; Owner: -
+-- Name: arch_ordersgroups_drafrptquantitydto _RETURN; Type: RULE; Schema: public; Owner: -
 --
 
-CREATE OR REPLACE VIEW public.basic_productdto AS
- SELECT product.id,
-    product.number,
-    product.name,
-    product.globaltypeofmaterial,
-    product.category,
-    parent.name AS parentname,
-    product.ean,
-    product.externalnumber,
+CREATE OR REPLACE VIEW public.arch_ordersgroups_drafrptquantitydto AS
+ SELECT DISTINCT ordersgroup.id,
+    ordersgroup.number,
+    COALESCE(sum(topoc.usedquantity), (0)::numeric) AS sum
+   FROM ((((public.arch_productioncounting_trackingoperationproductoutcomponent topoc
+     JOIN public.arch_productioncounting_productiontracking pt ON ((pt.id = topoc.productiontracking_id)))
+     JOIN public.arch_orders_order ord ON ((ord.id = pt.order_id)))
+     JOIN public.arch_ordersgroups_ordersgroup ordersgroup ON ((ord.ordersgroup_id = ordersgroup.id)))
+     JOIN public.basic_product product ON ((topoc.product_id = product.id)))
+  WHERE ((pt.state)::text = '01draft'::text)
+  GROUP BY ordersgroup.id;
+
+
+--
+-- Name: arch_masterorders_masterorderposition_manyproducts _RETURN; Type: RULE; Schema: public; Owner: -
+--
+
+CREATE OR REPLACE VIEW public.arch_masterorders_masterorderposition_manyproducts AS
+ SELECT masterorderproduct.id,
+    masterorderdefinition.number AS masterorderdefinitionnumber,
+    (masterorder.id)::integer AS masterorderid,
+    (masterorderproduct.product_id)::integer AS productid,
+    (masterorderproduct.id)::integer AS masterorderproductid,
+    masterorder.name,
+    masterorder.number,
+    masterorder.deadline,
+    masterorder.masterorderstate AS masterorderstatus,
+    masterorderproduct.masterorderpositionstatus,
+    COALESCE(masterorderproduct.masterorderquantity, (0)::numeric) AS masterorderquantity,
+    COALESCE(( SELECT sum(orders.plannedquantity) AS sum), (0)::numeric) AS cumulatedmasterorderquantity,
+    COALESCE(( SELECT sum(orders.donequantity) AS sum), (0)::numeric) AS producedorderquantity,
+        CASE
+            WHEN ((COALESCE(masterorderproduct.masterorderquantity, (0)::numeric) - COALESCE(( SELECT sum(orders.donequantity) AS sum), (0)::numeric)) > (0)::numeric) THEN (COALESCE(masterorderproduct.masterorderquantity, (0)::numeric) - COALESCE(( SELECT sum(orders.donequantity) AS sum), (0)::numeric))
+            ELSE (0)::numeric
+        END AS lefttorelease,
+    masterorderproduct.comments,
+    _product.number AS productnumber,
+    _product.name AS productname,
+    _product.unit,
+    technology.number AS technologyname,
+    company.name AS companyname,
+    masterorder.active,
+    companypayer.name AS companypayer,
     assortment.name AS assortmentname,
-    model.name AS modelname,
-    product.norm,
+    masterorder.state,
+    masterorder.description
+   FROM ((((((((public.arch_masterorders_masterorderproduct masterorderproduct
+     LEFT JOIN public.arch_masterorders_masterorder masterorder ON ((masterorderproduct.masterorder_id = masterorder.id)))
+     LEFT JOIN public.masterorders_masterorderdefinition masterorderdefinition ON ((masterorderdefinition.id = masterorder.masterorderdefinition_id)))
+     LEFT JOIN public.basic_product _product ON ((_product.id = masterorderproduct.product_id)))
+     LEFT JOIN public.basic_company company ON ((company.id = masterorder.company_id)))
+     LEFT JOIN public.technologies_technology technology ON ((technology.id = masterorderproduct.technology_id)))
+     LEFT JOIN public.arch_orders_order orders ON (((orders.masterorder_id = masterorderproduct.masterorder_id) AND (orders.product_id = masterorderproduct.product_id))))
+     LEFT JOIN public.basic_company companypayer ON ((companypayer.id = masterorder.companypayer_id)))
+     LEFT JOIN public.basic_assortment assortment ON ((assortment.id = _product.assortment_id)))
+  GROUP BY masterorderdefinition.number, masterorder.id, masterorderproduct.product_id, masterorderproduct.id, masterorder.name, masterorder.deadline, masterorder.masterorderstate, masterorderproduct.masterorderpositionstatus, masterorderproduct.comments, _product.number, _product.name, _product.unit, technology.number, company.name, masterorder.active, companypayer.name, assortment.name;
+
+
+--
+-- Name: productioncounting_productionanalysisdto _RETURN; Type: RULE; Schema: public; Owner: -
+--
+
+CREATE OR REPLACE VIEW public.productioncounting_productionanalysisdto AS
+ SELECT row_number() OVER () AS id,
+    bool_or(productiontracking.active) AS active,
+    (productionline.id)::integer AS productionline_id,
+    productionline.number AS productionlinenumber,
+    (basiccompany.id)::integer AS company_id,
+    basiccompany.number AS companynumber,
+    (staff.id)::integer AS staff_id,
+    (((staff.surname)::text || ' '::text) || (staff.name)::text) AS staffname,
+    (assortment.id)::integer AS assortment_id,
+    assortment.name AS assortmentname,
+    (product.id)::integer AS product_id,
+    product.number AS productnumber,
+    product.name AS productname,
+    product.unit AS productunit,
     size.number AS sizenumber,
-    (count(attachment.id) <> 0) AS hasattachments,
-    product.active,
-    product.unit,
-    product.additionalunit,
-    product.entitytype,
-    cmp.number AS supplier,
-    product.nominalcost,
-    product.lastpurchasecost,
-    np.number AS batchnumberpattern
-   FROM (((((((public.basic_product product
-     LEFT JOIN public.basic_product parent ON ((product.parent_id = parent.id)))
-     LEFT JOIN public.basic_assortment assortment ON ((product.assortment_id = assortment.id)))
-     LEFT JOIN public.basic_model model ON ((product.model_id = model.id)))
-     LEFT JOIN public.basic_productattachment attachment ON ((attachment.product_id = product.id)))
+    sum((COALESCE(trackingoperationproductoutcomponent.usedquantity, (0)::numeric))::numeric(14,5)) AS usedquantity,
+    sum((COALESCE(trackingoperationproductoutcomponent.wastesquantity, (0)::numeric))::numeric(14,5)) AS wastesquantity,
+    sum(((COALESCE(trackingoperationproductoutcomponent.usedquantity, (0)::numeric) + COALESCE(trackingoperationproductoutcomponent.wastesquantity, (0)::numeric)))::numeric(14,5)) AS donequantity,
+    trackingoperationproductoutcomponent.causeofwastes,
+    (shift.id)::integer AS shift_id,
+    shift.name AS shiftname,
+    (productiontracking.timerangefrom)::date AS timerangefrom,
+    (productiontracking.timerangeto)::date AS timerangeto,
+    (tcontext.id)::integer AS generator_id,
+    tcontext.number AS generatorname,
+    (ordersorder.id)::integer AS order_id,
+    ordersorder.number AS ordernumber,
+    COALESCE(masterorder.number, groupmasterorder.number) AS obtainedmasterordernumber,
+    technologygroup.number AS technologygroupnumber,
+    trackingoperationproductoutcomponent.typeofmaterial
+   FROM (((((((((((((((public.productioncounting_productiontracking productiontracking
+     LEFT JOIN public.orders_order ordersorder ON ((ordersorder.id = productiontracking.order_id)))
+     LEFT JOIN public.basic_company basiccompany ON ((basiccompany.id = ordersorder.company_id)))
+     LEFT JOIN public.productionlines_productionline productionline ON ((productionline.id = ordersorder.productionline_id)))
+     LEFT JOIN public.basic_staff staff ON ((staff.id = productiontracking.staff_id)))
+     LEFT JOIN public.productioncounting_trackingoperationproductoutcomponent trackingoperationproductoutcomponent ON ((trackingoperationproductoutcomponent.productiontracking_id = productiontracking.id)))
+     LEFT JOIN public.basic_product product ON ((product.id = trackingoperationproductoutcomponent.product_id)))
+     LEFT JOIN public.basic_assortment assortment ON ((assortment.id = product.assortment_id)))
      LEFT JOIN public.basic_size size ON ((size.id = product.size_id)))
-     LEFT JOIN public.basic_company cmp ON ((cmp.id = product.supplier_id)))
-     LEFT JOIN public.basic_numberpattern np ON ((np.id = product.batchnumberpattern_id)))
-  GROUP BY product.id, parent.name, assortment.name, model.name, size.number, cmp.number, np.number;
+     LEFT JOIN public.basic_shift shift ON ((shift.id = productiontracking.shift_id)))
+     LEFT JOIN public.technologies_technology technologyprototype ON ((ordersorder.technologyprototype_id = technologyprototype.id)))
+     LEFT JOIN public.technologiesgenerator_generatorcontext tcontext ON ((tcontext.id = technologyprototype.generatorcontext_id)))
+     LEFT JOIN public.masterorders_masterorder masterorder ON ((masterorder.id = ordersorder.masterorder_id)))
+     LEFT JOIN public.ordersgroups_ordersgroup ordersgroup ON ((ordersgroup.id = ordersorder.ordersgroup_id)))
+     LEFT JOIN public.masterorders_masterorder groupmasterorder ON ((groupmasterorder.id = ordersgroup.masterorder_id)))
+     LEFT JOIN public.technologies_technologygroup technologygroup ON ((technologyprototype.technologygroup_id = technologygroup.id)))
+  WHERE ((productiontracking.state)::text = ANY (ARRAY[('01draft'::character varying)::text, ('02accepted'::character varying)::text]))
+  GROUP BY productionline.id, basiccompany.id, staff.id, assortment.id, size.number, product.id, shift.id, trackingoperationproductoutcomponent.causeofwastes, ((productiontracking.timerangefrom)::date), ((productiontracking.timerangeto)::date), ordersorder.id, tcontext.id, masterorder.id, groupmasterorder.id, technologygroup.number, trackingoperationproductoutcomponent.typeofmaterial
+UNION ALL
+ SELECT row_number() OVER () AS id,
+    bool_or(productiontracking.active) AS active,
+    (productionline.id)::integer AS productionline_id,
+    productionline.number AS productionlinenumber,
+    (basiccompany.id)::integer AS company_id,
+    basiccompany.number AS companynumber,
+    (staff.id)::integer AS staff_id,
+    (((staff.surname)::text || ' '::text) || (staff.name)::text) AS staffname,
+    (assortment.id)::integer AS assortment_id,
+    assortment.name AS assortmentname,
+    (product.id)::integer AS product_id,
+    product.number AS productnumber,
+    product.name AS productname,
+    product.unit AS productunit,
+    size.number AS sizenumber,
+    sum((COALESCE(trackingoperationproductoutcomponent.usedquantity, (0)::numeric))::numeric(14,5)) AS usedquantity,
+    sum((COALESCE(trackingoperationproductoutcomponent.wastesquantity, (0)::numeric))::numeric(14,5)) AS wastesquantity,
+    sum(((COALESCE(trackingoperationproductoutcomponent.usedquantity, (0)::numeric) + COALESCE(trackingoperationproductoutcomponent.wastesquantity, (0)::numeric)))::numeric(14,5)) AS donequantity,
+    trackingoperationproductoutcomponent.causeofwastes,
+    (shift.id)::integer AS shift_id,
+    shift.name AS shiftname,
+    (productiontracking.timerangefrom)::date AS timerangefrom,
+    (productiontracking.timerangeto)::date AS timerangeto,
+    (tcontext.id)::integer AS generator_id,
+    tcontext.number AS generatorname,
+    (ordersorder.id)::integer AS order_id,
+    ordersorder.number AS ordernumber,
+    COALESCE(masterorder.number, groupmasterorder.number) AS obtainedmasterordernumber,
+    technologygroup.number AS technologygroupnumber,
+    trackingoperationproductoutcomponent.typeofmaterial
+   FROM (((((((((((((((public.arch_productioncounting_productiontracking productiontracking
+     LEFT JOIN public.arch_orders_order ordersorder ON ((ordersorder.id = productiontracking.order_id)))
+     LEFT JOIN public.basic_company basiccompany ON ((basiccompany.id = ordersorder.company_id)))
+     LEFT JOIN public.productionlines_productionline productionline ON ((productionline.id = ordersorder.productionline_id)))
+     LEFT JOIN public.basic_staff staff ON ((staff.id = productiontracking.staff_id)))
+     LEFT JOIN public.arch_productioncounting_trackingoperationproductoutcomponent trackingoperationproductoutcomponent ON ((trackingoperationproductoutcomponent.productiontracking_id = productiontracking.id)))
+     LEFT JOIN public.basic_product product ON ((product.id = trackingoperationproductoutcomponent.product_id)))
+     LEFT JOIN public.basic_assortment assortment ON ((assortment.id = product.assortment_id)))
+     LEFT JOIN public.basic_size size ON ((size.id = product.size_id)))
+     LEFT JOIN public.basic_shift shift ON ((shift.id = productiontracking.shift_id)))
+     LEFT JOIN public.technologies_technology technologyprototype ON ((ordersorder.technologyprototype_id = technologyprototype.id)))
+     LEFT JOIN public.technologiesgenerator_generatorcontext tcontext ON ((tcontext.id = technologyprototype.generatorcontext_id)))
+     LEFT JOIN public.arch_masterorders_masterorder masterorder ON ((masterorder.id = ordersorder.masterorder_id)))
+     LEFT JOIN public.arch_ordersgroups_ordersgroup ordersgroup ON ((ordersgroup.id = ordersorder.ordersgroup_id)))
+     LEFT JOIN public.arch_masterorders_masterorder groupmasterorder ON ((groupmasterorder.id = ordersgroup.masterorder_id)))
+     LEFT JOIN public.technologies_technologygroup technologygroup ON ((technologyprototype.technologygroup_id = technologygroup.id)))
+  WHERE ((productiontracking.state)::text = ANY (ARRAY[('01draft'::character varying)::text, ('02accepted'::character varying)::text]))
+  GROUP BY productionline.id, basiccompany.id, staff.id, assortment.id, size.number, product.id, shift.id, trackingoperationproductoutcomponent.causeofwastes, ((productiontracking.timerangefrom)::date), ((productiontracking.timerangeto)::date), ordersorder.id, tcontext.id, masterorder.id, groupmasterorder.id, technologygroup.number, trackingoperationproductoutcomponent.typeofmaterial;
 
 
 --
@@ -56590,14 +58680,6 @@ ALTER TABLE ONLY public.goodfood_confectioninputproduct
 
 
 --
--- Name: arch_goodfood_confectioninputproduct advancedgenealogy_batch_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_goodfood_confectioninputproduct
-    ADD CONSTRAINT advancedgenealogy_batch_fkey FOREIGN KEY (batch_id) REFERENCES public.advancedgenealogy_batch(id) DEFERRABLE;
-
-
---
 -- Name: qcadooview_viewedalert alert_user_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -56630,26 +58712,10 @@ ALTER TABLE ONLY public.productioncounting_anomaly
 
 
 --
--- Name: arch_productioncounting_anomaly anomaly_location_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_productioncounting_anomaly
-    ADD CONSTRAINT anomaly_location_fkey FOREIGN KEY (location_id) REFERENCES public.materialflow_location(id) DEFERRABLE;
-
-
---
 -- Name: productioncounting_anomaly anomaly_masterproduct_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.productioncounting_anomaly
-    ADD CONSTRAINT anomaly_masterproduct_fkey FOREIGN KEY (masterproduct_id) REFERENCES public.basic_product(id) DEFERRABLE;
-
-
---
--- Name: arch_productioncounting_anomaly anomaly_masterproduct_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_productioncounting_anomaly
     ADD CONSTRAINT anomaly_masterproduct_fkey FOREIGN KEY (masterproduct_id) REFERENCES public.basic_product(id) DEFERRABLE;
 
 
@@ -56662,27 +58728,11 @@ ALTER TABLE ONLY public.productioncounting_anomaly
 
 
 --
--- Name: arch_productioncounting_anomaly anomaly_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_productioncounting_anomaly
-    ADD CONSTRAINT anomaly_product_fkey FOREIGN KEY (product_id) REFERENCES public.basic_product(id) DEFERRABLE;
-
-
---
 -- Name: productioncounting_anomaly anomaly_productiontracking_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.productioncounting_anomaly
     ADD CONSTRAINT anomaly_productiontracking_fkey FOREIGN KEY (productiontracking_id) REFERENCES public.productioncounting_productiontracking(id) DEFERRABLE;
-
-
---
--- Name: arch_productioncounting_anomaly anomaly_productiontracking_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_productioncounting_anomaly
-    ADD CONSTRAINT anomaly_productiontracking_fkey FOREIGN KEY (productiontracking_id) REFERENCES public.arch_productioncounting_productiontracking(id) DEFERRABLE;
 
 
 --
@@ -56694,26 +58744,10 @@ ALTER TABLE ONLY public.productioncounting_anomalyexplanation
 
 
 --
--- Name: arch_productioncounting_anomalyexplanation anomalyexplanation_anomaly_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_productioncounting_anomalyexplanation
-    ADD CONSTRAINT anomalyexplanation_anomaly_fkey FOREIGN KEY (anomaly_id) REFERENCES public.arch_productioncounting_anomaly(id) DEFERRABLE;
-
-
---
 -- Name: productioncounting_anomalyexplanation anomalyexplanation_location_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.productioncounting_anomalyexplanation
-    ADD CONSTRAINT anomalyexplanation_location_fkey FOREIGN KEY (location_id) REFERENCES public.materialflow_location(id) DEFERRABLE;
-
-
---
--- Name: arch_productioncounting_anomalyexplanation anomalyexplanation_location_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_productioncounting_anomalyexplanation
     ADD CONSTRAINT anomalyexplanation_location_fkey FOREIGN KEY (location_id) REFERENCES public.materialflow_location(id) DEFERRABLE;
 
 
@@ -56726,26 +58760,10 @@ ALTER TABLE ONLY public.productioncounting_anomalyexplanation
 
 
 --
--- Name: arch_productioncounting_anomalyexplanation anomalyexplanation_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_productioncounting_anomalyexplanation
-    ADD CONSTRAINT anomalyexplanation_product_fkey FOREIGN KEY (product_id) REFERENCES public.basic_product(id) DEFERRABLE;
-
-
---
 -- Name: productioncounting_anomalyproductiontrackingentryhelper anomalyproductiontrackingentryhelper_apt_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.productioncounting_anomalyproductiontrackingentryhelper
-    ADD CONSTRAINT anomalyproductiontrackingentryhelper_apt_fkey FOREIGN KEY (anomalyproductiontracking_id) REFERENCES public.productioncounting_anomalyproductiontrackinghelper(id) DEFERRABLE;
-
-
---
--- Name: arch_productioncounting_anomalyproductiontrackingentryhelper anomalyproductiontrackingentryhelper_apt_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_productioncounting_anomalyproductiontrackingentryhelper
     ADD CONSTRAINT anomalyproductiontrackingentryhelper_apt_fkey FOREIGN KEY (anomalyproductiontracking_id) REFERENCES public.productioncounting_anomalyproductiontrackinghelper(id) DEFERRABLE;
 
 
@@ -56758,26 +58776,10 @@ ALTER TABLE ONLY public.productioncounting_anomalyproductiontrackingentryhelper
 
 
 --
--- Name: arch_productioncounting_anomalyproductiontrackingentryhelper anomalyproductiontrackingentryhelper_topic_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_productioncounting_anomalyproductiontrackingentryhelper
-    ADD CONSTRAINT anomalyproductiontrackingentryhelper_topic_fkey FOREIGN KEY (trackingoperationproductincomponent_id) REFERENCES public.arch_productioncounting_trackingoperationproductincomponent(id) DEFERRABLE;
-
-
---
 -- Name: productioncounting_anomalyreasoncontainer anomalyreasoncontainer_anomalyreason_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.productioncounting_anomalyreasoncontainer
-    ADD CONSTRAINT anomalyreasoncontainer_anomalyreason_fkey FOREIGN KEY (anomalyreason_id) REFERENCES public.productioncounting_anomalyreason(id) DEFERRABLE;
-
-
---
--- Name: arch_productioncounting_anomalyreasoncontainer anomalyreasoncontainer_anomalyreason_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_productioncounting_anomalyreasoncontainer
     ADD CONSTRAINT anomalyreasoncontainer_anomalyreason_fkey FOREIGN KEY (anomalyreason_id) REFERENCES public.productioncounting_anomalyreason(id) DEFERRABLE;
 
 
@@ -56787,14 +58789,6 @@ ALTER TABLE ONLY public.arch_productioncounting_anomalyreasoncontainer
 
 ALTER TABLE ONLY public.productioncounting_anomalyreasoncontainer
     ADD CONSTRAINT anomalyreasoncontainer_apteh_fkey FOREIGN KEY (anomalyproductiontrackingentryhelper_id) REFERENCES public.productioncounting_anomalyproductiontrackingentryhelper(id) DEFERRABLE;
-
-
---
--- Name: arch_productioncounting_anomalyreasoncontainer anomalyreasoncontainer_apteh_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_productioncounting_anomalyreasoncontainer
-    ADD CONSTRAINT anomalyreasoncontainer_apteh_fkey FOREIGN KEY (anomalyproductiontrackingentryhelper_id) REFERENCES public.arch_productioncounting_anomalyproductiontrackingentryhelper(id) DEFERRABLE;
 
 
 --
@@ -56818,22 +58812,6 @@ ALTER TABLE ONLY public.assignmenttoshift_staffassignmenttoshift
 --
 
 ALTER TABLE ONLY public.avglaborcostcalcfororder_assignmentworkertoshift
-    ADD CONSTRAINT assignmenttoshift_assignmenttoshift_fkey FOREIGN KEY (assignmenttoshift_id) REFERENCES public.assignmenttoshift_assignmenttoshift(id) DEFERRABLE;
-
-
---
--- Name: arch_assignmenttoshift_staffassignmenttoshift assignmenttoshift_assignmenttoshift_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_assignmenttoshift_staffassignmenttoshift
-    ADD CONSTRAINT assignmenttoshift_assignmenttoshift_fkey FOREIGN KEY (assignmenttoshift_id) REFERENCES public.assignmenttoshift_assignmenttoshift(id) DEFERRABLE;
-
-
---
--- Name: arch_avglaborcostcalcfororder_assignmentworkertoshift assignmenttoshift_assignmenttoshift_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_avglaborcostcalcfororder_assignmentworkertoshift
     ADD CONSTRAINT assignmenttoshift_assignmenttoshift_fkey FOREIGN KEY (assignmenttoshift_id) REFERENCES public.assignmenttoshift_assignmenttoshift(id) DEFERRABLE;
 
 
@@ -56894,14 +58872,6 @@ ALTER TABLE ONLY public.advancedgenealogy_trackingrecordstatechange
 
 
 --
--- Name: arch_advancedgenealogy_trackingrecordstatechange atrackingrecordstatechange_trackingrecord_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_advancedgenealogy_trackingrecordstatechange
-    ADD CONSTRAINT atrackingrecordstatechange_trackingrecord_fkey FOREIGN KEY (trackingrecord_id) REFERENCES public.arch_advancedgenealogy_trackingrecord(id) DEFERRABLE;
-
-
---
 -- Name: cmmsscheduler_recurringeventattachment attachment_event_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -56926,14 +58896,6 @@ ALTER TABLE ONLY public.avglaborcostcalcfororder_assignmentworkertoshift
 
 
 --
--- Name: arch_avglaborcostcalcfororder_assignmentworkertoshift avglaborcostcalcfororder_avglaborcostcalcfororder_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_avglaborcostcalcfororder_assignmentworkertoshift
-    ADD CONSTRAINT avglaborcostcalcfororder_avglaborcostcalcfororder_fkey FOREIGN KEY (avglaborcostcalcfororder_id) REFERENCES public.arch_avglaborcostcalcfororder_avglaborcostcalcfororder(id) DEFERRABLE;
-
-
---
 -- Name: productionpershift_balance balance_context_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -56950,27 +58912,11 @@ ALTER TABLE ONLY public.technologies_barcodeoperationcomponent
 
 
 --
--- Name: arch_technologies_barcodeoperationcomponent barcodeoperationcomponen_operationcomponent_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_technologies_barcodeoperationcomponent
-    ADD CONSTRAINT barcodeoperationcomponen_operationcomponent_fkey FOREIGN KEY (operationcomponent_id) REFERENCES public.technologies_technologyoperationcomponent(id) DEFERRABLE;
-
-
---
 -- Name: technologies_barcodeoperationcomponent barcodeoperationcomponent_orderfkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.technologies_barcodeoperationcomponent
     ADD CONSTRAINT barcodeoperationcomponent_orderfkey FOREIGN KEY (order_id) REFERENCES public.orders_order(id) DEFERRABLE;
-
-
---
--- Name: arch_technologies_barcodeoperationcomponent barcodeoperationcomponent_orderfkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_technologies_barcodeoperationcomponent
-    ADD CONSTRAINT barcodeoperationcomponent_orderfkey FOREIGN KEY (order_id) REFERENCES public.arch_orders_order(id) DEFERRABLE;
 
 
 --
@@ -57002,14 +58948,6 @@ ALTER TABLE ONLY public.basic_staff
 --
 
 ALTER TABLE ONLY public.masterorders_masterorder
-    ADD CONSTRAINT basic_company_fkey FOREIGN KEY (companypayer_id) REFERENCES public.basic_company(id) DEFERRABLE;
-
-
---
--- Name: arch_masterorders_masterorder basic_company_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_masterorders_masterorder
     ADD CONSTRAINT basic_company_fkey FOREIGN KEY (companypayer_id) REFERENCES public.basic_company(id) DEFERRABLE;
 
 
@@ -57075,30 +59013,6 @@ ALTER TABLE ONLY public.goodfood_confectionremainderinputproduct
 
 ALTER TABLE ONLY public.basic_product
     ADD CONSTRAINT basic_product_fkey FOREIGN KEY (parent_id) REFERENCES public.basic_product(id) DEFERRABLE;
-
-
---
--- Name: arch_goodfood_confectioninputproduct basic_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_goodfood_confectioninputproduct
-    ADD CONSTRAINT basic_product_fkey FOREIGN KEY (product_id) REFERENCES public.basic_product(id) DEFERRABLE;
-
-
---
--- Name: arch_goodfood_confectionprotocol basic_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_goodfood_confectionprotocol
-    ADD CONSTRAINT basic_product_fkey FOREIGN KEY (filmproduct_id) REFERENCES public.basic_product(id) DEFERRABLE;
-
-
---
--- Name: arch_goodfood_confectionremainderinputproduct basic_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_goodfood_confectionremainderinputproduct
-    ADD CONSTRAINT basic_product_fkey FOREIGN KEY (product_id) REFERENCES public.basic_product(id) DEFERRABLE;
 
 
 --
@@ -57174,22 +59088,6 @@ ALTER TABLE ONLY public.productioncounting_productiontrackingstatechange
 
 
 --
--- Name: arch_advancedgenealogy_trackingrecordstatechange basic_shift_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_advancedgenealogy_trackingrecordstatechange
-    ADD CONSTRAINT basic_shift_fkey FOREIGN KEY (shift_id) REFERENCES public.basic_shift(id) DEFERRABLE;
-
-
---
--- Name: arch_productioncounting_productiontrackingstatechange basic_shift_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_productioncounting_productiontrackingstatechange
-    ADD CONSTRAINT basic_shift_fkey FOREIGN KEY (shift_id) REFERENCES public.basic_shift(id) DEFERRABLE;
-
-
---
 -- Name: basic_staff basic_staff_division_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -57230,38 +59128,6 @@ ALTER TABLE ONLY public.avglaborcostcalcfororder_assignmentworkertoshift
 
 
 --
--- Name: arch_assignmenttoshift_staffassignmenttoshift basic_staff_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_assignmenttoshift_staffassignmenttoshift
-    ADD CONSTRAINT basic_staff_fkey FOREIGN KEY (worker_id) REFERENCES public.basic_staff(id) DEFERRABLE;
-
-
---
--- Name: arch_avglaborcostcalcfororder_assignmentworkertoshift basic_staff_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_avglaborcostcalcfororder_assignmentworkertoshift
-    ADD CONSTRAINT basic_staff_fkey FOREIGN KEY (worker_id) REFERENCES public.basic_staff(id) DEFERRABLE;
-
-
---
--- Name: arch_goodfood_confectionstaff basic_staff_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_goodfood_confectionstaff
-    ADD CONSTRAINT basic_staff_fkey FOREIGN KEY (worker_id) REFERENCES public.basic_staff(id) DEFERRABLE;
-
-
---
--- Name: arch_goodfood_extrusionsouse basic_staff_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_goodfood_extrusionsouse
-    ADD CONSTRAINT basic_staff_fkey FOREIGN KEY (worker_id) REFERENCES public.basic_staff(id) DEFERRABLE;
-
-
---
 -- Name: basic_staff basic_staff_workstation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -57278,26 +59144,10 @@ ALTER TABLE ONLY public.basicproductioncounting_basicproductioncounting
 
 
 --
--- Name: arch_basicproductioncounting_basicproductioncounting basicproductioncounting_order_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_basicproductioncounting_basicproductioncounting
-    ADD CONSTRAINT basicproductioncounting_order_fkey FOREIGN KEY (order_id) REFERENCES public.arch_orders_order(id) DEFERRABLE;
-
-
---
 -- Name: basicproductioncounting_basicproductioncounting basicproductioncounting_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.basicproductioncounting_basicproductioncounting
-    ADD CONSTRAINT basicproductioncounting_product_fkey FOREIGN KEY (product_id) REFERENCES public.basic_product(id) DEFERRABLE;
-
-
---
--- Name: arch_basicproductioncounting_basicproductioncounting basicproductioncounting_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_basicproductioncounting_basicproductioncounting
     ADD CONSTRAINT basicproductioncounting_product_fkey FOREIGN KEY (product_id) REFERENCES public.basic_product(id) DEFERRABLE;
 
 
@@ -57358,26 +59208,10 @@ ALTER TABLE ONLY public.costnormsforoperation_calculationoperationcomponent
 
 
 --
--- Name: arch_costnormsforoperation_calculationoperationcomponent calculationoperationcomponent_costcalculation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_costnormsforoperation_calculationoperationcomponent
-    ADD CONSTRAINT calculationoperationcomponent_costcalculation_fkey FOREIGN KEY (costcalculation_id) REFERENCES public.arch_costcalculation_costcalculation(id) DEFERRABLE;
-
-
---
 -- Name: costnormsforoperation_calculationoperationcomponent calculationoperationcomponent_operation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.costnormsforoperation_calculationoperationcomponent
-    ADD CONSTRAINT calculationoperationcomponent_operation_fkey FOREIGN KEY (operation_id) REFERENCES public.technologies_operation(id) DEFERRABLE;
-
-
---
--- Name: arch_costnormsforoperation_calculationoperationcomponent calculationoperationcomponent_operation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_costnormsforoperation_calculationoperationcomponent
     ADD CONSTRAINT calculationoperationcomponent_operation_fkey FOREIGN KEY (operation_id) REFERENCES public.technologies_operation(id) DEFERRABLE;
 
 
@@ -57390,26 +59224,10 @@ ALTER TABLE ONLY public.costnormsforoperation_calculationoperationcomponent
 
 
 --
--- Name: arch_costnormsforoperation_calculationoperationcomponent calculationoperationcomponent_parent_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_costnormsforoperation_calculationoperationcomponent
-    ADD CONSTRAINT calculationoperationcomponent_parent_fkey FOREIGN KEY (parent_id) REFERENCES public.arch_costnormsforoperation_calculationoperationcomponent(id) DEFERRABLE;
-
-
---
 -- Name: costnormsforoperation_calculationoperationcomponent calculationoperationcomponent_technologyoperationcomponent_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.costnormsforoperation_calculationoperationcomponent
-    ADD CONSTRAINT calculationoperationcomponent_technologyoperationcomponent_fkey FOREIGN KEY (technologyoperationcomponent_id) REFERENCES public.technologies_technologyoperationcomponent(id) DEFERRABLE;
-
-
---
--- Name: arch_costnormsforoperation_calculationoperationcomponent calculationoperationcomponent_technologyoperationcomponent_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_costnormsforoperation_calculationoperationcomponent
     ADD CONSTRAINT calculationoperationcomponent_technologyoperationcomponent_fkey FOREIGN KEY (technologyoperationcomponent_id) REFERENCES public.technologies_technologyoperationcomponent(id) DEFERRABLE;
 
 
@@ -57490,14 +59308,6 @@ ALTER TABLE ONLY public.supplynegotiations_columnforrequests
 --
 
 ALTER TABLE ONLY public.orders_order
-    ADD CONSTRAINT company_company_fkey FOREIGN KEY (company_id) REFERENCES public.basic_company(id) DEFERRABLE;
-
-
---
--- Name: arch_orders_order company_company_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_orders_order
     ADD CONSTRAINT company_company_fkey FOREIGN KEY (company_id) REFERENCES public.basic_company(id) DEFERRABLE;
 
 
@@ -57598,26 +59408,10 @@ ALTER TABLE ONLY public.costcalculation_componentcost
 
 
 --
--- Name: arch_costcalculation_componentcost componentcost_costcalculation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_costcalculation_componentcost
-    ADD CONSTRAINT componentcost_costcalculation_fkey FOREIGN KEY (costcalculation_id) REFERENCES public.arch_costcalculation_costcalculation(id) DEFERRABLE;
-
-
---
 -- Name: costcalculation_componentcost componentcost_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.costcalculation_componentcost
-    ADD CONSTRAINT componentcost_product_fkey FOREIGN KEY (product_id) REFERENCES public.basic_product(id) DEFERRABLE;
-
-
---
--- Name: arch_costcalculation_componentcost componentcost_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_costcalculation_componentcost
     ADD CONSTRAINT componentcost_product_fkey FOREIGN KEY (product_id) REFERENCES public.basic_product(id) DEFERRABLE;
 
 
@@ -57630,14 +59424,6 @@ ALTER TABLE ONLY public.goodfood_confectionadditionalinputproduct
 
 
 --
--- Name: arch_goodfood_confectionadditionalinputproduct confectionadditionalinputproduct_batch_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_goodfood_confectionadditionalinputproduct
-    ADD CONSTRAINT confectionadditionalinputproduct_batch_fkey FOREIGN KEY (batch_id) REFERENCES public.advancedgenealogy_batch(id) DEFERRABLE;
-
-
---
 -- Name: goodfood_confectionadditionalinputproduct confectionadditionalinputproduct_confectionprotocol_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -57646,26 +59432,10 @@ ALTER TABLE ONLY public.goodfood_confectionadditionalinputproduct
 
 
 --
--- Name: arch_goodfood_confectionadditionalinputproduct confectionadditionalinputproduct_confectionprotocol_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_goodfood_confectionadditionalinputproduct
-    ADD CONSTRAINT confectionadditionalinputproduct_confectionprotocol_fkey FOREIGN KEY (confectionprotocol_id) REFERENCES public.arch_goodfood_confectionprotocol(id) DEFERRABLE;
-
-
---
 -- Name: goodfood_confectionadditionalinputproduct confectionadditionalinputproduct_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.goodfood_confectionadditionalinputproduct
-    ADD CONSTRAINT confectionadditionalinputproduct_product_fkey FOREIGN KEY (product_id) REFERENCES public.basic_product(id) DEFERRABLE;
-
-
---
--- Name: arch_goodfood_confectionadditionalinputproduct confectionadditionalinputproduct_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_goodfood_confectionadditionalinputproduct
     ADD CONSTRAINT confectionadditionalinputproduct_product_fkey FOREIGN KEY (product_id) REFERENCES public.basic_product(id) DEFERRABLE;
 
 
@@ -57686,26 +59456,10 @@ ALTER TABLE ONLY public.goodfood_confectionfilmproduct
 
 
 --
--- Name: arch_goodfood_confectionfilmproduct confectionfilmproduct_confectionprotocol_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_goodfood_confectionfilmproduct
-    ADD CONSTRAINT confectionfilmproduct_confectionprotocol_fkey FOREIGN KEY (confectionprotocol_id) REFERENCES public.arch_goodfood_confectionprotocol(id) DEFERRABLE;
-
-
---
 -- Name: goodfood_confectionfilmproductentry confectionfilmproductentry_batch_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.goodfood_confectionfilmproductentry
-    ADD CONSTRAINT confectionfilmproductentry_batch_fkey FOREIGN KEY (batch_id) REFERENCES public.advancedgenealogy_batch(id) DEFERRABLE;
-
-
---
--- Name: arch_goodfood_confectionfilmproductentry confectionfilmproductentry_batch_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_goodfood_confectionfilmproductentry
     ADD CONSTRAINT confectionfilmproductentry_batch_fkey FOREIGN KEY (batch_id) REFERENCES public.advancedgenealogy_batch(id) DEFERRABLE;
 
 
@@ -57718,26 +59472,10 @@ ALTER TABLE ONLY public.goodfood_confectionfilmproductentry
 
 
 --
--- Name: arch_goodfood_confectionfilmproductentry confectionfilmproductentry_confectionfilmproduct_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_goodfood_confectionfilmproductentry
-    ADD CONSTRAINT confectionfilmproductentry_confectionfilmproduct_fkey FOREIGN KEY (confectionfilmproduct_id) REFERENCES public.arch_goodfood_confectionfilmproduct(id) DEFERRABLE;
-
-
---
 -- Name: goodfood_confectionprotocol confectionprotocol_additionalfilmproduct_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.goodfood_confectionprotocol
-    ADD CONSTRAINT confectionprotocol_additionalfilmproduct_fkey FOREIGN KEY (additionalfilmproduct_id) REFERENCES public.basic_product(id) DEFERRABLE;
-
-
---
--- Name: arch_goodfood_confectionprotocol confectionprotocol_additionalfilmproduct_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_goodfood_confectionprotocol
     ADD CONSTRAINT confectionprotocol_additionalfilmproduct_fkey FOREIGN KEY (additionalfilmproduct_id) REFERENCES public.basic_product(id) DEFERRABLE;
 
 
@@ -57750,27 +59488,11 @@ ALTER TABLE ONLY public.goodfood_confectionfilmproduct
 
 
 --
--- Name: arch_goodfood_confectionfilmproduct confectionprotocol_filmproduct_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_goodfood_confectionfilmproduct
-    ADD CONSTRAINT confectionprotocol_filmproduct_fkey FOREIGN KEY (filmproduct_id) REFERENCES public.basic_product(id) DEFERRABLE;
-
-
---
 -- Name: goodfood_confectionprotocolcorrect confectionprotocolcorrect_confectionprotocol_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.goodfood_confectionprotocolcorrect
     ADD CONSTRAINT confectionprotocolcorrect_confectionprotocol_fkey FOREIGN KEY (confectionprotocol_id) REFERENCES public.goodfood_confectionprotocol(id) DEFERRABLE;
-
-
---
--- Name: arch_goodfood_confectionprotocolcorrect confectionprotocolcorrect_confectionprotocol_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_goodfood_confectionprotocolcorrect
-    ADD CONSTRAINT confectionprotocolcorrect_confectionprotocol_fkey FOREIGN KEY (confectionprotocol_id) REFERENCES public.arch_goodfood_confectionprotocol(id) DEFERRABLE;
 
 
 --
@@ -57782,26 +59504,10 @@ ALTER TABLE ONLY public.goodfood_confectionprotocolstatechange
 
 
 --
--- Name: arch_goodfood_confectionprotocolstatechange confectionprotocolstatechange_confectionprotocol_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_goodfood_confectionprotocolstatechange
-    ADD CONSTRAINT confectionprotocolstatechange_confectionprotocol_fkey FOREIGN KEY (confectionprotocol_id) REFERENCES public.arch_goodfood_confectionprotocol(id) DEFERRABLE;
-
-
---
 -- Name: goodfood_confectionprotocolstatechange confectionprotocolstatechange_shift_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.goodfood_confectionprotocolstatechange
-    ADD CONSTRAINT confectionprotocolstatechange_shift_fkey FOREIGN KEY (shift_id) REFERENCES public.basic_shift(id) DEFERRABLE;
-
-
---
--- Name: arch_goodfood_confectionprotocolstatechange confectionprotocolstatechange_shift_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_goodfood_confectionprotocolstatechange
     ADD CONSTRAINT confectionprotocolstatechange_shift_fkey FOREIGN KEY (shift_id) REFERENCES public.basic_shift(id) DEFERRABLE;
 
 
@@ -57822,43 +59528,11 @@ ALTER TABLE ONLY public.subcontractorportal_subordercost
 
 
 --
--- Name: arch_costcalculation_costcalculation costcalculation_defaulttechnology_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_costcalculation_costcalculation
-    ADD CONSTRAINT costcalculation_defaulttechnology_fkey FOREIGN KEY (defaulttechnology_id) REFERENCES public.technologies_technology(id) DEFERRABLE;
-
-
---
 -- Name: costcalculation_costcalculation costcalculation_offer_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.costcalculation_costcalculation
     ADD CONSTRAINT costcalculation_offer_fkey FOREIGN KEY (offer_id) REFERENCES public.supplynegotiations_offer(id) DEFERRABLE;
-
-
---
--- Name: arch_costcalculation_costcalculation costcalculation_order_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_costcalculation_costcalculation
-    ADD CONSTRAINT costcalculation_order_fkey FOREIGN KEY (order_id) REFERENCES public.arch_orders_order(id) DEFERRABLE;
-
-
---
--- Name: arch_costcalculation_costcalculation costcalculation_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_costcalculation_costcalculation
-    ADD CONSTRAINT costcalculation_product_fkey FOREIGN KEY (product_id) REFERENCES public.basic_product(id) DEFERRABLE;
-
-
---
--- Name: arch_costcalculation_costcalculation costcalculation_productionline_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_costcalculation_costcalculation
-    ADD CONSTRAINT costcalculation_productionline_fkey FOREIGN KEY (productionline_id) REFERENCES public.productionlines_productionline(id) DEFERRABLE;
 
 
 --
@@ -57878,14 +59552,6 @@ ALTER TABLE ONLY public.jointable_costcalculation_technology
 
 
 --
--- Name: arch_costcalculation_costcalculation costcalculation_technology_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_costcalculation_costcalculation
-    ADD CONSTRAINT costcalculation_technology_fkey FOREIGN KEY (technology_id) REFERENCES public.technologies_technology(id) DEFERRABLE;
-
-
---
 -- Name: jointable_costcalculation_technology costcalculation_technology_technology_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -57902,26 +59568,10 @@ ALTER TABLE ONLY public.costnormsformaterials_technologyinstoperproductincomp
 
 
 --
--- Name: arch_costnormsformaterials_technologyinstoperproductincomp costnormsforproduct_orderoperationproductincomponent_o_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_costnormsformaterials_technologyinstoperproductincomp
-    ADD CONSTRAINT costnormsforproduct_orderoperationproductincomponent_o_fkey FOREIGN KEY (order_id) REFERENCES public.arch_orders_order(id) DEFERRABLE;
-
-
---
 -- Name: costnormsformaterials_technologyinstoperproductincomp costnormsforproduct_orderoperationproductincomponent_p_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.costnormsformaterials_technologyinstoperproductincomp
-    ADD CONSTRAINT costnormsforproduct_orderoperationproductincomponent_p_fkey FOREIGN KEY (product_id) REFERENCES public.basic_product(id) DEFERRABLE;
-
-
---
--- Name: arch_costnormsformaterials_technologyinstoperproductincomp costnormsforproduct_orderoperationproductincomponent_p_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_costnormsformaterials_technologyinstoperproductincomp
     ADD CONSTRAINT costnormsforproduct_orderoperationproductincomponent_p_fkey FOREIGN KEY (product_id) REFERENCES public.basic_product(id) DEFERRABLE;
 
 
@@ -57974,14 +59624,6 @@ ALTER TABLE ONLY public.materialrequirementcoveragefororder_coveragelocation
 
 
 --
--- Name: arch_materialrequirementcoveragefororder_coveragelocation coveragelocation_coveragefororder_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_materialrequirementcoveragefororder_coveragelocation
-    ADD CONSTRAINT coveragelocation_coveragefororder_fkey FOREIGN KEY (coveragefororder_id) REFERENCES public.arch_materialrequirementcoveragefororder_coveragefororder(id) DEFERRABLE;
-
-
---
 -- Name: ordersupplies_coveragelocation coveragelocation_location_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -57998,35 +59640,11 @@ ALTER TABLE ONLY public.materialrequirementcoveragefororder_coveragelocation
 
 
 --
--- Name: arch_materialrequirementcoveragefororder_coveragelocation coveragelocation_location_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_materialrequirementcoveragefororder_coveragelocation
-    ADD CONSTRAINT coveragelocation_location_fkey FOREIGN KEY (location_id) REFERENCES public.materialflow_location(id) DEFERRABLE;
-
-
---
--- Name: arch_ordersupplies_coveragelocation coveragelocation_location_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_ordersupplies_coveragelocation
-    ADD CONSTRAINT coveragelocation_location_fkey FOREIGN KEY (location_id) REFERENCES public.materialflow_location(id) DEFERRABLE;
-
-
---
 -- Name: ordersupplies_coveragelocation coveragelocation_materialrequirementcoverage_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.ordersupplies_coveragelocation
     ADD CONSTRAINT coveragelocation_materialrequirementcoverage_fkey FOREIGN KEY (materialrequirementcoverage_id) REFERENCES public.ordersupplies_materialrequirementcoverage(id) DEFERRABLE;
-
-
---
--- Name: arch_ordersupplies_coveragelocation coveragelocation_materialrequirementcoverage_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_ordersupplies_coveragelocation
-    ADD CONSTRAINT coveragelocation_materialrequirementcoverage_fkey FOREIGN KEY (materialrequirementcoverage_id) REFERENCES public.arch_ordersupplies_materialrequirementcoverage(id) DEFERRABLE;
 
 
 --
@@ -58046,22 +59664,6 @@ ALTER TABLE ONLY public.materialrequirementcoveragefororder_coveragelocation
 
 
 --
--- Name: arch_materialrequirementcoveragefororder_coveragelocation coveragelocation_parameter_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_materialrequirementcoveragefororder_coveragelocation
-    ADD CONSTRAINT coveragelocation_parameter_fkey FOREIGN KEY (parameter_id) REFERENCES public.basic_parameter(id) DEFERRABLE;
-
-
---
--- Name: arch_ordersupplies_coveragelocation coveragelocation_parameter_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_ordersupplies_coveragelocation
-    ADD CONSTRAINT coveragelocation_parameter_fkey FOREIGN KEY (parameter_id) REFERENCES public.basic_parameter(id) DEFERRABLE;
-
-
---
 -- Name: ordersupplies_coverageorderstate coverageorderstate_materialrequirementcoverage_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -58070,26 +59672,10 @@ ALTER TABLE ONLY public.ordersupplies_coverageorderstate
 
 
 --
--- Name: arch_ordersupplies_coverageorderstate coverageorderstate_materialrequirementcoverage_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_ordersupplies_coverageorderstate
-    ADD CONSTRAINT coverageorderstate_materialrequirementcoverage_fkey FOREIGN KEY (materialrequirementcoverage_id) REFERENCES public.arch_ordersupplies_materialrequirementcoverage(id) DEFERRABLE;
-
-
---
 -- Name: ordersupplies_coverageorderstate coverageorderstate_parameter_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.ordersupplies_coverageorderstate
-    ADD CONSTRAINT coverageorderstate_parameter_fkey FOREIGN KEY (parameter_id) REFERENCES public.basic_parameter(id) DEFERRABLE;
-
-
---
--- Name: arch_ordersupplies_coverageorderstate coverageorderstate_parameter_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_ordersupplies_coverageorderstate
     ADD CONSTRAINT coverageorderstate_parameter_fkey FOREIGN KEY (parameter_id) REFERENCES public.basic_parameter(id) DEFERRABLE;
 
 
@@ -58102,27 +59688,11 @@ ALTER TABLE ONLY public.ordersupplies_coverageproduct
 
 
 --
--- Name: arch_ordersupplies_coverageproduct coverageproduct_company_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_ordersupplies_coverageproduct
-    ADD CONSTRAINT coverageproduct_company_fkey FOREIGN KEY (company_id) REFERENCES public.basic_company(id) DEFERRABLE;
-
-
---
 -- Name: materialrequirementcoveragefororder_coverageproduct coverageproduct_coveragefororder_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.materialrequirementcoveragefororder_coverageproduct
     ADD CONSTRAINT coverageproduct_coveragefororder_fkey FOREIGN KEY (coveragefororder_id) REFERENCES public.materialrequirementcoveragefororder_coveragefororder(id) DEFERRABLE;
-
-
---
--- Name: arch_materialrequirementcoveragefororder_coverageproduct coverageproduct_coveragefororder_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_materialrequirementcoveragefororder_coverageproduct
-    ADD CONSTRAINT coverageproduct_coveragefororder_fkey FOREIGN KEY (coveragefororder_id) REFERENCES public.arch_materialrequirementcoveragefororder_coveragefororder(id) DEFERRABLE;
 
 
 --
@@ -58134,27 +59704,11 @@ ALTER TABLE ONLY public.ordersupplies_coverageproduct
 
 
 --
--- Name: arch_ordersupplies_coverageproduct coverageproduct_materialrequirementcoverage_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_ordersupplies_coverageproduct
-    ADD CONSTRAINT coverageproduct_materialrequirementcoverage_fkey FOREIGN KEY (materialrequirementcoverage_id) REFERENCES public.arch_ordersupplies_materialrequirementcoverage(id) DEFERRABLE;
-
-
---
 -- Name: materialrequirementcoveragefororder_coverageproduct coverageproduct_order_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.materialrequirementcoveragefororder_coverageproduct
     ADD CONSTRAINT coverageproduct_order_fkey FOREIGN KEY (order_id) REFERENCES public.orders_order(id) DEFERRABLE;
-
-
---
--- Name: arch_materialrequirementcoveragefororder_coverageproduct coverageproduct_order_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_materialrequirementcoveragefororder_coverageproduct
-    ADD CONSTRAINT coverageproduct_order_fkey FOREIGN KEY (order_id) REFERENCES public.arch_orders_order(id) DEFERRABLE;
 
 
 --
@@ -58170,22 +59724,6 @@ ALTER TABLE ONLY public.ordersupplies_coverageproduct
 --
 
 ALTER TABLE ONLY public.materialrequirementcoveragefororder_coverageproduct
-    ADD CONSTRAINT coverageproduct_product_fkey FOREIGN KEY (product_id) REFERENCES public.basic_product(id) DEFERRABLE;
-
-
---
--- Name: arch_materialrequirementcoveragefororder_coverageproduct coverageproduct_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_materialrequirementcoveragefororder_coverageproduct
-    ADD CONSTRAINT coverageproduct_product_fkey FOREIGN KEY (product_id) REFERENCES public.basic_product(id) DEFERRABLE;
-
-
---
--- Name: arch_ordersupplies_coverageproduct coverageproduct_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_ordersupplies_coverageproduct
     ADD CONSTRAINT coverageproduct_product_fkey FOREIGN KEY (product_id) REFERENCES public.basic_product(id) DEFERRABLE;
 
 
@@ -58206,22 +59744,6 @@ ALTER TABLE ONLY public.ordersupplies_coverageproductlogging
 
 
 --
--- Name: arch_materialrequirementcoveragefororder_coverageproductlogging coverageproductlogging_coverageproduct_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_materialrequirementcoveragefororder_coverageproductlogging
-    ADD CONSTRAINT coverageproductlogging_coverageproduct_fkey FOREIGN KEY (coverageproduct_id) REFERENCES public.arch_materialrequirementcoveragefororder_coverageproduct(id) DEFERRABLE;
-
-
---
--- Name: arch_ordersupplies_coverageproductlogging coverageproductlogging_coverageproduct_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_ordersupplies_coverageproductlogging
-    ADD CONSTRAINT coverageproductlogging_coverageproduct_fkey FOREIGN KEY (coverageproduct_id) REFERENCES public.arch_ordersupplies_coverageproduct(id) DEFERRABLE;
-
-
---
 -- Name: materialrequirementcoveragefororder_coverageproductlogging coverageproductlogging_delivery_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -58234,22 +59756,6 @@ ALTER TABLE ONLY public.materialrequirementcoveragefororder_coverageproductloggi
 --
 
 ALTER TABLE ONLY public.ordersupplies_coverageproductlogging
-    ADD CONSTRAINT coverageproductlogging_delivery_fkey FOREIGN KEY (delivery_id) REFERENCES public.deliveries_delivery(id) DEFERRABLE;
-
-
---
--- Name: arch_materialrequirementcoveragefororder_coverageproductlogging coverageproductlogging_delivery_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_materialrequirementcoveragefororder_coverageproductlogging
-    ADD CONSTRAINT coverageproductlogging_delivery_fkey FOREIGN KEY (delivery_id) REFERENCES public.deliveries_delivery(id) DEFERRABLE;
-
-
---
--- Name: arch_ordersupplies_coverageproductlogging coverageproductlogging_delivery_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_ordersupplies_coverageproductlogging
     ADD CONSTRAINT coverageproductlogging_delivery_fkey FOREIGN KEY (delivery_id) REFERENCES public.deliveries_delivery(id) DEFERRABLE;
 
 
@@ -58270,22 +59776,6 @@ ALTER TABLE ONLY public.materialrequirementcoveragefororder_coverageproductloggi
 
 
 --
--- Name: arch_materialrequirementcoveragefororder_coverageproductlogging coverageproductlogging_operation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_materialrequirementcoveragefororder_coverageproductlogging
-    ADD CONSTRAINT coverageproductlogging_operation_fkey FOREIGN KEY (operation_id) REFERENCES public.technologies_operation(id) DEFERRABLE;
-
-
---
--- Name: arch_ordersupplies_coverageproductlogging coverageproductlogging_operation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_ordersupplies_coverageproductlogging
-    ADD CONSTRAINT coverageproductlogging_operation_fkey FOREIGN KEY (operation_id) REFERENCES public.technologies_operation(id) DEFERRABLE;
-
-
---
 -- Name: ordersupplies_coverageproductlogging coverageproductlogging_order_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -58299,22 +59789,6 @@ ALTER TABLE ONLY public.ordersupplies_coverageproductlogging
 
 ALTER TABLE ONLY public.materialrequirementcoveragefororder_coverageproductlogging
     ADD CONSTRAINT coverageproductlogging_order_fkey FOREIGN KEY (order_id) REFERENCES public.orders_order(id) DEFERRABLE;
-
-
---
--- Name: arch_materialrequirementcoveragefororder_coverageproductlogging coverageproductlogging_order_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_materialrequirementcoveragefororder_coverageproductlogging
-    ADD CONSTRAINT coverageproductlogging_order_fkey FOREIGN KEY (order_id) REFERENCES public.arch_orders_order(id) DEFERRABLE;
-
-
---
--- Name: arch_ordersupplies_coverageproductlogging coverageproductlogging_order_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_ordersupplies_coverageproductlogging
-    ADD CONSTRAINT coverageproductlogging_order_fkey FOREIGN KEY (order_id) REFERENCES public.arch_orders_order(id) DEFERRABLE;
 
 
 --
@@ -58334,75 +59808,11 @@ ALTER TABLE ONLY public.materialrequirementcoveragefororder_coverageproductloggi
 
 
 --
--- Name: arch_materialrequirementcoveragefororder_coverageproductlogging coverageproductlogging_subcontractedoperation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_materialrequirementcoveragefororder_coverageproductlogging
-    ADD CONSTRAINT coverageproductlogging_subcontractedoperation_fkey FOREIGN KEY (subcontractedoperation_id) REFERENCES public.technologies_operation(id) DEFERRABLE;
-
-
---
--- Name: arch_ordersupplies_coverageproductlogging coverageproductlogging_subcontractedoperation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_ordersupplies_coverageproductlogging
-    ADD CONSTRAINT coverageproductlogging_subcontractedoperation_fkey FOREIGN KEY (subcontractedoperation_id) REFERENCES public.technologies_operation(id) DEFERRABLE;
-
-
---
 -- Name: ordersupplies_coverageproductselected coverageproductselected_coverageproduct_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.ordersupplies_coverageproductselected
     ADD CONSTRAINT coverageproductselected_coverageproduct_fkey FOREIGN KEY (coverageproduct_id) REFERENCES public.ordersupplies_coverageproduct(id) DEFERRABLE;
-
-
---
--- Name: arch_ordersupplies_coverageproductselected coverageproductselected_coverageproduct_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_ordersupplies_coverageproductselected
-    ADD CONSTRAINT coverageproductselected_coverageproduct_fkey FOREIGN KEY (coverageproduct_id) REFERENCES public.arch_ordersupplies_coverageproduct(id) DEFERRABLE;
-
-
---
--- Name: arch_ordersupplies_coverageregister coverageregister_delivery_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_ordersupplies_coverageregister
-    ADD CONSTRAINT coverageregister_delivery_fkey FOREIGN KEY (delivery_id) REFERENCES public.deliveries_delivery(id) DEFERRABLE;
-
-
---
--- Name: arch_ordersupplies_coverageregister coverageregister_operation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_ordersupplies_coverageregister
-    ADD CONSTRAINT coverageregister_operation_fkey FOREIGN KEY (operation_id) REFERENCES public.technologies_operation(id) DEFERRABLE;
-
-
---
--- Name: arch_ordersupplies_coverageregister coverageregister_order_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_ordersupplies_coverageregister
-    ADD CONSTRAINT coverageregister_order_fkey FOREIGN KEY (order_id) REFERENCES public.arch_orders_order(id) DEFERRABLE;
-
-
---
--- Name: arch_ordersupplies_coverageregister coverageregister_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_ordersupplies_coverageregister
-    ADD CONSTRAINT coverageregister_product_fkey FOREIGN KEY (product_id) REFERENCES public.basic_product(id) DEFERRABLE;
-
-
---
--- Name: arch_ordersupplies_coverageregister coverageregister_technologyoperationcomponent_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_ordersupplies_coverageregister
-    ADD CONSTRAINT coverageregister_technologyoperationcomponent_fkey FOREIGN KEY (technologyoperationcomponent_id) REFERENCES public.technologies_technologyoperationcomponent(id) DEFERRABLE;
 
 
 --
@@ -58422,26 +59832,10 @@ ALTER TABLE ONLY public.productionpershift_dailyprogress
 
 
 --
--- Name: arch_productionpershift_dailyprogress dailyprogress_progressforday_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_productionpershift_dailyprogress
-    ADD CONSTRAINT dailyprogress_progressforday_fkey FOREIGN KEY (progressforday_id) REFERENCES public.arch_productionpershift_progressforday(id) DEFERRABLE;
-
-
---
 -- Name: productionpershift_dailyprogress dailyprogress_shift_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.productionpershift_dailyprogress
-    ADD CONSTRAINT dailyprogress_shift_fkey FOREIGN KEY (shift_id) REFERENCES public.basic_shift(id) DEFERRABLE;
-
-
---
--- Name: arch_productionpershift_dailyprogress dailyprogress_shift_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_productionpershift_dailyprogress
     ADD CONSTRAINT dailyprogress_shift_fkey FOREIGN KEY (shift_id) REFERENCES public.basic_shift(id) DEFERRABLE;
 
 
@@ -58782,14 +60176,6 @@ ALTER TABLE ONLY public.productflowthrudivision_warehouseissue
 
 
 --
--- Name: arch_productflowthrudivision_warehouseissue division_warehouseissue_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_productflowthrudivision_warehouseissue
-    ADD CONSTRAINT division_warehouseissue_fkey FOREIGN KEY (division_id) REFERENCES public.basic_division(id) DEFERRABLE;
-
-
---
 -- Name: basic_division division_wastereceptionwarehouse_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -58806,26 +60192,10 @@ ALTER TABLE ONLY public.materialflowresources_document
 
 
 --
--- Name: arch_materialflowresources_document document_address_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_materialflowresources_document
-    ADD CONSTRAINT document_address_fkey FOREIGN KEY (address_id) REFERENCES public.basic_address(id) DEFERRABLE;
-
-
---
 -- Name: materialflowresources_document document_company_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.materialflowresources_document
-    ADD CONSTRAINT document_company_fkey FOREIGN KEY (company_id) REFERENCES public.basic_company(id) DEFERRABLE;
-
-
---
--- Name: arch_materialflowresources_document document_company_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_materialflowresources_document
     ADD CONSTRAINT document_company_fkey FOREIGN KEY (company_id) REFERENCES public.basic_company(id) DEFERRABLE;
 
 
@@ -58838,14 +60208,6 @@ ALTER TABLE ONLY public.materialflowresources_document
 
 
 --
--- Name: arch_materialflowresources_document document_delivery_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_materialflowresources_document
-    ADD CONSTRAINT document_delivery_fkey FOREIGN KEY (delivery_id) REFERENCES public.deliveries_delivery(id) DEFERRABLE;
-
-
---
 -- Name: materialflowresources_document document_dispositionshift_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -58854,26 +60216,10 @@ ALTER TABLE ONLY public.materialflowresources_document
 
 
 --
--- Name: arch_materialflowresources_document document_dispositionshift_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_materialflowresources_document
-    ADD CONSTRAINT document_dispositionshift_fkey FOREIGN KEY (dispositionshift_id) REFERENCES public.arch_materialflowresources_document(id) DEFERRABLE;
-
-
---
 -- Name: materialflowresources_document document_linkeddocumentlocation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.materialflowresources_document
-    ADD CONSTRAINT document_linkeddocumentlocation_fkey FOREIGN KEY (linkeddocumentlocation_id) REFERENCES public.materialflow_location(id) DEFERRABLE;
-
-
---
--- Name: arch_materialflowresources_document document_linkeddocumentlocation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_materialflowresources_document
     ADD CONSTRAINT document_linkeddocumentlocation_fkey FOREIGN KEY (linkeddocumentlocation_id) REFERENCES public.materialflow_location(id) DEFERRABLE;
 
 
@@ -58886,26 +60232,10 @@ ALTER TABLE ONLY public.materialflowresources_document
 
 
 --
--- Name: arch_materialflowresources_document document_locationfrom_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_materialflowresources_document
-    ADD CONSTRAINT document_locationfrom_fkey FOREIGN KEY (locationfrom_id) REFERENCES public.materialflow_location(id) DEFERRABLE;
-
-
---
 -- Name: materialflowresources_document document_locationto_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.materialflowresources_document
-    ADD CONSTRAINT document_locationto_fkey FOREIGN KEY (locationto_id) REFERENCES public.materialflow_location(id) DEFERRABLE;
-
-
---
--- Name: arch_materialflowresources_document document_locationto_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_materialflowresources_document
     ADD CONSTRAINT document_locationto_fkey FOREIGN KEY (locationto_id) REFERENCES public.materialflow_location(id) DEFERRABLE;
 
 
@@ -58918,27 +60248,11 @@ ALTER TABLE ONLY public.materialflowresources_document
 
 
 --
--- Name: arch_materialflowresources_document document_maintenanceevent_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_materialflowresources_document
-    ADD CONSTRAINT document_maintenanceevent_fkey FOREIGN KEY (maintenanceevent_id) REFERENCES public.cmmsmachineparts_maintenanceevent(id) DEFERRABLE;
-
-
---
 -- Name: materialflowresources_document document_order_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.materialflowresources_document
     ADD CONSTRAINT document_order_fkey FOREIGN KEY (order_id) REFERENCES public.orders_order(id) DEFERRABLE;
-
-
---
--- Name: arch_materialflowresources_document document_order_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_materialflowresources_document
-    ADD CONSTRAINT document_order_fkey FOREIGN KEY (order_id) REFERENCES public.arch_orders_order(id) DEFERRABLE;
 
 
 --
@@ -58966,26 +60280,10 @@ ALTER TABLE ONLY public.materialflowresources_document
 
 
 --
--- Name: arch_materialflowresources_document document_suborder_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_materialflowresources_document
-    ADD CONSTRAINT document_suborder_fkey FOREIGN KEY (suborder_id) REFERENCES public.subcontractorportal_suborder(id) DEFERRABLE;
-
-
---
 -- Name: materialflowresources_document document_user_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.materialflowresources_document
-    ADD CONSTRAINT document_user_fkey FOREIGN KEY (user_id) REFERENCES public.qcadoosecurity_user(id) DEFERRABLE;
-
-
---
--- Name: arch_materialflowresources_document document_user_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_materialflowresources_document
     ADD CONSTRAINT document_user_fkey FOREIGN KEY (user_id) REFERENCES public.qcadoosecurity_user(id) DEFERRABLE;
 
 
@@ -59062,14 +60360,6 @@ ALTER TABLE ONLY public.goodfood_extrusionaddedmixentry
 
 
 --
--- Name: arch_goodfood_extrusionaddedmixentry extrusionaddedmixentry_extrusionmix_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_goodfood_extrusionaddedmixentry
-    ADD CONSTRAINT extrusionaddedmixentry_extrusionmix_fkey FOREIGN KEY (extrusionmix_id) REFERENCES public.goodfood_extrusionmix(id) DEFERRABLE;
-
-
---
 -- Name: goodfood_extrusionaddedmixentry extrusionaddedmixentry_extrusionprotocol_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -59078,26 +60368,10 @@ ALTER TABLE ONLY public.goodfood_extrusionaddedmixentry
 
 
 --
--- Name: arch_goodfood_extrusionaddedmixentry extrusionaddedmixentry_extrusionprotocol_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_goodfood_extrusionaddedmixentry
-    ADD CONSTRAINT extrusionaddedmixentry_extrusionprotocol_fkey FOREIGN KEY (extrusionprotocol_id) REFERENCES public.arch_goodfood_extrusionprotocol(id) DEFERRABLE;
-
-
---
 -- Name: goodfood_extrusionaddedmixingredient extrusionaddedmixingredient_batch_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.goodfood_extrusionaddedmixingredient
-    ADD CONSTRAINT extrusionaddedmixingredient_batch_fkey FOREIGN KEY (batch_id) REFERENCES public.advancedgenealogy_batch(id) DEFERRABLE;
-
-
---
--- Name: arch_goodfood_extrusionaddedmixingredient extrusionaddedmixingredient_batch_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_goodfood_extrusionaddedmixingredient
     ADD CONSTRAINT extrusionaddedmixingredient_batch_fkey FOREIGN KEY (batch_id) REFERENCES public.advancedgenealogy_batch(id) DEFERRABLE;
 
 
@@ -59110,14 +60384,6 @@ ALTER TABLE ONLY public.goodfood_extrusionaddedmixingredient
 
 
 --
--- Name: arch_goodfood_extrusionaddedmixingredient extrusionaddedmixingredient_extrusionaddedmixentry_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_goodfood_extrusionaddedmixingredient
-    ADD CONSTRAINT extrusionaddedmixingredient_extrusionaddedmixentry_fkey FOREIGN KEY (extrusionaddedmixentry_id) REFERENCES public.arch_goodfood_extrusionaddedmixentry(id) DEFERRABLE;
-
-
---
 -- Name: goodfood_extrusionaddedmixingredient extrusionaddedmixingredient_extrusionmixingredient_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -59126,26 +60392,10 @@ ALTER TABLE ONLY public.goodfood_extrusionaddedmixingredient
 
 
 --
--- Name: arch_goodfood_extrusionaddedmixingredient extrusionaddedmixingredient_extrusionmixingredient_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_goodfood_extrusionaddedmixingredient
-    ADD CONSTRAINT extrusionaddedmixingredient_extrusionmixingredient_fkey FOREIGN KEY (extrusionmixingredient_id) REFERENCES public.goodfood_extrusionmixingredient(id) DEFERRABLE;
-
-
---
 -- Name: goodfood_extrusionaddedmixingredient extrusionaddedmixingredient_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.goodfood_extrusionaddedmixingredient
-    ADD CONSTRAINT extrusionaddedmixingredient_product_fkey FOREIGN KEY (product_id) REFERENCES public.basic_product(id) DEFERRABLE;
-
-
---
--- Name: arch_goodfood_extrusionaddedmixingredient extrusionaddedmixingredient_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_goodfood_extrusionaddedmixingredient
     ADD CONSTRAINT extrusionaddedmixingredient_product_fkey FOREIGN KEY (product_id) REFERENCES public.basic_product(id) DEFERRABLE;
 
 
@@ -59166,26 +60416,10 @@ ALTER TABLE ONLY public.goodfood_extrusionpouring
 
 
 --
--- Name: arch_goodfood_extrusionpouring extrusionpouring_extrusionprotocol_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_goodfood_extrusionpouring
-    ADD CONSTRAINT extrusionpouring_extrusionprotocol_fkey FOREIGN KEY (extrusionprotocol_id) REFERENCES public.arch_goodfood_extrusionprotocol(id) DEFERRABLE;
-
-
---
 -- Name: goodfood_extrusionpouringingredient extrusionpouringingredient_batch_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.goodfood_extrusionpouringingredient
-    ADD CONSTRAINT extrusionpouringingredient_batch_fkey FOREIGN KEY (batch_id) REFERENCES public.advancedgenealogy_batch(id) DEFERRABLE;
-
-
---
--- Name: arch_goodfood_extrusionpouringingredient extrusionpouringingredient_batch_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_goodfood_extrusionpouringingredient
     ADD CONSTRAINT extrusionpouringingredient_batch_fkey FOREIGN KEY (batch_id) REFERENCES public.advancedgenealogy_batch(id) DEFERRABLE;
 
 
@@ -59198,14 +60432,6 @@ ALTER TABLE ONLY public.goodfood_extrusionpouringingredient
 
 
 --
--- Name: arch_goodfood_extrusionpouringingredient extrusionpouringingredient_extrusionpouring_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_goodfood_extrusionpouringingredient
-    ADD CONSTRAINT extrusionpouringingredient_extrusionpouring_fkey FOREIGN KEY (extrusionpouring_id) REFERENCES public.arch_goodfood_extrusionpouring(id) DEFERRABLE;
-
-
---
 -- Name: goodfood_extrusionpouringingredient extrusionpouringingredient_extrusionpouringmix_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -59214,26 +60440,10 @@ ALTER TABLE ONLY public.goodfood_extrusionpouringingredient
 
 
 --
--- Name: arch_goodfood_extrusionpouringingredient extrusionpouringingredient_extrusionpouringmix_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_goodfood_extrusionpouringingredient
-    ADD CONSTRAINT extrusionpouringingredient_extrusionpouringmix_fkey FOREIGN KEY (extrusionpouringmix_id) REFERENCES public.arch_goodfood_extrusionpouringmix(id) DEFERRABLE;
-
-
---
 -- Name: goodfood_extrusionpouringingredient extrusionpouringingredient_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.goodfood_extrusionpouringingredient
-    ADD CONSTRAINT extrusionpouringingredient_product_fkey FOREIGN KEY (product_id) REFERENCES public.basic_product(id) DEFERRABLE;
-
-
---
--- Name: arch_goodfood_extrusionpouringingredient extrusionpouringingredient_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_goodfood_extrusionpouringingredient
     ADD CONSTRAINT extrusionpouringingredient_product_fkey FOREIGN KEY (product_id) REFERENCES public.basic_product(id) DEFERRABLE;
 
 
@@ -59246,27 +60456,11 @@ ALTER TABLE ONLY public.goodfood_extrusionpouringmix
 
 
 --
--- Name: arch_goodfood_extrusionpouringmix extrusionpouringmix_extrusionpouring_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_goodfood_extrusionpouringmix
-    ADD CONSTRAINT extrusionpouringmix_extrusionpouring_fkey FOREIGN KEY (extrusionpouring_id) REFERENCES public.arch_goodfood_extrusionpouring(id) DEFERRABLE;
-
-
---
 -- Name: goodfood_extrusionprotocolcorrect extrusionprotocolcorrect_extrusionprotocol_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.goodfood_extrusionprotocolcorrect
     ADD CONSTRAINT extrusionprotocolcorrect_extrusionprotocol_fkey FOREIGN KEY (extrusionprotocol_id) REFERENCES public.goodfood_extrusionprotocol(id) DEFERRABLE;
-
-
---
--- Name: arch_goodfood_extrusionprotocolcorrect extrusionprotocolcorrect_extrusionprotocol_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_goodfood_extrusionprotocolcorrect
-    ADD CONSTRAINT extrusionprotocolcorrect_extrusionprotocol_fkey FOREIGN KEY (extrusionprotocol_id) REFERENCES public.arch_goodfood_extrusionprotocol(id) DEFERRABLE;
 
 
 --
@@ -59278,26 +60472,10 @@ ALTER TABLE ONLY public.goodfood_extrusionprotocolstatechange
 
 
 --
--- Name: arch_goodfood_extrusionprotocolstatechange extrusionprotocolstatechange_extrusionprotocol_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_goodfood_extrusionprotocolstatechange
-    ADD CONSTRAINT extrusionprotocolstatechange_extrusionprotocol_fkey FOREIGN KEY (extrusionprotocol_id) REFERENCES public.arch_goodfood_extrusionprotocol(id) DEFERRABLE;
-
-
---
 -- Name: goodfood_extrusionprotocolstatechange extrusionprotocolstatechange_shif_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.goodfood_extrusionprotocolstatechange
-    ADD CONSTRAINT extrusionprotocolstatechange_shif_fkey FOREIGN KEY (shift_id) REFERENCES public.basic_shift(id) DEFERRABLE;
-
-
---
--- Name: arch_goodfood_extrusionprotocolstatechange extrusionprotocolstatechange_shif_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_goodfood_extrusionprotocolstatechange
     ADD CONSTRAINT extrusionprotocolstatechange_shif_fkey FOREIGN KEY (shift_id) REFERENCES public.basic_shift(id) DEFERRABLE;
 
 
@@ -59310,14 +60488,6 @@ ALTER TABLE ONLY public.goodfood_extrusiontakenoffmixentry
 
 
 --
--- Name: arch_goodfood_extrusiontakenoffmixentry extrusiontakenoffmixentry_extrusionmix_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_goodfood_extrusiontakenoffmixentry
-    ADD CONSTRAINT extrusiontakenoffmixentry_extrusionmix_fkey FOREIGN KEY (extrusionmix_id) REFERENCES public.goodfood_extrusionmix(id) DEFERRABLE;
-
-
---
 -- Name: goodfood_extrusiontakenoffmixentry extrusiontakenoffmixentry_extrusionprotocol_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -59326,26 +60496,10 @@ ALTER TABLE ONLY public.goodfood_extrusiontakenoffmixentry
 
 
 --
--- Name: arch_goodfood_extrusiontakenoffmixentry extrusiontakenoffmixentry_extrusionprotocol_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_goodfood_extrusiontakenoffmixentry
-    ADD CONSTRAINT extrusiontakenoffmixentry_extrusionprotocol_fkey FOREIGN KEY (extrusionprotocol_id) REFERENCES public.arch_goodfood_extrusionprotocol(id) DEFERRABLE;
-
-
---
 -- Name: goodfood_extrusiontakenoffmixingredient extrusiontakenoffmixingredient_batch_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.goodfood_extrusiontakenoffmixingredient
-    ADD CONSTRAINT extrusiontakenoffmixingredient_batch_fkey FOREIGN KEY (batch_id) REFERENCES public.advancedgenealogy_batch(id) DEFERRABLE;
-
-
---
--- Name: arch_goodfood_extrusiontakenoffmixingredient extrusiontakenoffmixingredient_batch_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_goodfood_extrusiontakenoffmixingredient
     ADD CONSTRAINT extrusiontakenoffmixingredient_batch_fkey FOREIGN KEY (batch_id) REFERENCES public.advancedgenealogy_batch(id) DEFERRABLE;
 
 
@@ -59358,14 +60512,6 @@ ALTER TABLE ONLY public.goodfood_extrusiontakenoffmixingredient
 
 
 --
--- Name: arch_goodfood_extrusiontakenoffmixingredient extrusiontakenoffmixingredient_extrusionmixingredient_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_goodfood_extrusiontakenoffmixingredient
-    ADD CONSTRAINT extrusiontakenoffmixingredient_extrusionmixingredient_fkey FOREIGN KEY (extrusionmixingredient_id) REFERENCES public.goodfood_extrusionmixingredient(id) DEFERRABLE;
-
-
---
 -- Name: goodfood_extrusiontakenoffmixingredient extrusiontakenoffmixingredient_extrusiontakenoffmixentry_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -59374,26 +60520,10 @@ ALTER TABLE ONLY public.goodfood_extrusiontakenoffmixingredient
 
 
 --
--- Name: arch_goodfood_extrusiontakenoffmixingredient extrusiontakenoffmixingredient_extrusiontakenoffmixentry_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_goodfood_extrusiontakenoffmixingredient
-    ADD CONSTRAINT extrusiontakenoffmixingredient_extrusiontakenoffmixentry_fkey FOREIGN KEY (extrusiontakenoffmixentry_id) REFERENCES public.arch_goodfood_extrusiontakenoffmixentry(id) DEFERRABLE;
-
-
---
 -- Name: goodfood_extrusiontakenoffmixingredient extrusiontakenoffmixingredient_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.goodfood_extrusiontakenoffmixingredient
-    ADD CONSTRAINT extrusiontakenoffmixingredient_product_fkey FOREIGN KEY (product_id) REFERENCES public.basic_product(id) DEFERRABLE;
-
-
---
--- Name: arch_goodfood_extrusiontakenoffmixingredient extrusiontakenoffmixingredient_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_goodfood_extrusiontakenoffmixingredient
     ADD CONSTRAINT extrusiontakenoffmixingredient_product_fkey FOREIGN KEY (product_id) REFERENCES public.basic_product(id) DEFERRABLE;
 
 
@@ -59462,27 +60592,11 @@ ALTER TABLE ONLY public.advancedgenealogyfororders_genealogyproductinbatch
 
 
 --
--- Name: arch_advancedgenealogyfororders_genealogyproductinbatch genealogyproductinbatch_batch_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_advancedgenealogyfororders_genealogyproductinbatch
-    ADD CONSTRAINT genealogyproductinbatch_batch_fkey FOREIGN KEY (batch_id) REFERENCES public.advancedgenealogy_batch(id) DEFERRABLE;
-
-
---
 -- Name: advancedgenealogyfororders_genealogyproductinbatch genealogyproductinbatch_genealogyproductincomponent_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.advancedgenealogyfororders_genealogyproductinbatch
     ADD CONSTRAINT genealogyproductinbatch_genealogyproductincomponent_fkey FOREIGN KEY (genealogyproductincomponent_id) REFERENCES public.advancedgenealogyfororders_genealogyproductincomponent(id) DEFERRABLE;
-
-
---
--- Name: arch_advancedgenealogyfororders_genealogyproductinbatch genealogyproductinbatch_genealogyproductincomponent_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_advancedgenealogyfororders_genealogyproductinbatch
-    ADD CONSTRAINT genealogyproductinbatch_genealogyproductincomponent_fkey FOREIGN KEY (genealogyproductincomponent_id) REFERENCES public.arch_advancedgenealogyfororders_genealogyproductincomponent(id) DEFERRABLE;
 
 
 --
@@ -59494,26 +60608,10 @@ ALTER TABLE ONLY public.advancedgenealogyfororders_genealogyproductincomponent
 
 
 --
--- Name: arch_advancedgenealogyfororders_genealogyproductincomponent genealogyproductincomponent_productincomponent_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_advancedgenealogyfororders_genealogyproductincomponent
-    ADD CONSTRAINT genealogyproductincomponent_productincomponent_fkey FOREIGN KEY (productincomponent_id) REFERENCES public.technologies_operationproductincomponent(id) DEFERRABLE;
-
-
---
 -- Name: advancedgenealogyfororders_genealogyproductincomponent genealogyproductincomponent_technologyoperationcomponent_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.advancedgenealogyfororders_genealogyproductincomponent
-    ADD CONSTRAINT genealogyproductincomponent_technologyoperationcomponent_fkey FOREIGN KEY (technologyoperationcomponent_id) REFERENCES public.technologies_technologyoperationcomponent(id) DEFERRABLE;
-
-
---
--- Name: arch_advancedgenealogyfororders_genealogyproductincomponent genealogyproductincomponent_technologyoperationcomponent_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_advancedgenealogyfororders_genealogyproductincomponent
     ADD CONSTRAINT genealogyproductincomponent_technologyoperationcomponent_fkey FOREIGN KEY (technologyoperationcomponent_id) REFERENCES public.technologies_technologyoperationcomponent(id) DEFERRABLE;
 
 
@@ -59523,14 +60621,6 @@ ALTER TABLE ONLY public.arch_advancedgenealogyfororders_genealogyproductincompon
 
 ALTER TABLE ONLY public.advancedgenealogyfororders_genealogyproductincomponent
     ADD CONSTRAINT genealogyproductincomponent_trackingrecord_fkey FOREIGN KEY (trackingrecord_id) REFERENCES public.advancedgenealogy_trackingrecord(id) DEFERRABLE;
-
-
---
--- Name: arch_advancedgenealogyfororders_genealogyproductincomponent genealogyproductincomponent_trackingrecord_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_advancedgenealogyfororders_genealogyproductincomponent
-    ADD CONSTRAINT genealogyproductincomponent_trackingrecord_fkey FOREIGN KEY (trackingrecord_id) REFERENCES public.arch_advancedgenealogy_trackingrecord(id) DEFERRABLE;
 
 
 --
@@ -59662,26 +60752,10 @@ ALTER TABLE ONLY public.masterorders_masterorder
 
 
 --
--- Name: arch_masterorders_masterorder goodfood_batch_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_masterorders_masterorder
-    ADD CONSTRAINT goodfood_batch_fkey FOREIGN KEY (batch_id) REFERENCES public.advancedgenealogy_batch(id) DEFERRABLE;
-
-
---
 -- Name: goodfood_confectionprotocol goodfood_confectioncontext_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.goodfood_confectionprotocol
-    ADD CONSTRAINT goodfood_confectioncontext_fkey FOREIGN KEY (confectioncontext_id) REFERENCES public.goodfood_confectioncontext(id) DEFERRABLE;
-
-
---
--- Name: arch_goodfood_confectionprotocol goodfood_confectioncontext_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_goodfood_confectionprotocol
     ADD CONSTRAINT goodfood_confectioncontext_fkey FOREIGN KEY (confectioncontext_id) REFERENCES public.goodfood_confectioncontext(id) DEFERRABLE;
 
 
@@ -59710,30 +60784,6 @@ ALTER TABLE ONLY public.goodfood_confectionstaff
 
 
 --
--- Name: arch_goodfood_confectioninputproduct goodfood_confectionprotocol_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_goodfood_confectioninputproduct
-    ADD CONSTRAINT goodfood_confectionprotocol_fkey FOREIGN KEY (confectionprotocol_id) REFERENCES public.arch_goodfood_confectionprotocol(id) DEFERRABLE;
-
-
---
--- Name: arch_goodfood_confectionremainderinputproduct goodfood_confectionprotocol_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_goodfood_confectionremainderinputproduct
-    ADD CONSTRAINT goodfood_confectionprotocol_fkey FOREIGN KEY (confectionprotocol_id) REFERENCES public.arch_goodfood_confectionprotocol(id) DEFERRABLE;
-
-
---
--- Name: arch_goodfood_confectionstaff goodfood_confectionprotocol_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_goodfood_confectionstaff
-    ADD CONSTRAINT goodfood_confectionprotocol_fkey FOREIGN KEY (confectionprotocol_id) REFERENCES public.arch_goodfood_confectionprotocol(id) DEFERRABLE;
-
-
---
 -- Name: cdnrcgoodfood_cancelprotocol goodfood_confectionprotocol_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -59746,14 +60796,6 @@ ALTER TABLE ONLY public.cdnrcgoodfood_cancelprotocol
 --
 
 ALTER TABLE ONLY public.goodfood_extrusionprotocol
-    ADD CONSTRAINT goodfood_extrusioncontext_fkey FOREIGN KEY (extrusioncontext_id) REFERENCES public.goodfood_extrusioncontext(id) DEFERRABLE;
-
-
---
--- Name: arch_goodfood_extrusionprotocol goodfood_extrusioncontext_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_goodfood_extrusionprotocol
     ADD CONSTRAINT goodfood_extrusioncontext_fkey FOREIGN KEY (extrusioncontext_id) REFERENCES public.goodfood_extrusioncontext(id) DEFERRABLE;
 
 
@@ -59830,14 +60872,6 @@ ALTER TABLE ONLY public.goodfood_extrusionsouse
 
 
 --
--- Name: arch_goodfood_extrusionsouse goodfood_extrusionprotocol_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_goodfood_extrusionsouse
-    ADD CONSTRAINT goodfood_extrusionprotocol_fkey FOREIGN KEY (extrusionprotocol_id) REFERENCES public.arch_goodfood_extrusionprotocol(id) DEFERRABLE;
-
-
---
 -- Name: cdnrcgoodfood_cancelprotocol goodfood_extrusionprotocol_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -59870,14 +60904,6 @@ ALTER TABLE ONLY public.esilco_importpositionerror
 
 
 --
--- Name: arch_esilco_importpositionerror importpositionerror_document_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_esilco_importpositionerror
-    ADD CONSTRAINT importpositionerror_document_fkey FOREIGN KEY (document_id) REFERENCES public.arch_materialflowresources_document(id) DEFERRABLE;
-
-
---
 -- Name: materialflowresources_importstoragelocation importstoragelocation_location_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -59891,14 +60917,6 @@ ALTER TABLE ONLY public.materialflowresources_importstoragelocation
 
 ALTER TABLE ONLY public.productflowthrudivision_issue
     ADD CONSTRAINT issue_document_fkey FOREIGN KEY (document_id) REFERENCES public.materialflowresources_document(id) DEFERRABLE;
-
-
---
--- Name: arch_productflowthrudivision_issue issue_document_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_productflowthrudivision_issue
-    ADD CONSTRAINT issue_document_fkey FOREIGN KEY (document_id) REFERENCES public.arch_materialflowresources_document(id) DEFERRABLE;
 
 
 --
@@ -59922,14 +60940,6 @@ ALTER TABLE ONLY public.jointable_issue_productstoissuehelper
 --
 
 ALTER TABLE ONLY public.productflowthrudivision_issue
-    ADD CONSTRAINT issue_storagelocation_fkey FOREIGN KEY (storagelocation_id) REFERENCES public.materialflowresources_storagelocation(id) DEFERRABLE;
-
-
---
--- Name: arch_productflowthrudivision_issue issue_storagelocation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_productflowthrudivision_issue
     ADD CONSTRAINT issue_storagelocation_fkey FOREIGN KEY (storagelocation_id) REFERENCES public.materialflowresources_storagelocation(id) DEFERRABLE;
 
 
@@ -60078,54 +61088,6 @@ ALTER TABLE ONLY public.jointable_productionline_technologygroup
 
 
 --
--- Name: arch_goodfood_label label_batch_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_goodfood_label
-    ADD CONSTRAINT label_batch_fkey FOREIGN KEY (batch_id) REFERENCES public.advancedgenealogy_batch(id) DEFERRABLE;
-
-
---
--- Name: arch_goodfood_label label_masterorder_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_goodfood_label
-    ADD CONSTRAINT label_masterorder_fkey FOREIGN KEY (masterorder_id) REFERENCES public.arch_masterorders_masterorder(id) DEFERRABLE;
-
-
---
--- Name: arch_goodfood_label label_palletcontext_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_goodfood_label
-    ADD CONSTRAINT label_palletcontext_fkey FOREIGN KEY (palletcontext_id) REFERENCES public.goodfood_palletcontext(id) DEFERRABLE;
-
-
---
--- Name: arch_goodfood_label label_productionline_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_goodfood_label
-    ADD CONSTRAINT label_productionline_fkey FOREIGN KEY (productionline_id) REFERENCES public.productionlines_productionline(id) DEFERRABLE;
-
-
---
--- Name: arch_goodfood_labelstatechange labelstatechange_label_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_goodfood_labelstatechange
-    ADD CONSTRAINT labelstatechange_label_fkey FOREIGN KEY (label_id) REFERENCES public.arch_goodfood_label(id) DEFERRABLE;
-
-
---
--- Name: arch_goodfood_labelstatechange labelstatechange_shift_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_goodfood_labelstatechange
-    ADD CONSTRAINT labelstatechange_shift_fkey FOREIGN KEY (shift_id) REFERENCES public.basic_shift(id) DEFERRABLE;
-
-
---
 -- Name: productioncounting_lack lack_trackingoperationproductoutcomponent_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -60190,26 +61152,10 @@ ALTER TABLE ONLY public.productflowthrudivision_issue
 
 
 --
--- Name: arch_productflowthrudivision_issue location_issue_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_productflowthrudivision_issue
-    ADD CONSTRAINT location_issue_fkey FOREIGN KEY (location_id) REFERENCES public.materialflow_location(id) DEFERRABLE;
-
-
---
 -- Name: productflowthrudivision_productstoissue location_productstoissue_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.productflowthrudivision_productstoissue
-    ADD CONSTRAINT location_productstoissue_fkey FOREIGN KEY (location_id) REFERENCES public.materialflow_location(id) DEFERRABLE;
-
-
---
--- Name: arch_productflowthrudivision_productstoissue location_productstoissue_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_productflowthrudivision_productstoissue
     ADD CONSTRAINT location_productstoissue_fkey FOREIGN KEY (location_id) REFERENCES public.materialflow_location(id) DEFERRABLE;
 
 
@@ -60422,14 +61368,6 @@ ALTER TABLE ONLY public.masterorders_masterorder
 
 
 --
--- Name: arch_masterorders_masterorder masterorder_address_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_masterorders_masterorder
-    ADD CONSTRAINT masterorder_address_fkey FOREIGN KEY (address_id) REFERENCES public.basic_address(id) DEFERRABLE;
-
-
---
 -- Name: masterorders_masterorder masterorder_company_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -60438,26 +61376,10 @@ ALTER TABLE ONLY public.masterorders_masterorder
 
 
 --
--- Name: arch_masterorders_masterorder masterorder_company_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_masterorders_masterorder
-    ADD CONSTRAINT masterorder_company_fkey FOREIGN KEY (company_id) REFERENCES public.basic_company(id) DEFERRABLE;
-
-
---
 -- Name: masterorders_masterorder masterorder_masterorderdefinition_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.masterorders_masterorder
-    ADD CONSTRAINT masterorder_masterorderdefinition_fkey FOREIGN KEY (masterorderdefinition_id) REFERENCES public.masterorders_masterorderdefinition(id) DEFERRABLE;
-
-
---
--- Name: arch_masterorders_masterorder masterorder_masterorderdefinition_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_masterorders_masterorder
     ADD CONSTRAINT masterorder_masterorderdefinition_fkey FOREIGN KEY (masterorderdefinition_id) REFERENCES public.masterorders_masterorderdefinition(id) DEFERRABLE;
 
 
@@ -60502,14 +61424,6 @@ ALTER TABLE ONLY public.masterorders_masterorderproduct
 
 
 --
--- Name: arch_masterorders_masterorderproduct masterorderproduct_masterorder_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_masterorders_masterorderproduct
-    ADD CONSTRAINT masterorderproduct_masterorder_fkey FOREIGN KEY (masterorder_id) REFERENCES public.arch_masterorders_masterorder(id) DEFERRABLE;
-
-
---
 -- Name: goodfood_palnumber masterorderproduct_masterorder_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -60526,26 +61440,10 @@ ALTER TABLE ONLY public.masterorders_masterorderproduct
 
 
 --
--- Name: arch_masterorders_masterorderproduct masterorderproduct_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_masterorders_masterorderproduct
-    ADD CONSTRAINT masterorderproduct_product_fkey FOREIGN KEY (product_id) REFERENCES public.basic_product(id) DEFERRABLE;
-
-
---
 -- Name: masterorders_masterorderproduct masterorderproduct_technology_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.masterorders_masterorderproduct
-    ADD CONSTRAINT masterorderproduct_technology_fkey FOREIGN KEY (technology_id) REFERENCES public.technologies_technology(id) DEFERRABLE;
-
-
---
--- Name: arch_masterorders_masterorderproduct masterorderproduct_technology_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_masterorders_masterorderproduct
     ADD CONSTRAINT masterorderproduct_technology_fkey FOREIGN KEY (technology_id) REFERENCES public.technologies_technology(id) DEFERRABLE;
 
 
@@ -60614,14 +61512,6 @@ ALTER TABLE ONLY public.productflowthrudivision_materialavailability
 
 
 --
--- Name: arch_productflowthrudivision_materialavailability materialavailability_location_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_productflowthrudivision_materialavailability
-    ADD CONSTRAINT materialavailability_location_fkey FOREIGN KEY (location_id) REFERENCES public.materialflow_location(id) DEFERRABLE;
-
-
---
 -- Name: productflowthrudivision_materialavailability materialavailability_order_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -60630,26 +61520,10 @@ ALTER TABLE ONLY public.productflowthrudivision_materialavailability
 
 
 --
--- Name: arch_productflowthrudivision_materialavailability materialavailability_order_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_productflowthrudivision_materialavailability
-    ADD CONSTRAINT materialavailability_order_fkey FOREIGN KEY (order_id) REFERENCES public.arch_orders_order(id) DEFERRABLE;
-
-
---
 -- Name: productflowthrudivision_materialavailability materialavailability_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.productflowthrudivision_materialavailability
-    ADD CONSTRAINT materialavailability_product_fkey FOREIGN KEY (product_id) REFERENCES public.basic_product(id) DEFERRABLE;
-
-
---
--- Name: arch_productflowthrudivision_materialavailability materialavailability_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_productflowthrudivision_materialavailability
     ADD CONSTRAINT materialavailability_product_fkey FOREIGN KEY (product_id) REFERENCES public.basic_product(id) DEFERRABLE;
 
 
@@ -60678,14 +61552,6 @@ ALTER TABLE ONLY public.ordersupplies_materialrequirementcoverage
 
 
 --
--- Name: arch_ordersupplies_materialrequirementcoverage materialrequirementcoverage_forder_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_ordersupplies_materialrequirementcoverage
-    ADD CONSTRAINT materialrequirementcoverage_forder_fkey FOREIGN KEY (order_id) REFERENCES public.arch_orders_order(id) DEFERRABLE;
-
-
---
 -- Name: materialrequirementcoveragefororder_coveragefororder materialrequirementcoverage_order_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -60702,27 +61568,11 @@ ALTER TABLE ONLY public.jointable_materialrequirementcoverage_order
 
 
 --
--- Name: arch_materialrequirementcoveragefororder_coveragefororder materialrequirementcoverage_order_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_materialrequirementcoveragefororder_coveragefororder
-    ADD CONSTRAINT materialrequirementcoverage_order_fkey FOREIGN KEY (order_id) REFERENCES public.arch_orders_order(id) DEFERRABLE;
-
-
---
 -- Name: ordersupplies_materialrequirementcoverage materialrequirementcoverage_ordersgroup_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.ordersupplies_materialrequirementcoverage
     ADD CONSTRAINT materialrequirementcoverage_ordersgroup_fkey FOREIGN KEY (forordersgroup_id) REFERENCES public.ordersgroups_ordersgroup(id) DEFERRABLE;
-
-
---
--- Name: arch_ordersupplies_materialrequirementcoverage materialrequirementcoverage_ordersgroup_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_ordersupplies_materialrequirementcoverage
-    ADD CONSTRAINT materialrequirementcoverage_ordersgroup_fkey FOREIGN KEY (forordersgroup_id) REFERENCES public.arch_ordersgroups_ordersgroup(id) DEFERRABLE;
 
 
 --
@@ -60734,26 +61584,10 @@ ALTER TABLE ONLY public.states_message
 
 
 --
--- Name: arch_states_message message_assignmenttoshiftstatechange_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_states_message
-    ADD CONSTRAINT message_assignmenttoshiftstatechange_fkey FOREIGN KEY (assignmenttoshiftstatechange_id) REFERENCES public.assignmenttoshift_assignmenttoshiftstatechange(id) DEFERRABLE;
-
-
---
 -- Name: states_message message_batchstatechange_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.states_message
-    ADD CONSTRAINT message_batchstatechange_fkey FOREIGN KEY (batchstatechange_id) REFERENCES public.advancedgenealogy_batchstatechange(id) DEFERRABLE;
-
-
---
--- Name: arch_states_message message_batchstatechange_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_states_message
     ADD CONSTRAINT message_batchstatechange_fkey FOREIGN KEY (batchstatechange_id) REFERENCES public.advancedgenealogy_batchstatechange(id) DEFERRABLE;
 
 
@@ -60774,26 +61608,10 @@ ALTER TABLE ONLY public.states_message
 
 
 --
--- Name: arch_states_message message_confectionprotocolstatechange_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_states_message
-    ADD CONSTRAINT message_confectionprotocolstatechange_fkey FOREIGN KEY (confectionprotocolstatechange_id) REFERENCES public.arch_goodfood_confectionprotocolstatechange(id) DEFERRABLE;
-
-
---
 -- Name: states_message message_deliverystatechange_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.states_message
-    ADD CONSTRAINT message_deliverystatechange_fkey FOREIGN KEY (deliverystatechange_id) REFERENCES public.deliveries_deliverystatechange(id) DEFERRABLE;
-
-
---
--- Name: arch_states_message message_deliverystatechange_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_states_message
     ADD CONSTRAINT message_deliverystatechange_fkey FOREIGN KEY (deliverystatechange_id) REFERENCES public.deliveries_deliverystatechange(id) DEFERRABLE;
 
 
@@ -60806,34 +61624,10 @@ ALTER TABLE ONLY public.states_message
 
 
 --
--- Name: arch_states_message message_extrusionprotocolstatechange_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_states_message
-    ADD CONSTRAINT message_extrusionprotocolstatechange_fkey FOREIGN KEY (extrusionprotocolstatechange_id) REFERENCES public.arch_goodfood_extrusionprotocolstatechange(id) DEFERRABLE;
-
-
---
--- Name: arch_states_message message_labelstatechange_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_states_message
-    ADD CONSTRAINT message_labelstatechange_fkey FOREIGN KEY (labelstatechange_id) REFERENCES public.arch_goodfood_labelstatechange(id) DEFERRABLE;
-
-
---
 -- Name: states_message message_maintenanceeventstatechange_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.states_message
-    ADD CONSTRAINT message_maintenanceeventstatechange_fkey FOREIGN KEY (maintenanceeventstatechange_id) REFERENCES public.cmmsmachineparts_maintenanceeventstatechange(id) DEFERRABLE;
-
-
---
--- Name: arch_states_message message_maintenanceeventstatechange_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_states_message
     ADD CONSTRAINT message_maintenanceeventstatechange_fkey FOREIGN KEY (maintenanceeventstatechange_id) REFERENCES public.cmmsmachineparts_maintenanceeventstatechange(id) DEFERRABLE;
 
 
@@ -60846,26 +61640,10 @@ ALTER TABLE ONLY public.states_message
 
 
 --
--- Name: arch_states_message message_negotiationstatechange_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_states_message
-    ADD CONSTRAINT message_negotiationstatechange_fkey FOREIGN KEY (negotiationstatechange_id) REFERENCES public.supplynegotiations_negotiationstatechange(id) DEFERRABLE;
-
-
---
 -- Name: states_message message_offerstatechange_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.states_message
-    ADD CONSTRAINT message_offerstatechange_fkey FOREIGN KEY (offerstatechange_id) REFERENCES public.supplynegotiations_offerstatechange(id) DEFERRABLE;
-
-
---
--- Name: arch_states_message message_offerstatechange_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_states_message
     ADD CONSTRAINT message_offerstatechange_fkey FOREIGN KEY (offerstatechange_id) REFERENCES public.supplynegotiations_offerstatechange(id) DEFERRABLE;
 
 
@@ -60875,14 +61653,6 @@ ALTER TABLE ONLY public.arch_states_message
 
 ALTER TABLE ONLY public.states_message
     ADD CONSTRAINT message_orderstatechange_fkey FOREIGN KEY (orderstatechange_id) REFERENCES public.orders_orderstatechange(id) DEFERRABLE;
-
-
---
--- Name: arch_states_message message_orderstatechange_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_states_message
-    ADD CONSTRAINT message_orderstatechange_fkey FOREIGN KEY (orderstatechange_id) REFERENCES public.arch_orders_orderstatechange(id) DEFERRABLE;
 
 
 --
@@ -60902,26 +61672,10 @@ ALTER TABLE ONLY public.states_message
 
 
 --
--- Name: arch_states_message message_palletstatechange_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_states_message
-    ADD CONSTRAINT message_palletstatechange_fkey FOREIGN KEY (palletstatechange_id) REFERENCES public.arch_goodfood_palletstatechange(id) DEFERRABLE;
-
-
---
 -- Name: states_message message_plannedeventstatechange_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.states_message
-    ADD CONSTRAINT message_plannedeventstatechange_fkey FOREIGN KEY (plannedeventstatechange_id) REFERENCES public.cmmsmachineparts_plannedeventstatechange(id) DEFERRABLE;
-
-
---
--- Name: arch_states_message message_plannedeventstatechange_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_states_message
     ADD CONSTRAINT message_plannedeventstatechange_fkey FOREIGN KEY (plannedeventstatechange_id) REFERENCES public.cmmsmachineparts_plannedeventstatechange(id) DEFERRABLE;
 
 
@@ -60934,14 +61688,6 @@ ALTER TABLE ONLY public.states_message
 
 
 --
--- Name: arch_states_message message_prodrecstatechange_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_states_message
-    ADD CONSTRAINT message_prodrecstatechange_fkey FOREIGN KEY (productiontrackingstatechange_id) REFERENCES public.arch_productioncounting_productiontrackingstatechange(id) DEFERRABLE;
-
-
---
 -- Name: states_message message_recurringeventstatechange_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -60950,26 +61696,10 @@ ALTER TABLE ONLY public.states_message
 
 
 --
--- Name: arch_states_message message_recurringeventstatechange_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_states_message
-    ADD CONSTRAINT message_recurringeventstatechange_fkey FOREIGN KEY (recurringeventstatechange_id) REFERENCES public.cmmsscheduler_recurringeventstatechange(id) DEFERRABLE;
-
-
---
 -- Name: states_message message_requestforquotationstatechange_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.states_message
-    ADD CONSTRAINT message_requestforquotationstatechange_fkey FOREIGN KEY (requestforquotationstatechange_id) REFERENCES public.supplynegotiations_requestforquotationstatechange(id) DEFERRABLE;
-
-
---
--- Name: arch_states_message message_requestforquotationstatechange_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_states_message
     ADD CONSTRAINT message_requestforquotationstatechange_fkey FOREIGN KEY (requestforquotationstatechange_id) REFERENCES public.supplynegotiations_requestforquotationstatechange(id) DEFERRABLE;
 
 
@@ -60998,14 +61728,6 @@ ALTER TABLE ONLY public.states_message
 
 
 --
--- Name: arch_states_message message_technologystatechange_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_states_message
-    ADD CONSTRAINT message_technologystatechange_fkey FOREIGN KEY (technologystatechange_id) REFERENCES public.technologies_technologystatechange(id) DEFERRABLE;
-
-
---
 -- Name: states_message message_trackingrecordstatechange_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -61014,27 +61736,11 @@ ALTER TABLE ONLY public.states_message
 
 
 --
--- Name: arch_states_message message_trackingrecordstatechange_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_states_message
-    ADD CONSTRAINT message_trackingrecordstatechange_fkey FOREIGN KEY (trackingrecordstatechange_id) REFERENCES public.arch_advancedgenealogy_trackingrecordstatechange(id) DEFERRABLE;
-
-
---
 -- Name: states_message message_warehouseissuestatechange_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.states_message
     ADD CONSTRAINT message_warehouseissuestatechange_fkey FOREIGN KEY (warehouseissuestatechange_id) REFERENCES public.productflowthrudivision_warehouseissuestatechange(id) DEFERRABLE;
-
-
---
--- Name: arch_states_message message_warehouseissuestatechange_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_states_message
-    ADD CONSTRAINT message_warehouseissuestatechange_fkey FOREIGN KEY (warehouseissuestatechange_id) REFERENCES public.arch_productflowthrudivision_warehouseissuestatechange(id) DEFERRABLE;
 
 
 --
@@ -61126,14 +61832,6 @@ ALTER TABLE ONLY public.assignmenttoshift_multiassignmenttoshift
 
 
 --
--- Name: arch_assignmenttoshift_multiassignmenttoshift multiassignmenttoshift_assignmenttoshift_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_assignmenttoshift_multiassignmenttoshift
-    ADD CONSTRAINT multiassignmenttoshift_assignmenttoshift_fkey FOREIGN KEY (assignmenttoshift_id) REFERENCES public.assignmenttoshift_assignmenttoshift(id) DEFERRABLE;
-
-
---
 -- Name: assignmenttoshift_multiassignmenttoshift multiassignmenttoshift_masterorder_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -61142,26 +61840,10 @@ ALTER TABLE ONLY public.assignmenttoshift_multiassignmenttoshift
 
 
 --
--- Name: arch_assignmenttoshift_multiassignmenttoshift multiassignmenttoshift_masterorder_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_assignmenttoshift_multiassignmenttoshift
-    ADD CONSTRAINT multiassignmenttoshift_masterorder_fkey FOREIGN KEY (masterorder_id) REFERENCES public.arch_masterorders_masterorder(id) DEFERRABLE;
-
-
---
 -- Name: assignmenttoshift_multiassignmenttoshift multiassignmenttoshift_productionline_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.assignmenttoshift_multiassignmenttoshift
-    ADD CONSTRAINT multiassignmenttoshift_productionline_fkey FOREIGN KEY (productionline_id) REFERENCES public.productionlines_productionline(id) DEFERRABLE;
-
-
---
--- Name: arch_assignmenttoshift_multiassignmenttoshift multiassignmenttoshift_productionline_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_assignmenttoshift_multiassignmenttoshift
     ADD CONSTRAINT multiassignmenttoshift_productionline_fkey FOREIGN KEY (productionline_id) REFERENCES public.productionlines_productionline(id) DEFERRABLE;
 
 
@@ -61694,26 +62376,10 @@ ALTER TABLE ONLY public.productionscheduling_opercomptimecalculation
 
 
 --
--- Name: arch_productionscheduling_opercomptimecalculation opercomptimecalculation_ordertimecalculation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_productionscheduling_opercomptimecalculation
-    ADD CONSTRAINT opercomptimecalculation_ordertimecalculation_fkey FOREIGN KEY (ordertimecalculation_id) REFERENCES public.arch_productionscheduling_ordertimecalculation(id) DEFERRABLE;
-
-
---
 -- Name: productionscheduling_opercomptimecalculation opercomptimecalculation_technologyoperationcomponent_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.productionscheduling_opercomptimecalculation
-    ADD CONSTRAINT opercomptimecalculation_technologyoperationcomponent_fkey FOREIGN KEY (technologyoperationcomponent_id) REFERENCES public.technologies_technologyoperationcomponent(id) DEFERRABLE;
-
-
---
--- Name: arch_productionscheduling_opercomptimecalculation opercomptimecalculation_technologyoperationcomponent_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_productionscheduling_opercomptimecalculation
     ADD CONSTRAINT opercomptimecalculation_technologyoperationcomponent_fkey FOREIGN KEY (technologyoperationcomponent_id) REFERENCES public.technologies_technologyoperationcomponent(id) DEFERRABLE;
 
 
@@ -61750,26 +62416,10 @@ ALTER TABLE ONLY public.orders_order
 
 
 --
--- Name: arch_orders_order order_address_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_orders_order
-    ADD CONSTRAINT order_address_fkey FOREIGN KEY (address_id) REFERENCES public.basic_address(id) DEFERRABLE;
-
-
---
 -- Name: orders_order order_division_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.orders_order
-    ADD CONSTRAINT order_division_fkey FOREIGN KEY (division_id) REFERENCES public.basic_division(id) DEFERRABLE;
-
-
---
--- Name: arch_orders_order order_division_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_orders_order
     ADD CONSTRAINT order_division_fkey FOREIGN KEY (division_id) REFERENCES public.basic_division(id) DEFERRABLE;
 
 
@@ -61782,26 +62432,10 @@ ALTER TABLE ONLY public.orders_order
 
 
 --
--- Name: arch_orders_order order_masterorder_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_orders_order
-    ADD CONSTRAINT order_masterorder_fkey FOREIGN KEY (masterorder_id) REFERENCES public.arch_masterorders_masterorder(id) DEFERRABLE;
-
-
---
 -- Name: orders_order order_masterorderproduct_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.orders_order
-    ADD CONSTRAINT order_masterorderproduct_fkey FOREIGN KEY (masterorderproduct_id) REFERENCES public.basic_product(id) DEFERRABLE;
-
-
---
--- Name: arch_orders_order order_masterorderproduct_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_orders_order
     ADD CONSTRAINT order_masterorderproduct_fkey FOREIGN KEY (masterorderproduct_id) REFERENCES public.basic_product(id) DEFERRABLE;
 
 
@@ -61811,14 +62445,6 @@ ALTER TABLE ONLY public.arch_orders_order
 
 ALTER TABLE ONLY public.orders_order
     ADD CONSTRAINT order_masterorderproductcomponent_fkey FOREIGN KEY (masterorderproductcomponent_id) REFERENCES public.masterorders_masterorderproduct(id) DEFERRABLE;
-
-
---
--- Name: arch_orders_order order_masterorderproductcomponent_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_orders_order
-    ADD CONSTRAINT order_masterorderproductcomponent_fkey FOREIGN KEY (masterorderproductcomponent_id) REFERENCES public.arch_masterorders_masterorderproduct(id) DEFERRABLE;
 
 
 --
@@ -61835,14 +62461,6 @@ ALTER TABLE ONLY public.jointable_materialrequirementcoverage_order
 
 ALTER TABLE ONLY public.orders_order
     ADD CONSTRAINT order_ordersgroup_fkey FOREIGN KEY (ordersgroup_id) REFERENCES public.ordersgroups_ordersgroup(id) DEFERRABLE;
-
-
---
--- Name: arch_orders_order order_ordersgroup_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_orders_order
-    ADD CONSTRAINT order_ordersgroup_fkey FOREIGN KEY (ordersgroup_id) REFERENCES public.arch_ordersgroups_ordersgroup(id) DEFERRABLE;
 
 
 --
@@ -61870,14 +62488,6 @@ ALTER TABLE ONLY public.orders_order
 
 
 --
--- Name: arch_orders_order order_parent_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_orders_order
-    ADD CONSTRAINT order_parent_fkey FOREIGN KEY (parent_id) REFERENCES public.arch_orders_order(id) DEFERRABLE;
-
-
---
 -- Name: jointable_order_printlabelshelper order_printlabelshelper_order_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -61898,14 +62508,6 @@ ALTER TABLE ONLY public.jointable_order_printlabelshelper
 --
 
 ALTER TABLE ONLY public.orders_order
-    ADD CONSTRAINT order_product_fkey FOREIGN KEY (product_id) REFERENCES public.basic_product(id) DEFERRABLE;
-
-
---
--- Name: arch_orders_order order_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_orders_order
     ADD CONSTRAINT order_product_fkey FOREIGN KEY (product_id) REFERENCES public.basic_product(id) DEFERRABLE;
 
 
@@ -61990,26 +62592,10 @@ ALTER TABLE ONLY public.orders_order
 
 
 --
--- Name: arch_orders_order order_technology_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_orders_order
-    ADD CONSTRAINT order_technology_fkey FOREIGN KEY (technology_id) REFERENCES public.technologies_technology(id) DEFERRABLE;
-
-
---
 -- Name: orders_order order_technologyprototype_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.orders_order
-    ADD CONSTRAINT order_technologyprototype_fkey FOREIGN KEY (technologyprototype_id) REFERENCES public.technologies_technology(id) DEFERRABLE;
-
-
---
--- Name: arch_orders_order order_technologyprototype_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_orders_order
     ADD CONSTRAINT order_technologyprototype_fkey FOREIGN KEY (technologyprototype_id) REFERENCES public.technologies_technology(id) DEFERRABLE;
 
 
@@ -62214,6 +62800,22 @@ ALTER TABLE ONLY public.orders_orderpackstatechange
 
 
 --
+-- Name: productflowthrudivision_orderproductresourcereservation orderproductresourcereservation_productioncountingquantity_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.productflowthrudivision_orderproductresourcereservation
+    ADD CONSTRAINT orderproductresourcereservation_productioncountingquantity_fkey FOREIGN KEY (productioncountingquantity_id) REFERENCES public.basicproductioncounting_productioncountingquantity(id) DEFERRABLE;
+
+
+--
+-- Name: productflowthrudivision_orderproductresourcereservation orderproductresourcereservation_resource_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.productflowthrudivision_orderproductresourcereservation
+    ADD CONSTRAINT orderproductresourcereservation_resource_fkey FOREIGN KEY (resource_id) REFERENCES public.materialflowresources_resource(id) DEFERRABLE;
+
+
+--
 -- Name: goodfood_confectionprotocol orders_order_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -62246,50 +62848,10 @@ ALTER TABLE ONLY public.orders_operationaltask
 
 
 --
--- Name: arch_avglaborcostcalcfororder_avglaborcostcalcfororder orders_order_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_avglaborcostcalcfororder_avglaborcostcalcfororder
-    ADD CONSTRAINT orders_order_fkey FOREIGN KEY (order_id) REFERENCES public.arch_orders_order(id) DEFERRABLE;
-
-
---
--- Name: arch_goodfood_confectionprotocol orders_order_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_goodfood_confectionprotocol
-    ADD CONSTRAINT orders_order_fkey FOREIGN KEY (order_id) REFERENCES public.arch_orders_order(id) DEFERRABLE;
-
-
---
--- Name: arch_goodfood_extrusionprotocol orders_order_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_goodfood_extrusionprotocol
-    ADD CONSTRAINT orders_order_fkey FOREIGN KEY (order_id) REFERENCES public.arch_orders_order(id) DEFERRABLE;
-
-
---
--- Name: arch_orders_operationaltask orders_order_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_orders_operationaltask
-    ADD CONSTRAINT orders_order_fkey FOREIGN KEY (order_id) REFERENCES public.arch_orders_order(id) DEFERRABLE;
-
-
---
 -- Name: orders_order orders_order_productionline_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.orders_order
-    ADD CONSTRAINT orders_order_productionline_fkey FOREIGN KEY (productionline_id) REFERENCES public.productionlines_productionline(id) DEFERRABLE;
-
-
---
--- Name: arch_orders_order orders_order_productionline_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_orders_order
     ADD CONSTRAINT orders_order_productionline_fkey FOREIGN KEY (productionline_id) REFERENCES public.productionlines_productionline(id) DEFERRABLE;
 
 
@@ -62302,26 +62864,10 @@ ALTER TABLE ONLY public.orders_order
 
 
 --
--- Name: arch_orders_order orders_order_root_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_orders_order
-    ADD CONSTRAINT orders_order_root_fkey FOREIGN KEY (root_id) REFERENCES public.arch_orders_order(id) DEFERRABLE;
-
-
---
 -- Name: ordersgroups_ordersgroup ordersgroup_assortment_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.ordersgroups_ordersgroup
-    ADD CONSTRAINT ordersgroup_assortment_fkey FOREIGN KEY (assortment_id) REFERENCES public.basic_assortment(id) DEFERRABLE;
-
-
---
--- Name: arch_ordersgroups_ordersgroup ordersgroup_assortment_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_ordersgroups_ordersgroup
     ADD CONSTRAINT ordersgroup_assortment_fkey FOREIGN KEY (assortment_id) REFERENCES public.basic_assortment(id) DEFERRABLE;
 
 
@@ -62334,14 +62880,6 @@ ALTER TABLE ONLY public.ordersgroups_ordersgroup
 
 
 --
--- Name: arch_ordersgroups_ordersgroup ordersgroup_masterorder_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_ordersgroups_ordersgroup
-    ADD CONSTRAINT ordersgroup_masterorder_fkey FOREIGN KEY (masterorder_id) REFERENCES public.arch_masterorders_masterorder(id) DEFERRABLE;
-
-
---
 -- Name: ordersgroups_ordersgroup ordersgroup_parent_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -62350,26 +62888,10 @@ ALTER TABLE ONLY public.ordersgroups_ordersgroup
 
 
 --
--- Name: arch_ordersgroups_ordersgroup ordersgroup_parent_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_ordersgroups_ordersgroup
-    ADD CONSTRAINT ordersgroup_parent_fkey FOREIGN KEY (parent_id) REFERENCES public.arch_ordersgroups_ordersgroup(id) DEFERRABLE;
-
-
---
 -- Name: ordersgroups_ordersgroup ordersgroup_productionline_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.ordersgroups_ordersgroup
-    ADD CONSTRAINT ordersgroup_productionline_fkey FOREIGN KEY (productionline_id) REFERENCES public.productionlines_productionline(id) DEFERRABLE;
-
-
---
--- Name: arch_ordersgroups_ordersgroup ordersgroup_productionline_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_ordersgroups_ordersgroup
     ADD CONSTRAINT ordersgroup_productionline_fkey FOREIGN KEY (productionline_id) REFERENCES public.productionlines_productionline(id) DEFERRABLE;
 
 
@@ -62502,26 +63024,10 @@ ALTER TABLE ONLY public.orders_orderstatechange
 
 
 --
--- Name: arch_orders_orderstatechange orderstatechange_order_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_orders_orderstatechange
-    ADD CONSTRAINT orderstatechange_order_fkey FOREIGN KEY (order_id) REFERENCES public.arch_orders_order(id) DEFERRABLE;
-
-
---
 -- Name: orders_orderstatechange orderstatechange_shift_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.orders_orderstatechange
-    ADD CONSTRAINT orderstatechange_shift_fkey FOREIGN KEY (shift_id) REFERENCES public.basic_shift(id) DEFERRABLE;
-
-
---
--- Name: arch_orders_orderstatechange orderstatechange_shift_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_orders_orderstatechange
     ADD CONSTRAINT orderstatechange_shift_fkey FOREIGN KEY (shift_id) REFERENCES public.basic_shift(id) DEFERRABLE;
 
 
@@ -62670,14 +63176,6 @@ ALTER TABLE ONLY public.productionscheduling_ordertimecalculation
 
 
 --
--- Name: arch_productionscheduling_ordertimecalculation ordertimecalculation_order_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_productionscheduling_ordertimecalculation
-    ADD CONSTRAINT ordertimecalculation_order_fkey FOREIGN KEY (order_id) REFERENCES public.arch_orders_order(id) DEFERRABLE;
-
-
---
 -- Name: jointable_staff_workerstatsreport orkerstatsreport_staff_staff_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -62710,14 +63208,6 @@ ALTER TABLE ONLY public.mobilewms_outofstock
 
 
 --
--- Name: arch_goodfood_pallet pallet_label_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_goodfood_pallet
-    ADD CONSTRAINT pallet_label_fkey FOREIGN KEY (label_id) REFERENCES public.arch_goodfood_label(id) DEFERRABLE;
-
-
---
 -- Name: goodfood_pallet pallet_pallet_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -62726,26 +63216,10 @@ ALTER TABLE ONLY public.goodfood_pallet
 
 
 --
--- Name: arch_goodfood_pallet pallet_pallet_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_goodfood_pallet
-    ADD CONSTRAINT pallet_pallet_fkey FOREIGN KEY (secondpallet_id) REFERENCES public.arch_goodfood_pallet(id) DEFERRABLE;
-
-
---
 -- Name: goodfood_pallet pallet_palletcontext_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.goodfood_pallet
-    ADD CONSTRAINT pallet_palletcontext_fkey FOREIGN KEY (palletcontext_id) REFERENCES public.goodfood_palletcontext(id) DEFERRABLE;
-
-
---
--- Name: arch_goodfood_pallet pallet_palletcontext_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_goodfood_pallet
     ADD CONSTRAINT pallet_palletcontext_fkey FOREIGN KEY (palletcontext_id) REFERENCES public.goodfood_palletcontext(id) DEFERRABLE;
 
 
@@ -62762,14 +63236,6 @@ ALTER TABLE ONLY public.goodfood_pallet
 --
 
 ALTER TABLE ONLY public.goodfood_pallet
-    ADD CONSTRAINT pallet_product_fkey FOREIGN KEY (product_id) REFERENCES public.basic_product(id) DEFERRABLE;
-
-
---
--- Name: arch_goodfood_pallet pallet_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_goodfood_pallet
     ADD CONSTRAINT pallet_product_fkey FOREIGN KEY (product_id) REFERENCES public.basic_product(id) DEFERRABLE;
 
 
@@ -62878,26 +63344,10 @@ ALTER TABLE ONLY public.goodfood_palletstatechange
 
 
 --
--- Name: arch_goodfood_palletstatechange palletstatechange_pallet_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_goodfood_palletstatechange
-    ADD CONSTRAINT palletstatechange_pallet_fkey FOREIGN KEY (pallet_id) REFERENCES public.arch_goodfood_pallet(id) DEFERRABLE;
-
-
---
 -- Name: goodfood_palletstatechange palletstatechange_shift_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.goodfood_palletstatechange
-    ADD CONSTRAINT palletstatechange_shift_fkey FOREIGN KEY (shift_id) REFERENCES public.basic_shift(id) DEFERRABLE;
-
-
---
--- Name: arch_goodfood_palletstatechange palletstatechange_shift_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_goodfood_palletstatechange
     ADD CONSTRAINT palletstatechange_shift_fkey FOREIGN KEY (shift_id) REFERENCES public.basic_shift(id) DEFERRABLE;
 
 
@@ -63198,27 +63648,11 @@ ALTER TABLE ONLY public.productioncounting_staffworktime
 
 
 --
--- Name: arch_productioncounting_staffworktime pc_swt_basic_staff_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_productioncounting_staffworktime
-    ADD CONSTRAINT pc_swt_basic_staff_fkey FOREIGN KEY (worker_id) REFERENCES public.basic_staff(id) DEFERRABLE;
-
-
---
 -- Name: productioncounting_staffworktime pc_swt_pc_productionrecord_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.productioncounting_staffworktime
     ADD CONSTRAINT pc_swt_pc_productionrecord_fkey FOREIGN KEY (productionrecord_id) REFERENCES public.productioncounting_productiontracking(id) DEFERRABLE;
-
-
---
--- Name: arch_productioncounting_staffworktime pc_swt_pc_productionrecord_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_productioncounting_staffworktime
-    ADD CONSTRAINT pc_swt_pc_productionrecord_fkey FOREIGN KEY (productionrecord_id) REFERENCES public.arch_productioncounting_productiontracking(id) DEFERRABLE;
 
 
 --
@@ -63242,14 +63676,6 @@ ALTER TABLE ONLY public.basic_piecerateitem
 --
 
 ALTER TABLE ONLY public.productflowthrudivision_warehouseissue
-    ADD CONSTRAINT placeofissue_warehouseissue_fkey FOREIGN KEY (placeofissue_id) REFERENCES public.materialflow_location(id) DEFERRABLE;
-
-
---
--- Name: arch_productflowthrudivision_warehouseissue placeofissue_warehouseissue_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_productflowthrudivision_warehouseissue
     ADD CONSTRAINT placeofissue_warehouseissue_fkey FOREIGN KEY (placeofissue_id) REFERENCES public.materialflow_location(id) DEFERRABLE;
 
 
@@ -63298,14 +63724,6 @@ ALTER TABLE ONLY public.cmmsmachineparts_plannedevent
 --
 
 ALTER TABLE ONLY public.materialflowresources_document
-    ADD CONSTRAINT plannedevent_fkey FOREIGN KEY (plannedevent_id) REFERENCES public.cmmsmachineparts_plannedevent(id) DEFERRABLE;
-
-
---
--- Name: arch_materialflowresources_document plannedevent_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_materialflowresources_document
     ADD CONSTRAINT plannedevent_fkey FOREIGN KEY (plannedevent_id) REFERENCES public.cmmsmachineparts_plannedevent(id) DEFERRABLE;
 
 
@@ -63566,26 +63984,10 @@ ALTER TABLE ONLY public.materialflowresources_position
 
 
 --
--- Name: arch_materialflowresources_position position_document_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_materialflowresources_position
-    ADD CONSTRAINT position_document_fkey FOREIGN KEY (document_id) REFERENCES public.arch_materialflowresources_document(id) DEFERRABLE;
-
-
---
 -- Name: materialflowresources_position position_palletnumber_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.materialflowresources_position
-    ADD CONSTRAINT position_palletnumber_fkey FOREIGN KEY (palletnumber_id) REFERENCES public.basic_palletnumber(id) DEFERRABLE;
-
-
---
--- Name: arch_materialflowresources_position position_palletnumber_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_materialflowresources_position
     ADD CONSTRAINT position_palletnumber_fkey FOREIGN KEY (palletnumber_id) REFERENCES public.basic_palletnumber(id) DEFERRABLE;
 
 
@@ -63606,14 +64008,6 @@ ALTER TABLE ONLY public.materialflowresources_position
 
 
 --
--- Name: arch_materialflowresources_position position_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_materialflowresources_position
-    ADD CONSTRAINT position_product_fkey FOREIGN KEY (product_id) REFERENCES public.basic_product(id) DEFERRABLE;
-
-
---
 -- Name: materialflowresources_position position_resource_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -63622,26 +64016,10 @@ ALTER TABLE ONLY public.materialflowresources_position
 
 
 --
--- Name: arch_materialflowresources_position position_resource_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_materialflowresources_position
-    ADD CONSTRAINT position_resource_fkey FOREIGN KEY (resource_id) REFERENCES public.materialflowresources_resource(id) DEFERRABLE;
-
-
---
 -- Name: materialflowresources_position position_storagelocation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.materialflowresources_position
-    ADD CONSTRAINT position_storagelocation_fkey FOREIGN KEY (storagelocation_id) REFERENCES public.materialflowresources_storagelocation(id) DEFERRABLE;
-
-
---
--- Name: arch_materialflowresources_position position_storagelocation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_materialflowresources_position
     ADD CONSTRAINT position_storagelocation_fkey FOREIGN KEY (storagelocation_id) REFERENCES public.materialflowresources_storagelocation(id) DEFERRABLE;
 
 
@@ -63702,26 +64080,10 @@ ALTER TABLE ONLY public.goodfood_printedlabel
 
 
 --
--- Name: arch_goodfood_printedlabel printedlabel_masterorder_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_goodfood_printedlabel
-    ADD CONSTRAINT printedlabel_masterorder_fkey FOREIGN KEY (masterorder_id) REFERENCES public.arch_masterorders_masterorder(id) DEFERRABLE;
-
-
---
 -- Name: goodfood_printedlabel printedlabel_palletcontext_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.goodfood_printedlabel
-    ADD CONSTRAINT printedlabel_palletcontext_fkey FOREIGN KEY (palletcontext_id) REFERENCES public.goodfood_palletcontext(id) DEFERRABLE;
-
-
---
--- Name: arch_goodfood_printedlabel printedlabel_palletcontext_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_goodfood_printedlabel
     ADD CONSTRAINT printedlabel_palletcontext_fkey FOREIGN KEY (palletcontext_id) REFERENCES public.goodfood_palletcontext(id) DEFERRABLE;
 
 
@@ -63734,27 +64096,11 @@ ALTER TABLE ONLY public.goodfood_printedlabel
 
 
 --
--- Name: arch_goodfood_printedlabel printedlabel_productionline_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_goodfood_printedlabel
-    ADD CONSTRAINT printedlabel_productionline_fkey FOREIGN KEY (productionline_id) REFERENCES public.productionlines_productionline(id) DEFERRABLE;
-
-
---
 -- Name: integrationbartender_printlabelshelper printlabelshelper_masterorder_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.integrationbartender_printlabelshelper
     ADD CONSTRAINT printlabelshelper_masterorder_fkey FOREIGN KEY (masterorder_id) REFERENCES public.masterorders_masterorder(id) DEFERRABLE;
-
-
---
--- Name: arch_integrationbartender_printlabelshelper printlabelshelper_masterorder_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_integrationbartender_printlabelshelper
-    ADD CONSTRAINT printlabelshelper_masterorder_fkey FOREIGN KEY (masterorder_id) REFERENCES public.arch_masterorders_masterorder(id) DEFERRABLE;
 
 
 --
@@ -63786,14 +64132,6 @@ ALTER TABLE ONLY public.jointable_printlabelshelper_printedlabel
 --
 
 ALTER TABLE ONLY public.integrationbartender_printlabelshelper
-    ADD CONSTRAINT printlabelshelper_printer_fkey FOREIGN KEY (printer_id) REFERENCES public.integrationbartender_printer(id) DEFERRABLE;
-
-
---
--- Name: arch_integrationbartender_printlabelshelper printlabelshelper_printer_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_integrationbartender_printlabelshelper
     ADD CONSTRAINT printlabelshelper_printer_fkey FOREIGN KEY (printer_id) REFERENCES public.integrationbartender_printer(id) DEFERRABLE;
 
 
@@ -63878,14 +64216,6 @@ ALTER TABLE ONLY public.productflowthrudivision_issue
 
 
 --
--- Name: arch_productflowthrudivision_issue product_issue_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_productflowthrudivision_issue
-    ADD CONSTRAINT product_issue_fkey FOREIGN KEY (product_id) REFERENCES public.basic_product(id) DEFERRABLE;
-
-
---
 -- Name: basic_product product_lastpurchasecostcurrency_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -63930,14 +64260,6 @@ ALTER TABLE ONLY public.basic_product
 --
 
 ALTER TABLE ONLY public.productflowthrudivision_productstoissue
-    ADD CONSTRAINT product_productstoissue_fkey FOREIGN KEY (product_id) REFERENCES public.basic_product(id) DEFERRABLE;
-
-
---
--- Name: arch_productflowthrudivision_productstoissue product_productstoissue_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_productflowthrudivision_productstoissue
     ADD CONSTRAINT product_productstoissue_fkey FOREIGN KEY (product_id) REFERENCES public.basic_product(id) DEFERRABLE;
 
 
@@ -64182,26 +64504,10 @@ ALTER TABLE ONLY public.productflowthrudivision_issue
 
 
 --
--- Name: arch_productflowthrudivision_issue productincomponent_issue_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_productflowthrudivision_issue
-    ADD CONSTRAINT productincomponent_issue_fkey FOREIGN KEY (productincomponent_id) REFERENCES public.technologies_operationproductincomponent(id) DEFERRABLE;
-
-
---
 -- Name: productflowthrudivision_productstoissue productincomponent_productstoissue_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.productflowthrudivision_productstoissue
-    ADD CONSTRAINT productincomponent_productstoissue_fkey FOREIGN KEY (productincomponent_id) REFERENCES public.technologies_operationproductincomponent(id) DEFERRABLE;
-
-
---
--- Name: arch_productflowthrudivision_productstoissue productincomponent_productstoissue_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_productflowthrudivision_productstoissue
     ADD CONSTRAINT productincomponent_productstoissue_fkey FOREIGN KEY (productincomponent_id) REFERENCES public.technologies_operationproductincomponent(id) DEFERRABLE;
 
 
@@ -64222,26 +64528,10 @@ ALTER TABLE ONLY public.productioncounting_productiontracking
 
 
 --
--- Name: arch_productioncounting_productiontracking productioncounting_productionrecord_d_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_productioncounting_productiontracking
-    ADD CONSTRAINT productioncounting_productionrecord_d_fkey FOREIGN KEY (division_id) REFERENCES public.basic_division(id) DEFERRABLE;
-
-
---
 -- Name: productioncounting_productiontracking productioncounting_productionrecord_s_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.productioncounting_productiontracking
-    ADD CONSTRAINT productioncounting_productionrecord_s_fkey FOREIGN KEY (staff_id) REFERENCES public.basic_staff(id) DEFERRABLE;
-
-
---
--- Name: arch_productioncounting_productiontracking productioncounting_productionrecord_s_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_productioncounting_productiontracking
     ADD CONSTRAINT productioncounting_productionrecord_s_fkey FOREIGN KEY (staff_id) REFERENCES public.basic_staff(id) DEFERRABLE;
 
 
@@ -64254,27 +64544,11 @@ ALTER TABLE ONLY public.productioncounting_productiontracking
 
 
 --
--- Name: arch_productioncounting_productiontracking productioncounting_productionrecord_wt_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_productioncounting_productiontracking
-    ADD CONSTRAINT productioncounting_productionrecord_wt_fkey FOREIGN KEY (workstationtype_id) REFERENCES public.basic_workstationtype(id) DEFERRABLE;
-
-
---
 -- Name: productioncounting_productiontrackingstatechange productioncounting_productionrecordlogging_pr_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.productioncounting_productiontrackingstatechange
     ADD CONSTRAINT productioncounting_productionrecordlogging_pr_fkey FOREIGN KEY (productiontracking_id) REFERENCES public.productioncounting_productiontracking(id) DEFERRABLE;
-
-
---
--- Name: arch_productioncounting_productiontrackingstatechange productioncounting_productionrecordlogging_pr_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_productioncounting_productiontrackingstatechange
-    ADD CONSTRAINT productioncounting_productionrecordlogging_pr_fkey FOREIGN KEY (productiontracking_id) REFERENCES public.arch_productioncounting_productiontracking(id) DEFERRABLE;
 
 
 --
@@ -64310,26 +64584,10 @@ ALTER TABLE ONLY public.basicproductioncounting_productioncountingoperationrun
 
 
 --
--- Name: arch_basicproductioncounting_productioncountingoperationrun productioncountingoperationrun_order_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_basicproductioncounting_productioncountingoperationrun
-    ADD CONSTRAINT productioncountingoperationrun_order_fkey FOREIGN KEY (order_id) REFERENCES public.arch_orders_order(id) DEFERRABLE;
-
-
---
 -- Name: basicproductioncounting_productioncountingoperationrun productioncountingoperationrun_toc_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.basicproductioncounting_productioncountingoperationrun
-    ADD CONSTRAINT productioncountingoperationrun_toc_fkey FOREIGN KEY (technologyoperationcomponent_id) REFERENCES public.technologies_technologyoperationcomponent(id) DEFERRABLE;
-
-
---
--- Name: arch_basicproductioncounting_productioncountingoperationrun productioncountingoperationrun_toc_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_basicproductioncounting_productioncountingoperationrun
     ADD CONSTRAINT productioncountingoperationrun_toc_fkey FOREIGN KEY (technologyoperationcomponent_id) REFERENCES public.technologies_technologyoperationcomponent(id) DEFERRABLE;
 
 
@@ -64350,26 +64608,10 @@ ALTER TABLE ONLY public.basicproductioncounting_productioncountingquantity
 
 
 --
--- Name: arch_basicproductioncounting_productioncountingquantity productioncountingquantity_basicproductioncounting_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_basicproductioncounting_productioncountingquantity
-    ADD CONSTRAINT productioncountingquantity_basicproductioncounting_fkey FOREIGN KEY (basicproductioncounting_id) REFERENCES public.arch_basicproductioncounting_basicproductioncounting(id) DEFERRABLE;
-
-
---
 -- Name: basicproductioncounting_productioncountingquantity productioncountingquantity_componentslocation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.basicproductioncounting_productioncountingquantity
-    ADD CONSTRAINT productioncountingquantity_componentslocation_fkey FOREIGN KEY (componentslocation_id) REFERENCES public.materialflow_location(id) DEFERRABLE;
-
-
---
--- Name: arch_basicproductioncounting_productioncountingquantity productioncountingquantity_componentslocation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_basicproductioncounting_productioncountingquantity
     ADD CONSTRAINT productioncountingquantity_componentslocation_fkey FOREIGN KEY (componentslocation_id) REFERENCES public.materialflow_location(id) DEFERRABLE;
 
 
@@ -64382,14 +64624,6 @@ ALTER TABLE ONLY public.basicproductioncounting_productioncountingquantity
 
 
 --
--- Name: arch_basicproductioncounting_productioncountingquantity productioncountingquantity_componentsoutputlocation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_basicproductioncounting_productioncountingquantity
-    ADD CONSTRAINT productioncountingquantity_componentsoutputlocation_fkey FOREIGN KEY (componentsoutputlocation_id) REFERENCES public.materialflow_location(id) DEFERRABLE;
-
-
---
 -- Name: basicproductioncounting_productioncountingquantity productioncountingquantity_order_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -64398,26 +64632,10 @@ ALTER TABLE ONLY public.basicproductioncounting_productioncountingquantity
 
 
 --
--- Name: arch_basicproductioncounting_productioncountingquantity productioncountingquantity_order_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_basicproductioncounting_productioncountingquantity
-    ADD CONSTRAINT productioncountingquantity_order_fkey FOREIGN KEY (order_id) REFERENCES public.arch_orders_order(id) DEFERRABLE;
-
-
---
 -- Name: basicproductioncounting_productioncountingquantity productioncountingquantity_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.basicproductioncounting_productioncountingquantity
-    ADD CONSTRAINT productioncountingquantity_product_fkey FOREIGN KEY (product_id) REFERENCES public.basic_product(id) DEFERRABLE;
-
-
---
--- Name: arch_basicproductioncounting_productioncountingquantity productioncountingquantity_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_basicproductioncounting_productioncountingquantity
     ADD CONSTRAINT productioncountingquantity_product_fkey FOREIGN KEY (product_id) REFERENCES public.basic_product(id) DEFERRABLE;
 
 
@@ -64430,26 +64648,10 @@ ALTER TABLE ONLY public.basicproductioncounting_productioncountingquantity
 
 
 --
--- Name: arch_basicproductioncounting_productioncountingquantity productioncountingquantity_productsflowlocation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_basicproductioncounting_productioncountingquantity
-    ADD CONSTRAINT productioncountingquantity_productsflowlocation_fkey FOREIGN KEY (productsflowlocation_id) REFERENCES public.materialflow_location(id) DEFERRABLE;
-
-
---
 -- Name: basicproductioncounting_productioncountingquantity productioncountingquantity_productsinputlocation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.basicproductioncounting_productioncountingquantity
-    ADD CONSTRAINT productioncountingquantity_productsinputlocation_fkey FOREIGN KEY (productsinputlocation_id) REFERENCES public.materialflow_location(id) DEFERRABLE;
-
-
---
--- Name: arch_basicproductioncounting_productioncountingquantity productioncountingquantity_productsinputlocation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_basicproductioncounting_productioncountingquantity
     ADD CONSTRAINT productioncountingquantity_productsinputlocation_fkey FOREIGN KEY (productsinputlocation_id) REFERENCES public.materialflow_location(id) DEFERRABLE;
 
 
@@ -64478,14 +64680,6 @@ ALTER TABLE ONLY public.basicproductioncounting_productioncountingquantity
 
 
 --
--- Name: arch_basicproductioncounting_productioncountingquantity productioncountingquantity_technologyoperationcomponent_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_basicproductioncounting_productioncountingquantity
-    ADD CONSTRAINT productioncountingquantity_technologyoperationcomponent_fkey FOREIGN KEY (technologyoperationcomponent_id) REFERENCES public.technologies_technologyoperationcomponent(id) DEFERRABLE;
-
-
---
 -- Name: basicproductioncounting_productioncountingquantity productioncountingquantity_wastereceptionwarehouse_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -64507,22 +64701,6 @@ ALTER TABLE ONLY public.basicproductioncounting_productioncountingquantitychange
 
 ALTER TABLE ONLY public.basicproductioncounting_productioncountingquantitychange
     ADD CONSTRAINT productioncountingquantitychange_product_fkey FOREIGN KEY (product_id) REFERENCES public.basic_product(id) DEFERRABLE;
-
-
---
--- Name: arch_productioncounting_productioncountingquantitysetcomponent productioncountingquantitysc_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_productioncounting_productioncountingquantitysetcomponent
-    ADD CONSTRAINT productioncountingquantitysc_product_fkey FOREIGN KEY (product_id) REFERENCES public.basic_product(id) DEFERRABLE;
-
-
---
--- Name: arch_productioncounting_productioncountingquantitysetcomponent productioncountingquantitysc_productioncountingquantity_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_productioncounting_productioncountingquantitysetcomponent
-    ADD CONSTRAINT productioncountingquantitysc_productioncountingquantity_fkey FOREIGN KEY (productioncountingquantity_id) REFERENCES public.arch_basicproductioncounting_productioncountingquantity(id) DEFERRABLE;
 
 
 --
@@ -64646,46 +64824,6 @@ ALTER TABLE ONLY public.avglaborcostcalcfororder_avglaborcostcalcfororder
 
 
 --
--- Name: arch_assignmenttoshift_staffassignmenttoshift productionlines_productionline_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_assignmenttoshift_staffassignmenttoshift
-    ADD CONSTRAINT productionlines_productionline_fkey FOREIGN KEY (productionline_id) REFERENCES public.productionlines_productionline(id) DEFERRABLE;
-
-
---
--- Name: arch_avglaborcostcalcfororder_avglaborcostcalcfororder productionlines_productionline_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_avglaborcostcalcfororder_avglaborcostcalcfororder
-    ADD CONSTRAINT productionlines_productionline_fkey FOREIGN KEY (productionline_id) REFERENCES public.productionlines_productionline(id) DEFERRABLE;
-
-
---
--- Name: arch_goodfood_confectionprotocol productionlines_productionline_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_goodfood_confectionprotocol
-    ADD CONSTRAINT productionlines_productionline_fkey FOREIGN KEY (productionline_id) REFERENCES public.productionlines_productionline(id) DEFERRABLE;
-
-
---
--- Name: arch_goodfood_extrusionprotocol productionlines_productionline_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_goodfood_extrusionprotocol
-    ADD CONSTRAINT productionlines_productionline_fkey FOREIGN KEY (productionline_id) REFERENCES public.productionlines_productionline(id) DEFERRABLE;
-
-
---
--- Name: arch_orders_operationaltask productionlines_productionline_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_orders_operationaltask
-    ADD CONSTRAINT productionlines_productionline_fkey FOREIGN KEY (productionline_id) REFERENCES public.productionlines_productionline(id) DEFERRABLE;
-
-
---
 -- Name: productionlines_workstationtypecomponent productionlines_workstationtypecomponent_pl_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -64758,26 +64896,10 @@ ALTER TABLE ONLY public.productionpershift_productionpershift
 
 
 --
--- Name: arch_productionpershift_productionpershift productionpershift_order_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_productionpershift_productionpershift
-    ADD CONSTRAINT productionpershift_order_fkey FOREIGN KEY (order_id) REFERENCES public.arch_orders_order(id) DEFERRABLE;
-
-
---
 -- Name: productioncounting_productiontracking productionrecord_subcontractor_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.productioncounting_productiontracking
-    ADD CONSTRAINT productionrecord_subcontractor_fkey FOREIGN KEY (subcontractor_id) REFERENCES public.basic_company(id) DEFERRABLE;
-
-
---
--- Name: arch_productioncounting_productiontracking productionrecord_subcontractor_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_productioncounting_productiontracking
     ADD CONSTRAINT productionrecord_subcontractor_fkey FOREIGN KEY (subcontractor_id) REFERENCES public.basic_company(id) DEFERRABLE;
 
 
@@ -64798,27 +64920,11 @@ ALTER TABLE ONLY public.productioncounting_productiontracking
 
 
 --
--- Name: arch_productioncounting_productiontracking productiontracking_correction_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_productioncounting_productiontracking
-    ADD CONSTRAINT productiontracking_correction_fkey FOREIGN KEY (correction_id) REFERENCES public.arch_productioncounting_productiontracking(id) DEFERRABLE;
-
-
---
 -- Name: productioncounting_productiontracking productiontracking_order_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.productioncounting_productiontracking
     ADD CONSTRAINT productiontracking_order_fkey FOREIGN KEY (order_id) REFERENCES public.orders_order(id) DEFERRABLE;
-
-
---
--- Name: arch_productioncounting_productiontracking productiontracking_order_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_productioncounting_productiontracking
-    ADD CONSTRAINT productiontracking_order_fkey FOREIGN KEY (order_id) REFERENCES public.arch_orders_order(id) DEFERRABLE;
 
 
 --
@@ -64830,26 +64936,10 @@ ALTER TABLE ONLY public.productioncounting_productiontracking
 
 
 --
--- Name: arch_productioncounting_productiontracking productiontracking_repairorder_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_productioncounting_productiontracking
-    ADD CONSTRAINT productiontracking_repairorder_fkey FOREIGN KEY (repairorder_id) REFERENCES public.arch_repairs_repairorder(id) DEFERRABLE;
-
-
---
 -- Name: productioncounting_productiontracking productiontracking_shift_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.productioncounting_productiontracking
-    ADD CONSTRAINT productiontracking_shift_fkey FOREIGN KEY (shift_id) REFERENCES public.basic_shift(id) DEFERRABLE;
-
-
---
--- Name: arch_productioncounting_productiontracking productiontracking_shift_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_productioncounting_productiontracking
     ADD CONSTRAINT productiontracking_shift_fkey FOREIGN KEY (shift_id) REFERENCES public.basic_shift(id) DEFERRABLE;
 
 
@@ -64862,26 +64952,10 @@ ALTER TABLE ONLY public.productioncounting_productiontracking
 
 
 --
--- Name: arch_productioncounting_productiontracking productiontracking_technologyoperationcomponent_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_productioncounting_productiontracking
-    ADD CONSTRAINT productiontracking_technologyoperationcomponent_fkey FOREIGN KEY (technologyoperationcomponent_id) REFERENCES public.technologies_technologyoperationcomponent(id) DEFERRABLE;
-
-
---
 -- Name: productioncounting_productiontracking productiontracking_workstation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.productioncounting_productiontracking
-    ADD CONSTRAINT productiontracking_workstation_fkey FOREIGN KEY (workstation_id) REFERENCES public.basic_workstation(id) DEFERRABLE;
-
-
---
--- Name: arch_productioncounting_productiontracking productiontracking_workstation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_productioncounting_productiontracking
     ADD CONSTRAINT productiontracking_workstation_fkey FOREIGN KEY (workstation_id) REFERENCES public.basic_workstation(id) DEFERRABLE;
 
 
@@ -65006,14 +65080,6 @@ ALTER TABLE ONLY public.productflowthrudivision_productstoissue
 
 
 --
--- Name: arch_productflowthrudivision_productstoissue productstoissue_storagelocation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_productflowthrudivision_productstoissue
-    ADD CONSTRAINT productstoissue_storagelocation_fkey FOREIGN KEY (storagelocation_id) REFERENCES public.materialflowresources_storagelocation(id) DEFERRABLE;
-
-
---
 -- Name: productflowthrudivision_productstoissuehelper productstoissuehelper_location_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -65126,26 +65192,10 @@ ALTER TABLE ONLY public.productflowthrudivision_producttoissuecorrection
 
 
 --
--- Name: arch_productflowthrudivision_producttoissuecorrection producttoissuecorrection_accountwithreservation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_productflowthrudivision_producttoissuecorrection
-    ADD CONSTRAINT producttoissuecorrection_accountwithreservation_fkey FOREIGN KEY (accountwithreservation_id) REFERENCES public.arch_materialflowresources_document(id) DEFERRABLE;
-
-
---
 -- Name: productflowthrudivision_producttoissuecorrection producttoissuecorrection_location_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.productflowthrudivision_producttoissuecorrection
-    ADD CONSTRAINT producttoissuecorrection_location_fkey FOREIGN KEY (location_id) REFERENCES public.materialflow_location(id) DEFERRABLE;
-
-
---
--- Name: arch_productflowthrudivision_producttoissuecorrection producttoissuecorrection_location_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_productflowthrudivision_producttoissuecorrection
     ADD CONSTRAINT producttoissuecorrection_location_fkey FOREIGN KEY (location_id) REFERENCES public.materialflow_location(id) DEFERRABLE;
 
 
@@ -65158,27 +65208,11 @@ ALTER TABLE ONLY public.productflowthrudivision_producttoissuecorrection
 
 
 --
--- Name: arch_productflowthrudivision_producttoissuecorrection producttoissuecorrection_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_productflowthrudivision_producttoissuecorrection
-    ADD CONSTRAINT producttoissuecorrection_product_fkey FOREIGN KEY (product_id) REFERENCES public.basic_product(id) DEFERRABLE;
-
-
---
 -- Name: productflowthrudivision_producttoissuecorrection producttoissuecorrection_productstoissue_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.productflowthrudivision_producttoissuecorrection
     ADD CONSTRAINT producttoissuecorrection_productstoissue_fkey FOREIGN KEY (productstoissue_id) REFERENCES public.productflowthrudivision_productstoissue(id) DEFERRABLE;
-
-
---
--- Name: arch_productflowthrudivision_producttoissuecorrection producttoissuecorrection_productstoissue_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_productflowthrudivision_producttoissuecorrection
-    ADD CONSTRAINT producttoissuecorrection_productstoissue_fkey FOREIGN KEY (productstoissue_id) REFERENCES public.arch_productflowthrudivision_productstoissue(id) DEFERRABLE;
 
 
 --
@@ -65190,27 +65224,11 @@ ALTER TABLE ONLY public.productflowthrudivision_producttoissuecorrection
 
 
 --
--- Name: arch_productflowthrudivision_producttoissuecorrection producttoissuecorrection_producttoissuecorrectionhelper_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_productflowthrudivision_producttoissuecorrection
-    ADD CONSTRAINT producttoissuecorrection_producttoissuecorrectionhelper_fkey FOREIGN KEY (producttoissuecorrectionhelper_id) REFERENCES public.productflowthrudivision_producttoissuecorrectionhelper(id) DEFERRABLE;
-
-
---
 -- Name: productflowthrudivision_producttoissuecorrection producttoissuecorrection_warehouseissue_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.productflowthrudivision_producttoissuecorrection
     ADD CONSTRAINT producttoissuecorrection_warehouseissue_fkey FOREIGN KEY (warehouseissue_id) REFERENCES public.productflowthrudivision_warehouseissue(id) DEFERRABLE;
-
-
---
--- Name: arch_productflowthrudivision_producttoissuecorrection producttoissuecorrection_warehouseissue_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_productflowthrudivision_producttoissuecorrection
-    ADD CONSTRAINT producttoissuecorrection_warehouseissue_fkey FOREIGN KEY (warehouseissue_id) REFERENCES public.arch_productflowthrudivision_warehouseissue(id) DEFERRABLE;
 
 
 --
@@ -65259,22 +65277,6 @@ ALTER TABLE ONLY public.technologies_producttoproductgrouptechnology
 
 ALTER TABLE ONLY public.productionpershift_progressforday
     ADD CONSTRAINT progressforday_productionpershift_fkey FOREIGN KEY (productionpershift_id) REFERENCES public.productionpershift_productionpershift(id) DEFERRABLE;
-
-
---
--- Name: arch_productionpershift_progressforday progressforday_productionpershift_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_productionpershift_progressforday
-    ADD CONSTRAINT progressforday_productionpershift_fkey FOREIGN KEY (productionpershift_id) REFERENCES public.arch_productionpershift_productionpershift(id) DEFERRABLE;
-
-
---
--- Name: arch_productionpershift_progressforday progressforday_technologyoperationcomponent_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_productionpershift_progressforday
-    ADD CONSTRAINT progressforday_technologyoperationcomponent_fkey FOREIGN KEY (technologyoperationcomponent_id) REFERENCES public.technologies_technologyoperationcomponent(id) DEFERRABLE;
 
 
 --
@@ -65590,14 +65592,6 @@ ALTER TABLE ONLY public.orders_reasontypecorrectiondatefrom
 
 
 --
--- Name: arch_orders_reasontypecorrectiondatefrom reasontypecorrectiondatefrom_changedateshelper_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_orders_reasontypecorrectiondatefrom
-    ADD CONSTRAINT reasontypecorrectiondatefrom_changedateshelper_fkey FOREIGN KEY (changedateshelper_id) REFERENCES public.orders_changedateshelper(id) DEFERRABLE;
-
-
---
 -- Name: orders_reasontypecorrectiondatefrom reasontypecorrectiondatefrom_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -65606,26 +65600,10 @@ ALTER TABLE ONLY public.orders_reasontypecorrectiondatefrom
 
 
 --
--- Name: arch_orders_reasontypecorrectiondatefrom reasontypecorrectiondatefrom_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_orders_reasontypecorrectiondatefrom
-    ADD CONSTRAINT reasontypecorrectiondatefrom_fkey FOREIGN KEY (order_id) REFERENCES public.arch_orders_order(id) DEFERRABLE;
-
-
---
 -- Name: orders_reasontypecorrectiondateto reasontypecorrectiondateto_changedateshelper_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.orders_reasontypecorrectiondateto
-    ADD CONSTRAINT reasontypecorrectiondateto_changedateshelper_fkey FOREIGN KEY (changedateshelper_id) REFERENCES public.orders_changedateshelper(id) DEFERRABLE;
-
-
---
--- Name: arch_orders_reasontypecorrectiondateto reasontypecorrectiondateto_changedateshelper_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_orders_reasontypecorrectiondateto
     ADD CONSTRAINT reasontypecorrectiondateto_changedateshelper_fkey FOREIGN KEY (changedateshelper_id) REFERENCES public.orders_changedateshelper(id) DEFERRABLE;
 
 
@@ -65638,27 +65616,11 @@ ALTER TABLE ONLY public.orders_reasontypecorrectiondateto
 
 
 --
--- Name: arch_orders_reasontypecorrectiondateto reasontypecorrectiondateto_order_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_orders_reasontypecorrectiondateto
-    ADD CONSTRAINT reasontypecorrectiondateto_order_fkey FOREIGN KEY (order_id) REFERENCES public.arch_orders_order(id) DEFERRABLE;
-
-
---
 -- Name: orders_reasontypedeviationeffectiveend reasontypedeviationeffectiveend_order_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.orders_reasontypedeviationeffectiveend
     ADD CONSTRAINT reasontypedeviationeffectiveend_order_fkey FOREIGN KEY (order_id) REFERENCES public.orders_order(id) DEFERRABLE;
-
-
---
--- Name: arch_orders_reasontypedeviationeffectiveend reasontypedeviationeffectiveend_order_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_orders_reasontypedeviationeffectiveend
-    ADD CONSTRAINT reasontypedeviationeffectiveend_order_fkey FOREIGN KEY (order_id) REFERENCES public.arch_orders_order(id) DEFERRABLE;
 
 
 --
@@ -65670,14 +65632,6 @@ ALTER TABLE ONLY public.orders_reasontypedeviationeffectivestart
 
 
 --
--- Name: arch_orders_reasontypedeviationeffectivestart reasontypedeviationeffectivestart_order_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_orders_reasontypedeviationeffectivestart
-    ADD CONSTRAINT reasontypedeviationeffectivestart_order_fkey FOREIGN KEY (order_id) REFERENCES public.arch_orders_order(id) DEFERRABLE;
-
-
---
 -- Name: orders_reasontypeofchangingorderstate reasontypeofchangingorderstate_orderstatechange_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -65686,27 +65640,11 @@ ALTER TABLE ONLY public.orders_reasontypeofchangingorderstate
 
 
 --
--- Name: arch_orders_reasontypeofchangingorderstate reasontypeofchangingorderstate_orderstatechange_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_orders_reasontypeofchangingorderstate
-    ADD CONSTRAINT reasontypeofchangingorderstate_orderstatechange_fkey FOREIGN KEY (orderstatechange_id) REFERENCES public.arch_orders_orderstatechange(id) DEFERRABLE;
-
-
---
 -- Name: productionpershift_reasontypeofcorrectionplan reasontypeofcorrectionplan_productionpershift_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.productionpershift_reasontypeofcorrectionplan
     ADD CONSTRAINT reasontypeofcorrectionplan_productionpershift_fkey FOREIGN KEY (productionpershift_id) REFERENCES public.productionpershift_productionpershift(id) DEFERRABLE;
-
-
---
--- Name: arch_productionpershift_reasontypeofcorrectionplan reasontypeofcorrectionplan_productionpershift_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_productionpershift_reasontypeofcorrectionplan
-    ADD CONSTRAINT reasontypeofcorrectionplan_productionpershift_fkey FOREIGN KEY (productionpershift_id) REFERENCES public.arch_productionpershift_productionpershift(id) DEFERRABLE;
 
 
 --
@@ -65822,26 +65760,10 @@ ALTER TABLE ONLY public.repairs_repairorder
 
 
 --
--- Name: arch_repairs_repairorder repairorder_division_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_repairs_repairorder
-    ADD CONSTRAINT repairorder_division_fkey FOREIGN KEY (division_id) REFERENCES public.basic_division(id) DEFERRABLE;
-
-
---
 -- Name: repairs_repairorder repairorder_faulttype_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.repairs_repairorder
-    ADD CONSTRAINT repairorder_faulttype_fkey FOREIGN KEY (faulttype_id) REFERENCES public.basic_faulttype(id) DEFERRABLE;
-
-
---
--- Name: arch_repairs_repairorder repairorder_faulttype_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_repairs_repairorder
     ADD CONSTRAINT repairorder_faulttype_fkey FOREIGN KEY (faulttype_id) REFERENCES public.basic_faulttype(id) DEFERRABLE;
 
 
@@ -65854,27 +65776,11 @@ ALTER TABLE ONLY public.repairs_repairorder
 
 
 --
--- Name: arch_repairs_repairorder repairorder_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_repairs_repairorder
-    ADD CONSTRAINT repairorder_product_fkey FOREIGN KEY (product_id) REFERENCES public.basic_product(id) DEFERRABLE;
-
-
---
 -- Name: repairs_repairorder repairorder_productiontracking_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.repairs_repairorder
     ADD CONSTRAINT repairorder_productiontracking_fkey FOREIGN KEY (productiontracking_id) REFERENCES public.productioncounting_productiontracking(id) DEFERRABLE;
-
-
---
--- Name: arch_repairs_repairorder repairorder_productiontracking_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_repairs_repairorder
-    ADD CONSTRAINT repairorder_productiontracking_fkey FOREIGN KEY (productiontracking_id) REFERENCES public.arch_productioncounting_productiontracking(id) DEFERRABLE;
 
 
 --
@@ -65886,26 +65792,10 @@ ALTER TABLE ONLY public.repairs_repairorder
 
 
 --
--- Name: arch_repairs_repairorder repairorder_repairorderproduct_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_repairs_repairorder
-    ADD CONSTRAINT repairorder_repairorderproduct_fkey FOREIGN KEY (repairorderproduct_id) REFERENCES public.arch_repairs_repairorderproduct(id) DEFERRABLE;
-
-
---
 -- Name: repairs_repairorder repairorder_shift_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.repairs_repairorder
-    ADD CONSTRAINT repairorder_shift_fkey FOREIGN KEY (shift_id) REFERENCES public.basic_shift(id) DEFERRABLE;
-
-
---
--- Name: arch_repairs_repairorder repairorder_shift_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_repairs_repairorder
     ADD CONSTRAINT repairorder_shift_fkey FOREIGN KEY (shift_id) REFERENCES public.basic_shift(id) DEFERRABLE;
 
 
@@ -65918,26 +65808,10 @@ ALTER TABLE ONLY public.repairs_repairorder
 
 
 --
--- Name: arch_repairs_repairorder repairorder_staff_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_repairs_repairorder
-    ADD CONSTRAINT repairorder_staff_fkey FOREIGN KEY (staff_id) REFERENCES public.basic_staff(id) DEFERRABLE;
-
-
---
 -- Name: repairs_repairorderproduct repairorderproduct_division_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.repairs_repairorderproduct
-    ADD CONSTRAINT repairorderproduct_division_fkey FOREIGN KEY (division_id) REFERENCES public.basic_division(id) DEFERRABLE;
-
-
---
--- Name: arch_repairs_repairorderproduct repairorderproduct_division_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_repairs_repairorderproduct
     ADD CONSTRAINT repairorderproduct_division_fkey FOREIGN KEY (division_id) REFERENCES public.basic_division(id) DEFERRABLE;
 
 
@@ -65950,26 +65824,10 @@ ALTER TABLE ONLY public.repairs_repairorderproduct
 
 
 --
--- Name: arch_repairs_repairorderproduct repairorderproduct_faulttype_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_repairs_repairorderproduct
-    ADD CONSTRAINT repairorderproduct_faulttype_fkey FOREIGN KEY (faulttype_id) REFERENCES public.basic_faulttype(id) DEFERRABLE;
-
-
---
 -- Name: repairs_repairorderproduct repairorderproduct_location_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.repairs_repairorderproduct
-    ADD CONSTRAINT repairorderproduct_location_fkey FOREIGN KEY (location_id) REFERENCES public.materialflow_location(id) DEFERRABLE;
-
-
---
--- Name: arch_repairs_repairorderproduct repairorderproduct_location_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_repairs_repairorderproduct
     ADD CONSTRAINT repairorderproduct_location_fkey FOREIGN KEY (location_id) REFERENCES public.materialflow_location(id) DEFERRABLE;
 
 
@@ -65982,27 +65840,11 @@ ALTER TABLE ONLY public.repairs_repairorderproduct
 
 
 --
--- Name: arch_repairs_repairorderproduct repairorderproduct_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_repairs_repairorderproduct
-    ADD CONSTRAINT repairorderproduct_product_fkey FOREIGN KEY (product_id) REFERENCES public.basic_product(id) DEFERRABLE;
-
-
---
 -- Name: repairs_repairorderproduct repairorderproduct_trackingoperationproductincomponent_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.repairs_repairorderproduct
     ADD CONSTRAINT repairorderproduct_trackingoperationproductincomponent_fkey FOREIGN KEY (trackingoperationproductincomponent_id) REFERENCES public.productioncounting_trackingoperationproductincomponent(id) DEFERRABLE;
-
-
---
--- Name: arch_repairs_repairorderproduct repairorderproduct_trackingoperationproductincomponent_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_repairs_repairorderproduct
-    ADD CONSTRAINT repairorderproduct_trackingoperationproductincomponent_fkey FOREIGN KEY (trackingoperationproductincomponent_id) REFERENCES public.arch_productioncounting_trackingoperationproductincomponent(id) DEFERRABLE;
 
 
 --
@@ -66014,26 +65856,10 @@ ALTER TABLE ONLY public.repairs_repairorderstatechange
 
 
 --
--- Name: arch_repairs_repairorderstatechange repairorderstatechange_repairorder_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_repairs_repairorderstatechange
-    ADD CONSTRAINT repairorderstatechange_repairorder_fkey FOREIGN KEY (repairorder_id) REFERENCES public.arch_repairs_repairorder(id) DEFERRABLE;
-
-
---
 -- Name: repairs_repairorderstatechange repairorderstatechange_shift_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.repairs_repairorderstatechange
-    ADD CONSTRAINT repairorderstatechange_shift_fkey FOREIGN KEY (shift_id) REFERENCES public.basic_shift(id) DEFERRABLE;
-
-
---
--- Name: arch_repairs_repairorderstatechange repairorderstatechange_shift_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_repairs_repairorderstatechange
     ADD CONSTRAINT repairorderstatechange_shift_fkey FOREIGN KEY (shift_id) REFERENCES public.basic_shift(id) DEFERRABLE;
 
 
@@ -66046,26 +65872,10 @@ ALTER TABLE ONLY public.repairs_repairorderworktime
 
 
 --
--- Name: arch_repairs_repairorderworktime repairorderworktime_repairorder_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_repairs_repairorderworktime
-    ADD CONSTRAINT repairorderworktime_repairorder_fkey FOREIGN KEY (repairorder_id) REFERENCES public.arch_repairs_repairorder(id) DEFERRABLE;
-
-
---
 -- Name: repairs_repairorderworktime repairorderworktime_staff_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.repairs_repairorderworktime
-    ADD CONSTRAINT repairorderworktime_staff_fkey FOREIGN KEY (staff_id) REFERENCES public.basic_staff(id) DEFERRABLE;
-
-
---
--- Name: arch_repairs_repairorderworktime repairorderworktime_staff_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_repairs_repairorderworktime
     ADD CONSTRAINT repairorderworktime_staff_fkey FOREIGN KEY (staff_id) REFERENCES public.basic_staff(id) DEFERRABLE;
 
 
@@ -66166,26 +65976,10 @@ ALTER TABLE ONLY public.urcmaterialavailability_requiredcomponent
 
 
 --
--- Name: arch_urcmaterialavailability_requiredcomponent requiredcomponent_order_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_urcmaterialavailability_requiredcomponent
-    ADD CONSTRAINT requiredcomponent_order_fkey FOREIGN KEY (order_id) REFERENCES public.arch_orders_order(id) DEFERRABLE;
-
-
---
 -- Name: urcmaterialavailability_requiredcomponent requiredcomponent_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.urcmaterialavailability_requiredcomponent
-    ADD CONSTRAINT requiredcomponent_product_fkey FOREIGN KEY (product_id) REFERENCES public.basic_product(id) DEFERRABLE;
-
-
---
--- Name: arch_urcmaterialavailability_requiredcomponent requiredcomponent_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_urcmaterialavailability_requiredcomponent
     ADD CONSTRAINT requiredcomponent_product_fkey FOREIGN KEY (product_id) REFERENCES public.basic_product(id) DEFERRABLE;
 
 
@@ -66198,26 +65992,10 @@ ALTER TABLE ONLY public.urcmaterialavailability_requiredcomponent
 
 
 --
--- Name: arch_urcmaterialavailability_requiredcomponent requiredcomponent_technology_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_urcmaterialavailability_requiredcomponent
-    ADD CONSTRAINT requiredcomponent_technology_fkey FOREIGN KEY (technology_id) REFERENCES public.technologies_technology(id) DEFERRABLE;
-
-
---
 -- Name: materialflowresources_reservation reservation_location_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.materialflowresources_reservation
-    ADD CONSTRAINT reservation_location_fkey FOREIGN KEY (location_id) REFERENCES public.materialflow_location(id) DEFERRABLE;
-
-
---
--- Name: arch_materialflowresources_reservation reservation_location_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_materialflowresources_reservation
     ADD CONSTRAINT reservation_location_fkey FOREIGN KEY (location_id) REFERENCES public.materialflow_location(id) DEFERRABLE;
 
 
@@ -66230,26 +66008,10 @@ ALTER TABLE ONLY public.materialflowresources_reservation
 
 
 --
--- Name: arch_materialflowresources_reservation reservation_position_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_materialflowresources_reservation
-    ADD CONSTRAINT reservation_position_fkey FOREIGN KEY (position_id) REFERENCES public.arch_materialflowresources_position(id) DEFERRABLE;
-
-
---
 -- Name: materialflowresources_reservation reservation_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.materialflowresources_reservation
-    ADD CONSTRAINT reservation_product_fkey FOREIGN KEY (product_id) REFERENCES public.basic_product(id) DEFERRABLE;
-
-
---
--- Name: arch_materialflowresources_reservation reservation_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_materialflowresources_reservation
     ADD CONSTRAINT reservation_product_fkey FOREIGN KEY (product_id) REFERENCES public.basic_product(id) DEFERRABLE;
 
 
@@ -66262,26 +66024,10 @@ ALTER TABLE ONLY public.materialflowresources_reservation
 
 
 --
--- Name: arch_materialflowresources_reservation reservation_producttoissue_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_materialflowresources_reservation
-    ADD CONSTRAINT reservation_producttoissue_fkey FOREIGN KEY (productstoissue_id) REFERENCES public.arch_productflowthrudivision_productstoissue(id) DEFERRABLE;
-
-
---
 -- Name: materialflowresources_reservation reservation_resource_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.materialflowresources_reservation
-    ADD CONSTRAINT reservation_resource_fkey FOREIGN KEY (resource_id) REFERENCES public.materialflowresources_resource(id) DEFERRABLE;
-
-
---
--- Name: arch_materialflowresources_reservation reservation_resource_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_materialflowresources_reservation
     ADD CONSTRAINT reservation_resource_fkey FOREIGN KEY (resource_id) REFERENCES public.materialflowresources_resource(id) DEFERRABLE;
 
 
@@ -66678,27 +66424,11 @@ ALTER TABLE ONLY public.orders_productionlineschedulestatechange
 
 
 --
--- Name: arch_integrationbartender_sendtoprint sendtoprint_prineter_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_integrationbartender_sendtoprint
-    ADD CONSTRAINT sendtoprint_prineter_fkey FOREIGN KEY (printer_id) REFERENCES public.integrationbartender_printer(id) DEFERRABLE;
-
-
---
 -- Name: integrationbartender_sendtoprint sendtoprint_printlabelshelper_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.integrationbartender_sendtoprint
     ADD CONSTRAINT sendtoprint_printlabelshelper_fkey FOREIGN KEY (printlabelshelper_id) REFERENCES public.integrationbartender_printlabelshelper(id) DEFERRABLE;
-
-
---
--- Name: arch_integrationbartender_sendtoprint sendtoprint_printlabelshelper_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_integrationbartender_sendtoprint
-    ADD CONSTRAINT sendtoprint_printlabelshelper_fkey FOREIGN KEY (printlabelshelper_id) REFERENCES public.arch_integrationbartender_printlabelshelper(id) DEFERRABLE;
 
 
 --
@@ -66730,14 +66460,6 @@ ALTER TABLE ONLY public.jointable_shift_shifttimetableexception
 --
 
 ALTER TABLE ONLY public.productflowthrudivision_warehouseissuestatechange
-    ADD CONSTRAINT shift_warehouseissuestatechange_fkey FOREIGN KEY (shift_id) REFERENCES public.basic_shift(id) DEFERRABLE;
-
-
---
--- Name: arch_productflowthrudivision_warehouseissuestatechange shift_warehouseissuestatechange_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_productflowthrudivision_warehouseissuestatechange
     ADD CONSTRAINT shift_warehouseissuestatechange_fkey FOREIGN KEY (shift_id) REFERENCES public.basic_shift(id) DEFERRABLE;
 
 
@@ -66886,14 +66608,6 @@ ALTER TABLE ONLY public.assignmenttoshift_staffassignmenttoshift
 
 
 --
--- Name: arch_assignmenttoshift_staffassignmenttoshift staffassignmenttoshift_masterorder_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_assignmenttoshift_staffassignmenttoshift
-    ADD CONSTRAINT staffassignmenttoshift_masterorder_fkey FOREIGN KEY (masterorder_id) REFERENCES public.arch_masterorders_masterorder(id) DEFERRABLE;
-
-
---
 -- Name: emailnotifications_staffnotification staffnotification_parameter_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -66987,14 +66701,6 @@ ALTER TABLE ONLY public.jointable_stocktaking_storagelocation
 
 ALTER TABLE ONLY public.stoppage_stoppage
     ADD CONSTRAINT stoppage_order_fkey FOREIGN KEY (order_id) REFERENCES public.orders_order(id) DEFERRABLE;
-
-
---
--- Name: arch_stoppage_stoppage stoppage_order_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_stoppage_stoppage
-    ADD CONSTRAINT stoppage_order_fkey FOREIGN KEY (order_id) REFERENCES public.arch_orders_order(id) DEFERRABLE;
 
 
 --
@@ -67246,27 +66952,11 @@ ALTER TABLE ONLY public.ordersforsubproductsgeneration_suborders
 
 
 --
--- Name: arch_ordersforsubproductsgeneration_suborders suborders_order_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_ordersforsubproductsgeneration_suborders
-    ADD CONSTRAINT suborders_order_fkey FOREIGN KEY (order_id) REFERENCES public.arch_orders_order(id) DEFERRABLE;
-
-
---
 -- Name: ordersforsubproductsgeneration_suborders suborders_ordersgroup_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.ordersforsubproductsgeneration_suborders
     ADD CONSTRAINT suborders_ordersgroup_fkey FOREIGN KEY (ordersgroup_id) REFERENCES public.ordersgroups_ordersgroup(id) DEFERRABLE;
-
-
---
--- Name: arch_ordersforsubproductsgeneration_suborders suborders_ordersgroup_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_ordersforsubproductsgeneration_suborders
-    ADD CONSTRAINT suborders_ordersgroup_fkey FOREIGN KEY (ordersgroup_id) REFERENCES public.arch_ordersgroups_ordersgroup(id) DEFERRABLE;
 
 
 --
@@ -67590,14 +67280,6 @@ ALTER TABLE ONLY public.productflowthrudivision_warehouseissue
 
 
 --
--- Name: arch_productflowthrudivision_warehouseissue technologyoperationcomponent_warehouseissue_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_productflowthrudivision_warehouseissue
-    ADD CONSTRAINT technologyoperationcomponent_warehouseissue_fkey FOREIGN KEY (technologyoperationcomponent_id) REFERENCES public.technologies_technologyoperationcomponent(id) DEFERRABLE;
-
-
---
 -- Name: jointable_technologyoperationcomponent_workstation technologyoperationcomponent_workstation_workstation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -67611,70 +67293,6 @@ ALTER TABLE ONLY public.jointable_technologyoperationcomponent_workstation
 
 ALTER TABLE ONLY public.technologies_technologyoperationcomponent
     ADD CONSTRAINT technologyoperationcomponent_workstationtype_fkey FOREIGN KEY (workstationtype_id) REFERENCES public.basic_workstationtype(id) DEFERRABLE;
-
-
---
--- Name: arch_technologies_technologyoperationcomponentmergeproductin technologyoperationcomponentmergeproductin_oc_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_technologies_technologyoperationcomponentmergeproductin
-    ADD CONSTRAINT technologyoperationcomponentmergeproductin_oc_fkey FOREIGN KEY (operationcomponent_id) REFERENCES public.technologies_technologyoperationcomponent(id) DEFERRABLE;
-
-
---
--- Name: arch_technologies_technologyoperationcomponentmergeproductin technologyoperationcomponentmergeproductin_opic_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_technologies_technologyoperationcomponentmergeproductin
-    ADD CONSTRAINT technologyoperationcomponentmergeproductin_opic_fkey FOREIGN KEY (mergedoperationproductcomponent_id) REFERENCES public.technologies_operationproductincomponent(id) DEFERRABLE;
-
-
---
--- Name: arch_technologies_technologyoperationcomponentmergeproductin technologyoperationcomponentmergeproductin_order_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_technologies_technologyoperationcomponentmergeproductin
-    ADD CONSTRAINT technologyoperationcomponentmergeproductin_order_fkey FOREIGN KEY (order_id) REFERENCES public.arch_orders_order(id) DEFERRABLE;
-
-
---
--- Name: arch_technologies_technologyoperationcomponentmergeproductin technologyoperationcomponentmergeproductin_toc_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_technologies_technologyoperationcomponentmergeproductin
-    ADD CONSTRAINT technologyoperationcomponentmergeproductin_toc_fkey FOREIGN KEY (mergedoperationcomponent_id) REFERENCES public.technologies_technologyoperationcomponent(id) DEFERRABLE;
-
-
---
--- Name: arch_technologies_technologyoperationcomponentmergeproductout technologyoperationcomponentmergeproductout_oc_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_technologies_technologyoperationcomponentmergeproductout
-    ADD CONSTRAINT technologyoperationcomponentmergeproductout_oc_fkey FOREIGN KEY (operationcomponent_id) REFERENCES public.technologies_technologyoperationcomponent(id) DEFERRABLE;
-
-
---
--- Name: arch_technologies_technologyoperationcomponentmergeproductout technologyoperationcomponentmergeproductout_opoc_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_technologies_technologyoperationcomponentmergeproductout
-    ADD CONSTRAINT technologyoperationcomponentmergeproductout_opoc_fkey FOREIGN KEY (mergedoperationproductcomponent_id) REFERENCES public.technologies_operationproductoutcomponent(id) DEFERRABLE;
-
-
---
--- Name: arch_technologies_technologyoperationcomponentmergeproductout technologyoperationcomponentmergeproductout_order_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_technologies_technologyoperationcomponentmergeproductout
-    ADD CONSTRAINT technologyoperationcomponentmergeproductout_order_fkey FOREIGN KEY (order_id) REFERENCES public.arch_orders_order(id) DEFERRABLE;
-
-
---
--- Name: arch_technologies_technologyoperationcomponentmergeproductout technologyoperationcomponentmergeproductout_toc_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_technologies_technologyoperationcomponentmergeproductout
-    ADD CONSTRAINT technologyoperationcomponentmergeproductout_toc_fkey FOREIGN KEY (mergedoperationcomponent_id) REFERENCES public.technologies_technologyoperationcomponent(id) DEFERRABLE;
 
 
 --
@@ -67814,26 +67432,10 @@ ALTER TABLE ONLY public.productioncounting_trackinginproductreplacementhelper
 
 
 --
--- Name: arch_productioncounting_trackingoperationproductincomponent trackingoperationproductincomponent_batch_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_productioncounting_trackingoperationproductincomponent
-    ADD CONSTRAINT trackingoperationproductincomponent_batch_fkey FOREIGN KEY (batch_id) REFERENCES public.advancedgenealogy_batch(id) DEFERRABLE;
-
-
---
 -- Name: productioncounting_trackingoperationproductincomponent trackingoperationproductincomponent_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.productioncounting_trackingoperationproductincomponent
-    ADD CONSTRAINT trackingoperationproductincomponent_product_fkey FOREIGN KEY (product_id) REFERENCES public.basic_product(id) DEFERRABLE;
-
-
---
--- Name: arch_productioncounting_trackingoperationproductincomponent trackingoperationproductincomponent_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_productioncounting_trackingoperationproductincomponent
     ADD CONSTRAINT trackingoperationproductincomponent_product_fkey FOREIGN KEY (product_id) REFERENCES public.basic_product(id) DEFERRABLE;
 
 
@@ -67843,14 +67445,6 @@ ALTER TABLE ONLY public.arch_productioncounting_trackingoperationproductincompon
 
 ALTER TABLE ONLY public.productioncounting_trackingoperationproductincomponent
     ADD CONSTRAINT trackingoperationproductincomponent_productiontracking_fkey FOREIGN KEY (productiontracking_id) REFERENCES public.productioncounting_productiontracking(id) DEFERRABLE;
-
-
---
--- Name: arch_productioncounting_trackingoperationproductincomponent trackingoperationproductincomponent_productiontracking_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_productioncounting_trackingoperationproductincomponent
-    ADD CONSTRAINT trackingoperationproductincomponent_productiontracking_fkey FOREIGN KEY (productiontracking_id) REFERENCES public.arch_productioncounting_productiontracking(id) DEFERRABLE;
 
 
 --
@@ -67866,14 +67460,6 @@ ALTER TABLE ONLY public.productioncounting_trackingoperationproductincomponent
 --
 
 ALTER TABLE ONLY public.productioncounting_trackingoperationproductoutcomponent
-    ADD CONSTRAINT trackingoperationproductoutcomponent_batch_fkey FOREIGN KEY (batch_id) REFERENCES public.advancedgenealogy_batch(id) DEFERRABLE;
-
-
---
--- Name: arch_productioncounting_trackingoperationproductoutcomponent trackingoperationproductoutcomponent_batch_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_productioncounting_trackingoperationproductoutcomponent
     ADD CONSTRAINT trackingoperationproductoutcomponent_batch_fkey FOREIGN KEY (batch_id) REFERENCES public.advancedgenealogy_batch(id) DEFERRABLE;
 
 
@@ -67894,27 +67480,11 @@ ALTER TABLE ONLY public.productioncounting_trackingoperationproductoutcomponent
 
 
 --
--- Name: arch_productioncounting_trackingoperationproductoutcomponent trackingoperationproductoutcomponent_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_productioncounting_trackingoperationproductoutcomponent
-    ADD CONSTRAINT trackingoperationproductoutcomponent_product_fkey FOREIGN KEY (product_id) REFERENCES public.basic_product(id) DEFERRABLE;
-
-
---
 -- Name: productioncounting_trackingoperationproductoutcomponent trackingoperationproductoutcomponent_productiontracking_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.productioncounting_trackingoperationproductoutcomponent
     ADD CONSTRAINT trackingoperationproductoutcomponent_productiontracking_fkey FOREIGN KEY (productiontracking_id) REFERENCES public.productioncounting_productiontracking(id) DEFERRABLE;
-
-
---
--- Name: arch_productioncounting_trackingoperationproductoutcomponent trackingoperationproductoutcomponent_productiontracking_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_productioncounting_trackingoperationproductoutcomponent
-    ADD CONSTRAINT trackingoperationproductoutcomponent_productiontracking_fkey FOREIGN KEY (productiontracking_id) REFERENCES public.arch_productioncounting_productiontracking(id) DEFERRABLE;
 
 
 --
@@ -67934,26 +67504,10 @@ ALTER TABLE ONLY public.advancedgenealogy_trackingrecord
 
 
 --
--- Name: arch_advancedgenealogy_trackingrecord trackingrecord_order_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_advancedgenealogy_trackingrecord
-    ADD CONSTRAINT trackingrecord_order_fkey FOREIGN KEY (order_id) REFERENCES public.arch_orders_order(id) DEFERRABLE;
-
-
---
 -- Name: advancedgenealogy_trackingrecord trackingrecord_producedbatch_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.advancedgenealogy_trackingrecord
-    ADD CONSTRAINT trackingrecord_producedbatch_fkey FOREIGN KEY (producedbatch_id) REFERENCES public.advancedgenealogy_batch(id) DEFERRABLE;
-
-
---
--- Name: arch_advancedgenealogy_trackingrecord trackingrecord_producedbatch_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_advancedgenealogy_trackingrecord
     ADD CONSTRAINT trackingrecord_producedbatch_fkey FOREIGN KEY (producedbatch_id) REFERENCES public.advancedgenealogy_batch(id) DEFERRABLE;
 
 
@@ -67963,14 +67517,6 @@ ALTER TABLE ONLY public.arch_advancedgenealogy_trackingrecord
 
 ALTER TABLE ONLY public.orders_typeofcorrectioncauses
     ADD CONSTRAINT typeofcorrectioncauses_order_fkey FOREIGN KEY (order_id) REFERENCES public.orders_order(id) DEFERRABLE;
-
-
---
--- Name: arch_orders_typeofcorrectioncauses typeofcorrectioncauses_order_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_orders_typeofcorrectioncauses
-    ADD CONSTRAINT typeofcorrectioncauses_order_fkey FOREIGN KEY (order_id) REFERENCES public.arch_orders_order(id) DEFERRABLE;
 
 
 --
@@ -67998,27 +67544,11 @@ ALTER TABLE ONLY public.advancedgenealogy_usedbatchsimple
 
 
 --
--- Name: arch_advancedgenealogy_usedbatchsimple usedbatchsimple_batch_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_advancedgenealogy_usedbatchsimple
-    ADD CONSTRAINT usedbatchsimple_batch_fkey FOREIGN KEY (batch_id) REFERENCES public.advancedgenealogy_batch(id) DEFERRABLE;
-
-
---
 -- Name: advancedgenealogy_usedbatchsimple usedbatchsimple_trackingrecord_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.advancedgenealogy_usedbatchsimple
     ADD CONSTRAINT usedbatchsimple_trackingrecord_fkey FOREIGN KEY (trackingrecord_id) REFERENCES public.advancedgenealogy_trackingrecord(id) DEFERRABLE;
-
-
---
--- Name: arch_advancedgenealogy_usedbatchsimple usedbatchsimple_trackingrecord_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_advancedgenealogy_usedbatchsimple
-    ADD CONSTRAINT usedbatchsimple_trackingrecord_fkey FOREIGN KEY (trackingrecord_id) REFERENCES public.arch_advancedgenealogy_trackingrecord(id) DEFERRABLE;
 
 
 --
@@ -68110,27 +67640,11 @@ ALTER TABLE ONLY public.productflowthrudivision_issue
 
 
 --
--- Name: arch_productflowthrudivision_issue warehouseissue_issue_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_productflowthrudivision_issue
-    ADD CONSTRAINT warehouseissue_issue_fkey FOREIGN KEY (warehouseissue_id) REFERENCES public.arch_productflowthrudivision_warehouseissue(id) DEFERRABLE;
-
-
---
 -- Name: productflowthrudivision_warehouseissue warehouseissue_order_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.productflowthrudivision_warehouseissue
     ADD CONSTRAINT warehouseissue_order_fkey FOREIGN KEY (order_id) REFERENCES public.orders_order(id) DEFERRABLE;
-
-
---
--- Name: arch_productflowthrudivision_warehouseissue warehouseissue_order_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_productflowthrudivision_warehouseissue
-    ADD CONSTRAINT warehouseissue_order_fkey FOREIGN KEY (order_id) REFERENCES public.arch_orders_order(id) DEFERRABLE;
 
 
 --
@@ -68142,27 +67656,11 @@ ALTER TABLE ONLY public.productflowthrudivision_productstoissue
 
 
 --
--- Name: arch_productflowthrudivision_productstoissue warehouseissue_productstoissue_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_productflowthrudivision_productstoissue
-    ADD CONSTRAINT warehouseissue_productstoissue_fkey FOREIGN KEY (warehouseissue_id) REFERENCES public.arch_productflowthrudivision_warehouseissue(id) DEFERRABLE;
-
-
---
 -- Name: productflowthrudivision_warehouseissuestatechange warehouseissue_warehouseissuestatechange_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.productflowthrudivision_warehouseissuestatechange
     ADD CONSTRAINT warehouseissue_warehouseissuestatechange_fkey FOREIGN KEY (warehouseissue_id) REFERENCES public.productflowthrudivision_warehouseissue(id) DEFERRABLE;
-
-
---
--- Name: arch_productflowthrudivision_warehouseissuestatechange warehouseissue_warehouseissuestatechange_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_productflowthrudivision_warehouseissuestatechange
-    ADD CONSTRAINT warehouseissue_warehouseissuestatechange_fkey FOREIGN KEY (warehouseissue_id) REFERENCES public.arch_productflowthrudivision_warehouseissue(id) DEFERRABLE;
 
 
 --
@@ -68278,26 +67776,10 @@ ALTER TABLE ONLY public.productflowthrudivision_warehouseissue
 
 
 --
--- Name: arch_productflowthrudivision_warehouseissue workerwhocollected_warehouseissue_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_productflowthrudivision_warehouseissue
-    ADD CONSTRAINT workerwhocollected_warehouseissue_fkey FOREIGN KEY (workerwhocollected_id) REFERENCES public.basic_staff(id) DEFERRABLE;
-
-
---
 -- Name: productflowthrudivision_warehouseissue workerwhoissued__warehouseissue_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.productflowthrudivision_warehouseissue
-    ADD CONSTRAINT workerwhoissued__warehouseissue_fkey FOREIGN KEY (workerwhoissued_id) REFERENCES public.basic_staff(id) DEFERRABLE;
-
-
---
--- Name: arch_productflowthrudivision_warehouseissue workerwhoissued__warehouseissue_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_productflowthrudivision_warehouseissue
     ADD CONSTRAINT workerwhoissued__warehouseissue_fkey FOREIGN KEY (workerwhoissued_id) REFERENCES public.basic_staff(id) DEFERRABLE;
 
 

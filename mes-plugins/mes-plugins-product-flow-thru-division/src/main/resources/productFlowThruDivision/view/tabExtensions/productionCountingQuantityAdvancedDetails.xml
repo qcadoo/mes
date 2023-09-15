@@ -29,7 +29,7 @@
                     xsi:schemaLocation="http://schema.qcadoo.org/modules/windowTabExtension http://schema.qcadoo.org/modules/windowTabExtension.xsd"
                     plugin="basicProductionCounting" view="productionCountingQuantityAdvancedDetails">
 
- <windowTab name="flowTab" reference="flowTab">
+    <windowTab name="flowTab" reference="flowTab">
         <component type="gridLayout" name="flowLayout" columns="4"
                    rows="6">
 
@@ -63,9 +63,9 @@
                 <component type="select" name="productionFlow"
                            field="#{form}.productionFlow" reference="productionFlow"
                            hasDescription="true">
-                     <listener event="onSelectedEntityChange"
-                           class="com.qcadoo.mes.productFlowThruDivision.listeners.ProductionCountingQuantityAdvancedDetailsListenersPFTD"
-                           method="setFlowTabState"/>
+                    <listener event="onSelectedEntityChange"
+                              class="com.qcadoo.mes.productFlowThruDivision.listeners.ProductionCountingQuantityAdvancedDetailsListenersPFTD"
+                              method="setFlowTabState"/>
                 </component>
             </layoutElement>
 
@@ -108,6 +108,63 @@
                 </component>
             </layoutElement>
 
+        </component>
+    </windowTab>
+    <windowTab name="productResourceReservations" reference="productResourceReservations">
+        <component type="gridLayout" name="flowLayout" columns="2"
+                   rows="3" hasBorders="false">
+            <layoutElement column="1" row="1">
+                <component type="label" name="infoMessage"
+                           reference="infoMessage" defaultEnabled="never" hasLabel="false">
+                    <option type="labelStyle" value="text"/>
+                </component>
+
+            </layoutElement>
+            <layoutElement column="1" row="2">
+                <component type="input" name="resourceProductNumber"
+                           reference="resourceProductNumber" defaultEnabled="never"
+                           hasLabel="true">
+                </component>
+            </layoutElement>
+            <layoutElement column="1" row="3">
+                <component type="input" name="resourcePlannedQuantity"
+                           reference="resourcePlannedQuantity" defaultEnabled="never"
+                           hasLabel="true">
+                </component>
+            </layoutElement>
+            <layoutElement column="2" row="3">
+                <component type="input" name="resourcePlannedQuantityUnit"
+                           reference="resourcePlannedQuantityUnit" defaultEnabled="false" hasLabel="false">
+                    <option type="textRepresentationOnDisabled" value="true"/>
+                    <option type="alignment" value="left"/>
+
+                </component>
+            </layoutElement>
+        </component>
+        <component type="grid" name="orderProductResourceReservations" reference="orderProductResourceReservations"
+                   source="#{form}.orderProductResourceReservations">
+            <option type="column" name="resourceNumber" fields="resourceNumber" link="true"/>
+            <option type="column" name="planedQuantity" fields="planedQuantity" link="true"/>
+            <option type="column" name="usedQuantity" fields="usedQuantity" link="true"/>
+
+            <option type="order" column="priority" direction="asc"/>
+
+            <option type="searchable" value="resourceNumber,planedQuantity,usedQuantity"/>
+            <option type="orderable" value="resourceNumber,planedQuantity,usedQuantity"/>
+
+
+
+            <option type="correspondingView" value="productFlowThruDivision/orderProductResourceReservationDetails"/>
+            <option type="correspondingComponent" value="form"/>
+            <option type="correspondingViewInModal" value="true"/>
+
+            <option type="creatable" value="true"/>
+            <option type="deletable" value="true"/>
+
+            <option type="fullscreen" value="true"/>
+            <option type="multiselect" value="true"/>
+            <option type="paginable" value="true"/>
+            <option type="prioritizable" value="true"/>
         </component>
     </windowTab>
 </windowTabExtension>

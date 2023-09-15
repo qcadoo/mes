@@ -29,75 +29,83 @@
     	xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
 		name="stoppagesForOrderList" modelName="stoppageDto" modelPlugin="stoppage">
 	
-		<component type="window" name="window" reference="window">
-			<ribbon>
-				<group name="actions">
-					<bigButton name="new" icon="newIcon24.png" state="enabled" action="#{grid}.fireEvent(addNew)"/>
-					<smallButton name="copy" icon="copyIcon16.png" state="disabled" action="#{grid}.performCopy;" accesskey="c">
-						<script><![CDATA[
-                #{grid}.addOnChangeListener({
-                	onChange: function(selectedArray) {
-                		if (selectedArray.length == 0) {
-                			this.disable();
-                		} else {
-                			this.enable();
-                		}
-                	}
-                });
-			]]></script>
-					</smallButton>
-					<smallButton name="delete" icon="deleteIcon16.png" state="disabled" action="#{grid}.performDelete;" accesskey="d">
-						<script><![CDATA[
-                #{grid}.addOnChangeListener({
-                	onChange: function(selectedArray) {
-                		if (selectedArray.length == 0) {
-                			this.disable();
-                		} else {
-                			this.enable();
-                		}
-                	}
-                });
-			]]></script>
-					</smallButton>
-					<bigButton name="refresh" icon="updateIcon24.png" state="enabled" action="#{grid}.performRefresh;" accesskey="r" />
-				</group>
-			</ribbon>
-						
-			<component type="grid" name="stoppage" reference="grid">
-				<option type="column" name="orderNumber" fields="orderNumber" link="true"/>
-				<option type="column" name="orderState" fields="orderState" link="true"/>
-				<option type="column" name="productionTrackingNumber" fields="productionTrackingNumber" link="true"/>
-				<option type="column" name="productionTrackingState" fields="productionTrackingState" link="true"/>
-				<option type="column" name="duration" fields="duration" expression="T(com.qcadoo.view.api.utils.TimeConverterService).convertTimeToString(#duration)" link="true"/>
-				<option type="column" name="dateFrom" fields="dateFrom"/>
-				<option type="column" name="dateTo" fields="dateTo"/>
-				<option type="column" name="reasonName" fields="reasonName"/>
-				<option type="column" name="description" fields="description"/>
-				<option type="column" name="divisionNumber" fields="divisionNumber"/>
-				<option type="column" name="productionLineNumber" fields="productionLineNumber"/>
-				<option type="column" name="workstationNumber" fields="workstationNumber"/>
-				<option type="column" name="staffName" fields="staffName"/>
+	<component type="window" name="window" reference="window">
+		<ribbon>
+			<group name="actions">
+				<bigButton name="new" icon="newIcon24.png" state="enabled" action="#{grid}.fireEvent(addNew)"/>
+				<smallButton name="copy" icon="copyIcon16.png" state="disabled" action="#{grid}.performCopy;" accesskey="c">
+					<script>
+						<![CDATA[
+							#{grid}.addOnChangeListener({
+								onChange: function(selectedArray) {
+									if (selectedArray.length == 0) {
+										this.disable();
+									} else {
+										this.enable();
+									}
+								}
+							});
+						]]>
+					</script>
+				</smallButton>
+				<smallButton name="delete" icon="deleteIcon16.png" state="disabled" action="#{grid}.performDelete;" accesskey="d">
+					<script>
+						<![CDATA[
+							#{grid}.addOnChangeListener({
+								onChange: function(selectedArray) {
+									if (selectedArray.length == 0) {
+										this.disable();
+									} else {
+										this.enable();
+									}
+								}
+							});
+						]]>
+					</script>
+				</smallButton>
+				<bigButton name="refresh" icon="updateIcon24.png" state="enabled" action="#{grid}.performRefresh;" accesskey="r" />
+			</group>
+		</ribbon>
 
-				<option type="correspondingView" value="stoppage/stoppageForOrderForm" />
-				<option type="correspondingComponent" value="form" />
-				<option type="correspondingViewInModal" value="false" />
-					
-				<option type="order" column="orderNumber" direction="desc" />
-				<option type="searchable" value="orderNumber,orderState,productionTrackingNumber,productionTrackingState,dateFrom,dateTo,reasonName,description,divisionNumber,productionLineNumber,workstationNumber,staffName" />
-				<option type="orderable" value="orderNumber,orderState,productionTrackingNumber,productionTrackingState,dateFrom,dateTo,reasonName,description,divisionNumber,productionLineNumber,workstationNumber,staffName" />
-				<option type="footerRow" value="true"/>
-				<option type="columnsToSummaryTime" value="duration"/>
+		<component type="grid" name="stoppage" reference="grid">
+			<option type="column" name="orderNumber" fields="orderNumber" link="true"/>
+			<option type="column" name="orderState" fields="orderState" link="true"/>
+			<option type="column" name="productionTrackingNumber" fields="productionTrackingNumber" link="true"/>
+			<option type="column" name="productionTrackingState" fields="productionTrackingState" link="true"/>
+			<option type="column" name="duration" fields="duration" link="true"/>
+			<option type="column" name="dateFrom" fields="dateFrom"/>
+			<option type="column" name="dateTo" fields="dateTo"/>
+			<option type="column" name="reasonName" fields="reasonName"/>
+			<option type="column" name="description" fields="description"/>
+			<option type="column" name="divisionNumber" fields="divisionNumber"/>
+			<option type="column" name="productionLineNumber" fields="productionLineNumber"/>
+			<option type="column" name="workstationNumber" fields="workstationNumber"/>
+			<option type="column" name="staffName" fields="staffName"/>
 
-				<option type="fullscreen" value="true" />
-				<option type="multiselect" value="true" />
+			<option type="correspondingView" value="stoppage/stoppageForOrderForm" />
+			<option type="correspondingComponent" value="form" />
+			<option type="correspondingViewInModal" value="false" />
 
-				<listener event="addNew"
-						  class="com.qcadoo.mes.stoppage.listeners.StoppagesForOrderListListeners" method="addNew"/>
+			<option type="order" column="orderNumber" direction="desc" />
 
-			</component>
-			<option type="fixedHeight" value="true" />
-			<option type="header" value="false" />
+			<option type="searchable" value="orderNumber,orderState,productionTrackingNumber,productionTrackingState,duration,dateFrom,dateTo,reasonName,description,divisionNumber,productionLineNumber,workstationNumber,staffName" />
+			<option type="orderable" value="orderNumber,orderState,productionTrackingNumber,productionTrackingState,duration,dateFrom,dateTo,reasonName,description,divisionNumber,productionLineNumber,workstationNumber,staffName" />
+
+			<option type="footerRow" value="true"/>
+			<option type="columnsToSummaryTime" value="duration"/>
+
+			<option type="fullscreen" value="true" />
+			<option type="multiselect" value="true" />
+
+			<listener event="addNew"
+					  class="com.qcadoo.mes.stoppage.listeners.StoppagesForOrderListListeners" method="addNew"/>
+
 		</component>
+
+		<option type="fixedHeight" value="true" />
+		<option type="header" value="false" />
+	</component>
+
 	<hooks>
 		<beforeRender class="com.qcadoo.mes.stoppage.hooks.StoppageForOrderFormHooks"
 					  method="onRibbonBeforeRender"/>
