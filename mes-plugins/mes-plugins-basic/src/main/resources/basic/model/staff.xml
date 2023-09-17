@@ -54,6 +54,7 @@
         <hasMany name="staffSkills" model="staffSkill" joinField="staff" cascade="delete"/>
         <hasMany name="machineWorkingPeriodsLaunchedBy" model="machineWorkingPeriod" joinField="launchedBy"/>
         <hasMany name="machineWorkingPeriodsStoppedBy" model="machineWorkingPeriod" joinField="stoppedBy"/>
+        <hasMany name="licenseUsages" model="licenseUsage" joinField="staff" cascade="delete"/>
     </fields>
 
     <hooks/>

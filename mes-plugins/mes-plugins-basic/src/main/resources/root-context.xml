@@ -72,6 +72,17 @@
         <property name="targetMethod" value="deleteTemporaryPalletNumberHelpersTrigger"/>
     </bean>
 
+    <bean id="deleteOldLicenseUsagesTrigger" class="org.springframework.scheduling.quartz.CronTriggerBean">
+        <property name="jobDetail" ref="deleteOldLicenseUsages"/>
+        <property name="cronExpression" value="0 0 5 * * ?"/>
+    </bean>
+
+    <bean id="deleteOldLicenseUsages"
+          class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+        <property name="targetObject" ref="licenseUsageService"/>
+        <property name="targetMethod" value="deleteOldLicenseUsagesTrigger"/>
+    </bean>
+
     <bean id="jdbcTemplate" class="org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate"
           c:dataSource-ref="dataSource"/>          
 </beans>

@@ -114,6 +114,8 @@ public final class BasicConstants {
 
     public static final String MODEL_MACHINE_WORKING_PERIOD = "machineWorkingPeriod";
 
+    public static final String MODEL_LICENSE_USAGE = "licenseUsage";
+
     // VIEW
 
     public static final String VIEW_HOME = "home";

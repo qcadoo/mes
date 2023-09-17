@@ -23,16 +23,17 @@
  */
 package com.qcadoo.mes.basic.constants;
 
-public final class UserFieldsB {
+public final class LicenseUsageFields {
 
-    private UserFieldsB() {
+
+    private LicenseUsageFields() {
 
     }
 
+    public static final String CREATE_TIME = "createTime";
+
+    public static final String USER = "user";
+
     public static final String STAFF = "staff";
-
-    public static final String FACTORY = "factory";
-
-    public static final String LICENSE_USAGES = "licenseUsages";
 
 }
