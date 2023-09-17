@@ -88,9 +88,9 @@ public final class BasicConstants {
 
     public static final String MODEL_STAFF_SKILL = "staffSkill";
 
-    public static final String ATTRIBUTE = "attribute";
+    public static final String MODEL_ATTRIBUTE = "attribute";
 
-    public static final String ATTRIBUTE_VALUE = "attributeValue";
+    public static final String MODEL_ATTRIBUTE_VALUE = "attributeValue";
 
     public static final String MODEL_NUMBER_PATTERN = "numberPattern";
 
@@ -106,7 +106,7 @@ public final class BasicConstants {
 
     public static final String MODEL_FORMS = "forms";
 
-    public static final String PRODUCT_ATTRIBUTE_VALUE = "productAttributeValue";
+    public static final String MODEL_PRODUCT_ATTRIBUTE_VALUE = "productAttributeValue";
 
     public static final String MODEL_PIECE_RATE = "pieceRate";
 

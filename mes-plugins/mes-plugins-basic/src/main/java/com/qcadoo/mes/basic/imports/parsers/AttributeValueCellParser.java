@@ -74,7 +74,7 @@ public class AttributeValueCellParser implements CellParser {
     }
 
     private DataDefinition getAttributeDD() {
-        return dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.ATTRIBUTE);
+        return dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_ATTRIBUTE);
     }
 
     private Entity getAttributeValueByValue(final Entity attribute, final String value) {
@@ -84,7 +84,7 @@ public class AttributeValueCellParser implements CellParser {
     }
 
     private DataDefinition getAttributeValueDD() {
-        return dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.ATTRIBUTE_VALUE);
+        return dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_ATTRIBUTE_VALUE);
     }
 
 }

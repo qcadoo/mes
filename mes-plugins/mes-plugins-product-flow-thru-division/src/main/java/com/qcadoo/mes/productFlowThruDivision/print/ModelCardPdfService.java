@@ -688,7 +688,7 @@ public final class ModelCardPdfService extends PdfDocumentService {
     }
 
     private DataDefinition getProductAttributeValueDD() {
-        return dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.PRODUCT_ATTRIBUTE_VALUE);
+        return dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PRODUCT_ATTRIBUTE_VALUE);
     }
 
     private List<Entity> getProductBySizeGroups(final Long operationProductComponentId) {

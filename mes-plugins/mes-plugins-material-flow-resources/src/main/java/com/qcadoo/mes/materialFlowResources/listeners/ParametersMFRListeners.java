@@ -47,7 +47,7 @@ public class ParametersMFRListeners {
             return;
         }
         ids.forEach(attrId -> {
-            Entity attribute = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.ATTRIBUTE).get(attrId);
+            Entity attribute = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_ATTRIBUTE).get(attrId);
 
             Entity positionItem = dataDefinitionService.get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER,
                     MaterialFlowResourcesConstants.MODEL_DOCUMENT_POSITION_PARAMETERS_ITEM).create();
