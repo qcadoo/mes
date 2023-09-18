@@ -42,7 +42,7 @@ public class LicenseUsageService {
         if (Objects.nonNull(user)) {
             Long userId = user.getId();
             Entity group = user.getBelongsToField(UserFields.GROUP);
-            
+
             String permissionType = group.getStringField(GroupFields.PERMISSION_TYPE);
 
             if (PermissionType.TERMINAL_LICENSE.getStringValue().equals(permissionType)) {
@@ -72,24 +72,20 @@ public class LicenseUsageService {
                 } else {
                     Integer licenseUsageCountForUserAndStaff = getLicenseUsageCountForUserAndStaff(userId, staffId);
 
-                    if (TypeTerminalLicenses.UP_TO_TEN_EMPLOYEES.getStringValue().equals(typeTerminalLicenses)) {
-                        if (licenseUsageCountForUserAndStaff == 0) {
+                    if (licenseUsageCountForUserAndStaff == 0) {
+                        if (TypeTerminalLicenses.UP_TO_TEN_EMPLOYEES.getStringValue().equals(typeTerminalLicenses)) {
                             if ((licenseUsageCountForUser + 1) > L_10_EMPLOYEES) {
                                 return false;
                             } else {
                                 createLicenseUsage(userId, staffId);
                             }
-                        }
-                    } else if (TypeTerminalLicenses.FROM_11_TO_50_EMPLOYEES.getStringValue().equals(typeTerminalLicenses)) {
-                        if (licenseUsageCountForUserAndStaff == 0) {
+                        } else if (TypeTerminalLicenses.FROM_11_TO_50_EMPLOYEES.getStringValue().equals(typeTerminalLicenses)) {
                             if ((licenseUsageCountForUser + 1) > L_50_EMPLOYEES) {
                                 return false;
                             } else {
                                 createLicenseUsage(userId, staffId);
                             }
-                        }
-                    } else {
-                        if (licenseUsageCountForUserAndStaff == 0) {
+                        } else {
                             createLicenseUsage(userId, staffId);
                         }
                     }
