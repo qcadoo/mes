@@ -6,6 +6,9 @@ import com.qcadoo.mes.basic.constants.ParameterFields;
 import com.qcadoo.mes.basic.constants.TypeTerminalLicenses;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.security.api.SecurityService;
+import com.qcadoo.security.constants.GroupFields;
+import com.qcadoo.security.constants.PermissionType;
+import com.qcadoo.security.constants.UserFields;
 import com.qcadoo.tenant.api.MultiTenantService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -14,6 +17,7 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
+import java.util.Objects;
 
 @Service
 public class LicenseUsageService {
@@ -34,54 +38,61 @@ public class LicenseUsageService {
     @Autowired
     private ParameterService parameterService;
 
-    public boolean checkLicences(final Long staffId) {
-        Entity parameter = parameterService.getParameter();
+    public boolean checkLicences(final Entity user, final Long staffId) {
+        if (Objects.nonNull(user)) {
+            Long userId = user.getId();
+            Entity group = user.getBelongsToField(UserFields.GROUP);
+            
+            String permissionType = group.getStringField(GroupFields.PERMISSION_TYPE);
 
-        Integer numberTerminalLicenses = parameter.getIntegerField(ParameterFields.NUMBER_TERMINAL_LICENSES);
-        String typeTerminalLicenses = parameter.getStringField(ParameterFields.TYPE_TERMINAL_LICENSES);
+            if (PermissionType.TERMINAL_LICENSE.getStringValue().equals(permissionType)) {
+                Entity parameter = parameterService.getParameter();
 
-        Long currentUserId = securityService.getCurrentUserId();
+                Integer numberTerminalLicenses = parameter.getIntegerField(ParameterFields.NUMBER_TERMINAL_LICENSES);
+                String typeTerminalLicenses = parameter.getStringField(ParameterFields.TYPE_TERMINAL_LICENSES);
 
-        Integer licenseUsageCount = getLicenseUsageCount();
+                Integer licenseUsageCount = getLicenseUsageCount();
 
-        if (numberTerminalLicenses.compareTo(licenseUsageCount) < 0) {
-            Integer licenseUsageCountOther = getLicenseUsageCountForOther(currentUserId);
+                if (numberTerminalLicenses.compareTo(licenseUsageCount) < 0) {
+                    Integer licenseUsageCountOther = getLicenseUsageCountForOther(userId);
 
-            if (numberTerminalLicenses.compareTo(licenseUsageCountOther + 1) < 0) {
-                return false;
-            }
-        }
-
-        Integer licenseUsageCountForUser = getLicenseUsageCountForUser(currentUserId);
-
-        if (licenseUsageCountForUser == 0) {
-            if (numberTerminalLicenses.compareTo(licenseUsageCount + 1) < 0) {
-                return false;
-            } else {
-                createLicenseUsage(currentUserId, staffId);
-            }
-        } else {
-            Integer licenseUsageCountForUserAndStaff = getLicenseUsageCountForUserAndStaff(currentUserId, staffId);
-
-            if (TypeTerminalLicenses.UP_TO_TEN_EMPLOYEES.getStringValue().equals(typeTerminalLicenses)) {
-                if (licenseUsageCountForUserAndStaff == 0) {
-                    if ((licenseUsageCountForUser + 1) > L_10_EMPLOYEES) {
+                    if (numberTerminalLicenses.compareTo(licenseUsageCountOther + 1) < 0) {
                         return false;
-                    } else {
-                        createLicenseUsage(currentUserId, staffId);
                     }
                 }
-            } else if (TypeTerminalLicenses.FROM_11_TO_50_EMPLOYEES.getStringValue().equals(typeTerminalLicenses)) {
-                if (licenseUsageCountForUserAndStaff == 0) {
-                    if ((licenseUsageCountForUser + 1) > L_50_EMPLOYEES) {
+
+                Integer licenseUsageCountForUser = getLicenseUsageCountForUser(userId);
+
+                if (licenseUsageCountForUser == 0) {
+                    if (numberTerminalLicenses.compareTo(licenseUsageCount + 1) < 0) {
                         return false;
                     } else {
-                        createLicenseUsage(currentUserId, staffId);
+                        createLicenseUsage(userId, staffId);
                     }
-                }
-            } else {
-                if (licenseUsageCountForUserAndStaff == 0) {
-                    createLicenseUsage(currentUserId, staffId);
+                } else {
+                    Integer licenseUsageCountForUserAndStaff = getLicenseUsageCountForUserAndStaff(userId, staffId);
+
+                    if (TypeTerminalLicenses.UP_TO_TEN_EMPLOYEES.getStringValue().equals(typeTerminalLicenses)) {
+                        if (licenseUsageCountForUserAndStaff == 0) {
+                            if ((licenseUsageCountForUser + 1) > L_10_EMPLOYEES) {
+                                return false;
+                            } else {
+                                createLicenseUsage(userId, staffId);
+                            }
+                        }
+                    } else if (TypeTerminalLicenses.FROM_11_TO_50_EMPLOYEES.getStringValue().equals(typeTerminalLicenses)) {
+                        if (licenseUsageCountForUserAndStaff == 0) {
+                            if ((licenseUsageCountForUser + 1) > L_50_EMPLOYEES) {
+                                return false;
+                            } else {
+                                createLicenseUsage(userId, staffId);
+                            }
+                        }
+                    } else {
+                        if (licenseUsageCountForUserAndStaff == 0) {
+                            createLicenseUsage(userId, staffId);
+                        }
+                    }
                 }
             }
         }
