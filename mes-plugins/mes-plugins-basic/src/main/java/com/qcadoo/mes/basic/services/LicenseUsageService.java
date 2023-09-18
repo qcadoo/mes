@@ -18,6 +18,10 @@ import java.util.Map;
 @Service
 public class LicenseUsageService {
 
+    private static final int L_10_EMPLOYEES = 10;
+
+    private static final int L_50_EMPLOYEES = 50;
+
     @Autowired
     private MultiTenantService multiTenantService;
 
@@ -61,7 +65,7 @@ public class LicenseUsageService {
 
             if (TypeTerminalLicenses.UP_TO_TEN_EMPLOYEES.getStringValue().equals(typeTerminalLicenses)) {
                 if (licenseUsageCountForUserAndStaff == 0) {
-                    if ((licenseUsageCountForUser + 1) > 10) {
+                    if ((licenseUsageCountForUser + 1) > L_10_EMPLOYEES) {
                         return false;
                     } else {
                         createLicenseUsage(currentUserId, staffId);
@@ -69,7 +73,7 @@ public class LicenseUsageService {
                 }
             } else if (TypeTerminalLicenses.FROM_11_TO_50_EMPLOYEES.getStringValue().equals(typeTerminalLicenses)) {
                 if (licenseUsageCountForUserAndStaff == 0) {
-                    if ((licenseUsageCountForUser + 1) > 50) {
+                    if ((licenseUsageCountForUser + 1) > L_50_EMPLOYEES) {
                         return false;
                     } else {
                         createLicenseUsage(currentUserId, staffId);
