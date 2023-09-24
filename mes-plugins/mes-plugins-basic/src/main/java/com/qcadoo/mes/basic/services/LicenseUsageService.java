@@ -38,7 +38,7 @@ public class LicenseUsageService {
     @Autowired
     private ParameterService parameterService;
 
-    public boolean checkLicences(final Entity user, final Long staffId) {
+    public boolean checkLicenseUsage(final Entity user, final Long staffId) {
         if (Objects.nonNull(user)) {
             Long userId = user.getId();
             Entity group = user.getBelongsToField(UserFields.GROUP);
@@ -64,9 +64,51 @@ public class LicenseUsageService {
                 Integer licenseUsageCountForUser = getLicenseUsageCountForUser(userId);
 
                 if (licenseUsageCountForUser == 0) {
-                    if (numberTerminalLicenses.compareTo(licenseUsageCount + 1) < 0) {
-                        return false;
-                    } else {
+                    return numberTerminalLicenses.compareTo(licenseUsageCount + 1) >= 0;
+                } else {
+                    Integer licenseUsageCountForUserAndStaff = getLicenseUsageCountForUserAndStaff(userId, staffId);
+
+                    if (licenseUsageCountForUserAndStaff == 0) {
+                        if (TypeTerminalLicenses.UP_TO_TEN_EMPLOYEES.getStringValue().equals(typeTerminalLicenses)) {
+                            return (licenseUsageCountForUser + 1) <= L_10_EMPLOYEES;
+                        } else if (TypeTerminalLicenses.FROM_11_TO_50_EMPLOYEES.getStringValue().equals(typeTerminalLicenses)) {
+                            return (licenseUsageCountForUser + 1) <= L_50_EMPLOYEES;
+                        }
+                    }
+                }
+            }
+        }
+
+        return true;
+    }
+
+    public void addLicenseUsage(final Entity user, final Long staffId) {
+        if (Objects.nonNull(user)) {
+            Long userId = user.getId();
+            Entity group = user.getBelongsToField(UserFields.GROUP);
+
+            String permissionType = group.getStringField(GroupFields.PERMISSION_TYPE);
+
+            if (PermissionType.TERMINAL_LICENSE.getStringValue().equals(permissionType)) {
+                Entity parameter = parameterService.getParameter();
+
+                Integer numberTerminalLicenses = parameter.getIntegerField(ParameterFields.NUMBER_TERMINAL_LICENSES);
+                String typeTerminalLicenses = parameter.getStringField(ParameterFields.TYPE_TERMINAL_LICENSES);
+
+                Integer licenseUsageCount = getLicenseUsageCount();
+
+                if (numberTerminalLicenses.compareTo(licenseUsageCount) < 0) {
+                    Integer licenseUsageCountOther = getLicenseUsageCountForOther(userId);
+
+                    if (numberTerminalLicenses.compareTo(licenseUsageCountOther + 1) < 0) {
+                        return;
+                    }
+                }
+
+                Integer licenseUsageCountForUser = getLicenseUsageCountForUser(userId);
+
+                if (licenseUsageCountForUser == 0) {
+                    if (numberTerminalLicenses.compareTo(licenseUsageCount + 1) >= 0) {
                         createLicenseUsage(userId, staffId);
                     }
                 } else {
@@ -74,15 +116,11 @@ public class LicenseUsageService {
 
                     if (licenseUsageCountForUserAndStaff == 0) {
                         if (TypeTerminalLicenses.UP_TO_TEN_EMPLOYEES.getStringValue().equals(typeTerminalLicenses)) {
-                            if ((licenseUsageCountForUser + 1) > L_10_EMPLOYEES) {
-                                return false;
-                            } else {
+                            if ((licenseUsageCountForUser + 1) <= L_10_EMPLOYEES) {
                                 createLicenseUsage(userId, staffId);
                             }
                         } else if (TypeTerminalLicenses.FROM_11_TO_50_EMPLOYEES.getStringValue().equals(typeTerminalLicenses)) {
-                            if ((licenseUsageCountForUser + 1) > L_50_EMPLOYEES) {
-                                return false;
-                            } else {
+                            if ((licenseUsageCountForUser + 1) <= L_50_EMPLOYEES) {
                                 createLicenseUsage(userId, staffId);
                             }
                         } else {
@@ -92,8 +130,6 @@ public class LicenseUsageService {
                 }
             }
         }
-
-        return true;
     }
 
     private Integer getLicenseUsageCount() {

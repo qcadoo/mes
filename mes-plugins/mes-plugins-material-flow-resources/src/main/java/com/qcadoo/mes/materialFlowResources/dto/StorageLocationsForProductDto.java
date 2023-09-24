@@ -1,4 +1,4 @@
-package com.qcadoo.mes.materialFlowResources.constants;
+package com.qcadoo.mes.materialFlowResources.dto;
 
 import java.math.BigDecimal;
 

@@ -65,8 +65,7 @@ public class ProductAttributeValueHooks {
 
                         productAttributeValue
                                 .setField(ProductAttributeValueFields.VALUE,
-                                        numberService.formatWithMinimumFractionDigits(eitherNumber.getRight().get(),
-                                                precision));
+                                        numberService.formatWithMinimumFractionDigits(eitherNumber.getRight().get(), 0));
                     } else {
                         if (ProductFamilyElementType.PARTICULAR_PRODUCT.getStringValue().equals(entityType)) {
                             productAttributeValue.addError(productAttributeValueDD.getField(ProductAttributeValueFields.VALUE),
@@ -173,12 +172,9 @@ public class ProductAttributeValueHooks {
                     productAttributeValue.getStringField(ProductAttributeValueFields.VALUE), LocaleContextHolder.getLocale());
 
             if (eitherNumber.isRight() && eitherNumber.getRight().isPresent()) {
-                int precision = attribute.getIntegerField(AttributeFields.PRECISION);
-
                 productAttributeValue.setField(
                         ProductAttributeValueFields.VALUE,
-                        numberService.formatWithMinimumFractionDigits(eitherNumber.getRight().get(),
-                                precision));
+                        numberService.formatWithMinimumFractionDigits(eitherNumber.getRight().get(), 0));
             }
         }
     }
