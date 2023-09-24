@@ -237,15 +237,24 @@ public class ProductionTrackingDocumentsHelper {
             }
 
             Entity product = productionCountingQuantity.getBelongsToField(ProductionCountingQuantityFields.PRODUCT);
-            Entity trackingOperationProductOutComponent = findProductionRecordByProduct(trackingOperationProductOutComponents,
+            List<Entity> filteredTrackingOperationProductOutComponents = findProductionRecordsByProduct(trackingOperationProductOutComponents,
                     product);
 
-            if (Objects.nonNull(trackingOperationProductOutComponent)) {
-                groupedRecordOutProducts.put(warehouse.getId(), trackingOperationProductOutComponent);
+            if (Objects.nonNull(filteredTrackingOperationProductOutComponents) && !filteredTrackingOperationProductOutComponents.isEmpty()) {
+                groupedRecordOutProducts.putAll(warehouse.getId(), filteredTrackingOperationProductOutComponents);
             }
         }
 
         return groupedRecordOutProducts;
+    }
+
+    public List<Entity> findProductionRecordsByProduct(final List<Entity> trackingOperationProductComponents, final Entity product) {
+        return trackingOperationProductComponents.stream().filter(trackingOperationProductComponent -> {
+            BigDecimal usedQuantity = trackingOperationProductComponent.getDecimalField(L_USED_QUANTITY);
+
+            return product.getId().equals(trackingOperationProductComponent.getBelongsToField(L_PRODUCT).getId())
+                    && Objects.nonNull(usedQuantity) && BigDecimal.ZERO.compareTo(usedQuantity) < 0;
+        }).collect(Collectors.toList());
     }
 
     public Entity findProductionRecordByProduct(final List<Entity> trackingOperationProductComponents, final Entity product) {

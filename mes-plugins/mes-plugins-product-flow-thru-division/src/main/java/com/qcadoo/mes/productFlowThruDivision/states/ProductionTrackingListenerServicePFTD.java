@@ -72,6 +72,8 @@ import java.math.BigDecimal;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static com.qcadoo.mes.orders.constants.OrderFields.DONE_QUANTITY;
+
 @Service
 public final class ProductionTrackingListenerServicePFTD {
 
@@ -194,6 +196,16 @@ public final class ProductionTrackingListenerServicePFTD {
 
         if (!groupedRecordInProducts.isEmpty() && releaseMaterials &&
                 !checkIfProductsAvailableInStock(productionTracking, groupedRecordInProducts)) {
+            return;
+        }
+
+
+
+        if((Objects.isNull(order.getDecimalField(DONE_QUANTITY)) || (Objects.nonNull(order.getDecimalField(DONE_QUANTITY)) && order.getDecimalField(DONE_QUANTITY).compareTo(BigDecimal.ZERO) == 0))
+                && trackingOperationProductOutComponents.stream().allMatch(p -> Objects.isNull(p.getDecimalField(TrackingOperationProductOutComponentFields.USED_QUANTITY)) || p.getDecimalField(TrackingOperationProductOutComponentFields.USED_QUANTITY).compareTo(BigDecimal.ZERO) == 0)
+                && orderClosingHelper.orderShouldBeClosedWithRecalculate(productionTracking)) {
+            productionTracking.addGlobalError("orders.order.orderStates.doneQuantityMustBeGreaterThanZero",false);
+            productionTracking.addGlobalError("productionCounting.order.orderCannotBeClosed", false);
             return;
         }
 
