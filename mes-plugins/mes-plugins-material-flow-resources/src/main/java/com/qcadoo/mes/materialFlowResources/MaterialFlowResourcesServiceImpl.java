@@ -23,19 +23,6 @@
  */
 package com.qcadoo.mes.materialFlowResources;
 
-import static com.qcadoo.mes.basic.constants.ProductFields.UNIT;
-
-import java.math.BigDecimal;
-import java.util.*;
-import java.util.stream.Collectors;
-
-import com.qcadoo.mes.materialFlowResources.dto.*;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.jdbc.core.BeanPropertyRowMapper;
-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
-import org.springframework.stereotype.Service;
-
 import com.google.common.collect.Maps;
 import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.basic.util.CurrencyService;
@@ -43,6 +30,7 @@ import com.qcadoo.mes.materialFlow.constants.MaterialFlowConstants;
 import com.qcadoo.mes.materialFlowResources.constants.MaterialFlowResourcesConstants;
 import com.qcadoo.mes.materialFlowResources.constants.ResourceFields;
 import com.qcadoo.mes.materialFlowResources.constants.ResourceStockDtoFields;
+import com.qcadoo.mes.materialFlowResources.dto.*;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -52,6 +40,20 @@ import com.qcadoo.model.api.search.SearchQueryBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Collectors;
+
+import static com.qcadoo.mes.basic.constants.ProductFields.UNIT;
 
 @Service
 public class MaterialFlowResourcesServiceImpl implements MaterialFlowResourcesService {
@@ -242,31 +244,6 @@ public class MaterialFlowResourcesServiceImpl implements MaterialFlowResourcesSe
         return resourcesQuantityDtoList;
     }
 
-    public ResourceDetailsDto getResourceDetails(final String resourceNumber) {
-
-        Map<String, Object> params = Maps.newHashMap();
-
-        if(resourceNumber != null || !resourceNumber.isEmpty()) {
-            StringBuilder prepareQuery = new StringBuilder();
-
-            prepareQuery.append("SELECT ");
-            prepareQuery.append("resourceDto.palletNumber as palletNumber, ");
-            prepareQuery.append("resourceDto.batchNumber as batchNumber, ");
-            prepareQuery.append("resourceDto.productionDate as productionDate, ");
-            prepareQuery.append("resourceDto.expirationDate as expirationDate ");
-            prepareQuery.append("FROM materialFlowResources_resourceDto as resourceDto ");
-            prepareQuery.append("WHERE resourceDto.number = :resourceNumber");
-
-            params.put("resourceNumber", resourceNumber);
-
-            try {
-                return jdbcTemplate.queryForObject(prepareQuery.toString(), params, BeanPropertyRowMapper.newInstance(ResourceDetailsDto.class));
-            } catch (EmptyResultDataAccessException e) {
-                return null;
-            }
-        }
-        return null;
-    }
 
     @Override
     public List<PalletNumberProductDTO> getProductsForPalletNumber(String palletNumber, List<String> userLocationNumbers) {
@@ -364,7 +341,7 @@ public class MaterialFlowResourcesServiceImpl implements MaterialFlowResourcesSe
     }
 
     @Override
-    public ExtendedResourceDetailsDto getMoreResourceDetails(String resourceNumber) {
+    public ResourceDetailsDto getResourceDetails(String resourceNumber) {
 
         Map<String, Object> params = Maps.newHashMap();
 
@@ -390,7 +367,7 @@ public class MaterialFlowResourcesServiceImpl implements MaterialFlowResourcesSe
             params.put("resourceNumber", resourceNumber);
 
             try {
-                return jdbcTemplate.queryForObject(prepareQuery.toString(), params, BeanPropertyRowMapper.newInstance(ExtendedResourceDetailsDto.class));
+                return jdbcTemplate.queryForObject(prepareQuery.toString(), params, BeanPropertyRowMapper.newInstance(ResourceDetailsDto.class));
             } catch (EmptyResultDataAccessException e) {
                 return null;
             }

@@ -1,12 +1,53 @@
 package com.qcadoo.mes.materialFlowResources.dto;
 
+import java.math.BigDecimal;
 import java.util.Date;
 
 public class ResourceDetailsDto {
+    private String productName;
+    private String locationNumber;
+    private String storageLocationNumber;
+    private String productNumber;
     private String palletNumber;
     private String batchNumber;
     private Date productionDate;
     private Date expirationDate;
+    private String additionalUnit;
+    private BigDecimal quantity;
+    private String unit;
+    private BigDecimal additionalQuantity;
+
+    public String getStorageLocationNumber() {
+        return storageLocationNumber;
+    }
+
+    public void setStorageLocationNumber(String storageLocationNumber) {
+        this.storageLocationNumber = storageLocationNumber;
+    }
+
+    public String getProductName() {
+        return productName;
+    }
+
+    public void setProductName(String productName) {
+        this.productName = productName;
+    }
+
+    public String getLocationNumber() {
+        return locationNumber;
+    }
+
+    public void setLocationNumber(String locationNumber) {
+        this.locationNumber = locationNumber;
+    }
+
+    public String getProductNumber() {
+        return productNumber;
+    }
+
+    public void setProductNumber(String productNumber) {
+        this.productNumber = productNumber;
+    }
 
     public String getPalletNumber() {
         return palletNumber;
@@ -38,5 +79,37 @@ public class ResourceDetailsDto {
 
     public void setExpirationDate(Date expirationDate) {
         this.expirationDate = expirationDate;
+    }
+
+    public String getAdditionalUnit() {
+        return additionalUnit;
+    }
+
+    public void setAdditionalUnit(String additionalUnit) {
+        this.additionalUnit = additionalUnit;
+    }
+
+    public BigDecimal getQuantity() {
+        return quantity;
+    }
+
+    public void setQuantity(BigDecimal quantity) {
+        this.quantity = quantity;
+    }
+
+    public String getUnit() {
+        return unit;
+    }
+
+    public void setUnit(String unit) {
+        this.unit = unit;
+    }
+
+    public BigDecimal getAdditionalQuantity() {
+        return additionalQuantity;
+    }
+
+    public void setAdditionalQuantity(BigDecimal additionalQuantity) {
+        this.additionalQuantity = additionalQuantity;
     }
 }
