@@ -3,19 +3,19 @@
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
  * Version: 1.4
- *
+ * <p>
  * This file is part of Qcadoo.
- *
+ * <p>
  * Qcadoo is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation; either version 3 of the License,
  * or (at your option) any later version.
- *
+ * <p>
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty
  * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU Affero General Public License for more details.
- *
+ * <p>
  * You should have received a copy of the GNU Affero General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
@@ -41,8 +41,11 @@ import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.technologies.BarcodeOperationComponentService;
 import com.qcadoo.mes.technologies.TechnologyService;
 import com.qcadoo.mes.technologies.constants.*;
+import com.qcadoo.mes.workPlans.WorkPlansService;
 import com.qcadoo.mes.workPlans.constants.OperationProductInComponentFieldsWP;
 import com.qcadoo.mes.workPlans.constants.WorkPlanFields;
+import com.qcadoo.mes.workPlans.pdf.document.operation.component.OperationProductColumnHelper;
+import com.qcadoo.mes.workPlans.pdf.document.operation.component.OperationProductHelper;
 import com.qcadoo.mes.workPlans.pdf.document.operation.grouping.container.GroupingContainer;
 import com.qcadoo.mes.workPlans.pdf.document.operation.grouping.holder.OrderOperationComponent;
 import com.qcadoo.mes.workPlans.pdf.document.operation.product.ProductDirection;
@@ -56,12 +59,20 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.*;
 import java.util.stream.Collectors;
 
 @Component
 public class WorkPlanPdfForDivision {
+
+    public static final String L_UNIT_OPERATION_PRODUCT_COLUMN = "unitOperationProductColumn";
+    public static final String L_PRODUCT_NAME_OPERATION_PRODUCT_COLUMN = "productNameOperationProductColumn";
+    public static final String L_PLANNED_QUANTITY_OPERATION_PRODUCT_COLUMN = "plannedQuantityOperationProductColumn";
+    public static final String L_PLANED_QUANTITY = "planedQuantity";
+    public static final String L_RESOURCE_NUMBER = "resourceNumber";
+    public static final String L_RESOURCE_UNIT = "resourceUnit";
 
     public static final String MSG_TITLE = "workPlans.workPlan.report.title";
 
@@ -86,6 +97,10 @@ public class WorkPlanPdfForDivision {
 
     @Autowired
     private TechnologyService technologyService;
+
+
+    @Autowired
+    private WorkPlansService workPlansService;
 
     public void print(PdfWriter pdfWriter, GroupingContainer groupingContainer, Entity workPlan, Document document, Locale locale)
             throws DocumentException {
@@ -144,7 +159,7 @@ public class WorkPlanPdfForDivision {
     }
 
     private void addOperationTable(PdfWriter pdfWriter, GroupingContainer groupingContainer, Document document,
-            OrderOperationComponent orderOperationComponent, Locale locale) throws DocumentException {
+                                   OrderOperationComponent orderOperationComponent, Locale locale) throws DocumentException {
 
         Map<Long, Map<OperationProductColumn, ColumnAlignment>> outputProductsMap = groupingContainer
                 .getOperationComponentIdProductOutColumnToAlignment();
@@ -179,15 +194,16 @@ public class WorkPlanPdfForDivision {
 
         addOrderSummary(headerCell, order, product, operationComponent);
 
-        addOperationProductsTable(inputCell,
+        addOperationProductsTableIn(order, inputCell,
                 addMaterialComponents(orderOperationComponent.getProductionCountingQuantitiesIn(), order),
                 inputProductColumnAlignmentMap, ProductDirection.IN, locale);
+
         addOperationProductsTable(outputCell, orderOperationComponent.getProductionCountingQuantitiesOut(),
                 outputProductColumnAlignmentMap, ProductDirection.OUT, locale);
 
         codeCell.addElement(createBarcode(pdfWriter, order, operationComponent));
 
-        float[] tableColumnWidths = new float[] { 70f, 70f, 10f };
+        float[] tableColumnWidths = new float[]{70f, 70f, 10f};
         table.setWidths(tableColumnWidths);
         table.setTableEvent(null);
         table.addCell(headerCell);
@@ -261,7 +277,7 @@ public class WorkPlanPdfForDivision {
             description = new Paragraph(comment, FontUtils.getDejavuBold7Dark());
         }
 
-        float[] tableColumnWidths = new float[] { 160f, 30f, 10f };
+        float[] tableColumnWidths = new float[]{160f, 30f, 10f};
         orderTable.setWidths(tableColumnWidths);
         orderTable.getDefaultCell().setBorder(Rectangle.NO_BORDER);
         orderTable.setTableEvent(null);
@@ -275,9 +291,130 @@ public class WorkPlanPdfForDivision {
         cell.addElement(orderTable);
     }
 
+    private void addOperationProductsTableIn(Entity order, PdfPCell cell, List<Entity> operationProductComponents,
+                                             Map<OperationProductColumn, ColumnAlignment> operationProductColumnAlignmentMap, ProductDirection direction,
+                                             Locale locale) throws DocumentException {
+        if (operationProductComponents.isEmpty()) {
+            return;
+        }
+
+        int columnCount = operationProductColumnAlignmentMap.size();
+
+        Map<String, HeaderAlignment> headerAlignments = new HashMap<>(columnCount);
+        List<String> headers = new ArrayList<String>(columnCount);
+        float[] widths = fill(locale, operationProductColumnAlignmentMap, headers, headerAlignments, direction);
+
+        PdfPTable table = pdfHelper.createTableWithHeader(columnCount, headers, false, headerAlignments);
+        table.setWidths(widths);
+        PdfPCell defaultCell = table.getDefaultCell();
+        List<OperationProductHelper> operationProductsValue = prepareOperationProductsValue(order,
+                operationProductComponents, operationProductColumnAlignmentMap.entrySet());
+
+        //operationProductsValue = workPlansService.sortByColumn(workPlan, operationProductsValue, headers);
+        defaultCell.setBorder(Rectangle.BOX);
+
+        for (OperationProductHelper operationProduct : operationProductsValue) {
+            if(operationProduct.isContainsResources() && !operationProduct.isLastResource()) {
+                defaultCell.setBorder(Rectangle.NO_BORDER);
+                defaultCell.enableBorderSide(Rectangle.LEFT);
+                defaultCell.enableBorderSide(Rectangle.RIGHT);
+            } else {
+                defaultCell.setBorder(Rectangle.TOP);
+                defaultCell.setBorder(Rectangle.BOTTOM);
+                defaultCell.enableBorderSide(Rectangle.LEFT);
+                defaultCell.enableBorderSide(Rectangle.RIGHT);
+            }
+
+
+            for (OperationProductColumnHelper e : operationProduct.getOperationProductColumnHelpers()) {
+                alignColumn(defaultCell, e.getColumnAlignment(), false);
+                table.addCell(operationProductPhrase(e.getValue()));
+            }
+        }
+
+        cell.addElement(table);
+
+    }
+
+    private List<OperationProductHelper> prepareOperationProductsValue(Entity order, final List<Entity> operationProducts,
+                                                                       final Set<Map.Entry<OperationProductColumn, ColumnAlignment>> alignments) {
+        List<OperationProductHelper> operationProductsValue = Lists.newArrayList();
+
+        for (Entity operationProduct : operationProducts) {
+            OperationProductHelper operationProductHelper = new OperationProductHelper();
+            List<OperationProductColumnHelper> operationProductColumnHelpers = Lists.newArrayList();
+
+            for (Map.Entry<OperationProductColumn, ColumnAlignment> e : alignments) {
+                String columnValue = e.getKey().getColumnValue(operationProduct);
+                if (StringUtils.isEmpty(columnValue)) {
+                    columnValue = e.getKey().getColumnValueForOrder(order, operationProduct);
+                }
+                OperationProductColumnHelper operationProductColumnHelper = new OperationProductColumnHelper(e.getValue(),
+                        columnValue, e.getKey().getIdentifier());
+                operationProductColumnHelpers.add(operationProductColumnHelper);
+            }
+
+            operationProductHelper.setOperationProductColumnHelpers(operationProductColumnHelpers);
+
+
+            Entity pcq = dataDefinitionService.get(BasicProductionCountingConstants.PLUGIN_IDENTIFIER, BasicProductionCountingConstants.MODEL_PRODUCTION_COUNTING_QUANTITY)
+                    .get(operationProduct.getId());
+
+            List<Entity> orderProductResourceReservations = pcq.getHasManyField("orderProductResourceReservations");
+
+            if (!orderProductResourceReservations.isEmpty()) {
+                operationProductHelper.setContainsResources(true);
+            }
+
+
+            operationProductsValue.add(operationProductHelper);
+
+            int index = 1;
+            for (Entity orderProductResourceReservation : orderProductResourceReservations) {
+
+                OperationProductHelper resourceOperationProductHelper = new OperationProductHelper();
+                resourceOperationProductHelper.setResource(true);
+                resourceOperationProductHelper.setContainsResources(true);
+                resourceOperationProductHelper.setContainsResources(true);
+                resourceOperationProductHelper.setLastResource(index == orderProductResourceReservations.size());
+                List<OperationProductColumnHelper> resourceOperationProductColumnHelpers = Lists.newArrayList();
+                BigDecimal planedQuantity = orderProductResourceReservation.getDecimalField(L_PLANED_QUANTITY);
+                String resourceNumber = orderProductResourceReservation.getStringField(L_RESOURCE_NUMBER);
+                String resourceUnit = orderProductResourceReservation.getStringField(L_RESOURCE_UNIT);
+
+                for (Map.Entry<OperationProductColumn, ColumnAlignment> e : alignments) {
+                    OperationProductColumnHelper operationProductColumnHelper;
+                    if (L_PRODUCT_NAME_OPERATION_PRODUCT_COLUMN.equals(e.getKey().getIdentifier())) {
+                        operationProductColumnHelper = new OperationProductColumnHelper(e.getValue(),
+                                "- " + resourceNumber, e.getKey().getIdentifier());
+
+                    } else if (L_UNIT_OPERATION_PRODUCT_COLUMN.equals(e.getKey().getIdentifier())) {
+                        operationProductColumnHelper = new OperationProductColumnHelper(e.getValue(),
+                                resourceUnit, e.getKey().getIdentifier());
+                    } else if (L_PLANNED_QUANTITY_OPERATION_PRODUCT_COLUMN.equals(e.getKey().getIdentifier())) {
+                        operationProductColumnHelper = new OperationProductColumnHelper(e.getValue(),
+                                String.valueOf(numberService.format(numberService.setScaleWithDefaultMathContext(planedQuantity))), e.getKey().getIdentifier());
+                    } else {
+                        operationProductColumnHelper = new OperationProductColumnHelper(e.getValue(),
+                                "", e.getKey().getIdentifier());
+                    }
+
+                    resourceOperationProductColumnHelpers.add(operationProductColumnHelper);
+                }
+                index++;
+                resourceOperationProductHelper.setOperationProductColumnHelpers(resourceOperationProductColumnHelpers);
+                operationProductsValue.add(resourceOperationProductHelper);
+            }
+
+
+        }
+
+        return operationProductsValue;
+    }
+
     private void addOperationProductsTable(PdfPCell cell, List<Entity> operationProductComponents,
-            Map<OperationProductColumn, ColumnAlignment> operationProductColumnAlignmentMap, ProductDirection direction,
-            Locale locale) throws DocumentException {
+                                           Map<OperationProductColumn, ColumnAlignment> operationProductColumnAlignmentMap, ProductDirection direction,
+                                           Locale locale) throws DocumentException {
 
         if (operationProductComponents.isEmpty()) {
             return;
@@ -294,7 +431,7 @@ public class WorkPlanPdfForDivision {
         PdfPCell defaultCell = table.getDefaultCell();
         for (Entity operationProduct : operationProductComponents) {
             for (Map.Entry<OperationProductColumn, ColumnAlignment> e : operationProductColumnAlignmentMap.entrySet()) {
-                alignColumn(defaultCell, e.getValue());
+                alignColumn(defaultCell, e.getValue(), true);
                 table.addCell(operationProductPhrase(operationProduct, e.getKey()));
             }
 
@@ -354,18 +491,20 @@ public class WorkPlanPdfForDivision {
         }
     }
 
-    private void alignColumn(final PdfPCell cell, final ColumnAlignment columnAlignment) {
+    private void alignColumn(final PdfPCell cell, final ColumnAlignment columnAlignment, boolean setBorder) {
         if (ColumnAlignment.LEFT.equals(columnAlignment)) {
             cell.setHorizontalAlignment(Element.ALIGN_LEFT);
         } else if (ColumnAlignment.RIGHT.equals(columnAlignment)) {
             cell.setHorizontalAlignment(Element.ALIGN_RIGHT);
         }
-        cell.setBorder(Rectangle.BOX);
+        if(setBorder) {
+            cell.setBorder(Rectangle.BOX);
+        }
         cell.setPadding(2f);
     }
 
     private float[] fill(Locale locale, Map<OperationProductColumn, ColumnAlignment> operationProductColumnAlignmentMap,
-            List<String> headers, Map<String, HeaderAlignment> headerAlignments, ProductDirection direction) {
+                         List<String> headers, Map<String, HeaderAlignment> headerAlignments, ProductDirection direction) {
         // for optimization method fills two collections simultaneously
         float[] widths = new float[operationProductColumnAlignmentMap.size()];
         if (widths.length > 3) {
@@ -387,6 +526,11 @@ public class WorkPlanPdfForDivision {
     private Phrase operationProductPhrase(Entity operationProduct, OperationProductColumn operationProductColumn) {
         return new Phrase(operationProductColumn.getColumnValue(operationProduct), FontUtils.getDejavuRegular7Dark());
     }
+
+    private Phrase operationProductPhrase(final String value) {
+        return new Phrase(value, FontUtils.getDejavuRegular7Dark());
+    }
+
 
     private HeaderAlignment headerAlignment(ColumnAlignment value) {
         return ColumnAlignment.LEFT.equals(value) ? HeaderAlignment.LEFT : HeaderAlignment.RIGHT;
@@ -420,7 +564,7 @@ public class WorkPlanPdfForDivision {
                         ProductionCountingQuantityRole.PRODUCED.getStringValue()))
                 .setMaxResults(1)
                 .uniqueResult();
-        if(Objects.nonNull(pcq)) {
+        if (Objects.nonNull(pcq)) {
             appendAttribiutes(summary, pcq.getHasManyField(ProductionCountingQuantityFields.PRODUCTION_COUNTING_ATTRIBUTE_VALUES));
         }
         Entity form = product.getBelongsToField(ProductFields.PRODUCT_FORM);
