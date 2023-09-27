@@ -16,19 +16,22 @@ String ctx = request.getContextPath();
 
     <c:choose>
         <c:when test="${locale == 'pl'}">
-            <script type="text/ecmascript" src="/qcadooView/public/js/crud/qcd/components/jqGrid/grid.locale-pl.js"></script>
+            <script type="text/ecmascript" src="/qcadooView/public/js/crud/qcd/components/jqGrid/grid.locale-pl.js?ver=${buildNumber}"></script>
+        </c:when>
+        <c:when test="${locale == 'cn'}">
+            <script type="text/ecmascript" src="/qcadooView/public/js/crud/qcd/components/jqGrid/grid.locale-cn.js?ver=${buildNumber}"></script>
         </c:when>
         <c:otherwise>
-            <script type="text/ecmascript" src="/qcadooView/public/js/crud/qcd/components/jqGrid/grid.locale-en.js"></script>
+            <script type="text/ecmascript" src="/qcadooView/public/js/crud/qcd/components/jqGrid/grid.locale-en.js?ver=${buildNumber}"></script>
         </c:otherwise>
     </c:choose>
 
-    <link rel="stylesheet" type="text/css" media="screen" href="/basic/public/css/ui.jqgrid.css" />
-    <link rel="stylesheet" type="text/css" media="screen" href="/basic/public/css/_jquery-ui-1.8.5.custom.css" />
+    <link rel="stylesheet" type="text/css" media="screen" href="/basic/public/css/ui.jqgrid.css?ver=${buildNumber}" />
+    <link rel="stylesheet" type="text/css" media="screen" href="/basic/public/css/_jquery-ui-1.8.5.custom.css?ver=${buildNumber}" />
     <link rel="stylesheet" href="${pageContext.request.contextPath}/qcadooView/public/css/crud/components/window.css?ver=${buildNumber}" type="text/css" />
     <link rel="stylesheet" href="${pageContext.request.contextPath}/qcadooView/public/css/crud/components/grid.css?ver=${buildNumber}" type="text/css" />
     
-    <link rel="stylesheet" type="text/css" media="screen" href="/basic/public/css/custom.css">
+    <link rel="stylesheet" type="text/css" media="screen" href="/basic/public/css/custom.css?ver=${buildNumber}">
 
     <script type="text/javascript">
         var QCD = QCD || {};
@@ -36,21 +39,23 @@ String ctx = request.getContextPath();
         QCD.currentLang = '<c:out value="${locale}" />';
 
         QCD.translate = function (key) {
-            return QCD.translations[key] || '[' + key + ']';
+            var msg = QCD.translations[key];
+            return msg === undefined ? '[' + key + ']' : msg;
         };
 
         QCD.translations = {};
+
         <c:forEach items="${translationsMap}" var="translation">
-        QCD.translations['<c:out value="${translation.key}" />'] = '<c:out value="${fn:replace(translation.value, '\\\'','\\\\\\'')}" escapeXml="false" />';
-                                              </c:forEach>
-                                              </script>
+            QCD.translations['<c:out value="${translation.key}" />'] = '<c:out value="${fn:replace(translation.value, '\\\'','\\\\\\'')}" escapeXml="false" />';
+        </c:forEach>
+    </script>
 
-                                              <div class="windowContainer" style="background:#9b9b9b;" ng-app="gridApp" ng-controller="GridController" id="GridController">
+    <div class="windowContainer" style="background:#9b9b9b;" ng-app="gridApp" ng-controller="GridController" id="GridController">
 
-                                              <div id="gridContainer" ng-init="init('${recordName}');">
-                                              <ng-jq-grid config="config" data="data"></ng-jq-grid>
-                                              <table id="grid"></table>
-                                              <div id="jqGridPager"></div>
-                                              </div>
-                                              </div>
-                                              </div>
+        <div id="gridContainer" ng-init="init('${recordName}');">
+            <ng-jq-grid config="config" data="data"></ng-jq-grid>
+            <table id="grid"></table>
+            <div id="jqGridPager"></div>
+        </div>
+    </div>
+</div>

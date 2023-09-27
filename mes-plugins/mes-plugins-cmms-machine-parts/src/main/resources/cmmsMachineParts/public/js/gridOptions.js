@@ -636,6 +636,7 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
 
         var config = {
             url: '../../rest/rest/actions/' + getPlannedEventId() + '.html',
+            regional: ((window.locale == 'de') || (window.locale == 'fr')) ? 'en' : window.locale,
             datatype: "json",
             height: '100%',
             autowidth: true,

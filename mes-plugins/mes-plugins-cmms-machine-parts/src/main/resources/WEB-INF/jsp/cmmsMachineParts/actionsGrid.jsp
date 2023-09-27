@@ -42,6 +42,9 @@ String ctx = request.getContextPath();
         <c:when test="${locale == 'pl'}">
             <script type="text/ecmascript" src="/qcadooView/public/js/crud/qcd/components/jqGrid/grid.locale-pl.js?ver=${buildNumber}"></script>
         </c:when>
+        <c:when test="${locale == 'cn'}">
+            <script type="text/ecmascript" src="/qcadooView/public/js/crud/qcd/components/jqGrid/grid.locale-cn.js?ver=${buildNumber}"></script>
+        </c:when>
         <c:otherwise>
             <script type="text/ecmascript" src="/qcadooView/public/js/crud/qcd/components/jqGrid/grid.locale-en.js?ver=${buildNumber}"></script>
         </c:otherwise>
@@ -65,6 +68,7 @@ String ctx = request.getContextPath();
         };
 
         QCD.translations = {};
+
         <c:forEach items="${translationsMap}" var="translation">
             QCD.translations['<c:out value="${translation.key}" />'] = '<c:out value="${fn:replace(translation.value, '\\\'','\\\\\\'')}" escapeXml="false" />';
         </c:forEach>
