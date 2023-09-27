@@ -36,6 +36,7 @@
         <string name="productName"/>
         <string name="productNumber"/>
         <string name="productUnit"/>
+        <string name="additionalUnit"/>
         <decimal name="orderedQuantity"/>
         <decimal name="deliveredQuantity"/>
         <decimal name="additionalDeliveredQuantity"/>
