@@ -375,6 +375,44 @@ public class MaterialFlowResourcesServiceImpl implements MaterialFlowResourcesSe
         return null;
     }
 
+    public ResourceToRepackDto getResourceDetailsToRepack(String resourceNumber, List<String> userLocations) {
+        Map<String, Object> params = Maps.newHashMap();
+
+        if(resourceNumber != null || !resourceNumber.isEmpty() || !userLocations.isEmpty()) {
+            StringBuilder prepareQuery = new StringBuilder();
+
+            prepareQuery.append("SELECT ");
+            prepareQuery.append("dto.location_id as locationId, ");
+            prepareQuery.append("dto.productName as productName, ");
+            prepareQuery.append("dto.productNumber as productNumber, ");
+            prepareQuery.append("dto.locationNumber as locationNumber, ");
+            prepareQuery.append("dto.storageLocationNumber as storageLocationNumber, ");
+            prepareQuery.append("dto.palletNumber as palletNumber, ");
+            prepareQuery.append("dto.typeOfPallet as palletType, ");
+            prepareQuery.append("dto.batchNumber as batchNumber, ");
+            prepareQuery.append("dto.productionDate as productionDate, ");
+            prepareQuery.append("dto.expirationDate as expirationDate, ");
+            prepareQuery.append("dto.givenUnit as additionalUnit, ");
+            prepareQuery.append("dto.quantity as quantity, ");
+            prepareQuery.append("dto.productUnit as unit, ");
+            prepareQuery.append("dto.quantityInAdditionalUnit as additionalQuantity, ");
+            prepareQuery.append("dto.conversion as conversionValue ");
+            prepareQuery.append("FROM materialFlowResources_resourceDto as dto ");
+            prepareQuery.append("WHERE dto.number = :resourceNumber ");
+            prepareQuery.append("AND dto.locationNumber IN (:userLocations)");
+
+            params.put("resourceNumber", resourceNumber);
+            params.put("userLocations", userLocations);
+
+            try {
+                return jdbcTemplate.queryForObject(prepareQuery.toString(), params, BeanPropertyRowMapper.newInstance(ResourceToRepackDto.class));
+            } catch (EmptyResultDataAccessException e) {
+                return null;
+            }
+        }
+        return null;
+    }
+
     private DataDefinition getProductDD() {
         return dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PRODUCT);
     }
