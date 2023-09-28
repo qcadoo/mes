@@ -102,7 +102,9 @@ public class TechnologyCreationService {
         if (result.isLeft()) {
             return new TechnologyCreationResponse(result.getLeft());
         } else {
-            return new TechnologyCreationResponse(TechnologyCreationResponse.StatusCode.OK);
+            TechnologyCreationResponse technologyCreationResponse = new TechnologyCreationResponse(TechnologyCreationResponse.StatusCode.OK);
+            technologyCreationResponse.setMessage(translationService.translate("orders.technologyDefinitionWizard.createTechnology.success", LocaleContextHolder.getLocale(), result.getRight().getStringField(TechnologyFields.NUMBER)));
+            return technologyCreationResponse;
         }
     }
 
