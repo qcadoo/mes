@@ -6124,7 +6124,7 @@ CREATE TABLE public.basic_product (
 
 CREATE TABLE public.materialflowresources_storagelocation (
     id bigint NOT NULL,
-    number character varying(1024),
+    number character varying(48),
     state character varying(255) DEFAULT '01draft'::character varying,
     location_id bigint,
     product_id bigint,
@@ -6170,7 +6170,7 @@ CREATE MATERIALIZED VIEW public.arch_mv_materialflowresources_positiondto AS
             WHEN (address.name IS NULL) THEN (address.number)::text
             ELSE (((address.number)::text || ' - '::text) || (address.name)::text)
         END AS documentaddress,
-    ''::text AS batch,
+    batch.number AS batch,
     storagelocation.number AS storagelocation,
     "position".waste,
     delivery.number AS deliverynumber,
@@ -6193,7 +6193,7 @@ CREATE MATERIALIZED VIEW public.arch_mv_materialflowresources_positiondto AS
         END AS orderid,
     ("position".price * "position".quantity) AS value,
     "position".resourcenumber
-   FROM (((((((((((((public.arch_materialflowresources_position "position"
+   FROM ((((((((((((((public.arch_materialflowresources_position "position"
      LEFT JOIN public.arch_materialflowresources_document document ON ((document.id = "position".document_id)))
      LEFT JOIN public.materialflow_location locationfrom ON ((locationfrom.id = document.locationfrom_id)))
      LEFT JOIN public.materialflow_location locationto ON ((locationto.id = document.locationto_id)))
@@ -6207,6 +6207,7 @@ CREATE MATERIALIZED VIEW public.arch_mv_materialflowresources_positiondto AS
      LEFT JOIN public.subcontractorportal_suborder suborder ON ((suborder.id = document.suborder_id)))
      LEFT JOIN public.arch_orders_order ordersorder ON (((ordersorder.id = document.order_id) OR (ordersorder.id = "position".orderid))))
      LEFT JOIN public.basic_palletnumber palletnumber ON ((palletnumber.id = "position".palletnumber_id)))
+     LEFT JOIN public.advancedgenealogy_batch batch ON (("position".batch_id = batch.id)))
   WITH NO DATA;
 
 
@@ -11177,6 +11178,37 @@ ALTER SEQUENCE public.basic_label_id_seq OWNED BY public.basic_label.id;
 
 
 --
+-- Name: basic_licenseusage; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.basic_licenseusage (
+    id bigint NOT NULL,
+    createtime timestamp without time zone,
+    user_id bigint,
+    staff_id bigint
+);
+
+
+--
+-- Name: basic_licenseusage_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.basic_licenseusage_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: basic_licenseusage_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.basic_licenseusage_id_seq OWNED BY public.basic_licenseusage.id;
+
+
+--
 -- Name: basic_log; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -15571,6 +15603,7 @@ CREATE VIEW public.deliveries_orderedproductdto AS
     product.name AS productname,
     product.norm AS productnorm,
     product.unit AS productunit,
+    product.additionalunit,
     offer.number AS offernumber,
     negotiation.number AS negotiationnumber,
     operation.number AS operationnumber,
@@ -15945,7 +15978,8 @@ CREATE TABLE public.mobilewms_wmsdocumentpart (
     document_id bigint,
     parts integer,
     additionaldescription character varying(2048),
-    differences boolean DEFAULT false
+    differences boolean DEFAULT false,
+    type character varying(255) NOT NULL
 );
 
 
@@ -21034,7 +21068,7 @@ CREATE VIEW public.materialflowresources_positiondto AS
             WHEN ("position".orderid IS NULL) THEN (document.order_id)::integer
             ELSE "position".orderid
         END AS orderid,
-    ("position".price * "position".quantity) AS value,
+    round(("position".price * "position".quantity), 5) AS value,
     "position".resourcenumber,
     "position".sellingprice,
     (((staff.surname)::text || ' '::text) || (staff.name)::text) AS staff,
@@ -26185,7 +26219,8 @@ CREATE TABLE public.productflowthrudivision_orderproductresourcereservation (
     planedquantity numeric(12,5),
     usedquantity numeric(12,5),
     productioncountingquantity_id bigint,
-    priority integer
+    priority integer,
+    resourceunit character varying(255)
 );
 
 
@@ -34543,6 +34578,13 @@ ALTER TABLE ONLY public.basic_label ALTER COLUMN id SET DEFAULT nextval('public.
 
 
 --
+-- Name: basic_licenseusage id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.basic_licenseusage ALTER COLUMN id SET DEFAULT nextval('public.basic_licenseusage_id_seq'::regclass);
+
+
+--
 -- Name: basic_log id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -39308,6 +39350,14 @@ COPY public.basic_label (id, name, description, createdate, updatedate, createus
 
 
 --
+-- Data for Name: basic_licenseusage; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY public.basic_licenseusage (id, createtime, user_id, staff_id) FROM stdin;
+\.
+
+
+--
 -- Data for Name: basic_log; Type: TABLE DATA; Schema: public; Owner: -
 --
 
@@ -42499,7 +42549,7 @@ COPY public.mobilewms_outofstock (id, location_id, product_id, storagelocation_i
 -- Data for Name: mobilewms_wmsdocumentpart; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.mobilewms_wmsdocumentpart (id, number, additionalinfo, part, company, stateinwms, pickingworker, document_id, parts, additionaldescription, differences) FROM stdin;
+COPY public.mobilewms_wmsdocumentpart (id, number, additionalinfo, part, company, stateinwms, pickingworker, document_id, parts, additionaldescription, differences, type) FROM stdin;
 \.
 
 
@@ -43063,7 +43113,7 @@ COPY public.productflowthrudivision_opertaskmaterialavailability (id, operationa
 -- Data for Name: productflowthrudivision_orderproductresourcereservation; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.productflowthrudivision_orderproductresourcereservation (id, resource_id, resourcenumber, planedquantity, usedquantity, productioncountingquantity_id, priority) FROM stdin;
+COPY public.productflowthrudivision_orderproductresourcereservation (id, resource_id, resourcenumber, planedquantity, usedquantity, productioncountingquantity_id, priority, resourceunit) FROM stdin;
 \.
 
 
@@ -44138,6 +44188,7 @@ COPY public.qcadooview_item (id, pluginidentifier, name, active, category_id, vi
 218	scheduleGantt	workstationsWorkChart	t	3	217	7	ROLE_COMPANY_STRUCTURE	0
 219	subcontractorPortal	subOrderIssuedProductsReportsList	t	15	218	18	ROLE_ANALYSIS_VIEWER	0
 172	mobileWMS	outOfStockList	t	9	171	16	ROLE_REQUIREMENTS	0
+220	technologies	productData	t	5	219	14	ROLE_TECHNOLOGIES	0
 \.
 
 
@@ -44348,6 +44399,7 @@ COPY public.qcadooview_view (id, pluginidentifier, name, view, url, entityversio
 216	productionCounting	employeePieceworkSettlement		/employeePieceworkSettlement.html	0
 218	subcontractorPortal	subOrderIssuedProductsReportsList	subOrderIssuedProductsReportsList	\N	0
 171	mobileWMS	outOfStockList	outOfStockList	\N	0
+219	technologies	productDatasList	productDatasList	\N	0
 \.
 
 
@@ -46480,6 +46532,13 @@ SELECT pg_catalog.setval('public.basic_forms_id_seq', 1, false);
 --
 
 SELECT pg_catalog.setval('public.basic_label_id_seq', 1, false);
+
+
+--
+-- Name: basic_licenseusage_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('public.basic_licenseusage_id_seq', 1, false);
 
 
 --
@@ -49762,14 +49821,14 @@ SELECT pg_catalog.setval('public.qcadooview_category_id_seq', 23, true);
 -- Name: qcadooview_item_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('public.qcadooview_item_id_seq', 219, true);
+SELECT pg_catalog.setval('public.qcadooview_item_id_seq', 220, true);
 
 
 --
 -- Name: qcadooview_view_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('public.qcadooview_view_id_seq', 218, true);
+SELECT pg_catalog.setval('public.qcadooview_view_id_seq', 219, true);
 
 
 --
@@ -52055,6 +52114,14 @@ ALTER TABLE ONLY public.basic_forms
 
 ALTER TABLE ONLY public.basic_label
     ADD CONSTRAINT basic_label_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: basic_licenseusage basic_licenseusage_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.basic_licenseusage
+    ADD CONSTRAINT basic_licenseusage_pkey PRIMARY KEY (id);
 
 
 --
@@ -57847,6 +57914,68 @@ CREATE OR REPLACE VIEW public.advancedgenealogy_batchdto AS
 
 
 --
+-- Name: arch_masterorders_masterorderposition_manyproducts _RETURN; Type: RULE; Schema: public; Owner: -
+--
+
+CREATE OR REPLACE VIEW public.arch_masterorders_masterorderposition_manyproducts AS
+ SELECT masterorderproduct.id,
+    masterorderdefinition.number AS masterorderdefinitionnumber,
+    (masterorder.id)::integer AS masterorderid,
+    (masterorderproduct.product_id)::integer AS productid,
+    (masterorderproduct.id)::integer AS masterorderproductid,
+    masterorder.name,
+    masterorder.number,
+    masterorder.deadline,
+    masterorder.masterorderstate AS masterorderstatus,
+    masterorderproduct.masterorderpositionstatus,
+    COALESCE(masterorderproduct.masterorderquantity, (0)::numeric) AS masterorderquantity,
+    COALESCE(( SELECT sum(orders.plannedquantity) AS sum), (0)::numeric) AS cumulatedmasterorderquantity,
+    COALESCE(( SELECT sum(orders.donequantity) AS sum), (0)::numeric) AS producedorderquantity,
+        CASE
+            WHEN ((COALESCE(masterorderproduct.masterorderquantity, (0)::numeric) - COALESCE(( SELECT sum(orders.donequantity) AS sum), (0)::numeric)) > (0)::numeric) THEN (COALESCE(masterorderproduct.masterorderquantity, (0)::numeric) - COALESCE(( SELECT sum(orders.donequantity) AS sum), (0)::numeric))
+            ELSE (0)::numeric
+        END AS lefttorelease,
+    masterorderproduct.comments,
+    _product.number AS productnumber,
+    _product.name AS productname,
+    _product.unit,
+    technology.number AS technologyname,
+    company.name AS companyname,
+    masterorder.active,
+    companypayer.name AS companypayer,
+    assortment.name AS assortmentname,
+    masterorder.state,
+    masterorder.description
+   FROM ((((((((public.arch_masterorders_masterorderproduct masterorderproduct
+     LEFT JOIN public.arch_masterorders_masterorder masterorder ON ((masterorderproduct.masterorder_id = masterorder.id)))
+     LEFT JOIN public.masterorders_masterorderdefinition masterorderdefinition ON ((masterorderdefinition.id = masterorder.masterorderdefinition_id)))
+     LEFT JOIN public.basic_product _product ON ((_product.id = masterorderproduct.product_id)))
+     LEFT JOIN public.basic_company company ON ((company.id = masterorder.company_id)))
+     LEFT JOIN public.technologies_technology technology ON ((technology.id = masterorderproduct.technology_id)))
+     LEFT JOIN public.arch_orders_order orders ON (((orders.masterorder_id = masterorderproduct.masterorder_id) AND (orders.product_id = masterorderproduct.product_id))))
+     LEFT JOIN public.basic_company companypayer ON ((companypayer.id = masterorder.companypayer_id)))
+     LEFT JOIN public.basic_assortment assortment ON ((assortment.id = _product.assortment_id)))
+  GROUP BY masterorderdefinition.number, masterorder.id, masterorderproduct.product_id, masterorderproduct.id, masterorder.name, masterorder.deadline, masterorder.masterorderstate, masterorderproduct.masterorderpositionstatus, masterorderproduct.comments, _product.number, _product.name, _product.unit, technology.number, company.name, masterorder.active, companypayer.name, assortment.name;
+
+
+--
+-- Name: arch_ordersgroups_drafrptquantitydto _RETURN; Type: RULE; Schema: public; Owner: -
+--
+
+CREATE OR REPLACE VIEW public.arch_ordersgroups_drafrptquantitydto AS
+ SELECT DISTINCT ordersgroup.id,
+    ordersgroup.number,
+    COALESCE(sum(topoc.usedquantity), (0)::numeric) AS sum
+   FROM ((((public.arch_productioncounting_trackingoperationproductoutcomponent topoc
+     JOIN public.arch_productioncounting_productiontracking pt ON ((pt.id = topoc.productiontracking_id)))
+     JOIN public.arch_orders_order ord ON ((ord.id = pt.order_id)))
+     JOIN public.arch_ordersgroups_ordersgroup ordersgroup ON ((ord.ordersgroup_id = ordersgroup.id)))
+     JOIN public.basic_product product ON ((topoc.product_id = product.id)))
+  WHERE ((pt.state)::text = '01draft'::text)
+  GROUP BY ordersgroup.id;
+
+
+--
 -- Name: basic_productdto _RETURN; Type: RULE; Schema: public; Owner: -
 --
 
@@ -58048,6 +58177,110 @@ CREATE OR REPLACE VIEW public.ordersgroups_drafrptquantitydto AS
      JOIN public.basic_product product ON ((topoc.product_id = product.id)))
   WHERE ((pt.state)::text = '01draft'::text)
   GROUP BY ordersgroup.id;
+
+
+--
+-- Name: productioncounting_productionanalysisdto _RETURN; Type: RULE; Schema: public; Owner: -
+--
+
+CREATE OR REPLACE VIEW public.productioncounting_productionanalysisdto AS
+ SELECT row_number() OVER () AS id,
+    bool_or(productiontracking.active) AS active,
+    (productionline.id)::integer AS productionline_id,
+    productionline.number AS productionlinenumber,
+    (basiccompany.id)::integer AS company_id,
+    basiccompany.number AS companynumber,
+    (staff.id)::integer AS staff_id,
+    (((staff.surname)::text || ' '::text) || (staff.name)::text) AS staffname,
+    (assortment.id)::integer AS assortment_id,
+    assortment.name AS assortmentname,
+    (product.id)::integer AS product_id,
+    product.number AS productnumber,
+    product.name AS productname,
+    product.unit AS productunit,
+    size.number AS sizenumber,
+    sum((COALESCE(trackingoperationproductoutcomponent.usedquantity, (0)::numeric))::numeric(14,5)) AS usedquantity,
+    sum((COALESCE(trackingoperationproductoutcomponent.wastesquantity, (0)::numeric))::numeric(14,5)) AS wastesquantity,
+    sum(((COALESCE(trackingoperationproductoutcomponent.usedquantity, (0)::numeric) + COALESCE(trackingoperationproductoutcomponent.wastesquantity, (0)::numeric)))::numeric(14,5)) AS donequantity,
+    trackingoperationproductoutcomponent.causeofwastes,
+    (shift.id)::integer AS shift_id,
+    shift.name AS shiftname,
+    (productiontracking.timerangefrom)::date AS timerangefrom,
+    (productiontracking.timerangeto)::date AS timerangeto,
+    (tcontext.id)::integer AS generator_id,
+    tcontext.number AS generatorname,
+    (ordersorder.id)::integer AS order_id,
+    ordersorder.number AS ordernumber,
+    COALESCE(masterorder.number, groupmasterorder.number) AS obtainedmasterordernumber,
+    technologygroup.number AS technologygroupnumber,
+    trackingoperationproductoutcomponent.typeofmaterial
+   FROM (((((((((((((((public.productioncounting_productiontracking productiontracking
+     LEFT JOIN public.orders_order ordersorder ON ((ordersorder.id = productiontracking.order_id)))
+     LEFT JOIN public.basic_company basiccompany ON ((basiccompany.id = ordersorder.company_id)))
+     LEFT JOIN public.productionlines_productionline productionline ON ((productionline.id = ordersorder.productionline_id)))
+     LEFT JOIN public.basic_staff staff ON ((staff.id = productiontracking.staff_id)))
+     LEFT JOIN public.productioncounting_trackingoperationproductoutcomponent trackingoperationproductoutcomponent ON ((trackingoperationproductoutcomponent.productiontracking_id = productiontracking.id)))
+     LEFT JOIN public.basic_product product ON ((product.id = trackingoperationproductoutcomponent.product_id)))
+     LEFT JOIN public.basic_assortment assortment ON ((assortment.id = product.assortment_id)))
+     LEFT JOIN public.basic_size size ON ((size.id = product.size_id)))
+     LEFT JOIN public.basic_shift shift ON ((shift.id = productiontracking.shift_id)))
+     LEFT JOIN public.technologies_technology technologyprototype ON ((ordersorder.technology_id = technologyprototype.id)))
+     LEFT JOIN public.technologiesgenerator_generatorcontext tcontext ON ((tcontext.id = technologyprototype.generatorcontext_id)))
+     LEFT JOIN public.masterorders_masterorder masterorder ON ((masterorder.id = ordersorder.masterorder_id)))
+     LEFT JOIN public.ordersgroups_ordersgroup ordersgroup ON ((ordersgroup.id = ordersorder.ordersgroup_id)))
+     LEFT JOIN public.masterorders_masterorder groupmasterorder ON ((groupmasterorder.id = ordersgroup.masterorder_id)))
+     LEFT JOIN public.technologies_technologygroup technologygroup ON ((technologyprototype.technologygroup_id = technologygroup.id)))
+  WHERE ((productiontracking.state)::text = ANY (ARRAY[('01draft'::character varying)::text, ('02accepted'::character varying)::text]))
+  GROUP BY productionline.id, basiccompany.id, staff.id, assortment.id, size.number, product.id, shift.id, trackingoperationproductoutcomponent.causeofwastes, ((productiontracking.timerangefrom)::date), ((productiontracking.timerangeto)::date), ordersorder.id, tcontext.id, masterorder.id, groupmasterorder.id, technologygroup.number, trackingoperationproductoutcomponent.typeofmaterial
+UNION ALL
+ SELECT row_number() OVER () AS id,
+    bool_or(productiontracking.active) AS active,
+    (productionline.id)::integer AS productionline_id,
+    productionline.number AS productionlinenumber,
+    (basiccompany.id)::integer AS company_id,
+    basiccompany.number AS companynumber,
+    (staff.id)::integer AS staff_id,
+    (((staff.surname)::text || ' '::text) || (staff.name)::text) AS staffname,
+    (assortment.id)::integer AS assortment_id,
+    assortment.name AS assortmentname,
+    (product.id)::integer AS product_id,
+    product.number AS productnumber,
+    product.name AS productname,
+    product.unit AS productunit,
+    size.number AS sizenumber,
+    sum((COALESCE(trackingoperationproductoutcomponent.usedquantity, (0)::numeric))::numeric(14,5)) AS usedquantity,
+    sum((COALESCE(trackingoperationproductoutcomponent.wastesquantity, (0)::numeric))::numeric(14,5)) AS wastesquantity,
+    sum(((COALESCE(trackingoperationproductoutcomponent.usedquantity, (0)::numeric) + COALESCE(trackingoperationproductoutcomponent.wastesquantity, (0)::numeric)))::numeric(14,5)) AS donequantity,
+    trackingoperationproductoutcomponent.causeofwastes,
+    (shift.id)::integer AS shift_id,
+    shift.name AS shiftname,
+    (productiontracking.timerangefrom)::date AS timerangefrom,
+    (productiontracking.timerangeto)::date AS timerangeto,
+    (tcontext.id)::integer AS generator_id,
+    tcontext.number AS generatorname,
+    (ordersorder.id)::integer AS order_id,
+    ordersorder.number AS ordernumber,
+    COALESCE(masterorder.number, groupmasterorder.number) AS obtainedmasterordernumber,
+    technologygroup.number AS technologygroupnumber,
+    trackingoperationproductoutcomponent.typeofmaterial
+   FROM (((((((((((((((public.arch_productioncounting_productiontracking productiontracking
+     LEFT JOIN public.arch_orders_order ordersorder ON ((ordersorder.id = productiontracking.order_id)))
+     LEFT JOIN public.basic_company basiccompany ON ((basiccompany.id = ordersorder.company_id)))
+     LEFT JOIN public.productionlines_productionline productionline ON ((productionline.id = ordersorder.productionline_id)))
+     LEFT JOIN public.basic_staff staff ON ((staff.id = productiontracking.staff_id)))
+     LEFT JOIN public.arch_productioncounting_trackingoperationproductoutcomponent trackingoperationproductoutcomponent ON ((trackingoperationproductoutcomponent.productiontracking_id = productiontracking.id)))
+     LEFT JOIN public.basic_product product ON ((product.id = trackingoperationproductoutcomponent.product_id)))
+     LEFT JOIN public.basic_assortment assortment ON ((assortment.id = product.assortment_id)))
+     LEFT JOIN public.basic_size size ON ((size.id = product.size_id)))
+     LEFT JOIN public.basic_shift shift ON ((shift.id = productiontracking.shift_id)))
+     LEFT JOIN public.technologies_technology technologyprototype ON ((ordersorder.technology_id = technologyprototype.id)))
+     LEFT JOIN public.technologiesgenerator_generatorcontext tcontext ON ((tcontext.id = technologyprototype.generatorcontext_id)))
+     LEFT JOIN public.arch_masterorders_masterorder masterorder ON ((masterorder.id = ordersorder.masterorder_id)))
+     LEFT JOIN public.arch_ordersgroups_ordersgroup ordersgroup ON ((ordersgroup.id = ordersorder.ordersgroup_id)))
+     LEFT JOIN public.arch_masterorders_masterorder groupmasterorder ON ((groupmasterorder.id = ordersgroup.masterorder_id)))
+     LEFT JOIN public.technologies_technologygroup technologygroup ON ((technologyprototype.technologygroup_id = technologygroup.id)))
+  WHERE ((productiontracking.state)::text = ANY (ARRAY[('01draft'::character varying)::text, ('02accepted'::character varying)::text]))
+  GROUP BY productionline.id, basiccompany.id, staff.id, assortment.id, size.number, product.id, shift.id, trackingoperationproductoutcomponent.causeofwastes, ((productiontracking.timerangefrom)::date), ((productiontracking.timerangeto)::date), ordersorder.id, tcontext.id, masterorder.id, groupmasterorder.id, technologygroup.number, trackingoperationproductoutcomponent.typeofmaterial;
 
 
 --
@@ -58319,172 +58552,6 @@ CREATE OR REPLACE VIEW public.technologies_technologydto AS
      LEFT JOIN public.productflowthrudivision_technologyproductionline tpl ON (((tpl.technology_id = technology.id) AND tpl.master)))
      LEFT JOIN public.productionlines_productionline productionline ON ((productionline.id = tpl.productionline_id)))
   GROUP BY technology.id, product.number, product.globaltypeofmaterial, technologygroup.number, division.name, product.name, generatorcontext.number, technologystatechange.dateandtime, tpl.standardperformance, productionline.number, assortment.name, qualitycard.number;
-
-
---
--- Name: arch_ordersgroups_drafrptquantitydto _RETURN; Type: RULE; Schema: public; Owner: -
---
-
-CREATE OR REPLACE VIEW public.arch_ordersgroups_drafrptquantitydto AS
- SELECT DISTINCT ordersgroup.id,
-    ordersgroup.number,
-    COALESCE(sum(topoc.usedquantity), (0)::numeric) AS sum
-   FROM ((((public.arch_productioncounting_trackingoperationproductoutcomponent topoc
-     JOIN public.arch_productioncounting_productiontracking pt ON ((pt.id = topoc.productiontracking_id)))
-     JOIN public.arch_orders_order ord ON ((ord.id = pt.order_id)))
-     JOIN public.arch_ordersgroups_ordersgroup ordersgroup ON ((ord.ordersgroup_id = ordersgroup.id)))
-     JOIN public.basic_product product ON ((topoc.product_id = product.id)))
-  WHERE ((pt.state)::text = '01draft'::text)
-  GROUP BY ordersgroup.id;
-
-
---
--- Name: arch_masterorders_masterorderposition_manyproducts _RETURN; Type: RULE; Schema: public; Owner: -
---
-
-CREATE OR REPLACE VIEW public.arch_masterorders_masterorderposition_manyproducts AS
- SELECT masterorderproduct.id,
-    masterorderdefinition.number AS masterorderdefinitionnumber,
-    (masterorder.id)::integer AS masterorderid,
-    (masterorderproduct.product_id)::integer AS productid,
-    (masterorderproduct.id)::integer AS masterorderproductid,
-    masterorder.name,
-    masterorder.number,
-    masterorder.deadline,
-    masterorder.masterorderstate AS masterorderstatus,
-    masterorderproduct.masterorderpositionstatus,
-    COALESCE(masterorderproduct.masterorderquantity, (0)::numeric) AS masterorderquantity,
-    COALESCE(( SELECT sum(orders.plannedquantity) AS sum), (0)::numeric) AS cumulatedmasterorderquantity,
-    COALESCE(( SELECT sum(orders.donequantity) AS sum), (0)::numeric) AS producedorderquantity,
-        CASE
-            WHEN ((COALESCE(masterorderproduct.masterorderquantity, (0)::numeric) - COALESCE(( SELECT sum(orders.donequantity) AS sum), (0)::numeric)) > (0)::numeric) THEN (COALESCE(masterorderproduct.masterorderquantity, (0)::numeric) - COALESCE(( SELECT sum(orders.donequantity) AS sum), (0)::numeric))
-            ELSE (0)::numeric
-        END AS lefttorelease,
-    masterorderproduct.comments,
-    _product.number AS productnumber,
-    _product.name AS productname,
-    _product.unit,
-    technology.number AS technologyname,
-    company.name AS companyname,
-    masterorder.active,
-    companypayer.name AS companypayer,
-    assortment.name AS assortmentname,
-    masterorder.state,
-    masterorder.description
-   FROM ((((((((public.arch_masterorders_masterorderproduct masterorderproduct
-     LEFT JOIN public.arch_masterorders_masterorder masterorder ON ((masterorderproduct.masterorder_id = masterorder.id)))
-     LEFT JOIN public.masterorders_masterorderdefinition masterorderdefinition ON ((masterorderdefinition.id = masterorder.masterorderdefinition_id)))
-     LEFT JOIN public.basic_product _product ON ((_product.id = masterorderproduct.product_id)))
-     LEFT JOIN public.basic_company company ON ((company.id = masterorder.company_id)))
-     LEFT JOIN public.technologies_technology technology ON ((technology.id = masterorderproduct.technology_id)))
-     LEFT JOIN public.arch_orders_order orders ON (((orders.masterorder_id = masterorderproduct.masterorder_id) AND (orders.product_id = masterorderproduct.product_id))))
-     LEFT JOIN public.basic_company companypayer ON ((companypayer.id = masterorder.companypayer_id)))
-     LEFT JOIN public.basic_assortment assortment ON ((assortment.id = _product.assortment_id)))
-  GROUP BY masterorderdefinition.number, masterorder.id, masterorderproduct.product_id, masterorderproduct.id, masterorder.name, masterorder.deadline, masterorder.masterorderstate, masterorderproduct.masterorderpositionstatus, masterorderproduct.comments, _product.number, _product.name, _product.unit, technology.number, company.name, masterorder.active, companypayer.name, assortment.name;
-
-
---
--- Name: productioncounting_productionanalysisdto _RETURN; Type: RULE; Schema: public; Owner: -
---
-
-CREATE OR REPLACE VIEW public.productioncounting_productionanalysisdto AS
- SELECT row_number() OVER () AS id,
-    bool_or(productiontracking.active) AS active,
-    (productionline.id)::integer AS productionline_id,
-    productionline.number AS productionlinenumber,
-    (basiccompany.id)::integer AS company_id,
-    basiccompany.number AS companynumber,
-    (staff.id)::integer AS staff_id,
-    (((staff.surname)::text || ' '::text) || (staff.name)::text) AS staffname,
-    (assortment.id)::integer AS assortment_id,
-    assortment.name AS assortmentname,
-    (product.id)::integer AS product_id,
-    product.number AS productnumber,
-    product.name AS productname,
-    product.unit AS productunit,
-    size.number AS sizenumber,
-    sum((COALESCE(trackingoperationproductoutcomponent.usedquantity, (0)::numeric))::numeric(14,5)) AS usedquantity,
-    sum((COALESCE(trackingoperationproductoutcomponent.wastesquantity, (0)::numeric))::numeric(14,5)) AS wastesquantity,
-    sum(((COALESCE(trackingoperationproductoutcomponent.usedquantity, (0)::numeric) + COALESCE(trackingoperationproductoutcomponent.wastesquantity, (0)::numeric)))::numeric(14,5)) AS donequantity,
-    trackingoperationproductoutcomponent.causeofwastes,
-    (shift.id)::integer AS shift_id,
-    shift.name AS shiftname,
-    (productiontracking.timerangefrom)::date AS timerangefrom,
-    (productiontracking.timerangeto)::date AS timerangeto,
-    (tcontext.id)::integer AS generator_id,
-    tcontext.number AS generatorname,
-    (ordersorder.id)::integer AS order_id,
-    ordersorder.number AS ordernumber,
-    COALESCE(masterorder.number, groupmasterorder.number) AS obtainedmasterordernumber,
-    technologygroup.number AS technologygroupnumber,
-    trackingoperationproductoutcomponent.typeofmaterial
-   FROM (((((((((((((((public.productioncounting_productiontracking productiontracking
-     LEFT JOIN public.orders_order ordersorder ON ((ordersorder.id = productiontracking.order_id)))
-     LEFT JOIN public.basic_company basiccompany ON ((basiccompany.id = ordersorder.company_id)))
-     LEFT JOIN public.productionlines_productionline productionline ON ((productionline.id = ordersorder.productionline_id)))
-     LEFT JOIN public.basic_staff staff ON ((staff.id = productiontracking.staff_id)))
-     LEFT JOIN public.productioncounting_trackingoperationproductoutcomponent trackingoperationproductoutcomponent ON ((trackingoperationproductoutcomponent.productiontracking_id = productiontracking.id)))
-     LEFT JOIN public.basic_product product ON ((product.id = trackingoperationproductoutcomponent.product_id)))
-     LEFT JOIN public.basic_assortment assortment ON ((assortment.id = product.assortment_id)))
-     LEFT JOIN public.basic_size size ON ((size.id = product.size_id)))
-     LEFT JOIN public.basic_shift shift ON ((shift.id = productiontracking.shift_id)))
-     LEFT JOIN public.technologies_technology technologyprototype ON ((ordersorder.technologyprototype_id = technologyprototype.id)))
-     LEFT JOIN public.technologiesgenerator_generatorcontext tcontext ON ((tcontext.id = technologyprototype.generatorcontext_id)))
-     LEFT JOIN public.masterorders_masterorder masterorder ON ((masterorder.id = ordersorder.masterorder_id)))
-     LEFT JOIN public.ordersgroups_ordersgroup ordersgroup ON ((ordersgroup.id = ordersorder.ordersgroup_id)))
-     LEFT JOIN public.masterorders_masterorder groupmasterorder ON ((groupmasterorder.id = ordersgroup.masterorder_id)))
-     LEFT JOIN public.technologies_technologygroup technologygroup ON ((technologyprototype.technologygroup_id = technologygroup.id)))
-  WHERE ((productiontracking.state)::text = ANY (ARRAY[('01draft'::character varying)::text, ('02accepted'::character varying)::text]))
-  GROUP BY productionline.id, basiccompany.id, staff.id, assortment.id, size.number, product.id, shift.id, trackingoperationproductoutcomponent.causeofwastes, ((productiontracking.timerangefrom)::date), ((productiontracking.timerangeto)::date), ordersorder.id, tcontext.id, masterorder.id, groupmasterorder.id, technologygroup.number, trackingoperationproductoutcomponent.typeofmaterial
-UNION ALL
- SELECT row_number() OVER () AS id,
-    bool_or(productiontracking.active) AS active,
-    (productionline.id)::integer AS productionline_id,
-    productionline.number AS productionlinenumber,
-    (basiccompany.id)::integer AS company_id,
-    basiccompany.number AS companynumber,
-    (staff.id)::integer AS staff_id,
-    (((staff.surname)::text || ' '::text) || (staff.name)::text) AS staffname,
-    (assortment.id)::integer AS assortment_id,
-    assortment.name AS assortmentname,
-    (product.id)::integer AS product_id,
-    product.number AS productnumber,
-    product.name AS productname,
-    product.unit AS productunit,
-    size.number AS sizenumber,
-    sum((COALESCE(trackingoperationproductoutcomponent.usedquantity, (0)::numeric))::numeric(14,5)) AS usedquantity,
-    sum((COALESCE(trackingoperationproductoutcomponent.wastesquantity, (0)::numeric))::numeric(14,5)) AS wastesquantity,
-    sum(((COALESCE(trackingoperationproductoutcomponent.usedquantity, (0)::numeric) + COALESCE(trackingoperationproductoutcomponent.wastesquantity, (0)::numeric)))::numeric(14,5)) AS donequantity,
-    trackingoperationproductoutcomponent.causeofwastes,
-    (shift.id)::integer AS shift_id,
-    shift.name AS shiftname,
-    (productiontracking.timerangefrom)::date AS timerangefrom,
-    (productiontracking.timerangeto)::date AS timerangeto,
-    (tcontext.id)::integer AS generator_id,
-    tcontext.number AS generatorname,
-    (ordersorder.id)::integer AS order_id,
-    ordersorder.number AS ordernumber,
-    COALESCE(masterorder.number, groupmasterorder.number) AS obtainedmasterordernumber,
-    technologygroup.number AS technologygroupnumber,
-    trackingoperationproductoutcomponent.typeofmaterial
-   FROM (((((((((((((((public.arch_productioncounting_productiontracking productiontracking
-     LEFT JOIN public.arch_orders_order ordersorder ON ((ordersorder.id = productiontracking.order_id)))
-     LEFT JOIN public.basic_company basiccompany ON ((basiccompany.id = ordersorder.company_id)))
-     LEFT JOIN public.productionlines_productionline productionline ON ((productionline.id = ordersorder.productionline_id)))
-     LEFT JOIN public.basic_staff staff ON ((staff.id = productiontracking.staff_id)))
-     LEFT JOIN public.arch_productioncounting_trackingoperationproductoutcomponent trackingoperationproductoutcomponent ON ((trackingoperationproductoutcomponent.productiontracking_id = productiontracking.id)))
-     LEFT JOIN public.basic_product product ON ((product.id = trackingoperationproductoutcomponent.product_id)))
-     LEFT JOIN public.basic_assortment assortment ON ((assortment.id = product.assortment_id)))
-     LEFT JOIN public.basic_size size ON ((size.id = product.size_id)))
-     LEFT JOIN public.basic_shift shift ON ((shift.id = productiontracking.shift_id)))
-     LEFT JOIN public.technologies_technology technologyprototype ON ((ordersorder.technologyprototype_id = technologyprototype.id)))
-     LEFT JOIN public.technologiesgenerator_generatorcontext tcontext ON ((tcontext.id = technologyprototype.generatorcontext_id)))
-     LEFT JOIN public.arch_masterorders_masterorder masterorder ON ((masterorder.id = ordersorder.masterorder_id)))
-     LEFT JOIN public.arch_ordersgroups_ordersgroup ordersgroup ON ((ordersgroup.id = ordersorder.ordersgroup_id)))
-     LEFT JOIN public.arch_masterorders_masterorder groupmasterorder ON ((groupmasterorder.id = ordersgroup.masterorder_id)))
-     LEFT JOIN public.technologies_technologygroup technologygroup ON ((technologyprototype.technologygroup_id = technologygroup.id)))
-  WHERE ((productiontracking.state)::text = ANY (ARRAY[('01draft'::character varying)::text, ('02accepted'::character varying)::text]))
-  GROUP BY productionline.id, basiccompany.id, staff.id, assortment.id, size.number, product.id, shift.id, trackingoperationproductoutcomponent.causeofwastes, ((productiontracking.timerangefrom)::date), ((productiontracking.timerangeto)::date), ordersorder.id, tcontext.id, masterorder.id, groupmasterorder.id, technologygroup.number, trackingoperationproductoutcomponent.typeofmaterial;
 
 
 --
@@ -61101,6 +61168,22 @@ ALTER TABLE ONLY public.productioncounting_lack
 
 ALTER TABLE ONLY public.productioncounting_lackreason
     ADD CONSTRAINT lackreason_lack_fkey FOREIGN KEY (lack_id) REFERENCES public.productioncounting_lack(id) DEFERRABLE;
+
+
+--
+-- Name: basic_licenseusage licenseusage_staff_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.basic_licenseusage
+    ADD CONSTRAINT licenseusage_staff_fkey FOREIGN KEY (staff_id) REFERENCES public.basic_staff(id) DEFERRABLE;
+
+
+--
+-- Name: basic_licenseusage licenseusage_user_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.basic_licenseusage
+    ADD CONSTRAINT licenseusage_user_fkey FOREIGN KEY (user_id) REFERENCES public.qcadoosecurity_user(id) DEFERRABLE;
 
 
 --

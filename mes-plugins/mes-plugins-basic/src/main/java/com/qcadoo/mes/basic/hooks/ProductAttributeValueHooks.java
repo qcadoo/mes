@@ -29,7 +29,10 @@ public class ProductAttributeValueHooks {
 
         String entityType = product.getStringField(ProductFields.ENTITY_TYPE);
 
-        if (AttributeDataType.CALCULATED.getStringValue().equals(attribute.getStringField(AttributeFields.DATA_TYPE))
+        String dataType = attribute.getStringField(AttributeFields.DATA_TYPE);
+        String valueType = attribute.getStringField(AttributeFields.VALUE_TYPE);
+
+        if (AttributeDataType.CALCULATED.getStringValue().equals(dataType)
                 && Objects.isNull(productAttributeValue.getBelongsToField(ProductAttributeValueFields.ATTRIBUTE_VALUE))) {
             productAttributeValue.setField(ProductAttributeValueFields.VALUE, null);
 
@@ -41,30 +44,28 @@ public class ProductAttributeValueHooks {
             }
         }
 
-        if (AttributeDataType.CONTINUOUS.getStringValue().equals(attribute.getStringField(AttributeFields.DATA_TYPE))) {
+        if (AttributeDataType.CONTINUOUS.getStringValue().equals(dataType)) {
             String value = productAttributeValue.getStringField(ProductAttributeValueFields.VALUE);
 
-            if (AttributeValueType.NUMERIC.getStringValue().equals(attribute.getStringField(AttributeFields.VALUE_TYPE))) {
+            if (AttributeValueType.NUMERIC.getStringValue().equals(valueType)) {
                 Either<Exception, Optional<BigDecimal>> eitherNumber = BigDecimalUtils.tryParseAndIgnoreSeparator(value,
                         LocaleContextHolder.getLocale());
 
                 if (eitherNumber.isRight()) {
                     if (eitherNumber.getRight().isPresent()) {
-                        int scale = attribute.getIntegerField(AttributeFields.PRECISION);
-                        int valueScale = eitherNumber.getRight().get().scale();
+                        int precision = attribute.getIntegerField(AttributeFields.PRECISION);
+                        int valueScale = eitherNumber.getRight().get().stripTrailingZeros().scale();
 
-                        if (valueScale > scale) {
+                        if (valueScale > precision) {
                             productAttributeValue.addError(productAttributeValueDD.getField(ProductAttributeValueFields.VALUE),
-                                    "qcadooView.validate.field.error.invalidScale.max", String.valueOf(scale));
+                                    "qcadooView.validate.field.error.invalidScale.max", String.valueOf(precision));
 
                             return false;
                         }
 
                         productAttributeValue
-                                .setField(
-                                        ProductAttributeValueFields.VALUE,
-                                        BigDecimalUtils.toString(eitherNumber.getRight().get(),
-                                                attribute.getIntegerField(AttributeFields.PRECISION)));
+                                .setField(ProductAttributeValueFields.VALUE,
+                                        numberService.formatWithMinimumFractionDigits(eitherNumber.getRight().get(), 0));
                     } else {
                         if (ProductFamilyElementType.PARTICULAR_PRODUCT.getStringValue().equals(entityType)) {
                             productAttributeValue.addError(productAttributeValueDD.getField(ProductAttributeValueFields.VALUE),
@@ -81,7 +82,7 @@ public class ProductAttributeValueHooks {
                 }
             }
 
-            if (AttributeValueType.TEXT.getStringValue().equals(attribute.getStringField(AttributeFields.VALUE_TYPE))) {
+            if (AttributeValueType.TEXT.getStringValue().equals(valueType)) {
                 if (StringUtils.isEmpty(value)) {
                     if (ProductFamilyElementType.PARTICULAR_PRODUCT.getStringValue().equals(entityType)) {
                         productAttributeValue.addError(productAttributeValueDD.getField(ProductAttributeValueFields.VALUE),
@@ -173,8 +174,7 @@ public class ProductAttributeValueHooks {
             if (eitherNumber.isRight() && eitherNumber.getRight().isPresent()) {
                 productAttributeValue.setField(
                         ProductAttributeValueFields.VALUE,
-                        BigDecimalUtils.toString(eitherNumber.getRight().get(),
-                                attribute.getIntegerField(AttributeFields.PRECISION)));
+                        numberService.formatWithMinimumFractionDigits(eitherNumber.getRight().get(), 0));
             }
         }
     }

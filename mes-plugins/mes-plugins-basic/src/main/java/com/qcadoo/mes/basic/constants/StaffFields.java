@@ -55,4 +55,6 @@ public final class StaffFields {
 
     public static final String PRODUCTION_LINE = "productionLine";
 
+    public static final String LICENSE_USAGES = "licenseUsages";
+
 }

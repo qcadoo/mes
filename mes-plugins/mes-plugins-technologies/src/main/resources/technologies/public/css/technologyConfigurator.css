@@ -99,7 +99,7 @@ h2 {
 }
 
 
-#technologyConfiguratorWizard .container {
+technologyConfigurator.css.container {
     width: 850px;
     position: relative;
     margin: 0 auto;
@@ -137,7 +137,7 @@ label {
     text-align: left;
     margin-right: 27px;
     display: inline-block;
-    */ margin-bottom: .5rem;
+    margin-bottom: .5rem;
     display: -ms-flexbox;
     display: flex;
     -ms-flex-align: center;
@@ -153,7 +153,6 @@ label {
     border-radius: .25rem;
 }
 
-}
 
 input.error {
     border: 1px solid #f63726;
@@ -336,6 +335,7 @@ fieldset {
     border-top: 2px solid #ebebeb;
     border-bottom: 2px solid #ebebeb;
     padding: 12px 20px;
+    pointer-events: none;
 }
 
 #technologyConfiguratorWizard .steps ul {
@@ -395,9 +395,9 @@ fieldset {
     font-weight: bold;
 }
 
-.actions {
+#technologyConfiguratorWizard  .actions {
     position: absolute;
-    bottom: 14px;
+    bottom: 2px;
     width: 100%;
     /* text-align: right; */
     padding: 0 20px;
@@ -476,12 +476,12 @@ fieldset {
 }
 
 #technologyConfiguratorWizard .fieldset-content {
-    height: 455px;
+    height: 415px;
     border-bottom: 1px solid #ebebeb;
 }
 
-.fieldset-footer {
-    padding: 28px 0;
+#technologyConfiguratorWizard .fieldset-footer {
+    padding: 18px 0;
 }
 
 .fieldset-footer span {
@@ -991,7 +991,7 @@ fieldset {
 }
 
 #technologyConfiguratorWizard .prev {
-    height: 455px;
+    height: 415px;
     overflow-x: auto;
 }
 

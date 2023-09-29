@@ -23,18 +23,6 @@
  */
 package com.qcadoo.mes.materialFlowResources;
 
-import static com.qcadoo.mes.basic.constants.ProductFields.UNIT;
-
-import java.math.BigDecimal;
-import java.util.*;
-import java.util.stream.Collectors;
-
-import com.qcadoo.mes.materialFlowResources.constants.StorageLocationsForProductDto;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.BeanPropertyRowMapper;
-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
-import org.springframework.stereotype.Service;
-
 import com.google.common.collect.Maps;
 import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.basic.util.CurrencyService;
@@ -42,6 +30,7 @@ import com.qcadoo.mes.materialFlow.constants.MaterialFlowConstants;
 import com.qcadoo.mes.materialFlowResources.constants.MaterialFlowResourcesConstants;
 import com.qcadoo.mes.materialFlowResources.constants.ResourceFields;
 import com.qcadoo.mes.materialFlowResources.constants.ResourceStockDtoFields;
+import com.qcadoo.mes.materialFlowResources.dto.*;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -51,6 +40,20 @@ import com.qcadoo.model.api.search.SearchQueryBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Collectors;
+
+import static com.qcadoo.mes.basic.constants.ProductFields.UNIT;
 
 @Service
 public class MaterialFlowResourcesServiceImpl implements MaterialFlowResourcesService {
@@ -195,15 +198,15 @@ public class MaterialFlowResourcesServiceImpl implements MaterialFlowResourcesSe
             StringBuilder prepareQuery = new StringBuilder();
 
             prepareQuery.append("SELECT ");
-            prepareQuery.append("storageLocationDto.productnumber as productNumber, storageLocationDto.resourcequantity as quantity, storageLocationDto.quantityinadditionalunit as additionalQuantity ");
+            prepareQuery.append("storageLocationDto.productNumber as productNumber, storageLocationDto.resourceQuantity as quantity, storageLocationDto.quantityInAdditionalUnit as additionalQuantity ");
             prepareQuery.append("FROM materialFlowResources_storageLocationDto as storageLocationDto ");
-            prepareQuery.append("WHERE storageLocationDto.productnumber IN (:productNumbers) ");
+            prepareQuery.append("WHERE storageLocationDto.productNumber IN (:productNumbers) ");
             prepareQuery.append("AND storageLocationDto.location_id = :materialFlowLocationId ");
 
             params.put("productNumbers", productNumbers);
             params.put("materialFlowLocationId", materialFlowLocationId.intValue());
 
-            quantityDtoList = jdbcTemplate.query(String.valueOf(prepareQuery), params, new BeanPropertyRowMapper(QuantityDto.class));
+            quantityDtoList = jdbcTemplate.query(prepareQuery.toString(), params, new BeanPropertyRowMapper(QuantityDto.class));
 
 
             return quantityDtoList;
@@ -216,86 +219,63 @@ public class MaterialFlowResourcesServiceImpl implements MaterialFlowResourcesSe
         List<ResourcesQuantityDto> resourcesQuantityDtoList = new ArrayList<>();
         Map<String, Object> params = Maps.newHashMap();
 
-        if (storageLocationId != null && !productNumber.isEmpty() && productNumber != null) {
+        if (storageLocationId != null || productNumber != null || !productNumber.isEmpty()) {
             StringBuilder prepareQuery = new StringBuilder();
 
             prepareQuery.append("SELECT DISTINCT ");
-            prepareQuery.append("resourcedto.number as resourceNumber, ");
-            prepareQuery.append("resourcedto.quantity as quantity, ");
-            prepareQuery.append("resourcedto.quantityinadditionalunit as additionalQuantity, ");
-            prepareQuery.append("internal.productunit as productUnit, ");
-            prepareQuery.append("internal.productadditionalunit as productAdditionalUnit ");
-            prepareQuery.append("FROM materialflowresources_resourcedto as resourcedto ");
-            prepareQuery.append("JOIN materialflowresources_storagelocationdto_internal as internal ");
-            prepareQuery.append("ON resourcedto.productnumber = internal.productnumber ");
-            prepareQuery.append("WHERE resourcedto.productnumber = :productNumber ");
-            prepareQuery.append("AND resourcedto.location_id = :storageLocationId");
+            prepareQuery.append("resourceDto.number as resourceNumber, ");
+            prepareQuery.append("resourceDto.quantity as quantity, ");
+            prepareQuery.append("resourceDto.quantityInAdditionalUnit as additionalQuantity, ");
+            prepareQuery.append("internal.productUnit as productUnit, ");
+            prepareQuery.append("internal.productAdditionalUnit as productAdditionalUnit ");
+            prepareQuery.append("FROM materialFlowResources_resourceDto as resourceDto ");
+            prepareQuery.append("JOIN materialFlowResources_storageLocationDto_internal as internal ");
+            prepareQuery.append("ON resourceDto.productNumber = internal.productNumber ");
+            prepareQuery.append("WHERE resourceDto.productNumber = :productNumber ");
+            prepareQuery.append("AND resourceDto.location_id = :storageLocationId");
 
             params.put("storageLocationId", storageLocationId);
             params.put("productNumber", productNumber);
 
-            resourcesQuantityDtoList = jdbcTemplate.query(String.valueOf(prepareQuery), params, new BeanPropertyRowMapper(ResourcesQuantityDto.class));
+            resourcesQuantityDtoList = jdbcTemplate.query(prepareQuery.toString(), params, new BeanPropertyRowMapper(ResourcesQuantityDto.class));
 
             return resourcesQuantityDtoList;
         }
         return resourcesQuantityDtoList;
     }
 
-    public List<ResourceDetailsDto> getResourceDetails(final String resourceNumber) {
-        List<ResourceDetailsDto> resourceDetailsDto = new ArrayList<>();
-        Map<String, Object> params = Maps.newHashMap();
-
-
-        if(resourceNumber != null && !resourceNumber.isEmpty()) {
-            StringBuilder prepareQuery = new StringBuilder();
-
-            prepareQuery.append("SELECT ");
-            prepareQuery.append("resourcedto.palletnumber as palletNumber, ");
-            prepareQuery.append("resourcedto.batchnumber as batchNumber, ");
-            prepareQuery.append("resourcedto.productiondate as productionDate, ");
-            prepareQuery.append("resourcedto.expirationdate as expirationDate ");
-            prepareQuery.append("FROM materialflowresources_resourcedto as resourcedto ");
-            prepareQuery.append("WHERE resourcedto.number = :resourceNumber");
-
-            params.put("resourceNumber", resourceNumber);
-
-            resourceDetailsDto = jdbcTemplate.query(String.valueOf(prepareQuery), params, new BeanPropertyRowMapper(ResourceDetailsDto.class));
-            return resourceDetailsDto;
-        }
-        return resourceDetailsDto;
-    }
 
     @Override
     public List<PalletNumberProductDTO> getProductsForPalletNumber(String palletNumber, List<String> userLocationNumbers) {
         List<PalletNumberProductDTO> palletNumberProductDTOList = new ArrayList<>();
         Map<String, Object> params = Maps.newHashMap();
 
-        if(palletNumber != null && !palletNumber.isEmpty()) {
+        if(palletNumber != null || !palletNumber.isEmpty()) {
             StringBuilder prepareQuery = new StringBuilder();
 
             prepareQuery.append("SELECT ");
-            prepareQuery.append("palletstoragedto.storageLocationNumber as storageLocationNumber, ");
-            prepareQuery.append("palletstoragedto.locationNumber as locationNumber, ");
-            prepareQuery.append("resourcestockdto.product_id as productId, ");
-            prepareQuery.append("resourcestockdto.productNumber as productNumber, ");
-            prepareQuery.append("resourcestockdto.productName as productName, ");
-            prepareQuery.append("resourcestockdto.productUnit as productUnit, ");
-            prepareQuery.append("storagelocationdto.productAdditionalUnit as productAdditionalUnit, ");
-            prepareQuery.append("resourcestockdto.quantity as quantity, ");
-            prepareQuery.append("resourcestockdto.quantityInAdditionalUnit as quantityInAdditionalUnit, ");
-            prepareQuery.append("resourcestockdto.location_id as locationId ");
-            prepareQuery.append("from materialflowresources_resourcestockdto as resourcestockdto ");
-            prepareQuery.append("join materialflowresources_palletstoragestatedto as palletstoragedto ");
-            prepareQuery.append("on palletstoragedto.location_id = resourcestockdto.location_id ");
-            prepareQuery.append("join materialflowresources_storagelocationdto as storagelocationdto ");
-            prepareQuery.append("on palletstoragedto.location_id = storagelocationdto.location_id ");
-            prepareQuery.append("where palletstoragedto.palletnumber = :palletNumber ");
-            prepareQuery.append("and resourcestockdto.locationNumber in (:userLocationNumbers)");
+            prepareQuery.append("palletStorageDto.storageLocationNumber as storageLocationNumber, ");
+            prepareQuery.append("palletStorageDto.locationNumber as locationNumber, ");
+            prepareQuery.append("resourceStockDto.product_id as productId, ");
+            prepareQuery.append("resourceStockDto.productNumber as productNumber, ");
+            prepareQuery.append("resourceStockDto.productName as productName, ");
+            prepareQuery.append("resourceStockDto.productUnit as productUnit, ");
+            prepareQuery.append("storageLocationDto.productAdditionalUnit as productAdditionalUnit, ");
+            prepareQuery.append("resourceStockDto.quantity as quantity, ");
+            prepareQuery.append("resourceStockDto.quantityInAdditionalUnit as quantityInAdditionalUnit, ");
+            prepareQuery.append("resourceStockDto.location_id as locationId ");
+            prepareQuery.append("FROM materialFlowResources_resourceStockDto as resourceStockDto ");
+            prepareQuery.append("JOIN materialFlowResources_palletStorageStateDto as palletStorageDto ");
+            prepareQuery.append("ON palletStorageDto.location_id = resourceStockDto.location_id ");
+            prepareQuery.append("JOIN materialFlowResources_storageLocationDto as storageLocationDto ");
+            prepareQuery.append("ON palletStorageDto.location_id = storageLocationDto.location_id ");
+            prepareQuery.append("WHERE palletStorageDto.palletNumber = :palletNumber ");
+            prepareQuery.append("AND resourceStockDto.locationNumber in (:userLocationNumbers)");
 
             params.put("palletNumber", palletNumber);
             params.put("userLocationNumbers", userLocationNumbers);
 
-            palletNumberProductDTOList = jdbcTemplate.query(String.valueOf(prepareQuery), params, new BeanPropertyRowMapper(PalletNumberProductDTO.class));
+            palletNumberProductDTOList = jdbcTemplate.query(prepareQuery.toString(), params, new BeanPropertyRowMapper(PalletNumberProductDTO.class));
             return palletNumberProductDTOList;
         }
         return palletNumberProductDTOList;
@@ -306,20 +286,20 @@ public class MaterialFlowResourcesServiceImpl implements MaterialFlowResourcesSe
         List<SumOfProductsDto> list = new ArrayList<>();
         Map<String, Object> params = Maps.newHashMap();
 
-        if(productNumber != null && !productNumber.isEmpty() && !locationNumbers.isEmpty()) {
+        if(productNumber != null || !productNumber.isEmpty() || !locationNumbers.isEmpty()) {
             StringBuilder prepareQuery = new StringBuilder();
 
             prepareQuery.append("SELECT ");
             prepareQuery.append("SUM (mfr.quantity) as quantitySum, ");
             prepareQuery.append("SUM (mfr.quantityInAdditionalUnit) as additionalQuantitySum ");
-            prepareQuery.append("FROM materialflowresources_resourcedto as mfr ");
-            prepareQuery.append("WHERE mfr.productnumber = :productNumber ");
+            prepareQuery.append("FROM materialFlowResources_resourceDto as mfr ");
+            prepareQuery.append("WHERE mfr.productNumber = :productNumber ");
             prepareQuery.append("AND mfr.locationNumber IN (:locationNumbers)");
 
             params.put("productNumber", productNumber);
             params.put("locationNumbers", locationNumbers);
 
-            list = jdbcTemplate.query(String.valueOf(prepareQuery), params, new BeanPropertyRowMapper(SumOfProductsDto.class));
+            list = jdbcTemplate.query(prepareQuery.toString(), params, new BeanPropertyRowMapper(SumOfProductsDto.class));
             return list;
         }
         return list;
@@ -330,7 +310,7 @@ public class MaterialFlowResourcesServiceImpl implements MaterialFlowResourcesSe
         List<StorageLocationsForProductDto> list = new ArrayList<>();
         Map<String, Object> params = Maps.newHashMap();
 
-        if(productNumber != null && !productNumber.isEmpty() && !locationNumbers.isEmpty()) {
+        if(productNumber != null || !productNumber.isEmpty() || !locationNumbers.isEmpty()) {
             StringBuilder prepareQuery = new StringBuilder();
 
             prepareQuery.append("SELECT DISTINCT ");
@@ -342,11 +322,11 @@ public class MaterialFlowResourcesServiceImpl implements MaterialFlowResourcesSe
             prepareQuery.append("mfrs.productUnit as unit, ");
             prepareQuery.append("mfrs.quantity as quantity, ");
             prepareQuery.append("sl.productAdditionalUnit as additionalUnit, ");
-            prepareQuery.append("mfrs.quantityinadditionalunit as additionalQuantity ");
-            prepareQuery.append("FROM materialflowresources_resourcestockdto as mfrs ");
-            prepareQuery.append("JOIN materialflowresources_storagelocationdto as sl ");
-            prepareQuery.append("ON mfrs.productnumber = sl.productnumber ");
-            prepareQuery.append("WHERE mfrs.productnumber = :productNumber ");
+            prepareQuery.append("mfrs.quantityInAdditionalUnit as additionalQuantity ");
+            prepareQuery.append("FROM materialFlowResources_resourceStockDto as mfrs ");
+            prepareQuery.append("JOIN materialFlowResources_storageLocationDto as sl ");
+            prepareQuery.append("ON mfrs.productNumber = sl.productNumber ");
+            prepareQuery.append("WHERE mfrs.productNumber = :productNumber ");
             prepareQuery.append("AND mfrs.locationNumber IN (:locationNumbers) ");
 
 
@@ -354,19 +334,18 @@ public class MaterialFlowResourcesServiceImpl implements MaterialFlowResourcesSe
             params.put("productNumber", productNumber);
             params.put("locationNumbers", locationNumbers);
 
-            list = jdbcTemplate.query(String.valueOf(prepareQuery), params, new BeanPropertyRowMapper(StorageLocationsForProductDto.class));
+            list = jdbcTemplate.query(prepareQuery.toString(), params, new BeanPropertyRowMapper(StorageLocationsForProductDto.class));
             return list;
         }
         return list;
     }
 
     @Override
-    public List<ExtendedResourceDetailsDto> getMoreResourceDetails(String resourceNumber) {
-        List<ExtendedResourceDetailsDto> resourceDetailsDto = new ArrayList<>();
+    public ResourceDetailsDto getResourceDetails(String resourceNumber) {
+
         Map<String, Object> params = Maps.newHashMap();
 
-
-        if(resourceNumber != null && !resourceNumber.isEmpty()) {
+        if(resourceNumber != null || !resourceNumber.isEmpty()) {
             StringBuilder prepareQuery = new StringBuilder();
 
             prepareQuery.append("SELECT ");
@@ -381,16 +360,57 @@ public class MaterialFlowResourcesServiceImpl implements MaterialFlowResourcesSe
             prepareQuery.append("dto.givenUnit as additionalUnit, ");
             prepareQuery.append("dto.quantity as quantity, ");
             prepareQuery.append("dto.productUnit as unit, ");
-            prepareQuery.append("dto.quantityinadditionalunit as additionalQuantity ");
-            prepareQuery.append("FROM materialflowresources_resourcedto as dto ");
+            prepareQuery.append("dto.quantityInAdditionalUnit as additionalQuantity ");
+            prepareQuery.append("FROM materialFlowResources_resourceDto as dto ");
             prepareQuery.append("WHERE dto.number = :resourceNumber");
 
             params.put("resourceNumber", resourceNumber);
 
-            resourceDetailsDto = jdbcTemplate.query(String.valueOf(prepareQuery), params, new BeanPropertyRowMapper(ExtendedResourceDetailsDto.class));
-            return resourceDetailsDto;
+            try {
+                return jdbcTemplate.queryForObject(prepareQuery.toString(), params, BeanPropertyRowMapper.newInstance(ResourceDetailsDto.class));
+            } catch (EmptyResultDataAccessException e) {
+                return null;
+            }
         }
-        return resourceDetailsDto;
+        return null;
+    }
+
+    public ResourceToRepackDto getResourceDetailsToRepack(String resourceNumber, List<String> userLocations) {
+        Map<String, Object> params = Maps.newHashMap();
+
+        if(resourceNumber != null || !resourceNumber.isEmpty() || !userLocations.isEmpty()) {
+            StringBuilder prepareQuery = new StringBuilder();
+
+            prepareQuery.append("SELECT ");
+            prepareQuery.append("dto.location_id as locationId, ");
+            prepareQuery.append("dto.productName as productName, ");
+            prepareQuery.append("dto.productNumber as productNumber, ");
+            prepareQuery.append("dto.locationNumber as locationNumber, ");
+            prepareQuery.append("dto.storageLocationNumber as storageLocationNumber, ");
+            prepareQuery.append("dto.palletNumber as palletNumber, ");
+            prepareQuery.append("dto.typeOfPallet as palletType, ");
+            prepareQuery.append("dto.batchNumber as batchNumber, ");
+            prepareQuery.append("dto.productionDate as productionDate, ");
+            prepareQuery.append("dto.expirationDate as expirationDate, ");
+            prepareQuery.append("dto.givenUnit as additionalUnit, ");
+            prepareQuery.append("dto.quantity as quantity, ");
+            prepareQuery.append("dto.productUnit as unit, ");
+            prepareQuery.append("dto.quantityInAdditionalUnit as additionalQuantity, ");
+            prepareQuery.append("dto.conversion as conversionValue ");
+            prepareQuery.append("FROM materialFlowResources_resourceDto as dto ");
+            prepareQuery.append("WHERE dto.number = :resourceNumber ");
+            prepareQuery.append("AND dto.locationNumber IN (:userLocations)");
+
+            params.put("resourceNumber", resourceNumber);
+            params.put("userLocations", userLocations);
+
+            try {
+                return jdbcTemplate.queryForObject(prepareQuery.toString(), params, BeanPropertyRowMapper.newInstance(ResourceToRepackDto.class));
+            } catch (EmptyResultDataAccessException e) {
+                return null;
+            }
+        }
+        return null;
     }
 
     private DataDefinition getProductDD() {

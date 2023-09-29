@@ -37,6 +37,7 @@
         <belongsTo name="resource" model="resource" plugin="materialFlowResources"/>
 
         <string name="resourceNumber"/>
+        <string name="resourceUnit"/>
 
         <decimal name="planedQuantity" required="true">
             <validatesRange from="0" exclusively="true"/>

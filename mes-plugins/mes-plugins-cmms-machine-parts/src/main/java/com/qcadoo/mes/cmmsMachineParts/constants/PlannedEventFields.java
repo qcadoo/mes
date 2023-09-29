@@ -113,4 +113,6 @@ public final class PlannedEventFields {
 
     public static final String ACCEPTANCE_EVENTS = "acceptanceEvents";
 
+    public static final String CREATE_USER = "createUser";
+
 }

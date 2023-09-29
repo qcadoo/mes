@@ -1,6 +1,7 @@
 package com.qcadoo.mes.productFlowThruDivision.hooks;
 
 import com.google.common.collect.Lists;
+import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityFields;
 import com.qcadoo.mes.materialFlowResources.constants.ResourceFields;
 import com.qcadoo.model.api.DataDefinition;
@@ -15,16 +16,22 @@ import java.util.stream.Collectors;
 @Service
 public class OrderProductResourceReservationHooks {
 
+    public static final String L_RESOURCE = "resource";
+
     public void onSave(final DataDefinition orderProductResourceReservationDD, final Entity orderProductResourceReservation) {
-        orderProductResourceReservation.setField("resourceNumber", orderProductResourceReservation.getBelongsToField("resource").getStringField(ResourceFields.NUMBER));
+        Entity resource = orderProductResourceReservation.getBelongsToField(L_RESOURCE);
+        if (Objects.nonNull(resource)) {
+            orderProductResourceReservation.setField("resourceNumber", resource.getStringField(ResourceFields.NUMBER));
+            orderProductResourceReservation.setField("resourceUnit", resource.getBelongsToField(ResourceFields.PRODUCT).getStringField(ProductFields.UNIT));
+        }
     }
 
     public boolean validate(final DataDefinition dataDefinition, final Entity orderProductResourceReservation) {
 
-        Entity resource = orderProductResourceReservation.getBelongsToField("resource");
+        Entity resource = orderProductResourceReservation.getBelongsToField(L_RESOURCE);
 
-        if(Objects.isNull(resource)) {
-            orderProductResourceReservation.addError(dataDefinition.getField("resource"), "qcadooView.validate.field.error.missing");
+        if (Objects.isNull(resource)) {
+            orderProductResourceReservation.addError(dataDefinition.getField(L_RESOURCE), "qcadooView.validate.field.error.missing");
             return false;
         }
 

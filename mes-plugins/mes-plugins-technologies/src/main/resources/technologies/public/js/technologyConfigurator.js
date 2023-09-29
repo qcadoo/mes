@@ -691,7 +691,7 @@ QCD.technologyConfigurator = (function () {
                 sortName: 'node',
                 sortOrder: 'asc',
                 showFooter: false,
-                height: 360,
+                height: 280,
                 locale: (QCD.currentLang + '-' + QCD.currentLang
                     .toUpperCase())
             });
@@ -917,7 +917,7 @@ QCD.technologyConfigurator = (function () {
                 sortName: 'node',
                 sortOrder: 'asc',
                 showFooter: false,
-                height: 360,
+                height: 320,
                 locale: (QCD.currentLang + '-' + QCD.currentLang
                     .toUpperCase())
             });
@@ -1895,8 +1895,11 @@ QCD.technologyConfigurator = (function () {
             success: function (data) {
                 logoutIfSessionExpired(data);
                 if (data.code === 'OK') {
-
                     window.parent.goToPage('/page/technologies/technologiesList.html', false, false);
+                    showMessage('success',
+                        QCD.translate("technologies.technologyConfigurator.technologyConfiguratorWizard.success"),
+                        data.message,
+                        false);
 
                 } else {
                     showMessage(

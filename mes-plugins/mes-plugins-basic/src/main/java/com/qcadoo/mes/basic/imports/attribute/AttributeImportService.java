@@ -3,28 +3,13 @@ package com.qcadoo.mes.basic.imports.attribute;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.qcadoo.localization.api.TranslationService;
-import com.qcadoo.mes.basic.constants.AttributeDataType;
-import com.qcadoo.mes.basic.constants.AttributeFields;
-import com.qcadoo.mes.basic.constants.AttributeValueFields;
-import com.qcadoo.mes.basic.constants.AttributeValueType;
-import com.qcadoo.mes.basic.constants.BasicConstants;
-import com.qcadoo.mes.basic.constants.ProductAttributeValueFields;
-import com.qcadoo.mes.basic.constants.ProductFields;
+import com.qcadoo.mes.basic.constants.*;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.file.FileService;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.stream.Collectors;
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
@@ -34,6 +19,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Service
 public class AttributeImportService {
@@ -272,14 +265,14 @@ public class AttributeImportService {
     }
 
     private Entity getAttributeValue(String valEntry, Entity attribute) {
-        return dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.ATTRIBUTE_VALUE).find()
+        return dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_ATTRIBUTE_VALUE).find()
                 .add(SearchRestrictions.belongsTo(AttributeValueFields.ATTRIBUTE, attribute))
                 .add(SearchRestrictions.eq(AttributeValueFields.VALUE, valEntry)).setMaxResults(1).uniqueResult();
     }
 
     private Map<String, Entity> getAttributeEntityByNumberForProduct(List<AttributePosition> attributes) {
         List<String> numbers = attributes.stream().map(AttributePosition::getNumber).collect(Collectors.toList());
-        List<Entity> attributeEntities = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.ATTRIBUTE)
+        List<Entity> attributeEntities = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_ATTRIBUTE)
                 .find().add(SearchRestrictions.eq(AttributeFields.FOR_PRODUCT, true))
                 .add(SearchRestrictions.in(AttributeFields.NUMBER, numbers)).list().getEntities();
         return attributeEntities.stream().collect(Collectors.toMap(ae -> ae.getStringField(AttributeFields.NUMBER), ae -> ae));
@@ -287,7 +280,7 @@ public class AttributeImportService {
 
     private Map<String, Entity> getAttributeEntityByNumberForResource(List<AttributePosition> attributes) {
         List<String> numbers = attributes.stream().map(AttributePosition::getNumber).collect(Collectors.toList());
-        List<Entity> attributeEntities = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.ATTRIBUTE)
+        List<Entity> attributeEntities = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_ATTRIBUTE)
                 .find().add(SearchRestrictions.eq(AttributeFields.FOR_RESOURCE, true))
                 .add(SearchRestrictions.in(AttributeFields.NUMBER, numbers)).list().getEntities();
         return attributeEntities.stream().collect(Collectors.toMap(ae -> ae.getStringField(AttributeFields.NUMBER), ae -> ae));

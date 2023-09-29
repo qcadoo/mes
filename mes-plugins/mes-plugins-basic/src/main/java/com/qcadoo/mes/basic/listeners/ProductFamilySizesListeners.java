@@ -131,7 +131,7 @@ public class ProductFamilySizesListeners {
 
     private DataDefinition getAttributeValueDD() {
         return dataDefinitionService
-                .get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.PRODUCT_ATTRIBUTE_VALUE);
+                .get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PRODUCT_ATTRIBUTE_VALUE);
     }
 
 }

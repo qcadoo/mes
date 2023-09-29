@@ -356,6 +356,8 @@
         <model:model model="pieceRate" resource="model/pieceRate.xml"/>
         <model:model model="pieceRateItem" resource="model/pieceRateItem.xml"/>
 
+        <model:model model="licenseUsage" resource="model/licenseUsage.xml"/>
+
         <model:dictionary name="categories"/>
         <model:dictionary name="reasonTypeOfChangingOrderState"/>
 
@@ -591,24 +593,30 @@
                         view="formsList" defaultAuthorizationRole="ROLE_FORMS"/>
 
         <model:model-field plugin="qcadooSecurity" model="user">
-            <model:belongsTo model="staff" plugin="basic" name="staff"/>
+            <model:belongsTo name="staff" plugin="basic" model="staff"/>
         </model:model-field>
         <model:model-field plugin="qcadooSecurity" model="user">
             <model:boolean name="showOnlyMyRegistrationRecords" default="false"/>
         </model:model-field>
         <!-- For constraints sake -->
         <model:model-field plugin="basic" model="staff">
-            <model:hasMany plugin="qcadooSecurity" model="user"
-                           joinField="staff" name="users" cascade="nullify"/>
+            <model:hasMany name="users" plugin="qcadooSecurity" model="user"
+                           joinField="staff" cascade="nullify"/>
         </model:model-field>
 
         <model:model-field plugin="qcadooSecurity" model="user">
-            <model:belongsTo model="factory" plugin="basic" name="factory"/>
+            <model:belongsTo name="factory" model="factory" plugin="basic"/>
         </model:model-field>
+
+        <model:model-field plugin="qcadooSecurity" model="user">
+            <model:hasMany name="licenseUsages" plugin="basic" model="licenseUsage"
+                           joinField="user" cascade="delete"/>
+        </model:model-field>
+
         <!-- For constraints sake -->
         <model:model-field plugin="basic" model="factory">
-            <model:hasMany plugin="qcadooSecurity" model="user"
-                           joinField="factory" name="users" cascade="nullify"/>
+            <model:hasMany name="users" plugin="qcadooSecurity" model="user"
+                           joinField="factory" cascade="nullify"/>
         </model:model-field>
 
         <model:model-field plugin="productionLines" model="productionLine">
@@ -621,17 +629,15 @@
                     class="com.qcadoo.mes.basic.validators.UserValidators" method="onValidate"/>
         </model:model-hook>
 
-        <model:model-field model="unitConversionItem"
-                           plugin="qcadooModel">
-            <model:belongsTo name="product" model="product"
-                             plugin="basic"/>
+        <model:model-field plugin="qcadooModel" model="unitConversionItem">
+            <model:belongsTo name="product" model="product" plugin="basic"/>
         </model:model-field>
 
         <model:model-field plugin="basic" model="parameter">
             <model:boolean name="considerMinimumStockLevelWhenCreatingProductionOrders"/>
         </model:model-field>
 
-        <model:model-hook model="unitConversionItem" plugin="qcadooModel">
+        <model:model-hook plugin="qcadooModel" model="unitConversionItem">
             <model:validatesWith
                     class="com.qcadoo.mes.basic.hooks.UnitConversionItemValidatorsB"
                     method="validateUnitOnConversionWithProduct"/>

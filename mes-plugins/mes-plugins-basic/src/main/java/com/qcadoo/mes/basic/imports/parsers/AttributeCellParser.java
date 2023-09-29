@@ -65,7 +65,7 @@ public class AttributeCellParser implements CellParser {
     }
 
     private DataDefinition getAttributeDD() {
-        return dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.ATTRIBUTE);
+        return dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_ATTRIBUTE);
     }
 
 }

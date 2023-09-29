@@ -25,7 +25,7 @@ public class AttributeDetailsHooks {
     private NumberGeneratorService numberGeneratorService;
 
     public void onBeforeRender(final ViewDefinitionState view) {
-        numberGeneratorService.generateAndInsertNumber(view, BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.ATTRIBUTE, QcadooViewConstants.L_FORM,
+        numberGeneratorService.generateAndInsertNumber(view, BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_ATTRIBUTE, QcadooViewConstants.L_FORM,
                 AttributeFields.NUMBER);
 
         FieldComponent dataType = (FieldComponent) view.getComponentByReference(AttributeFields.DATA_TYPE);

@@ -1,14 +1,17 @@
-package com.qcadoo.mes.materialFlowResources;
+package com.qcadoo.mes.materialFlowResources.dto;
 
 import java.math.BigDecimal;
 import java.util.Date;
 
-public class ExtendedResourceDetailsDto {
+public class ResourceToRepackDto {
+    private Long locationId;
     private String productName;
     private String locationNumber;
     private String storageLocationNumber;
     private String productNumber;
+    private String conversionValue;
     private String palletNumber;
+    private String palletType;
     private String batchNumber;
     private Date productionDate;
     private Date expirationDate;
@@ -17,12 +20,12 @@ public class ExtendedResourceDetailsDto {
     private String unit;
     private BigDecimal additionalQuantity;
 
-    public String getStorageLocationNumber() {
-        return storageLocationNumber;
+    public Long getLocationId() {
+        return locationId;
     }
 
-    public void setStorageLocationNumber(String storageLocationNumber) {
-        this.storageLocationNumber = storageLocationNumber;
+    public void setLocationId(Long locationId) {
+        this.locationId = locationId;
     }
 
     public String getProductName() {
@@ -41,6 +44,14 @@ public class ExtendedResourceDetailsDto {
         this.locationNumber = locationNumber;
     }
 
+    public String getStorageLocationNumber() {
+        return storageLocationNumber;
+    }
+
+    public void setStorageLocationNumber(String storageLocationNumber) {
+        this.storageLocationNumber = storageLocationNumber;
+    }
+
     public String getProductNumber() {
         return productNumber;
     }
@@ -49,12 +60,28 @@ public class ExtendedResourceDetailsDto {
         this.productNumber = productNumber;
     }
 
+    public String getConversionValue() {
+        return conversionValue;
+    }
+
+    public void setConversionValue(String conversionValue) {
+        this.conversionValue = conversionValue;
+    }
+
     public String getPalletNumber() {
         return palletNumber;
     }
 
     public void setPalletNumber(String palletNumber) {
         this.palletNumber = palletNumber;
+    }
+
+    public String getPalletType() {
+        return palletType;
+    }
+
+    public void setPalletType(String palletType) {
+        this.palletType = palletType;
     }
 
     public String getBatchNumber() {
