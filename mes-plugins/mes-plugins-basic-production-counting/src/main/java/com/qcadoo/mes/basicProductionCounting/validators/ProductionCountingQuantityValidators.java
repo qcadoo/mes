@@ -182,6 +182,21 @@ public class ProductionCountingQuantityValidators {
 
                     return false;
                 }
+
+                if(checkIfMainOperation(productionCountingQuantityDD, productionCountingQuantity)) {
+                    productionCountingQuantity.addError(
+                            productionCountingQuantityDD.getField(ProductionCountingQuantityFields.TYPE_OF_MATERIAL),
+                            "basicProductionCounting.productionCountingQuantity.typeOfMaterial.producedIntermediateProductInMainOperation");
+                    return false;
+                }
+
+                if(!checkIfIntermediateProductExistsForOperation(productionCountingQuantityDD, productionCountingQuantity)) {
+                    productionCountingQuantity.addError(
+                            productionCountingQuantityDD.getField(ProductionCountingQuantityFields.TYPE_OF_MATERIAL),
+                            "basicProductionCounting.productionCountingQuantity.typeOfMaterial.producedIntermediateProductAlreadyExist");
+                    return false;
+                }
+
             } else if (isTypeOfMaterialFinalProduct(typeOfMaterial)) {
                 if (isMainTypeOfMaterialFinalProduct(typeOfMaterial) && !checkIfAnotherFinalProductExists(productionCountingQuantityDD, productionCountingQuantity)) {
                     productionCountingQuantity.addError(
@@ -225,6 +240,28 @@ public class ProductionCountingQuantityValidators {
         return true;
     }
 
+    private boolean checkIfMainOperation(DataDefinition productionCountingQuantityDD, Entity productionCountingQuantity) {
+        String typeOfMaterial = productionCountingQuantity.getStringField(ProductionCountingQuantityFields.TYPE_OF_MATERIAL);
+
+        Entity toc = productionCountingQuantity.getBelongsToField(ProductionCountingQuantityFields.TECHNOLOGY_OPERATION_COMPONENT);
+
+        if (Objects.isNull(toc)) {
+            return true;
+        }
+
+        Entity order = productionCountingQuantity.getBelongsToField(ProductionCountingQuantityFields.ORDER);
+        Entity technology = order.getBelongsToField(OrderFields.TECHNOLOGY);
+
+        EntityTree treeField = technology.getTreeField(TechnologyFields.OPERATION_COMPONENTS);
+        EntityTreeNode root = treeField.getRoot();
+
+        if (!root.getId().equals(toc.getId())) {
+            return false;
+        }
+
+        return true;
+    }
+
     private boolean checkIfAnotherFinalProductExists(final DataDefinition productionCountingQuantityDD,
                                                      final Entity productionCountingQuantity) {
         Entity order = productionCountingQuantity.getBelongsToField(ProductionCountingQuantityFields.ORDER);
@@ -233,6 +270,32 @@ public class ProductionCountingQuantityValidators {
                 .add(SearchRestrictions.belongsTo(ProductionCountingQuantityFields.ORDER, order))
                 .add(SearchRestrictions.eq(ProductionCountingQuantityFields.TYPE_OF_MATERIAL,
                         ProductionCountingQuantityTypeOfMaterial.FINAL_PRODUCT.getStringValue()));
+
+        if (productionCountingQuantity.getId() != null) {
+            searchCriteriaBuilder.add(SearchRestrictions.ne("id", productionCountingQuantity.getId()));
+        }
+
+        SearchResult searchResult = searchCriteriaBuilder.list();
+
+        return searchResult.getEntities().isEmpty();
+    }
+
+    private boolean checkIfIntermediateProductExistsForOperation(final DataDefinition productionCountingQuantityDD,
+                                                     final Entity productionCountingQuantity) {
+        Entity order = productionCountingQuantity.getBelongsToField(ProductionCountingQuantityFields.ORDER);
+
+        Entity toc = productionCountingQuantity.getBelongsToField(ProductionCountingQuantityFields.TECHNOLOGY_OPERATION_COMPONENT);
+        if (Objects.isNull(toc)) {
+            return false;
+        }
+
+        SearchCriteriaBuilder searchCriteriaBuilder = productionCountingQuantityDD.find()
+                .add(SearchRestrictions.belongsTo(ProductionCountingQuantityFields.ORDER, order))
+                .add(SearchRestrictions.belongsTo(ProductionCountingQuantityFields.TECHNOLOGY_OPERATION_COMPONENT, toc))
+                .add(SearchRestrictions.eq(ProductionCountingQuantityFields.ROLE,
+                        ProductionCountingQuantityRole.PRODUCED.getStringValue()))
+                .add(SearchRestrictions.eq(ProductionCountingQuantityFields.TYPE_OF_MATERIAL,
+                        ProductionCountingQuantityTypeOfMaterial.INTERMEDIATE.getStringValue()));
 
         if (productionCountingQuantity.getId() != null) {
             searchCriteriaBuilder.add(SearchRestrictions.ne("id", productionCountingQuantity.getId()));
