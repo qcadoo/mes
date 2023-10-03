@@ -59,7 +59,7 @@
             <option type="column" name="totalPrice" fields="totalPrice"/>
             <option type="column" name="pricePerUnit" fields="pricePerUnit"/>
             <option type="column" name="offerCurrency" fields="offer"
-                    expression="#offer['currency']"/>
+                    expression="#offer.get('currency')?.get('alphabeticCode')"/>
 
             <option type="order" column="offeredDate" direction="asc"/>
 
