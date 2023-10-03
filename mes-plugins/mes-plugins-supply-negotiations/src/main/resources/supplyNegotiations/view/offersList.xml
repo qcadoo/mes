@@ -125,6 +125,8 @@
 				width="100" />
 			<option type="column" name="supplierName" fields="supplier"
 				expression="#supplier['name']" />
+			<option type="column" name="offerDate" fields="offerDate"
+					width="80" />
 			<option type="column" name="offeredDate" fields="offeredDate"
 				width="100" />
 			<option type="column" name="state" fields="state" />
@@ -135,8 +137,8 @@
 
 			<option type="order" column="number" direction="asc" />
 			
-			<option type="searchable" value="number,name,supplierName,offeredDate,state,createDate,requestForQuotationNumber,negotiationNumber" />
-			<option type="orderable" value="number,name,supplierName,offeredDate,state,createDate,requestForQuotationNumber,negotiationNumber" />
+			<option type="searchable" value="number,name,supplierName,offerDate,offeredDate,state,createDate,requestForQuotationNumber,negotiationNumber" />
+			<option type="orderable" value="number,name,supplierName,offerDate,offeredDate,state,createDate,requestForQuotationNumber,negotiationNumber" />
 
 			<option type="correspondingView" value="supplyNegotiations/offerDetails" />
 			<option type="correspondingComponent" value="form" />

@@ -23,17 +23,17 @@
  */
 package com.qcadoo.mes.supplyNegotiations.aop;
 
-import java.math.BigDecimal;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.qcadoo.mes.deliveries.constants.OrderedProductFields;
 import com.qcadoo.mes.supplyNegotiations.SupplyNegotiationsService;
 import com.qcadoo.mes.supplyNegotiations.constants.OrderedProductFieldsSN;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
+import java.util.Objects;
 
 @Service
 public class OrderedProductHooksOverrideUtil {
@@ -45,7 +45,7 @@ public class OrderedProductHooksOverrideUtil {
     private NumberService numberService;
 
     public boolean shouldOverride(final Entity orderedProduct) {
-        return (orderedProduct.getBelongsToField(OrderedProductFieldsSN.OFFER) != null);
+        return Objects.nonNull(orderedProduct.getBelongsToField(OrderedProductFieldsSN.OFFER));
     }
 
     public void calculateOrderedProductPricePerUnit(final DataDefinition orderedProductDD, final Entity orderedProduct) {
@@ -55,11 +55,11 @@ public class OrderedProductHooksOverrideUtil {
         BigDecimal quantity = orderedProduct.getDecimalField(OrderedProductFields.ORDERED_QUANTITY);
         BigDecimal pricePerUnit = supplyNegotiationsService.getPricePerUnit(offer, product);
 
-        if (pricePerUnit == null) {
+        if (Objects.isNull(pricePerUnit)) {
             orderedProduct.setField(OrderedProductFields.PRICE_PER_UNIT, null);
             orderedProduct.setField(OrderedProductFields.TOTAL_PRICE, null);
         } else {
-            if (quantity == null) {
+            if (Objects.isNull(quantity)) {
                 orderedProduct.setField(OrderedProductFields.PRICE_PER_UNIT, numberService.setScaleWithDefaultMathContext(pricePerUnit));
                 orderedProduct.setField(OrderedProductFields.TOTAL_PRICE, null);
             } else {

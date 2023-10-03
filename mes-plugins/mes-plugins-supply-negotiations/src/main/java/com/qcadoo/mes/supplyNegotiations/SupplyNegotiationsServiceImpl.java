@@ -23,12 +23,6 @@
  */
 package com.qcadoo.mes.supplyNegotiations;
 
-import java.math.BigDecimal;
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.supplyNegotiations.constants.*;
 import com.qcadoo.mes.supplyNegotiations.states.constants.OfferStateStringValues;
@@ -42,6 +36,12 @@ import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.LookupComponent;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.Objects;
 
 @Service
 public class SupplyNegotiationsServiceImpl implements SupplyNegotiationsService {
@@ -87,8 +87,10 @@ public class SupplyNegotiationsServiceImpl implements SupplyNegotiationsService 
     @Override
     public List<Entity> getColumnsForRequests() {
         List<Entity> columns = Lists.newLinkedList();
+
         List<Entity> columnComponents = getColumnForRequestsDD().find()
                 .addOrder(SearchOrders.asc(ColumnForRequestsFields.SUCCESSION)).list().getEntities();
+
         for (Entity columnComponent : columnComponents) {
             Entity columnDefinition = columnComponent.getBelongsToField("columnForRequests");
 
@@ -101,8 +103,10 @@ public class SupplyNegotiationsServiceImpl implements SupplyNegotiationsService 
     @Override
     public List<Entity> getColumnsForOffers() {
         List<Entity> columns = Lists.newLinkedList();
+
         List<Entity> columnComponents = getColumnForOffersDD().find()
                 .addOrder(SearchOrders.asc(ColumnForOffersFields.SUCCESSION)).list().getEntities();
+
         for (Entity columnComponent : columnComponents) {
             Entity columnDefinition = columnComponent.getBelongsToField("columnForOffers");
 
@@ -163,7 +167,7 @@ public class SupplyNegotiationsServiceImpl implements SupplyNegotiationsService 
     public BigDecimal getPricePerUnit(final Entity offer, final Entity product) {
         Entity offerProduct = getOfferProduct(offer, product);
 
-        if (offerProduct == null) {
+        if (Objects.isNull(offerProduct)) {
             return null;
         } else {
             return offerProduct.getDecimalField(OfferProductFields.PRICE_PER_UNIT);
@@ -176,28 +180,31 @@ public class SupplyNegotiationsServiceImpl implements SupplyNegotiationsService 
     }
 
     @Override
-    public Entity getLastOfferProduct(final Entity supplier, final Entity product) {
+    public Entity getLastOfferProduct(final Entity supplier, final Entity currency, final Entity product) {
         String query = String.format("SELECT offerProduct FROM #%s_%s AS offerProduct "
-                        + "INNER JOIN offerProduct.%s AS offer WHERE offer.%s = :state AND offer.%s = :supplier"
-                        + " AND offerProduct.%s = :product ORDER BY offer.updateDate DESC",
+                        + " INNER JOIN offerProduct.%s AS offer "
+                        + " WHERE offer.%s = :state AND offer.%s = :supplier"
+                        + " AND offer.%s = :currency AND offerProduct.%s = :product "
+                        + " ORDER BY offer.offerDate DESC",
                 SupplyNegotiationsConstants.PLUGIN_IDENTIFIER, SupplyNegotiationsConstants.MODEL_OFFER_PRODUCT,
-                SupplyNegotiationsConstants.MODEL_OFFER, OfferFields.STATE, OfferFields.SUPPLIER, OfferProductFields.PRODUCT);
+                SupplyNegotiationsConstants.MODEL_OFFER, OfferFields.STATE, OfferFields.SUPPLIER, OfferFields.CURRENCY, OfferProductFields.PRODUCT);
 
         SearchQueryBuilder searchQueryBuilder = dataDefinitionService.get(SupplyNegotiationsConstants.PLUGIN_IDENTIFIER,
                 SupplyNegotiationsConstants.MODEL_OFFER_PRODUCT).find(query);
 
         searchQueryBuilder.setString("state", OfferStateStringValues.ACCEPTED);
         searchQueryBuilder.setEntity("supplier", supplier);
+        searchQueryBuilder.setEntity("currency", currency);
         searchQueryBuilder.setEntity("product", product);
 
         return searchQueryBuilder.setMaxResults(1).uniqueResult();
     }
 
     @Override
-    public BigDecimal getLastPricePerUnit(final Entity supplier, final Entity product) {
-        Entity offerProduct = getLastOfferProduct(supplier, product);
+    public BigDecimal getLastPricePerUnit(final Entity supplier, final Entity currency, final Entity product) {
+        Entity offerProduct = getLastOfferProduct(supplier, currency, product);
 
-        if (offerProduct != null) {
+        if (Objects.nonNull(offerProduct)) {
             return offerProduct.getDecimalField(OfferProductFields.PRICE_PER_UNIT);
         }
 
@@ -208,6 +215,7 @@ public class SupplyNegotiationsServiceImpl implements SupplyNegotiationsService 
     public void fillPriceField(final ViewDefinitionState view, final String priceFieldReference,
                                final BigDecimal lastPurchasePrice) {
         FieldComponent pricePerUnitField = (FieldComponent) view.getComponentByReference(priceFieldReference);
+
         pricePerUnitField.setFieldValue(numberService.format(lastPurchasePrice));
         pricePerUnitField.requestComponentUpdateState();
     }
@@ -216,7 +224,7 @@ public class SupplyNegotiationsServiceImpl implements SupplyNegotiationsService 
     public void fillOffer(final ViewDefinitionState view, final Entity offer) {
         LookupComponent offerLookup = (LookupComponent) view.getComponentByReference(L_OFFER);
 
-        if (offer == null) {
+        if (Objects.isNull(offer)) {
             offerLookup.setFieldValue(null);
         } else {
             offerLookup.setFieldValue(offer.getId());

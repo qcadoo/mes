@@ -25,8 +25,8 @@ package com.qcadoo.mes.supplyNegotiations.hooks;
 
 import com.qcadoo.mes.deliveries.DeliveriesService;
 import com.qcadoo.mes.deliveries.constants.DeliveredProductFields;
+import com.qcadoo.mes.deliveries.constants.DeliveryFields;
 import com.qcadoo.mes.supplyNegotiations.SupplyNegotiationsService;
-import com.qcadoo.mes.supplyNegotiations.constants.OfferFields;
 import com.qcadoo.mes.supplyNegotiations.constants.OfferProductFields;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ViewDefinitionState;
@@ -37,10 +37,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.util.Objects;
 
 @Service
 public class DeliveredProductDetailsHooksSN {
-
 
 
     @Autowired
@@ -58,23 +58,24 @@ public class DeliveredProductDetailsHooksSN {
 
         Entity delivery = deliveredProduct.getBelongsToField(DeliveredProductFields.DELIVERY);
 
-        if ((delivery == null) || (product == null)) {
+        if (Objects.isNull(delivery) || Objects.isNull(product)) {
             return;
         }
 
-        Entity supplier = delivery.getBelongsToField(OfferFields.SUPPLIER);
+        Entity supplier = delivery.getBelongsToField(DeliveryFields.SUPPLIER);
+        Entity currency = delivery.getBelongsToField(DeliveryFields.CURRENCY);
 
-        if (supplier == null) {
+        if (Objects.isNull(supplier) || Objects.isNull(currency)) {
             return;
         }
 
-        Entity offerProduct = supplyNegotiationsService.getLastOfferProduct(supplier, product);
+        Entity offerProduct = supplyNegotiationsService.getLastOfferProduct(supplier, currency, product);
 
         BigDecimal pricePerUnit = null;
         BigDecimal totalPrice = null;
         Entity offer = null;
 
-        if (offerProduct != null) {
+        if (Objects.nonNull(offerProduct)) {
             pricePerUnit = offerProduct.getDecimalField(OfferProductFields.PRICE_PER_UNIT);
             offer = offerProduct.getBelongsToField(OfferProductFields.OFFER);
         }

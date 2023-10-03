@@ -29,9 +29,12 @@ import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.basic.constants.UnitConversionItemFieldsB;
 import com.qcadoo.mes.deliveries.DeliveriesService;
+import com.qcadoo.mes.deliveries.constants.CompanyFieldsD;
 import com.qcadoo.mes.deliveries.constants.DeliveriesConstants;
+import com.qcadoo.mes.deliveries.constants.DeliveryFields;
 import com.qcadoo.mes.deliveries.constants.OrderedProductFields;
 import com.qcadoo.mes.supplyNegotiations.SupplyNegotiationsService;
+import com.qcadoo.mes.supplyNegotiations.constants.OfferFields;
 import com.qcadoo.mes.supplyNegotiations.constants.OfferProductFields;
 import com.qcadoo.mes.supplyNegotiations.constants.OrderedProductFieldsSN;
 import com.qcadoo.mes.supplyNegotiations.hooks.OfferDetailsHooks;
@@ -45,7 +48,10 @@ import com.qcadoo.report.api.pdf.PdfHelper;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ComponentState.MessageType;
 import com.qcadoo.view.api.ViewDefinitionState;
+import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
+import com.qcadoo.view.api.components.GridComponent;
+import com.qcadoo.view.api.components.LookupComponent;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
 import com.qcadoo.view.constants.QcadooViewConstants;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,6 +60,7 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import static com.qcadoo.mes.deliveries.constants.DeliveryFields.NUMBER;
 import static com.qcadoo.mes.deliveries.constants.DeliveryFields.ORDERED_PRODUCTS;
@@ -64,15 +71,15 @@ import static com.qcadoo.mes.supplyNegotiations.constants.OfferFields.*;
 @Service
 public class OfferDetailsListeners {
 
-    private static final Integer REPORT_WIDTH_A4 = 515;
-
-    
-
     private static final String L_FILTERS = "filters";
 
     private static final String L_GRID_OPTIONS = "grid.options";
 
     private static final String L_WINDOW_ACTIVE_MENU = "window.activeMenu";
+
+    private static final Integer L_REPORT_WIDTH_A4 = 515;
+
+    private static final String L_DELIVERY_DATE_BUFFER = "deliveryDateBuffer";
 
     @Autowired
     private OfferReportPdf offerReportPdf;
@@ -97,20 +104,66 @@ public class OfferDetailsListeners {
 
     @Autowired
     private ParameterService parameterService;
-    
+
     @Autowired
     private UnitConversionService unitConversionService;
 
-    public void fillBufferForSupplier(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        offerDetailsHooks.fillBufferForSupplier(view);
+    public void fillCompanyFieldsForSupplier(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        LookupComponent supplierLookup = (LookupComponent) view.getComponentByReference(OfferFields.SUPPLIER);
+        FieldComponent deliveryDateBufferField = (FieldComponent) view.getComponentByReference(L_DELIVERY_DATE_BUFFER);
+        FieldComponent currencyField = (FieldComponent) view.getComponentByReference(OfferFields.CURRENCY);
+        GridComponent offerProductsGrid = (GridComponent) view.getComponentByReference(OfferFields.OFFER_PRODUCTS);
+
+        Entity supplier = supplierLookup.getEntity();
+
+        if (Objects.isNull(supplier)) {
+            deliveryDateBufferField.setFieldValue(null);
+        } else {
+            deliveryDateBufferField.setFieldValue(supplier.getField(CompanyFieldsD.BUFFER));
+
+            Entity supplierCurrency = supplier.getBelongsToField(CompanyFieldsD.CURRENCY);
+
+            if (Objects.nonNull(supplierCurrency)) {
+                Long oldCurrency = (Long) currencyField.getFieldValue();
+
+                if (Objects.nonNull(oldCurrency) && !oldCurrency.equals(supplierCurrency.getId())
+                        && !offerProductsGrid.getEntities().isEmpty()) {
+                    view.addMessage("supplyNegotiations.offer.currencyChange.offerProductsPriceVerificationRequired",
+                            MessageType.INFO, false);
+                }
+
+                currencyField.setFieldValue(supplierCurrency.getId());
+                currencyField.requestComponentUpdateState();
+            }
+        }
+
+        deliveryDateBufferField.requestComponentUpdateState();
     }
 
-    public void fillRequestforQuotationDateField(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        offerDetailsHooks.fillRequestforQuotationDateField(view);
+    public void fillRequestForQuotationDateField(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        offerDetailsHooks.fillRequestForQuotationDateField(view);
     }
 
     public void fillNegotiationDateField(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         offerDetailsHooks.fillNegotiationDateField(view);
+    }
+
+    public void onCurrencyChange(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        FormComponent offerForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
+        GridComponent offerProductsGrid = (GridComponent) view.getComponentByReference(OfferFields.OFFER_PRODUCTS);
+
+        Entity oldCurrency = null;
+
+        if (Objects.nonNull(offerForm.getEntityId())) {
+            oldCurrency = supplyNegotiationsService.getOffer(offerForm.getEntityId()).getBelongsToField(DeliveryFields.CURRENCY);
+        }
+
+        Long newCurrency = (Long) state.getFieldValue();
+
+        if (Objects.nonNull(oldCurrency) && !oldCurrency.getId().equals(newCurrency) && !offerProductsGrid.getEntities().isEmpty()) {
+            view.addMessage("supplyNegotiations.offer.currencyChange.offerProductsPriceVerificationRequired", MessageType.INFO,
+                    false);
+        }
     }
 
     public final void printOfferReport(final ViewDefinitionState view, final ComponentState state, final String[] args) {
@@ -239,7 +292,7 @@ public class OfferDetailsListeners {
         BigDecimal orderedQuantity = numberService.setScaleWithDefaultMathContext(offerProduct.getDecimalField(OfferProductFields.QUANTITY));
         Entity product = offerProduct.getBelongsToField(OfferProductFields.PRODUCT);
         BigDecimal conversion = getConversion(product);
-        
+
         orderedProduct.setField(OrderedProductFields.PRODUCT, product);
         orderedProduct.setField(OrderedProductFields.ORDERED_QUANTITY, orderedQuantity);
         orderedProduct.setField(OrderedProductFieldsSN.OFFER, offerProduct.getBelongsToField(OfferProductFields.OFFER));
@@ -247,7 +300,7 @@ public class OfferDetailsListeners {
                 numberService.setScaleWithDefaultMathContext(offerProduct.getDecimalField(OfferProductFields.PRICE_PER_UNIT)));
         orderedProduct.setField(OrderedProductFields.TOTAL_PRICE,
                 numberService.setScaleWithDefaultMathContext(offerProduct.getDecimalField(OfferProductFields.TOTAL_PRICE)));
-        
+
         orderedProduct.setField(OrderedProductFields.CONVERSION, conversion);
         orderedProduct.setField(OrderedProductFields.ADDITIONAL_QUANTITY, orderedQuantity.multiply(conversion, numberService.getMathContext()));
 
@@ -274,7 +327,7 @@ public class OfferDetailsListeners {
         Long offerId = ((FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM)).getEntity().getId();
         Entity offer = supplyNegotiationsService.getOffer(offerId);
         List<String> columnNames = offerReportPdf.getUsedColumnsInOfferReport(offer);
-        if (!pdfHelper.validateReportColumnWidths(REPORT_WIDTH_A4, parameterService.getReportColumnWidths(), columnNames)) {
+        if (!pdfHelper.validateReportColumnWidths(L_REPORT_WIDTH_A4, parameterService.getReportColumnWidths(), columnNames)) {
             state.addMessage("deliveries.delivery.printOrderReport.columnsWidthIsGreaterThenMax", MessageType.INFO, false);
         }
     }

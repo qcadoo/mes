@@ -49,4 +49,8 @@ public final class ParameterFieldsD {
 
     public static final String PRODUCT_DELIVERY_BATCH_NUMBER_PATTERN = "productDeliveryBatchNumberPattern";
 
+    public static final String DELIVERY_PRICE_FILL_BASED_ON = "deliveryPriceFillBasedOn";
+
+    public static final String DELIVERY_USE_NOMINAL_COST_WHEN_PRICE_NOT_SPECIFIED = "deliveryUseNominalCostWhenPriceNotSpecified";
+
 }

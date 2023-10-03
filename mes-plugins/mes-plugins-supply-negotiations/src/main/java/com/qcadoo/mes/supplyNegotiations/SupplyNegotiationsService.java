@@ -23,12 +23,12 @@
  */
 package com.qcadoo.mes.supplyNegotiations;
 
-import java.math.BigDecimal;
-import java.util.List;
-
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ViewDefinitionState;
+
+import java.math.BigDecimal;
+import java.util.List;
 
 public interface SupplyNegotiationsService {
 
@@ -163,19 +163,21 @@ public interface SupplyNegotiationsService {
      * Gets last offer product for given supplier and product
      *
      * @param supplier supplier
+     * @param currency  currency
      * @param product  product
      * @return offerProduct if entity exist or null
      */
-    Entity getLastOfferProduct(final Entity supplier, final Entity product);
+    Entity getLastOfferProduct(final Entity supplier, final Entity currency, final Entity product);
 
     /**
      * Gets last price per unit
      *
      * @param supplier supplier
+     * @param currency  currency
      * @param product  product
      * @return lastPurchase price if entity exist or null
      */
-    BigDecimal getLastPricePerUnit(final Entity supplier, final Entity product);
+    BigDecimal getLastPricePerUnit(final Entity supplier, final Entity currency, final Entity product);
 
     /**
      * Fills last purchase price

@@ -38,11 +38,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.util.Objects;
 
 @Service
 public class OfferProductDetailsListeners {
-
-    
 
     @Autowired
     private OfferProductDetailsHooks offerProductDetailsHooks;
@@ -62,17 +61,18 @@ public class OfferProductDetailsListeners {
 
         Entity offer = offerProduct.getBelongsToField(OfferProductFields.OFFER);
 
-        if ((offer == null) || (product == null)) {
+        if (Objects.isNull(offer) || Objects.isNull(product)) {
             return;
         }
 
         Entity supplier = offer.getBelongsToField(OfferFields.SUPPLIER);
+        Entity currency = offer.getBelongsToField(OfferFields.CURRENCY);
 
-        if (supplier == null) {
+        if (Objects.isNull(supplier) || Objects.isNull(currency)) {
             return;
         }
 
-        BigDecimal pricePerUnit = supplyNegotiationsService.getLastPricePerUnit(supplier, product);
+        BigDecimal pricePerUnit = supplyNegotiationsService.getLastPricePerUnit(supplier, currency, product);
 
         supplyNegotiationsService.fillPriceField(view, OfferProductFields.PRICE_PER_UNIT, pricePerUnit);
         supplyNegotiationsService.fillPriceField(view, OfferProductFields.TOTAL_PRICE, null);

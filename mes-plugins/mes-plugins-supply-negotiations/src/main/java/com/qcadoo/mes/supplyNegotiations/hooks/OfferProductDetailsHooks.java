@@ -23,23 +23,19 @@
  */
 package com.qcadoo.mes.supplyNegotiations.hooks;
 
-import static com.qcadoo.mes.supplyNegotiations.constants.OfferProductFields.PRODUCT;
-
-import java.math.BigDecimal;
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.deliveries.DeliveriesService;
-import com.qcadoo.mes.supplyNegotiations.SupplyNegotiationsService;
-import com.qcadoo.mes.supplyNegotiations.constants.OfferFields;
 import com.qcadoo.mes.supplyNegotiations.constants.OfferProductFields;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
-import com.qcadoo.view.api.components.LookupComponent;
+import com.qcadoo.view.constants.QcadooViewConstants;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+
+import static com.qcadoo.mes.supplyNegotiations.constants.OfferProductFields.PRODUCT;
 
 @Service
 public class OfferProductDetailsHooks {
@@ -60,9 +56,14 @@ public class OfferProductDetailsHooks {
     }
 
     public void fillCurrencyFields(final ViewDefinitionState view) {
+        FormComponent offerProductForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
+
+        Entity offerProduct = offerProductForm.getEntity();
+        Entity offer = offerProduct.getBelongsToField(OfferProductFields.OFFER);
+
         List<String> referenceNames = Lists.newArrayList(L_TOTAL_PRICE_CURRENCY, L_PRICE_PER_UNIT_CURRENCY);
 
-        deliveriesService.fillCurrencyFields(view, referenceNames);
+        deliveriesService.fillCurrencyFieldsForDelivery(view, referenceNames, offer);
     }
 
 }
