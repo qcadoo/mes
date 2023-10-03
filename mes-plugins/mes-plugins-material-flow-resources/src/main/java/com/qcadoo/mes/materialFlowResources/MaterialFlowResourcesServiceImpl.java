@@ -413,6 +413,55 @@ public class MaterialFlowResourcesServiceImpl implements MaterialFlowResourcesSe
         return null;
     }
 
+    public StorageLocationNumberIdDto getLocationId(String storageLocation, String storageLocationNumber) {
+        Map<String, Object> params = Maps.newHashMap();
+
+        if (storageLocation != null && storageLocationNumber != null && !storageLocationNumber.isEmpty() && !storageLocation.isEmpty()) {
+            StringBuilder prepareQuery = new StringBuilder();
+
+            prepareQuery.append("SELECT DISTINCT ");
+            prepareQuery.append("dto.location_id AS locationId ");
+            prepareQuery.append("FROM materialFlowResources_storageLocationDto AS dto ");
+            prepareQuery.append("WHERE dto.locationNumber = :storageLocation ");
+            prepareQuery.append("AND dto.storageLocationNumber = :storageLocationNumber");
+
+            params.put("storageLocation", storageLocation);
+            params.put("storageLocationNumber", storageLocationNumber);
+
+            try {
+                return jdbcTemplate.queryForObject(prepareQuery.toString(), params, BeanPropertyRowMapper.newInstance(StorageLocationNumberIdDto.class));
+            } catch (EmptyResultDataAccessException e) {
+                return null;
+            }
+        }
+        return null;
+    }
+
+    public CheckProductDto checkProductByStorageLocationNumber(String storageLocationNumber) {
+        Map<String, Object> params = Maps.newHashMap();
+
+        if (storageLocationNumber != null || !storageLocationNumber.isEmpty()) {
+            StringBuilder prepareQuery = new StringBuilder();
+
+            prepareQuery.append("SELECT ");
+            prepareQuery.append("sl.location_id as locationId, ");
+            prepareQuery.append("sl.product_id as productId, ");
+            prepareQuery.append("sl.placeStorageLocation as placeStorageLocation, ");
+            prepareQuery.append("sl.maximumNumberOfPallets as maximumNumberOfPallets ");
+            prepareQuery.append("from materialFlowResources_storageLocation as sl ");
+            prepareQuery.append("WHERE sl.number = :storageLocationNumber");
+
+            params.put("storageLocationNumber", storageLocationNumber);
+
+            try {
+                return jdbcTemplate.queryForObject(prepareQuery.toString(), params, BeanPropertyRowMapper.newInstance(CheckProductDto.class));
+            } catch (EmptyResultDataAccessException e) {
+                return null;
+            }
+        }
+        return null;
+    }
+
     private DataDefinition getProductDD() {
         return dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PRODUCT);
     }
