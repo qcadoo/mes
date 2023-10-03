@@ -67,4 +67,8 @@ public interface MaterialFlowResourcesService {
     List<StorageLocationsForProductDto> getStoragesForProductNumber(String productNumber, List<String> locationIds);
 
     ResourceToRepackDto getResourceDetailsToRepack(String resourceNumber, List<String> userLocations);
+
+    StorageLocationNumberIdDto getLocationId(String storageLocation, String storageLocationNumber);
+
+    CheckProductDto checkProductByStorageLocationNumber(String storageLocationNumber);
 }
