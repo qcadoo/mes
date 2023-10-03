@@ -38,15 +38,17 @@
 			<validatesLength max="2048" />
 		</string>
 		<belongsTo name="supplier" model="company" plugin="basic"/>
-		<integer name="workingDaysAfterOrder"/>	
+		<date name="offerDate" />
 		<datetime name="offeredDate" />
+		<integer name="workingDaysAfterOrder"/>
 		<belongsTo name="requestForQuotation" model="requestForQuotation" />
 		<belongsTo name="negotiation" model="negotiation" />
 		<file name="attachment" />
 		<decimal name="transportCost" />
 		<decimal name="offerProductsCumulatedQuantity" persistent="false" />
 		<decimal name="offerProductsCumulatedTotalPrice" persistent="false"/>
-		
+		<belongsTo name="currency" model="currency" plugin="basic" required="true"/>
+
 		<hasMany name="offerProducts" joinField="offer" model="offerProduct"
 			cascade="delete" copyable="true" />
 			

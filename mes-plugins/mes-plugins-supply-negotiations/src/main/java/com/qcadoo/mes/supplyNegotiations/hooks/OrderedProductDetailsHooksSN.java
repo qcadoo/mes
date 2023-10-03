@@ -40,11 +40,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.util.Objects;
 
 @Service
 public class OrderedProductDetailsHooksSN {
-
-    
 
     @Autowired
     private NumberService numberService;
@@ -62,7 +61,7 @@ public class OrderedProductDetailsHooksSN {
         Entity product = productLookup.getEntity();
         Entity offer = offerLookup.getEntity();
 
-        if ((product != null) && (offer != null)) {
+        if (Objects.nonNull(product) && Objects.nonNull(offer)) {
             FieldComponent pricePerUnitField = (FieldComponent) view.getComponentByReference(OrderedProductFields.PRICE_PER_UNIT);
             FieldComponent totalPriceField = (FieldComponent) view.getComponentByReference(OrderedProductFields.TOTAL_PRICE);
             FieldComponent quantityField = (FieldComponent) view.getComponentByReference(OrderedProductFields.ORDERED_QUANTITY);
@@ -70,17 +69,18 @@ public class OrderedProductDetailsHooksSN {
             BigDecimal quantity = deliveriesService.getBigDecimalFromField(quantityField, view.getLocale());
             BigDecimal pricePerUnit = supplyNegotiationsService.getPricePerUnit(offer, product);
 
-            if ((quantity != null) && (pricePerUnit != null)) {
+            if (Objects.nonNull(quantity) && Objects.nonNull(pricePerUnit)) {
                 BigDecimal totalPrice = quantity.multiply(pricePerUnit, numberService.getMathContext());
 
                 pricePerUnitField.setFieldValue(numberService.format(pricePerUnit));
                 totalPriceField.setFieldValue(numberService.format(totalPrice));
             } else {
-                if (pricePerUnit == null) {
+                if (Objects.isNull(pricePerUnit)) {
                     pricePerUnitField.setFieldValue(null);
                 } else {
                     pricePerUnitField.setFieldValue(numberService.format(pricePerUnit));
                 }
+
                 totalPriceField.setFieldValue(null);
             }
 
@@ -96,7 +96,7 @@ public class OrderedProductDetailsHooksSN {
         FieldComponent pricePerUnitField = (FieldComponent) view.getComponentByReference(OrderedProductFields.PRICE_PER_UNIT);
         FieldComponent totalPriceField = (FieldComponent) view.getComponentByReference(OrderedProductFields.TOTAL_PRICE);
 
-        if (offer == null) {
+        if (Objects.isNull(offer)) {
             pricePerUnitField.setEnabled(true);
             totalPriceField.setEnabled(true);
         } else {
@@ -114,24 +114,24 @@ public class OrderedProductDetailsHooksSN {
 
         Entity delivery = orderedProduct.getBelongsToField(OrderedProductFields.DELIVERY);
 
-        if ((delivery == null) || (product == null)) {
-
+        if (Objects.isNull(delivery) || Objects.isNull(product)) {
             return;
         }
 
         Entity supplier = delivery.getBelongsToField(DeliveryFields.SUPPLIER);
+        Entity currency = delivery.getBelongsToField(DeliveryFields.CURRENCY);
 
-        if (supplier == null) {
+        if (Objects.isNull(supplier) || Objects.isNull(currency)) {
             return;
         }
 
-        Entity offerProduct = supplyNegotiationsService.getLastOfferProduct(supplier, product);
+        Entity offerProduct = supplyNegotiationsService.getLastOfferProduct(supplier, currency, product);
 
         BigDecimal pricePerUnit = null;
         BigDecimal totalPrice = null;
         Entity offer = null;
 
-        if (offerProduct != null) {
+        if (Objects.nonNull(offerProduct)) {
             pricePerUnit = offerProduct.getDecimalField(OfferProductFields.PRICE_PER_UNIT);
             offer = offerProduct.getBelongsToField(OfferProductFields.OFFER);
         }

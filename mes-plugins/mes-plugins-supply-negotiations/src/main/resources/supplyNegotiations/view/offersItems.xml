@@ -25,53 +25,58 @@
 
 -->
 <view defaultAuthorizationRole="ROLE_REQUIREMENTS" name="offersItems" modelName="offerProduct" menuAccessible="true"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
-	xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd">
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
+      xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd">
 
-	<component type="window" name="window" reference="window">
+    <component type="window" name="window" reference="window">
 
-		<ribbon>
-			<template name="standardGridTemplate" excludeItems="actions.copy,actions.delete,actions.new" />
-		</ribbon>
+        <ribbon>
+            <template name="standardGridTemplate" excludeItems="actions.copy,actions.delete,actions.new"/>
+        </ribbon>
 
-		<component type="grid" name="offersItems" reference="grid">
-			<option type="column" name="offeredDate" fields="offer"
-				expression="#offer['offeredDate']" />
-			<option type="column" name="offerState" fields="offer"
-				expression="'@supplyNegotiations.offer.state.value.' + #offer['state']" />
-			<option type="column" name="offerNumber" fields="offer"
-				expression="#offer['number']" />
-			<option type="column" name="negotiationNumber" fields="offer"
-				expression="#offer.get('negotiation')?.get('number')" />
-			<option type="column" name="supplier" fields="offer"
-				expression="#offer.get('supplier')?.get('name')" />
-			<option type="column" name="productNumber" fields="product"
-				expression="#product['number']" />
-			<option type="column" name="productName" fields="product"
-				expression="#product['name']" />
-			<option type="column" name="quantity" fields="quantity" />
-			<option type="column" name="productUnit" fields="product"
-				expression="#product['unit']" />
-			<option type="column" name="totalPrice" fields="totalPrice" />
-			<option type="column" name="pricePerUnit" fields="pricePerUnit" />
+        <component type="grid" name="offersItems" reference="grid">
+            <option type="column" name="offeredDate" fields="offer"
+                    expression="#offer['offeredDate']"/>
+            <option type="column" name="offerState" fields="offer"
+                    expression="#offer['state']"/>
+            <option type="column" name="offerNumber" fields="offer"
+                    expression="#offer['number']" link="true"
+                    correspondingView="supplyNegotiations/offerDetails" correspondingField="offerId"/>
+            <option type="column" name="offerId" fields="offer" hidden="true"/>
+            <option type="column" name="offerDate" fields="offer"
+                    expression="#offer['offerDate']"/>
+            <option type="column" name="negotiationNumber" fields="offer"
+                    expression="#offer.get('negotiation')?.get('number')"/>
+            <option type="column" name="supplier" fields="offer"
+                    expression="#offer.get('supplier')?.get('name')"/>
+            <option type="column" name="productNumber" fields="product"
+                    expression="#product['number']"/>
+            <option type="column" name="productName" fields="product"
+                    expression="#product['name']"/>
+            <option type="column" name="quantity" fields="quantity"/>
+            <option type="column" name="productUnit" fields="product"
+                    expression="#product['unit']"/>
+            <option type="column" name="totalPrice" fields="totalPrice"/>
+            <option type="column" name="pricePerUnit" fields="pricePerUnit"/>
+            <option type="column" name="offerCurrency" fields="offer"
+                    expression="#offer['currency']"/>
 
-			<option type="order" column="offeredDate" direction="asc" />
+            <option type="order" column="offeredDate" direction="asc"/>
 
-			<option type="searchable"
-				value="offeredDate,offerNumber,offerName,negotiationNumber,supplier,productNumber,productName,quantity,productUnit,pricePerUnit,totalPrice" />
-			<option type="orderable"
-				value="offeredDate,offerNumber,offerName,negotiationNumber,supplier,productNumber,productName,quantity,productUnit,pricePerUnit,totalPrice" />
+            <option type="searchable"
+                    value="offeredDate,offerState,offerNumber,offerDate,negotiationNumber,supplier,productNumber,productName,quantity,productUnit,pricePerUnit,totalPrice,offerCurrency"/>
+            <option type="orderable"
+                    value="offeredDate,offerState,offerNumber,offerDate,negotiationNumber,supplier,productNumber,productName,quantity,productUnit,pricePerUnit,totalPrice,offerCurrency"/>
 
-			<option type="fullscreen" value="true" />
-			<option type="multiselect" value="false" />
-			<criteriaModifier class="com.qcadoo.mes.supplyNegotiations.criteriaModifiers.OfferCriteriaModifiers" method="showActiveOffersItems" />
-			<listener event="select"
-				class="com.qcadoo.mes.supplyNegotiations.listeners.OffersItemsListeners"
-				method="redirectToOfferDetails" />
-		</component>
+            <option type="fullscreen" value="true"/>
+            <option type="multiselect" value="false"/>
 
-		<option type="fixedHeight" value="true" />
-		<option type="header" value="false" />
-	</component>
+            <criteriaModifier class="com.qcadoo.mes.supplyNegotiations.criteriaModifiers.OfferCriteriaModifiers"
+                              method="showActiveOffersItems"/>
+        </component>
+
+        <option type="fixedHeight" value="true"/>
+        <option type="header" value="false"/>
+    </component>
 
 </view>

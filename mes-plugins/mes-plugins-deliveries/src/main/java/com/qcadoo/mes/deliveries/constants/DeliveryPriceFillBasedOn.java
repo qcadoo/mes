@@ -1,7 +1,7 @@
 /**
  * ***************************************************************************
  * Copyright (c) 2010 Qcadoo Limited
- * Project: Qcadoo Framework
+ * Project: Qcadoo MES
  * Version: 1.4
  *
  * This file is part of Qcadoo.
@@ -21,23 +21,30 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.supplyNegotiations.hooks;
+package com.qcadoo.mes.deliveries.constants;
 
-import com.qcadoo.mes.deliveries.DeliveriesService;
-import com.qcadoo.mes.supplyNegotiations.constants.OfferProductFields;
-import com.qcadoo.model.api.DataDefinition;
-import com.qcadoo.model.api.Entity;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+public enum DeliveryPriceFillBasedOn {
 
-@Service
-public class OfferProductHooks {
+    LAST_PURCHASE_PRICE("01lastPurchasePrice"), PRICES_FROM_LAST_DELIVERY_OFFER("02pricesFromLastDeliveryOffer");
 
-    @Autowired
-    private DeliveriesService deliveriesService;
+    private final String stringValue;
 
-    public void calculateOfferProductPricePerUnit(final DataDefinition offerProductDD, final Entity offerProduct) {
-        deliveriesService.calculatePricePerUnit(offerProduct, OfferProductFields.QUANTITY);
+    private DeliveryPriceFillBasedOn(final String stringValue) {
+        this.stringValue = stringValue;
+    }
+
+    public String getStringValue() {
+        return stringValue;
+    }
+
+    public static DeliveryPriceFillBasedOn parseString(final String stringValue) {
+        for (DeliveryPriceFillBasedOn basedOn : values()) {
+            if (basedOn.getStringValue().equals(stringValue)) {
+                return basedOn;
+            }
+        }
+
+        throw new IllegalArgumentException("Couldn't parse DeliveryPriceFillBasedOn from string '" + stringValue + "'");
     }
 
 }

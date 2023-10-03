@@ -41,4 +41,6 @@ public final class DeliveredProductMultiFields {
 
     public static final String STORAGE_LOCATION = "storageLocation";
 
+    public static final String UPDATE_DATE = "updateDate";
+
 }

@@ -36,19 +36,19 @@
 				<bigButton name="generateOffer" icon="pdfIcon24.png"
 					state="enabled">
 					<script>
-							<![CDATA[
-								this.addOnChangeListener({
-									onClick: function() {
-										#{form}.performEvent({
-											name : 'validateColumnsWidthForOffer'
-										});
-										#{form}.performEvent({
-											name : 'printOfferReport',
-											args : ['pdf']
-										});
-									}
-								});
-							]]>
+						<![CDATA[
+							this.addOnChangeListener({
+								onClick: function() {
+									#{form}.performEvent({
+										name : 'validateColumnsWidthForOffer'
+									});
+									#{form}.performEvent({
+										name : 'printOfferReport',
+										args : ['pdf']
+									});
+								}
+							});
+						]]>
 					</script>
 				</bigButton>
 			</group>
@@ -133,7 +133,7 @@
 						var deleteBtn = #{window}.getRibbonItem("actions.delete");
 						
 						var acceptBtn = #{window}.getRibbonItem("status.accept");
-	    			    var cancelBtn = #{window}.getRibbonItem("status.cancel");
+	    				var cancelBtn = #{window}.getRibbonItem("status.cancel");
 						
 						var generateOfferBtn = #{window}.getRibbonItem("generate.generateOffer");
 						
@@ -141,13 +141,13 @@
 						var buttonsStatus = ["status.accept", "status.cancel"];
 						
 						var listener = {
-					    	onSetValue: function() {
+						 	onSetValue: function() {
 								var isSaved = (#{form}.getValue().content && #{form}.getValue().content.entityId);
 								
 								if (isSaved) { 
 									generateOfferBtn.enable();
 									
-						     		var state = #{state}.getValue().content.value;
+									var state = #{state}.getValue().content.value;
 						
 									if (state == "01draft") {
 										enableButtons(buttonsStandard);
@@ -229,10 +229,16 @@
 
 							<listener event="onSelectedEntityChange"
 								class="com.qcadoo.mes.supplyNegotiations.listeners.OfferDetailsListeners"
-								method="fillBufferForSupplier" />
+								method="fillCompanyFieldsForSupplier" />
 						</component>
 					</layoutElement>
-					<layoutElement column="2" row="2" height="2">
+					<layoutElement column="2" row="2">
+						<component type="calendar" name="offerDate" field="offerDate"
+								   reference="offerDate">
+							<option type="withTimePicker" value="false" />
+						</component>
+					</layoutElement>
+					<layoutElement column="2" row="3" height="2">
 						<component type="borderLayout" name="offeredTimeOfDeliveryBorderLayout">
 							<option type="label" value="offeredTimeOfDeliveryTab" />
 							<component type="gridLayout" name="offeredTimeOfDeliveryGridLayout"
@@ -252,7 +258,7 @@
 							</component>
 						</component>
 					</layoutElement>
-					<layoutElement column="2" row="4">
+					<layoutElement column="2" row="5">
 						<component type="lookup" name="requestForQuotation"
 							reference="requestForQuotation" field="requestForQuotation">
 							<option type="column" name="name" fields="name" />
@@ -262,12 +268,13 @@
 
 							<option type="expression" value="#number" />
 							<option type="fieldCode" value="number" />
+
 							<listener
 								class="com.qcadoo.mes.supplyNegotiations.listeners.OfferDetailsListeners"
-								method="fillRequestforQuotationDateField" />
+								method="fillRequestForQuotationDateField" />
 						</component>
 					</layoutElement>
-					<layoutElement column="2" row="5">
+					<layoutElement column="2" row="6">
 						<component type="lookup" name="negotiation" reference="negotiation"
 							field="negotiation">
 							<option type="column" name="name" fields="name" />
@@ -303,6 +310,24 @@
                                     <option type="labelStyle" value="label" />
                                 </component>
 							</layoutElement>
+						</component>
+					</layoutElement>
+					<layoutElement column="3" row="3">
+						<component type="lookup" name="currency" reference="currency"
+								   field="currency">
+							<option type="column" name="currency" fields="currency"
+									link="true"/>
+							<option type="column" name="exchangeRate" fields="exchangeRate"/>
+
+							<option type="searchable" value="currency,alphabeticCode"/>
+							<option type="orderable" value="currency,alphabeticCode"/>
+
+							<option type="expression" value="#alphabeticCode + ' - ' + #currency"/>
+							<option type="fieldCode" value="alphabeticCode"/>
+
+							<listener event="onSelectedEntityChange"
+									  class="com.qcadoo.mes.supplyNegotiations.listeners.OfferDetailsListeners"
+									  method="onCurrencyChange"/>
 						</component>
 					</layoutElement>
 					<layoutElement column="3" row="4">
@@ -342,7 +367,6 @@
 				<listener event="validateColumnsWidthForOffer"
 					class="com.qcadoo.mes.supplyNegotiations.listeners.OfferDetailsListeners"
 					method="validateColumnsWidthForOffer" />
-
 			</component>
 		</windowTab>
 
@@ -461,27 +485,6 @@
 	<hooks>
 		<beforeRender
 			class="com.qcadoo.mes.supplyNegotiations.hooks.OfferDetailsHooks"
-			method="generateOfferNumber" />
-		<beforeRender
-			class="com.qcadoo.mes.supplyNegotiations.hooks.OfferDetailsHooks"
-			method="fillBufferForSupplier" />
-		<beforeRender
-			class="com.qcadoo.mes.supplyNegotiations.hooks.OfferDetailsHooks"
-			method="fillRequestforQuotationDateField" />
-		<beforeRender
-			class="com.qcadoo.mes.supplyNegotiations.hooks.OfferDetailsHooks"
-			method="fillNegotiationDateField" />
-		<beforeRender
-			class="com.qcadoo.mes.supplyNegotiations.hooks.OfferDetailsHooks"
-			method="updateRibbonState" />
-		<beforeRender
-			class="com.qcadoo.mes.supplyNegotiations.hooks.OfferDetailsHooks"
-			method="changeFieldsEnabledDependOnState" />
-		<beforeRender
-			class="com.qcadoo.mes.supplyNegotiations.hooks.OfferDetailsHooks"
-			method="filterStateChangeHistory" />
-		<beforeRender
-			class="com.qcadoo.mes.supplyNegotiations.hooks.OfferDetailsHooks"
-			method="fillCurrencyFields" />
+			method="onBeforeRender" />
 	</hooks>
 </view>
