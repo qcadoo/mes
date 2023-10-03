@@ -112,27 +112,20 @@
     </windowTab>
     <windowTab name="productResourceReservations" reference="productResourceReservations">
         <component type="gridLayout" name="flowLayout" columns="2"
-                   rows="3" hasBorders="false">
+                   rows="2" hasBorders="false">
             <layoutElement column="1" row="1">
-                <component type="label" name="infoMessage"
-                           reference="infoMessage" defaultEnabled="never" hasLabel="false">
-                    <option type="labelStyle" value="text"/>
-                </component>
-
-            </layoutElement>
-            <layoutElement column="1" row="2">
                 <component type="input" name="resourceProductNumber"
                            reference="resourceProductNumber" defaultEnabled="never"
                            hasLabel="true">
                 </component>
             </layoutElement>
-            <layoutElement column="1" row="3">
+            <layoutElement column="1" row="2">
                 <component type="input" name="resourcePlannedQuantity"
                            reference="resourcePlannedQuantity" defaultEnabled="never"
                            hasLabel="true">
                 </component>
             </layoutElement>
-            <layoutElement column="2" row="3">
+            <layoutElement column="2" row="2">
                 <component type="input" name="resourcePlannedQuantityUnit"
                            reference="resourcePlannedQuantityUnit" defaultEnabled="false" hasLabel="false">
                     <option type="textRepresentationOnDisabled" value="true"/>
