@@ -462,6 +462,25 @@ public class MaterialFlowResourcesServiceImpl implements MaterialFlowResourcesSe
         return null;
     }
 
+    public List<PalletDto> checkPalletsForLocationNumber(String storageLocationNumber) {
+        Map<String, Object> params = Maps.newHashMap();
+        List<PalletDto> list = new ArrayList<>();
+
+        if (storageLocationNumber != null || !storageLocationNumber.isEmpty()) {
+            StringBuilder prepareQuery = new StringBuilder();
+            prepareQuery.append("SELECT dto.palletNumber ");
+            prepareQuery.append("FROM materialFlowResources_resourceDto AS dto ");
+            prepareQuery.append("WHERE dto.storageLocationNumber = :storageLocationNumber ");
+            prepareQuery.append("GROUP BY dto.palletNumber");
+
+            params.put("storageLocationNumber", storageLocationNumber);
+
+            list = jdbcTemplate.query(prepareQuery.toString(), params, new BeanPropertyRowMapper(PalletDto.class));
+            return list;
+        }
+        return list;
+    }
+
     private DataDefinition getProductDD() {
         return dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PRODUCT);
     }

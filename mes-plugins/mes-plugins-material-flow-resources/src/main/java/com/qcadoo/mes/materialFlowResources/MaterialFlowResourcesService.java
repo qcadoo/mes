@@ -71,4 +71,6 @@ public interface MaterialFlowResourcesService {
     StorageLocationNumberIdDto getLocationId(String storageLocation, String storageLocationNumber);
 
     CheckProductDto checkProductByStorageLocationNumber(String storageLocationNumber);
+
+    List<PalletDto> checkPalletsForLocationNumber(String storageLocationNumber);
 }
