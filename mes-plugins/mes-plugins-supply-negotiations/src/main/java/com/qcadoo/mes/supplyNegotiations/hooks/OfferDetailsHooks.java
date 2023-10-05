@@ -182,6 +182,7 @@ public class OfferDetailsHooks {
         LookupComponent requestForQuotationLookup = (LookupComponent) view.getComponentByReference(OfferFields.REQUEST_FOR_QUOTATION);
 
         WindowComponent window = (WindowComponent) view.getComponentByReference(QcadooViewConstants.L_WINDOW);
+
         RibbonGroup requestForQuotationsRibbonGroup = window.getRibbon().getGroupByName(L_REQUEST_FOR_QUOTATIONS);
         RibbonGroup deliveriesRibbonGroup = window.getRibbon().getGroupByName(L_DELIVERIES);
 

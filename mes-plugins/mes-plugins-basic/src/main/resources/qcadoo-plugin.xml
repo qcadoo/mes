@@ -282,6 +282,10 @@
 
         <security:role identifier="ROLE_ARCHIVING"/>
 
+        <security:role identifier="ROLE_REQUEST_FOR_QUOTATIONS"/>
+        <security:role identifier="ROLE_OFFERS"/>
+        <security:role identifier="ROLE_NEGOTIATIONS"/>
+
         <model:model model="company" resource="model/company.xml"/>
         <model:model model="staff" resource="model/staff.xml"/>
         <model:model model="staffDto" resource="model/staffDto.xml"/>

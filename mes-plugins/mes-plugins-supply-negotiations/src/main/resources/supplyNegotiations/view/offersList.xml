@@ -24,19 +24,21 @@
     ***************************************************************************
 
 -->
-<view defaultAuthorizationRole="ROLE_REQUIREMENTS" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
-	xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
-	name="offersList" modelName="offer"
-	menuAccessible="true">
+<view defaultAuthorizationRole="ROLE_OFFERS" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns="http://schema.qcadoo.org/view"
+      xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
+      name="offersList" modelName="offer"
+      menuAccessible="true">
 
-	<component type="window" name="window" reference="window">
+    <component type="window" name="window" reference="window">
 
-		<ribbon>
-			<template name="standardGridTemplate" />
-			<group name="status">
-				<smallButton name="accept" icon="startIcon16.png" state="disabled">
-					<script>
-						<![CDATA[
+        <ribbon>
+            <template name="standardGridTemplate"/>
+            <group name="status">
+                <smallButton name="accept" icon="startIcon16.png"
+                             state="disabled">
+                    <script>
+                        <![CDATA[
 							this.addOnChangeListener({
 								onClick: function() {
 									if (window.confirm("#{translate(supplyNegotiations.offerDetails.window.ribbon.status.accept.confirm)}")) {
@@ -45,12 +47,12 @@
 								}
 							});
 						]]>
-					</script>
-				</smallButton>
-				<smallButton name="decline" icon="deleteIcon16.png"
-					state="disabled">
-					<script>
-						<![CDATA[
+                    </script>
+                </smallButton>
+                <smallButton name="decline" icon="deleteIcon16.png"
+                             state="disabled">
+                    <script>
+                        <![CDATA[
 							this.addOnChangeListener({
 								onClick: function() {
 									if (window.confirm("#{translate(supplyNegotiations.offerDetails.window.ribbon.status.cancel.confirm)}")) {
@@ -59,14 +61,14 @@
 								}
 							});
 						]]>
-					</script>
-				</smallButton>
-			</group>
-		</ribbon>
+                    </script>
+                </smallButton>
+            </group>
+        </ribbon>
 
-		<component type="grid" name="offerGrid" reference="grid">
-			<script>
- 				<![CDATA[ 
+        <component type="grid" name="offerGrid" reference="grid">
+            <script>
+                <![CDATA[
  					var copyBtn = #{window}.getRibbonItem("actions.copy");
 					var deleteBtn = #{window}.getRibbonItem("actions.delete");
 					
@@ -82,7 +84,7 @@
 								declineBtn.disable();
 							} else {
 								var noDifferentStates = true;
- 								if(selectedEntitiesArray.length > 1)
+ 								if (selectedEntitiesArray.length > 1)
 								{
 									for (var i = selectedEntitiesArray.length-1 ; i > 0 ; i--) {
 										if (selectedEntitiesArray[i-1].fields.state != selectedEntitiesArray[i].fields.state) {
@@ -112,47 +114,53 @@
 									acceptBtn.disable("#{translate(supplyNegotiations.offersList.ribbon.message.offersWithDifferentStatesSelected)}");
 									declineBtn.disable("#{translate(supplyNegotiations.offersList.ribbon.message.offersWithDifferentStatesSelected)}");
 								}
+
 								copyBtn.enable();
 							}
 						}
 					}
+
 					this.addOnChangeListener(listener);
 				]]>
-			</script>
-			<option type="column" name="number" fields="number" link="true"
-				width="50" />
-			<option type="column" name="name" fields="name" link="true"
-				width="100" />
-			<option type="column" name="supplierName" fields="supplier"
-				expression="#supplier['name']" />
-			<option type="column" name="offerDate" fields="offerDate"
-					width="80" />
-			<option type="column" name="offeredDate" fields="offeredDate"
-				width="100" />
-			<option type="column" name="state" fields="state" />
-			<option type="column" name="createDate" fields="createDate"
-				width="100" />
-			<option type="column" name="requestForQuotationNumber" fields="requestForQuotation" expression="#requestForQuotation['number']" />
-			<option type="column" name="negotiationNumber" fields="negotiation" expression="#negotiation['number']" />
+            </script>
 
-			<option type="order" column="number" direction="asc" />
-			
-			<option type="searchable" value="number,name,supplierName,offerDate,offeredDate,state,createDate,requestForQuotationNumber,negotiationNumber" />
-			<option type="orderable" value="number,name,supplierName,offerDate,offeredDate,state,createDate,requestForQuotationNumber,negotiationNumber" />
+            <option type="column" name="number" fields="number" link="true"
+                    width="50"/>
+            <option type="column" name="name" fields="name" link="true"
+                    width="100"/>
+            <option type="column" name="supplierName" fields="supplier"
+                    expression="#supplier['name']"/>
+            <option type="column" name="offerDate" fields="offerDate"
+                    width="80"/>
+            <option type="column" name="offeredDate" fields="offeredDate"
+                    width="100"/>
+            <option type="column" name="state" fields="state"/>
+            <option type="column" name="createDate" fields="createDate"
+                    width="100"/>
+            <option type="column" name="requestForQuotationNumber" fields="requestForQuotation"
+                    expression="#requestForQuotation['number']"/>
+            <option type="column" name="negotiationNumber" fields="negotiation" expression="#negotiation['number']"/>
 
-			<option type="correspondingView" value="supplyNegotiations/offerDetails" />
-			<option type="correspondingComponent" value="form" />
-			
-			<option type="fullscreen" value="true" />
-			<option type="multiselect" value="true" />
+            <option type="order" column="number" direction="asc"/>
 
-			<listener event="changeState"
-				class="com.qcadoo.mes.supplyNegotiations.states.client.OfferViewClient"
-				method="changeState" />
-		</component>
+            <option type="searchable"
+                    value="number,name,supplierName,offerDate,offeredDate,state,createDate,requestForQuotationNumber,negotiationNumber"/>
+            <option type="orderable"
+                    value="number,name,supplierName,offerDate,offeredDate,state,createDate,requestForQuotationNumber,negotiationNumber"/>
 
-		<option type="fixedHeight" value="true" />
-		<option type="header" value="false" />
-	</component>
-	
+            <option type="correspondingView" value="supplyNegotiations/offerDetails"/>
+            <option type="correspondingComponent" value="form"/>
+
+            <option type="fullscreen" value="true"/>
+            <option type="multiselect" value="true"/>
+
+            <listener event="changeState"
+                      class="com.qcadoo.mes.supplyNegotiations.states.client.OfferViewClient"
+                      method="changeState"/>
+        </component>
+
+        <option type="fixedHeight" value="true"/>
+        <option type="header" value="false"/>
+    </component>
+
 </view>
