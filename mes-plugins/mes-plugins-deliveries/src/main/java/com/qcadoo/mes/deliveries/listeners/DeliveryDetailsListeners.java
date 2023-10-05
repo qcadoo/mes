@@ -322,6 +322,7 @@ public class DeliveryDetailsListeners {
             contractorCategoryField.setFieldValue(supplier.getStringField(CompanyFields.CONTRACTOR_CATEGORY));
 
             Entity supplierCurrency = supplier.getBelongsToField(CompanyFieldsD.CURRENCY);
+
             if (Objects.nonNull(supplierCurrency)) {
                 Long oldCurrency = (Long) currencyField.getFieldValue();
 
@@ -339,24 +340,6 @@ public class DeliveryDetailsListeners {
         deliveryDateBufferField.requestComponentUpdateState();
         paymentFormField.requestComponentUpdateState();
         contractorCategoryField.requestComponentUpdateState();
-    }
-
-    public void onCurrencyChange(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        FormComponent deliveryForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
-        GridComponent orderedProductsGrid = (GridComponent) view.getComponentByReference(DeliveryFields.ORDERED_PRODUCTS);
-
-        Entity oldCurrency = null;
-
-        if (Objects.nonNull(deliveryForm.getEntityId())) {
-            oldCurrency = deliveriesService.getDelivery(deliveryForm.getEntityId()).getBelongsToField(DeliveryFields.CURRENCY);
-        }
-
-        Long newCurrency = (Long) state.getFieldValue();
-
-        if (Objects.nonNull(oldCurrency) && !oldCurrency.getId().equals(newCurrency) && !orderedProductsGrid.getEntities().isEmpty()) {
-            view.addMessage("deliveries.delivery.currencyChange.orderedProductsPriceVerificationRequired", MessageType.INFO,
-                    false);
-        }
     }
 
     public final void printDeliveryReport(final ViewDefinitionState view, final ComponentState state, final String[] args) {

@@ -31,7 +31,6 @@ import com.qcadoo.mes.basic.constants.UnitConversionItemFieldsB;
 import com.qcadoo.mes.deliveries.DeliveriesService;
 import com.qcadoo.mes.deliveries.constants.CompanyFieldsD;
 import com.qcadoo.mes.deliveries.constants.DeliveriesConstants;
-import com.qcadoo.mes.deliveries.constants.DeliveryFields;
 import com.qcadoo.mes.deliveries.constants.OrderedProductFields;
 import com.qcadoo.mes.supplyNegotiations.SupplyNegotiationsService;
 import com.qcadoo.mes.supplyNegotiations.constants.OfferFields;
@@ -146,24 +145,6 @@ public class OfferDetailsListeners {
 
     public void fillNegotiationDateField(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         offerDetailsHooks.fillNegotiationDateField(view);
-    }
-
-    public void onCurrencyChange(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        FormComponent offerForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
-        GridComponent offerProductsGrid = (GridComponent) view.getComponentByReference(OfferFields.OFFER_PRODUCTS);
-
-        Entity oldCurrency = null;
-
-        if (Objects.nonNull(offerForm.getEntityId())) {
-            oldCurrency = supplyNegotiationsService.getOffer(offerForm.getEntityId()).getBelongsToField(DeliveryFields.CURRENCY);
-        }
-
-        Long newCurrency = (Long) state.getFieldValue();
-
-        if (Objects.nonNull(oldCurrency) && !oldCurrency.getId().equals(newCurrency) && !offerProductsGrid.getEntities().isEmpty()) {
-            view.addMessage("supplyNegotiations.offer.currencyChange.offerProductsPriceVerificationRequired", MessageType.INFO,
-                    false);
-        }
     }
 
     public final void printOfferReport(final ViewDefinitionState view, final ComponentState state, final String[] args) {
