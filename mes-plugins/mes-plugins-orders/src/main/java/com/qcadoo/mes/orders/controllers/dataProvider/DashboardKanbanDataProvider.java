@@ -115,7 +115,7 @@ public class DashboardKanbanDataProvider {
     private String getOrdersQuery(final Entity productionLine) {
         String query = getOrderQueryProjections();
 
-        query += "WHERE orderlistdto.state IN (:states) ";
+        query += "WHERE orderlistdto.active = true AND orderlistdto.state IN (:states) ";
         query += "AND date_trunc('day', orderlistdto.startdate) <= current_date AND current_date <= date_trunc('day', orderlistdto.finishdate) ";
 
         if (!Objects.isNull(productionLine)) {
