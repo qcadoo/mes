@@ -47,7 +47,7 @@
                  joinField="productionLine" cascade="delete"/>
 
         <hasMany name="workstations" joinField="productionLine" model="workstation" plugin="basic" />
-        <manyToMany name="shifts" joinField="productionLines" model="shift" plugin="basic" />
+        <manyToMany name="shifts" joinField="productionLines" model="shift" plugin="basic" copyable="true"/>
 
         <boolean name="supportsOtherTechnologiesWorkstationTypes"
                  default="true"/>
