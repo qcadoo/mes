@@ -25,17 +25,17 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
-public class StorageLocationsListListener {
+public class StorageLocationsListListeners {
 
     private static final String L_ZERO = "0";
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
-    public void importCurrentList(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        String url = "../page/materialFlowResources/importStorageLocationList.html";
+    public void openStorageLocationsImportPage(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        StringBuilder url = new StringBuilder("../page/materialFlowResources/storageLocationsImport.html");
 
-        view.openModal(url);
+        view.openModal(url.toString());
     }
 
     public void redirectToAddManyStorageLocations(final ViewDefinitionState view, final ComponentState state, final String[] args) {
