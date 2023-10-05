@@ -22,12 +22,11 @@ public class Position {
 
     private String unit;
 
-    private String targetPallet;
-
     private String batch;
 
-    public Position(String index, Long product, String storageLocation, String typeOfPallet, String palletNumber,
-            BigDecimal quantity, String productName, String unit, String targetPallet, String batch) {
+    public Position(final String index, final Long product, final String storageLocation, final String typeOfPallet,
+                    final String palletNumber, final BigDecimal quantity, final String productName, final String unit,
+                    final String batch) {
         this.index = index;
         this.product = product;
         this.storageLocation = storageLocation;
@@ -36,20 +35,15 @@ public class Position {
         this.quantity = quantity;
         this.productName = productName;
         this.unit = unit;
-        this.targetPallet = targetPallet;
         this.batch = batch;
     }
 
-    public void setQuantity(BigDecimal quantity) {
+    public void setQuantity(final BigDecimal quantity) {
         this.quantity = quantity;
     }
 
     public String getIndex() {
         return index;
-    }
-
-    public String getTargetPallet() {
-        return targetPallet;
     }
 
     public Long getProduct() {
@@ -86,11 +80,16 @@ public class Position {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o)
+        if (this == o) {
             return true;
-        if (o == null || getClass() != o.getClass())
+        }
+
+        if (o == null || getClass() != o.getClass()) {
             return false;
+        }
+
         Position that = (Position) o;
+
         return Objects.equal(product, that.product) && Objects.equal(storageLocation, that.storageLocation)
                 && Objects.equal(typeOfPallet, that.typeOfPallet) && Objects.equal(palletNumber, that.palletNumber)
                 && Objects.equal(batch, that.batch);
@@ -100,4 +99,5 @@ public class Position {
     public int hashCode() {
         return Objects.hashCode(product, storageLocation, typeOfPallet, palletNumber, batch);
     }
+
 }
