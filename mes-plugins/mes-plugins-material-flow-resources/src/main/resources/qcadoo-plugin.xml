@@ -120,6 +120,8 @@
         <model:model model="positionAttributeValue" resource="model/positionAttributeValue.xml"/>
         <model:model model="documentStateChange" resource="model/documentStateChange.xml"/>
 
+        <model:model-enum-value plugin="basic" model="log" enum="logType" value="storageLocationImport"/>
+
         <model:model-field plugin="basic" model="parameter">
             <model:belongsTo name="documentPositionParameters" model="documentPositionParameters"
                              plugin="materialFlowResources"/>
@@ -369,6 +371,7 @@
         <view:view resource="view/storageLocationsMultiAdd.xml"/>
         <view:view resource="view/storageLocationsDetails.xml"/>
         <view:view resource="view/storageLocationList.xml"/>
+        <view:view resource="view/storageLocationsImport.xml"/>
         <view:view resource="view/reservationsList.xml"/>
         <view:view resource="view/storageLocationsStateList.xml"/>
         <view:view resource="view/palletStorageStateList.xml"/>
@@ -386,7 +389,6 @@
 
         <view:view resource="view/warehouseStockReportDetails.xml"/>
         <view:view resource="view/warehouseStockReportsList.xml"/>
-        <view:view resource="view/importStorageLocationList.xml"/>
         <view:view resource="view/positionAddMulti.xml"/>
         <view:view resource="view/resourceAttributeValueDetails.xml"/>
         <view:view resource="view/documentAttributePosition.xml"/>
