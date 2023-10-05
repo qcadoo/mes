@@ -167,13 +167,13 @@
 		</model:model-field>
 
 		<menu:menu-item name="requestsForQuotation" category="requirements"
-			view="requestForQuotationsList" defaultAuthorizationRole="ROLE_REQUIREMENTS"/>
+			view="requestForQuotationsList" defaultAuthorizationRole="ROLE_REQUEST_FOR_QUOTATIONS"/>
 		<menu:menu-item name="offer" category="requirements"
-			view="offersList" defaultAuthorizationRole="ROLE_REQUIREMENTS"/>
+			view="offersList" defaultAuthorizationRole="ROLE_OFFERS"/>
 		<menu:menu-item name="offersItems" category="requirements"
-			view="offersItems" defaultAuthorizationRole="ROLE_REQUIREMENTS"/>
+			view="offersItems" defaultAuthorizationRole="ROLE_OFFERS"/>
 		<menu:menu-item name="negotiation" category="requirements"
-			view="negotiationsList" defaultAuthorizationRole="ROLE_REQUIREMENTS"/>
+			view="negotiationsList" defaultAuthorizationRole="ROLE_NEGOTIATIONS"/>
 
 		<view:view resource="view/requestForQuotationDetails.xml" />
 		<view:view resource="view/requestForQuotationsList.xml" />

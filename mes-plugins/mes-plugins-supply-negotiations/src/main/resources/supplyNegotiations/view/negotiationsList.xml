@@ -24,19 +24,21 @@
     ***************************************************************************
 
 -->
-<view defaultAuthorizationRole="ROLE_REQUIREMENTS" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
-	xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
-	name="negotiationsList" modelName="negotiation" 
-	menuAccessible="true">
-	
-	<component type="window" name="window" reference="window">
-	
-		<ribbon>
-			<template name="standardGridTemplate" />
-			<group name="status">
-				<smallButton name="generate" icon="startIcon16.png" state="disabled">
-					<script>
-						<![CDATA[
+<view defaultAuthorizationRole="ROLE_NEGOTIATIONS" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns="http://schema.qcadoo.org/view"
+      xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
+      name="negotiationsList" modelName="negotiation"
+      menuAccessible="true">
+
+    <component type="window" name="window" reference="window">
+
+        <ribbon>
+            <template name="standardGridTemplate"/>
+            <group name="status">
+                <smallButton name="generate" icon="startIcon16.png"
+                             state="disabled">
+                    <script>
+                        <![CDATA[
 							this.addOnChangeListener({
 								onClick: function() {
 									if (this.state == "02generatedRequests") {
@@ -51,12 +53,12 @@
 								}
 							});
 						]]>
-					</script>
-				</smallButton>
-				<smallButton name="decline" icon="deleteIcon16.png"
-					state="disabled">
-					<script>
-						<![CDATA[
+                    </script>
+                </smallButton>
+                <smallButton name="decline" icon="deleteIcon16.png"
+                             state="disabled">
+                    <script>
+                        <![CDATA[
 							this.addOnChangeListener({
 								onClick: function() {
 									if (window.confirm("#{translate(supplyNegotiations.negotiationDetails.window.ribbon.status.cancel.confirm)}")) {
@@ -65,14 +67,14 @@
 								}
 							});
 						]]>
-					</script>
-				</smallButton>
-			</group>
-		</ribbon>
-		
-		<component type="grid" name="negotiationGrid" reference="grid">
-			<script>
- 				<![CDATA[ 
+                    </script>
+                </smallButton>
+            </group>
+        </ribbon>
+
+        <component type="grid" name="negotiationGrid" reference="grid">
+            <script>
+                <![CDATA[
  					var copyBtn = #{window}.getRibbonItem("actions.copy");
 					var deleteBtn = #{window}.getRibbonItem("actions.delete");
 					
@@ -88,8 +90,7 @@
 								declineBtn.disable();
 							} else {
 								var noDifferentStates = true;
- 								if(selectedEntitiesArray.length > 1)
-								{
+ 								if (selectedEntitiesArray.length > 1) {
 									for (var i = selectedEntitiesArray.length-1 ; i > 0 ; i--) {
 										if (selectedEntitiesArray[i-1].fields.state != selectedEntitiesArray[i].fields.state) {
 											noDifferentStates = false;
@@ -128,39 +129,41 @@
 									generateBtn.disable("#{translate(supplyNegotiations.negotiationsList.ribbon.message.negotiationsWithDifferentStatesSelected)}");
 									declineBtn.disable("#{translate(supplyNegotiations.negotiationsList.ribbon.message.negotiationsWithDifferentStatesSelected)}");
 								}
+
  								copyBtn.enable(); 
 							}
 						}
 					}
+
 					this.addOnChangeListener(listener);
 				]]>
-			</script>
-			<option type="column" name="number" fields="number" link="true" width="50" />
-			<option type="column" name="name" fields="name" link="true" width="100" />
+            </script>
 
-			<option type="column" name="farthestLimitDate" fields="farthestLimitDate" width="100" />
-			<option type="column" name="state" fields="state" />
-			<option type="column" name="createDate" fields="createDate" width="100" />
-			<option type="column" name="generateDate" fields="createDate" width="100" />
-			
-			<option type="order" column="number" direction="asc" />
-			
-			<option type="searchable" value="number,name,state,createDate,generateDate" />
-			<option type="orderable" value="number,name,state,createDate,generateDate" />
-			
-			<option type="correspondingView" value="supplyNegotiations/negotiationDetails" />
-			<option type="correspondingComponent" value="form" />
-			
-			<option type="fullscreen" value="true" />
-			<option type="multiselect" value="true" />
-			
-			<listener event="changeState"
-				class="com.qcadoo.mes.supplyNegotiations.states.client.NegotiationViewClient"
-				method="changeState" />			
-		</component>
-		
-		<option type="fixedHeight" value="true" />
-		<option type="header" value="false" />
-	</component>
-	
+            <option type="column" name="number" fields="number" link="true" width="50"/>
+            <option type="column" name="name" fields="name" link="true" width="100"/>
+            <option type="column" name="farthestLimitDate" fields="farthestLimitDate" width="100"/>
+            <option type="column" name="state" fields="state"/>
+            <option type="column" name="createDate" fields="createDate" width="100"/>
+            <option type="column" name="generateDate" fields="createDate" width="100"/>
+
+            <option type="order" column="number" direction="asc"/>
+
+            <option type="searchable" value="number,name,state,createDate,generateDate"/>
+            <option type="orderable" value="number,name,state,createDate,generateDate"/>
+
+            <option type="correspondingView" value="supplyNegotiations/negotiationDetails"/>
+            <option type="correspondingComponent" value="form"/>
+
+            <option type="fullscreen" value="true"/>
+            <option type="multiselect" value="true"/>
+
+            <listener event="changeState"
+                      class="com.qcadoo.mes.supplyNegotiations.states.client.NegotiationViewClient"
+                      method="changeState"/>
+        </component>
+
+        <option type="fixedHeight" value="true"/>
+        <option type="header" value="false"/>
+    </component>
+
 </view>

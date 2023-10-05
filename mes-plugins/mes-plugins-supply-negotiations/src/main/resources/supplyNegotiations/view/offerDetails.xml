@@ -24,19 +24,20 @@
     ***************************************************************************
 
 -->
-<view defaultAuthorizationRole="ROLE_REQUIREMENTS" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
-	xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
-	name="offerDetails" modelName="offer">
+<view defaultAuthorizationRole="ROLE_OFFERS" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns="http://schema.qcadoo.org/view"
+      xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
+      name="offerDetails" modelName="offer">
 
-	<component type="window" name="window" reference="window">
+    <component type="window" name="window" reference="window">
 
-		<ribbon>
-			<template name="standardFormTemplate" />
-			<group name="generate">
-				<bigButton name="generateOffer" icon="pdfIcon24.png"
-					state="enabled">
-					<script>
-						<![CDATA[
+        <ribbon>
+            <template name="standardFormTemplate"/>
+            <group name="generate">
+                <bigButton name="generateOffer" icon="pdfIcon24.png"
+                           state="enabled">
+                    <script>
+                        <![CDATA[
 							this.addOnChangeListener({
 								onClick: function() {
 									#{form}.performEvent({
@@ -49,13 +50,14 @@
 								}
 							});
 						]]>
-					</script>
-				</bigButton>
-			</group>
-			<group name="status">
-				<smallButton name="accept" icon="startIcon16.png" state="disabled">
-					<script>
-						<![CDATA[
+                    </script>
+                </bigButton>
+            </group>
+            <group name="status">
+                <smallButton name="accept" icon="startIcon16.png"
+                             state="disabled">
+                    <script>
+                        <![CDATA[
 							this.addOnChangeListener({
 								onClick: function() {
 									if (window.confirm("#{translate(supplyNegotiations.offerDetails.window.ribbon.status.accept.confirm)}")) {
@@ -64,12 +66,12 @@
 								}
 							});
 						]]>
-					</script>
-				</smallButton>
-				<smallButton name="cancel" icon="deleteIcon16.png"
-					state="disabled">
-					<script>
-						<![CDATA[
+                    </script>
+                </smallButton>
+                <smallButton name="cancel" icon="deleteIcon16.png"
+                             state="disabled">
+                    <script>
+                        <![CDATA[
 							this.addOnChangeListener({
 								onClick: function() {
 									if (window.confirm("#{translate(supplyNegotiations.offerDetails.window.ribbon.status.cancel.confirm)}")) {
@@ -78,58 +80,58 @@
 								}
 							});
 						]]>
-					</script>
-				</smallButton>
-			</group>
-			<group name="requestForQuotations">
-				<bigButton name="showRequestForQuotation" icon="genealogyIcon24.png">
-					<script>
-						<![CDATA[
+                    </script>
+                </smallButton>
+            </group>
+            <group name="requestForQuotations" defaultAuthorizationRole="ROLE_REQUEST_FOR_QUOTATIONS">
+                <bigButton name="showRequestForQuotation" icon="genealogyIcon24.png">
+                    <script>
+                        <![CDATA[
 							this.addOnChangeListener({
 								onClick: function() {
-									if(window.canClose()) {
+									if (window.canClose()) {
 										#{form}.performEvent('showRequestForQuotation', []);
 									}
 								}
 							});		
 						]]>
-					</script>
-				</bigButton>
-			</group>
-			<group name="deliveries">
-				<bigButton name="createDelivery" icon="genealogyIcon24.png">
-					<script>
-						<![CDATA[
+                    </script>
+                </bigButton>
+            </group>
+            <group name="deliveries">
+                <bigButton name="createDelivery" icon="genealogyIcon24.png">
+                    <script>
+                        <![CDATA[
 							this.addOnChangeListener({
 								onClick: function() {
-									if(window.canClose()) {
+									if (window.canClose()) {
 										#{form}.performEvent('createDelivery', []);
 									}
 								}
 							});		
 						]]>
-					</script>
-				</bigButton>
-				<bigButton name="showSupplyItemsForGivenOffer" icon="genealogyIcon24.png">
-					<script>
-						<![CDATA[
+                    </script>
+                </bigButton>
+                <bigButton name="showSupplyItemsForGivenOffer" icon="genealogyIcon24.png">
+                    <script>
+                        <![CDATA[
 							this.addOnChangeListener({
 								onClick: function() {
-									if(window.canClose()) {
+									if (window.canClose()) {
 										#{form}.performEvent('showSupplyItemsForGivenOffer', []);
 									}
 								}
 							});		
 						]]>
-					</script>
-				</bigButton>
-			</group>
-		</ribbon>
+                    </script>
+                </bigButton>
+            </group>
+        </ribbon>
 
-		<windowTab name="mainTab">
-			<component type="form" name="offerForm" reference="form">
-				<script>
-					<![CDATA[
+        <windowTab name="mainTab">
+            <component type="form" name="offerForm" reference="form">
+                <script>
+                    <![CDATA[
 						var deleteBtn = #{window}.getRibbonItem("actions.delete");
 						
 						var acceptBtn = #{window}.getRibbonItem("status.accept");
@@ -196,295 +198,299 @@
 						
 						#{form}.addOnChangeListener(listener);
 					]]>
-				</script>
-				<component type="gridLayout" name="mainTabGridLayout"
-					columns="3" rows="7">
-					<layoutElement column="1" row="1">
-						<component type="input" name="number" field="number"
-							reference="number">
-							<option type="alignment" value="right" />
-						</component>
-					</layoutElement>
-					<layoutElement column="1" row="2" height="2">
-						<component type="textarea" name="name" field="name"
-							reference="name" />
-					</layoutElement>
-					<layoutElement column="1" row="4" height="3">
-						<component type="textarea" name="description" field="description" />
-					</layoutElement>
-					<layoutElement column="1" row="7">
-						<component type="file" name="attachment" field="attachment" />
-					</layoutElement>
-					<layoutElement column="2" row="1">
-						<component type="lookup" name="supplier" reference="supplier"
-							field="supplier">
-							<option type="column" name="name" fields="name" link="true" />
+                </script>
 
-							<option type="searchable" value="name,number" />
-							<option type="orderable" value="name,number" />
+                <component type="gridLayout" name="mainTabGridLayout"
+                           columns="3" rows="7">
+                    <layoutElement column="1" row="1">
+                        <component type="input" name="number" field="number"
+                                   reference="number">
+                            <option type="alignment" value="right"/>
+                        </component>
+                    </layoutElement>
+                    <layoutElement column="1" row="2" height="2">
+                        <component type="textarea" name="name" field="name"
+                                   reference="name"/>
+                    </layoutElement>
+                    <layoutElement column="1" row="4" height="3">
+                        <component type="textarea" name="description" field="description"/>
+                    </layoutElement>
+                    <layoutElement column="1" row="7">
+                        <component type="file" name="attachment" field="attachment"/>
+                    </layoutElement>
+                    <layoutElement column="2" row="1">
+                        <component type="lookup" name="supplier" reference="supplier"
+                                   field="supplier">
+                            <option type="column" name="name" fields="name" link="true"/>
 
-							<option type="expression"
-								value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name" />
-							<option type="fieldCode" value="number" />
+                            <option type="searchable" value="name,number"/>
+                            <option type="orderable" value="name,number"/>
 
-							<listener event="onSelectedEntityChange"
-								class="com.qcadoo.mes.supplyNegotiations.listeners.OfferDetailsListeners"
-								method="fillCompanyFieldsForSupplier" />
-						</component>
-					</layoutElement>
-					<layoutElement column="2" row="2">
-						<component type="calendar" name="offerDate" field="offerDate"
-								   reference="offerDate">
-							<option type="withTimePicker" value="false" />
-						</component>
-					</layoutElement>
-					<layoutElement column="2" row="3" height="2">
-						<component type="borderLayout" name="offeredTimeOfDeliveryBorderLayout">
-							<option type="label" value="offeredTimeOfDeliveryTab" />
-							<component type="gridLayout" name="offeredTimeOfDeliveryGridLayout"
-								columns="1" rows="2">
-								<layoutElement column="1" row="1">
-									<component type="calendar" name="offeredDate" field="offeredDate"
-										reference="offeredDate">
-										<option type="withTimePicker" value="true" />
-									</component>
-								</layoutElement>
-								<layoutElement column="1" row="2">
-									<component type="input" name="workingDaysAfterOrder"
-										field="workingDaysAfterOrder" reference="workingDaysAfterOrder">
-										<option type="alignment" value="right" />
-									</component>
-								</layoutElement>
-							</component>
-						</component>
-					</layoutElement>
-					<layoutElement column="2" row="5">
-						<component type="lookup" name="requestForQuotation"
-							reference="requestForQuotation" field="requestForQuotation">
-							<option type="column" name="name" fields="name" />
+                            <option type="expression"
+                                    value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name"/>
+                            <option type="fieldCode" value="number"/>
 
-							<option type="searchable" value="name,number" />
-							<option type="orderable" value="name,number" />
+                            <listener event="onSelectedEntityChange"
+                                      class="com.qcadoo.mes.supplyNegotiations.listeners.OfferDetailsListeners"
+                                      method="fillCompanyFieldsForSupplier"/>
+                        </component>
+                    </layoutElement>
+                    <layoutElement column="2" row="2">
+                        <component type="calendar" name="offerDate" field="offerDate"
+                                   reference="offerDate">
+                            <option type="withTimePicker" value="false"/>
+                        </component>
+                    </layoutElement>
+                    <layoutElement column="2" row="3" height="2">
+                        <component type="borderLayout" name="offeredTimeOfDeliveryBorderLayout">
+                            <option type="label" value="offeredTimeOfDeliveryTab"/>
+                            <component type="gridLayout" name="offeredTimeOfDeliveryGridLayout"
+                                       columns="1" rows="2">
+                                <layoutElement column="1" row="1">
+                                    <component type="calendar" name="offeredDate" field="offeredDate"
+                                               reference="offeredDate">
+                                        <option type="withTimePicker" value="true"/>
+                                    </component>
+                                </layoutElement>
+                                <layoutElement column="1" row="2">
+                                    <component type="input" name="workingDaysAfterOrder"
+                                               field="workingDaysAfterOrder" reference="workingDaysAfterOrder">
+                                        <option type="alignment" value="right"/>
+                                    </component>
+                                </layoutElement>
+                            </component>
+                        </component>
+                    </layoutElement>
+                    <layoutElement column="2" row="5">
+                        <component type="lookup" name="requestForQuotation"
+                                   reference="requestForQuotation" field="requestForQuotation">
+                            <option type="column" name="name" fields="name"/>
 
-							<option type="expression" value="#number" />
-							<option type="fieldCode" value="number" />
+                            <option type="searchable" value="name,number"/>
+                            <option type="orderable" value="name,number"/>
 
-							<listener
-								class="com.qcadoo.mes.supplyNegotiations.listeners.OfferDetailsListeners"
-								method="fillRequestForQuotationDateField" />
-						</component>
-					</layoutElement>
-					<layoutElement column="2" row="6">
-						<component type="lookup" name="negotiation" reference="negotiation"
-							field="negotiation">
-							<option type="column" name="name" fields="name" />
+                            <option type="expression" value="#number"/>
+                            <option type="fieldCode" value="number"/>
 
-							<option type="searchable" value="name,number" />
-							<option type="orderable" value="name,number" />
+                            <listener event="onSelectedEntityChange"
+                                      class="com.qcadoo.mes.supplyNegotiations.listeners.OfferDetailsListeners"
+                                      method="fillRequestForQuotationDateField"/>
+                        </component>
+                    </layoutElement>
+                    <layoutElement column="2" row="6">
+                        <component type="lookup" name="negotiation" reference="negotiation"
+                                   field="negotiation">
+                            <option type="column" name="name" fields="name"/>
 
-							<option type="expression" value="#number" />
-							<option type="fieldCode" value="number" />
+                            <option type="searchable" value="name,number"/>
+                            <option type="orderable" value="name,number"/>
 
-							<listener
-								class="com.qcadoo.mes.supplyNegotiations.listeners.OfferDetailsListeners"
-								method="fillNegotiationDateField" />
-						</component>
-					</layoutElement>
-					<layoutElement column="3" row="1">
-						<component type="select" name="state" field="state"
-							reference="state" defaultEnabled="never">
-						</component>
-					</layoutElement>
-					<layoutElement column="3" row="2">
-						<component type="gridLayout" name="gridLayoutDeliveryDateBuffer"
-							hasBorders="false" columns="4" rows="1">
-							<layoutElement column="1" row="1" width="3">
-								<component type="input" name="deliveryDateBuffer"
-									reference="deliveryDateBuffer" defaultEnabled="never">
-									<option type="labelWidth" value="40" />
-								</component>
-							</layoutElement>
-							<layoutElement column="4" row="1">
+                            <option type="expression" value="#number"/>
+                            <option type="fieldCode" value="number"/>
+
+                            <listener event="onSelectedEntityChange"
+                                    class="com.qcadoo.mes.supplyNegotiations.listeners.OfferDetailsListeners"
+                                    method="fillNegotiationDateField"/>
+                        </component>
+                    </layoutElement>
+                    <layoutElement column="3" row="1">
+                        <component type="select" name="state" field="state"
+                                   reference="state" defaultEnabled="never">
+                        </component>
+                    </layoutElement>
+                    <layoutElement column="3" row="2">
+                        <component type="gridLayout" name="gridLayoutDeliveryDateBuffer"
+                                   hasBorders="false" columns="4" rows="1">
+                            <layoutElement column="1" row="1" width="3">
+                                <component type="input" name="deliveryDateBuffer"
+                                           reference="deliveryDateBuffer" defaultEnabled="never">
+                                    <option type="labelWidth" value="40"/>
+                                </component>
+                            </layoutElement>
+                            <layoutElement column="4" row="1">
                                 <component type="label" name="deliveryDateBufferDays"
                                            reference="deliveryDateBufferDays" required="false">
-                                    <option type="labelStyle" value="label" />
+                                    <option type="labelStyle" value="label"/>
                                 </component>
-							</layoutElement>
-						</component>
-					</layoutElement>
-					<layoutElement column="3" row="3">
-						<component type="lookup" name="currency" reference="currency"
-								   field="currency">
-							<option type="column" name="currency" fields="currency"
-									link="true"/>
-							<option type="column" name="exchangeRate" fields="exchangeRate"/>
+                            </layoutElement>
+                        </component>
+                    </layoutElement>
+                    <layoutElement column="3" row="3">
+                        <component type="lookup" name="currency" reference="currency"
+                                   field="currency">
+                            <option type="column" name="currency" fields="currency"
+                                    link="true"/>
+                            <option type="column" name="exchangeRate" fields="exchangeRate"/>
 
-							<option type="searchable" value="currency,alphabeticCode"/>
-							<option type="orderable" value="currency,alphabeticCode"/>
+                            <option type="searchable" value="currency,alphabeticCode"/>
+                            <option type="orderable" value="currency,alphabeticCode"/>
 
-							<option type="expression" value="#alphabeticCode + ' - ' + #currency"/>
-							<option type="fieldCode" value="alphabeticCode"/>
+                            <option type="expression" value="#alphabeticCode + ' - ' + #currency"/>
+                            <option type="fieldCode" value="alphabeticCode"/>
 
-							<listener event="onSelectedEntityChange"
-									  class="com.qcadoo.mes.supplyNegotiations.listeners.OfferDetailsListeners"
-									  method="onCurrencyChange"/>
-						</component>
-					</layoutElement>
-					<layoutElement column="3" row="4">
-						<component type="calendar" name="requestForQuotationDate"
-							reference="requestForQuotationDate" defaultEnabled="never">
-							<option type="withTimePicker" value="true" />
-						</component>
-					</layoutElement>
-					<layoutElement column="3" row="5">
-						<component type="calendar" name="negotiationDate"
-							defaultEnabled="never" reference="negotiationDate">
-							<option type="withTimePicker" value="true" />
-						</component>
-					</layoutElement>
-				</component>
+                            <listener event="onSelectedEntityChange"
+                                      class="com.qcadoo.mes.supplyNegotiations.listeners.OfferDetailsListeners"
+                                      method="onCurrencyChange"/>
+                        </component>
+                    </layoutElement>
+                    <layoutElement column="3" row="4">
+                        <component type="calendar" name="requestForQuotationDate"
+                                   reference="requestForQuotationDate" defaultEnabled="never">
+                            <option type="withTimePicker" value="true"/>
+                        </component>
+                    </layoutElement>
+                    <layoutElement column="3" row="5">
+                        <component type="calendar" name="negotiationDate"
+                                   defaultEnabled="never" reference="negotiationDate">
+                            <option type="withTimePicker" value="true"/>
+                        </component>
+                    </layoutElement>
+                </component>
 
-				<option type="header" value="true" />
-				<option type="expression" value="#number" />
+                <option type="header" value="true"/>
+                <option type="expression" value="#number"/>
 
-				<listener event="printOfferReport"
-					class="com.qcadoo.mes.supplyNegotiations.listeners.OfferDetailsListeners"
-					method="printOfferReport" />
-				<listener event="showRequestForQuotation"
-					class="com.qcadoo.mes.supplyNegotiations.listeners.OfferDetailsListeners"
-					method="showRequestForQuotation" />
-				<listener event="createDelivery"
-					class="com.qcadoo.mes.supplyNegotiations.listeners.OfferDetailsListeners"
-					method="createDelivery" />
-				<listener event="showSupplyItemsForGivenOffer"
-					class="com.qcadoo.mes.supplyNegotiations.listeners.OfferDetailsListeners"
-					method="showSupplyItemsForGivenOffer" />
+                <listener event="printOfferReport"
+                          class="com.qcadoo.mes.supplyNegotiations.listeners.OfferDetailsListeners"
+                          method="printOfferReport"/>
+                <listener event="showRequestForQuotation"
+                          class="com.qcadoo.mes.supplyNegotiations.listeners.OfferDetailsListeners"
+                          method="showRequestForQuotation"/>
+                <listener event="createDelivery"
+                          class="com.qcadoo.mes.supplyNegotiations.listeners.OfferDetailsListeners"
+                          method="createDelivery"/>
+                <listener event="showSupplyItemsForGivenOffer"
+                          class="com.qcadoo.mes.supplyNegotiations.listeners.OfferDetailsListeners"
+                          method="showSupplyItemsForGivenOffer"/>
 
-				<listener event="changeState"
-					class="com.qcadoo.mes.supplyNegotiations.states.client.OfferViewClient"
-					method="changeState" />
+                <listener event="changeState"
+                          class="com.qcadoo.mes.supplyNegotiations.states.client.OfferViewClient"
+                          method="changeState"/>
 
-				<listener event="validateColumnsWidthForOffer"
-					class="com.qcadoo.mes.supplyNegotiations.listeners.OfferDetailsListeners"
-					method="validateColumnsWidthForOffer" />
-			</component>
-		</windowTab>
+                <listener event="validateColumnsWidthForOffer"
+                          class="com.qcadoo.mes.supplyNegotiations.listeners.OfferDetailsListeners"
+                          method="validateColumnsWidthForOffer"/>
+            </component>
+        </windowTab>
 
-		<windowTab name="productsTab">
-			<component type="gridLayout" name="productsGridLayout"
-				columns="4" rows="9" hasBorders="false">
-				<layoutElement column="1" row="1">
-					<component type="gridLayout"
-						name="orderedProductsCumulatedTotalPriceGridLayout" hasBorders="false"
-						columns="4" rows="1">
-						<layoutElement column="1" row="1" width="3">
-							<component type="input" name="transportCost" field="#{form}.transportCost">
-								<option type="alignment" value="right" />
-							</component>
-						</layoutElement>
-						<layoutElement column="4" row="1">
-							<component type="input" name="transportCostCurrency"
-								reference="transportCostCurrency" hasLabel="false"
-								defaultEnabled="never">
-								<option type="alignment" value="right" />
-								<option type="boldTextRepresentationOnDisabled" value="true" />
-							</component>
-						</layoutElement>
-					</component>
-				</layoutElement>
-				<layoutElement column="2" row="1">
-					<component type="input" name="offerProductsCumulatedQuantity"
-						field="#{form}.offerProductsCumulatedQuantity" reference="offerProductsCumulatedQuantity"
-						defaultEnabled="never">
-						<option type="alignment" value="right" />
-						<option type="boldTextRepresentationOnDisabled" value="true" />
-					</component>
-				</layoutElement>
-				<layoutElement column="3" row="1">
-					<component type="gridLayout"
-						name="offerProductsCumulatedTotalPriceGridLayout" hasBorders="false"
-						columns="4" rows="1">
-						<layoutElement column="1" row="1" width="3">
-							<component type="input" name="offerProductsCumulatedTotalPrice"
-								field="#{form}.offerProductsCumulatedTotalPrice" reference="offerProductsCumulatedTotalPrice"
-								defaultEnabled="never">
-								<option type="alignment" value="right" />
-								<option type="boldTextRepresentationOnDisabled" value="true" />
-							</component>
-						</layoutElement>
-						<layoutElement column="4" row="1">
-							<component type="input"
-								name="offerProductsCumulatedTotalPriceCurrency" reference="offerProductsCumulatedTotalPriceCurrency"
-								defaultEnabled="never" hasLabel="false">
-								<option type="boldTextRepresentationOnDisabled" value="true" />
-							</component>
-						</layoutElement>
-					</component>
-				</layoutElement>
-				<layoutElement column="1" row="2" height="8" width="4">
-					<component type="grid" name="offerProducts" reference="offerProducts"
-						source="#{form}.offerProducts" defaultEnabled="false">
-						<option type="column" name="succession" fields="succession"
-							width="30" />
-						<option type="column" name="number" fields="product"
-							expression="#product['number']" link="true" />
-						<option type="column" name="name" fields="product"
-							expression="#product['name']" link="true" />
-						<option type="column" name="quantity" fields="quantity" />
-						<option type="column" name="unit" fields="product"
-							expression="#product['unit']" width="70" />
-						<option type="column" name="pricePerUnit" fields="pricePerUnit" />
-						<option type="column" name="totalPrice" fields="totalPrice" />
+        <windowTab name="productsTab">
+            <component type="gridLayout" name="productsGridLayout"
+                       columns="4" rows="9" hasBorders="false">
+                <layoutElement column="1" row="1">
+                    <component type="gridLayout"
+                               name="orderedProductsCumulatedTotalPriceGridLayout" hasBorders="false"
+                               columns="4" rows="1">
+                        <layoutElement column="1" row="1" width="3">
+                            <component type="input" name="transportCost" field="#{form}.transportCost">
+                                <option type="alignment" value="right"/>
+                            </component>
+                        </layoutElement>
+                        <layoutElement column="4" row="1">
+                            <component type="input" name="transportCostCurrency"
+                                       reference="transportCostCurrency" hasLabel="false"
+                                       defaultEnabled="never">
+                                <option type="alignment" value="right"/>
+                                <option type="boldTextRepresentationOnDisabled" value="true"/>
+                            </component>
+                        </layoutElement>
+                    </component>
+                </layoutElement>
+                <layoutElement column="2" row="1">
+                    <component type="input" name="offerProductsCumulatedQuantity"
+                               field="#{form}.offerProductsCumulatedQuantity" reference="offerProductsCumulatedQuantity"
+                               defaultEnabled="never">
+                        <option type="alignment" value="right"/>
+                        <option type="boldTextRepresentationOnDisabled" value="true"/>
+                    </component>
+                </layoutElement>
+                <layoutElement column="3" row="1">
+                    <component type="gridLayout"
+                               name="offerProductsCumulatedTotalPriceGridLayout" hasBorders="false"
+                               columns="4" rows="1">
+                        <layoutElement column="1" row="1" width="3">
+                            <component type="input" name="offerProductsCumulatedTotalPrice"
+                                       field="#{form}.offerProductsCumulatedTotalPrice"
+                                       reference="offerProductsCumulatedTotalPrice"
+                                       defaultEnabled="never">
+                                <option type="alignment" value="right"/>
+                                <option type="boldTextRepresentationOnDisabled" value="true"/>
+                            </component>
+                        </layoutElement>
+                        <layoutElement column="4" row="1">
+                            <component type="input"
+                                       name="offerProductsCumulatedTotalPriceCurrency"
+                                       reference="offerProductsCumulatedTotalPriceCurrency"
+                                       defaultEnabled="never" hasLabel="false">
+                                <option type="boldTextRepresentationOnDisabled" value="true"/>
+                            </component>
+                        </layoutElement>
+                    </component>
+                </layoutElement>
+                <layoutElement column="1" row="2" height="8" width="4">
+                    <component type="grid" name="offerProducts" reference="offerProducts"
+                               source="#{form}.offerProducts" defaultEnabled="false">
+                        <option type="column" name="succession" fields="succession"
+                                width="30"/>
+                        <option type="column" name="number" fields="product"
+                                expression="#product['number']" link="true"/>
+                        <option type="column" name="name" fields="product"
+                                expression="#product['name']" link="true"/>
+                        <option type="column" name="quantity" fields="quantity"/>
+                        <option type="column" name="unit" fields="product"
+                                expression="#product['unit']" width="70"/>
+                        <option type="column" name="pricePerUnit" fields="pricePerUnit"/>
+                        <option type="column" name="totalPrice" fields="totalPrice"/>
 
-						<option type="order" column="succession" direction="asc" />
+                        <option type="order" column="succession" direction="asc"/>
 
-						<option type="searchable"
-							value="number,name,quantity,unit,pricePerUnit,totalPrice" />
-						<option type="orderable"
-							value="succession,number,name,quantity,unit,pricePerUnit,totalPrice" />
+                        <option type="searchable"
+                                value="number,name,quantity,unit,pricePerUnit,totalPrice"/>
+                        <option type="orderable"
+                                value="succession,number,name,quantity,unit,pricePerUnit,totalPrice"/>
 
-						<option type="correspondingView" value="supplyNegotiations/offerProductDetails" />
-						<option type="correspondingComponent" value="form" />
-						<option type="correspondingViewInModal" value="true" />
+                        <option type="correspondingView" value="supplyNegotiations/offerProductDetails"/>
+                        <option type="correspondingComponent" value="form"/>
+                        <option type="correspondingViewInModal" value="true"/>
 
-                        <option type="modalHeight" value="700" />
+                        <option type="modalHeight" value="700"/>
 
-						<option type="creatable" value="true" />
-						<option type="deletable" value="true" />
-						<option type="fullscreen" value="true" />
-						<option type="multiselect" value="true" />
-						<option type="fixedHeight" value="true" />
-					</component>
-				</layoutElement>
-			</component>
-		</windowTab>
+                        <option type="creatable" value="true"/>
+                        <option type="deletable" value="true"/>
+                        <option type="fullscreen" value="true"/>
+                        <option type="multiselect" value="true"/>
+                        <option type="fixedHeight" value="true"/>
+                    </component>
+                </layoutElement>
+            </component>
+        </windowTab>
 
-		<windowTab name="historyTab">
-			<component type="gridLayout" name="loggingsGridLayout"
-				columns="2" rows="1">
-				<layoutElement column="1" row="1">
-					<component type="grid" name="loggingsGrid" reference="loggingsGrid"
-						source="#{form}.stateChanges">
-						<option type="column" name="dateAndTime" fields="dateAndTime" />
-						<option type="column" name="currentState" fields="targetState" />
-						<option type="column" name="worker" fields="worker" />
+        <windowTab name="historyTab">
+            <component type="gridLayout" name="loggingsGridLayout"
+                       columns="2" rows="1">
+                <layoutElement column="1" row="1">
+                    <component type="grid" name="loggingsGrid" reference="loggingsGrid"
+                               source="#{form}.stateChanges">
+                        <option type="column" name="dateAndTime" fields="dateAndTime"/>
+                        <option type="column" name="currentState" fields="targetState"/>
+                        <option type="column" name="worker" fields="worker"/>
 
-						<option type="order" column="dateAndTime" direction="asc" />
+                        <option type="order" column="dateAndTime" direction="asc"/>
 
-						<option type="searchable" value="dateAndTime,targetState,worker" />
-						<option type="orderable" value="dateAndTime,targetState,worker" />
+                        <option type="searchable" value="dateAndTime,targetState,worker"/>
+                        <option type="orderable" value="dateAndTime,targetState,worker"/>
 
-						<option type="fullscreen" value="true" />
-						<option type="multiselect" value="true" />
-					</component>
-				</layoutElement>
-			</component>
-		</windowTab>
-	</component>
+                        <option type="fullscreen" value="true"/>
+                        <option type="multiselect" value="true"/>
+                    </component>
+                </layoutElement>
+            </component>
+        </windowTab>
+    </component>
 
-	<hooks>
-		<beforeRender
-			class="com.qcadoo.mes.supplyNegotiations.hooks.OfferDetailsHooks"
-			method="onBeforeRender" />
-	</hooks>
+    <hooks>
+        <beforeRender
+                class="com.qcadoo.mes.supplyNegotiations.hooks.OfferDetailsHooks"
+                method="onBeforeRender"/>
+    </hooks>
+
 </view>
