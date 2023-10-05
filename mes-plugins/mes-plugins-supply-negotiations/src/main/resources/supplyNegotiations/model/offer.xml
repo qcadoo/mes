@@ -71,6 +71,8 @@
                 method="onCopy"/>
         <onView class="com.qcadoo.mes.supplyNegotiations.hooks.OfferHooks"
                 method="onView"/>
+        <onSave class="com.qcadoo.mes.supplyNegotiations.hooks.OfferHooks"
+                method="onSave"/>
     </hooks>
 
     <identifier expression="#number + ' - ' + #name"/>

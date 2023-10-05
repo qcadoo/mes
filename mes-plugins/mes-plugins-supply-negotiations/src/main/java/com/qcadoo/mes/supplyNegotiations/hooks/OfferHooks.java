@@ -23,10 +23,8 @@
  */
 package com.qcadoo.mes.supplyNegotiations.hooks;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.qcadoo.mes.states.service.StateChangeEntityBuilder;
+import com.qcadoo.mes.supplyNegotiations.SupplyNegotiationsService;
 import com.qcadoo.mes.supplyNegotiations.constants.OfferFields;
 import com.qcadoo.mes.supplyNegotiations.states.constants.OfferState;
 import com.qcadoo.mes.supplyNegotiations.states.constants.OfferStateChangeDescriber;
@@ -35,6 +33,11 @@ import com.qcadoo.mes.supplyNegotiations.util.OfferPricesAndQuantities;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.Objects;
 
 @Service
 public class OfferHooks {
@@ -47,6 +50,9 @@ public class OfferHooks {
 
     @Autowired
     private NumberService numberService;
+
+    @Autowired
+    private SupplyNegotiationsService supplyNegotiationsService;
 
     public void onCreate(final DataDefinition offerDD, final Entity offer) {
         setInitialState(offer);
@@ -70,9 +76,29 @@ public class OfferHooks {
     }
 
     private void fillCumulatedQuantityAndTotalPrice(final Entity offer) {
-        OfferPricesAndQuantities pricesAndQntts = new OfferPricesAndQuantities(offer, numberService);
-        offer.setField(OfferFields.OFFER_PRODUCTS_CUMULATED_QUANTITY, pricesAndQntts.getOfferCumulatedQuantity());
-        offer.setField(OfferFields.OFFER_PRODUCTS_CUMULATED_TOTAL_PRICE, pricesAndQntts.getOfferTotalPrice());
+        OfferPricesAndQuantities offerPricesAndQuantities = new OfferPricesAndQuantities(offer, numberService);
+
+        offer.setField(OfferFields.OFFER_PRODUCTS_CUMULATED_QUANTITY, offerPricesAndQuantities.getOfferCumulatedQuantity());
+        offer.setField(OfferFields.OFFER_PRODUCTS_CUMULATED_TOTAL_PRICE, offerPricesAndQuantities.getOfferTotalPrice());
+    }
+
+    public void onSave(final DataDefinition offerDD, final Entity offer) {
+        checkCurrency(offer);
+    }
+
+    private void checkCurrency(final Entity offer) {
+        Long offerId = offer.getId();
+        Entity currency = offer.getBelongsToField(OfferFields.CURRENCY);
+        List<Entity> offerProducts = offer.getHasManyField(OfferFields.OFFER_PRODUCTS);
+
+        if (Objects.nonNull(offerId)) {
+            Entity offerFromDB = supplyNegotiationsService.getOffer(offerId);
+            Entity currencyFromDB = offerFromDB.getBelongsToField(OfferFields.CURRENCY);
+
+            if (Objects.nonNull(currencyFromDB) && !currencyFromDB.getId().equals(currency.getId()) && !offerProducts.isEmpty()) {
+                offer.addGlobalMessage("supplyNegotiations.offer.currencyChange.offerProductsPriceVerificationRequired", false, false);
+            }
+        }
     }
 
 }

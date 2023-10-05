@@ -23,24 +23,13 @@
  */
 package com.qcadoo.mes.supplyNegotiations.listeners;
 
-import static com.qcadoo.mes.supplyNegotiations.constants.OfferFields.*;
-import static com.qcadoo.mes.supplyNegotiations.constants.OfferProductFields.*;
-import static com.qcadoo.mes.supplyNegotiations.constants.RequestForQuotationFields.DESIRED_DATE;
-import static com.qcadoo.mes.supplyNegotiations.constants.RequestForQuotationFields.REQUEST_FOR_QUOTATION_PRODUCTS;
-import static com.qcadoo.mes.supplyNegotiations.constants.RequestForQuotationProductFields.ORDERED_QUANTITY;
-
-import java.math.BigDecimal;
-import java.util.List;
-import java.util.Map;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.qcadoo.mes.basic.ParameterService;
+import com.qcadoo.mes.basic.util.CurrencyService;
+import com.qcadoo.mes.deliveries.constants.CompanyFieldsD;
 import com.qcadoo.mes.supplyNegotiations.SupplyNegotiationsService;
-import com.qcadoo.mes.supplyNegotiations.constants.SupplyNegotiationsConstants;
+import com.qcadoo.mes.supplyNegotiations.constants.*;
 import com.qcadoo.mes.supplyNegotiations.hooks.RequestForQuotationDetailsHooks;
 import com.qcadoo.mes.supplyNegotiations.print.RequestForQuotationReportPdf;
 import com.qcadoo.model.api.Entity;
@@ -52,13 +41,21 @@ import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
 import com.qcadoo.view.constants.QcadooViewConstants;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import java.math.BigDecimal;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 @Component
 public class RequestForQuotationDetailsListeners {
 
-    private static final Integer REPORT_WIDTH_A4 = 515;
+    private static final Integer L_REPORT_WIDTH_A4 = 515;
 
-    
+    private static final String L_FORM_ID = "form.id";
 
     private static final String L_FILTERS = "filters";
 
@@ -87,6 +84,9 @@ public class RequestForQuotationDetailsListeners {
     @Autowired
     private ParameterService parameterService;
 
+    @Autowired
+    private CurrencyService currencyService;
+
     public void fillBufferForSupplier(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         requestForQuotationDetailsHooks.fillBufferForSupplier(view);
     }
@@ -96,7 +96,7 @@ public class RequestForQuotationDetailsListeners {
     }
 
     public final void printRequestForQuotationReport(final ViewDefinitionState viewDefinitionState, final ComponentState state,
-            final String[] args) {
+                                                     final String[] args) {
         if (state instanceof FormComponent) {
             state.performEvent(viewDefinitionState, "save", args);
 
@@ -112,72 +112,50 @@ public class RequestForQuotationDetailsListeners {
 
     public final void createOffer(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         FormComponent requestForQuotationForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
+
         Long requestForQuotationId = requestForQuotationForm.getEntityId();
 
-        if (requestForQuotationId == null) {
+        if (Objects.isNull(requestForQuotationId)) {
             return;
         }
 
-        Entity offer = createOffer(supplyNegotiationsService.getRequestForQuotation(requestForQuotationId));
+        Entity requestForQuotation = supplyNegotiationsService.getRequestForQuotation(requestForQuotationId);
 
-        if (offer == null) {
+        Entity offer = createOffer(requestForQuotation);
+
+        if (Objects.isNull(offer)) {
             return;
         }
 
         Long offerId = offer.getId();
 
         Map<String, Object> parameters = Maps.newHashMap();
-        parameters.put("form.id", offerId);
 
+        parameters.put(L_FORM_ID, offerId);
         parameters.put(L_WINDOW_ACTIVE_MENU, "requirements.offer");
 
         String url = "../page/supplyNegotiations/offerDetails.html";
         view.redirectTo(url, false, true, parameters);
     }
 
-    public final void showOffersForGivenRequestForQuotation(final ViewDefinitionState view, final ComponentState state,
-            final String[] args) {
-        FormComponent requestForQuotationForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
-        Long requestForQuotationId = requestForQuotationForm.getEntityId();
-
-        if (requestForQuotationId == null) {
-            return;
-        }
-
-        Entity requestForQuotation = requestForQuotationForm.getEntity();
-
-        String requestForQuotationNumber = requestForQuotation.getStringField(NUMBER);
-
-        if (requestForQuotationNumber == null) {
-            return;
-        }
-
-        Map<String, String> filters = Maps.newHashMap();
-        filters.put("requestForQuotationNumber", requestForQuotationNumber);
-
-        Map<String, Object> gridOptions = Maps.newHashMap();
-        gridOptions.put(L_FILTERS, filters);
-
-        Map<String, Object> parameters = Maps.newHashMap();
-        parameters.put(L_GRID_OPTIONS, gridOptions);
-
-        parameters.put(L_WINDOW_ACTIVE_MENU, "requirements.offer");
-
-        String url = "../page/supplyNegotiations/offersList.html";
-        view.redirectTo(url, false, true, parameters);
-    }
-
     private Entity createOffer(final Entity requestForQuotation) {
+        String number = numberGeneratorService.generateNumber(SupplyNegotiationsConstants.PLUGIN_IDENTIFIER, SupplyNegotiationsConstants.MODEL_OFFER);
+        Entity supplier = requestForQuotation.getBelongsToField(RequestForQuotationFields.SUPPLIER);
+        Date offeredDate = requestForQuotation.getDateField(RequestForQuotationFields.DESIRED_DATE);
+        Integer workingDaysAfterOrder = requestForQuotation.getIntegerField(RequestForQuotationFields.WORKING_DAYS_AFTER_ORDER);
+        Entity negotiation = requestForQuotation.getBelongsToField(RequestForQuotationFields.NEGOTIATION);
+        List<Entity> requestForQuotationProducts = requestForQuotation.getHasManyField(RequestForQuotationFields.REQUEST_FOR_QUOTATION_PRODUCTS);
+
         Entity offer = supplyNegotiationsService.getOfferDD().create();
 
-        offer.setField(NUMBER, numberGeneratorService.generateNumber(SupplyNegotiationsConstants.PLUGIN_IDENTIFIER,
-                SupplyNegotiationsConstants.MODEL_OFFER));
-        offer.setField(SUPPLIER, requestForQuotation.getBelongsToField(SUPPLIER));
-        offer.setField(OFFERED_DATE, requestForQuotation.getField(DESIRED_DATE));
-        offer.setField(WORKING_DAYS_AFTER_ORDER, requestForQuotation.getField(WORKING_DAYS_AFTER_ORDER));
-        offer.setField(OFFER_PRODUCTS, createOfferProducts(requestForQuotation.getHasManyField(REQUEST_FOR_QUOTATION_PRODUCTS)));
-        offer.setField(REQUEST_FOR_QUOTATION, requestForQuotation);
-        offer.setField(NEGOTIATION, requestForQuotation.getBelongsToField(NEGOTIATION));
+        offer.setField(OfferFields.NUMBER, number);
+        offer.setField(OfferFields.SUPPLIER, supplier);
+        offer.setField(OfferFields.OFFERED_DATE, offeredDate);
+        offer.setField(OfferFields.WORKING_DAYS_AFTER_ORDER, workingDaysAfterOrder);
+        offer.setField(OfferFields.OFFER_PRODUCTS, createOfferProducts(requestForQuotationProducts));
+        offer.setField(OfferFields.REQUEST_FOR_QUOTATION, requestForQuotation);
+        offer.setField(OfferFields.NEGOTIATION, negotiation);
+        offer.setField(OfferFields.CURRENCY, getCurrency(supplier));
 
         offer = offer.getDataDefinition().save(offer);
 
@@ -197,19 +175,72 @@ public class RequestForQuotationDetailsListeners {
     private Entity createOfferProduct(final Entity requestForQuotationProduct) {
         Entity offerProduct = supplyNegotiationsService.getOfferProductDD().create();
 
-        offerProduct.setField(PRODUCT, requestForQuotationProduct.getBelongsToField(PRODUCT));
-        offerProduct.setField(QUANTITY, numberService.setScaleWithDefaultMathContext(requestForQuotationProduct.getDecimalField(ORDERED_QUANTITY)));
-        offerProduct.setField(TOTAL_PRICE, numberService.setScaleWithDefaultMathContext(BigDecimal.ZERO));
-        offerProduct.setField(PRICE_PER_UNIT, numberService.setScaleWithDefaultMathContext(BigDecimal.ZERO));
+        offerProduct.setField(OfferProductFields.PRODUCT, requestForQuotationProduct.getBelongsToField(RequestForQuotationProductFields.PRODUCT));
+        offerProduct.setField(OfferProductFields.QUANTITY, numberService.setScaleWithDefaultMathContext(requestForQuotationProduct.getDecimalField(RequestForQuotationProductFields.ORDERED_QUANTITY)));
+        offerProduct.setField(OfferProductFields.TOTAL_PRICE, numberService.setScaleWithDefaultMathContext(BigDecimal.ZERO));
+        offerProduct.setField(OfferProductFields.PRICE_PER_UNIT, numberService.setScaleWithDefaultMathContext(BigDecimal.ZERO));
 
         return offerProduct;
     }
 
+    private Entity getCurrency(final Entity supplier) {
+        Entity currency = null;
+
+        if (Objects.nonNull(supplier)) {
+            currency = supplier.getBelongsToField(CompanyFieldsD.CURRENCY);
+        }
+
+        if (Objects.isNull(currency)) {
+            currency = currencyService.getCurrentCurrency();
+        }
+
+        return currency;
+    }
+
+    public final void showOffersForGivenRequestForQuotation(final ViewDefinitionState view, final ComponentState state,
+                                                            final String[] args) {
+        FormComponent requestForQuotationForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
+        Long requestForQuotationId = requestForQuotationForm.getEntityId();
+
+        if (Objects.isNull(requestForQuotationId)) {
+            return;
+        }
+
+        Entity requestForQuotation = requestForQuotationForm.getEntity();
+
+        String requestForQuotationNumber = requestForQuotation.getStringField(RequestForQuotationFields.NUMBER);
+
+        if (Objects.isNull(requestForQuotationNumber)) {
+            return;
+        }
+
+        Map<String, String> filters = Maps.newHashMap();
+
+        filters.put("requestForQuotationNumber", requestForQuotationNumber);
+
+        Map<String, Object> gridOptions = Maps.newHashMap();
+
+        gridOptions.put(L_FILTERS, filters);
+
+        Map<String, Object> parameters = Maps.newHashMap();
+
+        parameters.put(L_GRID_OPTIONS, gridOptions);
+        parameters.put(L_WINDOW_ACTIVE_MENU, "requirements.offer");
+
+        String url = "../page/supplyNegotiations/offersList.html";
+        view.redirectTo(url, false, true, parameters);
+    }
+
     public void validateColumnsWidthForRequest(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        Long requestForQuotationId = ((FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM)).getEntity().getId();
+        FormComponent requestForQuotationForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
+
+        Long requestForQuotationId = requestForQuotationForm.getEntityId();
+
         Entity request = supplyNegotiationsService.getRequestForQuotation(requestForQuotationId);
+
         List<String> columnNames = requestForQuotationReportPdf.getUsedColumnsInRequestReport(request);
-        if (!pdfHelper.validateReportColumnWidths(REPORT_WIDTH_A4, parameterService.getReportColumnWidths(), columnNames)) {
+
+        if (!pdfHelper.validateReportColumnWidths(L_REPORT_WIDTH_A4, parameterService.getReportColumnWidths(), columnNames)) {
             state.addMessage("deliveries.delivery.printOrderReport.columnsWidthIsGreaterThenMax", MessageType.INFO, false);
         }
     }

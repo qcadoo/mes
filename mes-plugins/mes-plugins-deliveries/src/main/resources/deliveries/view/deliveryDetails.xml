@@ -629,10 +629,6 @@
 
                             <option type="expression" value="#alphabeticCode + ' - ' + #currency"/>
                             <option type="fieldCode" value="alphabeticCode"/>
-
-                            <listener event="onSelectedEntityChange"
-                                      class="com.qcadoo.mes.deliveries.listeners.DeliveryDetailsListeners"
-                                      method="onCurrencyChange"/>
                         </component>
                     </layoutElement>
                 </component>
