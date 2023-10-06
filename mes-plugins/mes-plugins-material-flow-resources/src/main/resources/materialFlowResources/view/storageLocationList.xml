@@ -61,15 +61,16 @@
                     expression="#product['number']"/>
             <option type="column" name="productName" fields="product"
                     expression="#product['name']"/>
-
+            <option type="column" name="placeStorageLocation" fields="placeStorageLocation"/>
+            <option type="column" name="maximumNumberOfPallets" fields="maximumNumberOfPallets"/>
             <option type="column" name="highStorageLocation" fields="highStorageLocation"/>
 
             <option type="order" column="number" direction="desc" width="200"/>
 
             <option type="searchable"
-                    value="number,locationNumber,locationName,productNumber,productName,highStorageLocation"/>
+                    value="number,locationNumber,locationName,productNumber,productName,placeStorageLocation,maximumNumberOfPallets,highStorageLocation"/>
             <option type="orderable"
-                    value="number,locationNumber,locationName,productNumber,productName,highStorageLocation"/>
+                    value="number,locationNumber,locationName,productNumber,productName,placeStorageLocation,maximumNumberOfPallets,highStorageLocation"/>
 
             <option type="correspondingView" value="materialFlowResources/storageLocationsDetails"/>
             <option type="correspondingComponent" value="form"/>
