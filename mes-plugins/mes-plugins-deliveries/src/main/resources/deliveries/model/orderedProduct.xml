@@ -75,10 +75,6 @@
 
         <datetime name="pickingDate" copyable="false"/>
         <belongsTo name="pickingWorker" model="staff" plugin="basic" copyable="false"/>
-        <belongsTo name="wmsStorageLocation" model="storageLocation" plugin="materialFlowResources" copyable="false"/>
-        <decimal name="wmsDeliveredQuantity" copyable="false">
-            <validatesRange from="0"/>
-        </decimal>
     </fields>
 
     <hooks>
