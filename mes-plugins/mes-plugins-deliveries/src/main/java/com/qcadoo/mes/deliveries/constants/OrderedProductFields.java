@@ -67,8 +67,4 @@ public final class OrderedProductFields {
 
     public static final String PICKING_WORKER = "pickingWorker";
 
-    public static final String WMS_STORAGE_LOCATION = "wmsStorageLocation";
-
-    public static final String WMS_DELIVERED_QUANTITY = "wmsDeliveredQuantity";
-
 }
