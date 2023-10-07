@@ -27,7 +27,8 @@ import com.google.common.collect.ComparisonChain;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.lowagie.text.*;
-import com.lowagie.text.pdf.*;
+import com.lowagie.text.pdf.PdfPCell;
+import com.lowagie.text.pdf.PdfPTable;
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.advancedGenealogy.constants.BatchFields;
 import com.qcadoo.mes.basic.constants.ProductFields;
@@ -43,10 +44,9 @@ import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
 import com.qcadoo.model.api.search.SearchCriterion;
 import com.qcadoo.model.api.search.SearchRestrictions;
-import com.qcadoo.report.api.ColorUtils;
 import com.qcadoo.report.api.FontUtils;
 import com.qcadoo.report.api.pdf.HeaderAlignment;
-import com.qcadoo.report.api.pdf.PdfDocumentWithWriterService;
+import com.qcadoo.report.api.pdf.PdfDocumentService;
 import com.qcadoo.report.api.pdf.PdfHelper;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,7 +56,7 @@ import java.util.List;
 import java.util.*;
 
 @Service
-public class DispositionOrderPdfService extends PdfDocumentWithWriterService {
+public class DispositionOrderPdfService extends PdfDocumentService {
 
     private static final String L_POSITION_HEADER_PREFIX = "materialFlowResources.dispositionOrder.positionsHeader.";
 
@@ -91,38 +91,7 @@ public class DispositionOrderPdfService extends PdfDocumentWithWriterService {
     }
 
     @Override
-    protected void buildPdfContent(final PdfWriter writer, final Document document, final Entity entity, final Locale locale) throws DocumentException {
-
-        class DispositionOrderHeader extends PdfPageEventHelper {
-
-            @Override
-            public void onEndPage(final PdfWriter writer, final Document document) {
-                try {
-                    PdfContentByte cb = writer.getDirectContent();
-
-                    cb.saveState();
-
-                    float textBase = document.top();
-
-                    cb.setColorFill(ColorUtils.getLightColor());
-                    cb.setColorStroke(ColorUtils.getLightColor());
-                    cb.beginText();
-                    cb.setFontAndSize(FontUtils.getDejavu(), 7);
-
-                    cb.setTextMatrix(document.left(), textBase + 20);
-                    cb.showText((translationService.translate(L_PZ, locale) + ": " + DocumentDataProvider.pzLocation(entity)));
-                    cb.endText();
-                    cb.stroke();
-                    cb.restoreState();
-                } catch (Exception ex) {
-                    throw new RuntimeException(ex);
-                }
-
-            }
-        }
-
-        writer.setPageEvent(new DispositionOrderHeader());
-
+    protected void buildPdfContent(final Document document, final Entity entity, final Locale locale) throws DocumentException {
         String documentHeader = getDocumentHeader(entity, locale);
 
         pdfHelper.addDocumentHeader(document, "", documentHeader, "", new Date());
@@ -132,7 +101,6 @@ public class DispositionOrderPdfService extends PdfDocumentWithWriterService {
         addPlaceForComments(document, locale);
         addPlaceForSignature(document, locale);
     }
-
 
     private void addHeaderTable(final Document document, final Entity entity, final Locale locale) throws DocumentException {
         PdfPTable table = pdfHelper.createPanelTable(2);
