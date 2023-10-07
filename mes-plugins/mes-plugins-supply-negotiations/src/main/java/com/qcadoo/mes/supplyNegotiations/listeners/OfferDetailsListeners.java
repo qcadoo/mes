@@ -28,9 +28,11 @@ import com.google.common.collect.Maps;
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.basic.constants.UnitConversionItemFieldsB;
+import com.qcadoo.mes.basic.util.CurrencyService;
 import com.qcadoo.mes.deliveries.DeliveriesService;
 import com.qcadoo.mes.deliveries.constants.CompanyFieldsD;
 import com.qcadoo.mes.deliveries.constants.DeliveriesConstants;
+import com.qcadoo.mes.deliveries.constants.DeliveryFields;
 import com.qcadoo.mes.deliveries.constants.OrderedProductFields;
 import com.qcadoo.mes.supplyNegotiations.SupplyNegotiationsService;
 import com.qcadoo.mes.supplyNegotiations.constants.OfferFields;
@@ -61,14 +63,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-import static com.qcadoo.mes.deliveries.constants.DeliveryFields.NUMBER;
-import static com.qcadoo.mes.deliveries.constants.DeliveryFields.ORDERED_PRODUCTS;
-import static com.qcadoo.mes.deliveries.constants.DeliveryFields.SUPPLIER;
-import static com.qcadoo.mes.deliveries.constants.DeliveryFields.*;
-import static com.qcadoo.mes.supplyNegotiations.constants.OfferFields.*;
-
 @Service
 public class OfferDetailsListeners {
+
+    private static final Integer L_REPORT_WIDTH_A4 = 515;
+
+    private static final String L_FORM_ID = "form.id";
 
     private static final String L_FILTERS = "filters";
 
@@ -76,24 +76,7 @@ public class OfferDetailsListeners {
 
     private static final String L_WINDOW_ACTIVE_MENU = "window.activeMenu";
 
-    private static final Integer L_REPORT_WIDTH_A4 = 515;
-
     private static final String L_DELIVERY_DATE_BUFFER = "deliveryDateBuffer";
-
-    @Autowired
-    private OfferReportPdf offerReportPdf;
-
-    @Autowired
-    private PdfHelper pdfHelper;
-
-    @Autowired
-    private SupplyNegotiationsService supplyNegotiationsService;
-
-    @Autowired
-    private DeliveriesService deliveriesService;
-
-    @Autowired
-    private OfferDetailsHooks offerDetailsHooks;
 
     @Autowired
     private NumberGeneratorService numberGeneratorService;
@@ -105,7 +88,25 @@ public class OfferDetailsListeners {
     private ParameterService parameterService;
 
     @Autowired
+    private CurrencyService currencyService;
+
+    @Autowired
     private UnitConversionService unitConversionService;
+
+    @Autowired
+    private PdfHelper pdfHelper;
+
+    @Autowired
+    private OfferReportPdf offerReportPdf;
+
+    @Autowired
+    private SupplyNegotiationsService supplyNegotiationsService;
+
+    @Autowired
+    private DeliveriesService deliveriesService;
+
+    @Autowired
+    private OfferDetailsHooks offerDetailsHooks;
 
     public void fillCompanyFieldsForSupplier(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         LookupComponent supplierLookup = (LookupComponent) view.getComponentByReference(OfferFields.SUPPLIER);
@@ -163,23 +164,23 @@ public class OfferDetailsListeners {
         FormComponent offerForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         Long offerId = offerForm.getEntityId();
 
-        if (offerId == null) {
+        if (Objects.isNull(offerId)) {
             return;
         }
 
         Entity offer = offerForm.getEntity();
 
-        Entity requestForQuotation = offer.getBelongsToField(REQUEST_FOR_QUOTATION);
+        Entity requestForQuotation = offer.getBelongsToField(OfferFields.REQUEST_FOR_QUOTATION);
 
-        if (requestForQuotation == null) {
+        if (Objects.isNull(requestForQuotation)) {
             return;
         }
 
         Long requestForQuotationId = requestForQuotation.getId();
 
         Map<String, Object> parameters = Maps.newHashMap();
-        parameters.put("form.id", requestForQuotationId);
 
+        parameters.put(L_FORM_ID, requestForQuotationId);
         parameters.put(L_WINDOW_ACTIVE_MENU, "requirements.requestsForQuotation");
 
         String url = "../page/supplyNegotiations/requestForQuotationDetails.html";
@@ -190,7 +191,7 @@ public class OfferDetailsListeners {
         FormComponent offerForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         Long offerId = offerForm.getEntityId();
 
-        if (offerId == null) {
+        if (Objects.isNull(offerId)) {
             return;
         }
 
@@ -198,13 +199,13 @@ public class OfferDetailsListeners {
 
         Long deliveryId = delivery.getId();
 
-        if (deliveryId == null) {
+        if (Objects.isNull(deliveryId)) {
             return;
         }
 
         Map<String, Object> parameters = Maps.newHashMap();
-        parameters.put("form.id", deliveryId);
 
+        parameters.put(L_FORM_ID, deliveryId);
         parameters.put(L_WINDOW_ACTIVE_MENU, "requirements.deliveries");
 
         String url = "../page/deliveries/deliveryDetails.html";
@@ -215,27 +216,29 @@ public class OfferDetailsListeners {
         FormComponent offerForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         Long offerId = offerForm.getEntityId();
 
-        if (offerId == null) {
+        if (Objects.isNull(offerId)) {
             return;
         }
 
         Entity offer = offerForm.getEntity();
 
-        String offerNumber = offer.getStringField(NUMBER);
+        String offerNumber = offer.getStringField(OfferFields.NUMBER);
 
-        if (offerNumber == null) {
+        if (Objects.isNull(offerNumber)) {
             return;
         }
 
         Map<String, String> filters = Maps.newHashMap();
+
         filters.put("offerNumber", offerNumber);
 
         Map<String, Object> gridOptions = Maps.newHashMap();
+
         gridOptions.put(L_FILTERS, filters);
 
         Map<String, Object> parameters = Maps.newHashMap();
-        parameters.put(L_GRID_OPTIONS, gridOptions);
 
+        parameters.put(L_GRID_OPTIONS, gridOptions);
         parameters.put(L_WINDOW_ACTIVE_MENU, "requirements.supplyItems");
 
         String url = "../page/deliveries/supplyItems.html";
@@ -243,14 +246,19 @@ public class OfferDetailsListeners {
     }
 
     private Entity createDelivery(final Entity offer) {
+        String number = numberGeneratorService.generateNumber(DeliveriesConstants.PLUGIN_IDENTIFIER, DeliveriesConstants.MODEL_DELIVERY);
+        Entity supplier = offer.getBelongsToField(OfferFields.SUPPLIER);
+        Object deliveryDate = offer.getField(OfferFields.OFFERED_DATE);
+        List<Entity> offerProducts = offer.getHasManyField(OfferFields.OFFER_PRODUCTS);
+
         Entity delivery = deliveriesService.getDeliveryDD().create();
 
-        delivery.setField(NUMBER,
-                numberGeneratorService.generateNumber(DeliveriesConstants.PLUGIN_IDENTIFIER, DeliveriesConstants.MODEL_DELIVERY));
-        delivery.setField(SUPPLIER, offer.getBelongsToField(SUPPLIER));
-        delivery.setField(DELIVERY_DATE, offer.getField(OFFERED_DATE));
-        delivery.setField(ORDERED_PRODUCTS, createOrderedProducts(offer.getHasManyField(OFFER_PRODUCTS)));
-        delivery.setField(EXTERNAL_SYNCHRONIZED, true);
+        delivery.setField(DeliveryFields.NUMBER, number);
+        delivery.setField(DeliveryFields.SUPPLIER, supplier);
+        delivery.setField(DeliveryFields.DELIVERY_DATE, deliveryDate);
+        delivery.setField(DeliveryFields.EXTERNAL_SYNCHRONIZED, true);
+        delivery.setField(DeliveryFields.ORDERED_PRODUCTS, createOrderedProducts(offerProducts));
+        delivery.setField(DeliveryFields.CURRENCY, getCurrency(supplier));
 
         delivery = delivery.getDataDefinition().save(delivery);
 
@@ -268,35 +276,39 @@ public class OfferDetailsListeners {
     }
 
     private Entity createOrderedProduct(final Entity offerProduct) {
+        Entity product = offerProduct.getBelongsToField(OfferProductFields.PRODUCT);
+        Entity offer = offerProduct.getBelongsToField(OfferProductFields.OFFER);
+        BigDecimal orderedQuantity = offerProduct.getDecimalField(OfferProductFields.QUANTITY);
+        BigDecimal pricePerUnit = offerProduct.getDecimalField(OfferProductFields.PRICE_PER_UNIT);
+        BigDecimal totalPrice = offerProduct.getDecimalField(OfferProductFields.TOTAL_PRICE);
+        BigDecimal conversion = getConversion(product);
+        BigDecimal additionalQuantity = orderedQuantity.multiply(conversion, numberService.getMathContext());
+
         Entity orderedProduct = deliveriesService.getOrderedProductDD().create();
 
-        BigDecimal orderedQuantity = numberService.setScaleWithDefaultMathContext(offerProduct.getDecimalField(OfferProductFields.QUANTITY));
-        Entity product = offerProduct.getBelongsToField(OfferProductFields.PRODUCT);
-        BigDecimal conversion = getConversion(product);
-
         orderedProduct.setField(OrderedProductFields.PRODUCT, product);
-        orderedProduct.setField(OrderedProductFields.ORDERED_QUANTITY, orderedQuantity);
-        orderedProduct.setField(OrderedProductFieldsSN.OFFER, offerProduct.getBelongsToField(OfferProductFields.OFFER));
-        orderedProduct.setField(OrderedProductFields.PRICE_PER_UNIT,
-                numberService.setScaleWithDefaultMathContext(offerProduct.getDecimalField(OfferProductFields.PRICE_PER_UNIT)));
-        orderedProduct.setField(OrderedProductFields.TOTAL_PRICE,
-                numberService.setScaleWithDefaultMathContext(offerProduct.getDecimalField(OfferProductFields.TOTAL_PRICE)));
-
+        orderedProduct.setField(OrderedProductFieldsSN.OFFER, offer);
+        orderedProduct.setField(OrderedProductFields.ORDERED_QUANTITY, numberService.setScaleWithDefaultMathContext(orderedQuantity));
+        orderedProduct.setField(OrderedProductFields.PRICE_PER_UNIT, numberService.setScaleWithDefaultMathContext(pricePerUnit));
+        orderedProduct.setField(OrderedProductFields.TOTAL_PRICE, numberService.setScaleWithDefaultMathContext(totalPrice));
         orderedProduct.setField(OrderedProductFields.CONVERSION, conversion);
-        orderedProduct.setField(OrderedProductFields.ADDITIONAL_QUANTITY, orderedQuantity.multiply(conversion, numberService.getMathContext()));
+        orderedProduct.setField(OrderedProductFields.ADDITIONAL_QUANTITY, additionalQuantity);
 
         return orderedProduct;
     }
 
-    private BigDecimal getConversion(Entity product) {
+    private BigDecimal getConversion(final Entity product) {
         String unit = product.getStringField(ProductFields.UNIT);
         String additionalUnit = product.getStringField(ProductFields.ADDITIONAL_UNIT);
-        if (additionalUnit == null) {
+
+        if (Objects.isNull(additionalUnit)) {
             return BigDecimal.ONE;
         }
+
         PossibleUnitConversions unitConversions = unitConversionService.getPossibleConversions(unit,
                 searchCriteriaBuilder -> searchCriteriaBuilder.add(SearchRestrictions.belongsTo(
                         UnitConversionItemFieldsB.PRODUCT, product)));
+
         if (unitConversions.isDefinedFor(additionalUnit)) {
             return unitConversions.asUnitToConversionMap().get(additionalUnit);
         } else {
@@ -304,12 +316,32 @@ public class OfferDetailsListeners {
         }
     }
 
+    private Entity getCurrency(final Entity supplier) {
+        Entity currency = null;
+
+        if (Objects.nonNull(supplier)) {
+            currency = supplier.getBelongsToField(CompanyFieldsD.CURRENCY);
+        }
+
+        if (Objects.isNull(currency)) {
+            currency = currencyService.getCurrentCurrency();
+        }
+
+        return currency;
+    }
+
     public void validateColumnsWidthForOffer(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        Long offerId = ((FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM)).getEntity().getId();
+        FormComponent requestForQuotationForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
+
+        Long offerId = requestForQuotationForm.getEntity().getId();
+
         Entity offer = supplyNegotiationsService.getOffer(offerId);
+
         List<String> columnNames = offerReportPdf.getUsedColumnsInOfferReport(offer);
+
         if (!pdfHelper.validateReportColumnWidths(L_REPORT_WIDTH_A4, parameterService.getReportColumnWidths(), columnNames)) {
             state.addMessage("deliveries.delivery.printOrderReport.columnsWidthIsGreaterThenMax", MessageType.INFO, false);
         }
     }
+
 }

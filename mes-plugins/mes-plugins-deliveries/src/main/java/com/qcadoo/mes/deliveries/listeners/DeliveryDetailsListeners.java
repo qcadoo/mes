@@ -73,9 +73,15 @@ public class DeliveryDetailsListeners {
 
     private static final Logger LOG = LoggerFactory.getLogger(DeliveryDetailsListeners.class);
 
-    private static final String L_ORDERED_PRODUCTS_CUMULATED_TOTAL_PRICE = "orderedProductsCumulatedTotalPrice";
+    private static final Integer L_REPORT_WIDTH_A4 = 515;
+
+    private static final String L_FORM_ID = "form.id";
 
     private static final String L_WINDOW_ACTIVE_MENU = "window.activeMenu";
+
+    private static final String L_DELIVERY_ID = "delivery.id";
+
+    private static final String L_ORDERED_PRODUCTS_CUMULATED_TOTAL_PRICE = "orderedProductsCumulatedTotalPrice";
 
     private static final String L_PRODUCT = "product";
 
@@ -83,46 +89,44 @@ public class DeliveryDetailsListeners {
 
     private static final String L_OFFER = "offer";
 
-    private static final Integer L_REPORT_WIDTH_A4 = 515;
-
     @Autowired
-    private CurrencyService currencyService;
-
-    @Autowired
-    private DeliveriesService deliveriesService;
-
-    @Autowired
-    private NumberService numberService;
+    private DataDefinitionService dataDefinitionService;
 
     @Autowired
     private NumberGeneratorService numberGeneratorService;
 
     @Autowired
-    private OrderReportPdf orderReportPdf;
-
-    @Autowired
-    private PdfHelper pdfHelper;
+    private NumberService numberService;
 
     @Autowired
     private ParameterService parameterService;
 
     @Autowired
-    private DeliveryReportPdf deliveryReportPdf;
-
-    @Autowired
-    private DataDefinitionService dataDefinitionService;
-
-    @Autowired
-    private ReservationService reservationService;
-
-    @Autowired
-    private DeliveredProductMultiPositionService deliveredProductMultiPositionService;
+    private CurrencyService currencyService;
 
     @Autowired
     private UnitConversionService unitConversionService;
 
     @Autowired
     private FileService fileService;
+
+    @Autowired
+    private PdfHelper pdfHelper;
+
+    @Autowired
+    private DeliveryReportPdf deliveryReportPdf;
+
+    @Autowired
+    private OrderReportPdf orderReportPdf;
+
+    @Autowired
+    private DeliveriesService deliveriesService;
+
+    @Autowired
+    private ReservationService reservationService;
+
+    @Autowired
+    private DeliveredProductMultiPositionService deliveredProductMultiPositionService;
 
     @Autowired
     private CalculationQuantityService calculationQuantityService;
@@ -170,7 +174,7 @@ public class DeliveryDetailsListeners {
                     orderedProduct.setField(OrderedProductFields.TOTAL_PRICE, null);
                 }
 
-                Entity lastPurchaseCostCurrency  = product.getBelongsToField(ProductFieldsCNFP.LAST_PURCHASE_COST_CURRENCY);
+                Entity lastPurchaseCostCurrency = product.getBelongsToField(ProductFieldsCNFP.LAST_PURCHASE_COST_CURRENCY);
 
                 pricePerUnit = getPricePerUnit(currency, plnCurrency, product, productsToMessage, lastPurchaseCostCurrency,
                         lastPurchaseCost);
@@ -648,7 +652,7 @@ public class DeliveryDetailsListeners {
 
             Map<String, Object> parameters = Maps.newHashMap();
 
-            parameters.put("form.id", relatedDeliveryId);
+            parameters.put(L_FORM_ID, relatedDeliveryId);
             parameters.put(L_WINDOW_ACTIVE_MENU, "requirements.deliveries");
 
             String url = "../page/deliveries/deliveryDetails.html";
@@ -855,7 +859,7 @@ public class DeliveryDetailsListeners {
 
         Map<String, Object> parameters = Maps.newHashMap();
 
-        parameters.put("delivery.id", deliveryId);
+        parameters.put(L_DELIVERY_ID, deliveryId);
         parameters.put(L_WINDOW_ACTIVE_MENU, "requirements.deliveries");
 
         String url = "../page/deliveries/deliveriesList.html";
@@ -878,7 +882,7 @@ public class DeliveryDetailsListeners {
 
         Map<String, Object> parameters = Maps.newHashMap();
 
-        parameters.put("form.id", product.getId());
+        parameters.put(L_FORM_ID, product.getId());
         parameters.put(L_WINDOW_ACTIVE_MENU, "basic.products");
 
         String url = "../page/basic/productDetails.html";
