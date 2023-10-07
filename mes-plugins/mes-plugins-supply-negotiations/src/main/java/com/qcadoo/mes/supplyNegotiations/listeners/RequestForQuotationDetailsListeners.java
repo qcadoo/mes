@@ -64,16 +64,16 @@ public class RequestForQuotationDetailsListeners {
     private static final String L_WINDOW_ACTIVE_MENU = "window.activeMenu";
 
     @Autowired
-    private SupplyNegotiationsService supplyNegotiationsService;
-
-    @Autowired
-    private RequestForQuotationDetailsHooks requestForQuotationDetailsHooks;
-
-    @Autowired
     private NumberGeneratorService numberGeneratorService;
 
     @Autowired
     private NumberService numberService;
+
+    @Autowired
+    private ParameterService parameterService;
+
+    @Autowired
+    private CurrencyService currencyService;
 
     @Autowired
     private PdfHelper pdfHelper;
@@ -82,10 +82,10 @@ public class RequestForQuotationDetailsListeners {
     private RequestForQuotationReportPdf requestForQuotationReportPdf;
 
     @Autowired
-    private ParameterService parameterService;
+    private SupplyNegotiationsService supplyNegotiationsService;
 
     @Autowired
-    private CurrencyService currencyService;
+    private RequestForQuotationDetailsHooks requestForQuotationDetailsHooks;
 
     public void fillBufferForSupplier(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         requestForQuotationDetailsHooks.fillBufferForSupplier(view);
@@ -173,10 +173,13 @@ public class RequestForQuotationDetailsListeners {
     }
 
     private Entity createOfferProduct(final Entity requestForQuotationProduct) {
+        Entity product = requestForQuotationProduct.getBelongsToField(RequestForQuotationProductFields.PRODUCT);
+        BigDecimal quantity = requestForQuotationProduct.getDecimalField(RequestForQuotationProductFields.ORDERED_QUANTITY);
+
         Entity offerProduct = supplyNegotiationsService.getOfferProductDD().create();
 
-        offerProduct.setField(OfferProductFields.PRODUCT, requestForQuotationProduct.getBelongsToField(RequestForQuotationProductFields.PRODUCT));
-        offerProduct.setField(OfferProductFields.QUANTITY, numberService.setScaleWithDefaultMathContext(requestForQuotationProduct.getDecimalField(RequestForQuotationProductFields.ORDERED_QUANTITY)));
+        offerProduct.setField(OfferProductFields.PRODUCT, product);
+        offerProduct.setField(OfferProductFields.QUANTITY, numberService.setScaleWithDefaultMathContext(quantity));
         offerProduct.setField(OfferProductFields.TOTAL_PRICE, numberService.setScaleWithDefaultMathContext(BigDecimal.ZERO));
         offerProduct.setField(OfferProductFields.PRICE_PER_UNIT, numberService.setScaleWithDefaultMathContext(BigDecimal.ZERO));
 
