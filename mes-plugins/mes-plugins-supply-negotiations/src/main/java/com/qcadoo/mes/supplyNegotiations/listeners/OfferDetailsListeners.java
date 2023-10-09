@@ -248,6 +248,7 @@ public class OfferDetailsListeners {
     private Entity createDelivery(final Entity offer) {
         String number = numberGeneratorService.generateNumber(DeliveriesConstants.PLUGIN_IDENTIFIER, DeliveriesConstants.MODEL_DELIVERY);
         Entity supplier = offer.getBelongsToField(OfferFields.SUPPLIER);
+        Entity currency = offer.getBelongsToField(OfferFields.CURRENCY);
         Object deliveryDate = offer.getField(OfferFields.OFFERED_DATE);
         List<Entity> offerProducts = offer.getHasManyField(OfferFields.OFFER_PRODUCTS);
 
@@ -258,7 +259,7 @@ public class OfferDetailsListeners {
         delivery.setField(DeliveryFields.DELIVERY_DATE, deliveryDate);
         delivery.setField(DeliveryFields.EXTERNAL_SYNCHRONIZED, true);
         delivery.setField(DeliveryFields.ORDERED_PRODUCTS, createOrderedProducts(offerProducts));
-        delivery.setField(DeliveryFields.CURRENCY, getCurrency(supplier));
+        delivery.setField(DeliveryFields.CURRENCY, currency);
 
         delivery = delivery.getDataDefinition().save(delivery);
 
@@ -314,20 +315,6 @@ public class OfferDetailsListeners {
         } else {
             return BigDecimal.ZERO;
         }
-    }
-
-    private Entity getCurrency(final Entity supplier) {
-        Entity currency = null;
-
-        if (Objects.nonNull(supplier)) {
-            currency = supplier.getBelongsToField(CompanyFieldsD.CURRENCY);
-        }
-
-        if (Objects.isNull(currency)) {
-            currency = currencyService.getCurrentCurrency();
-        }
-
-        return currency;
     }
 
     public void validateColumnsWidthForOffer(final ViewDefinitionState view, final ComponentState state, final String[] args) {
