@@ -47,10 +47,7 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.qcadoo.mes.basic.constants.ProductFields.UNIT;
@@ -462,7 +459,7 @@ public class MaterialFlowResourcesServiceImpl implements MaterialFlowResourcesSe
         return null;
     }
 
-    public List<PalletDto> checkPalletsForLocationNumber(String storageLocationNumber) {
+    public List<PalletDto> checkPalletsForLocationNumber(final String storageLocationNumber) {
         Map<String, Object> params = Maps.newHashMap();
         List<PalletDto> list = new ArrayList<>();
 
@@ -481,12 +478,26 @@ public class MaterialFlowResourcesServiceImpl implements MaterialFlowResourcesSe
         return list;
     }
 
+    public Optional<Entity> findStorageLocationForProduct(final Entity location, final Entity product) {
+        SearchQueryBuilder scb = getStorageLocationDD().find("SELECT sl FROM #materialFlowResources_storageLocation AS sl JOIN sl.products p WHERE sl.location = :locationId AND p.id = :productId");
+
+        scb.setLong("locationId", location.getId());
+        scb.setLong("productId", product.getId());
+
+        return Optional.ofNullable(scb.setMaxResults(1).uniqueResult());
+    }
+
     private DataDefinition getProductDD() {
         return dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PRODUCT);
     }
 
     private DataDefinition getLocationDD() {
         return dataDefinitionService.get(MaterialFlowConstants.PLUGIN_IDENTIFIER, MaterialFlowConstants.MODEL_LOCATION);
+    }
+
+    private DataDefinition getStorageLocationDD() {
+        return dataDefinitionService
+                .get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER, MaterialFlowResourcesConstants.MODEL_STORAGE_LOCATION);
     }
 
     private DataDefinition getResourceDD() {
