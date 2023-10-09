@@ -38,6 +38,8 @@ public final class StorageLocationFields {
 
     public static final String STORAGE_LOCATION_NUMBER_HELPERS = "storageLocationNumberHelpers";
 
+    public static final String PRODUCTS = "products";
+
     public static final String ACTIVE = "active";
 
 }

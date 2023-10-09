@@ -59,6 +59,8 @@
 			<validatesScale max="5"/>
 		</decimal>
 		<string name="batchesQuantityClass"/>
+		<integer name="storageLocationId"/>
+		<string name="storageLocationNumber"/>
 	</fields>
 
 	<hooks />
