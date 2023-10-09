@@ -52,11 +52,15 @@
 
                             <option type="expression" value="#name"/>
                             <option type="fieldCode" value="name"/>
+
+                            <listener event="onSelectedEntityChange"
+                                      class="com.qcadoo.view.api.listeners.RerenderListener"
+                                      method="onChangeRerender"/>
                         </component>
                     </layoutElement>
                     <layoutElement column="1" row="3">
                         <component type="lookup" name="product" reference="product"
-                                   field="product">
+                                   field="product" hasDescription="true">
                             <option type="column" name="name" fields="name" link="true"
                                     width="200"/>
                             <option type="column" name="ean" fields="ean"/>
@@ -67,6 +71,9 @@
                             <option type="expression"
                                     value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name"/>
                             <option type="fieldCode" value="number"/>
+
+                            <criteriaModifier class="com.qcadoo.mes.materialFlowResources.criteriaModifiers.ProductsCriteriaModifiers"
+                                              method="showNotAssignedProducts"/>
                         </component>
                     </layoutElement>
                     <layoutElement column="1" row="4">
@@ -77,15 +84,12 @@
                                       method="updateFields"/>
                         </component>
                     </layoutElement>
-
                     <layoutElement column="1" row="5">
                         <component type="input" name="maximumNumberOfPallets"
                                    reference="maximumNumberOfPallets" field="maximumNumberOfPallets">
                             <option type="alignment" value="right"/>
                         </component>
                     </layoutElement>
-
-
                     <layoutElement column="1" row="6">
                         <component type="checkbox" name="highStorageLocation" field="highStorageLocation"
                                    reference="highStorageLocation" hasDescription="true">
@@ -98,9 +102,48 @@
             </component>
         </windowTab>
 
+        <windowTab name="productsTab" reference="productsTab">
+            <component type="lookup" name="productsLookup" reference="productsLookup"
+                       field="#{form}.products" defaultVisible="false" persistent="false"
+                       hasLabel="false">
+                <option type="column" name="name" fields="name" link="true"/>
+                <option type="column" name="globalTypeOfMaterial" fields="globalTypeOfMaterial"/>
+
+                <option type="searchable" value="number,name,globalTypeOfMaterial"/>
+                <option type="orderable" value="number,name,globalTypeOfMaterial"/>
+
+                <option type="expression"
+                        value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name"/>
+                <option type="fieldCode" value="number"/>
+
+                <option type="multiselect" value="true"/>
+
+                <criteriaModifier class="com.qcadoo.mes.materialFlowResources.criteriaModifiers.ProductsCriteriaModifiers"
+                                  method="showNotAssignedProducts"/>
+            </component>
+            <component type="grid" name="products" reference="products"
+                       source="#{form}.products">
+                <option type="column" name="number" fields="number"/>
+                <option type="column" name="name" fields="name"/>
+                <option type="column" name="globalTypeOfMaterial" fields="globalTypeOfMaterial"/>
+
+                <option type="order" column="number" direction="asc"/>
+
+                <option type="searchable" value="number,name,globalTypeOfMaterial"/>
+                <option type="orderable" value="number,name,globalTypeOfMaterial"/>
+
+                <option type="weakRelation" value="true"/>
+                <option type="correspondingLookup" value="productsLookup"/>
+
+                <option type="creatable" value="true"/>
+                <option type="deletable" value="true"/>
+                <option type="multiselect" value="true"/>
+                <option type="fixedHeight" value="true"/>
+            </component>
+        </windowTab>
+
         <windowTab name="history" reference="historyTab">
             <component type="grid" name="historyGrid" reference="historyGrid" source="#{form}.history">
-
                 <option type="column" name="createDate" fields="createDate"/>
                 <option type="column" name="createUser" fields="createUser"/>
 
@@ -122,7 +165,6 @@
         </windowTab>
 
     </component>
-
 
     <hooks>
         <beforeRender

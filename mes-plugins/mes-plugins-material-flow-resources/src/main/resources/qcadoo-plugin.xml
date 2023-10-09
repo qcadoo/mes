@@ -114,8 +114,10 @@
         <model:model model="documentPositionParametersItem" resource="model/documentPositionParametersItem.xml"/>
 
         <model:model model="resourceAttributeValue" resource="model/resourceAttributeValue.xml"/>
-        <model:model model="resourceAttributeValueAfterCorrection" resource="model/resourceAttributeValueAfterCorrection.xml"/>
-        <model:model model="resourceAttributeValueBeforeCorrection" resource="model/resourceAttributeValueBeforeCorrection.xml"/>
+        <model:model model="resourceAttributeValueAfterCorrection"
+                     resource="model/resourceAttributeValueAfterCorrection.xml"/>
+        <model:model model="resourceAttributeValueBeforeCorrection"
+                     resource="model/resourceAttributeValueBeforeCorrection.xml"/>
 
         <model:model model="positionAttributeValue" resource="model/positionAttributeValue.xml"/>
         <model:model model="documentStateChange" resource="model/documentStateChange.xml"/>
@@ -136,8 +138,9 @@
         </model:model-field>
 
         <model:model-field plugin="basic" model="parameter">
-            <model:hasMany name="warehouses" model="costNormsLocation" plugin="materialFlowResources" joinField="parameter"
-                     cascade="delete" copyable="false"/>
+            <model:hasMany name="warehouses" model="costNormsLocation"
+                           plugin="materialFlowResources" joinField="parameter"
+                           cascade="delete" copyable="false"/>
         </model:model-field>
 
         <model:model-field plugin="advancedGenealogy" model="batch">
@@ -166,7 +169,13 @@
         </model:model-field>
 
         <model:model-field plugin="basic" model="product">
-            <model:belongsTo name="costNormsGenerator" plugin="materialFlowResources" model="costNormsGenerator"/>
+            <model:belongsTo name="costNormsGenerator" model="costNormsGenerator"
+                             plugin="materialFlowResources"/>
+        </model:model-field>
+
+        <model:model-field plugin="basic" model="product">
+            <model:manyToMany name="storageLocations" model="storageLocation"
+                              plugin="materialFlowResources" joinField="products"/>
         </model:model-field>
 
         <model:model-field plugin="basic" model="company">
@@ -214,7 +223,8 @@
 
         <model:model-field plugin="materialFlow" model="location">
             <model:enum name="directionConvertingQuantityAfterChangingConverter"
-                        values="01fromBasicToAdditional,02fromAdditionalToBasicQuantity" default="01fromBasicToAdditional"/>
+                        values="01fromBasicToAdditional,02fromAdditionalToBasicQuantity"
+                        default="01fromBasicToAdditional"/>
         </model:model-field>
 
         <model:model-field plugin="materialFlow" model="location">
@@ -285,12 +295,12 @@
 
         <model:model-hook plugin="basic" model="parameter">
             <model:onCreate class="com.qcadoo.mes.materialFlowResources.hooks.ParametersHooksMFR"
-                                 method="onCreate"/>
+                            method="onCreate"/>
         </model:model-hook>
 
         <model:model-hook plugin="basic" model="parameter">
             <model:validatesWith class="com.qcadoo.mes.materialFlowResources.hooks.ParametersHooksMFR"
-                            method="validatesWith"/>
+                                 method="validatesWith"/>
         </model:model-hook>
 
         <model:model-hook plugin="materialFlow" model="location">
@@ -349,7 +359,8 @@
         <menu:menu-item-url name="resourcesAttributes" category="materialFlow" url="/resourcesAttributes.html"
                             defaultAuthorizationRole="ROLE_RESOURCES"/>
 
-        <menu:menu-item-url name="documentPositionsAttributes" category="materialFlow" url="/documentPositionsAttributes.html"
+        <menu:menu-item-url name="documentPositionsAttributes" category="materialFlow"
+                            url="/documentPositionsAttributes.html"
                             defaultAuthorizationRole="ROLE_DOCUMENT_POSITIONS"/>
 
         <menu:menu-item-url name="materialFlowResourcesParameters" category="parameters"
@@ -402,6 +413,7 @@
 
         <view:view-tab resource="view/tabExtensions/locationDetails.xml"/>
         <view:view-tab resource="view/tabExtensions/generalParameters.xml"/>
+        <view:view-tab resource="view/tabExtensions/productAdditionalDetails.xml"/>
 
         <view:view-ribbon-group resource="view/ribbonExtensions/productsList.xml"/>
         <view:view-ribbon-group resource="view/ribbonExtensions/productDetails.xml"/>
