@@ -4,11 +4,15 @@ import com.google.common.collect.Lists;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityFields;
 import com.qcadoo.mes.materialFlowResources.constants.ResourceFields;
+import com.qcadoo.mes.productFlowThruDivision.constants.OrderProductResourceReservationFields;
+import com.qcadoo.mes.productFlowThruDivision.reservation.OrderReservationsService;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -18,12 +22,19 @@ public class OrderProductResourceReservationHooks {
 
     public static final String L_RESOURCE = "resource";
 
+    @Autowired
+    private OrderReservationsService orderReservationsService;
+
     public void onSave(final DataDefinition orderProductResourceReservationDD, final Entity orderProductResourceReservation) {
+        if(Objects.isNull(orderProductResourceReservation.getId())) {
+            orderProductResourceReservation.setField(OrderProductResourceReservationFields.CREATION_DATE, new Date());
+        }
         Entity resource = orderProductResourceReservation.getBelongsToField(L_RESOURCE);
         if (Objects.nonNull(resource)) {
             orderProductResourceReservation.setField("resourceNumber", resource.getStringField(ResourceFields.NUMBER));
             orderProductResourceReservation.setField("resourceUnit", resource.getBelongsToField(ResourceFields.PRODUCT).getStringField(ProductFields.UNIT));
         }
+        orderReservationsService.createOrUpdateReservation(orderProductResourceReservation);
     }
 
     public boolean validate(final DataDefinition dataDefinition, final Entity orderProductResourceReservation) {

@@ -11,5 +11,8 @@ public class OrderProductResourceReservationFields {
     public static final String PLANED_QUANTITY = "planedQuantity";
 
     public static final String USED_QUANTITY = "usedQuantity";
+    public static final String CREATION_DATE = "creationDate";
+
+    public static final String RESERVATIONS = "reservations";
 
 }

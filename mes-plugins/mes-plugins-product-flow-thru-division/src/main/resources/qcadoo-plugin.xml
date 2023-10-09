@@ -88,6 +88,18 @@
                            model="orderProductResourceReservation" plugin="productFlowThruDivision" joinField="productionCountingQuantity" cascade="delete"/>
         </model:model-field>
 
+
+        <model:model-field plugin="materialFlowResources" model="reservation">
+            <model:belongsTo name="orderProductResourceReservation" model="orderProductResourceReservation"
+                             plugin="productFlowThruDivision"/>
+        </model:model-field>
+
+        <model:model-field plugin="materialFlowResources" model="reservation">
+            <model:belongsTo name="order" model="order"
+                             plugin="orders"/>
+        </model:model-field>
+
+
         <view:view resource="view/orderProductResourceReservationDetails.xml"/>
 
 

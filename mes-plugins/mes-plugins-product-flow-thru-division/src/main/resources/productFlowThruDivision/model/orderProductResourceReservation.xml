@@ -51,6 +51,11 @@
             <validatesScale max="5"/>
         </decimal>
 
+        <datetime name="creationDate"/>
+
+        <hasMany name="reservations" model="reservation" joinField="orderProductResourceReservation"
+                 copyable="false" cascade="delete" plugin="materialFlowResources" />
+
     </fields>
 
     <hooks>
