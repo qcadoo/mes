@@ -23,13 +23,14 @@
  */
 package com.qcadoo.mes.materialFlowResources;
 
-import java.math.BigDecimal;
-import java.util.List;
-import java.util.Map;
-
 import com.qcadoo.mes.materialFlowResources.dto.*;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ViewDefinitionState;
+
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 public interface MaterialFlowResourcesService {
 
@@ -73,4 +74,7 @@ public interface MaterialFlowResourcesService {
     CheckProductDto checkProductByStorageLocationNumber(String storageLocationNumber);
 
     List<PalletDto> checkPalletsForLocationNumber(String storageLocationNumber);
+
+    Optional<Entity> findStorageLocationForProduct(final Entity location, final Entity product);
+
 }

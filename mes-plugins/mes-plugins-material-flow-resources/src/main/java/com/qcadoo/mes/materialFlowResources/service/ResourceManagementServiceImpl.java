@@ -32,6 +32,7 @@ import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.basic.constants.ProductAttributeValueFields;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.materialFlowResources.DocumentPositionService;
+import com.qcadoo.mes.materialFlowResources.MaterialFlowResourcesService;
 import com.qcadoo.mes.materialFlowResources.constants.*;
 import com.qcadoo.mes.materialFlowResources.exceptions.InvalidResourceException;
 import com.qcadoo.mes.materialFlowResources.helpers.NotEnoughResourcesErrorMessageCopyToEntityHelper;
@@ -73,6 +74,12 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
     private NumberService numberService;
 
     @Autowired
+    private ParameterService parameterService;
+
+    @Autowired
+    private UserService userService;
+
+    @Autowired
     private PalletNumberDisposalService palletNumberDisposalService;
 
     @Autowired
@@ -82,19 +89,16 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
     private ReservationsService reservationsService;
 
     @Autowired
-    private ParameterService parameterService;
-
-    @Autowired
     private NotEnoughResourcesErrorMessageHolderFactory notEnoughResourcesErrorMessageHolderFactory;
-
-    @Autowired
-    private UserService userService;
 
     @Autowired
     private CalculationQuantityService calculationQuantityService;
 
     @Autowired
     private DocumentPositionService documentPositionService;
+
+    @Autowired
+    private MaterialFlowResourcesService materialFlowResourcesService;
 
     @Override
     @Transactional
@@ -207,7 +211,7 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
     }
 
     private Entity createResource(final Entity position, final Entity warehouse, final Entity resource, final BigDecimal quantity,
-            final Object date, boolean transferPalletToReceivingWarehouse) {
+                                  final Object date, boolean transferPalletToReceivingWarehouse) {
         Entity newResource = resource.getDataDefinition().create();
 
         if (position != null) {
@@ -280,7 +284,7 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
     }
 
     private SearchCriteriaBuilder getSearchCriteriaForResourceForProductAndWarehouse(final Entity product,
-            final Entity warehouse) {
+                                                                                     final Entity warehouse) {
         return dataDefinitionService
                 .get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER, MaterialFlowResourcesConstants.MODEL_RESOURCE).find()
                 .add(SearchRestrictions.belongsTo(ResourceFields.LOCATION, warehouse))
@@ -290,7 +294,7 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
     }
 
     public Multimap<Long, BigDecimal> getQuantitiesInWarehouse(final Entity warehouse,
-            final Multimap<Entity, Entity> productsAndPositions) {
+                                                               final Multimap<Entity, Entity> productsAndPositions) {
         Multimap<Long, BigDecimal> result = ArrayListMultimap.create();
 
         for (Map.Entry<Entity, Entity> productAndPosition : productsAndPositions.entries()) {
@@ -340,7 +344,7 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
     }
 
     private BigDecimal getQuantityOfProductFromMultimap(final Multimap<Long, BigDecimal> quantitiesForWarehouse,
-            final Entity product) {
+                                                        final Entity product) {
         List<BigDecimal> quantities = Lists.newArrayList(quantitiesForWarehouse.get(product.getId()));
 
         return quantities.stream().reduce(BigDecimal.ZERO, BigDecimal::add);
@@ -456,7 +460,7 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
     }
 
     private Either<BigDecimal, List<Entity>> updateResources(final Entity warehouse, final Entity position,
-            final WarehouseAlgorithm warehouseAlgorithm, boolean isFromOrder, boolean transferPalletToReceivingWarehouse) {
+                                                             final WarehouseAlgorithm warehouseAlgorithm, boolean isFromOrder, boolean transferPalletToReceivingWarehouse) {
         List<Entity> newPositions = Lists.newArrayList();
 
         Entity product = position.getBelongsToField(PositionFields.PRODUCT);
@@ -632,7 +636,7 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
     }
 
     private Either<BigDecimal, List<Entity>> moveResources(final Entity warehouseFrom, final Entity warehouseTo,
-            final Entity position, final Object date, final WarehouseAlgorithm warehouseAlgorithm, boolean isFromOrder) {
+                                                           final Entity position, final Object date, final WarehouseAlgorithm warehouseAlgorithm, boolean isFromOrder) {
         List<Entity> newPositions = Lists.newArrayList();
 
         Entity product = position.getBelongsToField(PositionFields.PRODUCT);
@@ -782,7 +786,7 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
     }
 
     private List<Entity> getResourcesForWarehouseProductAndAlgorithm(final Entity warehouse, final Entity product,
-            final Entity position, final WarehouseAlgorithm warehouseAlgorithm) {
+                                                                     final Entity position, final WarehouseAlgorithm warehouseAlgorithm) {
         List<Entity> resources = Lists.newArrayList();
 
         Entity resource = position.getBelongsToField(PositionFields.RESOURCE);
@@ -818,8 +822,8 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
     }
 
     private List<Entity> getResourcesForLocationCommonCodeConversion(final Entity warehouse, final Entity product,
-            final Entity position, final boolean resourceIrrespectiveOfConversion,
-            final SearchOrder... searchOrders) {
+                                                                     final Entity position, final boolean resourceIrrespectiveOfConversion,
+                                                                     final SearchOrder... searchOrders) {
 
         class SearchCriteriaHelper {
 
@@ -870,7 +874,7 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
     }
 
     private List<Entity> getResourcesForLocationCommonCode(final Entity warehouse, final Entity product,
-            final Entity position, final SearchOrder... searchOrders) {
+                                                           final Entity position, final SearchOrder... searchOrders) {
         List<Entity> resources = getResourcesForLocationCommonCodeConversion(warehouse, product, position, false,
                 searchOrders);
 
@@ -889,25 +893,25 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
     }
 
     private List<Entity> getResourcesForLocationAndProductFIFO(final Entity warehouse, final Entity product,
-            final Entity position) {
+                                                               final Entity position) {
         return getResourcesForLocationCommonCode(warehouse, product, position,
                 SearchOrders.asc(ResourceFields.TIME));
     }
 
     private List<Entity> getResourcesForLocationAndProductLIFO(final Entity warehouse, final Entity product,
-            final Entity position) {
+                                                               final Entity position) {
         return getResourcesForLocationCommonCode(warehouse, product, position,
                 SearchOrders.desc(ResourceFields.TIME));
     }
 
     private List<Entity> getResourcesForLocationAndProductFEFO(final Entity warehouse, final Entity product,
-            final Entity position) {
+                                                               final Entity position) {
         return getResourcesForLocationCommonCode(warehouse, product, position,
                 SearchOrders.asc(ResourceFields.EXPIRATION_DATE), SearchOrders.asc(ResourceFields.AVAILABLE_QUANTITY));
     }
 
     private List<Entity> getResourcesForLocationAndProductLEFO(final Entity warehouse, final Entity product,
-            final Entity position) {
+                                                               final Entity position) {
         return getResourcesForLocationCommonCode(warehouse, product, position,
                 SearchOrders.desc(ResourceFields.EXPIRATION_DATE), SearchOrders.asc(ResourceFields.AVAILABLE_QUANTITY));
     }
@@ -988,7 +992,7 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
     }
 
     private List<Entity> matchResourcesToPosition(final Entity position, final Entity warehouse,
-            final WarehouseAlgorithm warehouseAlgorithm, boolean isFromOrder) {
+                                                  final WarehouseAlgorithm warehouseAlgorithm, boolean isFromOrder) {
         DataDefinition positionDD = dataDefinitionService.get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER,
                 MaterialFlowResourcesConstants.MODEL_POSITION);
 
@@ -1059,7 +1063,7 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
         newPosition.setField(PositionFields.EXPIRATION_DATE, resource.getField(ResourceFields.EXPIRATION_DATE));
         newPosition.setField(PositionFields.RESOURCE, null);
         newPosition.setField(PositionFields.RESOURCE_NUMBER, resource.getStringField(ResourceFields.NUMBER));
-        newPosition.setField(PositionFields.STORAGE_LOCATION, resource.getField(ResourceFields.STORAGE_LOCATION));
+        newPosition.setField(PositionFields.STORAGE_LOCATION, getStorageLocation(position, resource));
         newPosition.setField(PositionFields.CONVERSION, resource.getField(ResourceFields.CONVERSION));
         newPosition.setField(PositionFields.PALLET_NUMBER, resource.getField(ResourceFields.PALLET_NUMBER));
         newPosition.setField(PositionFields.TYPE_OF_PALLET, resource.getField(ResourceFields.TYPE_OF_PALLET));
@@ -1085,6 +1089,28 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
         return newPosition;
     }
 
+    private Entity getStorageLocation(final Entity position, final Entity resource) {
+        Entity storageLocation = resource.getBelongsToField(ResourceFields.STORAGE_LOCATION);
+
+        if (Objects.isNull(storageLocation)) {
+            Entity product = position.getBelongsToField(PositionFields.PRODUCT);
+            Entity document = position.getBelongsToField(PositionFields.DOCUMENT);
+            String documentType = document.getStringField(DocumentFields.TYPE);
+
+            if (DocumentType.TRANSFER.getStringValue().equals(documentType)) {
+                Entity locationTo = document.getBelongsToField(DocumentFields.LOCATION_TO);
+
+                Optional<Entity> mayBeStorageLocation = materialFlowResourcesService.findStorageLocationForProduct(locationTo, product);
+
+                if (mayBeStorageLocation.isPresent()) {
+                    storageLocation = mayBeStorageLocation.get();
+                }
+            }
+        }
+
+        return storageLocation;
+    }
+
     private List<Entity> prepareAttributes(Entity resource) {
         List<Entity> attributes = Lists.newArrayList();
         resource.getHasManyField(ResourceFields.RESOURCE_ATTRIBUTE_VALUES).forEach(aVal -> {
@@ -1104,7 +1130,7 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
     }
 
     private BigDecimal recalculateQuantity(String directionConvertingQuantity, final BigDecimal quantity,
-            final BigDecimal conversion, final String givenUnit, final BigDecimal resourceConversion, final String unit) {
+                                           final BigDecimal conversion, final String givenUnit, final BigDecimal resourceConversion, final String unit) {
         if (conversion.compareTo(resourceConversion) != 0) {
             if (DirectionConvertingQuantityAfterChangingConverter.FROM_BASIC_TO_ADDITIONAL.getStringValue()
                     .equals(directionConvertingQuantity)) {
@@ -1134,7 +1160,7 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
     }
 
     private Entity createPositionWithoutResourceForMissingQuantity(final Entity position, final DataDefinition positionDD,
-            final BigDecimal quantity) {
+                                                                   final BigDecimal quantity) {
         Entity newPosition = positionDD.create();
 
         newPosition.setField(PositionFields.PRODUCT, position.getBelongsToField(PositionFields.PRODUCT));
