@@ -77,4 +77,13 @@ public interface MaterialFlowResourcesService {
 
     Optional<Entity> findStorageLocationForProduct(final Entity location, final Entity product);
 
+
+    PalletDto checkIfPalletExist(String palletNumber);
+
+    ResourceNumberDto checkIfPalletIsEmpty(String palletNumber);
+
+    List<ResourceToRepackDto> getResourceListByStorageLocationNumber(String storageLocationNumber, List<String> userLocations);
+
+    List<ResourceToRepackDto> getResourceListByPalletNumber(String palletNumber, List<String> userLocations);
+    List<ResourceToRepackDto> getResourceListByPalletAndLocationNumber(String palletNumber, String storageLocationNumber, List<String> userLocations);
 }

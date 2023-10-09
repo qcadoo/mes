@@ -380,6 +380,7 @@ public class MaterialFlowResourcesServiceImpl implements MaterialFlowResourcesSe
 
             prepareQuery.append("SELECT ");
             prepareQuery.append("dto.location_id as locationId, ");
+            prepareQuery.append("dto.number as resourceNumber, ");
             prepareQuery.append("dto.productName as productName, ");
             prepareQuery.append("dto.productNumber as productNumber, ");
             prepareQuery.append("dto.locationNumber as locationNumber, ");
@@ -486,6 +487,168 @@ public class MaterialFlowResourcesServiceImpl implements MaterialFlowResourcesSe
 
         return Optional.ofNullable(scb.setMaxResults(1).uniqueResult());
     }
+
+    public PalletDto checkIfPalletExist(String palletNumber) {
+        Map<String, Object> params = Maps.newHashMap();
+
+        if (palletNumber != null || !palletNumber.isEmpty()) {
+            StringBuilder prepareQuery = new StringBuilder();
+
+            prepareQuery.append("SELECT ");
+            prepareQuery.append("bpn.number ");
+            prepareQuery.append("from basic_palletNumber AS bpn ");
+            prepareQuery.append("WHERE bpn.number = :palletNumber");
+
+            params.put("palletNumber", palletNumber);
+
+            try {
+                return jdbcTemplate.queryForObject(prepareQuery.toString(), params, BeanPropertyRowMapper.newInstance(PalletDto.class));
+            } catch (EmptyResultDataAccessException e) {
+                return null;
+            }
+        }
+        return null;
+    }
+
+    public ResourceNumberDto checkIfPalletIsEmpty(String palletNumber) {
+        Map<String, Object> params = Maps.newHashMap();
+        if (palletNumber != null || !palletNumber.isEmpty()) {
+            StringBuilder prepareQuery = new StringBuilder();
+
+            prepareQuery.append("SELECT ");
+            prepareQuery.append("dto.number ");
+            prepareQuery.append("from materialFlowResources_resourceDto as dto ");
+            prepareQuery.append("WHERE dto.palletNumber = :palletNumber");
+
+            params.put("palletNumber", palletNumber);
+
+            try {
+                return jdbcTemplate.queryForObject(prepareQuery.toString(), params, BeanPropertyRowMapper.newInstance(ResourceNumberDto.class));
+            } catch (EmptyResultDataAccessException e) {
+                return null;
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public List<ResourceToRepackDto> getResourceListByStorageLocationNumber(String storageLocationNumber, List<String> userLocations) {
+        Map<String, Object> params = Maps.newHashMap();
+        List<ResourceToRepackDto> list = new ArrayList<>();
+
+        if ((storageLocationNumber != null || !storageLocationNumber.isEmpty()) && !userLocations.isEmpty()) {
+            StringBuilder prepareQuery = new StringBuilder();
+
+            prepareQuery.append("SELECT ");
+            prepareQuery.append("dto.location_id as locationId, ");
+            prepareQuery.append("dto.number as resourceNumber, ");
+            prepareQuery.append("dto.productName as productName, ");
+            prepareQuery.append("dto.productNumber as productNumber, ");
+            prepareQuery.append("dto.locationNumber as locationNumber, ");
+            prepareQuery.append("dto.storageLocationNumber as storageLocationNumber, ");
+            prepareQuery.append("dto.palletNumber as palletNumber, ");
+            prepareQuery.append("dto.typeOfPallet as palletType, ");
+            prepareQuery.append("dto.batchNumber as batchNumber, ");
+            prepareQuery.append("dto.productionDate as productionDate, ");
+            prepareQuery.append("dto.expirationDate as expirationDate, ");
+            prepareQuery.append("dto.givenUnit as additionalUnit, ");
+            prepareQuery.append("dto.quantity as quantity, ");
+            prepareQuery.append("dto.productUnit as unit, ");
+            prepareQuery.append("dto.quantityInAdditionalUnit as additionalQuantity, ");
+            prepareQuery.append("dto.conversion as conversionValue ");
+            prepareQuery.append("FROM materialFlowResources_resourceDto as dto ");
+            prepareQuery.append("WHERE dto.storageLocationNumber = :storageLocationNumber ");
+            prepareQuery.append("AND dto.locationNumber IN (:userLocations)");
+
+            params.put("storageLocationNumber", storageLocationNumber);
+            params.put("userLocations", userLocations);
+
+            list = jdbcTemplate.query(prepareQuery.toString(), params, new BeanPropertyRowMapper(ResourceToRepackDto.class));
+            return list;
+        }
+        return list;
+    }
+
+    @Override
+    public List<ResourceToRepackDto> getResourceListByPalletNumber(String palletNumber, List<String> userLocations) {
+        Map<String, Object> params = Maps.newHashMap();
+        List<ResourceToRepackDto> list = new ArrayList<>();
+
+        if ((palletNumber != null || !palletNumber.isEmpty()) && !userLocations.isEmpty()) {
+            StringBuilder prepareQuery = new StringBuilder();
+
+            prepareQuery.append("SELECT ");
+            prepareQuery.append("dto.location_id as locationId, ");
+            prepareQuery.append("dto.number as resourceNumber, ");
+            prepareQuery.append("dto.productName as productName, ");
+            prepareQuery.append("dto.productNumber as productNumber, ");
+            prepareQuery.append("dto.locationNumber as locationNumber, ");
+            prepareQuery.append("dto.storageLocationNumber as storageLocationNumber, ");
+            prepareQuery.append("dto.palletNumber as palletNumber, ");
+            prepareQuery.append("dto.typeOfPallet as palletType, ");
+            prepareQuery.append("dto.batchNumber as batchNumber, ");
+            prepareQuery.append("dto.productionDate as productionDate, ");
+            prepareQuery.append("dto.expirationDate as expirationDate, ");
+            prepareQuery.append("dto.givenUnit as additionalUnit, ");
+            prepareQuery.append("dto.quantity as quantity, ");
+            prepareQuery.append("dto.productUnit as unit, ");
+            prepareQuery.append("dto.quantityInAdditionalUnit as additionalQuantity, ");
+            prepareQuery.append("dto.conversion as conversionValue ");
+            prepareQuery.append("FROM materialFlowResources_resourceDto as dto ");
+            prepareQuery.append("WHERE dto.palletNumber = :palletNumber ");
+            prepareQuery.append("AND dto.locationNumber IN (:userLocations)");
+
+            params.put("palletNumber", palletNumber);
+            params.put("userLocations", userLocations);
+
+            list = jdbcTemplate.query(prepareQuery.toString(), params, new BeanPropertyRowMapper(ResourceToRepackDto.class));
+            return list;
+        }
+        return list;
+    }
+
+    @Override
+    public List<ResourceToRepackDto> getResourceListByPalletAndLocationNumber(String palletNumber, String storageLocationNumber, List<String> userLocations) {
+        Map<String, Object> params = Maps.newHashMap();
+        List<ResourceToRepackDto> list = new ArrayList<>();
+
+        if ((palletNumber != null || !palletNumber.isEmpty())
+                && (storageLocationNumber != null || !storageLocationNumber.isEmpty())
+                && !userLocations.isEmpty()) {
+            StringBuilder prepareQuery = new StringBuilder();
+
+            prepareQuery.append("SELECT ");
+            prepareQuery.append("dto.location_id as locationId, ");
+            prepareQuery.append("dto.number as resourceNumber, ");
+            prepareQuery.append("dto.productName as productName, ");
+            prepareQuery.append("dto.productNumber as productNumber, ");
+            prepareQuery.append("dto.locationNumber as locationNumber, ");
+            prepareQuery.append("dto.storageLocationNumber as storageLocationNumber, ");
+            prepareQuery.append("dto.palletNumber as palletNumber, ");
+            prepareQuery.append("dto.typeOfPallet as palletType, ");
+            prepareQuery.append("dto.batchNumber as batchNumber, ");
+            prepareQuery.append("dto.productionDate as productionDate, ");
+            prepareQuery.append("dto.expirationDate as expirationDate, ");
+            prepareQuery.append("dto.givenUnit as additionalUnit, ");
+            prepareQuery.append("dto.quantity as quantity, ");
+            prepareQuery.append("dto.productUnit as unit, ");
+            prepareQuery.append("dto.quantityInAdditionalUnit as additionalQuantity, ");
+            prepareQuery.append("dto.conversion as conversionValue ");
+            prepareQuery.append("FROM materialFlowResources_resourceDto as dto ");
+            prepareQuery.append("WHERE dto.palletNumber = :palletNumber ");
+            prepareQuery.append("AND dto.storageLocationNumber = :storageLocationNumber ");
+            prepareQuery.append("AND dto.locationNumber IN (:userLocations)");
+
+            params.put("palletNumber", palletNumber);
+            params.put("userLocations", userLocations);
+            params.put("storageLocationNumber", storageLocationNumber);
+
+            list = jdbcTemplate.query(prepareQuery.toString(), params, new BeanPropertyRowMapper(ResourceToRepackDto.class));
+            return list;
+        }
+        return list;
+    }
+
 
     private DataDefinition getProductDD() {
         return dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PRODUCT);
