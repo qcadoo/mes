@@ -63,6 +63,8 @@ public final class ParameterFields {
 
     public static final String TYPE_TERMINAL_LICENSES = "typeTerminalLicenses";
 
+    public static final String NUMBER_VISIBLE_ORDERS_TASKS_ON_DASHBOARD = "numberVisibleOrdersTasksOnDashboard";
+
     public static final String NUMBER_OFFICE_LICENSES = "numberOfficeLicenses";
 
     public static final String MANY_ARTICLES_WITH_THE_SAME_EAN = "manyArticlesWithTheSameEAN";

@@ -4,6 +4,7 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.basic.constants.ParameterFields;
+import com.qcadoo.mes.basic.constants.UserFieldsB;
 import com.qcadoo.mes.orders.controllers.dto.OperationalTaskHolder;
 import com.qcadoo.mes.orders.controllers.dto.OrderHolder;
 import com.qcadoo.mes.orders.states.constants.OperationalTaskStateStringValues;
@@ -11,8 +12,7 @@ import com.qcadoo.mes.orders.states.constants.OrderStateStringValues;
 import com.qcadoo.mes.productionLines.constants.UserFieldsPL;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
-import com.qcadoo.security.api.SecurityService;
-import com.qcadoo.security.constants.QcadooSecurityConstants;
+import com.qcadoo.security.api.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -33,9 +33,11 @@ public class DashboardKanbanDataProvider {
 
     private static final String L_PRODUCTION_LINE_ID = "productionLineId";
 
+    private static final String L_STAFF_ID = "staffId";
+
     private static final String L_START_DATE = "startDate";
 
-    public static final int DEFAULT_RECORDS_LIMIT = 50;
+    private static final int DEFAULT_RECORDS_LIMIT = 50;
 
     @Autowired
     private NamedParameterJdbcTemplate jdbcTemplate;
@@ -44,59 +46,56 @@ public class DashboardKanbanDataProvider {
     private DataDefinitionService dataDefinitionService;
 
     @Autowired
-    private SecurityService securityService;
-
-    @Autowired
     private ParameterService parameterService;
 
+    @Autowired
+    private UserService userService;
+
     public List<OrderHolder> getOrdersPending() {
-        Map<String, Object> params = Maps.newHashMap();
+        Entity user = userService.getCurrentUserEntity();
 
-        Entity productionLine = getCurrentUserProductionLine();
+        Map<String, Object> parameters = Maps.newHashMap();
 
-        if (!Objects.isNull(productionLine)) {
-            params.put(L_PRODUCTION_LINE_ID, productionLine.getId());
-        }
+        Entity staff = setStaffParameters(parameters, user);
+        Entity productionLine = setProductionLineParameters(parameters, user);
 
-        params.put(L_STATES, Sets.newHashSet(OrderStateStringValues.ACCEPTED, OrderStateStringValues.INTERRUPTED));
+        parameters.put(L_STATES, Sets.newHashSet(OrderStateStringValues.ACCEPTED, OrderStateStringValues.INTERRUPTED));
 
-        return jdbcTemplate.query(getOrdersQuery(productionLine), params, new BeanPropertyRowMapper(OrderHolder.class));
+        return jdbcTemplate.query(getOrdersQuery(staff, productionLine), parameters, new BeanPropertyRowMapper(OrderHolder.class));
     }
 
     public List<OrderHolder> getOrdersInProgress() {
-        Map<String, Object> params = Maps.newHashMap();
+        Entity user = userService.getCurrentUserEntity();
 
-        Entity productionLine = getCurrentUserProductionLine();
+        Map<String, Object> parameters = Maps.newHashMap();
 
-        if (!Objects.isNull(productionLine)) {
-            params.put(L_PRODUCTION_LINE_ID, productionLine.getId());
-        }
+        Entity staff = setStaffParameters(parameters, user);
+        Entity productionLine = setProductionLineParameters(parameters, user);
+        
+        parameters.put(L_STATES, Sets.newHashSet(OrderStateStringValues.IN_PROGRESS));
 
-        params.put(L_STATES, Sets.newHashSet(OrderStateStringValues.IN_PROGRESS));
-
-        return jdbcTemplate.query(getOrdersQuery(productionLine), params, new BeanPropertyRowMapper(OrderHolder.class));
+        return jdbcTemplate.query(getOrdersQuery(staff, productionLine), parameters, new BeanPropertyRowMapper(OrderHolder.class));
     }
 
     public List<OrderHolder> getOrdersCompleted() {
-        Map<String, Object> params = Maps.newHashMap();
+        Entity user = userService.getCurrentUserEntity();
 
-        Entity productionLine = getCurrentUserProductionLine();
+        Map<String, Object> parameters = Maps.newHashMap();
 
-        if (!Objects.isNull(productionLine)) {
-            params.put(L_PRODUCTION_LINE_ID, productionLine.getId());
-        }
+        Entity staff = setStaffParameters(parameters, user);
+        Entity productionLine = setProductionLineParameters(parameters, user);
 
-        params.put(L_STATES, Sets.newHashSet(OrderStateStringValues.COMPLETED));
+        parameters.put(L_STATES, Sets.newHashSet(OrderStateStringValues.COMPLETED));
 
-        return jdbcTemplate.query(getOrdersQuery(productionLine), params, new BeanPropertyRowMapper(OrderHolder.class));
+        return jdbcTemplate.query(getOrdersQuery(staff, productionLine), parameters, new BeanPropertyRowMapper(OrderHolder.class));
     }
 
     public OrderHolder getOrder(final Long orderId) {
-        Map<String, Object> params = Maps.newHashMap();
+        Map<String, Object> parameters = Maps.newHashMap();
 
-        params.put(L_ID, orderId);
+        parameters.put(L_ID, orderId);
 
-        return (OrderHolder) jdbcTemplate.queryForObject(getOrderQuery(), params, new BeanPropertyRowMapper(OrderHolder.class));
+        return (OrderHolder) jdbcTemplate.queryForObject(getOrderQuery(), parameters, new BeanPropertyRowMapper(OrderHolder.class));
     }
 
     private String getOrderQueryProjections() {
@@ -107,19 +106,28 @@ public class DashboardKanbanDataProvider {
                 + "orderlistdto.productionlinenumber AS productionLineNumber, orderlistdto.productnumber AS productNumber, "
                 + "orderlistdto.unit AS productunit, orderlistdto.companyname AS companyName, orderlistdto.addressNumber AS addressNumber, "
                 + "orderlistdto.description, orderlistdto.productname AS productName, p.dashboardshowdescription, p.dashboardshowforproduct "
-                + "FROM orders_orderlistdto orderlistdto CROSS JOIN basic_parameter p "
+                + "FROM orders_orderlistdto orderlistdto "
+                + "CROSS JOIN basic_parameter p "
                 + "LEFT JOIN masterorders_masterorderproduct mop ON mop.product_id = orderlistdto.productid "
                 + "AND mop.masterorder_id = orderlistdto.masterorderid ";
     }
 
-    private String getOrdersQuery(final Entity productionLine) {
+    private String getOrdersQuery(final Entity staff, final Entity productionLine) {
         String query = getOrderQueryProjections();
 
         query += "WHERE orderlistdto.active = true AND orderlistdto.state IN (:states) ";
         query += "AND date_trunc('day', orderlistdto.startdate) <= current_date AND current_date <= date_trunc('day', orderlistdto.finishdate) ";
 
-        if (!Objects.isNull(productionLine)) {
-            query += "AND orderlistdto.productionlineid = :productionLineId ";
+        if (Objects.nonNull(staff)) {
+            query += "AND (";
+            query += " NOT EXISTS(SELECT * FROM jointable_order_staff WHERE order_id = orderlistdto.id) ";
+            query += " OR ";
+            query += " EXISTS (SELECT * FROM jointable_order_staff WHERE order_id = orderlistdto.id AND staff_id = :staffId)";
+            query += ") ";
+        }
+
+        if (Objects.nonNull(productionLine)) {
+            query += " AND orderlistdto.productionlineid = :productionLineId ";
         }
 
         query += "ORDER BY orderlistdto.productionlinenumber, orderlistdto.";
@@ -153,57 +161,61 @@ public class DashboardKanbanDataProvider {
         return query;
     }
 
-    private Entity getCurrentUserProductionLine() {
-        Entity currentUser = dataDefinitionService
-                .get(QcadooSecurityConstants.PLUGIN_IDENTIFIER, QcadooSecurityConstants.MODEL_USER)
-                .get(securityService.getCurrentUserId());
-
-        return currentUser.getBelongsToField(UserFieldsPL.PRODUCTION_LINE);
-    }
-
     public List<OperationalTaskHolder> getOperationalTasksPendingForOrder(final Long orderId) {
+        Map<String, Object> parameters = Maps.newHashMap();
+
+        parameters.put(L_STATES, Sets.newHashSet(OperationalTaskStateStringValues.FINISHED));
+        parameters.put(L_ORDER_ID, orderId);
+
         String additionalRestrictions = "AND operationaltaskdto.orderid = :orderId AND coalesce(operationaltaskdto.usedquantity, 0) = 0 ";
 
-        Map<String, Object> params = Maps.newHashMap();
-
-        params.put(L_STATES, Sets.newHashSet(OperationalTaskStateStringValues.FINISHED));
-        params.put(L_ORDER_ID, orderId);
-
-        return jdbcTemplate.query(getOperationalTasksQuery(additionalRestrictions, false), params,
+        return jdbcTemplate.query(getOperationalTasksQuery(null, additionalRestrictions, false), parameters,
                 new BeanPropertyRowMapper(OperationalTaskHolder.class));
     }
 
     public List<OperationalTaskHolder> getOperationalTasksPending() {
+        Entity user = userService.getCurrentUserEntity();
+
+        Map<String, Object> parameters = Maps.newHashMap();
+
+        Entity staff = setStaffParameters(parameters, user);
+
+        parameters.put(L_STATES, Sets.newHashSet(OperationalTaskStateStringValues.PENDING, OperationalTaskStateStringValues.STARTED));
+
         String additionalRestrictions = "AND coalesce(operationaltaskdto.usedquantity, 0) = 0 ";
 
-        Map<String, Object> params = Maps.newHashMap();
-
-        params.put(L_STATES, Sets.newHashSet(OperationalTaskStateStringValues.PENDING, OperationalTaskStateStringValues.STARTED));
-
-        return jdbcTemplate.query(getOperationalTasksQuery(additionalRestrictions, true), params,
+        return jdbcTemplate.query(getOperationalTasksQuery(staff, additionalRestrictions, true), parameters,
                 new BeanPropertyRowMapper(OperationalTaskHolder.class));
     }
 
     public List<OperationalTaskHolder> getOperationalTasksInProgress() {
+        Entity user = userService.getCurrentUserEntity();
+
+        Map<String, Object> parameters = Maps.newHashMap();
+
+        Entity staff = setStaffParameters(parameters, user);
+
+        parameters.put(L_STATES, Sets.newHashSet(OperationalTaskStateStringValues.STARTED));
+
         String additionalRestrictions = "AND (operationaltaskdto.plannedquantity > 0 AND operationaltaskdto.usedquantity * 100 / operationaltaskdto.plannedquantity > 0 AND operationaltaskdto.usedquantity * 100 / operationaltaskdto.plannedquantity < 100) ";
 
-        Map<String, Object> params = Maps.newHashMap();
-
-        params.put(L_STATES, Sets.newHashSet(OperationalTaskStateStringValues.STARTED));
-
-        return jdbcTemplate.query(getOperationalTasksQuery(additionalRestrictions, true), params,
+        return jdbcTemplate.query(getOperationalTasksQuery(staff, additionalRestrictions, true), parameters,
                 new BeanPropertyRowMapper(OperationalTaskHolder.class));
     }
 
     public List<OperationalTaskHolder> getOperationalTasksCompleted() {
-        String additionalRestrictions = "AND ((operationaltaskdto.plannedquantity > 0 AND operationaltaskdto.usedquantity * 100 / operationaltaskdto.plannedquantity >= 100) OR operationaltaskdto.state = '03finished') ";
+        Entity user = userService.getCurrentUserEntity();
 
-        Map<String, Object> params = Maps.newHashMap();
+        Map<String, Object> parameters = Maps.newHashMap();
 
-        params.put(L_STATES,
+        Entity staff = setStaffParameters(parameters, user);
+
+        parameters.put(L_STATES,
                 Sets.newHashSet(OperationalTaskStateStringValues.STARTED, OperationalTaskStateStringValues.FINISHED));
 
-        return jdbcTemplate.query(getOperationalTasksQuery(additionalRestrictions, true), params,
+        String additionalRestrictions = "AND ((operationaltaskdto.plannedquantity > 0 AND operationaltaskdto.usedquantity * 100 / operationaltaskdto.plannedquantity >= 100) OR operationaltaskdto.state = '03finished') ";
+
+        return jdbcTemplate.query(getOperationalTasksQuery(staff, additionalRestrictions, true), parameters,
                 new BeanPropertyRowMapper(OperationalTaskHolder.class));
     }
 
@@ -215,12 +227,14 @@ public class DashboardKanbanDataProvider {
                 + "operationaltaskdto.productnumber AS productNumber, operationaltaskdto.productUnit AS productUnit, "
                 + "operationaltaskdto.staffname AS staffName, operationaltaskdto.orderid AS orderId, "
                 + "product.number AS orderProductNumber, product.name AS orderProductName, operationaltaskdto.description, "
-                + "p.dashboardshowdescription, p.dashboardshowforproduct FROM orders_operationaltaskdto operationaltaskdto "
+                + "p.dashboardshowdescription, p.dashboardshowforproduct "
+                + "FROM orders_operationaltaskdto operationaltaskdto "
+                + "CROSS JOIN basic_parameter p "
                 + "LEFT JOIN orders_order ordersorder ON ordersorder.id = operationaltaskdto.orderid "
-                + "LEFT JOIN basic_product product ON product.id = ordersorder.product_id CROSS JOIN basic_parameter p ";
+                + "LEFT JOIN basic_product product ON product.id = ordersorder.product_id ";
     }
 
-    private String getOperationalTasksQuery(final String additionalRestrictions, final boolean in) {
+    private String getOperationalTasksQuery(final Entity staff, final String additionalRestrictions, final boolean in) {
         String query = getOperationalTaskQueryProjections();
 
         if (in) {
@@ -230,16 +244,53 @@ public class DashboardKanbanDataProvider {
         }
 
         query += "AND date_trunc('day', operationaltaskdto.startdate) <= current_date AND current_date <= date_trunc('day', operationaltaskdto.finishdate) ";
+
+        if (Objects.nonNull(staff)) {
+            query += "AND (";
+            query += " NOT EXISTS(SELECT * FROM jointable_operationaltask_staff WHERE operationaltask_id = operationaltaskdto.id) ";
+            query += " OR ";
+            query += " EXISTS (SELECT * FROM jointable_operationaltask_staff WHERE operationaltask_id = operationaltaskdto.id AND staff_id = :staffId)";
+            query += ") ";
+        }
+
         query += additionalRestrictions;
+
         query += "ORDER BY operationaltaskdto.workstationnumber, operationaltaskdto.startdate ";
         query += "LIMIT " + getRecordsLimit();
 
         return query;
     }
 
+    private Entity setStaffParameters(final Map<String, Object> parameters, final Entity user) {
+        boolean showOnlyMyOperationalTasksAndOrders = user.getBooleanField(UserFieldsB.SHOW_ONLY_MY_OPERATIONAL_TASKS_AND_ORDERS);
+
+        Entity staff = null;
+
+        if (showOnlyMyOperationalTasksAndOrders) {
+            staff = user.getBelongsToField(UserFieldsB.STAFF);
+
+            if (Objects.nonNull(staff)) {
+                parameters.put(L_STAFF_ID, staff.getId());
+            }
+        }
+
+        return staff;
+    }
+
+    private Entity setProductionLineParameters(final Map<String, Object> parameters, final Entity user) {
+        Entity productionLine = user.getBelongsToField(UserFieldsPL.PRODUCTION_LINE);
+
+        if (Objects.nonNull(productionLine)) {
+            parameters.put(L_PRODUCTION_LINE_ID, productionLine.getId());
+        }
+        
+        return productionLine;
+    }
 
     private Integer getRecordsLimit() {
-        Integer numberVisibleOrdersTasksOnDashboard = parameterService.getParameter().getIntegerField("numberVisibleOrdersTasksOnDashboard");
+        Integer numberVisibleOrdersTasksOnDashboard = parameterService.getParameter().getIntegerField(ParameterFields.NUMBER_VISIBLE_ORDERS_TASKS_ON_DASHBOARD);
+
         return Objects.isNull(numberVisibleOrdersTasksOnDashboard) ? DEFAULT_RECORDS_LIMIT : numberVisibleOrdersTasksOnDashboard;
     }
+
 }

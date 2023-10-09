@@ -31,7 +31,7 @@
 
     <windowTab name="permissionsTab" reference="permissionsTab">
         <component type="gridLayout" name="staffGridLayout"
-                   columns="3" rows="4" hasBorders="false">
+                   columns="3" rows="5" hasBorders="false">
             <layoutElement column="1" row="1">
                 <component type="lookup" name="staff" reference="staff"
                            field="#{form}.staff" defaultEnabled="never">
@@ -67,6 +67,12 @@
                 </component>
             </layoutElement>
             <layoutElement column="1" row="4">
+                <component type="checkbox" name="showOnlyMyOperationalTasksAndOrders" field="#{form}.showOnlyMyOperationalTasksAndOrders"
+                           reference="showOnlyMyOperationalTasksAndOrders" defaultEnabled="false" hasDescription="true">
+                    <option type="labelWidth" value="60"/>
+                </component>
+            </layoutElement>
+            <layoutElement column="1" row="5">
                 <component type="borderLayout" name="userLocationsBorderLayout" reference="userLocationsBorderLayout"
                            defaultVisible="false">
                     <component type="awesomeDynamicList" name="userLocations" source="#{form}.userLocations"
@@ -80,8 +86,10 @@
                                     <component type="lookup" name="location" field="location" reference="location"
                                                hasLabel="false">
                                         <option type="column" fields="name" name="name" link="true"/>
+
                                         <option type="searchable" value="number,name"/>
                                         <option type="orderable" value="number,name"/>
+
                                         <option type="expression" value="#number + ' - ' + #name"/>
                                         <option type="fieldCode" value="number"/>
                                     </component>
@@ -89,6 +97,7 @@
                             </component>
                         </components>
                     </component>
+
                     <option type="label" value="userLocations"/>
                 </component>
             </layoutElement>
