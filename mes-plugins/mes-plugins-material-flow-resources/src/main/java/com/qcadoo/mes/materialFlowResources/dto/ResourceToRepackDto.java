@@ -5,6 +5,7 @@ import java.util.Date;
 
 public class ResourceToRepackDto {
     private Long locationId;
+    private String resourceNumber;
     private String productName;
     private String locationNumber;
     private String storageLocationNumber;
@@ -19,6 +20,14 @@ public class ResourceToRepackDto {
     private BigDecimal quantity;
     private String unit;
     private BigDecimal additionalQuantity;
+
+    public String getResourceNumber() {
+        return resourceNumber;
+    }
+
+    public void setResourceNumber(String resourceNumber) {
+        this.resourceNumber = resourceNumber;
+    }
 
     public Long getLocationId() {
         return locationId;
