@@ -25,20 +25,19 @@ package com.qcadoo.mes.basic.imports.parsers;
 
 import com.qcadoo.mes.basic.imports.helpers.CellErrorsAccessor;
 import com.qcadoo.mes.basic.imports.helpers.CellParser;
+import org.springframework.stereotype.Component;
 
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.springframework.stereotype.Component;
-
 @Component
 public class BooleanCellParser implements CellParser {
 
     private static final String L_QCADOO_VIEW_VALIDATE_FIELD_ERROR_CUSTOM = "qcadooView.validate.field.error.custom";
 
-    private static final String L_TRUE_BOOLEAN_PATTERN = "^(true|tak|t|1)$";
+    private static final String L_TRUE_BOOLEAN_PATTERN = "^(true|yes|tak|t|1)$";
 
     @Override
     public void parse(final String cellValue, final String dependentCellValue, final CellErrorsAccessor errorsAccessor,
