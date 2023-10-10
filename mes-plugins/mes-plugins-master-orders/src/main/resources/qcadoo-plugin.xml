@@ -170,6 +170,12 @@
             </model:file>
         </model:model-field>
 
+        <model:model-field plugin="materialFlowResources" model="documentPositionParameters">
+            <model:integer name="runningOutOfStockDays">
+                <model:validatesRange from="0"/>
+            </model:integer>
+        </model:model-field>
+
         <model:model-field model="order" plugin="orders">
             <model:belongsTo name="salesPlan" model="salesPlan"
                              plugin="masterOrders" lazy="true"/>
@@ -282,6 +288,11 @@
                                  method="onDelete"/>
         </model:model-hook>
 
+        <model:model-hook model="documentPositionParameters" plugin="materialFlowResources">
+            <model:validatesWith class="com.qcadoo.mes.masterOrders.hooks.DocumentPositionParametersHooksMO"
+                                 method="validatesWith"/>
+        </model:model-hook>
+
         <model:model-enum-value plugin="basic" model="log" enum="logType" value="masterOrderImport"/>
 
         <menu:menu-category name="sales" defaultAuthorizationRole="ROLE_PLANNING_MENU"/>
@@ -360,6 +371,7 @@
 
         <view:view-tab resource="view/tabExtensions/orderDetails.xml"/>
         <view:view-tab resource="view/tabExtensions/masterOrderDefinitionsParameters.xml"/>
+        <view:view-tab resource="view/tabExtensions/salesVolumesParameters.xml"/>
 
         <view:view-grid-column plugin="orders" view="ordersList" component="grid">
             <view:column name="masterOrderNumber" fields="masterOrderNumber" orderable="true" searchable="true"
