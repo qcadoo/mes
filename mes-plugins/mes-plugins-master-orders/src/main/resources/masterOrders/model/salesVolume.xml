@@ -44,11 +44,9 @@
             <validatesUnscaledValue max="9"/>
             <validatesScale max="5"/>
         </decimal>
-        <decimal name="stockForDays" persistent="false">
+        <integer name="stockForDays" persistent="false">
             <validatesRange from="0"/>
-            <validatesUnscaledValue max="9"/>
-            <validatesScale max="5"/>
-        </decimal>
+        </integer>
     </fields>
 
     <hooks>
