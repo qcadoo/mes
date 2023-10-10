@@ -59,18 +59,6 @@
                             <listener event="onSelectedEntityChange"
                                       class="com.qcadoo.mes.deliveries.listeners.DeliveredProductDetailsListeners"
                                       method="onSelectedEntityChange"/>
-                            <listener event="onSelectedEntityChange"
-                                      class="com.qcadoo.mes.deliveries.listeners.DeliveredProductDetailsListeners"
-                                      method="fillOrderedQuantities"/>
-                            <listener event="onSelectedEntityChange"
-                                      class="com.qcadoo.mes.deliveries.listeners.DeliveredProductDetailsListeners"
-                                      method="fillUnitFields"/>
-                            <listener event="onSelectedEntityChange"
-                                      class="com.qcadoo.mes.deliveries.listeners.DeliveredProductDetailsListeners"
-                                      method="fillCurrencyFields"/>
-                            <listener event="onSelectedEntityChange"
-                                      class="com.qcadoo.mes.deliveries.listeners.DeliveredProductDetailsListeners"
-                                      method="setBatchLookupProductFilterValue"/>
                         </component>
                     </layoutElement>
                     <layoutElement column="1" row="3">
@@ -414,7 +402,7 @@
     <hooks>
         <beforeRender
                 class="com.qcadoo.mes.deliveries.hooks.DeliveredProductDetailsHooks"
-                method="beforeRender"/>
+                method="onBeforeRender"/>
     </hooks>
 
 </view>

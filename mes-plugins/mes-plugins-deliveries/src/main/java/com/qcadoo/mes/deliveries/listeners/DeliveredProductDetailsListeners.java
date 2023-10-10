@@ -27,7 +27,9 @@ import com.qcadoo.mes.basic.CalculationQuantityService;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.deliveries.DeliveriesService;
 import com.qcadoo.mes.deliveries.constants.DeliveredProductFields;
+import com.qcadoo.mes.deliveries.constants.DeliveryFields;
 import com.qcadoo.mes.deliveries.hooks.DeliveredProductDetailsHooks;
+import com.qcadoo.mes.materialFlowResources.MaterialFlowResourcesService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
 import com.qcadoo.view.api.ComponentState;
@@ -48,8 +50,6 @@ import java.util.Optional;
 @Service
 public class DeliveredProductDetailsListeners {
 
-    
-
     @Autowired
     private NumberService numberService;
 
@@ -62,38 +62,21 @@ public class DeliveredProductDetailsListeners {
     @Autowired
     private DeliveredProductDetailsHooks deliveredProductDetailsHooks;
 
+    @Autowired
+    private MaterialFlowResourcesService materialFlowResourcesService;
+
     public void onSelectedEntityChange(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        LookupComponent productLookup = (LookupComponent) view.getComponentByReference(DeliveredProductFields.PRODUCT);
-        Entity product = productLookup.getEntity();
-
-        LookupComponent storageLocationLookup = (LookupComponent) view
-                .getComponentByReference(DeliveredProductFields.STORAGE_LOCATION);
-
-        if (Objects.nonNull(product)) {
-            filterByProduct(storageLocationLookup, product.getId());
-        } else {
-            clearAndDisable(storageLocationLookup);
-        }
-
         fillConversion(view, state, args);
         quantityChange(view, state, args);
+        fillOrderedQuantities(view, state, args);
+        fillUnitFields(view, state, args);
+        fillCurrencyFields(view, state, args);
+        setBatchLookupProductFilterValue(view, state, args);
+        setStorageLocationLookup(view);
     }
 
-    private void filterByProduct(final LookupComponent lookupComponent, final Long id) {
-        lookupComponent.setFieldValue(null);
-        lookupComponent.setEnabled(true);
-
-        FilterValueHolder filterValueHolder = lookupComponent.getFilterValue();
-        filterValueHolder.put(DeliveredProductFields.PRODUCT, id);
-
-        lookupComponent.setFilterValue(filterValueHolder);
-        lookupComponent.requestComponentUpdateState();
-    }
-
-    private void clearAndDisable(final LookupComponent lookupComponent) {
-        lookupComponent.setFieldValue(null);
-        lookupComponent.setEnabled(false);
-        lookupComponent.requestComponentUpdateState();
+    public void fillConversion(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        deliveredProductDetailsHooks.fillConversion(view);
     }
 
     public void fillUnitFields(final ViewDefinitionState view, final ComponentState state, final String[] args) {
@@ -106,10 +89,6 @@ public class DeliveredProductDetailsListeners {
 
     public void fillOrderedQuantities(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         deliveredProductDetailsHooks.fillOrderedQuantities(view);
-    }
-
-    public void fillConversion(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        deliveredProductDetailsHooks.fillConversion(view);
     }
 
     public void calculatePriceFromTotalPrice(final ViewDefinitionState view, final ComponentState state, final String[] args) {
@@ -152,8 +131,8 @@ public class DeliveredProductDetailsListeners {
     }
 
     private boolean decimalFieldsInvalid(final FormComponent formComponent) {
-        String[] fieldNames = { DeliveredProductFields.ADDITIONAL_QUANTITY, DeliveredProductFields.CONVERSION,
-                DeliveredProductFields.DELIVERED_QUANTITY };
+        String[] fieldNames = {DeliveredProductFields.ADDITIONAL_QUANTITY, DeliveredProductFields.CONVERSION,
+                DeliveredProductFields.DELIVERED_QUANTITY};
 
         boolean valid = false;
 
@@ -199,13 +178,51 @@ public class DeliveredProductDetailsListeners {
         }
     }
 
-    public void setBatchLookupProductFilterValue(final ViewDefinitionState view, final ComponentState state,
-            final String[] args) {
+    public void setBatchLookupProductFilterValue(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         FormComponent deliveredProductForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
         Entity deliveredProduct = deliveredProductForm.getPersistedEntityWithIncludedFormValues();
 
         deliveredProductDetailsHooks.setBatchLookupProductFilterValue(view, deliveredProduct);
+    }
+
+    public void setStorageLocationLookup(final ViewDefinitionState view) {
+        FormComponent deliveredProductForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
+        LookupComponent productLookup = (LookupComponent) view.getComponentByReference(DeliveredProductFields.PRODUCT);
+        LookupComponent storageLocationLookup = (LookupComponent) view
+                .getComponentByReference(DeliveredProductFields.STORAGE_LOCATION);
+
+        Entity deliveredProduct = deliveredProductForm.getEntity();
+        Entity delivery = deliveredProduct.getBelongsToField(DeliveredProductFields.DELIVERY);
+        Entity location = delivery.getBelongsToField(DeliveryFields.LOCATION);
+        Entity product = productLookup.getEntity();
+
+        Long storageLocationId = null;
+
+        FilterValueHolder filterValueHolder = storageLocationLookup.getFilterValue();
+
+        boolean isProductSet = Objects.nonNull(product);
+
+        if (isProductSet) {
+            filterValueHolder.put(DeliveredProductFields.PRODUCT, product.getId());
+
+            if (Objects.nonNull(location)) {
+                Optional<Entity> mayBeStorageLocation = materialFlowResourcesService.findStorageLocationForProduct(location, product);
+
+                if (mayBeStorageLocation.isPresent()) {
+                    Entity storageLocation = mayBeStorageLocation.get();
+
+                    storageLocationId = storageLocation.getId();
+                }
+            }
+        } else {
+            filterValueHolder.remove(DeliveredProductFields.PRODUCT);
+        }
+
+        storageLocationLookup.setFilterValue(filterValueHolder);
+        storageLocationLookup.setFieldValue(storageLocationId);
+        storageLocationLookup.setEnabled(isProductSet);
+        storageLocationLookup.requestComponentUpdateState();
     }
 
 }
