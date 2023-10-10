@@ -154,6 +154,7 @@
                 <option type="expression" value="#product['name']"/>
             </component>
         </windowTab>
+
         <windowTab name="lacks">
             <component type="grid" name="lacks" useDto="true" source="#{form}.lacksDto"
                        model="lackDto" reference="lacks">
@@ -184,10 +185,9 @@
                 <listener event="remove"
                           method="onRemoveLack"
                           class="com.qcadoo.mes.productionCounting.listeners.TrackingOperationProductComponentDetailsListeners"/>
-
-
             </component>
         </windowTab>
+
         <windowTab name="resourceAttributes">
             <component type="grid" name="prodOutResourceAttrVals" reference="prodOutResourceAttrVals"
                        source="#{form}.prodOutResourceAttrVals">

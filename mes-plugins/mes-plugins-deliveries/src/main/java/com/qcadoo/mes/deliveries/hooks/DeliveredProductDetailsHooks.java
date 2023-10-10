@@ -23,16 +23,6 @@
  */
 package com.qcadoo.mes.deliveries.hooks;
 
-import java.math.BigDecimal;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-
-import com.qcadoo.view.api.components.*;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.advancedGenealogy.criteriaModifier.BatchCriteriaModifier;
 import com.qcadoo.mes.basic.constants.ProductFields;
@@ -49,8 +39,17 @@ import com.qcadoo.model.api.units.UnitConversionService;
 import com.qcadoo.security.api.SecurityService;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
+import com.qcadoo.view.api.components.*;
 import com.qcadoo.view.api.components.lookup.FilterValueHolder;
 import com.qcadoo.view.constants.QcadooViewConstants;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
 @Service
 public class DeliveredProductDetailsHooks {
@@ -60,8 +59,10 @@ public class DeliveredProductDetailsHooks {
     private static final String L_LOCATION = "location";
 
     private static final String L_PRODUCT = "product";
-    public static final String TOTAL_PRICE_CURRENCY = "totalPriceCurrency";
-    public static final String PRICE_PER_UNIT_CURRENCY = "pricePerUnitCurrency";
+
+    private static final String TOTAL_PRICE_CURRENCY = "totalPriceCurrency";
+
+    private static final String PRICE_PER_UNIT_CURRENCY = "pricePerUnitCurrency";
 
     @Autowired
     private NumberService numberService;
@@ -78,18 +79,14 @@ public class DeliveredProductDetailsHooks {
     @Autowired
     private SecurityService securityService;
 
-    public void beforeRender(final ViewDefinitionState view) {
-
-        FieldComponent batchNumber = (FieldComponent) view.getComponentByReference(DeliveredProductFields.BATCH_NUMBER);
-        if (((CheckBoxComponent) view.getComponentByReference(DeliveredProductFields.ADD_BATCH)).isChecked()) {
-            batchNumber.setEnabled(true);
-        } else {
-            batchNumber.setEnabled(false);
-        }
-
+    public void onBeforeRender(final ViewDefinitionState view) {
         FormComponent deliveredProductForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
+        FieldComponent batchNumber = (FieldComponent) view.getComponentByReference(DeliveredProductFields.BATCH_NUMBER);
+        CheckBoxComponent addBatchCheckBox = (CheckBoxComponent) view.getComponentByReference(DeliveredProductFields.ADD_BATCH);
 
         Entity deliveredProduct = deliveredProductForm.getPersistedEntityWithIncludedFormValues();
+
+        batchNumber.setEnabled(addBatchCheckBox.isChecked());
 
         fillOrderedQuantities(view);
         fillUnitFields(view);
