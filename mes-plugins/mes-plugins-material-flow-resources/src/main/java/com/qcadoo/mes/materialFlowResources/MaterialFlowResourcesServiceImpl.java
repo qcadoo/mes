@@ -346,6 +346,7 @@ public class MaterialFlowResourcesServiceImpl implements MaterialFlowResourcesSe
             StringBuilder prepareQuery = new StringBuilder();
 
             prepareQuery.append("SELECT ");
+            prepareQuery.append("dto.location_id as locationId, ");
             prepareQuery.append("dto.productName as productName, ");
             prepareQuery.append("dto.productNumber as productNumber, ");
             prepareQuery.append("dto.locationNumber as locationNumber, ");
