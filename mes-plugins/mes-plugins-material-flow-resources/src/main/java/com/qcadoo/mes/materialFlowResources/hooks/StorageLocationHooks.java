@@ -36,15 +36,18 @@ public class StorageLocationHooks {
         } else {
             List<Entity> products = Lists.newArrayList(storageLocation.getHasManyField(StorageLocationFields.PRODUCTS));
 
+            Entity storageLocationFromDB = storageLocation.getDataDefinition().get(storageLocation.getId());
+            Entity productFromDB = storageLocationFromDB.getBelongsToField(StorageLocationFields.PRODUCT);
+
             if (Objects.nonNull(product)) {
+                if (Objects.nonNull(productFromDB) && !product.getId().equals(productFromDB.getId())) {
+                    products = products.stream().filter(p -> !p.getId().equals(productFromDB.getId())).collect(Collectors.toList());
+                }
+
                 if (products.stream().noneMatch(p -> p.getId().equals(product.getId()))) {
                     products.add(product);
                 }
             } else {
-                Entity storageLocationFromDB = storageLocation.getDataDefinition().get(storageLocation.getId());
-
-                Entity productFromDB = storageLocationFromDB.getBelongsToField(StorageLocationFields.PRODUCT);
-
                 if (Objects.nonNull(productFromDB)) {
                     products = products.stream().filter(p -> !p.getId().equals(productFromDB.getId())).collect(Collectors.toList());
                 }
@@ -52,22 +55,6 @@ public class StorageLocationHooks {
 
             storageLocation.setField(StorageLocationFields.PRODUCTS, products);
         }
-    }
-
-    private boolean isProductChanged(final Entity storageLocation, final Entity product) {
-        Entity storageLocationFromDB = storageLocation.getDataDefinition().get(storageLocation.getId());
-
-        Entity productFromDB = storageLocationFromDB.getBelongsToField(StorageLocationFields.PRODUCT);
-
-        if (Objects.isNull(product)) {
-            return false;
-        }
-
-        if (Objects.isNull(productFromDB)) {
-            return true;
-        }
-
-        return !product.getId().equals(productFromDB.getId());
     }
 
     private void addAuditChanges(DataDefinition storageLocationDD, Entity storageLocation) {

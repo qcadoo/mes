@@ -37,6 +37,7 @@ import com.qcadoo.mes.deliveries.constants.*;
 import com.qcadoo.mes.deliveries.print.DeliveryReportPdf;
 import com.qcadoo.mes.deliveries.print.OrderReportPdf;
 import com.qcadoo.mes.deliveries.states.constants.DeliveryStateStringValues;
+import com.qcadoo.mes.materialFlowResources.MaterialFlowResourcesService;
 import com.qcadoo.model.api.*;
 import com.qcadoo.model.api.file.FileService;
 import com.qcadoo.model.api.search.*;
@@ -130,6 +131,9 @@ public class DeliveryDetailsListeners {
 
     @Autowired
     private CalculationQuantityService calculationQuantityService;
+
+    @Autowired
+    private MaterialFlowResourcesService materialFlowResourcesService;
 
     public void fillPrices(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         Entity parameter = parameterService.getParameter();
@@ -588,6 +592,7 @@ public class DeliveryDetailsListeners {
                                           final boolean copyQuantityAndPrice) {
         Entity deliveredProduct = deliveriesService.getDeliveredProductDD().create();
 
+        Entity location = delivery.getBelongsToField(DeliveryFields.LOCATION);
         Entity product = orderedProduct.getBelongsToField(OrderedProductFields.PRODUCT);
         BigDecimal conversion = orderedProduct.getDecimalField(OrderedProductFields.CONVERSION);
 
@@ -608,6 +613,16 @@ public class DeliveryDetailsListeners {
                     .setScaleWithDefaultMathContext(orderedProduct.getDecimalField(OrderedProductFields.PRICE_PER_UNIT)));
             deliveredProduct.setField(DeliveredProductFields.TOTAL_PRICE, numberService
                     .setScaleWithDefaultMathContext(orderedProduct.getDecimalField(OrderedProductFields.TOTAL_PRICE)));
+        }
+
+        if (Objects.nonNull(location)) {
+            Optional<Entity> mayBeStorageLocation = materialFlowResourcesService.findStorageLocationForProduct(location, product);
+
+            if (mayBeStorageLocation.isPresent()) {
+                Entity storageLocation = mayBeStorageLocation.get();
+
+                deliveredProduct.setField(DeliveredProductFields.STORAGE_LOCATION, storageLocation);
+            }
         }
 
         if (PluginUtils.isEnabled("supplyNegotiations")) {
