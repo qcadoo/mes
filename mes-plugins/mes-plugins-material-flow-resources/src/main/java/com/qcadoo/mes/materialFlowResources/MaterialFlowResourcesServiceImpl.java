@@ -438,6 +438,28 @@ public class MaterialFlowResourcesServiceImpl implements MaterialFlowResourcesSe
         return null;
     }
 
+    public StorageLocationNumberIdDto checkIfStorageLocationNumberExist(String storageLocationNumber) {
+        Map<String, Object> params = Maps.newHashMap();
+
+        if (storageLocationNumber != null && !storageLocationNumber.isEmpty()) {
+            StringBuilder prepareQuery = new StringBuilder();
+
+            prepareQuery.append("SELECT ");
+            prepareQuery.append("mfsl.id as id ");
+            prepareQuery.append("FROM materialFlowResources_storageLocation as mfsl ");
+            prepareQuery.append("WHERE mfsl.number = :storageLocationNumber");
+
+            params.put("storageLocationNumber", storageLocationNumber);
+
+            try {
+                return jdbcTemplate.queryForObject(prepareQuery.toString(), params, BeanPropertyRowMapper.newInstance(StorageLocationNumberIdDto.class));
+            } catch (EmptyResultDataAccessException e) {
+                return null;
+            }
+        }
+        return null;
+    }
+
     public CheckProductDto checkProductByStorageLocationNumber(String storageLocationNumber) {
         Map<String, Object> params = Maps.newHashMap();
 
