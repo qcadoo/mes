@@ -7,6 +7,7 @@ import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.*;
 import com.qcadoo.view.api.components.lookup.FilterValueHolder;
 import com.qcadoo.view.constants.QcadooViewConstants;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -34,7 +35,7 @@ public class StorageLocationsDetailsHooks {
 
         boolean isSaved = Objects.nonNull(storageLocationForm.getEntityId());
 
-        if (Objects.nonNull(product)) {
+        if (Objects.nonNull(product) || StringUtils.isNotEmpty(productLookup.getCurrentCode())) {
             productLookup.setEnabled(true);
             productsGrid.setEnabled(false);
         } else {
