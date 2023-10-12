@@ -107,47 +107,42 @@
         </windowTab>
 
         <windowTab name="productsTab" reference="productsTab">
-            <component type="gridLayout" name="productsGridLayout"
-                       hasBorders="false" columns="3" rows="1">
-                <layoutElement column="1" row="1" width="2">
-                    <component type="lookup" name="productsLookup" reference="productsLookup"
-                               field="#{form}.products" defaultVisible="false" persistent="false"
-                               hasLabel="false">
-                        <option type="column" name="name" fields="name" link="true"/>
-                        <option type="column" name="globalTypeOfMaterial" fields="globalTypeOfMaterial"/>
+            <component type="lookup" name="productsLookup" reference="productsLookup"
+                       field="#{form}.products" defaultVisible="false" persistent="false"
+                       hasLabel="false">
+                <option type="column" name="name" fields="name" link="true"/>
+                <option type="column" name="globalTypeOfMaterial" fields="globalTypeOfMaterial"/>
 
-                        <option type="searchable" value="number,name,globalTypeOfMaterial"/>
-                        <option type="orderable" value="number,name,globalTypeOfMaterial"/>
+                <option type="searchable" value="number,name,globalTypeOfMaterial"/>
+                <option type="orderable" value="number,name,globalTypeOfMaterial"/>
 
-                        <option type="expression"
-                                value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name"/>
-                        <option type="fieldCode" value="number"/>
+                <option type="expression"
+                        value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name"/>
+                <option type="fieldCode" value="number"/>
 
-                        <option type="multiselect" value="true"/>
+                <option type="multiselect" value="true"/>
 
-                        <criteriaModifier class="com.qcadoo.mes.materialFlowResources.criteriaModifiers.ProductsCriteriaModifiers"
-                                          method="showNotAssignedProducts"/>
-                    </component>
-                    <component type="grid" name="products" reference="products"
-                               source="#{form}.products">
-                        <option type="column" name="number" fields="number"/>
-                        <option type="column" name="name" fields="name"/>
-                        <option type="column" name="globalTypeOfMaterial" fields="globalTypeOfMaterial"/>
+                <criteriaModifier class="com.qcadoo.mes.materialFlowResources.criteriaModifiers.ProductsCriteriaModifiers"
+                                  method="showNotAssignedProducts"/>
+            </component>
+            <component type="grid" name="products" reference="products"
+                       source="#{form}.products">
+                <option type="column" name="number" fields="number"/>
+                <option type="column" name="name" fields="name"/>
+                <option type="column" name="globalTypeOfMaterial" fields="globalTypeOfMaterial"/>
 
-                        <option type="order" column="number" direction="asc"/>
+                <option type="order" column="number" direction="asc"/>
 
-                        <option type="searchable" value="number,name,globalTypeOfMaterial"/>
-                        <option type="orderable" value="number,name,globalTypeOfMaterial"/>
+                <option type="searchable" value="number,name,globalTypeOfMaterial"/>
+                <option type="orderable" value="number,name,globalTypeOfMaterial"/>
 
-                        <option type="weakRelation" value="true"/>
-                        <option type="correspondingLookup" value="productsLookup"/>
+                <option type="weakRelation" value="true"/>
+                <option type="correspondingLookup" value="productsLookup"/>
 
-                        <option type="creatable" value="true"/>
-                        <option type="deletable" value="true"/>
-                        <option type="multiselect" value="true"/>
-                        <option type="fixedHeight" value="true"/>
-                    </component>
-                </layoutElement>
+                <option type="creatable" value="true"/>
+                <option type="deletable" value="true"/>
+                <option type="multiselect" value="true"/>
+                <option type="fixedHeight" value="true"/>
             </component>
         </windowTab>
 

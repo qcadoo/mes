@@ -25,27 +25,32 @@
 
 -->
 <windowTabExtension xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xmlns="http://schema.qcadoo.org/modules/windowTabExtension"
-	xsi:schemaLocation="http://schema.qcadoo.org/modules/windowTabExtension http://schema.qcadoo.org/modules/windowTabExtension.xsd"
-	plugin="basic" view="productAdditionalDetails">
+                    xmlns="http://schema.qcadoo.org/modules/windowTabExtension"
+                    xsi:schemaLocation="http://schema.qcadoo.org/modules/windowTabExtension http://schema.qcadoo.org/modules/windowTabExtension.xsd"
+                    plugin="basic" view="productAdditionalDetails">
 
-	<windowTab name="storageLocationsTab">
-		<component type="grid" name="storageLocations" source="#{form}.storageLocations"
-				   reference="storageLocations">
-			<option type="column" name="locationNumber" fields="location"
-					expression="#location['number']"/>
-			<option type="column" name="number" fields="number"/>
+    <windowTab name="storageLocationsTab">
+        <component type="gridLayout" name="storageLocationsGridLayout"
+                   hasBorders="false" columns="2" rows="1">
+            <layoutElement column="1" row="1">
+                <component type="grid" name="storageLocations" source="#{form}.storageLocations"
+                           reference="storageLocations">
+                    <option type="column" name="locationNumber" fields="location"
+                            expression="#location['number']"/>
+                    <option type="column" name="number" fields="number"/>
 
-			<option type="order" column="number" direction="desc"/>
+                    <option type="order" column="number" direction="desc"/>
 
-			<option type="orderable" value="locationNumber,number"/>
-			<option type="searchable" value="locationNumber,number"/>
+                    <option type="orderable" value="locationNumber,number"/>
+                    <option type="searchable" value="locationNumber,number"/>
 
-			<option type="creatable" value="false"/>
-			<option type="deletable" value="false"/>
-			<option type="multiselect" value="true"/>
-			<option type="fixedHeight" value="true"/>
-		</component>
-	</windowTab>
+                    <option type="creatable" value="false"/>
+                    <option type="deletable" value="false"/>
+                    <option type="multiselect" value="true"/>
+                    <option type="fixedHeight" value="true"/>
+                </component>
+            </layoutElement>
+        </component>
+    </windowTab>
 
 </windowTabExtension>
