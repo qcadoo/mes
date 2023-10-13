@@ -445,7 +445,7 @@ public class MaterialFlowResourcesServiceImpl implements MaterialFlowResourcesSe
             StringBuilder prepareQuery = new StringBuilder();
 
             prepareQuery.append("SELECT ");
-            prepareQuery.append("mfsl.id as id ");
+            prepareQuery.append("mfsl.id as locationId ");
             prepareQuery.append("FROM materialFlowResources_storageLocation as mfsl ");
             prepareQuery.append("WHERE mfsl.number = :storageLocationNumber");
 
