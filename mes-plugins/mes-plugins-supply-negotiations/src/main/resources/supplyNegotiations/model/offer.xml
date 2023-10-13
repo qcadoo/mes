@@ -25,48 +25,55 @@
 
 -->
 <model name="offer" activable="true" auditable="true"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
-	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
-	<fields>
-		<string name="number" required="true" unique="true">
-			<validatesLength max="255" />
-		</string>
-		<string name="name">
-			<validatesLength max="1024" />
-		</string>
-		<string name="description">
-			<validatesLength max="2048" />
-		</string>
-		<belongsTo name="supplier" model="company" plugin="basic"/>
-		<integer name="workingDaysAfterOrder"/>	
-		<datetime name="offeredDate" />
-		<belongsTo name="requestForQuotation" model="requestForQuotation" />
-		<belongsTo name="negotiation" model="negotiation" />
-		<file name="attachment" />
-		<decimal name="transportCost" />
-		<decimal name="offerProductsCumulatedQuantity" persistent="false" />
-		<decimal name="offerProductsCumulatedTotalPrice" persistent="false"/>
-		
-		<hasMany name="offerProducts" joinField="offer" model="offerProduct"
-			cascade="delete" copyable="true" />
-			
-		<enum name="state" values="01draft,02accepted,03declined"
-			default="01draft" required="true" />
-		<hasMany name="stateChanges" model="offerStateChange"
-			joinField="offer" cascade="delete" />
-			
-		<hasMany name="deliveredProducts" model="deliveredProduct" plugin="deliveries"
-			joinField="offer" cascade="nullify" />
-		<hasMany name="orderedProducts" model="orderedProduct" plugin="deliveries"
-			joinField="offer" cascade="nullify" />
-	</fields>
-	<hooks >
-		<onCreate class="com.qcadoo.mes.supplyNegotiations.hooks.OfferHooks"
-			method="onCreate" />
-		<onCopy class="com.qcadoo.mes.supplyNegotiations.hooks.OfferHooks"
-			method="onCopy" />
-		<onView class="com.qcadoo.mes.supplyNegotiations.hooks.OfferHooks"
-			method="onView" />
-	</hooks>
-	<identifier expression="#number + ' - ' + #name" />
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
+       xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
+
+    <fields>
+        <string name="number" required="true" unique="true">
+            <validatesLength max="255"/>
+        </string>
+        <string name="name">
+            <validatesLength max="1024"/>
+        </string>
+        <string name="description">
+            <validatesLength max="2048"/>
+        </string>
+        <belongsTo name="supplier" model="company" plugin="basic"/>
+        <date name="offerDate"/>
+        <datetime name="offeredDate"/>
+        <integer name="workingDaysAfterOrder"/>
+        <belongsTo name="requestForQuotation" model="requestForQuotation"/>
+        <belongsTo name="negotiation" model="negotiation"/>
+        <file name="attachment"/>
+        <decimal name="transportCost"/>
+        <decimal name="offerProductsCumulatedQuantity" persistent="false"/>
+        <decimal name="offerProductsCumulatedTotalPrice" persistent="false"/>
+        <belongsTo name="currency" model="currency" plugin="basic" required="true"/>
+
+        <hasMany name="offerProducts" joinField="offer" model="offerProduct"
+                 cascade="delete" copyable="true"/>
+
+        <enum name="state" values="01draft,02accepted,03declined"
+              default="01draft" required="true"/>
+        <hasMany name="stateChanges" model="offerStateChange"
+                 joinField="offer" cascade="delete"/>
+
+        <hasMany name="deliveredProducts" model="deliveredProduct" plugin="deliveries"
+                 joinField="offer" cascade="nullify"/>
+        <hasMany name="orderedProducts" model="orderedProduct" plugin="deliveries"
+                 joinField="offer" cascade="nullify"/>
+    </fields>
+
+    <hooks>
+        <onCreate class="com.qcadoo.mes.supplyNegotiations.hooks.OfferHooks"
+                  method="onCreate"/>
+        <onCopy class="com.qcadoo.mes.supplyNegotiations.hooks.OfferHooks"
+                method="onCopy"/>
+        <onView class="com.qcadoo.mes.supplyNegotiations.hooks.OfferHooks"
+                method="onView"/>
+        <onSave class="com.qcadoo.mes.supplyNegotiations.hooks.OfferHooks"
+                method="onSave"/>
+    </hooks>
+
+    <identifier expression="#number + ' - ' + #name"/>
 </model>

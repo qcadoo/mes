@@ -23,13 +23,12 @@
  */
 package com.qcadoo.mes.supplyNegotiations.hooks;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.qcadoo.mes.deliveries.DeliveriesService;
 import com.qcadoo.mes.supplyNegotiations.constants.OfferProductFields;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 @Service
 public class OfferProductHooks {

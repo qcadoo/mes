@@ -36,6 +36,13 @@
             <group name="salesVolumes">
                 <bigButton name="addSalesVolumes" icon="newIcon24.png" action="#{grid}.fireEvent(addSalesVolumes);"/>
             </group>
+
+            <group name="filter">
+                <bigButton name="showProductsRunningOutOfStock" icon="newIcon24.png" action="#{grid}.fireEvent(showProductsRunningOutOfStock);"
+                           message="masterOrders.salesVolumesList.window.ribbon.filter.showProductsRunningOutOfStock.description"/>
+                <bigButton name="showProductsAll" icon="newIcon24.png" action="#{grid}.fireEvent(showProductsAll);"
+                           message="masterOrders.salesVolumesList.window.ribbon.filter.showProductsAll.description"/>
+            </group>
         </ribbon>
 
         <component type="grid" name="salesVolumes" reference="grid">
@@ -63,9 +70,19 @@
             <option type="fullscreen" value="true"/>
             <option type="multiselect" value="true"/>
 
+            <rowStyleResolver
+                    class="com.qcadoo.mes.masterOrders.rowStyleResolvers.SalesVolumesListResolver"
+                    method="fillRowStyles"/>
+
             <listener event="addSalesVolumes"
                       class="com.qcadoo.mes.masterOrders.listeners.SalesVolumesListListeners"
                       method="addSalesVolumes"/>
+            <listener event="showProductsRunningOutOfStock"
+                      class="com.qcadoo.mes.masterOrders.listeners.SalesVolumesListListeners"
+                      method="showProductsRunningOutOfStock"/>
+            <listener event="showProductsAll"
+                      class="com.qcadoo.mes.masterOrders.listeners.SalesVolumesListListeners"
+                      method="showProductsAll"/>
         </component>
 
         <option type="fixedHeight" value="true"/>

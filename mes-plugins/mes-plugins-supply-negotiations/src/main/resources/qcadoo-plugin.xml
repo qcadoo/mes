@@ -97,6 +97,11 @@
 				plugin="supplyNegotiations" model="negotiationStateChange" />
 		</model:model-field>
 
+		<model:model-field plugin="basic" model="currency" >
+			<model:hasMany name="offers" joinField="currency"
+						   plugin="supplyNegotiations" model="offer" />
+		</model:model-field>
+
 		<model:model-field plugin="basic" model="shift">
 			<model:hasMany name="requestForQuotationStateChanges"
 				plugin="supplyNegotiations" model="requestForQuotationStateChange"
@@ -162,13 +167,13 @@
 		</model:model-field>
 
 		<menu:menu-item name="requestsForQuotation" category="requirements"
-			view="requestForQuotationsList" defaultAuthorizationRole="ROLE_REQUIREMENTS"/>
+			view="requestForQuotationsList" defaultAuthorizationRole="ROLE_REQUEST_FOR_QUOTATIONS"/>
 		<menu:menu-item name="offer" category="requirements"
-			view="offersList" defaultAuthorizationRole="ROLE_REQUIREMENTS"/>
+			view="offersList" defaultAuthorizationRole="ROLE_OFFERS"/>
 		<menu:menu-item name="offersItems" category="requirements"
-			view="offersItems" defaultAuthorizationRole="ROLE_REQUIREMENTS"/>
+			view="offersItems" defaultAuthorizationRole="ROLE_OFFERS"/>
 		<menu:menu-item name="negotiation" category="requirements"
-			view="negotiationsList" defaultAuthorizationRole="ROLE_REQUIREMENTS"/>
+			view="negotiationsList" defaultAuthorizationRole="ROLE_NEGOTIATIONS"/>
 
 		<view:view resource="view/requestForQuotationDetails.xml" />
 		<view:view resource="view/requestForQuotationsList.xml" />
@@ -225,21 +230,6 @@
 			class="com.qcadoo.mes.supplyNegotiations.listeners.CompanyDetailsListenersSN"
 			method="redirectToFilteredRequestsList" />
 
-		<view:view-listener plugin="deliveries" view="orderedProductDetails"
-			component="product" event="onSelectedEntityChange"
-			class="com.qcadoo.mes.supplyNegotiations.listeners.OrderedProductDetailsListenersSN"
-			method="fillPricePerUnitAndOffer" />
-
-		<view:view-listener plugin="deliveries" view="deliveredProductDetails"
-			component="product" event="onSelectedEntityChange"
-			class="com.qcadoo.mes.supplyNegotiations.listeners.DeliveredProductDetailsListenersSN"
-			method="fillPricePerUnitAndOffer" />
-
-		<view:view-listener plugin="deliveries" view="orderedProductDetails"
-			component="product" event="onSelectedEntityChange"
-			class="com.qcadoo.mes.supplyNegotiations.listeners.OrderedProductDetailsListenersSN"
-			method="fillPricePerUnitAndOffer" />
-
 		<view:view-listener plugin="deliveries" view="deliveredProductDetails"
 			component="product" event="onSelectedEntityChange"
 			class="com.qcadoo.mes.supplyNegotiations.listeners.DeliveredProductDetailsListenersSN"
@@ -258,16 +248,6 @@
 			type="beforeRender"
 			class="com.qcadoo.mes.supplyNegotiations.hooks.CostNormsForMaterialsInOrderDetailsHooksSN"
 			method="disabledFieldAboutCostFromOffer" />
-
-		<view:view-hook plugin="deliveries" view="orderedProductDetails"
-			type="beforeRender"
-			class="com.qcadoo.mes.supplyNegotiations.hooks.OrderedProductDetailsHooksSN"
-			method="fillPricePerUnit" />
-
-		<view:view-hook plugin="deliveries" view="orderedProductDetails"
-			type="beforeRender"
-			class="com.qcadoo.mes.supplyNegotiations.hooks.OrderedProductDetailsHooksSN"
-			method="disabledFieldWhenOfferIsSelected" />
 
 		<custom:custom
 			class="com.qcadoo.mes.supplyNegotiations.SupplyNegotiationsOnStartupService" />

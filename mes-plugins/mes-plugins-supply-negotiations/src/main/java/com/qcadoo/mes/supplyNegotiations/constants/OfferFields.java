@@ -37,6 +37,8 @@ public final class OfferFields {
 
     public static final String SUPPLIER = "supplier";
 
+    public static final String OFFER_DATE = "offerDate";
+
     public static final String OFFERED_DATE = "offeredDate";
 
     public static final String WORKING_DAYS_AFTER_ORDER = "workingDaysAfterOrder";
@@ -45,20 +47,24 @@ public final class OfferFields {
 
     public static final String NEGOTIATION = "negotiation";
 
-    public static final String STATE = "state";
-
-    public static final String STATE_CHANGES = "stateChanges";
+    public static final String ATTACHMENT = "attachment";
 
     public static final String TRANSPORT_COST = "transportCost";
-
-    public static final String OFFER_PRODUCTS = "offerProducts";
-
-    public static final String DELIVERED_PRODUCTS = "deliveredProducts";
-
-    public static final String ORDERED_PRODUCTS = "orderedProducts";
 
     public static final String OFFER_PRODUCTS_CUMULATED_QUANTITY = "offerProductsCumulatedQuantity";
 
     public static final String OFFER_PRODUCTS_CUMULATED_TOTAL_PRICE = "offerProductsCumulatedTotalPrice";
+
+    public static final String CURRENCY = "currency";
+
+    public static final String OFFER_PRODUCTS = "offerProducts";
+
+    public static final String STATE = "state";
+
+    public static final String STATE_CHANGES = "stateChanges";
+
+    public static final String DELIVERED_PRODUCTS = "deliveredProducts";
+
+    public static final String ORDERED_PRODUCTS = "orderedProducts";
 
 }

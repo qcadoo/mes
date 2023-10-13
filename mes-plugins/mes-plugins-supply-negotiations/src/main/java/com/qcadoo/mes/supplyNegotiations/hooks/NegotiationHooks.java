@@ -23,18 +23,9 @@
  */
 package com.qcadoo.mes.supplyNegotiations.hooks;
 
-import static com.qcadoo.mes.supplyNegotiations.constants.NegotiationFields.FARTHEST_LIMIT_DATE;
-import static com.qcadoo.mes.supplyNegotiations.constants.NegotiationFields.NEGOTIATION_PRODUCTS;
-import static com.qcadoo.mes.supplyNegotiations.constants.NegotiationFields.STATE;
-import static com.qcadoo.mes.supplyNegotiations.constants.NegotiationProductFields.DUE_DATE;
-import static com.qcadoo.mes.supplyNegotiations.constants.NegotiationProductFields.NEGOTIATION;
-
-import java.util.Date;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.qcadoo.mes.states.service.StateChangeEntityBuilder;
+import com.qcadoo.mes.supplyNegotiations.constants.NegotiationFields;
+import com.qcadoo.mes.supplyNegotiations.constants.NegotiationProductFields;
 import com.qcadoo.mes.supplyNegotiations.states.constants.NegotiationState;
 import com.qcadoo.mes.supplyNegotiations.states.constants.NegotiationStateChangeDescriber;
 import com.qcadoo.mes.supplyNegotiations.states.constants.NegotiationStateStringValues;
@@ -42,6 +33,12 @@ import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchOrders;
 import com.qcadoo.model.api.search.SearchRestrictions;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.Date;
+import java.util.Objects;
+
 
 @Service
 public class NegotiationHooks {
@@ -56,20 +53,20 @@ public class NegotiationHooks {
         stateChangeEntityBuilder.buildInitial(describer, negotiation, NegotiationState.DRAFT);
     }
 
-    public void clearStateFieldOnCopy(final DataDefinition dataDefinition, final Entity entity) {
-        entity.setField(STATE, NegotiationStateStringValues.DRAFT);
+    public void clearStateFieldOnCopy(final DataDefinition negotiationDD, final Entity negotiation) {
+        negotiation.setField(NegotiationFields.STATE, NegotiationStateStringValues.DRAFT);
     }
 
-    public void updateFarestLimitDate(final DataDefinition negotiationDD, final Entity negotiation) {
-        if (negotiation.getId() != null) {
-            Entity negotiationProduct = negotiation.getHasManyField(NEGOTIATION_PRODUCTS).find()
-                    .add(SearchRestrictions.belongsTo(NEGOTIATION, negotiation)).addOrder(SearchOrders.desc(DUE_DATE))
+    public void updateFarthestLimitDate(final DataDefinition negotiationDD, final Entity negotiation) {
+        if (Objects.nonNull(negotiation.getId())) {
+            Entity negotiationProduct = negotiation.getHasManyField(NegotiationFields.NEGOTIATION_PRODUCTS).find()
+                    .add(SearchRestrictions.belongsTo(NegotiationProductFields.NEGOTIATION, negotiation)).addOrder(SearchOrders.desc(NegotiationProductFields.DUE_DATE))
                     .setMaxResults(1).uniqueResult();
 
-            if (negotiationProduct != null) {
-                Date farestLimitDate = (Date) negotiationProduct.getField(DUE_DATE);
+            if (Objects.nonNull(negotiationProduct)) {
+                Date farestLimitDate = (Date) negotiationProduct.getField(NegotiationProductFields.DUE_DATE);
 
-                negotiation.setField(FARTHEST_LIMIT_DATE, farestLimitDate);
+                negotiation.setField(NegotiationFields.FARTHEST_LIMIT_DATE, farestLimitDate);
             }
         }
     }

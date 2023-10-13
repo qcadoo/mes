@@ -24,7 +24,8 @@
     ***************************************************************************
 
 -->
-<view defaultAuthorizationRole="ROLE_MATERIAL_FLOW" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
+<view defaultAuthorizationRole="ROLE_MATERIAL_FLOW" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns="http://schema.qcadoo.org/view"
       xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
       name="storageLocationList"
       modelName="storageLocation"
@@ -32,17 +33,17 @@
 
     <component type="window" name="window">
         <ribbon>
-            <template name="standardGridTemplate" />
+            <template name="standardGridTemplate"/>
 
             <group name="actions">
                 <bigButton name="addMulti" icon="genealogyIcon24.png"
                            action="#{grid}.fireEvent(redirectToAddManyStorageLocations);">
                 </bigButton>
-                <bigButton name="importCurrentList" icon="iconProducts24.png"
-                           action="#{grid}.fireEvent(importCurrentList);">
-                </bigButton>
             </group>
-
+            <group name="import">
+                <bigButton name="openStorageLocationsImportPage" state="enabled" icon="xlsIcon24.png"
+                           action="#{window}.fireEvent(openStorageLocationsImportPage);"/>
+            </group>
             <group name="print">
                 <bigButton name="printStorageLocationNumbersReport" icon="pdfIcon24.png"
                            state="enabled" action="#{grid}.fireEvent(printStorageLocationNumbersReport);"/>
@@ -51,47 +52,49 @@
 
         <component type="grid" name="grid" reference="grid">
             <option type="column" name="number" fields="number" link="true"
-                    width="150" />
+                    width="150"/>
             <option type="column" name="locationNumber" fields="location"
-                    expression="#location['number']" />
+                    expression="#location['number']"/>
             <option type="column" name="locationName" fields="location"
-                    expression="#location['name']" />
-
+                    expression="#location['name']"/>
             <option type="column" name="productNumber" fields="product"
-                    expression="#product['number']" />
+                    expression="#product['number']"/>
             <option type="column" name="productName" fields="product"
-                    expression="#product['name']" />
-
+                    expression="#product['name']"/>
+            <option type="column" name="placeStorageLocation" fields="placeStorageLocation"/>
+            <option type="column" name="maximumNumberOfPallets" fields="maximumNumberOfPallets"/>
             <option type="column" name="highStorageLocation" fields="highStorageLocation"/>
 
-            <option type="order" column="number" direction="desc" width="200" />
+            <option type="order" column="number" direction="desc" width="200"/>
 
             <option type="searchable"
-                    value="number,locationNumber,locationName,productNumber,productName,highStorageLocation" />
+                    value="number,locationNumber,locationName,productNumber,productName,placeStorageLocation,maximumNumberOfPallets,highStorageLocation"/>
             <option type="orderable"
-                    value="number,locationNumber,locationName,productNumber,productName,highStorageLocation" />
+                    value="number,locationNumber,locationName,productNumber,productName,placeStorageLocation,maximumNumberOfPallets,highStorageLocation"/>
 
-            <option type="correspondingView" value="materialFlowResources/storageLocationsDetails" />
-            <option type="correspondingComponent" value="form" />
+            <option type="correspondingView" value="materialFlowResources/storageLocationsDetails"/>
+            <option type="correspondingComponent" value="form"/>
 
-            <option type="fullscreen" value="true" />
-            <option type="multiselect" value="true" />
+            <option type="fullscreen" value="true"/>
+            <option type="multiselect" value="true"/>
 
-            <criteriaModifier class="com.qcadoo.mes.materialFlowResources.criteriaModifiers.StorageLocationsCriteriaModifier"
-                              method="restrictToUserLocations"/>
+            <criteriaModifier
+                    class="com.qcadoo.mes.materialFlowResources.criteriaModifiers.StorageLocationsCriteriaModifier"
+                    method="restrictToUserLocations"/>
 
             <listener event="redirectToAddManyStorageLocations" method="redirectToAddManyStorageLocations"
-                      class="com.qcadoo.mes.materialFlowResources.listeners.StorageLocationsListListener"/>
-
-            <listener event="importCurrentList" method="importCurrentList"
-                      class="com.qcadoo.mes.materialFlowResources.listeners.StorageLocationsListListener"/>
+                      class="com.qcadoo.mes.materialFlowResources.listeners.StorageLocationsListListeners"/>
 
             <listener event="printStorageLocationNumbersReport" method="printStorageLocationNumbersReport"
-                      class="com.qcadoo.mes.materialFlowResources.listeners.StorageLocationsListListener"/>
+                      class="com.qcadoo.mes.materialFlowResources.listeners.StorageLocationsListListeners"/>
         </component>
 
-        <option type="fixedHeight" value="true" />
-        <option type="header" value="false" />
+        <listener event="openStorageLocationsImportPage"
+                  class="com.qcadoo.mes.materialFlowResources.listeners.StorageLocationsListListeners"
+                  method="openStorageLocationsImportPage"/>
+
+        <option type="fixedHeight" value="true"/>
+        <option type="header" value="false"/>
     </component>
 
     <hooks>

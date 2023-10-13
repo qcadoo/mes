@@ -198,9 +198,13 @@
         <model:model-field plugin="basic" model="company">
             <model:belongsTo name="currency" plugin="basic" model="currency" />
         </model:model-field>
-        <model:model-field plugin="basic" model="currency" >
+        <model:model-field plugin="basic" model="currency">
             <model:hasMany name="companies" joinField="currency"
                            plugin="basic" model="company" />
+        </model:model-field>
+        <model:model-field plugin="basic" model="currency">
+            <model:hasMany name="deliveries" joinField="currency"
+                           plugin="deliveries" model="delivery" />
         </model:model-field>
 
         <model:model-field plugin="basic" model="product">
@@ -239,11 +243,6 @@
 
         <model:model-field plugin="basic" model="staff">
             <model:hasMany name="orderedProducts" model="orderedProduct" joinField="pickingWorker"
-                           plugin="deliveries"/>
-        </model:model-field>
-
-        <model:model-field plugin="materialFlowResources" model="storageLocation">
-            <model:hasMany name="orderedProducts" model="orderedProduct" joinField="wmsStorageLocation"
                            plugin="deliveries"/>
         </model:model-field>
 

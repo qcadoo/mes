@@ -25,43 +25,46 @@
 
 -->
 <model name="negotiation" activable="true" auditable="true"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
-	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
-	<fields>
-		<string name="number" required="true" unique="true">
-			<validatesLength max="255" />
-		</string>
-		<string name="name">
-			<validatesLength max="1024" />
-		</string>
-		<datetime name="farthestLimitDate" persistent="false" />
-		<datetime name="generateDate" />
-		
-		<hasMany name="negotiationProducts" joinField="negotiation"
-			model="negotiationProduct" cascade="delete" copyable="true" />
-		
-		<manyToMany name="includedCompanies" joinField="companyNegotiations"
-			plugin="basic" model="company" />
-			
-		<enum name="state" values="01draft,02generatedRequests,03declined,04completed"
-			default="01draft" required="true" />
-		<hasMany name="stateChanges" model="negotiationStateChange"
-			joinField="negotiation" cascade="delete" />
-			
-		<hasMany name="offers" joinField="negotiation" model="offer"
-			cascade="nullify" />
-		<hasMany name="requestForQuotations" joinField="negotiation" model="requestForQuotation"
-			cascade="nullify" />	
-	</fields>
-	<hooks>
-		<onCreate class="com.qcadoo.mes.supplyNegotiations.hooks.NegotiationHooks"
-			method="setInitialState" />
-		<onCopy class="com.qcadoo.mes.supplyNegotiations.hooks.NegotiationHooks"
-			method="setInitialState" />
-		<onCopy class="com.qcadoo.mes.supplyNegotiations.hooks.NegotiationHooks"
-			method="clearStateFieldOnCopy" />
-		<onView class="com.qcadoo.mes.supplyNegotiations.hooks.NegotiationHooks"
-			method="updateFarestLimitDate" />
-	</hooks>
-	<identifier expression="#number + ' - ' + #name" />
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
+       xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
+
+    <fields>
+        <string name="number" required="true" unique="true">
+            <validatesLength max="255"/>
+        </string>
+        <string name="name">
+            <validatesLength max="1024"/>
+        </string>
+        <datetime name="farthestLimitDate" persistent="false"/>
+        <datetime name="generateDate"/>
+
+        <hasMany name="negotiationProducts" joinField="negotiation"
+                 model="negotiationProduct" cascade="delete" copyable="true"/>
+
+        <manyToMany name="includedCompanies" joinField="companyNegotiations"
+                    plugin="basic" model="company"/>
+
+        <enum name="state" values="01draft,02generatedRequests,03declined,04completed"
+              default="01draft" required="true"/>
+        <hasMany name="stateChanges" model="negotiationStateChange"
+                 joinField="negotiation" cascade="delete"/>
+
+        <hasMany name="offers" joinField="negotiation" model="offer"
+                 cascade="nullify"/>
+        <hasMany name="requestForQuotations" joinField="negotiation" model="requestForQuotation"
+                 cascade="nullify"/>
+    </fields>
+
+    <hooks>
+        <onCreate class="com.qcadoo.mes.supplyNegotiations.hooks.NegotiationHooks"
+                  method="setInitialState"/>
+        <onCopy class="com.qcadoo.mes.supplyNegotiations.hooks.NegotiationHooks"
+                method="setInitialState"/>
+        <onCopy class="com.qcadoo.mes.supplyNegotiations.hooks.NegotiationHooks"
+                method="clearStateFieldOnCopy"/>
+        <onView class="com.qcadoo.mes.supplyNegotiations.hooks.NegotiationHooks"
+                method="updateFarthestLimitDate"/>
+    </hooks>
+
+    <identifier expression="#number + ' - ' + #name"/>
 </model>

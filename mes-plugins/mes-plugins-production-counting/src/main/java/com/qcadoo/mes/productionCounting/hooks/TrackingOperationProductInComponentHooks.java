@@ -66,7 +66,7 @@ public class TrackingOperationProductInComponentHooks {
 
                 Entity pcq = scb.setMaxResults(1).uniqueResult();
 
-                if(Objects.nonNull(pcq.getHasManyField(ProductionCountingQuantityFields.BATCHES))) {
+                if(Objects.nonNull(pcq) && Objects.nonNull(pcq.getHasManyField(ProductionCountingQuantityFields.BATCHES))) {
                     List<Entity> batches = pcq.getHasManyField(ProductionCountingQuantityFields.BATCHES);
 
                     if (batches.size() == 1) {

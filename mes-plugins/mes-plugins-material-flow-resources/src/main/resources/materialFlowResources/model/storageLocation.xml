@@ -67,6 +67,9 @@
 
         <manyToMany name="storageLocationNumberHelpers" model="storageLocationNumberHelper" joinField="palletNumbers"
                     copyable="false" cascade="nullify" />
+
+        <manyToMany name="products" plugin="basic" model="product" joinField="storageLocations"
+                    copyable="false" cascade="nullify"/>
     </fields>
 
     <hooks>

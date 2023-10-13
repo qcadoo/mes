@@ -112,7 +112,7 @@
                 <option type="header" value="true"/>
                 <option type="expression" value="' '"/>
                 <listener event="createStorageLocations"
-                          class="com.qcadoo.mes.materialFlowResources.listeners.StorageLocationsListListener"
+                          class="com.qcadoo.mes.materialFlowResources.listeners.StorageLocationsListListeners"
                           method="createStorageLocations"/>
             </component>
         </windowTab>

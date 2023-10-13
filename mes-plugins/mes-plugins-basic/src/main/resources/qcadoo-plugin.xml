@@ -282,6 +282,10 @@
 
         <security:role identifier="ROLE_ARCHIVING"/>
 
+        <security:role identifier="ROLE_REQUEST_FOR_QUOTATIONS"/>
+        <security:role identifier="ROLE_OFFERS"/>
+        <security:role identifier="ROLE_NEGOTIATIONS"/>
+
         <model:model model="company" resource="model/company.xml"/>
         <model:model model="staff" resource="model/staff.xml"/>
         <model:model model="staffDto" resource="model/staffDto.xml"/>
@@ -589,15 +593,16 @@
                         class="com.qcadoo.mes.basic.hooks.UserDetailsHooksB"
                         method="setFieldsEnabledForAdmin" />
 
+        <view:view-hook plugin="qcadooUsers" view="profile" type="beforeRender"
+                        class="com.qcadoo.mes.basic.hooks.ProfileHooksB" method="setFieldsEnabledForAdmin" />
+
         <menu:menu-item name="formsList" category="basic"
                         view="formsList" defaultAuthorizationRole="ROLE_FORMS"/>
 
         <model:model-field plugin="qcadooSecurity" model="user">
             <model:belongsTo name="staff" plugin="basic" model="staff"/>
         </model:model-field>
-        <model:model-field plugin="qcadooSecurity" model="user">
-            <model:boolean name="showOnlyMyRegistrationRecords" default="false"/>
-        </model:model-field>
+
         <!-- For constraints sake -->
         <model:model-field plugin="basic" model="staff">
             <model:hasMany name="users" plugin="qcadooSecurity" model="user"
@@ -607,7 +612,12 @@
         <model:model-field plugin="qcadooSecurity" model="user">
             <model:belongsTo name="factory" model="factory" plugin="basic"/>
         </model:model-field>
-
+        <model:model-field plugin="qcadooSecurity" model="user">
+            <model:boolean name="showOnlyMyRegistrationRecords" default="false"/>
+        </model:model-field>
+        <model:model-field plugin="qcadooSecurity" model="user">
+            <model:boolean name="showOnlyMyOperationalTasksAndOrders" default="false"/>
+        </model:model-field>
         <model:model-field plugin="qcadooSecurity" model="user">
             <model:hasMany name="licenseUsages" plugin="basic" model="licenseUsage"
                            joinField="user" cascade="delete"/>

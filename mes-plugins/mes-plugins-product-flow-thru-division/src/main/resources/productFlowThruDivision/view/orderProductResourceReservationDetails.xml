@@ -40,8 +40,6 @@
                     <layoutElement column="1" row="1" width="4">
                         <component type="lookup" name="resource" field="resource"
                                    reference="resource">
-                            <option type="column" name="number" fields="number" link="true"
-                                    width="150"/>
 
                             <option type="column" name="availableQuantity" fields="availableQuantity" link="true"
                                     width="70"/>

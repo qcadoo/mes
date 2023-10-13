@@ -24,38 +24,40 @@
     ***************************************************************************
 
 -->
-<view defaultAuthorizationRole="ROLE_REQUIREMENTS" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
-	xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
-	name="negotiationDetails" modelName="negotiation">
+<view defaultAuthorizationRole="ROLE_NEGOTIATIONS" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns="http://schema.qcadoo.org/view"
+      xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
+      name="negotiationDetails" modelName="negotiation">
 
-	<component type="window" name="window" reference="window">
-		<ribbon>
-			<template name="standardFormTemplate" />
-			<group name="status">
-				<smallButton name="generate" icon="startIcon16.png"
-					state="disabled">
-					<script>
-						<![CDATA[
-						this.addOnChangeListener({
-							onClick: function() {
-								if (this.state == "generate") {
-									if (window.confirm("#{translate(supplyNegotiations.negotiationDetails.window.ribbon.status.generate.confirm)}")) {
-										#{form}.performEvent('changeState', ["02generatedRequests"]);
-									};
-								} else if (this.state == "finish") {
-									if (window.confirm("#{translate(supplyNegotiations.negotiationDetails.window.ribbon.status.finish.confirm)}")) {
-										#{form}.performEvent('changeState', ["04completed"]);
-									};
+    <component type="window" name="window" reference="window">
+
+        <ribbon>
+            <template name="standardFormTemplate"/>
+            <group name="status">
+                <smallButton name="generate" icon="startIcon16.png"
+                             state="disabled">
+                    <script>
+                        <![CDATA[
+							this.addOnChangeListener({
+								onClick: function() {
+									if (this.state == "generate") {
+										if (window.confirm("#{translate(supplyNegotiations.negotiationDetails.window.ribbon.status.generate.confirm)}")) {
+											#{form}.performEvent('changeState', ["02generatedRequests"]);
+										};
+									} else if (this.state == "finish") {
+										if (window.confirm("#{translate(supplyNegotiations.negotiationDetails.window.ribbon.status.finish.confirm)}")) {
+											#{form}.performEvent('changeState', ["04completed"]);
+										};
+									}
 								}
-							}
-						});																		
+							});
 						]]>
-					</script>
-				</smallButton>
-				<smallButton name="cancel" icon="deleteIcon16.png"
-					state="disabled">
-					<script>
-						<![CDATA[
+                    </script>
+                </smallButton>
+                <smallButton name="cancel" icon="deleteIcon16.png"
+                             state="disabled">
+                    <script>
+                        <![CDATA[
 							this.addOnChangeListener({
 								onClick: function() {
 									if (window.confirm("#{translate(supplyNegotiations.negotiationDetails.window.ribbon.status.cancel.confirm)}")) {
@@ -64,88 +66,87 @@
 								}
 							});
 						]]>
-					</script>
-				</smallButton>
-			</group>
-			<group name="requestForQuotations">
-				<bigButton name="showRequestForQuotationsForGivenNegotiation"
-					icon="genealogyIcon24.png">
-					<script>
-						<![CDATA[
+                    </script>
+                </smallButton>
+            </group>
+            <group name="requestForQuotations" defaultAuthorizationRole="ROLE_REQUEST_FOR_QUOTATIONS">
+                <bigButton name="showRequestForQuotationsForGivenNegotiation" icon="genealogyIcon24.png">
+                    <script>
+                        <![CDATA[
 							this.addOnChangeListener({
 								onClick: function() {
-									if(window.canClose()) {
+									if (window.canClose()) {
 										#{form}.performEvent('showRequestForQuotationsForGivenNegotiation', []);
 									}
 								}
 							});		
 						]]>
-					</script>
-				</bigButton>
-			</group>
-			<group name="offers">
-				<bigButton name="showOffersForGivenNegotiation" icon="genealogyIcon24.png">
-					<script>
-						<![CDATA[
+                    </script>
+                </bigButton>
+            </group>
+            <group name="offers" defaultAuthorizationRole="ROLE_OFFERS">
+                <bigButton name="showOffersForGivenNegotiation" icon="genealogyIcon24.png">
+                    <script>
+                        <![CDATA[
 							this.addOnChangeListener({
 								onClick: function() {
-									if(window.canClose()) {
+									if (window.canClose()) {
 										#{form}.performEvent('showOffersForGivenNegotiation', []);
 									}
 								}
 							});		
 						]]>
-					</script>
-				</bigButton>
-				<bigButton name="showOffersItemsForGivenNegotiation" icon="genealogyIcon24.png">
-					<script>
-						<![CDATA[
+                    </script>
+                </bigButton>
+                <bigButton name="showOffersItemsForGivenNegotiation" icon="genealogyIcon24.png">
+                    <script>
+                        <![CDATA[
 							this.addOnChangeListener({
 								onClick: function() {
-									if(window.canClose()) {
+									if (window.canClose()) {
 										#{form}.performEvent('showOffersItemsForGivenNegotiation', []);
 									}
 								}
 							});		
 						]]>
-					</script>
-				</bigButton>
-			</group>
-			<group name="deliveries">
-				<bigButton name="showSupplyItemsForGivenNegotiation" icon="genealogyIcon24.png">
-					<script>
-						<![CDATA[
+                    </script>
+                </bigButton>
+            </group>
+            <group name="deliveries">
+                <bigButton name="showSupplyItemsForGivenNegotiation" icon="genealogyIcon24.png">
+                    <script>
+                        <![CDATA[
 							this.addOnChangeListener({
 								onClick: function() {
-									if(window.canClose()) {
+									if (window.canClose()) {
 										#{form}.performEvent('showSupplyItemsForGivenNegotiation', []);
 									}
 								}
 							});		
 						]]>
-					</script>
-				</bigButton>
-			</group>
-		</ribbon>
+                    </script>
+                </bigButton>
+            </group>
+        </ribbon>
 
-		<windowTab name="mainTab">
-			<component type="form" name="negotiationForm" reference="form">
-				<script>
-					<![CDATA[
+        <windowTab name="mainTab">
+            <component type="form" name="negotiationForm" reference="form">
+                <script>
+                    <![CDATA[
 						var deleteBtn = #{window}.getRibbonItem("actions.delete");
 						
 						var generateBtn = #{window}.getRibbonItem("status.generate");
-	    			    var cancelBtn = #{window}.getRibbonItem("status.cancel");
+	    				var cancelBtn = #{window}.getRibbonItem("status.cancel");
 						
 						var buttonsStandard = ["actions.save", "actions.saveBack", "actions.saveNew", "actions.cancel"];
 						var buttonsStatus = ["status.generate", "status.cancel"];
 						
 						var listener = {
-					    	onSetValue: function() {
+							onSetValue: function() {
 								var isSaved = (#{form}.getValue().content && #{form}.getValue().content.entityId);
 								
 								if (isSaved) { 
-						     		var state = #{state}.getValue().content.value;
+									var state = #{state}.getValue().content.value;
 						
 									if (state == "01draft") {
 										enableButtons(buttonsStandard);
@@ -203,158 +204,146 @@
 						
 						#{form}.addOnChangeListener(listener);
 					]]>
-					 
-				</script>
-				<component type="gridLayout" name="mainTabGridLayout"
-					columns="3" rows="7">
-					<layoutElement column="1" row="1">
-						<component type="input" name="number" field="number"
-							reference="number">
-							<option type="alignment" value="right" />
-						</component>
-					</layoutElement>
-					<layoutElement column="1" row="2" height="2">
-						<component type="textarea" name="name" field="name"
-							reference="name" />
-					</layoutElement>
-					<layoutElement column="2" row="1">
-						<component type="select" name="state" field="state"
-							reference="state" defaultEnabled="never">
-						</component>
-					</layoutElement>
-				</component>
+                </script>
 
-				<option type="header" value="true" />
-				<option type="expression" value="#number" />
+                <component type="gridLayout" name="mainTabGridLayout"
+                           columns="3" rows="7">
+                    <layoutElement column="1" row="1">
+                        <component type="input" name="number" field="number"
+                                   reference="number">
+                            <option type="alignment" value="right"/>
+                        </component>
+                    </layoutElement>
+                    <layoutElement column="1" row="2" height="2">
+                        <component type="textarea" name="name" field="name"
+                                   reference="name"/>
+                    </layoutElement>
+                    <layoutElement column="2" row="1">
+                        <component type="select" name="state" field="state"
+                                   reference="state" defaultEnabled="never">
+                        </component>
+                    </layoutElement>
+                </component>
 
-				<listener event="showRequestForQuotationsForGivenNegotiation"
-					class="com.qcadoo.mes.supplyNegotiations.listeners.NegotiationDetailsListeners"
-					method="showRequestForQuotationsForGivenNegotiation" />
-				<listener event="showOffersForGivenNegotiation"
-					class="com.qcadoo.mes.supplyNegotiations.listeners.NegotiationDetailsListeners"
-					method="showOffersForGivenNegotiation" />
-				<listener event="showOffersItemsForGivenNegotiation"
-					class="com.qcadoo.mes.supplyNegotiations.listeners.NegotiationDetailsListeners"
-					method="showOffersItemsForGivenNegotiation" />
-				<listener event="showSupplyItemsForGivenNegotiation"
-					class="com.qcadoo.mes.supplyNegotiations.listeners.NegotiationDetailsListeners"
-					method="showSupplyItemsForGivenNegotiation" />
+                <option type="header" value="true"/>
+                <option type="expression" value="#number"/>
 
-				<listener event="changeState"
-					class="com.qcadoo.mes.supplyNegotiations.states.client.NegotiationViewClient"
-					method="changeState" />
-			</component>
-		</windowTab>
+                <listener event="showRequestForQuotationsForGivenNegotiation"
+                          class="com.qcadoo.mes.supplyNegotiations.listeners.NegotiationDetailsListeners"
+                          method="showRequestForQuotationsForGivenNegotiation"/>
+                <listener event="showOffersForGivenNegotiation"
+                          class="com.qcadoo.mes.supplyNegotiations.listeners.NegotiationDetailsListeners"
+                          method="showOffersForGivenNegotiation"/>
+                <listener event="showOffersItemsForGivenNegotiation"
+                          class="com.qcadoo.mes.supplyNegotiations.listeners.NegotiationDetailsListeners"
+                          method="showOffersItemsForGivenNegotiation"/>
+                <listener event="showSupplyItemsForGivenNegotiation"
+                          class="com.qcadoo.mes.supplyNegotiations.listeners.NegotiationDetailsListeners"
+                          method="showSupplyItemsForGivenNegotiation"/>
 
-		<windowTab name="productsTab">
-			<component type="gridLayout" name="productsGridLayout"
-				columns="1" rows="1" hasBorders="false">
-				<layoutElement column="1" row="1">
-					<component type="grid" name="negotiationProducts"
-						reference="negotiationProducts" source="#{form}.negotiationProducts"
-						defaultEnabled="false">
-						<option type="column" name="number" fields="product"
-							expression="#product['number']" link="true" />
-						<option type="column" name="name" fields="product"
-							expression="#product['name']" link="true" />
-						<option type="column" name="neededQuantity" fields="neededQuantity" />
-						<option type="column" name="approvedDeliveredQuantity"
-							fields="approvedDeliveredQuantity" />
-						<option type="column" name="draftDeliveredQuantity" fields="draftDeliveredQuantity" />
-						<option type="column" name="leftQuantity" fields="leftQuantity" />
-						<option type="column" name="unit" fields="product"
-							expression="#product['unit']" />
-						<option type="column" name="dueDate" fields="dueDate" />
-						<option type="column" name="requestForQuotationsNumber" fields="requestForQuotationsNumber" />
+                <listener event="changeState"
+                          class="com.qcadoo.mes.supplyNegotiations.states.client.NegotiationViewClient"
+                          method="changeState"/>
+            </component>
+        </windowTab>
 
-						<option type="order" column="number" direction="desc" />
+        <windowTab name="productsTab">
+            <component type="gridLayout" name="productsGridLayout"
+                       columns="1" rows="1" hasBorders="false">
+                <layoutElement column="1" row="1">
+                    <component type="grid" name="negotiationProducts"
+                               reference="negotiationProducts" source="#{form}.negotiationProducts"
+                               defaultEnabled="false">
+                        <option type="column" name="number" fields="product"
+                                expression="#product['number']" link="true"/>
+                        <option type="column" name="name" fields="product"
+                                expression="#product['name']" link="true"/>
+                        <option type="column" name="neededQuantity" fields="neededQuantity"/>
+                        <option type="column" name="approvedDeliveredQuantity"
+                                fields="approvedDeliveredQuantity"/>
+                        <option type="column" name="draftDeliveredQuantity" fields="draftDeliveredQuantity"/>
+                        <option type="column" name="leftQuantity" fields="leftQuantity"/>
+                        <option type="column" name="unit" fields="product"
+                                expression="#product['unit']"/>
+                        <option type="column" name="dueDate" fields="dueDate"/>
+                        <option type="column" name="requestForQuotationsNumber" fields="requestForQuotationsNumber"/>
 
-						<option type="searchable"
-							value="number,name,neededQuantity,approvedDeliveredQuantity,draftDeliveredQuantity,leftQuantity,unit,dueDate,requestForQuotationsNumber" />
-						<option type="orderable"
-							value="number,name,neededQuantity,approvedDeliveredQuantity,draftDeliveredQuantity,leftQuantity,unit,dueDate,requestForQuotationsNumber" />
+                        <option type="order" column="number" direction="desc"/>
 
-						<option type="correspondingView" value="supplyNegotiations/negotiationProductDetails" />
-						<option type="correspondingComponent" value="form" />
-						<option type="correspondingViewInModal" value="true" />
+                        <option type="searchable"
+                                value="number,name,neededQuantity,approvedDeliveredQuantity,draftDeliveredQuantity,leftQuantity,unit,dueDate,requestForQuotationsNumber"/>
+                        <option type="orderable"
+                                value="number,name,neededQuantity,approvedDeliveredQuantity,draftDeliveredQuantity,leftQuantity,unit,dueDate,requestForQuotationsNumber"/>
 
-						<option type="creatable" value="true" />
-						<option type="deletable" value="true" />
-						<option type="fullscreen" value="true" />
-						<option type="multiselect" value="true" />
-						<option type="fixedHeight" value="true" />
-					</component>
-				</layoutElement>
-			</component>
-			
-		</windowTab>
+                        <option type="correspondingView" value="supplyNegotiations/negotiationProductDetails"/>
+                        <option type="correspondingComponent" value="form"/>
+                        <option type="correspondingViewInModal" value="true"/>
 
-		<windowTab name="companiesTab">
-			<component type="gridLayout" name="companiesGridLayout"
-				columns="2" rows="1" hasBorders="false">
-				<layoutElement column="1" row="1">
-					<component type="grid" name="includedCompanies"
-						reference="includedCompanies" source="#{form}.includedCompanies">
-						<option type="column" name="number" fields="number" width="50" />
-						<option type="column" name="name" fields="name" width="100" />
-						<option type="column" name="country" fields="country" expression="#country['country']"/>
-						<option type="column" name="city" fields="city" />
+                        <option type="creatable" value="true"/>
+                        <option type="deletable" value="true"/>
+                        <option type="fullscreen" value="true"/>
+                        <option type="multiselect" value="true"/>
+                        <option type="fixedHeight" value="true"/>
+                    </component>
+                </layoutElement>
+            </component>
 
-						<option type="order" column="number" direction="desc" />
+        </windowTab>
 
-						<option type="weakRelation" value="true" />
+        <windowTab name="companiesTab">
+            <component type="gridLayout" name="companiesGridLayout"
+                       columns="2" rows="1" hasBorders="false">
+                <layoutElement column="1" row="1">
+                    <component type="grid" name="includedCompanies"
+                               reference="includedCompanies" source="#{form}.includedCompanies">
+                        <option type="column" name="number" fields="number" width="50"/>
+                        <option type="column" name="name" fields="name" width="100"/>
+                        <option type="column" name="country" fields="country" expression="#country['country']"/>
+                        <option type="column" name="city" fields="city"/>
 
-						<option type="fullscreen" value="true" />
-						<option type="multiselect" value="true" />
-					</component>
-				</layoutElement>
-				<layoutElement column="2" row="1">
-					<component type="label" name="description">
-						<option type="labelStyle" value="text" />
-					</component>
-				</layoutElement>
-			</component>
-		</windowTab>
+                        <option type="order" column="number" direction="desc"/>
 
-		<windowTab name="historyTab">
-			<component type="gridLayout" name="loggingsGridLayout"
-				columns="2" rows="1">
-				<layoutElement column="1" row="1">
-					<component type="grid" name="loggingsGrid" reference="loggingsGrid"
-						source="#{form}.stateChanges">
-						<option type="column" name="dateAndTime" fields="dateAndTime" />
-						<option type="column" name="currentState" fields="targetState" />
-						<option type="column" name="worker" fields="worker" />
+                        <option type="weakRelation" value="true"/>
 
-						<option type="order" column="dateAndTime" direction="asc" />
+                        <option type="fullscreen" value="true"/>
+                        <option type="multiselect" value="true"/>
+                    </component>
+                </layoutElement>
+                <layoutElement column="2" row="1">
+                    <component type="label" name="description">
+                        <option type="labelStyle" value="text"/>
+                    </component>
+                </layoutElement>
+            </component>
+        </windowTab>
 
-						<option type="searchable" value="dateAndTime,targetState,worker" />
-						<option type="orderable" value="dateAndTime,targetState,worker" />
+        <windowTab name="historyTab">
+            <component type="gridLayout" name="loggingsGridLayout"
+                       columns="2" rows="1">
+                <layoutElement column="1" row="1">
+                    <component type="grid" name="loggingsGrid" reference="loggingsGrid"
+                               source="#{form}.stateChanges">
+                        <option type="column" name="dateAndTime" fields="dateAndTime"/>
+                        <option type="column" name="currentState" fields="targetState"/>
+                        <option type="column" name="worker" fields="worker"/>
 
-						<option type="fullscreen" value="true" />
-						<option type="multiselect" value="true" />
-					</component>
-				</layoutElement>
-			</component>
-		</windowTab>
-	</component>
+                        <option type="order" column="dateAndTime" direction="asc"/>
 
-	<hooks>
-		<beforeRender
-			class="com.qcadoo.mes.supplyNegotiations.hooks.NegotiationDetailsHooks"
-			method="generateNegotiationNumber" />
-		<beforeRender
-			class="com.qcadoo.mes.supplyNegotiations.hooks.NegotiationDetailsHooks"
-			method="updateRibbonState" />
-		<beforeRender
-			class="com.qcadoo.mes.supplyNegotiations.hooks.NegotiationDetailsHooks"
-			method="changeFieldsEnabledDependOnState" />
-		<beforeRender
-			class="com.qcadoo.mes.supplyNegotiations.hooks.NegotiationDetailsHooks"
-			method="changeApprovedNotApprovedLeftQuantity" />
-		<beforeRender
-			class="com.qcadoo.mes.supplyNegotiations.hooks.NegotiationDetailsHooks"
-			method="filterStateChangeHistory" />
-	</hooks>
+                        <option type="searchable" value="dateAndTime,targetState,worker"/>
+                        <option type="orderable" value="dateAndTime,targetState,worker"/>
+
+                        <option type="fullscreen" value="true"/>
+                        <option type="multiselect" value="true"/>
+                    </component>
+                </layoutElement>
+            </component>
+        </windowTab>
+    </component>
+
+    <hooks>
+        <beforeRender
+                class="com.qcadoo.mes.supplyNegotiations.hooks.NegotiationDetailsHooks"
+                method="onBeforeRender"/>
+    </hooks>
 
 </view>

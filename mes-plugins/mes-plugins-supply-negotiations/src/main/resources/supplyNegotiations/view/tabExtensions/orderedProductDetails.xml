@@ -46,9 +46,6 @@
 					<listener event="onSelectedEntityChange"
 						class="com.qcadoo.mes.supplyNegotiations.listeners.OrderedProductDetailsListenersSN"
 						method="fillPricePerUnit" />
-					<listener event="onSelectedEntityChange"
-						class="com.qcadoo.mes.supplyNegotiations.listeners.OrderedProductDetailsListenersSN"
-						method="disabledFieldWhenOfferIsSelected" />
 				</component>
 			</layoutElement>
 		</component>

@@ -29,17 +29,27 @@ public final class DocumentPositionParametersFields {
 
     }
 
-    public static final String FILL_RESOURCE_IRRESPECTIVE_OF_CONVERSION = "fillResourceIrrespectiveOfConversion";
+    public static final String ITEMS = "items";
 
-    public static final String TRANSFER_PALLET_TO_RECEIVING_WAREHOUSE = "transferPalletToReceivingWarehouse";
+    public static final String SUGGEST_RESOURCE = "suggestResource";
+
+    public static final String ACCEPTANCE_OF_DOCUMENT_BEFORE_PRINTING = "acceptanceOfDocumentBeforePrinting";
+
+    public static final String NOT_SHOW_PRICES = "notShowPrices";
+
+    public static final String PRESENT_TOTAL_AMOUNT_AND_REST = "presentTotalAmountAndRest";
 
     public static final String PALLET_TO_SHIFT = "palletToShift";
 
     public static final String PALLET_WITH_FREE_PLACE = "palletWithFreePlace";
 
-    public static final String PRESENT_TOTAL_AMOUNT_AND_REST = "presentTotalAmountAndRest";
+    public static final String NUMBER_OF_MONTHS_FOR_POSITIONS_DATA = "numberOfMonthsForPositionsData";
 
-    public static final String SUGGEST_RESOURCE = "suggestResource";
+    public static final String FILL_RESOURCE_IRRESPECTIVE_OF_CONVERSION = "fillResourceIrrespectiveOfConversion";
+
+    public static final String TRANSFER_PALLET_TO_RECEIVING_WAREHOUSE = "transferPalletToReceivingWarehouse";
+
+    public static final String COLOR_RESOURCES_AFTER_DEADLINE = "colorResourcesAfterDeadline";
 
     public static final String SHORT_EXPIRY_DATE = "shortExpiryDate";
 

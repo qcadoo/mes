@@ -39,4 +39,6 @@ public final class ProductFieldsMFR {
 
     public static final String COST_NORMS_GENERATOR = "costNormsGenerator";
 
+    public static final String STORAGE_LOCATIONS = "storageLocations";
+
 }
