@@ -139,7 +139,6 @@
                 <component type="gridLayout" name="gridLayout" columns="3"
                            rows="7">
                     <layoutElement column="1" row="1">
-                        <component type="hidden" name="inBuffer" field="inBuffer" reference="inBuffer"/>
                         <component type="hidden" name="wms" field="wms" reference="wms"/>
                         <component type="input" name="number" reference="number" field="number"/>
                     </layoutElement>
@@ -265,7 +264,7 @@
 
                 <option type="header" value="true"/>
                 <option type="expression"
-                        value="#inBuffer ? #number + ' - ' + '@materialFlowResources.document.state.value.'+#state + ' - '  + '@materialFlowResources.document.inBuffer' : #number + ' - ' + '@materialFlowResources.document.state.value.'+#state"/>
+                        value="#number + ' - ' + '@materialFlowResources.document.state.value.'+#state"/>
 
                 <listener event="createResourcesForDocuments"
                           class="com.qcadoo.mes.materialFlowResources.listeners.DocumentDetailsListeners"
@@ -357,7 +356,36 @@
                 </layoutElement>
             </component>
         </windowTab>
+        <windowTab name="additionalConditionsTab" reference="additionalConditionsTab">
+            <component type="gridLayout" name="additionalConditionsGridLayout" columns="3" rows="2" hasBorders="false">
+                <layoutElement row="1" column="1">
+                    <component type="checkbox" name="createLinkedDocument" field="#{form}.createLinkedDocument"
+                               reference="createLinkedDocument">
+                        <option type="labelWidth" value="40"/>
+                        <listener event="onChange"
+                                  class="com.qcadoo.mes.materialFlowResources.hooks.DocumentDetailsHooks"
+                                  method="onCreateLinkedDocumentChange"/>
+                    </component>
+                </layoutElement>
+                <layoutElement row="2" column="1">
+                    <component type="lookup" name="linkedDocumentLocation" field="#{form}.linkedDocumentLocation"
+                               reference="linkedDocumentLocation">
+                        <option type="labelWidth" value="40"/>
+                        <option type="column" name="name" fields="name"/>
 
+                        <option type="searchable" value="number,name"/>
+                        <option type="orderable" value="number,name"/>
+
+                        <option type="expression" value="#number + ' - ' + #name"/>
+                        <option type="fieldCode" value="number"/>
+
+                        <criteriaModifier
+                                class="com.qcadoo.mes.materialFlowResources.criteriaModifiers.LocationCriteriaModifiersMFR"
+                                method="showWarehousesOnly"/>
+                    </component>
+                </layoutElement>
+            </component>
+        </windowTab>
     </component>
 
     <hooks>

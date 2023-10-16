@@ -39,10 +39,7 @@ import com.qcadoo.plugin.api.PluginManager;
 import com.qcadoo.security.api.UserService;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
-import com.qcadoo.view.api.components.FieldComponent;
-import com.qcadoo.view.api.components.FormComponent;
-import com.qcadoo.view.api.components.LookupComponent;
-import com.qcadoo.view.api.components.WindowComponent;
+import com.qcadoo.view.api.components.*;
 import com.qcadoo.view.api.components.lookup.FilterValueHolder;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.constants.QcadooViewConstants;
@@ -52,7 +49,7 @@ import org.springframework.stereotype.Service;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-import static com.qcadoo.mes.materialFlowResources.listeners.DocumentsListListeners.ESILCO;
+import static com.qcadoo.mes.materialFlowResources.listeners.DocumentsListListeners.MOBILE_WMS;
 
 @Service
 public class DocumentDetailsHooks {
@@ -97,6 +94,50 @@ public class DocumentDetailsHooks {
         fetchNameAndNumberFromDatabase(view);
         setRibbonState(view);
         fillAddressLookupCriteriaModifier(view);
+        setAdditionalConditions(view);
+    }
+
+    private void setAdditionalConditions(final ViewDefinitionState view) {
+        FormComponent documentForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
+
+        Entity document = documentForm.getPersistedEntityWithIncludedFormValues();
+        LookupComponent locationFromLookup = (LookupComponent) view
+                .getComponentByReference(DocumentFields.LINKED_DOCUMENT_LOCATION);
+        CheckBoxComponent createLinkedDocumentCheckBox = (CheckBoxComponent) view
+                .getComponentByReference(DocumentFields.CREATE_LINKED_DOCUMENT);
+
+        String state = document.getStringField(DocumentFields.STATE);
+
+        if (DocumentState.ACCEPTED.getStringValue().equals(state)) {
+            locationFromLookup.setEnabled(false);
+            createLinkedDocumentCheckBox.setEnabled(false);
+        } else {
+            String type = document.getStringField(DocumentFields.TYPE);
+
+            if (DocumentType.RELEASE.getStringValue().equals(type)) {
+                if (createLinkedDocumentCheckBox.isChecked()) {
+                    locationFromLookup.setEnabled(true);
+                } else {
+                    locationFromLookup.setFieldValue(null);
+                    locationFromLookup.setEnabled(false);
+                }
+
+                createLinkedDocumentCheckBox.setEnabled(true);
+            } else {
+                locationFromLookup.setFieldValue(null);
+                locationFromLookup.setEnabled(false);
+                createLinkedDocumentCheckBox.setChecked(false);
+                createLinkedDocumentCheckBox.setEnabled(false);
+            }
+        }
+
+        locationFromLookup.requestComponentUpdateState();
+        createLinkedDocumentCheckBox.requestComponentUpdateState();
+    }
+
+    public void onCreateLinkedDocumentChange(final ViewDefinitionState view, final ComponentState formState,
+                                             final String[] args) {
+        setAdditionalConditions(view);
     }
 
     public void showFieldsByDocumentType(final ViewDefinitionState view) {
@@ -123,7 +164,7 @@ public class DocumentDetailsHooks {
             showCompanyAndAddress(view, false);
         }
 
-        if (!positions.isEmpty() && !document.getBooleanField(DocumentFields.IN_BUFFER)) {
+        if (!positions.isEmpty()) {
             showWarehouse(view, false, false);
         }
     }
@@ -178,7 +219,7 @@ public class DocumentDetailsHooks {
             changeCheckResourcesStockButtonState(window, DocumentType.isOutbound(document.getStringField(DocumentFields.TYPE))
                     && !reservationsService.reservationsEnabledForDocumentPositions(document));
             changeAddMultipleResourcesButtonState(window, DocumentType.isOutbound(document.getStringField(DocumentFields.TYPE)));
-            if (pluginManager.isPluginEnabled(ESILCO)) {
+            if (pluginManager.isPluginEnabled(MOBILE_WMS)) {
                 if (document.getBooleanField(DocumentFields.WMS) && !document.getBooleanField(DocumentFields.EDIT_IN_WMS)) {
                     toggleRibbon(window, false);
                     changeFillResourceButtonState(window, false);
@@ -314,18 +355,14 @@ public class DocumentDetailsHooks {
         boolean isDraft = DocumentState.DRAFT.getStringValue().equals(state);
         boolean isDispositionOrder = documentTypesWithDispositionOrder.contains(documentType);
         boolean isAdmission = documentTypesWithAdmission.contains(documentType);
-        boolean inBuffer = document.getBooleanField(DocumentFields.IN_BUFFER);
 
         if (isSaved) {
             if (Objects.isNull(documentType) || !isDispositionOrder) {
                 errorMessage = "materialFlowResources.printDispositionOrderPdf.error";
             }
-            if (inBuffer) {
-                errorMessage = "materialFlowResources.printDispositionOrderPdf.errorInBuffer";
-            }
         }
 
-        printDispositionOrderPdfRibbonActionItem.setEnabled(isSaved && isDispositionOrder && !inBuffer);
+        printDispositionOrderPdfRibbonActionItem.setEnabled(isSaved && isDispositionOrder);
         printDispositionOrderPdfRibbonActionItem.setMessage(errorMessage);
         printDispositionOrderPdfRibbonActionItem.requestUpdate(true);
 

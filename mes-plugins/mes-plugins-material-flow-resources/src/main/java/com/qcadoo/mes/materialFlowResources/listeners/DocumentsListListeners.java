@@ -52,7 +52,7 @@ public class DocumentsListListeners {
 
     public static final String REALIZED = "05realized";
 
-    public static final String ESILCO = "esilco";
+    public static final String MOBILE_WMS = "mobileWMS";
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
@@ -124,7 +124,7 @@ public class DocumentsListListeners {
                     continue;
                 }
 
-                if (pluginManager.isPluginEnabled(ESILCO) && documentFromDB.getBooleanField(DocumentFields.WMS)
+                if (pluginManager.isPluginEnabled(MOBILE_WMS) && documentFromDB.getBooleanField(DocumentFields.WMS)
                         && !REALIZED.equals(documentFromDB.getStringField(DocumentFields.STATE_IN_WMS))) {
                     allAccepted = false;
                     continue;

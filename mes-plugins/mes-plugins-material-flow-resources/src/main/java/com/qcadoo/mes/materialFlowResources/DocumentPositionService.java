@@ -28,7 +28,7 @@ import java.math.BigDecimal;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static com.qcadoo.mes.materialFlowResources.listeners.DocumentsListListeners.ESILCO;
+import static com.qcadoo.mes.materialFlowResources.listeners.DocumentsListListeners.MOBILE_WMS;
 
 @Repository
 public class DocumentPositionService {
@@ -352,7 +352,6 @@ public class DocumentPositionService {
             config.put("readOnly", isGridReadOnly(documentId));
             config.put("suggestResource", shouldSuggestResource());
             config.put("outDocument", isOutDocument);
-            config.put("inBufferDocument", isInBufferDocument(documentId));
             config.put("columns", columns);
 
             return config;
@@ -516,7 +515,7 @@ public class DocumentPositionService {
 
         boolean readOnly = DocumentState.parseString(stateString) == DocumentState.ACCEPTED;
 
-        if (pluginManager.isPluginEnabled(ESILCO)) {
+        if (pluginManager.isPluginEnabled(MOBILE_WMS)) {
             query = "SELECT wms, editinwms FROM materialflowresources_document WHERE id = :id";
 
             Map<String, Object> documentResult = jdbcTemplate.queryForMap(query, Collections.singletonMap(ID, documentId));
@@ -541,12 +540,6 @@ public class DocumentPositionService {
         String type = jdbcTemplate.queryForObject(query, Collections.singletonMap(ID, documentId), String.class);
 
         return DocumentType.isOutbound(type);
-    }
-
-    private boolean isInBufferDocument(final Long documentId) {
-        String query = "SELECT inbuffer FROM materialflowresources_document WHERE id = :id";
-
-        return jdbcTemplate.queryForObject(query, Collections.singletonMap(ID, documentId), Boolean.class);
     }
 
     public StorageLocationDTO getStorageLocation(final String product, final String document) {
