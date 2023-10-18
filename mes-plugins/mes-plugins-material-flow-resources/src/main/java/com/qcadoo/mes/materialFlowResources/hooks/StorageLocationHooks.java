@@ -21,8 +21,17 @@ public class StorageLocationHooks {
     private DataDefinitionService dataDefinitionService;
 
     public void onSave(final DataDefinition storageLocationDD, final Entity storageLocation) {
+        clearMaxNumberOfPallets(storageLocationDD, storageLocation);
         updateDefaultStorageLocation(storageLocationDD, storageLocation);
         addAuditChanges(storageLocationDD, storageLocation);
+    }
+
+    private void clearMaxNumberOfPallets(final DataDefinition storageLocationDD, final Entity storageLocation) {
+        boolean placeStorageLocation = storageLocation.getBooleanField(StorageLocationFields.PLACE_STORAGE_LOCATION);
+
+        if (!placeStorageLocation) {
+            storageLocation.setField(StorageLocationFields.MAXIMUM_NUMBER_OF_PALLETS, null);
+        }
     }
 
     private void updateDefaultStorageLocation(final DataDefinition storageLocationDD, final Entity storageLocation) {
