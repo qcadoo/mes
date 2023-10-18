@@ -21,6 +21,15 @@ public class ResourceToRepackDto {
     private String unit;
     private BigDecimal additionalQuantity;
     private Boolean blockedForQualityControl;
+    private String qualityRating;
+
+    public String getQualityRating() {
+        return qualityRating;
+    }
+
+    public void setQualityRating(String qualityRating) {
+        this.qualityRating = qualityRating;
+    }
 
     public Boolean getBlockedForQualityControl() {
         return blockedForQualityControl;

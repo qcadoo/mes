@@ -359,7 +359,8 @@ public class MaterialFlowResourcesServiceImpl implements MaterialFlowResourcesSe
             prepareQuery.append("dto.quantity as quantity, ");
             prepareQuery.append("dto.productUnit as unit, ");
             prepareQuery.append("dto.quantityInAdditionalUnit as additionalQuantity, ");
-            prepareQuery.append("dto.blockedForQualityControl as blockedForQualityControl ");
+            prepareQuery.append("dto.blockedForQualityControl as blockedForQualityControl, ");
+            prepareQuery.append("dto.qualityRating as qualityRating ");
             prepareQuery.append("FROM materialFlowResources_resourceDto as dto ");
             prepareQuery.append("WHERE dto.number = :resourceNumber");
 
@@ -397,7 +398,8 @@ public class MaterialFlowResourcesServiceImpl implements MaterialFlowResourcesSe
             prepareQuery.append("dto.productUnit as unit, ");
             prepareQuery.append("dto.quantityInAdditionalUnit as additionalQuantity, ");
             prepareQuery.append("dto.conversion as conversionValue, ");
-            prepareQuery.append("dto.blockedForQualityControl as blockedForQualityControl ");
+            prepareQuery.append("dto.blockedForQualityControl as blockedForQualityControl, ");
+            prepareQuery.append("dto.qualityRating as qualityRating ");
             prepareQuery.append("FROM materialFlowResources_resourceDto as dto ");
             prepareQuery.append("WHERE dto.number = :resourceNumber ");
             prepareQuery.append("AND dto.locationNumber IN (:userLocations)");
