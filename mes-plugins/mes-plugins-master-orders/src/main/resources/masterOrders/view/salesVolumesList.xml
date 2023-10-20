@@ -63,9 +63,9 @@
             <option type="order" column="number" direction="desc"/>
 
             <option type="searchable"
-                    value="productNumber,productName,productUnit,dailySalesVolume,optimalStock"/>
+                    value="productNumber,productName,productUnit,dailySalesVolume,optimalStock,currentStock,stockForDays"/>
             <option type="orderable"
-                    value="productNumber,productName,productUnit,dailySalesVolume,optimalStock"/>
+                    value="productNumber,productName,productUnit,dailySalesVolume,optimalStock,currentStock,stockForDays"/>
 
             <option type="fullscreen" value="true"/>
             <option type="multiselect" value="true"/>
@@ -88,4 +88,11 @@
         <option type="fixedHeight" value="true"/>
         <option type="header" value="false"/>
     </component>
+
+    <hooks>
+        <beforeRender
+                class="com.qcadoo.mes.masterOrders.hooks.SalesVolumesListHooks"
+                method="onBeforeRender"/>
+    </hooks>
+
 </view>

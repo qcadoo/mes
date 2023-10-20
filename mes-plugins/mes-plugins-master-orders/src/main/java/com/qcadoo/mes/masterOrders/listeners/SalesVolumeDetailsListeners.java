@@ -5,6 +5,7 @@ import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.masterOrders.OrdersGenerationService;
 import com.qcadoo.mes.masterOrders.constants.SalesVolumeFields;
 import com.qcadoo.mes.masterOrders.hooks.SalesVolumeHooks;
+import com.qcadoo.mes.materialFlowResources.MaterialFlowResourcesService;
 import com.qcadoo.mes.orders.TechnologyServiceO;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
 import com.qcadoo.model.api.BigDecimalUtils;
@@ -12,13 +13,15 @@ import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
+import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
-import com.qcadoo.view.api.components.LookupComponent;
 import com.qcadoo.view.constants.QcadooViewConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -41,6 +44,9 @@ public class SalesVolumeDetailsListeners {
 
     @Autowired
     private SalesVolumeHooks salesVolumeHooks;
+
+    @Autowired
+    private MaterialFlowResourcesService materialFlowResourcesService;
 
     public final void createOrder(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         FormComponent salesVolumeForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
@@ -104,18 +110,47 @@ public class SalesVolumeDetailsListeners {
 
     public void onQuantityChange(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         FormComponent salesVolumeForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
-        LookupComponent productLookup = (LookupComponent) view.getComponentByReference(SalesVolumeFields.PRODUCT);
+        FieldComponent currentStockField = (FieldComponent) view.getComponentByReference(SalesVolumeFields.CURRENT_STOCK);
+        FieldComponent stockForDaysField = (FieldComponent) view.getComponentByReference(SalesVolumeFields.STOCK_FOR_DAYS);
 
         Entity salesVolume = salesVolumeForm.getEntity();
-        Entity product = productLookup.getEntity();
 
-        salesVolumeHooks.fillStockFields(salesVolume);
+        Entity product = salesVolume.getBelongsToField(SalesVolumeFields.PRODUCT);
 
         if (Objects.nonNull(product)) {
-            salesVolume.setField(SalesVolumeFields.PRODUCT, product);
+            BigDecimal dailySalesVolume;
 
-            salesVolumeForm.setEntity(salesVolume);
+            try {
+                dailySalesVolume = salesVolume.getDecimalField(SalesVolumeFields.DAILY_SALES_VOLUME);
+
+                if (Objects.nonNull(dailySalesVolume) && BigDecimal.ZERO.compareTo(dailySalesVolume) < 0) {
+                    BigDecimal currentStock = getCurrentStock(product);
+                    Integer stockForDays = currentStock.divide(dailySalesVolume, 0, RoundingMode.FLOOR).intValue();
+
+                    currentStockField.setFieldValue(numberService.formatWithMinimumFractionDigits(currentStock, 0));
+                    stockForDaysField.setFieldValue(stockForDays);
+                }
+            } catch (IllegalArgumentException ex) {
+            }
         }
+
+        currentStockField.requestComponentUpdateState();
+        stockForDaysField.requestComponentUpdateState();
+    }
+
+    private BigDecimal getCurrentStock(final Entity product) {
+        BigDecimal currentStock = BigDecimal.ZERO;
+
+        List<Entity> locations = materialFlowResourcesService.getWarehouseLocationsFromDB();
+
+        Map<Long, Map<Long, BigDecimal>> resourceStocks = materialFlowResourcesService.getQuantitiesForProductsAndLocations(com.google.common.collect.Lists.newArrayList(product), locations);
+
+        for (Map.Entry<Long, Map<Long, BigDecimal>> resourceStock : resourceStocks.entrySet()) {
+            currentStock = currentStock.add(BigDecimalUtils.convertNullToZero(resourceStock.getValue().get(product.getId())),
+                    numberService.getMathContext());
+        }
+
+        return currentStock;
     }
 
 }

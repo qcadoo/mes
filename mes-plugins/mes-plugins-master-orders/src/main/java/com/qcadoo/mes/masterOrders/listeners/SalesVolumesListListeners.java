@@ -20,10 +20,13 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 @Service
 public class SalesVolumesListListeners {
+
+    private static final String L_LT = "<";
+
+    private static final String L_SPACE = " ";
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
@@ -50,26 +53,29 @@ public class SalesVolumesListListeners {
         List<Entity> oldEntries = getSalesVolumeMultiDD().find().add(SearchRestrictions.lt("updateDate", currentDate.toDate()))
                 .list().getEntities();
 
-        oldEntries.forEach(e -> e.getDataDefinition().delete(e.getId()));
+        oldEntries.forEach(oldEntry -> oldEntry.getDataDefinition().delete(oldEntry.getId()));
     }
 
     public final void showProductsRunningOutOfStock(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         GridComponent salesVolumesGrid = (GridComponent) view.getComponentByReference(QcadooViewConstants.L_GRID);
 
-        List<Entity> salesVolumes = salesVolumesGrid.getEntities();
-
         Integer runningOutOfStockDays = IntegerUtils.convertNullToZero(getDocumentPositionParameters().getIntegerField(DocumentPositionParametersFieldsMO.RUNNING_OUT_OF_STOCK_DAYS));
 
-        salesVolumesGrid.setEntities(salesVolumes.stream().filter(salesVolume ->
-                        runningOutOfStockDays.compareTo(salesVolume.getIntegerField(SalesVolumeFields.STOCK_FOR_DAYS)) > 0)
-                .collect(Collectors.toList())
-        );
+        Map<String, String> filters = salesVolumesGrid.getFilters();
+
+        filters.put(SalesVolumeFields.STOCK_FOR_DAYS, L_LT + runningOutOfStockDays);
+
+        salesVolumesGrid.setFilters(filters);
     }
 
     public final void showProductsAll(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         GridComponent salesVolumesGrid = (GridComponent) view.getComponentByReference(QcadooViewConstants.L_GRID);
 
-        salesVolumesGrid.performEvent(view, "refresh");
+        Map<String, String> filters = salesVolumesGrid.getFilters();
+
+        filters.put(SalesVolumeFields.STOCK_FOR_DAYS, L_SPACE);
+
+        salesVolumesGrid.setFilters(filters);
     }
 
     private DataDefinition getSalesVolumeMultiDD() {
