@@ -23,27 +23,19 @@
     ***************************************************************************
 
 -->
-<model name="orderProductResourceReservation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<model name="trackingProductResourceReservation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns="http://schema.qcadoo.org/model"
        xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
 
     <fields>
 
-        <priority name="priority" scope="productionCountingQuantity"/>
+        <integer name="priority"/>
 
-        <belongsTo name="productionCountingQuantity" model="productionCountingQuantity" plugin="basicProductionCounting"
+        <belongsTo name="orderProductResourceReservation" model="orderProductResourceReservation" plugin="productFlowThruDivision"
                    required="true"/>
 
-        <belongsTo name="resource" model="resource" plugin="materialFlowResources"/>
-
-        <string name="resourceNumber"/>
-        <string name="resourceUnit"/>
-
-        <decimal name="planedQuantity" required="true">
-            <validatesRange from="0" exclusively="true"/>
-            <validatesUnscaledValue max="7"/>
-            <validatesScale max="5"/>
-        </decimal>
+        <belongsTo name="trackingOperationProductInComponent" model="trackingOperationProductInComponent" plugin="productionCounting"
+                   required="true"/>
 
         <decimal name="usedQuantity">
             <validatesRange from="0" exclusively="true"/>
@@ -51,21 +43,9 @@
             <validatesScale max="5"/>
         </decimal>
 
-        <datetime name="creationDate"/>
-
-        <hasMany name="reservations" model="reservation" joinField="orderProductResourceReservation"
-                 copyable="false" cascade="delete" plugin="materialFlowResources" />
-
     </fields>
 
     <hooks>
-        <onSave class="com.qcadoo.mes.productFlowThruDivision.hooks.OrderProductResourceReservationHooks"
-                method="onSave"/>
 
-        <validatesWith class="com.qcadoo.mes.productFlowThruDivision.hooks.OrderProductResourceReservationHooks"
-                       method="validate"/>
-
-        <onDelete class="com.qcadoo.mes.productFlowThruDivision.hooks.OrderProductResourceReservationHooks"
-                method="onDelete"/>
     </hooks>
 </model>

@@ -3,19 +3,19 @@
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
  * Version: 1.4
- *
+ * <p>
  * This file is part of Qcadoo.
- *
+ * <p>
  * Qcadoo is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation; either version 3 of the License,
  * or (at your option) any later version.
- *
+ * <p>
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty
  * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU Affero General Public License for more details.
- *
+ * <p>
  * You should have received a copy of the GNU Affero General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
@@ -29,15 +29,21 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Multimaps;
 import com.google.common.collect.Sets;
+import com.qcadoo.mes.basicProductionCounting.constants.BasicProductionCountingConstants;
+import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityFields;
+import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityRole;
+import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityTypeOfMaterial;
 import com.qcadoo.mes.productionCounting.constants.OrderFieldsPC;
 import com.qcadoo.mes.productionCounting.constants.ProductionCountingConstants;
 import com.qcadoo.mes.productionCounting.constants.ProductionTrackingFields;
 import com.qcadoo.mes.productionCounting.constants.TypeOfProductionRecording;
 import com.qcadoo.mes.technologies.ProductQuantitiesService;
 import com.qcadoo.mes.technologies.TechnologyService;
+import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.mes.technologies.dto.OperationProductComponentEntityType;
 import com.qcadoo.mes.technologies.dto.OperationProductComponentHolder;
 import com.qcadoo.mes.technologies.dto.OperationProductComponentWithQuantityContainer;
+import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 
 import java.math.BigDecimal;
@@ -47,6 +53,7 @@ import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Set;
 
+import com.qcadoo.model.api.search.SearchRestrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -61,13 +68,16 @@ public class OperationProductsExtractor {
     @Autowired
     private TrackingOperationComponentBuilder trackingOperationComponentBuilder;
 
+    @Autowired
+    private DataDefinitionService dataDefinitionService;
+
     /**
      * This method takes production tracking entity and returns all matching products wrapped in tracking operation components.
      * Results will be grouped by their model name, so you can easily distinct inputs products from output ones.
-     * 
+     *
      * @param productionTracking
      *            production tracking for which you want to extract products.
-     * 
+     *
      * @return object representing tracking operation components grouped by their model name.
      */
     public TrackingOperationProducts getProductsByModelName(final Entity productionTracking) {
@@ -159,16 +169,45 @@ public class OperationProductsExtractor {
             }
         }
 
+        for (Entity trackingOperationProductComponent : trackingOperationProductComponents) {
+            if (ProductionCountingConstants.MODEL_TRACKING_OPERATION_PRODUCT_IN_COMPONENT.equals(trackingOperationProductComponent.getDataDefinition().getName())) {
+
+                List<Entity> pcqs = dataDefinitionService.get(BasicProductionCountingConstants.PLUGIN_IDENTIFIER, BasicProductionCountingConstants.MODEL_PRODUCTION_COUNTING_QUANTITY)
+                        .find()
+                        .add(SearchRestrictions.belongsTo(ProductionCountingQuantityFields.ORDER, order))
+                        .add(SearchRestrictions.belongsTo(ProductionCountingQuantityFields.PRODUCT, trackingOperationProductComponent.getBelongsToField(L_PRODUCT)))
+                        .add(SearchRestrictions.eq(ProductionCountingQuantityFields.ROLE, ProductionCountingQuantityRole.USED.getStringValue()))
+                        .add(SearchRestrictions.eq(ProductionCountingQuantityFields.TYPE_OF_MATERIAL, ProductionCountingQuantityTypeOfMaterial.COMPONENT.getStringValue()))
+                        .list().getEntities();
+
+                List<Entity> reservations = Lists.newArrayList();
+                for (Entity productionCountingQuantity : pcqs) {
+                    List<Entity> orderProductResourceReservations = productionCountingQuantity.getHasManyField("orderProductResourceReservations");
+                    for (Entity orderProductResourceReservation : orderProductResourceReservations) {
+                        Entity reservation = dataDefinitionService.get("productFlowThruDivision", "trackingProductResourceReservation").create();
+                        reservation.setField("trackingOperationProductInComponent", trackingOperationProductComponent);
+                        reservation.setField("orderProductResourceReservation", orderProductResourceReservation);
+                        reservation.setField("priority", orderProductResourceReservation.getIntegerField("priority"));
+                        reservations.add(reservation);
+                    }
+                }
+
+                trackingOperationProductComponent.setField("resourceReservations", reservations);
+            }
+
+        }
+
+
         return trackingOperationProductComponents;
     }
 
     private boolean shouldSkipAddingProduct(OperationProductComponentHolder operationProductComponentHolder,
-            Map<OperationProductComponentEntityType, Set<Entity>> entityTypeWithAlreadyAddedProducts,
-            String typeOfProductionRecording) {
+                                            Map<OperationProductComponentEntityType, Set<Entity>> entityTypeWithAlreadyAddedProducts,
+                                            String typeOfProductionRecording) {
 
         if (cumulated(typeOfProductionRecording)
                 && operationProductComponentHolder.getProductMaterialType().getStringValue()
-                        .equals(TechnologyService.L_02_INTERMEDIATE)) {
+                .equals(TechnologyService.L_02_INTERMEDIATE)) {
             return true;
         }
 

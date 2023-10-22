@@ -5,6 +5,7 @@ import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityFields;
 import com.qcadoo.mes.materialFlowResources.constants.MaterialFlowResourcesConstants;
 import com.qcadoo.mes.materialFlowResources.constants.ReservationFields;
+import com.qcadoo.mes.materialFlowResources.service.ResourceReservationsService;
 import com.qcadoo.mes.productFlowThruDivision.constants.OrderProductResourceReservationFields;
 import com.qcadoo.mes.productFlowThruDivision.constants.ProductionCountingQuantityFieldsPFTD;
 import com.qcadoo.model.api.DataDefinition;
@@ -27,12 +28,12 @@ public class OrderReservationsService {
     private DataDefinitionService dataDefinitionService;
 
     @Autowired
-    private ParameterService parameterService;
+    private ResourceReservationsService resourceReservationsService;
 
     public void createOrUpdateReservation(Entity orderProductResourceReservation) {
         Entity existingReservation = getReservation(orderProductResourceReservation);
 
-        if(Objects.nonNull(existingReservation)) {
+        if (Objects.nonNull(existingReservation)) {
             BigDecimal plannedQuantity = orderProductResourceReservation.getDecimalField(OrderProductResourceReservationFields.PLANED_QUANTITY);
             existingReservation.setField(ReservationFields.QUANTITY, plannedQuantity);
             existingReservation.getDataDefinition().save(existingReservation);
@@ -44,7 +45,10 @@ public class OrderReservationsService {
 
     public void clearReservationsForOrder(Entity order) {
         List<Entity> reservationsForOrder = getReservationsForOrder(order);
-        reservationsForOrder.forEach(rfo -> rfo.getDataDefinition().delete(rfo.getId()));
+        reservationsForOrder.forEach(rfo -> {
+            resourceReservationsService.updateResourceQuantitiesOnRemoveReservation(rfo.getBelongsToField(ReservationFields.RESOURCE), rfo.getDecimalField(ReservationFields.QUANTITY));
+            rfo.getDataDefinition().delete(rfo.getId());
+        });
     }
 
 
@@ -75,14 +79,14 @@ public class OrderReservationsService {
                 MaterialFlowResourcesConstants.MODEL_RESERVATION);
     }
 
-    private  List<Entity> getReservationsForOrder(final Entity order) {
+    private List<Entity> getReservationsForOrder(final Entity order) {
 
         SearchCriteriaBuilder scb = getReservationDD().find();
         List<Entity> reservations = scb.add(SearchRestrictions.belongsTo(ReservationFields.ORDER, order))
                 .list().getEntities();
 
 
-        return  reservations;
+        return reservations;
     }
 
     private Entity getReservation(final Entity orderProductResourceReservation) {

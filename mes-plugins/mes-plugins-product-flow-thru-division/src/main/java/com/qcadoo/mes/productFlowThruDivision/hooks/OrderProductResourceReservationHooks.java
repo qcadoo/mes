@@ -3,11 +3,14 @@ package com.qcadoo.mes.productFlowThruDivision.hooks;
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityFields;
+import com.qcadoo.mes.materialFlowResources.constants.ReservationFields;
 import com.qcadoo.mes.materialFlowResources.constants.ResourceFields;
+import com.qcadoo.mes.materialFlowResources.service.ResourceReservationsService;
 import com.qcadoo.mes.productFlowThruDivision.constants.OrderProductResourceReservationFields;
 import com.qcadoo.mes.productFlowThruDivision.reservation.OrderReservationsService;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.EntityList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -24,6 +27,17 @@ public class OrderProductResourceReservationHooks {
 
     @Autowired
     private OrderReservationsService orderReservationsService;
+
+    @Autowired
+    private ResourceReservationsService resourceReservationsService;
+
+    public void onDelete(final DataDefinition orderProductResourceReservationDD, final Entity orderProductResourceReservation) {
+
+        List<Entity> reservations = orderProductResourceReservation.getHasManyField(OrderProductResourceReservationFields.RESERVATIONS);
+        for (Entity reservation : reservations) {
+            resourceReservationsService.updateResourceQuantitiesOnRemoveReservation(reservation.getBelongsToField(ReservationFields.RESOURCE), reservation.getDecimalField(ReservationFields.QUANTITY));
+        }
+    }
 
     public void onSave(final DataDefinition orderProductResourceReservationDD, final Entity orderProductResourceReservation) {
         if(Objects.isNull(orderProductResourceReservation.getId())) {

@@ -82,6 +82,7 @@
 
         <!--    orderProductResourceReservation  -->
         <model:model model="orderProductResourceReservation" resource="model/orderProductResourceReservation.xml"/>
+        <model:model model="trackingProductResourceReservation" resource="model/trackingProductResourceReservation.xml"/>
 
         <model:model-field plugin="basicProductionCounting" model="productionCountingQuantity">
             <model:hasMany name="orderProductResourceReservations"
@@ -99,10 +100,19 @@
                              plugin="orders"/>
         </model:model-field>
 
+        <model:model-field plugin="productionCounting" model="trackingOperationProductInComponent">
+            <model:hasMany name="resourceReservations"
+                           model="trackingProductResourceReservation" plugin="productFlowThruDivision" joinField="trackingOperationProductInComponent" cascade="delete"/>
+        </model:model-field>
+
 
         <view:view resource="view/orderProductResourceReservationDetails.xml"/>
 
-
+        <model:model-hook plugin="productionCounting" model="trackingOperationProductInComponent">
+            <model:onSave
+                    class="com.qcadoo.mes.productFlowThruDivision.hooks.TrackingOperationProductInComponentHooksPFTD"
+                    method="onSave"/>
+        </model:model-hook>
 
 
         <!--    koniec orderProductResourceReservation  -->
@@ -585,6 +595,7 @@
         <view:view-tab resource="view/tabExtensions/technologiesParameters.xml"/>
         <view:view-tab resource="view/tabExtensions/generalParameters.xml" />
         <view:view-tab resource="view/tabExtensions/orderDetails.xml" />
+        <view:view-tab resource="view/tabExtensions/trackingOperationProductInComponentDetailsResourcesTab.xml" />
 
         <view:view-hook plugin="basic" view="divisionDetails"
                         type="beforeRender"
@@ -651,6 +662,11 @@
                         class="com.qcadoo.mes.productFlowThruDivision.hooks.DetailedProductionCountingAndProgressListHooksBPC"
                         method="onBeforeRender"/>
 
+        <view:view-hook view="trackingOperationProductInComponentDetails" type="beforeRender"
+                        plugin="productionCounting"
+                        class="com.qcadoo.mes.productFlowThruDivision.hooks.TrackingOperationProductInComponentDetailsHooksPFTD"
+                        method="onBeforeRender"/>
+
         <view:view-grid-column plugin="materialFlowResources"
                                view="documentsList" component="grid">
             <view:column name="orderNumber" fields="orderNumber" orderable="true"
@@ -693,6 +709,7 @@
         <view:view-ribbon-group resource="view/ribbonExtensions/detailedProductionCountingAndProgressList.xml"/>
         <view:view-ribbon-group resource="view/ribbonExtensions/warehouseStocksList.xml"/>
 
+        <view:view resource="view/orderProductResourceReservationRegisterDetails.xml"/>
         <view:view resource="view/orderWithMaterialAvailabilityList.xml"/>
         <view:view resource="view/ordersWithMaterialAvailabilityList.xml"/>
         <view:view resource="view/materialAvailabilityList.xml"/>
