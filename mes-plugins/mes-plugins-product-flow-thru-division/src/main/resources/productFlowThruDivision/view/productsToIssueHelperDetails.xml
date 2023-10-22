@@ -309,9 +309,6 @@
 
                         <component type="checkbox" name="goBack" reference="goBack" defaultVisible="false"
                                    defaultEnabled="false"/>
-
-                        <component type="input" name="documentId" reference="documentId"
-                                   field="#{form}.documentId" defaultVisible="false" defaultEnabled="never"/>
                     </layoutElement>
                 </component>
                 <option type="header" value="true"/>

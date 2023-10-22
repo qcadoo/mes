@@ -128,7 +128,7 @@ public class DocumentPositionValidator {
             final List<String> errors) {
         String type = document.getType();
 
-        if (DocumentType.isOutbound(type) && !document.getInBuffer()) {
+        if (DocumentType.isOutbound(type)) {
             String query = "SELECT draftmakesreservation FROM materialflow_location WHERE id = :location_id";
             Boolean enabled = jdbcTemplate.queryForObject(query,
                     Collections.singletonMap("location_id", document.getLocationFrom_id()), Boolean.class);

@@ -72,13 +72,6 @@
 									    break;
 							        }
 							    }
-
-							    for (var i in selectedEntitiesArray) {
-							        if (selectedEntitiesArray[i].fields.inBuffer == '1') {
-									    acceptButton.disable("#{translate(materialFlowResources.actions.errorInBuffer)}");
-									    break;
-							        }
-							    }
 							}
 						}
 					}

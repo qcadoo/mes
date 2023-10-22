@@ -25,6 +25,10 @@ import java.util.stream.Collectors;
 @Service
 public class SalesVolumesListListeners {
 
+    private static final String L_LT = "<";
+
+    private static final String L_SPACE = " ";
+
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
@@ -50,7 +54,29 @@ public class SalesVolumesListListeners {
         List<Entity> oldEntries = getSalesVolumeMultiDD().find().add(SearchRestrictions.lt("updateDate", currentDate.toDate()))
                 .list().getEntities();
 
-        oldEntries.forEach(e -> e.getDataDefinition().delete(e.getId()));
+        oldEntries.forEach(oldEntry -> oldEntry.getDataDefinition().delete(oldEntry.getId()));
+    }
+
+    public final void showProductsRunningOutOfStock(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        GridComponent salesVolumesGrid = (GridComponent) view.getComponentByReference(QcadooViewConstants.L_GRID);
+
+        Integer runningOutOfStockDays = IntegerUtils.convertNullToZero(getDocumentPositionParameters().getIntegerField(DocumentPositionParametersFieldsMO.RUNNING_OUT_OF_STOCK_DAYS));
+
+        Map<String, String> filters = salesVolumesGrid.getFilters();
+
+        filters.put(SalesVolumeFields.STOCK_FOR_DAYS, L_LT + runningOutOfStockDays);
+
+        salesVolumesGrid.setFilters(filters);
+    }
+
+    public final void showProductsAll(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        GridComponent salesVolumesGrid = (GridComponent) view.getComponentByReference(QcadooViewConstants.L_GRID);
+
+        Map<String, String> filters = salesVolumesGrid.getFilters();
+
+        filters.put(SalesVolumeFields.STOCK_FOR_DAYS, L_SPACE);
+
+        salesVolumesGrid.setFilters(filters);
     }
 
     public final void showProductsRunningOutOfStock(final ViewDefinitionState view, final ComponentState state, final String[] args) {

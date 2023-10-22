@@ -39,12 +39,13 @@
             <validatesUnscaledValue max="9"/>
             <validatesScale max="5"/>
         </decimal>
-        <decimal name="currentStock" persistent="false">
+        <decimal name="currentStock">
             <validatesRange from="0"/>
             <validatesUnscaledValue max="9"/>
             <validatesScale max="5"/>
         </decimal>
-        <integer name="stockForDays" persistent="false">
+
+        <integer name="stockForDays">
             <validatesRange from="0"/>
         </integer>
     </fields>
@@ -52,8 +53,6 @@
     <hooks>
         <validatesWith class="com.qcadoo.mes.masterOrders.hooks.SalesVolumeHooks"
                        method="validatesWith"/>
-        <onView class="com.qcadoo.mes.masterOrders.hooks.SalesVolumeHooks"
-                method="onView"/>
     </hooks>
 
 </model>
