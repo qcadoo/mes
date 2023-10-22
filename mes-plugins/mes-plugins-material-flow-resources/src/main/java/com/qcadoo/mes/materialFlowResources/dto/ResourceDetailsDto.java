@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.util.Date;
 
 public class ResourceDetailsDto {
+    private Long locationId;
     private String productName;
     private String locationNumber;
     private String storageLocationNumber;
@@ -16,6 +17,23 @@ public class ResourceDetailsDto {
     private BigDecimal quantity;
     private String unit;
     private BigDecimal additionalQuantity;
+    private Boolean blockedForQualityControl;
+
+    public Long getLocationId() {
+        return locationId;
+    }
+
+    public void setLocationId(Long locationId) {
+        this.locationId = locationId;
+    }
+
+    public Boolean getBlockedForQualityControl() {
+        return blockedForQualityControl;
+    }
+
+    public void setBlockedForQualityControl(Boolean blockedForQualityControl) {
+        this.blockedForQualityControl = blockedForQualityControl;
+    }
 
     public String getStorageLocationNumber() {
         return storageLocationNumber;

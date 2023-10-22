@@ -100,6 +100,7 @@
                         <option type="column" name="requiredQuantity" fields="requiredQuantity"/>
                         <option type="column" name="productUnit" fields="productUnit"/>
                         <option type="column" name="locationNumber" fields="locationNumber"/>
+                        <option type="column" name="storageLocationNumber" fields="storageLocationNumber"/>
                         <option type="column" name="replacement" fields="replacement"/>
                         <option type="column" name="batches" fields="batches"/>
                         <option type="column" name="batchesQuantity" fields="batchesQuantity"
@@ -109,9 +110,9 @@
                         <option type="order" column="productNumber" direction="asc"/>
 
                         <option type="searchable"
-                                value="batchesQuantity,batches,productName,productNumber,locationNumber,availability,availableQuantity,requiredQuantity,replacement"/>
+                                value="productName,productNumber,availability,availableQuantity,requiredQuantity,productUnit,locationNumber,storageLocationNumber,replacement,batches,batchesQuantity"/>
                         <option type="orderable"
-                                value="batchesQuantity,batches,productName,productNumber,availability,availableQuantity,requiredQuantity,replacement"/>
+                                value="productName,productNumber,availability,availableQuantity,requiredQuantity,productUnit,locationNumber,storageLocationNumber,replacement,batches,batchesQuantity"/>
 
                         <option type="fullscreen" value="true"/>
                         <option type="multiselect" value="true"/>

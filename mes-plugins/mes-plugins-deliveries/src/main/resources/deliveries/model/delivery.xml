@@ -27,59 +27,60 @@
 <model name="delivery" activable="true" auditable="true" versionable="true"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
        xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
+
     <fields>
         <string name="number" required="true" unique="true">
-            <validatesLength max="255" />
+            <validatesLength max="255"/>
         </string>
         <string name="name">
-            <validatesLength max="1024" />
+            <validatesLength max="1024"/>
         </string>
         <string name="description">
-            <validatesLength max="2048" />
+            <validatesLength max="2048"/>
         </string>
-        <belongsTo name="supplier" model="company" plugin="basic" />
-        <datetime name="deliveryDate" />
+        <belongsTo name="supplier" model="company" plugin="basic"/>
+        <datetime name="deliveryDate"/>
         <string name="deliveryAddress">
-            <validatesLength max="2048" />
+            <validatesLength max="2048"/>
         </string>
-		
-        <integer name="deliveryDateBuffer" persistent="false" />
+
+        <integer name="deliveryDateBuffer" persistent="false"/>
         <dictionary name="paymentForm" dictionary="paymentForm"/>
 
         <belongsTo name="location" model="location"
-                   plugin="materialFlow" />
-        <belongsTo name="relatedDelivery" model="delivery" />
+                   plugin="materialFlow"/>
+        <belongsTo name="relatedDelivery" model="delivery"/>
         <belongsTo name="currency" model="currency" plugin="basic"/>
         <hasMany name="relatedDeliveries" joinField="relatedDelivery" model="delivery"
-                         cascade="nullify" />
-		
-        <string name="externalNumber" unique="true" />
-        <boolean name="externalSynchronized" default="true" />
-        <decimal name="orderedProductsCumulatedQuantity" persistent="false" />
-        <decimal name="deliveredProductsCumulatedQuantity" persistent="false" />
+                 cascade="nullify"/>
+
+        <string name="externalNumber" unique="true"/>
+        <boolean name="externalSynchronized" default="true"/>
+        <decimal name="orderedProductsCumulatedQuantity" persistent="false"/>
+        <decimal name="deliveredProductsCumulatedQuantity" persistent="false"/>
         <decimal name="orderedProductsCumulatedTotalPrice" persistent="false"/>
         <decimal name="deliveredProductsCumulatedTotalPrice" persistent="false"/>
-		
+
         <enum name="state"
-                      values="01draft,02prepared,03duringCorrection,04declined,05approved,06received,07receiveConfirmWaiting"
-                      default="01draft" required="true" />
+              values="01draft,02prepared,03duringCorrection,04declined,05approved,06received,07receiveConfirmWaiting"
+              default="01draft" required="true"/>
         <hasMany name="stateChanges" joinField="delivery" model="deliveryStateChange"
-                         cascade="delete" />
+                 cascade="delete"/>
 
         <hasMany name="orderedProducts" joinField="delivery" model="orderedProduct"
-                         cascade="delete" copyable="true" />
+                 cascade="delete" copyable="true"/>
 
         <hasMany name="orderedProductDtos" joinField="delivery" model="orderedProductDto"
-                 cascade="nullify" copyable="false" persistent="false" />
+                 cascade="nullify" copyable="false" persistent="false"/>
 
         <hasMany name="deliveredProducts" joinField="delivery" model="deliveredProduct"
-                         cascade="delete" />
+                 cascade="delete"/>
 
         <hasMany name="deliveredProductDtos" joinField="delivery" model="deliveredProductDto"
-                         cascade="nullify" copyable="false" persistent="false" />
+                 cascade="nullify" copyable="false" persistent="false"/>
 
         <hasMany name="deliveredProductMultis" joinField="delivery" model="deliveredProductMulti"
-                 cascade="delete" />
+                 cascade="delete"/>
 
         <hasMany name="deliveredPackages" joinField="delivery" model="deliveredPackage"
                  cascade="delete" copyable="true"/>
@@ -91,17 +92,19 @@
         <boolean name="wms" copyable="false" default="false"/>
         <enum name="stateInWMS" values="01waiting,02inProgress,03delayed,04realized" copyable="false"/>
     </fields>
+
     <hooks>
         <onCreate class="com.qcadoo.mes.deliveries.hooks.DeliveryHooks"
-                          method="onCreate" />
-        <onCopy class="com.qcadoo.mes.deliveries.hooks.DeliveryHooks" 
-                        method="onCopy"/>
-        <onView class="com.qcadoo.mes.deliveries.hooks.DeliveryHooks" 
-                        method="onView" />
-        <validatesWith class="com.qcadoo.mes.deliveries.hooks.DeliveryHooks"
-                       method="validate" />
+                  method="onCreate"/>
+        <onCopy class="com.qcadoo.mes.deliveries.hooks.DeliveryHooks"
+                method="onCopy"/>
+        <onView class="com.qcadoo.mes.deliveries.hooks.DeliveryHooks"
+                method="onView"/>
         <onSave class="com.qcadoo.mes.deliveries.hooks.DeliveryHooks"
-                          method="onSave" />
+                method="onSave"/>
+        <validatesWith class="com.qcadoo.mes.deliveries.hooks.DeliveryHooks"
+                       method="validate"/>
     </hooks>
-    <identifier expression="#number + ' - ' + #name" />
+
+    <identifier expression="#number + ' - ' + #name"/>
 </model>

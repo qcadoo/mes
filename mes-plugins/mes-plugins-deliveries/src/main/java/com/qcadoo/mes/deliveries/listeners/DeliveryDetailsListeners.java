@@ -37,6 +37,7 @@ import com.qcadoo.mes.deliveries.constants.*;
 import com.qcadoo.mes.deliveries.print.DeliveryReportPdf;
 import com.qcadoo.mes.deliveries.print.OrderReportPdf;
 import com.qcadoo.mes.deliveries.states.constants.DeliveryStateStringValues;
+import com.qcadoo.mes.materialFlowResources.MaterialFlowResourcesService;
 import com.qcadoo.model.api.*;
 import com.qcadoo.model.api.file.FileService;
 import com.qcadoo.model.api.search.*;
@@ -73,9 +74,15 @@ public class DeliveryDetailsListeners {
 
     private static final Logger LOG = LoggerFactory.getLogger(DeliveryDetailsListeners.class);
 
-    private static final String L_ORDERED_PRODUCTS_CUMULATED_TOTAL_PRICE = "orderedProductsCumulatedTotalPrice";
+    private static final Integer L_REPORT_WIDTH_A4 = 515;
+
+    private static final String L_FORM_ID = "form.id";
 
     private static final String L_WINDOW_ACTIVE_MENU = "window.activeMenu";
+
+    private static final String L_DELIVERY_ID = "delivery.id";
+
+    private static final String L_ORDERED_PRODUCTS_CUMULATED_TOTAL_PRICE = "orderedProductsCumulatedTotalPrice";
 
     private static final String L_PRODUCT = "product";
 
@@ -83,40 +90,20 @@ public class DeliveryDetailsListeners {
 
     private static final String L_OFFER = "offer";
 
-    private static final Integer L_REPORT_WIDTH_A4 = 515;
-
     @Autowired
-    private CurrencyService currencyService;
-
-    @Autowired
-    private DeliveriesService deliveriesService;
-
-    @Autowired
-    private NumberService numberService;
+    private DataDefinitionService dataDefinitionService;
 
     @Autowired
     private NumberGeneratorService numberGeneratorService;
 
     @Autowired
-    private OrderReportPdf orderReportPdf;
-
-    @Autowired
-    private PdfHelper pdfHelper;
+    private NumberService numberService;
 
     @Autowired
     private ParameterService parameterService;
 
     @Autowired
-    private DeliveryReportPdf deliveryReportPdf;
-
-    @Autowired
-    private DataDefinitionService dataDefinitionService;
-
-    @Autowired
-    private ReservationService reservationService;
-
-    @Autowired
-    private DeliveredProductMultiPositionService deliveredProductMultiPositionService;
+    private CurrencyService currencyService;
 
     @Autowired
     private UnitConversionService unitConversionService;
@@ -125,7 +112,28 @@ public class DeliveryDetailsListeners {
     private FileService fileService;
 
     @Autowired
+    private PdfHelper pdfHelper;
+
+    @Autowired
+    private DeliveryReportPdf deliveryReportPdf;
+
+    @Autowired
+    private OrderReportPdf orderReportPdf;
+
+    @Autowired
+    private DeliveriesService deliveriesService;
+
+    @Autowired
+    private ReservationService reservationService;
+
+    @Autowired
+    private DeliveredProductMultiPositionService deliveredProductMultiPositionService;
+
+    @Autowired
     private CalculationQuantityService calculationQuantityService;
+
+    @Autowired
+    private MaterialFlowResourcesService materialFlowResourcesService;
 
     public void fillPrices(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         Entity parameter = parameterService.getParameter();
@@ -170,7 +178,7 @@ public class DeliveryDetailsListeners {
                     orderedProduct.setField(OrderedProductFields.TOTAL_PRICE, null);
                 }
 
-                Entity lastPurchaseCostCurrency  = product.getBelongsToField(ProductFieldsCNFP.LAST_PURCHASE_COST_CURRENCY);
+                Entity lastPurchaseCostCurrency = product.getBelongsToField(ProductFieldsCNFP.LAST_PURCHASE_COST_CURRENCY);
 
                 pricePerUnit = getPricePerUnit(currency, plnCurrency, product, productsToMessage, lastPurchaseCostCurrency,
                         lastPurchaseCost);
@@ -322,6 +330,7 @@ public class DeliveryDetailsListeners {
             contractorCategoryField.setFieldValue(supplier.getStringField(CompanyFields.CONTRACTOR_CATEGORY));
 
             Entity supplierCurrency = supplier.getBelongsToField(CompanyFieldsD.CURRENCY);
+
             if (Objects.nonNull(supplierCurrency)) {
                 Long oldCurrency = (Long) currencyField.getFieldValue();
 
@@ -339,24 +348,6 @@ public class DeliveryDetailsListeners {
         deliveryDateBufferField.requestComponentUpdateState();
         paymentFormField.requestComponentUpdateState();
         contractorCategoryField.requestComponentUpdateState();
-    }
-
-    public void onCurrencyChange(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        FormComponent deliveryForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
-        GridComponent orderedProductsGrid = (GridComponent) view.getComponentByReference(DeliveryFields.ORDERED_PRODUCTS);
-
-        Entity oldCurrency = null;
-
-        if (Objects.nonNull(deliveryForm.getEntityId())) {
-            oldCurrency = deliveriesService.getDelivery(deliveryForm.getEntityId()).getBelongsToField(DeliveryFields.CURRENCY);
-        }
-
-        Long newCurrency = (Long) state.getFieldValue();
-
-        if (Objects.nonNull(oldCurrency) && !oldCurrency.getId().equals(newCurrency) && !orderedProductsGrid.getEntities().isEmpty()) {
-            view.addMessage("deliveries.delivery.currencyChange.orderedProductsPriceVerificationRequired", MessageType.INFO,
-                    false);
-        }
     }
 
     public final void printDeliveryReport(final ViewDefinitionState view, final ComponentState state, final String[] args) {
@@ -601,6 +592,7 @@ public class DeliveryDetailsListeners {
                                           final boolean copyQuantityAndPrice) {
         Entity deliveredProduct = deliveriesService.getDeliveredProductDD().create();
 
+        Entity location = delivery.getBelongsToField(DeliveryFields.LOCATION);
         Entity product = orderedProduct.getBelongsToField(OrderedProductFields.PRODUCT);
         BigDecimal conversion = orderedProduct.getDecimalField(OrderedProductFields.CONVERSION);
 
@@ -621,6 +613,16 @@ public class DeliveryDetailsListeners {
                     .setScaleWithDefaultMathContext(orderedProduct.getDecimalField(OrderedProductFields.PRICE_PER_UNIT)));
             deliveredProduct.setField(DeliveredProductFields.TOTAL_PRICE, numberService
                     .setScaleWithDefaultMathContext(orderedProduct.getDecimalField(OrderedProductFields.TOTAL_PRICE)));
+        }
+
+        if (Objects.nonNull(location)) {
+            Optional<Entity> mayBeStorageLocation = materialFlowResourcesService.findStorageLocationForProduct(location, product);
+
+            if (mayBeStorageLocation.isPresent()) {
+                Entity storageLocation = mayBeStorageLocation.get();
+
+                deliveredProduct.setField(DeliveredProductFields.STORAGE_LOCATION, storageLocation);
+            }
         }
 
         if (PluginUtils.isEnabled("supplyNegotiations")) {
@@ -665,7 +667,7 @@ public class DeliveryDetailsListeners {
 
             Map<String, Object> parameters = Maps.newHashMap();
 
-            parameters.put("form.id", relatedDeliveryId);
+            parameters.put(L_FORM_ID, relatedDeliveryId);
             parameters.put(L_WINDOW_ACTIVE_MENU, "requirements.deliveries");
 
             String url = "../page/deliveries/deliveryDetails.html";
@@ -872,7 +874,7 @@ public class DeliveryDetailsListeners {
 
         Map<String, Object> parameters = Maps.newHashMap();
 
-        parameters.put("delivery.id", deliveryId);
+        parameters.put(L_DELIVERY_ID, deliveryId);
         parameters.put(L_WINDOW_ACTIVE_MENU, "requirements.deliveries");
 
         String url = "../page/deliveries/deliveriesList.html";
@@ -895,7 +897,7 @@ public class DeliveryDetailsListeners {
 
         Map<String, Object> parameters = Maps.newHashMap();
 
-        parameters.put("form.id", product.getId());
+        parameters.put(L_FORM_ID, product.getId());
         parameters.put(L_WINDOW_ACTIVE_MENU, "basic.products");
 
         String url = "../page/basic/productDetails.html";

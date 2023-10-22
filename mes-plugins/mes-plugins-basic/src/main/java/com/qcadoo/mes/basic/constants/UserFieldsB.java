@@ -33,6 +33,10 @@ public final class UserFieldsB {
 
     public static final String FACTORY = "factory";
 
+    public static final String SHOW_ONLY_MY_REGISTRATION_RECORDS = "showOnlyMyRegistrationRecords";
+
+    public static final String SHOW_ONLY_MY_OPERATIONAL_TASKS_AND_ORDERS = "showOnlyMyOperationalTasksAndOrders";
+
     public static final String LICENSE_USAGES = "licenseUsages";
 
 }

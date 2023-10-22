@@ -20,62 +20,56 @@ public class PositionBuilder {
 
     private String unit;
 
-    private String targetPallet;
-
     private String batch;
 
-    public PositionBuilder setIndex(String index) {
+    public PositionBuilder setIndex(final String index) {
         this.index = index;
         return this;
     }
 
-    public PositionBuilder setProduct(Long product) {
+    public PositionBuilder setProduct(final Long product) {
         this.product = product;
         return this;
     }
 
-    public PositionBuilder setStorageLocation(String storageLocation) {
+    public PositionBuilder setStorageLocation(final String storageLocation) {
         this.storageLocation = storageLocation;
         return this;
     }
 
-    public PositionBuilder setTypeOfPallet(String typeOfPallet) {
+    public PositionBuilder setTypeOfPallet(final String typeOfPallet) {
         this.typeOfPallet = typeOfPallet;
         return this;
     }
 
-    public PositionBuilder setPalletNumber(String palletNumber) {
+    public PositionBuilder setPalletNumber(final String palletNumber) {
         this.palletNumber = palletNumber;
         return this;
     }
 
-    public PositionBuilder setQuantity(BigDecimal quantity) {
+    public PositionBuilder setQuantity(final BigDecimal quantity) {
         this.quantity = quantity;
         return this;
     }
 
-    public PositionBuilder setProductName(String productName) {
+    public PositionBuilder setProductName(final String productName) {
         this.productName = productName;
         return this;
     }
 
-    public PositionBuilder setUnit(String unit) {
+    public PositionBuilder setUnit(final String unit) {
         this.unit = unit;
         return this;
     }
 
-    public PositionBuilder setTargetPallet(String targetPallet) {
-        this.targetPallet = targetPallet;
-        return this;
-    }
-
-    public PositionBuilder setBatch(String batch) {
+    public PositionBuilder setBatch(final String batch) {
         this.batch = batch;
         return this;
     }
 
     public Position createPosition() {
         return new Position(index, product, storageLocation, typeOfPallet, palletNumber, quantity, productName,
-                unit, targetPallet, batch);
+                unit, batch);
     }
+
 }

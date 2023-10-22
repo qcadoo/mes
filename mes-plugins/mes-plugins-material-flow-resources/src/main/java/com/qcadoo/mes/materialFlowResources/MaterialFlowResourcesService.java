@@ -23,13 +23,14 @@
  */
 package com.qcadoo.mes.materialFlowResources;
 
-import java.math.BigDecimal;
-import java.util.List;
-import java.util.Map;
-
 import com.qcadoo.mes.materialFlowResources.dto.*;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ViewDefinitionState;
+
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 public interface MaterialFlowResourcesService {
 
@@ -67,4 +68,24 @@ public interface MaterialFlowResourcesService {
     List<StorageLocationsForProductDto> getStoragesForProductNumber(String productNumber, List<String> locationIds);
 
     ResourceToRepackDto getResourceDetailsToRepack(String resourceNumber, List<String> userLocations);
+
+    StorageLocationNumberIdDto getLocationId(String storageLocation, String storageLocationNumber);
+
+    StorageLocationNumberIdDto checkIfStorageLocationNumberExist(String storageLocationNumber);
+
+    CheckProductDto checkProductByStorageLocationNumber(String storageLocationNumber);
+
+    List<PalletDto> checkPalletsForLocationNumber(String storageLocationNumber);
+
+    Optional<Entity> findStorageLocationForProduct(final Entity location, final Entity product);
+
+
+    PalletDto checkIfPalletExist(String palletNumber);
+
+    ResourceNumberDto checkIfPalletIsEmpty(String palletNumber);
+
+    List<ResourceToRepackDto> getResourceListByStorageLocationNumber(String storageLocationNumber, List<String> userLocations);
+
+    List<ResourceToRepackDto> getResourceListByPalletNumber(String palletNumber, List<String> userLocations);
+    List<ResourceToRepackDto> getResourceListByPalletAndLocationNumber(String palletNumber, String storageLocationNumber, List<String> userLocations);
 }

@@ -23,39 +23,38 @@
  */
 package com.qcadoo.mes.basic.hooks;
 
-import java.util.Currency;
-import java.util.Locale;
-import java.util.Objects;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.qcadoo.mes.basic.constants.CurrencyFields;
 import com.qcadoo.mes.basic.constants.ParameterFields;
 import com.qcadoo.mes.basic.util.CurrencyService;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.Currency;
+import java.util.Locale;
+import java.util.Objects;
 
 @Service
 public class ParameterModelHooks {
 
     private static final String L_RELEASE_OF_MATERIALS = "releaseOfMaterials";
+
     private static final String L_RECEIPT_OF_PRODUCTS = "receiptOfProducts";
-    public static final String TASKS_SELECTION_BY = "tasksSelectionBy";
-    public static final String NUMBER_VISIBLE_ORDERS_TASKS_ON_DASHBOARD = "numberVisibleOrdersTasksOnDashboard";
+
+    private static final String L_TASKS_SELECTION_BY = "tasksSelectionBy";
 
     @Autowired
     private CurrencyService currencyService;
 
-
     public void onSave(final DataDefinition parameterDD, final Entity parameter) {
-
-        if(Objects.isNull(parameter.getId())) {
+        if (Objects.isNull(parameter.getId())) {
             return;
         }
 
         Entity parameterDb = parameter.getDataDefinition().get(parameter.getId());
-        if(parameter.getBooleanField(ParameterFields.NO_EXCHANGE_RATE_DOWNLOAD) && !parameterDb.getBooleanField(ParameterFields.NO_EXCHANGE_RATE_DOWNLOAD)) {
+
+        if (parameter.getBooleanField(ParameterFields.NO_EXCHANGE_RATE_DOWNLOAD) && !parameterDb.getBooleanField(ParameterFields.NO_EXCHANGE_RATE_DOWNLOAD)) {
             currencyService.clearExchangeRate();
         }
     }
@@ -70,8 +69,8 @@ public class ParameterModelHooks {
         parameter.setField(L_RECEIPT_OF_PRODUCTS, "01onAcceptanceRegistrationRecord");
         parameter.setField(ParameterFields.NUMBER_TERMINAL_LICENSES, 1);
         parameter.setField(ParameterFields.NUMBER_OFFICE_LICENSES, 1);
-        parameter.setField(NUMBER_VISIBLE_ORDERS_TASKS_ON_DASHBOARD, 50);
-        parameter.setField(TASKS_SELECTION_BY, "01orderDate");
+        parameter.setField(ParameterFields.NUMBER_VISIBLE_ORDERS_TASKS_ON_DASHBOARD, 50);
+        parameter.setField(L_TASKS_SELECTION_BY, "01orderDate");
     }
 
 }

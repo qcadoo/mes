@@ -5764,7 +5764,8 @@ CREATE TABLE public.qcadoosecurity_user (
     groupchangedate timestamp without time zone,
     pswdlastchanged timestamp without time zone,
     afterfirstpswdchange boolean DEFAULT false,
-    isblocked boolean DEFAULT false
+    isblocked boolean DEFAULT false,
+    showonlymyoperationaltasksandorders boolean DEFAULT false
 );
 
 
@@ -15233,7 +15234,9 @@ CREATE TABLE public.supplynegotiations_offer (
     updateuser character varying(255),
     workingdaysafterorder integer,
     negotiation_id bigint,
-    entityversion bigint DEFAULT 0
+    entityversion bigint DEFAULT 0,
+    offerdate date,
+    currency_id bigint
 );
 
 
@@ -15524,9 +15527,7 @@ CREATE TABLE public.deliveries_orderedproduct (
     batch_id bigint,
     qualitycard_id bigint,
     pickingdate timestamp without time zone,
-    pickingworker_id bigint,
-    wmsdeliveredquantity numeric(12,5),
-    wmsstoragelocation_id bigint
+    pickingworker_id bigint
 );
 
 
@@ -18815,6 +18816,16 @@ CREATE TABLE public.jointable_product_scale (
 
 
 --
+-- Name: jointable_product_storagelocation; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.jointable_product_storagelocation (
+    product_id bigint NOT NULL,
+    storagelocation_id bigint NOT NULL
+);
+
+
+--
 -- Name: jointable_product_warehouseminimumstatemulti; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -20376,6 +20387,33 @@ ALTER SEQUENCE public.materialflowresources_costnormslocation_id_seq OWNED BY pu
 
 
 --
+-- Name: materialflowresources_defaultstoragelocationdto; Type: VIEW; Schema: public; Owner: -
+--
+
+CREATE VIEW public.materialflowresources_defaultstoragelocationdto AS
+ SELECT row_number() OVER () AS id,
+    storagelocation.active,
+    storagelocation.number,
+    storagelocation.location_id,
+    product_storagelocation.storagelocation_id,
+    product_storagelocation.product_id
+   FROM (public.materialflowresources_storagelocation storagelocation
+     RIGHT JOIN public.jointable_product_storagelocation product_storagelocation ON ((product_storagelocation.storagelocation_id = storagelocation.id)));
+
+
+--
+-- Name: materialflowresources_defaultstoragelocationdto_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.materialflowresources_defaultstoragelocationdto_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
 -- Name: materialflowresources_document; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -20594,7 +20632,8 @@ CREATE TABLE public.materialflowresources_documentpositionparameters (
     numberofmonthsforpositionsdata integer DEFAULT 1,
     colorresourcesafterdeadline boolean DEFAULT false,
     shortexpirydate integer DEFAULT 14,
-    transferpallettoreceivingwarehouse boolean DEFAULT false
+    transferpallettoreceivingwarehouse boolean DEFAULT false,
+    runningoutofstockdays integer DEFAULT 0
 );
 
 
@@ -26030,11 +26069,14 @@ CREATE VIEW public.productflowthrudivision_materialavailabilitydto AS
         CASE
             WHEN ((materialavailability.requiredquantity > COALESCE(materialavailability.batchesquantity, (0)::numeric)) AND (materialavailability.batchesid IS NOT NULL)) THEN 'red-cell'::text
             ELSE 'base-cell'::text
-        END AS batchesquantityclass
-   FROM (((public.productflowthrudivision_materialavailability materialavailability
+        END AS batchesquantityclass,
+    (defaultstoragelocationdto.storagelocation_id)::integer AS storagelocationid,
+    defaultstoragelocationdto.number AS storagelocationnumber
+   FROM ((((public.productflowthrudivision_materialavailability materialavailability
      JOIN public.orders_order ordersorder ON ((ordersorder.id = materialavailability.order_id)))
      JOIN public.basic_product product ON ((product.id = materialavailability.product_id)))
-     LEFT JOIN public.materialflow_location location ON ((location.id = materialavailability.location_id)));
+     LEFT JOIN public.materialflow_location location ON ((location.id = materialavailability.location_id)))
+     LEFT JOIN public.materialflowresources_defaultstoragelocationdto defaultstoragelocationdto ON (((defaultstoragelocationdto.location_id = location.id) AND (defaultstoragelocationdto.product_id = product.id))));
 
 
 --
@@ -40125,7 +40167,7 @@ COPY public.deliveries_deliverystatechange (id, dateandtime, sourcestate, target
 -- Data for Name: deliveries_orderedproduct; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.deliveries_orderedproduct (id, delivery_id, product_id, orderedquantity, priceperunit, totalprice, description, succession, operation_id, offer_id, actualversion, entityversion, additionalquantity, conversion, deliveredquantity, additionaldeliveredquantity, batchnumber, batch_id, qualitycard_id, pickingdate, pickingworker_id, wmsdeliveredquantity, wmsstoragelocation_id) FROM stdin;
+COPY public.deliveries_orderedproduct (id, delivery_id, product_id, orderedquantity, priceperunit, totalprice, description, succession, operation_id, offer_id, actualversion, entityversion, additionalquantity, conversion, deliveredquantity, additionaldeliveredquantity, batchnumber, batch_id, qualitycard_id, pickingdate, pickingworker_id) FROM stdin;
 \.
 
 
@@ -41698,6 +41740,42 @@ COPY public.jointable_group_role (group_id, role_id) FROM stdin;
 29	153
 30	153
 42	153
+4	156
+2	156
+3	156
+29	156
+30	156
+32	156
+33	156
+34	156
+35	156
+36	156
+37	156
+42	156
+4	157
+2	157
+3	157
+29	157
+30	157
+32	157
+33	157
+34	157
+35	157
+36	157
+37	157
+42	157
+4	158
+2	158
+3	158
+29	158
+30	158
+32	158
+33	158
+34	158
+35	158
+36	158
+37	158
+42	158
 \.
 
 
@@ -41898,6 +41976,14 @@ COPY public.jointable_product_salesvolumemulti (product_id, salesvolumemulti_id)
 --
 
 COPY public.jointable_product_scale (product_id, scale_id) FROM stdin;
+\.
+
+
+--
+-- Data for Name: jointable_product_storagelocation; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY public.jointable_product_storagelocation (product_id, storagelocation_id) FROM stdin;
 \.
 
 
@@ -42273,8 +42359,8 @@ COPY public.materialflowresources_document (id, number, type, "time", state, loc
 -- Data for Name: materialflowresources_documentpositionparameters; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.materialflowresources_documentpositionparameters (id, suggestresource, acceptanceofdocumentbeforeprinting, notshowprices, presenttotalamountandrest, pallettoshift, palletwithfreeplace, fillresourceirrespectiveofconversion, numberofmonthsforpositionsdata, colorresourcesafterdeadline, shortexpirydate, transferpallettoreceivingwarehouse) FROM stdin;
-1	f	t	f	f	\N	\N	f	1	f	14	f
+COPY public.materialflowresources_documentpositionparameters (id, suggestresource, acceptanceofdocumentbeforeprinting, notshowprices, presenttotalamountandrest, pallettoshift, palletwithfreeplace, fillresourceirrespectiveofconversion, numberofmonthsforpositionsdata, colorresourcesafterdeadline, shortexpirydate, transferpallettoreceivingwarehouse, runningoutofstockdays) FROM stdin;
+1	f	t	f	f	\N	\N	f	1	f	14	f	0
 \.
 
 
@@ -43929,6 +44015,9 @@ COPY public.qcadoosecurity_role (id, identifier, description, entityversion) FRO
 153	ROLE_DELIVERIES_PRICE	\N	0
 154	ROLE_ARCHIVING	\N	0
 155	ROLE_ORDER_TECHNOLOGICAL_PROCESSES	\N	0
+156	ROLE_REQUEST_FOR_QUOTATIONS	\N	0
+157	ROLE_OFFERS	\N	0
+158	ROLE_NEGOTIATIONS	\N	0
 \.
 
 
@@ -43936,10 +44025,10 @@ COPY public.qcadoosecurity_role (id, identifier, description, entityversion) FRO
 -- Data for Name: qcadoosecurity_user; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.qcadoosecurity_user (id, username, email, firstname, lastname, enabled, description, password, lastactivity, staff_id, group_id, entityversion, factory_id, ipaddress, showonlymyregistrationrecords, productionline_id, groupchangedate, pswdlastchanged, afterfirstpswdchange, isblocked) FROM stdin;
-3	qcadoo_bot	\N	qcadoo_bot	qcadoo_bot	t	\N	\N	\N	\N	1	0	\N	\N	f	\N	2022-05-26 00:00:00	\N	f	f
-2	admin	admin@qcadoo.com	generated admin	generated admin	t	\N	$2a$11$fK09LNi7Y4ZHKWAg0PCLxeOP/oTENa6AKO4CcuxYRbtrOeStRZYVm	\N	\N	4	0	\N	\N	f	\N	2022-05-26 00:00:00	\N	t	f
-1	superadmin	superadmin@qcadoo.com	generated superadmin	generated superadmin	t	\N	$2a$11$tzoAWwNksWYQPgkvvczy6eQaJHMAFBlUlq5OzAz.GeNNMqTEt1FE2	\N	\N	2	0	\N	\N	f	\N	2022-05-26 00:00:00	\N	t	f
+COPY public.qcadoosecurity_user (id, username, email, firstname, lastname, enabled, description, password, lastactivity, staff_id, group_id, entityversion, factory_id, ipaddress, showonlymyregistrationrecords, productionline_id, groupchangedate, pswdlastchanged, afterfirstpswdchange, isblocked, showonlymyoperationaltasksandorders) FROM stdin;
+3	qcadoo_bot	\N	qcadoo_bot	qcadoo_bot	t	\N	\N	\N	\N	1	0	\N	\N	f	\N	2022-05-26 00:00:00	\N	f	f	f
+2	admin	admin@qcadoo.com	generated admin	generated admin	t	\N	$2a$11$fK09LNi7Y4ZHKWAg0PCLxeOP/oTENa6AKO4CcuxYRbtrOeStRZYVm	\N	\N	4	0	\N	\N	f	\N	2022-05-26 00:00:00	\N	t	f	f
+1	superadmin	superadmin@qcadoo.com	generated superadmin	generated superadmin	t	\N	$2a$11$tzoAWwNksWYQPgkvvczy6eQaJHMAFBlUlq5OzAz.GeNNMqTEt1FE2	\N	\N	2	0	\N	\N	f	\N	2022-05-26 00:00:00	\N	t	f	f
 \.
 
 
@@ -44025,10 +44114,6 @@ COPY public.qcadooview_item (id, pluginidentifier, name, active, category_id, vi
 78	warehouseMinimalState	warehouseMinimumStateList	t	6	78	13	ROLE_DOCUMENTS_CORRECTIONS_MIN_STATES	0
 100	orderSupplies	generateMaterialRequirementCoverage	t	9	100	1	ROLE_REQUIREMENTS	0
 49	materialRequirements	materialRequirements	t	9	49	2	ROLE_REQUIREMENTS	0
-66	supplyNegotiations	offer	t	9	66	8	ROLE_REQUIREMENTS	0
-65	supplyNegotiations	offersItems	t	9	65	9	ROLE_REQUIREMENTS	0
-67	supplyNegotiations	requestsForQuotation	t	9	67	10	ROLE_REQUIREMENTS	0
-64	supplyNegotiations	negotiation	t	9	64	11	ROLE_REQUIREMENTS	0
 97	workPlans	workPlans	t	7	97	12	ROLE_PLANNING	0
 106	deviationCausesReporting	deviationsReport	t	7	105	18	ROLE_PLANNING	0
 93	productionCounting	productionTrackingForProduct	t	8	93	7	ROLE_PRODUCTION_TRACKING	0
@@ -44189,6 +44274,10 @@ COPY public.qcadooview_item (id, pluginidentifier, name, active, category_id, vi
 218	scheduleGantt	workstationsWorkChart	t	3	217	7	ROLE_COMPANY_STRUCTURE	0
 219	subcontractorPortal	subOrderIssuedProductsReportsList	t	15	218	18	ROLE_ANALYSIS_VIEWER	0
 220	technologies	productData	t	5	219	14	ROLE_TECHNOLOGIES	0
+67	supplyNegotiations	requestsForQuotation	t	9	67	10	ROLE_REQUEST_FOR_QUOTATIONS	0
+66	supplyNegotiations	offer	t	9	66	8	ROLE_OFFERS	0
+65	supplyNegotiations	offersItems	t	9	65	9	ROLE_OFFERS	0
+64	supplyNegotiations	negotiation	t	9	64	11	ROLE_NEGOTIATIONS	0
 \.
 
 
@@ -44737,7 +44826,7 @@ COPY public.supplynegotiations_negotiationstatechange (id, dateandtime, sourcest
 -- Data for Name: supplynegotiations_offer; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.supplynegotiations_offer (id, number, name, description, supplier_id, requestforquotation_id, offereddate, attachment, transportcost, state, active, createdate, updatedate, createuser, updateuser, workingdaysafterorder, negotiation_id, entityversion) FROM stdin;
+COPY public.supplynegotiations_offer (id, number, name, description, supplier_id, requestforquotation_id, offereddate, attachment, transportcost, state, active, createdate, updatedate, createuser, updateuser, workingdaysafterorder, negotiation_id, entityversion, offerdate, currency_id) FROM stdin;
 \.
 
 
@@ -48159,6 +48248,13 @@ SELECT pg_catalog.setval('public.materialflowresources_costnormslocation_id_seq'
 
 
 --
+-- Name: materialflowresources_defaultstoragelocationdto_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('public.materialflowresources_defaultstoragelocationdto_id_seq', 1, false);
+
+
+--
 -- Name: materialflowresources_document_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
@@ -49793,7 +49889,7 @@ SELECT pg_catalog.setval('public.qcadoosecurity_persistenttoken_id_seq', 1, fals
 -- Name: qcadoosecurity_role_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('public.qcadoosecurity_role_id_seq', 155, true);
+SELECT pg_catalog.setval('public.qcadoosecurity_role_id_seq', 158, true);
 
 
 --
@@ -53650,6 +53746,14 @@ ALTER TABLE ONLY public.jointable_product_salesvolumemulti
 
 ALTER TABLE ONLY public.jointable_product_scale
     ADD CONSTRAINT jointable_product_scale_pkey PRIMARY KEY (scale_id, product_id);
+
+
+--
+-- Name: jointable_product_storagelocation jointable_product_storagelocation_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.jointable_product_storagelocation
+    ADD CONSTRAINT jointable_product_storagelocation_pkey PRIMARY KEY (storagelocation_id, product_id);
 
 
 --
@@ -62099,6 +62203,14 @@ ALTER TABLE ONLY public.supplynegotiations_offer
 
 
 --
+-- Name: supplynegotiations_offer offer_currency_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.supplynegotiations_offer
+    ADD CONSTRAINT offer_currency_fkey FOREIGN KEY (currency_id) REFERENCES public.basic_currency(id) DEFERRABLE;
+
+
+--
 -- Name: supplynegotiations_offer offer_negotiation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -62792,14 +62904,6 @@ ALTER TABLE ONLY public.deliveries_orderedproduct
 
 ALTER TABLE ONLY public.deliveries_orderedproduct
     ADD CONSTRAINT orderedproduct_qualitycard_fkey FOREIGN KEY (qualitycard_id) REFERENCES public.technologies_qualitycard(id) DEFERRABLE;
-
-
---
--- Name: deliveries_orderedproduct orderedproduct_wmsstoragelocation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.deliveries_orderedproduct
-    ADD CONSTRAINT orderedproduct_wmsstoragelocation_fkey FOREIGN KEY (wmsstoragelocation_id) REFERENCES public.materialflowresources_storagelocation(id) DEFERRABLE;
 
 
 --
@@ -64400,6 +64504,22 @@ ALTER TABLE ONLY public.jointable_product_scale
 
 ALTER TABLE ONLY public.basic_product
     ADD CONSTRAINT product_size_fkey FOREIGN KEY (size_id) REFERENCES public.basic_size(id) DEFERRABLE;
+
+
+--
+-- Name: jointable_product_storagelocation product_storagelocation_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.jointable_product_storagelocation
+    ADD CONSTRAINT product_storagelocation_product_fkey FOREIGN KEY (product_id) REFERENCES public.basic_product(id) DEFERRABLE;
+
+
+--
+-- Name: jointable_product_storagelocation product_storagelocation_storagelocation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.jointable_product_storagelocation
+    ADD CONSTRAINT product_storagelocation_storagelocation_fkey FOREIGN KEY (storagelocation_id) REFERENCES public.materialflowresources_storagelocation(id) DEFERRABLE;
 
 
 --

@@ -94,7 +94,7 @@ public class SalesVolumeHooks {
 
                 if (Objects.nonNull(dailySalesVolume) && BigDecimal.ZERO.compareTo(dailySalesVolume) < 0) {
                     BigDecimal currentStock = getCurrentStock(product);
-                    BigDecimal stockForDays = currentStock.divide(dailySalesVolume, 0, RoundingMode.FLOOR);
+                    Integer stockForDays = currentStock.divide(dailySalesVolume, 0, RoundingMode.FLOOR).intValue();
 
                     salesVolume.setField(SalesVolumeFields.CURRENT_STOCK, currentStock);
                     salesVolume.setField(SalesVolumeFields.STOCK_FOR_DAYS, stockForDays);
