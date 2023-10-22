@@ -20,7 +20,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 @Service
 public class SalesVolumesListListeners {
@@ -77,25 +76,6 @@ public class SalesVolumesListListeners {
         filters.put(SalesVolumeFields.STOCK_FOR_DAYS, L_SPACE);
 
         salesVolumesGrid.setFilters(filters);
-    }
-
-    public final void showProductsRunningOutOfStock(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        GridComponent salesVolumesGrid = (GridComponent) view.getComponentByReference(QcadooViewConstants.L_GRID);
-
-        List<Entity> salesVolumes = salesVolumesGrid.getEntities();
-
-        Integer runningOutOfStockDays = IntegerUtils.convertNullToZero(getDocumentPositionParameters().getIntegerField(DocumentPositionParametersFieldsMO.RUNNING_OUT_OF_STOCK_DAYS));
-
-        salesVolumesGrid.setEntities(salesVolumes.stream().filter(salesVolume ->
-                        runningOutOfStockDays.compareTo(salesVolume.getIntegerField(SalesVolumeFields.STOCK_FOR_DAYS)) > 0)
-                .collect(Collectors.toList())
-        );
-    }
-
-    public final void showProductsAll(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        GridComponent salesVolumesGrid = (GridComponent) view.getComponentByReference(QcadooViewConstants.L_GRID);
-
-        salesVolumesGrid.performEvent(view, "refresh");
     }
 
     private DataDefinition getSalesVolumeMultiDD() {
