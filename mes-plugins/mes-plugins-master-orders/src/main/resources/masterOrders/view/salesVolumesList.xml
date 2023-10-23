@@ -84,6 +84,8 @@
                       class="com.qcadoo.mes.masterOrders.listeners.SalesVolumesListListeners"
                       method="showProductsAll"/>
         </component>
+        <component type="checkbox" name="isStockForDaysFilter" reference="isStockForDaysFilter"
+                   defaultVisible="false" defaultEnabled="false"/>
 
         <option type="fixedHeight" value="true"/>
         <option type="header" value="false"/>
