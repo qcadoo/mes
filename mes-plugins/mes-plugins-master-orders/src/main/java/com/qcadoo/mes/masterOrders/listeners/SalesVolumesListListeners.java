@@ -19,10 +19,6 @@ import java.util.Map;
 @Service
 public class SalesVolumesListListeners {
 
-    private static final String L_LT = "<";
-
-    private static final String L_SPACE = " ";
-
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
