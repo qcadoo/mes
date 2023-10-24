@@ -33,21 +33,25 @@
         <ribbon>
             <template name="standardFormTemplate" excludeItems="actions.copy, actions.saveNew, actions.delete"/>
         </ribbon>
+
         <windowTab name="mainTab">
             <component type="form" name="form" reference="form">
                 <component type="gridLayout" name="gridLayout" columns="5"
-                           rows="5">
+                           rows="4">
                     <layoutElement column="1" row="1" width="4">
                         <component type="lookup" name="product" field="product"
                                    reference="product">
                             <option type="column" name="name" fields="name" link="true"
                                     width="200"/>
                             <option type="column" name="ean" fields="ean"/>
+
                             <option type="searchable" value="name,ean"/>
                             <option type="orderable" value="name,ean"/>
+
                             <option type="expression"
                                     value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name"/>
                             <option type="fieldCode" value="number"/>
+
                             <listener event="onSelectedEntityChange"
                                       class="com.qcadoo.mes.productFlowThruDivision.warehouseIssue.listeners.IssueDetailsListeners"
                                       method="onProductSelect"/>
@@ -71,49 +75,31 @@
                         </component>
                     </layoutElement>
                     <layoutElement column="1" row="3" width="4">
-                        <component type="lookup" name="storageLocation" field="storageLocation"
-                                   reference="storageLocation" defaultEnabled="false">
-                            <option type="column" fields="location" name="location" link="true"
-                                    expression="#location['number']"/>
-
-                            <option type="searchable" value="number,location"/>
-                            <option type="orderable" value="number,location"/>
-
-                            <option type="expression" value="#number"/>
-                            <option type="fieldCode" value="number"/>
-                            <criteriaModifier
-                                    class="com.qcadoo.mes.materialFlowResources.criteriaModifiers.StorageLocationCriteriaModifiers"
-                                    method="showStorageLocationsForProductAndLocation"/>
-                        </component>
-                    </layoutElement>
-                    <layoutElement column="1" row="4" width="4">
                         <component type="input" name="demandQuantity" field="demandQuantity"
                                    reference="demandQuantity" defaultEnabled="never">
                             <option type="alignment" value="right"/>
                             <option type="labelWidth" value="45"/>
                         </component>
                     </layoutElement>
-                    <layoutElement column="5" row="4">
+                    <layoutElement column="5" row="3">
                         <component type="input" name="demandQuantityUnit"
                                    reference="demandQuantityUnit" defaultEnabled="false" hasLabel="false">
                             <option type="textRepresentationOnDisabled" value="true"/>
                         </component>
                     </layoutElement>
-                    <layoutElement column="1" row="5" width="4">
+                    <layoutElement column="1" row="4" width="4">
                         <component type="input" name="issueQuantity" field="issueQuantity"
                                    reference="issueQuantity">
                             <option type="alignment" value="right"/>
                             <option type="labelWidth" value="45"/>
                         </component>
                     </layoutElement>
-                    <layoutElement column="5" row="5">
+                    <layoutElement column="5" row="4">
                         <component type="input" name="issueQuantityUnit"
                                    reference="issueQuantityUnit" defaultEnabled="false" hasLabel="false">
                             <option type="textRepresentationOnDisabled" value="true"/>
                         </component>
                     </layoutElement>
-
-
                 </component>
 
                 <option type="header" value="true"/>
@@ -127,5 +113,4 @@
         <beforeRender class="com.qcadoo.mes.productFlowThruDivision.warehouseIssue.hooks.IssueDetailsHooks"
                       method="onBeforeRender"/>
     </hooks>
-
 </view>

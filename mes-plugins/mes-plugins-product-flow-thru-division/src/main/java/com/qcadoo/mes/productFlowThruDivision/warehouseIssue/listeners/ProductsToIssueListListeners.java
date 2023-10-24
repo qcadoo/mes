@@ -1,14 +1,5 @@
 package com.qcadoo.mes.productFlowThruDivision.warehouseIssue.listeners;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.qcadoo.mes.productFlowThruDivision.constants.ProductFlowThruDivisionConstants;
@@ -26,6 +17,11 @@ import com.qcadoo.view.api.components.WindowComponent;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.api.ribbon.RibbonGroup;
 import com.qcadoo.view.constants.QcadooViewConstants;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class ProductsToIssueListListeners {
@@ -38,12 +34,16 @@ public class ProductsToIssueListListeners {
 
     public void showProductAttributes(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         GridComponent positionGird = (GridComponent) view.getComponentByReference(QcadooViewConstants.L_GRID);
+
         Set<Long> ids = positionGird.getSelectedEntitiesIds();
+
         if (ids.size() == 1) {
-            Entity productToIssue = dataDefinitionService.get(ProductFlowThruDivisionConstants.PLUGIN_IDENTIFIER,
-                    ProductFlowThruDivisionConstants.MODEL_PRODUCTS_TO_ISSUE).get(ids.stream().findFirst().get());
+            Entity productToIssue = getProductsToIssueDD().get(ids.stream().findFirst().get());
+
             Map<String, Object> parameters = Maps.newHashMap();
+
             parameters.put("form.id", productToIssue.getBelongsToField(ProductsToIssueFields.PRODUCT).getId());
+
             view.redirectTo("/page/materialFlowResources/productAttributesForPositionList.html", false, true, parameters);
         } else {
             view.addMessage("materialFlow.info.document.showProductAttributes.toManyPositionsSelected",
@@ -52,92 +52,111 @@ public class ProductsToIssueListListeners {
     }
 
     public void correctReservations(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        GridComponent grid = (GridComponent) view.getComponentByReference(QcadooViewConstants.L_GRID);
-        List<Long> selectedEntities = Lists.newArrayList(grid.getSelectedEntitiesIds());
+        GridComponent positionGird = (GridComponent) view.getComponentByReference(QcadooViewConstants.L_GRID);
+
+        List<Long> selectedEntities = Lists.newArrayList(positionGird.getSelectedEntitiesIds());
+
         if (selectedEntities.isEmpty()) {
             view.addMessage("productFlowThruDivision.productsToIssueList.noSelectedEntities", ComponentState.MessageType.INFO);
+
             return;
         }
-        Entity firstProduct = dataDefinitionService.get(ProductFlowThruDivisionConstants.PLUGIN_IDENTIFIER,
-                ProductFlowThruDivisionConstants.MODEL_PRODUCTS_TO_ISSUE).get(selectedEntities.get(0));
+
+        Entity firstProduct = getProductsToIssueDD().get(selectedEntities.get(0));
 
         Map<String, Object> parameters = Maps.newHashMap();
+
         parameters.put("form.productsToIssueIds", selectedEntities.stream().map(Object::toString)
                 .collect(Collectors.joining(",")));
-        if (firstProduct != null) {
+
+        if (Objects.nonNull(firstProduct)) {
             parameters.put("form.locationFrom", firstProduct.getBelongsToField(ProductsToIssueFields.LOCATION).getId());
             parameters.put("form.placeOfIssue", firstProduct.getBelongsToField(ProductsToIssueFields.WAREHOUSE_ISSUE)
                     .getBelongsToField(WarehouseIssueFields.PLACE_OF_ISSUE).getId());
         }
+
         String url = "../page/productFlowThruDivision/productToIssueCorrectionHelperDetails.html";
         view.redirectTo(url, false, true, parameters);
     }
 
-    public void fillStorageLocations(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        productsToIssueService.fillStorageLocations();
-        view.addMessage("productFlowThruDivision.productsToIssueList.fillStorageLocations.success",
-                ComponentState.MessageType.SUCCESS);
-    }
-
     public void copyProductsToIssue(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        GridComponent positionGird = (GridComponent) view.getComponentByReference(QcadooViewConstants.L_GRID);
 
-        GridComponent grid = (GridComponent) view.getComponentByReference(QcadooViewConstants.L_GRID);
-        List<Long> selectedEntities = Lists.newArrayList(grid.getSelectedEntitiesIds());
+        List<Long> selectedEntities = Lists.newArrayList(positionGird.getSelectedEntitiesIds());
+
         if (selectedEntities.isEmpty()) {
             view.addMessage("productFlowThruDivision.productsToIssueList.noSelectedEntities", ComponentState.MessageType.INFO);
+
             return;
         }
-        productsToIssueService.fillStorageLocations(selectedEntities);
-        Entity firstProduct = dataDefinitionService.get(ProductFlowThruDivisionConstants.PLUGIN_IDENTIFIER,
-                ProductFlowThruDivisionConstants.MODEL_PRODUCTS_TO_ISSUE).get(selectedEntities.get(0));
+
+        Entity firstProduct = getProductsToIssueDD().get(selectedEntities.get(0));
 
         Map<String, Object> parameters = Maps.newHashMap();
+
         parameters.put("form.productsToIssueIds", selectedEntities.stream().map(Object::toString)
                 .collect(Collectors.joining(",")));
-        if (firstProduct != null) {
+
+        if (Objects.nonNull(firstProduct)) {
             parameters.put("form.locationFrom", firstProduct.getBelongsToField(ProductsToIssueFields.WAREHOUSE_ISSUE)
                     .getBelongsToField(WarehouseIssueFields.PLACE_OF_ISSUE).getId());
         }
-        Optional.ofNullable(grid.getFilters().get("productNumber")).ifPresent(
+
+        Optional.ofNullable(positionGird.getFilters().get("productNumber")).ifPresent(
                 value -> parameters.put("form.gridProductNumberFilter", value));
+
         String url = "../page/productFlowThruDivision/productsToIssueHelperDetails.html";
         view.redirectTo(url, false, true, parameters);
     }
 
-    private void changeRibbonState(final ViewDefinitionState view) {
+    public void onBeforeRender(final ViewDefinitionState view) {
+        changeRibbonState(view);
+    }
 
+    public void changeRibbonState(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        changeRibbonState(view);
+    }
+
+    private void changeRibbonState(final ViewDefinitionState view) {
+        GridComponent positionsGrid = (GridComponent) view.getComponentByReference(QcadooViewConstants.L_GRID);
         WindowComponent window = (WindowComponent) view.getComponentByReference(QcadooViewConstants.L_WINDOW);
         RibbonGroup group = window.getRibbon().getGroupByName("warehouseIssues");
         RibbonActionItem copyProducts = group.getItemByName("copyProducts");
         RibbonActionItem correctReservations = group.getItemByName("correctReservations");
-        GridComponent grid = (GridComponent) view.getComponentByReference(QcadooViewConstants.L_GRID);
 
-        DataDefinition productsToIssueDD = dataDefinitionService.get(ProductFlowThruDivisionConstants.PLUGIN_IDENTIFIER,
-                ProductFlowThruDivisionConstants.MODEL_PRODUCTS_TO_ISSUE);
-        Set<Long> selectedEntitiesIds = grid.getSelectedEntitiesIds();
+        DataDefinition productsToIssueDD = getProductsToIssueDD();
+
+        Set<Long> selectedEntitiesIds = positionsGrid.getSelectedEntitiesIds();
+
         boolean enabled = !selectedEntitiesIds.isEmpty();
         boolean correctionEnabled = !selectedEntitiesIds.isEmpty();
+
         if (enabled) {
             Entity warehouse = null;
             Entity location = null;
+
             for (Long id : selectedEntitiesIds) {
                 Entity productToIssue = productsToIssueDD.get(id);
-                if (productToIssue != null) {
+
+                if (Objects.nonNull(productToIssue)) {
                     Entity warehouseIssue = productToIssue.getBelongsToField(ProductsToIssueFields.WAREHOUSE_ISSUE);
                     String state = warehouseIssue.getStringField(WarehouseIssueFields.STATE);
                     Entity productLocation = productToIssue.getBelongsToField(ProductsToIssueFields.LOCATION);
-                    if (location == null) {
+
+                    if (Objects.isNull(location)) {
                         location = productLocation;
                     } else {
-                        if (productLocation != null && !location.getId().equals(productLocation.getId())) {
+                        if (Objects.nonNull(productLocation) && !location.getId().equals(productLocation.getId())) {
                             correctionEnabled = false;
                         }
                     }
+
                     if (WarehouseIssueState.DISCARD.getStringValue().equals(state)
                             || WarehouseIssueState.COMPLETED.getStringValue().equals(state)) {
                         enabled = false;
                     } else {
                         Entity issueWarehouse = warehouseIssue.getBelongsToField(WarehouseIssueFields.PLACE_OF_ISSUE);
+
                         if (warehouse == null) {
                             warehouse = issueWarehouse;
                         } else {
@@ -152,18 +171,16 @@ public class ProductsToIssueListListeners {
                 }
             }
         }
+
         correctReservations.setEnabled(correctionEnabled);
         correctReservations.requestUpdate(true);
         copyProducts.setEnabled(enabled);
         copyProducts.requestUpdate(true);
     }
 
-    public void onBeforeRender(final ViewDefinitionState view) {
-        changeRibbonState(view);
-        GridComponent grid = (GridComponent) view.getComponentByReference(QcadooViewConstants.L_GRID);
+    private DataDefinition getProductsToIssueDD() {
+        return dataDefinitionService.get(ProductFlowThruDivisionConstants.PLUGIN_IDENTIFIER,
+                ProductFlowThruDivisionConstants.MODEL_PRODUCTS_TO_ISSUE);
     }
 
-    public void changeRibbonState(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        changeRibbonState(view);
-    }
 }

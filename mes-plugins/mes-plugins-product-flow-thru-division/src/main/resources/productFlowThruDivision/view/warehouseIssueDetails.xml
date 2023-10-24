@@ -30,7 +30,6 @@
       name="warehouseIssueDetails" modelName="warehouseIssue">
 
     <component type="window" name="window" reference="window">
-
         <ribbon>
             <template name="standardFormTemplate"/>
 
@@ -167,7 +166,6 @@
 								    copyIssue.disable();
 								    issue.disable();
 								}
-
 							}
 						});
 
@@ -208,7 +206,7 @@
 								toggleEditable(false);
 							}
 						}
-				]]>
+				    ]]>
                 </script>
                 <component type="select" name="state" field="state"
                            reference="state" hasLabel="false" defaultVisible="false"/>
@@ -220,7 +218,6 @@
                         </component>
                     </layoutElement>
                     <layoutElement column="1" row="2">
-
                         <component type="lookup" name="order" reference="order"
                                    field="order">
                             <option type="column" name="name" fields="name" link="true"/>
@@ -245,7 +242,6 @@
                                     class="com.qcadoo.mes.productFlowThruDivision.warehouseIssue.criteriaModifiers.OrderCriteriaModifiersPFTD"
                                     method="showAcceptedInProgressInterrupted"/>
                         </component>
-
                     </layoutElement>
                     <layoutElement column="1" row="3">
                         <component type="calendar" name="orderStartDate" field="orderStartDate"
@@ -282,8 +278,6 @@
                             <option type="withTimePicker" value="true"/>
                         </component>
                     </layoutElement>
-
-
                     <layoutElement column="2" row="1" height="2">
                         <component type="borderLayout" name="warehouseIssueWorkers"
                                    reference="warehouseIssueWorkers">
@@ -315,7 +309,6 @@
                                     </component>
                                 </layoutElement>
                             </component>
-
 
                             <option type="label" value="warehouseIssueWorkersLabel"/>
                         </component>
@@ -374,8 +367,6 @@
                         value="#number + ' - ' + '@productFlowThruDivision.warehouseIssue.state.value.' + #state"/>
 
             </component>
-
-
         </windowTab>
 
         <windowTab name="productsToIssuedTab">
@@ -383,25 +374,25 @@
                        reference="productsToIssues">
                 <script>
                     <![CDATA[
-					var copyIssue = #{window}.getRibbonItem("copyissue.copyProductsToIssue");
-					var listener = {
-						onChange: function(selectedEntitiesArray) {
-						    var state = #{state}.getValue().content.value;
-							if (!selectedEntitiesArray || selectedEntitiesArray.length == 0) {
-								copyIssue.disable("#{translate(productFlowThruDivision.issue.productsToissueNoSelected)}");
-							} else {
-								copyIssue.enable();
-  							    if (state == "03discard") {
-								    copyIssue.disable();
-								} else if (state == "04completed") {
-								    copyIssue.disable();
-								}
-							}
-						}
-					}
+                        var copyIssue = #{window}.getRibbonItem("copyissue.copyProductsToIssue");
+                        var listener = {
+                            onChange: function(selectedEntitiesArray) {
+                                var state = #{state}.getValue().content.value;
+                                if (!selectedEntitiesArray || selectedEntitiesArray.length == 0) {
+                                    copyIssue.disable("#{translate(productFlowThruDivision.issue.productsToissueNoSelected)}");
+                                } else {
+                                    copyIssue.enable();
+                                    if (state == "03discard") {
+                                        copyIssue.disable();
+                                    } else if (state == "04completed") {
+                                        copyIssue.disable();
+                                    }
+                                }
+                            }
+                        }
 
-					this.addOnChangeListener(listener);
-				]]>
+                        this.addOnChangeListener(listener);
+                    ]]>
                 </script>
                 <option type="column" name="productNumber" fields="product"
                         expression="#product['number']" width="50" link="true"/>
@@ -422,17 +413,15 @@
                         expression="#product['unit']" width="30"/>
                 <option type="column" name="location" fields="location"
                         expression="#location['name']" width="50"/>
-                <option type="column" name="storageLocation" fields="storageLocation"
-                        expression="#storageLocation['number']" width="50"/>
                 <option type="column" name="placeOfIssueQuantity" fields="placeOfIssueQuantity"
                         width="35"/>
 
                 <option type="order" column="productNumber" direction="desc"/>
 
                 <option type="searchable"
-                        value="productNumber,productName,demandQuantity,correction,locationsQuantity,issueQuantity,productUnit,location,storageLocation,additionalDemandQuantity,conversion"/>
+                        value="productNumber,productName,demandQuantity,correction,locationsQuantity,issueQuantity,productUnit,location,additionalDemandQuantity,conversion"/>
                 <option type="orderable"
-                        value="productNumber,productName,demandQuantity,correction,locationsQuantity,issueQuantity,productUnit,location,storageLocation,additionalDemandQuantity,conversion"/>
+                        value="productNumber,productName,demandQuantity,correction,locationsQuantity,issueQuantity,productUnit,location,additionalDemandQuantity,conversion"/>
 
                 <option type="correspondingView" value="productFlowThruDivision/productToIssueDetails"/>
                 <option type="correspondingComponent" value="form"/>
@@ -443,7 +432,6 @@
                 <option type="fullscreen" value="true"/>
                 <option type="multiselect" value="true"/>
                 <option type="fixedHeight" value="true"/>
-
             </component>
         </windowTab>
 
@@ -468,16 +456,14 @@
                         expression="#product['unit']" width="30"/>
                 <option type="column" name="location" fields="location"
                         expression="#location['name']" width="50"/>
-                <option type="column" name="storageLocation" fields="storageLocation"
-                        expression="#storageLocation['number']" width="50"/>
                 <option type="column" name="issued" fields="issued" width="30"/>
 
                 <option type="order" column="productNumber" direction="desc"/>
 
                 <option type="searchable"
-                        value="productNumber,productName,demandQuantity,locationsQuantity,issueQuantity,productUnit,location,issued,storageLocation,additionalDemandQuantity,conversion"/>
+                        value="productNumber,productName,demandQuantity,locationsQuantity,issueQuantity,productUnit,location,issued,additionalDemandQuantity,conversion"/>
                 <option type="orderable"
-                        value="productNumber,productName,demandQuantity,locationsQuantity,issueQuantity,productUnit,location,issued,storageLocation,additionalDemandQuantity,conversion"/>
+                        value="productNumber,productName,demandQuantity,locationsQuantity,issueQuantity,productUnit,location,issued,additionalDemandQuantity,conversion"/>
 
                 <option type="correspondingView" value="productFlowThruDivision/issueDetails"/>
                 <option type="correspondingComponent" value="form"/>
@@ -493,10 +479,8 @@
                 <rowStyleResolver
                         class="com.qcadoo.mes.productFlowThruDivision.warehouseIssue.hooks.WarehouseIssueDetailHooks"
                         method="fillRowStyles"/>
-
             </component>
         </windowTab>
-
 
         <windowTab name="correctTab">
             <component type="grid" name="corrections" source="#{form}.corrections"
@@ -526,6 +510,7 @@
                 <option type="fixedHeight" value="true"/>
             </component>
         </windowTab>
+
     </component>
 
     <hooks>
@@ -533,5 +518,4 @@
                 class="com.qcadoo.mes.productFlowThruDivision.warehouseIssue.hooks.WarehouseIssueDetailHooks"
                 method="onBeforeRender"/>
     </hooks>
-
 </view>

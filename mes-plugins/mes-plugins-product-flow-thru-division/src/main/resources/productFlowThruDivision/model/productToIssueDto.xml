@@ -49,7 +49,6 @@
         <decimal name="quantityToIssueInAddUnit"/>
         <string name="unit"/>
         <string name="unitAdditional"/>
-        <string name="storageLocationNumber"/>
         <boolean name="issued" default="false"/>
         <decimal name="correction"/>
     </fields>

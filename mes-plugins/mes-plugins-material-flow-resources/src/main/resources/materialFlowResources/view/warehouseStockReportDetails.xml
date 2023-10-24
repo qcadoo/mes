@@ -63,79 +63,76 @@
             <component type="form" name="form" reference="form">
                 <script>
                     <![CDATA[
-							var generatedRibbonItem =  #{window}.getRibbonItem("generate.generate");
-							var printRibbonItem = #{window}.getRibbonItem("print.print");
-							var saveRibbonItem = #{window}.getRibbonItem("actions.save");
-							var saveBackRibbonItem = #{window}.getRibbonItem("actions.saveBack");
-							var saveNewRibbonItem = #{window}.getRibbonItem("actions.saveNew");
-							var copyRibbonItem = #{window}.getRibbonItem("actions.copy");
-							var cancelRibbonItem = #{window}.getRibbonItem("actions.cancel");
+                        var generatedRibbonItem =  #{window}.getRibbonItem("generate.generate");
+                        var printRibbonItem = #{window}.getRibbonItem("print.print");
+                        var saveRibbonItem = #{window}.getRibbonItem("actions.save");
+                        var saveBackRibbonItem = #{window}.getRibbonItem("actions.saveBack");
+                        var saveNewRibbonItem = #{window}.getRibbonItem("actions.saveNew");
+                        var copyRibbonItem = #{window}.getRibbonItem("actions.copy");
+                        var cancelRibbonItem = #{window}.getRibbonItem("actions.cancel");
 
-							var entityExists = false;
+                        var entityExists = false;
 
-							this.addOnChangeListener({
-								onSetValue: function(value) {
-									if (!value || !value.content) {
-										return;
-									}
-									if (value.content.entityId) {
-										entityExists = true;
-									} else {
-										entityExists = false;
-									}
-									updateRibbon();
-								}
-							});
-							#{form}.addOnChangeListener({
-								onSetValue: function(value) {
-									updateRibbon();
-								}
-							});
+                        this.addOnChangeListener({
+                            onSetValue: function(value) {
+                                if (!value || !value.content) {
+                                    return;
+                                }
+                                if (value.content.entityId) {
+                                    entityExists = true;
+                                } else {
+                                    entityExists = false;
+                                }
+                                updateRibbon();
+                            }
+                        });
+                        #{form}.addOnChangeListener({
+                            onSetValue: function(value) {
+                                updateRibbon();
+                            }
+                        });
 
-							function updateRibbon() {
-								if (entityExists) {
-									var isGeneratedCheckboxValue = #{generated}.getValue();
-									generatedRibbonItem.enable();
-									saveRibbonItem.disable();
-									if (isGeneratedCheckboxValue && isGeneratedCheckboxValue.content.value == "1") {
-										printRibbonItem.enable();
-										generatedRibbonItem.disable();
-										saveRibbonItem.disable("#{translate(materialFlowResources.warehouseStockReportDetails.ribbon.message.alreadyGenerated)}");
-										saveBackRibbonItem.disable("#{translate(materialFlowResources.warehouseStockReportDetails.ribbon.message.alreadyGenerated)}");
-										saveNewRibbonItem.disable("#{translate(materialFlowResources.warehouseStockReportDetails.ribbon.message.alreadyGenerated)}");
-										cancelRibbonItem.disable("#{translate(materialFlowResources.warehouseStockReportDetails.ribbon.message.alreadyGenerated)}");
-									} else {
-										printRibbonItem.disable("#{translate(materialFlowResources.warehouseStockReportDetails.ribbon.message.notGenerated)}");
-										saveRibbonItem.enable();
-										cancelRibbonItem.enable()
-									}
-								} else {
-									copyRibbonItem.disable("#{translate(materialFlowResources.warehouseStockReportDetails.ribbon.message.notGenerated)}");
-									printRibbonItem.disable("#{translate(materialFlowResources.warehouseStockReportDetails.ribbon.message.notGenerated)}");
-									saveRibbonItem.enable();
-									cancelRibbonItem.enable()
-								}
-							}
+                        function updateRibbon() {
+                            if (entityExists) {
+                                var isGeneratedCheckboxValue = #{generated}.getValue();
+                                generatedRibbonItem.enable();
+                                saveRibbonItem.disable();
+                                if (isGeneratedCheckboxValue && isGeneratedCheckboxValue.content.value == "1") {
+                                    printRibbonItem.enable();
+                                    generatedRibbonItem.disable();
+                                    saveRibbonItem.disable("#{translate(materialFlowResources.warehouseStockReportDetails.ribbon.message.alreadyGenerated)}");
+                                    saveBackRibbonItem.disable("#{translate(materialFlowResources.warehouseStockReportDetails.ribbon.message.alreadyGenerated)}");
+                                    saveNewRibbonItem.disable("#{translate(materialFlowResources.warehouseStockReportDetails.ribbon.message.alreadyGenerated)}");
+                                    cancelRibbonItem.disable("#{translate(materialFlowResources.warehouseStockReportDetails.ribbon.message.alreadyGenerated)}");
+                                } else {
+                                    printRibbonItem.disable("#{translate(materialFlowResources.warehouseStockReportDetails.ribbon.message.notGenerated)}");
+                                    saveRibbonItem.enable();
+                                    cancelRibbonItem.enable()
+                                }
+                            } else {
+                                copyRibbonItem.disable("#{translate(materialFlowResources.warehouseStockReportDetails.ribbon.message.notGenerated)}");
+                                printRibbonItem.disable("#{translate(materialFlowResources.warehouseStockReportDetails.ribbon.message.notGenerated)}");
+                                saveRibbonItem.enable();
+                                cancelRibbonItem.enable()
+                            }
+                        }
 					]]>
                 </script>
+
                 <component type="gridLayout" name="stocktakingGridLayout"
                            hasBorders="false" columns="2" rows="9">
-
                     <layoutElement row="1" column="1">
                         <component type="checkbox" name="generated" field="generated"
                                    reference="generated" defaultEnabled="false" defaultVisible="false"/>
                         <component type="calendar" name="warehouseStockDate" reference="warehouseStockDate"
                                    field="#{form}.warehouseStockDate" defaultEnabled="never"/>
                     </layoutElement>
-
                     <layoutElement row="2" column="1">
                         <component type="select" name="category" reference="category" field="#{form}.category"/>
                     </layoutElement>
-
                     <layoutElement row="3" column="1">
                         <component type="select" name="wasteMode" reference="wasteMode" field="#{form}.wasteMode"/>
                     </layoutElement>
-
                     <layoutElement column="2" row="1">
                         <component type="lookup" name="location" field="location"
                                    reference="location">
@@ -152,7 +149,6 @@
                                     method="showWarehousesOnly"/>
                         </component>
                     </layoutElement>
-
                     <layoutElement row="2" column="2">
                         <component type="select" name="storageLocationMode" reference="storageLocationMode"
                                    field="#{form}.storageLocationMode">
@@ -161,8 +157,6 @@
                                       method="changeStorageLocationsGridEnabled"/>
                         </component>
                     </layoutElement>
-
-
                     <layoutElement column="1" row="4" height="6" width="2">
                         <component type="lookup" name="storageLocationLookup" reference="storageLocationLookup"
                                    field="#{form}.storageLocations"
@@ -173,10 +167,11 @@
 
                             <option type="searchable" value="number"/>
                             <option type="orderable" value="number"/>
-                            <criteriaModifier method="showStorageLocationsForProductAndLocation"
-                                              class="com.qcadoo.mes.materialFlowResources.criteriaModifiers.StorageLocationCriteriaModifiers"/>
-                        </component>
 
+                            <criteriaModifier
+                                    class="com.qcadoo.mes.materialFlowResources.criteriaModifiers.StorageLocationCriteriaModifiers"
+                                    method="showStorageLocationsForLocation"/>
+                        </component>
                         <component type="grid" name="storageLocations" reference="storageLocations"
                                    source="#{form}.storageLocations" defaultEnabled="false">
                             <option type="column" name="number" fields="number"/>
@@ -193,7 +188,6 @@
 
                             <option type="weakRelation" value="true"/>
                             <option type="correspondingLookup" value="storageLocationLookup"/>
-
                         </component>
                     </layoutElement>
                 </component>
@@ -208,9 +202,10 @@
                           method="print"/>
             </component>
         </windowTab>
-    </component>
-    <hooks>
 
+    </component>
+
+    <hooks>
         <beforeRender class="com.qcadoo.mes.materialFlowResources.hooks.WarehouseStockReportDetailsHooks"
                       method="onBeforeRender"/>
     </hooks>

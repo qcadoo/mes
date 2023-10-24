@@ -10,8 +10,6 @@ public final class StorageLocationFields {
 
     public static final String LOCATION = "location";
 
-    public static final String PRODUCT = "product";
-
     public static final String PLACE_STORAGE_LOCATION = "placeStorageLocation";
 
     public static final String MAXIMUM_NUMBER_OF_PALLETS = "maximumNumberOfPallets";

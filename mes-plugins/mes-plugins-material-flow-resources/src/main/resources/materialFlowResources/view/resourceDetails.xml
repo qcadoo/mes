@@ -42,7 +42,6 @@
             <component type="form" name="resourceForm" reference="form">
                 <component type="gridLayout" name="resourceGridLayout"
                            hasBorders="false" columns="11" rows="8">
-
                     <layoutElement column="1" row="1" width="5">
                         <component type="input" name="number" field="number"
                                    reference="number" defaultEnabled="false">
@@ -86,15 +85,17 @@
 
                             <option type="expression" value="#number"/>
                             <option type="fieldCode" value="number"/>
+
                             <criteriaModifier
                                     class="com.qcadoo.mes.materialFlowResources.criteriaModifiers.StorageLocationCriteriaModifiers"
-                                    method="showStorageLocationsForProductAndLocation"/>
+                                    method="showStorageLocationsForLocation"/>
                         </component>
                     </layoutElement>
                     <layoutElement column="1" row="5" width="5">
                         <component type="input" name="quantity" field="quantity"
                                    reference="quantity">
                             <option type="alignment" value="right"/>
+
                             <listener event="onInputChange"
                                       class="com.qcadoo.mes.materialFlowResources.hooks.ResourceDetailsHooks"
                                       method="onQuantityChange"/>
@@ -110,6 +111,7 @@
                         <component type="input" name="quantityInAdditionalUnit" field="quantityInAdditionalUnit"
                                    reference="quantityInAdditionalUnit">
                             <option type="alignment" value="right"/>
+
                             <listener event="onInputChange"
                                       class="com.qcadoo.mes.materialFlowResources.hooks.ResourceDetailsHooks"
                                       method="onQuantityInAdditionalUnitChange"/>
@@ -204,10 +206,12 @@
                 <listener event="createResourceCorrection"
                           class="com.qcadoo.mes.materialFlowResources.listeners.ResourceDetailsListeners"
                           method="createResourceCorrection"/>
+
                 <option type="header" value="true"/>
                 <option type="expression" value="#product['number'] + ' - ' + #product['name']"/>
             </component>
         </windowTab>
+
         <windowTab name="attributes">
             <component type="grid" name="resourceAttributeValues" reference="resourceAttributeValues"
                        source="#{form}.resourceAttributeValues">
@@ -229,10 +233,10 @@
 
                 <option type="order" column="number" direction="desc"/>
 
-
                 <option type="correspondingView" value="materialFlowResources/resourceAttributeValueDetails"/>
                 <option type="correspondingComponent" value="form"/>
                 <option type="correspondingViewInModal" value="true"/>
+
                 <option type="orderable" value="number,name,value,description,unit"/>
                 <option type="searchable" value="number,name,value,description,unit"/>
 
@@ -242,8 +246,8 @@
                 <option type="fullscreen" value="true"/>
                 <option type="multiselect" value="true"/>
             </component>
-
         </windowTab>
+
         <windowTab name="correctionsTab" reference="correctionsTab">
             <component type="grid" name="resourceCorrectionsGrid"
                        reference="grid" source="#{form}.resourceCorrections">
@@ -272,8 +276,8 @@
                 <option type="multiselect" value="true"/>
             </component>
         </windowTab>
-    </component>
 
+    </component>
 
     <hooks>
         <beforeRender class="com.qcadoo.mes.materialFlowResources.MaterialFlowResourcesService"

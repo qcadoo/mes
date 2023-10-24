@@ -35,7 +35,6 @@
             <group name="actions">
                 <bigButton name="createDocuments" icon="generateIcon24.png"
                            action="#{form}.fireEvent(createDocuments);" state="enabled"/>
-
                 <bigButton name="createDocumentsAndGoBack" icon="generateIcon24.png" state="enabled">
                     <script>
                         <![CDATA[
@@ -83,6 +82,7 @@
                 </bigButton>
             </group>
         </ribbon>
+
         <windowTab name="mainTab">
             <component type="form" name="form" reference="form">
                 <component type="gridLayout" name="mainLayout" rows="3" columns="4" hasBorders="false">
@@ -115,51 +115,48 @@
                             <option type="hasButtons" value="true"/>
                             <header>
                                 <component type="gridLayout" name="headerGridLayout"
-                                           columns="34" rows="1" fixedRowHeight="false">
+                                           columns="31" rows="1" fixedRowHeight="false">
                                     <layoutElement column="1" row="1" width="7">
                                         <component type="label" name="productLabel"/>
                                     </layoutElement>
                                     <layoutElement column="8" row="1" width="3">
-                                        <component type="label" name="storageLocationLabel"/>
-                                    </layoutElement>
-                                    <layoutElement column="11" row="1" width="3">
                                         <component type="label" name="locationToLabel"/>
                                     </layoutElement>
-                                    <layoutElement column="14" row="1" width="3">
+                                    <layoutElement column="11" row="1" width="3">
                                         <component type="label" name="warehouseIssueLabel"/>
                                     </layoutElement>
-                                    <layoutElement column="17" row="1" width="2">
+                                    <layoutElement column="14" row="1" width="2">
                                         <component type="label" name="demandQuantityLabel"/>
                                     </layoutElement>
-                                    <layoutElement column="19" row="1" width="2">
+                                    <layoutElement column="16" row="1" width="2">
                                         <component type="label" name="quantityPerUnitLabel"/>
                                     </layoutElement>
-                                    <layoutElement column="21" row="1" width="2">
+                                    <layoutElement column="18" row="1" width="2">
                                         <component type="label" name="issueQuantityLabel"/>
                                     </layoutElement>
-                                    <layoutElement column="23" row="1" width="2">
+                                    <layoutElement column="20" row="1" width="2">
                                         <component type="label" name="issueQuantityAdditionalUnitLabel"/>
                                     </layoutElement>
-                                    <layoutElement column="25" row="1" width="2">
+                                    <layoutElement column="22" row="1" width="2">
                                         <component type="label" name="conversionLabel"/>
                                     </layoutElement>
-                                    <layoutElement column="27" row="1" width="2">
+                                    <layoutElement column="24" row="1" width="2">
                                         <component type="label" name="quantityInLocationFromLabel"/>
                                     </layoutElement>
-                                    <layoutElement column="29" row="1" width="2">
+                                    <layoutElement column="26" row="1" width="2">
                                         <component type="label" name="quantityInLocationToLabel"/>
                                     </layoutElement>
-                                    <layoutElement column="31" row="1" width="2">
+                                    <layoutElement column="28" row="1" width="2">
                                         <component type="label" name="unitLabel"/>
                                     </layoutElement>
-                                    <layoutElement column="33" row="1" width="2">
+                                    <layoutElement column="30" row="1" width="2">
                                         <component type="label" name="additionalUnitLabel"/>
                                     </layoutElement>
                                 </component>
                             </header>
                             <components>
                                 <component type="gridLayout" name="gridLayout"
-                                           columns="34" rows="1" fixedRowHeight="false">
+                                           columns="31" rows="1" fixedRowHeight="false">
                                     <layoutElement column="1" row="1" width="7">
                                         <component type="hidden" name="productsToIssueId"
                                                    field="productsToIssueId" reference="productsToIssueId"
@@ -180,6 +177,7 @@
                                             <option type="expression"
                                                     value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name"/>
                                             <option type="fieldCode" value="number"/>
+
                                             <listener event="onSelectedEntityChange"
                                                       class="com.qcadoo.mes.productFlowThruDivision.warehouseIssue.listeners.ProductsToIssueHelperDetailsListeners"
                                                       method="fillUnits"/>
@@ -189,20 +187,6 @@
                                         </component>
                                     </layoutElement>
                                     <layoutElement column="8" row="1" width="3">
-                                        <component type="lookup" name="storageLocation" field="storageLocation"
-                                                   reference="storageLocation" defaultEnabled="never"
-                                                   hasLabel="false">
-                                            <option type="column" fields="location" name="location" link="true"
-                                                    expression="#location['number']"/>
-
-                                            <option type="searchable" value="number,location"/>
-                                            <option type="orderable" value="number,location"/>
-
-                                            <option type="expression" value="#number"/>
-                                            <option type="fieldCode" value="number"/>
-                                        </component>
-                                    </layoutElement>
-                                    <layoutElement column="11" row="1" width="3">
                                         <component type="lookup" name="location" reference="location"
                                                    field="location" hasLabel="false" defaultEnabled="never">
                                             <option type="column" name="name" fields="name" link="true"/>
@@ -215,7 +199,7 @@
                                             <option type="fieldCode" value="number"/>
                                         </component>
                                     </layoutElement>
-                                    <layoutElement column="14" row="1" width="3">
+                                    <layoutElement column="11" row="1" width="3">
                                         <component type="lookup" name="warehouseIssue" reference="warehouseIssue"
                                                    field="warehouseIssue" hasLabel="false" defaultEnabled="never">
 
@@ -227,19 +211,19 @@
                                             <option type="fieldCode" value="number"/>
                                         </component>
                                     </layoutElement>
-                                    <layoutElement column="17" row="1" width="2">
+                                    <layoutElement column="14" row="1" width="2">
                                         <component type="input" name="demandQuantity" field="demandQuantity"
                                                    reference="demandQuantity" defaultEnabled="never" hasLabel="false">
                                             <option type="alignment" value="right"/>
                                         </component>
                                     </layoutElement>
-                                    <layoutElement column="19" row="1" width="2">
+                                    <layoutElement column="16" row="1" width="2">
                                         <component type="input" name="quantityPerUnit" field="quantityPerUnit"
                                                    reference="quantityPerUnit" defaultEnabled="never" hasLabel="false">
                                             <option type="alignment" value="right"/>
                                         </component>
                                     </layoutElement>
-                                    <layoutElement column="21" row="1" width="2">
+                                    <layoutElement column="18" row="1" width="2">
                                         <component type="input" name="issueQuantity" field="issueQuantity"
                                                    reference="issueQuantity" hasLabel="false">
                                             <option type="alignment" value="right"/>
@@ -249,7 +233,7 @@
                                                       method="quantityChanged"/>
                                         </component>
                                     </layoutElement>
-                                    <layoutElement column="23" row="1" width="2">
+                                    <layoutElement column="20" row="1" width="2">
                                         <component type="input" name="issueQuantityAdditionalUnit"
                                                    field="issueQuantityAdditionalUnit"
                                                    reference="issueQuantityAdditionalUnit" hasLabel="false">
@@ -260,34 +244,34 @@
                                                       method="additionalQuantityChanged"/>
                                         </component>
                                     </layoutElement>
-                                    <layoutElement column="25" row="1" width="2">
+                                    <layoutElement column="22" row="1" width="2">
                                         <component type="input" name="conversion" field="conversion"
                                                    reference="conversion" hasLabel="false"
                                                    defaultEnabled="never">
                                             <option type="alignment" value="right"/>
                                         </component>
                                     </layoutElement>
-                                    <layoutElement column="27" row="1" width="2">
+                                    <layoutElement column="24" row="1" width="2">
                                         <component type="input" name="locationsQuantity" field="locationsQuantity"
                                                    reference="locationsQuantity" hasLabel="false"
                                                    defaultEnabled="never">
                                             <option type="alignment" value="right"/>
                                         </component>
                                     </layoutElement>
-                                    <layoutElement column="29" row="1" width="2">
+                                    <layoutElement column="26" row="1" width="2">
                                         <component type="input" name="locationToQuantity" field="locationToQuantity"
                                                    reference="locationToQuantity" hasLabel="false"
                                                    defaultEnabled="never">
                                             <option type="alignment" value="right"/>
                                         </component>
                                     </layoutElement>
-                                    <layoutElement column="31" row="1" width="2">
+                                    <layoutElement column="28" row="1" width="2">
                                         <component type="input" name="unit"
                                                    reference="unit" defaultEnabled="false" hasLabel="false">
                                             <option type="textRepresentationOnDisabled" value="true"/>
                                         </component>
                                     </layoutElement>
-                                    <layoutElement column="33" row="1" width="2">
+                                    <layoutElement column="30" row="1" width="2">
                                         <component type="input" name="additionalUnit"
                                                    reference="additionalUnit" defaultEnabled="false" hasLabel="false">
                                             <option type="textRepresentationOnDisabled" value="true"/>
@@ -295,6 +279,7 @@
                                     </layoutElement>
                                 </component>
                             </components>
+
                             <listener event="onDeleteRow"
                                       class="com.qcadoo.mes.productFlowThruDivision.warehouseIssue.listeners.ProductsToIssueHelperDetailsListeners"
                                       method="onDeleteRow"/>
@@ -311,8 +296,10 @@
                                    defaultEnabled="false"/>
                     </layoutElement>
                 </component>
+
                 <option type="header" value="true"/>
                 <option type="expression" value="#locationFrom['number']"/>
+
                 <listener event="createDocuments"
                           class="com.qcadoo.mes.productFlowThruDivision.warehouseIssue.listeners.ProductsToIssueHelperDetailsListeners"
                           method="createDocuments"/>
@@ -321,11 +308,12 @@
                           method="createDocumentsAndGoBack"/>
             </component>
         </windowTab>
+
     </component>
+
     <hooks>
         <beforeRender
                 class="com.qcadoo.mes.productFlowThruDivision.warehouseIssue.hooks.ProductsToIssueDetailsHooks"
                 method="onBeforeRender"/>
     </hooks>
-
 </view>

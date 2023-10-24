@@ -37,10 +37,6 @@ public final class MaterialFlowResourcesConstants {
 
     public static final String MODEL_WAREHOUSE_STOCK_REPORT = "warehouseStockReport";
 
-    public static final String MODEL_PRODUCT_STORAGE_LOCATION_HISTORY = "productStorageLocationHistory";
-
-    public static final String MODEL_STORAGE_LOCATION_HISTORY = "storageLocationHistory";
-
     public static final String MODEL_PALLET_BALANCE = "palletBalance";
 
     public static final String MODEL_RESOURCE_STOCK = "resourceStock";
@@ -84,6 +80,7 @@ public final class MaterialFlowResourcesConstants {
     public static final String VIEW_RESOURCES_ATTRIBUTES = "resourcesAttributes";
 
     public static final String VIEW_DOCUMENT_POSITIONS_ATTRIBUTES = "documentPositionsAttributes";
+
     public static final String MODEL_STORAGE_LOCATION_DTO = "storageLocationDto";
 
 }

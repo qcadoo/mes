@@ -31,14 +31,10 @@ public final class ProductFieldsMFR {
 
     public static final String RESOURCES = "resources";
 
-    public static final String STORAGE_LOCATION_HISTORY = "storageLocationHistory";
-
     public static final String RESOURCE_STOCKS = "resourceStocks";
 
     public static final String RESOURCE_CORRECTIONS = "resourceCorrections";
 
     public static final String COST_NORMS_GENERATOR = "costNormsGenerator";
-
-    public static final String STORAGE_LOCATIONS = "storageLocations";
 
 }
