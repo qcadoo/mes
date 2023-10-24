@@ -32,7 +32,6 @@
     <windowTab name="resourcesTab" reference="resourcesTab">
         <component type="grid" name="orderProductResourceReservations" reference="orderProductResourceReservations"
                    source="#{form}.resourceReservations">
-            <option type="column" name="priority" fields="priority" link="true" align="right" width="150"/>
             <option type="column" name="planedQuantity" fields="orderProductResourceReservation" align="right"
                     expression="#orderProductResourceReservation['planedQuantity']" link="true"/>
 

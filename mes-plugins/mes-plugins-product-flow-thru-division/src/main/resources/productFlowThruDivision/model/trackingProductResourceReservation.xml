@@ -46,6 +46,8 @@
     </fields>
 
     <hooks>
+        <onSave class="com.qcadoo.mes.productFlowThruDivision.hooks.TrackingProductResourceReservationHooks"
+                method="onSave"/>
 
     </hooks>
 </model>
