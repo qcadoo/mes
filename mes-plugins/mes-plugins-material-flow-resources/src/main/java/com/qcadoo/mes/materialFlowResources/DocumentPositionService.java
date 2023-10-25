@@ -292,11 +292,12 @@ public class DocumentPositionService {
         paramMap.put("document", Integer.parseInt(document));
 
         if (Strings.isNullOrEmpty(product)) {
-            preparedQuery = "SELECT id, number FROM materialflowresources_storagelocation WHERE number ilike :query "
-                    + "AND location_id IN (SELECT DISTINCT COALESCE(locationfrom_id, locationto_id) FROM materialflowresources_document WHERE id = :document) "
-                    + "AND active = true;";
+            preparedQuery = "SELECT sl.id, sl.number FROM materialflowresources_storagelocation sl "
+                    + "WHERE sl.number ilike :query "
+                    + "AND sl.location_id IN (SELECT DISTINCT COALESCE(locationfrom_id, locationto_id) FROM materialflowresources_document WHERE id = :document) "
+                    + "AND sl.active = true;";
         } else {
-            preparedQuery = "SELECT id, number FROM materialflowresources_storagelocation sl "
+            preparedQuery = "SELECT sl.id, sl.number FROM materialflowresources_storagelocation sl "
                     + "LEFT JOIN jointable_product_storagelocation psl ON psl.storagelocation_id = sl.id "
                     + "WHERE sl.number ilike :query "
                     + "AND sl.location_id IN (SELECT DISTINCT COALESCE(locationfrom_id, locationto_id) FROM materialflowresources_document WHERE id = :document) "
@@ -549,10 +550,10 @@ public class DocumentPositionService {
             return null;
         }
 
-        String query = "SELECT sl.storagelocation_id AS id, sl.number AS number, p.name AS product, l.name AS location "
+        String query = "SELECT sl.id AS id, sl.number AS number, p.name AS product, l.name AS location "
                 + "FROM materialflowresources_storagelocation sl "
                 + "JOIN materialflow_location l ON l.id = sl.location_id "
-                + "LEFT JOIN jointable_product_storagelocation psl ON psl.storagelocation_id = sl.id "
+                + "RIGHT JOIN jointable_product_storagelocation psl ON psl.storagelocation_id = sl.id "
                 + "LEFT JOIN basic_product p ON p.id = psl.product_id "
                 + "WHERE sl.location_id IN "
                 + "(SELECT DISTINCT COALESCE(locationfrom_id, locationto_id) AS location FROM materialflowresources_document WHERE id = :document) "
