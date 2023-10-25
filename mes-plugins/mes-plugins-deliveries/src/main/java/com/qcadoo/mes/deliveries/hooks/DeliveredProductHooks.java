@@ -458,9 +458,4 @@ public class DeliveredProductHooks {
         return true;
     }
 
-    private DataDefinition getStorageLocationDD() {
-        return dataDefinitionService.get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER,
-                MaterialFlowResourcesConstants.MODEL_STORAGE_LOCATION);
-    }
-
 }
