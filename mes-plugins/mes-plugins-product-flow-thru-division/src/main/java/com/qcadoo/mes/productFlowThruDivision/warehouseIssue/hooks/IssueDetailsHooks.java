@@ -1,42 +1,41 @@
 package com.qcadoo.mes.productFlowThruDivision.warehouseIssue.hooks;
 
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.qcadoo.mes.basic.constants.ProductFields;
-import com.qcadoo.mes.productFlowThruDivision.warehouseIssue.IssueCommonDetailsHelper;
 import com.qcadoo.mes.productFlowThruDivision.warehouseIssue.constans.IssueFields;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.constants.QcadooViewConstants;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.stereotype.Service;
+
+import java.util.Objects;
 
 @Service
 public class IssueDetailsHooks {
 
-    @Autowired
-    private IssueCommonDetailsHelper issueCommonDetailsHelper;
-
     public void onBeforeRender(final ViewDefinitionState view) {
         fillUnit(view);
-        issueCommonDetailsHelper.setFilterValue(view);
     }
 
     private void fillUnit(final ViewDefinitionState view) {
-        FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
-        Entity issue = form.getPersistedEntityWithIncludedFormValues();
-        if(issue.getBooleanField(IssueFields.ISSUED)){
-            form.setFormEnabled(false);
-            return;
-        }
-        Entity product = issue.getBelongsToField(IssueFields.PRODUCT);
-
+        FormComponent issueForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         FieldComponent issueUnitField = (FieldComponent) view.getComponentByReference("issueQuantityUnit");
         FieldComponent demandUnitField = (FieldComponent) view.getComponentByReference("demandQuantityUnit");
-        if (product != null) {
+
+        Entity issue = issueForm.getPersistedEntityWithIncludedFormValues();
+
+        if (issue.getBooleanField(IssueFields.ISSUED)) {
+            issueForm.setFormEnabled(false);
+            return;
+        }
+
+        Entity product = issue.getBelongsToField(IssueFields.PRODUCT);
+
+        if (Objects.nonNull(product)) {
             String unit = product.getStringField(ProductFields.UNIT);
+
             issueUnitField.setFieldValue(unit);
             demandUnitField.setFieldValue(unit);
         } else {
@@ -44,4 +43,5 @@ public class IssueDetailsHooks {
             demandUnitField.setFieldValue(StringUtils.EMPTY);
         }
     }
+
 }

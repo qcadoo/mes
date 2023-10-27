@@ -64,7 +64,7 @@ public class ReservationsService {
     public boolean reservationsEnabledForDocumentPositions(final Entity document) {
         String type = document.getStringField(DocumentFields.TYPE);
         Entity warehouse = document.getBelongsToField(DocumentFields.LOCATION_FROM);
-        return DocumentType.isOutbound(type) && !document.getBooleanField(DocumentFields.IN_BUFFER)
+        return DocumentType.isOutbound(type)
                 && (warehouse != null && warehouse.getBooleanField(LocationFieldsMFR.DRAFT_MAKES_RESERVATION));
     }
 
@@ -258,9 +258,9 @@ public class ReservationsService {
     }
 
     public Boolean reservationsEnabledForDocumentPositions(Map<String, Object> params) {
-        String queryForDocumentType = "SELECT type, inBuffer, locationfrom_id FROM materialflowresources_document WHERE id = :document_id";
+        String queryForDocumentType = "SELECT type, locationfrom_id FROM materialflowresources_document WHERE id = :document_id";
         Map<String, Object> documentMap = jdbcTemplate.queryForMap(queryForDocumentType, params);
-        if (DocumentType.isOutbound((String) documentMap.get("type")) && !(boolean) documentMap.get("inBuffer")) {
+        if (DocumentType.isOutbound((String) documentMap.get("type"))) {
             String query = "SELECT draftmakesreservation FROM materialflow_location WHERE id = :location_id";
             Boolean enabled = jdbcTemplate.queryForObject(query,
                     Collections.singletonMap("location_id", (Long) documentMap.get("locationfrom_id")), Boolean.class);

@@ -12,8 +12,6 @@ public class DocumentDTO {
 
     private Long locationFrom_id;
 
-    private Boolean inBuffer;
-
     private Boolean acceptationInProgress;
 
     public Long getId() {
@@ -56,14 +54,6 @@ public class DocumentDTO {
         this.locationFrom_id = locationFrom_id;
     }
 
-    public Boolean getInBuffer() {
-        return inBuffer;
-    }
-
-    public void setInBuffer(final Boolean inBuffer) {
-        this.inBuffer = inBuffer;
-    }
-
     public Boolean getAcceptationInProgress() {
         if (acceptationInProgress == null) {
             return Boolean.FALSE;
@@ -82,7 +72,7 @@ public class DocumentDTO {
 
     @Override
     public int hashCode() {
-        return com.google.common.base.Objects.hashCode(id, state, type, locationTo_id, locationFrom_id, inBuffer,
+        return com.google.common.base.Objects.hashCode(id, state, type, locationTo_id, locationFrom_id,
                 acceptationInProgress);
     }
 
@@ -102,7 +92,6 @@ public class DocumentDTO {
                 && com.google.common.base.Objects.equal(type, that.type)
                 && com.google.common.base.Objects.equal(locationTo_id, that.locationTo_id)
                 && com.google.common.base.Objects.equal(locationFrom_id, that.locationFrom_id)
-                && com.google.common.base.Objects.equal(inBuffer, that.inBuffer)
                 && com.google.common.base.Objects.equal(acceptationInProgress, that.acceptationInProgress);
     }
 

@@ -23,7 +23,7 @@
  */
 package com.qcadoo.mes.materialFlowResources.listeners;
 
-import static com.qcadoo.mes.materialFlowResources.listeners.DocumentsListListeners.ESILCO;
+import static com.qcadoo.mes.materialFlowResources.listeners.DocumentsListListeners.MOBILE_WMS;
 import static com.qcadoo.mes.materialFlowResources.listeners.DocumentsListListeners.REALIZED;
 
 import java.util.Arrays;
@@ -246,7 +246,7 @@ public class DocumentDetailsListeners {
                 return;
             }
 
-            if (pluginManager.isPluginEnabled(ESILCO) && documentFromDB.getBooleanField(DocumentFields.WMS)
+            if (pluginManager.isPluginEnabled(MOBILE_WMS) && documentFromDB.getBooleanField(DocumentFields.WMS)
                     && !REALIZED.equals(documentFromDB.getStringField(DocumentFields.STATE_IN_WMS))) {
                 documentForm.addMessage("materialFlow.error.document.notRealizedInWMS", MessageType.FAILURE);
 

@@ -120,7 +120,7 @@ public class PositionAddMultiListeners {
 
     private boolean validateAvailableQuantity(Entity document, Entity position) {
         String type = document.getStringField(DocumentFields.TYPE);
-        if (DocumentType.isOutbound(type) && !document.getBooleanField(DocumentFields.IN_BUFFER)) {
+        if (DocumentType.isOutbound(type)) {
             Entity location = document.getBelongsToField(DocumentFields.LOCATION_FROM);
             boolean enabled = location.getBooleanField(LocationFieldsMFR.DRAFT_MAKES_RESERVATION);
             if (enabled) {

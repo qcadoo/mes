@@ -1,18 +1,5 @@
 package com.qcadoo.mes.productFlowThruDivision.service;
 
-import java.math.BigDecimal;
-import java.util.Collection;
-import java.util.List;
-import java.util.Set;
-import java.util.StringJoiner;
-
-import com.qcadoo.security.api.SecurityService;
-import com.qcadoo.security.api.UserService;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.stereotype.Service;
-
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
@@ -36,6 +23,7 @@ import com.qcadoo.mes.productFlowThruDivision.warehouseIssue.CreationDocumentRes
 import com.qcadoo.mes.productFlowThruDivision.warehouseIssue.WarehouseIssueParameterService;
 import com.qcadoo.mes.productFlowThruDivision.warehouseIssue.constans.IssueFields;
 import com.qcadoo.mes.productFlowThruDivision.warehouseIssue.constans.WarehouseIssueFields;
+import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
@@ -43,12 +31,18 @@ import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.model.api.units.PossibleUnitConversions;
 import com.qcadoo.model.api.units.UnitConversionService;
 import com.qcadoo.model.api.validators.ErrorMessage;
+import com.qcadoo.security.api.SecurityService;
+import com.qcadoo.security.api.UserService;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
+import java.util.*;
 
 @Service
 public class WarehouseIssueDocumentsService {
-
-    @Autowired
-    private DocumentManagementService documentManagementService;
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
@@ -63,6 +57,15 @@ public class WarehouseIssueDocumentsService {
     private TranslationService translationService;
 
     @Autowired
+    private UserService userService;
+
+    @Autowired
+    private SecurityService securityService;
+
+    @Autowired
+    private DocumentManagementService documentManagementService;
+
+    @Autowired
     private WarehouseIssueParameterService warehouseIssueParameterService;
 
     @Autowired
@@ -71,19 +74,13 @@ public class WarehouseIssueDocumentsService {
     @Autowired
     private CalculationQuantityService calculationQuantityService;
 
-    @Autowired
-    private UserService userService;
-
-    @Autowired
-    private SecurityService securityService;
-
     public CreationDocumentResponse createWarehouseDocument(final Entity locationFrom, final Entity locationTo,
-            final Collection positions) {
+                                                            final Collection positions) {
         return createWarehouseDocument(locationFrom, locationTo, positions, null);
     }
 
     public CreationDocumentResponse createWarehouseDocument(final Entity locationFrom, final Entity locationTo,
-            final Collection positions, final String additionalInfo) {
+                                                            final Collection positions, final String additionalInfo) {
         List<Entity> _issues = Lists.newArrayList(positions);
 
         for (Entity issue : _issues) {
@@ -105,7 +102,7 @@ public class WarehouseIssueDocumentsService {
                 break;
         }
 
-        if (response == null) {
+        if (Objects.isNull(response)) {
             response = new CreationDocumentResponse(false);
         }
 
@@ -119,7 +116,7 @@ public class WarehouseIssueDocumentsService {
     }
 
     private CreationDocumentResponse buildReceiptReleasePairDocuments(final Entity locationFrom, final Entity locationTo,
-            final Collection positions, final DocumentsStatus documentsStatus, final String additionalInfo) {
+                                                                      final Collection positions, final DocumentsStatus documentsStatus, final String additionalInfo) {
         CreationDocumentResponse validReleaseDocument = buildReleaseDocument(locationFrom, locationTo, positions, documentsStatus,
                 additionalInfo);
 
@@ -127,10 +124,9 @@ public class WarehouseIssueDocumentsService {
     }
 
     private CreationDocumentResponse buildReleaseDocument(final Entity locationFrom, final Entity locationTo,
-            final Collection positions, final DocumentsStatus documentsStatus, final String additionalInfo) {
-
-        Long id = securityService.getCurrentUserOrQcadooBotId();
-        Entity user = userService.find(id);
+                                                          final Collection positions, final DocumentsStatus documentsStatus, final String additionalInfo) {
+        Long currentUserId = securityService.getCurrentUserOrQcadooBotId();
+        Entity user = userService.find(currentUserId);
 
         DocumentBuilder documentBuilder = documentManagementService.getDocumentBuilder(user);
 
@@ -140,13 +136,14 @@ public class WarehouseIssueDocumentsService {
                 buildDescriptionForReleaseDocument(locationTo, positions, additionalInfo));
         documentBuilder.setField(DocumentFields.CREATE_LINKED_DOCUMENT, true);
         documentBuilder.setField(DocumentFields.LINKED_DOCUMENT_LOCATION, locationTo);
+
         buildDocumentPositions(positions, documentBuilder);
 
         return build(documentsStatus, documentBuilder);
     }
 
     private String buildDescriptionForReleaseDocument(final Entity locationTo, final Collection positions,
-            final String additionalInfo) {
+                                                      final String additionalInfo) {
         String description = buildDescription(positions);
 
         description = Strings.isNullOrEmpty(description) ? "" : description + "\n";
@@ -154,7 +151,7 @@ public class WarehouseIssueDocumentsService {
                 "productFlowThruDivision.issue.documentGeneration.descriptionForReleaseDocument", LocaleContextHolder.getLocale(),
                 locationTo.getStringField(LocationFields.NAME));
 
-        if (additionalInfo != null) {
+        if (Objects.nonNull(additionalInfo)) {
             description += "\n" + additionalInfo;
         }
 
@@ -164,7 +161,7 @@ public class WarehouseIssueDocumentsService {
     private String buildDescriptionForTransferDocument(final Collection positions, final String additionalInfo) {
         String description = buildDescription(positions);
 
-        if (additionalInfo != null) {
+        if (Objects.nonNull(additionalInfo)) {
             description += "\n" + additionalInfo;
         }
 
@@ -172,10 +169,9 @@ public class WarehouseIssueDocumentsService {
     }
 
     private CreationDocumentResponse buildTransferDocument(final Entity locationFrom, final Entity locationTo,
-            final Collection positions, final DocumentsStatus documentsStatus, final String additionalInfo) {
-
-        Long id = securityService.getCurrentUserOrQcadooBotId();
-        Entity user = userService.find(id);
+                                                           final Collection positions, final DocumentsStatus documentsStatus, final String additionalInfo) {
+        Long currentUserId = securityService.getCurrentUserOrQcadooBotId();
+        Entity user = userService.find(currentUserId);
 
         DocumentBuilder documentBuilder = documentManagementService.getDocumentBuilder(user);
 
@@ -222,13 +218,13 @@ public class WarehouseIssueDocumentsService {
             Entity product = issue.getBelongsToField(IssueFields.PRODUCT);
             BigDecimal quantity = issue.getDecimalField(IssueFields.ISSUE_QUANTITY);
             BigDecimal conversion = BigDecimal.ONE;
-            Entity position = dataDefinitionService
-                    .get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER, MaterialFlowResourcesConstants.MODEL_POSITION)
-                    .create();
+
+            Entity position = getPositionDD().create();
+
             String additionalUnit = product.getStringField(ProductFields.ADDITIONAL_UNIT);
             String unit = product.getStringField(ProductFields.UNIT);
 
-            if (issue.getDecimalField(IssueFields.CONVERSION) != null) {
+            if (Objects.nonNull(issue.getDecimalField(IssueFields.CONVERSION))) {
                 conversion = issue.getDecimalField(IssueFields.CONVERSION);
                 position.setField(PositionFields.CONVERSION, conversion);
 
@@ -265,11 +261,6 @@ public class WarehouseIssueDocumentsService {
             position.setField(PositionFields.QUANTITY, quantity);
             position.setField(PositionFields.PRODUCT, product);
 
-            if (documentBuilder.getDocumentType().getStringValue().equals(DocumentType.INTERNAL_INBOUND.getStringValue())
-                    || documentBuilder.getDocumentType().getStringValue().equals(DocumentType.RECEIPT.getStringValue())) {
-                position.setField(PositionFields.STORAGE_LOCATION, issue.getBelongsToField(IssueFields.STORAGE_LOCATION));
-            }
-
             position.setField(PositionFields.DOCUMENT, documentBuilder.getDocument());
 
             documentBuilder.addPosition(position);
@@ -301,13 +292,18 @@ public class WarehouseIssueDocumentsService {
 
             StringJoiner joiner = new StringJoiner(",");
 
-            ordersName.forEach(number -> joiner.add(number));
+            ordersName.forEach(joiner::add);
 
             return translationService.translate("productFlowThruDivision.issue.documentGeneration.forOrder",
                     LocaleContextHolder.getLocale(), joiner.toString());
         }
 
         return "";
+    }
+
+    private DataDefinition getPositionDD() {
+        return dataDefinitionService
+                .get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER, MaterialFlowResourcesConstants.MODEL_POSITION);
     }
 
 }

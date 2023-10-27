@@ -76,6 +76,30 @@ public class DocumentValidators {
         return document.isValid();
     }
 
+    public boolean validatesWith(final DataDefinition documentDD, final Entity document) {
+
+        boolean createLinkedDocument = document.getBooleanField(DocumentFields.CREATE_LINKED_DOCUMENT);
+        Entity locationPz = document.getBelongsToField(DocumentFields.LINKED_DOCUMENT_LOCATION);
+        Entity locationFrom = document.getBelongsToField(DocumentFields.LOCATION_FROM);
+
+        String type = document.getStringField(DocumentFields.TYPE);
+        if (DocumentType.RELEASE.getStringValue().equals(type) && createLinkedDocument && locationPz == null) {
+            document.addError(documentDD.getField(DocumentFields.LINKED_DOCUMENT_LOCATION),
+                    "qcadooView.validate.field.error.missing");
+
+            return false;
+        }
+        if (DocumentType.RELEASE.getStringValue().equals(type) && createLinkedDocument && locationFrom != null
+                && locationFrom.getId().equals(locationPz.getId())) {
+            document.addError(documentDD.getField(DocumentFields.LINKED_DOCUMENT_LOCATION),
+                    "materialFlowResources.document.error.linkedDocumentLocationEqualsFrom");
+
+            return false;
+        }
+
+        return true;
+    }
+
     private boolean checkIfItIsReportGeneration(final Entity document, final Entity documentFromDB) {
         return (((document.getDateField(DocumentFields.GENERATION_DATE) != null)
                 && (documentFromDB.getDateField(DocumentFields.GENERATION_DATE) == null))
@@ -136,9 +160,8 @@ public class DocumentValidators {
 
         Entity documentFromDB = documentDD.get(document.getId());
 
-        if (!document.getBooleanField(DocumentFields.IN_BUFFER)
-                && (checkIfWarehouseHasChanged(documentFromDB, document, DocumentFields.LOCATION_FROM)
-                        || checkIfWarehouseHasChanged(documentFromDB, document, DocumentFields.LOCATION_TO))) {
+        if (checkIfWarehouseHasChanged(documentFromDB, document, DocumentFields.LOCATION_FROM)
+                || checkIfWarehouseHasChanged(documentFromDB, document, DocumentFields.LOCATION_TO)) {
             document.addGlobalError("materialFlow.document.validate.global.error.warehouseChanged");
 
             return false;

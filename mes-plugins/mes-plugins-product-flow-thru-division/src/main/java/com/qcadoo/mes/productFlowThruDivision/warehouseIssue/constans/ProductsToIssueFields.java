@@ -12,8 +12,6 @@ public final class ProductsToIssueFields {
 
 	public static final String PRODUCT_IN_COMPONENT = "productInComponent";
 
-	public static final String STORAGE_LOCATION = "storageLocation";
-
 	public static final String DEMAND_QUANTITY = "demandQuantity";
 
 	public static final String ADDITIONAL_DEMAND_QUANTITY = "additionalDemandQuantity";

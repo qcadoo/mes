@@ -37,8 +37,6 @@
         <belongsTo name="productInComponent" plugin="technologies"
                    model="operationProductInComponent"/>
 
-        <belongsTo name="storageLocation" model="storageLocation" plugin="materialFlowResources"/>
-
         <belongsTo name="document" model="document" plugin="materialFlowResources"/>
 
         <decimal name="demandQuantity">

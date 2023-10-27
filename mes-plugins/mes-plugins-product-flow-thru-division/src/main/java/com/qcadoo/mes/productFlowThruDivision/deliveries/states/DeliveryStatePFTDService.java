@@ -9,8 +9,6 @@ import com.qcadoo.mes.deliveries.constants.DeliveredProductReservationFields;
 import com.qcadoo.mes.deliveries.constants.DeliveriesConstants;
 import com.qcadoo.mes.deliveries.constants.DeliveryFields;
 import com.qcadoo.mes.materialFlow.constants.MaterialFlowConstants;
-import com.qcadoo.mes.materialFlowResources.constants.MaterialFlowResourcesConstants;
-import com.qcadoo.mes.materialFlowResources.constants.StorageLocationFields;
 import com.qcadoo.mes.productFlowThruDivision.constants.ProductFlowThruDivisionConstants;
 import com.qcadoo.mes.productFlowThruDivision.deliveries.helpers.CreationWarehouseIssueState;
 import com.qcadoo.mes.productFlowThruDivision.deliveries.helpers.DeliveredProductReservationKeyObject;
@@ -26,15 +24,16 @@ import com.qcadoo.mes.states.messages.constants.StateMessageType;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.search.SearchCriteriaBuilder;
-import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.model.api.validators.ErrorMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.util.*;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 @Service
 public class DeliveryStatePFTDService {
@@ -139,23 +138,18 @@ public class DeliveryStatePFTDService {
 
             productToIssue.setField(ProductsToIssueFields.WAREHOUSE_ISSUE, warehouseIssue);
 
-            Optional<Entity> storageLocation = findStorageLocationForProduct(product, location);
-
-            if (storageLocation.isPresent()) {
-                productToIssue.setField(ProductsToIssueFields.STORAGE_LOCATION, storageLocation.get());
-            }
-
-            BigDecimal dQuantity = value.stream().filter(Objects::nonNull)
+            BigDecimal demandQuantity = value.stream().filter(Objects::nonNull)
                     .map(val -> val.getReservationForDeliveredProduct()
                             .getDecimalField(DeliveredProductReservationFields.DELIVERED_QUANTITY))
                     .reduce(BigDecimal.ZERO, BigDecimal::add);
-            BigDecimal aQuantity = value.stream().filter(Objects::nonNull)
+            BigDecimal additionalDemandQuantity = value.stream().filter(Objects::nonNull)
                     .map(val -> val.getReservationForDeliveredProduct()
                             .getDecimalField(DeliveredProductReservationFields.ADDITIONAL_QUANTITY))
                     .reduce(BigDecimal.ZERO, BigDecimal::add);
 
-            productToIssue.setField(ProductsToIssueFields.DEMAND_QUANTITY, dQuantity);
-            productToIssue.setField(ProductsToIssueFields.ADDITIONAL_DEMAND_QUANTITY, aQuantity);
+            productToIssue.setField(ProductsToIssueFields.DEMAND_QUANTITY, demandQuantity);
+            productToIssue.setField(ProductsToIssueFields.ADDITIONAL_DEMAND_QUANTITY, additionalDemandQuantity);
+
             productToIssue = productToIssue.getDataDefinition().save(productToIssue);
 
             createdProductsToIssue.add(productToIssue);
@@ -236,16 +230,7 @@ public class DeliveryStatePFTDService {
         return builder.toString();
     }
 
-    public Optional<Entity> findStorageLocationForProduct(final Entity product, final Entity location) {
-        SearchCriteriaBuilder scb = getStorageLocationDD().find();
-
-        scb.add(SearchRestrictions.belongsTo(StorageLocationFields.PRODUCT, product));
-        scb.add(SearchRestrictions.belongsTo(StorageLocationFields.LOCATION, location));
-
-        return Optional.ofNullable(scb.setMaxResults(1).uniqueResult());
-    }
-
-    public void validate(StateChangeContext stateChangeContext) {
+    public void validate(final StateChangeContext stateChangeContext) {
         if (warehouseIssueParameterService.generateWarehouseIssuesToDeliveries()) {
             Entity delivery = stateChangeContext.getOwner();
 
@@ -257,11 +242,6 @@ public class DeliveryStatePFTDService {
 
     private DataDefinition getLocationDD() {
         return dataDefinitionService.get(MaterialFlowConstants.PLUGIN_IDENTIFIER, MaterialFlowConstants.MODEL_LOCATION);
-    }
-
-    private DataDefinition getStorageLocationDD() {
-        return dataDefinitionService.get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER,
-                MaterialFlowResourcesConstants.MODEL_STORAGE_LOCATION);
     }
 
     private DataDefinition getDeliveredProductReservation() {

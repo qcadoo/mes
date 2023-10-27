@@ -34,7 +34,6 @@
         </string>
 
         <belongsTo name="location" model="location" plugin="materialFlow" required="true"/>
-        <belongsTo name="product" model="product" plugin="basic" copyable="false"/>
         <boolean name="placeStorageLocation" default="false"/>
         <decimal name="maximumNumberOfPallets">
             <validatesRange from="0" exclusively="true"/>
@@ -53,13 +52,6 @@
 
         <boolean name="highStorageLocation" default="false"/>
 
-        <hasMany name="history" model="storageLocationHistory" joinField="storageLocation"
-                 cascade="delete" copyable="false"/>
-        <hasMany name="productFromHistory" model="productStorageLocationHistory" joinField="storageLocationFrom"
-                 cascade="delete" copyable="false"/>
-        <hasMany name="productToHistory" model="productStorageLocationHistory" joinField="storageLocationTo"
-                 cascade="delete" copyable="false"/>
-
         <manyToMany name="stocktakings" model="stocktaking" joinField="storageLocations"
                     copyable="false" cascade="nullify"/>
         <manyToMany name="warehouseStockReports" model="warehouseStockReport" joinField="storageLocations"
@@ -73,9 +65,6 @@
     </fields>
 
     <hooks>
-        <validatesWith
-                class="com.qcadoo.mes.materialFlowResources.validators.StorageLocationModelValidators"
-                method="validate"/>
         <onSave class="com.qcadoo.mes.materialFlowResources.hooks.StorageLocationHooks"
                 method="onSave"/>
     </hooks>

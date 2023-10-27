@@ -33,13 +33,12 @@ import com.qcadoo.mes.materialFlowResources.constants.StorageLocationFields;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.Objects;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 @Service
 public class PositionXlsxImportService extends XlsxImportService {
@@ -136,11 +135,9 @@ public class PositionXlsxImportService extends XlsxImportService {
 
         if (Objects.nonNull(product) && Objects.nonNull(locationTo) && Objects.nonNull(storageLocation)) {
             Entity storageLocationLocation = storageLocation.getBelongsToField(StorageLocationFields.LOCATION);
-            Entity storageLocationProduct = storageLocation.getBelongsToField(StorageLocationFields.PRODUCT);
 
             if (!storageLocation.isActive()
-                    || (Objects.nonNull(storageLocationLocation) && !locationTo.equals(storageLocationLocation))
-                    || (Objects.nonNull(storageLocationProduct) && !product.equals(storageLocationProduct)))
+                    || (Objects.nonNull(storageLocationLocation) && !locationTo.equals(storageLocationLocation)))
                 position.addError(positionDD.getField(PositionFields.STORAGE_LOCATION),
                         L_QCADOO_VIEW_VALIDATE_FIELD_ERROR_CUSTOM);
         }

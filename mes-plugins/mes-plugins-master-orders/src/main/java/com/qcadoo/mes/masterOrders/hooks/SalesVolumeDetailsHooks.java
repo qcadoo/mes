@@ -27,7 +27,9 @@ import com.beust.jcommander.internal.Lists;
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.masterOrders.constants.SalesVolumeFields;
+import com.qcadoo.mes.materialFlowResources.MaterialFlowResourcesService;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.NumberService;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
@@ -46,15 +48,22 @@ import java.util.Objects;
 @Service
 public class SalesVolumeDetailsHooks {
 
-    public static final String L_ORDERS = "orders";
+    private static final String L_ORDERS = "orders";
 
-    public static final String L_CREATE_ORDER = "createOrder";
+    private static final String L_CREATE_ORDER = "createOrder";
+
     @Autowired
     private TranslationService translationService;
 
+    @Autowired
+    private NumberService numberService;
+
+    @Autowired
+    private MaterialFlowResourcesService materialFlowResourcesService;
+
     public void onBeforeRender(final ViewDefinitionState view) {
         setRibbonEnabled(view);
-        setUnitField(view);
+        setUnitFields(view);
     }
 
     private void setRibbonEnabled(final ViewDefinitionState view) {
@@ -76,7 +85,7 @@ public class SalesVolumeDetailsHooks {
         createOrdersRibbonActionItem.requestUpdate(true);
     }
 
-    private void setUnitField(final ViewDefinitionState view) {
+    private void setUnitFields(final ViewDefinitionState view) {
         LookupComponent productLookup = (LookupComponent) view.getComponentByReference(SalesVolumeFields.PRODUCT);
 
         Entity product = productLookup.getEntity();

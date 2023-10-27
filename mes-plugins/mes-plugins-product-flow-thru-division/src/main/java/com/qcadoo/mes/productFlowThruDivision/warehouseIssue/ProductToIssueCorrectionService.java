@@ -1,19 +1,8 @@
 package com.qcadoo.mes.productFlowThruDivision.warehouseIssue;
 
-import java.math.BigDecimal;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.google.common.collect.Lists;
 import com.qcadoo.localization.api.TranslationService;
-import com.qcadoo.mes.materialFlowResources.constants.MaterialFlowResourcesConstants;
-import com.qcadoo.mes.materialFlowResources.constants.StorageLocationFields;
+import com.qcadoo.mes.materialFlowResources.MaterialFlowResourcesService;
 import com.qcadoo.mes.productFlowThruDivision.constants.ProductFlowThruDivisionConstants;
 import com.qcadoo.mes.productFlowThruDivision.warehouseIssue.constans.CollectionProducts;
 import com.qcadoo.mes.productFlowThruDivision.warehouseIssue.constans.ProductToIssueCorrectionFields;
@@ -23,7 +12,14 @@ import com.qcadoo.model.api.BigDecimalUtils;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.search.SearchRestrictions;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.Optional;
 
 @Service
 public class ProductToIssueCorrectionService {
@@ -41,6 +37,7 @@ public class ProductToIssueCorrectionService {
     public List<Entity> correctProductsToIssue(final Entity helper, final List<Entity> corrections) {
         Entity newWarehouseIssue = createCorrectedWarehouseIssue(helper);
         Entity locationTo = helper.getBelongsToField("locationTo");
+
         List<Entity> correctedProductsToIssue = Lists.newArrayList();
         List<Entity> createdWarehouseIssues = Lists.newArrayList();
 
@@ -90,7 +87,7 @@ public class ProductToIssueCorrectionService {
                 .anyMatch(productToIssue -> correction.getBelongsToField(ProductToIssueCorrectionFields.PRODUCT).getId()
                         .equals(productToIssue.getBelongsToField(ProductsToIssueFields.PRODUCT).getId())
                         && !correction.getDecimalField(ProductToIssueCorrectionFields.CONVERSION)
-                                .equals(productToIssue.getDecimalField(ProductsToIssueFields.CONVERSION)));
+                        .equals(productToIssue.getDecimalField(ProductsToIssueFields.CONVERSION)));
     }
 
     private Entity createCorrectedWarehouseIssue(final Entity helper) {
@@ -107,8 +104,8 @@ public class ProductToIssueCorrectionService {
         return newWarehouseIssue;
     }
 
-    private void createOrUpdateCorrectedProductToIssue(List<Entity> correctedProductsToIssue, final Entity locationTo,
-            final Entity warehouseIssue, final Entity correction) {
+    private void createOrUpdateCorrectedProductToIssue(final List<Entity> correctedProductsToIssue, final Entity locationTo,
+                                                       final Entity warehouseIssue, final Entity correction) {
         Entity product = correction.getBelongsToField(ProductToIssueCorrectionFields.PRODUCT);
 
         BigDecimal conversion = correction.getDecimalField(ProductToIssueCorrectionFields.CONVERSION);
@@ -116,9 +113,9 @@ public class ProductToIssueCorrectionService {
         BigDecimal correctionQuantityInAdditionalUnit = correction
                 .getDecimalField(ProductToIssueCorrectionFields.CORRECTION_QUANTITY_IN_ADDITIONAL_UNIT);
 
-        Optional<Entity> existingProductToIssue = correctedProductsToIssue.stream().filter(p -> p
-                .getBelongsToField(ProductsToIssueFields.PRODUCT).getId().equals(product.getId())
-                && p.getDecimalField(ProductsToIssueFields.CONVERSION).compareTo(conversion) == 0)
+        Optional<Entity> existingProductToIssue = correctedProductsToIssue.stream().filter(productToIssue -> productToIssue
+                        .getBelongsToField(ProductsToIssueFields.PRODUCT).getId().equals(product.getId())
+                        && productToIssue.getDecimalField(ProductsToIssueFields.CONVERSION).compareTo(conversion) == 0)
                 .findAny();
 
         if (existingProductToIssue.isPresent()) {
@@ -138,22 +135,10 @@ public class ProductToIssueCorrectionService {
             productToIssue.setField(ProductsToIssueFields.DEMAND_QUANTITY, correctionQuantity);
             productToIssue.setField(ProductsToIssueFields.ADDITIONAL_DEMAND_QUANTITY, correctionQuantityInAdditionalUnit);
             productToIssue.setField(ProductsToIssueFields.LOCATION, locationTo);
-            productToIssue.setField(ProductsToIssueFields.STORAGE_LOCATION, getStorageLocationForProduct(locationTo, product));
             productToIssue.setField(ProductsToIssueFields.CONVERSION, conversion);
 
             correctedProductsToIssue.add(productToIssue);
         }
-    }
-
-    private Entity getStorageLocationForProduct(final Entity location, final Entity product) {
-        return getStorageLocationDD().find().add(SearchRestrictions.belongsTo(StorageLocationFields.PRODUCT, product))
-                .add(SearchRestrictions.belongsTo(StorageLocationFields.LOCATION, location)).list().getEntities().stream()
-                .findAny().orElse(null);
-    }
-
-    private DataDefinition getStorageLocationDD() {
-        return dataDefinitionService.get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER,
-                MaterialFlowResourcesConstants.MODEL_STORAGE_LOCATION);
     }
 
     private DataDefinition getWarehouseIssueDD() {

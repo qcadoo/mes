@@ -61,8 +61,6 @@ public final class IssueFields {
 
 	public static final String QUANTITY_PER_UNIT = "quantityPerUnit";
 
-	public static final String STORAGE_LOCATION = "storageLocation";
-
 	public static final String WAREHOUSE_ISSUE = "warehouseIssue";
 
 }

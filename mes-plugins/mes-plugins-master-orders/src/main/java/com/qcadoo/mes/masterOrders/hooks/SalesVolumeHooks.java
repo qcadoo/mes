@@ -23,10 +23,8 @@
  */
 package com.qcadoo.mes.masterOrders.hooks;
 
-import com.beust.jcommander.internal.Lists;
 import com.qcadoo.mes.masterOrders.constants.SalesVolumeFields;
 import com.qcadoo.mes.materialFlowResources.MaterialFlowResourcesService;
-import com.qcadoo.model.api.BigDecimalUtils;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
@@ -35,10 +33,6 @@ import com.qcadoo.model.api.search.SearchRestrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
-import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 
 @Service
@@ -77,46 +71,6 @@ public class SalesVolumeHooks {
 
             return false;
         }
-    }
-
-    public void onView(final DataDefinition salesVolumeDD, final Entity salesVolume) {
-        fillStockFields(salesVolume);
-    }
-
-    public void fillStockFields(final Entity salesVolume) {
-        Entity product = salesVolume.getBelongsToField(SalesVolumeFields.PRODUCT);
-
-        if (Objects.nonNull(product)) {
-            BigDecimal dailySalesVolume;
-
-            try {
-                dailySalesVolume = salesVolume.getDecimalField(SalesVolumeFields.DAILY_SALES_VOLUME);
-
-                if (Objects.nonNull(dailySalesVolume) && BigDecimal.ZERO.compareTo(dailySalesVolume) < 0) {
-                    BigDecimal currentStock = getCurrentStock(product);
-                    Integer stockForDays = currentStock.divide(dailySalesVolume, 0, RoundingMode.FLOOR).intValue();
-
-                    salesVolume.setField(SalesVolumeFields.CURRENT_STOCK, currentStock);
-                    salesVolume.setField(SalesVolumeFields.STOCK_FOR_DAYS, stockForDays);
-                }
-            } catch (IllegalArgumentException ex) {
-            }
-        }
-    }
-
-    private BigDecimal getCurrentStock(final Entity product) {
-        BigDecimal currentStock = BigDecimal.ZERO;
-
-        List<Entity> locations = materialFlowResourcesService.getWarehouseLocationsFromDB();
-
-        Map<Long, Map<Long, BigDecimal>> resourceStocks = materialFlowResourcesService.getQuantitiesForProductsAndLocations(Lists.newArrayList(product), locations);
-
-        for (Map.Entry<Long, Map<Long, BigDecimal>> resourceStock : resourceStocks.entrySet()) {
-            currentStock = currentStock.add(BigDecimalUtils.convertNullToZero(resourceStock.getValue().get(product.getId())),
-                    numberService.getMathContext());
-        }
-
-        return currentStock;
     }
 
 }

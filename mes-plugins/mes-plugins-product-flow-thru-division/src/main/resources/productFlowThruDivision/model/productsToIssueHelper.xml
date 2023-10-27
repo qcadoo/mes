@@ -30,9 +30,8 @@
     <fields>
         <belongsTo name="locationFrom" model="location"
                    plugin="materialFlow"/>
-        <manyToMany name="issues" model="issue" cascade="nullify" joinField="helpers"/>
+        <manyToMany name="issues" model="issue" joinField="helpers"/>
         <string name="productsToIssueIds"/>
-        <string name="documentId"/>
         <boolean name="generated" default="false"/>
         <string name="additionalInfo"/>
     </fields>

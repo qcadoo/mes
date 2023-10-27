@@ -7,10 +7,8 @@ import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.*;
 import com.qcadoo.view.api.components.lookup.FilterValueHolder;
 import com.qcadoo.view.constants.QcadooViewConstants;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.Objects;
 
 @Service
@@ -25,23 +23,11 @@ public class StorageLocationsDetailsHooks {
 
     private void setFieldsEnabled(final ViewDefinitionState view) {
         FormComponent storageLocationForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
-        LookupComponent productLookup = (LookupComponent) view.getComponentByReference(StorageLocationFields.PRODUCT);
         FieldComponent maximumNumberField = (FieldComponent) view.getComponentByReference(StorageLocationFields.MAXIMUM_NUMBER_OF_PALLETS);
         CheckBoxComponent isPlaceCheckBox = (CheckBoxComponent) view.getComponentByReference(StorageLocationFields.PLACE_STORAGE_LOCATION);
         GridComponent productsGrid = (GridComponent) view.getComponentByReference(StorageLocationFields.PRODUCTS);
 
-        Entity product = productLookup.getEntity();
-        List<Entity> products = productsGrid.getEntities();
-
         boolean isSaved = Objects.nonNull(storageLocationForm.getEntityId());
-
-        if (Objects.nonNull(product) || StringUtils.isNotEmpty(productLookup.getCurrentCode())) {
-            productLookup.setEnabled(true);
-            productsGrid.setEnabled(false);
-        } else {
-            productLookup.setEnabled(products.isEmpty());
-            productsGrid.setEnabled(isSaved);
-        }
 
         if (isPlaceCheckBox.isChecked()) {
             maximumNumberField.setEnabled(true);
@@ -50,18 +36,17 @@ public class StorageLocationsDetailsHooks {
             maximumNumberField.setFieldValue(null);
         }
 
-        productLookup.requestComponentUpdateState();
         maximumNumberField.requestComponentUpdateState();
+        productsGrid.setEnabled(isSaved);
     }
 
     private void setFilterValueHolders(final ViewDefinitionState view) {
         LookupComponent locationLookup = (LookupComponent) view.getComponentByReference(StorageLocationFields.LOCATION);
-        LookupComponent productLookup = (LookupComponent) view.getComponentByReference(StorageLocationFields.PRODUCT);
         LookupComponent productsLookup = (LookupComponent) view.getComponentByReference(L_PRODUCTS_LOOKUP);
 
         Entity location = locationLookup.getEntity();
 
-        FilterValueHolder filterValueHolder = productLookup.getFilterValue();
+        FilterValueHolder filterValueHolder = productsLookup.getFilterValue();
 
         if (Objects.isNull(location)) {
             filterValueHolder.remove(ProductsCriteriaModifiers.L_LOCATION_ID);
@@ -71,7 +56,6 @@ public class StorageLocationsDetailsHooks {
             filterValueHolder.put(ProductsCriteriaModifiers.L_LOCATION_ID, locationId);
         }
 
-        productLookup.setFilterValue(filterValueHolder);
         productsLookup.setFilterValue(filterValueHolder);
     }
 

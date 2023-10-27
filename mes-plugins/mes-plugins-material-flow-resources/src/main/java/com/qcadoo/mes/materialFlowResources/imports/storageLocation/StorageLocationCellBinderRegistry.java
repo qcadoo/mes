@@ -55,7 +55,6 @@ public class StorageLocationCellBinderRegistry {
     private void init() {
         cellBinderRegistry.setCellBinder(required(StorageLocationFields.NUMBER));
         cellBinderRegistry.setCellBinder(required(StorageLocationFields.LOCATION, locationCellParser));
-        cellBinderRegistry.setCellBinder(optional(StorageLocationFields.PRODUCT, productCellParser));
         cellBinderRegistry.setCellBinder(optional(StorageLocationFields.PLACE_STORAGE_LOCATION, booleanCellParser));
         cellBinderRegistry.setCellBinder(optional(StorageLocationFields.MAXIMUM_NUMBER_OF_PALLETS, bigDecimalCellParser));
         cellBinderRegistry.setCellBinder(optional(StorageLocationFields.HIGH_STORAGE_LOCATION, booleanCellParser));

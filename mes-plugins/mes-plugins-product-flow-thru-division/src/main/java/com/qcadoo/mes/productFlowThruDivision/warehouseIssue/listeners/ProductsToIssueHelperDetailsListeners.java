@@ -41,10 +41,16 @@ import java.util.*;
 @Service
 public class ProductsToIssueHelperDetailsListeners {
 
-    public static final String L_ISSUES = "issues";
+    private static final String L_ISSUES = "issues";
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
+
+    @Autowired
+    private NumberService numberService;
+
+    @Autowired
+    private TranslationService translationService;
 
     @Autowired
     private ProductsToIssueDetailsHooks productsToIssueDetailsHooks;
@@ -56,9 +62,6 @@ public class ProductsToIssueHelperDetailsListeners {
     private MaterialFlowResourcesService materialFlowResourcesService;
 
     @Autowired
-    private NumberService numberService;
-
-    @Autowired
     private WarehouseIssueParameterService warehouseIssueParameterService;
 
     @Autowired
@@ -67,25 +70,25 @@ public class ProductsToIssueHelperDetailsListeners {
     @Autowired
     private CalculationQuantityService calculationQuantityService;
 
-    @Autowired
-    private TranslationService translationService;
-
     @Transactional
     private List<Entity> createDocumentsInvoke(final ViewDefinitionState view, final Entity helper) {
         Optional<List<Entity>> optionalPositions = saveProductsToIssue(view);
 
         Optional<String> additionalInfo = Optional.ofNullable(helper.getStringField("additionalInfo"));
+
         if (additionalInfo.isPresent() && additionalInfo.get().length() > 1024) {
             throw new RuntimeException("productFlowThruDivision.productsToIssueHelperDetails.error.additionalInfoTooLong");
         }
+
         if (optionalPositions.isPresent()) {
             if (!issueValidators.checkIfCanIssueQuantity(optionalPositions.get())) {
                 throw new RuntimeException("productFlowThruDivision.issue.state.accept.error.issuedToExtentNecessary");
             }
+
             List<Entity> documents = warehouseIssueService.createWarehouseDocumentsForPositions(view, optionalPositions.get(),
                     helper.getBelongsToField("locationFrom"), additionalInfo);
-            return documents;
 
+            return documents;
         } else {
             throw new RuntimeException("productFlowThruDivision.productsToIssueHelperDetails.window.save.error");
         }
@@ -93,40 +96,47 @@ public class ProductsToIssueHelperDetailsListeners {
 
     public void createDocuments(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
+
         Entity helper = form.getPersistedEntityWithIncludedFormValues();
-       FieldComponent helperField = (FieldComponent) view.getComponentByReference("generated");
+
+        FieldComponent helperField = (FieldComponent) view.getComponentByReference("generated");
+
         boolean success = false;
+
         try {
             List<Entity> documents = createDocumentsInvoke(view, helper);
+
             afterSuccessfulCreateDocumentsHooks(view, documents);
+
             success = true;
-            
+
         } catch (DocumentBuildException e) {
             e.getInvalidPositions().forEach(ip -> copyPositionMessages(ip, view));
         } catch (EntityRuntimeException e) {
             copyMessages(e.getEntity(), view);
-
-        }catch( RuntimeExceptionWithArguments e){
+        } catch (RuntimeExceptionWithArguments e) {
             view.addMessage(e.getMessage(), ComponentState.MessageType.FAILURE, e.getArguments());
-
         } catch (Exception e) {
             view.addMessage(e.getMessage(), ComponentState.MessageType.FAILURE);
-
         }
+
         helperField.setFieldValue(success);
         helperField.requestComponentUpdateState();
     }
 
     public void createDocumentsAndGoBack(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        CheckBoxComponent goBack = (CheckBoxComponent) view.getComponentByReference("goBack");
+        CheckBoxComponent goBackCheckBox = (CheckBoxComponent) view.getComponentByReference("goBack");
+        FieldComponent generatedField = (FieldComponent) view.getComponentByReference("generated");
+
         createDocuments(view, state, args);
-        FieldComponent helperField = (FieldComponent) view.getComponentByReference("generated");
-        Boolean generated = Boolean.valueOf(helperField.getFieldValue().toString());
-        goBack.setChecked(BooleanUtils.isTrue(generated));
+
+        Boolean generated = Boolean.valueOf(generatedField.getFieldValue().toString());
+
+        goBackCheckBox.setChecked(BooleanUtils.isTrue(generated));
     }
 
     private void copyMessages(Entity entity, final ViewDefinitionState componentMessagesHolder) {
-        if (componentMessagesHolder == null) {
+        if (Objects.isNull(componentMessagesHolder)) {
             return;
         }
 
@@ -143,17 +153,20 @@ public class ProductsToIssueHelperDetailsListeners {
     }
 
     private void copyPositionMessages(Entity invalidPosition, final ViewDefinitionState componentMessagesHolder) {
-        if (componentMessagesHolder == null) {
+        if (Objects.isNull(componentMessagesHolder)) {
             return;
         }
+
         Locale locale = LocaleContextHolder.getLocale();
 
         String productNumber = Optional.of(invalidPosition).map(ip -> ip.getBelongsToField(PositionFields.PRODUCT))
                 .map(p -> p.getStringField(ProductFields.NUMBER)).orElse("???");
+
         for (ErrorMessage errorMessage : invalidPosition.getGlobalErrors()) {
             String translatedMessage = translationService.translate(errorMessage.getMessage(), locale, errorMessage.getVars());
             translatedMessage = translationService.translate("productFlowThruDivision.issue.documentBuild.position.error", locale,
                     translatedMessage, productNumber);
+
             componentMessagesHolder.addTranslatedMessage(translatedMessage, ComponentState.MessageType.FAILURE,
                     errorMessage.getAutoClose(), errorMessage.isExtraLarge());
         }
@@ -161,6 +174,7 @@ public class ProductsToIssueHelperDetailsListeners {
             String translatedMessage = translationService.translate(errorMessage.getMessage(), locale, errorMessage.getVars());
             translatedMessage = translationService.translate("productFlowThruDivision.issue.documentBuild.position.error", locale,
                     translatedMessage, productNumber);
+
             componentMessagesHolder.addTranslatedMessage(translatedMessage, ComponentState.MessageType.FAILURE,
                     errorMessage.getAutoClose(), errorMessage.isExtraLarge());
         }
@@ -173,41 +187,56 @@ public class ProductsToIssueHelperDetailsListeners {
 
     private Optional<List<Entity>> saveProductsToIssue(final ViewDefinitionState view) {
         List<Entity> savedEntities = Lists.newArrayList();
+
         AwesomeDynamicListComponent adl = (AwesomeDynamicListComponent) view.getComponentByReference(L_ISSUES);
+
         DataDefinition issueDD = dataDefinitionService.get(ProductFlowThruDivisionConstants.PLUGIN_IDENTIFIER,
                 ProductFlowThruDivisionConstants.MODEL_ISSUE);
+
         boolean areErrors = false;
-        Map<FormComponent,Entity> entityToSaved = new HashMap<>();
-        for (FormComponent form : adl.getFormComponents()) {
-            Entity issue = form.getPersistedEntityWithIncludedFormValues();
+
+        Map<FormComponent, Entity> entityToSaved = new HashMap<>();
+
+        for (FormComponent formComponent : adl.getFormComponents()) {
+            Entity issue = formComponent.getPersistedEntityWithIncludedFormValues();
+
             issue.setField(IssueFields.ISSUED, false);
+
             Entity saved = issueDD.save(issue);
+
             if (!saved.isValid()) {
-                Map<String, ErrorMessage> errorMessageMap =  saved.getErrors();
-                errorMessageMap.forEach((field,errorMessage)-> form.findFieldComponentByName(field).addMessage(errorMessage.getMessage(), ComponentState.MessageType.FAILURE));
+                Map<String, ErrorMessage> errorMessageMap = saved.getErrors();
+
+                errorMessageMap.forEach((field, errorMessage) -> formComponent.findFieldComponentByName(field).addMessage(errorMessage.getMessage(), ComponentState.MessageType.FAILURE));
+
                 areErrors = true;
-            }else{
-                if(saved.getDecimalField(IssueFields.ISSUE_QUANTITY) != null) {
+            } else {
+                if (Objects.nonNull(saved.getDecimalField(IssueFields.ISSUE_QUANTITY))) {
                     if (saved.getDecimalField(IssueFields.ISSUE_QUANTITY).compareTo(BigDecimal.valueOf(0)) == 0) {
-                        form.findFieldComponentByName(IssueFields.ISSUE_QUANTITY).addMessage("productFlowThruDivision.productsToIssueHelperDetails.issueQuantity", ComponentState.MessageType.FAILURE);
-                        areErrors =  true;
-                    }else {
-                        entityToSaved.put(form, saved);
+                        formComponent.findFieldComponentByName(IssueFields.ISSUE_QUANTITY).addMessage("productFlowThruDivision.productsToIssueHelperDetails.issueQuantity", ComponentState.MessageType.FAILURE);
+
+                        areErrors = true;
+                    } else {
+                        entityToSaved.put(formComponent, saved);
                     }
                 }
             }
+
             savedEntities.add(saved);
         }
-        if(areErrors){
+
+        if (areErrors) {
             return Optional.empty();
         }
-        if(!checkIssuedToExtentNecessary(savedEntities,adl)){
+        if (!checkIssuedToExtentNecessary(savedEntities, adl)) {
             return Optional.empty();
         }
-        if(!checkNoProductsOnLocation(savedEntities,view,adl)){
+        if (!checkNoProductsOnLocation(savedEntities, view, adl)) {
             return Optional.empty();
         }
+
         entityToSaved.forEach(FormComponent::setEntity);
+
         return Optional.of(savedEntities);
     }
 
@@ -217,11 +246,15 @@ public class ProductsToIssueHelperDetailsListeners {
 
     public void updateQuantities(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         AwesomeDynamicListComponent adl = (AwesomeDynamicListComponent) view.getComponentByReference(L_ISSUES);
+
         Long changedId = (Long) state.getFieldValue();
+
         for (FormComponent form : adl.getFormComponents()) {
             Entity issue = form.getPersistedEntityWithIncludedFormValues();
+
             Entity product = issue.getBelongsToField(IssueFields.PRODUCT);
-            if (product != null && product.getId().equals(changedId)) {
+
+            if (Objects.nonNull(product) && product.getId().equals(changedId)) {
                 Entity locationTo = issue.getBelongsToField(IssueFields.LOCATION);
 
                 Entity warehouseIssue = issue.getBelongsToField(IssueFields.WAREHOUSE_ISSUE);
@@ -230,31 +263,35 @@ public class ProductsToIssueHelperDetailsListeners {
                 Optional<Entity> maybeProductToIssue = warehouseIssue.getHasManyField(WarehouseIssueFields.PRODUCTS_TO_ISSUES)
                         .stream()
                         .filter(p -> p.getBelongsToField(ProductsToIssueFields.PRODUCT).getId().equals(product.getId())
-                        && p.getBelongsToField(ProductsToIssueFields.LOCATION).getId().equals(locationTo.getId()))
+                                && p.getBelongsToField(ProductsToIssueFields.LOCATION).getId().equals(locationTo.getId()))
                         .findFirst();
+
                 BigDecimal quantityFrom = materialFlowResourcesService.getResourcesQuantityForLocationAndProduct(locationFrom,
                         product);
                 BigDecimal quantityTo = materialFlowResourcesService.getResourcesQuantityForLocationAndProduct(locationTo,
                         product);
+
                 if (maybeProductToIssue.isPresent()) {
                     Entity productToIssue = maybeProductToIssue.get();
 
                     BigDecimal demandQuantity = productToIssue.getDecimalField(ProductsToIssueFields.DEMAND_QUANTITY);
                     BigDecimal issuedQuantity = productToIssue.getDecimalField(ProductsToIssueFields.ISSUE_QUANTITY);
-                    issue.setField(IssueFields.STORAGE_LOCATION,
-                            productToIssue.getBelongsToField(ProductsToIssueFields.STORAGE_LOCATION));
                     BigDecimal quantityPerUnit = null;
                     BigDecimal issueQuantity = BigDecimal.ZERO;
+
                     if (warehouseIssueParameterService.issueForOrder()) {
                         Entity order = warehouseIssue.getBelongsToField(WarehouseIssueFields.ORDER);
                         BigDecimal plannedQuantity = order.getDecimalField(OrderFields.PLANNED_QUANTITY);
-                        if (plannedQuantity != null && demandQuantity != null) {
+
+                        if (Objects.nonNull(plannedQuantity) && Objects.nonNull(demandQuantity)) {
                             quantityPerUnit = demandQuantity.divide(plannedQuantity, numberService.getMathContext());
                         }
                     }
-                    if (demandQuantity != null && issuedQuantity != null) {
+
+                    if (Objects.nonNull(demandQuantity) && Objects.nonNull(issuedQuantity)) {
                         issueQuantity = demandQuantity.subtract(issuedQuantity);
                     }
+
                     if (issueQuantity.compareTo(BigDecimal.ZERO) == -1) {
                         issueQuantity = BigDecimal.ZERO;
                     }
@@ -262,16 +299,20 @@ public class ProductsToIssueHelperDetailsListeners {
                     issue.setField(IssueFields.DEMAND_QUANTITY, demandQuantity);
                     issue.setField(IssueFields.QUANTITY_PER_UNIT, quantityPerUnit);
                     issue.setField(IssueFields.ISSUE_QUANTITY, issueQuantity);
+
                     BigDecimal conversion = productToIssue.getDecimalField(ProductsToIssueFields.CONVERSION);
-                    if (conversion != null) {
+
+                    if (Objects.nonNull(conversion)) {
                         issue.setField(IssueFields.CONVERSION, conversion);
+
                         String unit = product.getStringField(ProductFields.UNIT);
                         String additionalUnit = product.getStringField(ProductFields.ADDITIONAL_UNIT);
+
                         BigDecimal newAdditionalQuantity = calculationQuantityService.calculateAdditionalQuantity(demandQuantity,
                                 conversion, Optional.ofNullable(additionalUnit).orElse(unit));
+
                         issue.setField(IssueFields.ADDITIONAL_DEMAND_QUANTITY, newAdditionalQuantity);
                     }
-
                 } else {
                     issue.setField(IssueFields.DEMAND_QUANTITY, BigDecimal.ZERO);
                     issue.setField(IssueFields.QUANTITY_PER_UNIT, BigDecimal.ZERO);
@@ -287,22 +328,28 @@ public class ProductsToIssueHelperDetailsListeners {
 
     public void quantityChanged(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         AwesomeDynamicListComponent adl = (AwesomeDynamicListComponent) view.getComponentByReference("issues");
-        List<FormComponent> formComponenets = adl.getFormComponents();
-        for (FormComponent formComponent : formComponenets) {
+
+        List<FormComponent> formComponents = adl.getFormComponents();
+
+        for (FormComponent formComponent : formComponents) {
             Entity formEntity = formComponent.getPersistedEntityWithIncludedFormValues();
 
             FieldComponent quantityField = formComponent.findFieldComponentByName("issueQuantity");
 
             BigDecimal conversion = formEntity.getDecimalField(IssueFields.CONVERSION);
             FieldComponent additionalQuantity = formComponent.findFieldComponentByName("issueQuantityAdditionalUnit");
+
             if (quantityField.getUuid().equals(state.getUuid())) {
                 Either<Exception, com.google.common.base.Optional<BigDecimal>> maybeQuantity = BigDecimalUtils
                         .tryParse(quantityField.getFieldValue().toString(), LocaleContextHolder.getLocale());
-                if (conversion != null && maybeQuantity.isRight() && maybeQuantity.getRight().isPresent()) {
+
+                if (Objects.nonNull(conversion) && maybeQuantity.isRight() && maybeQuantity.getRight().isPresent()) {
                     BigDecimal quantity = maybeQuantity.getRight().get();
                     BigDecimal newAdditionalQuantity = quantity.multiply(conversion, numberService.getMathContext());
+
                     newAdditionalQuantity = newAdditionalQuantity.setScale(NumberService.DEFAULT_MAX_FRACTION_DIGITS_IN_DECIMAL,
                             RoundingMode.HALF_UP);
+
                     additionalQuantity.setFieldValue(numberService.formatWithMinimumFractionDigits(newAdditionalQuantity, 0));
                     additionalQuantity.requestComponentUpdateState();
                 } else if (maybeQuantity.isLeft()) {
@@ -311,26 +358,34 @@ public class ProductsToIssueHelperDetailsListeners {
                             ComponentState.MessageType.FAILURE);
                 }
             }
-
         }
     }
 
     public void additionalQuantityChanged(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         AwesomeDynamicListComponent adl = (AwesomeDynamicListComponent) view.getComponentByReference("issues");
-        List<FormComponent> formComponenets = adl.getFormComponents();
-        for (FormComponent formComponent : formComponenets) {
+
+        List<FormComponent> formComponents = adl.getFormComponents();
+
+        for (FormComponent formComponent : formComponents) {
             FieldComponent additionalQuantityField = formComponent.findFieldComponentByName("issueQuantityAdditionalUnit");
+
             Entity formEntity = formComponent.getPersistedEntityWithIncludedFormValues();
+
             BigDecimal conversion = formEntity.getDecimalField(IssueFields.CONVERSION);
+
             FieldComponent quantity = formComponent.findFieldComponentByName("issueQuantity");
+
             if (additionalQuantityField.getUuid().equals(state.getUuid())) {
                 Either<Exception, com.google.common.base.Optional<BigDecimal>> maybeAdditionalQuantity = BigDecimalUtils
                         .tryParse(additionalQuantityField.getFieldValue().toString(), LocaleContextHolder.getLocale());
-                if (conversion != null && maybeAdditionalQuantity.isRight() && maybeAdditionalQuantity.getRight().isPresent()) {
+
+                if (Objects.nonNull(conversion) && maybeAdditionalQuantity.isRight() && maybeAdditionalQuantity.getRight().isPresent()) {
                     BigDecimal additionalQuantity = maybeAdditionalQuantity.getRight().get();
                     BigDecimal newQuantity = additionalQuantity.divide(conversion, numberService.getMathContext());
+
                     newQuantity = newQuantity.setScale(NumberService.DEFAULT_MAX_FRACTION_DIGITS_IN_DECIMAL,
                             RoundingMode.HALF_UP);
+
                     quantity.setFieldValue(numberService.formatWithMinimumFractionDigits(newQuantity, 0));
                     quantity.requestComponentUpdateState();
                 } else if (maybeAdditionalQuantity.isLeft()) {
@@ -343,36 +398,45 @@ public class ProductsToIssueHelperDetailsListeners {
         }
     }
 
-    private void afterSuccessfulCreateDocumentsHooks(final ViewDefinitionState view, List<Entity> documents) {
-// used in AOP        
+    private void afterSuccessfulCreateDocumentsHooks(final ViewDefinitionState view, final List<Entity> documents) {
+        // used in AOP
     }
 
-
-    private boolean checkIssuedToExtentNecessary(List<Entity> savedEntities, AwesomeDynamicListComponent adl){
+    private boolean checkIssuedToExtentNecessary(final List<Entity> savedEntities, final AwesomeDynamicListComponent adl) {
         boolean canIssueQuantity = issueValidators.checkIfCanIssueQuantity(Optional.of(savedEntities).get());
+
         if (!canIssueQuantity) {
             adl.addMessage("productFlowThruDivision.issue.state.accept.error.issuedToExtentNecessary",
                     ComponentState.MessageType.FAILURE);
+
             return false;
         }
+
         return true;
     }
 
-    private boolean checkNoProductsOnLocation(List<Entity> savedEntities,ViewDefinitionState view,AwesomeDynamicListComponent adl){
-        Entity location = ((FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM)).getEntity().getBelongsToField("locationFrom");
+    private boolean checkNoProductsOnLocation(final List<Entity> savedEntities, final ViewDefinitionState view, final AwesomeDynamicListComponent adl) {
+        FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
+
+        Entity location = form.getEntity().getBelongsToField("locationFrom");
+
         UpdateIssuesLocationsQuantityStatusHolder updateIssuesStatus = warehouseIssueService
                 .tryUpdateIssuesLocationsQuantity(location, Optional.of(savedEntities).get());
+
         if (!updateIssuesStatus.isUpdated()) {
             adl.addMessage("productFlowThruDivision.issue.state.accept.error.noProductsOnLocation",
                     ComponentState.MessageType.FAILURE, updateIssuesStatus.getMessage(),
                     location.getStringField(LocationFields.NUMBER));
+
             return false;
         }
+
         return true;
     }
 
     public void onDeleteRow(final ViewDefinitionState view, final ComponentState componentState, final String[] args) {
         AwesomeDynamicListComponent adl = (AwesomeDynamicListComponent) view.getComponentByReference("issues");
+
         if (adl.getFormComponents().isEmpty()) {
             WindowComponent window = (WindowComponent) view.getComponentByReference(QcadooViewConstants.L_WINDOW);
             window.getRibbon().getGroups().stream().filter(g -> !g.getName().equals("navigation"))
@@ -382,4 +446,5 @@ public class ProductsToIssueHelperDetailsListeners {
                     });
         }
     }
+
 }
