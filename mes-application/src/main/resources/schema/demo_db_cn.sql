@@ -5435,7 +5435,6 @@ CREATE TABLE public.arch_materialflowresources_document (
     createlinkeddocument boolean,
     linkeddocumentlocation_id bigint,
     address_id bigint,
-    inbuffer boolean DEFAULT false,
     dispositionshift_id bigint,
     positionsfile character varying,
     printed boolean DEFAULT false,
@@ -5706,7 +5705,6 @@ CREATE TABLE public.deliveries_delivery (
     updateuser character varying(255),
     synchronizationstatus character varying(255),
     entityversion bigint DEFAULT 0,
-    positionsfile character varying(255),
     paymentform character varying(255),
     salesplan_id bigint,
     wms boolean DEFAULT false,
@@ -5794,8 +5792,7 @@ CREATE TABLE public.subcontractorportal_suborder (
 --
 
 CREATE MATERIALIZED VIEW public.arch_mv_materialflowresources_documentdto AS
- SELECT document.inbuffer,
-    document.id,
+ SELECT document.id,
     document.number,
     document.description,
     document.name,
@@ -5824,8 +5821,7 @@ CREATE MATERIALIZED VIEW public.arch_mv_materialflowresources_documentdto AS
     (ordersorder.id)::integer AS order_id,
     ordersorder.number AS ordernumber,
     (suborder.id)::integer AS suborder_id,
-    suborder.number AS subordernumber,
-    document.printed
+    suborder.number AS subordernumber
    FROM ((((((((((public.arch_materialflowresources_document document
      LEFT JOIN public.materialflow_location locationfrom ON ((locationfrom.id = document.locationfrom_id)))
      LEFT JOIN public.materialflow_location locationto ON ((locationto.id = document.locationto_id)))
@@ -5845,8 +5841,7 @@ CREATE MATERIALIZED VIEW public.arch_mv_materialflowresources_documentdto AS
 --
 
 CREATE VIEW public.arch_materialflowresources_documentdto AS
- SELECT arch_mv_materialflowresources_documentdto.inbuffer,
-    arch_mv_materialflowresources_documentdto.id,
+ SELECT arch_mv_materialflowresources_documentdto.id,
     arch_mv_materialflowresources_documentdto.number,
     arch_mv_materialflowresources_documentdto.description,
     arch_mv_materialflowresources_documentdto.name,
@@ -5872,8 +5867,7 @@ CREATE VIEW public.arch_materialflowresources_documentdto AS
     arch_mv_materialflowresources_documentdto.order_id,
     arch_mv_materialflowresources_documentdto.ordernumber,
     arch_mv_materialflowresources_documentdto.suborder_id,
-    arch_mv_materialflowresources_documentdto.subordernumber,
-    arch_mv_materialflowresources_documentdto.printed
+    arch_mv_materialflowresources_documentdto.subordernumber
    FROM public.arch_mv_materialflowresources_documentdto;
 
 
@@ -6128,7 +6122,6 @@ CREATE TABLE public.materialflowresources_storagelocation (
     number character varying(48),
     state character varying(255) DEFAULT '01draft'::character varying,
     location_id bigint,
-    product_id bigint,
     placestoragelocation boolean DEFAULT false,
     maximumnumberofpallets numeric(12,5),
     createdate timestamp without time zone,
@@ -6187,7 +6180,6 @@ CREATE MATERIALIZED VIEW public.arch_mv_materialflowresources_positiondto AS
     "position".givenunit,
     "position".conversion,
     (document.id)::integer AS documentid,
-    document.inbuffer,
         CASE
             WHEN ("position".orderid IS NULL) THEN (document.order_id)::integer
             ELSE "position".orderid
@@ -6250,7 +6242,6 @@ CREATE VIEW public.arch_materialflowresources_positiondto AS
     arch_mv_materialflowresources_positiondto.givenunit,
     arch_mv_materialflowresources_positiondto.conversion,
     arch_mv_materialflowresources_positiondto.documentid,
-    arch_mv_materialflowresources_positiondto.inbuffer,
     arch_mv_materialflowresources_positiondto.orderid,
     arch_mv_materialflowresources_positiondto.value,
     arch_mv_materialflowresources_positiondto.resourcenumber
@@ -8587,7 +8578,6 @@ CREATE TABLE public.arch_productflowthrudivision_producttoissuecorrection (
     createuser character varying(255),
     updateuser character varying(255),
     productstoissue_id bigint,
-    accountwithreservation_id bigint,
     archived boolean DEFAULT false
 );
 
@@ -11553,7 +11543,6 @@ CREATE TABLE public.basic_parameter (
     deliveredbiggerthanordered boolean DEFAULT true,
     ordersganttparameters_id bigint,
     additionalimage character varying(255),
-    esilcointegrationdir text,
     autorecalculateorder boolean,
     ppsisautomatic boolean,
     ppsproducedamountrecalculateplan boolean,
@@ -11561,14 +11550,12 @@ CREATE TABLE public.basic_parameter (
     baselinkerparameters_id bigint,
     technologiesgeneratorcopyproductsize boolean,
     cartonlabelsbtpath character varying,
-    esilcodispositionshiftlocation_id bigint,
     maxproductsquantity integer,
     allowerrorsinmasterorderpositions boolean,
     companyname_id bigint,
     hideassignedstaff boolean DEFAULT false,
     fillorderdescriptionbasedontechnologydescription boolean,
     allowanomalycreationonacceptancerecord boolean DEFAULT false,
-    esilcoaccountwithreservationlocation_id bigint,
     includelevelandsuffix boolean DEFAULT true,
     orderedproductsunit character varying,
     allowincompleteunits boolean DEFAULT false,
@@ -15827,321 +15814,6 @@ ALTER SEQUENCE public.emailnotifications_staffnotification_id_seq OWNED BY publi
 
 
 --
--- Name: esilco_importpositionerror; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.esilco_importpositionerror (
-    id bigint NOT NULL,
-    document_id bigint,
-    quantity numeric(14,5),
-    productcode character varying(255),
-    name character varying(255)
-);
-
-
---
--- Name: esilco_importpositionerror_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE public.esilco_importpositionerror_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: esilco_importpositionerror_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE public.esilco_importpositionerror_id_seq OWNED BY public.esilco_importpositionerror.id;
-
-
---
--- Name: mobilewms_outofstock; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.mobilewms_outofstock (
-    id bigint NOT NULL,
-    location_id bigint,
-    product_id bigint,
-    storagelocation_id bigint,
-    state character varying(255) DEFAULT '01new'::character varying,
-    createdate timestamp without time zone,
-    updatedate timestamp without time zone,
-    createuser character varying(255),
-    updateuser character varying(255)
-);
-
-
---
--- Name: esilco_outofstock_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE public.esilco_outofstock_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: esilco_outofstock_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE public.esilco_outofstock_id_seq OWNED BY public.mobilewms_outofstock.id;
-
-
---
--- Name: esilco_picksreport; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.esilco_picksreport (
-    id bigint NOT NULL,
-    number character varying(255),
-    name character varying(1024),
-    location_id bigint,
-    datefrom date,
-    dateto date,
-    date timestamp without time zone,
-    worker character varying(255),
-    generated boolean,
-    filename character varying(255)
-);
-
-
---
--- Name: esilco_picksreport_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE public.esilco_picksreport_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: esilco_picksreport_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE public.esilco_picksreport_id_seq OWNED BY public.esilco_picksreport.id;
-
-
---
--- Name: esilco_printdocuments; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.esilco_printdocuments (
-    id bigint NOT NULL,
-    active boolean DEFAULT true,
-    createdate timestamp without time zone,
-    updatedate timestamp without time zone,
-    createuser character varying(255),
-    updateuser character varying(255)
-);
-
-
---
--- Name: esilco_printdocuments_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE public.esilco_printdocuments_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: esilco_printdocuments_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE public.esilco_printdocuments_id_seq OWNED BY public.esilco_printdocuments.id;
-
-
---
--- Name: mobilewms_wmsdocumentpart; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.mobilewms_wmsdocumentpart (
-    id bigint NOT NULL,
-    number character varying(255),
-    additionalinfo character varying(255),
-    part integer,
-    company character varying(255),
-    stateinwms character varying(255),
-    pickingworker character varying(255),
-    document_id bigint,
-    parts integer,
-    additionaldescription character varying(2048),
-    differences boolean DEFAULT false,
-    type character varying(255) NOT NULL
-);
-
-
---
--- Name: esilco_wmsdocumentpart_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE public.esilco_wmsdocumentpart_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: esilco_wmsdocumentpart_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE public.esilco_wmsdocumentpart_id_seq OWNED BY public.mobilewms_wmsdocumentpart.id;
-
-
---
--- Name: mobilewms_wmsdocumenttype; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.mobilewms_wmsdocumenttype (
-    id bigint NOT NULL,
-    type character varying(255),
-    parameter_id bigint
-);
-
-
---
--- Name: esilco_wmsdocumenttype_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE public.esilco_wmsdocumenttype_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: esilco_wmsdocumenttype_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE public.esilco_wmsdocumenttype_id_seq OWNED BY public.mobilewms_wmsdocumenttype.id;
-
-
---
--- Name: mobilewms_wmslocation; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.mobilewms_wmslocation (
-    id bigint NOT NULL,
-    location_id bigint,
-    parameter_id bigint
-);
-
-
---
--- Name: esilco_wmslocation_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE public.esilco_wmslocation_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: esilco_wmslocation_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE public.esilco_wmslocation_id_seq OWNED BY public.mobilewms_wmslocation.id;
-
-
---
--- Name: mobilewms_wmsposition; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.mobilewms_wmsposition (
-    id bigint NOT NULL,
-    productnumber character varying(255),
-    storagelocationnumber character varying(255),
-    batchnumber character varying(255),
-    cartons numeric(14,5),
-    rest numeric(14,5),
-    quantity numeric(14,5),
-    conversion numeric(12,5),
-    unit character varying(255),
-    pickingdate timestamp without time zone,
-    documentpart_id bigint NOT NULL,
-    locationnumber character varying(255),
-    productname character varying(1024)
-);
-
-
---
--- Name: esilco_wmsposition_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE public.esilco_wmsposition_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: esilco_wmsposition_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE public.esilco_wmsposition_id_seq OWNED BY public.mobilewms_wmsposition.id;
-
-
---
--- Name: esilco_workerstatsreport; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.esilco_workerstatsreport (
-    id bigint NOT NULL,
-    number character varying(255),
-    name character varying(1024),
-    location_id bigint,
-    datefrom date,
-    dateto date,
-    date timestamp without time zone,
-    worker character varying(255),
-    generated boolean,
-    filename character varying(255),
-    workerstype character varying(255) DEFAULT '01all'::character varying
-);
-
-
---
--- Name: esilco_workerstatsreport_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE public.esilco_workerstatsreport_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: esilco_workerstatsreport_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE public.esilco_workerstatsreport_id_seq OWNED BY public.esilco_workerstatsreport.id;
-
-
---
 -- Name: goodfood_confectionadditionalinputproduct; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -18896,16 +18568,6 @@ CREATE TABLE public.jointable_staff_timeusagereportfilter (
 
 
 --
--- Name: jointable_staff_workerstatsreport; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.jointable_staff_workerstatsreport (
-    staff_id bigint NOT NULL,
-    workerstatsreport_id bigint NOT NULL
-);
-
-
---
 -- Name: jointable_stocktaking_storagelocation; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -20217,7 +19879,9 @@ CREATE TABLE public.masterorders_salesvolume (
     id bigint NOT NULL,
     product_id bigint,
     dailysalesvolume numeric(14,5),
-    optimalstock numeric(14,5)
+    optimalstock numeric(14,5),
+    currentstock numeric(14,5),
+    stockfordays integer
 );
 
 
@@ -20439,14 +20103,10 @@ CREATE TABLE public.materialflowresources_document (
     maintenanceevent_id bigint,
     entityversion bigint DEFAULT 0,
     plannedevent_id bigint,
-    name character varying(255) NOT NULL,
+    name character varying(255),
     createlinkeddocument boolean,
     linkeddocumentlocation_id bigint,
     address_id bigint,
-    inbuffer boolean DEFAULT false,
-    dispositionshift_id bigint,
-    positionsfile character varying,
-    printed boolean DEFAULT false,
     generationdate timestamp without time zone,
     filename character varying(255),
     acceptationinprogress boolean DEFAULT false,
@@ -20459,7 +20119,6 @@ CREATE TABLE public.materialflowresources_document (
     stateinwms character varying(255),
     pickingworker character varying(255),
     dateconfirmationofcompletion timestamp without time zone,
-    locationchanged boolean DEFAULT false,
     editinwms boolean DEFAULT true,
     additionaldescription character varying(2048),
     staff_id bigint,
@@ -20551,8 +20210,7 @@ CREATE SEQUENCE public.materialflowresources_document_number_wz
 --
 
 CREATE VIEW public.materialflowresources_documentdto AS
- SELECT document.inbuffer,
-    document.id,
+ SELECT document.id,
     document.number,
     document.description,
     document.name,
@@ -20582,7 +20240,6 @@ CREATE VIEW public.materialflowresources_documentdto AS
     ordersorder.number AS ordernumber,
     (suborder.id)::integer AS suborder_id,
     suborder.number AS subordernumber,
-    document.printed,
     document.issend,
     document.wms,
     document.stateinwms,
@@ -21102,7 +20759,6 @@ CREATE VIEW public.materialflowresources_positiondto AS
     "position".givenunit,
     "position".conversion,
     (document.id)::integer AS documentid,
-    document.inbuffer,
         CASE
             WHEN ("position".orderid IS NULL) THEN (document.order_id)::integer
             ELSE "position".orderid
@@ -21140,42 +20796,6 @@ CREATE SEQUENCE public.materialflowresources_positiondto_id_seq
     NO MINVALUE
     NO MAXVALUE
     CACHE 1;
-
-
---
--- Name: materialflowresources_productstoragelocationhistory; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.materialflowresources_productstoragelocationhistory (
-    id bigint NOT NULL,
-    storagelocationfrom_id bigint,
-    storagelocationto_id bigint,
-    product_id bigint,
-    location_id bigint,
-    createdate timestamp without time zone,
-    updatedate timestamp without time zone,
-    createuser character varying(255),
-    updateuser character varying(255)
-);
-
-
---
--- Name: materialflowresources_productstoragelocationhistory_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE public.materialflowresources_productstoragelocationhistory_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: materialflowresources_productstoragelocationhistory_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE public.materialflowresources_productstoragelocationhistory_id_seq OWNED BY public.materialflowresources_productstoragelocationhistory.id;
 
 
 --
@@ -21770,20 +21390,19 @@ ALTER SEQUENCE public.materialflowresources_storagelocation_id_seq OWNED BY publ
 CREATE VIEW public.materialflowresources_storagelocationdto_internal AS
  SELECT location.number AS locationnumber,
     storagelocation.number AS storagelocationnumber,
-    COALESCE(product.number, storageproduct.number) AS productnumber,
-    COALESCE(product.name, storageproduct.name) AS productname,
+    product.number AS productnumber,
+    product.name AS productname,
     COALESCE(sum(resource.quantity), (0)::numeric) AS resourcequantity,
-    COALESCE(product.unit, storageproduct.unit) AS productunit,
+    product.unit AS productunit,
     COALESCE(sum(resource.quantityinadditionalunit), (0)::numeric) AS quantityinadditionalunit,
-    COALESCE(product.additionalunit, product.unit, storageproduct.additionalunit, storageproduct.unit) AS productadditionalunit,
+    COALESCE(product.additionalunit, product.unit) AS productadditionalunit,
     (location.id)::integer AS location_id
-   FROM ((((public.materialflowresources_storagelocation storagelocation
+   FROM (((public.materialflowresources_storagelocation storagelocation
      JOIN public.materialflow_location location ON ((storagelocation.location_id = location.id)))
      LEFT JOIN public.materialflowresources_resource resource ON ((resource.storagelocation_id = storagelocation.id)))
      LEFT JOIN public.basic_product product ON ((product.id = resource.product_id)))
-     LEFT JOIN public.basic_product storageproduct ON ((storageproduct.id = storagelocation.product_id)))
   WHERE (storagelocation.active = true)
-  GROUP BY location.number, location.id, storagelocation.number, COALESCE(product.number, storageproduct.number), COALESCE(product.name, storageproduct.name), COALESCE(product.unit, storageproduct.unit), COALESCE(product.additionalunit, product.unit, storageproduct.additionalunit, storageproduct.unit);
+  GROUP BY location.number, location.id, storagelocation.number, product.number, product.name, product.unit, COALESCE(product.additionalunit, product.unit);
 
 
 --
@@ -21849,41 +21468,6 @@ CREATE SEQUENCE public.materialflowresources_storagelocationhelper_id_seq
 --
 
 ALTER SEQUENCE public.materialflowresources_storagelocationhelper_id_seq OWNED BY public.materialflowresources_storagelocationhelper.id;
-
-
---
--- Name: materialflowresources_storagelocationhistory; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.materialflowresources_storagelocationhistory (
-    id bigint NOT NULL,
-    storagelocation_id bigint,
-    productfrom_id bigint,
-    productto_id bigint,
-    createdate timestamp without time zone,
-    updatedate timestamp without time zone,
-    createuser character varying(255),
-    updateuser character varying(255)
-);
-
-
---
--- Name: materialflowresources_storagelocationhistory_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE public.materialflowresources_storagelocationhistory_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: materialflowresources_storagelocationhistory_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE public.materialflowresources_storagelocationhistory_id_seq OWNED BY public.materialflowresources_storagelocationhistory.id;
 
 
 --
@@ -22183,6 +21767,23 @@ ALTER SEQUENCE public.materialrequirements_materialrequirement_id_seq OWNED BY p
 
 
 --
+-- Name: mobilewms_outofstock; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.mobilewms_outofstock (
+    id bigint NOT NULL,
+    location_id bigint,
+    product_id bigint,
+    storagelocation_id bigint,
+    state character varying(255) DEFAULT '01new'::character varying,
+    createdate timestamp without time zone,
+    updatedate timestamp without time zone,
+    createuser character varying(255),
+    updateuser character varying(255)
+);
+
+
+--
 -- Name: mobilewms_outofstock_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
@@ -22199,6 +21800,25 @@ CREATE SEQUENCE public.mobilewms_outofstock_id_seq
 --
 
 ALTER SEQUENCE public.mobilewms_outofstock_id_seq OWNED BY public.mobilewms_outofstock.id;
+
+
+--
+-- Name: mobilewms_wmsdocumentpart; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.mobilewms_wmsdocumentpart (
+    id bigint NOT NULL,
+    number character varying(255),
+    additionalinfo character varying(255),
+    part integer,
+    company character varying(255),
+    stateinwms character varying(255),
+    pickingworker character varying(255),
+    document_id bigint,
+    parts integer,
+    additionaldescription character varying(2048),
+    type character varying(255) NOT NULL
+);
 
 
 --
@@ -22221,6 +21841,17 @@ ALTER SEQUENCE public.mobilewms_wmsdocumentpart_id_seq OWNED BY public.mobilewms
 
 
 --
+-- Name: mobilewms_wmsdocumenttype; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.mobilewms_wmsdocumenttype (
+    id bigint NOT NULL,
+    type character varying(255),
+    parameter_id bigint
+);
+
+
+--
 -- Name: mobilewms_wmsdocumenttype_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
@@ -22240,6 +21871,17 @@ ALTER SEQUENCE public.mobilewms_wmsdocumenttype_id_seq OWNED BY public.mobilewms
 
 
 --
+-- Name: mobilewms_wmslocation; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.mobilewms_wmslocation (
+    id bigint NOT NULL,
+    location_id bigint,
+    parameter_id bigint
+);
+
+
+--
 -- Name: mobilewms_wmslocation_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
@@ -22256,6 +21898,27 @@ CREATE SEQUENCE public.mobilewms_wmslocation_id_seq
 --
 
 ALTER SEQUENCE public.mobilewms_wmslocation_id_seq OWNED BY public.mobilewms_wmslocation.id;
+
+
+--
+-- Name: mobilewms_wmsposition; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.mobilewms_wmsposition (
+    id bigint NOT NULL,
+    productnumber character varying(255),
+    storagelocationnumber character varying(255),
+    batchnumber character varying(255),
+    cartons numeric(14,5),
+    rest numeric(14,5),
+    quantity numeric(14,5),
+    conversion numeric(12,5),
+    unit character varying(255),
+    pickingdate timestamp without time zone,
+    documentpart_id bigint NOT NULL,
+    locationnumber character varying(255),
+    productname character varying(1024)
+);
 
 
 --
@@ -25900,7 +25563,6 @@ CREATE TABLE public.productflowthrudivision_issue (
     locationtoquantity numeric(12,5),
     quantityperunit numeric(12,5),
     issued boolean DEFAULT false,
-    storagelocation_id bigint,
     additionaldemandquantity numeric(12,5),
     conversion numeric(12,5),
     dateofissued timestamp without time zone,
@@ -25976,17 +25638,15 @@ CREATE VIEW public.productflowthrudivision_issuedto AS
     issue.conversion,
     issue.dateofissued,
     warehouseissue.state AS warehouseissuestate,
-    _location.number AS locationnumber,
-    (_location.id)::integer AS locationid,
-    storagelocation.number AS storagelocationnumber,
-    _document.number AS documentnumber,
-    _document.state AS documentstate
-   FROM (((((public.productflowthrudivision_issue issue
+    location.number AS locationnumber,
+    (location.id)::integer AS locationid,
+    document.number AS documentnumber,
+    document.state AS documentstate
+   FROM ((((public.productflowthrudivision_issue issue
      LEFT JOIN public.productflowthrudivision_warehouseissue warehouseissue ON ((warehouseissue.id = issue.warehouseissue_id)))
      LEFT JOIN public.basic_product product ON ((product.id = issue.product_id)))
-     LEFT JOIN public.materialflow_location _location ON ((_location.id = issue.location_id)))
-     LEFT JOIN public.materialflowresources_storagelocation storagelocation ON ((storagelocation.id = issue.storagelocation_id)))
-     LEFT JOIN public.materialflowresources_document _document ON ((_document.id = issue.document_id)));
+     LEFT JOIN public.materialflow_location location ON ((location.id = issue.location_id)))
+     LEFT JOIN public.materialflowresources_document document ON ((document.id = issue.document_id)));
 
 
 --
@@ -26375,7 +26035,6 @@ CREATE TABLE public.productflowthrudivision_productstoissue (
     location_id bigint,
     entityversion bigint DEFAULT 0,
     issued boolean DEFAULT false,
-    storagelocation_id bigint,
     additionaldemandquantity numeric(12,5),
     conversion numeric(12,5),
     correction numeric(12,5)
@@ -26410,8 +26069,7 @@ CREATE TABLE public.productflowthrudivision_productstoissuehelper (
     locationfrom_id bigint,
     productstoissueids character varying(255),
     generated boolean DEFAULT false,
-    additionalinfo character varying(255),
-    documentid character varying
+    additionalinfo character varying(255)
 );
 
 
@@ -26454,8 +26112,7 @@ CREATE TABLE public.productflowthrudivision_producttoissuecorrection (
     updatedate timestamp without time zone,
     createuser character varying(255),
     updateuser character varying(255),
-    productstoissue_id bigint,
-    accountwithreservation_id bigint
+    productstoissue_id bigint
 );
 
 
@@ -26590,16 +26247,14 @@ CREATE VIEW public.productflowthrudivision_producttoissuedto AS
             ELSE false
         END AS issued,
     product.id AS productid,
-    storagelocation.number AS storagelocationnumber,
     producttoissue.correction,
     (locationfrom.id)::integer AS locationfrom_id,
     (locationto.id)::integer AS locationto_id
-   FROM (((((((((((public.productflowthrudivision_productstoissue producttoissue
+   FROM ((((((((((public.productflowthrudivision_productstoissue producttoissue
      JOIN public.qcadooplugin_plugin plu ON (((plu.identifier)::text = 'integration'::text)))
      LEFT JOIN public.productflowthrudivision_warehouseissue issue ON ((producttoissue.warehouseissue_id = issue.id)))
      LEFT JOIN public.materialflow_location locationfrom ON ((issue.placeofissue_id = locationfrom.id)))
      LEFT JOIN public.materialflow_location locationto ON ((producttoissue.location_id = locationto.id)))
-     LEFT JOIN public.materialflowresources_storagelocation storagelocation ON ((producttoissue.storagelocation_id = storagelocation.id)))
      LEFT JOIN public.orders_order o ON ((issue.order_id = o.id)))
      LEFT JOIN public.basic_product product ON ((producttoissue.product_id = product.id)))
      LEFT JOIN public.productflowthrudivision_producttoissuedto_internal warehousestockfrom ON (((warehousestockfrom.product_id = producttoissue.product_id) AND (warehousestockfrom.location_id = locationfrom.id))))
@@ -35271,34 +34926,6 @@ ALTER TABLE ONLY public.emailnotifications_staffnotification ALTER COLUMN id SET
 
 
 --
--- Name: esilco_importpositionerror id; Type: DEFAULT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.esilco_importpositionerror ALTER COLUMN id SET DEFAULT nextval('public.esilco_importpositionerror_id_seq'::regclass);
-
-
---
--- Name: esilco_picksreport id; Type: DEFAULT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.esilco_picksreport ALTER COLUMN id SET DEFAULT nextval('public.esilco_picksreport_id_seq'::regclass);
-
-
---
--- Name: esilco_printdocuments id; Type: DEFAULT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.esilco_printdocuments ALTER COLUMN id SET DEFAULT nextval('public.esilco_printdocuments_id_seq'::regclass);
-
-
---
--- Name: esilco_workerstatsreport id; Type: DEFAULT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.esilco_workerstatsreport ALTER COLUMN id SET DEFAULT nextval('public.esilco_workerstatsreport_id_seq'::regclass);
-
-
---
 -- Name: goodfood_confectionadditionalinputproduct id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -35873,13 +35500,6 @@ ALTER TABLE ONLY public.materialflowresources_positionattributevalue ALTER COLUM
 
 
 --
--- Name: materialflowresources_productstoragelocationhistory id; Type: DEFAULT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.materialflowresources_productstoragelocationhistory ALTER COLUMN id SET DEFAULT nextval('public.materialflowresources_productstoragelocationhistory_id_seq'::regclass);
-
-
---
 -- Name: materialflowresources_reservation id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -35947,13 +35567,6 @@ ALTER TABLE ONLY public.materialflowresources_storagelocation ALTER COLUMN id SE
 --
 
 ALTER TABLE ONLY public.materialflowresources_storagelocationhelper ALTER COLUMN id SET DEFAULT nextval('public.materialflowresources_storagelocationhelper_id_seq'::regclass);
-
-
---
--- Name: materialflowresources_storagelocationhistory id; Type: DEFAULT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.materialflowresources_storagelocationhistory ALTER COLUMN id SET DEFAULT nextval('public.materialflowresources_storagelocationhistory_id_seq'::regclass);
 
 
 --
@@ -38103,7 +37716,7 @@ COPY public.arch_masterorders_productsbysizehelper (id, product_id, totalquantit
 -- Data for Name: arch_materialflowresources_document; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.arch_materialflowresources_document (id, number, type, "time", state, locationfrom_id, locationto_id, user_id, delivery_id, active, createdate, updatedate, createuser, updateuser, order_id, description, suborder_id, company_id, maintenanceevent_id, entityversion, plannedevent_id, name, createlinkeddocument, linkeddocumentlocation_id, address_id, inbuffer, dispositionshift_id, positionsfile, printed, generationdate, filename, acceptationinprogress, externalnumber, issend, wms, datesendtowms, dateshipmenttocustomer, additionalinfo, stateinwms, pickingworker, dateconfirmationofcompletion, locationchanged, editinwms, additionaldescription, staff_id, ordersgroup_id, archived) FROM stdin;
+COPY public.arch_materialflowresources_document (id, number, type, "time", state, locationfrom_id, locationto_id, user_id, delivery_id, active, createdate, updatedate, createuser, updateuser, order_id, description, suborder_id, company_id, maintenanceevent_id, entityversion, plannedevent_id, name, createlinkeddocument, linkeddocumentlocation_id, address_id, dispositionshift_id, positionsfile, printed, generationdate, filename, acceptationinprogress, externalnumber, issend, wms, datesendtowms, dateshipmenttocustomer, additionalinfo, stateinwms, pickingworker, dateconfirmationofcompletion, locationchanged, editinwms, additionaldescription, staff_id, ordersgroup_id, archived) FROM stdin;
 \.
 
 
@@ -38471,7 +38084,7 @@ COPY public.arch_productflowthrudivision_productstoissue (id, warehouseissue_id,
 -- Data for Name: arch_productflowthrudivision_producttoissuecorrection; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.arch_productflowthrudivision_producttoissuecorrection (id, producttoissuecorrectionhelper_id, warehouseissue_id, product_id, correctionquantity, correctionquantityinadditionalunit, quantitytoissue, demandquantity, conversion, location_id, description, createdate, updatedate, createuser, updateuser, productstoissue_id, accountwithreservation_id, archived) FROM stdin;
+COPY public.arch_productflowthrudivision_producttoissuecorrection (id, producttoissuecorrectionhelper_id, warehouseissue_id, product_id, correctionquantity, correctionquantityinadditionalunit, quantitytoissue, demandquantity, conversion, location_id, description, createdate, updatedate, createuser, updateuser, productstoissue_id, archived) FROM stdin;
 \.
 
 
@@ -39459,8 +39072,8 @@ COPY public.basic_palletnumberhelper (id, quantity, active, createdate, updateda
 -- Data for Name: basic_parameter; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.basic_parameter (id, country_id, currency_id, unit, additionaltextinfooter, company_id, registerproductiontime, reasonneededwhendelayedeffectivedatefrom, earliereffectivedatetotime, reasonneededwhencorrectingtherequestedvolume, reasonneededwhencorrectingdateto, reasonneededwhenchangingstatetodeclined, imageurlinworkplan, hidedescriptioninworkplans, defaultproductionline_id, reasonneededwhenearliereffectivedateto, earliereffectivedatefromtime, defaultaddress, allowquantitychangeinacceptedorder, reasonneededwhendelayedeffectivedateto, justone, registerquantityinproduct, reasonneededwhenchangingstatetointerrupted, registerquantityoutproduct, dontprintordersinworkplans, location_id, typeofproductionrecording, dontprintinputproductsinworkplans, delayedeffectivedatefromtime, hideemptycolumnsfororders, reasonneededwhenchangingstatetoabandoned, autocloseorder, allowtoclose, dontprintoutputproductsinworkplans, inputproductsrequiredfortype, otheraddress, reasonneededwhenearliereffectivedatefrom, defaultdescription, delayedeffectivedatetotime, hidetechnologyandorderinworkplans, reasonneededwhencorrectingdatefrom, ssccnumberprefix, lowerlimit, negativetrend, upperlimit, positivetrend, dueweight, printoperationatfirstpageinworkplans, averagelaborhourlycostpb, materialcostsusedpb, additionaloverheadpb, materialcostmarginpb, includetpzpb, productioncostmarginpb, averagemachinehourlycostpb, includeadditionaltimepb, batchnumberuniqueness, defaultcoveragefromdays, includedraftdeliveries, coveragetype, hideemptycolumnsforoffers, hideemptycolumnsforrequests, validateproductionrecordtimes, workstationsquantityfromproductionline, allowtechnologytreechangeinpendingorder, lockproductionprogress, hidebarcodeoperationcomponentinworkplans, ignoremissingcomponents, additionaloutputrows, additionalinputrows, allowmultipleregisteringtimeforworker, pricebasedon, takeactualprogressinworkplans, confectionplanrequirereasontypethreshold, confectionplancorrectionreasontype, automaticsavecoverage, externaldeliveriesextension, warehouse_id, documentstate, positivepurchaseprice, sameordernumber, automaticdeliveriesminstate, possibleworktimedeviation, ordersincludeperiod, includerequirements, entityversion, labelsbtpath, profitpb, registrationpriceoverheadpb, sourceofoperationcostspb, acceptanceevents, useblackbox, generatewarehouseissuestoorders, daysbeforeorderstart, issuelocation_id, consumptionofrawmaterialsbasedonstandards, documentpositionparameters_id, includecomponents, warehouseissuesreservestates, drawndocuments, generatewarehouseissuestodeliveries, issuedquantityuptoneed, documentsstatus, warehouseissueproductssource, productstoissue, trackingcorrectionrecalculatepps, deliveredbiggerthanordered, ordersganttparameters_id, additionalimage, esilcointegrationdir, autorecalculateorder, ppsisautomatic, ppsproducedamountrecalculateplan, ppsalgorithm, baselinkerparameters_id, technologiesgeneratorcopyproductsize, cartonlabelsbtpath, esilcodispositionshiftlocation_id, maxproductsquantity, allowerrorsinmasterorderpositions, companyname_id, hideassignedstaff, fillorderdescriptionbasedontechnologydescription, allowanomalycreationonacceptancerecord, esilcoaccountwithreservationlocation_id, includelevelandsuffix, orderedproductsunit, allowincompleteunits, acceptrecordsfromterminal, allowchangestousedquantityonterminal, includeadditionaltimeps, includetpzps, ordersgenerationnotcompletedates, canchangeprodlineforacceptedorders, generateeachonseparatepage, includewagegroups, ordersgeneratedbycoverage, automaticallygenerateordersforcomponents, seteffectivedatefromoninprogress, seteffectivedatetooncompleted, copydescription, exporttopdfonlyvisiblecolumns, additionalcartonlabelsquantity, maxcartonlabelsquantity, exporttocsvonlyvisiblecolumns, flagpercentageofexecutionwithcolor, opertaskflagpercentexecutionwithcolor, automaticclosingoforderwithingroups, copynotesfrommasterorderposition, manuallysendwarehousedocuments, realizationfromstock, alwaysorderitemswithpersonalization, selectorder, availabilityofrawmaterials, selectoperationaltask, stoppages, repair, employeeprogress, includeunacceptableproduction, calculateamounttimeemployeesonacceptancerecord, notshowtasksdownloadedbyanotheremployee, createcollectiveorders, completemasterorderafterorderingpositions, hideorderedproductworkplan, selectiontasksbyorderdateinterminal, showprogress, showdelays, requiresupplieridentification, numberpattern_id, generatebatchfororderedproduct, generatebatchoforderedproduct, acceptbatchtrackingwhenclosingorder, completewarehousesflowwhilechecking, qualitycontrol, finalqualitycontrolwithoutresources, terminalproductattribute_id, oeefor, oeeworktimefrom, range, division_id, showqronordersgrouppdf, advisestartdateoftheorder, orderstartdatebasedon, showchartondashboard, whattoshowondashboard, dashboardoperation_id, dashboardcomponentslocation_id, dashboardproductsinputlocation_id, momentofvalidation, moveproductstosubsequentoperations, demandcausesofwastes, wmsapk, wmsversion, applicationconfigured, materialcostsused, usenominalcostpricenotspecified, sourceofoperationcosts, standardlaborcost_id, averagemachinehourlycost, averagelaborhourlycost, includetpz, includeadditionaltime, materialcostmargin, productioncostmargin, additionaloverhead, registrationpriceoverhead, profit, applicationconfigurationfinished, generatepacksfororders, includepacksgeneratingprocessesfororder, optimalpacksize, restfeedinglastpack, deliveryusenominalcostwhenpricenotspecified, deliverypricefillbasedon, allowcheckedtechnologywithoutinproducts, requireassortment, changeorderdatesbasedonchangegroupdates, acceptedtechnologymarkedasdefault, terminalscanning, processsource, showproductdescriptiononordersgrouppdf, attributeonordersgrouppdf_id, copyattributestosizeproducts, materialcostsusedmc, usenominalcostpricenotspecifiedmc, productattribute_id, materialattribute_id, attributeonthelabel_id, requiretypeoffault, workingstationinputtype, allowchangeordeleteordertechnologicalprocess, technicalproductioncostoverhead, technicalproductioncostoverheadpb, synchronizeadditionalproductdata, processterminalplaceofperformance, emptylabelbtpath, schedulesortorder, workstationassigncriterion, workerassigncriterion, scheduleforbuffer, additionaltimeextendsoperation, synchronizeproductcategory, completenominalcostinarticleandproducts, copynominalcostfamilyofproductssizes, onlypackagesinproduction, bufferstationsshowninchart, allowtilelengthtobeedited, analyzeavailableresources, analyzeplannedquantity, analyzemaxquantity, numberpatternordergroup_id, otcopydescriptionfromproductionorder, setorderdatesbasedontaskdates, automaticallygeneratetasksfororder, automaticallygenerateprocessesfororder, includeadditionaltimesg, includetpzsg, includetpzs, dashboardshowforproduct, dashboardshowdescription, receivedeliveryinordercurrency, sortbyproducttypepriorityordersgrouppdf, attributeonordersgrouprequirementpdf_id, quantitymadeonthebasisofdashboard, producingmorethanplanned, logo, synchronizemasterorderattributes, synchronizedocumentpositionattributes, dashboardordersorting, completestationandemployeeingeneratedtasks, considerexceptionswhenpromptingcurrentshift, productionorderedquantityclosestheorder, receiptofproducts, releaseofmaterials, considerminimumstocklevelwhencreatingproductionorders, fillorderdescriptionbasedonproductdescription, ganttrunadjusterror, checkfortheexistenceofinputproductprices, automaticupdatecostnorms, costssource, automaticreleaseaftergeneration, analyzeactualstaff, analyzeactualstaffmaxquantity, analyzegetquantityfromshiftassignment, setmasterorderdatebasedonorderdates, notshowtasksblockedbyprevious, promptdefaultlinefromtechnology, numberofficelicenses, numberterminallicenses, typeterminallicenses, notshoworderfilters, notincludedateswhenretrievingorders, requirequalityrating, synchronizeproductsize, masterorderreleaselocation_id, demandworkstation, skipfinishedtasks, onlyonebatchtrackingfororder, producedbatchfromordertrackingrecord, packaginglocation_id, includeworkstationongetrrforot, notincludeworkstationwhensearchingot, generatetransferdocumentsonrepair, howmanydaysrecalculateplan, operationproductindefaultquantity, operationproductoutdefaultquantity, manyarticleswiththesameean, includeincalculationdeliveries, transferordersgrouptoordersforcomponents, automaticallyusethebatchplannedinorder, productdeliverybatchevidence, productdeliverybatchnumberpattern_id, showmachineperiodregistration, mergingordersforcomponents, tasksselectionby, recalculateplantasksorder, numbervisibleorderstasksondashboard, updatetechnologiesonpendingorders, sharingregistrationrecord, noexchangeratedownload, createfailtodowntime) FROM stdin;
-1	\N	39	一块	\N	1	t	f	0	f	f	f	\N	f	1	f	0	\N	t	f	f	t	f	t	f	\N	02cumulated	f	0	f	f	f	f	f	01startOrder	\N	f	\N	0	f	f	0005900125	\N	\N	\N	\N	\N	f	\N	06costForOrder	\N	\N	f	\N	\N	f	01globally	14	f	\N	f	f	f	f	f	f	f	t	\N	\N	f	01nominalProductCost	f	\N	\N	f	\N	\N	01draft	f	f	f	\N	\N	f	0	\N	\N	\N	02parameters	f	\N	f	\N	\N	t	1	f	f	01transfer	f	f	01accepted	01order	01allInputProducts	f	t	\N	\N	\N	f	f	f	\N	\N	\N	\N	\N	150	\N	\N	f	t	f	\N	t	\N	f	f	t	f	f	f	t	f	f	f	f	f	f	t	f	50	3000	f	t	t	f	f	f	f	f	t	f	t	t	t	f	t	f	f	f	f	f	f	f	f	f	\N	\N	f	f	t	t	f	\N	01productionLine	01staffWorkTimes	01oneDivision	\N	f	t	03endDateLastOrderOnTheLine	t	01orders	\N	\N	\N	01orderAcceptance	t	f	\N	\N	f	01nominal	f	01technologyOperation	\N	\N	\N	f	f	0.00000	0.00000	0.00000	0.00000	0.00000	f	f	f	\N	\N	f	01lastPurchasePrice	f	f	f	f	01operationNumber	01orderPackages	f	\N	f	01nominal	f	\N	\N	\N	f	01scanTheNumber	f	0.00000	0.00000	f	01workstation	\N	01desc	01shortestTime	01workstationLastOperatorLatestFinished	f	t	t	f	f	f	f	f	f	f	\N	\N	f	f	f	f	\N	\N	t	01number	f	f	t	\N	01approvedProduction	t	\N	f	f	01startDate	f	f	f	01onAcceptanceRegistrationRecord	01onAcceptanceRegistrationRecord	f	f	t	f	f	01mes	f	f	\N	f	f	f	t	10000	10000	03over51Employees	f	f	t	f	\N	f	f	f	f	\N	f	f	t	7	\N	\N	f	01confirmedDeliveries	f	f	f	\N	f	f	02taskDate	01operationsLevelAndTasksStartDate	50	f	f	f	f
+COPY public.basic_parameter (id, country_id, currency_id, unit, additionaltextinfooter, company_id, registerproductiontime, reasonneededwhendelayedeffectivedatefrom, earliereffectivedatetotime, reasonneededwhencorrectingtherequestedvolume, reasonneededwhencorrectingdateto, reasonneededwhenchangingstatetodeclined, imageurlinworkplan, hidedescriptioninworkplans, defaultproductionline_id, reasonneededwhenearliereffectivedateto, earliereffectivedatefromtime, defaultaddress, allowquantitychangeinacceptedorder, reasonneededwhendelayedeffectivedateto, justone, registerquantityinproduct, reasonneededwhenchangingstatetointerrupted, registerquantityoutproduct, dontprintordersinworkplans, location_id, typeofproductionrecording, dontprintinputproductsinworkplans, delayedeffectivedatefromtime, hideemptycolumnsfororders, reasonneededwhenchangingstatetoabandoned, autocloseorder, allowtoclose, dontprintoutputproductsinworkplans, inputproductsrequiredfortype, otheraddress, reasonneededwhenearliereffectivedatefrom, defaultdescription, delayedeffectivedatetotime, hidetechnologyandorderinworkplans, reasonneededwhencorrectingdatefrom, ssccnumberprefix, lowerlimit, negativetrend, upperlimit, positivetrend, dueweight, printoperationatfirstpageinworkplans, averagelaborhourlycostpb, materialcostsusedpb, additionaloverheadpb, materialcostmarginpb, includetpzpb, productioncostmarginpb, averagemachinehourlycostpb, includeadditionaltimepb, batchnumberuniqueness, defaultcoveragefromdays, includedraftdeliveries, coveragetype, hideemptycolumnsforoffers, hideemptycolumnsforrequests, validateproductionrecordtimes, workstationsquantityfromproductionline, allowtechnologytreechangeinpendingorder, lockproductionprogress, hidebarcodeoperationcomponentinworkplans, ignoremissingcomponents, additionaloutputrows, additionalinputrows, allowmultipleregisteringtimeforworker, pricebasedon, takeactualprogressinworkplans, confectionplanrequirereasontypethreshold, confectionplancorrectionreasontype, automaticsavecoverage, externaldeliveriesextension, warehouse_id, documentstate, positivepurchaseprice, sameordernumber, automaticdeliveriesminstate, possibleworktimedeviation, ordersincludeperiod, includerequirements, entityversion, labelsbtpath, profitpb, registrationpriceoverheadpb, sourceofoperationcostspb, acceptanceevents, useblackbox, generatewarehouseissuestoorders, daysbeforeorderstart, issuelocation_id, consumptionofrawmaterialsbasedonstandards, documentpositionparameters_id, includecomponents, warehouseissuesreservestates, drawndocuments, generatewarehouseissuestodeliveries, issuedquantityuptoneed, documentsstatus, warehouseissueproductssource, productstoissue, trackingcorrectionrecalculatepps, deliveredbiggerthanordered, ordersganttparameters_id, additionalimage, autorecalculateorder, ppsisautomatic, ppsproducedamountrecalculateplan, ppsalgorithm, baselinkerparameters_id, technologiesgeneratorcopyproductsize, cartonlabelsbtpath, maxproductsquantity, allowerrorsinmasterorderpositions, companyname_id, hideassignedstaff, fillorderdescriptionbasedontechnologydescription, allowanomalycreationonacceptancerecord, includelevelandsuffix, orderedproductsunit, allowincompleteunits, acceptrecordsfromterminal, allowchangestousedquantityonterminal, includeadditionaltimeps, includetpzps, ordersgenerationnotcompletedates, canchangeprodlineforacceptedorders, generateeachonseparatepage, includewagegroups, ordersgeneratedbycoverage, automaticallygenerateordersforcomponents, seteffectivedatefromoninprogress, seteffectivedatetooncompleted, copydescription, exporttopdfonlyvisiblecolumns, additionalcartonlabelsquantity, maxcartonlabelsquantity, exporttocsvonlyvisiblecolumns, flagpercentageofexecutionwithcolor, opertaskflagpercentexecutionwithcolor, automaticclosingoforderwithingroups, copynotesfrommasterorderposition, manuallysendwarehousedocuments, realizationfromstock, alwaysorderitemswithpersonalization, selectorder, availabilityofrawmaterials, selectoperationaltask, stoppages, repair, employeeprogress, includeunacceptableproduction, calculateamounttimeemployeesonacceptancerecord, notshowtasksdownloadedbyanotheremployee, createcollectiveorders, completemasterorderafterorderingpositions, hideorderedproductworkplan, selectiontasksbyorderdateinterminal, showprogress, showdelays, requiresupplieridentification, numberpattern_id, generatebatchfororderedproduct, generatebatchoforderedproduct, acceptbatchtrackingwhenclosingorder, completewarehousesflowwhilechecking, qualitycontrol, finalqualitycontrolwithoutresources, terminalproductattribute_id, oeefor, oeeworktimefrom, range, division_id, showqronordersgrouppdf, advisestartdateoftheorder, orderstartdatebasedon, showchartondashboard, whattoshowondashboard, dashboardoperation_id, dashboardcomponentslocation_id, dashboardproductsinputlocation_id, momentofvalidation, moveproductstosubsequentoperations, demandcausesofwastes, wmsapk, wmsversion, applicationconfigured, materialcostsused, usenominalcostpricenotspecified, sourceofoperationcosts, standardlaborcost_id, averagemachinehourlycost, averagelaborhourlycost, includetpz, includeadditionaltime, materialcostmargin, productioncostmargin, additionaloverhead, registrationpriceoverhead, profit, applicationconfigurationfinished, generatepacksfororders, includepacksgeneratingprocessesfororder, optimalpacksize, restfeedinglastpack, deliveryusenominalcostwhenpricenotspecified, deliverypricefillbasedon, allowcheckedtechnologywithoutinproducts, requireassortment, changeorderdatesbasedonchangegroupdates, acceptedtechnologymarkedasdefault, terminalscanning, processsource, showproductdescriptiononordersgrouppdf, attributeonordersgrouppdf_id, copyattributestosizeproducts, materialcostsusedmc, usenominalcostpricenotspecifiedmc, productattribute_id, materialattribute_id, attributeonthelabel_id, requiretypeoffault, workingstationinputtype, allowchangeordeleteordertechnologicalprocess, technicalproductioncostoverhead, technicalproductioncostoverheadpb, synchronizeadditionalproductdata, processterminalplaceofperformance, emptylabelbtpath, schedulesortorder, workstationassigncriterion, workerassigncriterion, scheduleforbuffer, additionaltimeextendsoperation, synchronizeproductcategory, completenominalcostinarticleandproducts, copynominalcostfamilyofproductssizes, onlypackagesinproduction, bufferstationsshowninchart, allowtilelengthtobeedited, analyzeavailableresources, analyzeplannedquantity, analyzemaxquantity, numberpatternordergroup_id, otcopydescriptionfromproductionorder, setorderdatesbasedontaskdates, automaticallygeneratetasksfororder, automaticallygenerateprocessesfororder, includeadditionaltimesg, includetpzsg, includetpzs, dashboardshowforproduct, dashboardshowdescription, receivedeliveryinordercurrency, sortbyproducttypepriorityordersgrouppdf, attributeonordersgrouprequirementpdf_id, quantitymadeonthebasisofdashboard, producingmorethanplanned, logo, synchronizemasterorderattributes, synchronizedocumentpositionattributes, dashboardordersorting, completestationandemployeeingeneratedtasks, considerexceptionswhenpromptingcurrentshift, productionorderedquantityclosestheorder, receiptofproducts, releaseofmaterials, considerminimumstocklevelwhencreatingproductionorders, fillorderdescriptionbasedonproductdescription, ganttrunadjusterror, checkfortheexistenceofinputproductprices, automaticupdatecostnorms, costssource, automaticreleaseaftergeneration, analyzeactualstaff, analyzeactualstaffmaxquantity, analyzegetquantityfromshiftassignment, setmasterorderdatebasedonorderdates, notshowtasksblockedbyprevious, promptdefaultlinefromtechnology, numberofficelicenses, numberterminallicenses, typeterminallicenses, notshoworderfilters, notincludedateswhenretrievingorders, requirequalityrating, synchronizeproductsize, masterorderreleaselocation_id, demandworkstation, skipfinishedtasks, onlyonebatchtrackingfororder, producedbatchfromordertrackingrecord, packaginglocation_id, includeworkstationongetrrforot, notincludeworkstationwhensearchingot, generatetransferdocumentsonrepair, howmanydaysrecalculateplan, operationproductindefaultquantity, operationproductoutdefaultquantity, manyarticleswiththesameean, includeincalculationdeliveries, transferordersgrouptoordersforcomponents, automaticallyusethebatchplannedinorder, productdeliverybatchevidence, productdeliverybatchnumberpattern_id, showmachineperiodregistration, mergingordersforcomponents, tasksselectionby, recalculateplantasksorder, numbervisibleorderstasksondashboard, updatetechnologiesonpendingorders, sharingregistrationrecord, noexchangeratedownload, createfailtodowntime) FROM stdin;
+1	\N	39	一块	\N	1	t	f	0	f	f	f	\N	f	1	f	0	\N	t	f	f	t	f	t	f	\N	02cumulated	f	0	f	f	f	f	f	01startOrder	\N	f	\N	0	f	f	0005900125	\N	\N	\N	\N	\N	f	\N	06costForOrder	\N	\N	f	\N	\N	f	01globally	14	f	\N	f	f	f	f	f	f	f	t	\N	\N	f	01nominalProductCost	f	\N	\N	f	\N	\N	01draft	f	f	f	\N	\N	f	0	\N	\N	\N	02parameters	f	\N	f	\N	\N	t	1	f	f	01transfer	f	f	01accepted	01order	01allInputProducts	f	t	\N	\N	f	f	f	\N	\N	\N	\N	150	\N	\N	f	t	f	t	\N	f	f	t	f	f	f	t	f	f	f	f	f	f	t	f	50	3000	f	t	t	f	f	f	f	f	t	f	t	t	t	f	t	f	f	f	f	f	f	f	f	f	\N	\N	f	f	t	t	f	\N	01productionLine	01staffWorkTimes	01oneDivision	\N	f	t	03endDateLastOrderOnTheLine	t	01orders	\N	\N	\N	01orderAcceptance	t	f	\N	\N	f	01nominal	f	01technologyOperation	\N	\N	\N	f	f	0.00000	0.00000	0.00000	0.00000	0.00000	f	f	f	\N	\N	f	01lastPurchasePrice	f	f	f	f	01operationNumber	01orderPackages	f	\N	f	01nominal	f	\N	\N	\N	f	01scanTheNumber	f	0.00000	0.00000	f	01workstation	\N	01desc	01shortestTime	01workstationLastOperatorLatestFinished	f	t	t	f	f	f	f	f	f	f	\N	\N	f	f	f	f	\N	\N	t	01number	f	f	t	\N	01approvedProduction	t	\N	f	f	01startDate	f	f	f	01onAcceptanceRegistrationRecord	01onAcceptanceRegistrationRecord	f	f	t	f	f	01mes	f	f	\N	f	f	f	t	10000	10000	03over51Employees	f	f	t	f	\N	f	f	f	f	\N	f	f	t	7	\N	\N	f	01confirmedDeliveries	f	f	f	\N	f	f	02taskDate	01operationsLevelAndTasksStartDate	50	f	f	f	f
 \.
 
 
@@ -40135,7 +39748,7 @@ COPY public.deliveries_deliveredproductreservation (id, deliveredproduct_id, loc
 -- Data for Name: deliveries_delivery; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.deliveries_delivery (id, number, name, description, supplier_id, deliverydate, deliveryaddress, relateddelivery_id, currency_id, externalnumber, externalsynchronized, state, location_id, active, createdate, updatedate, createuser, updateuser, synchronizationstatus, entityversion, positionsfile, paymentform, salesplan_id, wms, stateinwms, datesendtowms, pickingworker, dateconfirmationofcompletion) FROM stdin;
+COPY public.deliveries_delivery (id, number, name, description, supplier_id, deliverydate, deliveryaddress, relateddelivery_id, currency_id, externalnumber, externalsynchronized, state, location_id, active, createdate, updatedate, createuser, updateuser, synchronizationstatus, entityversion, paymentform, salesplan_id, wms, stateinwms, datesendtowms, pickingworker, dateconfirmationofcompletion) FROM stdin;
 \.
 
 
@@ -40204,38 +39817,6 @@ COPY public.deliveries_parameterdeliveryordercolumn (id, parameter_id, columnfor
 --
 
 COPY public.emailnotifications_staffnotification (id, email, staff_id, createdate, updatedate, createuser, updateuser, parameter_id, createdeliveryminstate, entityversion, pmmnotification) FROM stdin;
-\.
-
-
---
--- Data for Name: esilco_importpositionerror; Type: TABLE DATA; Schema: public; Owner: -
---
-
-COPY public.esilco_importpositionerror (id, document_id, quantity, productcode, name) FROM stdin;
-\.
-
-
---
--- Data for Name: esilco_picksreport; Type: TABLE DATA; Schema: public; Owner: -
---
-
-COPY public.esilco_picksreport (id, number, name, location_id, datefrom, dateto, date, worker, generated, filename) FROM stdin;
-\.
-
-
---
--- Data for Name: esilco_printdocuments; Type: TABLE DATA; Schema: public; Owner: -
---
-
-COPY public.esilco_printdocuments (id, active, createdate, updatedate, createuser, updateuser) FROM stdin;
-\.
-
-
---
--- Data for Name: esilco_workerstatsreport; Type: TABLE DATA; Schema: public; Owner: -
---
-
-COPY public.esilco_workerstatsreport (id, number, name, location_id, datefrom, dateto, date, worker, generated, filename, workerstype) FROM stdin;
 \.
 
 
@@ -42060,14 +41641,6 @@ COPY public.jointable_staff_timeusagereportfilter (staff_id, timeusagereportfilt
 
 
 --
--- Data for Name: jointable_staff_workerstatsreport; Type: TABLE DATA; Schema: public; Owner: -
---
-
-COPY public.jointable_staff_workerstatsreport (staff_id, workerstatsreport_id) FROM stdin;
-\.
-
-
---
 -- Data for Name: jointable_stocktaking_storagelocation; Type: TABLE DATA; Schema: public; Owner: -
 --
 
@@ -42303,7 +41876,7 @@ COPY public.masterorders_salesplanstatechange (id, dateandtime, salesplan_id, sh
 -- Data for Name: masterorders_salesvolume; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.masterorders_salesvolume (id, product_id, dailysalesvolume, optimalstock) FROM stdin;
+COPY public.masterorders_salesvolume (id, product_id, dailysalesvolume, optimalstock, currentstock, stockfordays) FROM stdin;
 \.
 
 
@@ -42351,7 +41924,7 @@ COPY public.materialflowresources_costnormslocation (id, costnormsgenerator_id, 
 -- Data for Name: materialflowresources_document; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.materialflowresources_document (id, number, type, "time", state, locationfrom_id, locationto_id, user_id, delivery_id, active, createdate, updatedate, createuser, updateuser, order_id, description, suborder_id, company_id, maintenanceevent_id, entityversion, plannedevent_id, name, createlinkeddocument, linkeddocumentlocation_id, address_id, inbuffer, dispositionshift_id, positionsfile, printed, generationdate, filename, acceptationinprogress, externalnumber, issend, wms, datesendtowms, dateshipmenttocustomer, additionalinfo, stateinwms, pickingworker, dateconfirmationofcompletion, locationchanged, editinwms, additionaldescription, staff_id, ordersgroup_id) FROM stdin;
+COPY public.materialflowresources_document (id, number, type, "time", state, locationfrom_id, locationto_id, user_id, delivery_id, active, createdate, updatedate, createuser, updateuser, order_id, description, suborder_id, company_id, maintenanceevent_id, entityversion, plannedevent_id, name, createlinkeddocument, linkeddocumentlocation_id, address_id, generationdate, filename, acceptationinprogress, externalnumber, issend, wms, datesendtowms, dateshipmenttocustomer, additionalinfo, stateinwms, pickingworker, dateconfirmationofcompletion, editinwms, additionaldescription, staff_id, ordersgroup_id) FROM stdin;
 \.
 
 
@@ -42454,14 +42027,6 @@ COPY public.materialflowresources_positionattributevalue (id, position_id, attri
 
 
 --
--- Data for Name: materialflowresources_productstoragelocationhistory; Type: TABLE DATA; Schema: public; Owner: -
---
-
-COPY public.materialflowresources_productstoragelocationhistory (id, storagelocationfrom_id, storagelocationto_id, product_id, location_id, createdate, updatedate, createuser, updateuser) FROM stdin;
-\.
-
-
---
 -- Data for Name: materialflowresources_reservation; Type: TABLE DATA; Schema: public; Owner: -
 --
 
@@ -42529,7 +42094,7 @@ COPY public.materialflowresources_stocktaking (id, number, stocktakingdate, gene
 -- Data for Name: materialflowresources_storagelocation; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.materialflowresources_storagelocation (id, number, state, location_id, product_id, placestoragelocation, maximumnumberofpallets, createdate, updatedate, createuser, updateuser, active, highstoragelocation) FROM stdin;
+COPY public.materialflowresources_storagelocation (id, number, state, location_id, placestoragelocation, maximumnumberofpallets, createdate, updatedate, createuser, updateuser, active, highstoragelocation) FROM stdin;
 \.
 
 
@@ -42538,14 +42103,6 @@ COPY public.materialflowresources_storagelocation (id, number, state, location_i
 --
 
 COPY public.materialflowresources_storagelocationhelper (id, prefix, number, location_id, placestoragelocation, numberofstoragelocations, maximumnumberofpallets, highstoragelocation) FROM stdin;
-\.
-
-
---
--- Data for Name: materialflowresources_storagelocationhistory; Type: TABLE DATA; Schema: public; Owner: -
---
-
-COPY public.materialflowresources_storagelocationhistory (id, storagelocation_id, productfrom_id, productto_id, createdate, updatedate, createuser, updateuser) FROM stdin;
 \.
 
 
@@ -42635,7 +42192,7 @@ COPY public.mobilewms_outofstock (id, location_id, product_id, storagelocation_i
 -- Data for Name: mobilewms_wmsdocumentpart; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.mobilewms_wmsdocumentpart (id, number, additionalinfo, part, company, stateinwms, pickingworker, document_id, parts, additionaldescription, differences, type) FROM stdin;
+COPY public.mobilewms_wmsdocumentpart (id, number, additionalinfo, part, company, stateinwms, pickingworker, document_id, parts, additionaldescription, type) FROM stdin;
 \.
 
 
@@ -43159,7 +42716,7 @@ COPY public.productcatalognumbers_productcatalognumbers (id, catalognumber, prod
 -- Data for Name: productflowthrudivision_issue; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.productflowthrudivision_issue (id, warehouseissue_id, product_id, productincomponent_id, demandquantity, locationsquantity, issuequantity, location_id, entityversion, locationtoquantity, quantityperunit, issued, storagelocation_id, additionaldemandquantity, conversion, dateofissued, document_id) FROM stdin;
+COPY public.productflowthrudivision_issue (id, warehouseissue_id, product_id, productincomponent_id, demandquantity, locationsquantity, issuequantity, location_id, entityversion, locationtoquantity, quantityperunit, issued, additionaldemandquantity, conversion, dateofissued, document_id) FROM stdin;
 \.
 
 
@@ -43215,7 +42772,7 @@ COPY public.productflowthrudivision_productandquantityhelper (id, product_id, lo
 -- Data for Name: productflowthrudivision_productstoissue; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.productflowthrudivision_productstoissue (id, warehouseissue_id, product_id, productincomponent_id, demandquantity, locationsquantity, placeofissuequantity, issuequantity, location_id, entityversion, issued, storagelocation_id, additionaldemandquantity, conversion, correction) FROM stdin;
+COPY public.productflowthrudivision_productstoissue (id, warehouseissue_id, product_id, productincomponent_id, demandquantity, locationsquantity, placeofissuequantity, issuequantity, location_id, entityversion, issued, additionaldemandquantity, conversion, correction) FROM stdin;
 \.
 
 
@@ -43223,7 +42780,7 @@ COPY public.productflowthrudivision_productstoissue (id, warehouseissue_id, prod
 -- Data for Name: productflowthrudivision_productstoissuehelper; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.productflowthrudivision_productstoissuehelper (id, locationfrom_id, productstoissueids, generated, additionalinfo, documentid) FROM stdin;
+COPY public.productflowthrudivision_productstoissuehelper (id, locationfrom_id, productstoissueids, generated, additionalinfo) FROM stdin;
 \.
 
 
@@ -43231,7 +42788,7 @@ COPY public.productflowthrudivision_productstoissuehelper (id, locationfrom_id, 
 -- Data for Name: productflowthrudivision_producttoissuecorrection; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.productflowthrudivision_producttoissuecorrection (id, producttoissuecorrectionhelper_id, warehouseissue_id, product_id, correctionquantity, correctionquantityinadditionalunit, quantitytoissue, demandquantity, conversion, location_id, description, createdate, updatedate, createuser, updateuser, productstoissue_id, accountwithreservation_id) FROM stdin;
+COPY public.productflowthrudivision_producttoissuecorrection (id, producttoissuecorrectionhelper_id, warehouseissue_id, product_id, correctionquantity, correctionquantityinadditionalunit, quantitytoissue, demandquantity, conversion, location_id, description, createdate, updatedate, createuser, updateuser, productstoissue_id) FROM stdin;
 \.
 
 
@@ -43779,7 +43336,6 @@ COPY public.qcadooplugin_plugin (id, identifier, version, state, issystem, entit
 152	integrationPipedrive	1.5.0	DISABLED	f	0	\N	\N
 153	arch	1.5.0	DISABLED	f	0	\N	Commercial
 53	warehouseMinimalState	1.5.0	ENABLED	f	0	other	AGPL
-102	esilco	1.5.0	DISABLED	f	0	\N	Commercial
 151	integrationScales	1.5.0	DISABLED	f	0	\N	Commercial
 150	integrationAsana	1.5.0	DISABLED	f	0	\N	Commercial
 68	advancedGenealogyForOrders	1.5.0	ENABLED	f	0	genealogy	Commercial
@@ -44049,7 +43605,6 @@ COPY public.qcadooview_category (id, pluginidentifier, name, succession, authrol
 3	basic	companyStructure	3	ROLE_COMPANY_STRUCTURE	0
 21	basic	parameters	20	\N	0
 1	qcadooView	administration	1	ROLE_HOME_PROFILE	0
-22	esilco	esilcoReports	21	\N	0
 17	basic	calendars	4	ROLE_SHIFTS	0
 18	basic	staff	5	\N	0
 4	basic	basic	6	\N	0
@@ -44195,8 +43750,6 @@ COPY public.qcadooview_item (id, pluginidentifier, name, active, category_id, vi
 169	materialFlowResources	materialFlowResourcesParameters	t	21	168	5	ROLE_PARAMETERS	0
 170	productionCounting	productionCountingParameters	t	21	169	6	ROLE_PARAMETERS	0
 173	productionCounting	productionAnalysisParameters	t	21	172	7	ROLE_PARAMETERS	0
-174	esilco	picksReportsList	t	22	173	1	ROLE_REQUIREMENTS	0
-175	esilco	workerStatsReportsList	t	22	174	2	ROLE_REQUIREMENTS	0
 182	basic	technologicalProcessRateList	t	18	181	24	ROLE_TECHNOLOGICAL_PROCESSES	0
 128	productionCounting	anomalyList	t	8	127	10	ROLE_ANOMALIES	0
 183	technologies	technologicalProcessesList	t	5	182	8	ROLE_TECHNOLOGICAL_PROCESSES	0
@@ -44441,8 +43994,6 @@ COPY public.qcadooview_view (id, pluginidentifier, name, view, url, entityversio
 169	productionCounting	productionCountingParameters	\N	/productionCountingParameters.html	0
 170	basicProductionCounting	productionCountingQuantityList	productionCountingQuantityList	\N	0
 172	productionCounting	productionAnalysisParameters	\N	/productionAnalysisParameters.html	0
-173	esilco	picksReportsList	picksReportsList	\N	0
-174	esilco	workerStatsReportsList	workerStatsReportsList	\N	0
 175	basic	sizesList	sizesList	\N	0
 176	basic	sizeGroupsList	sizeGroupsList	\N	0
 177	configurator	configurator	\N	/configurator.html	0
@@ -47443,69 +46994,6 @@ SELECT pg_catalog.setval('public.emailnotifications_staffnotification_id_seq', 1
 
 
 --
--- Name: esilco_importpositionerror_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
---
-
-SELECT pg_catalog.setval('public.esilco_importpositionerror_id_seq', 1, false);
-
-
---
--- Name: esilco_outofstock_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
---
-
-SELECT pg_catalog.setval('public.esilco_outofstock_id_seq', 1, false);
-
-
---
--- Name: esilco_picksreport_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
---
-
-SELECT pg_catalog.setval('public.esilco_picksreport_id_seq', 1, false);
-
-
---
--- Name: esilco_printdocuments_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
---
-
-SELECT pg_catalog.setval('public.esilco_printdocuments_id_seq', 1, false);
-
-
---
--- Name: esilco_wmsdocumentpart_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
---
-
-SELECT pg_catalog.setval('public.esilco_wmsdocumentpart_id_seq', 1, false);
-
-
---
--- Name: esilco_wmsdocumenttype_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
---
-
-SELECT pg_catalog.setval('public.esilco_wmsdocumenttype_id_seq', 1, false);
-
-
---
--- Name: esilco_wmslocation_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
---
-
-SELECT pg_catalog.setval('public.esilco_wmslocation_id_seq', 1, false);
-
-
---
--- Name: esilco_wmsposition_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
---
-
-SELECT pg_catalog.setval('public.esilco_wmsposition_id_seq', 1, false);
-
-
---
--- Name: esilco_workerstatsreport_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
---
-
-SELECT pg_catalog.setval('public.esilco_workerstatsreport_id_seq', 1, false);
-
-
---
 -- Name: goodfood_confectionadditionalinputproduct_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
@@ -48388,13 +47876,6 @@ SELECT pg_catalog.setval('public.materialflowresources_positiondto_id_seq', 1, f
 
 
 --
--- Name: materialflowresources_productstoragelocationhistory_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
---
-
-SELECT pg_catalog.setval('public.materialflowresources_productstoragelocationhistory_id_seq', 1, false);
-
-
---
 -- Name: materialflowresources_reservation_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
@@ -48525,13 +48006,6 @@ SELECT pg_catalog.setval('public.materialflowresources_storagelocationdto_id_seq
 --
 
 SELECT pg_catalog.setval('public.materialflowresources_storagelocationhelper_id_seq', 1, false);
-
-
---
--- Name: materialflowresources_storagelocationhistory_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
---
-
-SELECT pg_catalog.setval('public.materialflowresources_storagelocationhistory_id_seq', 1, false);
 
 
 --
@@ -53005,35 +52479,11 @@ ALTER TABLE ONLY public.emailnotifications_staffnotification
 
 
 --
--- Name: esilco_importpositionerror esilco_importpositionerror_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.esilco_importpositionerror
-    ADD CONSTRAINT esilco_importpositionerror_pkey PRIMARY KEY (id);
-
-
---
 -- Name: mobilewms_outofstock esilco_outofstock_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.mobilewms_outofstock
     ADD CONSTRAINT esilco_outofstock_pkey PRIMARY KEY (id);
-
-
---
--- Name: esilco_picksreport esilco_picksreport_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.esilco_picksreport
-    ADD CONSTRAINT esilco_picksreport_pkey PRIMARY KEY (id);
-
-
---
--- Name: esilco_printdocuments esilco_printdocuments_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.esilco_printdocuments
-    ADD CONSTRAINT esilco_printdocuments_pkey PRIMARY KEY (id);
 
 
 --
@@ -53066,14 +52516,6 @@ ALTER TABLE ONLY public.mobilewms_wmslocation
 
 ALTER TABLE ONLY public.mobilewms_wmsposition
     ADD CONSTRAINT esilco_wmsposition_pkey PRIMARY KEY (id);
-
-
---
--- Name: esilco_workerstatsreport esilco_workerstatsreport_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.esilco_workerstatsreport
-    ADD CONSTRAINT esilco_workerstatsreport_pkey PRIMARY KEY (id);
 
 
 --
@@ -53829,14 +53271,6 @@ ALTER TABLE ONLY public.jointable_staff_timeusagereportfilter
 
 
 --
--- Name: jointable_staff_workerstatsreport jointable_staff_workerstatsreport_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.jointable_staff_workerstatsreport
-    ADD CONSTRAINT jointable_staff_workerstatsreport_pkey PRIMARY KEY (workerstatsreport_id, staff_id);
-
-
---
 -- Name: jointable_stocktaking_storagelocation jointable_stocktaking_storagelocation_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -54181,14 +53615,6 @@ ALTER TABLE ONLY public.materialflowresources_positionattributevalue
 
 
 --
--- Name: materialflowresources_productstoragelocationhistory materialflowresources_productstoragelocationhistory_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.materialflowresources_productstoragelocationhistory
-    ADD CONSTRAINT materialflowresources_productstoragelocationhistory_pkey PRIMARY KEY (id);
-
-
---
 -- Name: materialflowresources_reservation materialflowresources_reservation_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -54266,14 +53692,6 @@ ALTER TABLE ONLY public.materialflowresources_storagelocation
 
 ALTER TABLE ONLY public.materialflowresources_storagelocationhelper
     ADD CONSTRAINT materialflowresources_storagelocationhelper_pkey PRIMARY KEY (id);
-
-
---
--- Name: materialflowresources_storagelocationhistory materialflowresources_storagelocationhistory_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.materialflowresources_storagelocationhistory
-    ADD CONSTRAINT materialflowresources_storagelocationhistory_pkey PRIMARY KEY (id);
 
 
 --
@@ -57414,13 +56832,6 @@ CREATE INDEX idx_mat_document_delivery_id ON public.materialflowresources_docume
 
 
 --
--- Name: idx_mat_document_dispositionshift_id; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX idx_mat_document_dispositionshift_id ON public.materialflowresources_document USING btree (dispositionshift_id);
-
-
---
 -- Name: idx_mat_document_order_id; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -60379,14 +59790,6 @@ ALTER TABLE ONLY public.materialflowresources_document
 
 
 --
--- Name: materialflowresources_document document_dispositionshift_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.materialflowresources_document
-    ADD CONSTRAINT document_dispositionshift_fkey FOREIGN KEY (dispositionshift_id) REFERENCES public.materialflowresources_document(id) DEFERRABLE;
-
-
---
 -- Name: materialflowresources_document document_linkeddocumentlocation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -61067,14 +60470,6 @@ ALTER TABLE ONLY public.jointable_group_role
 
 
 --
--- Name: esilco_importpositionerror importpositionerror_document_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.esilco_importpositionerror
-    ADD CONSTRAINT importpositionerror_document_fkey FOREIGN KEY (document_id) REFERENCES public.materialflowresources_document(id) DEFERRABLE;
-
-
---
 -- Name: materialflowresources_importstoragelocation importstoragelocation_location_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -61104,14 +60499,6 @@ ALTER TABLE ONLY public.jointable_issue_productstoissuehelper
 
 ALTER TABLE ONLY public.jointable_issue_productstoissuehelper
     ADD CONSTRAINT issue_productstoissuehelper_productstoissuehelper_fkey FOREIGN KEY (productstoissuehelper_id) REFERENCES public.productflowthrudivision_productstoissuehelper(id) DEFERRABLE;
-
-
---
--- Name: productflowthrudivision_issue issue_storagelocation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.productflowthrudivision_issue
-    ADD CONSTRAINT issue_storagelocation_fkey FOREIGN KEY (storagelocation_id) REFERENCES public.materialflowresources_storagelocation(id) DEFERRABLE;
 
 
 --
@@ -63363,14 +62750,6 @@ ALTER TABLE ONLY public.productionscheduling_ordertimecalculation
 
 
 --
--- Name: jointable_staff_workerstatsreport orkerstatsreport_staff_staff_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.jointable_staff_workerstatsreport
-    ADD CONSTRAINT orkerstatsreport_staff_staff_fkey FOREIGN KEY (staff_id) REFERENCES public.basic_staff(id) DEFERRABLE;
-
-
---
 -- Name: mobilewms_outofstock outofstock_location_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -63635,22 +63014,6 @@ ALTER TABLE ONLY public.basic_parameter
 
 
 --
--- Name: basic_parameter parameter_esilcoaccountwithreservationlocation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.basic_parameter
-    ADD CONSTRAINT parameter_esilcoaccountwithreservationlocation_fkey FOREIGN KEY (esilcoaccountwithreservationlocation_id) REFERENCES public.materialflow_location(id) DEFERRABLE;
-
-
---
--- Name: basic_parameter parameter_esilcodispositionshiftlocation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.basic_parameter
-    ADD CONSTRAINT parameter_esilcodispositionshiftlocation_fkey FOREIGN KEY (esilcodispositionshiftlocation_id) REFERENCES public.materialflow_location(id) DEFERRABLE;
-
-
---
 -- Name: basic_parameter parameter_issuelocation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -63840,14 +63203,6 @@ ALTER TABLE ONLY public.productioncounting_staffworktime
 
 ALTER TABLE ONLY public.productioncounting_staffworktime
     ADD CONSTRAINT pc_swt_pc_productionrecord_fkey FOREIGN KEY (productionrecord_id) REFERENCES public.productioncounting_productiontracking(id) DEFERRABLE;
-
-
---
--- Name: esilco_picksreport pickreport_location_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.esilco_picksreport
-    ADD CONSTRAINT pickreport_location_fkey FOREIGN KEY (location_id) REFERENCES public.materialflow_location(id) DEFERRABLE;
 
 
 --
@@ -65275,51 +64630,11 @@ ALTER TABLE ONLY public.masterorders_productsbysizehelper
 
 
 --
--- Name: productflowthrudivision_productstoissue productstoissue_storagelocation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.productflowthrudivision_productstoissue
-    ADD CONSTRAINT productstoissue_storagelocation_fkey FOREIGN KEY (storagelocation_id) REFERENCES public.materialflowresources_storagelocation(id) DEFERRABLE;
-
-
---
 -- Name: productflowthrudivision_productstoissuehelper productstoissuehelper_location_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.productflowthrudivision_productstoissuehelper
     ADD CONSTRAINT productstoissuehelper_location_fkey FOREIGN KEY (locationfrom_id) REFERENCES public.materialflow_location(id) DEFERRABLE;
-
-
---
--- Name: materialflowresources_productstoragelocationhistory productstoragelocationhistory_location_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.materialflowresources_productstoragelocationhistory
-    ADD CONSTRAINT productstoragelocationhistory_location_fkey FOREIGN KEY (location_id) REFERENCES public.materialflow_location(id) DEFERRABLE;
-
-
---
--- Name: materialflowresources_productstoragelocationhistory productstoragelocationhistory_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.materialflowresources_productstoragelocationhistory
-    ADD CONSTRAINT productstoragelocationhistory_product_fkey FOREIGN KEY (product_id) REFERENCES public.basic_product(id) DEFERRABLE;
-
-
---
--- Name: materialflowresources_productstoragelocationhistory productstoragelocationhistory_storagelocationfrom_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.materialflowresources_productstoragelocationhistory
-    ADD CONSTRAINT productstoragelocationhistory_storagelocationfrom_fkey FOREIGN KEY (storagelocationfrom_id) REFERENCES public.materialflowresources_storagelocation(id) DEFERRABLE;
-
-
---
--- Name: materialflowresources_productstoragelocationhistory productstoragelocationhistory_storagelocationto_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.materialflowresources_productstoragelocationhistory
-    ADD CONSTRAINT productstoragelocationhistory_storagelocationto_fkey FOREIGN KEY (storagelocationto_id) REFERENCES public.materialflowresources_storagelocation(id) DEFERRABLE;
 
 
 --
@@ -65384,14 +64699,6 @@ ALTER TABLE ONLY public.technologies_productstructuretreenode
 
 ALTER TABLE ONLY public.technologies_productstructuretreenode
     ADD CONSTRAINT productstructuretreenode_technologyinputproducttype_fkey FOREIGN KEY (technologyinputproducttype_id) REFERENCES public.technologies_technologyinputproducttype(id) DEFERRABLE;
-
-
---
--- Name: productflowthrudivision_producttoissuecorrection producttoissuecorrection_accountwithreservation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.productflowthrudivision_producttoissuecorrection
-    ADD CONSTRAINT producttoissuecorrection_accountwithreservation_fkey FOREIGN KEY (accountwithreservation_id) REFERENCES public.materialflowresources_document(id) DEFERRABLE;
 
 
 --
@@ -66931,14 +66238,6 @@ ALTER TABLE ONLY public.materialflowresources_storagelocation
 
 
 --
--- Name: materialflowresources_storagelocation storagelocation_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.materialflowresources_storagelocation
-    ADD CONSTRAINT storagelocation_product_fkey FOREIGN KEY (product_id) REFERENCES public.basic_product(id) DEFERRABLE;
-
-
---
 -- Name: jointable_storagelocation_warehousestockreport storagelocation_warehousestockreport_storagelocation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -66960,30 +66259,6 @@ ALTER TABLE ONLY public.jointable_storagelocation_warehousestockreport
 
 ALTER TABLE ONLY public.materialflowresources_storagelocationhelper
     ADD CONSTRAINT storagelocationhelper_location_fkey FOREIGN KEY (location_id) REFERENCES public.materialflow_location(id) DEFERRABLE;
-
-
---
--- Name: materialflowresources_storagelocationhistory storagelocationhistory_productfrom_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.materialflowresources_storagelocationhistory
-    ADD CONSTRAINT storagelocationhistory_productfrom_fkey FOREIGN KEY (productfrom_id) REFERENCES public.basic_product(id) DEFERRABLE;
-
-
---
--- Name: materialflowresources_storagelocationhistory storagelocationhistory_productto_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.materialflowresources_storagelocationhistory
-    ADD CONSTRAINT storagelocationhistory_productto_fkey FOREIGN KEY (productto_id) REFERENCES public.basic_product(id) DEFERRABLE;
-
-
---
--- Name: materialflowresources_storagelocationhistory storagelocationhistory_storagelocation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.materialflowresources_storagelocationhistory
-    ADD CONSTRAINT storagelocationhistory_storagelocation_fkey FOREIGN KEY (storagelocation_id) REFERENCES public.materialflowresources_storagelocation(id) DEFERRABLE;
 
 
 --
@@ -67955,22 +67230,6 @@ ALTER TABLE ONLY public.cmmsmachineparts_staffworktime
 
 
 --
--- Name: esilco_workerstatsreport workerstatsreport_location_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.esilco_workerstatsreport
-    ADD CONSTRAINT workerstatsreport_location_fkey FOREIGN KEY (location_id) REFERENCES public.materialflow_location(id) DEFERRABLE;
-
-
---
--- Name: jointable_staff_workerstatsreport workerstatsreport_staff_workerstatsreport_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.jointable_staff_workerstatsreport
-    ADD CONSTRAINT workerstatsreport_staff_workerstatsreport_fkey FOREIGN KEY (workerstatsreport_id) REFERENCES public.esilco_workerstatsreport(id) DEFERRABLE;
-
-
---
 -- Name: productflowthrudivision_warehouseissue workerwhocollected_warehouseissue_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -68278,20 +67537,6 @@ REFRESH MATERIALIZED VIEW public.arch_mv_masterorders_masterorderpositiondto;
 --
 
 REFRESH MATERIALIZED VIEW public.arch_mv_masterorders_masterorderdto;
-
-
---
--- Name: arch_mv_materialflowresources_documentdto; Type: MATERIALIZED VIEW DATA; Schema: public; Owner: -
---
-
-REFRESH MATERIALIZED VIEW public.arch_mv_materialflowresources_documentdto;
-
-
---
--- Name: arch_mv_materialflowresources_positiondto; Type: MATERIALIZED VIEW DATA; Schema: public; Owner: -
---
-
-REFRESH MATERIALIZED VIEW public.arch_mv_materialflowresources_positiondto;
 
 
 --
