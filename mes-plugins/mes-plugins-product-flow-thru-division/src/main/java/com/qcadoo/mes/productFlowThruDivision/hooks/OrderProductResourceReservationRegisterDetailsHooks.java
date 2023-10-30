@@ -3,6 +3,8 @@ package com.qcadoo.mes.productFlowThruDivision.hooks;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityFields;
 import com.qcadoo.mes.materialFlowResources.constants.ResourceFields;
+import com.qcadoo.mes.productFlowThruDivision.constants.OrderProductResourceReservationFields;
+import com.qcadoo.mes.productFlowThruDivision.constants.TrackingProductResourceReservationFields;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
 import com.qcadoo.view.api.ComponentState;
@@ -16,6 +18,9 @@ import org.springframework.stereotype.Service;
 @Service
 public class OrderProductResourceReservationRegisterDetailsHooks {
 
+    private static final String L_PLANED_QUANTITY_UNIT = "planedQuantityUnit";
+    private static final String L_USED_QUANTITY_UNIT = "usedQuantityUnit";
+
     @Autowired
     private NumberService numberService;
 
@@ -23,18 +28,18 @@ public class OrderProductResourceReservationRegisterDetailsHooks {
         FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
         Entity trackingProductResourceReservation = form.getPersistedEntityWithIncludedFormValues();
-        Entity orderProductResourceReservation = trackingProductResourceReservation.getBelongsToField("orderProductResourceReservation");
-        Entity resource = orderProductResourceReservation.getBelongsToField("resource");
-        Entity pcq = orderProductResourceReservation.getBelongsToField("productionCountingQuantity");
+        Entity orderProductResourceReservation = trackingProductResourceReservation.getBelongsToField(TrackingProductResourceReservationFields.ORDER_PRODUCT_RESOURCE_RESERVATION);
+        Entity resource = orderProductResourceReservation.getBelongsToField(OrderProductResourceReservationFields.RESOURCE);
+        Entity pcq = orderProductResourceReservation.getBelongsToField(OrderProductResourceReservationFields.PRODUCTION_COUNTING_QUANTITY);
         Entity product = pcq.getBelongsToField(ProductionCountingQuantityFields.PRODUCT);
 
-        ComponentState resourceLookup = view.getComponentByReference("resource");
-        ComponentState resourcePlannedQuantity = view.getComponentByReference("planedQuantity");
-        ComponentState resourcePlannedQuantityUnit = view.getComponentByReference("planedQuantityUnit");
-        ComponentState usedQuantityUnit = view.getComponentByReference("usedQuantityUnit");
+        ComponentState resourceLookup = view.getComponentByReference(OrderProductResourceReservationFields.RESOURCE_NUMBER);
+        ComponentState resourcePlannedQuantity = view.getComponentByReference(OrderProductResourceReservationFields.PLANED_QUANTITY);
+        ComponentState resourcePlannedQuantityUnit = view.getComponentByReference(L_PLANED_QUANTITY_UNIT);
+        ComponentState usedQuantityUnit = view.getComponentByReference(L_USED_QUANTITY_UNIT);
 
         resourceLookup.setFieldValue(resource.getStringField(ResourceFields.NUMBER));
-        resourcePlannedQuantity.setFieldValue(numberService.format(orderProductResourceReservation.getDecimalField("planedQuantity")));
+        resourcePlannedQuantity.setFieldValue(numberService.format(orderProductResourceReservation.getDecimalField(OrderProductResourceReservationFields.PLANED_QUANTITY)));
         resourcePlannedQuantityUnit.setFieldValue(product.getStringField(ProductFields.UNIT));
         usedQuantityUnit.setFieldValue(product.getStringField(ProductFields.UNIT));
 

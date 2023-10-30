@@ -23,7 +23,7 @@ import java.util.stream.Collectors;
 @Service
 public class OrderProductResourceReservationHooks {
 
-    public static final String L_RESOURCE = "resource";
+    public static final String L_ORDER_PRODUCT_RESOURCE_RESERVATIONS = "orderProductResourceReservations";
 
     @Autowired
     private OrderReservationsService orderReservationsService;
@@ -35,41 +35,46 @@ public class OrderProductResourceReservationHooks {
 
         List<Entity> reservations = orderProductResourceReservation.getHasManyField(OrderProductResourceReservationFields.RESERVATIONS);
         for (Entity reservation : reservations) {
-            resourceReservationsService.updateResourceQuantitiesOnRemoveReservation(reservation.getBelongsToField(ReservationFields.RESOURCE), reservation.getDecimalField(ReservationFields.QUANTITY));
+            resourceReservationsService.updateResourceQuantitiesOnRemoveReservation(reservation.getBelongsToField(ReservationFields.RESOURCE),
+                    reservation.getDecimalField(ReservationFields.QUANTITY));
         }
     }
 
     public void onSave(final DataDefinition orderProductResourceReservationDD, final Entity orderProductResourceReservation) {
-        if(Objects.isNull(orderProductResourceReservation.getId())) {
+        if (Objects.isNull(orderProductResourceReservation.getId())) {
             orderProductResourceReservation.setField(OrderProductResourceReservationFields.CREATION_DATE, new Date());
         }
-        Entity resource = orderProductResourceReservation.getBelongsToField(L_RESOURCE);
+        Entity resource = orderProductResourceReservation.getBelongsToField(OrderProductResourceReservationFields.RESOURCE);
         if (Objects.nonNull(resource)) {
-            orderProductResourceReservation.setField("resourceNumber", resource.getStringField(ResourceFields.NUMBER));
-            orderProductResourceReservation.setField("resourceUnit", resource.getBelongsToField(ResourceFields.PRODUCT).getStringField(ProductFields.UNIT));
+            orderProductResourceReservation.setField(OrderProductResourceReservationFields.RESOURCE_NUMBER,
+                    resource.getStringField(ResourceFields.NUMBER));
+            orderProductResourceReservation.setField(OrderProductResourceReservationFields.RESOURCE_UNIT,
+                    resource.getBelongsToField(ResourceFields.PRODUCT).getStringField(ProductFields.UNIT));
         }
         orderReservationsService.createOrUpdateReservation(orderProductResourceReservation);
     }
 
     public boolean validate(final DataDefinition dataDefinition, final Entity orderProductResourceReservation) {
 
-        Entity resource = orderProductResourceReservation.getBelongsToField(L_RESOURCE);
+        Entity resource = orderProductResourceReservation.getBelongsToField(OrderProductResourceReservationFields.RESOURCE);
 
         if (Objects.isNull(resource)) {
-            orderProductResourceReservation.addError(dataDefinition.getField(L_RESOURCE), "qcadooView.validate.field.error.missing");
+            orderProductResourceReservation.addError(dataDefinition.getField(OrderProductResourceReservationFields.RESOURCE),
+                    "qcadooView.validate.field.error.missing");
             return false;
         }
 
         BigDecimal resourceQuantity = resource.getDecimalField(ResourceFields.AVAILABLE_QUANTITY);
-        BigDecimal planedQuantity = orderProductResourceReservation.getDecimalField("planedQuantity");
+        BigDecimal planedQuantity = orderProductResourceReservation.getDecimalField(OrderProductResourceReservationFields.PLANED_QUANTITY);
         if (planedQuantity.compareTo(resourceQuantity) > 0) {
-            orderProductResourceReservation.addError(dataDefinition.getField("planedQuantity"), "productFlowThruDivision.orderProductResourceReservation.error.planedQuantityGreaterThanResource");
+            orderProductResourceReservation.addError(dataDefinition.getField(OrderProductResourceReservationFields.PLANED_QUANTITY),
+                    "productFlowThruDivision.orderProductResourceReservation.error.planedQuantityGreaterThanResource");
             return false;
         }
 
-        Entity pcq = orderProductResourceReservation.getBelongsToField("productionCountingQuantity");
+        Entity pcq = orderProductResourceReservation.getBelongsToField(OrderProductResourceReservationFields.PRODUCTION_COUNTING_QUANTITY);
 
-        List<Entity> orderProductResourceReservations = Lists.newArrayList(pcq.getHasManyField("orderProductResourceReservations"));
+        List<Entity> orderProductResourceReservations = Lists.newArrayList(pcq.getHasManyField(L_ORDER_PRODUCT_RESOURCE_RESERVATIONS));
 
         if (Objects.nonNull(orderProductResourceReservation.getId())) {
             orderProductResourceReservations = orderProductResourceReservations
@@ -83,11 +88,12 @@ public class OrderProductResourceReservationHooks {
 
         BigDecimal plannedQuantityFromResources = orderProductResourceReservations
                 .stream()
-                .map(rr -> rr.getDecimalField("planedQuantity"))
+                .map(rr -> rr.getDecimalField(OrderProductResourceReservationFields.PLANED_QUANTITY))
                 .filter(Objects::nonNull).reduce(BigDecimal.ZERO, BigDecimal::add);
 
         if (plannedQuantityFromResources.compareTo(productPlannedQuantity) > 0) {
-            orderProductResourceReservation.addError(dataDefinition.getField("planedQuantity"), "productFlowThruDivision.orderProductResourceReservation.error.allPlanedQuantityGreaterThanProductQuantity");
+            orderProductResourceReservation.addError(dataDefinition.getField(OrderProductResourceReservationFields.PLANED_QUANTITY),
+                    "productFlowThruDivision.orderProductResourceReservation.error.allPlanedQuantityGreaterThanProductQuantity");
             return false;
         }
 

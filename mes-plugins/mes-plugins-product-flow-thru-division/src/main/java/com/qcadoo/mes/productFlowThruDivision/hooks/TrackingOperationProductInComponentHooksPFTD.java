@@ -21,10 +21,31 @@ public class TrackingOperationProductInComponentHooksPFTD {
     public void onSave(final DataDefinition trackingOperationProductOutComponentDD,
                        final Entity trackingOperationProductInComponent) {
 
+        if (Objects.isNull(trackingOperationProductInComponent.getId())) {
+            return;
+        }
+
+
+        Entity productionTracking = trackingOperationProductInComponent.getBelongsToField(TrackingOperationProductInComponentFields.PRODUCTION_TRACKING);
+
+        if(productionTracking.getBooleanField("fromTerminal")) {
+            return;
+        }
+
+
+        Entity trackingOperationProductInComponentDb = trackingOperationProductOutComponentDD.get(trackingOperationProductInComponent.getId());
+
+        BigDecimal usedQuantityDb = trackingOperationProductInComponentDb.getDecimalField(TrackingOperationProductInComponentFields.USED_QUANTITY);
+        BigDecimal usedQuantity = trackingOperationProductInComponent.getDecimalField(TrackingOperationProductInComponentFields.USED_QUANTITY);
+
+        if (Objects.nonNull(usedQuantityDb) && Objects.nonNull(usedQuantity) && usedQuantityDb.compareTo(usedQuantity) == 0) {
+            return;
+        }
+
+
         List<Entity> resourceReservations = trackingOperationProductInComponent.getHasManyField("resourceReservations");
 
         if (!resourceReservations.isEmpty()) {
-            BigDecimal usedQuantity = trackingOperationProductInComponent.getDecimalField(TrackingOperationProductInComponentFields.USED_QUANTITY);
             if (Objects.nonNull(usedQuantity)) {
                 for (Entity resourceReservation : resourceReservations) {
                     Entity orderProductResourceReservation = resourceReservation.getBelongsToField("orderProductResourceReservation");

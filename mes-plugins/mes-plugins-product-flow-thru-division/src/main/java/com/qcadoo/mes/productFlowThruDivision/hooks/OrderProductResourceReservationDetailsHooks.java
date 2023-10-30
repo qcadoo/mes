@@ -3,6 +3,7 @@ package com.qcadoo.mes.productFlowThruDivision.hooks;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityFields;
 import com.qcadoo.mes.materialFlowResources.constants.ResourceFields;
+import com.qcadoo.mes.productFlowThruDivision.constants.OrderProductResourceReservationFields;
 import com.qcadoo.mes.productFlowThruDivision.constants.ProductionCountingQuantityFieldsPFTD;
 import com.qcadoo.mes.productFlowThruDivision.criteriaModifiers.ResourceCriteriaModifiersPFTD;
 import com.qcadoo.model.api.Entity;
@@ -24,28 +25,31 @@ import java.util.stream.Collectors;
 @Service
 public class OrderProductResourceReservationDetailsHooks {
 
+    private static final String L_ORDER_PRODUCT_RESOURCE_RESERVATIONS = "orderProductResourceReservations";
+    private static final String L_PLANED_QUANTITY_UNIT = "planedQuantityUnit";
+
     @Autowired
     private NumberService numberService;
 
     public void onResourceChange(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         Entity orderProductResourceReservation = form.getPersistedEntityWithIncludedFormValues();
-        Entity pcq = orderProductResourceReservation.getBelongsToField("productionCountingQuantity");
+        Entity pcq = orderProductResourceReservation.getBelongsToField(OrderProductResourceReservationFields.PRODUCTION_COUNTING_QUANTITY);
 
-        LookupComponent resourceLookup = (LookupComponent) view.getComponentByReference("resource");
-        if(!resourceLookup.isEmpty()) {
+        LookupComponent resourceLookup = (LookupComponent) view.getComponentByReference(OrderProductResourceReservationFields.RESOURCE);
+        if (!resourceLookup.isEmpty()) {
             Entity resource = resourceLookup.getEntity();
-            if(Objects.isNull(orderProductResourceReservation.getId())) {
-                BigDecimal plannedQuantityFromResources = pcq.getHasManyField("orderProductResourceReservations")
+            if (Objects.isNull(orderProductResourceReservation.getId())) {
+                BigDecimal plannedQuantityFromResources = pcq.getHasManyField(L_ORDER_PRODUCT_RESOURCE_RESERVATIONS)
                         .stream()
-                        .map(rr -> rr.getDecimalField("planedQuantity"))
+                        .map(rr -> rr.getDecimalField(OrderProductResourceReservationFields.PLANED_QUANTITY))
                         .filter(Objects::nonNull).reduce(BigDecimal.ZERO, BigDecimal::add);
 
                 setPlannedQuantity(form, orderProductResourceReservation, pcq, resource, plannedQuantityFromResources);
             } else {
-                List<Entity> orderProductResourceReservations = pcq.getHasManyField("orderProductResourceReservations");
+                List<Entity> orderProductResourceReservations = pcq.getHasManyField(L_ORDER_PRODUCT_RESOURCE_RESERVATIONS);
 
-                if(Objects.nonNull(orderProductResourceReservation.getId())) {
+                if (Objects.nonNull(orderProductResourceReservation.getId())) {
                     orderProductResourceReservations = orderProductResourceReservations
                             .stream()
                             .filter(oprr -> !oprr.getId().equals(orderProductResourceReservation.getId()))
@@ -53,15 +57,13 @@ public class OrderProductResourceReservationDetailsHooks {
                 }
                 BigDecimal plannedQuantityFromResources = orderProductResourceReservations
                         .stream()
-                        .map(rr -> rr.getDecimalField("planedQuantity"))
+                        .map(rr -> rr.getDecimalField(OrderProductResourceReservationFields.PLANED_QUANTITY))
                         .filter(Objects::nonNull).reduce(BigDecimal.ZERO, BigDecimal::add);
 
                 setPlannedQuantity(form, orderProductResourceReservation, pcq, resource, plannedQuantityFromResources);
 
             }
-
         }
-
     }
 
     private void setPlannedQuantity(FormComponent form, Entity orderProductResourceReservation, Entity pcq, Entity resource, BigDecimal plannedQuantityFromResources) {
@@ -76,34 +78,32 @@ public class OrderProductResourceReservationDetailsHooks {
             reservedQuantity = remainingQuantityToReservation;
         }
 
-        orderProductResourceReservation.setField("planedQuantity",reservedQuantity);
+        orderProductResourceReservation.setField(OrderProductResourceReservationFields.PLANED_QUANTITY, reservedQuantity);
         form.setEntity(orderProductResourceReservation);
     }
 
 
     public void onBeforeRender(final ViewDefinitionState view) {
 
-
         FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         Entity orderProductResourceReservation = form.getPersistedEntityWithIncludedFormValues();
 
-
-        Entity pcq = orderProductResourceReservation.getBelongsToField("productionCountingQuantity");
+        Entity pcq = orderProductResourceReservation.getBelongsToField(OrderProductResourceReservationFields.PRODUCTION_COUNTING_QUANTITY);
         Entity product = pcq.getBelongsToField(ProductionCountingQuantityFields.PRODUCT);
         Entity componentsLocation = pcq.getBelongsToField(ProductionCountingQuantityFieldsPFTD.COMPONENTS_LOCATION);
 
-        List<Entity> orderProductResourceReservations = pcq.getHasManyField("orderProductResourceReservations");
+        List<Entity> orderProductResourceReservations = pcq.getHasManyField(L_ORDER_PRODUCT_RESOURCE_RESERVATIONS);
 
         List<Long> alreadyAddedResourceIds = orderProductResourceReservations
                 .stream()
-                .map(opr -> opr.getBelongsToField("resource").getId())
+                .map(opr -> opr.getBelongsToField(OrderProductResourceReservationFields.RESOURCE).getId())
                 .collect(Collectors.toList());
 
         fillFilterValue(view, product, componentsLocation, alreadyAddedResourceIds);
 
-        ComponentState resourcePlannedQuantityUnit = view.getComponentByReference("planedQuantityUnit");
-        LookupComponent resourceLookup = (LookupComponent) view.getComponentByReference("resource");
-        if(resourceLookup.isEmpty()) {
+        ComponentState resourcePlannedQuantityUnit = view.getComponentByReference(L_PLANED_QUANTITY_UNIT);
+        LookupComponent resourceLookup = (LookupComponent) view.getComponentByReference(OrderProductResourceReservationFields.RESOURCE);
+        if (resourceLookup.isEmpty()) {
             resourcePlannedQuantityUnit.setFieldValue(null);
         } else {
             resourcePlannedQuantityUnit.setFieldValue(product.getStringField(ProductFields.UNIT));
@@ -111,7 +111,7 @@ public class OrderProductResourceReservationDetailsHooks {
     }
 
     private void fillFilterValue(ViewDefinitionState view, Entity product, Entity componentsLocation, List<Long> alreadyAddedResourceIds) {
-        LookupComponent resourceLookup = (LookupComponent) view.getComponentByReference("resource");
+        LookupComponent resourceLookup = (LookupComponent) view.getComponentByReference(OrderProductResourceReservationFields.RESOURCE);
         FilterValueHolder filterValueHolder = resourceLookup.getFilterValue();
 
         if (Objects.nonNull(componentsLocation)) {
