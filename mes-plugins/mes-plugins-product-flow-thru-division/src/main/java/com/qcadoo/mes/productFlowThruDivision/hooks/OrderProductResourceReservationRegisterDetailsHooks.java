@@ -28,12 +28,15 @@ public class OrderProductResourceReservationRegisterDetailsHooks {
         FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
         Entity trackingProductResourceReservation = form.getPersistedEntityWithIncludedFormValues();
-        Entity orderProductResourceReservation = trackingProductResourceReservation.getBelongsToField(TrackingProductResourceReservationFields.ORDER_PRODUCT_RESOURCE_RESERVATION);
-        Entity resource = orderProductResourceReservation.getBelongsToField(OrderProductResourceReservationFields.RESOURCE);
+        Entity orderProductResourceReservationBT = trackingProductResourceReservation.getBelongsToField(TrackingProductResourceReservationFields.ORDER_PRODUCT_RESOURCE_RESERVATION);
+        Entity orderProductResourceReservation = orderProductResourceReservationBT.getDataDefinition().get(orderProductResourceReservationBT.getId());
+        Entity resourceBT = orderProductResourceReservation.getBelongsToField(OrderProductResourceReservationFields.RESOURCE);
+        Entity resource = resourceBT.getDataDefinition().get(resourceBT.getId());
+
         Entity pcq = orderProductResourceReservation.getBelongsToField(OrderProductResourceReservationFields.PRODUCTION_COUNTING_QUANTITY);
         Entity product = pcq.getBelongsToField(ProductionCountingQuantityFields.PRODUCT);
 
-        ComponentState resourceLookup = view.getComponentByReference(OrderProductResourceReservationFields.RESOURCE_NUMBER);
+        ComponentState resourceLookup = view.getComponentByReference(OrderProductResourceReservationFields.RESOURCE);
         ComponentState resourcePlannedQuantity = view.getComponentByReference(OrderProductResourceReservationFields.PLANED_QUANTITY);
         ComponentState resourcePlannedQuantityUnit = view.getComponentByReference(L_PLANED_QUANTITY_UNIT);
         ComponentState usedQuantityUnit = view.getComponentByReference(L_USED_QUANTITY_UNIT);

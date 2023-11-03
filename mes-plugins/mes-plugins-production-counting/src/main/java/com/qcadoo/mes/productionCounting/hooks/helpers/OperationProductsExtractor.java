@@ -47,12 +47,10 @@ import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 
 import java.math.BigDecimal;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Optional;
-import java.util.Set;
 
+import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -75,9 +73,7 @@ public class OperationProductsExtractor {
      * This method takes production tracking entity and returns all matching products wrapped in tracking operation components.
      * Results will be grouped by their model name, so you can easily distinct inputs products from output ones.
      *
-     * @param productionTracking
-     *            production tracking for which you want to extract products.
-     *
+     * @param productionTracking production tracking for which you want to extract products.
      * @return object representing tracking operation components grouped by their model name.
      */
     public TrackingOperationProducts getProductsByModelName(final Entity productionTracking) {
@@ -172,13 +168,18 @@ public class OperationProductsExtractor {
         for (Entity trackingOperationProductComponent : trackingOperationProductComponents) {
             if (ProductionCountingConstants.MODEL_TRACKING_OPERATION_PRODUCT_IN_COMPONENT.equals(trackingOperationProductComponent.getDataDefinition().getName())) {
 
-                List<Entity> pcqs = dataDefinitionService.get(BasicProductionCountingConstants.PLUGIN_IDENTIFIER, BasicProductionCountingConstants.MODEL_PRODUCTION_COUNTING_QUANTITY)
+                SearchCriteriaBuilder scb = dataDefinitionService.get(BasicProductionCountingConstants.PLUGIN_IDENTIFIER, BasicProductionCountingConstants.MODEL_PRODUCTION_COUNTING_QUANTITY)
                         .find()
                         .add(SearchRestrictions.belongsTo(ProductionCountingQuantityFields.ORDER, order))
                         .add(SearchRestrictions.belongsTo(ProductionCountingQuantityFields.PRODUCT, trackingOperationProductComponent.getBelongsToField(L_PRODUCT)))
                         .add(SearchRestrictions.eq(ProductionCountingQuantityFields.ROLE, ProductionCountingQuantityRole.USED.getStringValue()))
-                        .add(SearchRestrictions.eq(ProductionCountingQuantityFields.TYPE_OF_MATERIAL, ProductionCountingQuantityTypeOfMaterial.COMPONENT.getStringValue()))
-                        .list().getEntities();
+                        .add(SearchRestrictions.eq(ProductionCountingQuantityFields.TYPE_OF_MATERIAL, ProductionCountingQuantityTypeOfMaterial.COMPONENT.getStringValue()));
+
+                if (Objects.nonNull(technologyOperationComponent)) {
+                    scb.add(SearchRestrictions.belongsTo(ProductionCountingQuantityFields.TECHNOLOGY_OPERATION_COMPONENT, technologyOperationComponent));
+                }
+
+                List<Entity> pcqs = scb.list().getEntities();
 
                 List<Entity> reservations = Lists.newArrayList();
                 for (Entity productionCountingQuantity : pcqs) {
