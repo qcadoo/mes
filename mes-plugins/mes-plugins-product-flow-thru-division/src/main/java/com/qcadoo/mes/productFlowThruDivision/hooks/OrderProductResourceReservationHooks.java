@@ -66,6 +66,12 @@ public class OrderProductResourceReservationHooks {
 
         BigDecimal resourceQuantity = resource.getDecimalField(ResourceFields.AVAILABLE_QUANTITY);
         BigDecimal planedQuantity = orderProductResourceReservation.getDecimalField(OrderProductResourceReservationFields.PLANED_QUANTITY);
+
+        if(Objects.nonNull(orderProductResourceReservation.getId())) {
+            Entity orderProductResourceReservationDb = orderProductResourceReservation.getDataDefinition().get(orderProductResourceReservation.getId());
+            resourceQuantity = resourceQuantity.add(orderProductResourceReservationDb.getDecimalField(OrderProductResourceReservationFields.PLANED_QUANTITY));
+        }
+
         if (planedQuantity.compareTo(resourceQuantity) > 0) {
             orderProductResourceReservation.addError(dataDefinition.getField(OrderProductResourceReservationFields.PLANED_QUANTITY),
                     "productFlowThruDivision.orderProductResourceReservation.error.planedQuantityGreaterThanResource");
