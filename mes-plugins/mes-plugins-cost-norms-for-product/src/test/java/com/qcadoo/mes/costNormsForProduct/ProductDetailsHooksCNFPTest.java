@@ -35,6 +35,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 
 import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.basic.util.CurrencyService;
+import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.costNormsForProduct.constants.ProductFieldsCNFP;
 import com.qcadoo.mes.costNormsForProduct.hooks.ProductDetailsHooksCNFP;
 import com.qcadoo.model.api.DataDefinition;
@@ -47,10 +48,10 @@ import com.qcadoo.view.constants.QcadooViewConstants;
 
 public class ProductDetailsHooksCNFPTest {
 
+    private ProductDetailsHooksCNFP costNormsForProductService;
+
     @Mock
     private ViewDefinitionState viewDefinitionState;
-
-    private ProductDetailsHooksCNFP costNormsForProductService;
 
     @Mock
     private DataDefinition dataDefinition;
@@ -62,13 +63,13 @@ public class ProductDetailsHooksCNFPTest {
     private CurrencyService currencyService;
 
     @Mock
-    private FormComponent form;
+    private FormComponent productForm;
 
     @Mock
     private FieldComponent field1, field2, field3, field4, field5, field6;
 
     @Mock
-    private Entity entity;
+    private Entity product;
 
     @Before
     public void init() {
@@ -81,10 +82,9 @@ public class ProductDetailsHooksCNFPTest {
         when(dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PRODUCT))
                 .thenReturn(dataDefinition);
 
-        when(viewDefinitionState.getComponentByReference(QcadooViewConstants.L_FORM)).thenReturn(form);
-        when(form.getEntityId()).thenReturn(3L);
-        when(dataDefinition.get(anyLong())).thenReturn(entity);
-
+        when(viewDefinitionState.getComponentByReference(QcadooViewConstants.L_FORM)).thenReturn(productForm);
+        when(productForm.getEntityId()).thenReturn(3L);
+        when(dataDefinition.get(anyLong())).thenReturn(product);
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -99,7 +99,6 @@ public class ProductDetailsHooksCNFPTest {
 
         when(viewDefinitionState.getComponentByReference("averageOfferCostCurrency")).thenReturn(field4);
         when(viewDefinitionState.getComponentByReference("lastOfferCostCurrency")).thenReturn(field5);
-
         when(currencyService.getCurrencyAlphabeticCode()).thenReturn(currency);
         // when
         costNormsForProductService.fillCurrencyFieldsInProduct(viewDefinitionState);
@@ -111,9 +110,9 @@ public class ProductDetailsHooksCNFPTest {
         // given
         Long productId = 1L;
         String externalId = "0001";
-        when(form.getEntityId()).thenReturn(productId);
-        when(dataDefinition.get(productId)).thenReturn(entity);
-        when(entity.getStringField("externalNumber")).thenReturn(externalId);
+        when(productForm.getEntityId()).thenReturn(productId);
+        when(dataDefinition.get(productId)).thenReturn(product);
+        when(product.getStringField(ProductFields.EXTERNAL_NUMBER)).thenReturn(externalId);
         when(viewDefinitionState.getComponentByReference(ProductFieldsCNFP.NOMINAL_COST)).thenReturn(field1);
         when(viewDefinitionState.getComponentByReference(ProductFieldsCNFP.AVERAGE_OFFER_COST)).thenReturn(field2);
         when(viewDefinitionState.getComponentByReference(ProductFieldsCNFP.LAST_OFFER_COST)).thenReturn(field3);
@@ -121,7 +120,7 @@ public class ProductDetailsHooksCNFPTest {
         when(viewDefinitionState.getComponentByReference(ProductFieldsCNFP.AVERAGE_COST)).thenReturn(field5);
         when(viewDefinitionState.getComponentByReference(ProductFieldsCNFP.NOMINAL_COST_CURRENCY)).thenReturn(field6);
         // when
-        costNormsForProductService.enabledFieldForExternalID(viewDefinitionState);
+        costNormsForProductService.enableFieldForExternalID(viewDefinitionState);
         // then
         Mockito.verify(field1).setEnabled(true);
         Mockito.verify(field2).setEnabled(true);
@@ -134,19 +133,20 @@ public class ProductDetailsHooksCNFPTest {
     @Test
     public void shouldFillUnitFieldWhenInProductIsTrue() throws Exception {
         // given
-        when(viewDefinitionState.getComponentByReference("nominalCost")).thenReturn(field1);
+        when(viewDefinitionState.getComponentByReference(ProductFieldsCNFP.NOMINAL_COST)).thenReturn(field1);
         // when
-        costNormsForProductService.fillUnitField(viewDefinitionState, "nominalCost", true);
+        costNormsForProductService.fillUnitField(viewDefinitionState, ProductFieldsCNFP.NOMINAL_COST, true);
         // then
     }
 
     @Test
     public void shouldFillUnitFieldWhenInProductIsFalse() throws Exception {
         // given
-        when(viewDefinitionState.getComponentByReference("nominalCost")).thenReturn(field1);
+        when(viewDefinitionState.getComponentByReference(ProductFieldsCNFP.NOMINAL_COST)).thenReturn(field1);
         when(viewDefinitionState.getComponentByReference("product")).thenReturn(field2);
         // when
-        costNormsForProductService.fillUnitField(viewDefinitionState, "nominalCost", false);
+        costNormsForProductService.fillUnitField(viewDefinitionState, ProductFieldsCNFP.NOMINAL_COST, false);
         // then
     }
+
 }
