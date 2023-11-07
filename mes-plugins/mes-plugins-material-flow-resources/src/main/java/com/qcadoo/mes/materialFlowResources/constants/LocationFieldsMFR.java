@@ -53,6 +53,4 @@ public final class LocationFieldsMFR {
 
 	public static final String COST_NORMS_LOCATIONS = "costNormsLocations";
 
-	public static final String DIRECTION_CONVERTING_QUANTITY_AFTER_CHANGING_CONVERTER = "directionConvertingQuantityAfterChangingConverter";
-
 }

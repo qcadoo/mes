@@ -41,10 +41,6 @@
 						   reference="draftMakesReservation" hasDescription="true">
 				</component>
 			</layoutElement>
-			<layoutElement column="1" row="3">
-				<component type="select" name="directionConvertingQuantityAfterChangingConverter" field="#{form}.directionConvertingQuantityAfterChangingConverter"
-						   reference="directionConvertingQuantityAfterChangingConverter" hasDescription="true"/>
-			</layoutElement>
 			<layoutElement column="2" row="1" height="4">
 				<component type="borderLayout" name="attributeBorderLayout"
 					reference="attributeBorderLayout">

@@ -215,12 +215,6 @@
         </model:model-field>
 
         <model:model-field plugin="materialFlow" model="location">
-            <model:enum name="directionConvertingQuantityAfterChangingConverter"
-                        values="01fromBasicToAdditional,02fromAdditionalToBasicQuantity"
-                        default="01fromBasicToAdditional"/>
-        </model:model-field>
-
-        <model:model-field plugin="materialFlow" model="location">
             <model:boolean name="requirePrice"/>
         </model:model-field>
         <model:model-field plugin="materialFlow" model="location">

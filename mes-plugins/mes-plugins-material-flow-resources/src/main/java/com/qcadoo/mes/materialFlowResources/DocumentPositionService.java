@@ -351,7 +351,6 @@ public class DocumentPositionService {
 
             Map<String, Object> config = Maps.newHashMap();
 
-            config.put("directionConvertingQuantityAfterChangingConverter", directionConvertingQuantityAfterChangingConverter(documentId, isOutDocument));
             config.put("readOnly", isGridReadOnly(documentId));
             config.put("suggestResource", shouldSuggestResource());
             config.put("outDocument", isOutDocument);
@@ -361,25 +360,6 @@ public class DocumentPositionService {
         } catch (EmptyResultDataAccessException e) {
             return Collections.emptyMap();
         }
-    }
-
-    private String directionConvertingQuantityAfterChangingConverter(final Long documentId, final boolean isOutDocument) {
-        String query = "SELECT loc.directionconvertingquantityafterchangingconverter as directionconvertingquantityafterchangingconverter ";
-        query += "FROM materialflowresources_document doc ";
-
-        if (isOutDocument) {
-            query += "LEFT JOIN materialflow_location loc ON loc.id = doc.locationfrom_id ";
-        } else {
-            query += "LEFT JOIN materialflow_location loc ON loc.id = doc.locationto_id ";
-        }
-
-        query += "WHERE doc.id = :documentId ";
-
-        Map<String, Object> parameters = Maps.newHashMap();
-
-        parameters.put("documentId", documentId);
-
-        return jdbcTemplate.queryForObject(query, parameters, String.class);
     }
 
     public Map<String, Object> unitsOfProduct(final String productNumber) {

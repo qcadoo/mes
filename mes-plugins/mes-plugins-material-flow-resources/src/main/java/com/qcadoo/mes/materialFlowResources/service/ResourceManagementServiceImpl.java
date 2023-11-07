@@ -3,19 +3,19 @@
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
  * Version: 1.4
- *
+ * <p>
  * This file is part of Qcadoo.
- *
+ * <p>
  * Qcadoo is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation; either version 3 of the License,
  * or (at your option) any later version.
- *
+ * <p>
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty
  * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU Affero General Public License for more details.
- *
+ * <p>
  * You should have received a copy of the GNU Affero General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
@@ -486,13 +486,10 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
 
             if (isFromOrder) {
                 quantity = recalculateQuantity(
-                        warehouse.getStringField(LocationFieldsMFR.DIRECTION_CONVERTING_QUANTITY_AFTER_CHANGING_CONVERTER),
                         quantity, resource.getDecimalField(ResourceFields.CONVERSION), givenUnit,
                         resource.getDecimalField(ResourceFields.CONVERSION), product.getStringField(ProductFields.UNIT));
             } else {
-                quantity = recalculateQuantity(
-                        warehouse.getStringField(LocationFieldsMFR.DIRECTION_CONVERTING_QUANTITY_AFTER_CHANGING_CONVERTER),
-                        quantity, conversion, givenUnit, resource.getDecimalField(ResourceFields.CONVERSION),
+                quantity = recalculateQuantity(quantity, conversion, givenUnit, resource.getDecimalField(ResourceFields.CONVERSION),
                         product.getStringField(ProductFields.UNIT));
             }
 
@@ -672,14 +669,10 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
             Entity newPosition = createNewPosition(position, product, resource, newPositions.size());
 
             if (isFromOrder) {
-                quantity = recalculateQuantity(
-                        warehouseFrom.getStringField(LocationFieldsMFR.DIRECTION_CONVERTING_QUANTITY_AFTER_CHANGING_CONVERTER),
-                        quantity, resource.getDecimalField(ResourceFields.CONVERSION), givenUnit,
+                quantity = recalculateQuantity(quantity, resource.getDecimalField(ResourceFields.CONVERSION), givenUnit,
                         resource.getDecimalField(ResourceFields.CONVERSION), product.getStringField(ProductFields.UNIT));
             } else {
-                quantity = recalculateQuantity(
-                        warehouseFrom.getStringField(LocationFieldsMFR.DIRECTION_CONVERTING_QUANTITY_AFTER_CHANGING_CONVERTER),
-                        quantity, conversion, givenUnit, resource.getDecimalField(ResourceFields.CONVERSION),
+                quantity = recalculateQuantity(quantity, conversion, givenUnit, resource.getDecimalField(ResourceFields.CONVERSION),
                         product.getStringField(ProductFields.UNIT));
             }
 
@@ -1037,14 +1030,10 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
             newPosition.setField(PositionFields.RESOURCE, resource);
 
             if (isFromOrder) {
-                quantity = recalculateQuantity(
-                        warehouse.getStringField(LocationFieldsMFR.DIRECTION_CONVERTING_QUANTITY_AFTER_CHANGING_CONVERTER),
-                        quantity, resource.getDecimalField(ResourceFields.CONVERSION), givenUnit,
+                quantity = recalculateQuantity(quantity, resource.getDecimalField(ResourceFields.CONVERSION), givenUnit,
                         resource.getDecimalField(ResourceFields.CONVERSION), product.getStringField(ProductFields.UNIT));
             } else {
-                quantity = recalculateQuantity(
-                        warehouse.getStringField(LocationFieldsMFR.DIRECTION_CONVERTING_QUANTITY_AFTER_CHANGING_CONVERTER),
-                        quantity, conversion, givenUnit, resource.getDecimalField(ResourceFields.CONVERSION),
+                quantity = recalculateQuantity(quantity, conversion, givenUnit, resource.getDecimalField(ResourceFields.CONVERSION),
                         product.getStringField(ProductFields.UNIT));
             }
 
@@ -1154,21 +1143,12 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
         return attributes;
     }
 
-    private BigDecimal recalculateQuantity(final String directionConvertingQuantity, final BigDecimal quantity,
+    private BigDecimal recalculateQuantity(final BigDecimal quantity,
                                            final BigDecimal conversion, final String givenUnit, final BigDecimal resourceConversion, final String unit) {
         if (conversion.compareTo(resourceConversion) != 0) {
-            if (DirectionConvertingQuantityAfterChangingConverter.FROM_BASIC_TO_ADDITIONAL.getStringValue()
-                    .equals(directionConvertingQuantity)) {
-                BigDecimal additional = calculationQuantityService.calculateAdditionalQuantity(quantity, resourceConversion,
-                        givenUnit);
-
-                return calculationQuantityService.calculateQuantity(additional, resourceConversion, unit);
-            } else {
-                BigDecimal givenQuantity = calculationQuantityService.calculateAdditionalQuantity(quantity, conversion,
-                        givenUnit);
-
-                return calculationQuantityService.calculateQuantity(givenQuantity, resourceConversion, unit);
-            }
+            BigDecimal additional = calculationQuantityService.calculateAdditionalQuantity(quantity, resourceConversion,
+                    givenUnit);
+            return calculationQuantityService.calculateQuantity(additional, resourceConversion, unit);
         }
 
         return quantity;
