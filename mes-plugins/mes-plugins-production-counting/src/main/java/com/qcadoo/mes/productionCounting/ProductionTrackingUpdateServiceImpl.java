@@ -154,14 +154,11 @@ public class ProductionTrackingUpdateServiceImpl implements ProductionTrackingUp
                     reservation.setField("trackingOperationProductInComponent", productionTrackingInput);
                     reservation.setField("orderProductResourceReservation", orderProductResourceReservation);
                     reservation.setField("priority", orderProductResourceReservation.getIntegerField("priority"));
-                    resourceReservations.add(reservation);
-                    toSave = true;
+                    reservation.getDataDefinition().fastSave(reservation);
+                  //  toSave = true;
                 }
             }
-            if(toSave) {
-                productionTrackingInput.setField("resourceReservations", resourceReservations);
-                productionTrackingInput.getDataDefinition().save(productionTrackingInput);
-            }
+
         }
 
     }

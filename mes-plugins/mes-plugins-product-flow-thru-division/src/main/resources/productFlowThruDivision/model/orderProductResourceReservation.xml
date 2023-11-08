@@ -29,10 +29,10 @@
 
     <fields>
 
-        <priority name="priority" scope="productionCountingQuantity"/>
-
         <belongsTo name="productionCountingQuantity" model="productionCountingQuantity" plugin="basicProductionCounting"
                    required="true"/>
+        <priority name="priority" scope="productionCountingQuantity"/>
+
 
         <belongsTo name="resource" model="resource" plugin="materialFlowResources"/>
 
