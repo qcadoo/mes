@@ -58,8 +58,6 @@ public class DeliveredProductDetailsHooks {
 
     private static final String L_LOCATION = "location";
 
-    private static final String L_PRODUCT = "product";
-
     private static final String TOTAL_PRICE_CURRENCY = "totalPriceCurrency";
 
     private static final String PRICE_PER_UNIT_CURRENCY = "pricePerUnitCurrency";
@@ -275,7 +273,6 @@ public class DeliveredProductDetailsHooks {
 
         if (Objects.nonNull(product) && Objects.nonNull(location)) {
             filterBy(storageLocationsLookup, L_LOCATION, location.getId());
-            filterBy(storageLocationsLookup, L_PRODUCT, product.getId());
         } else {
             storageLocationsLookup.setFieldValue(null);
             storageLocationsLookup.setEnabled(false);

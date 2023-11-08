@@ -304,11 +304,10 @@
                         <option type="fieldCode" value="number"/>
 
                         <criteriaModifier
-                                class="com.qcadoo.mes.deliveries.criteriaModifiers.DeliveredProductCriteriaModifiers"
-                                method="restrictStorageLocation"/>
+                                class="com.qcadoo.mes.materialFlowResources.criteriaModifiers.StorageLocationCriteriaModifiers"
+                                method="showStorageLocationsForLocation"/>
                     </component>
                 </layoutElement>
-
                 <layoutElement column="1" row="4" width="2">
                     <component type="lookup" name="batch" field="#{form}.batch"
                                reference="batch">
@@ -332,7 +331,6 @@
                                 method="filterByProduct"/>
                     </component>
                 </layoutElement>
-
                 <layoutElement column="1" row="5" width="2">
                     <component type="checkbox" name="addBatch" field="#{form}.addBatch"
                                reference="addBatch" hasDescription="true">
@@ -341,8 +339,6 @@
                                   method="onChangeRerender"/>
                     </component>
                 </layoutElement>
-
-
                 <layoutElement column="1" row="6" width="2">
                     <component type="input" name="batchNumber" field="#{form}.batchNumber"
                                reference="batchNumber" hasDescription="true">
@@ -351,12 +347,9 @@
                                   method="fillOrderedQuantities"/>
                     </component>
                 </layoutElement>
-
-
                 <layoutElement column="1" row="7" width="2">
                     <component type="calendar" name="productionDate" field="#{form}.productionDate" reference="productionDate"/>
                 </layoutElement>
-
                 <layoutElement column="1" row="8" width="2">
                     <component type="calendar" name="expirationDate" field="#{form}.expirationDate" reference="expirationDate"/>
                 </layoutElement>

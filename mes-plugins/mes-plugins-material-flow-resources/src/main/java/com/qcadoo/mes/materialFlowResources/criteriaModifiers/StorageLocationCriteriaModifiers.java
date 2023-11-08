@@ -20,6 +20,7 @@ public class StorageLocationCriteriaModifiers {
     public void showStorageLocationsForLocation(final SearchCriteriaBuilder scb, final FilterValueHolder filterValue) {
         if (filterValue.has(L_LOCATION)) {
             Long locationId = filterValue.getLong(L_LOCATION);
+
             scb.add(SearchRestrictions.belongsTo(StorageLocationFields.LOCATION, MaterialFlowConstants.PLUGIN_IDENTIFIER,
                     MaterialFlowConstants.MODEL_LOCATION, locationId));
         }
