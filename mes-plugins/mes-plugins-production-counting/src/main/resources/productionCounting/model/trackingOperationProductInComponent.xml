@@ -68,6 +68,9 @@
         <hasMany name="usedBatches"
                  joinField="trackingOperationProductInComponent" model="usedBatch"
                  cascade="delete"/>
+
+        <boolean name="fromTerminal" default="false" persistent="false"/>
+
     </fields>
 
     <hooks>

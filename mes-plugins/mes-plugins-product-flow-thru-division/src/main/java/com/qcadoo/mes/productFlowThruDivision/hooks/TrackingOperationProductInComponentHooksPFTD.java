@@ -28,7 +28,7 @@ public class TrackingOperationProductInComponentHooksPFTD {
 
         Entity productionTracking = trackingOperationProductInComponent.getBelongsToField(TrackingOperationProductInComponentFields.PRODUCTION_TRACKING);
 
-        if(productionTracking.getBooleanField("fromTerminal")) {
+        if(productionTracking.getBooleanField("fromTerminal") || trackingOperationProductInComponent.getBooleanField("fromTerminal") ) {
             return;
         }
 
