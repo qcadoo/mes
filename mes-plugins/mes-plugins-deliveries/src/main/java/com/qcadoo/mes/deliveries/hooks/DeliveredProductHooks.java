@@ -95,7 +95,6 @@ public class DeliveredProductHooks {
         reservationService.deleteReservationsForDeliveredProductIfChanged(deliveredProduct);
 
         updateDeliveredAndAdditionalQuantityInOrderedProduct(deliveredProductDD, deliveredProduct);
-        tryFillStorageLocation(deliveredProduct);
 
         createBatch(deliveredProduct);
     }
@@ -214,20 +213,6 @@ public class DeliveredProductHooks {
         }
 
         return searchCriteriaBuilder.list().getEntities();
-    }
-
-    private void tryFillStorageLocation(final Entity deliveredProduct) {
-        Entity delivery = deliveredProduct.getBelongsToField(DeliveredProductFields.DELIVERY);
-        Entity location = delivery.getBelongsToField(DeliveryFields.LOCATION);
-
-        if (Objects.nonNull(location)
-                && Objects.isNull(deliveredProduct.getBelongsToField(DeliveredProductFields.STORAGE_LOCATION))) {
-            Entity product = deliveredProduct.getBelongsToField(DeliveredProductFields.PRODUCT);
-
-            Optional<Entity> storageLocation = materialFlowResourcesService.findStorageLocationForProduct(location, product);
-
-            storageLocation.ifPresent(entity -> deliveredProduct.setField(DeliveredProductFields.STORAGE_LOCATION, entity));
-        }
     }
 
     private void createBatch(final Entity deliveredProduct) {
