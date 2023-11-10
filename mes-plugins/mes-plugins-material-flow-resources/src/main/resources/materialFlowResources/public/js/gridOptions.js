@@ -317,6 +317,7 @@ function openLookup(name, parameters) {
             var urlParams = $.param(parameters);
             lookupHtml = lookupHtml + "?" + urlParams;
         }
+
         mainController.openModal('body', '../' + name + lookupHtml, false, function onModalClose() {
         }, function onModalRender(modalWindow) {
         }, {width: 1000, height: 560});
@@ -835,26 +836,10 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
             window.clearTimeout(t.data("timeout"));
             $(this).data("timeout", setTimeout(function () {
                 conversionModified = false;
-                updateProductFromLocation(t.val(), getRowIdFromElement(t));
             }, 500));
         });
 
         return lookup;
-    }
-
-    function updateProductFromLocation(location, rowNumber) {
-        $.get('/rest/rest/documentPositions/productFromLocation.html',
-            {
-                location: location,
-                document: getDocumentId()
-            },
-            function (newProduct) {
-                if (newProduct) {
-                    var productField = updateFieldValue('product', newProduct['number'], rowNumber);
-                    productField.trigger('change');
-                }
-
-            }, 'json');
     }
 
     function lookup_value(elem, operation, value) {
@@ -1012,7 +997,6 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                         newGivenQuantity = roundTo(quantityValueNew * conversion);
                     }
 
-
                     var isInteger = false;
                     if (available_additionalunits) {
                         var entry = available_additionalunits.filter(function (element, index) {
@@ -1030,7 +1014,6 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                     if (!newGivenQuantity || t.hasClass('error-grid')) {
                         newGivenQuantity = '';
                     }
-
 
                     updateFieldValue('givenquantity', newGivenQuantity, rowId);
                 }, 500)));
@@ -1187,7 +1170,6 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                     }
 
                     updateFieldValue('givenquantity', newGivenQuantity, rowId);
-
 
                     if ($scope.config.outDocument && $scope.config.suggestResource) {
                         var product = getFieldValue('product', getRowIdFromElement(t));
