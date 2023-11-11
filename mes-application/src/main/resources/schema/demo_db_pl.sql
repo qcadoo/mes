@@ -2535,6 +2535,22 @@ $$;
 
 
 --
+-- Name: refreshproductionanalysismv(); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION public.refreshproductionanalysismv() RETURNS void
+    LANGUAGE plpgsql
+    AS $$
+DECLARE
+
+BEGIN
+    RAISE NOTICE '-- refresh materialized view mv_productioncounting_productionanalysisdto';
+    EXECUTE 'refresh materialized view mv_productioncounting_productionanalysisdto;';
+END;
+$$;
+
+
+--
 -- Name: remove_archived_data(); Type: FUNCTION; Schema: public; Owner: -
 --
 
@@ -2863,6 +2879,31 @@ BEGIN
 
         END LOOP;
 END;
+$$;
+
+
+--
+-- Name: update_nextupdatetime(); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION public.update_nextupdatetime() RETURNS void
+    LANGUAGE plpgsql
+    AS $$
+    DECLARE
+        systeminfo record;
+        number_of_days integer;
+
+    BEGIN
+        number_of_days = 14;
+
+        FOR systeminfo IN SELECT * FROM qcadooview_systeminfo
+            WHERE (nextupdatetime - interval '1 day') < now()
+        LOOP
+            IF systeminfo.nextupdatetime IS NOT NULL THEN
+                EXECUTE 'UPDATE qcadooview_systeminfo SET nextupdatetime = nextupdatetime ' || E' + interval \'' || number_of_days || E'\' day';
+            END IF;
+        END LOOP;
+    END;
 $$;
 
 
@@ -5733,7 +5774,6 @@ CREATE TABLE public.materialflow_location (
     warehousenumberinoptima character varying(255),
     draftmakesreservation boolean DEFAULT false,
     realizationlocation_id bigint,
-    directionconvertingquantityafterchangingconverter character varying(255) DEFAULT '01fromBasicToAdditional'::character varying,
     active boolean DEFAULT true
 );
 
@@ -26828,7 +26868,7 @@ CREATE VIEW public.productioncounting_finalproductanalysisentry AS
      JOIN public.productioncounting_productiontracking pt ON ((pt.id = topoc.productiontracking_id)))
      JOIN public.orders_order ord ON ((ord.id = pt.order_id)))
      JOIN public.basic_product product ON ((topoc.product_id = product.id)))
-     JOIN public.technologies_technology technology ON ((technology.id = ord.technologyprototype_id)))
+     JOIN public.technologies_technology technology ON ((technology.id = ord.technology_id)))
      LEFT JOIN public.basic_shift shift ON ((pt.shift_id = shift.id)))
      LEFT JOIN public.basic_assortment assortment ON ((product.assortment_id = assortment.id)))
      LEFT JOIN public.basic_size size ON ((size.id = product.size_id)))
@@ -26858,7 +26898,7 @@ UNION ALL
      JOIN public.arch_productioncounting_productiontracking pt ON ((pt.id = topoc.productiontracking_id)))
      JOIN public.arch_orders_order ord ON ((ord.id = pt.order_id)))
      JOIN public.basic_product product ON ((topoc.product_id = product.id)))
-     JOIN public.technologies_technology technology ON ((technology.id = ord.technologyprototype_id)))
+     JOIN public.technologies_technology technology ON ((technology.id = ord.technology_id)))
      LEFT JOIN public.basic_shift shift ON ((pt.shift_id = shift.id)))
      LEFT JOIN public.basic_assortment assortment ON ((product.assortment_id = assortment.id)))
      LEFT JOIN public.basic_size size ON ((size.id = product.size_id)))
@@ -28965,6 +29005,35 @@ ALTER SEQUENCE public.qcadooview_item_id_seq OWNED BY public.qcadooview_item.id;
 
 
 --
+-- Name: qcadooview_systeminfo; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.qcadooview_systeminfo (
+    id bigint NOT NULL,
+    nextupdatetime timestamp without time zone
+);
+
+
+--
+-- Name: qcadooview_systeminfo_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.qcadooview_systeminfo_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: qcadooview_systeminfo_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.qcadooview_systeminfo_id_seq OWNED BY public.qcadooview_systeminfo.id;
+
+
+--
 -- Name: qcadooview_view; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -31004,7 +31073,8 @@ CREATE TABLE public.technologies_changetechnologyparameters (
     createuser character varying(255),
     updateuser character varying(255),
     updateoperationtimenorms boolean DEFAULT false,
-    updateoperationworkstations boolean DEFAULT false
+    updateoperationworkstations boolean DEFAULT false,
+    updateoperationcostnorms boolean DEFAULT false
 );
 
 
@@ -36515,6 +36585,13 @@ ALTER TABLE ONLY public.qcadooview_item ALTER COLUMN id SET DEFAULT nextval('pub
 
 
 --
+-- Name: qcadooview_systeminfo id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.qcadooview_systeminfo ALTER COLUMN id SET DEFAULT nextval('public.qcadooview_systeminfo_id_seq'::regclass);
+
+
+--
 -- Name: qcadooview_view id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -41357,6 +41434,28 @@ COPY public.jointable_group_role (group_id, role_id) FROM stdin;
 36	158
 37	158
 42	158
+3	159
+4	159
+2	159
+29	159
+30	159
+32	159
+33	159
+38	159
+39	159
+42	159
+13	150
+14	150
+15	150
+16	150
+17	150
+18	150
+19	150
+20	150
+34	150
+35	150
+41	150
+42	150
 \.
 
 
@@ -41892,7 +41991,7 @@ COPY public.masterorders_salesvolumemulti (id, dailysalesvolume, optimalstock, c
 -- Data for Name: materialflow_location; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.materialflow_location (id, number, name, externalnumber, algorithm, requireprice, requirebatch, requireproductiondate, requireexpirationdate, entityversion, warehousenumberinoptima, draftmakesreservation, realizationlocation_id, directionconvertingquantityafterchangingconverter, active) FROM stdin;
+COPY public.materialflow_location (id, number, name, externalnumber, algorithm, requireprice, requirebatch, requireproductiondate, requireexpirationdate, entityversion, warehousenumberinoptima, draftmakesreservation, realizationlocation_id, active) FROM stdin;
 \.
 
 
@@ -43355,46 +43454,46 @@ COPY public.qcadooplugin_plugin (id, identifier, version, state, issystem, entit
 COPY public.qcadoosecurity_group (id, name, description, identifier, entityversion, permissiontype) FROM stdin;
 3	User	\N	USER	0	02officeLicense
 4	Admin	\N	ADMIN	0	02officeLicense
-5	Subcontractor	\N	SUBCONTRACTOR	0	02officeLicense
-6	Brak dostępu	\N	\N	0	02officeLicense
 1	API	\N	API	0	01superAdmin
 2	Super admin	\N	SUPER_ADMIN	0	01superAdmin
-7	Terminal rejestracji produkcji		PRODUCTION_TERMINAL	0	03terminalLicense
-8	Terminal rejestracji produkcji + awarie		PRODUCTION_TERMINAL_EVENTS	0	03terminalLicense
-9	Terminal potwierdzania procesów		PROCESS_TERMINAL	0	03terminalLicense
-10	Terminal potwierdzania procesów + awarie		PROCESS_TERMINAL_EVENTS	0	03terminalLicense
-11	Terminale		TERMINALS	0	03terminalLicense
-12	Terminale + awarie		TERMINALS_EVENTS	0	03terminalLicense
-13	Podgląd Gantt  (planowanie na linie) + terminale		ORDERS_GANTT_TERMINALS	0	03terminalLicense
-14	Podgląd Gantt  (planowanie na linie) + terminal rejestracji produkcji		ORDERS_GANTT_PRODUCTION_TERMINAL	0	03terminalLicense
-15	Podgląd Gantt  (planowanie na linie) + terminal rejestracji produkcji + awarie		ORDERS_GANTT_PRODUCTION_TERMINAL_EVENTS	0	03terminalLicense
-16	Podgląd Gantt  (planowanie na linie) + terminale + awarie		ORDERS_GANTT_TERMINALS_EVENTS	0	03terminalLicense
-17	Podgląd Gantt  (planowanie na linie) + terminale + Dashboard		ORDERS_GANTT_TERMINALS_DASHBOARD	0	03terminalLicense
-18	Podgląd Gantt  (planowanie na linie) + terminal rejestracji produkcji + Dashboard		ORDERS_GANTT_PRODUCTION_TERMINAL_DASHBOARD	0	03terminalLicense
-19	Podgląd Gantt  (planowanie na linie) + terminal rejestracji produkcji + Dashboard + awarie		ORDERS_GANTT_PRODUCTION_TERMINAL_DASHBOARD_EVENTS	0	03terminalLicense
-20	Podgląd Gantt  (planowanie na linie) + terminale + Dashboard + awarie		ORDERS_GANTT_TERMINALS_DASHBOARD_EVENTS	0	03terminalLicense
-21	Podgląd Gantt zadań + terminale		TASKS_GANTT_TERMINALS	0	03terminalLicense
-22	Podgląd Gantt  (planowanie na linie) + terminal rejestracji produkcji		TASKS_GANTT_PRODUCTION_TERMINAL	0	03terminalLicense
-23	Podgląd Gantt  (planowanie na linie) + terminal rejestracji produkcji + awarie		TASKS_GANTT_PRODUCTION_TERMINAL_EVENTS	0	03terminalLicense
-24	Podgląd Gantt  (planowanie na linie) + terminale + awarie		TASKS_GANTT_TERMINALS_EVENTS	0	03terminalLicense
-25	Podgląd Gantt  (planowanie na linie) + terminale + Dashboard		TASKS_GANTT_TERMINALS_DASHBOARD	0	03terminalLicense
-26	Podgląd Gantt  (planowanie na linie) + terminal rejestracji produkcji + Dashboard		TASKS_GANTT_PRODUCTION_TERMINAL_DASHBOARD	0	03terminalLicense
-27	Podgląd Gantt  (planowanie na linie) + terminal rejestracji produkcji + Dashboard + awarie		TASKS_GANTT_PRODUCTION_TERMINAL_DASHBOARD_EVENTS	0	03terminalLicense
-28	Podgląd Gantt  (planowanie na linie) + terminale + Dashboard + awarie		TASKS_GANTT_TERMINALS_DASHBOARD_EVENTS	0	03terminalLicense
-29	Obsługa magazynu (produkty, firmy, magazyn, zaopatrzenie)		WAREHOUSE	0	02officeLicense
-30	Obsługa magazynu (produkty, firmy, magazyn, zaopatrzenie) + dźwięki		WAREHOUSE_NOTIFICATION	0	02officeLicense
-31	Kontrola jakości		QUALITY_CONTROL	0	02officeLicense
-32	DUR admin		DUR_ADMIN	0	02officeLicense
-33	DUR admin + dźwięki		DUR_ADMIN_NOTIFICATION	0	02officeLicense
-34	DUR planista		DUR_PLANNER	0	02officeLicense
-35	DUR planista + dźwięki		DUR_PLANNER_NOTIFICATION	0	02officeLicense
-36	DUR pracownik		DUR_WORKER	0	02officeLicense
-37	DUR pracownik + dźwięki		DUR_WORKER_NOTIFICATION	0	02officeLicense
-38	Sprzedaż		SALES	0	02officeLicense
-39	Technolog		TECHNOLOGIST	0	02officeLicense
-40	Księgowa		ACCOUNTANT	0	02officeLicense
-41	Analizy (zarząd)		ANALYSIS	0	02officeLicense
-42	Zakup		PURCHASE	0	02officeLicense
+6	Brak dostępu	\N	DELETED	0	04lackOfAccess
+7	Terminal rejestracji produkcji	\N	PRODUCTION_TERMINAL	0	03terminalLicense
+8	Terminal rejestracji produkcji + awarie	\N	PRODUCTION_TERMINAL_EVENTS	0	03terminalLicense
+9	Terminal potwierdzania procesów	\N	PROCESS_TERMINAL	0	03terminalLicense
+10	Terminal potwierdzania procesów + awarie	\N	PROCESS_TERMINAL_EVENTS	0	03terminalLicense
+11	Terminale	\N	TERMINALS	0	03terminalLicense
+12	Terminale + awarie	\N	TERMINALS_EVENTS	0	03terminalLicense
+29	Obsługa magazynu (produkty, firmy, magazyn, zaopatrzenie)	\N	WAREHOUSE	0	02officeLicense
+30	Obsługa magazynu (produkty, firmy, magazyn, zaopatrzenie) + dźwięki	\N	WAREHOUSE_NOTIFICATION	0	02officeLicense
+31	Kontrola jakości	\N	QUALITY_CONTROL	0	02officeLicense
+32	DUR admin	\N	DUR_ADMIN	0	02officeLicense
+33	DUR admin + dźwięki	\N	DUR_ADMIN_NOTIFICATION	0	02officeLicense
+34	DUR planista	\N	DUR_PLANNER	0	02officeLicense
+35	DUR planista + dźwięki	\N	DUR_PLANNER_NOTIFICATION	0	02officeLicense
+36	DUR pracownik	\N	DUR_WORKER	0	02officeLicense
+37	DUR pracownik + dźwięki	\N	DUR_WORKER_NOTIFICATION	0	02officeLicense
+38	Sprzedaż	\N	SALES	0	02officeLicense
+39	Technolog	\N	TECHNOLOGIST	0	02officeLicense
+40	Księgowa	\N	ACCOUNTANT	0	02officeLicense
+41	Analizy (zarząd)	\N	ANALYSIS	0	02officeLicense
+42	Zakup	\N	PURCHASE	0	02officeLicense
+14	Podgląd Gantt zleceń + terminal rejestracji produkcji	\N	ORDERS_GANTT_PRODUCTION_TERMINAL	0	03terminalLicense
+15	Podgląd Gantt zleceń + terminal rejestracji produkcji + awarie	\N	ORDERS_GANTT_PRODUCTION_TERMINAL_EVENTS	0	03terminalLicense
+18	Podgląd Gantt zleceń + terminal rejestracji produkcji + Dashboard	\N	ORDERS_GANTT_PRODUCTION_TERMINAL_DASHBOARD	0	03terminalLicense
+19	Podgląd Gantt zleceń + terminal rejestracji produkcji + Dashboard + awarie	\N	ORDERS_GANTT_PRODUCTION_TERMINAL_DASHBOARD_EVENTS	0	03terminalLicense
+13	Podgląd Gantt zleceń + terminale	\N	ORDERS_GANTT_TERMINALS	0	03terminalLicense
+16	Podgląd Gantt zleceń + terminale + awarie	\N	ORDERS_GANTT_TERMINALS_EVENTS	0	03terminalLicense
+17	Podgląd Gantt zleceń + terminale + Dashboard	\N	ORDERS_GANTT_TERMINALS_DASHBOARD	0	03terminalLicense
+20	Podgląd Gantt zleceń + terminale + Dashboard + awarie	\N	ORDERS_GANTT_TERMINALS_DASHBOARD_EVENTS	0	03terminalLicense
+22	Podgląd Gantt zadań + terminal rejestracji produkcji	\N	TASKS_GANTT_PRODUCTION_TERMINAL	0	03terminalLicense
+23	Podgląd Gantt zadań + terminal rejestracji produkcji + awarie	\N	TASKS_GANTT_PRODUCTION_TERMINAL_EVENTS	0	03terminalLicense
+26	Podgląd Gantt zadań + terminal rejestracji produkcji + Dashboard	\N	TASKS_GANTT_PRODUCTION_TERMINAL_DASHBOARD	0	03terminalLicense
+27	Podgląd Gantt zadań + terminal rejestracji produkcji + Dashboard + awarie	\N	TASKS_GANTT_PRODUCTION_TERMINAL_DASHBOARD_EVENTS	0	03terminalLicense
+21	Podgląd Gantt zadań + terminale	\N	TASKS_GANTT_TERMINALS	0	03terminalLicense
+24	Podgląd Gantt zadań + terminale + awarie	\N	TASKS_GANTT_TERMINALS_EVENTS	0	03terminalLicense
+25	Podgląd Gantt zadań + terminale + Dashboard	\N	TASKS_GANTT_TERMINALS_DASHBOARD	0	03terminalLicense
+28	Podgląd Gantt zadań + terminale + Dashboard + awarie	\N	TASKS_GANTT_TERMINALS_DASHBOARD_EVENTS	0	03terminalLicense
+5	Podwykonawca	\N	SUBCONTRACTOR	0	02officeLicense
 \.
 
 
@@ -43574,6 +43673,7 @@ COPY public.qcadoosecurity_role (id, identifier, description, entityversion) FRO
 156	ROLE_REQUEST_FOR_QUOTATIONS	\N	0
 157	ROLE_OFFERS	\N	0
 158	ROLE_NEGOTIATIONS	\N	0
+159	ROLE_PRODUCT_COSTS	\N	0
 \.
 
 
@@ -43831,6 +43931,14 @@ COPY public.qcadooview_item (id, pluginidentifier, name, active, category_id, vi
 66	supplyNegotiations	offer	t	9	66	8	ROLE_OFFERS	0
 65	supplyNegotiations	offersItems	t	9	65	9	ROLE_OFFERS	0
 64	supplyNegotiations	negotiation	t	9	64	11	ROLE_NEGOTIATIONS	0
+\.
+
+
+--
+-- Data for Name: qcadooview_systeminfo; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY public.qcadooview_systeminfo (id, nextupdatetime) FROM stdin;
 \.
 
 
@@ -44466,7 +44574,7 @@ COPY public.technologies_barcodeoperationcomponent (id, operationcomponent_id, c
 -- Data for Name: technologies_changetechnologyparameters; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.technologies_changetechnologyparameters (id, changeperformancenorm, standardperformance, changegroup, technologygroup_id, createdate, updatedate, createuser, updateuser, updateoperationtimenorms, updateoperationworkstations) FROM stdin;
+COPY public.technologies_changetechnologyparameters (id, changeperformancenorm, standardperformance, changegroup, technologygroup_id, createdate, updatedate, createuser, updateuser, updateoperationtimenorms, updateoperationworkstations, updateoperationcostnorms) FROM stdin;
 \.
 
 
@@ -49363,7 +49471,7 @@ SELECT pg_catalog.setval('public.qcadoosecurity_persistenttoken_id_seq', 1, fals
 -- Name: qcadoosecurity_role_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('public.qcadoosecurity_role_id_seq', 158, true);
+SELECT pg_catalog.setval('public.qcadoosecurity_role_id_seq', 159, true);
 
 
 --
@@ -49392,6 +49500,13 @@ SELECT pg_catalog.setval('public.qcadooview_category_id_seq', 23, true);
 --
 
 SELECT pg_catalog.setval('public.qcadooview_item_id_seq', 220, true);
+
+
+--
+-- Name: qcadooview_systeminfo_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('public.qcadooview_systeminfo_id_seq', 1, false);
 
 
 --
@@ -50319,6 +50434,199 @@ SELECT pg_catalog.setval('public.workstation_changeover_for_operational_task_num
 
 
 --
+-- Name: arch_masterorders_masterorder arc2_masterorders_masterorder_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.arch_masterorders_masterorder
+    ADD CONSTRAINT arc2_masterorders_masterorder_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: arch_orders_order arc2_orders_order_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.arch_orders_order
+    ADD CONSTRAINT arc2_orders_order_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: basic_assortment basic_assortment_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.basic_assortment
+    ADD CONSTRAINT basic_assortment_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: basic_company basic_company_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.basic_company
+    ADD CONSTRAINT basic_company_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: basic_product basic_product_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.basic_product
+    ADD CONSTRAINT basic_product_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: basic_shift basic_shift_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.basic_shift
+    ADD CONSTRAINT basic_shift_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: basic_staff basic_staff_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.basic_staff
+    ADD CONSTRAINT basic_staff_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: masterorders_masterorder masterorders_masterorder_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.masterorders_masterorder
+    ADD CONSTRAINT masterorders_masterorder_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: orders_order orders_order_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.orders_order
+    ADD CONSTRAINT orders_order_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: productionlines_productionline productionlines_productionline_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.productionlines_productionline
+    ADD CONSTRAINT productionlines_productionline_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: technologiesgenerator_generatorcontext technologiesgenerator_generatorcontext_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.technologiesgenerator_generatorcontext
+    ADD CONSTRAINT technologiesgenerator_generatorcontext_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: mv_productioncounting_productionanalysisdto; Type: MATERIALIZED VIEW; Schema: public; Owner: -
+--
+
+CREATE MATERIALIZED VIEW public.mv_productioncounting_productionanalysisdto AS
+ SELECT row_number() OVER () AS id,
+    bool_or(productiontracking.active) AS active,
+    (productionline.id)::integer AS productionline_id,
+    productionline.number AS productionlinenumber,
+    (basiccompany.id)::integer AS company_id,
+    basiccompany.number AS companynumber,
+    (staff.id)::integer AS staff_id,
+    (((staff.surname)::text || ' '::text) || (staff.name)::text) AS staffname,
+    (assortment.id)::integer AS assortment_id,
+    assortment.name AS assortmentname,
+    (product.id)::integer AS product_id,
+    product.number AS productnumber,
+    product.name AS productname,
+    product.unit AS productunit,
+    size.number AS sizenumber,
+    sum((COALESCE(trackingoperationproductoutcomponent.usedquantity, (0)::numeric))::numeric(14,5)) AS usedquantity,
+    sum((COALESCE(trackingoperationproductoutcomponent.wastesquantity, (0)::numeric))::numeric(14,5)) AS wastesquantity,
+    sum(((COALESCE(trackingoperationproductoutcomponent.usedquantity, (0)::numeric) + COALESCE(trackingoperationproductoutcomponent.wastesquantity, (0)::numeric)))::numeric(14,5)) AS donequantity,
+    trackingoperationproductoutcomponent.causeofwastes,
+    (shift.id)::integer AS shift_id,
+    shift.name AS shiftname,
+    (productiontracking.timerangefrom)::date AS timerangefrom,
+    (productiontracking.timerangeto)::date AS timerangeto,
+    (tcontext.id)::integer AS generator_id,
+    tcontext.number AS generatorname,
+    (ordersorder.id)::integer AS order_id,
+    ordersorder.number AS ordernumber,
+    COALESCE(masterorder.number, groupmasterorder.number) AS obtainedmasterordernumber,
+    technologygroup.number AS technologygroupnumber,
+    trackingoperationproductoutcomponent.typeofmaterial
+   FROM (((((((((((((((public.productioncounting_productiontracking productiontracking
+     LEFT JOIN public.orders_order ordersorder ON ((ordersorder.id = productiontracking.order_id)))
+     LEFT JOIN public.basic_company basiccompany ON ((basiccompany.id = ordersorder.company_id)))
+     LEFT JOIN public.productionlines_productionline productionline ON ((productionline.id = ordersorder.productionline_id)))
+     LEFT JOIN public.basic_staff staff ON ((staff.id = productiontracking.staff_id)))
+     LEFT JOIN public.productioncounting_trackingoperationproductoutcomponent trackingoperationproductoutcomponent ON ((trackingoperationproductoutcomponent.productiontracking_id = productiontracking.id)))
+     LEFT JOIN public.basic_product product ON ((product.id = trackingoperationproductoutcomponent.product_id)))
+     LEFT JOIN public.basic_assortment assortment ON ((assortment.id = product.assortment_id)))
+     LEFT JOIN public.basic_size size ON ((size.id = product.size_id)))
+     LEFT JOIN public.basic_shift shift ON ((shift.id = productiontracking.shift_id)))
+     LEFT JOIN public.technologies_technology technologyprototype ON ((ordersorder.technology_id = technologyprototype.id)))
+     LEFT JOIN public.technologiesgenerator_generatorcontext tcontext ON ((tcontext.id = technologyprototype.generatorcontext_id)))
+     LEFT JOIN public.masterorders_masterorder masterorder ON ((masterorder.id = ordersorder.masterorder_id)))
+     LEFT JOIN public.ordersgroups_ordersgroup ordersgroup ON ((ordersgroup.id = ordersorder.ordersgroup_id)))
+     LEFT JOIN public.masterorders_masterorder groupmasterorder ON ((groupmasterorder.id = ordersgroup.masterorder_id)))
+     LEFT JOIN public.technologies_technologygroup technologygroup ON ((technologyprototype.technologygroup_id = technologygroup.id)))
+  WHERE ((productiontracking.state)::text = ANY (ARRAY[('01draft'::character varying)::text, ('02accepted'::character varying)::text]))
+  GROUP BY productionline.id, basiccompany.id, staff.id, assortment.id, size.number, product.id, shift.id, trackingoperationproductoutcomponent.causeofwastes, ((productiontracking.timerangefrom)::date), ((productiontracking.timerangeto)::date), ordersorder.id, tcontext.id, masterorder.id, groupmasterorder.id, technologygroup.number, trackingoperationproductoutcomponent.typeofmaterial
+UNION ALL
+ SELECT row_number() OVER () AS id,
+    bool_or(productiontracking.active) AS active,
+    (productionline.id)::integer AS productionline_id,
+    productionline.number AS productionlinenumber,
+    (basiccompany.id)::integer AS company_id,
+    basiccompany.number AS companynumber,
+    (staff.id)::integer AS staff_id,
+    (((staff.surname)::text || ' '::text) || (staff.name)::text) AS staffname,
+    (assortment.id)::integer AS assortment_id,
+    assortment.name AS assortmentname,
+    (product.id)::integer AS product_id,
+    product.number AS productnumber,
+    product.name AS productname,
+    product.unit AS productunit,
+    size.number AS sizenumber,
+    sum((COALESCE(trackingoperationproductoutcomponent.usedquantity, (0)::numeric))::numeric(14,5)) AS usedquantity,
+    sum((COALESCE(trackingoperationproductoutcomponent.wastesquantity, (0)::numeric))::numeric(14,5)) AS wastesquantity,
+    sum(((COALESCE(trackingoperationproductoutcomponent.usedquantity, (0)::numeric) + COALESCE(trackingoperationproductoutcomponent.wastesquantity, (0)::numeric)))::numeric(14,5)) AS donequantity,
+    trackingoperationproductoutcomponent.causeofwastes,
+    (shift.id)::integer AS shift_id,
+    shift.name AS shiftname,
+    (productiontracking.timerangefrom)::date AS timerangefrom,
+    (productiontracking.timerangeto)::date AS timerangeto,
+    (tcontext.id)::integer AS generator_id,
+    tcontext.number AS generatorname,
+    (ordersorder.id)::integer AS order_id,
+    ordersorder.number AS ordernumber,
+    COALESCE(masterorder.number, groupmasterorder.number) AS obtainedmasterordernumber,
+    technologygroup.number AS technologygroupnumber,
+    trackingoperationproductoutcomponent.typeofmaterial
+   FROM (((((((((((((((public.arch_productioncounting_productiontracking productiontracking
+     LEFT JOIN public.arch_orders_order ordersorder ON ((ordersorder.id = productiontracking.order_id)))
+     LEFT JOIN public.basic_company basiccompany ON ((basiccompany.id = ordersorder.company_id)))
+     LEFT JOIN public.productionlines_productionline productionline ON ((productionline.id = ordersorder.productionline_id)))
+     LEFT JOIN public.basic_staff staff ON ((staff.id = productiontracking.staff_id)))
+     LEFT JOIN public.arch_productioncounting_trackingoperationproductoutcomponent trackingoperationproductoutcomponent ON ((trackingoperationproductoutcomponent.productiontracking_id = productiontracking.id)))
+     LEFT JOIN public.basic_product product ON ((product.id = trackingoperationproductoutcomponent.product_id)))
+     LEFT JOIN public.basic_assortment assortment ON ((assortment.id = product.assortment_id)))
+     LEFT JOIN public.basic_size size ON ((size.id = product.size_id)))
+     LEFT JOIN public.basic_shift shift ON ((shift.id = productiontracking.shift_id)))
+     LEFT JOIN public.technologies_technology technologyprototype ON ((ordersorder.technology_id = technologyprototype.id)))
+     LEFT JOIN public.technologiesgenerator_generatorcontext tcontext ON ((tcontext.id = technologyprototype.generatorcontext_id)))
+     LEFT JOIN public.arch_masterorders_masterorder masterorder ON ((masterorder.id = ordersorder.masterorder_id)))
+     LEFT JOIN public.arch_ordersgroups_ordersgroup ordersgroup ON ((ordersgroup.id = ordersorder.ordersgroup_id)))
+     LEFT JOIN public.arch_masterorders_masterorder groupmasterorder ON ((groupmasterorder.id = ordersgroup.masterorder_id)))
+     LEFT JOIN public.technologies_technologygroup technologygroup ON ((technologyprototype.technologygroup_id = technologygroup.id)))
+  WHERE ((productiontracking.state)::text = ANY (ARRAY[('01draft'::character varying)::text, ('02accepted'::character varying)::text]))
+  GROUP BY productionline.id, basiccompany.id, staff.id, assortment.id, size.number, product.id, shift.id, trackingoperationproductoutcomponent.causeofwastes, ((productiontracking.timerangefrom)::date), ((productiontracking.timerangeto)::date), ordersorder.id, tcontext.id, masterorder.id, groupmasterorder.id, technologygroup.number, trackingoperationproductoutcomponent.typeofmaterial
+  WITH NO DATA;
+
+
+--
 -- Name: advancedgenealogy_batch advancedgenealogy_batch_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -50767,14 +51075,6 @@ ALTER TABLE ONLY public.arch_masterorders_masterorder
 
 
 --
--- Name: arch_masterorders_masterorder arc2_masterorders_masterorder_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_masterorders_masterorder
-    ADD CONSTRAINT arc2_masterorders_masterorder_pkey PRIMARY KEY (id);
-
-
---
 -- Name: arch_masterorders_masterorderproduct arc2_masterorders_masterorderproduct_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -50900,14 +51200,6 @@ ALTER TABLE ONLY public.arch_orders_operationaltask
 
 ALTER TABLE ONLY public.arch_orders_operationaltaskstatechange
     ADD CONSTRAINT arc2_orders_operationaltaskstatechange_pkey PRIMARY KEY (id);
-
-
---
--- Name: arch_orders_order arc2_orders_order_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arch_orders_order
-    ADD CONSTRAINT arc2_orders_order_pkey PRIMARY KEY (id);
 
 
 --
@@ -51575,14 +51867,6 @@ ALTER TABLE ONLY public.basic_address
 
 
 --
--- Name: basic_assortment basic_assortment_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.basic_assortment
-    ADD CONSTRAINT basic_assortment_pkey PRIMARY KEY (id);
-
-
---
 -- Name: basic_assortmentelement basic_assortmentelement_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -51604,14 +51888,6 @@ ALTER TABLE ONLY public.basic_attribute
 
 ALTER TABLE ONLY public.basic_attributevalue
     ADD CONSTRAINT basic_attributevalue_pkey PRIMARY KEY (id);
-
-
---
--- Name: basic_company basic_company_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.basic_company
-    ADD CONSTRAINT basic_company_pkey PRIMARY KEY (id);
 
 
 --
@@ -51775,14 +52051,6 @@ ALTER TABLE ONLY public.basic_piecerateitem
 
 
 --
--- Name: basic_product basic_product_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.basic_product
-    ADD CONSTRAINT basic_product_pkey PRIMARY KEY (id);
-
-
---
 -- Name: basic_productattachment basic_productattachment_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -51804,14 +52072,6 @@ ALTER TABLE ONLY public.basic_productattributevalue
 
 ALTER TABLE ONLY public.basic_reportcolumnwidth
     ADD CONSTRAINT basic_reportcolumnwidth_pkey PRIMARY KEY (id);
-
-
---
--- Name: basic_shift basic_shift_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.basic_shift
-    ADD CONSTRAINT basic_shift_pkey PRIMARY KEY (id);
 
 
 --
@@ -51844,14 +52104,6 @@ ALTER TABLE ONLY public.basic_sizegroup
 
 ALTER TABLE ONLY public.basic_skill
     ADD CONSTRAINT basic_skill_pkey PRIMARY KEY (id);
-
-
---
--- Name: basic_staff basic_staff_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.basic_staff
-    ADD CONSTRAINT basic_staff_pkey PRIMARY KEY (id);
 
 
 --
@@ -53335,14 +53587,6 @@ ALTER TABLE ONLY public.masterorders_generatingordershelper
 
 
 --
--- Name: masterorders_masterorder masterorders_masterorder_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.masterorders_masterorder
-    ADD CONSTRAINT masterorders_masterorder_pkey PRIMARY KEY (id);
-
-
---
 -- Name: masterorders_masterorderdefinition masterorders_masterorderdefinition_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -53844,14 +54088,6 @@ ALTER TABLE ONLY public.orders_operationaltask
 
 ALTER TABLE ONLY public.orders_operationaltaskstatechange
     ADD CONSTRAINT orders_operationaltaskstatechange_pkey PRIMARY KEY (id);
-
-
---
--- Name: orders_order orders_order_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.orders_order
-    ADD CONSTRAINT orders_order_pkey PRIMARY KEY (id);
 
 
 --
@@ -54583,14 +54819,6 @@ ALTER TABLE ONLY public.productionlines_factorystructureelement
 
 
 --
--- Name: productionlines_productionline productionlines_productionline_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.productionlines_productionline
-    ADD CONSTRAINT productionlines_productionline_pkey PRIMARY KEY (id);
-
-
---
 -- Name: productionlines_workstationtypecomponent productionlines_workstationtypecomponent_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -54820,6 +55048,14 @@ ALTER TABLE ONLY public.qcadooview_category
 
 ALTER TABLE ONLY public.qcadooview_item
     ADD CONSTRAINT qcadooview_item_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: qcadooview_systeminfo qcadooview_systeminfo_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.qcadooview_systeminfo
+    ADD CONSTRAINT qcadooview_systeminfo_pkey PRIMARY KEY (id);
 
 
 --
@@ -55444,14 +55680,6 @@ ALTER TABLE ONLY public.technologies_workstationchangeovernorm
 
 ALTER TABLE ONLY public.technologies_workstationstatechange
     ADD CONSTRAINT technologies_workstationstatechange_pkey PRIMARY KEY (id);
-
-
---
--- Name: technologiesgenerator_generatorcontext technologiesgenerator_generatorcontext_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.technologiesgenerator_generatorcontext
-    ADD CONSTRAINT technologiesgenerator_generatorcontext_pkey PRIMARY KEY (id);
 
 
 --
@@ -57695,110 +57923,6 @@ CREATE OR REPLACE VIEW public.ordersgroups_drafrptquantitydto AS
 
 
 --
--- Name: productioncounting_productionanalysisdto _RETURN; Type: RULE; Schema: public; Owner: -
---
-
-CREATE OR REPLACE VIEW public.productioncounting_productionanalysisdto AS
- SELECT row_number() OVER () AS id,
-    bool_or(productiontracking.active) AS active,
-    (productionline.id)::integer AS productionline_id,
-    productionline.number AS productionlinenumber,
-    (basiccompany.id)::integer AS company_id,
-    basiccompany.number AS companynumber,
-    (staff.id)::integer AS staff_id,
-    (((staff.surname)::text || ' '::text) || (staff.name)::text) AS staffname,
-    (assortment.id)::integer AS assortment_id,
-    assortment.name AS assortmentname,
-    (product.id)::integer AS product_id,
-    product.number AS productnumber,
-    product.name AS productname,
-    product.unit AS productunit,
-    size.number AS sizenumber,
-    sum((COALESCE(trackingoperationproductoutcomponent.usedquantity, (0)::numeric))::numeric(14,5)) AS usedquantity,
-    sum((COALESCE(trackingoperationproductoutcomponent.wastesquantity, (0)::numeric))::numeric(14,5)) AS wastesquantity,
-    sum(((COALESCE(trackingoperationproductoutcomponent.usedquantity, (0)::numeric) + COALESCE(trackingoperationproductoutcomponent.wastesquantity, (0)::numeric)))::numeric(14,5)) AS donequantity,
-    trackingoperationproductoutcomponent.causeofwastes,
-    (shift.id)::integer AS shift_id,
-    shift.name AS shiftname,
-    (productiontracking.timerangefrom)::date AS timerangefrom,
-    (productiontracking.timerangeto)::date AS timerangeto,
-    (tcontext.id)::integer AS generator_id,
-    tcontext.number AS generatorname,
-    (ordersorder.id)::integer AS order_id,
-    ordersorder.number AS ordernumber,
-    COALESCE(masterorder.number, groupmasterorder.number) AS obtainedmasterordernumber,
-    technologygroup.number AS technologygroupnumber,
-    trackingoperationproductoutcomponent.typeofmaterial
-   FROM (((((((((((((((public.productioncounting_productiontracking productiontracking
-     LEFT JOIN public.orders_order ordersorder ON ((ordersorder.id = productiontracking.order_id)))
-     LEFT JOIN public.basic_company basiccompany ON ((basiccompany.id = ordersorder.company_id)))
-     LEFT JOIN public.productionlines_productionline productionline ON ((productionline.id = ordersorder.productionline_id)))
-     LEFT JOIN public.basic_staff staff ON ((staff.id = productiontracking.staff_id)))
-     LEFT JOIN public.productioncounting_trackingoperationproductoutcomponent trackingoperationproductoutcomponent ON ((trackingoperationproductoutcomponent.productiontracking_id = productiontracking.id)))
-     LEFT JOIN public.basic_product product ON ((product.id = trackingoperationproductoutcomponent.product_id)))
-     LEFT JOIN public.basic_assortment assortment ON ((assortment.id = product.assortment_id)))
-     LEFT JOIN public.basic_size size ON ((size.id = product.size_id)))
-     LEFT JOIN public.basic_shift shift ON ((shift.id = productiontracking.shift_id)))
-     LEFT JOIN public.technologies_technology technologyprototype ON ((ordersorder.technology_id = technologyprototype.id)))
-     LEFT JOIN public.technologiesgenerator_generatorcontext tcontext ON ((tcontext.id = technologyprototype.generatorcontext_id)))
-     LEFT JOIN public.masterorders_masterorder masterorder ON ((masterorder.id = ordersorder.masterorder_id)))
-     LEFT JOIN public.ordersgroups_ordersgroup ordersgroup ON ((ordersgroup.id = ordersorder.ordersgroup_id)))
-     LEFT JOIN public.masterorders_masterorder groupmasterorder ON ((groupmasterorder.id = ordersgroup.masterorder_id)))
-     LEFT JOIN public.technologies_technologygroup technologygroup ON ((technologyprototype.technologygroup_id = technologygroup.id)))
-  WHERE ((productiontracking.state)::text = ANY (ARRAY[('01draft'::character varying)::text, ('02accepted'::character varying)::text]))
-  GROUP BY productionline.id, basiccompany.id, staff.id, assortment.id, size.number, product.id, shift.id, trackingoperationproductoutcomponent.causeofwastes, ((productiontracking.timerangefrom)::date), ((productiontracking.timerangeto)::date), ordersorder.id, tcontext.id, masterorder.id, groupmasterorder.id, technologygroup.number, trackingoperationproductoutcomponent.typeofmaterial
-UNION ALL
- SELECT row_number() OVER () AS id,
-    bool_or(productiontracking.active) AS active,
-    (productionline.id)::integer AS productionline_id,
-    productionline.number AS productionlinenumber,
-    (basiccompany.id)::integer AS company_id,
-    basiccompany.number AS companynumber,
-    (staff.id)::integer AS staff_id,
-    (((staff.surname)::text || ' '::text) || (staff.name)::text) AS staffname,
-    (assortment.id)::integer AS assortment_id,
-    assortment.name AS assortmentname,
-    (product.id)::integer AS product_id,
-    product.number AS productnumber,
-    product.name AS productname,
-    product.unit AS productunit,
-    size.number AS sizenumber,
-    sum((COALESCE(trackingoperationproductoutcomponent.usedquantity, (0)::numeric))::numeric(14,5)) AS usedquantity,
-    sum((COALESCE(trackingoperationproductoutcomponent.wastesquantity, (0)::numeric))::numeric(14,5)) AS wastesquantity,
-    sum(((COALESCE(trackingoperationproductoutcomponent.usedquantity, (0)::numeric) + COALESCE(trackingoperationproductoutcomponent.wastesquantity, (0)::numeric)))::numeric(14,5)) AS donequantity,
-    trackingoperationproductoutcomponent.causeofwastes,
-    (shift.id)::integer AS shift_id,
-    shift.name AS shiftname,
-    (productiontracking.timerangefrom)::date AS timerangefrom,
-    (productiontracking.timerangeto)::date AS timerangeto,
-    (tcontext.id)::integer AS generator_id,
-    tcontext.number AS generatorname,
-    (ordersorder.id)::integer AS order_id,
-    ordersorder.number AS ordernumber,
-    COALESCE(masterorder.number, groupmasterorder.number) AS obtainedmasterordernumber,
-    technologygroup.number AS technologygroupnumber,
-    trackingoperationproductoutcomponent.typeofmaterial
-   FROM (((((((((((((((public.arch_productioncounting_productiontracking productiontracking
-     LEFT JOIN public.arch_orders_order ordersorder ON ((ordersorder.id = productiontracking.order_id)))
-     LEFT JOIN public.basic_company basiccompany ON ((basiccompany.id = ordersorder.company_id)))
-     LEFT JOIN public.productionlines_productionline productionline ON ((productionline.id = ordersorder.productionline_id)))
-     LEFT JOIN public.basic_staff staff ON ((staff.id = productiontracking.staff_id)))
-     LEFT JOIN public.arch_productioncounting_trackingoperationproductoutcomponent trackingoperationproductoutcomponent ON ((trackingoperationproductoutcomponent.productiontracking_id = productiontracking.id)))
-     LEFT JOIN public.basic_product product ON ((product.id = trackingoperationproductoutcomponent.product_id)))
-     LEFT JOIN public.basic_assortment assortment ON ((assortment.id = product.assortment_id)))
-     LEFT JOIN public.basic_size size ON ((size.id = product.size_id)))
-     LEFT JOIN public.basic_shift shift ON ((shift.id = productiontracking.shift_id)))
-     LEFT JOIN public.technologies_technology technologyprototype ON ((ordersorder.technology_id = technologyprototype.id)))
-     LEFT JOIN public.technologiesgenerator_generatorcontext tcontext ON ((tcontext.id = technologyprototype.generatorcontext_id)))
-     LEFT JOIN public.arch_masterorders_masterorder masterorder ON ((masterorder.id = ordersorder.masterorder_id)))
-     LEFT JOIN public.arch_ordersgroups_ordersgroup ordersgroup ON ((ordersgroup.id = ordersorder.ordersgroup_id)))
-     LEFT JOIN public.arch_masterorders_masterorder groupmasterorder ON ((groupmasterorder.id = ordersgroup.masterorder_id)))
-     LEFT JOIN public.technologies_technologygroup technologygroup ON ((technologyprototype.technologygroup_id = technologygroup.id)))
-  WHERE ((productiontracking.state)::text = ANY (ARRAY[('01draft'::character varying)::text, ('02accepted'::character varying)::text]))
-  GROUP BY productionline.id, basiccompany.id, staff.id, assortment.id, size.number, product.id, shift.id, trackingoperationproductoutcomponent.causeofwastes, ((productiontracking.timerangefrom)::date), ((productiontracking.timerangeto)::date), ordersorder.id, tcontext.id, masterorder.id, groupmasterorder.id, technologygroup.number, trackingoperationproductoutcomponent.typeofmaterial;
-
-
---
 -- Name: productioncounting_trackingoperationproductincomponenthelper _RETURN; Type: RULE; Schema: public; Owner: -
 --
 
@@ -58067,6 +58191,44 @@ CREATE OR REPLACE VIEW public.technologies_technologydto AS
      LEFT JOIN public.productflowthrudivision_technologyproductionline tpl ON (((tpl.technology_id = technology.id) AND tpl.master)))
      LEFT JOIN public.productionlines_productionline productionline ON ((productionline.id = tpl.productionline_id)))
   GROUP BY technology.id, product.number, product.globaltypeofmaterial, technologygroup.number, division.name, product.name, generatorcontext.number, technologystatechange.dateandtime, tpl.standardperformance, productionline.number, assortment.name, qualitycard.number;
+
+
+--
+-- Name: productioncounting_productionanalysisdto _RETURN; Type: RULE; Schema: public; Owner: -
+--
+
+CREATE OR REPLACE VIEW public.productioncounting_productionanalysisdto AS
+ SELECT mv_productioncounting_productionanalysisdto.id,
+    mv_productioncounting_productionanalysisdto.active,
+    mv_productioncounting_productionanalysisdto.productionline_id,
+    mv_productioncounting_productionanalysisdto.productionlinenumber,
+    mv_productioncounting_productionanalysisdto.company_id,
+    mv_productioncounting_productionanalysisdto.companynumber,
+    mv_productioncounting_productionanalysisdto.staff_id,
+    mv_productioncounting_productionanalysisdto.staffname,
+    mv_productioncounting_productionanalysisdto.assortment_id,
+    mv_productioncounting_productionanalysisdto.assortmentname,
+    mv_productioncounting_productionanalysisdto.product_id,
+    mv_productioncounting_productionanalysisdto.productnumber,
+    mv_productioncounting_productionanalysisdto.productname,
+    mv_productioncounting_productionanalysisdto.productunit,
+    mv_productioncounting_productionanalysisdto.sizenumber,
+    mv_productioncounting_productionanalysisdto.usedquantity,
+    mv_productioncounting_productionanalysisdto.wastesquantity,
+    mv_productioncounting_productionanalysisdto.donequantity,
+    mv_productioncounting_productionanalysisdto.causeofwastes,
+    mv_productioncounting_productionanalysisdto.shift_id,
+    mv_productioncounting_productionanalysisdto.shiftname,
+    mv_productioncounting_productionanalysisdto.timerangefrom,
+    mv_productioncounting_productionanalysisdto.timerangeto,
+    mv_productioncounting_productionanalysisdto.generator_id,
+    mv_productioncounting_productionanalysisdto.generatorname,
+    mv_productioncounting_productionanalysisdto.order_id,
+    mv_productioncounting_productionanalysisdto.ordernumber,
+    mv_productioncounting_productionanalysisdto.obtainedmasterordernumber,
+    mv_productioncounting_productionanalysisdto.technologygroupnumber,
+    mv_productioncounting_productionanalysisdto.typeofmaterial
+   FROM public.mv_productioncounting_productionanalysisdto;
 
 
 --
@@ -67565,6 +67727,13 @@ REFRESH MATERIALIZED VIEW public.arch_mv_productioncounting_productiontrackingdt
 --
 
 REFRESH MATERIALIZED VIEW public.mv_productioncounting_performanceanalysisdto;
+
+
+--
+-- Name: mv_productioncounting_productionanalysisdto; Type: MATERIALIZED VIEW DATA; Schema: public; Owner: -
+--
+
+REFRESH MATERIALIZED VIEW public.mv_productioncounting_productionanalysisdto;
 
 
 --
