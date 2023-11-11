@@ -36,6 +36,21 @@
                 <bigButton name="refresh" icon="updateIcon24.png" state="enabled" action="#{grid}.performRefresh;"
                            accesskey="r"/>
             </group>
+            <group name="actions">
+                <bigButton name="refreshProductionAnalysisMV" icon="generateIcon24.png">
+                    <script>
+                        <![CDATA[
+							this.addOnChangeListener({
+								onClick: function() {
+									if(window.canClose()) {
+										#{grid}.performEvent('refreshProductionAnalysisMV', []);
+									}
+								}
+							});
+						]]>
+                    </script>
+                </bigButton>
+            </group>
             <group name="genericExport">
                 <smallButton name="csv" state="enabled" icon="exportToCsvIcon16.png">
                     <script>
@@ -135,6 +150,11 @@
                     <listener event="calculateTotalQuantities"
                               class="com.qcadoo.mes.productionCounting.listeners.ProductionAnalysisListeners"
                               method="calculateTotalQuantities"/>
+
+
+                    <listener event="refreshProductionAnalysisMV"
+                              class="com.qcadoo.mes.productionCounting.listeners.ProductionAnalysisListeners"
+                              method="refreshProductionAnalysisMV"/>
                 </component>
             </layoutElement>
         </component>

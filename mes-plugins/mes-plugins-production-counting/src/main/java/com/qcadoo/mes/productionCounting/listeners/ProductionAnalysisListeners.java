@@ -3,6 +3,7 @@ package com.qcadoo.mes.productionCounting.listeners;
 import java.util.Collections;
 import java.util.Map;
 
+import com.google.common.collect.Maps;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -32,6 +33,13 @@ public class ProductionAnalysisListeners {
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
+
+    public void refreshProductionAnalysisMV(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        jdbcTemplate.queryForObject("SELECT refreshProductionAnalysisMV()",
+                Maps.newHashMap()
+                , Object.class);
+    }
+
 
     public void calculateTotalQuantities(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         final FieldComponent totalProducedQuantity = (FieldComponent) view.getComponentByReference("totalProducedQuantity");

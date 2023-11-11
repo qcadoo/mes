@@ -78,6 +78,7 @@
 
         <security:role identifier="ROLE_PRODUCTS"/>
         <security:role identifier="ROLE_PRODUCT_FAMILIES"/>
+        <security:role identifier="ROLE_PRODUCT_COSTS"/>
 
         <security:role identifier="ROLE_COMPANY"/>
         <security:role identifier="ROLE_COMPANY_STRUCTURE"/>
