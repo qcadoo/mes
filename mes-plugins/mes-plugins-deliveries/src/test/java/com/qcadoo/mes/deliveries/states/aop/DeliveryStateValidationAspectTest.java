@@ -63,7 +63,7 @@ public class DeliveryStateValidationAspectTest {
 
         RunForStateTransitions transitions = preValidationOnReceive.getAnnotation(RunForStateTransitions.class);
         assertNotNull(transitions);
-        assertEquals(2, transitions.value().length);
+        assertEquals(1, transitions.value().length);
 
         RunForStateTransition firstTransition = transitions.value()[0];
         assertEquals(firstTransition.sourceState(), DeliveryStateStringValues.APPROVED);
