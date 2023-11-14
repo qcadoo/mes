@@ -8,6 +8,7 @@ import com.qcadoo.mes.materialFlowResources.constants.ReservationFields;
 import com.qcadoo.mes.materialFlowResources.service.ResourceReservationsService;
 import com.qcadoo.mes.productFlowThruDivision.constants.OrderProductResourceReservationFields;
 import com.qcadoo.mes.productFlowThruDivision.constants.ProductionCountingQuantityFieldsPFTD;
+import com.qcadoo.mes.productFlowThruDivision.constants.TrackingProductResourceReservationFields;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -50,6 +51,24 @@ public class OrderReservationsService {
             rfo.getDataDefinition().delete(rfo.getId());
         });
     }
+
+
+    public void updateReservationOnDocumentCreation(final Entity trackingProductResourceReservation) {
+        Entity orderProductResourceReservation = trackingProductResourceReservation.getBelongsToField(TrackingProductResourceReservationFields.ORDER_PRODUCT_RESOURCE_RESERVATION);
+        Entity existingReservation = getReservation(orderProductResourceReservation);
+        if (Objects.nonNull(existingReservation)) {
+            BigDecimal reservationQuantity = existingReservation.getDecimalField(ReservationFields.QUANTITY);
+            BigDecimal newReservationQuantity = reservationQuantity.subtract(trackingProductResourceReservation.getDecimalField(TrackingProductResourceReservationFields.USED_QUANTITY));
+            if (newReservationQuantity.compareTo(BigDecimal.ZERO) > 0) {
+                existingReservation.setField(ReservationFields.QUANTITY, newReservationQuantity);
+            } else {
+                existingReservation.setField(ReservationFields.QUANTITY, BigDecimal.ZERO);
+            }
+            existingReservation.getDataDefinition().save(existingReservation);
+        }
+
+    }
+
 
 
     private void createReservation(Entity orderProductResourceReservation) {

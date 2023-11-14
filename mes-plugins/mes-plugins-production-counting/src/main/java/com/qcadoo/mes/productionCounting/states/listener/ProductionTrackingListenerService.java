@@ -83,6 +83,9 @@ public final class ProductionTrackingListenerService {
     private static final String L_PRODUCT = "product";
 
     private static final String L_COUNT = "count";
+    public static final String L_RESOURCE_RESERVATIONS = "resourceReservations";
+    public static final String L_ORDER_PRODUCT_RESOURCE_RESERVATION = "orderProductResourceReservation";
+    public static final String L_USED_QUANTITY = "usedQuantity";
 
     @Autowired
     private NumberService numberService;
@@ -503,8 +506,7 @@ public final class ProductionTrackingListenerService {
                 final BigDecimal result = operation.perform(usedQuantity, productQuantity);
 
                 pcq.setField(ProductionCountingQuantityFields.USED_QUANTITY, result);
-                pcq = pcq.getDataDefinition().save(pcq);
-                pcq.isValid();
+                pcq.getDataDefinition().save(pcq);
             } else {
                 int lastIndex = productionCountingQuantities.size() - 1;
                 BigDecimal productQuantity = BigDecimalUtils.convertNullToZero(trackingOperationProductInComponent
@@ -548,6 +550,16 @@ public final class ProductionTrackingListenerService {
 
                 }
             }
+
+            for (Entity trackingProductResourceReservation : trackingOperationProductInComponent.getHasManyField(L_RESOURCE_RESERVATIONS)) {
+                Entity orderProductResourceReservation = trackingProductResourceReservation.getBelongsToField(L_ORDER_PRODUCT_RESOURCE_RESERVATION);
+                BigDecimal usedQuantity = BigDecimalUtils.convertNullToZero(orderProductResourceReservation.getDecimalField(L_USED_QUANTITY));
+                usedQuantity = usedQuantity.add(BigDecimalUtils.convertNullToZero(trackingProductResourceReservation.getDecimalField(L_USED_QUANTITY)));
+                orderProductResourceReservation.setField(L_USED_QUANTITY, usedQuantity);
+                orderProductResourceReservation.getDataDefinition().fastSave(orderProductResourceReservation);
+            }
+
+
 
         });
 

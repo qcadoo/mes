@@ -12,6 +12,9 @@ import com.qcadoo.mes.basic.constants.UnitConversionItemFieldsB;
 import com.qcadoo.mes.basicProductionCounting.constants.OrderFieldsBPC;
 import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityRole;
 import com.qcadoo.mes.materialFlowResources.constants.DocumentFields;
+import com.qcadoo.mes.productFlowThruDivision.constants.OrderProductResourceReservationFields;
+import com.qcadoo.mes.productFlowThruDivision.constants.TrackingProductResourceReservationFields;
+import com.qcadoo.mes.productFlowThruDivision.reservation.OrderReservationsService;
 import com.qcadoo.mes.productionCounting.ProductionTrackingService;
 import com.qcadoo.mes.productionCounting.constants.*;
 import com.qcadoo.mes.productionCounting.states.constants.ProductionTrackingState;
@@ -77,6 +80,9 @@ public class ProductionCountingDocumentService {
     @Autowired
     private ProductionTrackingService productionTrackingService;
 
+    @Autowired
+    private OrderReservationsService orderReservationsService;
+
     public void createCumulatedInternalOutboundDocument(Entity order) {
 
         List<Entity> productionTrackings = dataDefinitionService
@@ -87,10 +93,10 @@ public class ProductionCountingDocumentService {
 
         List<Entity> trackingOperationProductInComponents = Lists.newArrayList();
         for (Entity productionTracking : productionTrackings) {
-            if(productionTrackingListenerServicePFTD.notCreateDocumentsForIntermediateRecords(productionTracking)) {
+            if (productionTrackingListenerServicePFTD.notCreateDocumentsForIntermediateRecords(productionTracking)) {
 
                 List<Entity> withoutIntermediateRecords = productionTracking.getHasManyField(ProductionTrackingFields.TRACKING_OPERATION_PRODUCT_IN_COMPONENTS)
-                                .stream().filter(pin -> !Strings.isNullOrEmpty(pin.getStringField(TrackingOperationProductInComponentFields.TYPE_OF_MATERIAL))
+                        .stream().filter(pin -> !Strings.isNullOrEmpty(pin.getStringField(TrackingOperationProductInComponentFields.TYPE_OF_MATERIAL))
                                 && !pin.getStringField(TrackingOperationProductInComponentFields.TYPE_OF_MATERIAL).equals(ProductionCountingQuantityTypeOfMaterial.INTERMEDIATE.getStringValue()))
                         .collect(Collectors.toList());
                 trackingOperationProductInComponents.addAll(withoutIntermediateRecords);
@@ -167,7 +173,7 @@ public class ProductionCountingDocumentService {
     }
 
     public Entity createInternalOutboundDocumentForComponents(final Entity locationFrom, final Entity order,
-            final List<ProductionCountingQuantityHolder> inProductsRecords, boolean useUsedQuantity) {
+                                                              final List<ProductionCountingQuantityHolder> inProductsRecords, boolean useUsedQuantity) {
         Entity user = dataDefinitionService.get(QcadooSecurityConstants.PLUGIN_IDENTIFIER, QcadooSecurityConstants.MODEL_USER)
                 .get(securityService.getCurrentUserId());
 
@@ -190,7 +196,7 @@ public class ProductionCountingDocumentService {
     }
 
     public Entity createInternalOutboundDocumentOnCompletedOrder(final Entity locationFrom, final Entity order,
-            final List<ProductionCountingQuantityHolder> inProductsRecords) {
+                                                                 final List<ProductionCountingQuantityHolder> inProductsRecords) {
         Entity user = dataDefinitionService.get(QcadooSecurityConstants.PLUGIN_IDENTIFIER, QcadooSecurityConstants.MODEL_USER)
                 .get(securityService.getCurrentUserId());
 
@@ -254,17 +260,44 @@ public class ProductionCountingDocumentService {
     private List<ProductionCountingQuantityHolder> mapToHolderFromInProduct(Collection<Entity> inProducts) {
         List<ProductionCountingQuantityHolder> entities = Lists.newArrayList();
         for (Entity inProductRecord : inProducts) {
-            if (inProductRecord.getHasManyField(TrackingOperationProductInComponentFields.USED_BATCHES).isEmpty()) {
-                Entity inProduct = inProductRecord.getBelongsToField(TrackingOperationProductInComponentFields.PRODUCT);
-                ProductionCountingQuantityHolder holder = crateProductionCountingQuantityHolder(inProductRecord, inProduct);
-                fillHolderList(entities, holder);
-            } else {
-                Entity inProduct = inProductRecord.getBelongsToField(TrackingOperationProductInComponentFields.PRODUCT);
+            List<Entity> usedBatches = inProductRecord.getHasManyField(TrackingOperationProductInComponentFields.USED_BATCHES);
+            List<Entity> resourceReservations = inProductRecord.getHasManyField("resourceReservations");
+            if (!resourceReservations.isEmpty()) {
+                for (Entity resourceReservation : resourceReservations) {
+                    Entity inProduct = inProductRecord.getBelongsToField(TrackingOperationProductInComponentFields.PRODUCT);
 
+                    ProductionCountingQuantityHolder holder = preparePositionForResourceReservation(inProductRecord, inProduct, resourceReservation);
+                    orderReservationsService.updateReservationOnDocumentCreation(resourceReservation);
+                    fillHolderList(entities, holder);
+
+                }
+
+                BigDecimal usedQuantity = inProductRecord.getDecimalField(TrackingOperationProductInComponentFields.USED_QUANTITY);
+
+                BigDecimal sumUsedResourceQuantity = resourceReservations.
+                        stream()
+                        .map(rr -> rr.getDecimalField(TrackingProductResourceReservationFields.USED_QUANTITY))
+                        .filter(Objects::nonNull)
+                        .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+                BigDecimal rest = usedQuantity.subtract(sumUsedResourceQuantity, numberService.getMathContext());
+                if (rest.compareTo(BigDecimal.ZERO) > 0) {
+                    Entity inProduct = inProductRecord.getBelongsToField(TrackingOperationProductInComponentFields.PRODUCT);
+
+                    ProductionCountingQuantityHolder holder = crateProductionCountingQuantityForQuantityHolder(inProductRecord, inProduct, rest);
+                    fillHolderList(entities, holder);
+                }
+
+            } else if (!usedBatches.isEmpty()) {
+                Entity inProduct = inProductRecord.getBelongsToField(TrackingOperationProductInComponentFields.PRODUCT);
                 for (Entity usedBatch : inProductRecord.getHasManyField(TrackingOperationProductInComponentFields.USED_BATCHES)) {
                     ProductionCountingQuantityHolder holder = preparePositionForUsedBatch(inProductRecord, inProduct, usedBatch);
                     fillHolderList(entities, holder);
                 }
+            } else {
+                Entity inProduct = inProductRecord.getBelongsToField(TrackingOperationProductInComponentFields.PRODUCT);
+                ProductionCountingQuantityHolder holder = crateProductionCountingQuantityHolder(inProductRecord, inProduct);
+                fillHolderList(entities, holder);
             }
         }
         return entities;
@@ -282,7 +315,7 @@ public class ProductionCountingDocumentService {
     }
 
     private ProductionCountingQuantityHolder preparePositionForUsedBatch(Entity inProductRecord, Entity inProduct,
-            final Entity usedBatch) {
+                                                                         final Entity usedBatch) {
         ProductionCountingQuantityHolder holder = new ProductionCountingQuantityHolder();
 
         BigDecimal usedQuantity = usedBatch.getDecimalField(UsedBatchFields.QUANTITY);
@@ -313,6 +346,42 @@ public class ProductionCountingDocumentService {
         return holder;
     }
 
+    private ProductionCountingQuantityHolder preparePositionForResourceReservation(Entity inProductRecord, Entity inProduct,
+                                                                                   final Entity trackingProductResourceReservation) {
+        ProductionCountingQuantityHolder holder = new ProductionCountingQuantityHolder();
+        Entity orderProductResourceReservationBT = trackingProductResourceReservation.getBelongsToField(TrackingProductResourceReservationFields.ORDER_PRODUCT_RESOURCE_RESERVATION);
+        Entity orderProductResourceReservation = orderProductResourceReservationBT.getDataDefinition().get(orderProductResourceReservationBT.getId());
+        Entity resourceBT = orderProductResourceReservation.getBelongsToField(OrderProductResourceReservationFields.RESOURCE);
+        Entity resource = resourceBT.getDataDefinition().get(resourceBT.getId());
+
+        BigDecimal usedQuantity = trackingProductResourceReservation.getDecimalField(TrackingProductResourceReservationFields.USED_QUANTITY);
+        BigDecimal givenQuantity = productionTrackingService.calculateGivenQuantity(inProductRecord, usedQuantity)
+                .orElse(usedQuantity);
+        BigDecimal conversion = BigDecimal.ONE;
+        String unit = inProduct.getStringField(ProductFields.UNIT);
+        String givenUnit = inProductRecord.getStringField(TrackingOperationProductOutComponentFields.GIVEN_UNIT);
+
+        if (Objects.nonNull(usedQuantity)) {
+            PossibleUnitConversions unitConversions = unitConversionService.getPossibleConversions(unit,
+                    searchCriteriaBuilder -> searchCriteriaBuilder
+                            .add(SearchRestrictions.belongsTo(UnitConversionItemFieldsB.PRODUCT, inProduct)));
+
+            if (unitConversions.isDefinedFor(givenUnit)) {
+                conversion = numberService.setScaleWithDefaultMathContext(unitConversions.asUnitToConversionMap().get(givenUnit));
+            }
+        }
+
+        holder.setProductId(inProduct.getId());
+        holder.setProduct(inProduct);
+        holder.setUsedQuantity(usedQuantity);
+        holder.setConversion(conversion);
+        holder.setGivenQuantity(givenQuantity);
+        holder.setGivenUnit(givenUnit);
+        holder.setResourceId(resource.getId());
+        holder.setResource(resource);
+        return holder;
+    }
+
     private ProductionCountingQuantityHolder crateProductionCountingQuantityHolder(Entity inProductRecord, Entity inProduct) {
         ProductionCountingQuantityHolder holder = new ProductionCountingQuantityHolder();
 
@@ -340,9 +409,36 @@ public class ProductionCountingDocumentService {
         holder.setGivenUnit(givenUnit);
         return holder;
     }
+    private ProductionCountingQuantityHolder crateProductionCountingQuantityForQuantityHolder(Entity inProductRecord, Entity inProduct, final BigDecimal usedQuantity) {
+        ProductionCountingQuantityHolder holder = new ProductionCountingQuantityHolder();
+
+        BigDecimal givenQuantity = null;
+        BigDecimal conversion = BigDecimal.ONE;
+        String givenUnit = inProductRecord.getStringField(TrackingOperationProductOutComponentFields.GIVEN_UNIT);
+        String unit = inProduct.getStringField(ProductFields.UNIT);
+
+        PossibleUnitConversions unitConversions = unitConversionService.getPossibleConversions(unit,
+                searchCriteriaBuilder -> searchCriteriaBuilder.add(SearchRestrictions.belongsTo(
+                        UnitConversionItemFieldsB.PRODUCT, inProduct)));
+
+        if (unitConversions.isDefinedFor(givenUnit)) {
+            givenQuantity = unitConversions.convertTo(usedQuantity, givenUnit, BigDecimal.ROUND_FLOOR);
+            conversion = numberService.setScaleWithDefaultMathContext(unitConversions.asUnitToConversionMap().get(givenUnit));
+        } else {
+            givenQuantity = usedQuantity;
+        }
+
+        holder.setProductId(inProduct.getId());
+        holder.setProduct(inProduct);
+        holder.setUsedQuantity(usedQuantity);
+        holder.setConversion(conversion);
+        holder.setGivenQuantity(givenQuantity);
+        holder.setGivenUnit(givenUnit);
+        return holder;
+    }
 
     private Entity preparePositionForInProductOnCompletedOrder(DataDefinition positionDD,
-            ProductionCountingQuantityHolder inProductRecord) {
+                                                               ProductionCountingQuantityHolder inProductRecord) {
         Entity position = positionDD.create();
         Entity inProduct = inProductRecord.getProduct();
         String unit = inProduct.getStringField(ProductFields.UNIT);
@@ -357,7 +453,7 @@ public class ProductionCountingDocumentService {
     }
 
     private Entity preparePositionForInProduct(final DataDefinition positionDD,
-            final ProductionCountingQuantityHolder inProductRecord, boolean useUsedQuantity) {
+                                               final ProductionCountingQuantityHolder inProductRecord, boolean useUsedQuantity) {
         Entity position = positionDD.create();
 
         BigDecimal quantity = null;
@@ -393,7 +489,7 @@ public class ProductionCountingDocumentService {
             } else if (ProductionCountingQuantityTypeOfMaterial.INTERMEDIATE.getStringValue()
                     .equals(productionCountingQuantity.getStringField(ProductionCountingQuantityFields.TYPE_OF_MATERIAL))
                     && L_WAREHOUSE.equals(
-                            productionCountingQuantity.getStringField(ProductionCountingQuantityFields.PRODUCTION_FLOW))) {
+                    productionCountingQuantity.getStringField(ProductionCountingQuantityFields.PRODUCTION_FLOW))) {
                 warehouse = productionCountingQuantity.getBelongsToField(ProductionCountingQuantityFields.PRODUCTS_FLOW_LOCATION);
             } else {
                 continue;

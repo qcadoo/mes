@@ -90,6 +90,12 @@
         </model:model-field>
 
 
+        <model:model-field plugin="materialFlowResources" model="resource">
+            <model:hasMany name="orderProductResourceReservations"
+                           model="orderProductResourceReservation" plugin="productFlowThruDivision" joinField="resource" cascade="nullify"/>
+        </model:model-field>
+
+
         <model:model-field plugin="materialFlowResources" model="reservation">
             <model:belongsTo name="orderProductResourceReservation" model="orderProductResourceReservation"
                              plugin="productFlowThruDivision"/>
