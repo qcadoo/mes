@@ -159,13 +159,7 @@ public class MaterialRequirementCoverageForOrderServiceImpl implements MaterialR
         for (Entity delivery : includedDeliveries) {
             Date coverageDate = getCoverageProductLoggingDateForDelivery(delivery, actualDate);
 
-            List<Entity> deliveryProducts;
-
-            if (DeliveryStateStringValues.RECEIVE_CONFIRM_WAITING.equals(delivery.getStringField(DeliveryFields.STATE))) {
-                deliveryProducts = delivery.getHasManyField(DeliveryFields.DELIVERED_PRODUCTS);
-            } else {
-                deliveryProducts = delivery.getHasManyField(DeliveryFields.ORDERED_PRODUCTS);
-            }
+            List<Entity> deliveryProducts = delivery.getHasManyField(DeliveryFields.ORDERED_PRODUCTS);
 
             for (Entity deliveryProduct : deliveryProducts) {
                 estimateProductDelivery(productAndCoverageProducts,

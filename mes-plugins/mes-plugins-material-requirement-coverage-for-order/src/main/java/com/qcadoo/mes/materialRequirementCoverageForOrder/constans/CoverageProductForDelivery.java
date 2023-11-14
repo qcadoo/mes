@@ -78,11 +78,7 @@ public class CoverageProductForDelivery extends CoverageProduct {
     }
 
     public BigDecimal getDeliveryQuantity() {
-        if (DeliveryStateStringValues.RECEIVE_CONFIRM_WAITING.equals(delivery.getStringField(DeliveryFields.STATE))) {
-            return deliveryProduct.getDecimalField(DeliveredProductFields.DELIVERED_QUANTITY);
-        } else {
-            return deliveryProduct.getDecimalField(OrderedProductFields.ORDERED_QUANTITY);
-        }
+        return deliveryProduct.getDecimalField(OrderedProductFields.ORDERED_QUANTITY);
     }
 
 }
