@@ -71,7 +71,6 @@ public class DeliveryStateValidationAspectTest {
 
         RunForStateTransition secondTransition = transitions.value()[1];
         assertEquals(secondTransition.sourceState(), DeliveryStateStringValues.APPROVED);
-        assertEquals(secondTransition.targetState(), DeliveryStateStringValues.RECEIVE_CONFIRM_WAITING);
 
         RunInPhase runInPhase = preValidationOnReceive.getAnnotation(RunInPhase.class);
         assertNotNull(runInPhase);

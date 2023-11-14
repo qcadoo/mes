@@ -728,8 +728,7 @@ public class MaterialRequirementCoverageForOrderServiceImpl implements MaterialR
                     .add(SearchRestrictions.or(SearchRestrictions.eq(DeliveryFields.STATE, DeliveryStateStringValues.DRAFT),
                             SearchRestrictions.eq(DeliveryFields.STATE, DeliveryStateStringValues.PREPARED),
                             SearchRestrictions.eq(DeliveryFields.STATE, DeliveryStateStringValues.DURING_CORRECTION),
-                            SearchRestrictions.eq(DeliveryFields.STATE, DeliveryStateStringValues.APPROVED),
-                            SearchRestrictions.eq(DeliveryFields.STATE, DeliveryStateStringValues.RECEIVE_CONFIRM_WAITING)))
+                            SearchRestrictions.eq(DeliveryFields.STATE, DeliveryStateStringValues.APPROVED)))
                     .add(SearchRestrictions.eq(DeliveryFields.ACTIVE, true));
             if (!coverageLocations.isEmpty()) {
                 scb = scb.createAlias(DeliveryFields.LOCATION, DeliveryFields.LOCATION, JoinType.LEFT).add(
@@ -745,8 +744,7 @@ public class MaterialRequirementCoverageForOrderServiceImpl implements MaterialR
             SearchCriteriaBuilder scb = getDeliveryDD()
                     .find()
                     .add(SearchRestrictions.le(DeliveryFields.DELIVERY_DATE, coverageToDate))
-                    .add(SearchRestrictions.or(SearchRestrictions.eq(DeliveryFields.STATE, DeliveryStateStringValues.APPROVED),
-                            SearchRestrictions.eq(DeliveryFields.STATE, DeliveryStateStringValues.RECEIVE_CONFIRM_WAITING)))
+                    .add(SearchRestrictions.eq(DeliveryFields.STATE, DeliveryStateStringValues.APPROVED))
                     .add(SearchRestrictions.eq(DeliveryFields.ACTIVE, true));
             if (!coverageLocations.isEmpty()) {
                 scb = scb.createAlias(DeliveryFields.LOCATION, DeliveryFields.LOCATION, JoinType.LEFT).add(

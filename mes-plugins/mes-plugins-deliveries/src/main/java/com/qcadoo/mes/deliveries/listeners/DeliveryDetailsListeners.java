@@ -647,8 +647,7 @@ public class DeliveryDetailsListeners {
 
         Entity delivery = deliveriesService.getDelivery(deliveryId);
 
-        if (DeliveryStateStringValues.RECEIVED.equals(delivery.getStringField(DeliveryFields.STATE))
-                || DeliveryStateStringValues.RECEIVE_CONFIRM_WAITING.equals(delivery.getStringField(DeliveryFields.STATE))) {
+        if (DeliveryStateStringValues.RECEIVED.equals(delivery.getStringField(DeliveryFields.STATE))) {
             Entity relatedDelivery = createRelatedDelivery(delivery);
 
             if (Objects.isNull(relatedDelivery)) {

@@ -356,11 +356,11 @@
                     </predefinedFilter>
                     <predefinedFilter name="notReceived">
                         <filterRestriction column="state"
-                                           value="[01draft,02prepared,03duringCorrection,04declined,05approved,07receiveConfirmWaiting]"/>
+                                           value="[01draft,02prepared,03duringCorrection,04declined,05approved]"/>
                     </predefinedFilter>
                     <predefinedFilter name="notDeclined">
                         <filterRestriction column="state"
-                                           value="[01draft,02prepared,03duringCorrection,05approved,06received,07receiveConfirmWaiting]"/>
+                                           value="[01draft,02prepared,03duringCorrection,05approved,06received]"/>
                     </predefinedFilter>
                 </predefinedFilters>
 
