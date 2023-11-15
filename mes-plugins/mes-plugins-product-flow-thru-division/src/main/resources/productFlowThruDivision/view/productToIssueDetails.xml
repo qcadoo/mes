@@ -33,21 +33,25 @@
         <ribbon>
             <template name="standardFormTemplate" excludeItems="actions.copy, actions.saveNew, actions.delete"/>
         </ribbon>
+
         <windowTab name="mainTab">
             <component type="form" name="form" reference="form">
                 <component type="gridLayout" name="gridLayout" columns="5"
-                           rows="7">
+                           rows="6">
                     <layoutElement column="1" row="1" width="4">
                         <component type="lookup" name="product" field="product"
                                    reference="product">
                             <option type="column" name="name" fields="name" link="true"
                                     width="200"/>
                             <option type="column" name="ean" fields="ean"/>
+
                             <option type="searchable" value="name,ean"/>
                             <option type="orderable" value="name,ean"/>
+
                             <option type="expression"
                                     value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name"/>
                             <option type="fieldCode" value="number"/>
+
                             <listener event="onSelectedEntityChange"
                                       class="com.qcadoo.mes.productFlowThruDivision.warehouseIssue.listeners.ProductsToIssueDetailsListeners"
                                       method="onProductSelect"/>
@@ -71,53 +75,38 @@
                         </component>
                     </layoutElement>
                     <layoutElement column="1" row="3" width="4">
-                        <component type="lookup" name="storageLocation" field="storageLocation"
-                                   reference="storageLocation">
-                            <option type="column" fields="location" name="location" link="true"
-                                    expression="#location['number']"/>
-
-                            <option type="searchable" value="number,location"/>
-                            <option type="orderable" value="number,location"/>
-
-                            <option type="expression" value="#number"/>
-                            <option type="fieldCode" value="number"/>
-                            <criteriaModifier
-                                    class="com.qcadoo.mes.materialFlowResources.criteriaModifiers.StorageLocationCriteriaModifiers"
-                                    method="showStorageLocationsForProductAndLocation"/>
-                        </component>
-                    </layoutElement>
-                    <layoutElement column="1" row="4" width="4">
                         <component type="input" name="demandQuantity" field="demandQuantity"
                                    reference="demandQuantity">
                             <option type="alignment" value="right"/>
                             <option type="labelWidth" value="45"/>
+
                             <listener event="onInputChange" method="onDemandQuantityChange"
                                       class="com.qcadoo.mes.productFlowThruDivision.warehouseIssue.listeners.ProductsToIssueDetailsListeners" />
                         </component>
                     </layoutElement>
-                    <layoutElement column="5" row="4">
+                    <layoutElement column="5" row="3">
                         <component type="input" name="demandQuantityUnit"
                                    reference="demandQuantityUnit" defaultEnabled="false" hasLabel="false">
                             <option type="textRepresentationOnDisabled" value="true"/>
                         </component>
                     </layoutElement>
-                    <layoutElement column="1" row="5" width="4">
+                    <layoutElement column="1" row="4" width="4">
                         <component type="input" name="additionalDemandQuantity" field="additionalDemandQuantity"
                                    reference="additionalDemandQuantity">
                             <option type="alignment" value="right"/>
                             <option type="labelWidth" value="45"/>
+
                             <listener event="onInputChange" method="onAdditionalDemandQuantityChange"
                                       class="com.qcadoo.mes.productFlowThruDivision.warehouseIssue.listeners.ProductsToIssueDetailsListeners" />
-
                         </component>
                     </layoutElement>
-                    <layoutElement column="5" row="6">
+                    <layoutElement column="5" row="5">
                         <component type="input" name="additionalDemandQuantityUnit"
                                    reference="additionalDemandQuantityUnit" defaultEnabled="false" hasLabel="false">
                             <option type="textRepresentationOnDisabled" value="true"/>
                         </component>
                     </layoutElement>
-                    <layoutElement column="1" row="6" width="4">
+                    <layoutElement column="1" row="5" width="4">
                         <component type="input" name="conversion"
                                    reference="conversion" field="conversion">
                             <option type="alignment" value="right" />
@@ -125,18 +114,16 @@
 
                             <listener event="onInputChange" method="onConversionChange"
                                       class="com.qcadoo.mes.productFlowThruDivision.warehouseIssue.listeners.ProductsToIssueDetailsListeners" />
-
                         </component>
                     </layoutElement>
-                    <layoutElement column="1" row="7" width="4">
+                    <layoutElement column="1" row="6" width="4">
                         <component type="input" name="correction" field="correction"
                                    reference="correction" defaultEnabled="never" hasDescription="true">
                             <option type="alignment" value="right"/>
                             <option type="labelWidth" value="45"/>
-
                         </component>
                     </layoutElement>
-                    <layoutElement column="5" row="7">
+                    <layoutElement column="5" row="6">
                         <component type="input" name="correctionUnit"
                                    reference="correctionUnit" defaultEnabled="false" hasLabel="false">
                             <option type="textRepresentationOnDisabled" value="true"/>
@@ -155,5 +142,4 @@
         <beforeRender class="com.qcadoo.mes.productFlowThruDivision.warehouseIssue.hooks.ProductToIssueDetailsHooks"
                       method="onBeforeRender"/>
     </hooks>
-
 </view>

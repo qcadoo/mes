@@ -1,19 +1,14 @@
 package com.qcadoo.mes.masterOrders.listeners;
 
 import com.google.common.collect.Maps;
-import com.qcadoo.mes.masterOrders.constants.DocumentPositionParametersFieldsMO;
 import com.qcadoo.mes.masterOrders.constants.MasterOrdersConstants;
-import com.qcadoo.mes.masterOrders.constants.SalesVolumeFields;
-import com.qcadoo.mes.materialFlowResources.constants.MaterialFlowResourcesConstants;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.IntegerUtils;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
-import com.qcadoo.view.api.components.GridComponent;
-import com.qcadoo.view.constants.QcadooViewConstants;
+import com.qcadoo.view.api.components.CheckBoxComponent;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -23,10 +18,6 @@ import java.util.Map;
 
 @Service
 public class SalesVolumesListListeners {
-
-    private static final String L_LT = "<";
-
-    private static final String L_SPACE = " ";
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
@@ -57,38 +48,21 @@ public class SalesVolumesListListeners {
     }
 
     public final void showProductsRunningOutOfStock(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        GridComponent salesVolumesGrid = (GridComponent) view.getComponentByReference(QcadooViewConstants.L_GRID);
+        CheckBoxComponent isStockForDaysFilterCheckBox = (CheckBoxComponent) view.getComponentByReference("isStockForDaysFilter");
 
-        Integer runningOutOfStockDays = IntegerUtils.convertNullToZero(getDocumentPositionParameters().getIntegerField(DocumentPositionParametersFieldsMO.RUNNING_OUT_OF_STOCK_DAYS));
-
-        Map<String, String> filters = salesVolumesGrid.getFilters();
-
-        filters.put(SalesVolumeFields.STOCK_FOR_DAYS, L_LT + runningOutOfStockDays);
-
-        salesVolumesGrid.setFilters(filters);
+        isStockForDaysFilterCheckBox.setChecked(true);
+        isStockForDaysFilterCheckBox.requestComponentUpdateState();
     }
 
     public final void showProductsAll(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        GridComponent salesVolumesGrid = (GridComponent) view.getComponentByReference(QcadooViewConstants.L_GRID);
+        CheckBoxComponent isStockForDaysFilterCheckBox = (CheckBoxComponent) view.getComponentByReference("isStockForDaysFilter");
 
-        Map<String, String> filters = salesVolumesGrid.getFilters();
-
-        filters.put(SalesVolumeFields.STOCK_FOR_DAYS, L_SPACE);
-
-        salesVolumesGrid.setFilters(filters);
+        isStockForDaysFilterCheckBox.setChecked(false);
+        isStockForDaysFilterCheckBox.requestComponentUpdateState();
     }
 
     private DataDefinition getSalesVolumeMultiDD() {
         return dataDefinitionService.get(MasterOrdersConstants.PLUGIN_IDENTIFIER, MasterOrdersConstants.MODEL_SALES_VOLUME_MULTI);
-    }
-
-    private Entity getDocumentPositionParameters() {
-        return getDocumentPositionParametersDD().find().setMaxResults(1).uniqueResult();
-    }
-
-    private DataDefinition getDocumentPositionParametersDD() {
-        return dataDefinitionService.get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER,
-                MaterialFlowResourcesConstants.MODEL_DOCUMENT_POSITION_PARAMETERS);
     }
 
 }

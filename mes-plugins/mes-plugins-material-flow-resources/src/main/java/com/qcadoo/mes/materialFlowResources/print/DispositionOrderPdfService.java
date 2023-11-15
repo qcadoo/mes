@@ -32,6 +32,7 @@ import com.lowagie.text.pdf.PdfPTable;
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.advancedGenealogy.constants.BatchFields;
 import com.qcadoo.mes.basic.constants.ProductFields;
+import com.qcadoo.mes.materialFlowResources.MaterialFlowResourcesService;
 import com.qcadoo.mes.materialFlowResources.constants.DocumentFields;
 import com.qcadoo.mes.materialFlowResources.constants.MaterialFlowResourcesConstants;
 import com.qcadoo.mes.materialFlowResources.constants.PositionFields;
@@ -42,8 +43,6 @@ import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
-import com.qcadoo.model.api.search.SearchCriterion;
-import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.report.api.FontUtils;
 import com.qcadoo.report.api.pdf.HeaderAlignment;
 import com.qcadoo.report.api.pdf.PdfDocumentService;
@@ -75,16 +74,19 @@ public class DispositionOrderPdfService extends PdfDocumentService {
     private static final String L_PZ = "materialFlowResources.dispositionOrder.locationPZ";
 
     @Autowired
+    private DataDefinitionService dataDefinitionService;
+
+    @Autowired
     private TranslationService translationService;
+
+    @Autowired
+    private NumberService numberService;
 
     @Autowired
     private PdfHelper pdfHelper;
 
     @Autowired
-    private DataDefinitionService dataDefinitionService;
-
-    @Autowired
-    private NumberService numberService;
+    private MaterialFlowResourcesService materialFlowResourcesService;
 
     private String getDocumentHeader(final Entity document, final Locale locale) {
         return translationService.translate(L_HEADER, locale, document.getStringField(DocumentFields.NUMBER));
@@ -286,17 +288,11 @@ public class DispositionOrderPdfService extends PdfDocumentService {
         Entity locationFrom = position.getBelongsToField(PositionFields.DOCUMENT).getBelongsToField(DocumentFields.LOCATION_FROM);
 
         if (Objects.isNull(storageLocation) && Objects.nonNull(locationFrom)) {
-            SearchCriterion criterionLocation = SearchRestrictions.belongsTo(StorageLocationFields.LOCATION, locationFrom);
-            SearchCriterion criterionProduct = SearchRestrictions.belongsTo(StorageLocationFields.PRODUCT,
-                    position.getBelongsToField(PositionFields.PRODUCT));
-
-            storageLocation = getStorageLocationDD().find().add(SearchRestrictions.and(criterionLocation, criterionProduct))
-                    .setMaxResults(1).uniqueResult();
+            storageLocation = materialFlowResourcesService.findStorageLocationForProduct(locationFrom, position.getBelongsToField(PositionFields.PRODUCT)).orElse(null);
         }
 
         return Objects.nonNull(storageLocation) ? storageLocation.getStringField(StorageLocationFields.NUMBER) : StringUtils.EMPTY;
     }
-
 
     private String getDataForProduct(final Entity position) {
         Entity product = position.getBelongsToField(PositionFields.PRODUCT);
@@ -307,11 +303,6 @@ public class DispositionOrderPdfService extends PdfDocumentService {
     @Override
     public String getReportTitle(final Locale locale) {
         return translationService.translate("materialFlowResources.dispositionOrder.title", locale);
-    }
-
-    private DataDefinition getStorageLocationDD() {
-        return dataDefinitionService.get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER,
-                MaterialFlowResourcesConstants.MODEL_STORAGE_LOCATION);
     }
 
 }

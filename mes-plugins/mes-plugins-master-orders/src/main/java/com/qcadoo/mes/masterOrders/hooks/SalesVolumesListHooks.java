@@ -23,11 +23,17 @@
  */
 package com.qcadoo.mes.masterOrders.hooks;
 
+import com.qcadoo.mes.masterOrders.constants.DocumentPositionParametersFieldsMO;
 import com.qcadoo.mes.masterOrders.constants.MasterOrdersConstants;
 import com.qcadoo.mes.masterOrders.constants.SalesVolumeFields;
 import com.qcadoo.mes.materialFlowResources.MaterialFlowResourcesService;
+import com.qcadoo.mes.materialFlowResources.constants.MaterialFlowResourcesConstants;
 import com.qcadoo.model.api.*;
+import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.view.api.ViewDefinitionState;
+import com.qcadoo.view.api.components.CheckBoxComponent;
+import com.qcadoo.view.api.components.GridComponent;
+import com.qcadoo.view.constants.QcadooViewConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -52,6 +58,7 @@ public class SalesVolumesListHooks {
 
     public void onBeforeRender(final ViewDefinitionState view) {
         fillStockFields(view);
+        applyFilters(view);
     }
 
     private void fillStockFields(final ViewDefinitionState view) {
@@ -89,6 +96,29 @@ public class SalesVolumesListHooks {
         }
 
         return currentStock;
+    }
+
+    public void applyFilters(final ViewDefinitionState view) {
+        GridComponent salesVolumesGrid = (GridComponent) view.getComponentByReference(QcadooViewConstants.L_GRID);
+        CheckBoxComponent isStockForDaysFilterCheckBox = (CheckBoxComponent) view.getComponentByReference("isStockForDaysFilter");
+
+        boolean isStockForDaysFilter = isStockForDaysFilterCheckBox.isChecked();
+
+        Integer runningOutOfStockDays = IntegerUtils.convertNullToZero(getDocumentPositionParameters().getIntegerField(DocumentPositionParametersFieldsMO.RUNNING_OUT_OF_STOCK_DAYS));
+
+        if (isStockForDaysFilter) {
+            salesVolumesGrid.setCustomRestriction(searchBuilder -> searchBuilder.add(
+                    SearchRestrictions.lt(SalesVolumeFields.STOCK_FOR_DAYS, runningOutOfStockDays)));
+        }
+    }
+
+    private Entity getDocumentPositionParameters() {
+        return getDocumentPositionParametersDD().find().setMaxResults(1).uniqueResult();
+    }
+
+    private DataDefinition getDocumentPositionParametersDD() {
+        return dataDefinitionService.get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER,
+                MaterialFlowResourcesConstants.MODEL_DOCUMENT_POSITION_PARAMETERS);
     }
 
     private DataDefinition getSalesVolumeDD() {

@@ -41,7 +41,7 @@
     </modules>
 
     <properties>
-        <qcadoo.buildVersionForUser>2.5.1-DEV</qcadoo.buildVersionForUser>
+        <qcadoo.buildVersionForUser>2.5.3-DEV</qcadoo.buildVersionForUser>
         <qcadoo.version>${project.version}</qcadoo.version>
         <qcadoo.plugin.version>1.5</qcadoo.plugin.version>
         <qcadoo.maven.plugin.version>1.5-SNAPSHOT</qcadoo.maven.plugin.version>

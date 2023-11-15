@@ -27,9 +27,11 @@
 <model name="changeTechnologyParameters" auditable="true"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
        xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
+
     <fields>
         <boolean name="changePerformanceNorm" default="false"/>
         <boolean name="updateOperationTimeNorms" default="false"/>
+        <boolean name="updateOperationCostNorms" default="false"/>
         <boolean name="updateOperationWorkstations" default="false"/>
         <decimal name="standardPerformance">
             <validatesRange from="0" exclusively="true"/>
@@ -40,7 +42,8 @@
         <belongsTo name="technologyGroup" plugin="technologies"
                    model="technologyGroup" lazy="false"/>
         <string name="selectedEntities" persistent="false"/>
-
+        <boolean name="generated" persistent="false"/>
     </fields>
+
     <hooks/>
 </model>

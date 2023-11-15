@@ -27,13 +27,12 @@ import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.Objects;
 
+import com.qcadoo.mes.masterOrders.constants.*;
+import com.qcadoo.view.api.components.GridComponent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.basic.constants.ProductFields;
-import com.qcadoo.mes.masterOrders.constants.MasterOrderPositionDtoFields;
-import com.qcadoo.mes.masterOrders.constants.MasterOrderProductFields;
-import com.qcadoo.mes.masterOrders.constants.MasterOrdersConstants;
 import com.qcadoo.mes.orders.TechnologyServiceO;
 import com.qcadoo.mes.orders.criteriaModifiers.TechnologyCriteriaModifiersO;
 import com.qcadoo.model.api.BigDecimalUtils;
@@ -70,6 +69,21 @@ public class MasterOrderProductDetailsHooks {
         fillDefaultTechnology(view);
         showErrorWhenCumulatedQuantity(view);
         fillQuantities(view);
+        disableAttrValuesGrid(view);
+    }
+
+    private void disableAttrValuesGrid(final ViewDefinitionState view) {
+        FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
+        if(Objects.nonNull(form.getEntityId())) {
+            Entity productComponent = form.getEntity();
+            Entity mo = productComponent.getBelongsToField(MasterOrderProductFields.MASTER_ORDER);
+            String state = mo.getStringField(MasterOrderFields.STATE);
+            if(MasterOrderState.DECLINED.getStringValue().equals(state) || MasterOrderState.COMPLETED.getStringValue().equals(state)) {
+                GridComponent attrValuesGrid = (GridComponent) view.getComponentByReference("masterOrderProductAttrValues");
+                attrValuesGrid.setEditable(false);
+            }
+        }
+
     }
 
     public void fillUnitField(final ViewDefinitionState view) {

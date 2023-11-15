@@ -124,8 +124,7 @@ public class MaterialFlowResourcesServiceImpl implements MaterialFlowResourcesSe
             StringBuilder query = new StringBuilder();
 
             query.append("SELECT ");
-            query.append(
-                    "resourceStockDto.product_id AS product_id, resourceStockDto.quantity AS quantity, resourceStockDto.availableQuantity AS availableQuantity ");
+            query.append("resourceStockDto.product_id AS product_id, resourceStockDto.quantity AS quantity, resourceStockDto.availableQuantity AS availableQuantity ");
             query.append("FROM #materialFlowResources_resourceStockDto resourceStockDto ");
             query.append("WHERE resourceStockDto.product_id IN (:productIds) ");
             query.append("AND resourceStockDto.location_id = :locationId ");
@@ -195,8 +194,8 @@ public class MaterialFlowResourcesServiceImpl implements MaterialFlowResourcesSe
             StringBuilder prepareQuery = new StringBuilder();
 
             prepareQuery.append("SELECT ");
-            prepareQuery.append("storageLocationDto.productNumber as productNumber, storageLocationDto.resourceQuantity as quantity, storageLocationDto.quantityInAdditionalUnit as additionalQuantity ");
-            prepareQuery.append("FROM materialFlowResources_storageLocationDto as storageLocationDto ");
+            prepareQuery.append("storageLocationDto.productNumber AS productNumber, storageLocationDto.resourceQuantity AS quantity, storageLocationDto.quantityInAdditionalUnit AS additionalQuantity ");
+            prepareQuery.append("FROM materialFlowResources_storageLocationDto AS storageLocationDto ");
             prepareQuery.append("WHERE storageLocationDto.productNumber IN (:productNumbers) ");
             prepareQuery.append("AND storageLocationDto.location_id = :materialFlowLocationId ");
 
@@ -220,13 +219,13 @@ public class MaterialFlowResourcesServiceImpl implements MaterialFlowResourcesSe
             StringBuilder prepareQuery = new StringBuilder();
 
             prepareQuery.append("SELECT DISTINCT ");
-            prepareQuery.append("resourceDto.number as resourceNumber, ");
-            prepareQuery.append("resourceDto.quantity as quantity, ");
-            prepareQuery.append("resourceDto.quantityInAdditionalUnit as additionalQuantity, ");
-            prepareQuery.append("internal.productUnit as productUnit, ");
-            prepareQuery.append("internal.productAdditionalUnit as productAdditionalUnit ");
-            prepareQuery.append("FROM materialFlowResources_resourceDto as resourceDto ");
-            prepareQuery.append("JOIN materialFlowResources_storageLocationDto_internal as internal ");
+            prepareQuery.append("resourceDto.number AS resourceNumber, ");
+            prepareQuery.append("resourceDto.quantity AS quantity, ");
+            prepareQuery.append("resourceDto.quantityInAdditionalUnit AS additionalQuantity, ");
+            prepareQuery.append("internal.productUnit AS productUnit, ");
+            prepareQuery.append("internal.productAdditionalUnit AS productAdditionalUnit ");
+            prepareQuery.append("FROM materialFlowResources_resourceDto AS resourceDto ");
+            prepareQuery.append("JOIN materialFlowResources_storageLocationDto_internal AS internal ");
             prepareQuery.append("ON resourceDto.productNumber = internal.productNumber ");
             prepareQuery.append("WHERE resourceDto.productNumber = :productNumber ");
             prepareQuery.append("AND resourceDto.location_id = :storageLocationId");
@@ -251,23 +250,23 @@ public class MaterialFlowResourcesServiceImpl implements MaterialFlowResourcesSe
             StringBuilder prepareQuery = new StringBuilder();
 
             prepareQuery.append("SELECT ");
-            prepareQuery.append("palletStorageDto.storageLocationNumber as storageLocationNumber, ");
-            prepareQuery.append("palletStorageDto.locationNumber as locationNumber, ");
-            prepareQuery.append("resourceStockDto.product_id as productId, ");
-            prepareQuery.append("resourceStockDto.productNumber as productNumber, ");
-            prepareQuery.append("resourceStockDto.productName as productName, ");
-            prepareQuery.append("resourceStockDto.productUnit as productUnit, ");
-            prepareQuery.append("storageLocationDto.productAdditionalUnit as productAdditionalUnit, ");
-            prepareQuery.append("resourceStockDto.quantity as quantity, ");
-            prepareQuery.append("resourceStockDto.quantityInAdditionalUnit as quantityInAdditionalUnit, ");
-            prepareQuery.append("resourceStockDto.location_id as locationId ");
-            prepareQuery.append("FROM materialFlowResources_resourceStockDto as resourceStockDto ");
-            prepareQuery.append("JOIN materialFlowResources_palletStorageStateDto as palletStorageDto ");
+            prepareQuery.append("palletStorageDto.storageLocationNumber AS storageLocationNumber, ");
+            prepareQuery.append("palletStorageDto.locationNumber AS locationNumber, ");
+            prepareQuery.append("resourceStockDto.product_id AS productId, ");
+            prepareQuery.append("resourceStockDto.productNumber AS productNumber, ");
+            prepareQuery.append("resourceStockDto.productName AS productName, ");
+            prepareQuery.append("resourceStockDto.productUnit AS productUnit, ");
+            prepareQuery.append("storageLocationDto.productAdditionalUnit AS productAdditionalUnit, ");
+            prepareQuery.append("resourceStockDto.quantity AS quantity, ");
+            prepareQuery.append("resourceStockDto.quantityInAdditionalUnit AS quantityInAdditionalUnit, ");
+            prepareQuery.append("resourceStockDto.location_id AS locationId ");
+            prepareQuery.append("FROM materialFlowResources_resourceStockDto AS resourceStockDto ");
+            prepareQuery.append("JOIN materialFlowResources_palletStorageStateDto AS palletStorageDto ");
             prepareQuery.append("ON palletStorageDto.location_id = resourceStockDto.location_id ");
-            prepareQuery.append("JOIN materialFlowResources_storageLocationDto as storageLocationDto ");
+            prepareQuery.append("JOIN materialFlowResources_storageLocationDto AS storageLocationDto ");
             prepareQuery.append("ON palletStorageDto.location_id = storageLocationDto.location_id ");
             prepareQuery.append("WHERE palletStorageDto.palletNumber = :palletNumber ");
-            prepareQuery.append("AND resourceStockDto.locationNumber in (:userLocationNumbers)");
+            prepareQuery.append("AND resourceStockDto.locationNumber IN (:userLocationNumbers)");
 
             params.put("palletNumber", palletNumber);
             params.put("userLocationNumbers", userLocationNumbers);
@@ -287,9 +286,9 @@ public class MaterialFlowResourcesServiceImpl implements MaterialFlowResourcesSe
             StringBuilder prepareQuery = new StringBuilder();
 
             prepareQuery.append("SELECT ");
-            prepareQuery.append("SUM (mfr.quantity) as quantitySum, ");
-            prepareQuery.append("SUM (mfr.quantityInAdditionalUnit) as additionalQuantitySum ");
-            prepareQuery.append("FROM materialFlowResources_resourceDto as mfr ");
+            prepareQuery.append("SUM (mfr.quantity) AS quantitySum, ");
+            prepareQuery.append("SUM (mfr.quantityInAdditionalUnit) AS additionalQuantitySum ");
+            prepareQuery.append("FROM materialFlowResources_resourceDto AS mfr ");
             prepareQuery.append("WHERE mfr.productNumber = :productNumber ");
             prepareQuery.append("AND mfr.locationNumber IN (:locationNumbers)");
 
@@ -311,17 +310,17 @@ public class MaterialFlowResourcesServiceImpl implements MaterialFlowResourcesSe
             StringBuilder prepareQuery = new StringBuilder();
 
             prepareQuery.append("SELECT DISTINCT ");
-            prepareQuery.append("mfrs.location_id as locationId, ");
-            prepareQuery.append("mfrs.locationNumber as locationNumber, ");
-            prepareQuery.append("mfrs.locationName as locationName, ");
-            prepareQuery.append("mfrs.product_id as productId, ");
-            prepareQuery.append("mfrs.productName as productName, ");
-            prepareQuery.append("mfrs.productUnit as unit, ");
-            prepareQuery.append("mfrs.quantity as quantity, ");
-            prepareQuery.append("sl.productAdditionalUnit as additionalUnit, ");
-            prepareQuery.append("mfrs.quantityInAdditionalUnit as additionalQuantity ");
-            prepareQuery.append("FROM materialFlowResources_resourceStockDto as mfrs ");
-            prepareQuery.append("JOIN materialFlowResources_storageLocationDto as sl ");
+            prepareQuery.append("mfrs.location_id AS locationId, ");
+            prepareQuery.append("mfrs.locationNumber AS locationNumber, ");
+            prepareQuery.append("mfrs.locationName AS locationName, ");
+            prepareQuery.append("mfrs.product_id AS productId, ");
+            prepareQuery.append("mfrs.productName AS productName, ");
+            prepareQuery.append("mfrs.productUnit AS unit, ");
+            prepareQuery.append("mfrs.quantity AS quantity, ");
+            prepareQuery.append("sl.productAdditionalUnit AS additionalUnit, ");
+            prepareQuery.append("mfrs.quantityInAdditionalUnit AS additionalQuantity ");
+            prepareQuery.append("FROM materialFlowResources_resourceStockDto AS mfrs ");
+            prepareQuery.append("JOIN materialFlowResources_storageLocationDto AS sl ");
             prepareQuery.append("ON mfrs.productNumber = sl.productNumber ");
             prepareQuery.append("WHERE mfrs.productNumber = :productNumber ");
             prepareQuery.append("AND mfrs.locationNumber IN (:locationNumbers) ");
@@ -346,23 +345,22 @@ public class MaterialFlowResourcesServiceImpl implements MaterialFlowResourcesSe
             StringBuilder prepareQuery = new StringBuilder();
 
             prepareQuery.append("SELECT ");
-            prepareQuery.append("dto.location_id as locationId, ");
-            prepareQuery.append("dto.productName as productName, ");
-            prepareQuery.append("dto.productNumber as productNumber, ");
-            prepareQuery.append("dto.locationNumber as locationNumber, ");
-            prepareQuery.append("dto.storageLocationNumber as storageLocationNumber, ");
-            prepareQuery.append("dto.palletNumber as palletNumber, ");
-            prepareQuery.append("dto.batchNumber as batchNumber, ");
-            prepareQuery.append("dto.productionDate as productionDate, ");
-            prepareQuery.append("dto.expirationDate as expirationDate, ");
-            prepareQuery.append("dto.givenUnit as additionalUnit, ");
-            prepareQuery.append("dto.quantity as quantity, ");
-            prepareQuery.append("dto.productUnit as unit, ");
-            prepareQuery.append("dto.quantityInAdditionalUnit as additionalQuantity, ");
-
-            prepareQuery.append("dto.blockedForQualityControl as blockedForQualityControl, ");
-            prepareQuery.append("dto.qualityRating as qualityRating ");
-            prepareQuery.append("FROM materialFlowResources_resourceDto as dto ");
+            prepareQuery.append("dto.location_id AS locationId, ");
+            prepareQuery.append("dto.productName AS productName, ");
+            prepareQuery.append("dto.productNumber AS productNumber, ");
+            prepareQuery.append("dto.locationNumber AS locationNumber, ");
+            prepareQuery.append("dto.storageLocationNumber AS storageLocationNumber, ");
+            prepareQuery.append("dto.palletNumber AS palletNumber, ");
+            prepareQuery.append("dto.batchNumber AS batchNumber, ");
+            prepareQuery.append("dto.productionDate AS productionDate, ");
+            prepareQuery.append("dto.expirationDate AS expirationDate, ");
+            prepareQuery.append("dto.givenUnit AS additionalUnit, ");
+            prepareQuery.append("dto.quantity AS quantity, ");
+            prepareQuery.append("dto.productUnit AS unit, ");
+            prepareQuery.append("dto.quantityInAdditionalUnit AS additionalQuantity, ");
+            prepareQuery.append("dto.blockedForQualityControl AS blockedForQualityControl, ");
+            prepareQuery.append("dto.qualityRating AS qualityRating ");
+            prepareQuery.append("FROM materialFlowResources_resourceDto AS dto ");
             prepareQuery.append("WHERE dto.number = :resourceNumber");
 
             params.put("resourceNumber", resourceNumber);
@@ -383,26 +381,25 @@ public class MaterialFlowResourcesServiceImpl implements MaterialFlowResourcesSe
             StringBuilder prepareQuery = new StringBuilder();
 
             prepareQuery.append("SELECT ");
-            prepareQuery.append("dto.location_id as locationId, ");
-            prepareQuery.append("dto.number as resourceNumber, ");
-            prepareQuery.append("dto.productName as productName, ");
-            prepareQuery.append("dto.productNumber as productNumber, ");
-            prepareQuery.append("dto.locationNumber as locationNumber, ");
-            prepareQuery.append("dto.storageLocationNumber as storageLocationNumber, ");
-            prepareQuery.append("dto.palletNumber as palletNumber, ");
-            prepareQuery.append("dto.typeOfPallet as palletType, ");
-            prepareQuery.append("dto.batchNumber as batchNumber, ");
-            prepareQuery.append("dto.productionDate as productionDate, ");
-            prepareQuery.append("dto.expirationDate as expirationDate, ");
-            prepareQuery.append("dto.givenUnit as additionalUnit, ");
-            prepareQuery.append("dto.quantity as quantity, ");
-            prepareQuery.append("dto.productUnit as unit, ");
-            prepareQuery.append("dto.quantityInAdditionalUnit as additionalQuantity, ");
-            prepareQuery.append("dto.conversion as conversionValue, ");
-
-            prepareQuery.append("dto.blockedForQualityControl as blockedForQualityControl, ");
-            prepareQuery.append("dto.qualityRating as qualityRating ");
-            prepareQuery.append("FROM materialFlowResources_resourceDto as dto ");
+            prepareQuery.append("dto.location_id AS locationId, ");
+            prepareQuery.append("dto.number AS resourceNumber, ");
+            prepareQuery.append("dto.productName AS productName, ");
+            prepareQuery.append("dto.productNumber AS productNumber, ");
+            prepareQuery.append("dto.locationNumber AS locationNumber, ");
+            prepareQuery.append("dto.storageLocationNumber AS storageLocationNumber, ");
+            prepareQuery.append("dto.palletNumber AS palletNumber, ");
+            prepareQuery.append("dto.typeOfPallet AS palletType, ");
+            prepareQuery.append("dto.batchNumber AS batchNumber, ");
+            prepareQuery.append("dto.productionDate AS productionDate, ");
+            prepareQuery.append("dto.expirationDate AS expirationDate, ");
+            prepareQuery.append("dto.givenUnit AS additionalUnit, ");
+            prepareQuery.append("dto.quantity AS quantity, ");
+            prepareQuery.append("dto.productUnit AS unit, ");
+            prepareQuery.append("dto.quantityInAdditionalUnit AS additionalQuantity, ");
+            prepareQuery.append("dto.conversion AS conversionValue, ");
+            prepareQuery.append("dto.blockedForQualityControl AS blockedForQualityControl, ");
+            prepareQuery.append("dto.qualityRating AS qualityRating ");
+            prepareQuery.append("FROM materialFlowResources_resourceDto AS dto ");
             prepareQuery.append("WHERE dto.number = :resourceNumber ");
             prepareQuery.append("AND dto.locationNumber IN (:userLocations)");
 
@@ -449,9 +446,9 @@ public class MaterialFlowResourcesServiceImpl implements MaterialFlowResourcesSe
             StringBuilder prepareQuery = new StringBuilder();
 
             prepareQuery.append("SELECT ");
-            prepareQuery.append("mfsl.id as locationId ");
-            prepareQuery.append("FROM materialFlowResources_storageLocation as mfsl ");
-            prepareQuery.append("WHERE mfsl.number = :storageLocationNumber");
+            prepareQuery.append("sl.id AS locationId ");
+            prepareQuery.append("FROM materialFlowResources_storageLocation sl ");
+            prepareQuery.append("WHERE sl.number = :storageLocationNumber");
 
             params.put("storageLocationNumber", storageLocationNumber);
 
@@ -467,15 +464,19 @@ public class MaterialFlowResourcesServiceImpl implements MaterialFlowResourcesSe
     public CheckProductDto checkProductByStorageLocationNumber(String storageLocationNumber) {
         Map<String, Object> params = Maps.newHashMap();
 
-        if (storageLocationNumber != null || !storageLocationNumber.isEmpty()) {
+        if (storageLocationNumber != null && !storageLocationNumber.isEmpty()) {
             StringBuilder prepareQuery = new StringBuilder();
 
             prepareQuery.append("SELECT ");
-            prepareQuery.append("sl.location_id as locationId, ");
-            prepareQuery.append("sl.product_id as productId, ");
-            prepareQuery.append("sl.placeStorageLocation as placeStorageLocation, ");
-            prepareQuery.append("sl.maximumNumberOfPallets as maximumNumberOfPallets ");
-            prepareQuery.append("from materialFlowResources_storageLocation as sl ");
+            prepareQuery.append("sl.location_id AS locationId, ");
+            prepareQuery.append("psl.product_id AS productId, ");
+            prepareQuery.append("sl.placeStorageLocation AS placeStorageLocation, ");
+            prepareQuery.append("sl.maximumNumberOfPallets AS maximumNumberOfPallets ");
+            prepareQuery.append("FROM materialFlowResources_storageLocation sl ");
+            prepareQuery.append("LEFT JOIN jointable_product_storagelocation psl ");
+            prepareQuery.append("ON psl.storagelocation_id = sl.id ");
+            prepareQuery.append("LEFT JOIN basic_product p ");
+            prepareQuery.append("ON p.id = psl.product_id ");
             prepareQuery.append("WHERE sl.number = :storageLocationNumber");
 
             params.put("storageLocationNumber", storageLocationNumber);
@@ -525,7 +526,7 @@ public class MaterialFlowResourcesServiceImpl implements MaterialFlowResourcesSe
 
             prepareQuery.append("SELECT ");
             prepareQuery.append("bpn.number ");
-            prepareQuery.append("from basic_palletNumber AS bpn ");
+            prepareQuery.append("FROM basic_palletNumber AS bpn ");
             prepareQuery.append("WHERE bpn.number = :palletNumber");
 
             params.put("palletNumber", palletNumber);
@@ -546,7 +547,7 @@ public class MaterialFlowResourcesServiceImpl implements MaterialFlowResourcesSe
 
             prepareQuery.append("SELECT ");
             prepareQuery.append("dto.number ");
-            prepareQuery.append("from materialFlowResources_resourceDto as dto ");
+            prepareQuery.append("FROM materialFlowResources_resourceDto AS dto ");
             prepareQuery.append("WHERE dto.palletNumber = :palletNumber");
 
             params.put("palletNumber", palletNumber);
@@ -569,23 +570,23 @@ public class MaterialFlowResourcesServiceImpl implements MaterialFlowResourcesSe
             StringBuilder prepareQuery = new StringBuilder();
 
             prepareQuery.append("SELECT ");
-            prepareQuery.append("dto.location_id as locationId, ");
-            prepareQuery.append("dto.number as resourceNumber, ");
-            prepareQuery.append("dto.productName as productName, ");
-            prepareQuery.append("dto.productNumber as productNumber, ");
-            prepareQuery.append("dto.locationNumber as locationNumber, ");
-            prepareQuery.append("dto.storageLocationNumber as storageLocationNumber, ");
-            prepareQuery.append("dto.palletNumber as palletNumber, ");
-            prepareQuery.append("dto.typeOfPallet as palletType, ");
-            prepareQuery.append("dto.batchNumber as batchNumber, ");
-            prepareQuery.append("dto.productionDate as productionDate, ");
-            prepareQuery.append("dto.expirationDate as expirationDate, ");
-            prepareQuery.append("dto.givenUnit as additionalUnit, ");
-            prepareQuery.append("dto.quantity as quantity, ");
-            prepareQuery.append("dto.productUnit as unit, ");
-            prepareQuery.append("dto.quantityInAdditionalUnit as additionalQuantity, ");
-            prepareQuery.append("dto.conversion as conversionValue ");
-            prepareQuery.append("FROM materialFlowResources_resourceDto as dto ");
+            prepareQuery.append("dto.location_id AS locationId, ");
+            prepareQuery.append("dto.number AS resourceNumber, ");
+            prepareQuery.append("dto.productName AS productName, ");
+            prepareQuery.append("dto.productNumber AS productNumber, ");
+            prepareQuery.append("dto.locationNumber AS locationNumber, ");
+            prepareQuery.append("dto.storageLocationNumber AS storageLocationNumber, ");
+            prepareQuery.append("dto.palletNumber AS palletNumber, ");
+            prepareQuery.append("dto.typeOfPallet AS palletType, ");
+            prepareQuery.append("dto.batchNumber AS batchNumber, ");
+            prepareQuery.append("dto.productionDate AS productionDate, ");
+            prepareQuery.append("dto.expirationDate AS expirationDate, ");
+            prepareQuery.append("dto.givenUnit AS additionalUnit, ");
+            prepareQuery.append("dto.quantity AS quantity, ");
+            prepareQuery.append("dto.productUnit AS unit, ");
+            prepareQuery.append("dto.quantityInAdditionalUnit AS additionalQuantity, ");
+            prepareQuery.append("dto.conversion AS conversionValue ");
+            prepareQuery.append("FROM materialFlowResources_resourceDto AS dto ");
             prepareQuery.append("WHERE dto.storageLocationNumber = :storageLocationNumber ");
             prepareQuery.append("AND dto.locationNumber IN (:userLocations)");
 
@@ -607,23 +608,23 @@ public class MaterialFlowResourcesServiceImpl implements MaterialFlowResourcesSe
             StringBuilder prepareQuery = new StringBuilder();
 
             prepareQuery.append("SELECT ");
-            prepareQuery.append("dto.location_id as locationId, ");
-            prepareQuery.append("dto.number as resourceNumber, ");
-            prepareQuery.append("dto.productName as productName, ");
-            prepareQuery.append("dto.productNumber as productNumber, ");
-            prepareQuery.append("dto.locationNumber as locationNumber, ");
-            prepareQuery.append("dto.storageLocationNumber as storageLocationNumber, ");
-            prepareQuery.append("dto.palletNumber as palletNumber, ");
-            prepareQuery.append("dto.typeOfPallet as palletType, ");
-            prepareQuery.append("dto.batchNumber as batchNumber, ");
-            prepareQuery.append("dto.productionDate as productionDate, ");
-            prepareQuery.append("dto.expirationDate as expirationDate, ");
-            prepareQuery.append("dto.givenUnit as additionalUnit, ");
-            prepareQuery.append("dto.quantity as quantity, ");
-            prepareQuery.append("dto.productUnit as unit, ");
-            prepareQuery.append("dto.quantityInAdditionalUnit as additionalQuantity, ");
-            prepareQuery.append("dto.conversion as conversionValue ");
-            prepareQuery.append("FROM materialFlowResources_resourceDto as dto ");
+            prepareQuery.append("dto.location_id AS locationId, ");
+            prepareQuery.append("dto.number AS resourceNumber, ");
+            prepareQuery.append("dto.productName AS productName, ");
+            prepareQuery.append("dto.productNumber AS productNumber, ");
+            prepareQuery.append("dto.locationNumber AS locationNumber, ");
+            prepareQuery.append("dto.storageLocationNumber AS storageLocationNumber, ");
+            prepareQuery.append("dto.palletNumber AS palletNumber, ");
+            prepareQuery.append("dto.typeOfPallet AS palletType, ");
+            prepareQuery.append("dto.batchNumber AS batchNumber, ");
+            prepareQuery.append("dto.productionDate AS productionDate, ");
+            prepareQuery.append("dto.expirationDate AS expirationDate, ");
+            prepareQuery.append("dto.givenUnit AS additionalUnit, ");
+            prepareQuery.append("dto.quantity AS quantity, ");
+            prepareQuery.append("dto.productUnit AS unit, ");
+            prepareQuery.append("dto.quantityInAdditionalUnit AS additionalQuantity, ");
+            prepareQuery.append("dto.conversion AS conversionValue ");
+            prepareQuery.append("FROM materialFlowResources_resourceDto AS dto ");
             prepareQuery.append("WHERE dto.palletNumber = :palletNumber ");
             prepareQuery.append("AND dto.locationNumber IN (:userLocations)");
 
@@ -647,23 +648,23 @@ public class MaterialFlowResourcesServiceImpl implements MaterialFlowResourcesSe
             StringBuilder prepareQuery = new StringBuilder();
 
             prepareQuery.append("SELECT ");
-            prepareQuery.append("dto.location_id as locationId, ");
-            prepareQuery.append("dto.number as resourceNumber, ");
-            prepareQuery.append("dto.productName as productName, ");
-            prepareQuery.append("dto.productNumber as productNumber, ");
-            prepareQuery.append("dto.locationNumber as locationNumber, ");
-            prepareQuery.append("dto.storageLocationNumber as storageLocationNumber, ");
-            prepareQuery.append("dto.palletNumber as palletNumber, ");
-            prepareQuery.append("dto.typeOfPallet as palletType, ");
-            prepareQuery.append("dto.batchNumber as batchNumber, ");
-            prepareQuery.append("dto.productionDate as productionDate, ");
-            prepareQuery.append("dto.expirationDate as expirationDate, ");
-            prepareQuery.append("dto.givenUnit as additionalUnit, ");
-            prepareQuery.append("dto.quantity as quantity, ");
-            prepareQuery.append("dto.productUnit as unit, ");
-            prepareQuery.append("dto.quantityInAdditionalUnit as additionalQuantity, ");
-            prepareQuery.append("dto.conversion as conversionValue ");
-            prepareQuery.append("FROM materialFlowResources_resourceDto as dto ");
+            prepareQuery.append("dto.location_id AS locationId, ");
+            prepareQuery.append("dto.number AS resourceNumber, ");
+            prepareQuery.append("dto.productName AS productName, ");
+            prepareQuery.append("dto.productNumber AS productNumber, ");
+            prepareQuery.append("dto.locationNumber AS locationNumber, ");
+            prepareQuery.append("dto.storageLocationNumber AS storageLocationNumber, ");
+            prepareQuery.append("dto.palletNumber AS palletNumber, ");
+            prepareQuery.append("dto.typeOfPallet AS palletType, ");
+            prepareQuery.append("dto.batchNumber AS batchNumber, ");
+            prepareQuery.append("dto.productionDate AS productionDate, ");
+            prepareQuery.append("dto.expirationDate AS expirationDate, ");
+            prepareQuery.append("dto.givenUnit AS additionalUnit, ");
+            prepareQuery.append("dto.quantity AS quantity, ");
+            prepareQuery.append("dto.productUnit AS unit, ");
+            prepareQuery.append("dto.quantityInAdditionalUnit AS additionalQuantity, ");
+            prepareQuery.append("dto.conversion AS conversionValue ");
+            prepareQuery.append("FROM materialFlowResources_resourceDto AS dto ");
             prepareQuery.append("WHERE dto.palletNumber = :palletNumber ");
             prepareQuery.append("AND dto.storageLocationNumber = :storageLocationNumber ");
             prepareQuery.append("AND dto.locationNumber IN (:userLocations)");

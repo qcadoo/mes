@@ -81,8 +81,7 @@ public class NegotiationDetailsHooksTSFNOverrideUtil {
         String queryNotApprovedDeliveries = String.format("SELECT np.id AS " + L_NEGOTIATION_PRODUCT_ID
                 + ", SUM(op.orderedQuantity) AS " + L_ORDERED_QUANTITY + " FROM #deliveries_orderedProduct op "
                 + "JOIN op.offer.negotiation.negotiationProducts np WHERE op.offer.negotiation.id = %s "
-                + "AND op.delivery.state IN ('" + DeliveryStateStringValues.APPROVED + "', '"
-                + DeliveryStateStringValues.RECEIVE_CONFIRM_WAITING + "') AND op.product.id = np.product.id "
+                + "AND op.delivery.state IN ('" + DeliveryStateStringValues.APPROVED + "') AND op.product.id = np.product.id "
                 + "AND ((op.operation.id IS null AND np.operation.id IS null) OR op.operation.id = np.operation.id) "
                 + "GROUP BY np.id", negotiationId);
 

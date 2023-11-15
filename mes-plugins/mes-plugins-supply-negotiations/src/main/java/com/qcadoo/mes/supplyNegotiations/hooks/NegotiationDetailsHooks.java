@@ -270,8 +270,7 @@ public class NegotiationDetailsHooks {
         String queryApprovedDeliveries = String.format("SELECT np.id AS " + L_NEGOTIATION_PRODUCT_ID
                         + ", SUM(op.orderedQuantity) AS " + L_ORDERED_QUANTITY + " FROM #deliveries_orderedProduct op "
                         + "JOIN op.offer.negotiation.negotiationProducts np WHERE op.offer.negotiation.id = %s "
-                        + "AND op.delivery.state IN ('" + DeliveryStateStringValues.APPROVED + "', '"
-                        + DeliveryStateStringValues.RECEIVE_CONFIRM_WAITING + "') AND op.product.id = np.product.id " + "GROUP BY np.id",
+                        + "AND op.delivery.state IN ('" + DeliveryStateStringValues.APPROVED + "') AND op.product.id = np.product.id " + "GROUP BY np.id",
                 negotiationId);
 
         return queryApprovedDeliveries;

@@ -65,21 +65,6 @@ public class MaterialRequirementCoverageRowStyleResolver {
             states.add(DeliveryStateStringValues.DURING_CORRECTION);
         }
 
-        StringBuilder queryForDelivered = new StringBuilder();
-
-        queryForDelivered.append("select count(delivery.id) as cnt ");
-        queryForDelivered.append("from #deliveries_delivery delivery ");
-        queryForDelivered.append("join delivery.deliveredProducts deliveredProduct ");
-        queryForDelivered.append("where delivery.active = true and delivery.deliveryDate <= :deliveryDate ");
-        queryForDelivered.append("and deliveredProduct.product = :productId and delivery.state = '07receiveConfirmWaiting' ");
-
-        long deliveredCount = dataDefinitionService
-                .get(DeliveriesConstants.PLUGIN_IDENTIFIER, DeliveriesConstants.MODEL_DELIVERY)
-                .find(queryForDelivered.toString()).setLong("productId", productId).setDate("deliveryDate", coverageToDate)
-                .setMaxResults(1).uniqueResult().getLongField("cnt");
-        if (deliveredCount > 0) {
-            return RowStyle.YELLOW_BACKGROUND;
-        }
         List<Entity> orderedDeliveries = dataDefinitionService
                 .get(DeliveriesConstants.PLUGIN_IDENTIFIER, DeliveriesConstants.MODEL_DELIVERY).find(query.toString())
                 .setLong("productId", productId).setDate("deliveryDate", coverageToDate).setParameterList("states", states)

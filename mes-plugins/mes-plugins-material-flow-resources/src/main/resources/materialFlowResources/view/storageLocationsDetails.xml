@@ -37,7 +37,7 @@
         <windowTab name="mainTab" reference="mainTab">
             <component type="form" name="storageLocationsForm" reference="form">
                 <component type="gridLayout" name="storageLocationsGridLayout"
-                           hasBorders="false" columns="3" rows="6">
+                           hasBorders="false" columns="3" rows="5">
                     <layoutElement column="1" row="1">
                         <component type="input" name="number" reference="number"
                                    field="number">
@@ -59,28 +59,6 @@
                         </component>
                     </layoutElement>
                     <layoutElement column="1" row="3">
-                        <component type="lookup" name="product" reference="product"
-                                   field="product" hasDescription="true">
-                            <option type="column" name="name" fields="name" link="true"
-                                    width="200"/>
-                            <option type="column" name="ean" fields="ean"/>
-
-                            <option type="searchable" value="name,ean"/>
-                            <option type="orderable" value="name,ean"/>
-
-                            <option type="expression"
-                                    value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name"/>
-                            <option type="fieldCode" value="number"/>
-
-                            <criteriaModifier class="com.qcadoo.mes.materialFlowResources.criteriaModifiers.ProductsCriteriaModifiers"
-                                              method="showNotAssignedProducts"/>
-
-                            <listener event="onSelectedEntityChange"
-                                      class="com.qcadoo.view.api.listeners.RerenderListener"
-                                      method="onChangeRerender"/>
-                        </component>
-                    </layoutElement>
-                    <layoutElement column="1" row="4">
                         <component type="checkbox" name="placeStorageLocation" field="placeStorageLocation"
                                    reference="placeStorageLocation">
                             <listener event="onChange"
@@ -88,13 +66,13 @@
                                       method="updateFields"/>
                         </component>
                     </layoutElement>
-                    <layoutElement column="1" row="5">
+                    <layoutElement column="1" row="4">
                         <component type="input" name="maximumNumberOfPallets"
                                    reference="maximumNumberOfPallets" field="maximumNumberOfPallets">
                             <option type="alignment" value="right"/>
                         </component>
                     </layoutElement>
-                    <layoutElement column="1" row="6">
+                    <layoutElement column="1" row="5">
                         <component type="checkbox" name="highStorageLocation" field="highStorageLocation"
                                    reference="highStorageLocation" hasDescription="true">
                         </component>
@@ -143,28 +121,6 @@
                 <option type="deletable" value="true"/>
                 <option type="multiselect" value="true"/>
                 <option type="fixedHeight" value="true"/>
-            </component>
-        </windowTab>
-
-        <windowTab name="history" reference="historyTab">
-            <component type="grid" name="historyGrid" reference="historyGrid" source="#{form}.history">
-                <option type="column" name="createDate" fields="createDate"/>
-                <option type="column" name="createUser" fields="createUser"/>
-
-                <option type="column" name="productFrom" fields="productFrom"
-                        expression="#productFrom['number']" />
-                <option type="column" name="productTo" fields="productTo"
-                        expression="#productTo['number']" />
-
-                <option type="order" column="createDate" direction="desc" />
-
-                <option type="searchable"
-                        value="createDate,createUser,productFrom,productTo" />
-                <option type="orderable"
-                        value="createDate,createUser,productFrom,productTo" />
-
-                <option type="fullscreen" value="true" />
-                <option type="multiselect" value="true" />
             </component>
         </windowTab>
 

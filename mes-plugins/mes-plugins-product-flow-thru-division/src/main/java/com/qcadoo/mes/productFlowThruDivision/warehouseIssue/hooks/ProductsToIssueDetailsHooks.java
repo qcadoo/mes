@@ -1,24 +1,5 @@
 package com.qcadoo.mes.productFlowThruDivision.warehouseIssue.hooks;
 
-import static org.apache.commons.lang3.StringUtils.isNotBlank;
-
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.stream.Collectors;
-
-import org.json.JSONException;
-import org.json.JSONObject;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
-
 import com.google.common.base.Optional;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Lists;
@@ -38,11 +19,7 @@ import com.qcadoo.mes.productFlowThruDivision.warehouseIssue.WarehouseIssueParam
 import com.qcadoo.mes.productFlowThruDivision.warehouseIssue.constans.IssueFields;
 import com.qcadoo.mes.productFlowThruDivision.warehouseIssue.constans.ProductsToIssueFields;
 import com.qcadoo.mes.productFlowThruDivision.warehouseIssue.constans.WarehouseIssueFields;
-import com.qcadoo.model.api.BigDecimalUtils;
-import com.qcadoo.model.api.DataDefinition;
-import com.qcadoo.model.api.DataDefinitionService;
-import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.NumberService;
+import com.qcadoo.model.api.*;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.AwesomeDynamicListComponent;
 import com.qcadoo.view.api.components.FieldComponent;
@@ -52,6 +29,18 @@ import com.qcadoo.view.api.ribbon.Ribbon;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.api.ribbon.RibbonGroup;
 import com.qcadoo.view.constants.QcadooViewConstants;
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
+
+import java.math.BigDecimal;
+import java.util.*;
+import java.util.stream.Collectors;
+
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 @Service
 public class ProductsToIssueDetailsHooks {
@@ -63,10 +52,10 @@ public class ProductsToIssueDetailsHooks {
     private NumberService numberService;
 
     @Autowired
-    private MaterialFlowResourcesService materialFlowResourcesService;
+    private TranslationService translationService;
 
     @Autowired
-    private TranslationService translationService;
+    private MaterialFlowResourcesService materialFlowResourcesService;
 
     @Autowired
     private WarehouseIssueParameterService warehouseIssueParameterService;
@@ -143,7 +132,8 @@ public class ProductsToIssueDetailsHooks {
 
     private List<Entity> sortIssuesBasedOnFilter(final ViewDefinitionState view, final List<Entity> createdIssues) {
         try {
-            sortEntries: {
+            sortEntries:
+            {
                 String jsonKeyName = "window.mainTab.form.gridProductNumberFilter";
 
                 final String gridProductNumberFilter;
@@ -177,8 +167,8 @@ public class ProductsToIssueDetailsHooks {
     }
 
     private void fillLocationQuantity(final List<Entity> createdIssues,
-            final Map<Long, Map<Long, BigDecimal>> stockForWarehousesFrom,
-            final Map<Long, Map<Long, BigDecimal>> stockForWarehousesTo) {
+                                      final Map<Long, Map<Long, BigDecimal>> stockForWarehousesFrom,
+                                      final Map<Long, Map<Long, BigDecimal>> stockForWarehousesTo) {
         for (Entity issue : createdIssues) {
             BigDecimal quantityFrom = stockForWarehousesFrom
                     .get(issue.getBelongsToField(IssueFields.WAREHOUSE_ISSUE)
@@ -318,7 +308,6 @@ public class ProductsToIssueDetailsHooks {
         issue.setField(IssueFields.DEMAND_QUANTITY, demandQuantity);
         issue.setField(IssueFields.QUANTITY_PER_UNIT, quantityPerUnit);
         issue.setField(IssueFields.ISSUE_QUANTITY, issueQuantity);
-        issue.setField(IssueFields.STORAGE_LOCATION, productToIssue.getBelongsToField(ProductsToIssueFields.STORAGE_LOCATION));
         issue.setField(IssueFields.ISSUED, false);
         issue.setField(IssueFields.ISSUE_QUANTITY_ADDITIONAL_UNIT, issuedQuantityAdditionalUnit);
         issue.setField(IssueFields.PRODUCTS_TO_ISSUE_ID, productToIssue.getId());

@@ -23,65 +23,75 @@ import java.util.Objects;
 @Service
 public class StocktakingDetailsHooks {
 
-    
-
     @Autowired
     private NumberGeneratorService numberGeneratorService;
 
     public void onBeforeRender(final ViewDefinitionState view) {
-        FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
-        Entity stocktaking = form.getPersistedEntityWithIncludedFormValues();
-        if (stocktaking.getId() == null) {
+        FormComponent stocktakingForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
+
+        Entity stocktaking = stocktakingForm.getPersistedEntityWithIncludedFormValues();
+
+        if (Objects.isNull(stocktaking.getId())) {
             numberGeneratorService.generateAndInsertNumber(view, MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER,
                     MaterialFlowResourcesConstants.MODEL_STOCKTAKING, QcadooViewConstants.L_FORM, StocktakingFields.NUMBER);
         }
+
         if (Objects.isNull(stocktaking.getDateField(StocktakingFields.STOCKTAKING_DATE))) {
             FieldComponent stocktakingDateField = (FieldComponent) view
                     .getComponentByReference(StocktakingFields.STOCKTAKING_DATE);
+
             stocktakingDateField.setFieldValue(DateUtils.toDateString(new Date()));
             stocktakingDateField.requestComponentUpdateState();
         }
 
-        setCriteriaModifierParameters(view, stocktaking);
+        disableForm(view, stocktakingForm, stocktaking);
 
-        disableForm(view, form, stocktaking);
+        setCriteriaModifierParameters(view, stocktaking);
     }
 
-    private void disableForm(final ViewDefinitionState view, final FormComponent form, final Entity stocktaking) {
+    private void disableForm(final ViewDefinitionState view, final FormComponent stocktakingForm, final Entity stocktaking) {
+        GridComponent storageLocationsGrid = (GridComponent) view.getComponentByReference(StocktakingFields.STORAGE_LOCATIONS);
+
         if (stocktaking.getBooleanField(StocktakingFields.GENERATED)) {
-            form.setFormEnabled(false);
-            GridComponent storageLocations = (GridComponent) view.getComponentByReference(StocktakingFields.STORAGE_LOCATIONS);
-            storageLocations.setEnabled(false);
+            stocktakingForm.setFormEnabled(false);
+            storageLocationsGrid.setEnabled(false);
         } else {
-            form.setFormEnabled(true);
+            stocktakingForm.setFormEnabled(true);
             changeStorageLocationsGridEnabled(view);
         }
     }
 
     private void changeStorageLocationsGridEnabled(final ViewDefinitionState view) {
-        GridComponent storageLocations = (GridComponent) view.getComponentByReference(StocktakingFields.STORAGE_LOCATIONS);
-        FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
-        Entity stocktaking = form.getEntity();
+        FormComponent stocktakingForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
+        GridComponent storageLocationsGrid = (GridComponent) view.getComponentByReference(StocktakingFields.STORAGE_LOCATIONS);
+
+        Entity stocktaking = stocktakingForm.getEntity();
+
         boolean enabled = StorageLocationMode.SELECTED.getStringValue().equals(
                 stocktaking.getStringField(StocktakingFields.STORAGE_LOCATION_MODE));
-        storageLocations.setEnabled(enabled);
 
+        storageLocationsGrid.setEnabled(enabled);
     }
 
     public void changeStorageLocationsGridEnabled(final ViewDefinitionState view, final ComponentState componentState,
-            final String[] args) {
+                                                  final String[] args) {
         changeStorageLocationsGridEnabled(view);
     }
 
     private void setCriteriaModifierParameters(final ViewDefinitionState view, final Entity stocktaking) {
         LookupComponent storageLocationLookup = (LookupComponent) view.getComponentByReference("storageLocationLookup");
+
         Entity location = stocktaking.getBelongsToField(StocktakingFields.LOCATION);
+
         FilterValueHolder filterValueHolder = storageLocationLookup.getFilterValue();
-        if (location != null) {
+
+        if (Objects.nonNull(location)) {
             filterValueHolder.put(StocktakingFields.LOCATION, location.getId());
         } else {
             filterValueHolder.put(StocktakingFields.LOCATION, 0L);
         }
+
         storageLocationLookup.setFilterValue(filterValueHolder);
     }
+
 }

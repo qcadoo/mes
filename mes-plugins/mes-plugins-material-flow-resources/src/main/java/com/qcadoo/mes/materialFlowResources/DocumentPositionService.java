@@ -292,14 +292,17 @@ public class DocumentPositionService {
         paramMap.put("document", Integer.parseInt(document));
 
         if (Strings.isNullOrEmpty(product)) {
-            preparedQuery = "SELECT id, number FROM materialflowresources_storagelocation WHERE number ilike :query "
-                    + "AND location_id IN (SELECT DISTINCT COALESCE(locationfrom_id, locationto_id) FROM materialflowresources_document WHERE id = :document) "
-                    + "AND active = true;";
+            preparedQuery = "SELECT sl.id, sl.number FROM materialflowresources_storagelocation sl "
+                    + "WHERE sl.number ilike :query "
+                    + "AND sl.location_id IN (SELECT DISTINCT COALESCE(locationfrom_id, locationto_id) FROM materialflowresources_document WHERE id = :document) "
+                    + "AND sl.active = true;";
         } else {
-            preparedQuery = "SELECT id, number FROM materialflowresources_storagelocation WHERE number ilike :query "
-                    + "AND location_id IN (SELECT DISTINCT COALESCE(locationfrom_id, locationto_id) FROM materialflowresources_document WHERE id = :document) "
-                    + "AND (product_id IN (SELECT id FROM basic_product WHERE number LIKE :product) OR product_id IS NULL) "
-                    + "AND active = true;";
+            preparedQuery = "SELECT sl.id, sl.number FROM materialflowresources_storagelocation sl "
+                    + "LEFT JOIN jointable_product_storagelocation psl ON psl.storagelocation_id = sl.id "
+                    + "WHERE sl.number ilike :query "
+                    + "AND sl.location_id IN (SELECT DISTINCT COALESCE(locationfrom_id, locationto_id) FROM materialflowresources_document WHERE id = :document) "
+                    + "AND (psl.product_id IN (SELECT id FROM basic_product WHERE number LIKE :product) OR psl.product_id IS NULL) "
+                    + "AND sl.active = true;";
 
             paramMap.put("product", product);
         }
@@ -348,7 +351,6 @@ public class DocumentPositionService {
 
             Map<String, Object> config = Maps.newHashMap();
 
-            config.put("directionConvertingQuantityAfterChangingConverter", directionConvertingQuantityAfterChangingConverter(documentId, isOutDocument));
             config.put("readOnly", isGridReadOnly(documentId));
             config.put("suggestResource", shouldSuggestResource());
             config.put("outDocument", isOutDocument);
@@ -358,25 +360,6 @@ public class DocumentPositionService {
         } catch (EmptyResultDataAccessException e) {
             return Collections.emptyMap();
         }
-    }
-
-    private String directionConvertingQuantityAfterChangingConverter(final Long documentId, final boolean isOutDocument) {
-        String query = "SELECT loc.directionconvertingquantityafterchangingconverter as directionconvertingquantityafterchangingconverter ";
-        query += "FROM materialflowresources_document doc ";
-
-        if (isOutDocument) {
-            query += "LEFT JOIN materialflow_location loc ON loc.id = doc.locationfrom_id ";
-        } else {
-            query += "LEFT JOIN materialflow_location loc ON loc.id = doc.locationto_id ";
-        }
-
-        query += "WHERE doc.id = :documentId ";
-
-        Map<String, Object> parameters = Maps.newHashMap();
-
-        parameters.put("documentId", documentId);
-
-        return jdbcTemplate.queryForObject(query, parameters, String.class);
     }
 
     public Map<String, Object> unitsOfProduct(final String productNumber) {
@@ -547,13 +530,14 @@ public class DocumentPositionService {
             return null;
         }
 
-        String query = "SELECT dsl.storagelocation_id AS id, dsl.number AS number, p.name AS product, l.name AS location "
-                + "FROM materialflowresources_defaultstoragelocationdto dsl "
-                + "JOIN basic_product p ON p.id = dsl.product_id "
-                + "JOIN materialflow_location l ON l.id = dsl.location_id "
-                + "WHERE dsl.location_id IN "
+        String query = "SELECT sl.id AS id, sl.number AS number, p.name AS product, l.name AS location "
+                + "FROM materialflowresources_storagelocation sl "
+                + "JOIN materialflow_location l ON l.id = sl.location_id "
+                + "RIGHT JOIN jointable_product_storagelocation psl ON psl.storagelocation_id = sl.id "
+                + "LEFT JOIN basic_product p ON p.id = psl.product_id "
+                + "WHERE sl.location_id IN "
                 + "(SELECT DISTINCT COALESCE(locationfrom_id, locationto_id) AS location FROM materialflowresources_document WHERE id = :document) "
-                + "AND dsl.active = true AND p.number = :product LIMIT 1;";
+                + "AND sl.active = true AND p.number = :product LIMIT 1;";
 
         Map<String, Object> filter = Maps.newHashMap();
 
@@ -575,7 +559,12 @@ public class DocumentPositionService {
             return null;
         }
 
-        String query = "SELECT p.number FROM materialflowresources_storagelocation sl JOIN basic_product p ON sl.product_id = p.id JOIN materialflow_location l on l.id = sl.location_id WHERE sl.number = :location AND l.id = (SELECT DISTINCT COALESCE(locationfrom_id, locationto_id) FROM materialflowresources_document WHERE id = :document);";
+        String query = "SELECT p.number FROM materialflowresources_storagelocation sl "
+                + "JOIN materialflow_location l ON l.id = sl.location_id "
+                + "RIGHT JOIN jointable_product_storagelocation psl ON psl.storagelocation_id = sl.id "
+                + "LEFT JOIN basic_product p ON p.id = psl.product_id "
+                + "WHERE sl.number = :location "
+                + "AND l.id IN (SELECT DISTINCT COALESCE(locationfrom_id, locationto_id) FROM materialflowresources_document WHERE id = :document);";
 
         Map<String, Object> filter = Maps.newHashMap();
 

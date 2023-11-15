@@ -142,15 +142,7 @@
 
 		<view:view-hook plugin="basic" view="productDetails"
 			type="beforeRender" class="com.qcadoo.mes.costNormsForProduct.hooks.ProductDetailsHooksCNFP"
-			method="fillUnitFieldInProduct" />
-
-		<view:view-hook plugin="basic" view="productDetails"
-			type="beforeRender" class="com.qcadoo.mes.costNormsForProduct.hooks.ProductDetailsHooksCNFP"
-			method="fillCurrencyFieldsInProduct" />
-
-		<view:view-hook plugin="basic" view="productDetails"
-			type="beforeRender" class="com.qcadoo.mes.costNormsForProduct.hooks.ProductDetailsHooksCNFP"
-			method="enabledFieldForExternalID" />
+			method="onBeforeRender" />
 
 		<model:model-hook plugin="basic" model="product" >
 			<model:onSave

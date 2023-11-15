@@ -1,7 +1,7 @@
 /**
  * ***************************************************************************
  * Copyright (c) 2010 Qcadoo Limited
- * Project: Qcadoo MES
+ * Project: Qcadoo Framework
  * Version: 1.4
  *
  * This file is part of Qcadoo.
@@ -21,36 +21,30 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.materialFlowResources.constants;
+package com.qcadoo.mes.technologies.constants;
 
-public final class LocationFieldsMFR {
+public final class ChangeTechnologyParametersFields {
 
-	private LocationFieldsMFR() {
+    private ChangeTechnologyParametersFields() {
 
-	}
+    }
 
-	public static final String ALGORITHM = "algorithm";
+    public static final String CHANGE_PERFORMANCE_NORM = "changePerformanceNorm";
 
-	public static final String REQUIRE_PRICE = "requirePrice";
+    public static final String UPDATE_OPERATION_TIME_NORMS = "updateOperationTimeNorms";
 
-	public static final String REQUIRE_BATCH = "requireBatch";
+    public static final String UPDATE_OPERATION_COST_NORMS = "updateOperationCostNorms";
 
-	public static final String REQUIRE_PRODUCTION_DATE = "requireProductionDate";
+    public static final String UPDATE_OPERATION_WORKSTATIONS = "updateOperationWorkstations";
 
-	public static final String REQUIRE_EXPIRATION_DATE = "requireExpirationDate";
+    public static final String STANDARD_PERFORMANCE = "standardPerformance";
 
-	public static final String DRAFT_MAKES_RESERVATION = "draftMakesReservation";
+    public static final String CHANGE_GROUP = "changeGroup";
 
-	public static final String RESOURCE_CORRECTIONS = "resourceCorrections";
+    public static final String TECHNOLOGY_GROUP = "technologyGroup";
 
-	public static final String STOCK_TAKINGS = "stocktakings";
+    public static final String SELECTED_ENTITIES = "selectedEntities";
 
-	public static final String RESOURCE_STOCKS = "resourceStocks";
-
-	public static final String LINKED_DOCUMENTS = "linkedDocuments";
-
-	public static final String RESOURCES = "resources";
-
-	public static final String COST_NORMS_LOCATIONS = "costNormsLocations";
+    public static final String GENERATED = "generated";
 
 }

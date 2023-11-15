@@ -23,17 +23,6 @@
  */
 package com.qcadoo.mes.deliveries.hooks;
 
-import java.math.BigDecimal;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
-import org.springframework.stereotype.Service;
-
 import com.qcadoo.mes.advancedGenealogy.AdvancedGenealogyService;
 import com.qcadoo.mes.advancedGenealogy.constants.BatchNumberUniqueness;
 import com.qcadoo.mes.advancedGenealogy.hooks.BatchModelValidators;
@@ -44,16 +33,23 @@ import com.qcadoo.mes.deliveries.constants.DeliveredProductFields;
 import com.qcadoo.mes.deliveries.constants.DeliveryFields;
 import com.qcadoo.mes.deliveries.constants.OrderedProductFields;
 import com.qcadoo.mes.deliveries.constants.ParameterFieldsD;
+import com.qcadoo.mes.materialFlowResources.MaterialFlowResourcesService;
 import com.qcadoo.mes.materialFlowResources.PalletValidatorService;
 import com.qcadoo.mes.materialFlowResources.constants.MaterialFlowResourcesConstants;
 import com.qcadoo.mes.materialFlowResources.constants.StorageLocationFields;
-import com.qcadoo.model.api.BigDecimalUtils;
-import com.qcadoo.model.api.DataDefinition;
-import com.qcadoo.model.api.DataDefinitionService;
-import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.NumberService;
+import com.qcadoo.model.api.*;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
 @Service
 public class DeliveredProductHooks {
@@ -87,6 +83,9 @@ public class DeliveredProductHooks {
     @Autowired
     private BatchModelValidators batchModelValidators;
 
+    @Autowired
+    private MaterialFlowResourcesService materialFlowResourcesService;
+
     public void onCreate(final DataDefinition deliveredProductDD, final Entity deliveredProduct) {
         reservationService.createDefaultReservationsForDeliveredProduct(deliveredProduct);
     }
@@ -96,7 +95,6 @@ public class DeliveredProductHooks {
         reservationService.deleteReservationsForDeliveredProductIfChanged(deliveredProduct);
 
         updateDeliveredAndAdditionalQuantityInOrderedProduct(deliveredProductDD, deliveredProduct);
-        tryFillStorageLocation(deliveredProduct);
 
         createBatch(deliveredProduct);
     }
@@ -215,29 +213,6 @@ public class DeliveredProductHooks {
         }
 
         return searchCriteriaBuilder.list().getEntities();
-    }
-
-    private void tryFillStorageLocation(final Entity deliveredProduct) {
-        Entity delivery = deliveredProduct.getBelongsToField(DeliveredProductFields.DELIVERY);
-        Entity location = delivery.getBelongsToField(DeliveryFields.LOCATION);
-
-        if (Objects.nonNull(location)
-                && Objects.isNull(deliveredProduct.getBelongsToField(DeliveredProductFields.STORAGE_LOCATION))) {
-            Entity product = deliveredProduct.getBelongsToField(DeliveredProductFields.PRODUCT);
-
-            Optional<Entity> storageLocation = findStorageLocationForProduct(product, location);
-
-            storageLocation.ifPresent(entity -> deliveredProduct.setField(DeliveredProductFields.STORAGE_LOCATION, entity));
-        }
-    }
-
-    public Optional<Entity> findStorageLocationForProduct(final Entity product, final Entity location) {
-        SearchCriteriaBuilder searchCriteriaBuilder = getStorageLocationDD().find();
-
-        searchCriteriaBuilder.add(SearchRestrictions.belongsTo(StorageLocationFields.PRODUCT, product));
-        searchCriteriaBuilder.add(SearchRestrictions.belongsTo(StorageLocationFields.LOCATION, location));
-
-        return Optional.ofNullable(searchCriteriaBuilder.setMaxResults(1).uniqueResult());
     }
 
     private void createBatch(final Entity deliveredProduct) {
@@ -466,11 +441,6 @@ public class DeliveredProductHooks {
         }
 
         return true;
-    }
-
-    private DataDefinition getStorageLocationDD() {
-        return dataDefinitionService.get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER,
-                MaterialFlowResourcesConstants.MODEL_STORAGE_LOCATION);
     }
 
 }

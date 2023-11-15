@@ -34,6 +34,8 @@ public final class MaterialRequirementsConstants {
     // MODEL
     public static final String MODEL_MATERIAL_REQUIREMENT = "materialRequirement";
 
+    public static final String MODEL_MATERIAL_REQUIREMENT_PRODUCT = "materialRequirementProduct";
+
     // VIEW
     public static final String VIEW_MATERIAL_REQUIREMENT_DETAILS = "materialRequirementDetails";
 

@@ -21,36 +21,14 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.materialFlowResources.constants;
+package com.qcadoo.mes.materialRequirements.constants;
 
-public final class LocationFieldsMFR {
+public final class LocationFieldsMR {
 
-	private LocationFieldsMFR() {
+    private LocationFieldsMR() {
 
-	}
+    }
 
-	public static final String ALGORITHM = "algorithm";
-
-	public static final String REQUIRE_PRICE = "requirePrice";
-
-	public static final String REQUIRE_BATCH = "requireBatch";
-
-	public static final String REQUIRE_PRODUCTION_DATE = "requireProductionDate";
-
-	public static final String REQUIRE_EXPIRATION_DATE = "requireExpirationDate";
-
-	public static final String DRAFT_MAKES_RESERVATION = "draftMakesReservation";
-
-	public static final String RESOURCE_CORRECTIONS = "resourceCorrections";
-
-	public static final String STOCK_TAKINGS = "stocktakings";
-
-	public static final String RESOURCE_STOCKS = "resourceStocks";
-
-	public static final String LINKED_DOCUMENTS = "linkedDocuments";
-
-	public static final String RESOURCES = "resources";
-
-	public static final String COST_NORMS_LOCATIONS = "costNormsLocations";
+    public static final String MATERIAL_REQUIREMENT_PRODUCTS = "materialRequirementProducts";
 
 }

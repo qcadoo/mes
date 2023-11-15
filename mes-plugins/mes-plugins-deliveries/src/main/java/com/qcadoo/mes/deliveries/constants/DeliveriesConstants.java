@@ -41,6 +41,8 @@ public final class DeliveriesConstants {
 
     public static final String MODEL_ORDERED_PRODUCT = "orderedProduct";
 
+    public static final String MODEL_ORDERED_PRODUCT_DTO = "orderedProductDto";
+
     public static final String MODEL_ORDERED_PRODUCT_RESERVATION = "orderedProductReservation";
 
     public static final String MODEL_COLUMN_FOR_DELIVERIES = "columnForDeliveries";

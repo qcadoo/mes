@@ -34,7 +34,8 @@
     <component type="window" name="window" reference="window">
         <ribbon>
             <group name="navigation">
-                <bigButton name="back" icon="backIcon24.png" state="enabled" action="#{window}.performBackWithoutConfirm"/>
+                <bigButton name="back" icon="backIcon24.png" state="enabled"
+                           action="#{window}.performBackWithoutConfirm"/>
             </group>
             <group name="actions">
                 <bigButton name="changeTechnologyParameters" icon="genealogyIcon24.png">
@@ -62,37 +63,41 @@
                 </bigButton>
             </group>
         </ribbon>
+
         <windowTab name="mainTab">
             <component type="form" name="form" reference="form">
                 <script>
                     <![CDATA[
                         var changeTechnologyParameters = #{window}.getRibbonItemOrNull("actions.changeTechnologyParameters");
-                        this.addOnChangeListener({
 
+                        this.addOnChangeListener({
 						    onSetValue: function(value) {
 							    changeTechnologyParameters.enable();
+
 							    var changePerformanceNorm = #{changePerformanceNorm}.getValue().content.value;
 							    var changeGroup = #{changeGroup}.getValue().content.value;
 							    var updateOperationTimeNorms = #{updateOperationTimeNorms}.getValue().content.value;
+							    var updateOperationCostNorms = #{updateOperationCostNorms}.getValue().content.value;
 							    var updateOperationWorkstations = #{updateOperationWorkstations}.getValue().content.value;
+
                                 if (changePerformanceNorm == '0' && changeGroup == '0'
-                                    && updateOperationTimeNorms == '0' && updateOperationWorkstations == '0') {
+                                    && updateOperationTimeNorms == '0' && updateOperationCostNorms == '0'
+                                    && updateOperationWorkstations == '0') {
                                     changeTechnologyParameters.disable();
                                 }
 						    }
-
 						});
           			]]>
                 </script>
-                <component type="gridLayout" name="gridLayout" columns="3"
-                           rows="6">
+
+                <component type="gridLayout" name="gridLayout" columns="2"
+                           rows="7">
                     <layoutElement column="1" row="1">
-                        <component type="checkbox" name="generated" defaultVisible="false"
-                                   reference="generated" defaultEnabled="false"/>
-                        <component type="checkbox" name="changePerformanceNorm"
-                                   reference="changePerformanceNorm"
+                        <component type="checkbox" name="generated" reference="generated"
+                                   defaultVisible="false" defaultEnabled="false"/>
+                        <component type="checkbox" name="changePerformanceNorm" reference="changePerformanceNorm"
                                    field="#{form}.changePerformanceNorm">
-                            <option type="labelWidth" value="35" />
+                            <option type="labelWidth" value="35"/>
 
                             <listener event="onChange"
                                       class="com.qcadoo.mes.technologies.listeners.ChangeTechnologyParametersListeners"
@@ -100,18 +105,16 @@
                         </component>
                     </layoutElement>
                     <layoutElement column="1" row="2">
-                        <component type="input" name="standardPerformance" defaultEnabled="false"
-                                   field="standardPerformance" reference="standardPerformance">
+                        <component type="input" name="standardPerformance" reference="standardPerformance"
+                                   field="standardPerformance" defaultEnabled="false">
                             <option type="alignment" value="right"/>
-                            <option type="labelWidth" value="35" />
-
+                            <option type="labelWidth" value="35"/>
                         </component>
                     </layoutElement>
                     <layoutElement column="1" row="3">
-                        <component type="checkbox" name="changeGroup"
-                                   reference="changeGroup"
-                                   field="#{form}.changeGroup" >
-                            <option type="labelWidth" value="35" />
+                        <component type="checkbox" name="changeGroup" reference="changeGroup"
+                                   field="#{form}.changeGroup">
+                            <option type="labelWidth" value="35"/>
 
                             <listener event="onChange"
                                       class="com.qcadoo.mes.technologies.listeners.ChangeTechnologyParametersListeners"
@@ -119,9 +122,9 @@
                         </component>
                     </layoutElement>
                     <layoutElement column="1" row="4">
-                        <component type="lookup" name="technologyGroup" field="technologyGroup" defaultEnabled="false"
-                                   reference="technologyGroup">
-                            <option type="labelWidth" value="35" />
+                        <component type="lookup" name="technologyGroup" reference="technologyGroup"
+                                   field="technologyGroup" defaultEnabled="false">
+                            <option type="labelWidth" value="35"/>
 
                             <option type="column" name="name" fields="name" link="true"
                                     width="200"/>
@@ -135,29 +138,39 @@
                         </component>
                         <component type="input" name="selectedEntities" reference="selectedEntities"
                                    field="selectedEntities" defaultVisible="false" defaultEnabled="false"/>
-
                     </layoutElement>
                     <layoutElement column="1" row="5">
-                        <component type="checkbox" name="updateOperationTimeNorms"
-                                   reference="updateOperationTimeNorms"
+                        <component type="checkbox" name="updateOperationTimeNorms" reference="updateOperationTimeNorms"
                                    field="#{form}.updateOperationTimeNorms" hasDescription="true">
-                            <option type="labelWidth" value="35" />
+                            <option type="labelWidth" value="35"/>
+
                             <listener event="onChange"
                                       class="com.qcadoo.view.api.listeners.RerenderListener"
                                       method="onChangeRerender"/>
                         </component>
                     </layoutElement>
                     <layoutElement column="1" row="6">
-                        <component type="checkbox" name="updateOperationWorkstations"
-                                   reference="updateOperationWorkstations"
+                        <component type="checkbox" name="updateOperationCostNorms" reference="updateOperationCostNorms"
+                                   field="#{form}.updateOperationCostNorms" hasDescription="true">
+                            <option type="labelWidth" value="35"/>
+
+                            <listener event="onChange"
+                                      class="com.qcadoo.view.api.listeners.RerenderListener"
+                                      method="onChangeRerender"/>
+                        </component>
+                    </layoutElement>
+                    <layoutElement column="1" row="7">
+                        <component type="checkbox" name="updateOperationWorkstations" reference="updateOperationWorkstations"
                                    field="#{form}.updateOperationWorkstations" hasDescription="true">
-                            <option type="labelWidth" value="35" />
+                            <option type="labelWidth" value="35"/>
+
                             <listener event="onChange"
                                       class="com.qcadoo.view.api.listeners.RerenderListener"
                                       method="onChangeRerender"/>
                         </component>
                     </layoutElement>
                 </component>
+
                 <option type="header" value="true"/>
                 <option type="expression" value="''"/>
 
@@ -167,7 +180,4 @@
         </windowTab>
 
     </component>
-    <hooks>
-
-    </hooks>
 </view>

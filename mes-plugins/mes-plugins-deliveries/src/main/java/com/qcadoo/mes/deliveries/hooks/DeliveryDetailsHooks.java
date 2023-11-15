@@ -160,7 +160,7 @@ public class DeliveryDetailsHooks {
         } else {
             if (DeliveryState.PREPARED.getStringValue().equals(state) || DeliveryState.APPROVED.getStringValue().equals(state)) {
                 changeFieldsEnabled(view, false, false, true, true);
-            } else if (DeliveryState.DECLINED.getStringValue().equals(state) || DeliveryState.RECEIVED.getStringValue().equals(state) || DeliveryState.RECEIVE_CONFIRM_WAITING.getStringValue().equals(state)) {
+            } else if (DeliveryState.DECLINED.getStringValue().equals(state) || DeliveryState.RECEIVED.getStringValue().equals(state)) {
                 changeFieldsEnabled(view, false, false, false, false);
             } else {
                 changeFieldsEnabled(view, true, true, true, true);
@@ -236,11 +236,10 @@ public class DeliveryDetailsHooks {
         List<Entity> relatedDeliveries = delivery.getHasManyField(DeliveryFields.RELATED_DELIVERIES);
 
         boolean received = DeliveryState.RECEIVED.getStringValue().equals(delivery.getStringField(DeliveryFields.STATE));
-        boolean receiveConfirmWaiting = DeliveryState.RECEIVE_CONFIRM_WAITING.getStringValue().equals(delivery.getStringField(DeliveryFields.STATE));
         boolean created = (Objects.nonNull(relatedDeliveries) && !relatedDeliveries.isEmpty());
 
-        updateButtonState(createRelatedDeliveryRibbonActionItem, (received || receiveConfirmWaiting) && !created);
-        updateButtonState(showRelatedDeliveryRibbonActionItem, (received || receiveConfirmWaiting) && created);
+        updateButtonState(createRelatedDeliveryRibbonActionItem, received && !created);
+        updateButtonState(showRelatedDeliveryRibbonActionItem, received && created);
     }
 
     private void updateButtonState(final RibbonActionItem ribbonActionItem, final boolean isEnabled) {
@@ -305,7 +304,7 @@ public class DeliveryDetailsHooks {
             FieldComponent stateField = (FieldComponent) view.getComponentByReference(DeliveryFields.STATE);
             String state = stateField.getFieldValue().toString();
 
-            locationField.setEnabled(!DeliveryState.DECLINED.getStringValue().equals(state) && !DeliveryState.RECEIVED.getStringValue().equals(state) && !DeliveryState.RECEIVE_CONFIRM_WAITING.getStringValue().equals(state));
+            locationField.setEnabled(!DeliveryState.DECLINED.getStringValue().equals(state) && !DeliveryState.RECEIVED.getStringValue().equals(state));
         }
     }
 
@@ -412,7 +411,7 @@ public class DeliveryDetailsHooks {
 
             String state = delivery.getStringField(DeliveryFields.STATE);
 
-            isEnabled = !DeliveryState.RECEIVED.getStringValue().equals(state) && !DeliveryState.RECEIVE_CONFIRM_WAITING.getStringValue().equals(state) && !DeliveryState.DECLINED.getStringValue().equals(state);
+            isEnabled = !DeliveryState.RECEIVED.getStringValue().equals(state) && !DeliveryState.DECLINED.getStringValue().equals(state);
         }
 
         updateButtonState(assignStorageLocationsRibbonActionItem, isEnabled);

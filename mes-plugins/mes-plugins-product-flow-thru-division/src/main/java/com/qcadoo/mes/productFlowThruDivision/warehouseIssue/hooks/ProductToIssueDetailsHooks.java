@@ -1,7 +1,6 @@
 package com.qcadoo.mes.productFlowThruDivision.warehouseIssue.hooks;
 
 import com.qcadoo.mes.basic.constants.ProductFields;
-import com.qcadoo.mes.productFlowThruDivision.warehouseIssue.IssueCommonDetailsHelper;
 import com.qcadoo.mes.productFlowThruDivision.warehouseIssue.constans.ProductsToIssueFields;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ViewDefinitionState;
@@ -9,46 +8,50 @@ import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.constants.QcadooViewConstants;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.util.Objects;
 
 @Service
 public class ProductToIssueDetailsHooks {
 
-    @Autowired
-    private IssueCommonDetailsHelper issueCommonDetailsHelper;
-
     public void onBeforeRender(final ViewDefinitionState view) {
         fillUnit(view);
         fillAdditionalUnit(view);
-        issueCommonDetailsHelper.setFilterValue(view);
     }
 
-    private void fillUnit(ViewDefinitionState view) {
-        FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
-        Entity productToIssue = form.getPersistedEntityWithIncludedFormValues();
-        Entity product = productToIssue.getBelongsToField(ProductsToIssueFields.PRODUCT);
-        FieldComponent demandUnitField = (FieldComponent) view.getComponentByReference("demandQuantityUnit");
+    private void fillUnit(final ViewDefinitionState view) {
+        FormComponent productToIssueForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
+        FieldComponent demandQuantityUnitField = (FieldComponent) view.getComponentByReference("demandQuantityUnit");
         FieldComponent correctionUnitField = (FieldComponent) view.getComponentByReference("correctionUnit");
-        if (product != null) {
+
+        Entity productToIssue = productToIssueForm.getPersistedEntityWithIncludedFormValues();
+
+        Entity product = productToIssue.getBelongsToField(ProductsToIssueFields.PRODUCT);
+
+        if (Objects.nonNull(product)) {
             String unit = product.getStringField(ProductFields.UNIT);
-            demandUnitField.setFieldValue(unit);
+
+            demandQuantityUnitField.setFieldValue(unit);
             correctionUnitField.setFieldValue(unit);
         } else {
-            demandUnitField.setFieldValue(StringUtils.EMPTY);
+            demandQuantityUnitField.setFieldValue(StringUtils.EMPTY);
         }
     }
 
     private void fillAdditionalUnit(final ViewDefinitionState view) {
-        FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
-        Entity productToIssue = form.getPersistedEntityWithIncludedFormValues();
+        FormComponent productToIssueForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
+        FieldComponent conversionField = (FieldComponent) view.getComponentByReference("conversion");
+        FieldComponent additionalDemandQuantityUnitField = (FieldComponent) view.getComponentByReference("additionalDemandQuantityUnit");
+
+        Entity productToIssue = productToIssueForm.getPersistedEntityWithIncludedFormValues();
+
         Entity product = productToIssue.getBelongsToField(ProductsToIssueFields.PRODUCT);
 
-        if (product != null) {
+        if (Objects.nonNull(product)) {
             String additionalUnit = product.getStringField(ProductFields.ADDITIONAL_UNIT);
-            FieldComponent conversionField = (FieldComponent) view.getComponentByReference("conversion");
+
             if (StringUtils.isEmpty(additionalUnit)) {
                 conversionField.setFieldValue(BigDecimal.ONE);
                 conversionField.setEnabled(false);
@@ -56,11 +59,10 @@ public class ProductToIssueDetailsHooks {
 
                 additionalUnit = product.getStringField(ProductFields.UNIT);
             }
-            FieldComponent field = (FieldComponent) view.getComponentByReference("additionalDemandQuantityUnit");
-            field.setFieldValue(additionalUnit);
-            field.requestComponentUpdateState();
-        }
 
+            additionalDemandQuantityUnitField.setFieldValue(additionalUnit);
+            additionalDemandQuantityUnitField.requestComponentUpdateState();
+        }
     }
 
 }
