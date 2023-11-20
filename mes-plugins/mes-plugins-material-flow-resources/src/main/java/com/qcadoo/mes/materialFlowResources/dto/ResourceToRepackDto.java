@@ -48,8 +48,8 @@ public class ResourceToRepackDto {
         this.additionalUnit = resource.getStringField(ResourceFields.GIVEN_UNIT);
         this.expirationDate = resource.getDateField(ResourceFields.EXPIRATION_DATE);
         this.locationNumber = resource.getBelongsToField(ResourceFields.LOCATION).getStringField(LocationFields.NUMBER);
-        Entity palletNumber = resource.getBelongsToField(ResourceFields.PALLET_NUMBER);
-        this.palletNumber = palletNumber != null ? palletNumber.getStringField(PalletNumberFields.NUMBER) : "";
+        Entity palletNr = resource.getBelongsToField(ResourceFields.PALLET_NUMBER);
+        this.palletNumber = palletNr != null ? palletNr.getStringField(PalletNumberFields.NUMBER) : "";
         this.palletType = resource.getStringField(ResourceFields.TYPE_OF_PALLET);
     }
 

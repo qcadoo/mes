@@ -241,11 +241,6 @@
             <model:hasMany name="orderedProducts" plugin="deliveries" model="orderedProduct" joinField="qualityCard"/>
         </model:model-field>
 
-        <model:model-field plugin="basic" model="staff">
-            <model:hasMany name="orderedProducts" model="orderedProduct" joinField="pickingWorker"
-                           plugin="deliveries"/>
-        </model:model-field>
-
         <menu:menu-category name="requirements" defaultAuthorizationRole="ROLE_REQUIREMENTS"/>
 
         <menu:menu-item name="deliveries" category="requirements" defaultAuthorizationRole="ROLE_DELIVERIES"
