@@ -134,15 +134,20 @@ public class OrderServiceImpl implements OrderService {
             return null;
         }
 
-        List<Entity> lines = technology.getHasManyField(TechnologyFields.PRODUCTION_LINES);
-        boolean anyMatch = lines.stream().anyMatch(l -> l.getBelongsToField(TechnologyProductionLineFields.PRODUCTION_LINE).getId().equals(defaultProductionLine.getId()));
-        if(anyMatch) {
-            productionLine = defaultProductionLine;
+        if(Objects.nonNull(defaultProductionLine)) {
+            List<Entity> lines = technology.getHasManyField(TechnologyFields.PRODUCTION_LINES);
+            boolean anyMatch = lines.stream().anyMatch(l -> l.getBelongsToField(TechnologyProductionLineFields.PRODUCTION_LINE).getId().equals(defaultProductionLine.getId()));
+            if (anyMatch) {
+                productionLine = defaultProductionLine;
+            }
         }
 
         if (Objects.nonNull(technology) && parameter.getBooleanField(ParameterFieldsO.PROMPT_DEFAULT_LINE_FROM_TECHNOLOGY)
                 && PluginUtils.isEnabled(L_PRODUCT_FLOW_THRU_DIVISION)) {
-            productionLine = technologyService.getProductionLine(technology).orElse(defaultProductionLine);
+            Optional<Entity> maybeProductionLine = technologyService.getProductionLine(technology);
+            if(maybeProductionLine.isPresent()) {
+                productionLine = maybeProductionLine.get();
+            }
         }
         return productionLine;
     }

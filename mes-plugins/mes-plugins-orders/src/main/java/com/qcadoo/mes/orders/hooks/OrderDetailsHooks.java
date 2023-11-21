@@ -237,8 +237,15 @@ public class OrderDetailsHooks {
     public final void fillProductionLine(final ViewDefinitionState view) {
         FormComponent orderForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         if (Objects.isNull(orderForm.getEntityId()) && view.isViewAfterRedirect()) {
-
             fillProductionLineForTechnology(view);
+        } else if (view.isViewAfterRedirect()) {
+            LookupComponent productionLineLookup = (LookupComponent) view.getComponentByReference(OrderFields.PRODUCTION_LINE);
+            FilterValueHolder filterValue = productionLineLookup.getFilterValue();
+
+            LookupComponent technologyLookup = (LookupComponent) view
+                    .getComponentByReference(OrderFields.TECHNOLOGY);
+            Entity technology = technologyLookup.getEntity();
+            fillProductionLineFilterValue(productionLineLookup, filterValue, technology);
         }
     }
 
@@ -250,6 +257,12 @@ public class OrderDetailsHooks {
                 .getComponentByReference(OrderFields.TECHNOLOGY);
         Entity technology = technologyLookup.getEntity();
 
+        fillProductionLineFilterValue(productionLineLookup, filterValue, technology);
+        Entity productionLine = orderService.getProductionLine(technology);
+        fillProductionLine(productionLineLookup, productionLine);
+    }
+
+    private void fillProductionLineFilterValue(LookupComponent productionLineLookup, FilterValueHolder filterValue, Entity technology) {
         if (Objects.nonNull(technology)) {
             filterValue.put(ProductionLineCriteriaModifiersO.TECHNOLOGY_ID, technology.getId());
         } else {
@@ -258,8 +271,6 @@ public class OrderDetailsHooks {
             }
         }
         productionLineLookup.setFilterValue(filterValue);
-        Entity productionLine = orderService.getProductionLine(technology);
-        fillProductionLine(productionLineLookup, productionLine);
     }
 
     public void fillProductionLine(final LookupComponent productionLineLookup,
