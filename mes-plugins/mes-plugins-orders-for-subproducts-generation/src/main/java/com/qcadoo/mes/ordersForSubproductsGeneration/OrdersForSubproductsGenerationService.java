@@ -215,7 +215,7 @@ public class OrdersForSubproductsGenerationService {
         order.setField(OrderFields.PRODUCT, product);
 
         order.setField(OrderFields.TECHNOLOGY, technology);
-        getProductionLine(parentOrder, order, technology);
+        getProductionLine(order, technology);
         getDivision(parentOrder, order, technology);
         order.setField(OrderFields.EXTERNAL_SYNCHRONIZED, true);
         order.setField(OrderFieldsPC.TYPE_OF_PRODUCTION_RECORDING,
@@ -284,7 +284,7 @@ public class OrdersForSubproductsGenerationService {
         order.setField(OrderFields.PRODUCT, product);
 
         order.setField(OrderFields.TECHNOLOGY, technology);
-        getProductionLine(parentOrder, order, technology);
+        getProductionLine( order, technology);
         getDivision(parentOrder, order, technology);
         order.setField(OrderFields.EXTERNAL_SYNCHRONIZED, true);
         order.setField(OrderFieldsPC.TYPE_OF_PRODUCTION_RECORDING,
@@ -348,8 +348,8 @@ public class OrdersForSubproductsGenerationService {
         }
     }
 
-    private void getProductionLine(final Entity parentOrder, final Entity order, final Entity technology) {
-        Entity productionLine = technologyService.getProductionLine(technology).orElse(parentOrder.getBelongsToField(OrderFields.PRODUCTION_LINE));
+    private void getProductionLine(final Entity order, final Entity technology) {
+        Entity productionLine = orderService.getProductionLine(technology);
 
         order.setField(OrderFields.PRODUCTION_LINE, productionLine);
     }

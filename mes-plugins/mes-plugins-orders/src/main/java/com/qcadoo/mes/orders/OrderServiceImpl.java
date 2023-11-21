@@ -32,6 +32,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 
+import com.qcadoo.mes.technologies.constants.TechnologyProductionLineFields;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -124,9 +125,21 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public Entity getProductionLine(final Entity technology) {
+
         Entity parameter = parameterService.getParameter();
         Entity defaultProductionLine = parameter.getBelongsToField(ParameterFieldsPL.DEFAULT_PRODUCTION_LINE);
-        Entity productionLine = defaultProductionLine;
+        Entity productionLine = null;
+
+        if(technology == null) {
+            return null;
+        }
+
+        List<Entity> lines = technology.getHasManyField(TechnologyFields.PRODUCTION_LINES);
+        boolean anyMatch = lines.stream().anyMatch(l -> l.getBelongsToField(TechnologyProductionLineFields.PRODUCTION_LINE).getId().equals(defaultProductionLine.getId()));
+        if(anyMatch) {
+            productionLine = defaultProductionLine;
+        }
+
         if (Objects.nonNull(technology) && parameter.getBooleanField(ParameterFieldsO.PROMPT_DEFAULT_LINE_FROM_TECHNOLOGY)
                 && PluginUtils.isEnabled(L_PRODUCT_FLOW_THRU_DIVISION)) {
             productionLine = technologyService.getProductionLine(technology).orElse(defaultProductionLine);
