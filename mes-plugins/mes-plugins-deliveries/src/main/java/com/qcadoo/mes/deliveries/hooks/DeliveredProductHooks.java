@@ -35,11 +35,11 @@ import com.qcadoo.mes.deliveries.constants.OrderedProductFields;
 import com.qcadoo.mes.deliveries.constants.ParameterFieldsD;
 import com.qcadoo.mes.materialFlowResources.MaterialFlowResourcesService;
 import com.qcadoo.mes.materialFlowResources.PalletValidatorService;
-import com.qcadoo.mes.materialFlowResources.constants.MaterialFlowResourcesConstants;
 import com.qcadoo.mes.materialFlowResources.constants.StorageLocationFields;
 import com.qcadoo.model.api.*;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
+import com.qcadoo.view.api.ComponentState;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -256,7 +256,7 @@ public class DeliveredProductHooks {
         return checkIfDeliveredProductAlreadyExists(deliveredProductDD, deliveredProduct)
                 && checkIfDeliveredQuantityIsLessThanDamagedQuantity(deliveredProductDD, deliveredProduct)
                 && checkIfDeliveredQuantityIsLessThanOrderedQuantity(deliveredProductDD, deliveredProduct)
-                && validatePallet(deliveredProduct) && notTooManyPalletsInStorageLocation(deliveredProductDD, deliveredProduct);
+                && validatePallet(deliveredProductDD, deliveredProduct) && notTooManyPalletsInStorageLocation(deliveredProductDD, deliveredProduct);
     }
 
     public boolean checkIfDeliveredProductAlreadyExists(final DataDefinition deliveredProductDD, final Entity deliveredProduct) {
@@ -384,9 +384,34 @@ public class DeliveredProductHooks {
         return searchCriteriaBuilder.list().getEntities();
     }
 
-    private boolean validatePallet(final Entity deliveredProduct) {
+    private boolean validatePallet(final DataDefinition deliveredProductDD, final Entity deliveredProduct) {
         if (Objects.isNull(deliveredProduct.getField(DeliveredProductFields.VALIDATE_PALLET))
                 || deliveredProduct.getBooleanField(DeliveredProductFields.VALIDATE_PALLET)) {
+            Entity delivery = deliveredProduct.getBelongsToField(DeliveredProductFields.DELIVERY);
+            Entity storageLocation = deliveredProduct.getBelongsToField(DeliveredProductFields.STORAGE_LOCATION);
+            Entity palletNumber = deliveredProduct.getBelongsToField(DeliveredProductFields.PALLET_NUMBER);
+            Entity location = delivery.getBelongsToField(DeliveryFields.LOCATION);
+
+            if (Objects.nonNull(location)) {
+                if (Objects.isNull(storageLocation) && Objects.nonNull(palletNumber)) {
+                    deliveredProduct.addError(deliveredProductDD.getField(DeliveredProductFields.STORAGE_LOCATION), "qcadooView.validate.field.error.missing");
+
+                    return false;
+                } else {
+                    if (Objects.nonNull(storageLocation)) {
+                        boolean placeStorageLocation = storageLocation.getBooleanField(StorageLocationFields.PLACE_STORAGE_LOCATION);
+
+                        if (placeStorageLocation) {
+                            if (Objects.isNull(palletNumber)) {
+                                deliveredProduct.addError(deliveredProductDD.getField(DeliveredProductFields.PALLET_NUMBER), "qcadooView.validate.field.error.missing");
+
+                                return false;
+                            }
+                        }
+                    }
+                }
+            }
+
             return palletValidatorService.validatePalletForDeliveredProduct(deliveredProduct);
         }
 

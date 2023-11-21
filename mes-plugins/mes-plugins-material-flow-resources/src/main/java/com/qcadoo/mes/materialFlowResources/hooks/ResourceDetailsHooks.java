@@ -61,7 +61,7 @@ public class ResourceDetailsHooks {
 
         setStorageLocationLookupFilterValue(view, resource);
         setBatchLookupProductFilterValue(view, resource);
-        setPalletTypeValue(view, resource);
+        setTypeOfPalletValue(view, resource);
     }
 
     private void fillUnitField(final ViewDefinitionState view, final Entity resource) {
@@ -200,7 +200,7 @@ public class ResourceDetailsHooks {
         }
     }
 
-    private void setPalletTypeValue(final ViewDefinitionState view, final Entity resourceCorrection) {
+    private void setTypeOfPalletValue(final ViewDefinitionState view, final Entity resourceCorrection) {
         LookupComponent locationLookup = (LookupComponent) view.getComponentByReference(ResourceFields.LOCATION);
         LookupComponent palletNumberLookup = (LookupComponent) view.getComponentByReference(ResourceFields.PALLET_NUMBER);
         FieldComponent typeOfPalletField = (FieldComponent) view.getComponentByReference(ResourceFields.TYPE_OF_PALLET);

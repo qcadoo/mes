@@ -87,6 +87,10 @@ public class DeliveredProductDetailsListeners {
         deliveredProductDetailsHooks.fillCurrencyFields(view);
     }
 
+    public void fillPalletTypeField(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        deliveredProductDetailsHooks.fillPalletTypeField(view);
+    }
+
     public void fillOrderedQuantities(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         deliveredProductDetailsHooks.fillOrderedQuantities(view);
     }

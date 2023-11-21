@@ -25,6 +25,7 @@ package com.qcadoo.mes.deliveries.listeners;
 
 import com.qcadoo.mes.advancedGenealogy.constants.BatchFields;
 import com.qcadoo.mes.basic.CalculationQuantityService;
+import com.qcadoo.mes.basic.constants.PalletNumberFields;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.basic.constants.UnitConversionItemFieldsB;
 import com.qcadoo.mes.deliveries.DeliveredProductMultiPositionService;
@@ -32,6 +33,7 @@ import com.qcadoo.mes.deliveries.constants.*;
 import com.qcadoo.mes.deliveries.helpers.DeliveredMultiProduct;
 import com.qcadoo.mes.deliveries.helpers.DeliveredMultiProductContainer;
 import com.qcadoo.mes.deliveries.hooks.DeliveredProductAddMultiHooks;
+import com.qcadoo.mes.materialFlowResources.MaterialFlowResourcesService;
 import com.qcadoo.mes.materialFlowResources.constants.LocationFieldsMFR;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
@@ -94,6 +96,9 @@ public class DeliveredProductAddMultiListeners {
 
     @Autowired
     private CalculationQuantityService calculationQuantityService;
+
+    @Autowired
+    private MaterialFlowResourcesService materialFlowResourcesService;
 
     public void createDeliveredProducts(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         FormComponent deliveredProductMultiForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
@@ -185,11 +190,11 @@ public class DeliveredProductAddMultiListeners {
 
         Arrays.asList(DeliveredProductMultiFields.PALLET_NUMBER, DeliveredProductMultiFields.PALLET_TYPE,
                 DeliveredProductMultiFields.STORAGE_LOCATION).stream().forEach(fieldName -> {
-                    if (Objects.isNull(deliveredProductMulti.getField(fieldName))) {
-                        deliveredProductMulti.addError(deliveredProductMultiDD.getField(fieldName),
-                                L_QCADOO_VIEW_VALIDATE_FIELD_ERROR_MISSING);
-                    }
-                });
+            if (Objects.isNull(deliveredProductMulti.getField(fieldName))) {
+                deliveredProductMulti.addError(deliveredProductMultiDD.getField(fieldName),
+                        L_QCADOO_VIEW_VALIDATE_FIELD_ERROR_MISSING);
+            }
+        });
 
         isValid = deliveredProductMulti.isValid();
 
@@ -267,7 +272,7 @@ public class DeliveredProductAddMultiListeners {
     }
 
     private void checkExpirationDate(final Entity deliveredProductMulti, final Entity position, final String fieldname,
-            final DataDefinition positionDataDefinition) {
+                                     final DataDefinition positionDataDefinition) {
         Entity delivery = deliveredProductMulti.getBelongsToField(DeliveredProductMultiFields.DELIVERY);
         Entity location = delivery.getBelongsToField(DeliveryFields.LOCATION);
 
@@ -316,6 +321,24 @@ public class DeliveredProductAddMultiListeners {
         }
 
         return deliveredProduct;
+    }
+
+    public void fillPalletTypeField(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        LookupComponent palletNumberLookup = (LookupComponent) view.getComponentByReference(DeliveredProductFields.PALLET_NUMBER);
+        FieldComponent palletTypeField = (FieldComponent) view.getComponentByReference(DeliveredProductFields.PALLET_TYPE);
+
+        Entity delivery = extractDeliveryEntityFromView(view);
+
+        Entity location = delivery.getBelongsToField(DeliveryFields.LOCATION);
+        Entity palletNumber = palletNumberLookup.getEntity();
+        String palletType = (String) palletTypeField.getFieldValue();
+
+        if (Objects.nonNull(palletNumber) && StringUtils.isEmpty(palletType)) {
+            palletType = materialFlowResourcesService.getTypeOfPalletByPalletNumber(location.getId(), palletNumber.getStringField(PalletNumberFields.NUMBER));
+        }
+
+        palletTypeField.setFieldValue(palletType);
+        palletTypeField.requestComponentUpdateState();
     }
 
     public void productChanged(final ViewDefinitionState view, final ComponentState state, final String[] args) {
