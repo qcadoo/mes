@@ -1,8 +1,5 @@
 package com.qcadoo.mes.materialFlowResources;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.qcadoo.mes.basic.constants.PalletNumberFields;
 import com.qcadoo.mes.materialFlowResources.constants.MaterialFlowResourcesConstants;
 import com.qcadoo.mes.materialFlowResources.constants.ResourceFields;
@@ -10,6 +7,8 @@ import com.qcadoo.mes.materialFlowResources.constants.StorageLocationFields;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchQueryBuilder;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 @Service
 public class PalletValidatorService {
@@ -43,7 +42,8 @@ public class PalletValidatorService {
         return validatePallet(palletNumber, palletType, storageLocation, resource, location);
     }
 
-    private boolean validatePallet(String palletNumber, String palletType, String storageLocation, Entity entity, Entity location) {
+    private boolean validatePallet(String palletNumber, String palletType, String storageLocation, Entity entity,
+                                   Entity location) {
         if (entity.getField("validatePallet") != null && !entity.getBooleanField("validatePallet")) {
             return true;
         }
@@ -53,8 +53,8 @@ public class PalletValidatorService {
 
     }
 
-    private boolean existsOtherPositionForPalletNumber(String palletNumber, String palletType, String storageLocation,
-            Entity entity, Entity location) {
+    public boolean existsOtherPositionForPalletNumber(String palletNumber, String palletType, String storageLocation,
+                                                      Entity entity, Entity location) {
         StringBuilder query = new StringBuilder();
         query.append("select count(dp) as cnt from #materialFlowResources_position dp JOIN dp.palletNumber as pallet ");
         query.append("JOIN dp.document as document ");
@@ -88,7 +88,7 @@ public class PalletValidatorService {
     }
 
     private boolean existsOtherResourceForPalletNumber(String palletNumber, String palletType, String storageLocation,
-            Entity entity, Entity location) {
+                                                       Entity entity, Entity location) {
         StringBuilder query = new StringBuilder();
         query.append("select count(dp) as cnt from #materialFlowResources_resource dp JOIN dp.palletNumber as pallet ");
         query.append("JOIN dp.location AS location ");
@@ -120,8 +120,9 @@ public class PalletValidatorService {
         return exists;
     }
 
-    private boolean existsOtherDeliveredProductForPalletNumber(String palletNumber, String palletType, String storageLocation,
-            Entity entity, Entity location) {
+    private boolean existsOtherDeliveredProductForPalletNumber(String palletNumber, String palletType,
+                                                               String storageLocation,
+                                                               Entity entity, Entity location) {
         StringBuilder query = new StringBuilder();
         query.append("select count(dp) as cnt from #deliveries_deliveredProduct dp JOIN dp.palletNumber as pallet ");
         query.append("JOIN dp.delivery delivery ");
