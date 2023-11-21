@@ -23,24 +23,25 @@
  */
 package com.qcadoo.mes.materialFlowResources.validators;
 
-import com.google.common.collect.Maps;
-import com.qcadoo.mes.materialFlowResources.constants.DocumentFields;
-import com.qcadoo.mes.materialFlowResources.constants.DocumentState;
-import com.qcadoo.mes.materialFlowResources.constants.DocumentType;
-import com.qcadoo.mes.materialFlowResources.constants.MaterialFlowResourcesConstants;
-import com.qcadoo.mes.materialFlowResources.constants.PositionFields;
-import com.qcadoo.mes.materialFlowResources.constants.ReservationFields;
+import com.beust.jcommander.internal.Sets;
+import com.qcadoo.mes.basic.constants.ProductFields;
+import com.qcadoo.mes.materialFlowResources.MaterialFlowResourcesService;
+import com.qcadoo.mes.materialFlowResources.constants.*;
+import com.qcadoo.mes.materialFlowResources.exceptions.InvalidResourceException;
+import com.qcadoo.mes.materialFlowResources.service.DocumentService;
+import com.qcadoo.mes.materialFlowResources.service.ResourceManagementService;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
-
-import java.math.BigDecimal;
-import java.util.List;
-import java.util.Map;
-
+import com.qcadoo.view.api.ComponentState;
+import com.qcadoo.view.api.components.FormComponent;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
 
 @Service
 public class DocumentValidators {
@@ -49,12 +50,18 @@ public class DocumentValidators {
     private DataDefinitionService dataDefinitionService;
 
     @Autowired
-    private PositionValidators positionValidators;
+    private DocumentService documentService;
+
+    @Autowired
+    private MaterialFlowResourcesService materialFlowResourcesService;
+
+    @Autowired
+    private ResourceManagementService resourceManagementService;
 
     public boolean validate(final DataDefinition documentDD, final Entity document) {
         Long documentId = document.getId();
 
-        if (documentId != null) {
+        if (Objects.nonNull(documentId)) {
             Entity documentFromDB = documentDD.get(documentId);
 
             if (!checkIfItIsReportGeneration(document, documentFromDB)
@@ -77,19 +84,18 @@ public class DocumentValidators {
     }
 
     public boolean validatesWith(final DataDefinition documentDD, final Entity document) {
-
         boolean createLinkedDocument = document.getBooleanField(DocumentFields.CREATE_LINKED_DOCUMENT);
         Entity locationPz = document.getBelongsToField(DocumentFields.LINKED_DOCUMENT_LOCATION);
         Entity locationFrom = document.getBelongsToField(DocumentFields.LOCATION_FROM);
 
         String type = document.getStringField(DocumentFields.TYPE);
-        if (DocumentType.RELEASE.getStringValue().equals(type) && createLinkedDocument && locationPz == null) {
+        if (DocumentType.RELEASE.getStringValue().equals(type) && createLinkedDocument && Objects.isNull(locationPz)) {
             document.addError(documentDD.getField(DocumentFields.LINKED_DOCUMENT_LOCATION),
                     "qcadooView.validate.field.error.missing");
 
             return false;
         }
-        if (DocumentType.RELEASE.getStringValue().equals(type) && createLinkedDocument && locationFrom != null
+        if (DocumentType.RELEASE.getStringValue().equals(type) && createLinkedDocument && Objects.nonNull(locationFrom)
                 && locationFrom.getId().equals(locationPz.getId())) {
             document.addError(documentDD.getField(DocumentFields.LINKED_DOCUMENT_LOCATION),
                     "materialFlowResources.document.error.linkedDocumentLocationEqualsFrom");
@@ -101,10 +107,10 @@ public class DocumentValidators {
     }
 
     private boolean checkIfItIsReportGeneration(final Entity document, final Entity documentFromDB) {
-        return (((document.getDateField(DocumentFields.GENERATION_DATE) != null)
-                && (documentFromDB.getDateField(DocumentFields.GENERATION_DATE) == null))
+        return ((Objects.nonNull(document.getDateField(DocumentFields.GENERATION_DATE))
+                && Objects.isNull(documentFromDB.getDateField(DocumentFields.GENERATION_DATE)))
                 || (StringUtils.isNotEmpty(document.getStringField(DocumentFields.FILE_NAME))
-                        && StringUtils.isEmpty(documentFromDB.getStringField(DocumentFields.FILE_NAME))));
+                && StringUtils.isEmpty(documentFromDB.getStringField(DocumentFields.FILE_NAME))));
     }
 
     public boolean hasDifferentWarehouses(final DataDefinition documentDD, final Entity document) {
@@ -114,7 +120,7 @@ public class DocumentValidators {
             Entity locationFrom = document.getBelongsToField(DocumentFields.LOCATION_FROM);
             Entity locationTo = document.getBelongsToField(DocumentFields.LOCATION_TO);
 
-            if (locationFrom == null || locationTo == null) {
+            if (Objects.isNull(locationFrom) || Objects.isNull(locationTo)) {
                 return true;
             }
             if (locationFrom.getId().equals(locationTo.getId())) {
@@ -123,6 +129,7 @@ public class DocumentValidators {
                 return false;
             }
         }
+
         return true;
     }
 
@@ -144,7 +151,7 @@ public class DocumentValidators {
     private boolean hasWarehouse(final DataDefinition documentDD, final Entity document, String warehouseField) {
         Entity location = document.getBelongsToField(warehouseField);
 
-        if (location == null) {
+        if (Objects.isNull(location)) {
             document.addError(documentDD.getField(warehouseField), "materialFlow.error.document.warehouse.required");
 
             return false;
@@ -154,7 +161,7 @@ public class DocumentValidators {
     }
 
     private boolean validateWarehouseChanged(final DataDefinition documentDD, final Entity document) {
-        if (document.getId() == null || document.getHasManyField(DocumentFields.POSITIONS).isEmpty()) {
+        if (Objects.isNull(document.getId()) || document.getHasManyField(DocumentFields.POSITIONS).isEmpty()) {
             return true;
         }
 
@@ -174,58 +181,119 @@ public class DocumentValidators {
         Entity oldWarehouse = oldDocument.getBelongsToField(warehouseField);
         Entity newWarehouse = newDocument.getBelongsToField(warehouseField);
 
-        if (oldWarehouse == null && newWarehouse == null) {
+        if (Objects.isNull(oldWarehouse) && Objects.isNull(newWarehouse)) {
             return false;
-        } else if (oldWarehouse != null && newWarehouse != null) {
+        } else if (Objects.nonNull(oldWarehouse) && Objects.nonNull(newWarehouse)) {
             return oldWarehouse.getId().compareTo(newWarehouse.getId()) != 0;
         }
 
         return true;
     }
-    
-    private Map<Long, Entity> groupProductsInPositions(final List<Entity> positions) {
-        Map<Long, Entity> groupedPositions = Maps.newHashMap();
 
-        for (Entity position : positions) {
-            Entity product = position.getBelongsToField(PositionFields.PRODUCT);
-            List<Entity> reservations = position.getHasManyField(PositionFields.RESERVATIONS);
-            BigDecimal reservedQuantity = BigDecimal.ZERO;
+    public void validatePositionsAndCreateResources(final FormComponent documentForm, final Entity document) {
+        if (!document.getHasManyField(DocumentFields.POSITIONS).isEmpty()) {
+            if (validatePositions(document)) {
+                String blockedResources = documentService.getBlockedResources(document);
 
-            if (reservations != null && !reservations.isEmpty()) {
-                Entity reservation = reservations.get(0);
+                if (Objects.isNull(blockedResources)) {
+                    try {
+                        resourceManagementService.createResources(document);
+                    } catch (InvalidResourceException ire) {
+                        document.setNotValid();
 
-                if (reservation.getId() != null) {
-                    reservedQuantity = reservation.getDecimalField(ReservationFields.QUANTITY);
-                }
-            }
-            if (groupedPositions.containsKey(product.getId())) {
-                Entity existingPosition = groupedPositions.get(product.getId());
-                BigDecimal oldQuantity = existingPosition.getDecimalField(PositionFields.QUANTITY);
-                BigDecimal newQuantity = position.getDecimalField(PositionFields.QUANTITY);
+                        String productNumber = ire.getEntity().getBelongsToField(ResourceFields.PRODUCT)
+                                .getStringField(ProductFields.NUMBER);
+                        if ("materialFlow.error.position.batch.required"
+                                .equals(ire.getEntity().getError(ResourceFields.BATCH).getMessage())) {
+                            documentForm.addMessage("materialFlow.document.validate.global.error.invalidResource.batchRequired",
+                                    ComponentState.MessageType.FAILURE, false, productNumber);
+                        } else {
+                            String resourceNumber = ire.getEntity().getStringField(ResourceFields.NUMBER);
 
-                if (oldQuantity == null) {
-                    existingPosition.setField(PositionFields.QUANTITY, newQuantity.subtract(reservedQuantity));
-                } else {
-                    if (newQuantity != null) {
-                        existingPosition.setField(PositionFields.QUANTITY,
-                                newQuantity.add(oldQuantity).subtract(reservedQuantity));
+                            documentForm.addMessage("materialFlow.document.validate.global.error.invalidResource",
+                                    ComponentState.MessageType.FAILURE, false, resourceNumber, productNumber);
+                        }
                     }
+                } else {
+                    document.setNotValid();
+
+                    documentForm.addMessage("materialFlow.document.validate.global.error.positionsBlockedForQualityControl",
+                            ComponentState.MessageType.FAILURE, document.getStringField(DocumentFields.NUMBER), blockedResources);
                 }
             } else {
-                Entity newPosition = dataDefinitionService
-                        .get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER, MaterialFlowResourcesConstants.MODEL_POSITION)
-                        .create();
+                document.setNotValid();
 
-                newPosition.setField(PositionFields.PRODUCT, product);
-                newPosition.setField("id", position.getId());
-                newPosition.setField(PositionFields.QUANTITY,
-                        position.getDecimalField(PositionFields.QUANTITY).subtract(reservedQuantity));
+                documentForm.addMessage("qcadooView.validate.global.error.custom", ComponentState.MessageType.FAILURE);
+            }
+        } else {
+            document.setNotValid();
 
-                groupedPositions.put(product.getId(), newPosition);
+            documentForm.addMessage("materialFlow.document.validate.global.error.emptyPositions", ComponentState.MessageType.FAILURE,
+                    document.getStringField(DocumentFields.NUMBER));
+        }
+    }
+
+    private boolean validatePositions(final Entity document) {
+        if (Objects.isNull(document.getId()) || document.getHasManyField(DocumentFields.POSITIONS).isEmpty()) {
+            return true;
+        }
+
+        boolean isValid = true;
+
+        String type = document.getStringField(DocumentFields.TYPE);
+
+        if (DocumentType.isInbound(type)) {
+            String number = document.getStringField(DocumentFields.NUMBER);
+            Entity locationTo = document.getBelongsToField(DocumentFields.LOCATION_TO);
+            List<Entity> positions = document.getHasManyField(DocumentFields.POSITIONS);
+
+            Set<String> missingStorageLocations = Sets.newHashSet();
+            Set<String> missingPalletNumbers = Sets.newHashSet();
+            Set<String> existsMorePallets = Sets.newHashSet();
+
+            for (Entity position : positions) {
+                Integer positionNumber = position.getIntegerField(PositionFields.NUMBER);
+                Entity storageLocation = position.getBelongsToField(PositionFields.STORAGE_LOCATION);
+                Entity palletNumber = position.getBelongsToField(PositionFields.PALLET_NUMBER);
+
+                if (Objects.isNull(storageLocation) && Objects.nonNull(palletNumber)) {
+                    missingStorageLocations.add(positionNumber.toString());
+                } else {
+                    if (Objects.nonNull(storageLocation)) {
+                        String storageLocationNumber = storageLocation.getStringField(StorageLocationFields.NUMBER);
+                        boolean placeStorageLocation = storageLocation.getBooleanField(StorageLocationFields.PLACE_STORAGE_LOCATION);
+
+                        if (placeStorageLocation) {
+                            if (Objects.isNull(palletNumber)) {
+                                missingPalletNumbers.add(positionNumber.toString());
+                            }
+
+                            if (materialFlowResourcesService.checkIfExistsMorePalletsForStorageLocation(locationTo.getId(), storageLocationNumber)) {
+                                existsMorePallets.add(positionNumber.toString());
+                            }
+                        }
+                    }
+                }
+            }
+
+            if (!missingStorageLocations.isEmpty()) {
+                document.addGlobalError("materialFlow.document.validate.global.error.position.storageLocationRequired", number, String.join(", ", missingStorageLocations));
+
+                isValid = false;
+            }
+            if (!missingPalletNumbers.isEmpty()) {
+                document.addGlobalError("materialFlow.document.validate.global.error.position.palletNumberRequired", number, String.join(", ", missingPalletNumbers));
+
+                isValid = false;
+            }
+            if (!missingPalletNumbers.isEmpty()) {
+                document.addGlobalError("materialFlow.document.validate.global.error.position.morePalletsExists", number, String.join(", ", missingPalletNumbers));
+
+                isValid = false;
             }
         }
 
-        return groupedPositions;
+        return isValid;
     }
 
 }

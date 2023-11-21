@@ -43,13 +43,13 @@ public interface MaterialFlowResourcesService {
     Map<Long, BigDecimal> getQuantitiesForProductsAndLocation(final List<Entity> products, final Entity location);
 
     Map<Long, BigDecimal> getQuantitiesForProductsAndLocation(final List<Entity> products, final Entity location,
-            final boolean withoutBlockedForQualityControl);
+                                                              final boolean withoutBlockedForQualityControl);
 
     Map<Long, BigDecimal> getQuantitiesForProductsAndLocation(final List<Entity> products, final Entity location,
-                                                             final boolean withoutBlockedForQualityControl, final String fieldName);
+                                                              final boolean withoutBlockedForQualityControl, final String fieldName);
 
     Map<Long, Map<Long, BigDecimal>> getQuantitiesForProductsAndLocations(final List<Entity> products,
-            final List<Entity> locations);
+                                                                          final List<Entity> locations);
 
     void fillUnitFieldValues(final ViewDefinitionState view);
 
@@ -87,5 +87,13 @@ public interface MaterialFlowResourcesService {
     List<ResourceToRepackDto> getResourceListByStorageLocationNumber(String storageLocationNumber, List<String> userLocations);
 
     List<ResourceToRepackDto> getResourceListByPalletNumber(String palletNumber, List<String> userLocations);
+
     List<ResourceToRepackDto> getResourceListByPalletAndLocationNumber(String palletNumber, String storageLocationNumber, List<String> userLocations);
+
+    String getTypeOfPalletByPalletNumber(final Long locationId, final String palletNumberNumber);
+
+    boolean isPlaceStorageLocation(final String storageLocationNumber);
+
+    boolean checkIfExistsMorePalletsForStorageLocation(final Long locationId, final String storageLocationNumber);
+
 }

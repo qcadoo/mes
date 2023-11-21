@@ -598,7 +598,23 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
     function palletNumbersLookup_createElement(value, options) {
         var lookup = createLookupElement('palletNumber', value, '/rest/palletnumbers', options);
 
+        $('input', lookup).bind('change keydown paste input', function () {
+            var t = $(this);
+            window.clearTimeout(t.data("timeout"));
+            $(this).data("timeout", setTimeout(function () {
+                fillTypeOfPalletFromPallet(t.val(), getRowIdFromElement(t))
+            }, 500));
+        });
+
         return lookup;
+    }
+
+    function fillTypeOfPalletFromPallet(pallet, rowId) {
+        $.get('/rest/rest/documentPositions/typeOfPalletByPallet/' + getDocumentId() + '/' + Base64.encodeURI(pallet) + ".html", function (typeOfPallet) {
+            if (typeOfPallet !== '') {
+                updateFieldValue('typeOfPallet', typeOfPallet, rowId);
+            }
+        });
     }
 
     function attributeLookup_createElement(value, options) {

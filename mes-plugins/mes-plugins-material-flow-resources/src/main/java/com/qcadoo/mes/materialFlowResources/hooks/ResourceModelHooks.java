@@ -78,4 +78,5 @@ public class ResourceModelHooks {
             resource.setField(ResourceFields.AVAILABLE_QUANTITY, resource.getDecimalField(ResourceFields.QUANTITY));
         }
     }
+
 }

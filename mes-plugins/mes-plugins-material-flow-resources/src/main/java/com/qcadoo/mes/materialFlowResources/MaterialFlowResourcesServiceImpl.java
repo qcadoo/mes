@@ -107,14 +107,14 @@ public class MaterialFlowResourcesServiceImpl implements MaterialFlowResourcesSe
 
     @Override
     public Map<Long, BigDecimal> getQuantitiesForProductsAndLocation(final List<Entity> products, final Entity location,
-            final boolean withoutBlockedForQualityControl) {
+                                                                     final boolean withoutBlockedForQualityControl) {
         return getQuantitiesForProductsAndLocation(products, location, withoutBlockedForQualityControl,
                 ResourceStockDtoFields.AVAILABLE_QUANTITY);
     }
 
     @Override
     public Map<Long, BigDecimal> getQuantitiesForProductsAndLocation(final List<Entity> products, final Entity location,
-            final boolean withoutBlockedForQualityControl, final String fieldName) {
+                                                                     final boolean withoutBlockedForQualityControl, final String fieldName) {
         Map<Long, BigDecimal> quantities = Maps.newHashMap();
 
         if (products.size() > 0) {
@@ -152,7 +152,7 @@ public class MaterialFlowResourcesServiceImpl implements MaterialFlowResourcesSe
 
     @Override
     public Map<Long, Map<Long, BigDecimal>> getQuantitiesForProductsAndLocations(final List<Entity> products,
-            final List<Entity> locations) {
+                                                                                 final List<Entity> locations) {
         Map<Long, Map<Long, BigDecimal>> quantities = Maps.newHashMap();
 
         for (Entity location : locations) {
@@ -246,7 +246,7 @@ public class MaterialFlowResourcesServiceImpl implements MaterialFlowResourcesSe
         List<PalletNumberProductDTO> palletNumberProductDTOList = new ArrayList<>();
         Map<String, Object> params = Maps.newHashMap();
 
-        if(palletNumber != null || !palletNumber.isEmpty()) {
+        if (palletNumber != null || !palletNumber.isEmpty()) {
             StringBuilder prepareQuery = new StringBuilder();
 
             prepareQuery.append("SELECT ");
@@ -282,7 +282,7 @@ public class MaterialFlowResourcesServiceImpl implements MaterialFlowResourcesSe
         List<SumOfProductsDto> list = new ArrayList<>();
         Map<String, Object> params = Maps.newHashMap();
 
-        if(productNumber != null || !productNumber.isEmpty() || !locationNumbers.isEmpty()) {
+        if (productNumber != null || !productNumber.isEmpty() || !locationNumbers.isEmpty()) {
             StringBuilder prepareQuery = new StringBuilder();
 
             prepareQuery.append("SELECT ");
@@ -306,7 +306,7 @@ public class MaterialFlowResourcesServiceImpl implements MaterialFlowResourcesSe
         List<StorageLocationsForProductDto> list = new ArrayList<>();
         Map<String, Object> params = Maps.newHashMap();
 
-        if(productNumber != null || !productNumber.isEmpty() || !locationNumbers.isEmpty()) {
+        if (productNumber != null || !productNumber.isEmpty() || !locationNumbers.isEmpty()) {
             StringBuilder prepareQuery = new StringBuilder();
 
             prepareQuery.append("SELECT DISTINCT ");
@@ -326,7 +326,6 @@ public class MaterialFlowResourcesServiceImpl implements MaterialFlowResourcesSe
             prepareQuery.append("AND mfrs.locationNumber IN (:locationNumbers) ");
 
 
-
             params.put("productNumber", productNumber);
             params.put("locationNumbers", locationNumbers);
 
@@ -341,7 +340,7 @@ public class MaterialFlowResourcesServiceImpl implements MaterialFlowResourcesSe
 
         Map<String, Object> params = Maps.newHashMap();
 
-        if(resourceNumber != null || !resourceNumber.isEmpty()) {
+        if (resourceNumber != null || !resourceNumber.isEmpty()) {
             StringBuilder prepareQuery = new StringBuilder();
 
             prepareQuery.append("SELECT ");
@@ -377,7 +376,7 @@ public class MaterialFlowResourcesServiceImpl implements MaterialFlowResourcesSe
     public ResourceToRepackDto getResourceDetailsToRepack(String resourceNumber, List<String> userLocations) {
         Map<String, Object> params = Maps.newHashMap();
 
-        if(resourceNumber != null || !resourceNumber.isEmpty() || !userLocations.isEmpty()) {
+        if (resourceNumber != null || !resourceNumber.isEmpty() || !userLocations.isEmpty()) {
             StringBuilder prepareQuery = new StringBuilder();
 
             prepareQuery.append("SELECT ");
@@ -679,6 +678,69 @@ public class MaterialFlowResourcesServiceImpl implements MaterialFlowResourcesSe
         return list;
     }
 
+    public String getTypeOfPalletByPalletNumber(final Long locationId, final String palletNumberNumber) {
+        StringBuilder query = new StringBuilder();
+
+        query.append("SELECT resource.typeofpallet ");
+        query.append("FROM materialflowresources_resource resource ");
+        query.append("LEFT JOIN basic_palletnumber palletnumber ");
+        query.append("ON palletnumber.id = resource.palletnumber_id ");
+        query.append("WHERE palletnumber.number = :palletNumberNumber ");
+        query.append("AND resource.location_id = :locationId ");
+        query.append("LIMIT 1");
+
+        Map<String, Object> params = Maps.newHashMap();
+
+        params.put("locationId", locationId);
+        params.put("palletNumberNumber", palletNumberNumber);
+
+        try {
+            return jdbcTemplate.queryForObject(query.toString(), params, String.class);
+        } catch (EmptyResultDataAccessException e) {
+            return null;
+        }
+    }
+
+    public boolean isPlaceStorageLocation(final String storageLocationNumber) {
+        StringBuilder query = new StringBuilder();
+
+        query.append("SELECT placestoragelocation ");
+        query.append("FROM materialflowresources_storagelocation ");
+        query.append("WHERE number = :storageLocationNumber");
+
+        Map<String, Object> params = Maps.newHashMap();
+
+        params.put("storageLocationNumber", storageLocationNumber);
+
+        try {
+            return jdbcTemplate.queryForObject(query.toString(), params, Boolean.class);
+        } catch (EmptyResultDataAccessException e) {
+            return false;
+        }
+    }
+
+    public boolean checkIfExistsMorePalletsForStorageLocation(final Long locationId, final String storageLocationNumber) {
+        StringBuilder query = new StringBuilder();
+
+        query.append("SELECT ");
+        query.append("CASE ");
+        query.append("WHEN COALESCE(MAX(storagelocation.maximumNumberOfPallets), 0) = 0 THEN FALSE ");
+        query.append("ELSE COUNT(DISTINCT(resource.palletnumber_id)) >= COALESCE(MAX(storagelocation.maximumNumberOfPallets), 0) ");
+        query.append("END AS exists ");
+        query.append("FROM materialflowresources_resource resource ");
+        query.append("RIGHT JOIN materialflowresources_storagelocation storagelocation ");
+        query.append("ON storagelocation.id = resource.storagelocation_id ");
+        query.append("WHERE storagelocation.number = :storageLocationNumber ");
+        query.append("AND storagelocation.placestoragelocation = true ");
+        query.append("AND resource.location_id = :locationId");
+
+        Map<String, Object> params = Maps.newHashMap();
+
+        params.put("storageLocationNumber", storageLocationNumber);
+        params.put("locationId", locationId);
+
+        return jdbcTemplate.queryForObject(query.toString(), params, Boolean.class);
+    }
 
     private DataDefinition getProductDD() {
         return dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PRODUCT);

@@ -280,10 +280,6 @@
     </component>
 
     <hooks>
-        <beforeRender class="com.qcadoo.mes.materialFlowResources.MaterialFlowResourcesService"
-                      method="fillUnitFieldValues"/>
-        <beforeRender class="com.qcadoo.mes.materialFlowResources.MaterialFlowResourcesService"
-                      method="fillCurrencyFieldValues"/>
         <beforeRender class="com.qcadoo.mes.materialFlowResources.hooks.ResourceDetailsHooks"
                       method="onBeforeRender"/>
     </hooks>

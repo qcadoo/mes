@@ -4,7 +4,9 @@ import com.google.common.base.Optional;
 import com.qcadoo.commons.functional.Either;
 import com.qcadoo.mes.advancedGenealogy.criteriaModifier.BatchCriteriaModifier;
 import com.qcadoo.mes.basic.CalculationQuantityService;
+import com.qcadoo.mes.basic.constants.PalletNumberFields;
 import com.qcadoo.mes.basic.constants.ProductFields;
+import com.qcadoo.mes.materialFlowResources.MaterialFlowResourcesService;
 import com.qcadoo.mes.materialFlowResources.constants.ResourceFields;
 import com.qcadoo.model.api.BigDecimalUtils;
 import com.qcadoo.model.api.Entity;
@@ -17,6 +19,7 @@ import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.LookupComponent;
 import com.qcadoo.view.api.components.lookup.FilterValueHolder;
 import com.qcadoo.view.constants.QcadooViewConstants;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -42,16 +45,23 @@ public class ResourceDetailsHooks {
     @Autowired
     private BatchCriteriaModifier batchCriteriaModifier;
 
+    @Autowired
+    private MaterialFlowResourcesService materialFlowResourcesService;
+
     public void onBeforeRender(final ViewDefinitionState view) {
         FormComponent resourceForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
         Entity resource = resourceForm.getPersistedEntityWithIncludedFormValues();
+
+        materialFlowResourcesService.fillUnitFieldValues(view);
+        materialFlowResourcesService.fillCurrencyFieldValues(view);
 
         fillUnitField(view, resource);
         togglePriceFields(view);
 
         setStorageLocationLookupFilterValue(view, resource);
         setBatchLookupProductFilterValue(view, resource);
+        setPalletTypeValue(view, resource);
     }
 
     private void fillUnitField(final ViewDefinitionState view, final Entity resource) {
@@ -188,6 +198,23 @@ public class ResourceDetailsHooks {
         } else {
             quantityField.setFieldValue(null);
         }
+    }
+
+    private void setPalletTypeValue(final ViewDefinitionState view, final Entity resourceCorrection) {
+        LookupComponent locationLookup = (LookupComponent) view.getComponentByReference(ResourceFields.LOCATION);
+        LookupComponent palletNumberLookup = (LookupComponent) view.getComponentByReference(ResourceFields.PALLET_NUMBER);
+        FieldComponent typeOfPalletField = (FieldComponent) view.getComponentByReference(ResourceFields.TYPE_OF_PALLET);
+
+        Entity location = locationLookup.getEntity();
+        Entity palletNumber = palletNumberLookup.getEntity();
+        String typeOfPallet = (String) typeOfPalletField.getFieldValue();
+
+        if (Objects.nonNull(palletNumber) && StringUtils.isEmpty(typeOfPallet)) {
+            typeOfPallet = materialFlowResourcesService.getTypeOfPalletByPalletNumber(location.getId(), palletNumber.getStringField(PalletNumberFields.NUMBER));
+        }
+
+        typeOfPalletField.setFieldValue(typeOfPallet);
+        typeOfPalletField.requestComponentUpdateState();
     }
 
 }
