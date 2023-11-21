@@ -36,7 +36,9 @@ public class OrderReservationsService {
 
         if (Objects.nonNull(existingReservation)) {
             BigDecimal plannedQuantity = orderProductResourceReservation.getDecimalField(OrderProductResourceReservationFields.PLANED_QUANTITY);
+            Entity resource = orderProductResourceReservation.getBelongsToField(OrderProductResourceReservationFields.RESOURCE);
             existingReservation.setField(ReservationFields.QUANTITY, plannedQuantity);
+            existingReservation.setField(ReservationFields.RESOURCE, resource);
             existingReservation.getDataDefinition().save(existingReservation);
         } else {
             createReservation(orderProductResourceReservation);
