@@ -338,6 +338,11 @@
                            joinField="batch" plugin="productionCounting"/>
         </model:model-field>
 
+        <model:model-field model="palletNumber" plugin="basic">
+            <model:hasMany name="trackingOperationProductOutComponents" model="trackingOperationProductOutComponent"
+                           joinField="palletNumber" plugin="productionCounting"/>
+        </model:model-field>
+
         <model:model-field model="storageLocation" plugin="materialFlowResources">
             <model:hasMany name="trackingOperationProductOutComponents" model="trackingOperationProductOutComponent"
                            joinField="storageLocation" plugin="productionCounting"/>

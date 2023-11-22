@@ -76,7 +76,7 @@ public class ProductionTrackingStateService extends BasicStateService implements
 
         switch (targetState) {
             case ProductionTrackingStateStringValues.DECLINED:
-                productionTrackingListenerService.unMarakLastTracking(entity);
+                productionTrackingListenerService.unMarkLastTracking(entity);
                 break;
         }
 
