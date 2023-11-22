@@ -114,9 +114,6 @@ public class ResourceDetailsHooks {
         FieldComponent additionalUnitField = (FieldComponent) viewDefinitionState
                 .getComponentByReference(ResourceFields.GIVEN_UNIT);
 
-        FieldComponent quantityField = (FieldComponent) viewDefinitionState
-                .getComponentByReference(ResourceFields.QUANTITY);
-
         Either<Exception, Optional<BigDecimal>> maybeConversion = BigDecimalUtils
                 .tryParseAndIgnoreSeparator((String) conversionField.getFieldValue(), viewDefinitionState.getLocale());
 
@@ -132,15 +129,6 @@ public class ResourceDetailsHooks {
             String quantityInAdditionalUnitFormatted = numberService.format(newAdditionalQuantity);
 
             quantityInAdditionalUnitField.setFieldValue(quantityInAdditionalUnitFormatted);
-            Entity product = resource.getBelongsToField(ResourceFields.PRODUCT);
-
-            BigDecimal quantity = calculationQuantityService.calculateQuantity(
-                    resource.getDecimalField(ResourceFields.QUANTITY_IN_ADDITIONAL_UNIT), maybeConversion.getRight().get(),
-                    product.getStringField(ProductFields.UNIT));
-
-            String quantityFormatted = numberService.format(quantity);
-
-            quantityField.setFieldValue(quantityFormatted);
         }
 
     }
