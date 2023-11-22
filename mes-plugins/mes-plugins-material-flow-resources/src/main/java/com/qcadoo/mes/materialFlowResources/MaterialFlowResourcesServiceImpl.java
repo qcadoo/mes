@@ -101,7 +101,8 @@ public class MaterialFlowResourcesServiceImpl implements MaterialFlowResourcesSe
     }
 
     @Override
-    public Map<Long, BigDecimal> getQuantitiesForProductsAndLocation(final List<Entity> products, final Entity location) {
+    public Map<Long, BigDecimal> getQuantitiesForProductsAndLocation(final List<Entity> products,
+                                                                     final Entity location) {
         return getQuantitiesForProductsAndLocation(products, location, false);
     }
 
@@ -114,7 +115,8 @@ public class MaterialFlowResourcesServiceImpl implements MaterialFlowResourcesSe
 
     @Override
     public Map<Long, BigDecimal> getQuantitiesForProductsAndLocation(final List<Entity> products, final Entity location,
-                                                                     final boolean withoutBlockedForQualityControl, final String fieldName) {
+                                                                     final boolean withoutBlockedForQualityControl,
+                                                                     final String fieldName) {
         Map<Long, BigDecimal> quantities = Maps.newHashMap();
 
         if (products.size() > 0) {
@@ -186,31 +188,6 @@ public class MaterialFlowResourcesServiceImpl implements MaterialFlowResourcesSe
     }
 
     @Override
-    public List<QuantityDto> getQuantitiesForProductsAndLocationWMS(final List<String> productNumbers, final Long materialFlowLocationId) {
-        List<QuantityDto> quantityDtoList = new ArrayList<>();
-        Map<String, Object> params = Maps.newHashMap();
-
-        if (!productNumbers.isEmpty()) {
-            StringBuilder prepareQuery = new StringBuilder();
-
-            prepareQuery.append("SELECT ");
-            prepareQuery.append("storageLocationDto.productNumber AS productNumber, storageLocationDto.resourceQuantity AS quantity, storageLocationDto.quantityInAdditionalUnit AS additionalQuantity ");
-            prepareQuery.append("FROM materialFlowResources_storageLocationDto AS storageLocationDto ");
-            prepareQuery.append("WHERE storageLocationDto.productNumber IN (:productNumbers) ");
-            prepareQuery.append("AND storageLocationDto.location_id = :materialFlowLocationId ");
-
-            params.put("productNumbers", productNumbers);
-            params.put("materialFlowLocationId", materialFlowLocationId.intValue());
-
-            quantityDtoList = jdbcTemplate.query(prepareQuery.toString(), params, new BeanPropertyRowMapper(QuantityDto.class));
-
-
-            return quantityDtoList;
-        }
-        return quantityDtoList;
-    }
-
-    @Override
     public List<ResourcesQuantityDto> getResourceQuantities(final Long storageLocationId, final String productNumber) {
         List<ResourcesQuantityDto> resourcesQuantityDtoList = new ArrayList<>();
         Map<String, Object> params = Maps.newHashMap();
@@ -242,7 +219,7 @@ public class MaterialFlowResourcesServiceImpl implements MaterialFlowResourcesSe
 
 
     @Override
-    public List<PalletNumberProductDTO> getProductsForPalletNumber(String palletNumber, List<String> userLocationNumbers) {
+    public List<PalletNumberProductDTO> getProductsForPalletNumber(String palletNumber, Set<Long> userLocationIds) {
         List<PalletNumberProductDTO> palletNumberProductDTOList = new ArrayList<>();
         Map<String, Object> params = Maps.newHashMap();
 
@@ -266,13 +243,12 @@ public class MaterialFlowResourcesServiceImpl implements MaterialFlowResourcesSe
             prepareQuery.append("JOIN materialFlowResources_storageLocationDto AS storageLocationDto ");
             prepareQuery.append("ON palletStorageDto.location_id = storageLocationDto.location_id ");
             prepareQuery.append("WHERE palletStorageDto.palletNumber = :palletNumber ");
-            prepareQuery.append("AND resourceStockDto.locationNumber IN (:userLocationNumbers)");
+            prepareQuery.append("AND resourceStockDto.location_id IN (:userLocationIds)");
 
             params.put("palletNumber", palletNumber);
-            params.put("userLocationNumbers", userLocationNumbers);
+            params.put("userLocationIds", userLocationIds);
 
             palletNumberProductDTOList = jdbcTemplate.query(prepareQuery.toString(), params, new BeanPropertyRowMapper(PalletNumberProductDTO.class));
-            return palletNumberProductDTOList;
         }
         return palletNumberProductDTOList;
     }
@@ -302,7 +278,8 @@ public class MaterialFlowResourcesServiceImpl implements MaterialFlowResourcesSe
     }
 
     @Override
-    public List<StorageLocationsForProductDto> getStoragesForProductNumber(String productNumber, List<String> locationNumbers) {
+    public List<StorageLocationsForProductDto> getStoragesForProductNumber(String productNumber,
+                                                                           List<String> locationNumbers) {
         List<StorageLocationsForProductDto> list = new ArrayList<>();
         Map<String, Object> params = Maps.newHashMap();
 
@@ -561,7 +538,8 @@ public class MaterialFlowResourcesServiceImpl implements MaterialFlowResourcesSe
     }
 
     @Override
-    public List<ResourceToRepackDto> getResourceListByStorageLocationNumber(String storageLocationNumber, List<String> userLocations) {
+    public List<ResourceToRepackDto> getResourceListByStorageLocationNumber(String storageLocationNumber,
+                                                                            List<String> userLocations) {
         Map<String, Object> params = Maps.newHashMap();
         List<ResourceToRepackDto> list = new ArrayList<>();
 
@@ -637,7 +615,9 @@ public class MaterialFlowResourcesServiceImpl implements MaterialFlowResourcesSe
     }
 
     @Override
-    public List<ResourceToRepackDto> getResourceListByPalletAndLocationNumber(String palletNumber, String storageLocationNumber, List<String> userLocations) {
+    public List<ResourceToRepackDto> getResourceListByPalletAndLocationNumber(String palletNumber,
+                                                                              String storageLocationNumber,
+                                                                              List<String> userLocations) {
         Map<String, Object> params = Maps.newHashMap();
         List<ResourceToRepackDto> list = new ArrayList<>();
 
@@ -719,7 +699,8 @@ public class MaterialFlowResourcesServiceImpl implements MaterialFlowResourcesSe
         }
     }
 
-    public boolean checkIfExistsMorePalletsForStorageLocation(final Long locationId, final String storageLocationNumber) {
+    public boolean checkIfExistsMorePalletsForStorageLocation(final Long locationId,
+                                                              final String storageLocationNumber) {
         StringBuilder query = new StringBuilder();
 
         query.append("SELECT ");

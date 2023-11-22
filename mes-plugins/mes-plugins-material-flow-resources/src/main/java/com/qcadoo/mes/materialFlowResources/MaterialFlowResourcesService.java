@@ -31,6 +31,7 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 public interface MaterialFlowResourcesService {
 
@@ -55,13 +56,11 @@ public interface MaterialFlowResourcesService {
 
     void fillCurrencyFieldValues(final ViewDefinitionState view);
 
-    List<QuantityDto> getQuantitiesForProductsAndLocationWMS(final List<String> productNumbers, final Long materialFlowLocationId);
-
     List<ResourcesQuantityDto> getResourceQuantities(final Long storageLocationId, final String productNumber);
 
     ResourceDetailsDto getResourceDetails(String resourceNumber);
 
-    List<PalletNumberProductDTO> getProductsForPalletNumber(String palletNumber, List<String> userLocationNumbers);
+    List<PalletNumberProductDTO> getProductsForPalletNumber(String palletNumber, Set<Long> userLocationIds);
 
     List<SumOfProductsDto> getSumOfProducts(String productNumber, List<String> locationIds);
 
