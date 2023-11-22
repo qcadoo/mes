@@ -2,6 +2,7 @@ package com.qcadoo.mes.productFlowThruDivision.hooks;
 
 import com.qcadoo.mes.productFlowThruDivision.constants.OrderProductResourceReservationFields;
 import com.qcadoo.mes.productionCounting.constants.TrackingOperationProductInComponentFields;
+import com.qcadoo.model.api.BigDecimalUtils;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
@@ -50,6 +51,7 @@ public class TrackingOperationProductInComponentHooksPFTD {
                 for (Entity resourceReservation : resourceReservations) {
                     Entity orderProductResourceReservation = resourceReservation.getBelongsToField("orderProductResourceReservation");
                     BigDecimal resourcePlanedQuantity = orderProductResourceReservation.getDecimalField(OrderProductResourceReservationFields.PLANED_QUANTITY);
+                    resourcePlanedQuantity = resourcePlanedQuantity.subtract(BigDecimalUtils.convertNullToZero(orderProductResourceReservation.getDecimalField(OrderProductResourceReservationFields.USED_QUANTITY)), numberService.getMathContext());
 
                     if (usedQuantity.compareTo(resourcePlanedQuantity) > 0) {
                         resourceReservation.setField("usedQuantity", resourcePlanedQuantity);
