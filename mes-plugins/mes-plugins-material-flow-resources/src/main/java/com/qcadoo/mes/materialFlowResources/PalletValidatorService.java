@@ -53,7 +53,7 @@ public class PalletValidatorService {
 
     }
 
-    public boolean existsOtherPositionForPalletNumber(String palletNumber, String palletType, String storageLocation,
+    private boolean existsOtherPositionForPalletNumber(String palletNumber, String palletType, String storageLocation,
                                                       Entity entity, Entity location) {
         StringBuilder query = new StringBuilder();
         query.append("select count(dp) as cnt from #materialFlowResources_position dp JOIN dp.palletNumber as pallet ");
@@ -87,7 +87,7 @@ public class PalletValidatorService {
         return exists;
     }
 
-    private boolean existsOtherResourceForPalletNumber(String palletNumber, String palletType, String storageLocation,
+    public boolean existsOtherResourceForPalletNumber(String palletNumber, String palletType, String storageLocation,
                                                        Entity entity, Entity location) {
         StringBuilder query = new StringBuilder();
         query.append("select count(dp) as cnt from #materialFlowResources_resource dp JOIN dp.palletNumber as pallet ");
