@@ -140,6 +140,10 @@ public class OrderServiceImpl implements OrderService {
             if (anyMatch) {
                 productionLine = defaultProductionLine;
             }
+
+            if(lines.isEmpty()) {
+                productionLine = defaultProductionLine;
+            }
         }
 
         if (Objects.nonNull(technology) && parameter.getBooleanField(ParameterFieldsO.PROMPT_DEFAULT_LINE_FROM_TECHNOLOGY)
