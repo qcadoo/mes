@@ -130,7 +130,7 @@ public class TrackingOperationProductOutComponentHooks {
         Entity palletNumber = trackingOperationProductOutComponent.getBelongsToField(TrackingOperationProductOutComponentFields.PALLET_NUMBER);
 
         if (Objects.isNull(storageLocation) && Objects.nonNull(palletNumber)) {
-            trackingOperationProductOutComponent.addError(trackingOperationProductOutComponentDD.getField(TrackingOperationProductOutComponentFields.STORAGE_LOCATION), "qcadooView.validate.field.error.missing");
+            trackingOperationProductOutComponent.addError(trackingOperationProductOutComponentDD.getField(TrackingOperationProductOutComponentFields.STORAGE_LOCATION), "productionCounting.trackingOperationProductOutComponent.error.storageLocationRequired");
 
             return false;
         } else {
@@ -141,7 +141,7 @@ public class TrackingOperationProductOutComponentHooks {
 
                 if (placeStorageLocation) {
                     if (Objects.isNull(palletNumber)) {
-                        trackingOperationProductOutComponent.addError(trackingOperationProductOutComponentDD.getField(TrackingOperationProductOutComponentFields.PALLET_NUMBER), "qcadooView.validate.field.error.missing");
+                        trackingOperationProductOutComponent.addError(trackingOperationProductOutComponentDD.getField(TrackingOperationProductOutComponentFields.PALLET_NUMBER), "productionCounting.trackingOperationProductOutComponent.error.palletNumberRequired");
 
                         return false;
                     }
