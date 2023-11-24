@@ -133,6 +133,7 @@ public class TrackingOperationProductOutComponentHooks {
     private boolean validateStorageLocationAndPalletNumber(final DataDefinition trackingOperationProductOutComponentDD, final Entity trackingOperationProductOutComponent) {
         Entity storageLocation = trackingOperationProductOutComponent.getBelongsToField(TrackingOperationProductOutComponentFields.STORAGE_LOCATION);
         Entity palletNumber = trackingOperationProductOutComponent.getBelongsToField(TrackingOperationProductOutComponentFields.PALLET_NUMBER);
+        String typeOfPallet = trackingOperationProductOutComponent.getStringField(TrackingOperationProductOutComponentFields.TYPE_OF_PALLET);
 
         if (Objects.isNull(storageLocation) && Objects.nonNull(palletNumber)) {
             trackingOperationProductOutComponent.addError(trackingOperationProductOutComponentDD.getField(TrackingOperationProductOutComponentFields.STORAGE_LOCATION), "productionCounting.trackingOperationProductOutComponent.error.storageLocationRequired");
@@ -151,6 +152,10 @@ public class TrackingOperationProductOutComponentHooks {
                         return false;
                     } else {
                         String palletNumberNumber = palletNumber.getStringField(PalletNumberFields.NUMBER);
+
+                        if (palletValidatorService.validatePallet(location, storageLocation, palletNumber, typeOfPallet, trackingOperationProductOutComponent)) {
+                            return false;
+                        }
 
                         if (palletValidatorService.checkIfExistsMorePalletsForStorageLocation(location.getId(), storageLocationNumber, palletNumberNumber)) {
                             trackingOperationProductOutComponent.addError(trackingOperationProductOutComponentDD.getField(TrackingOperationProductOutComponentFields.STORAGE_LOCATION), "productionCounting.trackingOperationProductOutComponent.error.existsOtherPalletsAtStorageLocation");
