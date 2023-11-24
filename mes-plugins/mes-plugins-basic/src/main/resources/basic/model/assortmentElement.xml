@@ -31,7 +31,7 @@
     <fields>
         <dictionary name="descriptionType" dictionary="descriptionTypes" required="true"/>
         <string name="description">
-            <validatesLength max="255"/>
+            <validatesLength max="2048"/>
         </string>
         <boolean name="main" default="false"/>
         <belongsTo name="assortment" model="assortment" required="true"/>
