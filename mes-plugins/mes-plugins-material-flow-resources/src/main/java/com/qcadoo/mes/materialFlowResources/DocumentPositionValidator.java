@@ -613,7 +613,7 @@ public class DocumentPositionValidator {
         return errors;
     }
 
-    private Collection<? extends String> validatePallet(final DocumentPositionDTO position, final DocumentDTO document) {
+    public Collection<? extends String> validatePallet(final DocumentPositionDTO position, final DocumentDTO document) {
         List<String> errors = Lists.newArrayList();
 
         if (DocumentType.isInbound(document.getType())) {
@@ -626,12 +626,9 @@ public class DocumentPositionValidator {
 
             if (Strings.isNullOrEmpty(storageLocationNumber) && !Strings.isNullOrEmpty(palletNumberNumber)) {
                 errors.add("documentGrid.error.position.storageLocation.required");
-            } else {
-                if (palletValidatorService.isPlaceStorageLocation(storageLocationNumber)) {
-                    if (Strings.isNullOrEmpty(palletNumberNumber)) {
-                        errors.add("documentGrid.error.position.palletNumber.required");
-                    }
-                }
+            } else if (palletValidatorService.isPlaceStorageLocation(storageLocationNumber)
+                    && Strings.isNullOrEmpty(palletNumberNumber)) {
+                errors.add("documentGrid.error.position.palletNumber.required");
             }
 
             if (palletValidatorService.existsOtherResourceForPalletNumber(locationId, storageLocationNumber,
