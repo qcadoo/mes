@@ -273,9 +273,9 @@ public class TrackingOperationProductComponentDetailsListeners {
 
                 if (Objects.nonNull(productsInputLocation)) {
                     Entity palletNumber = palletNumberLookup.getEntity();
-                    String typeOfPallet = (String) typeOfPalletField.getFieldValue();
+                    String typeOfPallet = null;
 
-                    if (Objects.nonNull(palletNumber) && StringUtils.isEmpty(typeOfPallet)) {
+                    if (Objects.nonNull(palletNumber)) {
                         typeOfPallet = materialFlowResourcesService.getTypeOfPalletByPalletNumber(productsInputLocation.getId(), palletNumber.getStringField(PalletNumberFields.NUMBER));
                     }
 

@@ -602,7 +602,11 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
             var t = $(this);
             window.clearTimeout(t.data("timeout"));
             $(this).data("timeout", setTimeout(function () {
-                fillTypeOfPalletFromPallet(t.val(), getRowIdFromElement(t))
+                if (t.val()) {
+                    fillTypeOfPalletFromPallet(t.val(), getRowIdFromElement(t))
+                } else {
+                    updateFieldValue('typeOfPallet', '', getRowIdFromElement(t));
+                }
             }, 500));
         });
 

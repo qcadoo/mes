@@ -24,8 +24,9 @@
 package com.qcadoo.mes.materialFlowResources.validators;
 
 import com.beust.jcommander.internal.Sets;
+import com.qcadoo.mes.basic.constants.PalletNumberFields;
 import com.qcadoo.mes.basic.constants.ProductFields;
-import com.qcadoo.mes.materialFlowResources.MaterialFlowResourcesService;
+import com.qcadoo.mes.materialFlowResources.PalletValidatorService;
 import com.qcadoo.mes.materialFlowResources.constants.*;
 import com.qcadoo.mes.materialFlowResources.exceptions.InvalidResourceException;
 import com.qcadoo.mes.materialFlowResources.service.DocumentService;
@@ -53,10 +54,10 @@ public class DocumentValidators {
     private DocumentService documentService;
 
     @Autowired
-    private MaterialFlowResourcesService materialFlowResourcesService;
+    private ResourceManagementService resourceManagementService;
 
     @Autowired
-    private ResourceManagementService resourceManagementService;
+    private PalletValidatorService palletValidatorService;
 
     public boolean validate(final DataDefinition documentDD, final Entity document) {
         Long documentId = document.getId();
@@ -251,7 +252,7 @@ public class DocumentValidators {
             Set<String> missingPalletNumbers = Sets.newHashSet();
             Set<String> existsMorePallets = Sets.newHashSet();
 
-            for (Entity position : positions) {
+            positions.forEach(position -> {
                 Integer positionNumber = position.getIntegerField(PositionFields.NUMBER);
                 Entity storageLocation = position.getBelongsToField(PositionFields.STORAGE_LOCATION);
                 Entity palletNumber = position.getBelongsToField(PositionFields.PALLET_NUMBER);
@@ -266,15 +267,17 @@ public class DocumentValidators {
                         if (placeStorageLocation) {
                             if (Objects.isNull(palletNumber)) {
                                 missingPalletNumbers.add(positionNumber.toString());
-                            }
+                            } else {
+                                String palletNumberNumber = palletNumber.getStringField(PalletNumberFields.NUMBER);
 
-                            if (materialFlowResourcesService.checkIfExistsMorePalletsForStorageLocation(locationTo.getId(), storageLocationNumber)) {
-                                existsMorePallets.add(positionNumber.toString());
+                                if (palletValidatorService.checkIfExistsMorePalletsForStorageLocation(locationTo.getId(), storageLocationNumber, palletNumberNumber)) {
+                                    existsMorePallets.add(positionNumber.toString());
+                                }
                             }
                         }
                     }
                 }
-            }
+            });
 
             if (!missingStorageLocations.isEmpty()) {
                 document.addGlobalError("materialFlow.document.validate.global.error.position.storageLocationRequired", number, String.join(", ", missingStorageLocations));
@@ -286,8 +289,8 @@ public class DocumentValidators {
 
                 isValid = false;
             }
-            if (!missingPalletNumbers.isEmpty()) {
-                document.addGlobalError("materialFlow.document.validate.global.error.position.morePalletsExists", number, String.join(", ", missingPalletNumbers));
+            if (!existsMorePallets.isEmpty()) {
+                document.addGlobalError("materialFlow.document.validate.global.error.position.morePalletsExists", number, String.join(", ", existsMorePallets));
 
                 isValid = false;
             }

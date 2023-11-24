@@ -46,21 +46,13 @@ public class ResourceModelValidators {
     private PositionValidators positionValidators;
 
     public boolean validatesWith(final DataDefinition resourceDD, final Entity resource) {
-        boolean isValid = checkPallet(resourceDD, resource);
-        isValid = isValid && checkProductionAndExpirationDate(resourceDD, resource);
+        boolean isValid = checkProductionAndExpirationDate(resourceDD, resource);
+
         isValid = isValid && validateRequiredAttributes(resourceDD, resource);
-        isValid = isValid && checBatchEvidence(resourceDD, resource);
+        isValid = isValid && checkBatchEvidence(resourceDD, resource);
+        isValid = isValid && palletValidatorService.validatePalletForResource(resource);
 
         return isValid;
-    }
-
-    private boolean checkPallet(final DataDefinition resourceDD, final Entity resource) {
-        if (resource.getField(ResourceFields.VALIDATE_PALLET) == null
-                || resource.getBooleanField(ResourceFields.VALIDATE_PALLET)) {
-            return palletValidatorService.validatePalletForResource(resource);
-        }
-
-        return true;
     }
 
     private boolean checkProductionAndExpirationDate(final DataDefinition resourceDD, final Entity resource) {
@@ -88,7 +80,7 @@ public class ResourceModelValidators {
                 warehouse.getBooleanField(LocationFieldsMFR.REQUIRE_EXPIRATION_DATE));
     }
 
-    private boolean checBatchEvidence(final DataDefinition resourceDD, final Entity resource) {
+    private boolean checkBatchEvidence(final DataDefinition resourceDD, final Entity resource) {
         boolean isValid = true;
 
         Entity product = resource.getBelongsToField(ResourceFields.PRODUCT);

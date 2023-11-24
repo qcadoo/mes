@@ -681,48 +681,6 @@ public class MaterialFlowResourcesServiceImpl implements MaterialFlowResourcesSe
         }
     }
 
-    public boolean isPlaceStorageLocation(final String storageLocationNumber) {
-        StringBuilder query = new StringBuilder();
-
-        query.append("SELECT placestoragelocation ");
-        query.append("FROM materialflowresources_storagelocation ");
-        query.append("WHERE number = :storageLocationNumber");
-
-        Map<String, Object> params = Maps.newHashMap();
-
-        params.put("storageLocationNumber", storageLocationNumber);
-
-        try {
-            return jdbcTemplate.queryForObject(query.toString(), params, Boolean.class);
-        } catch (EmptyResultDataAccessException e) {
-            return false;
-        }
-    }
-
-    public boolean checkIfExistsMorePalletsForStorageLocation(final Long locationId,
-                                                              final String storageLocationNumber) {
-        StringBuilder query = new StringBuilder();
-
-        query.append("SELECT ");
-        query.append("CASE ");
-        query.append("WHEN COALESCE(MAX(storagelocation.maximumNumberOfPallets), 0) = 0 THEN FALSE ");
-        query.append("ELSE COUNT(DISTINCT(resource.palletnumber_id)) >= COALESCE(MAX(storagelocation.maximumNumberOfPallets), 0) ");
-        query.append("END AS exists ");
-        query.append("FROM materialflowresources_resource resource ");
-        query.append("RIGHT JOIN materialflowresources_storagelocation storagelocation ");
-        query.append("ON storagelocation.id = resource.storagelocation_id ");
-        query.append("WHERE storagelocation.number = :storageLocationNumber ");
-        query.append("AND storagelocation.placestoragelocation = true ");
-        query.append("AND resource.location_id = :locationId");
-
-        Map<String, Object> params = Maps.newHashMap();
-
-        params.put("storageLocationNumber", storageLocationNumber);
-        params.put("locationId", locationId);
-
-        return jdbcTemplate.queryForObject(query.toString(), params, Boolean.class);
-    }
-
     private DataDefinition getProductDD() {
         return dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PRODUCT);
     }

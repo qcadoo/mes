@@ -25,10 +25,11 @@ package com.qcadoo.mes.materialFlowResources.listeners;
 
 import com.google.common.base.Optional;
 import com.qcadoo.commons.functional.Either;
-import com.qcadoo.mes.materialFlowResources.MaterialFlowResourcesService;
+import com.qcadoo.mes.materialFlowResources.PalletValidatorService;
 import com.qcadoo.mes.materialFlowResources.constants.MaterialFlowResourcesConstants;
 import com.qcadoo.mes.materialFlowResources.constants.ResourceFields;
 import com.qcadoo.mes.materialFlowResources.constants.StorageLocationFields;
+import com.qcadoo.mes.materialFlowResources.hooks.ResourceDetailsHooks;
 import com.qcadoo.mes.materialFlowResources.service.ResourceCorrectionService;
 import com.qcadoo.model.api.*;
 import com.qcadoo.model.api.search.SearchRestrictions;
@@ -64,7 +65,10 @@ public class ResourceDetailsListeners {
     private ResourceCorrectionService resourceCorrectionService;
 
     @Autowired
-    private MaterialFlowResourcesService materialFlowResourcesService;
+    private ResourceDetailsHooks resourceDetailsHooks;
+
+    @Autowired
+    private PalletValidatorService palletValidatorService;
 
     public void createResourceCorrection(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         FormComponent resourceForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
@@ -84,6 +88,12 @@ public class ResourceDetailsListeners {
                 resourceForm.addMessage("materialFlow.success.correction.correctionCreated", MessageType.SUCCESS);
             }
         }
+    }
+
+    private void copyErrors(final FormComponent resourceForm, final Entity resource) {
+        resource.getGlobalErrors().forEach(resourceForm::addMessage);
+
+        resource.getErrors().values().forEach(resourceForm::addMessage);
     }
 
     private boolean validateQuantity(final ViewDefinitionState view, final Entity resource) {
@@ -158,29 +168,25 @@ public class ResourceDetailsListeners {
     private boolean validatePallet(final ViewDefinitionState view, final Entity resource) {
         boolean isValid = true;
 
-        LookupComponent locationLookup = (LookupComponent) view.getComponentByReference(ResourceFields.LOCATION);
         LookupComponent storageLocationLookup = (LookupComponent) view.getComponentByReference(ResourceFields.STORAGE_LOCATION);
         LookupComponent palletNumberLookup = (LookupComponent) view.getComponentByReference(ResourceFields.PALLET_NUMBER);
 
-        Entity location = locationLookup.getEntity();
         Entity storageLocation = storageLocationLookup.getEntity();
         Entity palletNumber = palletNumberLookup.getEntity();
 
-        if (Objects.nonNull(location)) {
-            if (Objects.isNull(storageLocation) && Objects.nonNull(palletNumber)) {
-                storageLocationLookup.addMessage("qcadooView.validate.field.error.missing", MessageType.FAILURE);
+        if (Objects.isNull(storageLocation) && Objects.nonNull(palletNumber)) {
+            storageLocationLookup.addMessage("qcadooView.validate.field.error.missing", MessageType.FAILURE);
 
-                isValid = false;
-            } else {
-                if (Objects.nonNull(storageLocation)) {
-                    boolean placeStorageLocation = storageLocation.getBooleanField(StorageLocationFields.PLACE_STORAGE_LOCATION);
+            isValid = false;
+        } else {
+            if (Objects.nonNull(storageLocation)) {
+                boolean placeStorageLocation = storageLocation.getBooleanField(StorageLocationFields.PLACE_STORAGE_LOCATION);
 
-                    if (placeStorageLocation) {
-                        if (Objects.isNull(palletNumber)) {
-                            palletNumberLookup.addMessage("qcadooView.validate.field.error.missing", MessageType.FAILURE);
+                if (placeStorageLocation) {
+                    if (Objects.isNull(palletNumber)) {
+                        palletNumberLookup.addMessage("qcadooView.validate.field.error.missing", MessageType.FAILURE);
 
-                            isValid = false;
-                        }
+                        isValid = false;
                     }
                 }
             }
@@ -189,10 +195,8 @@ public class ResourceDetailsListeners {
         return isValid;
     }
 
-    private void copyErrors(final FormComponent resourceForm, final Entity resource) {
-        resource.getGlobalErrors().forEach(resourceForm::addMessage);
-
-        resource.getErrors().values().forEach(resourceForm::addMessage);
+    public void fillTypeOfPalletField(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        resourceDetailsHooks.fillTypeOfPalletField(view);
     }
 
     private Entity getResourceStockDto(final Entity resourceFromDb) {

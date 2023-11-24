@@ -23,11 +23,15 @@
  */
 package com.qcadoo.mes.deliveries.states;
 
+import com.beust.jcommander.internal.Sets;
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.basic.ParameterService;
+import com.qcadoo.mes.basic.constants.PalletNumberFields;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.deliveries.ProductSynchronizationService;
 import com.qcadoo.mes.deliveries.constants.*;
+import com.qcadoo.mes.materialFlowResources.PalletValidatorService;
+import com.qcadoo.mes.materialFlowResources.constants.StorageLocationFields;
 import com.qcadoo.mes.states.StateChangeContext;
 import com.qcadoo.model.api.BigDecimalUtils;
 import com.qcadoo.model.api.Entity;
@@ -57,6 +61,9 @@ public class DeliveryStateValidationService {
     @Autowired
     private ProductSynchronizationService productSynchronizationService;
 
+    @Autowired
+    private PalletValidatorService palletValidatorService;
+
     public void validationOnApproved(final StateChangeContext stateChangeContext) {
         final List<String> fieldNames = Lists.newArrayList(DeliveryFields.DELIVERY_DATE, DeliveryFields.SUPPLIER);
 
@@ -71,6 +78,7 @@ public class DeliveryStateValidationService {
         checkDeliveredProductsDeliveredQuantities(stateChangeContext);
         checkDeliveredProductsBatches(stateChangeContext);
         checkDeliveredPackages(stateChangeContext);
+        checkIfStorageLocationsAndPalletNumbersAreSet(stateChangeContext);
 
         if (parameterService.getParameter().getBooleanField(ParameterFieldsD.POSITIVE_PURCHASE_PRICE)) {
             checkDeliveredProductsPricePerUnits(stateChangeContext);
@@ -185,6 +193,56 @@ public class DeliveryStateValidationService {
         Entity product = deliveredProduct.getBelongsToField(DeliveredProductFields.PRODUCT);
 
         return product.getBooleanField(ProductFields.BATCH_EVIDENCE);
+    }
+
+    private void checkIfStorageLocationsAndPalletNumbersAreSet(final StateChangeContext stateChangeContext) {
+        checkArgument(Objects.nonNull(stateChangeContext), L_ENTITY_IS_NULL);
+
+        final Entity delivery = stateChangeContext.getOwner();
+
+        List<Entity> deliveredProducts = delivery.getHasManyField(DeliveryFields.DELIVERED_PRODUCTS);
+
+        Set<String> missingStorageLocations = Sets.newHashSet();
+        Set<String> missingPalletNumbers = Sets.newHashSet();
+        Set<String> existsMorePallets = Sets.newHashSet();
+
+        deliveredProducts.forEach(deliveredProduct -> {
+            String productNumber = deliveredProduct.getBelongsToField(DeliveredProductFields.PRODUCT).getStringField(ProductFields.NUMBER);
+            Entity storageLocation = deliveredProduct.getBelongsToField(DeliveredProductFields.STORAGE_LOCATION);
+            Entity palletNumber = deliveredProduct.getBelongsToField(DeliveredProductFields.PALLET_NUMBER);
+
+            if (Objects.isNull(storageLocation) && Objects.nonNull(palletNumber)) {
+                missingStorageLocations.add(productNumber);
+            } else {
+                if (Objects.nonNull(storageLocation)) {
+                    Entity location = storageLocation.getBelongsToField(StorageLocationFields.LOCATION);
+                    String storageLocationNumber = storageLocation.getStringField(StorageLocationFields.NUMBER);
+                    boolean placeStorageLocation = storageLocation.getBooleanField(StorageLocationFields.PLACE_STORAGE_LOCATION);
+
+                    if (placeStorageLocation) {
+                        if (Objects.isNull(palletNumber)) {
+                            missingPalletNumbers.add(productNumber);
+                        } else {
+                            String palletNumberNumber = palletNumber.getStringField(PalletNumberFields.NUMBER);
+
+                            if (palletValidatorService.checkIfExistsMorePalletsForStorageLocation(location.getId(), storageLocationNumber, palletNumberNumber)) {
+                                existsMorePallets.add(productNumber);
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        if (!missingStorageLocations.isEmpty()) {
+            stateChangeContext.addValidationError("deliveries.deliveredProducts.error.storageLocationRequired", false, String.join(", ", missingStorageLocations));
+        }
+        if (!missingPalletNumbers.isEmpty()) {
+            stateChangeContext.addValidationError("deliveries.deliveredProducts.error.palletNumberRequired", false, String.join(", ", missingPalletNumbers));
+        }
+        if (!existsMorePallets.isEmpty()) {
+            stateChangeContext.addValidationError("deliveries.deliveredProducts.error.morePalletsExists", false, String.join(", ", existsMorePallets));
+        }
     }
 
     private void checkDeliveredProductsPricePerUnits(final StateChangeContext stateChangeContext) {

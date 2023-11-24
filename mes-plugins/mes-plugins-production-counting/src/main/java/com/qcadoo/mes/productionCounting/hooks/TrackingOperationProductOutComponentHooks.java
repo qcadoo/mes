@@ -25,12 +25,14 @@ package com.qcadoo.mes.productionCounting.hooks;
 
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.basic.ParameterService;
+import com.qcadoo.mes.basic.constants.PalletNumberFields;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.basicProductionCounting.BasicProductionCountingService;
 import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityFields;
 import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityRole;
 import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityTypeOfMaterial;
 import com.qcadoo.mes.materialFlowResources.MaterialFlowResourcesService;
+import com.qcadoo.mes.materialFlowResources.PalletValidatorService;
 import com.qcadoo.mes.materialFlowResources.constants.StorageLocationFields;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.productionCounting.ProductionTrackingService;
@@ -71,6 +73,9 @@ public class TrackingOperationProductOutComponentHooks {
 
     @Autowired
     private MaterialFlowResourcesService materialFlowResourcesService;
+
+    @Autowired
+    private PalletValidatorService palletValidatorService;
 
     public boolean validatesWith(final DataDefinition trackingOperationProductOutComponentDD,
                                  final Entity trackingOperationProductOutComponent) {
@@ -144,10 +149,14 @@ public class TrackingOperationProductOutComponentHooks {
                         trackingOperationProductOutComponent.addError(trackingOperationProductOutComponentDD.getField(TrackingOperationProductOutComponentFields.PALLET_NUMBER), "productionCounting.trackingOperationProductOutComponent.error.palletNumberRequired");
 
                         return false;
-                    }
+                    } else {
+                        String palletNumberNumber = palletNumber.getStringField(PalletNumberFields.NUMBER);
 
-                    if (materialFlowResourcesService.checkIfExistsMorePalletsForStorageLocation(location.getId(), storageLocationNumber)) {
-                        trackingOperationProductOutComponent.addError(trackingOperationProductOutComponentDD.getField(TrackingOperationProductOutComponentFields.STORAGE_LOCATION), "productionCounting.trackingOperationProductOutComponent.error.existsOtherPalletsAtStorageLocation");
+                        if (palletValidatorService.checkIfExistsMorePalletsForStorageLocation(location.getId(), storageLocationNumber, palletNumberNumber)) {
+                            trackingOperationProductOutComponent.addError(trackingOperationProductOutComponentDD.getField(TrackingOperationProductOutComponentFields.STORAGE_LOCATION), "productionCounting.trackingOperationProductOutComponent.error.existsOtherPalletsAtStorageLocation");
+
+                            return false;
+                        }
                     }
                 }
             }
@@ -161,6 +170,7 @@ public class TrackingOperationProductOutComponentHooks {
         fillOrderReportedQuantity(trackingOperationProductOutComponent);
         fillStorageLocation(trackingOperationProductOutComponent);
         clearLacks(trackingOperationProductOutComponent);
+        setTypeOfPallet(trackingOperationProductOutComponent);
     }
 
     private void fillTrackingOperationProductInComponentsQuantities(final Entity trackingOperationProductOutComponent) {
@@ -372,9 +382,17 @@ public class TrackingOperationProductOutComponentHooks {
         }
     }
 
-    private static void clearLacks(final Entity trackingOperationProductOutComponent) {
+    private void clearLacks(final Entity trackingOperationProductOutComponent) {
         if (!trackingOperationProductOutComponent.getBooleanField(TrackingOperationProductOutComponentFields.MANY_REASONS_FOR_LACKS)) {
             trackingOperationProductOutComponent.setField(TrackingOperationProductOutComponentFields.LACKS, Lists.newArrayList());
+        }
+    }
+
+    private void setTypeOfPallet(final Entity trackingOperationProductOutComponent) {
+        Entity palletNumber = trackingOperationProductOutComponent.getBelongsToField(TrackingOperationProductOutComponentFields.PALLET_NUMBER);
+
+        if (Objects.isNull(palletNumber)) {
+            trackingOperationProductOutComponent.setField(TrackingOperationProductOutComponentFields.TYPE_OF_PALLET, null);
         }
     }
 

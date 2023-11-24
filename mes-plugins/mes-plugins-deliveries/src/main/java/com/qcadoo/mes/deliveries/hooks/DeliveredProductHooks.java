@@ -35,14 +35,11 @@ import com.qcadoo.mes.deliveries.constants.OrderedProductFields;
 import com.qcadoo.mes.deliveries.constants.ParameterFieldsD;
 import com.qcadoo.mes.materialFlowResources.MaterialFlowResourcesService;
 import com.qcadoo.mes.materialFlowResources.PalletValidatorService;
-import com.qcadoo.mes.materialFlowResources.constants.StorageLocationFields;
 import com.qcadoo.model.api.*;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
-import com.qcadoo.view.api.ComponentState;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Service;
 
@@ -97,6 +94,7 @@ public class DeliveredProductHooks {
         updateDeliveredAndAdditionalQuantityInOrderedProduct(deliveredProductDD, deliveredProduct);
 
         createBatch(deliveredProduct);
+        setPalletType(deliveredProduct);
     }
 
     private void updateDeliveredAndAdditionalQuantityInOrderedProduct(final DataDefinition deliveredProductDD,
@@ -216,7 +214,6 @@ public class DeliveredProductHooks {
     }
 
     private void createBatch(final Entity deliveredProduct) {
-
         if (deliveredProduct.getBooleanField(DeliveredProductFields.ADD_BATCH)
                 && (StringUtils.isNoneEmpty(deliveredProduct.getStringField(DeliveredProductFields.BATCH_NUMBER))
                 || parameterService.getParameter().getBooleanField(
@@ -242,6 +239,14 @@ public class DeliveredProductHooks {
         }
     }
 
+    private void setPalletType(final Entity deliveredProduct) {
+        Entity palletNumber = deliveredProduct.getBelongsToField(DeliveredProductFields.PALLET_NUMBER);
+
+        if (Objects.isNull(palletNumber)) {
+            deliveredProduct.setField(DeliveredProductFields.PALLET_TYPE, null);
+        }
+    }
+
     public boolean onDelete(final DataDefinition deliveredProductDD, final Entity deliveredProduct) {
         BigDecimal deliveredQuantity = BigDecimal.ZERO;
         BigDecimal additionalQuantity = BigDecimal.ZERO;
@@ -253,10 +258,13 @@ public class DeliveredProductHooks {
     }
 
     public boolean validatesWith(final DataDefinition deliveredProductDD, final Entity deliveredProduct) {
-        return checkIfDeliveredProductAlreadyExists(deliveredProductDD, deliveredProduct)
-                && checkIfDeliveredQuantityIsLessThanDamagedQuantity(deliveredProductDD, deliveredProduct)
-                && checkIfDeliveredQuantityIsLessThanOrderedQuantity(deliveredProductDD, deliveredProduct)
-                && validatePallet(deliveredProductDD, deliveredProduct) && notTooManyPalletsInStorageLocation(deliveredProductDD, deliveredProduct);
+        boolean isValid = checkIfDeliveredProductAlreadyExists(deliveredProductDD, deliveredProduct);
+
+        isValid = isValid && checkIfDeliveredQuantityIsLessThanDamagedQuantity(deliveredProductDD, deliveredProduct);
+        isValid = isValid && checkIfDeliveredQuantityIsLessThanOrderedQuantity(deliveredProductDD, deliveredProduct);
+        isValid = isValid && palletValidatorService.validatePalletForDeliveredProduct(deliveredProduct);
+
+        return isValid;
     }
 
     public boolean checkIfDeliveredProductAlreadyExists(final DataDefinition deliveredProductDD, final Entity deliveredProduct) {
@@ -382,90 +390,6 @@ public class DeliveredProductHooks {
                 .add(SearchRestrictions.belongsTo(OrderedProductFields.PRODUCT, product));
 
         return searchCriteriaBuilder.list().getEntities();
-    }
-
-    private boolean validatePallet(final DataDefinition deliveredProductDD, final Entity deliveredProduct) {
-        if (Objects.isNull(deliveredProduct.getField(DeliveredProductFields.VALIDATE_PALLET))
-                || deliveredProduct.getBooleanField(DeliveredProductFields.VALIDATE_PALLET)) {
-            Entity delivery = deliveredProduct.getBelongsToField(DeliveredProductFields.DELIVERY);
-            Entity storageLocation = deliveredProduct.getBelongsToField(DeliveredProductFields.STORAGE_LOCATION);
-            Entity palletNumber = deliveredProduct.getBelongsToField(DeliveredProductFields.PALLET_NUMBER);
-            Entity location = delivery.getBelongsToField(DeliveryFields.LOCATION);
-
-            if (Objects.nonNull(location)) {
-                if (Objects.isNull(storageLocation) && Objects.nonNull(palletNumber)) {
-                    deliveredProduct.addError(deliveredProductDD.getField(DeliveredProductFields.STORAGE_LOCATION), "qcadooView.validate.field.error.missing");
-
-                    return false;
-                } else {
-                    if (Objects.nonNull(storageLocation)) {
-                        boolean placeStorageLocation = storageLocation.getBooleanField(StorageLocationFields.PLACE_STORAGE_LOCATION);
-
-                        if (placeStorageLocation) {
-                            if (Objects.isNull(palletNumber)) {
-                                deliveredProduct.addError(deliveredProductDD.getField(DeliveredProductFields.PALLET_NUMBER), "qcadooView.validate.field.error.missing");
-
-                                return false;
-                            }
-                        }
-                    }
-                }
-            }
-
-            return palletValidatorService.validatePalletForDeliveredProduct(deliveredProduct);
-        }
-
-        return true;
-    }
-
-    private boolean notTooManyPalletsInStorageLocation(final DataDefinition deliveredProductDD, final Entity deliveredProduct) {
-        Entity storageLocation = deliveredProduct.getBelongsToField(DeliveredProductFields.STORAGE_LOCATION);
-
-        final BigDecimal maxNumberOfPallets;
-
-        if (Objects.nonNull(storageLocation) && Objects
-                .nonNull(maxNumberOfPallets = storageLocation.getDecimalField(StorageLocationFields.MAXIMUM_NUMBER_OF_PALLETS))) {
-
-            Entity palletNumber = deliveredProduct.getBelongsToField(DeliveredProductFields.PALLET_NUMBER);
-
-            if (Objects.nonNull(palletNumber)) {
-                String query = "SELECT count(DISTINCT palletsInStorageLocation.palletnumber_id) AS palletsCount     "
-                        + "   FROM (SELECT                                                                          "
-                        + "           resource.palletnumber_id,                                                     "
-                        + "           resource.storagelocation_id                                                   "
-                        + "         FROM materialflowresources_resource resource                                    "
-                        + "         UNION ALL SELECT                                                                "
-                        + "                     deliveredproduct.palletnumber_id,                                   "
-                        + "                     deliveredproduct.storagelocation_id                                 "
-                        + "                   FROM deliveries_delivery delivery                                     "
-                        + "                     JOIN deliveries_deliveredproduct deliveredproduct                   "
-                        + "                       ON deliveredproduct.delivery_id = delivery.id                     "
-                        + "                   WHERE                                                                 "
-                        + "                     delivery.state not in ('06received','04declined') AND                                      "
-                        + "                     deliveredproduct.id <> :deliveredProductId                          "
-                        + "        ) palletsInStorageLocation                                                       "
-                        + "   WHERE palletsInStorageLocation.storagelocation_id = :storageLocationId AND            "
-                        + "         palletsInStorageLocation.palletnumber_id <> :palletNumberId";
-
-                Long deliveredProductId = Optional.ofNullable(deliveredProduct.getId()).orElse(-1L);
-                Long palletsCount = jdbcTemplate.queryForObject(query,
-                        new MapSqlParameterSource().addValue("storageLocationId", storageLocation.getId())
-                                .addValue("palletNumberId", palletNumber.getId())
-                                .addValue("deliveredProductId", deliveredProductId),
-                        Long.class);
-
-                boolean valid = maxNumberOfPallets.compareTo(BigDecimal.valueOf(palletsCount)) > 0;
-
-                if (!valid) {
-                    deliveredProduct.addError(deliveredProductDD.getField(DeliveredProductFields.STORAGE_LOCATION),
-                            "deliveries.deliveredProduct.error.storageLocationPalletLimitExceeded");
-                }
-
-                return valid;
-            }
-        }
-
-        return true;
     }
 
 }

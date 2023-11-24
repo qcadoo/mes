@@ -91,8 +91,4 @@ public interface MaterialFlowResourcesService {
 
     String getTypeOfPalletByPalletNumber(final Long locationId, final String palletNumberNumber);
 
-    boolean isPlaceStorageLocation(final String storageLocationNumber);
-
-    boolean checkIfExistsMorePalletsForStorageLocation(final Long locationId, final String storageLocationNumber);
-
 }

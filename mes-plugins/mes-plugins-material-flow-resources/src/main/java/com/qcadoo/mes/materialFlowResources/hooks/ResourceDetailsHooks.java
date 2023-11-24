@@ -19,7 +19,6 @@ import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.LookupComponent;
 import com.qcadoo.view.api.components.lookup.FilterValueHolder;
 import com.qcadoo.view.constants.QcadooViewConstants;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -61,7 +60,6 @@ public class ResourceDetailsHooks {
 
         setStorageLocationLookupFilterValue(view, resource);
         setBatchLookupProductFilterValue(view, resource);
-        setTypeOfPalletValue(view, resource);
     }
 
     private void fillUnitField(final ViewDefinitionState view, final Entity resource) {
@@ -188,16 +186,16 @@ public class ResourceDetailsHooks {
         }
     }
 
-    private void setTypeOfPalletValue(final ViewDefinitionState view, final Entity resourceCorrection) {
+    public void fillTypeOfPalletField(final ViewDefinitionState view) {
         LookupComponent locationLookup = (LookupComponent) view.getComponentByReference(ResourceFields.LOCATION);
         LookupComponent palletNumberLookup = (LookupComponent) view.getComponentByReference(ResourceFields.PALLET_NUMBER);
         FieldComponent typeOfPalletField = (FieldComponent) view.getComponentByReference(ResourceFields.TYPE_OF_PALLET);
 
         Entity location = locationLookup.getEntity();
         Entity palletNumber = palletNumberLookup.getEntity();
-        String typeOfPallet = (String) typeOfPalletField.getFieldValue();
+        String typeOfPallet = null;
 
-        if (Objects.nonNull(palletNumber) && StringUtils.isEmpty(typeOfPallet)) {
+        if (Objects.nonNull(palletNumber)) {
             typeOfPallet = materialFlowResourcesService.getTypeOfPalletByPalletNumber(location.getId(), palletNumber.getStringField(PalletNumberFields.NUMBER));
         }
 

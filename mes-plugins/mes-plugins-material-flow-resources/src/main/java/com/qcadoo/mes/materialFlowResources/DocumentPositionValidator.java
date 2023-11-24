@@ -39,7 +39,7 @@ public class DocumentPositionValidator {
     private DocumentPositionService documentPositionService;
 
     @Autowired
-    private MaterialFlowResourcesService materialFlowResourcesService;
+    private PalletValidatorService palletValidatorService;
 
     public Map<String, Object> validateAndTryMapBeforeCreate(final DocumentPositionDTO documentPositionDTO) {
         return validateAndMap(documentPositionDTO);
@@ -449,20 +449,25 @@ public class DocumentPositionValidator {
     private Map<String, Object> tryMapDocumentPositionVOToParams(final DocumentPositionDTO vo, final List<String> errors) {
         Map<String, Object> params = Maps.newHashMap();
 
+        Long productId = tryGetProductIdByNumber(vo.getProduct(), errors);
+        Long palletNumberId = tryGetPalletNumberIdByNumber(vo.getPalletNumber(), errors);
+        Long storageLocationId = tryGetStorageLocationIdByNumber(vo.getStorageLocation(), errors);
+        Long resourceId = tryGetResourceIdByNumber(vo.getResource(), errors);
+
         params.put("id", vo.getId());
-        params.put("product_id", tryGetProductIdByNumber(vo.getProduct(), errors));
+        params.put("product_id", productId);
         params.put("quantity", vo.getQuantity());
         params.put("givenquantity", vo.getGivenquantity());
         params.put("givenunit", vo.getGivenunit());
         params.put("conversion", vo.getUnit().equals(vo.getGivenunit()) ? 1 : vo.getConversion());
         params.put("expirationDate", vo.getExpirationDate());
-        params.put("palletnumber_id", tryGetPalletNumberIdByNumber(vo.getPalletNumber(), errors));
-        params.put("typeofpallet", vo.getTypeOfPallet());
-        params.put("storagelocation_id", tryGetStorageLocationIdByNumber(vo.getStorageLocation(), errors));
+        params.put("palletnumber_id", palletNumberId);
+        params.put("typeofpallet", Objects.nonNull(palletNumberId) ? vo.getTypeOfPallet() : null);
+        params.put("storagelocation_id", storageLocationId);
         params.put("document_id", vo.getDocument());
         params.put("productionDate", vo.getProductionDate());
         params.put("price", vo.getPrice());
-        params.put("resource_id", tryGetResourceIdByNumber(vo.getResource(), errors));
+        params.put("resource_id", resourceId);
         params.put("batch_id", vo.getBatchId());
         params.put("waste", vo.isWaste());
         params.put("lastResource", vo.getLastResource());
@@ -536,7 +541,7 @@ public class DocumentPositionValidator {
         }
     }
 
-    private Object tryGetResourceIdByNumber(final String resource, final List<String> errors) {
+    private Long tryGetResourceIdByNumber(final String resource, final List<String> errors) {
         if (Strings.isNullOrEmpty(resource)) {
             return null;
         }
@@ -612,29 +617,40 @@ public class DocumentPositionValidator {
         List<String> errors = Lists.newArrayList();
 
         if (DocumentType.isInbound(document.getType())) {
-            if (Strings.isNullOrEmpty(position.getStorageLocation()) && !Strings.isNullOrEmpty(position.getPalletNumber())) {
+            Long documentId = document.getId();
+            Long locationId = document.getLocationTo_id();
+            Long positionId = position.getId();
+            String storageLocationNumber = position.getStorageLocation();
+            String palletNumberNumber = position.getPalletNumber();
+            String typeOfPallet = position.getTypeOfPallet();
+
+            if (Strings.isNullOrEmpty(storageLocationNumber) && !Strings.isNullOrEmpty(palletNumberNumber)) {
                 errors.add("documentGrid.error.position.storageLocation.required");
             } else {
-                if (materialFlowResourcesService.isPlaceStorageLocation(position.getStorageLocation())) {
-                    if (Strings.isNullOrEmpty(position.getPalletNumber())) {
+                if (palletValidatorService.isPlaceStorageLocation(storageLocationNumber)) {
+                    if (Strings.isNullOrEmpty(palletNumberNumber)) {
                         errors.add("documentGrid.error.position.palletNumber.required");
                     }
                 }
             }
 
-            if (existsNotMatchingResourceForPalletNumber(position, document)) {
+            if (palletValidatorService.existsOtherResourceForPalletNumber(locationId, storageLocationNumber,
+                    palletNumberNumber, typeOfPallet, null)) {
                 errors.add(translationService.translate(
                         "documentGrid.error.position.existsOtherResourceForPalletAndStorageLocation",
                         LocaleContextHolder.getLocale()));
-            } else if (existsNotMatchingPositionForPalletNumber(position, document)) {
+            } else if (palletValidatorService.existsOtherPositionForPalletNumber(locationId, storageLocationNumber,
+                    palletNumberNumber, typeOfPallet, positionId, documentId)) {
                 errors.add(translationService.translate(
                         "documentGrid.error.position.existsOtherPositionForPalletAndStorageLocation",
                         LocaleContextHolder.getLocale()));
-            } else if (existsNotMatchingDeliveredProductForPalletNumber(position, document)) {
+            } else if (palletValidatorService.existsOtherDeliveredProductForPalletNumber(locationId, storageLocationNumber,
+                    palletNumberNumber, typeOfPallet, null)) {
                 errors.add(translationService.translate(
                         "documentGrid.error.position.existsOtherDeliveredProductForPalletAndStorageLocation",
                         LocaleContextHolder.getLocale()));
-            } else if (existsMorePalletsForStorageLocation(position, document)) {
+            } else if (palletValidatorService.checkIfExistsMorePalletsForStorageLocation(locationId, storageLocationNumber,
+                    palletNumberNumber)) {
                 errors.add(translationService.translate(
                         "documentGrid.error.position.existsOtherPalletsAtStorageLocation",
                         LocaleContextHolder.getLocale()));
@@ -642,88 +658,6 @@ public class DocumentPositionValidator {
         }
 
         return errors;
-    }
-
-    private boolean existsNotMatchingResourceForPalletNumber(final DocumentPositionDTO position, final DocumentDTO document) {
-        if (Strings.isNullOrEmpty(position.getPalletNumber())) {
-            return false;
-        }
-
-        StringBuilder query = new StringBuilder();
-
-        query.append("SELECT count(*) FROM materialflowresources_resource resource ");
-        query.append("JOIN basic_palletnumber pallet ON (resource.palletnumber_id = pallet.id) ");
-        query.append("LEFT JOIN materialflowresources_storagelocation storage ON (resource.storagelocation_id = storage.id) ");
-        query.append("WHERE pallet.number = :palletNumber AND (storage.number <> :storageNumber OR resource.typeofpallet <> :typeOfPallet) ");
-        query.append("AND resource.location_id = :locationId");
-
-        Map<String, Object> params = Maps.newHashMap();
-
-        params.put("palletNumber", position.getPalletNumber());
-        params.put("storageNumber", position.getStorageLocation());
-        params.put("typeOfPallet", position.getTypeOfPallet());
-        params.put("locationId", document.getLocationTo_id());
-
-        Long count = jdbcTemplate.queryForObject(query.toString(), params, Long.class);
-
-        return count > 0;
-    }
-
-    private boolean existsNotMatchingPositionForPalletNumber(final DocumentPositionDTO position, final DocumentDTO document) {
-        if (Strings.isNullOrEmpty(position.getPalletNumber())) {
-            return false;
-        }
-
-        StringBuilder query = new StringBuilder();
-
-        query.append("SELECT count(*) FROM materialflowresources_position position ");
-        query.append("JOIN basic_palletnumber pallet ON (position.palletnumber_id = pallet.id) ");
-        query.append("LEFT JOIN materialflowresources_storagelocation storage ON (position.storagelocation_id = storage.id) ");
-        query.append("WHERE pallet.number = :palletNumber AND (storage.number <> :storageNumber OR position.typeofpallet <> :typeOfPallet) ");
-        query.append("AND position.document_id = :documentId AND position.id <> :positionId ");
-
-        Map<String, Object> params = Maps.newHashMap();
-
-        params.put("palletNumber", position.getPalletNumber());
-        params.put("storageNumber", position.getStorageLocation());
-        params.put("typeOfPallet", position.getTypeOfPallet());
-        params.put("documentId", position.getDocument());
-        params.put("positionId", position.getId());
-
-        Long count = jdbcTemplate.queryForObject(query.toString(), params, Long.class);
-
-        return count > 0;
-    }
-
-    private boolean existsNotMatchingDeliveredProductForPalletNumber(final DocumentPositionDTO position,
-                                                                     final DocumentDTO document) {
-        if (Strings.isNullOrEmpty(position.getPalletNumber())) {
-            return false;
-        }
-
-        StringBuilder query = new StringBuilder();
-
-        query.append("SELECT count(*) FROM deliveries_deliveredproduct position ");
-        query.append("JOIN basic_palletnumber pallet ON (position.palletnumber_id = pallet.id) ");
-        query.append("JOIN deliveries_delivery delivery ON position.delivery_id = delivery.id ");
-        query.append("LEFT JOIN materialflowresources_storagelocation storage ON (position.storagelocation_id = storage.id) ");
-        query.append("WHERE pallet.number = :palletNumber AND (storage.number <> :storageNumber OR position.pallettype <> :typeOfPallet) ");
-        query.append("AND delivery.location_id = :locationId");
-
-        Map<String, Object> params = Maps.newHashMap();
-
-        params.put("palletNumber", position.getPalletNumber());
-        params.put("storageNumber", position.getStorageLocation());
-        params.put("typeOfPallet", position.getTypeOfPallet());
-        params.put("locationId", document.getLocationTo_id());
-
-        Long count = jdbcTemplate.queryForObject(query.toString(), params, Long.class);
-
-        return count > 0;
-    }
-
-    private boolean existsMorePalletsForStorageLocation(final DocumentPositionDTO position, final DocumentDTO document) {
-        return materialFlowResourcesService.checkIfExistsMorePalletsForStorageLocation(document.getLocationTo_id(), position.getStorageLocation());
     }
 
 }

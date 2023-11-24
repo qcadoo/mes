@@ -159,9 +159,9 @@ public class DeliveredProductDetailsHooks {
 
         Entity location = delivery.getBelongsToField(DeliveryFields.LOCATION);
         Entity palletNumber = palletNumberLookup.getEntity();
-        String palletType = (String) palletTypeField.getFieldValue();
+        String palletType = null;
 
-        if (Objects.nonNull(palletNumber) && StringUtils.isEmpty(palletType)) {
+        if (Objects.nonNull(palletNumber)) {
             palletType = materialFlowResourcesService.getTypeOfPalletByPalletNumber(location.getId(), palletNumber.getStringField(PalletNumberFields.NUMBER));
         }
 

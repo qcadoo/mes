@@ -60,6 +60,16 @@ public class ResourceModelHooks {
 
             resource.setField(ResourceFields.NUMBER, number);
         }
+
+        setTypeOfPallet(resource);
+    }
+
+    private void setTypeOfPallet(final Entity resource) {
+        Entity palletNumber = resource.getBelongsToField(ResourceFields.PALLET_NUMBER);
+
+        if (Objects.isNull(palletNumber)) {
+            resource.setField(ResourceFields.TYPE_OF_PALLET, null);
+        }
     }
 
     public void onCreate(final DataDefinition resourceDD, final Entity resource) {
