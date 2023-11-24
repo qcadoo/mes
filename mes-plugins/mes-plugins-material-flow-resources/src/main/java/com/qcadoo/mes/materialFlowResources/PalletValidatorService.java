@@ -68,44 +68,15 @@ public class PalletValidatorService {
 
     public boolean validatePallet(final Entity location, final Entity storageLocation, final Entity palletNumber, final String typeOfPallet, final Entity entity) {
         if (Objects.isNull(entity.getField(L_VALIDATE_PALLET)) || entity.getBooleanField(L_VALIDATE_PALLET)) {
-            String palletNumberNumber = Objects.nonNull(palletNumber) ? palletNumber.getStringField(PalletNumberFields.NUMBER) : null;
-            String storageLocationNumber = Objects.nonNull(storageLocation) ? storageLocation.getStringField(StorageLocationFields.NUMBER) : null;
-            Long resourceId = getEntityId(entity, MaterialFlowResourcesConstants.MODEL_RESOURCE);
-            Long deliveredProductId = getEntityId(entity, L_DELIVERED_PRODUCT);
 
             boolean isValid = validateRequiredFields(storageLocation, palletNumber, entity);
 
-            if (existsOtherResourceForPalletNumber(location.getId(), storageLocationNumber, palletNumberNumber, typeOfPallet, resourceId)) {
-                entity.addError(entity.getDataDefinition().getField(L_PALLET_NUMBER),
-                        "documentGrid.error.position.existsOtherResourceForPalletAndStorageLocation");
-
-                isValid = false;
-            }
-            if (existsOtherPositionForPalletNumber(location.getId(), storageLocationNumber, palletNumberNumber, typeOfPallet, null, null)) {
-                entity.addError(entity.getDataDefinition().getField(L_PALLET_NUMBER),
-                        "documentGrid.error.position.existsOtherPositionForPalletAndStorageLocation");
-
-                isValid = false;
-            }
-            if (existsOtherDeliveredProductForPalletNumber(location.getId(), storageLocationNumber, palletNumberNumber, typeOfPallet, deliveredProductId)) {
-                entity.addError(entity.getDataDefinition().getField(L_PALLET_NUMBER),
-                        "documentGrid.error.position.existsOtherDeliveredProductForPalletAndStorageLocation");
-
-                isValid = false;
-            }
+            isValid = isValid && validatePalletNumberAndTypeOfPallet(location, storageLocation, palletNumber, typeOfPallet, entity);
 
             return isValid;
         }
 
         return true;
-    }
-
-    private Long getEntityId(final Entity entity, final String modelName) {
-        if (modelName.equals(entity.getDataDefinition().getName()) && Objects.nonNull(entity.getId())) {
-            return entity.getId();
-        }
-
-        return null;
     }
 
     public boolean validateRequiredFields(final Entity storageLocation, final Entity palletNumber, final Entity entity) {
@@ -129,6 +100,43 @@ public class PalletValidatorService {
 
         return true;
     }
+
+    public boolean validatePalletNumberAndTypeOfPallet(final Entity location, final Entity storageLocation, final Entity palletNumber, final String typeOfPallet, final Entity entity) {
+        String palletNumberNumber = Objects.nonNull(palletNumber) ? palletNumber.getStringField(PalletNumberFields.NUMBER) : null;
+        String storageLocationNumber = Objects.nonNull(storageLocation) ? storageLocation.getStringField(StorageLocationFields.NUMBER) : null;
+        Long resourceId = getEntityId(entity, MaterialFlowResourcesConstants.MODEL_RESOURCE);
+        Long deliveredProductId = getEntityId(entity, L_DELIVERED_PRODUCT);
+
+        if (existsOtherResourceForPalletNumber(location.getId(), storageLocationNumber, palletNumberNumber, typeOfPallet, resourceId)) {
+            entity.addError(entity.getDataDefinition().getField(L_PALLET_NUMBER),
+                    "documentGrid.error.position.existsOtherResourceForPalletAndStorageLocation");
+
+            return false;
+        }
+        if (existsOtherPositionForPalletNumber(location.getId(), storageLocationNumber, palletNumberNumber, typeOfPallet, null, null)) {
+            entity.addError(entity.getDataDefinition().getField(L_PALLET_NUMBER),
+                    "documentGrid.error.position.existsOtherPositionForPalletAndStorageLocation");
+
+            return false;
+        }
+        if (existsOtherDeliveredProductForPalletNumber(location.getId(), storageLocationNumber, palletNumberNumber, typeOfPallet, deliveredProductId)) {
+            entity.addError(entity.getDataDefinition().getField(L_PALLET_NUMBER),
+                    "documentGrid.error.position.existsOtherDeliveredProductForPalletAndStorageLocation");
+
+            return false;
+        }
+
+        return true;
+    }
+
+    private Long getEntityId(final Entity entity, final String modelName) {
+        if (modelName.equals(entity.getDataDefinition().getName()) && Objects.nonNull(entity.getId())) {
+            return entity.getId();
+        }
+
+        return null;
+    }
+
 
     public boolean existsOtherResourceForPalletNumber(final Long locationId, final String storageLocationNumber,
                                                       final String palletNumberNumber, final String typeOfPallet,
@@ -344,7 +352,6 @@ public class PalletValidatorService {
 
         return true;
     }
-
 
 
     public boolean checkMaximumNumberOfPallets(final Entity storageLocation, final Entity palletNumber) {
