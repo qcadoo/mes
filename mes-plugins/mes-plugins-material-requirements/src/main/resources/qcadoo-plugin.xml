@@ -65,11 +65,20 @@
 		<localization:translation path="locales" />
 
 		<model:model model="materialRequirement" resource="model/materialRequirement.xml" />
+		<model:model model="materialRequirementProduct" resource="model/materialRequirementProduct.xml" />
 	
 		<model:model-field plugin="basic" model="parameter">
 			<model:enum values="01startOrder" name="inputProductsRequiredForType" />
 		</model:model-field>
-		
+
+		<model:model-field plugin="basic" model="product">
+			<model:hasMany name="materialRequirementProducts" model="materialRequirementProduct" plugin="materialRequirements" joinField="product"/>
+		</model:model-field>
+
+		<model:model-field plugin="materialFlow" model="location">
+			<model:hasMany name="materialRequirementProducts" model="materialRequirementProduct" plugin="materialRequirements" joinField="location"/>
+		</model:model-field>
+
 		<model:model-field plugin="orders" model="order">
 			<model:manyToMany name="materialRequirements"
 				joinField="orders" model="materialRequirement" plugin="materialRequirements" />

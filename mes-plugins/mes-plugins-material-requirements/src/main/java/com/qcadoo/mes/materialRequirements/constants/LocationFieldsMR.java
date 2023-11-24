@@ -21,14 +21,14 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.materialFlowResources.service;
+package com.qcadoo.mes.materialRequirements.constants;
 
-import com.qcadoo.model.api.Entity;
+public final class LocationFieldsMR {
 
-import java.util.Optional;
+    private LocationFieldsMR() {
 
-public interface ResourceCorrectionService {
+    }
 
-    Optional<Entity> createCorrectionForResource(final Entity resource, boolean fromAttribute);
+    public static final String MATERIAL_REQUIREMENT_PRODUCTS = "materialRequirementProducts";
 
 }

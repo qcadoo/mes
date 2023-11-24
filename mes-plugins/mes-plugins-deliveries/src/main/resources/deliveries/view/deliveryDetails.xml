@@ -710,7 +710,7 @@
                                 var listener = {
                                     onChange: function(selectedEntitiesArray) {
                                         var state = #{state}.getValue().content.value;
-                                        if(state != "06received" && state != "04declined" && state != "07receiveConfirmWaiting" && selectedEntitiesArray.length > 0) {
+                                        if(state != "06received" && state != "04declined" && selectedEntitiesArray.length > 0) {
                                             fillPrices.enable("#{translate(deliveries.deliveryDetails.window.ribbon.prices.fillPrices.desc)}");
                                         } else {
                                             fillPrices.disable("#{translate(deliveries.deliveryDetails.window.ribbon.prices.fillPrices.desc)}");

@@ -134,13 +134,7 @@ public class MasterOrderPositionsHelper {
                                            List<Entity> coverageLocations, Boolean includeDraftDeliveries) {
         List<Entity> includedDeliveries = getDeliveriesFromDB(coverageLocations, includeDraftDeliveries);
         for (Entity delivery : includedDeliveries) {
-            List<Entity> deliveryProducts;
-
-            if (DeliveryStateStringValues.RECEIVE_CONFIRM_WAITING.equals(delivery.getStringField(DeliveryFields.STATE))) {
-                deliveryProducts = delivery.getHasManyField(DeliveryFields.DELIVERED_PRODUCTS);
-            } else {
-                deliveryProducts = delivery.getHasManyField(DeliveryFields.ORDERED_PRODUCTS);
-            }
+            List<Entity> deliveryProducts = delivery.getHasManyField(DeliveryFields.ORDERED_PRODUCTS);
 
             for (Entity deliveryProduct : deliveryProducts) {
                 if (positionsProductIds.contains(deliveryProduct.getId())) {
@@ -160,11 +154,7 @@ public class MasterOrderPositionsHelper {
     }
 
     private BigDecimal getDeliveryQuantity(Entity delivery, Entity deliveryProduct) {
-        if (DeliveryStateStringValues.RECEIVE_CONFIRM_WAITING.equals(delivery.getStringField(DeliveryFields.STATE))) {
-            return deliveryProduct.getDecimalField(DeliveredProductFields.DELIVERED_QUANTITY);
-        } else {
-            return deliveryProduct.getDecimalField(OrderedProductFields.ORDERED_QUANTITY);
-        }
+        return deliveryProduct.getDecimalField(OrderedProductFields.ORDERED_QUANTITY);
     }
 
     private boolean storeDeliveriesProductQuantities(final Map<Long, BigDecimal> productAndQuantities) {
@@ -189,8 +179,7 @@ public class MasterOrderPositionsHelper {
                     .add(SearchRestrictions.or(SearchRestrictions.eq(DeliveryFields.STATE, DeliveryStateStringValues.DRAFT),
                             SearchRestrictions.eq(DeliveryFields.STATE, DeliveryStateStringValues.PREPARED),
                             SearchRestrictions.eq(DeliveryFields.STATE, DeliveryStateStringValues.DURING_CORRECTION),
-                            SearchRestrictions.eq(DeliveryFields.STATE, DeliveryStateStringValues.APPROVED),
-                            SearchRestrictions.eq(DeliveryFields.STATE, DeliveryStateStringValues.RECEIVE_CONFIRM_WAITING)))
+                            SearchRestrictions.eq(DeliveryFields.STATE, DeliveryStateStringValues.APPROVED)))
                     .add(SearchRestrictions.eq(DeliveryFields.ACTIVE, true));
             if (!coverageLocations.isEmpty()) {
                 scb = scb.createAlias(DeliveryFields.LOCATION, DeliveryFields.LOCATION, JoinType.LEFT).add(
@@ -204,8 +193,7 @@ public class MasterOrderPositionsHelper {
         } else {
             SearchCriteriaBuilder scb = getDeliveryDD()
                     .find()
-                    .add(SearchRestrictions.or(SearchRestrictions.eq(DeliveryFields.STATE, DeliveryStateStringValues.APPROVED),
-                            SearchRestrictions.eq(DeliveryFields.STATE, DeliveryStateStringValues.RECEIVE_CONFIRM_WAITING)))
+                    .add(SearchRestrictions.eq(DeliveryFields.STATE, DeliveryStateStringValues.APPROVED))
                     .add(SearchRestrictions.eq(DeliveryFields.ACTIVE, true));
             if (!coverageLocations.isEmpty()) {
                 scb = scb.createAlias(DeliveryFields.LOCATION, DeliveryFields.LOCATION, JoinType.LEFT).add(

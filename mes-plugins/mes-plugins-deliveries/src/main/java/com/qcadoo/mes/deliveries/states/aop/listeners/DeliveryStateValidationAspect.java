@@ -63,8 +63,7 @@ public class DeliveryStateValidationAspect extends AbstractStateListenerAspect {
 
     @RunInPhase(DeliveryStateChangePhase.PRE_VALIDATION)
     @RunForStateTransitions({
-            @RunForStateTransition(sourceState = DeliveryStateStringValues.APPROVED, targetState = DeliveryStateStringValues.RECEIVED),
-            @RunForStateTransition(sourceState = DeliveryStateStringValues.APPROVED, targetState = DeliveryStateStringValues.RECEIVE_CONFIRM_WAITING) })
+            @RunForStateTransition(sourceState = DeliveryStateStringValues.APPROVED, targetState = DeliveryStateStringValues.RECEIVED)})
     @Before(PHASE_EXECUTION_POINTCUT)
     public void preValidationOnReceived(final StateChangeContext stateChangeContext, final int phase) {
         validationService.validationOnReceived(stateChangeContext);

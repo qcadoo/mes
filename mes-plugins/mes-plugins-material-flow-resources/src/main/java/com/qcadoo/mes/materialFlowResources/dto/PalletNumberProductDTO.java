@@ -3,6 +3,8 @@ package com.qcadoo.mes.materialFlowResources.dto;
 import java.math.BigDecimal;
 
 public class PalletNumberProductDTO {
+
+    private Long locationId;
     private String storageLocationNumber;
     private String locationNumber;
     private String productId;
@@ -12,7 +14,7 @@ public class PalletNumberProductDTO {
     private String productAdditionalUnit;
     private BigDecimal quantity;
     private BigDecimal quantityInAdditionalUnit;
-    private Integer locationId;
+
 
     public String getStorageLocationNumber() {
         return storageLocationNumber;
@@ -86,11 +88,11 @@ public class PalletNumberProductDTO {
         this.quantityInAdditionalUnit = quantityInAdditionalUnit;
     }
 
-    public Integer getLocationId() {
+    public Long getLocationId() {
         return locationId;
     }
 
-    public void setLocationId(Integer locationId) {
+    public void setLocationId(Long locationId) {
         this.locationId = locationId;
     }
 }

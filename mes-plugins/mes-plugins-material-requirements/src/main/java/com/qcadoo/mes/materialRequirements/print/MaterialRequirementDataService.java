@@ -1,14 +1,5 @@
 package com.qcadoo.mes.materialRequirements.print;
 
-import java.math.BigDecimal;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-
-import org.joda.time.DateTime;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.qcadoo.mes.basic.constants.ProductFields;
@@ -21,6 +12,14 @@ import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.technologies.constants.MrpAlgorithm;
 import com.qcadoo.model.api.BigDecimalUtils;
 import com.qcadoo.model.api.Entity;
+import org.joda.time.DateTime;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 @Service
 public class MaterialRequirementDataService {
@@ -32,8 +31,6 @@ public class MaterialRequirementDataService {
     private MaterialFlowResourcesService materialFlowResourcesService;
 
     public Map<WarehouseDateKey, List<MaterialRequirementEntry>> getGroupedData(final Entity materialRequirement) {
-        Map<WarehouseDateKey, List<MaterialRequirementEntry>> data;
-
         List<Entity> orders = materialRequirement.getHasManyField(MaterialRequirementFields.ORDERS);
 
         List<Entity> productionCountingQuantities = Lists.newArrayList();
@@ -52,41 +49,39 @@ public class MaterialRequirementDataService {
         boolean includeWarehouse = materialRequirement.getBooleanField(MaterialRequirementFields.INCLUDE_WAREHOUSE);
         boolean includeStartDateOrder = materialRequirement.getBooleanField(MaterialRequirementFields.INCLUDE_START_DATE_ORDER);
 
-        List<MaterialRequirementEntry> entries = Lists.newArrayList();
+        List<MaterialRequirementEntry> materialRequirementEntries = Lists.newArrayList();
 
         for (Entity productionCountingQuantity : productionCountingQuantities) {
             MaterialRequirementEntry materialRequirementEntry = mapToMaterialRequirementEntry(productionCountingQuantity,
                     includeWarehouse, includeStartDateOrder);
 
-            entries.add(materialRequirementEntry);
+            materialRequirementEntries.add(materialRequirementEntry);
         }
 
-        data = convertToMap(entries, includeWarehouse, includeStartDateOrder);
-
-        return data;
+        return convertToMap(materialRequirementEntries, includeWarehouse, includeStartDateOrder);
     }
 
-    private Map<WarehouseDateKey, List<MaterialRequirementEntry>> convertToMap(List<MaterialRequirementEntry> entries,
-            boolean includeWarehouse, boolean includeStartDateOrder) {
-        Map<WarehouseDateKey, List<MaterialRequirementEntry>> data = Maps.newHashMap();
+    private Map<WarehouseDateKey, List<MaterialRequirementEntry>> convertToMap(final List<MaterialRequirementEntry> materialRequirementEntries,
+                                                                               final boolean includeWarehouse, final boolean includeStartDateOrder) {
+        Map<WarehouseDateKey, List<MaterialRequirementEntry>> materialRequirementEntriesMap = Maps.newHashMap();
 
-        for (MaterialRequirementEntry entry : entries) {
-            WarehouseDateKey warehouseDateKey = new WarehouseDateKey(entry, includeWarehouse, includeStartDateOrder);
+        for (MaterialRequirementEntry materialRequirementEntry : materialRequirementEntries) {
+            WarehouseDateKey warehouseDateKey = new WarehouseDateKey(materialRequirementEntry, includeWarehouse, includeStartDateOrder);
 
-            if (data.containsKey(warehouseDateKey)) {
-                List<MaterialRequirementEntry> elements = data.get(warehouseDateKey);
+            if (materialRequirementEntriesMap.containsKey(warehouseDateKey)) {
+                List<MaterialRequirementEntry> elements = materialRequirementEntriesMap.get(warehouseDateKey);
 
-                elements.add(entry);
+                elements.add(materialRequirementEntry);
             } else {
-                data.put(warehouseDateKey, Lists.newArrayList(entry));
+                materialRequirementEntriesMap.put(warehouseDateKey, Lists.newArrayList(materialRequirementEntry));
             }
         }
 
-        return data;
+        return materialRequirementEntriesMap;
     }
 
     private MaterialRequirementEntry mapToMaterialRequirementEntry(final Entity productionCountingQuantity,
-            final boolean includeWarehouse, final boolean includeStartDateOrder) {
+                                                                   final boolean includeWarehouse, final boolean includeStartDateOrder) {
         MaterialRequirementEntry materialRequirementEntry = new MaterialRequirementEntry();
 
         Entity product = productionCountingQuantity.getBelongsToField(ProductionCountingQuantityFields.PRODUCT);
@@ -97,8 +92,7 @@ public class MaterialRequirementDataService {
         materialRequirementEntry.setName(productionCountingQuantity.getBelongsToField(ProductionCountingQuantityFields.PRODUCT)
                 .getStringField(ProductFields.NAME));
         materialRequirementEntry.setProduct(product);
-        materialRequirementEntry.setPlannedQuantity(
-                productionCountingQuantity.getDecimalField(ProductionCountingQuantityFields.PLANNED_QUANTITY));
+        materialRequirementEntry.setPlannedQuantity(productionCountingQuantity.getDecimalField(ProductionCountingQuantityFields.PLANNED_QUANTITY));
         materialRequirementEntry.setUnit(productionCountingQuantity.getBelongsToField(ProductionCountingQuantityFields.PRODUCT)
                 .getStringField(ProductFields.UNIT));
 
@@ -126,13 +120,13 @@ public class MaterialRequirementDataService {
         return materialRequirementEntry;
     }
 
-    public Map<Long, Map<Long, BigDecimal>> getQuantitiesInStock(final List<? extends MaterialRequirementEntry> entries) {
+    public Map<Long, Map<Long, BigDecimal>> getQuantitiesInStock(final List<? extends MaterialRequirementEntry> materialRequirementEntries) {
         Map<Long, Entity> warehouses = Maps.newHashMap();
         Map<Long, List<Entity>> warehouseProducts = Maps.newHashMap();
 
-        for (MaterialRequirementEntry entry : entries) {
-            Long warehouseId = entry.getWarehouseId();
-            Entity warehouse = entry.getWarehouse();
+        for (MaterialRequirementEntry materialRequirementEntry : materialRequirementEntries) {
+            Long warehouseId = materialRequirementEntry.getWarehouseId();
+            Entity warehouse = materialRequirementEntry.getWarehouse();
 
             if (Objects.nonNull(warehouse)) {
                 if (!warehouses.containsKey(warehouseId)) {
@@ -141,9 +135,9 @@ public class MaterialRequirementDataService {
                 if (warehouseProducts.containsKey(warehouseId)) {
                     List<Entity> products = warehouseProducts.get(warehouseId);
 
-                    products.add(entry.getProduct());
+                    products.add(materialRequirementEntry.getProduct());
                 } else {
-                    warehouseProducts.put(warehouseId, Lists.newArrayList(entry.getProduct()));
+                    warehouseProducts.put(warehouseId, Lists.newArrayList(materialRequirementEntry.getProduct()));
                 }
             }
         }
@@ -162,7 +156,7 @@ public class MaterialRequirementDataService {
     }
 
     public BigDecimal getQuantity(final Map<Long, Map<Long, BigDecimal>> quantitiesInStock,
-            final MaterialRequirementEntry material) {
+                                  final MaterialRequirementEntry material) {
         Map<Long, BigDecimal> quantitiesInWarehouse = quantitiesInStock.get(material.getWarehouseId());
 
         if (Objects.nonNull(quantitiesInWarehouse)) {
@@ -170,6 +164,24 @@ public class MaterialRequirementDataService {
         } else {
             return BigDecimal.ZERO;
         }
+    }
+
+    public Map<String, MaterialRequirementEntry> getNeededProductQuantities(final List<MaterialRequirementEntry> materialRequirementEntries) {
+        Map<String, MaterialRequirementEntry> neededProductQuantities = Maps.newHashMap();
+
+        for (MaterialRequirementEntry materialRequirementEntry : materialRequirementEntries) {
+            String product = materialRequirementEntry.getNumber();
+
+            if (neededProductQuantities.containsKey(product)) {
+                BigDecimal plannedQuantity = materialRequirementEntry.getPlannedQuantity().add(neededProductQuantities.get(product).getPlannedQuantity());
+
+                materialRequirementEntry.setPlannedQuantity(plannedQuantity);
+            }
+
+            neededProductQuantities.put(product, materialRequirementEntry);
+        }
+
+        return neededProductQuantities;
     }
 
 }

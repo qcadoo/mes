@@ -81,7 +81,7 @@
         <boolean name="waste" default="false"/>
         <dictionary name="qualityRating" dictionary="qualityRating"/>
         <datetime name="pickingDate" copyable="false"/>
-        <belongsTo name="pickingWorker" model="staff" plugin="basic" copyable="false"/>
+        <belongsTo name="pickingWorker" model="user" plugin="qcadooSecurity" copyable="false"/>
         <hasMany name="positionAttributeValues" joinField="position"
                        model="positionAttributeValue"/>
     </fields>

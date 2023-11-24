@@ -1,6 +1,7 @@
 package com.qcadoo.mes.materialFlowResources.hooks;
 
 import com.qcadoo.mes.advancedGenealogy.criteriaModifier.BatchCriteriaModifier;
+import com.qcadoo.mes.materialFlowResources.MaterialFlowResourcesService;
 import com.qcadoo.mes.materialFlowResources.constants.ResourceCorrectionFields;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ViewDefinitionState;
@@ -15,15 +16,18 @@ import java.util.Objects;
 @Service
 public class ResourceCorrectionDetailsHooks {
 
-    
-
     @Autowired
     private BatchCriteriaModifier batchCriteriaModifier;
+
+    @Autowired
+    private MaterialFlowResourcesService materialFlowResourcesService;
 
     public void onBeforeRender(final ViewDefinitionState view) {
         FormComponent resourceCorrectionForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
         Entity resourceCorrection = resourceCorrectionForm.getPersistedEntityWithIncludedFormValues();
+
+        materialFlowResourcesService.fillUnitFieldValues(view);
 
         setBatchLookupsProductFilterValue(view, resourceCorrection);
     }

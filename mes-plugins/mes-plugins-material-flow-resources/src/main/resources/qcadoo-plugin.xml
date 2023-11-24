@@ -275,7 +275,7 @@
                            plugin="materialFlowResources" joinField="newBatch" cascade="nullify"/>
         </model:model-field>
 
-        <model:model-field plugin="basic" model="staff">
+        <model:model-field plugin="qcadooSecurity" model="user">
             <model:hasMany name="documentPositions" model="position" joinField="pickingWorker"
                            plugin="materialFlowResources"/>
         </model:model-field>

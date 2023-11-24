@@ -23,14 +23,44 @@
  */
 package com.qcadoo.mes.orders.criteriaModifiers;
 
+import com.qcadoo.mes.productionLines.constants.ProductionLineFields;
+import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
+import com.qcadoo.mes.technologies.constants.TechnologyFields;
+import com.qcadoo.mes.technologies.constants.TechnologyProductionLineFields;
+import com.qcadoo.model.api.DataDefinitionService;
+import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.search.SearchRestrictions;
+import com.qcadoo.view.api.components.lookup.FilterValueHolder;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 public class ProductionLineCriteriaModifiersO {
 
-    public void filterProductionLines(final SearchCriteriaBuilder scb) {
+    @Autowired
+    private DataDefinitionService dataDefinitionService;
+
+    public static final String TECHNOLOGY_ID = "technology_id";
+
+    public void filterProductionLines(final SearchCriteriaBuilder scb, final FilterValueHolder filterValueHolder) {
+
+        scb.add(SearchRestrictions.eq(ProductionLineFields.PRODUCTION, true));
+        if(filterValueHolder.has(TECHNOLOGY_ID)) {
+            Entity technology = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_TECHNOLOGY)
+                    .get(filterValueHolder.getLong(TECHNOLOGY_ID));
+
+            List<Entity> lines = technology.getHasManyField(TechnologyFields.PRODUCTION_LINES);
+            if(!lines.isEmpty()) {
+                List<Long> productionLinesIds = lines.stream()
+                        .map(pl -> pl.getBelongsToField(TechnologyProductionLineFields.PRODUCTION_LINE).getId()).collect(Collectors.toList());
+                scb.add(SearchRestrictions.in("id", productionLinesIds));
+            }
+        }
 
     }
 

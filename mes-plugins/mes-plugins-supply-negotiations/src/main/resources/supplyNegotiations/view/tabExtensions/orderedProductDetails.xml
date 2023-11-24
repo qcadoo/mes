@@ -31,7 +31,7 @@
 
 	<windowTab name="negotiations" reference="negotiations">
 		<component type="gridLayout" name="gridLayout" columns="1"
-			rows="2">
+			rows="1">
 			<layoutElement column="1" row="1">
 				<component type="lookup" name="offer" field="#{form}.offer"
 					reference="offer">

@@ -709,6 +709,27 @@ public class DocumentPositionService {
         }
     }
 
+    public String getTypeOfPalletByPalletNumber(final Long documentId, final String palletNumber) {
+        String query = "SELECT resource.typeofpallet "
+                + "FROM materialflowresources_resource resource "
+                + "LEFT JOIN basic_palletnumber palletnumber "
+                + "ON palletnumber.id = resource.palletnumber_id "
+                + "WHERE palletnumber.number = :palletNumber "
+                + "AND resource.location_id IN (SELECT DISTINCT COALESCE(locationfrom_id, locationto_id) FROM materialflowresources_document WHERE id = :documentId)"
+                + "LIMIT 1";
+
+        Map<String, Object> filter = Maps.newHashMap();
+
+        filter.put("documentId", documentId);
+        filter.put("palletNumber", palletNumber);
+
+        try {
+            return jdbcTemplate.queryForObject(query, filter, String.class);
+        } catch (EmptyResultDataAccessException e) {
+            return null;
+        }
+    }
+
     public void deletePositions(final String ids) {
         List<String> items = Arrays.asList(ids.split("\\s*,\\s*"));
 
