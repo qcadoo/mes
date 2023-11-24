@@ -755,16 +755,32 @@ $$;
 CREATE FUNCTION public.f_add_col(_tbl regclass, _col text, _type regtype) RETURNS boolean
     LANGUAGE plpgsql
     AS $$
+DECLARE
+    arch_table_name text;
 BEGIN
-   IF EXISTS (SELECT 1 FROM pg_attribute
-              WHERE  attrelid = _tbl
-              AND    attname = lower(_col)
-              AND    NOT attisdropped) THEN
-      RETURN FALSE;
-   ELSE
-      EXECUTE format('ALTER TABLE %s ADD COLUMN %I %s', _tbl, lower(_col), _type);
-      RETURN TRUE;
-   END IF;
+    IF EXISTS (SELECT 1 FROM pg_attribute
+               WHERE attrelid = _tbl
+                 AND attname = lower(_col)
+                 AND NOT attisdropped) THEN
+        RETURN FALSE;
+    ELSE
+
+        EXECUTE format('ALTER TABLE %s ADD COLUMN %I %s', _tbl, lower(_col), _type);
+
+        arch_table_name := 'arch_' || _tbl;
+        IF EXISTS (SELECT 1 FROM pg_tables WHERE tablename = arch_table_name) THEN
+
+            EXECUTE format('ALTER TABLE %s ADD COLUMN %I %s', arch_table_name, lower(_col), _type);
+
+            EXECUTE format('ALTER TABLE %s DROP COLUMN IF EXISTS %I CASCADE', arch_table_name, 'archived');
+
+            EXECUTE format('ALTER TABLE %s ADD COLUMN archived boolean DEFAULT false', arch_table_name);
+
+            EXECUTE format('UPDATE %s SET %I = true', arch_table_name, 'archived');
+        END IF;
+
+        RETURN TRUE;
+    END IF;
 END
 $$;
 
@@ -776,16 +792,31 @@ $$;
 CREATE FUNCTION public.f_add_col(_tbl regclass, _col text, _type text) RETURNS boolean
     LANGUAGE plpgsql
     AS $$
+DECLARE
+    arch_table_name text;
 BEGIN
-   IF EXISTS (SELECT 1 FROM pg_attribute
-              WHERE  attrelid = _tbl
-              AND    attname = lower(_col)
-              AND    NOT attisdropped) THEN
-      RETURN FALSE;
-   ELSE
-      EXECUTE format('ALTER TABLE %s ADD COLUMN %I %s', _tbl, lower(_col), _type);
-      RETURN TRUE;
-   END IF;
+    IF EXISTS (SELECT 1 FROM pg_attribute
+               WHERE attrelid = _tbl
+                 AND attname = lower(_col)
+                 AND NOT attisdropped) THEN
+        RETURN FALSE;
+    ELSE
+        EXECUTE format('ALTER TABLE %s ADD COLUMN %I %s', _tbl, lower(_col), _type);
+
+        arch_table_name := 'arch_' || _tbl;
+        IF EXISTS (SELECT 1 FROM pg_tables WHERE tablename = arch_table_name) THEN
+
+            EXECUTE format('ALTER TABLE %s ADD COLUMN %I %s', arch_table_name, lower(_col), _type);
+
+            EXECUTE format('ALTER TABLE %s DROP COLUMN IF EXISTS %I CASCADE', arch_table_name, 'archived');
+
+            EXECUTE format('ALTER TABLE %s ADD COLUMN archived boolean DEFAULT false', arch_table_name);
+
+            EXECUTE format('UPDATE %s SET %I = true', arch_table_name, 'archived');
+        END IF;
+
+        RETURN TRUE;
+    END IF;
 END
 $$;
 
@@ -797,16 +828,31 @@ $$;
 CREATE FUNCTION public.f_add_col_default(_tbl regclass, _col text, _type text, _default text) RETURNS boolean
     LANGUAGE plpgsql
     AS $$
+DECLARE
+    arch_table_name text;
 BEGIN
-   IF EXISTS (SELECT 1 FROM pg_attribute
-              WHERE  attrelid = _tbl
-              AND    attname = lower(_col)
-              AND    NOT attisdropped) THEN
-      RETURN FALSE;
-   ELSE
-      EXECUTE format('ALTER TABLE %s ADD COLUMN %I %s DEFAULT %s', _tbl, lower(_col), _type, _default);
-      RETURN TRUE;
-   END IF;
+    IF EXISTS (SELECT 1 FROM pg_attribute
+               WHERE  attrelid = _tbl
+                 AND    attname = lower(_col)
+                 AND    NOT attisdropped) THEN
+        RETURN FALSE;
+    ELSE
+        EXECUTE format('ALTER TABLE %s ADD COLUMN %I %s DEFAULT %s', _tbl, lower(_col), _type, _default);
+
+        arch_table_name := 'arch_' || _tbl;
+        IF EXISTS (SELECT 1 FROM pg_tables WHERE tablename = arch_table_name) THEN
+
+            EXECUTE format('ALTER TABLE %s ADD COLUMN %I %s DEFAULT %s', arch_table_name, lower(_col), _type, _default);
+
+            EXECUTE format('ALTER TABLE %s DROP COLUMN IF EXISTS %I CASCADE', arch_table_name, 'archived');
+
+            EXECUTE format('ALTER TABLE %s ADD COLUMN archived boolean DEFAULT false', arch_table_name);
+
+            EXECUTE format('UPDATE %s SET %I = true', arch_table_name, 'archived');
+        END IF;
+
+        RETURN TRUE;
+    END IF;
 END
 $$;
 
@@ -839,11 +885,17 @@ $$;
 CREATE FUNCTION public.f_drop_col(_tbl regclass, _col text) RETURNS boolean
     LANGUAGE plpgsql
     AS $$
-    BEGIN
-        EXECUTE format('ALTER TABLE %s DROP COLUMN IF EXISTS %I', _tbl, lower(_col));
+DECLARE
+    arch_table_name text;
+BEGIN
+    EXECUTE format('ALTER TABLE %s DROP COLUMN IF EXISTS %I', _tbl, lower(_col));
+    arch_table_name := 'arch_' || _tbl;
+    IF EXISTS (SELECT 1 FROM pg_tables WHERE tablename = arch_table_name) THEN
+        EXECUTE format('ALTER TABLE %s DROP COLUMN IF EXISTS %I', arch_table_name, lower(_col));
+    END IF;
 
-        RETURN TRUE;
-    END
+    RETURN TRUE;
+END
 $$;
 
 
@@ -6886,6 +6938,7 @@ CREATE TABLE public.arch_productioncounting_trackingoperationproductoutcomponent
     causeofwastes character varying(255),
     palletnumber_id bigint,
     manyreasonsforlacks boolean DEFAULT false,
+    typeofpallet character varying(255),
     archived boolean DEFAULT false
 );
 
@@ -8062,6 +8115,9 @@ CREATE TABLE public.arch_ordersgroups_ordersgroupproducedproduct (
     accepted boolean DEFAULT false,
     externaldocumentnumber character varying(255),
     batch_id bigint,
+    storagelocation_id bigint,
+    palletnumber_id bigint,
+    typeofpallet character varying(255),
     archived boolean DEFAULT false
 );
 
@@ -12894,7 +12950,8 @@ CREATE TABLE public.productioncounting_trackingoperationproductoutcomponent (
     storagelocation_id bigint,
     causeofwastes character varying(255),
     palletnumber_id bigint,
-    manyreasonsforlacks boolean DEFAULT false
+    manyreasonsforlacks boolean DEFAULT false,
+    typeofpallet character varying(255)
 );
 
 
@@ -15553,8 +15610,7 @@ CREATE TABLE public.deliveries_orderedproduct (
     batchnumber character varying(255),
     batch_id bigint,
     qualitycard_id bigint,
-    pickingdate timestamp without time zone,
-    pickingworker_id bigint
+    pickingdate timestamp without time zone
 );
 
 
@@ -21807,6 +21863,40 @@ ALTER SEQUENCE public.materialrequirements_materialrequirement_id_seq OWNED BY p
 
 
 --
+-- Name: materialrequirements_materialrequirementproduct; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.materialrequirements_materialrequirementproduct (
+    id bigint NOT NULL,
+    materialrequirement_id bigint,
+    product_id bigint,
+    location_id bigint,
+    quantity numeric(14,5),
+    currentstock numeric(14,5),
+    orderstartdate date
+);
+
+
+--
+-- Name: materialrequirements_materialrequirementproduct_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.materialrequirements_materialrequirementproduct_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: materialrequirements_materialrequirementproduct_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.materialrequirements_materialrequirementproduct_id_seq OWNED BY public.materialrequirements_materialrequirementproduct.id;
+
+
+--
 -- Name: mobilewms_outofstock; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -24705,7 +24795,10 @@ CREATE TABLE public.ordersgroups_ordersgroupproducedproduct (
     quantity numeric(14,5),
     accepted boolean DEFAULT false,
     externaldocumentnumber character varying(255),
-    batch_id bigint
+    batch_id bigint,
+    storagelocation_id bigint,
+    palletnumber_id bigint,
+    typeofpallet character varying(255)
 );
 
 
@@ -35696,6 +35789,13 @@ ALTER TABLE ONLY public.materialrequirements_materialrequirement ALTER COLUMN id
 
 
 --
+-- Name: materialrequirements_materialrequirementproduct id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.materialrequirements_materialrequirementproduct ALTER COLUMN id SET DEFAULT nextval('public.materialrequirements_materialrequirementproduct_id_seq'::regclass);
+
+
+--
 -- Name: mobilewms_outofstock id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -38049,7 +38149,7 @@ COPY public.arch_ordersgroups_ordersgroupmaterialrequirementproduct (id, ordersg
 -- Data for Name: arch_ordersgroups_ordersgroupproducedproduct; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.arch_ordersgroups_ordersgroupproducedproduct (id, ordersgroup_id, product_id, location_id, document_id, quantity, accepted, externaldocumentnumber, batch_id, archived) FROM stdin;
+COPY public.arch_ordersgroups_ordersgroupproducedproduct (id, ordersgroup_id, product_id, location_id, document_id, quantity, accepted, externaldocumentnumber, batch_id, storagelocation_id, palletnumber_id, typeofpallet, archived) FROM stdin;
 \.
 
 
@@ -38281,7 +38381,7 @@ COPY public.arch_productioncounting_trackingoperationproductincomponent (id, pro
 -- Data for Name: arch_productioncounting_trackingoperationproductoutcomponent; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.arch_productioncounting_trackingoperationproductoutcomponent (id, productiontracking_id, product_id, usedquantity, balance, batch_id, wastedquantity, givenunit, givenquantity, entityversion, wastesquantity, typeofmaterial, storagelocation_id, causeofwastes, palletnumber_id, manyreasonsforlacks, archived) FROM stdin;
+COPY public.arch_productioncounting_trackingoperationproductoutcomponent (id, productiontracking_id, product_id, usedquantity, balance, batch_id, wastedquantity, givenunit, givenquantity, entityversion, wastesquantity, typeofmaterial, storagelocation_id, causeofwastes, palletnumber_id, manyreasonsforlacks, typeofpallet, archived) FROM stdin;
 \.
 
 
@@ -39857,7 +39957,7 @@ COPY public.deliveries_deliverystatechange (id, dateandtime, sourcestate, target
 -- Data for Name: deliveries_orderedproduct; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.deliveries_orderedproduct (id, delivery_id, product_id, orderedquantity, priceperunit, totalprice, description, succession, operation_id, offer_id, actualversion, entityversion, additionalquantity, conversion, deliveredquantity, additionaldeliveredquantity, batchnumber, batch_id, qualitycard_id, pickingdate, pickingworker_id) FROM stdin;
+COPY public.deliveries_orderedproduct (id, delivery_id, product_id, orderedquantity, priceperunit, totalprice, description, succession, operation_id, offer_id, actualversion, entityversion, additionalquantity, conversion, deliveredquantity, additionaldeliveredquantity, batchnumber, batch_id, qualitycard_id, pickingdate) FROM stdin;
 \.
 
 
@@ -42280,6 +42380,14 @@ COPY public.materialrequirements_materialrequirement (id, name, number, date, wo
 
 
 --
+-- Data for Name: materialrequirements_materialrequirementproduct; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY public.materialrequirements_materialrequirementproduct (id, materialrequirement_id, product_id, location_id, quantity, currentstock, orderstartdate) FROM stdin;
+\.
+
+
+--
 -- Data for Name: mobilewms_outofstock; Type: TABLE DATA; Schema: public; Owner: -
 --
 
@@ -42684,7 +42792,7 @@ COPY public.ordersgroups_ordersgroupmaterialrequirementproduct (id, ordersgroupm
 -- Data for Name: ordersgroups_ordersgroupproducedproduct; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.ordersgroups_ordersgroupproducedproduct (id, ordersgroup_id, product_id, location_id, document_id, quantity, accepted, externaldocumentnumber, batch_id) FROM stdin;
+COPY public.ordersgroups_ordersgroupproducedproduct (id, ordersgroup_id, product_id, location_id, document_id, quantity, accepted, externaldocumentnumber, batch_id, storagelocation_id, palletnumber_id, typeofpallet) FROM stdin;
 \.
 
 
@@ -43063,7 +43171,7 @@ COPY public.productioncounting_trackingoperationproductincomponent (id, producti
 -- Data for Name: productioncounting_trackingoperationproductoutcomponent; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.productioncounting_trackingoperationproductoutcomponent (id, productiontracking_id, product_id, usedquantity, balance, batch_id, wastedquantity, givenunit, givenquantity, entityversion, wastesquantity, typeofmaterial, storagelocation_id, causeofwastes, palletnumber_id, manyreasonsforlacks) FROM stdin;
+COPY public.productioncounting_trackingoperationproductoutcomponent (id, productiontracking_id, product_id, usedquantity, balance, batch_id, wastedquantity, givenunit, givenquantity, entityversion, wastesquantity, typeofmaterial, storagelocation_id, causeofwastes, palletnumber_id, manyreasonsforlacks, typeofpallet) FROM stdin;
 \.
 
 
@@ -48191,6 +48299,13 @@ SELECT pg_catalog.setval('public.materialrequirementcoveragefororder_coveragepro
 --
 
 SELECT pg_catalog.setval('public.materialrequirements_materialrequirement_id_seq', 1, false);
+
+
+--
+-- Name: materialrequirements_materialrequirementproduct_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('public.materialrequirements_materialrequirementproduct_id_seq', 1, false);
 
 
 --
@@ -54003,6 +54118,14 @@ ALTER TABLE ONLY public.materialrequirements_materialrequirement
 
 
 --
+-- Name: materialrequirements_materialrequirementproduct materialrequirements_materialrequirementproduct_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.materialrequirements_materialrequirementproduct
+    ADD CONSTRAINT materialrequirements_materialrequirementproduct_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: nutritionfacts_nutrientcalculation nutrientcalculation_id_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -57923,6 +58046,44 @@ CREATE OR REPLACE VIEW public.ordersgroups_drafrptquantitydto AS
 
 
 --
+-- Name: productioncounting_productionanalysisdto _RETURN; Type: RULE; Schema: public; Owner: -
+--
+
+CREATE OR REPLACE VIEW public.productioncounting_productionanalysisdto AS
+ SELECT mv_productioncounting_productionanalysisdto.id,
+    mv_productioncounting_productionanalysisdto.active,
+    mv_productioncounting_productionanalysisdto.productionline_id,
+    mv_productioncounting_productionanalysisdto.productionlinenumber,
+    mv_productioncounting_productionanalysisdto.company_id,
+    mv_productioncounting_productionanalysisdto.companynumber,
+    mv_productioncounting_productionanalysisdto.staff_id,
+    mv_productioncounting_productionanalysisdto.staffname,
+    mv_productioncounting_productionanalysisdto.assortment_id,
+    mv_productioncounting_productionanalysisdto.assortmentname,
+    mv_productioncounting_productionanalysisdto.product_id,
+    mv_productioncounting_productionanalysisdto.productnumber,
+    mv_productioncounting_productionanalysisdto.productname,
+    mv_productioncounting_productionanalysisdto.productunit,
+    mv_productioncounting_productionanalysisdto.sizenumber,
+    mv_productioncounting_productionanalysisdto.usedquantity,
+    mv_productioncounting_productionanalysisdto.wastesquantity,
+    mv_productioncounting_productionanalysisdto.donequantity,
+    mv_productioncounting_productionanalysisdto.causeofwastes,
+    mv_productioncounting_productionanalysisdto.shift_id,
+    mv_productioncounting_productionanalysisdto.shiftname,
+    mv_productioncounting_productionanalysisdto.timerangefrom,
+    mv_productioncounting_productionanalysisdto.timerangeto,
+    mv_productioncounting_productionanalysisdto.generator_id,
+    mv_productioncounting_productionanalysisdto.generatorname,
+    mv_productioncounting_productionanalysisdto.order_id,
+    mv_productioncounting_productionanalysisdto.ordernumber,
+    mv_productioncounting_productionanalysisdto.obtainedmasterordernumber,
+    mv_productioncounting_productionanalysisdto.technologygroupnumber,
+    mv_productioncounting_productionanalysisdto.typeofmaterial
+   FROM public.mv_productioncounting_productionanalysisdto;
+
+
+--
 -- Name: productioncounting_trackingoperationproductincomponenthelper _RETURN; Type: RULE; Schema: public; Owner: -
 --
 
@@ -58191,44 +58352,6 @@ CREATE OR REPLACE VIEW public.technologies_technologydto AS
      LEFT JOIN public.productflowthrudivision_technologyproductionline tpl ON (((tpl.technology_id = technology.id) AND tpl.master)))
      LEFT JOIN public.productionlines_productionline productionline ON ((productionline.id = tpl.productionline_id)))
   GROUP BY technology.id, product.number, product.globaltypeofmaterial, technologygroup.number, division.name, product.name, generatorcontext.number, technologystatechange.dateandtime, tpl.standardperformance, productionline.number, assortment.name, qualitycard.number;
-
-
---
--- Name: productioncounting_productionanalysisdto _RETURN; Type: RULE; Schema: public; Owner: -
---
-
-CREATE OR REPLACE VIEW public.productioncounting_productionanalysisdto AS
- SELECT mv_productioncounting_productionanalysisdto.id,
-    mv_productioncounting_productionanalysisdto.active,
-    mv_productioncounting_productionanalysisdto.productionline_id,
-    mv_productioncounting_productionanalysisdto.productionlinenumber,
-    mv_productioncounting_productionanalysisdto.company_id,
-    mv_productioncounting_productionanalysisdto.companynumber,
-    mv_productioncounting_productionanalysisdto.staff_id,
-    mv_productioncounting_productionanalysisdto.staffname,
-    mv_productioncounting_productionanalysisdto.assortment_id,
-    mv_productioncounting_productionanalysisdto.assortmentname,
-    mv_productioncounting_productionanalysisdto.product_id,
-    mv_productioncounting_productionanalysisdto.productnumber,
-    mv_productioncounting_productionanalysisdto.productname,
-    mv_productioncounting_productionanalysisdto.productunit,
-    mv_productioncounting_productionanalysisdto.sizenumber,
-    mv_productioncounting_productionanalysisdto.usedquantity,
-    mv_productioncounting_productionanalysisdto.wastesquantity,
-    mv_productioncounting_productionanalysisdto.donequantity,
-    mv_productioncounting_productionanalysisdto.causeofwastes,
-    mv_productioncounting_productionanalysisdto.shift_id,
-    mv_productioncounting_productionanalysisdto.shiftname,
-    mv_productioncounting_productionanalysisdto.timerangefrom,
-    mv_productioncounting_productionanalysisdto.timerangeto,
-    mv_productioncounting_productionanalysisdto.generator_id,
-    mv_productioncounting_productionanalysisdto.generatorname,
-    mv_productioncounting_productionanalysisdto.order_id,
-    mv_productioncounting_productionanalysisdto.ordernumber,
-    mv_productioncounting_productionanalysisdto.obtainedmasterordernumber,
-    mv_productioncounting_productionanalysisdto.technologygroupnumber,
-    mv_productioncounting_productionanalysisdto.typeofmaterial
-   FROM public.mv_productioncounting_productionanalysisdto;
 
 
 --
@@ -61312,6 +61435,22 @@ ALTER TABLE ONLY public.ordersupplies_materialrequirementcoverage
 
 
 --
+-- Name: materialrequirements_materialrequirementproduct materialrequirementproduct_location_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.materialrequirements_materialrequirementproduct
+    ADD CONSTRAINT materialrequirementproduct_location_fkey FOREIGN KEY (location_id) REFERENCES public.materialflow_location(id) DEFERRABLE;
+
+
+--
+-- Name: materialrequirements_materialrequirementproduct materialrequirementproduct_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.materialrequirements_materialrequirementproduct
+    ADD CONSTRAINT materialrequirementproduct_product_fkey FOREIGN KEY (product_id) REFERENCES public.basic_product(id) DEFERRABLE;
+
+
+--
 -- Name: states_message message_assignmenttoshiftstatechange_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -62432,14 +62571,6 @@ ALTER TABLE ONLY public.deliveries_orderedproduct
 
 
 --
--- Name: deliveries_orderedproduct orderedproduct_pickingworker_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.deliveries_orderedproduct
-    ADD CONSTRAINT orderedproduct_pickingworker_fkey FOREIGN KEY (pickingworker_id) REFERENCES public.basic_staff(id) DEFERRABLE;
-
-
---
 -- Name: deliveries_orderedproduct orderedproduct_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -62744,11 +62875,27 @@ ALTER TABLE ONLY public.ordersgroups_ordersgroupproducedproduct
 
 
 --
+-- Name: ordersgroups_ordersgroupproducedproduct ordersgroupproducedproduct_palletnumber_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.ordersgroups_ordersgroupproducedproduct
+    ADD CONSTRAINT ordersgroupproducedproduct_palletnumber_fkey FOREIGN KEY (palletnumber_id) REFERENCES public.basic_palletnumber(id) DEFERRABLE;
+
+
+--
 -- Name: ordersgroups_ordersgroupproducedproduct ordersgroupproducedproduct_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.ordersgroups_ordersgroupproducedproduct
     ADD CONSTRAINT ordersgroupproducedproduct_product_fkey FOREIGN KEY (product_id) REFERENCES public.basic_product(id) DEFERRABLE;
+
+
+--
+-- Name: ordersgroups_ordersgroupproducedproduct ordersgroupproducedproduct_storagelocation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.ordersgroups_ordersgroupproducedproduct
+    ADD CONSTRAINT ordersgroupproducedproduct_storagelocation_fkey FOREIGN KEY (storagelocation_id) REFERENCES public.materialflowresources_storagelocation(id) DEFERRABLE;
 
 
 --
@@ -63700,7 +63847,7 @@ ALTER TABLE ONLY public.materialflowresources_position
 --
 
 ALTER TABLE ONLY public.materialflowresources_position
-    ADD CONSTRAINT position_pickingworker_fkey FOREIGN KEY (pickingworker_id) REFERENCES public.basic_staff(id) DEFERRABLE;
+    ADD CONSTRAINT position_pickingworker_fkey FOREIGN KEY (pickingworker_id) REFERENCES public.qcadoosecurity_user(id) DEFERRABLE;
 
 
 --
