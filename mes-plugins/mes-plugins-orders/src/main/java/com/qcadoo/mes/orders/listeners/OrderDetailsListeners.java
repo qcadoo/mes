@@ -192,7 +192,7 @@ public class OrderDetailsListeners {
             LookupComponent productionLineLookup = (LookupComponent) view.getComponentByReference(OrderFields.PRODUCTION_LINE);
             LookupComponent divisionLookup = (LookupComponent) view.getComponentByReference(OrderFields.DIVISION);
             Entity productionLine = orderService.getProductionLine(technology);
-            orderDetailsHooks.fillProductionLine(productionLineLookup, productionLine);
+            orderDetailsHooks.fillProductionLineForTechnology(view);
             orderDetailsHooks.fillDivision(divisionLookup, technology, productionLine);
         }
     }

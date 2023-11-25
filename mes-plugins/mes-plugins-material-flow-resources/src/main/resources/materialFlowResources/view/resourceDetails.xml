@@ -189,6 +189,10 @@
 
                             <option type="expression" value="#number"/>
                             <option type="fieldCode" value="number"/>
+
+                            <listener event="onSelectedEntityChange"
+                                      class="com.qcadoo.mes.materialFlowResources.listeners.ResourceDetailsListeners"
+                                      method="fillTypeOfPalletField"/>
                         </component>
                     </layoutElement>
                     <layoutElement column="7" row="7" width="5">
@@ -280,10 +284,6 @@
     </component>
 
     <hooks>
-        <beforeRender class="com.qcadoo.mes.materialFlowResources.MaterialFlowResourcesService"
-                      method="fillUnitFieldValues"/>
-        <beforeRender class="com.qcadoo.mes.materialFlowResources.MaterialFlowResourcesService"
-                      method="fillCurrencyFieldValues"/>
         <beforeRender class="com.qcadoo.mes.materialFlowResources.hooks.ResourceDetailsHooks"
                       method="onBeforeRender"/>
     </hooks>

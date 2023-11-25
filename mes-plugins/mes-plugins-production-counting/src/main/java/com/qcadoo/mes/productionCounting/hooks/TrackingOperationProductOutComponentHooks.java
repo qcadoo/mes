@@ -25,12 +25,15 @@ package com.qcadoo.mes.productionCounting.hooks;
 
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.basic.ParameterService;
+import com.qcadoo.mes.basic.constants.PalletNumberFields;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.basicProductionCounting.BasicProductionCountingService;
 import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityFields;
 import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityRole;
 import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityTypeOfMaterial;
 import com.qcadoo.mes.materialFlowResources.MaterialFlowResourcesService;
+import com.qcadoo.mes.materialFlowResources.PalletValidatorService;
+import com.qcadoo.mes.materialFlowResources.constants.StorageLocationFields;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.productionCounting.ProductionTrackingService;
 import com.qcadoo.mes.productionCounting.constants.*;
@@ -71,8 +74,16 @@ public class TrackingOperationProductOutComponentHooks {
     @Autowired
     private MaterialFlowResourcesService materialFlowResourcesService;
 
+    @Autowired
+    private PalletValidatorService palletValidatorService;
+
     public boolean validatesWith(final DataDefinition trackingOperationProductOutComponentDD,
                                  final Entity trackingOperationProductOutComponent) {
+        return validateUsedQuantity(trackingOperationProductOutComponentDD, trackingOperationProductOutComponent)
+                && validateStorageLocationAndPalletNumber(trackingOperationProductOutComponentDD, trackingOperationProductOutComponent);
+    }
+
+    private boolean validateUsedQuantity(final DataDefinition trackingOperationProductOutComponentDD, final Entity trackingOperationProductOutComponent) {
         Entity productionTracking = trackingOperationProductOutComponent
                 .getBelongsToField(TrackingOperationProductOutComponentFields.PRODUCTION_TRACKING);
 
@@ -86,7 +97,7 @@ public class TrackingOperationProductOutComponentHooks {
         if (orderProduct.getId().equals(product.getId())) {
             BigDecimal plannedQuantity = order.getDecimalField(OrderFields.PLANNED_QUANTITY);
 
-            List<Entity> trackings = productionTrackingService
+            List<Entity> trackingOperationProductOutComponents = productionTrackingService
                     .findTrackingOperationProductOutComponents(order, technologyOperationComponent, orderProduct);
 
             boolean useTracking = productionTracking.getStringField(ProductionTrackingFields.STATE).equals(
@@ -103,9 +114,9 @@ public class TrackingOperationProductOutComponentHooks {
             }
 
             BigDecimal trackedQuantity = productionTrackingService.getTrackedQuantity(trackingOperationProductOutComponent,
-                    trackings, useTracking);
+                    trackingOperationProductOutComponents, useTracking);
 
-            if (!parameterService.getParameter().getBooleanField("producingMoreThanPlanned")) {
+            if (!parameterService.getParameter().getBooleanField(ParameterFieldsPC.PRODUCING_MORE_THAN_PLANNED)) {
                 if (trackedQuantity.compareTo(plannedQuantity) > 0) {
                     trackingOperationProductOutComponent.addError(trackingOperationProductOutComponentDD
                                     .getField(TrackingOperationProductOutComponentFields.USED_QUANTITY),
@@ -119,11 +130,52 @@ public class TrackingOperationProductOutComponentHooks {
         return true;
     }
 
-    public void onSave(final DataDefinition trackingOperationProductOutComponentDD, Entity trackingOperationProductOutComponent) {
+    private boolean validateStorageLocationAndPalletNumber(final DataDefinition trackingOperationProductOutComponentDD, final Entity trackingOperationProductOutComponent) {
+        Entity storageLocation = trackingOperationProductOutComponent.getBelongsToField(TrackingOperationProductOutComponentFields.STORAGE_LOCATION);
+        Entity palletNumber = trackingOperationProductOutComponent.getBelongsToField(TrackingOperationProductOutComponentFields.PALLET_NUMBER);
+        String typeOfPallet = trackingOperationProductOutComponent.getStringField(TrackingOperationProductOutComponentFields.TYPE_OF_PALLET);
+
+        if (Objects.isNull(storageLocation) && Objects.nonNull(palletNumber)) {
+            trackingOperationProductOutComponent.addError(trackingOperationProductOutComponentDD.getField(TrackingOperationProductOutComponentFields.STORAGE_LOCATION), "productionCounting.trackingOperationProductOutComponent.error.storageLocationRequired");
+
+            return false;
+        } else {
+            if (Objects.nonNull(storageLocation)) {
+                Entity location = storageLocation.getBelongsToField(StorageLocationFields.LOCATION);
+                String storageLocationNumber = storageLocation.getStringField(StorageLocationFields.NUMBER);
+                boolean placeStorageLocation = storageLocation.getBooleanField(StorageLocationFields.PLACE_STORAGE_LOCATION);
+
+                if (placeStorageLocation) {
+                    if (Objects.isNull(palletNumber)) {
+                        trackingOperationProductOutComponent.addError(trackingOperationProductOutComponentDD.getField(TrackingOperationProductOutComponentFields.PALLET_NUMBER), "productionCounting.trackingOperationProductOutComponent.error.palletNumberRequired");
+
+                        return false;
+                    } else {
+                        String palletNumberNumber = palletNumber.getStringField(PalletNumberFields.NUMBER);
+
+                        if (!palletValidatorService.validatePalletNumberAndTypeOfPallet(location, storageLocation, palletNumber, typeOfPallet, trackingOperationProductOutComponent)) {
+                            return false;
+                        }
+
+                        if (palletValidatorService.checkIfExistsMorePalletsForStorageLocation(location.getId(), storageLocationNumber, palletNumberNumber)) {
+                            trackingOperationProductOutComponent.addError(trackingOperationProductOutComponentDD.getField(TrackingOperationProductOutComponentFields.STORAGE_LOCATION), "productionCounting.trackingOperationProductOutComponent.error.existsOtherPalletsAtStorageLocation");
+
+                            return false;
+                        }
+                    }
+                }
+            }
+        }
+
+        return true;
+    }
+
+    public void onSave(final DataDefinition trackingOperationProductOutComponentDD, final Entity trackingOperationProductOutComponent) {
         fillTrackingOperationProductInComponentsQuantities(trackingOperationProductOutComponent);
         fillOrderReportedQuantity(trackingOperationProductOutComponent);
         fillStorageLocation(trackingOperationProductOutComponent);
         clearLacks(trackingOperationProductOutComponent);
+        setTypeOfPallet(trackingOperationProductOutComponent);
     }
 
     private void fillTrackingOperationProductInComponentsQuantities(final Entity trackingOperationProductOutComponent) {
@@ -157,6 +209,7 @@ public class TrackingOperationProductOutComponentHooks {
 
                     if (usedBatches > L_ONE_BATCH) {
                         clearUsedBatches(trackingOperationProductInComponent, trackingOperationProductOutComponent);
+
                         fillQuantities(trackingOperationProductInComponent, ratio);
                     } else if (usedBatches == L_ONE_BATCH) {
                         fillQuantitiesInBatch(trackingOperationProductInComponent, ratio);
@@ -168,7 +221,7 @@ public class TrackingOperationProductOutComponentHooks {
         }
     }
 
-    private boolean checkIfShouldFillTrackingOperationProductInComponentsQuantities(Entity trackingOperationProductOutComponent,
+    private boolean checkIfShouldFillTrackingOperationProductInComponentsQuantities(final Entity trackingOperationProductOutComponent,
                                                                                     final Entity productionTracking) {
         if (Objects.isNull(trackingOperationProductOutComponent.getId())) {
             return false;
@@ -278,7 +331,7 @@ public class TrackingOperationProductOutComponentHooks {
         Entity product = trackingOperationProductOutComponent.getBelongsToField(TrackingOperationProductOutComponentFields.PRODUCT);
 
         if (orderProduct.getId().equals(product.getId())) {
-            List<Entity> trackings = productionTrackingService
+            List<Entity> trackingOperationProductOutComponents = productionTrackingService
                     .findTrackingOperationProductOutComponents(order, technologyOperationComponent, orderProduct);
 
             boolean useTracking = productionTracking.getStringField(ProductionTrackingFields.STATE).equals(
@@ -295,7 +348,7 @@ public class TrackingOperationProductOutComponentHooks {
             }
 
             BigDecimal trackedQuantity = productionTrackingService.getTrackedQuantity(trackingOperationProductOutComponent,
-                    trackings, useTracking);
+                    trackingOperationProductOutComponents, useTracking);
 
             Entity orderDb = order.getDataDefinition().get(order.getId());
 
@@ -334,9 +387,17 @@ public class TrackingOperationProductOutComponentHooks {
         }
     }
 
-    private static void clearLacks(final Entity trackingOperationProductOutComponent) {
+    private void clearLacks(final Entity trackingOperationProductOutComponent) {
         if (!trackingOperationProductOutComponent.getBooleanField(TrackingOperationProductOutComponentFields.MANY_REASONS_FOR_LACKS)) {
             trackingOperationProductOutComponent.setField(TrackingOperationProductOutComponentFields.LACKS, Lists.newArrayList());
+        }
+    }
+
+    private void setTypeOfPallet(final Entity trackingOperationProductOutComponent) {
+        Entity palletNumber = trackingOperationProductOutComponent.getBelongsToField(TrackingOperationProductOutComponentFields.PALLET_NUMBER);
+
+        if (Objects.isNull(palletNumber)) {
+            trackingOperationProductOutComponent.setField(TrackingOperationProductOutComponentFields.TYPE_OF_PALLET, null);
         }
     }
 

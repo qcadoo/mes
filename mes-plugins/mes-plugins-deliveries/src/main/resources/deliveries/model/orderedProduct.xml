@@ -72,7 +72,6 @@
         <boolean name="addBatch" default="false" persistent="false"/>
 
         <datetime name="pickingDate" copyable="false"/>
-        <belongsTo name="pickingWorker" model="staff" plugin="basic" copyable="false"/>
     </fields>
 
     <hooks>

@@ -31,5 +31,4 @@ public interface ResourceCorrectionService {
 
     Optional<Entity> createCorrectionForResource(final Entity resource, boolean fromAttribute);
 
-    long getPalletsCountInStorageLocation(final Entity newStorageLocation);
 }

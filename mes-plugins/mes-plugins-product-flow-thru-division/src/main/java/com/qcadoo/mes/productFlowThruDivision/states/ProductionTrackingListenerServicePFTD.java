@@ -637,6 +637,7 @@ public final class ProductionTrackingListenerServicePFTD {
             Entity batch = productionTracking.getBelongsToField(ProductionTrackingFields.BATCH);
             Entity storageLocation = trackingOperationProductOutComponent.getBelongsToField(TrackingOperationProductOutComponentFields.STORAGE_LOCATION);
             Entity palletNumber = trackingOperationProductOutComponent.getBelongsToField(TrackingOperationProductOutComponentFields.PALLET_NUMBER);
+            String typeOfPallet = trackingOperationProductOutComponent.getStringField(TrackingOperationProductOutComponentFields.TYPE_OF_PALLET);
             Date expirationDate = productionTracking.getDateField(ProductionTrackingFields.EXPIRATION_DATE);
 
             Optional<BigDecimal> usedQuantity = Optional
@@ -717,6 +718,10 @@ public final class ProductionTrackingListenerServicePFTD {
 
                 if (Objects.nonNull(palletNumber)) {
                     position.setField(PositionFields.PALLET_NUMBER, palletNumber.getId());
+                }
+
+                if (Objects.nonNull(typeOfPallet)) {
+                    position.setField(PositionFields.TYPE_OF_PALLET, typeOfPallet);
                 }
 
                 if (order.getBelongsToField(OrderFields.PRODUCT).getId().equals(product.getId())) {
@@ -862,6 +867,7 @@ public final class ProductionTrackingListenerServicePFTD {
             Entity batch = productionTracking.getBelongsToField(ProductionTrackingFields.BATCH);
             Entity storageLocation = trackingOperationProductOutComponent.getBelongsToField(TrackingOperationProductOutComponentFields.STORAGE_LOCATION);
             Entity palletNumber = trackingOperationProductOutComponent.getBelongsToField(TrackingOperationProductOutComponentFields.PALLET_NUMBER);
+            String typeOfPallet = trackingOperationProductOutComponent.getStringField(TrackingOperationProductOutComponentFields.TYPE_OF_PALLET);
             Date expirationDate = productionTracking.getDateField(ProductionTrackingFields.EXPIRATION_DATE);
 
             if (Objects.nonNull(usedQuantity) && Objects.nonNull(givenQuantity)) {
@@ -904,6 +910,10 @@ public final class ProductionTrackingListenerServicePFTD {
 
             if (Objects.nonNull(palletNumber)) {
                 position.setField(PositionFields.PALLET_NUMBER, palletNumber.getId());
+            }
+
+            if (Objects.nonNull(typeOfPallet)) {
+                position.setField(PositionFields.TYPE_OF_PALLET, typeOfPallet);
             }
 
             if (order.getBelongsToField(OrderFields.PRODUCT).getId().equals(product.getId())) {

@@ -25,7 +25,13 @@ package com.qcadoo.mes.materialFlowResources.constants;
 
 public final class PalletStorageStateDtoFields {
 
+    private PalletStorageStateDtoFields() {
+
+    }
+
     public static final String PALLET_NUMBER = "palletNumber";
+
+    public static final String PALLET_NUMBER_ACTIVE = "palletNumberActive";
 
     public static final String TYPE_OF_PALLET = "typeOfPallet";
 
@@ -33,18 +39,18 @@ public final class PalletStorageStateDtoFields {
 
     public static final String LOCATION_NUMBER = "locationNumber";
 
+    public static final String LOCATION_ID = "location_id";
+
     public static final String TOTAL_QUANTITY = "totalQuantity";
 
-    public static final String PALLET_NUMBER_ACTIVE = "palletNumberActive";
+    public static final String PALLET_MOVE_HELPER = "palletMoveHelper";
+
+    public static final String NEW_STORAGE_LOCATION = "newStorageLocation";
 
     public static final String NEW_PALLET_NUMBER = "newPalletNumber";
 
     public static final String IS_SHIFT_FILTER = "isShiftFilter";
 
     public static final String IS_FREE_FILTER = "isFreeFilter";
-
-    private PalletStorageStateDtoFields() {
-
-    }
 
 }

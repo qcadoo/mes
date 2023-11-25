@@ -3,19 +3,19 @@
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
  * Version: 1.4
- *
+ * <p>
  * This file is part of Qcadoo.
- *
+ * <p>
  * Qcadoo is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation; either version 3 of the License,
  * or (at your option) any later version.
- *
+ * <p>
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty
  * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU Affero General Public License for more details.
- *
+ * <p>
  * You should have received a copy of the GNU Affero General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
@@ -31,6 +31,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
+import com.qcadoo.mes.orders.criteriaModifiers.ProductionLineCriteriaModifiersO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Service;
@@ -235,24 +236,51 @@ public class OrderDetailsHooks {
 
     public final void fillProductionLine(final ViewDefinitionState view) {
         FormComponent orderForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
-
         if (Objects.isNull(orderForm.getEntityId()) && view.isViewAfterRedirect()) {
+            fillProductionLineForTechnology(view);
+        } else if (view.isViewAfterRedirect()) {
             LookupComponent productionLineLookup = (LookupComponent) view.getComponentByReference(OrderFields.PRODUCTION_LINE);
+            FilterValueHolder filterValue = productionLineLookup.getFilterValue();
+
             LookupComponent technologyLookup = (LookupComponent) view
                     .getComponentByReference(OrderFields.TECHNOLOGY);
             Entity technology = technologyLookup.getEntity();
-            Entity productionLine = orderService.getProductionLine(technology);
-
-            fillProductionLine(productionLineLookup, productionLine);
+            fillProductionLineFilterValue(productionLineLookup, filterValue, technology);
         }
+    }
+
+    public void fillProductionLineForTechnology(ViewDefinitionState view) {
+        LookupComponent productionLineLookup = (LookupComponent) view.getComponentByReference(OrderFields.PRODUCTION_LINE);
+        FilterValueHolder filterValue = productionLineLookup.getFilterValue();
+
+        LookupComponent technologyLookup = (LookupComponent) view
+                .getComponentByReference(OrderFields.TECHNOLOGY);
+        Entity technology = technologyLookup.getEntity();
+
+        fillProductionLineFilterValue(productionLineLookup, filterValue, technology);
+        Entity productionLine = orderService.getProductionLine(technology);
+        fillProductionLine(productionLineLookup, productionLine);
+    }
+
+    private void fillProductionLineFilterValue(LookupComponent productionLineLookup, FilterValueHolder filterValue, Entity technology) {
+        if (Objects.nonNull(technology)) {
+            filterValue.put(ProductionLineCriteriaModifiersO.TECHNOLOGY_ID, technology.getId());
+        } else {
+            if (filterValue.has(ProductionLineCriteriaModifiersO.TECHNOLOGY_ID)) {
+                filterValue.remove(ProductionLineCriteriaModifiersO.TECHNOLOGY_ID);
+            }
+        }
+        productionLineLookup.setFilterValue(filterValue);
     }
 
     public void fillProductionLine(final LookupComponent productionLineLookup,
                                    final Entity defaultProductionLine) {
         if (Objects.nonNull(defaultProductionLine)) {
             productionLineLookup.setFieldValue(defaultProductionLine.getId());
-            productionLineLookup.requestComponentUpdateState();
+        } else {
+            productionLineLookup.setFieldValue(null);
         }
+        productionLineLookup.requestComponentUpdateState();
     }
 
     public void fillDivision(final LookupComponent divisionLookup, final Entity technology, final Entity defaultProductionLine) {

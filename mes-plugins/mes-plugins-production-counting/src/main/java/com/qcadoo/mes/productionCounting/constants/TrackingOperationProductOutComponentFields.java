@@ -61,6 +61,8 @@ public final class TrackingOperationProductOutComponentFields {
 
     public static final String PALLET_NUMBER = "palletNumber";
 
+    public static final String TYPE_OF_PALLET = "typeOfPallet";
+
     public static final String CAUSE_OF_WASTES = "causeOfWastes";
 
     public static final String MANY_REASONS_FOR_LACKS = "manyReasonsForLacks";

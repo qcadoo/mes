@@ -63,6 +63,4 @@ public final class OrderedProductFields {
 
     public static final String PICKING_DATE = "pickingDate";
 
-    public static final String PICKING_WORKER = "pickingWorker";
-
 }

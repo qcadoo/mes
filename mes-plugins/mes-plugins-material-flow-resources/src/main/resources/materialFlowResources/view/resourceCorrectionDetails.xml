@@ -92,7 +92,8 @@
                         </component>
                     </layoutElement>
                     <layoutElement column="2" row="1" height="8" width="2">
-                        <component type="gridLayout" name="correctedResourceLayout" columns="10" rows="10" hasBorders="false">
+                        <component type="gridLayout" name="correctedResourceLayout" columns="10" rows="10"
+                                   hasBorders="false">
                             <layoutElement column="3" row="1" width="2">
                                 <component type="label" name="beforeCorrection">
                                     <option type="labelStyle" value="normal"/>
@@ -307,7 +308,7 @@
                         <option type="column" name="name" fields="attribute"
                                 expression="#attribute['name']" width="200"/>
                         <option type="column" name="value" fields="value"
-                               width="100"/>
+                                width="100"/>
 
                         <option type="order" column="number" direction="desc"/>
 
@@ -326,8 +327,6 @@
     </component>
 
     <hooks>
-        <beforeRender class="com.qcadoo.mes.materialFlowResources.MaterialFlowResourcesService"
-                      method="fillUnitFieldValues"/>
         <beforeRender class="com.qcadoo.mes.materialFlowResources.hooks.ResourceCorrectionDetailsHooks"
                       method="onBeforeRender"/>
     </hooks>

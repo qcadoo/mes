@@ -4,7 +4,9 @@ import com.google.common.base.Optional;
 import com.qcadoo.commons.functional.Either;
 import com.qcadoo.mes.advancedGenealogy.criteriaModifier.BatchCriteriaModifier;
 import com.qcadoo.mes.basic.CalculationQuantityService;
+import com.qcadoo.mes.basic.constants.PalletNumberFields;
 import com.qcadoo.mes.basic.constants.ProductFields;
+import com.qcadoo.mes.materialFlowResources.MaterialFlowResourcesService;
 import com.qcadoo.mes.materialFlowResources.constants.ResourceFields;
 import com.qcadoo.model.api.BigDecimalUtils;
 import com.qcadoo.model.api.Entity;
@@ -42,10 +44,16 @@ public class ResourceDetailsHooks {
     @Autowired
     private BatchCriteriaModifier batchCriteriaModifier;
 
+    @Autowired
+    private MaterialFlowResourcesService materialFlowResourcesService;
+
     public void onBeforeRender(final ViewDefinitionState view) {
         FormComponent resourceForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
         Entity resource = resourceForm.getPersistedEntityWithIncludedFormValues();
+
+        materialFlowResourcesService.fillUnitFieldValues(view);
+        materialFlowResourcesService.fillCurrencyFieldValues(view);
 
         fillUnitField(view, resource);
         togglePriceFields(view);
@@ -104,9 +112,6 @@ public class ResourceDetailsHooks {
         FieldComponent additionalUnitField = (FieldComponent) viewDefinitionState
                 .getComponentByReference(ResourceFields.GIVEN_UNIT);
 
-        FieldComponent quantityField = (FieldComponent) viewDefinitionState
-                .getComponentByReference(ResourceFields.QUANTITY);
-
         Either<Exception, Optional<BigDecimal>> maybeConversion = BigDecimalUtils
                 .tryParseAndIgnoreSeparator((String) conversionField.getFieldValue(), viewDefinitionState.getLocale());
 
@@ -122,15 +127,6 @@ public class ResourceDetailsHooks {
             String quantityInAdditionalUnitFormatted = numberService.format(newAdditionalQuantity);
 
             quantityInAdditionalUnitField.setFieldValue(quantityInAdditionalUnitFormatted);
-            Entity product = resource.getBelongsToField(ResourceFields.PRODUCT);
-
-            BigDecimal quantity = calculationQuantityService.calculateQuantity(
-                    resource.getDecimalField(ResourceFields.QUANTITY_IN_ADDITIONAL_UNIT), maybeConversion.getRight().get(),
-                    product.getStringField(ProductFields.UNIT));
-
-            String quantityFormatted = numberService.format(quantity);
-
-            quantityField.setFieldValue(quantityFormatted);
         }
 
     }
@@ -188,6 +184,23 @@ public class ResourceDetailsHooks {
         } else {
             quantityField.setFieldValue(null);
         }
+    }
+
+    public void fillTypeOfPalletField(final ViewDefinitionState view) {
+        LookupComponent locationLookup = (LookupComponent) view.getComponentByReference(ResourceFields.LOCATION);
+        LookupComponent palletNumberLookup = (LookupComponent) view.getComponentByReference(ResourceFields.PALLET_NUMBER);
+        FieldComponent typeOfPalletField = (FieldComponent) view.getComponentByReference(ResourceFields.TYPE_OF_PALLET);
+
+        Entity location = locationLookup.getEntity();
+        Entity palletNumber = palletNumberLookup.getEntity();
+        String typeOfPallet = null;
+
+        if (Objects.nonNull(palletNumber)) {
+            typeOfPallet = materialFlowResourcesService.getTypeOfPalletByPalletNumber(location.getId(), palletNumber.getStringField(PalletNumberFields.NUMBER));
+        }
+
+        typeOfPalletField.setFieldValue(typeOfPallet);
+        typeOfPalletField.requestComponentUpdateState();
     }
 
 }
