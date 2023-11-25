@@ -356,40 +356,6 @@
             </component>
         </windowTab>
 
-        <windowTab name="reservationsTab">
-            <component type="gridLayout" name="gridsLayout" columns="1" rows="5" hasBorders="false">
-                <layoutElement column="1" row="1" width="1" height="5">
-                    <component type="grid" name="deliveredProductReservations" source="#{form}.reservations"
-                               reference="deliveredProductReservations">
-                        <option type="column" name="number" fields="location" expression="#location['number']"
-                                link="true" width="50"/>
-                        <option type="column" name="name" fields="location" expression="#location['name']" link="true"
-                                width="100"/>
-                        <option type="column" name="deliveredQuantity" fields="deliveredQuantity" width="40"/>
-                        <option type="column" name="deliveredQuantityUnit" fields="deliveredQuantityUnit" width="20"/>
-                        <option type="column" name="additionalQuantity" fields="additionalQuantity" width="40"/>
-                        <option type="column" name="additionalQuantityUnit" fields="additionalQuantityUnit" width="20"/>
-
-                        <option type="order" column="number" direction="desc"/>
-
-                        <option type="orderable"
-                                value="number,name,deliveredQuantity,additionalQuantityUnit,deliveredQuantityUnit,additionalQuantity"/>
-                        <option type="searchable"
-                                value="number,name,deliveredQuantity,additionalQuantityUnit,deliveredQuantityUnit,additionalQuantity"/>
-
-                        <option type="correspondingView" value="deliveries/deliveredProductReservationDetails"/>
-                        <option type="correspondingComponent" value="form"/>
-                        <option type="correspondingViewInModal" value="true"/>
-
-                        <option type="paginable" value="false"/>
-                        <option type="creatable" value="true"/>
-                        <option type="deletable" value="true"/>
-                        <option type="fullscreen" value="true"/>
-                        <option type="multiselect" value="true"/>
-                    </component>
-                </layoutElement>
-            </component>
-        </windowTab>
     </component>
 
     <hooks>

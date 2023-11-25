@@ -158,8 +158,6 @@ public class DeliveryStateServiceMF {
             for (ErrorMessage error : createdDocument.getGlobalErrors()) {
                 delivery.addGlobalError(error.getMessage(), error.getAutoClose());
             }
-        } else {
-            tryCreateIssuesForDeliveriesReservations(stateChangeContext);
         }
     }
 
@@ -185,13 +183,6 @@ public class DeliveryStateServiceMF {
         });
 
         return attributes;
-    }
-
-    // BEWARE! do not remove this empty method - it is used to avoid transactional mixup in
-    // com.qcadoo.mes.productFlowThruDivision.deliveries.states.aop.listeners.DeliveryStateListenerPFTDAspect
-    // Remove only if deliveries will be rewritten to support new states.
-    public void tryCreateIssuesForDeliveriesReservations(final StateChangeContext context) {
-
     }
 
     public void validateRequiredParameters(final StateChangeContext stateChangeContext) {

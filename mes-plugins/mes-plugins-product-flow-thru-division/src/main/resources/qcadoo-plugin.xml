@@ -310,10 +310,6 @@
         </model:model-field>
 
         <model:model-field plugin="basic" model="parameter">
-            <model:boolean name="generateWarehouseIssuesToDeliveries" default="false"/>
-        </model:model-field>
-
-        <model:model-field plugin="basic" model="parameter">
             <model:boolean name="automaticReleaseAfterGeneration" default="false"/>
         </model:model-field>
 

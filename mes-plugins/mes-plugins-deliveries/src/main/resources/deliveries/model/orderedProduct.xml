@@ -58,8 +58,6 @@
         <string name="description">
             <validatesLength max="2048"/>
         </string>
-        <hasMany name="reservations" model="orderedProductReservation"
-                 joinField="orderedProduct" cascade="delete" copyable="true"/>
 
         <priority name="succession" scope="delivery"/>
 

@@ -54,8 +54,6 @@ import java.util.Optional;
 @Service
 public class DeliveredProductDetailsHooks {
 
-    private static final String L_DELIVERED_PRODUCT_RESERVATIONS = "deliveredProductReservations";
-
     private static final String L_LOCATION = "location";
 
     private static final String TOTAL_PRICE_CURRENCY = "totalPriceCurrency";
@@ -94,20 +92,8 @@ public class DeliveredProductDetailsHooks {
         setAdditionalQuantityFieldRequired(view);
         lockConversion(view);
         setFilters(view);
-        disableReservationsForWaste((view));
 
         setBatchLookupProductFilterValue(view, deliveredProduct);
-    }
-
-    private void disableReservationsForWaste(final ViewDefinitionState view) {
-        FormComponent deliveredProductForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
-        GridComponent reservationsGrid = (GridComponent) view.getComponentByReference(L_DELIVERED_PRODUCT_RESERVATIONS);
-
-        Entity deliveredProduct = deliveredProductForm.getEntity();
-
-        boolean isWaste = !deliveredProduct.getBooleanField(DeliveredProductFields.IS_WASTE);
-
-        reservationsGrid.setEnabled(isWaste);
     }
 
     public void fillUnitFields(final ViewDefinitionState view) {

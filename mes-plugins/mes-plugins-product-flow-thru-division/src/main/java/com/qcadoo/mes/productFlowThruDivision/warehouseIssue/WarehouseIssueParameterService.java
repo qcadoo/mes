@@ -46,10 +46,6 @@ public class WarehouseIssueParameterService {
         return parameterService.getParameter().getBooleanField(ParameterFieldsPFTD.ISSUED_QUANTITY_UP_TO_NEED);
     }
 
-    public boolean generateWarehouseIssuesToDeliveries() {
-        return parameterService.getParameter().getBooleanField(ParameterFieldsPFTD.GENERATE_WAREHOUSE_ISSUES_TO_DELIVERIES);
-    }
-
     public Optional<Entity> getIssuedWarehouse() {
         return Optional.ofNullable(parameterService.getParameter().getBelongsToField(ParameterFieldsPFTD.ISSUE_LOCATION));
     }
