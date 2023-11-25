@@ -37,7 +37,8 @@ public class OrdersCriteriaModifiersOS {
 
         scb.add(SearchRestrictions.ne(OrderFields.STATE, OrderState.COMPLETED.getStringValue()))
                 .add(SearchRestrictions.ne(OrderFields.STATE, OrderState.DECLINED.getStringValue()))
-                .add(SearchRestrictions.ne(OrderFields.STATE, OrderState.ABANDONED.getStringValue()));
+                .add(SearchRestrictions.ne(OrderFields.STATE, OrderState.ABANDONED.getStringValue()))
+                .add(SearchRestrictions.isNotNull(OrderFields.START_DATE));
 
     }
 

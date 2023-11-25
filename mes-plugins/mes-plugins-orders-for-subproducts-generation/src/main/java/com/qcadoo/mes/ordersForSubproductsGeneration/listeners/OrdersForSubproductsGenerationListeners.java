@@ -284,6 +284,12 @@ public class OrdersForSubproductsGenerationListeners {
 			Entity materialRequirement = materialRequirementForm.getEntity();
 			Entity materialRequirementFromDB = materialRequirement.getDataDefinition().get(materialRequirement.getId());
 
+            Entity assignedOrder = materialRequirementFromDB.getBelongsToField("order");
+            if(Objects.isNull(assignedOrder.getDateField(OrderFields.START_DATE))) {
+                state.addMessage("ordersForSubproductsGeneration.generationSubOrdersAction.datesIsEmptyInOrder", ComponentState.MessageType.INFO, false);
+                return;
+            }
+
             try {
                 if (hasAlreadyGeneratedOrders(view)) {
                     state.addMessage("ordersForSubproductsGeneration.generationSubOrdersAction.ordersAlreadyGenerated",
