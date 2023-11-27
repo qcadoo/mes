@@ -23,35 +23,11 @@
  */
 package com.qcadoo.mes.materialRequirements.constants;
 
-public final class MaterialRequirementFields {
+public final class BatchFieldsMR {
 
-    private MaterialRequirementFields() {
+    private BatchFieldsMR() {
 
     }
-
-    public static final String NAME = "name";
-
-    public static final String NUMBER = "number";
-
-    public static final String DATE = "date";
-
-    public static final String WORKER = "worker";
-
-    public static final String MRP_ALGORITHM = "mrpAlgorithm";
-
-    public static final String GENERATED = "generated";
-
-    public static final String FILE_NAME = "fileName";
-
-    public static final String ORDERS = "orders";
-
-    public static final String INCLUDE_WAREHOUSE = "includeWarehouse";
-
-    public static final String SHOW_CURRENT_STOCK_LEVEL = "showCurrentStockLevel";
-
-    public static final String INCLUDE_START_DATE_ORDER = "includeStartDateOrder";
-
-    public static final String LOCATION = "location";
 
     public static final String MATERIAL_REQUIREMENT_PRODUCTS = "materialRequirementProducts";
 

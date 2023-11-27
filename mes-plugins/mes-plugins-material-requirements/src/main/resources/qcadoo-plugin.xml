@@ -75,6 +75,13 @@
 			<model:hasMany name="materialRequirementProducts" model="materialRequirementProduct" plugin="materialRequirements" joinField="product"/>
 		</model:model-field>
 
+		<model:model-field plugin="advancedGenealogy" model="batch">
+			<model:hasMany name="materialRequirementProducts" model="materialRequirementProduct" plugin="materialRequirements" joinField="batch"/>
+		</model:model-field>
+
+		<model:model-field plugin="materialFlow" model="location">
+			<model:hasMany name="materialRequirements" model="materialRequirement" plugin="materialRequirements" joinField="location"/>
+		</model:model-field>
 		<model:model-field plugin="materialFlow" model="location">
 			<model:hasMany name="materialRequirementProducts" model="materialRequirementProduct" plugin="materialRequirements" joinField="location"/>
 		</model:model-field>

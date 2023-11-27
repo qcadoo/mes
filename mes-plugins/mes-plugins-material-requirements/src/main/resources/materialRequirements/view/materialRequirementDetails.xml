@@ -142,7 +142,7 @@
                            rows="1">
                     <layoutElement column="1" row="1">
                         <component type="gridLayout" name="leftGridLayout" columns="1"
-                                   rows="10">
+                                   rows="11">
                             <layoutElement column="1" row="1">
                                 <component type="checkbox" name="generated" reference="generated"
                                            field="generated" defaultEnabled="false">
@@ -183,12 +183,24 @@
                                 </component>
                             </layoutElement>
                             <layoutElement column="1" row="9">
+                                <component type="lookup" name="location" field="location"
+                                           reference="location">
+                                    <option type="column" name="name" fields="name"/>
+
+                                    <option type="searchable" value="number,name"/>
+                                    <option type="orderable" value="number,name"/>
+
+                                    <option type="expression" value="#number + ' - ' + #name"/>
+                                    <option type="fieldCode" value="number"/>
+                                </component>
+                            </layoutElement>
+                            <layoutElement column="1" row="10">
                                 <component type="checkbox" name="showCurrentStockLevel"
                                            reference="showCurrentStockLevel"
                                            field="showCurrentStockLevel" hasDescription="true">
                                 </component>
                             </layoutElement>
-                            <layoutElement column="1" row="10">
+                            <layoutElement column="1" row="11">
                                 <component type="checkbox" name="includeStartDateOrder"
                                            reference="includeStartDateOrder"
                                            field="includeStartDateOrder" hasDescription="true">
@@ -265,10 +277,15 @@
                 <option type="column" name="productUnit" fields="product"
                         expression="#product.get('unit')"
                         width="40"/>
+                <option type="column" name="batchNumber" fields="batch"
+                        expression="#batch.get('number')"
+                        width="100"/>
                 <option type="column" name="locationNumber" fields="location"
                         expression="#location?.get('number')"
                         width="100"/>
                 <option type="column" name="currentStock" fields="currentStock"
+                        width="60"/>
+                <option type="column" name="batchStock" fields="batchStock"
                         width="60"/>
                 <option type="column" name="orderStartDate" fields="orderStartDate"
                         width="80"/>
@@ -276,9 +293,9 @@
                 <option type="order" column="productNumber" direction="asc"/>
 
                 <option type="searchable"
-                        value="productNumber,productName,quantity,productUnit,locationNumber,currentStock,orderStartDate"/>
+                        value="productNumber,productName,quantity,productUnit,batchNumber,locationNumber,currentStock,batchStock,orderStartDate"/>
                 <option type="orderable"
-                        value="productNumber,productName,quantity,productUnit,locationNumber,currentStock,orderStartDate"/>
+                        value="productNumber,productName,quantity,productUnit,batchNumber,locationNumber,currentStock,batchStock,orderStartDate"/>
 
                 <option type="fullscreen" value="true"/>
                 <option type="multiselect" value="true"/>

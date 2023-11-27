@@ -30,22 +30,19 @@ import com.lowagie.text.pdf.PdfCell;
 import com.lowagie.text.pdf.PdfPTable;
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.localization.api.utils.DateUtils;
-import com.qcadoo.mes.basic.constants.BasicConstants;
+import com.qcadoo.mes.advancedGenealogy.constants.BatchFields;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.basicProductionCounting.BasicProductionCountingService;
+import com.qcadoo.mes.materialFlow.constants.LocationFields;
 import com.qcadoo.mes.materialFlowResources.MaterialFlowResourcesService;
 import com.qcadoo.mes.materialRequirements.constants.MaterialRequirementFields;
+import com.qcadoo.mes.materialRequirements.constants.MaterialRequirementProductFields;
 import com.qcadoo.mes.materialRequirements.print.MaterialRequirementDataService;
-import com.qcadoo.mes.materialRequirements.print.MaterialRequirementEntry;
-import com.qcadoo.mes.materialRequirements.print.WarehouseDateKey;
 import com.qcadoo.mes.materialRequirements.util.EntityOrderNumberComparator;
 import com.qcadoo.mes.orders.constants.OrderFields;
-import com.qcadoo.mes.technologies.constants.MrpAlgorithm;
-import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
-import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.report.api.FontUtils;
 import com.qcadoo.report.api.pdf.HeaderAlignment;
 import com.qcadoo.report.api.pdf.PdfDocumentService;
@@ -58,12 +55,15 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.*;
 
+import static java.util.Comparator.naturalOrder;
+import static java.util.Comparator.nullsFirst;
+
 @Service
 public final class MaterialRequirementPdfService extends PdfDocumentService {
 
     private final int[] defaultMatReqHeaderColumnWidth = new int[]{25, 25, 24, 13, 13};
 
-    private final int[] defaultOrderHeaderColumnWidth = new int[]{37, 37, 13, 13};
+    private final int[] defaultOrderHeaderColumnWidth = new int[]{37, 37, 13, 13, 20, 23};
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
@@ -167,16 +167,7 @@ public final class MaterialRequirementPdfService extends PdfDocumentService {
 
             Entity product = (Entity) order.getField(OrderFields.PRODUCT);
 
-            if (Objects.isNull(product)) {
-                BigDecimal plannedQuantity = order.getDecimalField(OrderFields.PLANNED_QUANTITY);
-                plannedQuantity = Objects.isNull(plannedQuantity) ? BigDecimal.ZERO : plannedQuantity;
-
-                table.addCell(new Phrase("", FontUtils.getDejavuRegular7Dark()));
-                table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_RIGHT);
-                table.addCell(new Phrase(numberService.format(plannedQuantity), FontUtils.getDejavuRegular7Dark()));
-                table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_LEFT);
-                table.addCell(new Phrase("", FontUtils.getDejavuRegular7Dark()));
-            } else {
+            if (Objects.nonNull(product)) {
                 BigDecimal plannedQuantity = order.getDecimalField(OrderFields.PLANNED_QUANTITY);
                 plannedQuantity = Objects.isNull(plannedQuantity) ? BigDecimal.ZERO : plannedQuantity;
 
@@ -186,11 +177,21 @@ public final class MaterialRequirementPdfService extends PdfDocumentService {
                 table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_LEFT);
 
                 String unit = product.getStringField(ProductFields.UNIT);
+
                 if (Objects.isNull(unit)) {
                     table.addCell(new Phrase("", FontUtils.getDejavuRegular7Dark()));
                 } else {
                     table.addCell(new Phrase(unit, FontUtils.getDejavuRegular7Dark()));
                 }
+            } else {
+                BigDecimal plannedQuantity = order.getDecimalField(OrderFields.PLANNED_QUANTITY);
+                plannedQuantity = Objects.isNull(plannedQuantity) ? BigDecimal.ZERO : plannedQuantity;
+
+                table.addCell(new Phrase("", FontUtils.getDejavuRegular7Dark()));
+                table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_RIGHT);
+                table.addCell(new Phrase(numberService.format(plannedQuantity), FontUtils.getDejavuRegular7Dark()));
+                table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_LEFT);
+                table.addCell(new Phrase("", FontUtils.getDejavuRegular7Dark()));
             }
         }
 
@@ -199,9 +200,6 @@ public final class MaterialRequirementPdfService extends PdfDocumentService {
 
     private void addGroupedDataSeries(final Document document, final Entity materialRequirement, final Locale locale)
             throws DocumentException {
-        Map<WarehouseDateKey, List<MaterialRequirementEntry>> materialRequirementEntriesMap = materialRequirementDataService
-                .getGroupedData(materialRequirement);
-
         boolean includeWarehouse = materialRequirement.getBooleanField(MaterialRequirementFields.INCLUDE_WAREHOUSE);
         boolean includeStartDateOrder = materialRequirement.getBooleanField(MaterialRequirementFields.INCLUDE_START_DATE_ORDER);
         boolean showCurrentStockLevel = materialRequirement.getBooleanField(MaterialRequirementFields.SHOW_CURRENT_STOCK_LEVEL);
@@ -213,37 +211,49 @@ public final class MaterialRequirementPdfService extends PdfDocumentService {
         if (includeWarehouse) {
             defaultOrderHeaderColumnWidth.add(20);
             headersWithAlignments.put(
-                    translationService.translate("materialRequirements.materialRequirement.report.warehouse", locale),
+                    translationService.translate("materialRequirements.materialRequirement.report.locationNumber", locale),
                     HeaderAlignment.LEFT);
         }
 
         if (includeStartDateOrder) {
             defaultOrderHeaderColumnWidth.add(20);
             headersWithAlignments.put(
-                    translationService.translate("materialRequirements.materialRequirement.report.startDateOrder", locale),
+                    translationService.translate("materialRequirements.materialRequirement.report.orderStartDate", locale),
                     HeaderAlignment.LEFT);
         }
 
         defaultOrderHeaderColumnWidth.add(30);
-        headersWithAlignments.put(translationService.translate("basic.product.number.label", locale), HeaderAlignment.LEFT);
-        defaultOrderHeaderColumnWidth.add(30);
-        headersWithAlignments.put(translationService.translate("basic.product.name.label", locale), HeaderAlignment.LEFT);
-        defaultOrderHeaderColumnWidth.add(19);
+        headersWithAlignments.put(translationService.translate("materialRequirements.materialRequirement.report.productNumber", locale), HeaderAlignment.LEFT);
 
+        defaultOrderHeaderColumnWidth.add(30);
+        headersWithAlignments.put(translationService.translate("materialRequirements.materialRequirement.report.productName", locale), HeaderAlignment.LEFT);
+
+        defaultOrderHeaderColumnWidth.add(19);
         headersWithAlignments.put(
-                translationService.translate("technologies.technologyOperationComponent.quantity.label", locale),
+                translationService.translate("materialRequirements.materialRequirement.report.quantity", locale),
                 HeaderAlignment.RIGHT);
         defaultOrderHeaderColumnWidth.add(9);
 
         headersWithAlignments.put(
                 translationService.translate("materialRequirements.materialRequirement.report.product.unit", locale),
                 HeaderAlignment.LEFT);
+
         if (showCurrentStockLevel) {
             defaultOrderHeaderColumnWidth.add(23);
             headersWithAlignments.put(
                     translationService.translate("materialRequirements.materialRequirement.report.currentStock", locale),
                     HeaderAlignment.RIGHT);
         }
+
+        defaultOrderHeaderColumnWidth.add(20);
+        headersWithAlignments.put(
+                translationService.translate("materialRequirements.materialRequirement.report.batch", locale),
+                HeaderAlignment.LEFT);
+
+        defaultOrderHeaderColumnWidth.add(23);
+        headersWithAlignments.put(
+                translationService.translate("materialRequirements.materialRequirement.report.batchStock", locale),
+                HeaderAlignment.RIGHT);
 
         List<String> headers = Lists.newLinkedList(headersWithAlignments.keySet());
 
@@ -255,180 +265,180 @@ public final class MaterialRequirementPdfService extends PdfDocumentService {
         PdfPTable table = pdfHelper.createTableWithHeader(headersWithAlignments.size(), headers, true,
                 defaultOrderHeaderColumnWidthInt, headersWithAlignments);
 
-        List<WarehouseDateKey> warehouseDataKeys = Lists.newArrayList(materialRequirementEntriesMap.keySet());
+        List<Entity> materialRequirementProducts = Lists.newArrayList(materialRequirement.getHasManyField(MaterialRequirementFields.MATERIAL_REQUIREMENT_PRODUCTS));
 
         if (includeWarehouse) {
-            warehouseDataKeys.sort(Comparator.comparing(WarehouseDateKey::getWarehouseNumber).thenComparing(WarehouseDateKey::getDate));
+            materialRequirementProducts.sort(Comparator.comparing(MaterialRequirementPdfService::extractLocationNumber, nullsFirst(naturalOrder()))
+                    .thenComparing(MaterialRequirementPdfService::extractOrderStartDate, nullsFirst(naturalOrder()))
+                    .thenComparing(MaterialRequirementPdfService::extractProductNumber)
+            );
         } else {
-            warehouseDataKeys.sort(Comparator.comparing(WarehouseDateKey::getDate));
+            materialRequirementProducts.sort(Comparator.comparing(MaterialRequirementPdfService::extractOrderStartDate, nullsFirst(naturalOrder()))
+                    .thenComparing(MaterialRequirementPdfService::extractProductNumber));
         }
 
-        Map<Long, Map<Long, BigDecimal>> quantitiesInStock = Maps.newHashMap();
+        String actualLocation = "";
+        Date actualDate = null;
 
-        if (showCurrentStockLevel) {
-            List<MaterialRequirementEntry> materialRequirementEntries = Lists.newArrayList();
+        for (Entity materialRequirementProduct : materialRequirementProducts) {
+            Entity product = materialRequirementProduct.getBelongsToField(MaterialRequirementProductFields.PRODUCT);
+            Entity location = materialRequirementProduct.getBelongsToField(MaterialRequirementProductFields.LOCATION);
+            Entity batch = materialRequirementProduct.getBelongsToField(MaterialRequirementProductFields.BATCH);
+            BigDecimal quantity = materialRequirementProduct.getDecimalField(MaterialRequirementProductFields.QUANTITY);
+            BigDecimal currentStock = materialRequirementProduct.getDecimalField(MaterialRequirementProductFields.CURRENT_STOCK);
+            BigDecimal batchStock = materialRequirementProduct.getDecimalField(MaterialRequirementProductFields.BATCH_STOCK);
+            Date orderStartDate = materialRequirementProduct.getDateField(MaterialRequirementProductFields.ORDER_START_DATE);
+            String unit = product.getStringField(ProductFields.UNIT);
 
-            for (WarehouseDateKey warehouseDateKey : warehouseDataKeys) {
-                if (Objects.nonNull(warehouseDateKey.getWarehouseId())) {
-                    materialRequirementEntries.addAll(materialRequirementEntriesMap.get(warehouseDateKey));
+            table.getDefaultCell().disableBorderSide(PdfCell.BOTTOM);
+            table.getDefaultCell().disableBorderSide(PdfCell.TOP);
+
+            boolean fillDateIfWarehouseChanged = false;
+
+            if (includeWarehouse) {
+                String locationNumber = "";
+
+                if (Objects.nonNull(location)) {
+                    locationNumber = location.getStringField(LocationFields.NUMBER);
+                }
+
+                if (!actualLocation.equals(locationNumber)) {
+                    table.getDefaultCell().enableBorderSide(PdfCell.TOP);
+                    table.addCell(new Phrase(locationNumber, FontUtils.getDejavuRegular7Dark()));
+
+                    actualLocation = locationNumber;
+
+                    fillDateIfWarehouseChanged = true;
+                } else {
+                    table.addCell(new Phrase("", FontUtils.getDejavuRegular7Dark()));
                 }
             }
 
-            quantitiesInStock = materialRequirementDataService.getQuantitiesInStock(materialRequirementEntries);
-        }
-
-        String actualWarehouse = "";
-        Date actualDate = null;
-
-        int keyIndex = 0;
-        for (WarehouseDateKey warehouseDateKey : warehouseDataKeys) {
-            keyIndex += 1;
-
-            List<MaterialRequirementEntry> materialRequirementEntries = materialRequirementEntriesMap.get(warehouseDateKey);
-            Map<String, MaterialRequirementEntry> neededProductQuantities = materialRequirementDataService.getNeededProductQuantities(materialRequirementEntries);
-            List<String> materialKeys = Lists.newArrayList(neededProductQuantities.keySet());
-
-            materialKeys.sort(Comparator.naturalOrder());
-
-            int index = 0;
-            for (String materialKey : materialKeys) {
-                index += 1;
-
-                MaterialRequirementEntry materialRequirementEntry = neededProductQuantities.get(materialKey);
-
-                table.getDefaultCell().disableBorderSide(PdfCell.BOTTOM);
-                table.getDefaultCell().disableBorderSide(PdfCell.TOP);
-
-                if (index == materialKeys.size() && keyIndex == warehouseDataKeys.size()) {
-                    table.getDefaultCell().enableBorderSide(PdfCell.BOTTOM);
-                }
-
-                boolean fillDateIfWarehouseChanged = false;
-
-                if (includeWarehouse) {
-                    if (!actualWarehouse.equals(warehouseDateKey.getWarehouseNumber())) {
+            if (includeStartDateOrder) {
+                if (Objects.isNull(actualDate) || !actualDate.equals(orderStartDate) || fillDateIfWarehouseChanged) {
+                    if (Objects.nonNull(orderStartDate)) {
                         table.getDefaultCell().enableBorderSide(PdfCell.TOP);
-                        table.addCell(new Phrase(warehouseDateKey.getWarehouseNumber(), FontUtils.getDejavuRegular7Dark()));
+                        table.addCell(new Phrase(DateUtils.toDateString(orderStartDate), FontUtils.getDejavuRegular7Dark()));
 
-                        actualWarehouse = warehouseDateKey.getWarehouseNumber();
-
-                        fillDateIfWarehouseChanged = true;
+                        actualDate = new Date(orderStartDate.getTime());
                     } else {
+                        table.getDefaultCell().enableBorderSide(PdfCell.TOP);
                         table.addCell(new Phrase("", FontUtils.getDejavuRegular7Dark()));
+
+                        actualDate = null;
                     }
-                }
-
-                if (includeStartDateOrder) {
-                    Date date = warehouseDateKey.getDate();
-
-                    if (Objects.isNull(actualDate) || !actualDate.equals(date) || fillDateIfWarehouseChanged) {
-                        if (Objects.isNull(date)) {
-                            actualDate = null;
-
-                            table.getDefaultCell().enableBorderSide(PdfCell.TOP);
-                            table.addCell(new Phrase("", FontUtils.getDejavuRegular7Dark()));
-                        } else {
-                            actualDate = new Date(date.getTime());
-
-                            table.getDefaultCell().enableBorderSide(PdfCell.TOP);
-                            table.addCell(new Phrase(DateUtils.toDateString(actualDate), FontUtils.getDejavuRegular7Dark()));
-                        }
-                    } else {
-                        table.addCell(new Phrase("", FontUtils.getDejavuRegular7Dark()));
-                    }
-                }
-
-                table.getDefaultCell().enableBorderSide(PdfCell.BOTTOM);
-                table.getDefaultCell().enableBorderSide(PdfCell.TOP);
-
-                table.addCell(new Phrase(materialRequirementEntry.getNumber(), FontUtils.getDejavuRegular7Dark()));
-                table.addCell(new Phrase(materialRequirementEntry.getName(), FontUtils.getDejavuRegular7Dark()));
-                table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_RIGHT);
-                table.addCell(new Phrase(numberService.format(materialRequirementEntry.getPlannedQuantity()), FontUtils.getDejavuBold7Dark()));
-                table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_LEFT);
-
-                String unit = materialRequirementEntry.getUnit();
-                if (Objects.isNull(unit)) {
-                    table.addCell(new Phrase("", FontUtils.getDejavuRegular7Dark()));
                 } else {
-                    table.addCell(new Phrase(unit, FontUtils.getDejavuRegular7Dark()));
+                    table.addCell(new Phrase("", FontUtils.getDejavuRegular7Dark()));
                 }
+            }
 
-                if (showCurrentStockLevel) {
-                    if (Objects.nonNull(warehouseDateKey.getWarehouseId())) {
-                        table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_RIGHT);
-                        table.addCell(new Phrase(
-                                numberService.format(materialRequirementDataService.getQuantity(quantitiesInStock, materialRequirementEntry)),
-                                FontUtils.getDejavuBold7Dark()));
-                        table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_LEFT);
-                    } else {
-                        table.addCell(new Phrase(numberService.format(BigDecimal.ZERO), FontUtils.getDejavuRegular7Dark()));
-                    }
-                }
+            table.getDefaultCell().enableBorderSide(PdfCell.BOTTOM);
+            table.getDefaultCell().enableBorderSide(PdfCell.TOP);
+
+            table.addCell(new Phrase(product.getStringField(ProductFields.NUMBER), FontUtils.getDejavuRegular7Dark()));
+            table.addCell(new Phrase(product.getStringField(ProductFields.NAME), FontUtils.getDejavuRegular7Dark()));
+            table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_RIGHT);
+            table.addCell(new Phrase(numberService.format(quantity), FontUtils.getDejavuBold7Dark()));
+            table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_LEFT);
+            table.addCell(new Phrase(unit, FontUtils.getDejavuRegular7Dark()));
+
+            if (showCurrentStockLevel) {
+                table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_RIGHT);
+                table.addCell(new Phrase(numberService.format(currentStock), FontUtils.getDejavuBold7Dark()));
+                table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_LEFT);
+            }
+
+            if (Objects.nonNull(batch)) {
+                table.addCell(new Phrase(batch.getStringField(BatchFields.NUMBER), FontUtils.getDejavuRegular7Dark()));
+                table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_RIGHT);
+                table.addCell(new Phrase(numberService.format(batchStock), FontUtils.getDejavuBold7Dark()));
+                table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_LEFT);
+            } else {
+                table.addCell(new Phrase("", FontUtils.getDejavuRegular7Dark()));
+                table.addCell(new Phrase("", FontUtils.getDejavuBold7Dark()));
             }
         }
 
         document.add(table);
     }
 
-    private void addDataSeries(final Document document, final Entity materialRequirement, final Locale locale) throws DocumentException {
+    private void addDataSeries(final Document document, final Entity materialRequirement, final Locale locale) throws
+            DocumentException {
         Map<String, HeaderAlignment> headersWithAlignments = Maps.newLinkedHashMap();
 
-        headersWithAlignments.put(translationService.translate("basic.product.number.label", locale),
+        headersWithAlignments.put(translationService.translate("materialRequirements.materialRequirement.report.productNumber", locale),
                 HeaderAlignment.LEFT);
-        headersWithAlignments.put(translationService.translate("basic.product.name.label", locale),
+        headersWithAlignments.put(translationService.translate("materialRequirements.materialRequirement.report.productName", locale),
                 HeaderAlignment.LEFT);
         headersWithAlignments.put(
-                translationService.translate("technologies.technologyOperationComponent.quantity.label", locale),
+                translationService.translate("materialRequirements.materialRequirement.report.quantity", locale),
                 HeaderAlignment.RIGHT);
         headersWithAlignments.put(
                 translationService.translate("materialRequirements.materialRequirement.report.product.unit", locale),
                 HeaderAlignment.LEFT);
-
-        List<Entity> orders = materialRequirement.getManyToManyField(MaterialRequirementFields.ORDERS);
-
-        MrpAlgorithm algorithm = MrpAlgorithm
-                .parseString(materialRequirement.getStringField(MaterialRequirementFields.MRP_ALGORITHM));
-
-        Map<Long, BigDecimal> neededProductQuantities = basicProductionCountingService.getNeededProductQuantities(orders,
-                algorithm);
+        headersWithAlignments.put(
+                translationService.translate("materialRequirements.materialRequirement.report.batch", locale),
+                HeaderAlignment.LEFT);
+        headersWithAlignments.put(
+                translationService.translate("materialRequirements.materialRequirement.report.batchStock", locale),
+                HeaderAlignment.RIGHT);
 
         List<String> headers = Lists.newLinkedList(headersWithAlignments.keySet());
 
         PdfPTable table = pdfHelper.createTableWithHeader(headersWithAlignments.size(), headers, true,
                 defaultOrderHeaderColumnWidth, headersWithAlignments);
 
-        List<Entity> products = getProductDD().find().add(SearchRestrictions.in("id", neededProductQuantities.keySet()))
-                .list().getEntities();
+        List<Entity> materialRequirementProducts = Lists.newArrayList(materialRequirement.getHasManyField(MaterialRequirementFields.MATERIAL_REQUIREMENT_PRODUCTS));
 
-        products.sort(Comparator.comparing(product -> product.getStringField(ProductFields.NUMBER)));
+        materialRequirementProducts.sort(Comparator.comparing(MaterialRequirementPdfService::extractProductNumber));
 
-        for (Entity product : products) {
+        for (Entity materialRequirementProduct : materialRequirementProducts) {
+            Entity product = materialRequirementProduct.getBelongsToField(MaterialRequirementProductFields.PRODUCT);
+            Entity batch = materialRequirementProduct.getBelongsToField(MaterialRequirementProductFields.BATCH);
+            BigDecimal quantity = materialRequirementProduct.getDecimalField(MaterialRequirementProductFields.QUANTITY);
+            BigDecimal batchStock = materialRequirementProduct.getDecimalField(MaterialRequirementProductFields.BATCH_STOCK);
+            String unit = product.getStringField(ProductFields.UNIT);
+
             table.addCell(new Phrase(product.getStringField(ProductFields.NUMBER), FontUtils.getDejavuRegular7Dark()));
             table.addCell(new Phrase(product.getStringField(ProductFields.NAME), FontUtils.getDejavuRegular7Dark()));
             table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_RIGHT);
-            table.addCell(new Phrase(numberService.format(neededProductQuantities.get(product.getId())),
-                    FontUtils.getDejavuBold7Dark()));
+            table.addCell(new Phrase(numberService.format(quantity), FontUtils.getDejavuBold7Dark()));
             table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_LEFT);
+            table.addCell(new Phrase(unit, FontUtils.getDejavuRegular7Dark()));
 
-            String unit = product.getStringField(ProductFields.UNIT);
-            if (Objects.isNull(unit)) {
-                table.addCell(new Phrase("", FontUtils.getDejavuRegular7Dark()));
+            if (Objects.nonNull(batch)) {
+                table.addCell(new Phrase(batch.getStringField(BatchFields.NUMBER), FontUtils.getDejavuRegular7Dark()));
+                table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_RIGHT);
+                table.addCell(new Phrase(numberService.format(batchStock), FontUtils.getDejavuBold7Dark()));
+                table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_LEFT);
             } else {
-                table.addCell(new Phrase(unit, FontUtils.getDejavuRegular7Dark()));
+                table.addCell(new Phrase("", FontUtils.getDejavuRegular7Dark()));
+                table.addCell(new Phrase("", FontUtils.getDejavuBold7Dark()));
             }
         }
 
         document.add(table);
     }
 
+    private static String extractProductNumber(final Entity materialRequirementProduct) {
+        Entity product = materialRequirementProduct.getBelongsToField(MaterialRequirementProductFields.PRODUCT);
+
+        return Objects.nonNull(product) ? product.getStringField(ProductFields.NUMBER) : null;
+    }
+
+    private static String extractLocationNumber(final Entity materialRequirementProduct) {
+        Entity location = materialRequirementProduct.getBelongsToField(MaterialRequirementProductFields.LOCATION);
+
+        return Objects.nonNull(location) ? location.getStringField(LocationFields.NUMBER) : null;
+    }
+
+    private static Date extractOrderStartDate(final Entity materialRequirementProduct) {
+        return materialRequirementProduct.getDateField(MaterialRequirementProductFields.ORDER_START_DATE);
+    }
+
     @Override
     public String getReportTitle(final Locale locale) {
         return translationService.translate("materialRequirements.materialRequirement.report.title", locale);
-    }
-
-    private DataDefinition getProductDD() {
-        return dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PRODUCT);
     }
 
 }

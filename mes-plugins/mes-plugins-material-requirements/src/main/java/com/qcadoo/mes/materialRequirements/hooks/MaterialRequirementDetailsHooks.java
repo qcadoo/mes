@@ -26,15 +26,13 @@ package com.qcadoo.mes.materialRequirements.hooks;
 import com.qcadoo.mes.materialRequirements.constants.MaterialRequirementFields;
 import com.qcadoo.mes.materialRequirements.constants.MaterialRequirementsConstants;
 import com.qcadoo.view.api.ViewDefinitionState;
-import com.qcadoo.view.api.components.CheckBoxComponent;
-import com.qcadoo.view.api.components.FieldComponent;
-import com.qcadoo.view.api.components.FormComponent;
-import com.qcadoo.view.api.components.GridComponent;
+import com.qcadoo.view.api.components.*;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
 import com.qcadoo.view.constants.QcadooViewConstants;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.Objects;
 
 @Service
 public class MaterialRequirementDetailsHooks {
@@ -55,41 +53,40 @@ public class MaterialRequirementDetailsHooks {
 
     private void disableFormForExistingMaterialRequirement(final ViewDefinitionState view) {
         FormComponent materialRequirementForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
-
-        if (materialRequirementForm.getEntityId() == null) {
-            return;
-        }
-
         FieldComponent generatedField = (FieldComponent) view.getComponentByReference(MaterialRequirementFields.GENERATED);
         FieldComponent numberField = (FieldComponent) view.getComponentByReference(MaterialRequirementFields.NUMBER);
         FieldComponent nameField = (FieldComponent) view.getComponentByReference(MaterialRequirementFields.NAME);
         FieldComponent mrpAlgorithmField = (FieldComponent) view.getComponentByReference(MaterialRequirementFields.MRP_ALGORITHM);
-        CheckBoxComponent includeWarehouseField = (CheckBoxComponent) view
+        CheckBoxComponent includeWarehouseCheckBox = (CheckBoxComponent) view
                 .getComponentByReference(MaterialRequirementFields.INCLUDE_WAREHOUSE);
-        CheckBoxComponent showCurrentStockLevelField = (CheckBoxComponent) view
+        CheckBoxComponent showCurrentStockLevelCheckBox = (CheckBoxComponent) view
                 .getComponentByReference(MaterialRequirementFields.SHOW_CURRENT_STOCK_LEVEL);
-        CheckBoxComponent includeStartDateOrderField = (CheckBoxComponent) view
+        CheckBoxComponent includeStartDateOrderCheckBox = (CheckBoxComponent) view
                 .getComponentByReference(MaterialRequirementFields.INCLUDE_START_DATE_ORDER);
+        LookupComponent locationLookup = (LookupComponent) view.getComponentByReference(MaterialRequirementFields.LOCATION);
 
         GridComponent ordersGrid = (GridComponent) view.getComponentByReference(MaterialRequirementFields.ORDERS);
 
+        boolean isSaved = Objects.nonNull(materialRequirementForm.getEntityId());
         boolean isGenerated = "1".equals(generatedField.getFieldValue());
+        boolean includeWarehouse = includeWarehouseCheckBox.isChecked();
 
         numberField.setEnabled(!isGenerated);
         nameField.setEnabled(!isGenerated);
         mrpAlgorithmField.setEnabled(!isGenerated);
-        includeWarehouseField.setEnabled(!isGenerated);
-        showCurrentStockLevelField.setEnabled(!isGenerated);
-        includeStartDateOrderField.setEnabled(!isGenerated);
-        ordersGrid.setEnabled(!isGenerated);
+        includeWarehouseCheckBox.setEnabled(!isGenerated);
+        showCurrentStockLevelCheckBox.setEnabled(!isGenerated && includeWarehouse);
+        includeStartDateOrderCheckBox.setEnabled(!isGenerated);
+        locationLookup.setEnabled(!isGenerated && includeWarehouse);
+        ordersGrid.setEnabled(isSaved && !isGenerated);
 
-        if (!isGenerated && includeWarehouseField.isChecked()) {
-            showCurrentStockLevelField.setEnabled(true);
-        } else if (!isGenerated) {
-            showCurrentStockLevelField.setEnabled(false);
-            showCurrentStockLevelField.setChecked(false);
-            showCurrentStockLevelField.requestComponentUpdateState();
+        if (!includeWarehouse) {
+            showCurrentStockLevelCheckBox.setChecked(false);
+            locationLookup.setFieldValue(null);
         }
+
+        showCurrentStockLevelCheckBox.requestComponentUpdateState();
+        locationLookup.requestComponentUpdateState();
     }
 
 }

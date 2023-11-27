@@ -35,9 +35,13 @@ public final class MaterialRequirementProductFields {
 
     public static final String LOCATION = "location";
 
+    public static final String BATCH = "batch";
+
     public static final String QUANTITY = "quantity";
 
     public static final String CURRENT_STOCK = "currentStock";
+
+    public static final String BATCH_STOCK = "batchStock";
 
     public static final String ORDER_START_DATE = "orderStartDate";
 
