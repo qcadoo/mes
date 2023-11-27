@@ -35,9 +35,7 @@ import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
-import com.qcadoo.model.api.search.SearchOrders;
-import com.qcadoo.model.api.search.SearchQueryBuilder;
-import com.qcadoo.model.api.search.SearchRestrictions;
+import com.qcadoo.model.api.search.*;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,6 +49,8 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.qcadoo.mes.basic.constants.ProductFields.UNIT;
+import static com.qcadoo.model.api.search.SearchOrders.asc;
+import static com.qcadoo.model.api.search.SearchProjections.*;
 
 @Service
 public class MaterialFlowResourcesServiceImpl implements MaterialFlowResourcesService {
@@ -162,6 +162,32 @@ public class MaterialFlowResourcesServiceImpl implements MaterialFlowResourcesSe
         }
 
         return quantities;
+    }
+
+    public BigDecimal getBatchesQuantity(final Collection<Entity> batches, final Entity product,
+                                         final Entity location) {
+        BigDecimal batchesQuantity = BigDecimal.ZERO;
+
+        if (!batches.isEmpty()) {
+            SearchCriteriaBuilder searchCriteriaBuilder =
+                    getResourceDD().find()
+                            .createAlias(ResourceFields.PRODUCT, ResourceFields.PRODUCT, JoinType.LEFT)
+                            .createAlias(ResourceFields.LOCATION, ResourceFields.LOCATION, JoinType.LEFT)
+                            .createAlias(ResourceFields.BATCH, ResourceFields.BATCH, JoinType.LEFT)
+                            .add(SearchRestrictions.eq(ResourceFields.PRODUCT + "." + "id", product.getId()))
+                            .add(SearchRestrictions.eq(ResourceFields.LOCATION + "." + "id", location.getId()))
+                            .add(SearchRestrictions.in(ResourceFields.BATCH + "." + "id", batches.stream().map(Entity::getId).collect(Collectors.toList())))
+                            .setProjection(list().add(alias(sum(ResourceFields.AVAILABLE_QUANTITY), "sum")).add(rowCount()))
+                            .addOrder(asc("sum"));
+
+            Entity resource = searchCriteriaBuilder.setMaxResults(1).uniqueResult();
+
+            if (Objects.nonNull(resource)) {
+                batchesQuantity = resource.getDecimalField("sum");
+            }
+        }
+
+        return batchesQuantity;
     }
 
     public void fillUnitFieldValues(final ViewDefinitionState view) {

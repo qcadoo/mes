@@ -278,7 +278,7 @@
                         expression="#product.get('unit')"
                         width="40"/>
                 <option type="column" name="batchNumber" fields="batch"
-                        expression="#batch.get('number')"
+                        expression="#batch?.get('number')"
                         width="100"/>
                 <option type="column" name="locationNumber" fields="location"
                         expression="#location?.get('number')"

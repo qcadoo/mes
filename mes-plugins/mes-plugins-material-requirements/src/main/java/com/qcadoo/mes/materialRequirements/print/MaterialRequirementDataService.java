@@ -83,6 +83,7 @@ public class MaterialRequirementDataService {
         materialRequirementEntry.setProduct(product);
         materialRequirementEntry.setPlannedQuantity(plannedQuantity);
         materialRequirementEntry.setUnit(product.getStringField(ProductFields.UNIT));
+        materialRequirementEntry.setBatches(productionCountingQuantity.getHasManyField(ProductionCountingQuantityFields.BATCHES));
 
         if (includeStartDateOrder) {
             Entity order = productionCountingQuantity.getBelongsToField(ProductionCountingQuantityFields.ORDER);
@@ -139,6 +140,7 @@ public class MaterialRequirementDataService {
                 if (!warehouses.containsKey(warehouseId)) {
                     warehouses.put(warehouseId, warehouse);
                 }
+
                 if (warehouseProducts.containsKey(warehouseId)) {
                     List<Entity> products = warehouseProducts.get(warehouseId);
 

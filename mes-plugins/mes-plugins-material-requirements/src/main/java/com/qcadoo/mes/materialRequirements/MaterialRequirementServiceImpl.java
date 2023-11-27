@@ -27,6 +27,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.lowagie.text.DocumentException;
 import com.qcadoo.mes.basicProductionCounting.BasicProductionCountingService;
+import com.qcadoo.mes.materialFlowResources.MaterialFlowResourcesService;
 import com.qcadoo.mes.materialRequirements.constants.MaterialRequirementFields;
 import com.qcadoo.mes.materialRequirements.constants.MaterialRequirementProductFields;
 import com.qcadoo.mes.materialRequirements.constants.MaterialRequirementsConstants;
@@ -36,10 +37,7 @@ import com.qcadoo.mes.materialRequirements.print.WarehouseDateKey;
 import com.qcadoo.mes.materialRequirements.print.pdf.MaterialRequirementPdfService;
 import com.qcadoo.mes.materialRequirements.print.xls.MaterialRequirementXlsService;
 import com.qcadoo.mes.technologies.constants.MrpAlgorithm;
-import com.qcadoo.model.api.DataDefinition;
-import com.qcadoo.model.api.DataDefinitionService;
-import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.NumberService;
+import com.qcadoo.model.api.*;
 import com.qcadoo.model.api.file.FileService;
 import com.qcadoo.view.api.ComponentState;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -67,6 +65,9 @@ public class MaterialRequirementServiceImpl implements MaterialRequirementServic
 
     @Autowired
     private BasicProductionCountingService basicProductionCountingService;
+
+    @Autowired
+    private MaterialFlowResourcesService materialFlowResourcesService;
 
     @Autowired
     private MaterialRequirementDataService materialRequirementDataService;
@@ -123,68 +124,70 @@ public class MaterialRequirementServiceImpl implements MaterialRequirementServic
         boolean includeStartDateOrder = materialRequirement.getBooleanField(MaterialRequirementFields.INCLUDE_START_DATE_ORDER);
         boolean showCurrentStockLevel = materialRequirement.getBooleanField(MaterialRequirementFields.SHOW_CURRENT_STOCK_LEVEL);
 
-        if (includeWarehouse || includeStartDateOrder) {
-            Map<WarehouseDateKey, List<MaterialRequirementEntry>> materialRequirementEntriesMap = materialRequirementDataService
-                    .getGroupedData(materialRequirement);
+        Map<WarehouseDateKey, List<MaterialRequirementEntry>> materialRequirementEntriesMap = materialRequirementDataService
+                .getGroupedData(materialRequirement);
 
-            List<WarehouseDateKey> warehouseDateKeys = Lists.newArrayList(materialRequirementEntriesMap.keySet());
+        List<WarehouseDateKey> warehouseDateKeys = Lists.newArrayList(materialRequirementEntriesMap.keySet());
 
-            Map<Long, Map<Long, BigDecimal>> quantitiesInStock = Maps.newHashMap();
+        Map<Long, Map<Long, BigDecimal>> quantitiesInStock = Maps.newHashMap();
 
-            if (showCurrentStockLevel) {
-                List<MaterialRequirementEntry> materialRequirementEntries = warehouseDateKeys.stream()
-                        .filter(warehouseDateKey -> Objects.nonNull(warehouseDateKey.getWarehouseId()))
-                        .flatMap(warehouseDateKey -> materialRequirementEntriesMap.get(warehouseDateKey).stream())
-                        .collect(Collectors.toList());
+        if (showCurrentStockLevel) {
+            List<MaterialRequirementEntry> materialRequirementEntries = warehouseDateKeys.stream()
+                    .filter(warehouseDateKey -> Objects.nonNull(warehouseDateKey.getWarehouseId()))
+                    .flatMap(warehouseDateKey -> materialRequirementEntriesMap.get(warehouseDateKey).stream())
+                    .collect(Collectors.toList());
 
-                quantitiesInStock = materialRequirementDataService.getQuantitiesInStock(materialRequirementEntries);
-            }
+            quantitiesInStock = materialRequirementDataService.getQuantitiesInStock(materialRequirementEntries);
+        }
 
-            for (WarehouseDateKey warehouseDateKey : warehouseDateKeys) {
-                List<MaterialRequirementEntry> materialRequirementEntries = materialRequirementEntriesMap.get(warehouseDateKey);
+        for (WarehouseDateKey warehouseDateKey : warehouseDateKeys) {
+            List<MaterialRequirementEntry> materialRequirementEntries = materialRequirementEntriesMap.get(warehouseDateKey);
 
-                Map<String, MaterialRequirementEntry> neededProductQuantities = materialRequirementDataService.getNeededProductQuantities(materialRequirementEntries);
+            Map<String, MaterialRequirementEntry> neededProductQuantities = materialRequirementDataService.getNeededProductQuantities(materialRequirementEntries);
 
-                List<String> materialKeys = Lists.newArrayList(neededProductQuantities.keySet());
+            List<String> materialKeys = Lists.newArrayList(neededProductQuantities.keySet());
 
-                for (String materialKey : materialKeys) {
-                    MaterialRequirementEntry materialRequirementEntry = neededProductQuantities.get(materialKey);
+            for (String materialKey : materialKeys) {
+                MaterialRequirementEntry materialRequirementEntry = neededProductQuantities.get(materialKey);
 
-                    Long productId = materialRequirementEntry.getProduct().getId();
-                    Long locationId = null;
-                    BigDecimal quantity = materialRequirementEntry.getPlannedQuantity();
-                    BigDecimal currentStock = null;
-                    Date orderStartDate = null;
+                Long productId = materialRequirementEntry.getId();
+                Long locationId = null;
+                BigDecimal quantity = materialRequirementEntry.getPlannedQuantity();
+                BigDecimal currentStock = null;
+                Date orderStartDate = null;
+                List<Entity> batches = materialRequirementEntry.getBatches();
 
-                    if (includeWarehouse) {
-                        locationId = materialRequirementEntry.getWarehouseId();
-                    }
-
-                    if (showCurrentStockLevel) {
-                        currentStock = Objects.nonNull(locationId) ?
-                                materialRequirementDataService.getQuantity(quantitiesInStock, materialRequirementEntry) : BigDecimal.ZERO;
-                    }
-
-                    if (includeStartDateOrder) {
-                        orderStartDate = warehouseDateKey.getDate();
-                    }
-
-                    createMaterialRequirementProduct(materialRequirement, productId, locationId, null, quantity, currentStock, null, orderStartDate);
+                if (includeWarehouse) {
+                    locationId = materialRequirementEntry.getWarehouseId();
                 }
-            }
-        } else {
-            List<Entity> orders = materialRequirement.getManyToManyField(MaterialRequirementFields.ORDERS);
 
-            MrpAlgorithm algorithm = MrpAlgorithm
-                    .parseString(materialRequirement.getStringField(MaterialRequirementFields.MRP_ALGORITHM));
+                if (showCurrentStockLevel) {
+                    currentStock = Objects.nonNull(locationId) ?
+                            BigDecimalUtils.convertNullToZero(materialRequirementDataService.getQuantity(quantitiesInStock, materialRequirementEntry)) : BigDecimal.ZERO;
+                }
 
-            Map<Long, BigDecimal> neededProductQuantities = basicProductionCountingService.getNeededProductQuantities(orders,
-                    algorithm);
+                if (includeStartDateOrder) {
+                    orderStartDate = warehouseDateKey.getDate();
+                }
 
-            for (Long productId : neededProductQuantities.keySet()) {
-                BigDecimal quantity = neededProductQuantities.get(productId);
+                if (batches.isEmpty()) {
+                    createMaterialRequirementProduct(materialRequirement, productId, locationId, null, quantity, currentStock, null, orderStartDate);
+                } else {
+                    Entity product = materialRequirementEntry.getProduct();
+                    Entity location = materialRequirementEntry.getWarehouse();
 
-                createMaterialRequirementProduct(materialRequirement, productId, null, null, quantity, null, null, null);
+                    for (Entity batch : batches) {
+                        Long batchId = batch.getId();
+                        BigDecimal batchStock = null;
+
+                        if (showCurrentStockLevel) {
+                            batchStock = Objects.nonNull(locationId) ?
+                                    BigDecimalUtils.convertNullToZero(materialFlowResourcesService.getBatchesQuantity(Lists.newArrayList(batch), product, location)) : BigDecimal.ZERO;
+                        }
+
+                        createMaterialRequirementProduct(materialRequirement, productId, locationId, batchId, quantity, currentStock, batchStock, orderStartDate);
+                    }
+                }
             }
         }
     }

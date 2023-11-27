@@ -28,6 +28,7 @@ import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ViewDefinitionState;
 
 import java.math.BigDecimal;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -51,6 +52,10 @@ public interface MaterialFlowResourcesService {
 
     Map<Long, Map<Long, BigDecimal>> getQuantitiesForProductsAndLocations(final List<Entity> products,
                                                                           final List<Entity> locations);
+
+
+    BigDecimal getBatchesQuantity(final Collection<Entity> batches, final Entity product,
+                                          final Entity location);
 
     void fillUnitFieldValues(final ViewDefinitionState view);
 

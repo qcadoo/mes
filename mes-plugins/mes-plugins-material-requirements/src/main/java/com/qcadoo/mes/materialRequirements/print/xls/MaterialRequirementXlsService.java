@@ -134,24 +134,15 @@ public final class MaterialRequirementXlsService extends XlsDocumentService {
         xlsHelper.setCellStyle(sheet, cellBatch);
         column += 1;
 
-        HSSFCell cellBatchStock = header.createCell(column);
-        cellBatchStock.setCellValue(translationService.translate("materialRequirements.materialRequirement.report.batchStock", locale));
-        xlsHelper.setCellStyle(sheet, cellBatchStock);
+        if (showCurrentStockLevel) {
+            HSSFCell cellBatchStock = header.createCell(column);
+            cellBatchStock.setCellValue(translationService.translate("materialRequirements.materialRequirement.report.batchStock", locale));
+            xlsHelper.setCellStyle(sheet, cellBatchStock);
+        }
     }
 
     @Override
     protected void addSeries(final HSSFSheet sheet, final Entity materialRequirement) {
-        boolean includeWarehouse = materialRequirement.getBooleanField(MaterialRequirementFields.INCLUDE_WAREHOUSE);
-        boolean includeStartDateOrder = materialRequirement.getBooleanField(MaterialRequirementFields.INCLUDE_START_DATE_ORDER);
-
-        if (includeWarehouse || includeStartDateOrder) {
-            addGroupedDataSeries(sheet, materialRequirement);
-        } else {
-            addDataSeries(sheet, materialRequirement);
-        }
-    }
-
-    private void addGroupedDataSeries(final HSSFSheet sheet, final Entity materialRequirement) {
         boolean includeWarehouse = materialRequirement.getBooleanField(MaterialRequirementFields.INCLUDE_WAREHOUSE);
         boolean includeStartDateOrder = materialRequirement.getBooleanField(MaterialRequirementFields.INCLUDE_START_DATE_ORDER);
         boolean showCurrentStockLevel = materialRequirement.getBooleanField(MaterialRequirementFields.SHOW_CURRENT_STOCK_LEVEL);
@@ -168,6 +159,7 @@ public final class MaterialRequirementXlsService extends XlsDocumentService {
                     .thenComparing(MaterialRequirementXlsService::extractProductNumber));
         }
 
+        String actualProduct = null;
         String actualLocation = "";
         Date actualDate = null;
 
@@ -182,6 +174,8 @@ public final class MaterialRequirementXlsService extends XlsDocumentService {
             BigDecimal currentStock = materialRequirementProduct.getDecimalField(MaterialRequirementProductFields.CURRENT_STOCK);
             BigDecimal batchStock = materialRequirementProduct.getDecimalField(MaterialRequirementProductFields.BATCH_STOCK);
             Date orderStartDate = materialRequirementProduct.getDateField(MaterialRequirementProductFields.ORDER_START_DATE);
+            String productNumber = product.getStringField(ProductFields.NUMBER);
+            String productName = product.getStringField(ProductFields.NAME);
             String unit = product.getStringField(ProductFields.UNIT);
 
             HSSFRow row = sheet.createRow(rowNum++);
@@ -213,7 +207,7 @@ public final class MaterialRequirementXlsService extends XlsDocumentService {
             if (includeStartDateOrder) {
                 if (Objects.isNull(actualDate) || !actualDate.equals(orderStartDate) || fillDateIfWarehouseChanged) {
                     if (Objects.nonNull(orderStartDate)) {
-                        row.createCell(column).setCellValue(DateUtils.toDateString(actualDate));
+                        row.createCell(column).setCellValue(DateUtils.toDateString(orderStartDate));
 
                         actualDate = new Date(orderStartDate.getTime());
                     } else {
@@ -228,69 +222,53 @@ public final class MaterialRequirementXlsService extends XlsDocumentService {
                 column += 1;
             }
 
-            row.createCell(column).setCellValue(product.getStringField(ProductFields.NUMBER));
-            column += 1;
-            row.createCell(column).setCellValue(product.getStringField(ProductFields.NAME));
-            column += 1;
-            row.createCell(column).setCellValue(numberService.format(quantity));
-            column += 1;
-            row.createCell(column).setCellValue(unit);
-            column += 1;
-
-            if (showCurrentStockLevel) {
-                row.createCell(column).setCellValue(numberService.format(currentStock));
+            if (Objects.isNull(actualProduct) || !actualProduct.equals(productNumber)) {
+                row.createCell(column).setCellValue(productNumber);
                 column += 1;
+                row.createCell(column).setCellValue(productName);
+                column += 1;
+                row.createCell(column).setCellValue(numberService.format(quantity));
+                column += 1;
+                row.createCell(column).setCellValue(unit);
+                column += 1;
+
+                if (showCurrentStockLevel) {
+                    row.createCell(column).setCellValue(numberService.format(currentStock));
+                    column += 1;
+                }
+
+                actualProduct = productNumber;
+            } else {
+                row.createCell(column).setCellValue("");
+                column += 1;
+                row.createCell(column).setCellValue("");
+                column += 1;
+                row.createCell(column).setCellValue("");
+                column += 1;
+                row.createCell(column).setCellValue("");
+                column += 1;
+
+                if (showCurrentStockLevel) {
+                    row.createCell(column).setCellValue("");
+                    column += 1;
+                }
             }
 
             if (Objects.nonNull(batch)) {
                 row.createCell(column).setCellValue(batch.getStringField(BatchFields.NUMBER));
                 column += 1;
-                row.createCell(column).setCellValue(numberService.format(batchStock));
-                column += 1;
             } else {
                 row.createCell(column).setCellValue("");
                 column += 1;
-                row.createCell(column).setCellValue("");
+            }
+
+            if (showCurrentStockLevel) {
+                row.createCell(column).setCellValue(numberService.format(batchStock));
                 column += 1;
             }
         }
 
         for (int i = 0; i < column; i++) {
-            sheet.autoSizeColumn((short) i);
-        }
-    }
-
-    private void addDataSeries(final HSSFSheet sheet, final Entity materialRequirement) {
-        int rowNum = 1;
-
-        List<Entity> materialRequirementProducts = Lists.newArrayList(materialRequirement.getHasManyField(MaterialRequirementFields.MATERIAL_REQUIREMENT_PRODUCTS));
-
-        materialRequirementProducts.sort(Comparator.comparing(MaterialRequirementXlsService::extractProductNumber));
-
-        for (Entity materialRequirementProduct : materialRequirementProducts) {
-            Entity product = materialRequirementProduct.getBelongsToField(MaterialRequirementProductFields.PRODUCT);
-            Entity batch = materialRequirementProduct.getBelongsToField(MaterialRequirementProductFields.BATCH);
-            BigDecimal quantity = materialRequirementProduct.getDecimalField(MaterialRequirementProductFields.QUANTITY);
-            BigDecimal batchStock = materialRequirementProduct.getDecimalField(MaterialRequirementProductFields.BATCH_STOCK);
-            String unit = product.getStringField(ProductFields.UNIT);
-
-            HSSFRow row = sheet.createRow(rowNum++);
-
-            row.createCell(0).setCellValue(product.getStringField(ProductFields.NUMBER));
-            row.createCell(1).setCellValue(product.getStringField(ProductFields.NAME));
-            row.createCell(2).setCellValue(numberService.format(quantity));
-            row.createCell(3).setCellValue(unit);
-
-            if (Objects.nonNull(batch)) {
-                row.createCell(4).setCellValue(batch.getStringField(BatchFields.NUMBER));
-                row.createCell(5).setCellValue(numberService.format(batchStock));
-            } else {
-                row.createCell(4).setCellValue("");
-                row.createCell(5).setCellValue("");
-            }
-        }
-
-        for (int i = 0; i < 6; i++) {
             sheet.autoSizeColumn((short) i);
         }
     }
