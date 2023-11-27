@@ -53,6 +53,9 @@ public class ResourceToRepackDto {
         this.palletType = resource.getStringField(ResourceFields.TYPE_OF_PALLET);
     }
 
+    public ResourceToRepackDto() {
+    }
+
     public String getQualityRating() {
         return qualityRating;
     }
