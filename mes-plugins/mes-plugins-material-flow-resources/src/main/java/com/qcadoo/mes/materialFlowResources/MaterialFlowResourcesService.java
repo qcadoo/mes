@@ -60,8 +60,6 @@ public interface MaterialFlowResourcesService {
 
     ResourceDetailsDto getResourceDetails(String resourceNumber);
 
-    List<PalletNumberProductDTO> getProductsForPalletNumber(String palletNumber, Set<Long> userLocationIds);
-
     List<SumOfProductsDto> getSumOfProducts(String productNumber, List<String> locationIds);
 
     List<StorageLocationsForProductDto> getStoragesForProductNumber(String productNumber, List<String> locationIds);
@@ -70,16 +68,11 @@ public interface MaterialFlowResourcesService {
 
     StorageLocationNumberIdDto getLocationId(String storageLocation, String storageLocationNumber);
 
-    StorageLocationNumberIdDto checkIfStorageLocationNumberExist(String storageLocationNumber);
-
     CheckProductDto checkProductByStorageLocationNumber(String storageLocationNumber);
 
     List<PalletDto> checkPalletsForLocationNumber(String storageLocationNumber);
 
     Optional<Entity> findStorageLocationForProduct(final Entity location, final Entity product);
-
-
-    PalletDto checkIfPalletExist(String palletNumber);
 
     ResourceNumberDto checkIfPalletIsEmpty(String palletNumber);
 
