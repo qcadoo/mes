@@ -56,8 +56,6 @@ public interface MaterialFlowResourcesService {
 
     void fillCurrencyFieldValues(final ViewDefinitionState view);
 
-    List<ResourcesQuantityDto> getResourceQuantities(final Long storageLocationId, final String productNumber);
-
     ResourceDetailsDto getResourceDetails(String resourceNumber);
 
     List<SumOfProductsDto> getSumOfProducts(String productNumber, List<String> locationIds);

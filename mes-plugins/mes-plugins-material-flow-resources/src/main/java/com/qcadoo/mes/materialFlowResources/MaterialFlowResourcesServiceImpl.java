@@ -188,36 +188,6 @@ public class MaterialFlowResourcesServiceImpl implements MaterialFlowResourcesSe
     }
 
     @Override
-    public List<ResourcesQuantityDto> getResourceQuantities(final Long storageLocationId, final String productNumber) {
-        List<ResourcesQuantityDto> resourcesQuantityDtoList = new ArrayList<>();
-        Map<String, Object> params = Maps.newHashMap();
-
-        if (storageLocationId != null || productNumber != null || !productNumber.isEmpty()) {
-            StringBuilder prepareQuery = new StringBuilder();
-
-            prepareQuery.append("SELECT DISTINCT ");
-            prepareQuery.append("resourceDto.number AS resourceNumber, ");
-            prepareQuery.append("resourceDto.quantity AS quantity, ");
-            prepareQuery.append("resourceDto.quantityInAdditionalUnit AS additionalQuantity, ");
-            prepareQuery.append("internal.productUnit AS productUnit, ");
-            prepareQuery.append("internal.productAdditionalUnit AS productAdditionalUnit ");
-            prepareQuery.append("FROM materialFlowResources_resourceDto AS resourceDto ");
-            prepareQuery.append("JOIN materialFlowResources_storageLocationDto_internal AS internal ");
-            prepareQuery.append("ON resourceDto.productNumber = internal.productNumber ");
-            prepareQuery.append("WHERE resourceDto.productNumber = :productNumber ");
-            prepareQuery.append("AND resourceDto.location_id = :storageLocationId");
-
-            params.put("storageLocationId", storageLocationId);
-            params.put("productNumber", productNumber);
-
-            resourcesQuantityDtoList = jdbcTemplate.query(prepareQuery.toString(), params, new BeanPropertyRowMapper(ResourcesQuantityDto.class));
-
-            return resourcesQuantityDtoList;
-        }
-        return resourcesQuantityDtoList;
-    }
-
-    @Override
     public List<SumOfProductsDto> getSumOfProducts(String productNumber, List<String> locationNumbers) {
         List<SumOfProductsDto> list = new ArrayList<>();
         Map<String, Object> params = Maps.newHashMap();
