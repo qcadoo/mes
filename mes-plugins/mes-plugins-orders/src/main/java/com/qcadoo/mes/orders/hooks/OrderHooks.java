@@ -36,6 +36,7 @@ import java.util.Locale;
 import java.util.Objects;
 import java.util.Optional;
 
+import com.qcadoo.mes.technologies.constants.TechnologyProductionLineFields;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
@@ -278,6 +279,35 @@ public class OrderHooks {
         clearOrSetSpecyfiedValueOrderFieldsOnCopy(orderDD, order);
         setProductQuantity(orderDD, order);
         copyAttachments(order);
+        setProductionLine(order);
+    }
+
+    private void setProductionLine(Entity order) {
+
+        Entity productionLine = order.getBelongsToField(OrderFields.PRODUCTION_LINE);
+        if (Objects.isNull(productionLine)) {
+            return;
+        }
+        Entity technology = order.getBelongsToField(OrderFields.TECHNOLOGY);
+
+        if (Objects.isNull(technology)) {
+            order.setField(OrderFields.PRODUCTION_LINE, null);
+            return;
+        }
+        List<Entity> lines = technology.getHasManyField(TechnologyFields.PRODUCTION_LINES);
+        if(lines.isEmpty()) {
+            return;
+        }
+
+        boolean anyMatch = lines.stream().anyMatch(l -> l.getBelongsToField(TechnologyProductionLineFields.PRODUCTION_LINE).getId().equals(productionLine.getId()));
+
+        if(anyMatch) {
+            return;
+        }
+
+        Entity newProductionLine = orderService.getProductionLine(technology);
+        order.setField(OrderFields.PRODUCTION_LINE, newProductionLine);
+
     }
 
 
