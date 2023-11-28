@@ -189,7 +189,7 @@ public class GenerateMaterialRequirementCoverageListeners {
 
             materialRequirementCoverageService.estimateProductCoverageInTime(materialRequirementCoverage);
             Entity assignedOrder = materialRequirementCoverage.getBelongsToField("order");
-            if(Objects.isNull(assignedOrder.getDateField(OrderFields.START_DATE))) {
+            if(Objects.nonNull(assignedOrder) && Objects.isNull(assignedOrder.getDateField(OrderFields.START_DATE))) {
                 state.addMessage("orderSupplies.materialRequirementCoverage.report.datesIsEmptyInOrder", MessageType.INFO, false);
             }
 
