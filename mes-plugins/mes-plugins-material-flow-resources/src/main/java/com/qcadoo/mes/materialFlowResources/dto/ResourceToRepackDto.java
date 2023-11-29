@@ -29,6 +29,7 @@ public class ResourceToRepackDto {
     private BigDecimal quantity;
     private String unit;
     private BigDecimal additionalQuantity;
+    private BigDecimal availableQuantity;
     private Boolean blockedForQualityControl;
     private String qualityRating;
 
@@ -206,5 +207,13 @@ public class ResourceToRepackDto {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public BigDecimal getAvailableQuantity() {
+        return availableQuantity;
+    }
+
+    public void setAvailableQuantity(BigDecimal availableQuantity) {
+        this.availableQuantity = availableQuantity;
     }
 }
