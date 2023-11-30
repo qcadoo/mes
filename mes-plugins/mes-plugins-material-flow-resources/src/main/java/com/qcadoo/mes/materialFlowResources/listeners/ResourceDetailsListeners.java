@@ -25,7 +25,6 @@ package com.qcadoo.mes.materialFlowResources.listeners;
 
 import com.google.common.base.Optional;
 import com.qcadoo.commons.functional.Either;
-import com.qcadoo.mes.materialFlowResources.PalletValidatorService;
 import com.qcadoo.mes.materialFlowResources.constants.MaterialFlowResourcesConstants;
 import com.qcadoo.mes.materialFlowResources.constants.ResourceFields;
 import com.qcadoo.mes.materialFlowResources.constants.StorageLocationFields;
@@ -67,10 +66,9 @@ public class ResourceDetailsListeners {
     @Autowired
     private ResourceDetailsHooks resourceDetailsHooks;
 
-    @Autowired
-    private PalletValidatorService palletValidatorService;
 
-    public void createResourceCorrection(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+    public void createResourceCorrection(final ViewDefinitionState view, final ComponentState state,
+                                         final String[] args) {
         FormComponent resourceForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
         Entity resource = resourceForm.getPersistedEntityWithIncludedFormValues();
