@@ -665,7 +665,7 @@ public class ProductQuantitiesServiceImpl implements ProductQuantitiesService {
                             BigDecimal addedQuantity = operationProductComponentWithQuantityContainer.get(
                                     operationProductComponent,
                                     productBySizeGroup.getBelongsToField(ProductBySizeGroupFields.PRODUCT));
-                            BigDecimal quantity = addedQuantity.multiply(multiplier, numberService.getMathContext());
+                            BigDecimal quantity = BigDecimalUtils.convertNullToZero(addedQuantity).multiply(multiplier, numberService.getMathContext());
 
                             operationProductComponentWithQuantityContainer.put(operationProductComponent,
                                     productBySizeGroup.getBelongsToField(ProductBySizeGroupFields.PRODUCT),
@@ -734,7 +734,7 @@ public class ProductQuantitiesServiceImpl implements ProductQuantitiesService {
                         Entity product = getProductDD().get(specificProductId);
 
                         BigDecimal addedQuantity = operationProductComponentWithQuantityContainer.get(operationProductComponent, product);
-                        BigDecimal quantity = addedQuantity.multiply(multiplier, numberService.getMathContext());
+                        BigDecimal quantity = BigDecimalUtils.convertNullToZero(addedQuantity).multiply(multiplier, numberService.getMathContext());
 
                         operationProductComponentWithQuantityContainer.put(operationProductComponent,
                                 product,
@@ -743,7 +743,7 @@ public class ProductQuantitiesServiceImpl implements ProductQuantitiesService {
                 }
             } else {
                 BigDecimal addedQuantity = operationProductComponentWithQuantityContainer.get(operationProductComponent);
-                BigDecimal quantity = addedQuantity.multiply(multiplier, numberService.getMathContext());
+                BigDecimal quantity = BigDecimalUtils.convertNullToZero(addedQuantity).multiply(multiplier, numberService.getMathContext());
 
                 operationProductComponentWithQuantityContainer.put(operationProductComponent,
                         quantity.setScale(5, RoundingMode.CEILING));
