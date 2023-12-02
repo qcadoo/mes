@@ -1,5 +1,6 @@
 package com.qcadoo.mes.productFlowThruDivision.hooks;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityFields;
@@ -65,11 +66,11 @@ public class OrderProductResourceReservationHooks {
 
         Entity resource = orderProductResourceReservation.getBelongsToField(OrderProductResourceReservationFields.RESOURCE);
 
-        if (Objects.isNull(resource)) {
-            return true;
-            //orderProductResourceReservation.addError(dataDefinition.getField(OrderProductResourceReservationFields.RESOURCE),
-            //        "qcadooView.validate.field.error.missing");
-            //return false;
+        if (Objects.isNull(resource)
+                && Strings.isNullOrEmpty(orderProductResourceReservation.getStringField(OrderProductResourceReservationFields.RESOURCE_NUMBER))) {
+            orderProductResourceReservation.addError(dataDefinition.getField(OrderProductResourceReservationFields.RESOURCE),
+                    "qcadooView.validate.field.error.missing");
+            return false;
         }
 
         BigDecimal resourceQuantity = resource.getDecimalField(ResourceFields.AVAILABLE_QUANTITY);

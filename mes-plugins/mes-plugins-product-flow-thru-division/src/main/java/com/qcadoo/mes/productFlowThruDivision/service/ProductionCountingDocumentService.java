@@ -449,6 +449,7 @@ public class ProductionCountingDocumentService {
         position.setField(PositionFields.GIVEN_QUANTITY, inProductRecord.getGivenQuantity());
         position.setField(PositionFields.CONVERSION, inProductRecord.getConversion());
         position.setField(PositionFields.BATCH, inProductRecord.getBatch());
+        position.setField(PositionFields.RESOURCE, inProductRecord.getResource());
         return position;
     }
 
