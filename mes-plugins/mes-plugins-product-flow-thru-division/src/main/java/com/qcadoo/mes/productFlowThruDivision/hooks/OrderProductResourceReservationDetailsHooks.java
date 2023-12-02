@@ -10,6 +10,7 @@ import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
+import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.LookupComponent;
 import com.qcadoo.view.api.components.lookup.FilterValueHolder;
@@ -93,21 +94,33 @@ public class OrderProductResourceReservationDetailsHooks {
         Entity componentsLocation = pcq.getBelongsToField(ProductionCountingQuantityFieldsPFTD.COMPONENTS_LOCATION);
 
         List<Entity> orderProductResourceReservations = pcq.getHasManyField(L_ORDER_PRODUCT_RESOURCE_RESERVATIONS);
-
-        List<Long> alreadyAddedResourceIds = orderProductResourceReservations
-                .stream()
-                .map(opr -> opr.getBelongsToField(OrderProductResourceReservationFields.RESOURCE).getId())
-                .collect(Collectors.toList());
-
-        fillFilterValue(view, product, componentsLocation, alreadyAddedResourceIds);
-
-        ComponentState resourcePlannedQuantityUnit = view.getComponentByReference(L_PLANED_QUANTITY_UNIT);
         LookupComponent resourceLookup = (LookupComponent) view.getComponentByReference(OrderProductResourceReservationFields.RESOURCE);
-        if (resourceLookup.isEmpty()) {
-            resourcePlannedQuantityUnit.setFieldValue(null);
-        } else {
+        FieldComponent resourceNumber = (FieldComponent) view.getComponentByReference("resourceNumber");
+        ComponentState resourcePlannedQuantityUnit = view.getComponentByReference(L_PLANED_QUANTITY_UNIT);
+        Entity entity = form.getEntity();
+        if(Objects.nonNull(form.getEntityId()) && entity.getBelongsToField(OrderProductResourceReservationFields.RESOURCE) == null) {
+            resourceNumber.setVisible(true);
+            resourceLookup.setVisible(false);
             resourcePlannedQuantityUnit.setFieldValue(product.getStringField(ProductFields.UNIT));
+        } else {
+            resourceNumber.setVisible(false);
+            resourceLookup.setVisible(true);
+            if (resourceLookup.isEmpty()) {
+                resourcePlannedQuantityUnit.setFieldValue(null);
+            } else {
+                resourcePlannedQuantityUnit.setFieldValue(product.getStringField(ProductFields.UNIT));
+            }
+
+            List<Long> alreadyAddedResourceIds = orderProductResourceReservations
+                    .stream()
+                    .map(opr -> opr.getBelongsToField(OrderProductResourceReservationFields.RESOURCE).getId())
+                    .collect(Collectors.toList());
+
+            fillFilterValue(view, product, componentsLocation, alreadyAddedResourceIds);
         }
+
+
+
     }
 
     private void fillFilterValue(ViewDefinitionState view, Entity product, Entity componentsLocation, List<Long> alreadyAddedResourceIds) {

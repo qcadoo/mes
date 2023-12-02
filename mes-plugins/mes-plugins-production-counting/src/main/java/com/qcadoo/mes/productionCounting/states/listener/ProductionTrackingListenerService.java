@@ -611,10 +611,11 @@ public final class ProductionTrackingListenerService {
 
             for (Entity trackingProductResourceReservation : trackingOperationProductInComponent.getHasManyField(L_RESOURCE_RESERVATIONS)) {
                 Entity orderProductResourceReservation = trackingProductResourceReservation.getBelongsToField(L_ORDER_PRODUCT_RESOURCE_RESERVATION);
-                BigDecimal usedQuantity = BigDecimalUtils.convertNullToZero(orderProductResourceReservation.getDecimalField(L_USED_QUANTITY));
+                Entity orderProductResourceReservationDb = orderProductResourceReservation.getDataDefinition().get(orderProductResourceReservation.getId());
+                BigDecimal usedQuantity = BigDecimalUtils.convertNullToZero(orderProductResourceReservationDb.getDecimalField(L_USED_QUANTITY));
                 usedQuantity = usedQuantity.add(BigDecimalUtils.convertNullToZero(trackingProductResourceReservation.getDecimalField(L_USED_QUANTITY)));
-                orderProductResourceReservation.setField(L_USED_QUANTITY, usedQuantity);
-                orderProductResourceReservation.getDataDefinition().fastSave(orderProductResourceReservation);
+                orderProductResourceReservationDb.setField(L_USED_QUANTITY, usedQuantity);
+                orderProductResourceReservation = orderProductResourceReservationDb.getDataDefinition().fastSave(orderProductResourceReservationDb);
             }
         });
 

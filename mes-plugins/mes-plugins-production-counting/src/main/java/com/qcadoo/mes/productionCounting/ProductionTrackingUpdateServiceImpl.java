@@ -40,6 +40,10 @@ public class ProductionTrackingUpdateServiceImpl implements ProductionTrackingUp
                 .get(ProductionCountingConstants.PLUGIN_IDENTIFIER, ProductionCountingConstants.MODEL_PRODUCTION_TRACKING)
                 .get(productionTrackingId);
 
+        if(productionTracking == null) {
+            return;
+        }
+
         Entity order = productionTracking.getBelongsToField(ProductionTrackingFields.ORDER);
 
         OperationProductsExtractor.TrackingOperationProducts operationProducts = operationProductsExtractor

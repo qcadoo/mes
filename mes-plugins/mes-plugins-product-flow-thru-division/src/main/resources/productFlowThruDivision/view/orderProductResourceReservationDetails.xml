@@ -38,6 +38,10 @@
                 <component type="gridLayout" name="gridLayout" columns="5"
                            rows="2" hasBorders="false">
                     <layoutElement column="1" row="1" width="4">
+                        <component type="input" name="resourceNumber" field="resourceNumber"
+                                   reference="resourceNumber" defaultEnabled="never">
+                            <option type="alignment" value="right"/>
+                        </component>
                         <component type="lookup" name="resource" field="resource"
                                    reference="resource">
 

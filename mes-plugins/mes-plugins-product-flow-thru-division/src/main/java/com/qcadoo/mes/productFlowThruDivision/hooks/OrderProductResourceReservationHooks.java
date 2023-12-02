@@ -31,13 +31,20 @@ public class OrderProductResourceReservationHooks {
     @Autowired
     private ResourceReservationsService resourceReservationsService;
 
-    public void onDelete(final DataDefinition orderProductResourceReservationDD, final Entity orderProductResourceReservation) {
+    public boolean onDelete(final DataDefinition orderProductResourceReservationDD, final Entity orderProductResourceReservation) {
+        BigDecimal usedQuantity = orderProductResourceReservation.getDecimalField(OrderProductResourceReservationFields.USED_QUANTITY);
+
+        if (usedQuantity.compareTo(BigDecimal.ZERO) > 0) {
+            orderProductResourceReservation.addGlobalError("productFlowThruDivision.orderProductResourceReservation.error.cannotDeleteTheItem");
+            return false;
+        }
 
         List<Entity> reservations = orderProductResourceReservation.getHasManyField(OrderProductResourceReservationFields.RESERVATIONS);
         for (Entity reservation : reservations) {
             resourceReservationsService.updateResourceQuantitiesOnRemoveReservation(reservation.getBelongsToField(ReservationFields.RESOURCE),
                     reservation.getDecimalField(ReservationFields.QUANTITY));
         }
+        return true;
     }
 
     public void onSave(final DataDefinition orderProductResourceReservationDD, final Entity orderProductResourceReservation) {
@@ -59,9 +66,10 @@ public class OrderProductResourceReservationHooks {
         Entity resource = orderProductResourceReservation.getBelongsToField(OrderProductResourceReservationFields.RESOURCE);
 
         if (Objects.isNull(resource)) {
-            orderProductResourceReservation.addError(dataDefinition.getField(OrderProductResourceReservationFields.RESOURCE),
-                    "qcadooView.validate.field.error.missing");
-            return false;
+            return true;
+            //orderProductResourceReservation.addError(dataDefinition.getField(OrderProductResourceReservationFields.RESOURCE),
+            //        "qcadooView.validate.field.error.missing");
+            //return false;
         }
 
         BigDecimal resourceQuantity = resource.getDecimalField(ResourceFields.AVAILABLE_QUANTITY);

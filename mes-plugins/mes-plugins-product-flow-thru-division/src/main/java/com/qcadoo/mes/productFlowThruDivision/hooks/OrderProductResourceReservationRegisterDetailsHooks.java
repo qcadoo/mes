@@ -30,8 +30,7 @@ public class OrderProductResourceReservationRegisterDetailsHooks {
         Entity trackingProductResourceReservation = form.getPersistedEntityWithIncludedFormValues();
         Entity orderProductResourceReservationBT = trackingProductResourceReservation.getBelongsToField(TrackingProductResourceReservationFields.ORDER_PRODUCT_RESOURCE_RESERVATION);
         Entity orderProductResourceReservation = orderProductResourceReservationBT.getDataDefinition().get(orderProductResourceReservationBT.getId());
-        Entity resourceBT = orderProductResourceReservation.getBelongsToField(OrderProductResourceReservationFields.RESOURCE);
-        Entity resource = resourceBT.getDataDefinition().get(resourceBT.getId());
+        String resourceNumer = orderProductResourceReservation.getStringField(OrderProductResourceReservationFields.RESOURCE_NUMBER);
 
         Entity pcq = orderProductResourceReservation.getBelongsToField(OrderProductResourceReservationFields.PRODUCTION_COUNTING_QUANTITY);
         Entity product = pcq.getBelongsToField(ProductionCountingQuantityFields.PRODUCT);
@@ -41,7 +40,7 @@ public class OrderProductResourceReservationRegisterDetailsHooks {
         ComponentState resourcePlannedQuantityUnit = view.getComponentByReference(L_PLANED_QUANTITY_UNIT);
         ComponentState usedQuantityUnit = view.getComponentByReference(L_USED_QUANTITY_UNIT);
 
-        resourceLookup.setFieldValue(resource.getStringField(ResourceFields.NUMBER));
+        resourceLookup.setFieldValue(resourceNumer);
         resourcePlannedQuantity.setFieldValue(numberService.format(orderProductResourceReservation.getDecimalField(OrderProductResourceReservationFields.PLANED_QUANTITY)));
         resourcePlannedQuantityUnit.setFieldValue(product.getStringField(ProductFields.UNIT));
         usedQuantityUnit.setFieldValue(product.getStringField(ProductFields.UNIT));
