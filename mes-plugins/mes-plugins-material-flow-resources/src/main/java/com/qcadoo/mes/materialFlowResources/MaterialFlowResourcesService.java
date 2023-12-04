@@ -55,15 +55,12 @@ public interface MaterialFlowResourcesService {
 
 
     BigDecimal getBatchesQuantity(final Collection<Entity> batches, final Entity product,
-                                          final Entity location);
+                                  final Entity location);
 
     void fillUnitFieldValues(final ViewDefinitionState view);
 
     void fillCurrencyFieldValues(final ViewDefinitionState view);
 
-    ResourceDetailsDto getResourceDetails(String resourceNumber);
-
-    ResourceToRepackDto getResourceDetailsToRepack(String resourceNumber, List<String> userLocations);
 
     StorageLocationNumberIdDto getLocationId(String storageLocation, String storageLocationNumber);
 
@@ -74,15 +71,6 @@ public interface MaterialFlowResourcesService {
     Optional<Entity> findStorageLocationForProduct(final Entity location, final Entity product);
 
     ResourceNumberDto checkIfPalletIsEmpty(String palletNumber);
-
-    List<ResourceToRepackDto> getResourceListByStorageLocationNumber(String storageLocationNumber,
-                                                                     List<String> userLocations);
-
-    List<ResourceToRepackDto> getResourceListByPalletNumber(String palletNumber, List<String> userLocations);
-
-    List<ResourceToRepackDto> getResourceListByPalletAndLocationNumber(String palletNumber,
-                                                                       String storageLocationNumber,
-                                                                       List<String> userLocations);
 
     String getTypeOfPalletByPalletNumber(final Long locationId, final String palletNumberNumber);
 
