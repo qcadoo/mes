@@ -71,7 +71,6 @@
         <boolean name="manyReasonsForLacks" default="false"/>
         <hasMany name="lacks" joinField="trackingOperationProductOutComponent" model="lack" cascade="delete"/>
         <hasMany name="lacksDto" joinField="trackingOperationProductOutComponent" model="lackDto" copyable="false" persistent="false"/>
-
     </fields>
 
     <hooks>
