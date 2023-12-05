@@ -353,31 +353,19 @@ public class PalletValidatorService {
         return true;
     }
 
-
-    public boolean checkMaximumNumberOfPallets(final Entity storageLocation, final Entity palletNumber) {
-        if (Objects.nonNull(storageLocation) && storageLocation.getBooleanField(StorageLocationFields.PLACE_STORAGE_LOCATION)) {
-            BigDecimal palletsInStorageLocation;
-
-            if (Objects.nonNull(palletNumber)) {
-                palletsInStorageLocation = BigDecimal.valueOf(getPalletsCountInStorageLocationWithoutPalletNumber(
-                        storageLocation, palletNumber) + 1);
-            } else {
-                palletsInStorageLocation = BigDecimal.valueOf(getPalletsCountInStorageLocation(storageLocation) + 1);
-            }
-
-            BigDecimal maximumNumberOfPallets = storageLocation.getDecimalField(StorageLocationFields.MAXIMUM_NUMBER_OF_PALLETS);
-
-            return (Objects.nonNull(maximumNumberOfPallets) && (palletsInStorageLocation.compareTo(maximumNumberOfPallets) > 0));
-        }
-
-        return false;
+    public boolean checkMaximumNumberOfPallets(final Entity storageLocation, final Entity resource) {
+        return checkMaximumNumberOfPallets(storageLocation, resource, 1);
     }
 
     public boolean checkMaximumNumberOfPallets(final Entity storageLocation, final long palletsCount) {
+        return checkMaximumNumberOfPallets(storageLocation, null, palletsCount);
+    }
+
+    private boolean checkMaximumNumberOfPallets(final Entity storageLocation, final Entity resource, final long palletsCount) {
         if (Objects.nonNull(storageLocation) && storageLocation.getBooleanField(StorageLocationFields.PLACE_STORAGE_LOCATION)) {
             BigDecimal maximumNumberOfPallets = storageLocation.getDecimalField(StorageLocationFields.MAXIMUM_NUMBER_OF_PALLETS);
 
-            BigDecimal palletsInStorageLocation = BigDecimal.valueOf(getPalletsCountInStorageLocation(storageLocation) + palletsCount);
+            BigDecimal palletsInStorageLocation = BigDecimal.valueOf(getPalletsCountInStorageLocation(storageLocation, resource) + palletsCount);
 
             return (Objects.nonNull(maximumNumberOfPallets) && (palletsInStorageLocation.compareTo(maximumNumberOfPallets) > 0));
         }
@@ -385,23 +373,7 @@ public class PalletValidatorService {
         return false;
     }
 
-    private Long getPalletsCountInStorageLocation(final Entity storageLocation) {
-        StringBuilder query = new StringBuilder();
-
-        query.append("SELECT COUNT(DISTINCT palletnumber.id) AS palletsCount ");
-        query.append("FROM materialflowresources_resource resource ");
-        query.append("LEFT JOIN basic_palletnumber palletnumber ");
-        query.append("ON palletnumber.id = resource.palletnumber_id ");
-        query.append("WHERE resource.storagelocation_id = :storageLocationId");
-
-        Map<String, Object> params = Maps.newHashMap();
-
-        params.put("storageLocationId", storageLocation.getId());
-
-        return jdbcTemplate.queryForObject(query.toString(), params, Long.class);
-    }
-
-    private Long getPalletsCountInStorageLocationWithoutPalletNumber(final Entity storageLocation, final Entity palletNumber) {
+    private Long getPalletsCountInStorageLocation(final Entity storageLocation, final Entity resource) {
         StringBuilder query = new StringBuilder();
 
         query.append("SELECT COUNT(DISTINCT palletnumber.id) AS palletsCount ");
@@ -409,12 +381,26 @@ public class PalletValidatorService {
         query.append("LEFT JOIN basic_palletnumber palletnumber ");
         query.append("ON palletnumber.id = resource.palletnumber_id ");
         query.append("WHERE resource.storagelocation_id = :storageLocationId ");
-        query.append("AND palletnumber.id != :palletNumberId");
 
         Map<String, Object> params = Maps.newHashMap();
 
         params.put("storageLocationId", storageLocation.getId());
-        params.put("palletNumberId", palletNumber.getId());
+
+        if (Objects.nonNull(resource)) {
+            if (Objects.nonNull(resource.getId())) {
+                query.append("AND resource.id != :resourceId ");
+
+                params.put("resourceId", resource.getId());
+            }
+
+            Entity palletNumber = resource.getBelongsToField(ResourceFields.PALLET_NUMBER);
+
+            if (Objects.nonNull(palletNumber)) {
+                query.append("AND palletnumber.id != :palletNumberId ");
+
+                params.put("palletNumberId", palletNumber.getId());
+            }
+        }
 
         return jdbcTemplate.queryForObject(query.toString(), params, Long.class);
     }
