@@ -270,7 +270,7 @@ public class DocumentValidators {
                             } else {
                                 String palletNumberNumber = palletNumber.getStringField(PalletNumberFields.NUMBER);
 
-                                if (palletValidatorService.checkIfExistsMorePalletsForStorageLocation(locationTo.getId(), storageLocationNumber, palletNumberNumber)) {
+                                if (palletValidatorService.tooManyPalletsInStorageLocationAndPositions(storageLocationNumber, palletNumberNumber, position.getId())) {
                                     existsMorePallets.add(positionNumber.toString());
                                 }
                             }

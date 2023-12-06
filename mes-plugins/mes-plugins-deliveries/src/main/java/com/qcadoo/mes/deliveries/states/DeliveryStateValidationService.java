@@ -26,7 +26,6 @@ package com.qcadoo.mes.deliveries.states;
 import com.beust.jcommander.internal.Sets;
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.basic.ParameterService;
-import com.qcadoo.mes.basic.constants.PalletNumberFields;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.deliveries.ProductSynchronizationService;
 import com.qcadoo.mes.deliveries.constants.*;
@@ -215,17 +214,13 @@ public class DeliveryStateValidationService {
                 missingStorageLocations.add(productNumber);
             } else {
                 if (Objects.nonNull(storageLocation)) {
-                    Entity location = storageLocation.getBelongsToField(StorageLocationFields.LOCATION);
-                    String storageLocationNumber = storageLocation.getStringField(StorageLocationFields.NUMBER);
                     boolean placeStorageLocation = storageLocation.getBooleanField(StorageLocationFields.PLACE_STORAGE_LOCATION);
 
                     if (placeStorageLocation) {
                         if (Objects.isNull(palletNumber)) {
                             missingPalletNumbers.add(productNumber);
                         } else {
-                            String palletNumberNumber = palletNumber.getStringField(PalletNumberFields.NUMBER);
-
-                            if (palletValidatorService.checkIfExistsMorePalletsForStorageLocation(location.getId(), storageLocationNumber, palletNumberNumber)) {
+                            if (palletValidatorService.tooManyPalletsInStorageLocationAndDeliveredProducts(deliveredProduct.getDataDefinition(), deliveredProduct)) {
                                 existsMorePallets.add(productNumber);
                             }
                         }

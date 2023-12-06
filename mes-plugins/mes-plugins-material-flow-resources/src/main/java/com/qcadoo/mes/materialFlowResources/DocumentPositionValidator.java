@@ -651,8 +651,8 @@ public class DocumentPositionValidator {
                 errors.add(translationService.translate(
                         "documentGrid.error.position.existsOtherDeliveredProductForPalletAndStorageLocation",
                         LocaleContextHolder.getLocale()));
-            } else if (palletValidatorService.checkIfExistsMorePalletsForStorageLocation(locationId, storageLocationNumber,
-                    palletNumberNumber)) {
+            } else if (palletValidatorService.tooManyPalletsInStorageLocationAndPositions(storageLocationNumber,
+                    palletNumberNumber, positionId)) {
                 errors.add(translationService.translate(
                         "documentGrid.error.position.existsOtherPalletsAtStorageLocation",
                         LocaleContextHolder.getLocale()));
