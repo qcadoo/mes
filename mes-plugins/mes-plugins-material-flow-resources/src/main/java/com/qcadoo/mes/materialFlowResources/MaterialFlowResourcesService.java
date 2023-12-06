@@ -23,7 +23,6 @@
  */
 package com.qcadoo.mes.materialFlowResources;
 
-import com.qcadoo.mes.materialFlowResources.dto.*;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ViewDefinitionState;
 
@@ -61,16 +60,7 @@ public interface MaterialFlowResourcesService {
 
     void fillCurrencyFieldValues(final ViewDefinitionState view);
 
-
-    StorageLocationNumberIdDto getLocationId(String storageLocation, String storageLocationNumber);
-
-    CheckProductDto checkProductByStorageLocationNumber(String storageLocationNumber);
-
-    List<PalletDto> checkPalletsForLocationNumber(String storageLocationNumber);
-
     Optional<Entity> findStorageLocationForProduct(final Entity location, final Entity product);
-
-    ResourceNumberDto checkIfPalletIsEmpty(String palletNumber);
 
     String getTypeOfPalletByPalletNumber(final Long locationId, final String palletNumberNumber);
 

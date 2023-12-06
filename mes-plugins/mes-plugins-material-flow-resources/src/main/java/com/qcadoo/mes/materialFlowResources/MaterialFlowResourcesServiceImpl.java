@@ -30,7 +30,6 @@ import com.qcadoo.mes.materialFlow.constants.MaterialFlowConstants;
 import com.qcadoo.mes.materialFlowResources.constants.MaterialFlowResourcesConstants;
 import com.qcadoo.mes.materialFlowResources.constants.ResourceFields;
 import com.qcadoo.mes.materialFlowResources.constants.ResourceStockDtoFields;
-import com.qcadoo.mes.materialFlowResources.dto.*;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -40,7 +39,6 @@ import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Service;
 
@@ -213,78 +211,6 @@ public class MaterialFlowResourcesServiceImpl implements MaterialFlowResourcesSe
         currencyField.requestComponentUpdateState();
     }
 
-    public StorageLocationNumberIdDto getLocationId(String storageLocation, String storageLocationNumber) {
-        Map<String, Object> params = Maps.newHashMap();
-
-        if (storageLocation != null && storageLocationNumber != null && !storageLocationNumber.isEmpty() && !storageLocation.isEmpty()) {
-            StringBuilder prepareQuery = new StringBuilder();
-
-            prepareQuery.append("SELECT DISTINCT ");
-            prepareQuery.append("dto.location_id AS locationId ");
-            prepareQuery.append("FROM materialFlowResources_storageLocationDto AS dto ");
-            prepareQuery.append("WHERE dto.locationNumber = :storageLocation ");
-            prepareQuery.append("AND dto.storageLocationNumber = :storageLocationNumber");
-
-            params.put("storageLocation", storageLocation);
-            params.put("storageLocationNumber", storageLocationNumber);
-
-            try {
-                return jdbcTemplate.queryForObject(prepareQuery.toString(), params, BeanPropertyRowMapper.newInstance(StorageLocationNumberIdDto.class));
-            } catch (EmptyResultDataAccessException e) {
-                return null;
-            }
-        }
-        return null;
-    }
-
-    public CheckProductDto checkProductByStorageLocationNumber(String storageLocationNumber) {
-        Map<String, Object> params = Maps.newHashMap();
-
-        if (storageLocationNumber != null && !storageLocationNumber.isEmpty()) {
-            StringBuilder prepareQuery = new StringBuilder();
-
-            prepareQuery.append("SELECT ");
-            prepareQuery.append("sl.location_id AS locationId, ");
-            prepareQuery.append("psl.product_id AS productId, ");
-            prepareQuery.append("sl.placeStorageLocation AS placeStorageLocation, ");
-            prepareQuery.append("sl.maximumNumberOfPallets AS maximumNumberOfPallets ");
-            prepareQuery.append("FROM materialFlowResources_storageLocation sl ");
-            prepareQuery.append("LEFT JOIN jointable_product_storagelocation psl ");
-            prepareQuery.append("ON psl.storagelocation_id = sl.id ");
-            prepareQuery.append("LEFT JOIN basic_product p ");
-            prepareQuery.append("ON p.id = psl.product_id ");
-            prepareQuery.append("WHERE sl.number = :storageLocationNumber");
-
-            params.put("storageLocationNumber", storageLocationNumber);
-
-            try {
-                return jdbcTemplate.queryForObject(prepareQuery.toString(), params, BeanPropertyRowMapper.newInstance(CheckProductDto.class));
-            } catch (EmptyResultDataAccessException e) {
-                return null;
-            }
-        }
-        return null;
-    }
-
-    public List<PalletDto> checkPalletsForLocationNumber(final String storageLocationNumber) {
-        Map<String, Object> params = Maps.newHashMap();
-        List<PalletDto> list = new ArrayList<>();
-
-        if (storageLocationNumber != null || !storageLocationNumber.isEmpty()) {
-            StringBuilder prepareQuery = new StringBuilder();
-            prepareQuery.append("SELECT dto.palletNumber ");
-            prepareQuery.append("FROM materialFlowResources_resourceDto AS dto ");
-            prepareQuery.append("WHERE dto.storageLocationNumber = :storageLocationNumber ");
-            prepareQuery.append("GROUP BY dto.palletNumber");
-
-            params.put("storageLocationNumber", storageLocationNumber);
-
-            list = jdbcTemplate.query(prepareQuery.toString(), params, new BeanPropertyRowMapper(PalletDto.class));
-            return list;
-        }
-        return list;
-    }
-
     public Optional<Entity> findStorageLocationForProduct(final Entity location, final Entity product) {
         SearchQueryBuilder scb = getStorageLocationDD().find("SELECT sl FROM #materialFlowResources_storageLocation AS sl JOIN sl.products p WHERE sl.location = :locationId AND p.id = :productId");
 
@@ -292,27 +218,6 @@ public class MaterialFlowResourcesServiceImpl implements MaterialFlowResourcesSe
         scb.setLong("productId", product.getId());
 
         return Optional.ofNullable(scb.setMaxResults(1).uniqueResult());
-    }
-
-    public ResourceNumberDto checkIfPalletIsEmpty(String palletNumber) {
-        Map<String, Object> params = Maps.newHashMap();
-        if (palletNumber != null || !palletNumber.isEmpty()) {
-            StringBuilder prepareQuery = new StringBuilder();
-
-            prepareQuery.append("SELECT ");
-            prepareQuery.append("dto.number ");
-            prepareQuery.append("FROM materialFlowResources_resourceDto AS dto ");
-            prepareQuery.append("WHERE dto.palletNumber = :palletNumber");
-
-            params.put("palletNumber", palletNumber);
-
-            try {
-                return jdbcTemplate.queryForObject(prepareQuery.toString(), params, BeanPropertyRowMapper.newInstance(ResourceNumberDto.class));
-            } catch (EmptyResultDataAccessException e) {
-                return null;
-            }
-        }
-        return null;
     }
 
     public String getTypeOfPalletByPalletNumber(final Long locationId, final String palletNumberNumber) {
