@@ -23,8 +23,6 @@ import java.util.stream.Collectors;
 @Service
 public class StorageLocationsListListeners {
 
-    private static final String L_ZERO = "0";
-
     @Autowired
     private DataDefinitionService dataDefinitionService;
 

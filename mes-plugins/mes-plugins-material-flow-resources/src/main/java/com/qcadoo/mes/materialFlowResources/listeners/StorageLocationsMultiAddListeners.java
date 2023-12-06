@@ -22,8 +22,6 @@ import java.util.Objects;
 @Service
 public class StorageLocationsMultiAddListeners {
 
-    private static final String L_ZERO = "0";
-
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
@@ -148,13 +146,7 @@ public class StorageLocationsMultiAddListeners {
         if (nextNumber.toString().length() > numberLength) {
             restOfNumber.append(nextNumber);
         } else {
-            int positionToAdd = numberLength - nextNumber.toString().length();
-
-            for (int i = 0; i < positionToAdd; i++) {
-                restOfNumber.append(L_ZERO);
-            }
-
-            restOfNumber.append(nextNumber);
+            restOfNumber.append(String.format("%0" + numberLength + "d", nextNumber));
         }
 
         return storageLocationHelper.getStringField(StorageLocationHelperFields.PREFIX) + restOfNumber;
