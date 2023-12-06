@@ -73,6 +73,10 @@ public class OrderProductResourceReservationHooks {
             return false;
         }
 
+        if(Objects.isNull(resource)) {
+            return true;
+        }
+
         BigDecimal resourceQuantity = resource.getDecimalField(ResourceFields.AVAILABLE_QUANTITY);
         BigDecimal planedQuantity = orderProductResourceReservation.getDecimalField(OrderProductResourceReservationFields.PLANED_QUANTITY);
 
