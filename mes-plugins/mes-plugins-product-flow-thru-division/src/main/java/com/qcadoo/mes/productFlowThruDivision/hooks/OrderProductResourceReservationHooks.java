@@ -35,7 +35,7 @@ public class OrderProductResourceReservationHooks {
     public boolean onDelete(final DataDefinition orderProductResourceReservationDD, final Entity orderProductResourceReservation) {
         BigDecimal usedQuantity = orderProductResourceReservation.getDecimalField(OrderProductResourceReservationFields.USED_QUANTITY);
 
-        if (usedQuantity.compareTo(BigDecimal.ZERO) > 0) {
+        if (Objects.nonNull(usedQuantity) && usedQuantity.compareTo(BigDecimal.ZERO) > 0) {
             orderProductResourceReservation.addGlobalError("productFlowThruDivision.orderProductResourceReservation.error.cannotDeleteTheItem");
             return false;
         }
