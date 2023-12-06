@@ -107,7 +107,13 @@ public class PalletValidatorService {
         Long resourceId = getEntityId(entity, MaterialFlowResourcesConstants.MODEL_RESOURCE);
         Long deliveredProductId = getEntityId(entity, L_DELIVERED_PRODUCT);
 
-        if (existsOtherResourceForPalletNumber(location.getId(), storageLocationNumber, palletNumberNumber, typeOfPallet, resourceId)) {
+        if (existsOtherResourceForPalletNumberOnOtherLocations(location.getId(), storageLocationNumber, palletNumberNumber, typeOfPallet, resourceId)) {
+            entity.addError(entity.getDataDefinition().getField(L_PALLET_NUMBER),
+                    "documentGrid.error.position.existsOtherResourceForPallet");
+
+            return false;
+        }
+        if (existsOtherResourceForPalletNumberOnSameLocation(location.getId(), storageLocationNumber, palletNumberNumber, typeOfPallet, resourceId)) {
             entity.addError(entity.getDataDefinition().getField(L_PALLET_NUMBER),
                     "documentGrid.error.position.existsOtherResourceForPalletAndStorageLocation");
 
@@ -137,8 +143,36 @@ public class PalletValidatorService {
         return null;
     }
 
+    public boolean existsOtherResourceForPalletNumberOnOtherLocations(final Long locationId, final String storageLocationNumber,
+                                                      final String palletNumberNumber, final String typeOfPallet,
+                                                      final Long resourceId) {
+        StringBuilder query = new StringBuilder();
 
-    public boolean existsOtherResourceForPalletNumber(final Long locationId, final String storageLocationNumber,
+        query.append("SELECT count(*) FROM materialflowresources_resource resource ");
+        query.append("JOIN basic_palletnumber palletnumber ");
+        query.append("ON palletnumber.id = resource.palletnumber_id ");
+        query.append("LEFT JOIN materialflowresources_storagelocation storagelocation ");
+        query.append("ON storagelocation.id = resource.storagelocation_id ");
+        query.append("WHERE palletnumber.number = :palletNumberNumber ");
+        query.append("AND resource.location_id <> :locationId ");
+
+        if (Objects.nonNull(resourceId)) {
+            query.append("AND resource.id <> :resourceId ");
+        }
+
+        Map<String, Object> params = Maps.newHashMap();
+
+        params.put("locationId", locationId);
+        params.put("palletNumberNumber", palletNumberNumber);
+
+        if (Objects.nonNull(resourceId)) {
+            params.put("resourceId", resourceId);
+        }
+
+        return jdbcTemplate.queryForObject(query.toString(), params, Long.class) > 0;
+    }
+
+    public boolean existsOtherResourceForPalletNumberOnSameLocation(final Long locationId, final String storageLocationNumber,
                                                       final String palletNumberNumber, final String typeOfPallet,
                                                       final Long resourceId) {
         StringBuilder query = new StringBuilder();
