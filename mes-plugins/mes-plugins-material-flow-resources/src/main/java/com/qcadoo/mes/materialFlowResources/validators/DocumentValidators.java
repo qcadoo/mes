@@ -34,6 +34,7 @@ import com.qcadoo.mes.materialFlowResources.service.ResourceManagementService;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.validators.ErrorMessage;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.components.FormComponent;
 import org.apache.commons.lang3.StringUtils;
@@ -204,13 +205,14 @@ public class DocumentValidators {
 
                         String productNumber = ire.getEntity().getBelongsToField(ResourceFields.PRODUCT)
                                 .getStringField(ProductFields.NUMBER);
-                        if ("materialFlow.error.position.batch.required"
-                                .equals(ire.getEntity().getError(ResourceFields.BATCH).getMessage())) {
+                        String resourceNumber = ire.getEntity().getStringField(ResourceFields.NUMBER);
+
+                        ErrorMessage batchError = ire.getEntity().getError(ResourceFields.BATCH);
+
+                        if (Objects.nonNull(batchError) && "materialFlow.error.position.batch.required".equals(batchError.getMessage())) {
                             documentForm.addMessage("materialFlow.document.validate.global.error.invalidResource.batchRequired",
                                     ComponentState.MessageType.FAILURE, false, productNumber);
                         } else {
-                            String resourceNumber = ire.getEntity().getStringField(ResourceFields.NUMBER);
-
                             documentForm.addMessage("materialFlow.document.validate.global.error.invalidResource",
                                     ComponentState.MessageType.FAILURE, false, resourceNumber, productNumber);
                         }
