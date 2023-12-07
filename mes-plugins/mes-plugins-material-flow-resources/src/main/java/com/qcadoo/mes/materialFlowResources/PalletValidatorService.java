@@ -376,7 +376,7 @@ public class PalletValidatorService {
             }
         }
 
-        return true;
+        return false;
     }
 
     public boolean tooManyPalletsInStorageLocationAndDeliveredProducts(final DataDefinition deliveredProductDD, final Entity deliveredProduct) {
@@ -424,12 +424,12 @@ public class PalletValidatorService {
                     deliveredProduct.addError(deliveredProductDD.getField("storageLocation"),
                             "deliveries.deliveredProduct.error.storageLocationPalletLimitExceeded");
 
-                    return false;
+                    return true;
                 }
             }
         }
 
-        return true;
+        return false;
     }
 
     public boolean checkMaximumNumberOfPallets(final Entity storageLocation, final Entity resource) {
