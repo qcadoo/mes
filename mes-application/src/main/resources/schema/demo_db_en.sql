@@ -5538,14 +5538,11 @@ CREATE TABLE public.arch_materialflowresources_document (
     issend boolean DEFAULT false,
     wms boolean DEFAULT false,
     datesendtowms timestamp without time zone,
-    dateshipmenttocustomer date,
-    additionalinfo character varying(255),
     stateinwms character varying(255),
     pickingworker character varying(255),
     dateconfirmationofcompletion timestamp without time zone,
     locationchanged boolean DEFAULT false,
     editinwms boolean DEFAULT true,
-    additionaldescription character varying(2048),
     staff_id bigint,
     ordersgroup_id bigint,
     archived boolean DEFAULT false
@@ -10349,7 +10346,7 @@ ALTER SEQUENCE public.basic_assortment_id_seq OWNED BY public.basic_assortment.i
 CREATE TABLE public.basic_assortmentelement (
     id bigint NOT NULL,
     descriptiontype character varying(255),
-    description character varying(255),
+    description character varying(2048),
     assortment_id bigint,
     main boolean DEFAULT false
 );
@@ -18783,9 +18780,9 @@ UNION ALL
     technologyto.number AS technologytonumber
    FROM ((((public.linechangeovernorms_linechangeovernorms linechangeovernorms
      JOIN public.technologies_technologygroup technologygroupfrom ON ((technologygroupfrom.id = linechangeovernorms.fromtechnologygroup_id)))
-     JOIN public.technologies_technology technologyfrom ON (((technologyfrom.technologygroup_id = technologygroupfrom.id) AND (technologyfrom.active = true) AND (technologyfrom.technologyprototype_id IS NULL))))
+     JOIN public.technologies_technology technologyfrom ON (((technologyfrom.technologygroup_id = technologygroupfrom.id) AND (technologyfrom.active = true))))
      JOIN public.technologies_technologygroup technologygroupto ON ((technologygroupto.id = linechangeovernorms.totechnologygroup_id)))
-     JOIN public.technologies_technology technologyto ON (((technologyto.technologygroup_id = technologygroupto.id) AND (technologyto.active = true) AND (technologyto.technologyprototype_id IS NULL))))
+     JOIN public.technologies_technology technologyto ON (((technologyto.technologygroup_id = technologygroupto.id) AND (technologyto.active = true))))
   WHERE ((linechangeovernorms.changeovertype)::text = '02forTechnologyGroup'::text);
 
 
@@ -20210,13 +20207,10 @@ CREATE TABLE public.materialflowresources_document (
     issend boolean DEFAULT false,
     wms boolean DEFAULT false,
     datesendtowms timestamp without time zone,
-    dateshipmenttocustomer date,
-    additionalinfo character varying(255),
     stateinwms character varying(255),
     pickingworker character varying(255),
     dateconfirmationofcompletion timestamp without time zone,
     editinwms boolean DEFAULT true,
-    additionaldescription character varying(2048),
     staff_id bigint,
     ordersgroup_id bigint
 );
@@ -21387,7 +21381,8 @@ CREATE VIEW public.materialflowresources_resourcestockdto AS
     COALESCE(ordered_quantities.quantity, (0)::numeric) AS orderedquantity,
     COALESCE(reserved_quantities.quantity, (0)::numeric) AS reservedquantity,
     (COALESCE(quantities.quantity, (0)::numeric) - COALESCE(reserved_quantities.quantity, (0)::numeric)) AS availablequantity,
-    quantities.blockedforqualitycontrol
+    quantities.blockedforqualitycontrol,
+    COALESCE(product.additionalunit, product.unit) AS productadditionalunit
    FROM (((((((public.materialflowresources_resourcestock resourcestock
      JOIN public.materialflow_location location ON ((location.id = resourcestock.location_id)))
      JOIN public.basic_product product ON ((product.id = resourcestock.product_id)))
@@ -21839,7 +21834,8 @@ CREATE TABLE public.materialrequirements_materialrequirement (
     entityversion bigint DEFAULT 0,
     includewarehouse boolean DEFAULT false,
     showcurrentstocklevel boolean DEFAULT false,
-    includestartdateorder boolean DEFAULT false
+    includestartdateorder boolean DEFAULT false,
+    location_id bigint
 );
 
 
@@ -21873,7 +21869,9 @@ CREATE TABLE public.materialrequirements_materialrequirementproduct (
     location_id bigint,
     quantity numeric(14,5),
     currentstock numeric(14,5),
-    orderstartdate date
+    orderstartdate date,
+    batch_id bigint,
+    batchstock numeric(14,5)
 );
 
 
@@ -21897,56 +21895,18 @@ ALTER SEQUENCE public.materialrequirements_materialrequirementproduct_id_seq OWN
 
 
 --
--- Name: mobilewms_outofstock; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.mobilewms_outofstock (
-    id bigint NOT NULL,
-    location_id bigint,
-    product_id bigint,
-    storagelocation_id bigint,
-    state character varying(255) DEFAULT '01new'::character varying,
-    createdate timestamp without time zone,
-    updatedate timestamp without time zone,
-    createuser character varying(255),
-    updateuser character varying(255)
-);
-
-
---
--- Name: mobilewms_outofstock_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE public.mobilewms_outofstock_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: mobilewms_outofstock_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE public.mobilewms_outofstock_id_seq OWNED BY public.mobilewms_outofstock.id;
-
-
---
 -- Name: mobilewms_wmsdocumentpart; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE public.mobilewms_wmsdocumentpart (
     id bigint NOT NULL,
     number character varying(255),
-    additionalinfo character varying(255),
     part integer,
     company character varying(255),
     stateinwms character varying(255),
     pickingworker character varying(255),
     document_id bigint,
     parts integer,
-    additionaldescription character varying(2048),
     type character varying(255) NOT NULL
 );
 
@@ -21968,66 +21928,6 @@ CREATE SEQUENCE public.mobilewms_wmsdocumentpart_id_seq
 --
 
 ALTER SEQUENCE public.mobilewms_wmsdocumentpart_id_seq OWNED BY public.mobilewms_wmsdocumentpart.id;
-
-
---
--- Name: mobilewms_wmsdocumenttype; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.mobilewms_wmsdocumenttype (
-    id bigint NOT NULL,
-    type character varying(255),
-    parameter_id bigint
-);
-
-
---
--- Name: mobilewms_wmsdocumenttype_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE public.mobilewms_wmsdocumenttype_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: mobilewms_wmsdocumenttype_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE public.mobilewms_wmsdocumenttype_id_seq OWNED BY public.mobilewms_wmsdocumenttype.id;
-
-
---
--- Name: mobilewms_wmslocation; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.mobilewms_wmslocation (
-    id bigint NOT NULL,
-    location_id bigint,
-    parameter_id bigint
-);
-
-
---
--- Name: mobilewms_wmslocation_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE public.mobilewms_wmslocation_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: mobilewms_wmslocation_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE public.mobilewms_wmslocation_id_seq OWNED BY public.mobilewms_wmslocation.id;
 
 
 --
@@ -22146,7 +22046,7 @@ CREATE VIEW public.productioncounting_performanceanalysisdetaildto AS
      LEFT JOIN public.basic_size size ON ((size.id = product.size_id)))
      LEFT JOIN public.productflowthrudivision_technologyproductionline tpl ON (((tpl.technology_id = ordersorder.technology_id) AND tpl.master)))
      LEFT JOIN public.basic_shift shift ON ((shift.id = productiontracking.shift_id)))
-     LEFT JOIN public.technologies_technology technologyprototype ON ((ordersorder.technologyprototype_id = technologyprototype.id)))
+     LEFT JOIN public.technologies_technology technologyprototype ON ((ordersorder.technology_id = technologyprototype.id)))
      LEFT JOIN public.technologiesgenerator_generatorcontext tcontext ON ((tcontext.id = technologyprototype.generatorcontext_id)))
   WHERE ((productiontracking.state)::text = ANY (ARRAY[('01draft'::character varying)::text, ('02accepted'::character varying)::text]))
 UNION ALL
@@ -22187,7 +22087,7 @@ UNION ALL
      LEFT JOIN public.basic_size size ON ((size.id = product.size_id)))
      LEFT JOIN public.productflowthrudivision_technologyproductionline tpl ON (((tpl.technology_id = ordersorder.technology_id) AND tpl.master)))
      LEFT JOIN public.basic_shift shift ON ((shift.id = productiontracking.shift_id)))
-     LEFT JOIN public.technologies_technology technologyprototype ON ((ordersorder.technologyprototype_id = technologyprototype.id)))
+     LEFT JOIN public.technologies_technology technologyprototype ON ((ordersorder.technology_id = technologyprototype.id)))
      LEFT JOIN public.technologiesgenerator_generatorcontext tcontext ON ((tcontext.id = technologyprototype.generatorcontext_id)))
   WHERE ((productiontracking.state)::text = ANY (ARRAY[('01draft'::character varying)::text, ('02accepted'::character varying)::text]));
 
@@ -24908,7 +24808,7 @@ CREATE VIEW public.ordersgroups_plannedworkingtimeanalysisdto AS
      LEFT JOIN public.basic_company company ON ((company.id = masterorder.company_id)))
      LEFT JOIN public.orders_order ordersorder ON ((ordersorder.ordersgroup_id = ordersgroup.id)))
      LEFT JOIN public.basic_product product ON ((ordersorder.product_id = product.id)))
-     LEFT JOIN public.technologies_technology technologyprototype ON ((ordersorder.technologyprototype_id = technologyprototype.id)))
+     LEFT JOIN public.technologies_technology technologyprototype ON ((ordersorder.technology_id = technologyprototype.id)))
      LEFT JOIN public.technologiesgenerator_generatorcontext tcontext ON ((tcontext.id = technologyprototype.generatorcontext_id)))
      LEFT JOIN public.productflowthrudivision_technologyproductionline tpl ON (((tpl.technology_id = ordersorder.technology_id) AND tpl.master)))
   WHERE (((ordersgroup.state)::text = ANY (ARRAY[('01draft'::character varying)::text, ('02inProgress'::character varying)::text])) AND (ordersorder.remainingamountofproducttoproduce <> (0)::numeric))
@@ -24935,7 +24835,7 @@ UNION ALL
      LEFT JOIN public.basic_company company ON ((company.id = masterorder.company_id)))
      LEFT JOIN public.orders_order ordersorder ON ((ordersorder.ordersgroup_id = ordersgroup.id)))
      LEFT JOIN public.basic_product product ON ((ordersorder.product_id = product.id)))
-     LEFT JOIN public.technologies_technology technologyprototype ON ((ordersorder.technologyprototype_id = technologyprototype.id)))
+     LEFT JOIN public.technologies_technology technologyprototype ON ((ordersorder.technology_id = technologyprototype.id)))
      LEFT JOIN public.technologiesgenerator_generatorcontext tcontext ON ((tcontext.id = technologyprototype.generatorcontext_id)))
      LEFT JOIN public.productflowthrudivision_technologyproductionline tpl ON (((tpl.technology_id = ordersorder.technology_id) AND tpl.master)))
   WHERE (((ordersgroup.state)::text = ANY (ARRAY[('01draft'::character varying)::text, ('02inProgress'::character varying)::text])) AND (ordersorder.remainingamountofproducttoproduce <> (0)::numeric));
@@ -26816,7 +26716,7 @@ CREATE VIEW public.productioncounting_beforeadditionalactionsanalysisentry AS
     tcontext.number AS technologygeneratornumber
    FROM (((((((((((((public.productioncounting_productiontracking pt
      JOIN public.orders_order ord ON ((ord.id = pt.order_id)))
-     JOIN public.technologies_technology technologyprototype ON ((technologyprototype.id = ord.technologyprototype_id)))
+     JOIN public.technologies_technology technologyprototype ON ((technologyprototype.id = ord.technology_id)))
      JOIN public.technologies_technology technology ON ((technology.id = ord.technology_id)))
      LEFT JOIN public.technologiesgenerator_generatorcontext tcontext ON ((tcontext.id = technologyprototype.generatorcontext_id)))
      LEFT JOIN public.orders_order parentorder ON ((ord.parent_id = parentorder.id)))
@@ -26849,7 +26749,7 @@ UNION ALL
     tcontext.number AS technologygeneratornumber
    FROM (((((((((((((public.arch_productioncounting_productiontracking pt
      JOIN public.arch_orders_order ord ON ((ord.id = pt.order_id)))
-     JOIN public.technologies_technology technologyprototype ON ((technologyprototype.id = ord.technologyprototype_id)))
+     JOIN public.technologies_technology technologyprototype ON ((technologyprototype.id = ord.technology_id)))
      JOIN public.technologies_technology technology ON ((technology.id = ord.technology_id)))
      LEFT JOIN public.technologiesgenerator_generatorcontext tcontext ON ((tcontext.id = technologyprototype.generatorcontext_id)))
      LEFT JOIN public.arch_orders_order parentorder ON ((ord.parent_id = parentorder.id)))
@@ -35796,31 +35696,10 @@ ALTER TABLE ONLY public.materialrequirements_materialrequirementproduct ALTER CO
 
 
 --
--- Name: mobilewms_outofstock id; Type: DEFAULT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.mobilewms_outofstock ALTER COLUMN id SET DEFAULT nextval('public.mobilewms_outofstock_id_seq'::regclass);
-
-
---
 -- Name: mobilewms_wmsdocumentpart id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.mobilewms_wmsdocumentpart ALTER COLUMN id SET DEFAULT nextval('public.mobilewms_wmsdocumentpart_id_seq'::regclass);
-
-
---
--- Name: mobilewms_wmsdocumenttype id; Type: DEFAULT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.mobilewms_wmsdocumenttype ALTER COLUMN id SET DEFAULT nextval('public.mobilewms_wmsdocumenttype_id_seq'::regclass);
-
-
---
--- Name: mobilewms_wmslocation id; Type: DEFAULT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.mobilewms_wmslocation ALTER COLUMN id SET DEFAULT nextval('public.mobilewms_wmslocation_id_seq'::regclass);
 
 
 --
@@ -37893,7 +37772,7 @@ COPY public.arch_masterorders_productsbysizehelper (id, product_id, totalquantit
 -- Data for Name: arch_materialflowresources_document; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.arch_materialflowresources_document (id, number, type, "time", state, locationfrom_id, locationto_id, user_id, delivery_id, active, createdate, updatedate, createuser, updateuser, order_id, description, suborder_id, company_id, maintenanceevent_id, entityversion, plannedevent_id, name, createlinkeddocument, linkeddocumentlocation_id, address_id, dispositionshift_id, positionsfile, printed, generationdate, filename, acceptationinprogress, externalnumber, issend, wms, datesendtowms, dateshipmenttocustomer, additionalinfo, stateinwms, pickingworker, dateconfirmationofcompletion, locationchanged, editinwms, additionaldescription, staff_id, ordersgroup_id, archived) FROM stdin;
+COPY public.arch_materialflowresources_document (id, number, type, "time", state, locationfrom_id, locationto_id, user_id, delivery_id, active, createdate, updatedate, createuser, updateuser, order_id, description, suborder_id, company_id, maintenanceevent_id, entityversion, plannedevent_id, name, createlinkeddocument, linkeddocumentlocation_id, address_id, dispositionshift_id, positionsfile, printed, generationdate, filename, acceptationinprogress, externalnumber, issend, wms, datesendtowms, stateinwms, pickingworker, dateconfirmationofcompletion, locationchanged, editinwms, staff_id, ordersgroup_id, archived) FROM stdin;
 \.
 
 
@@ -42123,7 +42002,7 @@ COPY public.materialflowresources_costnormslocation (id, costnormsgenerator_id, 
 -- Data for Name: materialflowresources_document; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.materialflowresources_document (id, number, type, "time", state, locationfrom_id, locationto_id, user_id, delivery_id, active, createdate, updatedate, createuser, updateuser, order_id, description, suborder_id, company_id, maintenanceevent_id, entityversion, plannedevent_id, name, createlinkeddocument, linkeddocumentlocation_id, address_id, generationdate, filename, acceptationinprogress, externalnumber, issend, wms, datesendtowms, dateshipmenttocustomer, additionalinfo, stateinwms, pickingworker, dateconfirmationofcompletion, editinwms, additionaldescription, staff_id, ordersgroup_id) FROM stdin;
+COPY public.materialflowresources_document (id, number, type, "time", state, locationfrom_id, locationto_id, user_id, delivery_id, active, createdate, updatedate, createuser, updateuser, order_id, description, suborder_id, company_id, maintenanceevent_id, entityversion, plannedevent_id, name, createlinkeddocument, linkeddocumentlocation_id, address_id, generationdate, filename, acceptationinprogress, externalnumber, issend, wms, datesendtowms, stateinwms, pickingworker, dateconfirmationofcompletion, editinwms, staff_id, ordersgroup_id) FROM stdin;
 \.
 
 
@@ -42375,7 +42254,7 @@ COPY public.materialrequirementcoveragefororder_coverageproductlogging (id, cove
 -- Data for Name: materialrequirements_materialrequirement; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.materialrequirements_materialrequirement (id, name, number, date, worker, mrpalgorithm, generated, filename, active, entityversion, includewarehouse, showcurrentstocklevel, includestartdateorder) FROM stdin;
+COPY public.materialrequirements_materialrequirement (id, name, number, date, worker, mrpalgorithm, generated, filename, active, entityversion, includewarehouse, showcurrentstocklevel, includestartdateorder, location_id) FROM stdin;
 \.
 
 
@@ -42383,15 +42262,7 @@ COPY public.materialrequirements_materialrequirement (id, name, number, date, wo
 -- Data for Name: materialrequirements_materialrequirementproduct; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.materialrequirements_materialrequirementproduct (id, materialrequirement_id, product_id, location_id, quantity, currentstock, orderstartdate) FROM stdin;
-\.
-
-
---
--- Data for Name: mobilewms_outofstock; Type: TABLE DATA; Schema: public; Owner: -
---
-
-COPY public.mobilewms_outofstock (id, location_id, product_id, storagelocation_id, state, createdate, updatedate, createuser, updateuser) FROM stdin;
+COPY public.materialrequirements_materialrequirementproduct (id, materialrequirement_id, product_id, location_id, quantity, currentstock, orderstartdate, batch_id, batchstock) FROM stdin;
 \.
 
 
@@ -42399,23 +42270,7 @@ COPY public.mobilewms_outofstock (id, location_id, product_id, storagelocation_i
 -- Data for Name: mobilewms_wmsdocumentpart; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.mobilewms_wmsdocumentpart (id, number, additionalinfo, part, company, stateinwms, pickingworker, document_id, parts, additionaldescription, type) FROM stdin;
-\.
-
-
---
--- Data for Name: mobilewms_wmsdocumenttype; Type: TABLE DATA; Schema: public; Owner: -
---
-
-COPY public.mobilewms_wmsdocumenttype (id, type, parameter_id) FROM stdin;
-\.
-
-
---
--- Data for Name: mobilewms_wmslocation; Type: TABLE DATA; Schema: public; Owner: -
---
-
-COPY public.mobilewms_wmslocation (id, location_id, parameter_id) FROM stdin;
+COPY public.mobilewms_wmsdocumentpart (id, number, part, company, stateinwms, pickingworker, document_id, parts, type) FROM stdin;
 \.
 
 
@@ -44026,7 +43881,6 @@ COPY public.qcadooview_item (id, pluginidentifier, name, active, category_id, vi
 215	orders	workstationChangeoverForOperationalTasksList	t	7	214	24	ROLE_PLANNING	0
 191	orders	orderTechnologicalProcessesList	t	8	190	4	ROLE_ORDER_TECHNOLOGICAL_PROCESSES	0
 192	orders	orderTechnologicalProcessWastesList	t	8	191	6	ROLE_ORDER_TECHNOLOGICAL_PROCESSES	0
-172	mobileWMS	outOfStockList	t	9	171	16	ROLE_REQUIREMENTS	0
 216	productionCounting	performanceAnalysisMv	t	15	215	16	ROLE_ANALYSIS_VIEWER	0
 217	productionCounting	employeePieceworkSettlement	t	15	216	17	ROLE_ANALYSIS_VIEWER	0
 77	masterOrders	masterOrders	t	23	77	2	ROLE_PLANNING	0
@@ -44254,7 +44108,6 @@ COPY public.qcadooview_view (id, pluginidentifier, name, view, url, entityversio
 217	scheduleGantt	workstationsWorkChart		/workstationsWorkChart.html	0
 216	productionCounting	employeePieceworkSettlement		/employeePieceworkSettlement.html	0
 218	subcontractorPortal	subOrderIssuedProductsReportsList	subOrderIssuedProductsReportsList	\N	0
-171	mobileWMS	outOfStockList	outOfStockList	\N	0
 219	technologies	productDatasList	productDatasList	\N	0
 \.
 
@@ -48309,31 +48162,10 @@ SELECT pg_catalog.setval('public.materialrequirements_materialrequirementproduct
 
 
 --
--- Name: mobilewms_outofstock_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
---
-
-SELECT pg_catalog.setval('public.mobilewms_outofstock_id_seq', 1, false);
-
-
---
 -- Name: mobilewms_wmsdocumentpart_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
 SELECT pg_catalog.setval('public.mobilewms_wmsdocumentpart_id_seq', 1, false);
-
-
---
--- Name: mobilewms_wmsdocumenttype_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
---
-
-SELECT pg_catalog.setval('public.mobilewms_wmsdocumenttype_id_seq', 1, false);
-
-
---
--- Name: mobilewms_wmslocation_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
---
-
-SELECT pg_catalog.setval('public.mobilewms_wmslocation_id_seq', 1, false);
 
 
 --
@@ -52846,35 +52678,11 @@ ALTER TABLE ONLY public.emailnotifications_staffnotification
 
 
 --
--- Name: mobilewms_outofstock esilco_outofstock_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.mobilewms_outofstock
-    ADD CONSTRAINT esilco_outofstock_pkey PRIMARY KEY (id);
-
-
---
 -- Name: mobilewms_wmsdocumentpart esilco_wmsdocumentpart_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.mobilewms_wmsdocumentpart
     ADD CONSTRAINT esilco_wmsdocumentpart_pkey PRIMARY KEY (id);
-
-
---
--- Name: mobilewms_wmsdocumenttype esilco_wmsdocumenttype_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.mobilewms_wmsdocumenttype
-    ADD CONSTRAINT esilco_wmsdocumenttype_pkey PRIMARY KEY (id);
-
-
---
--- Name: mobilewms_wmslocation esilco_wmslocation_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.mobilewms_wmslocation
-    ADD CONSTRAINT esilco_wmslocation_pkey PRIMARY KEY (id);
 
 
 --
@@ -61387,6 +61195,14 @@ ALTER TABLE ONLY public.productflowthrudivision_materialavailability
 
 
 --
+-- Name: materialrequirements_materialrequirement materialrequirement_location_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.materialrequirements_materialrequirement
+    ADD CONSTRAINT materialrequirement_location_fkey FOREIGN KEY (location_id) REFERENCES public.materialflow_location(id) DEFERRABLE;
+
+
+--
 -- Name: jointable_materialrequirement_order materialrequirement_order_materialrequirement_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -61432,6 +61248,14 @@ ALTER TABLE ONLY public.jointable_materialrequirementcoverage_order
 
 ALTER TABLE ONLY public.ordersupplies_materialrequirementcoverage
     ADD CONSTRAINT materialrequirementcoverage_ordersgroup_fkey FOREIGN KEY (forordersgroup_id) REFERENCES public.ordersgroups_ordersgroup(id) DEFERRABLE;
+
+
+--
+-- Name: materialrequirements_materialrequirementproduct materialrequirementproduct_batch_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.materialrequirements_materialrequirementproduct
+    ADD CONSTRAINT materialrequirementproduct_batch_fkey FOREIGN KEY (batch_id) REFERENCES public.advancedgenealogy_batch(id) DEFERRABLE;
 
 
 --
@@ -63056,30 +62880,6 @@ ALTER TABLE ONLY public.orders_ordertechnologicalprocesswaste
 
 ALTER TABLE ONLY public.productionscheduling_ordertimecalculation
     ADD CONSTRAINT ordertimecalculation_order_fkey FOREIGN KEY (order_id) REFERENCES public.orders_order(id) DEFERRABLE;
-
-
---
--- Name: mobilewms_outofstock outofstock_location_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.mobilewms_outofstock
-    ADD CONSTRAINT outofstock_location_fkey FOREIGN KEY (location_id) REFERENCES public.materialflow_location(id) DEFERRABLE;
-
-
---
--- Name: mobilewms_outofstock outofstock_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.mobilewms_outofstock
-    ADD CONSTRAINT outofstock_product_fkey FOREIGN KEY (product_id) REFERENCES public.basic_product(id) DEFERRABLE;
-
-
---
--- Name: mobilewms_outofstock outofstock_storagelocation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.mobilewms_outofstock
-    ADD CONSTRAINT outofstock_storagelocation_fkey FOREIGN KEY (storagelocation_id) REFERENCES public.materialflowresources_storagelocation(id) DEFERRABLE;
 
 
 --
@@ -67496,30 +67296,6 @@ ALTER TABLE ONLY public.materialflowresources_warehousestockreport
 
 ALTER TABLE ONLY public.mobilewms_wmsdocumentpart
     ADD CONSTRAINT wmsdocumentpart_document_fkey FOREIGN KEY (document_id) REFERENCES public.materialflowresources_document(id) DEFERRABLE;
-
-
---
--- Name: mobilewms_wmsdocumenttype wmsdocumenttype_parameter_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.mobilewms_wmsdocumenttype
-    ADD CONSTRAINT wmsdocumenttype_parameter_fkey FOREIGN KEY (parameter_id) REFERENCES public.basic_parameter(id) DEFERRABLE;
-
-
---
--- Name: mobilewms_wmslocation wmslocation_location_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.mobilewms_wmslocation
-    ADD CONSTRAINT wmslocation_location_fkey FOREIGN KEY (location_id) REFERENCES public.materialflow_location(id) DEFERRABLE;
-
-
---
--- Name: mobilewms_wmslocation wmslocation_parameter_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.mobilewms_wmslocation
-    ADD CONSTRAINT wmslocation_parameter_fkey FOREIGN KEY (parameter_id) REFERENCES public.basic_parameter(id) DEFERRABLE;
 
 
 --

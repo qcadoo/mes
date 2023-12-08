@@ -12,14 +12,11 @@ import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuanti
 import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityTypeOfMaterial;
 import com.qcadoo.mes.materialFlowResources.MaterialFlowResourcesService;
 import com.qcadoo.mes.materialFlowResources.constants.MaterialFlowResourcesConstants;
-import com.qcadoo.mes.materialFlowResources.constants.ResourceFields;
 import com.qcadoo.mes.orders.constants.OperationalTaskFields;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.productFlowThruDivision.constants.*;
 import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
 import com.qcadoo.model.api.*;
-import com.qcadoo.model.api.search.JoinType;
-import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -27,10 +24,6 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.util.*;
 import java.util.stream.Collectors;
-
-import static com.qcadoo.model.api.search.SearchOrders.asc;
-import static com.qcadoo.model.api.search.SearchProjections.*;
-import static com.qcadoo.model.api.search.SearchProjections.rowCount;
 
 @Service
 public class OperationalTaskMaterialAvailability {
@@ -49,7 +42,6 @@ public class OperationalTaskMaterialAvailability {
 
     @Autowired
     private MaterialFlowResourcesService materialFlowResourcesService;
-
 
     public List<Entity> generateAndSaveMaterialAvailability(final Entity operationalTask) {
         Entity order = operationalTask.getBelongsToField(OperationalTaskFields.ORDER);
@@ -195,10 +187,11 @@ public class OperationalTaskMaterialAvailability {
 
         materialAvailability.setField(OperationalTaskMaterialAvailabilityFields.BATCHES, batches);
         materialAvailability.setField(OperationalTaskMaterialAvailabilityFields.BATCHES_ID, batchesId);
+
         if (Objects.isNull(location)) {
             materialAvailability.setField(OperationalTaskMaterialAvailabilityFields.BATCHES_QUANTITY, BigDecimal.ZERO);
         } else {
-            materialAvailability.setField(OperationalTaskMaterialAvailabilityFields.BATCHES_QUANTITY, getBatchesQuantity(batchesList, product, location));
+            materialAvailability.setField(OperationalTaskMaterialAvailabilityFields.BATCHES_QUANTITY, materialFlowResourcesService.getBatchesQuantity(batchesList, product, location));
         }
 
         return materialAvailability;
@@ -338,31 +331,7 @@ public class OperationalTaskMaterialAvailability {
                         ProductionCountingQuantityRole.PRODUCED.getStringValue())).list().getEntities();
     }
 
-    private BigDecimal getBatchesQuantity(final Collection<Entity> batches, final Entity product,
-                                          final Entity location) {
-        BigDecimal batchesQuantity = BigDecimal.ZERO;
 
-        if (!batches.isEmpty()) {
-            SearchCriteriaBuilder searchCriteriaBuilder =
-                    getResourceDD().find()
-                            .createAlias(ResourceFields.PRODUCT, ResourceFields.PRODUCT, JoinType.LEFT)
-                            .createAlias(ResourceFields.LOCATION, ResourceFields.LOCATION, JoinType.LEFT)
-                            .createAlias(ResourceFields.BATCH, ResourceFields.BATCH, JoinType.LEFT)
-                            .add(SearchRestrictions.eq(ResourceFields.PRODUCT + "." + "id", product.getId()))
-                            .add(SearchRestrictions.eq(ResourceFields.LOCATION + "." + "id", location.getId()))
-                            .add(SearchRestrictions.in(ResourceFields.BATCH + "." + "id", batches.stream().map(Entity::getId).collect(Collectors.toList())))
-                            .setProjection(list().add(alias(sum(ResourceFields.AVAILABLE_QUANTITY), "sum")).add(rowCount()))
-                            .addOrder(asc("sum"));
-
-            Entity resource = searchCriteriaBuilder.setMaxResults(1).uniqueResult();
-
-            if (Objects.nonNull(resource)) {
-                batchesQuantity = resource.getDecimalField("sum");
-            }
-        }
-
-        return batchesQuantity;
-    }
 
     private void saveMaterialAvailability(final List<Entity> materialsAvailability) {
         DataDefinition materialAvailabilityDD = getOperationalTaskMaterialAvailabilityDD();

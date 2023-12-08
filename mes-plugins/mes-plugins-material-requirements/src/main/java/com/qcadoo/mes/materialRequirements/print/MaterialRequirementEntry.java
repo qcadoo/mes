@@ -1,13 +1,14 @@
 package com.qcadoo.mes.materialRequirements.print;
 
-import java.math.BigDecimal;
-import java.util.Date;
-import java.util.Objects;
-
+import com.google.common.collect.Lists;
+import com.qcadoo.model.api.Entity;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
-import com.qcadoo.model.api.Entity;
+import java.math.BigDecimal;
+import java.util.Date;
+import java.util.List;
+import java.util.Objects;
 
 public class MaterialRequirementEntry {
 
@@ -30,6 +31,8 @@ public class MaterialRequirementEntry {
     private Entity product;
 
     private Entity warehouse;
+
+    private List<Entity> batches = Lists.newArrayList();
 
     public Long getId() {
         return id;
@@ -113,6 +116,14 @@ public class MaterialRequirementEntry {
 
     public void setWarehouse(final Entity warehouse) {
         this.warehouse = warehouse;
+    }
+
+    public List<Entity> getBatches() {
+        return batches;
+    }
+
+    public void setBatches(final List<Entity> batches) {
+        this.batches = batches;
     }
 
     @Override

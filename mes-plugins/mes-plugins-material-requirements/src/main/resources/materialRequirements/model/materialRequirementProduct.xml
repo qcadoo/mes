@@ -32,12 +32,18 @@
         <belongsTo name="materialRequirement" model="materialRequirement" required="true"/>
         <belongsTo name="product" plugin="basic" model="product" required="true"/>
         <belongsTo name="location" plugin="materialFlow" model="location"/>
+        <belongsTo name="batch" plugin="advancedGenealogy" model="batch"/>
         <decimal name="quantity">
             <validatesRange from="0" exclusively="true"/>
             <validatesUnscaledValue max="9"/>
             <validatesScale max="5"/>
         </decimal>
         <decimal name="currentStock">
+            <validatesRange from="0"/>
+            <validatesUnscaledValue max="9"/>
+            <validatesScale max="5"/>
+        </decimal>
+        <decimal name="batchStock">
             <validatesRange from="0"/>
             <validatesUnscaledValue max="9"/>
             <validatesScale max="5"/>

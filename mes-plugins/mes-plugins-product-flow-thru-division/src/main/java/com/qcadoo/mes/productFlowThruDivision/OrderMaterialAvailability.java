@@ -1,23 +1,5 @@
 package com.qcadoo.mes.productFlowThruDivision;
 
-import static com.qcadoo.model.api.search.SearchOrders.asc;
-import static com.qcadoo.model.api.search.SearchProjections.alias;
-import static com.qcadoo.model.api.search.SearchProjections.list;
-import static com.qcadoo.model.api.search.SearchProjections.rowCount;
-import static com.qcadoo.model.api.search.SearchProjections.sum;
-
-import java.math.BigDecimal;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
-import java.util.stream.Collectors;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
@@ -29,22 +11,17 @@ import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuanti
 import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityTypeOfMaterial;
 import com.qcadoo.mes.materialFlowResources.MaterialFlowResourcesService;
 import com.qcadoo.mes.materialFlowResources.constants.MaterialFlowResourcesConstants;
-import com.qcadoo.mes.materialFlowResources.constants.ResourceFields;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
-import com.qcadoo.mes.productFlowThruDivision.constants.AvailabilityOfMaterialAvailability;
-import com.qcadoo.mes.productFlowThruDivision.constants.MaterialAvailabilityFields;
-import com.qcadoo.mes.productFlowThruDivision.constants.OrderFieldsPFTD;
-import com.qcadoo.mes.productFlowThruDivision.constants.ProductFlowThruDivisionConstants;
-import com.qcadoo.mes.productFlowThruDivision.constants.ProductionCountingQuantityFieldsPFTD;
-import com.qcadoo.model.api.DataDefinition;
-import com.qcadoo.model.api.DataDefinitionService;
-import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.EntityList;
-import com.qcadoo.model.api.NumberService;
-import com.qcadoo.model.api.search.JoinType;
-import com.qcadoo.model.api.search.SearchCriteriaBuilder;
+import com.qcadoo.mes.productFlowThruDivision.constants.*;
+import com.qcadoo.model.api.*;
 import com.qcadoo.model.api.search.SearchRestrictions;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class OrderMaterialAvailability {
@@ -341,35 +318,9 @@ public class OrderMaterialAvailability {
 
         materialAvailability.setField(MaterialAvailabilityFields.BATCHES, batches);
         materialAvailability.setField(MaterialAvailabilityFields.BATCHES_ID, batchesId);
-        materialAvailability.setField(MaterialAvailabilityFields.BATCHES_QUANTITY, getBatchesQuantity(batchesList, product, location));
+        materialAvailability.setField(MaterialAvailabilityFields.BATCHES_QUANTITY, materialFlowResourcesService.getBatchesQuantity(batchesList, product, location));
 
         return materialAvailability;
-    }
-
-    private BigDecimal getBatchesQuantity(final Collection<Entity> batches, final Entity product,
-                                          final Entity location) {
-        BigDecimal batchesQuantity = BigDecimal.ZERO;
-
-        if (!batches.isEmpty()) {
-            SearchCriteriaBuilder searchCriteriaBuilder =
-                    getResourceDD().find()
-                            .createAlias(ResourceFields.PRODUCT, ResourceFields.PRODUCT, JoinType.LEFT)
-                            .createAlias(ResourceFields.LOCATION, ResourceFields.LOCATION, JoinType.LEFT)
-                            .createAlias(ResourceFields.BATCH, ResourceFields.BATCH, JoinType.LEFT)
-                            .add(SearchRestrictions.eq(ResourceFields.PRODUCT + "." + "id", product.getId()))
-                            .add(SearchRestrictions.eq(ResourceFields.LOCATION + "." + "id", location.getId()))
-                            .add(SearchRestrictions.in(ResourceFields.BATCH + "." + "id", batches.stream().map(Entity::getId).collect(Collectors.toList())))
-                            .setProjection(list().add(alias(sum(ResourceFields.AVAILABLE_QUANTITY), "sum")).add(rowCount()))
-                            .addOrder(asc("sum"));
-
-            Entity resource = searchCriteriaBuilder.setMaxResults(1).uniqueResult();
-
-            if (Objects.nonNull(resource)) {
-                batchesQuantity = resource.getDecimalField("sum");
-            }
-        }
-
-        return batchesQuantity;
     }
 
     private void updateQuantityAndAvailability(final List<Entity> materialsAvailability) {

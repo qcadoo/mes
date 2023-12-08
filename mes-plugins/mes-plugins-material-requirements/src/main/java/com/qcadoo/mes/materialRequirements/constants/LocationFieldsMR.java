@@ -29,6 +29,8 @@ public final class LocationFieldsMR {
 
     }
 
+    public static final String MATERIAL_REQUIREMENTS = "materialRequirements";
+
     public static final String MATERIAL_REQUIREMENT_PRODUCTS = "materialRequirementProducts";
 
 }

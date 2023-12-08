@@ -49,6 +49,8 @@
         <boolean name="showCurrentStockLevel" default="false"/>
         <boolean name="includeStartDateOrder" default="false"/>
 
+        <belongsTo name="location" plugin="materialFlow" model="location"/>
+
         <hasMany name="materialRequirementProducts" model="materialRequirementProduct"
                  plugin="materialRequirements"
                  joinField="materialRequirement" cascade="delete"/>

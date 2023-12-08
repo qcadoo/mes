@@ -39,23 +39,19 @@
                 <bigButton name="createStorageLocations" icon="iconProducts24.png" state="enabled">
                     <script>
                         <![CDATA[
-					this.addOnChangeListener({
-						onClick: function() {
-
-								#{form}.performEvent('createStorageLocations', []);
-
-						}
-					});
-				]]>
+                            this.addOnChangeListener({
+                                onClick: function() {
+                                    #{form}.performEvent('createStorageLocations', []);
+                                }
+                            });
+                        ]]>
                     </script>
                 </bigButton>
             </group>
         </ribbon>
 
-
         <windowTab name="mainTab">
             <component type="form" name="product" reference="form">
-
                 <component type="gridLayout" name="gridLayout" columns="1"
                            rows="7" hasBorders="false">
                     <layoutElement column="1" row="1">
@@ -90,33 +86,31 @@
                         <component type="checkbox" name="placeStorageLocation" field="placeStorageLocation"
                                    reference="placeStorageLocation">
                             <listener event="onChange"
-                                      class="com.qcadoo.mes.materialFlowResources.listeners.StorageLocationsDetailsListeners"
+                                      class="com.qcadoo.mes.materialFlowResources.listeners.StorageLocationsMultiAddListeners"
                                       method="updateFields"/>
                         </component>
                     </layoutElement>
-
                     <layoutElement column="1" row="6">
                         <component type="input" name="maximumNumberOfPallets"
                                    reference="maximumNumberOfPallets" field="maximumNumberOfPallets">
                             <option type="alignment" value="right"/>
                         </component>
                     </layoutElement>
-
                     <layoutElement column="1" row="7">
                         <component type="checkbox" name="highStorageLocation" field="highStorageLocation"
                                    reference="highStorageLocation" hasDescription="true">
                         </component>
                     </layoutElement>
-
                 </component>
+
                 <option type="header" value="true"/>
                 <option type="expression" value="' '"/>
+
                 <listener event="createStorageLocations"
-                          class="com.qcadoo.mes.materialFlowResources.listeners.StorageLocationsListListeners"
+                          class="com.qcadoo.mes.materialFlowResources.listeners.StorageLocationsMultiAddListeners"
                           method="createStorageLocations"/>
             </component>
         </windowTab>
-
 
     </component>
 

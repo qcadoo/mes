@@ -48,6 +48,7 @@ public class MaterialRequirementDataService {
 
         boolean includeWarehouse = materialRequirement.getBooleanField(MaterialRequirementFields.INCLUDE_WAREHOUSE);
         boolean includeStartDateOrder = materialRequirement.getBooleanField(MaterialRequirementFields.INCLUDE_START_DATE_ORDER);
+        Entity location = materialRequirement.getBelongsToField(MaterialRequirementFields.LOCATION);
 
         List<MaterialRequirementEntry> materialRequirementEntries = Lists.newArrayList();
 
@@ -55,10 +56,57 @@ public class MaterialRequirementDataService {
             MaterialRequirementEntry materialRequirementEntry = mapToMaterialRequirementEntry(productionCountingQuantity,
                     includeWarehouse, includeStartDateOrder);
 
-            materialRequirementEntries.add(materialRequirementEntry);
+            Long warehouseId = materialRequirementEntry.getWarehouseId();
+
+            if (Objects.nonNull(location)) {
+                if (location.getId().equals(warehouseId)) {
+                    materialRequirementEntries.add(materialRequirementEntry);
+                }
+            } else {
+                materialRequirementEntries.add(materialRequirementEntry);
+            }
         }
 
         return convertToMap(materialRequirementEntries, includeWarehouse, includeStartDateOrder);
+    }
+
+    private MaterialRequirementEntry mapToMaterialRequirementEntry(final Entity productionCountingQuantity,
+                                                                   final boolean includeWarehouse, final boolean includeStartDateOrder) {
+        MaterialRequirementEntry materialRequirementEntry = new MaterialRequirementEntry();
+
+        Entity product = productionCountingQuantity.getBelongsToField(ProductionCountingQuantityFields.PRODUCT);
+        BigDecimal plannedQuantity = productionCountingQuantity.getDecimalField(ProductionCountingQuantityFields.PLANNED_QUANTITY);
+
+        materialRequirementEntry.setId(product.getId());
+        materialRequirementEntry.setNumber(product.getStringField(ProductFields.NUMBER));
+        materialRequirementEntry.setName(product.getStringField(ProductFields.NAME));
+        materialRequirementEntry.setProduct(product);
+        materialRequirementEntry.setPlannedQuantity(plannedQuantity);
+        materialRequirementEntry.setUnit(product.getStringField(ProductFields.UNIT));
+        materialRequirementEntry.setBatches(productionCountingQuantity.getHasManyField(ProductionCountingQuantityFields.BATCHES));
+
+        if (includeStartDateOrder) {
+            Entity order = productionCountingQuantity.getBelongsToField(ProductionCountingQuantityFields.ORDER);
+
+            if (Objects.nonNull(order.getDateField(OrderFields.START_DATE))) {
+                materialRequirementEntry.setOrderStartDate(new DateTime(order.getDateField(OrderFields.START_DATE))
+                        .withTimeAtStartOfDay().toDate());
+            } else {
+                materialRequirementEntry.setOrderStartDate(null);
+            }
+        }
+
+        if (includeWarehouse) {
+            Entity warehouse = productionCountingQuantity.getBelongsToField(ProductionCountingQuantityFields.COMPONENTS_LOCATION);
+
+            if (Objects.nonNull(warehouse)) {
+                materialRequirementEntry.setWarehouseId(warehouse.getId());
+                materialRequirementEntry.setWarehouseNumber(warehouse.getStringField(LocationFields.NUMBER));
+                materialRequirementEntry.setWarehouse(warehouse);
+            }
+        }
+
+        return materialRequirementEntry;
     }
 
     private Map<WarehouseDateKey, List<MaterialRequirementEntry>> convertToMap(final List<MaterialRequirementEntry> materialRequirementEntries,
@@ -80,46 +128,6 @@ public class MaterialRequirementDataService {
         return materialRequirementEntriesMap;
     }
 
-    private MaterialRequirementEntry mapToMaterialRequirementEntry(final Entity productionCountingQuantity,
-                                                                   final boolean includeWarehouse, final boolean includeStartDateOrder) {
-        MaterialRequirementEntry materialRequirementEntry = new MaterialRequirementEntry();
-
-        Entity product = productionCountingQuantity.getBelongsToField(ProductionCountingQuantityFields.PRODUCT);
-
-        materialRequirementEntry
-                .setId(productionCountingQuantity.getBelongsToField(ProductionCountingQuantityFields.PRODUCT).getId());
-        materialRequirementEntry.setNumber(product.getStringField(ProductFields.NUMBER));
-        materialRequirementEntry.setName(productionCountingQuantity.getBelongsToField(ProductionCountingQuantityFields.PRODUCT)
-                .getStringField(ProductFields.NAME));
-        materialRequirementEntry.setProduct(product);
-        materialRequirementEntry.setPlannedQuantity(productionCountingQuantity.getDecimalField(ProductionCountingQuantityFields.PLANNED_QUANTITY));
-        materialRequirementEntry.setUnit(productionCountingQuantity.getBelongsToField(ProductionCountingQuantityFields.PRODUCT)
-                .getStringField(ProductFields.UNIT));
-
-        if (includeStartDateOrder) {
-            if (Objects.nonNull(productionCountingQuantity.getBelongsToField(ProductionCountingQuantityFields.ORDER)
-                    .getDateField(OrderFields.START_DATE))) {
-                materialRequirementEntry.setOrderStartDate(
-                        new DateTime(productionCountingQuantity.getBelongsToField(ProductionCountingQuantityFields.ORDER)
-                                .getDateField(OrderFields.START_DATE)).withTimeAtStartOfDay().toDate());
-            } else {
-                materialRequirementEntry.setOrderStartDate(null);
-            }
-        }
-
-        if (includeWarehouse) {
-            Entity warehouse = productionCountingQuantity.getBelongsToField(ProductionCountingQuantityFields.COMPONENTS_LOCATION);
-
-            if (Objects.nonNull(warehouse)) {
-                materialRequirementEntry.setWarehouseId(warehouse.getId());
-                materialRequirementEntry.setWarehouseNumber(warehouse.getStringField(LocationFields.NUMBER));
-                materialRequirementEntry.setWarehouse(warehouse);
-            }
-        }
-
-        return materialRequirementEntry;
-    }
-
     public Map<Long, Map<Long, BigDecimal>> getQuantitiesInStock(final List<? extends MaterialRequirementEntry> materialRequirementEntries) {
         Map<Long, Entity> warehouses = Maps.newHashMap();
         Map<Long, List<Entity>> warehouseProducts = Maps.newHashMap();
@@ -132,6 +140,7 @@ public class MaterialRequirementDataService {
                 if (!warehouses.containsKey(warehouseId)) {
                     warehouses.put(warehouseId, warehouse);
                 }
+
                 if (warehouseProducts.containsKey(warehouseId)) {
                     List<Entity> products = warehouseProducts.get(warehouseId);
 

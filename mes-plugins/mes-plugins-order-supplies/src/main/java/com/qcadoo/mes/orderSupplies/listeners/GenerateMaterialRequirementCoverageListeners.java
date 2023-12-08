@@ -40,6 +40,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import com.qcadoo.mes.orderSupplies.coverage.coverageAnalysis.CoverageAnalysisForOrderService;
+import com.qcadoo.mes.orders.constants.OrderFields;
 import org.apache.commons.lang3.StringUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -187,6 +188,10 @@ public class GenerateMaterialRequirementCoverageListeners {
                     securityService.getCurrentUserName());
 
             materialRequirementCoverageService.estimateProductCoverageInTime(materialRequirementCoverage);
+            Entity assignedOrder = materialRequirementCoverage.getBelongsToField("order");
+            if(Objects.nonNull(assignedOrder) && Objects.isNull(assignedOrder.getDateField(OrderFields.START_DATE))) {
+                state.addMessage("orderSupplies.materialRequirementCoverage.report.datesIsEmptyInOrder", MessageType.INFO, false);
+            }
 
             state.performEvent(view, "reset", new String[0]);
 
