@@ -58,7 +58,7 @@ public class PalletValidatorService {
         }
 
         return validatePallet(location, storageLocation, palletNumber, palletType, deliveredProduct) &&
-                tooManyPalletsInStorageLocationAndDeliveredProducts(deliveredProduct.getDataDefinition(), deliveredProduct);
+                notTooManyPalletsInStorageLocationAndDeliveredProducts(deliveredProduct.getDataDefinition(), deliveredProduct);
     }
 
     public boolean validatePallet(final Entity location, final Entity storageLocation, final Entity palletNumber, final String typeOfPallet, final Entity entity) {
@@ -378,7 +378,7 @@ public class PalletValidatorService {
         return false;
     }
 
-    public boolean tooManyPalletsInStorageLocationAndDeliveredProducts(final DataDefinition deliveredProductDD, final Entity deliveredProduct) {
+    public boolean notTooManyPalletsInStorageLocationAndDeliveredProducts(final DataDefinition deliveredProductDD, final Entity deliveredProduct) {
         Entity storageLocation = deliveredProduct.getBelongsToField("storageLocation");
 
         if (Objects.nonNull(storageLocation) && storageLocation.getBooleanField(StorageLocationFields.PLACE_STORAGE_LOCATION)) {

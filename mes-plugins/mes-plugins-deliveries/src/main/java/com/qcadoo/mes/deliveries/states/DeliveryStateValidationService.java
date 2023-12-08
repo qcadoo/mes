@@ -220,7 +220,7 @@ public class DeliveryStateValidationService {
                         if (Objects.isNull(palletNumber)) {
                             missingPalletNumbers.add(productNumber);
                         } else {
-                            if (palletValidatorService.tooManyPalletsInStorageLocationAndDeliveredProducts(deliveredProduct.getDataDefinition(), deliveredProduct)) {
+                            if (!palletValidatorService.notTooManyPalletsInStorageLocationAndDeliveredProducts(deliveredProduct.getDataDefinition(), deliveredProduct)) {
                                 existsMorePallets.add(productNumber);
                             }
                         }
