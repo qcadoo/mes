@@ -616,7 +616,7 @@ public class DocumentPositionValidator {
     public Collection<? extends String> validatePallet(final DocumentPositionDTO position, final DocumentDTO document) {
         List<String> errors = Lists.newArrayList();
 
-        if (DocumentType.isInbound(document.getType())) {
+        if (DocumentType.RECEIPT.getStringValue().equals(document.getType()) || DocumentType.INTERNAL_INBOUND.getStringValue().equals(document.getType())) {
             Long documentId = document.getId();
             Long locationId = document.getLocationTo_id();
             Long positionId = position.getId();

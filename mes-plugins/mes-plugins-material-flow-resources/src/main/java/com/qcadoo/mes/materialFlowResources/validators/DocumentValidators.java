@@ -241,7 +241,7 @@ public class DocumentValidators {
 
         String type = document.getStringField(DocumentFields.TYPE);
 
-        if (DocumentType.isInbound(type)) {
+        if (DocumentType.RECEIPT.getStringValue().equals(type) || DocumentType.INTERNAL_INBOUND.getStringValue().equals(type)) {
             String number = document.getStringField(DocumentFields.NUMBER);
             List<Entity> positions = document.getHasManyField(DocumentFields.POSITIONS);
 
