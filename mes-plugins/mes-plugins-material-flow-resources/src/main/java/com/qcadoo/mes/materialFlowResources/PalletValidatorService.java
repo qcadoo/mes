@@ -423,12 +423,12 @@ public class PalletValidatorService {
                     deliveredProduct.addError(deliveredProductDD.getField("storageLocation"),
                             "deliveries.deliveredProduct.error.storageLocationPalletLimitExceeded");
 
-                    return true;
+                    return false;
                 }
             }
         }
 
-        return false;
+        return true;
     }
 
     public boolean checkMaximumNumberOfPallets(final Entity storageLocation, final Entity resource) {
