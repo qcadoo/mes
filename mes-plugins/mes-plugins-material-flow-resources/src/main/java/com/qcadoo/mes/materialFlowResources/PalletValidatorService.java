@@ -352,8 +352,7 @@ public class PalletValidatorService {
                 query.append("FROM materialflowresources_document document ");
                 query.append("JOIN materialflowresources_position position ");
                 query.append("ON position.document_id = document.id ");
-                query.append("WHERE document.state = '01draft' ");
-                query.append("AND position.id <> :positionId ");
+                query.append("WHERE position.id <> :positionId ");
                 query.append(") palletsInStorageLocation ");
                 query.append("JOIN materialflowresources_storagelocation storagelocation ");
                 query.append("ON storagelocation.id = palletsInStorageLocation.storagelocation_id ");

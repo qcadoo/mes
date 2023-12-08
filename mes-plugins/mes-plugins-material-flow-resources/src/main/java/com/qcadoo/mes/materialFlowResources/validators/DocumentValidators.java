@@ -32,7 +32,6 @@ import com.qcadoo.mes.materialFlowResources.exceptions.InvalidResourceException;
 import com.qcadoo.mes.materialFlowResources.service.DocumentService;
 import com.qcadoo.mes.materialFlowResources.service.ResourceManagementService;
 import com.qcadoo.model.api.DataDefinition;
-import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.validators.ErrorMessage;
 import com.qcadoo.view.api.ComponentState;
@@ -47,9 +46,6 @@ import java.util.Set;
 
 @Service
 public class DocumentValidators {
-
-    @Autowired
-    private DataDefinitionService dataDefinitionService;
 
     @Autowired
     private DocumentService documentService;
@@ -247,7 +243,6 @@ public class DocumentValidators {
 
         if (DocumentType.isInbound(type)) {
             String number = document.getStringField(DocumentFields.NUMBER);
-            Entity locationTo = document.getBelongsToField(DocumentFields.LOCATION_TO);
             List<Entity> positions = document.getHasManyField(DocumentFields.POSITIONS);
 
             Set<String> missingStorageLocations = Sets.newHashSet();
