@@ -53,6 +53,10 @@ public class TrackingOperationProductInComponentHooksPFTD {
                     BigDecimal resourcePlanedQuantity = orderProductResourceReservation.getDecimalField(OrderProductResourceReservationFields.PLANED_QUANTITY);
                     resourcePlanedQuantity = resourcePlanedQuantity.subtract(BigDecimalUtils.convertNullToZero(orderProductResourceReservation.getDecimalField(OrderProductResourceReservationFields.USED_QUANTITY)), numberService.getMathContext());
 
+                    if(BigDecimal.ZERO.compareTo(resourcePlanedQuantity) == 0) {
+                        continue;
+                    }
+
                     if (usedQuantity.compareTo(resourcePlanedQuantity) > 0) {
                         resourceReservation.setField("usedQuantity", resourcePlanedQuantity);
                         usedQuantity = usedQuantity.subtract(resourcePlanedQuantity, numberService.getMathContext());
