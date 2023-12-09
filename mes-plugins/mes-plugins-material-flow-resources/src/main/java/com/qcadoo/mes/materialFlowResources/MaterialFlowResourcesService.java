@@ -23,15 +23,14 @@
  */
 package com.qcadoo.mes.materialFlowResources;
 
-import com.qcadoo.mes.materialFlowResources.dto.*;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ViewDefinitionState;
 
 import java.math.BigDecimal;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 
 public interface MaterialFlowResourcesService {
 
@@ -47,47 +46,21 @@ public interface MaterialFlowResourcesService {
                                                               final boolean withoutBlockedForQualityControl);
 
     Map<Long, BigDecimal> getQuantitiesForProductsAndLocation(final List<Entity> products, final Entity location,
-                                                              final boolean withoutBlockedForQualityControl, final String fieldName);
+                                                              final boolean withoutBlockedForQualityControl,
+                                                              final String fieldName);
 
     Map<Long, Map<Long, BigDecimal>> getQuantitiesForProductsAndLocations(final List<Entity> products,
                                                                           final List<Entity> locations);
+
+
+    BigDecimal getBatchesQuantity(final Collection<Entity> batches, final Entity product,
+                                  final Entity location);
 
     void fillUnitFieldValues(final ViewDefinitionState view);
 
     void fillCurrencyFieldValues(final ViewDefinitionState view);
 
-    List<ResourcesQuantityDto> getResourceQuantities(final Long storageLocationId, final String productNumber);
-
-    ResourceDetailsDto getResourceDetails(String resourceNumber);
-
-    List<PalletNumberProductDTO> getProductsForPalletNumber(String palletNumber, Set<Long> userLocationIds);
-
-    List<SumOfProductsDto> getSumOfProducts(String productNumber, List<String> locationIds);
-
-    List<StorageLocationsForProductDto> getStoragesForProductNumber(String productNumber, List<String> locationIds);
-
-    ResourceToRepackDto getResourceDetailsToRepack(String resourceNumber, List<String> userLocations);
-
-    StorageLocationNumberIdDto getLocationId(String storageLocation, String storageLocationNumber);
-
-    StorageLocationNumberIdDto checkIfStorageLocationNumberExist(String storageLocationNumber);
-
-    CheckProductDto checkProductByStorageLocationNumber(String storageLocationNumber);
-
-    List<PalletDto> checkPalletsForLocationNumber(String storageLocationNumber);
-
     Optional<Entity> findStorageLocationForProduct(final Entity location, final Entity product);
-
-
-    PalletDto checkIfPalletExist(String palletNumber);
-
-    ResourceNumberDto checkIfPalletIsEmpty(String palletNumber);
-
-    List<ResourceToRepackDto> getResourceListByStorageLocationNumber(String storageLocationNumber, List<String> userLocations);
-
-    List<ResourceToRepackDto> getResourceListByPalletNumber(String palletNumber, List<String> userLocations);
-
-    List<ResourceToRepackDto> getResourceListByPalletAndLocationNumber(String palletNumber, String storageLocationNumber, List<String> userLocations);
 
     String getTypeOfPalletByPalletNumber(final Long locationId, final String palletNumberNumber);
 

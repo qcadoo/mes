@@ -131,36 +131,39 @@ public class TrackingOperationProductOutComponentHooks {
     }
 
     private boolean validateStorageLocationAndPalletNumber(final DataDefinition trackingOperationProductOutComponentDD, final Entity trackingOperationProductOutComponent) {
+        BigDecimal usedQuantity =  trackingOperationProductOutComponent.getDecimalField(TrackingOperationProductOutComponentFields.USED_QUANTITY);
         Entity storageLocation = trackingOperationProductOutComponent.getBelongsToField(TrackingOperationProductOutComponentFields.STORAGE_LOCATION);
         Entity palletNumber = trackingOperationProductOutComponent.getBelongsToField(TrackingOperationProductOutComponentFields.PALLET_NUMBER);
         String typeOfPallet = trackingOperationProductOutComponent.getStringField(TrackingOperationProductOutComponentFields.TYPE_OF_PALLET);
 
-        if (Objects.isNull(storageLocation) && Objects.nonNull(palletNumber)) {
-            trackingOperationProductOutComponent.addError(trackingOperationProductOutComponentDD.getField(TrackingOperationProductOutComponentFields.STORAGE_LOCATION), "productionCounting.trackingOperationProductOutComponent.error.storageLocationRequired");
+        if (Objects.nonNull(usedQuantity) && BigDecimal.ZERO.compareTo(usedQuantity) < 0) {
+            if (Objects.isNull(storageLocation) && Objects.nonNull(palletNumber)) {
+                trackingOperationProductOutComponent.addError(trackingOperationProductOutComponentDD.getField(TrackingOperationProductOutComponentFields.STORAGE_LOCATION), "productionCounting.trackingOperationProductOutComponent.error.storageLocationRequired");
 
-            return false;
-        } else {
-            if (Objects.nonNull(storageLocation)) {
-                Entity location = storageLocation.getBelongsToField(StorageLocationFields.LOCATION);
-                String storageLocationNumber = storageLocation.getStringField(StorageLocationFields.NUMBER);
-                boolean placeStorageLocation = storageLocation.getBooleanField(StorageLocationFields.PLACE_STORAGE_LOCATION);
+                return false;
+            } else {
+                if (Objects.nonNull(storageLocation)) {
+                    Entity location = storageLocation.getBelongsToField(StorageLocationFields.LOCATION);
+                    String storageLocationNumber = storageLocation.getStringField(StorageLocationFields.NUMBER);
+                    boolean placeStorageLocation = storageLocation.getBooleanField(StorageLocationFields.PLACE_STORAGE_LOCATION);
 
-                if (placeStorageLocation) {
-                    if (Objects.isNull(palletNumber)) {
-                        trackingOperationProductOutComponent.addError(trackingOperationProductOutComponentDD.getField(TrackingOperationProductOutComponentFields.PALLET_NUMBER), "productionCounting.trackingOperationProductOutComponent.error.palletNumberRequired");
-
-                        return false;
-                    } else {
-                        String palletNumberNumber = palletNumber.getStringField(PalletNumberFields.NUMBER);
-
-                        if (!palletValidatorService.validatePalletNumberAndTypeOfPallet(location, storageLocation, palletNumber, typeOfPallet, trackingOperationProductOutComponent)) {
-                            return false;
-                        }
-
-                        if (palletValidatorService.checkIfExistsMorePalletsForStorageLocation(location.getId(), storageLocationNumber, palletNumberNumber)) {
-                            trackingOperationProductOutComponent.addError(trackingOperationProductOutComponentDD.getField(TrackingOperationProductOutComponentFields.STORAGE_LOCATION), "productionCounting.trackingOperationProductOutComponent.error.existsOtherPalletsAtStorageLocation");
+                    if (placeStorageLocation) {
+                        if (Objects.isNull(palletNumber)) {
+                            trackingOperationProductOutComponent.addError(trackingOperationProductOutComponentDD.getField(TrackingOperationProductOutComponentFields.PALLET_NUMBER), "productionCounting.trackingOperationProductOutComponent.error.palletNumberRequired");
 
                             return false;
+                        } else {
+                            String palletNumberNumber = palletNumber.getStringField(PalletNumberFields.NUMBER);
+
+                            if (!palletValidatorService.validatePalletNumberAndTypeOfPallet(location, storageLocation, palletNumber, typeOfPallet, trackingOperationProductOutComponent)) {
+                                return false;
+                            }
+
+                            if (palletValidatorService.checkIfExistsMorePalletsForStorageLocation(location.getId(), storageLocationNumber, palletNumberNumber)) {
+                                trackingOperationProductOutComponent.addError(trackingOperationProductOutComponentDD.getField(TrackingOperationProductOutComponentFields.STORAGE_LOCATION), "productionCounting.trackingOperationProductOutComponent.error.existsOtherPalletsAtStorageLocation");
+
+                                return false;
+                            }
                         }
                     }
                 }

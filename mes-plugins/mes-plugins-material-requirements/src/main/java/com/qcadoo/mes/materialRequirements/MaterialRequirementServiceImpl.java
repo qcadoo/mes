@@ -26,9 +26,8 @@ package com.qcadoo.mes.materialRequirements;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.lowagie.text.DocumentException;
-import com.qcadoo.mes.basic.constants.BasicConstants;
-import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.basicProductionCounting.BasicProductionCountingService;
+import com.qcadoo.mes.materialFlowResources.MaterialFlowResourcesService;
 import com.qcadoo.mes.materialRequirements.constants.MaterialRequirementFields;
 import com.qcadoo.mes.materialRequirements.constants.MaterialRequirementProductFields;
 import com.qcadoo.mes.materialRequirements.constants.MaterialRequirementsConstants;
@@ -38,19 +37,19 @@ import com.qcadoo.mes.materialRequirements.print.WarehouseDateKey;
 import com.qcadoo.mes.materialRequirements.print.pdf.MaterialRequirementPdfService;
 import com.qcadoo.mes.materialRequirements.print.xls.MaterialRequirementXlsService;
 import com.qcadoo.mes.technologies.constants.MrpAlgorithm;
-import com.qcadoo.model.api.DataDefinition;
-import com.qcadoo.model.api.DataDefinitionService;
-import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.NumberService;
+import com.qcadoo.model.api.*;
 import com.qcadoo.model.api.file.FileService;
-import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.view.api.ComponentState;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.util.*;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Service
 public class MaterialRequirementServiceImpl implements MaterialRequirementService {
@@ -66,6 +65,9 @@ public class MaterialRequirementServiceImpl implements MaterialRequirementServic
 
     @Autowired
     private BasicProductionCountingService basicProductionCountingService;
+
+    @Autowired
+    private MaterialFlowResourcesService materialFlowResourcesService;
 
     @Autowired
     private MaterialRequirementDataService materialRequirementDataService;
@@ -111,7 +113,7 @@ public class MaterialRequirementServiceImpl implements MaterialRequirementServic
         Entity materialRequirementWithFileName = fileService.updateReportFileName(materialRequirement,
                 MaterialRequirementFields.DATE, "materialRequirements.materialRequirement.report.fileName");
 
-        createMaterialRequirementProducts(materialRequirement);
+        createMaterialRequirementProducts(materialRequirementWithFileName);
 
         materialRequirementPdfService.generateDocument(materialRequirementWithFileName, state.getLocale());
         materialRequirementXlsService.generateDocument(materialRequirementWithFileName, state.getLocale());
@@ -122,100 +124,89 @@ public class MaterialRequirementServiceImpl implements MaterialRequirementServic
         boolean includeStartDateOrder = materialRequirement.getBooleanField(MaterialRequirementFields.INCLUDE_START_DATE_ORDER);
         boolean showCurrentStockLevel = materialRequirement.getBooleanField(MaterialRequirementFields.SHOW_CURRENT_STOCK_LEVEL);
 
-        if (includeWarehouse || includeStartDateOrder) {
-            Map<WarehouseDateKey, List<MaterialRequirementEntry>> materialRequirementEntriesMap = materialRequirementDataService
-                    .getGroupedData(materialRequirement);
+        Map<WarehouseDateKey, List<MaterialRequirementEntry>> materialRequirementEntriesMap = materialRequirementDataService
+                .getGroupedData(materialRequirement);
 
-            List<WarehouseDateKey> warehouseDateKeys = Lists.newArrayList(materialRequirementEntriesMap.keySet());
+        List<WarehouseDateKey> warehouseDateKeys = Lists.newArrayList(materialRequirementEntriesMap.keySet());
 
-            if (includeWarehouse) {
-                warehouseDateKeys.sort(Comparator.comparing(WarehouseDateKey::getWarehouseNumber).thenComparing(WarehouseDateKey::getDate));
-            } else {
-                warehouseDateKeys.sort(Comparator.comparing(WarehouseDateKey::getDate));
-            }
+        Map<Long, Map<Long, BigDecimal>> quantitiesInStock = Maps.newHashMap();
 
-            Map<Long, Map<Long, BigDecimal>> quantitiesInStock = Maps.newHashMap();
+        if (showCurrentStockLevel) {
+            List<MaterialRequirementEntry> materialRequirementEntries = warehouseDateKeys.stream()
+                    .filter(warehouseDateKey -> Objects.nonNull(warehouseDateKey.getWarehouseId()))
+                    .flatMap(warehouseDateKey -> materialRequirementEntriesMap.get(warehouseDateKey).stream())
+                    .collect(Collectors.toList());
 
-            if (showCurrentStockLevel) {
-                List<MaterialRequirementEntry> materialRequirementEntries = Lists.newArrayList();
+            quantitiesInStock = materialRequirementDataService.getQuantitiesInStock(materialRequirementEntries);
+        }
 
-                for (WarehouseDateKey warehouseDateKey : warehouseDateKeys) {
-                    if (Objects.nonNull(warehouseDateKey.getWarehouseId())) {
-                        materialRequirementEntries.addAll(materialRequirementEntriesMap.get(warehouseDateKey));
-                    }
+        for (WarehouseDateKey warehouseDateKey : warehouseDateKeys) {
+            List<MaterialRequirementEntry> materialRequirementEntries = materialRequirementEntriesMap.get(warehouseDateKey);
+
+            Map<String, MaterialRequirementEntry> neededProductQuantities = materialRequirementDataService.getNeededProductQuantities(materialRequirementEntries);
+
+            List<String> materialKeys = Lists.newArrayList(neededProductQuantities.keySet());
+
+            for (String materialKey : materialKeys) {
+                MaterialRequirementEntry materialRequirementEntry = neededProductQuantities.get(materialKey);
+
+                Long productId = materialRequirementEntry.getId();
+                Long locationId = null;
+                BigDecimal quantity = materialRequirementEntry.getPlannedQuantity();
+                BigDecimal currentStock = null;
+                Date orderStartDate = null;
+                List<Entity> batches = materialRequirementEntry.getBatches();
+
+                if (includeWarehouse) {
+                    locationId = materialRequirementEntry.getWarehouseId();
                 }
 
-                quantitiesInStock = materialRequirementDataService.getQuantitiesInStock(materialRequirementEntries);
-            }
+                if (showCurrentStockLevel) {
+                    currentStock = Objects.nonNull(locationId) ?
+                            BigDecimalUtils.convertNullToZero(materialRequirementDataService.getQuantity(quantitiesInStock, materialRequirementEntry)) : BigDecimal.ZERO;
+                }
 
-            for (WarehouseDateKey warehouseDateKey : warehouseDateKeys) {
-                List<MaterialRequirementEntry> materialRequirementEntries = materialRequirementEntriesMap.get(warehouseDateKey);
-                Map<String, MaterialRequirementEntry> neededProductQuantities = materialRequirementDataService.getNeededProductQuantities(materialRequirementEntries);
-                List<String> materialKeys = Lists.newArrayList(neededProductQuantities.keySet());
+                if (includeStartDateOrder) {
+                    orderStartDate = warehouseDateKey.getDate();
+                }
 
-                materialKeys.sort(Comparator.naturalOrder());
-
-                for (String materialKey : materialKeys) {
-                    MaterialRequirementEntry materialRequirementEntry = neededProductQuantities.get(materialKey);
-
+                if (batches.isEmpty()) {
+                    createMaterialRequirementProduct(materialRequirement, productId, locationId, null, quantity, currentStock, null, orderStartDate);
+                } else {
                     Entity product = materialRequirementEntry.getProduct();
-                    Entity location = null;
-                    BigDecimal quantity = materialRequirementEntry.getPlannedQuantity();
-                    BigDecimal currentStock = null;
-                    Date orderStartDate = null;
+                    Entity location = materialRequirementEntry.getWarehouse();
 
-                    if (includeWarehouse) {
-                        location = materialRequirementEntry.getWarehouse();
-                    }
+                    for (Entity batch : batches) {
+                        Long batchId = batch.getId();
+                        BigDecimal batchStock = null;
 
-                    if (showCurrentStockLevel) {
-                        if (Objects.nonNull(warehouseDateKey.getWarehouseId())) {
-                            currentStock = materialRequirementDataService.getQuantity(quantitiesInStock, materialRequirementEntry);
-                        } else {
-                            currentStock = BigDecimal.ZERO;
+                        if (showCurrentStockLevel) {
+                            batchStock = Objects.nonNull(locationId) ?
+                                    BigDecimalUtils.convertNullToZero(materialFlowResourcesService.getBatchesQuantity(Lists.newArrayList(batch), product, location)) : BigDecimal.ZERO;
                         }
-                    }
 
-                    if (includeStartDateOrder) {
-                        orderStartDate = warehouseDateKey.getDate();
+                        createMaterialRequirementProduct(materialRequirement, productId, locationId, batchId, quantity, currentStock, batchStock, orderStartDate);
                     }
-
-                    createMaterialRequirementProduct(materialRequirement, product, location, quantity, currentStock, orderStartDate);
                 }
-            }
-        } else {
-            List<Entity> orders = materialRequirement.getManyToManyField(MaterialRequirementFields.ORDERS);
-
-            MrpAlgorithm algorithm = MrpAlgorithm
-                    .parseString(materialRequirement.getStringField(MaterialRequirementFields.MRP_ALGORITHM));
-
-            Map<Long, BigDecimal> neededProductQuantities = basicProductionCountingService.getNeededProductQuantities(orders,
-                    algorithm);
-
-            List<Entity> products = getProductDD().find().add(SearchRestrictions.in("id", neededProductQuantities.keySet()))
-                    .list().getEntities();
-
-            products.sort(Comparator.comparing(product -> product.getStringField(ProductFields.NUMBER)));
-
-            for (Entity product : products) {
-                BigDecimal quantity = neededProductQuantities.get(product.getId());
-
-                createMaterialRequirementProduct(materialRequirement, product, null, quantity, null, null);
             }
         }
     }
 
-    private void createMaterialRequirementProduct(final Entity materialRequirement, final Entity product, final Entity location,
-                                                  final BigDecimal quantity, final BigDecimal currentStock, final Date orderStartDate) {
+    private void createMaterialRequirementProduct(final Entity materialRequirement, final Long productId, final Long locationId, final Long batchId,
+                                                  final BigDecimal quantity, final BigDecimal currentStock, final BigDecimal batchStock,
+                                                  final Date orderStartDate) {
         Entity materialRequirementProduct = getMaterialRequirementProductDD().create();
 
         materialRequirementProduct.setField(MaterialRequirementProductFields.MATERIAL_REQUIREMENT, materialRequirement);
-        materialRequirementProduct.setField(MaterialRequirementProductFields.PRODUCT, product);
-        materialRequirementProduct.setField(MaterialRequirementProductFields.LOCATION, location);
+        materialRequirementProduct.setField(MaterialRequirementProductFields.PRODUCT, productId);
+        materialRequirementProduct.setField(MaterialRequirementProductFields.LOCATION, locationId);
+        materialRequirementProduct.setField(MaterialRequirementProductFields.BATCH, batchId);
         materialRequirementProduct.setField(MaterialRequirementProductFields.QUANTITY,
                 numberService.setScaleWithDefaultMathContext(quantity));
         materialRequirementProduct.setField(MaterialRequirementProductFields.CURRENT_STOCK,
                 numberService.setScaleWithDefaultMathContext(currentStock));
+        materialRequirementProduct.setField(MaterialRequirementProductFields.BATCH_STOCK,
+                numberService.setScaleWithDefaultMathContext(batchStock));
         materialRequirementProduct.setField(MaterialRequirementProductFields.ORDER_START_DATE, orderStartDate);
 
         materialRequirementProduct.getDataDefinition().save(materialRequirementProduct);
@@ -223,10 +214,6 @@ public class MaterialRequirementServiceImpl implements MaterialRequirementServic
 
     private DataDefinition getMaterialRequirementProductDD() {
         return dataDefinitionService.get(MaterialRequirementsConstants.PLUGIN_IDENTIFIER, MaterialRequirementsConstants.MODEL_MATERIAL_REQUIREMENT_PRODUCT);
-    }
-
-    private DataDefinition getProductDD() {
-        return dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PRODUCT);
     }
 
 }

@@ -23,20 +23,20 @@ public class StorageLocationsDetailsHooks {
 
     private void setFieldsEnabled(final ViewDefinitionState view) {
         FormComponent storageLocationForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
-        FieldComponent maximumNumberField = (FieldComponent) view.getComponentByReference(StorageLocationFields.MAXIMUM_NUMBER_OF_PALLETS);
         CheckBoxComponent isPlaceCheckBox = (CheckBoxComponent) view.getComponentByReference(StorageLocationFields.PLACE_STORAGE_LOCATION);
+        FieldComponent maximumNumberOfPalletsField = (FieldComponent) view.getComponentByReference(StorageLocationFields.MAXIMUM_NUMBER_OF_PALLETS);
         GridComponent productsGrid = (GridComponent) view.getComponentByReference(StorageLocationFields.PRODUCTS);
 
         boolean isSaved = Objects.nonNull(storageLocationForm.getEntityId());
 
         if (isPlaceCheckBox.isChecked()) {
-            maximumNumberField.setEnabled(true);
+            maximumNumberOfPalletsField.setEnabled(true);
         } else {
-            maximumNumberField.setEnabled(false);
-            maximumNumberField.setFieldValue(null);
+            maximumNumberOfPalletsField.setEnabled(false);
+            maximumNumberOfPalletsField.setFieldValue(null);
         }
 
-        maximumNumberField.requestComponentUpdateState();
+        maximumNumberOfPalletsField.requestComponentUpdateState();
         productsGrid.setEnabled(isSaved);
     }
 

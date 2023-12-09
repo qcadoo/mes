@@ -276,27 +276,8 @@
             <component type="gridLayout" name="storageLocationGridLayout" columns="3"
                        rows="8">
                 <layoutElement column="1" row="1" width="2">
-                    <component type="lookup" name="palletNumber" reference="palletNumber"
-                               field="#{form}.palletNumber">
-                        <option type="searchable" value="number"/>
-                        <option type="orderable" value="number"/>
-
-                        <option type="expression"
-                                value="#number"/>
-                        <option type="fieldCode" value="number"/>
-
-                        <listener event="onSelectedEntityChange"
-                                  class="com.qcadoo.mes.deliveries.listeners.DeliveredProductDetailsListeners"
-                                  method="fillPalletTypeField"/>
-                    </component>
-                </layoutElement>
-                <layoutElement column="1" row="2" width="2">
-                    <component type="select" name="palletType" field="#{form}.palletType"
-                               reference="palletType"/>
-                </layoutElement>
-                <layoutElement column="1" row="3" width="2">
                     <component type="lookup" name="storageLocation" reference="storageLocation"
-                                                   field="#{form}.storageLocation" hasDescription="true">
+                               field="#{form}.storageLocation" hasDescription="true">
                         <option type="column" name="location" fields="location"
                                 expression="#location['name']"/>
 
@@ -311,6 +292,25 @@
                                 class="com.qcadoo.mes.materialFlowResources.criteriaModifiers.StorageLocationCriteriaModifiers"
                                 method="showStorageLocationsForLocation"/>
                     </component>
+                </layoutElement>
+                <layoutElement column="1" row="2" width="2">
+                    <component type="lookup" name="palletNumber" reference="palletNumber"
+                               field="#{form}.palletNumber">
+                        <option type="searchable" value="number"/>
+                        <option type="orderable" value="number"/>
+
+                        <option type="expression"
+                                value="#number"/>
+                        <option type="fieldCode" value="number"/>
+
+                        <listener event="onSelectedEntityChange"
+                                  class="com.qcadoo.mes.deliveries.listeners.DeliveredProductDetailsListeners"
+                                  method="fillPalletTypeField"/>
+                    </component>
+                </layoutElement>
+                <layoutElement column="1" row="3" width="2">
+                    <component type="select" name="palletType" field="#{form}.palletType"
+                               reference="palletType"/>
                 </layoutElement>
                 <layoutElement column="1" row="4" width="2">
                     <component type="lookup" name="batch" field="#{form}.batch"

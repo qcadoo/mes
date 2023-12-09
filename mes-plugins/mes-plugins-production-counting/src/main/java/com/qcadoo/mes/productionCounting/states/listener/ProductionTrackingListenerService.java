@@ -173,28 +173,31 @@ public final class ProductionTrackingListenerService {
 
         trackingOperationProductOutComponents.forEach(trackingOperationProductOutComponent -> {
             Entity product = trackingOperationProductOutComponent.getBelongsToField(TrackingOperationProductOutComponentFields.PRODUCT);
+            BigDecimal usedQuantity =  trackingOperationProductOutComponent.getDecimalField(TrackingOperationProductOutComponentFields.USED_QUANTITY);
             Entity storageLocation = trackingOperationProductOutComponent.getBelongsToField(TrackingOperationProductOutComponentFields.STORAGE_LOCATION);
             Entity palletNumber = trackingOperationProductOutComponent.getBelongsToField(TrackingOperationProductOutComponentFields.PALLET_NUMBER);
 
-            if (Objects.isNull(storageLocation) && Objects.nonNull(palletNumber)) {
-                productionTracking.addGlobalError("productionCounting.productionTracking.error.trackingOperationOutComponent.storageLocationRequired",
-                        product.getStringField(ProductFields.NUMBER));
-            } else {
-                if (Objects.nonNull(storageLocation)) {
-                    Entity location = storageLocation.getBelongsToField(StorageLocationFields.LOCATION);
-                    String storageLocationNumber = storageLocation.getStringField(StorageLocationFields.NUMBER);
-                    boolean placeStorageLocation = storageLocation.getBooleanField(StorageLocationFields.PLACE_STORAGE_LOCATION);
+            if (Objects.nonNull(usedQuantity) && BigDecimal.ZERO.compareTo(usedQuantity) < 0) {
+                if (Objects.isNull(storageLocation) && Objects.nonNull(palletNumber)) {
+                    productionTracking.addGlobalError("productionCounting.productionTracking.error.trackingOperationOutComponent.storageLocationRequired",
+                            product.getStringField(ProductFields.NUMBER));
+                } else {
+                    if (Objects.nonNull(storageLocation)) {
+                        Entity location = storageLocation.getBelongsToField(StorageLocationFields.LOCATION);
+                        String storageLocationNumber = storageLocation.getStringField(StorageLocationFields.NUMBER);
+                        boolean placeStorageLocation = storageLocation.getBooleanField(StorageLocationFields.PLACE_STORAGE_LOCATION);
 
-                    if (placeStorageLocation) {
-                        if (Objects.isNull(palletNumber)) {
-                            productionTracking.addGlobalError("productionCounting.productionTracking.error.trackingOperationOutComponent.palletNumberRequired",
-                                    product.getStringField(ProductFields.NUMBER));
-                        } else {
-                            String palletNumberNumber = palletNumber.getStringField(PalletNumberFields.NUMBER);
-
-                            if (palletValidatorService.checkIfExistsMorePalletsForStorageLocation(location.getId(), storageLocationNumber, palletNumberNumber)) {
-                                productionTracking.addGlobalError("productionCounting.productionTracking.error.trackingOperationOutComponent.morePalletsExists",
+                        if (placeStorageLocation) {
+                            if (Objects.isNull(palletNumber)) {
+                                productionTracking.addGlobalError("productionCounting.productionTracking.error.trackingOperationOutComponent.palletNumberRequired",
                                         product.getStringField(ProductFields.NUMBER));
+                            } else {
+                                String palletNumberNumber = palletNumber.getStringField(PalletNumberFields.NUMBER);
+
+                                if (palletValidatorService.checkIfExistsMorePalletsForStorageLocation(location.getId(), storageLocationNumber, palletNumberNumber)) {
+                                    productionTracking.addGlobalError("productionCounting.productionTracking.error.trackingOperationOutComponent.morePalletsExists",
+                                            product.getStringField(ProductFields.NUMBER));
+                                }
                             }
                         }
                     }
