@@ -29,10 +29,10 @@
 
     <fields>
 
-        <priority name="priority" scope="productionCountingQuantity"/>
-
         <belongsTo name="productionCountingQuantity" model="productionCountingQuantity" plugin="basicProductionCounting"
                    required="true"/>
+        <priority name="priority" scope="productionCountingQuantity"/>
+
 
         <belongsTo name="resource" model="resource" plugin="materialFlowResources"/>
 
@@ -46,10 +46,15 @@
         </decimal>
 
         <decimal name="usedQuantity">
-            <validatesRange from="0" exclusively="true"/>
+            <validatesRange from="0" exclusively="false"/>
             <validatesUnscaledValue max="7"/>
             <validatesScale max="5"/>
         </decimal>
+
+        <datetime name="creationDate"/>
+
+        <hasMany name="reservations" model="reservation" joinField="orderProductResourceReservation"
+                 copyable="false" cascade="delete" plugin="materialFlowResources" />
 
     </fields>
 
@@ -59,5 +64,8 @@
 
         <validatesWith class="com.qcadoo.mes.productFlowThruDivision.hooks.OrderProductResourceReservationHooks"
                        method="validate"/>
+
+        <onDelete class="com.qcadoo.mes.productFlowThruDivision.hooks.OrderProductResourceReservationHooks"
+                method="onDelete"/>
     </hooks>
 </model>

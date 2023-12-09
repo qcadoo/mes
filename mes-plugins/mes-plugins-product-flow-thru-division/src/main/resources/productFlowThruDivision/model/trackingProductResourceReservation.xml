@@ -1,9 +1,8 @@
-<?xml version="1.0" encoding="UTF-8"?>
 <!--
 
     ***************************************************************************
     Copyright (c) 2010 Qcadoo Limited
-    Project: Qcadoo MES
+    Project: Qcadoo Framework
     Version: 1.4
 
     This file is part of Qcadoo.
@@ -24,23 +23,31 @@
     ***************************************************************************
 
 -->
-<model name="orderedProductReservation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<model name="trackingProductResourceReservation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns="http://schema.qcadoo.org/model"
        xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
-    <fields>        
-        <belongsTo name="orderedProduct" model="orderedProduct" plugin="deliveries" required="true" />
-        <belongsTo name="location" model="location" plugin="materialFlow" required="true" />
-        <decimal name="orderedQuantity" required="true" >
-            <validatesRange from="0" exclusively="true" />
+
+    <fields>
+
+        <integer name="priority"/>
+
+        <belongsTo name="orderProductResourceReservation" model="orderProductResourceReservation" plugin="productFlowThruDivision"
+                   required="true"/>
+
+        <belongsTo name="trackingOperationProductInComponent" model="trackingOperationProductInComponent" plugin="productionCounting"
+                   required="true"/>
+
+        <decimal name="usedQuantity">
+            <validatesRange from="0" exclusively="true"/>
+            <validatesUnscaledValue max="7"/>
+            <validatesScale max="5"/>
         </decimal>
-        <decimal name="additionalQuantity" required="true" >
-            <validatesRange from="0" exclusively="true" />
-        </decimal>  
-        <string name="orderedQuantityUnit" persistent="false" />      
-        <string name="additionalQuantityUnit" persistent="false" />      
+
     </fields>
+
     <hooks>
-        <onView class="com.qcadoo.mes.deliveries.hooks.OrderedProductReservationHooks"  method="onView"/>
-        <validatesWith class="com.qcadoo.mes.deliveries.hooks.OrderedProductReservationHooks"  method="validate" />
+        <onSave class="com.qcadoo.mes.productFlowThruDivision.hooks.TrackingProductResourceReservationHooks"
+                method="onSave"/>
+
     </hooks>
 </model>

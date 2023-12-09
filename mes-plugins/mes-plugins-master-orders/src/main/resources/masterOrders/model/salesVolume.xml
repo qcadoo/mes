@@ -44,6 +44,7 @@
             <validatesUnscaledValue max="9"/>
             <validatesScale max="5"/>
         </decimal>
+
         <integer name="stockForDays">
             <validatesRange from="0"/>
         </integer>

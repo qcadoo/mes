@@ -268,9 +268,6 @@
                 <bigButton name="assignStorageLocations"
                            icon="copyIcon24.png"
                            action="#{form}.fireEvent(assignStorageLocations);"/>
-                <bigButton name="recalculateReservations"
-                           icon="generateIcon24.png"
-                           action="#{form}.fireEvent(recalculateReservations);"/>
                 <bigButton name="changeStorageLocations"
                            icon="copyIcon24.png"
                            action="#{form}.fireEvent(changeStorageLocations);"
@@ -657,9 +654,6 @@
                 <listener event="changeStorageLocations"
                           class="com.qcadoo.mes.deliveries.listeners.DeliveryDetailsListeners"
                           method="changeStorageLocations"/>
-                <listener event="recalculateReservations"
-                          class="com.qcadoo.mes.deliveries.listeners.DeliveryDetailsListeners"
-                          method="recalculateReservations"/>
                 <listener event="createRelatedDelivery"
                           class="com.qcadoo.mes.deliveries.listeners.DeliveryDetailsListeners"
                           method="createRelatedDelivery"/>
@@ -864,17 +858,16 @@
                                 width="45"/>
                         <option type="column" name="damaged" fields="damaged"
                                 width="45"/>
-                        <option type="column" name="hasReservations" fields="hasReservations"
-                                width="45"/>
+
                         <option type="column" name="expirationDate" fields="expirationDate"
                                 width="45"/>
 
                         <option type="order" column="succession" direction="asc"/>
 
                         <option type="searchable"
-                                value="succession,productNumber,productName,deliveredQuantity,damagedQuantity,productUnit,additionalQuantity,additionalUnit,conversion,pricePerUnit,totalPrice,storageLocationNumber,palletNumber,palletType,isWaste,batchNumber,damaged,hasReservations,expirationDate"/>
+                                value="succession,productNumber,productName,deliveredQuantity,damagedQuantity,productUnit,additionalQuantity,additionalUnit,conversion,pricePerUnit,totalPrice,storageLocationNumber,palletNumber,palletType,isWaste,batchNumber,damaged,expirationDate"/>
                         <option type="orderable"
-                                value="succession,productNumber,productName,deliveredQuantity,damagedQuantity,productUnit,additionalQuantity,additionalUnit,conversion,pricePerUnit,totalPrice,storageLocationNumber,palletNumber,palletType,isWaste,batchNumber,damaged,hasReservations,expirationDate"/>
+                                value="succession,productNumber,productName,deliveredQuantity,damagedQuantity,productUnit,additionalQuantity,additionalUnit,conversion,pricePerUnit,totalPrice,storageLocationNumber,palletNumber,palletType,isWaste,batchNumber,damaged,expirationDate"/>
 
                         <option type="correspondingView" value="deliveries/deliveredProductDetails"/>
                         <option type="correspondingComponent" value="form"/>

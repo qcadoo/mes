@@ -52,7 +52,6 @@
         <string name="operationNumber"/>
         <boolean name="isWaste"/>
         <boolean name="damaged"/>
-        <boolean name="hasReservations"/>
         <date name="expirationDate"/>
     </fields>
 

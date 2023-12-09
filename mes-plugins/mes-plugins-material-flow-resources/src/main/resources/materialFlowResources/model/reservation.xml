@@ -33,6 +33,8 @@
         <decimal name="quantity" required="true"/>
         <belongsTo name="position" model="position"/>
         <belongsTo name="resource" model="resource"/>
+        <datetime name="date"/>
+
     </fields>
     <hooks>
         <onSave class="com.qcadoo.mes.materialFlowResources.hooks.ReservationHooks" method="onSave"/>

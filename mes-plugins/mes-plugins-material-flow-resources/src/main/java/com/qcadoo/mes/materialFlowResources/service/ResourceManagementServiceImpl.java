@@ -377,7 +377,7 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
         for (Entity position : document.getHasManyField(DocumentFields.POSITIONS)) {
             Entity product = position.getBelongsToField(PositionFields.PRODUCT);
 
-            Either<BigDecimal, List<Entity>> eitherPositions = updateResources(warehouse, position, warehouseAlgorithm,
+            Either<BigDecimal, List<Entity>> eitherPositions = updateResources(warehouse, document.getStringField(DocumentFields.STATE), position, warehouseAlgorithm,
                     isFromOrder, transferPalletToReceivingWarehouse);
 
             enoughResources = enoughResources && position.isValid();
@@ -467,7 +467,7 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
         }
     }
 
-    private Either<BigDecimal, List<Entity>> updateResources(final Entity warehouse, final Entity position,
+    private Either<BigDecimal, List<Entity>> updateResources(final Entity warehouse, String documentState, final Entity position,
                                                              final WarehouseAlgorithm warehouseAlgorithm, boolean isFromOrder, boolean transferPalletToReceivingWarehouse) {
         List<Entity> newPositions = Lists.newArrayList();
 
@@ -503,7 +503,8 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
                     .calculateAdditionalQuantity(resourceAvailableQuantity, conversion, givenUnit);
 
             if (Objects.nonNull(position.getBelongsToField(PositionFields.RESOURCE))
-                    && warehouse.getBooleanField(LocationFieldsMFR.DRAFT_MAKES_RESERVATION)) {
+                    && warehouse.getBooleanField(LocationFieldsMFR.DRAFT_MAKES_RESERVATION)
+                    && DocumentState.DRAFT.getStringValue().equals(documentState)) {
                 BigDecimal reservedQuantity = resource.getDecimalField(ResourceFields.RESERVED_QUANTITY).subtract(quantity,
                         numberService.getMathContext());
 

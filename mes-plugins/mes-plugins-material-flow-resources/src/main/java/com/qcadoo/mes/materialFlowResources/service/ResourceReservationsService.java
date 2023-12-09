@@ -3,6 +3,7 @@ package com.qcadoo.mes.materialFlowResources.service;
 import java.math.BigDecimal;
 import java.util.Map;
 
+import com.qcadoo.model.api.NumberService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Service;
@@ -21,6 +22,9 @@ public class ResourceReservationsService {
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
+
+    @Autowired
+    private NumberService numberService;
 
     void updateResourceQuantites(Map<String, Object> params, BigDecimal quantityToAdd) {
         if (params.get("resource_id") != null) {
@@ -45,4 +49,13 @@ public class ResourceReservationsService {
             }
         }
     }
+
+    public void updateResourceQuantitiesOnRemoveReservation(Entity resource, BigDecimal reservationQuantity) {
+        BigDecimal reservedQuantity = resource.getDecimalField(ResourceFields.RESERVED_QUANTITY).subtract(reservationQuantity, numberService.getMathContext());
+        BigDecimal quantity = resource.getDecimalField(ResourceFields.QUANTITY);
+        resource.setField(ResourceFields.AVAILABLE_QUANTITY, quantity.add(reservedQuantity));
+        resource.setField(ResourceFields.RESERVED_QUANTITY, reservedQuantity);
+        resource.getDataDefinition().save(resource);
+    }
+
 }

@@ -12,8 +12,10 @@ public class ProductionCountingQuantityHolder {
 
     private Long productId;
     private Long batchId;
+    private Long resourceId;
     private Entity product;
     private Entity batch;
+    private Entity resource;
     private BigDecimal usedQuantity;
     private BigDecimal conversion;
     private BigDecimal givenQuantity;
@@ -110,16 +112,32 @@ public class ProductionCountingQuantityHolder {
         this.givenUnit = givenUnit;
     }
 
+    public Long getResourceId() {
+        return resourceId;
+    }
+
+    public void setResourceId(Long resourceId) {
+        this.resourceId = resourceId;
+    }
+
+    public Entity getResource() {
+        return resource;
+    }
+
+    public void setResource(Entity resource) {
+        this.resource = resource;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         ProductionCountingQuantityHolder that = (ProductionCountingQuantityHolder) o;
-        return Objects.equals(productId, that.productId) && Objects.equals(batchId, that.batchId);
+        return Objects.equals(productId, that.productId) && Objects.equals(batchId, that.batchId) && Objects.equals(resourceId, that.resourceId);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(productId, batchId);
+        return Objects.hash(productId, batchId, resourceId);
     }
 }

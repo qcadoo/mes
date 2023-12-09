@@ -32,7 +32,6 @@
         <aspect name="com.qcadoo.mes.productFlowThruDivision.warehouseIssue.states.aop.listeners.WarehouseIssueListenerAspect"/>
         <aspect name="com.qcadoo.mes.productFlowThruDivision.warehouseIssue.states.aop.WarehouseIssueStateChangeAspect"/>
         <aspect name="com.qcadoo.mes.productFlowThruDivision.aop.WorkPlanPdfForDivisionAspectPFTD"/>
-        <aspect name="com.qcadoo.mes.productFlowThruDivision.deliveries.states.aop.listeners.DeliveryStateListenerPFTDAspect"/>
         <aspect name="com.qcadoo.mes.productFlowThruDivision.aop.CostNormsForMaterialsServiceAspectPFTD"/>
     </aspects>
 </aspectj>

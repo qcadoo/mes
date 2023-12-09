@@ -25,7 +25,6 @@ package com.qcadoo.mes.deliveries.hooks;
 
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.deliveries.DeliveriesService;
-import com.qcadoo.mes.deliveries.ReservationService;
 import com.qcadoo.mes.deliveries.constants.DeliveredProductFields;
 import com.qcadoo.mes.deliveries.constants.DeliveryFields;
 import com.qcadoo.mes.deliveries.constants.ParameterFieldsD;
@@ -62,9 +61,6 @@ public class DeliveryHooks {
 
     @Autowired
     private ParameterService parameterService;
-
-    @Autowired
-    private ReservationService reservationService;
 
     public void onCreate(final DataDefinition deliveryDD, final Entity delivery) {
         setInitialState(delivery);
@@ -149,9 +145,10 @@ public class DeliveryHooks {
         if (Objects.isNull(delivery.getBelongsToField(DeliveryFields.SUPPLIER))
                 && parameterService.getParameter().getBooleanField(ParameterFieldsD.REQUIRE_SUPPLIER_IDENTYFICATION)) {
             delivery.addError(deliveryDD.getField(DeliveryFields.SUPPLIER), "qcadooView.validate.field.error.missing");
+            return false;
         }
 
-        return reservationService.validateDeliveryAgainstReservations(delivery);
+        return true;
     }
 
     private void setStorageLocations(final Entity delivery) {
