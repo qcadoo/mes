@@ -218,7 +218,8 @@ public class DocumentPositionValidator {
         return availableQuantity;
     }
 
-    private BigDecimal getAvailableQuantityForProductAndLocation(final DocumentPositionDTO position, final Long productId,
+    private BigDecimal getAvailableQuantityForProductAndLocation(final DocumentPositionDTO position,
+                                                                 final Long productId,
                                                                  final Long locationId) {
         Long positionId = 0L;
 
@@ -274,7 +275,8 @@ public class DocumentPositionValidator {
     }
 
     private List<String> validatePositionAttributes(final DocumentPositionDTO position, final boolean requirePrice,
-                                                    final boolean requireBatch, boolean requireProductionDate, boolean requireExpirationDate) {
+                                                    final boolean requireBatch, boolean requireProductionDate,
+                                                    boolean requireExpirationDate) {
         List<String> errors = Lists.newArrayList();
 
         if (requirePrice && (Objects.isNull(position.getPrice()) || BigDecimal.ZERO.compareTo(position.getPrice()) == 0)) {
@@ -446,7 +448,8 @@ public class DocumentPositionValidator {
         }
     }
 
-    private Map<String, Object> tryMapDocumentPositionVOToParams(final DocumentPositionDTO vo, final List<String> errors) {
+    private Map<String, Object> tryMapDocumentPositionVOToParams(final DocumentPositionDTO vo,
+                                                                 final List<String> errors) {
         Map<String, Object> params = Maps.newHashMap();
 
         Long productId = tryGetProductIdByNumber(vo.getProduct(), errors);
@@ -556,7 +559,8 @@ public class DocumentPositionValidator {
         }
     }
 
-    private List<String> validateBigDecimal(final BigDecimal value, final String field, final int maxScale, final int maxPrecision) {
+    private List<String> validateBigDecimal(final BigDecimal value, final String field, final int maxScale,
+                                            final int maxPrecision) {
         List<String> errors = Lists.newArrayList();
 
         BigDecimal noZero = value.stripTrailingZeros();
@@ -621,38 +625,38 @@ public class DocumentPositionValidator {
             Long locationId = document.getLocationTo_id();
             Long positionId = position.getId();
             String storageLocationNumber = position.getStorageLocation();
-            String palletNumberNumber = position.getPalletNumber();
+            String palletNumber = position.getPalletNumber();
             String typeOfPallet = position.getTypeOfPallet();
 
-            if (Strings.isNullOrEmpty(storageLocationNumber) && !Strings.isNullOrEmpty(palletNumberNumber)) {
+            if (Strings.isNullOrEmpty(storageLocationNumber) && !Strings.isNullOrEmpty(palletNumber)) {
                 errors.add("documentGrid.error.position.storageLocation.required");
             } else if (palletValidatorService.isPlaceStorageLocation(storageLocationNumber)
-                    && Strings.isNullOrEmpty(palletNumberNumber)) {
+                    && Strings.isNullOrEmpty(palletNumber)) {
                 errors.add("documentGrid.error.position.palletNumber.required");
             }
 
             if (palletValidatorService.existsOtherResourceForPalletNumberOnOtherLocations(locationId, storageLocationNumber,
-                    palletNumberNumber, typeOfPallet, null)) {
+                    palletNumber, typeOfPallet, null)) {
                 errors.add(translationService.translate(
                         "documentGrid.error.position.existsOtherResourceForPallet",
                         LocaleContextHolder.getLocale()));
             } else if (palletValidatorService.existsOtherResourceForPalletNumberOnSameLocation(locationId, storageLocationNumber,
-                    palletNumberNumber, typeOfPallet, null)) {
+                    palletNumber, typeOfPallet, null)) {
                 errors.add(translationService.translate(
                         "documentGrid.error.position.existsOtherResourceForPalletAndStorageLocation",
                         LocaleContextHolder.getLocale()));
             } else if (palletValidatorService.existsOtherPositionForPalletNumber(locationId, storageLocationNumber,
-                    palletNumberNumber, typeOfPallet, positionId, documentId)) {
+                    palletNumber, typeOfPallet, positionId, documentId)) {
                 errors.add(translationService.translate(
                         "documentGrid.error.position.existsOtherPositionForPalletAndStorageLocation",
                         LocaleContextHolder.getLocale()));
             } else if (palletValidatorService.existsOtherDeliveredProductForPalletNumber(locationId, storageLocationNumber,
-                    palletNumberNumber, typeOfPallet, null)) {
+                    palletNumber, typeOfPallet, null)) {
                 errors.add(translationService.translate(
                         "documentGrid.error.position.existsOtherDeliveredProductForPalletAndStorageLocation",
                         LocaleContextHolder.getLocale()));
             } else if (palletValidatorService.tooManyPalletsInStorageLocationAndPositions(storageLocationNumber,
-                    palletNumberNumber, positionId)) {
+                    palletNumber, positionId)) {
                 errors.add(translationService.translate(
                         "documentGrid.error.position.existsOtherPalletsAtStorageLocation",
                         LocaleContextHolder.getLocale()));
