@@ -629,10 +629,12 @@ public class DocumentPositionValidator {
             String typeOfPallet = position.getTypeOfPallet();
 
             if (Strings.isNullOrEmpty(storageLocationNumber) && !Strings.isNullOrEmpty(palletNumber)) {
-                errors.add("documentGrid.error.position.storageLocation.required");
+                errors.add(translationService.translate("documentGrid.error.position.storageLocation.required",
+                        LocaleContextHolder.getLocale()));
             } else if (palletValidatorService.isPlaceStorageLocation(storageLocationNumber)
                     && Strings.isNullOrEmpty(palletNumber)) {
-                errors.add("documentGrid.error.position.palletNumber.required");
+                errors.add(translationService.translate("documentGrid.error.position.palletNumber.required",
+                        LocaleContextHolder.getLocale()));
             }
 
             if (palletValidatorService.existsOtherResourceForPalletNumberOnOtherLocations(locationId, storageLocationNumber,
