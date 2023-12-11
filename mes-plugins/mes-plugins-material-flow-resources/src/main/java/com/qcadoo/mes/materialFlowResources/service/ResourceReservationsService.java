@@ -51,6 +51,9 @@ public class ResourceReservationsService {
     }
 
     public void updateResourceQuantitiesOnRemoveReservation(Entity resource, BigDecimal reservationQuantity) {
+        if(resource == null) {
+            return;
+        }
         BigDecimal reservedQuantity = resource.getDecimalField(ResourceFields.RESERVED_QUANTITY).subtract(reservationQuantity, numberService.getMathContext());
         BigDecimal quantity = resource.getDecimalField(ResourceFields.QUANTITY);
         resource.setField(ResourceFields.AVAILABLE_QUANTITY, quantity.add(reservedQuantity));
