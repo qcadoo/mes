@@ -489,7 +489,8 @@ public class DocumentPositionValidator {
                     "SELECT _batch.id FROM advancedgenealogy_batch _batch WHERE _batch.number = :number",
                     Collections.singletonMap("number", batch), Long.class);
         } catch (EmptyResultDataAccessException e) {
-            errors.add(String.format("Nie znaleziono takiej parti: '%s'.", batch));
+            errors.add(translationService.translate("documentGrid.error.position.batchNotFound",
+                    LocaleContextHolder.getLocale(), batch));
 
             return null;
         }
@@ -505,7 +506,8 @@ public class DocumentPositionValidator {
                     "SELECT product.id FROM basic_product product WHERE product.number = :number",
                     Collections.singletonMap("number", productNumber), Long.class);
         } catch (EmptyResultDataAccessException e) {
-            errors.add(String.format("Nie znaleziono takiego produktu: '%s'.", productNumber));
+            errors.add(translationService.translate("documentGrid.error.position.productNotFound",
+                    LocaleContextHolder.getLocale(), productNumber));
 
             return null;
         }
@@ -521,7 +523,8 @@ public class DocumentPositionValidator {
                     "SELECT palletnumber.id FROM basic_palletnumber palletnumber WHERE palletnumber.number = :number",
                     Collections.singletonMap("number", palletNumber), Long.class);
         } catch (EmptyResultDataAccessException e) {
-            errors.add(String.format("Nie znaleziono takiego numeru palety: '%s'.", palletNumber));
+            errors.add(translationService.translate("documentGrid.error.position.palletNumberNotFound",
+                    LocaleContextHolder.getLocale(), palletNumber));
 
             return null;
         }
@@ -538,7 +541,8 @@ public class DocumentPositionValidator {
                             "SELECT storagelocation.id FROM materialflowresources_storagelocation storagelocation WHERE storagelocation.number = :number",
                             Collections.singletonMap("number", storageLocationNumber), Long.class);
         } catch (EmptyResultDataAccessException e) {
-            errors.add(String.format("Nie znaleziono takiego miejsca składowania: '%s'.", storageLocationNumber));
+            errors.add(translationService.translate("documentGrid.error.position.storageLocationNotFound",
+                    LocaleContextHolder.getLocale(), storageLocationNumber));
 
             return null;
         }
@@ -553,7 +557,8 @@ public class DocumentPositionValidator {
             return jdbcTemplate.queryForObject("SELECT id FROM materialflowresources_resource WHERE number = :number",
                     Collections.singletonMap("number", resource), Long.class);
         } catch (EmptyResultDataAccessException e) {
-            errors.add(String.format("Nie znaleziono takiego zasobu: '%s'.", resource));
+            errors.add(translationService.translate("documentGrid.error.position.resourceNotFound",
+                    LocaleContextHolder.getLocale(), resource));
 
             return null;
         }
@@ -576,15 +581,13 @@ public class DocumentPositionValidator {
         String fieldName = translationService.translate("documentGrid.gridColumn." + field, LocaleContextHolder.getLocale());
 
         if (scale > maxScale) {
-            errors.add(String.format(
-                    translationService.translate("documentGrid.error.position.bigdecimal.invalidScale",
-                            LocaleContextHolder.getLocale()), fieldName, maxScale));
+            errors.add(translationService.translate("documentGrid.error.position.bigdecimal.invalidScale",
+                    LocaleContextHolder.getLocale(), fieldName, String.valueOf(maxScale)));
         }
 
         if ((precision - scale) > maxPrecision) {
-            errors.add(String.format(
-                    translationService.translate("documentGrid.error.position.bigdecimal.invalidPrecision",
-                            LocaleContextHolder.getLocale()), fieldName, maxPrecision));
+            errors.add(translationService.translate("documentGrid.error.position.bigdecimal.invalidPrecision",
+                    LocaleContextHolder.getLocale(), fieldName, String.valueOf(maxPrecision)));
         }
 
         return errors;
@@ -597,8 +600,8 @@ public class DocumentPositionValidator {
                 LocaleContextHolder.getLocale());
 
         if (eitherNumber.isLeft()) {
-            errors.add(String.format(translationService.translate("documentGrid.error.position.bigdecimal.invalidNumericFormat",
-                    LocaleContextHolder.getLocale()), attribute.getNumber()));
+            errors.add(translationService.translate("documentGrid.error.position.bigdecimal.invalidNumericFormat",
+                    LocaleContextHolder.getLocale(), attribute.getNumber()));
 
             return errors;
         }
@@ -609,9 +612,8 @@ public class DocumentPositionValidator {
         int valueScale = val.scale();
 
         if (valueScale > scale) {
-            errors.add(String.format(
-                    translationService.translate("documentGrid.error.position.bigdecimal.invalidScale",
-                            LocaleContextHolder.getLocale()), attribute.getNumber(), scale));
+            errors.add(translationService.translate("documentGrid.error.position.bigdecimal.invalidScale",
+                    LocaleContextHolder.getLocale(), attribute.getNumber(), String.valueOf(scale)));
         }
 
         return errors;
