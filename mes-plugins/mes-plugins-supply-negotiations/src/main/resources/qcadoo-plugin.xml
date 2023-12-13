@@ -55,10 +55,6 @@
 
 	<dependencies>
 		<dependency>
-			<plugin>costNormsForMaterials</plugin>
-			<version>[1.1.7</version>
-		</dependency>
-		<dependency>
 			<plugin>deliveries</plugin>
 			<version>[1.1.7</version>
 		</dependency>
@@ -242,11 +238,6 @@
 		<view:view-hook plugin="basic" view="productDetails"
 			type="beforeRender"
 			class="com.qcadoo.mes.supplyNegotiations.hooks.ProductDetailsHooksSN"
-			method="disabledFieldAboutCostFromOffer" />
-
-		<view:view-hook plugin="costNormsForMaterials" view="costNormsForMaterialsInOrderDetails"
-			type="beforeRender"
-			class="com.qcadoo.mes.supplyNegotiations.hooks.CostNormsForMaterialsInOrderDetailsHooksSN"
 			method="disabledFieldAboutCostFromOffer" />
 
 		<custom:custom

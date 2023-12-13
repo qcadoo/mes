@@ -211,14 +211,7 @@
 	<hooks>
 		<beforeRender
 				class="com.qcadoo.mes.costNormsForMaterials.hooks.TechnologyInstOperProductInCompDetailsHooks"
-				method="fillUnitField"/>
-		<beforeRender
-				class="com.qcadoo.mes.costNormsForMaterials.hooks.TechnologyInstOperProductInCompDetailsHooks"
-				method="fillCurrencyFields"/>
-
-		<beforeRender
-				class="com.qcadoo.mes.costNormsForMaterials.hooks.TechnologyInstOperProductInCompDetailsHooks"
-				method="setCriteriaModifiersParameters"/>
+				method="onBeforeRender"/>
 	</hooks>
 
 </view>
