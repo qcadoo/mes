@@ -23,22 +23,24 @@
  */
 package com.qcadoo.mes.materialRequirements.listeners;
 
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
+import com.google.common.collect.Maps;
 import com.lowagie.text.DocumentException;
 import com.qcadoo.mes.materialRequirements.MaterialRequirementService;
+import com.qcadoo.mes.materialRequirements.constants.MaterialRequirementFields;
 import com.qcadoo.mes.materialRequirements.constants.MaterialRequirementsConstants;
+import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.util.OrderReportService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.validators.ErrorMessage;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.io.IOException;
+import java.util.Map;
+import java.util.Objects;
 
 @Service
 public class OrdersPlanningListListenersMR {
@@ -53,42 +55,38 @@ public class OrdersPlanningListListenersMR {
     private OrderReportService orderReportService;
 
     public void printMaterialRequirementForOrder(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        Entity materialRequirement = printMaterialReqForOrder(state);
+        Entity materialRequirement = printMaterialRequirementForOrder(state);
 
-        if (materialRequirement == null) {
+        if (Objects.isNull(materialRequirement)) {
             return;
         }
 
         try {
             materialRequirementService.generateMaterialRequirementDocuments(state, materialRequirement);
+
             view.redirectTo(
                     "/generateSavedReport/" + MaterialRequirementsConstants.PLUGIN_IDENTIFIER + "/"
                             + MaterialRequirementsConstants.MODEL_MATERIAL_REQUIREMENT + "." + args[0] + "?id="
                             + materialRequirement.getId(), true, false);
-        } catch (IOException e) {
-            throw new IllegalStateException(e.getMessage(), e);
-        } catch (DocumentException e) {
+        } catch (IOException | DocumentException e) {
             throw new IllegalStateException(e.getMessage(), e);
         }
     }
 
-    private Entity printMaterialReqForOrder(final ComponentState state) {
-        Map<String, Object> entityFieldsMap = new HashMap<String, Object>();
+    private Entity printMaterialRequirementForOrder(final ComponentState state) {
+        Map<String, Object> entityFieldsMap = Maps.newHashMap();
 
-        entityFieldsMap.put("mrpAlgorithm", materialRequirementService.getDefaultMrpAlgorithm().getStringValue());
-        entityFieldsMap.put("number", numberGeneratorService.generateNumber(MaterialRequirementsConstants.PLUGIN_IDENTIFIER,
+        entityFieldsMap.put(MaterialRequirementFields.NUMBER, numberGeneratorService.generateNumber(MaterialRequirementsConstants.PLUGIN_IDENTIFIER,
                 MaterialRequirementsConstants.MODEL_MATERIAL_REQUIREMENT));
+        entityFieldsMap.put(MaterialRequirementFields.MRP_ALGORITHM, materialRequirementService.getDefaultMrpAlgorithm().getStringValue());
 
-        OrderReportService.OrderValidator orderValidator = new OrderReportService.OrderValidator() {
-
-            @Override
-            public ErrorMessage validateOrder(final Entity order) {
-                if (order.getField("technology") == null) {
-                    return new ErrorMessage("orders.validate.global.error.orderMustHaveTechnology",
-                            order.getStringField("number"));
-                }
-                return null;
+        OrderReportService.OrderValidator orderValidator = order -> {
+            if (Objects.isNull(order.getField(OrderFields.TECHNOLOGY))) {
+                return new ErrorMessage("orders.validate.global.error.orderMustHaveTechnology",
+                        order.getStringField(OrderFields.NUMBER));
             }
+
+            return null;
         };
 
         return orderReportService.printForOrder(state, MaterialRequirementsConstants.PLUGIN_IDENTIFIER,
