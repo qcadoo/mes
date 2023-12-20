@@ -639,8 +639,7 @@ public class DocumentPositionValidator {
                         LocaleContextHolder.getLocale()));
             }
 
-            if (palletValidatorService.existsOtherResourceForPalletNumberOnOtherLocations(locationId, storageLocationNumber,
-                    palletNumber, typeOfPallet, null)) {
+            if (palletValidatorService.existsOtherResourceForPalletNumberOnOtherLocations(locationId, storageLocationNumber, null)) {
                 errors.add(translationService.translate(
                         "documentGrid.error.position.existsOtherResourceForPallet",
                         LocaleContextHolder.getLocale()));

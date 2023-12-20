@@ -102,7 +102,7 @@ public class PalletValidatorService {
         Long resourceId = getEntityId(entity, MaterialFlowResourcesConstants.MODEL_RESOURCE);
         Long deliveredProductId = getEntityId(entity, L_DELIVERED_PRODUCT);
 
-        if (existsOtherResourceForPalletNumberOnOtherLocations(location.getId(), storageLocationNumber, palletNumberNumber, typeOfPallet, resourceId)) {
+        if (existsOtherResourceForPalletNumberOnOtherLocations(location.getId(), storageLocationNumber, resourceId)) {
             entity.addError(entity.getDataDefinition().getField(L_PALLET_NUMBER),
                     "documentGrid.error.position.existsOtherResourceForPallet");
 
@@ -138,8 +138,8 @@ public class PalletValidatorService {
         return null;
     }
 
-    public boolean existsOtherResourceForPalletNumberOnOtherLocations(final Long locationId, final String storageLocationNumber,
-                                                                      final String palletNumberNumber, final String typeOfPallet,
+    public boolean existsOtherResourceForPalletNumberOnOtherLocations(final Long locationId,
+                                                                      final String palletNumberNumber,
                                                                       final Long resourceId) {
         StringBuilder query = new StringBuilder();
 
@@ -479,6 +479,31 @@ public class PalletValidatorService {
                 params.put("palletNumberId", palletNumber.getId());
             }
         }
+
+        return jdbcTemplate.queryForObject(query.toString(), params, Long.class);
+    }
+
+    public boolean checkPalletNumbersInStorageLocation(final Entity storageLocation) {
+        if (Objects.nonNull(storageLocation) && storageLocation.getBooleanField(StorageLocationFields.PLACE_STORAGE_LOCATION)) {
+            BigDecimal palletsWithoutNumbersInStorageLocation = BigDecimal.valueOf(getPalletsWithoutNumbersCountInStorageLocation(storageLocation));
+
+            return (palletsWithoutNumbersInStorageLocation.compareTo(BigDecimal.ZERO) > 0);
+        }
+
+        return false;
+    }
+
+    private Long getPalletsWithoutNumbersCountInStorageLocation(final Entity storageLocation) {
+        StringBuilder query = new StringBuilder();
+
+        query.append("SELECT COUNT(*) AS palletsCount ");
+        query.append("FROM materialflowresources_resource resource ");
+        query.append("WHERE resource.storagelocation_id = :storageLocationId ");
+        query.append("AND resource.palletnumber_id IS NULL");
+
+        Map<String, Object> params = Maps.newHashMap();
+
+        params.put("storageLocationId", storageLocation.getId());
 
         return jdbcTemplate.queryForObject(query.toString(), params, Long.class);
     }

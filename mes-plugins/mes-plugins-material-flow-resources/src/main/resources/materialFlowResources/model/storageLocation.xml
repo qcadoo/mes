@@ -65,6 +65,8 @@
     </fields>
 
     <hooks>
+        <validatesWith class="com.qcadoo.mes.materialFlowResources.hooks.StorageLocationHooks"
+                       method="validatesWith"/>
         <onSave class="com.qcadoo.mes.materialFlowResources.hooks.StorageLocationHooks"
                 method="onSave"/>
     </hooks>
