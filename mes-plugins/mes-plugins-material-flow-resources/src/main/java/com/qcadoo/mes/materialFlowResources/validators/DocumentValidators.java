@@ -59,17 +59,6 @@ public class DocumentValidators {
     public boolean validate(final DataDefinition documentDD, final Entity document) {
         Long documentId = document.getId();
 
-        if (Objects.nonNull(documentId)) {
-            Entity documentFromDB = documentDD.get(documentId);
-
-            if (!checkIfItIsReportGeneration(document, documentFromDB)
-                    && DocumentState.ACCEPTED.getStringValue().equals(documentFromDB.getStringField(DocumentFields.STATE))) {
-                document.addGlobalError("materialFlow.error.document.alreadyAccepted");
-
-                return false;
-            }
-        }
-
         boolean hasWarehouses = hasWarehouses(documentDD, document);
 
         if (hasWarehouses) {

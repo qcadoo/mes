@@ -50,6 +50,10 @@
                     </script>
                 </smallButton>
             </group>
+            <group name="invoices">
+                <bigButton name="assignInvoiceNumber" icon="newIcon24.png" action="#{grid}.fireEvent(assignInvoiceNumber);"
+                           state="disabled"/>
+            </group>
         </ribbon>
 
         <component type="grid" name="grid" reference="grid">
@@ -57,13 +61,20 @@
                 <![CDATA[
                     var deleteButton = #{window}.getRibbonItem("actions.delete");
 					var acceptButton = #{window}.getRibbonItem("state.accept");
+					var assignInvoiceNumberButton = #{window}.getRibbonItem("invoices.assignInvoiceNumber");
 
 					var listener = {
 						onChange: function(selectedEntitiesArray) {
 						    acceptButton.enable();
+						    assignInvoiceNumberButton.disable();
+
 							if (!selectedEntitiesArray || selectedEntitiesArray.length == 0) {
 								deleteButton.disable();
 								acceptButton.disable();
+							} else if (selectedEntitiesArray.length == 1) {
+                                if (selectedEntitiesArray[0].fields.type == "01receipt" || selectedEntitiesArray[0].fields.type == "04release") {
+						            assignInvoiceNumberButton.enable();
+								}
 							} else {
 							    for (var i in selectedEntitiesArray) {
 							        if (selectedEntitiesArray[i].fields.state == "02accepted") {
@@ -91,13 +102,14 @@
             <option type="column" name="address" fields="documentAddress"/>
             <option type="column" name="userName" fields="userName" width="150"/>
             <option type="column" name="staff" fields="staff" width="150"/>
+            <option type="column" name="invoiceNumber" fields="invoiceNumber"/>
 
             <option type="order" column="time" direction="desc" width="200"/>
 
             <option type="searchable"
-                    value="number,name,type,time,state,locationFromNumber,locationToNumber,description,companyName,userName,staff,address"/>
+                    value="number,name,type,time,state,locationFromNumber,locationToNumber,description,companyName,userName,staff,address,invoiceNumber"/>
             <option type="orderable"
-                    value="number,name,type,time,state,locationFromNumber,locationToNumber,description,companyName,userName,staff,address"/>
+                    value="number,name,type,time,state,locationFromNumber,locationToNumber,description,companyName,userName,staff,address,invoiceNumber"/>
 
             <option type="correspondingView" value="materialFlowResources/documentDetails"/>
             <option type="correspondingComponent" value="form"/>
@@ -111,6 +123,9 @@
             <listener event="createResourcesForDocuments"
                       class="com.qcadoo.mes.materialFlowResources.listeners.DocumentsListListeners"
                       method="createResourcesForDocuments"/>
+            <listener event="assignInvoiceNumber"
+                      class="com.qcadoo.mes.materialFlowResources.listeners.DocumentsListListeners"
+                      method="assignInvoiceNumber"/>
 
             <rowStyleResolver
                     class="com.qcadoo.mes.materialFlowResources.hooks.DocumentsListHooks"

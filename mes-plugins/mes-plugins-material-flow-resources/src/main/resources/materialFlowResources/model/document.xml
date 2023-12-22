@@ -57,6 +57,10 @@
         <boolean name="acceptationInProgress" default="false"/>
         <hasMany name="stateChanges" joinField="document" model="documentStateChange"
                  cascade="delete"/>
+
+        <string name="invoiceNumber">
+            <validatesLength max="2048"/>
+        </string>
     </fields>
 
     <hooks>

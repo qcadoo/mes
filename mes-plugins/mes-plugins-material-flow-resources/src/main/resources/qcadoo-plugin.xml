@@ -396,6 +396,8 @@
 
         <view:view resource="view/productAttributesForPositionList.xml"/>
 
+        <view:view resource="view/assignInvoiceNumber.xml"/>
+
         <view:view-tab resource="view/tabExtensions/locationDetails.xml"/>
         <view:view-tab resource="view/tabExtensions/generalParameters.xml"/>
         <view:view-tab resource="view/tabExtensions/productAdditionalDetails.xml"/>

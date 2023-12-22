@@ -47,6 +47,7 @@
         <string name="userName"/>
         <string name="staff"/>
         <string name="description"/>
+        <string name="invoiceNumber"/>
         <boolean name="wms" />
         <enum name="stateInWMS" values="01waiting,02inProgress,03delayed,04partiallyRealized,05realized" copyable="false"/>
     </fields>
