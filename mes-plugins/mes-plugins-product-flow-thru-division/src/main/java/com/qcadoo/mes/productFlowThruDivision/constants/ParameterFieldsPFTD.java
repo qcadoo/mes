@@ -42,9 +42,7 @@ public final class ParameterFieldsPFTD {
     public static final String ISSUE_LOCATION = "issueLocation";
 
     public static final String WAREHOUSE_ISSUE_PRODUCTS_SOURCE = "warehouseIssueProductsSource";
-
-    public static final String GENERATE_WAREHOUSE_ISSUES_TO_DELIVERIES = "generateWarehouseIssuesToDeliveries";
-
+    
     public static final String DRAWN_DOCUMENTS = "drawnDocuments";
 
     public static final String DOCUMENTS_STATUS = "documentsStatus";

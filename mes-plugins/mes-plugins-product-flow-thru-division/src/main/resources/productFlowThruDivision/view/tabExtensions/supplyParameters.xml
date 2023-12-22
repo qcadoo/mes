@@ -31,7 +31,7 @@
 
     <windowTab name="warehouseIssue">
         <component type="gridLayout" name="gridLayout" columns="3"
-                   rows="7">
+                   rows="6">
          	<layoutElement column="1" row="1">
 				<component type="select" name="warehouseIssueProductsSource" field="#{form}.warehouseIssueProductsSource"
 					reference="warehouseIssueProductsSource">
@@ -45,14 +45,6 @@
                 </component>
             </layoutElement>
             <layoutElement column="1" row="3">
-                <component type="checkbox" name="generateWarehouseIssuesToDeliveries"
-                    reference="generateWarehouseIssuesToDeliveries" field="#{form}.generateWarehouseIssuesToDeliveries" hasDescription="true" >
-                    <listener event="onInputChange" method="lockDeliveriesComponents"
-                    	class="com.qcadoo.mes.productFlowThruDivision.listeners.SupplyParametersListenersPFTD"/>
-                    <option type="labelWidth" value="60"/>
-                </component>
-            </layoutElement>
-            <layoutElement column="1" row="4">
                 <component type="checkbox" name="generateWarehouseIssuesToOrders"
                            reference="generateWarehouseIssuesToOrders" field="#{form}.generateWarehouseIssuesToOrders" hasDescription="true" >
                            <listener event="onInputChange" method="onGenerateWarehouseIssuesToOrdersChange"
@@ -60,14 +52,14 @@
                             <option type="labelWidth" value="60"/>
                 </component>
             </layoutElement>
-            <layoutElement column="1" row="5">
+            <layoutElement column="1" row="4">
                 <component type="input" name="daysBeforeOrderStart"
                            reference="daysBeforeOrderStart" field="#{form}.daysBeforeOrderStart">
                   			<option type="alignment" value="right"/>
                             <option type="labelWidth" value="60"/>
                 </component>
             </layoutElement>
-            <layoutElement column="1" row="6">
+            <layoutElement column="1" row="5">
                 <component type="lookup" name="issueLocation" reference="issueLocation"
                                    field="#{form}.issueLocation" hasDescription="true" >
                             <option type="column" name="name" fields="name" link="true"/>
@@ -81,7 +73,7 @@
                             <option type="labelWidth" value="60"/>
                         </component>
             </layoutElement>
-            <layoutElement column="1" row="7">
+            <layoutElement column="1" row="6">
                 <component type="checkbox" name="automaticReleaseAfterGeneration"
                            reference="automaticReleaseAfterGeneration" field="#{form}.automaticReleaseAfterGeneration" hasDescription="true" >
                     <option type="labelWidth" value="60"/>

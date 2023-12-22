@@ -23,12 +23,9 @@
  */
 package com.qcadoo.mes.deliveries.hooks;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.Map;
 import java.util.Objects;
 
-import com.qcadoo.mes.advancedGenealogy.constants.ParameterFieldsAG;
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.deliveries.constants.ParameterFieldsD;
 import org.apache.commons.lang3.StringUtils;
@@ -43,13 +40,10 @@ import com.qcadoo.mes.advancedGenealogy.AdvancedGenealogyService;
 import com.qcadoo.mes.advancedGenealogy.constants.BatchNumberUniqueness;
 import com.qcadoo.mes.advancedGenealogy.hooks.BatchModelValidators;
 import com.qcadoo.mes.deliveries.DeliveriesService;
-import com.qcadoo.mes.deliveries.ReservationService;
 import com.qcadoo.mes.deliveries.constants.DeliveryFields;
 import com.qcadoo.mes.deliveries.constants.OrderedProductFields;
-import com.qcadoo.mes.deliveries.constants.OrderedProductReservationFields;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.EntityList;
 import com.qcadoo.model.api.NumberService;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
@@ -67,9 +61,6 @@ public class OrderedProductHooks {
     private DeliveriesService deliveriesService;
 
     @Autowired
-    private ReservationService reservationService;
-
-    @Autowired
     private AdvancedGenealogyService advancedGenealogyService;
 
     @Autowired
@@ -81,28 +72,7 @@ public class OrderedProductHooks {
     public void onSave(final DataDefinition orderedProductDD, final Entity orderedProduct) {
         deliveriesService.calculatePricePerUnit(orderedProduct, OrderedProductFields.ORDERED_QUANTITY);
 
-        calculateReservationQuantities(orderedProduct);
-        reservationService.deleteReservationsForOrderedProductIfChanged(orderedProduct);
-
         createBatch(orderedProduct);
-    }
-
-    private void calculateReservationQuantities(final Entity orderedProduct) {
-        EntityList reservations = orderedProduct.getHasManyField(OrderedProductFields.RESERVATIONS);
-
-        if (Objects.nonNull(reservations)) {
-            BigDecimal conversion = orderedProduct.getDecimalField(OrderedProductFields.CONVERSION);
-
-            for (Entity reservation : reservations) {
-                BigDecimal orderedQuantity = reservation.getDecimalField(OrderedProductReservationFields.ORDERED_QUANTITY);
-                BigDecimal newAdditionalQuantity = orderedQuantity.multiply(conversion, numberService.getMathContext());
-
-                newAdditionalQuantity = newAdditionalQuantity.setScale(NumberService.DEFAULT_MAX_FRACTION_DIGITS_IN_DECIMAL,
-                        RoundingMode.HALF_UP);
-
-                reservation.setField(OrderedProductReservationFields.ADDITIONAL_QUANTITY, newAdditionalQuantity);
-            }
-        }
     }
 
     private void createBatch(final Entity orderedProduct) {

@@ -56,8 +56,7 @@
             <option type="column" name="documentId" fields="position"
                     expression="#position?.get('document')?.get('id')" hidden="true"/>
 
-            <option type="column" name="documentDate" fields="position"
-                    expression="#position?.get('document')?.get('time')"/>
+            <option type="column" name="documentDate" fields="date"/>
 
             <option type="column" name="documentNumber" fields="position" width="50"
                     expression="#position?.get('document')?.get('number')"
@@ -69,10 +68,16 @@
 
             <option type="order" column="productNumber" direction="asc"/>
 
+            <option type="column" name="orderId" fields="order"  expression="#order?.get('id')" hidden="true"/>
+            <option type="column" name="order" fields="order"
+                    width="50"  expression="#order?.get('number')"
+                    link="true" correspondingView="orders/orderDetails"
+                    correspondingField="orderId"/>
+
             <option type="searchable"
-                    value="location,productNumber,productName,quantity,unit,documentNumber,documentName,documentDate,resourceNumber"/>
+                    value="location,productNumber,productName,quantity,unit,documentNumber,documentName,documentDate,resourceNumber,order"/>
             <option type="orderable"
-                    value="location,productNumber,productName,quantity,unit,documentNumber,documentName,documentDate,resourceNumber"/>
+                    value="location,productNumber,productName,quantity,unit,documentNumber,documentName,documentDate,resourceNumber,order"/>
 
             <option type="creatable" value="false"/>
             <option type="deletable" value="false"/>

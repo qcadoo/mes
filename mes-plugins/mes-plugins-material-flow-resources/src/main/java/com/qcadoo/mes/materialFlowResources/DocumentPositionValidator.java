@@ -218,7 +218,8 @@ public class DocumentPositionValidator {
         return availableQuantity;
     }
 
-    private BigDecimal getAvailableQuantityForProductAndLocation(final DocumentPositionDTO position, final Long productId,
+    private BigDecimal getAvailableQuantityForProductAndLocation(final DocumentPositionDTO position,
+                                                                 final Long productId,
                                                                  final Long locationId) {
         Long positionId = 0L;
 
@@ -274,7 +275,8 @@ public class DocumentPositionValidator {
     }
 
     private List<String> validatePositionAttributes(final DocumentPositionDTO position, final boolean requirePrice,
-                                                    final boolean requireBatch, boolean requireProductionDate, boolean requireExpirationDate) {
+                                                    final boolean requireBatch, boolean requireProductionDate,
+                                                    boolean requireExpirationDate) {
         List<String> errors = Lists.newArrayList();
 
         if (requirePrice && (Objects.isNull(position.getPrice()) || BigDecimal.ZERO.compareTo(position.getPrice()) == 0)) {
@@ -446,7 +448,8 @@ public class DocumentPositionValidator {
         }
     }
 
-    private Map<String, Object> tryMapDocumentPositionVOToParams(final DocumentPositionDTO vo, final List<String> errors) {
+    private Map<String, Object> tryMapDocumentPositionVOToParams(final DocumentPositionDTO vo,
+                                                                 final List<String> errors) {
         Map<String, Object> params = Maps.newHashMap();
 
         Long productId = tryGetProductIdByNumber(vo.getProduct(), errors);
@@ -486,7 +489,8 @@ public class DocumentPositionValidator {
                     "SELECT _batch.id FROM advancedgenealogy_batch _batch WHERE _batch.number = :number",
                     Collections.singletonMap("number", batch), Long.class);
         } catch (EmptyResultDataAccessException e) {
-            errors.add(String.format("Nie znaleziono takiej parti: '%s'.", batch));
+            errors.add(translationService.translate("documentGrid.error.position.batchNotFound",
+                    LocaleContextHolder.getLocale(), batch));
 
             return null;
         }
@@ -502,7 +506,8 @@ public class DocumentPositionValidator {
                     "SELECT product.id FROM basic_product product WHERE product.number = :number",
                     Collections.singletonMap("number", productNumber), Long.class);
         } catch (EmptyResultDataAccessException e) {
-            errors.add(String.format("Nie znaleziono takiego produktu: '%s'.", productNumber));
+            errors.add(translationService.translate("documentGrid.error.position.productNotFound",
+                    LocaleContextHolder.getLocale(), productNumber));
 
             return null;
         }
@@ -518,7 +523,8 @@ public class DocumentPositionValidator {
                     "SELECT palletnumber.id FROM basic_palletnumber palletnumber WHERE palletnumber.number = :number",
                     Collections.singletonMap("number", palletNumber), Long.class);
         } catch (EmptyResultDataAccessException e) {
-            errors.add(String.format("Nie znaleziono takiego numeru palety: '%s'.", palletNumber));
+            errors.add(translationService.translate("documentGrid.error.position.palletNumberNotFound",
+                    LocaleContextHolder.getLocale(), palletNumber));
 
             return null;
         }
@@ -535,7 +541,8 @@ public class DocumentPositionValidator {
                             "SELECT storagelocation.id FROM materialflowresources_storagelocation storagelocation WHERE storagelocation.number = :number",
                             Collections.singletonMap("number", storageLocationNumber), Long.class);
         } catch (EmptyResultDataAccessException e) {
-            errors.add(String.format("Nie znaleziono takiego miejsca składowania: '%s'.", storageLocationNumber));
+            errors.add(translationService.translate("documentGrid.error.position.storageLocationNotFound",
+                    LocaleContextHolder.getLocale(), storageLocationNumber));
 
             return null;
         }
@@ -550,13 +557,15 @@ public class DocumentPositionValidator {
             return jdbcTemplate.queryForObject("SELECT id FROM materialflowresources_resource WHERE number = :number",
                     Collections.singletonMap("number", resource), Long.class);
         } catch (EmptyResultDataAccessException e) {
-            errors.add(String.format("Nie znaleziono takiego zasobu: '%s'.", resource));
+            errors.add(translationService.translate("documentGrid.error.position.resourceNotFound",
+                    LocaleContextHolder.getLocale(), resource));
 
             return null;
         }
     }
 
-    private List<String> validateBigDecimal(final BigDecimal value, final String field, final int maxScale, final int maxPrecision) {
+    private List<String> validateBigDecimal(final BigDecimal value, final String field, final int maxScale,
+                                            final int maxPrecision) {
         List<String> errors = Lists.newArrayList();
 
         BigDecimal noZero = value.stripTrailingZeros();
@@ -572,15 +581,13 @@ public class DocumentPositionValidator {
         String fieldName = translationService.translate("documentGrid.gridColumn." + field, LocaleContextHolder.getLocale());
 
         if (scale > maxScale) {
-            errors.add(String.format(
-                    translationService.translate("documentGrid.error.position.bigdecimal.invalidScale",
-                            LocaleContextHolder.getLocale()), fieldName, maxScale));
+            errors.add(translationService.translate("documentGrid.error.position.bigdecimal.invalidScale",
+                    LocaleContextHolder.getLocale(), fieldName, String.valueOf(maxScale)));
         }
 
         if ((precision - scale) > maxPrecision) {
-            errors.add(String.format(
-                    translationService.translate("documentGrid.error.position.bigdecimal.invalidPrecision",
-                            LocaleContextHolder.getLocale()), fieldName, maxPrecision));
+            errors.add(translationService.translate("documentGrid.error.position.bigdecimal.invalidPrecision",
+                    LocaleContextHolder.getLocale(), fieldName, String.valueOf(maxPrecision)));
         }
 
         return errors;
@@ -593,8 +600,8 @@ public class DocumentPositionValidator {
                 LocaleContextHolder.getLocale());
 
         if (eitherNumber.isLeft()) {
-            errors.add(String.format(translationService.translate("documentGrid.error.position.bigdecimal.invalidNumericFormat",
-                    LocaleContextHolder.getLocale()), attribute.getNumber()));
+            errors.add(translationService.translate("documentGrid.error.position.bigdecimal.invalidNumericFormat",
+                    LocaleContextHolder.getLocale(), attribute.getNumber()));
 
             return errors;
         }
@@ -605,9 +612,8 @@ public class DocumentPositionValidator {
         int valueScale = val.scale();
 
         if (valueScale > scale) {
-            errors.add(String.format(
-                    translationService.translate("documentGrid.error.position.bigdecimal.invalidScale",
-                            LocaleContextHolder.getLocale()), attribute.getNumber(), scale));
+            errors.add(translationService.translate("documentGrid.error.position.bigdecimal.invalidScale",
+                    LocaleContextHolder.getLocale(), attribute.getNumber(), String.valueOf(scale)));
         }
 
         return errors;
@@ -621,38 +627,39 @@ public class DocumentPositionValidator {
             Long locationId = document.getLocationTo_id();
             Long positionId = position.getId();
             String storageLocationNumber = position.getStorageLocation();
-            String palletNumberNumber = position.getPalletNumber();
+            String palletNumber = position.getPalletNumber();
             String typeOfPallet = position.getTypeOfPallet();
 
-            if (Strings.isNullOrEmpty(storageLocationNumber) && !Strings.isNullOrEmpty(palletNumberNumber)) {
-                errors.add("documentGrid.error.position.storageLocation.required");
+            if (Strings.isNullOrEmpty(storageLocationNumber) && !Strings.isNullOrEmpty(palletNumber)) {
+                errors.add(translationService.translate("documentGrid.error.position.storageLocation.required",
+                        LocaleContextHolder.getLocale()));
             } else if (palletValidatorService.isPlaceStorageLocation(storageLocationNumber)
-                    && Strings.isNullOrEmpty(palletNumberNumber)) {
-                errors.add("documentGrid.error.position.palletNumber.required");
+                    && Strings.isNullOrEmpty(palletNumber)) {
+                errors.add(translationService.translate("documentGrid.error.position.palletNumber.required",
+                        LocaleContextHolder.getLocale()));
             }
 
-            if (palletValidatorService.existsOtherResourceForPalletNumberOnOtherLocations(locationId, storageLocationNumber,
-                    palletNumberNumber, typeOfPallet, null)) {
+            if (palletValidatorService.existsOtherResourceForPalletNumberOnOtherLocations(locationId, storageLocationNumber, null)) {
                 errors.add(translationService.translate(
                         "documentGrid.error.position.existsOtherResourceForPallet",
                         LocaleContextHolder.getLocale()));
             } else if (palletValidatorService.existsOtherResourceForPalletNumberOnSameLocation(locationId, storageLocationNumber,
-                    palletNumberNumber, typeOfPallet, null)) {
+                    palletNumber, typeOfPallet, null)) {
                 errors.add(translationService.translate(
                         "documentGrid.error.position.existsOtherResourceForPalletAndStorageLocation",
                         LocaleContextHolder.getLocale()));
             } else if (palletValidatorService.existsOtherPositionForPalletNumber(locationId, storageLocationNumber,
-                    palletNumberNumber, typeOfPallet, positionId, documentId)) {
+                    palletNumber, typeOfPallet, positionId, documentId)) {
                 errors.add(translationService.translate(
                         "documentGrid.error.position.existsOtherPositionForPalletAndStorageLocation",
                         LocaleContextHolder.getLocale()));
             } else if (palletValidatorService.existsOtherDeliveredProductForPalletNumber(locationId, storageLocationNumber,
-                    palletNumberNumber, typeOfPallet, null)) {
+                    palletNumber, typeOfPallet, null)) {
                 errors.add(translationService.translate(
                         "documentGrid.error.position.existsOtherDeliveredProductForPalletAndStorageLocation",
                         LocaleContextHolder.getLocale()));
             } else if (palletValidatorService.tooManyPalletsInStorageLocationAndPositions(storageLocationNumber,
-                    palletNumberNumber, positionId)) {
+                    palletNumber, positionId)) {
                 errors.add(translationService.translate(
                         "documentGrid.error.position.existsOtherPalletsAtStorageLocation",
                         LocaleContextHolder.getLocale()));

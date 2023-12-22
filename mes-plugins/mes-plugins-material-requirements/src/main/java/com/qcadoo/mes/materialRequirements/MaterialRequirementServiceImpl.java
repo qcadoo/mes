@@ -140,6 +140,8 @@ public class MaterialRequirementServiceImpl implements MaterialRequirementServic
             quantitiesInStock = materialRequirementDataService.getQuantitiesInStock(materialRequirementEntries);
         }
 
+        List<Entity> materialRequirementProducts = Lists.newArrayList();
+
         for (WarehouseDateKey warehouseDateKey : warehouseDateKeys) {
             List<MaterialRequirementEntry> materialRequirementEntries = materialRequirementEntriesMap.get(warehouseDateKey);
 
@@ -171,7 +173,9 @@ public class MaterialRequirementServiceImpl implements MaterialRequirementServic
                 }
 
                 if (batches.isEmpty()) {
-                    createMaterialRequirementProduct(materialRequirement, productId, locationId, null, quantity, currentStock, null, orderStartDate);
+                    Entity materialRequirementProduct = createMaterialRequirementProduct(materialRequirement, productId, locationId, null, quantity, currentStock, null, orderStartDate);
+
+                    materialRequirementProducts.add(materialRequirementProduct);
                 } else {
                     Entity product = materialRequirementEntry.getProduct();
                     Entity location = materialRequirementEntry.getWarehouse();
@@ -185,14 +189,18 @@ public class MaterialRequirementServiceImpl implements MaterialRequirementServic
                                     BigDecimalUtils.convertNullToZero(materialFlowResourcesService.getBatchesQuantity(Lists.newArrayList(batch), product, location)) : BigDecimal.ZERO;
                         }
 
-                        createMaterialRequirementProduct(materialRequirement, productId, locationId, batchId, quantity, currentStock, batchStock, orderStartDate);
+                        Entity materialRequirementProduct = createMaterialRequirementProduct(materialRequirement, productId, locationId, batchId, quantity, currentStock, batchStock, orderStartDate);
+
+                        materialRequirementProducts.add(materialRequirementProduct);
                     }
                 }
             }
         }
+
+        materialRequirement.setField(MaterialRequirementFields.MATERIAL_REQUIREMENT_PRODUCTS, materialRequirementProducts);
     }
 
-    private void createMaterialRequirementProduct(final Entity materialRequirement, final Long productId, final Long locationId, final Long batchId,
+    private Entity createMaterialRequirementProduct(final Entity materialRequirement, final Long productId, final Long locationId, final Long batchId,
                                                   final BigDecimal quantity, final BigDecimal currentStock, final BigDecimal batchStock,
                                                   final Date orderStartDate) {
         Entity materialRequirementProduct = getMaterialRequirementProductDD().create();
@@ -209,7 +217,7 @@ public class MaterialRequirementServiceImpl implements MaterialRequirementServic
                 numberService.setScaleWithDefaultMathContext(batchStock));
         materialRequirementProduct.setField(MaterialRequirementProductFields.ORDER_START_DATE, orderStartDate);
 
-        materialRequirementProduct.getDataDefinition().save(materialRequirementProduct);
+        return materialRequirementProduct.getDataDefinition().save(materialRequirementProduct);
     }
 
     private DataDefinition getMaterialRequirementProductDD() {

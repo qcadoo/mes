@@ -70,8 +70,26 @@ public class OrderStatesListenerAspectPFTD extends AbstractStateListenerAspect {
         Entity owner = stateChangeContext.getOwner();
         if(owner.isValid()) {
             listenerService.acceptInboundDocumentsForOrder(stateChangeContext);
+            listenerService.clearReservations(stateChangeContext);
         }
     }
+
+    @RunInPhase(OrderStateChangePhase.LAST)
+    @RunForStateTransition(sourceState = WILDCARD_STATE, targetState = ABANDONED)
+    @Before(PHASE_EXECUTION_POINTCUT)
+    public void onAbandonedLast(final StateChangeContext stateChangeContext, final int phase) {
+        listenerService.clearReservations(stateChangeContext);
+    }
+
+
+    @RunInPhase(OrderStateChangePhase.LAST)
+    @RunForStateTransition(sourceState = WILDCARD_STATE, targetState = DECLINED)
+    @Before(PHASE_EXECUTION_POINTCUT)
+    public void onDeclinedLast(final StateChangeContext stateChangeContext, final int phase) {
+        listenerService.clearReservations(stateChangeContext);
+    }
+
+
 
     @RunInPhase(OrderStateChangePhase.EXT_SYNC)
     @RunForStateTransition(sourceState = WILDCARD_STATE, targetState = COMPLETED)
@@ -105,5 +123,5 @@ public class OrderStatesListenerAspectPFTD extends AbstractStateListenerAspect {
         listenerService.checkMaterialAvailability(stateChangeContext);
         listenerService.validateOrderProductResourceReservations(stateChangeContext);
     }
-    
+
 }

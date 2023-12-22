@@ -28,13 +28,13 @@ import com.qcadoo.mes.advancedGenealogy.constants.BatchNumberUniqueness;
 import com.qcadoo.mes.advancedGenealogy.hooks.BatchModelValidators;
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.deliveries.DeliveriesService;
-import com.qcadoo.mes.deliveries.ReservationService;
 import com.qcadoo.mes.deliveries.constants.DeliveredProductFields;
 import com.qcadoo.mes.deliveries.constants.DeliveryFields;
 import com.qcadoo.mes.deliveries.constants.OrderedProductFields;
 import com.qcadoo.mes.deliveries.constants.ParameterFieldsD;
 import com.qcadoo.mes.materialFlowResources.MaterialFlowResourcesService;
 import com.qcadoo.mes.materialFlowResources.PalletValidatorService;
+
 import com.qcadoo.model.api.*;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
@@ -69,9 +69,6 @@ public class DeliveredProductHooks {
     private DeliveriesService deliveriesService;
 
     @Autowired
-    private ReservationService reservationService;
-
-    @Autowired
     private PalletValidatorService palletValidatorService;
 
     @Autowired
@@ -84,12 +81,10 @@ public class DeliveredProductHooks {
     private MaterialFlowResourcesService materialFlowResourcesService;
 
     public void onCreate(final DataDefinition deliveredProductDD, final Entity deliveredProduct) {
-        reservationService.createDefaultReservationsForDeliveredProduct(deliveredProduct);
     }
 
     public void onSave(final DataDefinition deliveredProductDD, final Entity deliveredProduct) {
         deliveriesService.calculatePricePerUnit(deliveredProduct, DeliveredProductFields.DELIVERED_QUANTITY);
-        reservationService.deleteReservationsForDeliveredProductIfChanged(deliveredProduct);
 
         updateDeliveredAndAdditionalQuantityInOrderedProduct(deliveredProductDD, deliveredProduct);
 

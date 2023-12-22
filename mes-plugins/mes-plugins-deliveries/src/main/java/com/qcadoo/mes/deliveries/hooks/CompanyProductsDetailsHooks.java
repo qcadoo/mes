@@ -3,7 +3,6 @@ package com.qcadoo.mes.deliveries.hooks;
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.deliveries.constants.CompanyProductFields;
-import com.qcadoo.mes.technologies.constants.ProductComponentFields;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
@@ -33,7 +32,7 @@ public class CompanyProductsDetailsHooks {
         daysField.setFieldValue(translationService.translate(
                 "deliveries.deliveryDetails.window.mainTab.deliveriesDetails.deliveryDateBufferDays.label", view.getLocale()));
         Entity productCompany = productCompanyForm.getEntity();
-        Entity product = productCompany.getBelongsToField(ProductComponentFields.PRODUCT);
+        Entity product = productCompany.getBelongsToField(CompanyProductFields.PRODUCT);
 
         if (Objects.nonNull(product)) {
             unitField.setFieldValue(product.getStringField(ProductFields.UNIT));

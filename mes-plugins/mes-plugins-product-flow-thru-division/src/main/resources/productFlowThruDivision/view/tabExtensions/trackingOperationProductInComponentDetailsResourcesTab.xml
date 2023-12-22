@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    ***************************************************************************
+    Copyright (c) 2010 Qcadoo Limited
+    Project: Qcadoo Framework
+    Version: 1.4
+
+    This file is part of Qcadoo.
+
+    Qcadoo is free software; you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as published
+    by the Free Software Foundation; either version 3 of the License,
+    or (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty
+    of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+    See the GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+    ***************************************************************************
+
+-->
+<windowTabExtension xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                    xmlns="http://schema.qcadoo.org/modules/windowTabExtension"
+                    xsi:schemaLocation="http://schema.qcadoo.org/modules/windowTabExtension http://schema.qcadoo.org/modules/windowTabExtension.xsd"
+                    plugin="productionCounting" view="trackingOperationProductInComponentDetails">
+
+    <windowTab name="resourcesTab" reference="resourcesTab">
+        <component type="grid" name="orderProductResourceReservations" reference="orderProductResourceReservations"
+                   source="#{form}.resourceReservations">
+            <option type="column" name="resourceNumber" fields="orderProductResourceReservation" align="right"
+                    expression="#orderProductResourceReservation['resourceNumber']" link="true"/>
+
+            <option type="column" name="planedQuantity" fields="orderProductResourceReservation" align="right"
+                    expression="#orderProductResourceReservation['planedQuantity']" link="true"/>
+
+            <option type="column" name="registerQuantity" fields="orderProductResourceReservation" align="right"
+                    expression="#orderProductResourceReservation?.get('usedQuantity')" link="true"/>
+
+            <option type="column" name="usedQuantity" fields="usedQuantity" link="true" />
+
+            <option type="order" column="priority" direction="asc"/>
+
+            <option type="searchable" value="resourceNumber,planedQuantity,usedQuantity,registerQuantity"/>
+            <option type="orderable" value="resourceNumber,planedQuantity,usedQuantity,registerQuantity"/>
+
+
+
+            <option type="correspondingView" value="productFlowThruDivision/orderProductResourceReservationRegisterDetails"/>
+            <option type="correspondingComponent" value="form"/>
+            <option type="correspondingViewInModal" value="true"/>
+
+            <option type="creatable" value="false"/>
+            <option type="deletable" value="false"/>
+
+            <option type="fullscreen" value="true"/>
+            <option type="multiselect" value="true"/>
+            <option type="paginable" value="true"/>
+            <option type="prioritizable" value="false"/>
+        </component>
+    </windowTab>
+
+</windowTabExtension>

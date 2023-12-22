@@ -52,6 +52,7 @@ import com.qcadoo.mes.orders.states.constants.OrderState;
 import com.qcadoo.mes.productFlowThruDivision.OrderMaterialAvailability;
 import com.qcadoo.mes.productFlowThruDivision.constants.*;
 import com.qcadoo.mes.productFlowThruDivision.realProductionCost.RealProductionCostService;
+import com.qcadoo.mes.productFlowThruDivision.reservation.OrderReservationsService;
 import com.qcadoo.mes.productFlowThruDivision.service.ProductionCountingDocumentService;
 import com.qcadoo.mes.productionCounting.ProductionCountingService;
 import com.qcadoo.mes.productionCounting.constants.*;
@@ -133,6 +134,13 @@ public class OrderStatesListenerServicePFTD {
 
     @Autowired
     private BasicProductionCountingService basicProductionCountingService;
+
+    @Autowired
+    private OrderReservationsService orderReservationsService;
+
+    public void clearReservations(final StateChangeContext stateChangeContext) {
+        orderReservationsService.clearReservationsForOrder(stateChangeContext.getOwner());
+    }
 
     public void acceptInboundDocumentsForOrder(final StateChangeContext stateChangeContext) {
         String receiptOfProducts = parameterService.getParameter().getStringField(ParameterFieldsPC.RECEIPT_OF_PRODUCTS);

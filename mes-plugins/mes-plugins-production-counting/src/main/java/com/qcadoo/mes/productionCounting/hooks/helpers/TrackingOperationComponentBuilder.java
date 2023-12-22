@@ -26,6 +26,7 @@ package com.qcadoo.mes.productionCounting.hooks.helpers;
 import java.util.List;
 import java.util.Objects;
 
+import com.qcadoo.model.api.EntityList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -101,6 +102,7 @@ public class TrackingOperationComponentBuilder {
                     operationProductComponent.setField(TrackingOperationProductInComponentFields.REPLACEMENT_TO,
                             replacement.getId());
                 }
+
             } else {
                 moveAttributesFromPCQ(operationProductComponent, productionCountingQuantity);
             }

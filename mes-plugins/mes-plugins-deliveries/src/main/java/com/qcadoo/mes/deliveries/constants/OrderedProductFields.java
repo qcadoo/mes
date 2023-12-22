@@ -49,8 +49,6 @@ public final class OrderedProductFields {
 
     public static final String DESCRIPTION = "description";
 
-    public static final String RESERVATIONS = "reservations";
-
     public static final String SUCCESSION = "succession";
 
     public static final String BATCH_NUMBER = "batchNumber";

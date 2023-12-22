@@ -43,12 +43,6 @@ public class SupplyParametersListenersPFTD {
         toggleAutomaticReleaseAfterGeneration(generateWarehouseIssues.isChecked(), view);
     }
 
-    public void lockDeliveriesComponents(final ViewDefinitionState view, final ComponentState componentState, final String[] args) {
-        CheckBoxComponent generateWarehouseIssues = (CheckBoxComponent) componentState;
-        toggleDaysBeforeOrderStart(false, view);
-        toggleIssueLocation(false, view);
-    }
-
     private void toggleIssueLocation(final boolean lock, final ViewDefinitionState view) {
         FieldComponent issueLocation = (FieldComponent) view.getComponentByReference(ParameterFieldsPFTD.ISSUE_LOCATION);
         if (lock) {
@@ -87,17 +81,12 @@ public class SupplyParametersListenersPFTD {
         String value = (String) componentState.getFieldValue();
         if (StringUtils.isNotEmpty(value)) {
             WarehouseIssueProductsSource warehouseIssueProductsSource = WarehouseIssueProductsSource.parseString(value);
-            CheckBoxComponent generateWarehouseIssuesToDeliveries = (CheckBoxComponent) view
-                    .getComponentByReference(ParameterFieldsPFTD.GENERATE_WAREHOUSE_ISSUES_TO_DELIVERIES);
-            CheckBoxComponent generateWarehouseIssuesToOrders = (CheckBoxComponent) view
+                       CheckBoxComponent generateWarehouseIssuesToOrders = (CheckBoxComponent) view
                     .getComponentByReference(ParameterFieldsPFTD.GENERATE_WAREHOUSE_ISSUES_TO_ORDERS);
             if (WarehouseIssueProductsSource.MANUAL.equals(warehouseIssueProductsSource)) {
-                generateWarehouseIssuesToDeliveries.setEnabled(true);
                 uncheckAndDisable(generateWarehouseIssuesToOrders);
-                lockDeliveriesComponents(view, generateWarehouseIssuesToDeliveries, args);
             } else if (WarehouseIssueProductsSource.ORDER.equals(warehouseIssueProductsSource)) {
                 generateWarehouseIssuesToOrders.setEnabled(true);
-                uncheckAndDisable(generateWarehouseIssuesToDeliveries);
                 onGenerateWarehouseIssuesToOrdersChange(view, generateWarehouseIssuesToOrders, args);
             }
         }

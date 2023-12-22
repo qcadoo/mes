@@ -62,8 +62,6 @@
         <dictionary name="additionalUnit" dictionary="units"/>
 
         <priority name="succession" scope="delivery"/>
-        <hasMany name="reservations" model="deliveredProductReservation"
-                 joinField="deliveredProduct" cascade="delete" copyable="true"/>
 
         <string name="deliveredProductIds" persistent="false"/>
         <boolean name="validatePallet" default="true" persistent="false"/>

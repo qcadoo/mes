@@ -85,10 +85,6 @@
 		</model:model-field>
 
 		<model:model-field plugin="basic" model="parameter">
-			<model:belongsTo name="dashboardOperation" plugin="technologies" model="operation"/>
-		</model:model-field>
-
-		<model:model-field plugin="basic" model="parameter">
 			<model:belongsTo name="dashboardComponentsLocation" plugin="materialFlow" model="location"/>
 		</model:model-field>
 

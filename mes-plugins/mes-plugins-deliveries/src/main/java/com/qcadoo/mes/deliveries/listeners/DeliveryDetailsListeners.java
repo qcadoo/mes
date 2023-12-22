@@ -32,7 +32,6 @@ import com.qcadoo.mes.basic.util.CurrencyService;
 import com.qcadoo.mes.costNormsForProduct.constants.ProductFieldsCNFP;
 import com.qcadoo.mes.deliveries.DeliveredProductMultiPositionService;
 import com.qcadoo.mes.deliveries.DeliveriesService;
-import com.qcadoo.mes.deliveries.ReservationService;
 import com.qcadoo.mes.deliveries.constants.*;
 import com.qcadoo.mes.deliveries.print.DeliveryReportPdf;
 import com.qcadoo.mes.deliveries.print.OrderReportPdf;
@@ -122,9 +121,6 @@ public class DeliveryDetailsListeners {
 
     @Autowired
     private DeliveriesService deliveriesService;
-
-    @Autowired
-    private ReservationService reservationService;
 
     @Autowired
     private DeliveredProductMultiPositionService deliveredProductMultiPositionService;
@@ -378,16 +374,6 @@ public class DeliveryDetailsListeners {
         copyOrderedProductToDelivered(view, true);
 
         state.performEvent(view, "reset");
-    }
-
-    public final void recalculateReservations(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        FormComponent deliveryForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
-
-        Long deliveryId = deliveryForm.getEntityId();
-
-        reservationService.recalculateReservationsForDelivery(deliveryId);
-
-        view.addMessage("deliveries.delivery.recalculateReservations", MessageType.SUCCESS);
     }
 
     public final void changeStorageLocations(final ViewDefinitionState view, final ComponentState state, final String[] args) {
@@ -756,79 +742,11 @@ public class DeliveryDetailsListeners {
         newOrderedProduct.setField(OrderedProductFields.ADDITIONAL_QUANTITY,
                 BigDecimalUtils.convertNullToZero(orderedQuantity).multiply(conversion, numberService.getMathContext()));
 
-        newOrderedProduct.setField(OrderedProductFields.RESERVATIONS,
-                copyReservations(orderedProduct, newOrderedProduct, deliveredProduct));
-
         newOrderedProduct.setField(L_OFFER, orderedProduct.getBelongsToField(L_OFFER));
 
         return newOrderedProduct;
     }
 
-    private List<Entity> copyReservations(final Entity orderedProduct, final Entity newOrderedProduct,
-                                          final Entity deliveredProduct) {
-        List<Entity> newReservations = Lists.newArrayList();
-
-        List<Entity> oldReservations = orderedProduct.getHasManyField(OrderedProductFields.RESERVATIONS);
-
-        BigDecimal availableQuantity = newOrderedProduct.getDecimalField(OrderedProductFields.ORDERED_QUANTITY);
-
-        for (Entity oldReservation : oldReservations) {
-            Entity location = oldReservation.getBelongsToField(OrderedProductReservationFields.LOCATION);
-            BigDecimal deliveredReservedQuantity = getDeliveredReservedQuantity(deliveredProduct, location);
-
-            BigDecimal quantity = BigDecimalUtils
-                    .convertNullToZero(oldReservation.getDecimalField(OrderedProductReservationFields.ORDERED_QUANTITY));
-
-            if (availableQuantity.compareTo(quantity) < 0) {
-                quantity = availableQuantity;
-            }
-
-            quantity = quantity.subtract(deliveredReservedQuantity);
-
-            if (quantity.compareTo(BigDecimal.ZERO) > 0) {
-                Entity newReservation = dataDefinitionService
-                        .get(DeliveriesConstants.PLUGIN_IDENTIFIER, DeliveriesConstants.MODEL_ORDERED_PRODUCT_RESERVATION)
-                        .create();
-
-                BigDecimal conversion = getConversion(orderedProduct.getBelongsToField(OrderedProductFields.PRODUCT));
-
-                newReservation.setField(OrderedProductReservationFields.LOCATION,
-                        oldReservation.getBelongsToField(OrderedProductReservationFields.LOCATION));
-                newReservation.setField(OrderedProductReservationFields.ORDERED_PRODUCT,
-                        oldReservation.getBelongsToField(OrderedProductReservationFields.ORDERED_PRODUCT));
-                newReservation.setField(OrderedProductReservationFields.ORDERED_QUANTITY, quantity);
-                newReservation.setField(OrderedProductReservationFields.ORDERED_QUANTITY_UNIT,
-                        oldReservation.getStringField(OrderedProductReservationFields.ORDERED_QUANTITY_UNIT));
-                newReservation.setField(OrderedProductReservationFields.ADDITIONAL_QUANTITY,
-                        BigDecimalUtils.convertNullToZero(quantity).multiply(conversion, numberService.getMathContext()));
-                newReservation.setField(OrderedProductReservationFields.ADDITIONAL_QUANTITY_UNIT,
-                        oldReservation.getStringField(OrderedProductReservationFields.ADDITIONAL_QUANTITY_UNIT));
-                newReservation.setField(OrderedProductReservationFields.ORDERED_PRODUCT, newOrderedProduct);
-
-                newReservations.add(newReservation);
-
-                availableQuantity = availableQuantity.subtract(quantity);
-            }
-        }
-
-        return newReservations;
-    }
-
-    private BigDecimal getDeliveredReservedQuantity(final Entity deliveredProduct, final Entity location) {
-        BigDecimal quantity = BigDecimal.ZERO;
-
-        if (Objects.nonNull(deliveredProduct)) {
-            List<Entity> reservations = deliveredProduct.getHasManyField(DeliveredProductFields.RESERVATIONS);
-
-            quantity = reservations.stream()
-                    .filter(reservation -> reservation.getBelongsToField(DeliveredProductReservationFields.LOCATION).getId()
-                            .equals(location.getId()))
-                    .map(reservation -> reservation.getDecimalField(DeliveredProductReservationFields.DELIVERED_QUANTITY))
-                    .reduce(BigDecimal.ZERO, BigDecimal::add);
-        }
-
-        return quantity;
-    }
 
     public BigDecimal getConversion(final Entity product) {
         String unit = product.getStringField(ProductFields.UNIT);

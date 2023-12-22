@@ -11,8 +11,13 @@ public final class ReservationFields {
     public static final String POSITION = "position";
 
     public static final String PRODUCTS_TO_ISSUE = "productsToIssue";
+    public static final String ORDER_PRODUCT_RESOURCE_RESERVATION = "orderProductResourceReservation";
 
     public static final String RESOURCE = "resource";
+
+    public static final String ORDER = "order";
+
+    public static final String DATE = "date";
 
     private ReservationFields() {
     }

@@ -27,6 +27,7 @@ import static com.qcadoo.mes.costNormsForMaterials.constants.CostNormsForMateria
 
 import com.google.common.collect.ImmutableList;
 import com.qcadoo.mes.orders.constants.OrderFields;
+import com.qcadoo.plugin.api.PluginUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -45,6 +46,7 @@ import com.qcadoo.view.api.components.LookupComponent;
 import com.qcadoo.view.api.components.lookup.FilterValueHolder;
 import com.qcadoo.view.constants.QcadooViewConstants;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -66,7 +68,21 @@ public class TechnologyInstOperProductInCompDetailsHooks {
     @Autowired
     private NumberService numberService;
 
-    public void fillUnitField(final ViewDefinitionState viewDefinitionState) {
+    public void onBeforeRender(final ViewDefinitionState viewDefinitionState) {
+        fillUnitField(viewDefinitionState);
+        fillCurrencyFields(viewDefinitionState);
+        setCriteriaModifiersParameters(viewDefinitionState);
+        if(PluginUtils.isEnabled("supplyNegotiations")) {
+            for (String reference : Arrays.asList("lastOfferCost", "averageOfferCost")) {
+                FieldComponent field = (FieldComponent) viewDefinitionState.getComponentByReference(reference);
+                field.setEnabled(false);
+                field.requestComponentUpdateState();
+            }
+        }
+
+    }
+
+        public void fillUnitField(final ViewDefinitionState viewDefinitionState) {
         FieldComponent costForNumberUnit = (FieldComponent) viewDefinitionState.getComponentByReference(L_COST_FOR_NUMBER_UNIT);
         LookupComponent productLookup = (LookupComponent) viewDefinitionState
                 .getComponentByReference(TechnologyInstOperProductInCompFields.PRODUCT);

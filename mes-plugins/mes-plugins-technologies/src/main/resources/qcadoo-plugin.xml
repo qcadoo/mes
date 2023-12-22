@@ -324,6 +324,10 @@
                            model="pieceRateTechnologyDto" joinField="pieceRate"/>
         </model:model-field>
 
+        <model:model-field plugin="basic" model="parameter">
+            <model:belongsTo name="dashboardOperation" plugin="technologies" model="operation"/>
+        </model:model-field>
+
         <model:model-hook plugin="basic" model="division">
             <model:onDelete class="com.qcadoo.mes.technologies.hooks.DivisionHooksT" method="onDelete"/>
         </model:model-hook>
