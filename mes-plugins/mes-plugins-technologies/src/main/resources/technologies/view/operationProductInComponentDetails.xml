@@ -233,7 +233,34 @@
                 </layoutElement>
             </component>
         </windowTab>
+        <windowTab name="sectionsTab" reference="sectionsTab">
+            <component type="grid" name="sections" source="#{form}.sections"
+                       reference="sections">
 
+                <option type="column" name="length" fields="length" link="true"
+                        width="100"/>
+                <option type="column" name="quantity" fields="quantity" link="true"
+                        width="100"/>
+                <option type="column" name="unit" fields="unit" link="true"
+                        width="50"/>
+
+
+                <option type="order" column="length" direction="asc"/>
+
+                <option type="searchable" value="length,quantity,unit"/>
+                <option type="orderable" value="length,quantity,unit"/>
+
+                <option type="correspondingView" value="technologies/sectionDetails"/>
+                <option type="correspondingComponent" value="form"/>
+                <option type="correspondingViewInModal" value="true"/>
+
+                <option type="deletable" value="true"/>
+                <option type="creatable" value="true"/>
+                <option type="multiselect" value="true"/>
+                <option type="fullscreen" value="true"/>
+                <option type="fixedHeight" value="true"/>
+            </component>
+        </windowTab>
     </component>
 
     <hooks>

@@ -42,6 +42,7 @@
         <file name="attachment"/>
         <boolean name="areProductQuantitiesDivisible" default="false"/>
         <boolean name="isTjDivisible" default="false"/>
+        <boolean name="optimizeCutting" default="false"/>
 
         <belongsTo name="operationGroup" model="operationGroup"/>
 

@@ -119,6 +119,11 @@
                                    reference="reservationRawMaterialResourceRequired" defaultVisible="true" hasDescription="true">
                         </component>
                     </layoutElement>
+                    <layoutElement column="2" row="5">
+                        <component type="checkbox" name="optimizeCutting" field="#{form}.optimizeCutting"
+                                   reference="optimizeCutting" defaultVisible="true" hasDescription="true">
+                        </component>
+                    </layoutElement>
 
                 </component>
 

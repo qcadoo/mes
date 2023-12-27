@@ -2,6 +2,7 @@ package com.qcadoo.mes.basic.criteriaModifiers;
 
 import com.qcadoo.mes.basic.constants.AttributeDataType;
 import com.qcadoo.mes.basic.constants.AttributeFields;
+import com.qcadoo.mes.basic.constants.AttributeValueType;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
 
@@ -17,6 +18,10 @@ public class AttributeCriteriaModifiers {
 
     public void showForProduct(final SearchCriteriaBuilder scb) {
         scb.add(SearchRestrictions.eq(AttributeFields.FOR_PRODUCT, Boolean.TRUE));
+    }
+    public void showNumericForProduct(final SearchCriteriaBuilder scb) {
+        scb.add(SearchRestrictions.eq(AttributeFields.FOR_PRODUCT, Boolean.TRUE));
+        scb.add(SearchRestrictions.eq(AttributeFields.VALUE_TYPE, AttributeValueType.NUMERIC.getStringValue()));
     }
 
     public void showForResource(final SearchCriteriaBuilder scb) {

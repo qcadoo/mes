@@ -67,4 +67,6 @@ public final class OperationFields {
 
     public static final String PRODUCT_DATA_NUMBER = "productDataNumber";
     public static final String RESERVATION_RAW_MATERIAL_RESOURCE_REQUIRED = "reservationRawMaterialResourceRequired";
+
+    public static final String OPTIMIZE_CUTTING = "optimizeCutting";
 }
