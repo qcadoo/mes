@@ -63,7 +63,7 @@
         <hasMany name="productDataInputs" model="productDataInput" joinField="operationProductInComponent"
                  cascade="delete"/>
 
-        <hasMany name="sections" model="section" joinField="operationProductInComponent"
+        <hasMany name="sections" model="section" joinField="operationProductInComponent" copyable="true"
                  cascade="delete"/>
     </fields>
 
