@@ -66,5 +66,6 @@ public final class OperationProductInComponentFields {
     public static final String PRODUCT_DATA_NUMBER = "productDataNumber";
 
     public static final String PRODUCT_DATA_INPUTS = "productDataInputs";
+    public static final String SECTIONS = "sections";
 
 }
