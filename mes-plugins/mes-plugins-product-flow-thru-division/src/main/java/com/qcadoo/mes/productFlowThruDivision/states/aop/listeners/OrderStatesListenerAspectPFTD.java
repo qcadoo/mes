@@ -25,7 +25,6 @@ package com.qcadoo.mes.productFlowThruDivision.states.aop.listeners;
 
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.orders.states.aop.OrderStateChangeAspect;
-import com.qcadoo.mes.orders.states.aop.listener.OperationalTaskOrderStateAspect;
 import com.qcadoo.mes.orders.states.constants.OrderStateChangePhase;
 import com.qcadoo.mes.productFlowThruDivision.constants.ProductFlowThruDivisionConstants;
 import com.qcadoo.mes.productFlowThruDivision.states.OrderStatesListenerServicePFTD;
@@ -40,8 +39,6 @@ import com.qcadoo.plugin.api.RunIfEnabled;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.annotation.Pointcut;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
@@ -68,7 +65,7 @@ public class OrderStatesListenerAspectPFTD extends AbstractStateListenerAspect {
     @Before(PHASE_EXECUTION_POINTCUT)
     public void onCompletedLast(final StateChangeContext stateChangeContext, final int phase) {
         Entity owner = stateChangeContext.getOwner();
-        if(owner.isValid()) {
+        if (owner.isValid()) {
             listenerService.acceptInboundDocumentsForOrder(stateChangeContext);
             listenerService.clearReservations(stateChangeContext);
         }
@@ -88,7 +85,6 @@ public class OrderStatesListenerAspectPFTD extends AbstractStateListenerAspect {
     public void onDeclinedLast(final StateChangeContext stateChangeContext, final int phase) {
         listenerService.clearReservations(stateChangeContext);
     }
-
 
 
     @RunInPhase(OrderStateChangePhase.EXT_SYNC)

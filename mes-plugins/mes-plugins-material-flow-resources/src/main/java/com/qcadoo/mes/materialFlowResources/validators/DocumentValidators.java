@@ -221,7 +221,7 @@ public class DocumentValidators {
         }
     }
 
-    private boolean validatePositions(final Entity document) {
+    public boolean validatePositions(final Entity document) {
         if (Objects.isNull(document.getId()) || document.getHasManyField(DocumentFields.POSITIONS).isEmpty()) {
             return true;
         }
