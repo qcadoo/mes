@@ -24,34 +24,26 @@
     ***************************************************************************
 
 -->
-<model name="documentDto" activable="true" auditable="false" deletable="false" insertable="false" updatable="false"
+<model name="section"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
        xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
 
     <fields>
-        <string name="number"/>
-        <string name="name">
-            <validatesLength max="255"/>
-        </string>
-        <enum name="type" values="01receipt,02internalInbound,03internalOutbound,04release,05transfer"/>
-        <datetime name="time"/>
-        <enum name="state" values="01draft,02accepted" default="01draft" required="true"/>
-        <integer name="locationFrom_id"/>
-        <string name="locationFromNumber"/>
-        <integer name="locationTo_id"/>
-        <string name="locationToNumber"/>
-        <integer name="company_id"/>
-        <string name="companyName"/>
-        <string name="documentAddress"/>
-        <integer name="user_id"/>
-        <string name="userName"/>
-        <string name="staff"/>
-        <string name="description"/>
-        <string name="invoiceNumber"/>
-        <boolean name="wms" />
-        <enum name="stateInWMS" values="01waiting,02inProgress,03delayed,04partiallyRealized,05realized" copyable="false"/>
+        <belongsTo name="operationProductInComponent" model="operationProductInComponent" required="true"/>
+
+        <decimal name="length" required="true">
+            <validatesRange from="0" exclusively="true"/>
+            <validatesUnscaledValue max="9"/>
+            <validatesScale max="5"/>
+        </decimal>
+        <integer name="quantity" required="true">
+            <validatesRange from="0" exclusively="true"/>
+        </integer>
+        <dictionary name="unit" dictionary="units" required="true"/>
+
     </fields>
 
-    <masterModel plugin="materialFlowResources" model="document"/>
+    <hooks>
 
+    </hooks>
 </model>

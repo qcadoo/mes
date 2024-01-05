@@ -88,12 +88,13 @@
             <option type="column" name="state" fields="state" width="70"/>
             <option type="column" name="palletType" fields="palletType" width="50"/>
             <option type="column" name="palletNumber" fields="palletNumber" width="70"/>
+            <option type="column" name="invoiceNumber" fields="invoiceNumber" width="70"/>
             <option type="order" column="documentDate" direction="desc"/>
 
             <option type="searchable"
-                    value="value,sellingPrice,locationFrom,locationTo,productNumber,productName,productGlobalTypeOfMaterial,productCategory,quantity,givenQuantity,givenUnit,conversion,documentType,documentNumber,documentName,company,batch,expirationDate,productionDate,storageLocation,state,waste,documentDate,price,palletType,palletNumber,address,staff,resourceNumber"/>
+                    value="value,sellingPrice,locationFrom,locationTo,productNumber,productName,productGlobalTypeOfMaterial,productCategory,quantity,givenQuantity,givenUnit,conversion,documentType,documentNumber,documentName,company,batch,expirationDate,productionDate,storageLocation,state,waste,documentDate,price,palletType,palletNumber,address,staff,resourceNumber,invoiceNumber"/>
             <option type="orderable"
-                    value="value,sellingPrice,locationFrom,locationTo,productNumber,productName,productGlobalTypeOfMaterial,productCategory,quantity,givenQuantity,givenUnit,conversion,documentType,documentNumber,documentName,company,batch,expirationDate,productionDate,storageLocation,state,waste,documentDate,price,palletNumber,palletNumber,address,staff,resourceNumber"/>
+                    value="value,sellingPrice,locationFrom,locationTo,productNumber,productName,productGlobalTypeOfMaterial,productCategory,quantity,givenQuantity,givenUnit,conversion,documentType,documentNumber,documentName,company,batch,expirationDate,productionDate,storageLocation,state,waste,documentDate,price,palletNumber,palletNumber,address,staff,resourceNumber,invoiceNumber"/>
 
             <option type="creatable" value="false"/>
             <option type="deletable" value="false"/>

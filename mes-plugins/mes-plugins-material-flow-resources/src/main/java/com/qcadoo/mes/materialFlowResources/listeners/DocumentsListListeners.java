@@ -22,8 +22,13 @@
 package com.qcadoo.mes.materialFlowResources.listeners;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
+import com.google.common.collect.Maps;
 import com.qcadoo.mes.materialFlowResources.service.*;
+import com.qcadoo.view.api.components.FormComponent;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -105,6 +110,24 @@ public class DocumentsListListeners {
             } finally {
                 documentService.setAcceptationInProgress(documentsFromDB, false);
             }
+        }
+    }
+
+    public void assignInvoiceNumber(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        GridComponent gridComponent = (GridComponent) view.getComponentByReference(QcadooViewConstants.L_GRID);
+
+        Long documentId = gridComponent.getSelectedEntitiesIds().stream().findFirst().get();
+
+
+        if (Objects.nonNull(documentId)) {
+            Map<String, Object> parameters = Maps.newHashMap();
+
+            parameters.put("form.id", documentId);
+
+            JSONObject context = new JSONObject(parameters);
+
+            String url = "../page/materialFlowResources/assignInvoiceNumber.html?context=" + context;
+            view.openModal(url);
         }
     }
 

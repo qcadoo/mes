@@ -65,6 +65,7 @@
         <integer name="subOrderId"/>
         <string name="resourceNumber"/>
         <string name="staff"/>
+        <string name="invoiceNumber"/>
     </fields>
 
     <masterModel plugin="materialFlowResources" model="position"/>
