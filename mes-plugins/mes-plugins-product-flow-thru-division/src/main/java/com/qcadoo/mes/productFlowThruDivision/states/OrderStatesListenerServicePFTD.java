@@ -174,7 +174,11 @@ public class OrderStatesListenerServicePFTD {
             Either<String, Void> result = tryAcceptInboundDocumentsFor(order);
 
             if (result.isLeft()) {
-                stateChangeContext.addMessage(result.getLeft(), StateMessageType.FAILURE);
+                for (ErrorMessage error : order.getGlobalErrors()) {
+                    stateChangeContext.addMessage(error.getMessage(), StateMessageType.FAILURE, false, error.getVars());
+                }
+
+                stateChangeContext.addMessage(result.getLeft(), StateMessageType.FAILURE, false);
             }
         }
     }
@@ -233,12 +237,12 @@ public class OrderStatesListenerServicePFTD {
                         order.addGlobalError(error.getMessage(), error.getVars());
                     }
 
-                    order.addGlobalError(L_ACCEPT_INBOUND_DOCUMENT_ERROR);
-
                     return Either.left(L_ACCEPT_INBOUND_DOCUMENT_ERROR);
                 }
             } else {
-                order.addGlobalError(L_ACCEPT_INBOUND_DOCUMENT_ERROR);
+                for (ErrorMessage error : document.getGlobalErrors()) {
+                    order.addGlobalError(error.getMessage(), error.getVars());
+                }
 
                 return Either.left(L_ACCEPT_INBOUND_DOCUMENT_ERROR);
             }
