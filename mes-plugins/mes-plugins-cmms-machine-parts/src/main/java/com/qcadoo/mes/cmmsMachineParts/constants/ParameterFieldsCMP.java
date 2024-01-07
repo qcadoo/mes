@@ -35,4 +35,6 @@ public final class ParameterFieldsCMP {
 
     public static final String REQUIRE_TYPE_OF_FAULT = "requireTypeOfFault";
 
+    public static final String UPDATE_PLANNED_EVENT_FINISH_DATE = "updatePlannedEventFinishDate";
+
 }

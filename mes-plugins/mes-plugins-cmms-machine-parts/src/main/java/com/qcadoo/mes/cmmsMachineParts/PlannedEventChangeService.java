@@ -23,11 +23,16 @@
  */
 package com.qcadoo.mes.cmmsMachineParts;
 
-import org.springframework.stereotype.Service;
-
+import com.qcadoo.mes.basic.ParameterService;
+import com.qcadoo.mes.cmmsMachineParts.constants.ParameterFieldsCMP;
+import com.qcadoo.mes.cmmsMachineParts.constants.PlannedEventFields;
 import com.qcadoo.mes.states.StateChangeContext;
 import com.qcadoo.mes.states.constants.StateChangeStatus;
 import com.qcadoo.mes.states.service.client.util.ViewContextHolder;
+import com.qcadoo.model.api.Entity;
+import org.joda.time.DateTime;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 /**
  * ***************************************************************************
@@ -55,8 +60,11 @@ import com.qcadoo.mes.states.service.client.util.ViewContextHolder;
 
 @Service
 public class PlannedEventChangeService {
-    public void showReasonForm(final StateChangeContext stateChangeContext, final ViewContextHolder viewContext) {
 
+    @Autowired
+    private ParameterService parameterService;
+
+    public void showReasonForm(final StateChangeContext stateChangeContext, final ViewContextHolder viewContext) {
         stateChangeContext.setStatus(StateChangeStatus.PAUSED);
         stateChangeContext.save();
 
@@ -64,4 +72,15 @@ public class PlannedEventChangeService {
                 "../page/cmmsMachineParts/plannedEventStateChangeReasonDialog.html?context={\"form.id\": "
                         + stateChangeContext.getStateChangeEntity().getId() + "}");
     }
+
+    public void updatePlannedEventFinishDate(final StateChangeContext stateChangeContext) {
+        Entity plannedEvent = stateChangeContext.getOwner();
+
+        Entity parameter = parameterService.getParameter();
+
+        if (parameter.getBooleanField(ParameterFieldsCMP.UPDATE_PLANNED_EVENT_FINISH_DATE)) {
+            plannedEvent.setField(PlannedEventFields.FINISH_DATE, DateTime.now().toDate());
+        }
+    }
+
 }

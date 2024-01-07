@@ -219,6 +219,10 @@
             <model:boolean name="acceptanceEvents"/>
         </model:model-field>
 
+        <model:model-field plugin="basic" model="parameter">
+            <model:boolean name="updatePlannedEventFinishDate"/>
+        </model:model-field>
+
         <model:model-field plugin="basic" model="product">
             <model:hasMany name="machinePartAttachments" joinField="product" model="machinePartAttachment"
                            cascade="delete" plugin="cmmsMachineParts"/>
