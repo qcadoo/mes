@@ -127,7 +127,23 @@
 
         <model:model model="section" resource="model/section.xml"/>
 
+        <model:model model="dimensionControlAttribute" resource="model/dimensionControlAttribute.xml"/>
+
         <model:dictionary name="sampling"/>
+
+        <model:model-field plugin="basic" model="parameter">
+            <model:boolean name="dimensionControlOfProducts" default="false"/>
+        </model:model-field>
+
+        <model:model-field plugin="basic" model="parameter">
+            <model:hasMany name="dimensionControlAttributes" plugin="technologies"
+                           model="dimensionControlAttribute" joinField="parameter" cascade="delete"/>
+        </model:model-field>
+
+        <model:model-field plugin="basic" model="attribute">
+            <model:hasMany name="dimensionControlAttributes" plugin="technologies"
+                           model="dimensionControlAttribute" joinField="attribute" cascade="delete"/>
+        </model:model-field>
 
         <model:model-field plugin="basic" model="attribute">
             <model:hasMany name="workstationChangeoverNorms" plugin="technologies"
@@ -329,6 +345,12 @@
         <model:model-field plugin="basic" model="parameter">
             <model:belongsTo name="dashboardOperation" plugin="technologies" model="operation"/>
         </model:model-field>
+
+        <model:model-hook plugin="basic" model="parameter">
+            <model:validatesWith
+                    class="com.qcadoo.mes.technologies.hooks.ParameterHooksT"
+                    method="validatesWith"/>
+        </model:model-hook>
 
         <model:model-hook plugin="basic" model="division">
             <model:onDelete class="com.qcadoo.mes.technologies.hooks.DivisionHooksT" method="onDelete"/>

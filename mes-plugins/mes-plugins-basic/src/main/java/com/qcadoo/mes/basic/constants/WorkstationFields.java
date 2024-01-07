@@ -71,4 +71,14 @@ public final class WorkstationFields {
 
     public static final String MANUAL_STATE_CHANGE = "manualStateChange";
 
+    public static final String ENTITY_ID = "entityId";
+
+    public static final String MINIMUM_DIMENSION = "minimumDimension";
+
+    public static final String MAXIMUM_DIMENSION = "maximumDimension";
+
+    public static final String MINIMUM_DIMENSION_UNIT = "minimumDimensionUnit";
+
+    public static final String MAXIMUM_DIMENSION_UNIT = "maximumDimensionUnit";
+
 }

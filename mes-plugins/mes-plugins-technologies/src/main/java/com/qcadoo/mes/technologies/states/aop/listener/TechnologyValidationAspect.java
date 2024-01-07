@@ -30,8 +30,6 @@ import com.qcadoo.mes.states.annotation.RunForStateTransitions;
 import com.qcadoo.mes.states.annotation.RunInPhase;
 import com.qcadoo.mes.states.aop.AbstractStateListenerAspect;
 import com.qcadoo.mes.states.constants.StateChangeStatus;
-import com.qcadoo.mes.states.messages.constants.MessageFields;
-import com.qcadoo.mes.states.messages.constants.StateMessageType;
 import com.qcadoo.mes.technologies.constants.ParameterFieldsT;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.mes.technologies.listeners.TechnologyDetailsListeners;
@@ -44,15 +42,11 @@ import com.qcadoo.mes.technologies.validators.TechnologyTreeValidators;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.plugin.api.PluginUtils;
 import com.qcadoo.plugin.api.RunIfEnabled;
-
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.annotation.Pointcut;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
-
-import static com.qcadoo.mes.states.messages.constants.StateMessageType.FAILURE;
-import static com.qcadoo.mes.states.messages.constants.StateMessageType.VALIDATION_ERROR;
 
 @Aspect
 @Configurable
@@ -76,8 +70,8 @@ public class TechnologyValidationAspect extends AbstractStateListenerAspect {
     }
 
     @RunInPhase(TechnologyStateChangePhase.PRE_VALIDATION)
-    @RunForStateTransitions({ @RunForStateTransition(targetState = TechnologyStateStringValues.ACCEPTED),
-            @RunForStateTransition(targetState = TechnologyStateStringValues.CHECKED) })
+    @RunForStateTransitions({@RunForStateTransition(targetState = TechnologyStateStringValues.ACCEPTED),
+            @RunForStateTransition(targetState = TechnologyStateStringValues.CHECKED)})
     @Before(PHASE_EXECUTION_POINTCUT)
     public void preValidationOnAcceptingOrChecking(final StateChangeContext stateChangeContext, final int phase) {
         if (!technologyValidationService.checkIfTechnologyTreeIsSet(stateChangeContext)) {
@@ -91,7 +85,6 @@ public class TechnologyValidationAspect extends AbstractStateListenerAspect {
         if (!technologyValidationService.checkIfWasteProductsIsRightMarked(stateChangeContext)) {
             return;
         }
-
 
         if (technologyValidationService.checkIfRootOperationIsSubOrder(stateChangeContext)) {
             return;
@@ -129,15 +122,19 @@ public class TechnologyValidationAspect extends AbstractStateListenerAspect {
             }
         }
 
-        if(parameter.getBooleanField(ParameterFieldsT.CHECK_FOR_THE_EXISTENCE_OF_INPUT_PRODUCT_PRICES)) {
+        if (parameter.getBooleanField(ParameterFieldsT.CHECK_FOR_THE_EXISTENCE_OF_INPUT_PRODUCT_PRICES)) {
             technologyValidationService.checkIfInputProductPricesSet(stateChangeContext);
 
+        }
+
+        if (parameter.getBooleanField(ParameterFieldsT.DIMENSION_CONTROL_OF_PRODUCTS)) {
+            technologyValidationService.checkDimensionControlOfProducts(stateChangeContext);
         }
     }
 
     @RunInPhase(TechnologyStateChangePhase.PRE_VALIDATION)
-    @RunForStateTransitions({ @RunForStateTransition(targetState = TechnologyStateStringValues.OUTDATED),
-            @RunForStateTransition(targetState = TechnologyStateStringValues.DECLINED) })
+    @RunForStateTransitions({@RunForStateTransition(targetState = TechnologyStateStringValues.OUTDATED),
+            @RunForStateTransition(targetState = TechnologyStateStringValues.DECLINED)})
     @Before(PHASE_EXECUTION_POINTCUT)
     public void preValidationOnOutdatingOrDeclining(final StateChangeContext stateChangeContext, final int phase) {
         technologyValidationService.checkIfTechnologyIsNotUsedInActiveOrder(stateChangeContext);

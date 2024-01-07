@@ -24,7 +24,8 @@
     ***************************************************************************
 
 -->
-<view defaultAuthorizationRole="ROLE_COMPANY_STRUCTURE" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
+<view defaultAuthorizationRole="ROLE_COMPANY_STRUCTURE" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns="http://schema.qcadoo.org/view"
       xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
       name="subassemblyDetails" modelName="subassembly">
 
@@ -32,85 +33,103 @@
 
         <ribbon>
             <group name="navigation">
-                <bigButton name="back" icon="backIcon24.png" state="enabled" action="#{window}.performBack" />
+                <bigButton name="back" icon="backIcon24.png" state="enabled" action="#{window}.performBack"/>
             </group>
 
             <group name="actions" defaultAuthorizationRole="ROLE_COMPANY_STRUCTURE_EDIT">
-                <bigButton name="save" icon="saveIcon24.png" state="enabled" action="#{form}.performSave;" accesskey="s" />
-                <smallButton name="saveBack" icon="saveBackIcon16.png" state="enabled" action="#{form}.performSave; #{window}.performBack;" />
-                <smallButton name="saveNew" icon="saveNewIcon16.png" state="enabled" action="#{form}.performSaveAndClear;" />
-                <smallButton name="copy" icon="copyIcon16.png" state="disabled" action="#{form}.performCopy;" accesskey="c">
-                    <script><![CDATA[
-				#{form}.addOnChangeListener({
-					onSetValue: function(value) {
-						if (!value || !value.content)
-							return;
-						if (value.content.entityId) {
-							this.enable();
-						} else {
-							this.disable();
-						}
-					}
-				});
-			]]></script>
+                <bigButton name="save" icon="saveIcon24.png" state="enabled" action="#{form}.performSave;"
+                           accesskey="s"/>
+                <smallButton name="saveBack" icon="saveBackIcon16.png" state="enabled"
+                             action="#{form}.performSave; #{window}.performBack;"/>
+                <smallButton name="saveNew" icon="saveNewIcon16.png" state="enabled"
+                             action="#{form}.performSaveAndClear;"/>
+                <smallButton name="copy" icon="copyIcon16.png" state="disabled" action="#{form}.performCopy;"
+                             accesskey="c">
+                    <script>
+                        <![CDATA[
+                            #{form}.addOnChangeListener({
+                                onSetValue: function(value) {
+                                    if (!value || !value.content)
+                                        return;
+                                    if (value.content.entityId) {
+                                        this.enable();
+                                    } else {
+                                        this.disable();
+                                    }
+                                }
+                            });
+                        ]]>
+                    </script>
                 </smallButton>
-                <smallButton name="delete" icon="deleteIcon16.png" state="disabled" action="#{form}.performDelete;" accesskey="d">
-                    <script><![CDATA[
-                #{form}.addOnChangeListener({
-					onSetValue: function(value) {
-						if (!value || !value.content)
-							return;
-						if (value.content.entityId) {
-							this.enable();
-						} else {
-							this.disable();
-						}
-					}
-				});
-			]]></script>
+                <smallButton name="delete" icon="deleteIcon16.png" state="disabled" action="#{form}.performDelete;"
+                             accesskey="d">
+                    <script>
+                        <![CDATA[
+                            #{form}.addOnChangeListener({
+                                onSetValue: function(value) {
+                                    if (!value || !value.content)
+                                        return;
+                                    if (value.content.entityId) {
+                                        this.enable();
+                                    } else {
+                                        this.disable();
+                                    }
+                                }
+                            });
+                        ]]>
+                    </script>
                 </smallButton>
-                <smallButton name="cancel" icon="cancelIcon16.png" state="enabled" action="#{form}.performCancel;" accesskey="x" />
+                <smallButton name="cancel" icon="cancelIcon16.png" state="enabled" action="#{form}.performCancel;"
+                             accesskey="x"/>
             </group>
 
             <group name="actions" defaultAuthorizationRole="ROLE_COMPANY_STRUCTURE">
-                <bigButton name="refresh" icon="updateIcon24.png" state="enabled" action="#{form}.performRefresh;" accesskey="r" />
+                <bigButton name="refresh" icon="updateIcon24.png" state="enabled" action="#{form}.performRefresh;"
+                           accesskey="r"/>
             </group>
 
-            <group name="states" if="#view.getComponentByReference('form').dataDefinition.activable" defaultAuthorizationRole="ROLE_COMPANY_STRUCTURE_EDIT">
-                <smallButton name="activate" icon="unactiveVisibleIcon.png" state="disabled" action="#{form}.performActivate;">
-                    <script><![CDATA[
-				#{form}.addOnChangeListener({
-					onSetValue: function(value) {
-						if (!value || !value.content)
-							return;
-						if (value.content.entityId && !value.content.isActive) {
-							this.enable();
-						} else {
-							this.disable();
-						}
-					}
-				});
-			]]></script>
+            <group name="states" if="#view.getComponentByReference('form').dataDefinition.activable"
+                   defaultAuthorizationRole="ROLE_COMPANY_STRUCTURE_EDIT">
+                <smallButton name="activate" icon="unactiveVisibleIcon.png" state="disabled"
+                             action="#{form}.performActivate;">
+                    <script>
+                        <![CDATA[
+                            #{form}.addOnChangeListener({
+                                onSetValue: function(value) {
+                                    if (!value || !value.content)
+                                        return;
+                                    if (value.content.entityId && !value.content.isActive) {
+                                        this.enable();
+                                    } else {
+                                        this.disable();
+                                    }
+                                }
+                            });
+                        ]]>
+                    </script>
                 </smallButton>
-                <smallButton name="deactivate" icon="unactiveNotVisibleIcon.png" state="disabled" action="#{form}.performDeactivate;">
-                    <script><![CDATA[
-                #{form}.addOnChangeListener({
-					onSetValue: function(value) {
-						if (!value || !value.content)
-							return;
-						if (value.content.entityId && value.content.isActive) {
-							this.enable();
-						} else {
-							this.disable();
-						}
-					}
-				});
-			]]></script>
+                <smallButton name="deactivate" icon="unactiveNotVisibleIcon.png" state="disabled"
+                             action="#{form}.performDeactivate;">
+                    <script>
+                        <![CDATA[
+                            #{form}.addOnChangeListener({
+                                onSetValue: function(value) {
+                                    if (!value || !value.content)
+                                        return;
+                                    if (value.content.entityId && value.content.isActive) {
+                                        this.enable();
+                                    } else {
+                                        this.disable();
+                                    }
+                                }
+                            });
+                        ]]>
+                    </script>
                 </smallButton>
             </group>
 
-            <group name="atachments" defaultAuthorizationRole="ROLE_COMPANY_STRUCTURE">
-                <bigButton name="downloadAtachment" icon="generateIcon24.png"
+            <group name="attachments" defaultAuthorizationRole="ROLE_COMPANY_STRUCTURE">
+                <bigButton name="downloadAttachment" icon="generateIcon24.png"
                            state="enabled">
                     <script>
                         <![CDATA[
@@ -124,8 +143,10 @@
                 </bigButton>
             </group>
         </ribbon>
+
         <windowTab name="mainTab" reference="mainTab">
-            <component type="form" name="subassembly" reference="form" defaultAuthorizationRole="ROLE_COMPANY_STRUCTURE_EDIT">
+            <component type="form" name="subassembly" reference="form"
+                       defaultAuthorizationRole="ROLE_COMPANY_STRUCTURE_EDIT">
                 <component type="gridLayout" name="gridLayout" columns="3"
                            rows="6">
                     <layoutElement column="1" row="1">
@@ -150,12 +171,10 @@
                             <option type="fieldCode" value="number"/>
                         </component>
                     </layoutElement>
-
                     <layoutElement column="1" row="5">
                         <component type="select" name="type" field="type" reference="type"
                                    hasDescription="true"/>
                     </layoutElement>
-
                     <layoutElement column="1" row="6">
                         <component type="lookup" name="workstationType" field="workstationType"
                                    reference="workstationType" hasDescription="true">
@@ -166,12 +185,12 @@
 
                             <option type="expression" value="#number + ' - ' + #name"/>
                             <option type="fieldCode" value="number"/>
+
                             <criteriaModifier
                                     class="com.qcadoo.mes.basic.criteriaModifiers.WorkstationTypeCriteriaModifiers"
                                     method="showWorkstationTypesWithSubassembly"/>
                         </component>
                     </layoutElement>
-
                     <layoutElement column="2" row="1">
                         <component type="input" name="serialNumber" field="serialNumber" reference="serialNumber"/>
                     </layoutElement>
@@ -194,6 +213,7 @@
                           class="com.qcadoo.mes.basic.listeners.AttachmentsListeners"/>
             </component>
         </windowTab>
+
         <windowTab name="companiesTab" reference="companiesTab">
             <component type="gridLayout" name="companiesGridLayout"
                        columns="2" rows="1">
@@ -220,6 +240,7 @@
                         <option type="column" name="number" fields="number" width="50"/>
                         <option type="column" name="name" fields="name" width="100"/>
                         <option type="column" name="city" fields="city" width="100"/>
+
                         <option type="searchable" value="number,name,city"/>
                         <option type="orderable" value="number,name,city"/>
 
@@ -232,16 +253,15 @@
 
                         <option type="weakRelation" value="true"/>
                         <option type="correspondingLookup" value="companiesLookup"/>
-
                     </component>
                 </layoutElement>
             </component>
         </windowTab>
-        <windowTab name="atachments">
+
+        <windowTab name="attachments">
             <component type="gridLayout" name="gridsLayout" columns="3"
                        rows="6" hasBorders="false">
                 <layoutElement column="1" row="1" height="6">
-
                     <component type="staticPage" name="multiUpload">
                         <option type="page" value="basic/multiUploadForSubassembly.jsp"/>
                     </component>
@@ -260,17 +280,20 @@
                                 link="true" attachment="true"/>
                         <option type="column" name="attachmentLocation" fields="attachment" hidden="true"/>
                         <option type="column" name="size" fields="size"/>
+
                         <option type="order" column="attachment" direction="desc"/>
 
                         <option type="deletable" value="true"/>
-                        <option type="deletableAuthorizationRole"  value="ROLE_COMPANY_STRUCTURE_EDIT"/>
+                        <option type="deletableAuthorizationRole" value="ROLE_COMPANY_STRUCTURE_EDIT"/>
                         <option type="fullscreen" value="true"/>
                         <option type="multiselect" value="true"/>
                     </component>
                 </layoutElement>
             </component>
         </windowTab>
+
     </component>
+
     <hooks>
         <beforeRender
                 class="com.qcadoo.mes.basic.hooks.SubassemblyDetailsHooks"
