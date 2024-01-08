@@ -363,26 +363,29 @@ public class TrackingOperationProductOutComponentHooks {
 
     private void fillStorageLocation(final Entity trackingOperationProductOutComponent) {
         if (Objects.isNull(trackingOperationProductOutComponent.getId())) {
+            Entity storageLocation = trackingOperationProductOutComponent.getBelongsToField(TrackingOperationProductOutComponentFields.STORAGE_LOCATION);
             Entity productionTracking = trackingOperationProductOutComponent
                     .getBelongsToField(TrackingOperationProductOutComponentFields.PRODUCTION_TRACKING);
 
-            Entity order = productionTracking.getBelongsToField(ProductionTrackingFields.ORDER);
-            Entity orderProduct = order.getBelongsToField(OrderFields.PRODUCT);
-            Entity product = trackingOperationProductOutComponent.getBelongsToField(TrackingOperationProductOutComponentFields.PRODUCT);
+            if (Objects.isNull(storageLocation)) {
+                Entity order = productionTracking.getBelongsToField(ProductionTrackingFields.ORDER);
+                Entity orderProduct = order.getBelongsToField(OrderFields.PRODUCT);
+                Entity product = trackingOperationProductOutComponent.getBelongsToField(TrackingOperationProductOutComponentFields.PRODUCT);
 
-            if (orderProduct.getId().equals(product.getId())) {
-                Entity productionCountingQuantity = getProductionCountingQuantity(order, product);
+                if (orderProduct.getId().equals(product.getId())) {
+                    Entity productionCountingQuantity = getProductionCountingQuantity(order, product);
 
-                if (Objects.nonNull(productionCountingQuantity)) {
-                    Entity productsInputLocation = productionCountingQuantity.getBelongsToField(ProductionCountingQuantityFields.PRODUCTS_INPUT_LOCATION);
+                    if (Objects.nonNull(productionCountingQuantity)) {
+                        Entity productsInputLocation = productionCountingQuantity.getBelongsToField(ProductionCountingQuantityFields.PRODUCTS_INPUT_LOCATION);
 
-                    if (Objects.nonNull(productsInputLocation)) {
-                        Optional<Entity> mayBeStorageLocation = materialFlowResourcesService.findStorageLocationForProduct(productsInputLocation, product);
+                        if (Objects.nonNull(productsInputLocation)) {
+                            Optional<Entity> mayBeStorageLocation = materialFlowResourcesService.findStorageLocationForProduct(productsInputLocation, product);
 
-                        if (mayBeStorageLocation.isPresent()) {
-                            Entity storageLocation = mayBeStorageLocation.get();
+                            if (mayBeStorageLocation.isPresent()) {
+                                storageLocation = mayBeStorageLocation.get();
 
-                            trackingOperationProductOutComponent.setField(TrackingOperationProductOutComponentFields.STORAGE_LOCATION, storageLocation);
+                                trackingOperationProductOutComponent.setField(TrackingOperationProductOutComponentFields.STORAGE_LOCATION, storageLocation);
+                            }
                         }
                     }
                 }
