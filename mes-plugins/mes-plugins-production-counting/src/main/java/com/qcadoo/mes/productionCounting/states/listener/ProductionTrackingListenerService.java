@@ -52,6 +52,7 @@ import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchProjections;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.model.api.validators.ErrorMessage;
+import com.qcadoo.plugin.api.PluginManager;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.i18n.LocaleContextHolder;
@@ -111,6 +112,9 @@ public final class ProductionTrackingListenerService {
 
     @Autowired
     private StateChangeContextBuilder stateChangeContextBuilder;
+
+    @Autowired
+    private PluginManager pluginManager;
 
     public void onChangeFromDraftToAny(final Entity productionTracking) {
         productionTracking.setField(ProductionTrackingFields.LAST_STATE_CHANGE_FAILS, false);
@@ -612,13 +616,15 @@ public final class ProductionTrackingListenerService {
                 }
             }
 
-            for (Entity trackingProductResourceReservation : trackingOperationProductInComponent.getHasManyField(L_RESOURCE_RESERVATIONS)) {
-                Entity orderProductResourceReservation = trackingProductResourceReservation.getBelongsToField(L_ORDER_PRODUCT_RESOURCE_RESERVATION);
-                Entity orderProductResourceReservationDb = orderProductResourceReservation.getDataDefinition().get(orderProductResourceReservation.getId());
-                BigDecimal usedQuantity = BigDecimalUtils.convertNullToZero(orderProductResourceReservationDb.getDecimalField(L_USED_QUANTITY));
-                usedQuantity = usedQuantity.add(BigDecimalUtils.convertNullToZero(trackingProductResourceReservation.getDecimalField(L_USED_QUANTITY)));
-                orderProductResourceReservationDb.setField(L_USED_QUANTITY, usedQuantity);
-                orderProductResourceReservation = orderProductResourceReservationDb.getDataDefinition().fastSave(orderProductResourceReservationDb);
+            if (pluginManager.isPluginEnabled("productFlowThruDivision")) {
+                for (Entity trackingProductResourceReservation : trackingOperationProductInComponent.getHasManyField(L_RESOURCE_RESERVATIONS)) {
+                    Entity orderProductResourceReservation = trackingProductResourceReservation.getBelongsToField(L_ORDER_PRODUCT_RESOURCE_RESERVATION);
+                    Entity orderProductResourceReservationDb = orderProductResourceReservation.getDataDefinition().get(orderProductResourceReservation.getId());
+                    BigDecimal usedQuantity = BigDecimalUtils.convertNullToZero(orderProductResourceReservationDb.getDecimalField(L_USED_QUANTITY));
+                    usedQuantity = usedQuantity.add(BigDecimalUtils.convertNullToZero(trackingProductResourceReservation.getDecimalField(L_USED_QUANTITY)));
+                    orderProductResourceReservationDb.setField(L_USED_QUANTITY, usedQuantity);
+                    orderProductResourceReservation = orderProductResourceReservationDb.getDataDefinition().fastSave(orderProductResourceReservationDb);
+                }
             }
         });
 
