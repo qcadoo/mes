@@ -14,6 +14,7 @@ import com.qcadoo.mes.basicProductionCounting.constants.*;
 import com.qcadoo.mes.productionCounting.constants.*;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
+import com.qcadoo.plugin.api.PluginManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -33,6 +34,9 @@ public class ProductionTrackingUpdateServiceImpl implements ProductionTrackingUp
 
     @Autowired
     private OperationProductsExtractor operationProductsExtractor;
+
+    @Autowired
+    private PluginManager pluginManager;
 
     @Override
     public void updateProductionTracking(final Long productionTrackingId) {
@@ -173,45 +177,44 @@ public class ProductionTrackingUpdateServiceImpl implements ProductionTrackingUp
                     ProductionCountingConstants.MODEL_TRACKING_OPERATION_PRODUCT_IN_COMPONENT).delete(removedEntry);
         }
 
+        if (pluginManager.isPluginEnabled("productFlowThruDivision")) {
+            List<Entity> newProductionTrackingInputs = productionTracking.getDataDefinition().get(productionTracking.getId())
+                    .getHasManyField(ProductionTrackingFields.TRACKING_OPERATION_PRODUCT_IN_COMPONENTS);
 
-        List<Entity> newProductionTrackingInputs = productionTracking.getDataDefinition().get(productionTracking.getId())
-                .getHasManyField(ProductionTrackingFields.TRACKING_OPERATION_PRODUCT_IN_COMPONENTS);
+            Entity toc = productionTracking.getBelongsToField(ProductionTrackingFields.TECHNOLOGY_OPERATION_COMPONENT);
 
-        Entity toc = productionTracking.getBelongsToField(ProductionTrackingFields.TECHNOLOGY_OPERATION_COMPONENT);
+            for (Entity productionTrackingInput : newProductionTrackingInputs) {
 
-        for (Entity productionTrackingInput : newProductionTrackingInputs) {
+                SearchCriteriaBuilder scb = dataDefinitionService.get(BasicProductionCountingConstants.PLUGIN_IDENTIFIER, BasicProductionCountingConstants.MODEL_PRODUCTION_COUNTING_QUANTITY)
+                        .find()
+                        .add(SearchRestrictions.belongsTo(ProductionCountingQuantityFields.ORDER, order))
+                        .add(SearchRestrictions.belongsTo(ProductionCountingQuantityFields.PRODUCT, productionTrackingInput.getBelongsToField(TrackingOperationProductInComponentFields.PRODUCT)))
+                        .add(SearchRestrictions.eq(ProductionCountingQuantityFields.ROLE, ProductionCountingQuantityRole.USED.getStringValue()))
+                        .add(SearchRestrictions.eq(ProductionCountingQuantityFields.TYPE_OF_MATERIAL, ProductionCountingQuantityTypeOfMaterial.COMPONENT.getStringValue()));
 
-            SearchCriteriaBuilder scb = dataDefinitionService.get(BasicProductionCountingConstants.PLUGIN_IDENTIFIER, BasicProductionCountingConstants.MODEL_PRODUCTION_COUNTING_QUANTITY)
-                    .find()
-                    .add(SearchRestrictions.belongsTo(ProductionCountingQuantityFields.ORDER, order))
-                    .add(SearchRestrictions.belongsTo(ProductionCountingQuantityFields.PRODUCT, productionTrackingInput.getBelongsToField(TrackingOperationProductInComponentFields.PRODUCT)))
-                    .add(SearchRestrictions.eq(ProductionCountingQuantityFields.ROLE, ProductionCountingQuantityRole.USED.getStringValue()))
-                    .add(SearchRestrictions.eq(ProductionCountingQuantityFields.TYPE_OF_MATERIAL, ProductionCountingQuantityTypeOfMaterial.COMPONENT.getStringValue()));
+                if (Objects.nonNull(toc)) {
+                    scb.add(SearchRestrictions.belongsTo(ProductionCountingQuantityFields.TECHNOLOGY_OPERATION_COMPONENT, toc));
+                }
 
-            if (Objects.nonNull(toc)) {
-                scb.add(SearchRestrictions.belongsTo(ProductionCountingQuantityFields.TECHNOLOGY_OPERATION_COMPONENT, toc));
-            }
+                List<Entity> pcqs = scb.list().getEntities();
 
-            List<Entity> pcqs = scb.list().getEntities();
+                List<Entity> resourceReservations = Lists.newArrayList(productionTrackingInput.getHasManyField("resourceReservations"));
+                List<Long> orderProductResourceReservations = resourceReservations.stream().map(x -> x.getBelongsToField("orderProductResourceReservation").getId()).collect(Collectors.toList());
 
-            List<Entity> resourceReservations = Lists.newArrayList(productionTrackingInput.getHasManyField("resourceReservations"));
-            List<Long> orderProductResourceReservations = resourceReservations.stream().map(x -> x.getBelongsToField("orderProductResourceReservation").getId()).collect(Collectors.toList());
-
-            for (Entity productionCountingQuantity : pcqs) {
-                List<Entity> orderProductResourceReservationsPCQ = productionCountingQuantity.getHasManyField("orderProductResourceReservations");
-                for (Entity orderProductResourceReservation : orderProductResourceReservationsPCQ) {
-                    if (orderProductResourceReservations.contains(orderProductResourceReservation.getId())) {
-                        continue;
+                for (Entity productionCountingQuantity : pcqs) {
+                    List<Entity> orderProductResourceReservationsPCQ = productionCountingQuantity.getHasManyField("orderProductResourceReservations");
+                    for (Entity orderProductResourceReservation : orderProductResourceReservationsPCQ) {
+                        if (orderProductResourceReservations.contains(orderProductResourceReservation.getId())) {
+                            continue;
+                        }
+                        Entity reservation = dataDefinitionService.get("productFlowThruDivision", "trackingProductResourceReservation").create();
+                        reservation.setField("trackingOperationProductInComponent", productionTrackingInput);
+                        reservation.setField("orderProductResourceReservation", orderProductResourceReservation);
+                        reservation.setField("priority", orderProductResourceReservation.getIntegerField("priority"));
+                        reservation.getDataDefinition().fastSave(reservation);
                     }
-                    Entity reservation = dataDefinitionService.get("productFlowThruDivision", "trackingProductResourceReservation").create();
-                    reservation.setField("trackingOperationProductInComponent", productionTrackingInput);
-                    reservation.setField("orderProductResourceReservation", orderProductResourceReservation);
-                    reservation.setField("priority", orderProductResourceReservation.getIntegerField("priority"));
-                    reservation.getDataDefinition().fastSave(reservation);
                 }
             }
-
         }
-
     }
 }
