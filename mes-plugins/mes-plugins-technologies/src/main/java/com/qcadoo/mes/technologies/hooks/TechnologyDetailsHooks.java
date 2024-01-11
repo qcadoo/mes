@@ -163,9 +163,9 @@ public class TechnologyDetailsHooks {
         FieldComponent masterField = (FieldComponent) view.getComponentByReference(TechnologyFields.MASTER);
         LookupComponent technologyGroupLookup = (LookupComponent) view.getComponentByReference(TechnologyFields.TECHNOLOGY_GROUP);
 
-        boolean disabled = false;
-        boolean masterDisabled = false;
-        boolean technologyGroupEnabled = false;
+        boolean isEnabled = true;
+        boolean isMasterEnabled = false;
+        boolean isTechnologyGroupEnabled = false;
 
         Long technologyId = technologyForm.getEntityId();
 
@@ -178,24 +178,25 @@ public class TechnologyDetailsHooks {
 
             String state = technology.getStringField(TechnologyFields.STATE);
             boolean isTemplateAccepted = technology.getBooleanField(TechnologyFields.IS_TEMPLATE_ACCEPTED);
+            boolean master = technology.getBooleanField(TechnologyFields.MASTER);
 
             if (isTemplateAccepted || !TechnologyState.DRAFT.getStringValue().equals(state)) {
-                disabled = true;
+                isEnabled = false;
             }
-            if (TechnologyState.ACCEPTED.getStringValue().equals(state)) {
-                masterDisabled = true;
+            if (TechnologyState.ACCEPTED.getStringValue().equals(state) && !master) {
+                isMasterEnabled = true;
             }
             if (TechnologyState.ACCEPTED.getStringValue().equals(state) || TechnologyState.CHECKED.getStringValue().equals(state)
                     || TechnologyState.DRAFT.getStringValue().equals(state)) {
-                technologyGroupEnabled = true;
+                isTechnologyGroupEnabled = true;
             }
         }
 
-        technologyForm.setFormEnabled(!disabled);
+        technologyForm.setFormEnabled(isEnabled);
 
-        masterField.setEnabled(masterDisabled);
+        masterField.setEnabled(isMasterEnabled);
         masterField.requestComponentUpdateState();
-        technologyGroupLookup.setEnabled(technologyGroupEnabled);
+        technologyGroupLookup.setEnabled(isTechnologyGroupEnabled);
         technologyGroupLookup.requestComponentUpdateState();
     }
 
