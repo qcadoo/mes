@@ -916,7 +916,7 @@ public class TechnologyValidationService {
                     if (!unit.equals(minimumDimensionUnit)) {
                         PossibleUnitConversions possibleUnitConversions = unitConversionService.getPossibleConversions(unit, L_CM);
 
-                        if (possibleUnitConversions.isDefinedFor(minimumDimensionUnit) && possibleUnitConversions.isDefinedFor(L_MM)) {
+                        if (possibleUnitConversions.isDefinedFor(minimumDimensionUnit) && (possibleUnitConversions.isDefinedFor(L_MM) || L_MM.equals(unit))) {
                             dimension = convertToMM(dimension, unit);
                             minimumDimension = convertToMM(minimumDimension, minimumDimensionUnit);
                         } else {
@@ -937,7 +937,7 @@ public class TechnologyValidationService {
                     if (!unit.equals(maximumDimensionUnit)) {
                         PossibleUnitConversions possibleUnitConversions = unitConversionService.getPossibleConversions(unit, L_CM);
 
-                        if (possibleUnitConversions.isDefinedFor(maximumDimensionUnit) && possibleUnitConversions.isDefinedFor(L_MM)) {
+                        if (possibleUnitConversions.isDefinedFor(maximumDimensionUnit) && (possibleUnitConversions.isDefinedFor(L_MM) || L_MM.equals(unit))) {
                             dimension = convertToMM(dimension, unit);
                             maximumDimension = convertToMM(maximumDimension, maximumDimensionUnit);
                         } else {
