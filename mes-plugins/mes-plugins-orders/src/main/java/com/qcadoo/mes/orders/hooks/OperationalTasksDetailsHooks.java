@@ -27,10 +27,7 @@ import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.orders.OperationalTasksService;
-import com.qcadoo.mes.orders.constants.OperationalTaskDtoFields;
-import com.qcadoo.mes.orders.constants.OperationalTaskFields;
-import com.qcadoo.mes.orders.constants.OrderFields;
-import com.qcadoo.mes.orders.constants.OrdersConstants;
+import com.qcadoo.mes.orders.constants.*;
 import com.qcadoo.mes.orders.criteriaModifiers.OperationalTaskDetailsCriteriaModifiers;
 import com.qcadoo.mes.orders.states.constants.OperationalTaskState;
 import com.qcadoo.mes.orders.states.constants.OperationalTaskStateStringValues;
@@ -91,7 +88,7 @@ public class OperationalTasksDetailsHooks {
     private NumberGeneratorService numberGeneratorService;
 
     public void customRestrictionAfterRedirectFromOrder(final ViewDefinitionState view) {
-        if(view.isViewAfterRedirect() && Objects.nonNull(view.getJsonContext()) && view.getJsonContext().has("window.fromOrderDetails")) {
+        if (view.isViewAfterRedirect() && Objects.nonNull(view.getJsonContext()) && view.getJsonContext().has("window.fromOrderDetails")) {
             GridComponent grid = (GridComponent) view.getComponentByReference(QcadooViewConstants.L_GRID);
 
             grid.removeFilterForField(OperationalTaskFields.STATE);
@@ -114,6 +111,7 @@ public class OperationalTasksDetailsHooks {
         disableFieldsWhenOrderTypeIsSelected(view);
         disableButtons(view);
         fillCriteriaModifiers(view);
+        setHasChangeovers(view);
     }
 
     private void fetchNumberFromDatabase(final ViewDefinitionState view) {
@@ -131,17 +129,84 @@ public class OperationalTasksDetailsHooks {
         }
     }
 
-    public void fillCriteriaModifiers(final ViewDefinitionState view) {
-        FormComponent operationalTaskForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
-        LookupComponent staffLookup = (LookupComponent) view.getComponentByReference(L_STAFF_LOOKUP);
+    private void filterDivisionLookup(final ViewDefinitionState view) {
+        LookupComponent divisionLookup = (LookupComponent) view.getComponentByReference(OperationalTaskFields.DIVISION);
+        LookupComponent workstationLookup = (LookupComponent) view.getComponentByReference(OperationalTaskFields.WORKSTATION);
 
-        if (Objects.nonNull(operationalTaskForm.getEntityId())) {
-            FilterValueHolder filter = staffLookup.getFilterValue();
+        Entity division = divisionLookup.getEntity();
 
-            filter.put(OperationalTaskDetailsCriteriaModifiers.OPERATIONAL_TASK_ID, operationalTaskForm.getEntityId());
+        FilterValueHolder filterValueHolder = workstationLookup.getFilterValue();
 
-            staffLookup.setFilterValue(filter);
-            staffLookup.requestComponentUpdateState();
+        if (Objects.nonNull(division)) {
+            Long divisionId = division.getId();
+
+            filterValueHolder.put(OperationalTaskFields.DIVISION, divisionId);
+
+            workstationLookup.setFilterValue(filterValueHolder);
+        }
+    }
+
+    private void setTechnology(final ViewDefinitionState view) {
+        LookupComponent technologyLookup = (LookupComponent) view.getComponentByReference(OperationalTaskFields.TECHNOLOGY);
+        LookupComponent orderLookup = (LookupComponent) view.getComponentByReference(OperationalTaskFields.ORDER);
+
+        Entity order = orderLookup.getEntity();
+
+        if (Objects.isNull(order)) {
+            return;
+        }
+
+        Entity technology = order.getBelongsToField(OrderFields.TECHNOLOGY);
+
+        if (!Objects.isNull(technology)) {
+            technologyLookup.setFieldValue(technology.getId());
+            technologyLookup.requestComponentUpdateState();
+        }
+    }
+
+    private void setQuantities(final ViewDefinitionState view) {
+        final FormComponent operationalTaskForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
+
+        Long operationalTaskId = operationalTaskForm.getEntityId();
+
+        if (Objects.nonNull(operationalTaskId)) {
+            Entity operationalTask = operationalTaskForm.getEntity();
+
+            Entity product = operationalTask.getBelongsToField(OperationalTaskFields.PRODUCT);
+
+            if (Objects.nonNull(product)) {
+                Entity operationalTaskDto = getOperationalTaskDtoDD().get(operationalTaskId);
+
+                FieldComponent doneInPercentage = (FieldComponent) view.getComponentByReference("doneInPercentage");
+                FieldComponent doneInPercentageUnit = (FieldComponent) view.getComponentByReference("doneInPercentageUNIT");
+                FieldComponent usedQuantityUnit = (FieldComponent) view.getComponentByReference("usedQuantityUNIT");
+                FieldComponent plannedQuantityUnit = (FieldComponent) view.getComponentByReference("plannedQuantityUNIT");
+                FieldComponent usedQuantity = (FieldComponent) view.getComponentByReference("usedQuantity");
+                FieldComponent plannedQuantity = (FieldComponent) view.getComponentByReference("plannedQuantity");
+
+                usedQuantityUnit.setFieldValue(product.getStringField(ProductFields.UNIT));
+                plannedQuantityUnit.setFieldValue(product.getStringField(ProductFields.UNIT));
+
+                plannedQuantity.setFieldValue(numberService
+                        .formatWithMinimumFractionDigits(operationalTaskDto.getDecimalField(OperationalTaskDtoFields.PLANNED_QUANTITY), 0));
+                usedQuantity.setFieldValue(numberService
+                        .formatWithMinimumFractionDigits(operationalTaskDto.getDecimalField(OperationalTaskDtoFields.USED_QUANTITY), 0));
+
+                if (Objects.nonNull(operationalTaskDto.getDecimalField(OperationalTaskDtoFields.PLANNED_QUANTITY))
+                        && operationalTaskDto.getDecimalField(OperationalTaskDtoFields.PLANNED_QUANTITY).compareTo(BigDecimal.ZERO) > 0) {
+                    BigDecimal doneInPercentageQuantity = BigDecimalUtils.convertNullToZero(operationalTaskDto.getDecimalField(OperationalTaskDtoFields.USED_QUANTITY))
+                            .multiply(new BigDecimal(100));
+                    doneInPercentageQuantity = doneInPercentageQuantity
+                            .divide(operationalTaskDto.getDecimalField(OperationalTaskDtoFields.PLANNED_QUANTITY), MathContext.DECIMAL64);
+                    doneInPercentage.setFieldValue(numberService
+                            .formatWithMinimumFractionDigits(doneInPercentageQuantity.setScale(0, RoundingMode.CEILING), 0));
+                } else {
+                    doneInPercentage.setFieldValue(numberService.formatWithMinimumFractionDigits(BigDecimal.ZERO, 0));
+                }
+
+                doneInPercentage.setEnabled(false);
+                doneInPercentageUnit.setFieldValue("%");
+            }
         }
     }
 
@@ -195,68 +260,6 @@ public class OperationalTasksDetailsHooks {
         }
     }
 
-    private void setQuantities(final ViewDefinitionState view) {
-        final FormComponent operationalTaskForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
-
-        if (Objects.nonNull(operationalTaskForm.getEntityId())) {
-            Entity operationalTask = operationalTaskForm.getEntity();
-
-            Entity product = operationalTask.getBelongsToField(OperationalTaskFields.PRODUCT);
-
-            if (Objects.nonNull(product)) {
-                Entity operationalTaskDto = getOperationalTaskDtoDD().get(operationalTask.getId());
-
-                FieldComponent doneInPercentage = (FieldComponent) view.getComponentByReference("doneInPercentage");
-                FieldComponent doneInPercentageUnit = (FieldComponent) view.getComponentByReference("doneInPercentageUNIT");
-                FieldComponent usedQuantityUnit = (FieldComponent) view.getComponentByReference("usedQuantityUNIT");
-                FieldComponent plannedQuantityUnit = (FieldComponent) view.getComponentByReference("plannedQuantityUNIT");
-                FieldComponent usedQuantity = (FieldComponent) view.getComponentByReference("usedQuantity");
-                FieldComponent plannedQuantity = (FieldComponent) view.getComponentByReference("plannedQuantity");
-
-                usedQuantityUnit.setFieldValue(product.getStringField(ProductFields.UNIT));
-                plannedQuantityUnit.setFieldValue(product.getStringField(ProductFields.UNIT));
-
-                plannedQuantity.setFieldValue(numberService
-                        .formatWithMinimumFractionDigits(operationalTaskDto.getDecimalField(OperationalTaskDtoFields.PLANNED_QUANTITY), 0));
-                usedQuantity.setFieldValue(numberService
-                        .formatWithMinimumFractionDigits(operationalTaskDto.getDecimalField(OperationalTaskDtoFields.USED_QUANTITY), 0));
-
-                if (Objects.nonNull(operationalTaskDto.getDecimalField(OperationalTaskDtoFields.PLANNED_QUANTITY))
-                        && operationalTaskDto.getDecimalField(OperationalTaskDtoFields.PLANNED_QUANTITY).compareTo(BigDecimal.ZERO) > 0) {
-                    BigDecimal doneInPercentageQuantity = BigDecimalUtils.convertNullToZero(operationalTaskDto.getDecimalField(OperationalTaskDtoFields.USED_QUANTITY))
-                            .multiply(new BigDecimal(100));
-                    doneInPercentageQuantity = doneInPercentageQuantity
-                            .divide(operationalTaskDto.getDecimalField(OperationalTaskDtoFields.PLANNED_QUANTITY), MathContext.DECIMAL64);
-                    doneInPercentage.setFieldValue(numberService
-                            .formatWithMinimumFractionDigits(doneInPercentageQuantity.setScale(0, RoundingMode.CEILING), 0));
-                } else {
-                    doneInPercentage.setFieldValue(numberService.formatWithMinimumFractionDigits(BigDecimal.ZERO, 0));
-                }
-
-                doneInPercentage.setEnabled(false);
-                doneInPercentageUnit.setFieldValue("%");
-            }
-        }
-    }
-
-
-    private void filterDivisionLookup(final ViewDefinitionState view) {
-        LookupComponent divisionLookup = (LookupComponent) view.getComponentByReference(OperationalTaskFields.DIVISION);
-        LookupComponent workstationLookup = (LookupComponent) view.getComponentByReference(OperationalTaskFields.WORKSTATION);
-
-        Entity division = divisionLookup.getEntity();
-
-        FilterValueHolder filterValueHolder = workstationLookup.getFilterValue();
-
-        if (Objects.nonNull(division)) {
-            Long divisionId = division.getId();
-
-            filterValueHolder.put(OperationalTaskFields.DIVISION, divisionId);
-
-            workstationLookup.setFilterValue(filterValueHolder);
-        }
-    }
-
     public void disableFieldsWhenOrderTypeIsSelected(final ViewDefinitionState view) {
         FormComponent operationalTaskForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         FieldComponent typeField = (FieldComponent) view.getComponentByReference(OperationalTaskFields.TYPE);
@@ -285,23 +288,6 @@ public class OperationalTasksDetailsHooks {
 
         actualStaff.setEnabled(staffTabEnabled);
         workers.setEnabled(staffTabEnabled && Objects.nonNull(operationalTaskForm.getEntityId()));
-    }
-
-    private void changedStateField(final ViewDefinitionState view, final List<String> references, final boolean enabled) {
-        for (String reference : references) {
-            FieldComponent fieldComponent = (FieldComponent) view.getComponentByReference(reference);
-
-            fieldComponent.setEnabled(enabled);
-        }
-    }
-
-    private void clearFieldValue(final ViewDefinitionState view, final List<String> references) {
-        for (String reference : references) {
-            FieldComponent fieldComponent = (FieldComponent) view.getComponentByReference(reference);
-
-            fieldComponent.setFieldValue(null);
-            fieldComponent.requestComponentUpdateState();
-        }
     }
 
     public void disableButtons(final ViewDefinitionState view) {
@@ -343,21 +329,34 @@ public class OperationalTasksDetailsHooks {
         showWorkstationChangeoverForOperationalTasksRibbonItem.requestUpdate(true);
     }
 
-    private void setTechnology(final ViewDefinitionState view) {
-        LookupComponent technologyLookup = (LookupComponent) view.getComponentByReference(OperationalTaskFields.TECHNOLOGY);
-        LookupComponent orderLookup = (LookupComponent) view.getComponentByReference(OperationalTaskFields.ORDER);
+    public void fillCriteriaModifiers(final ViewDefinitionState view) {
+        FormComponent operationalTaskForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
+        LookupComponent staffLookup = (LookupComponent) view.getComponentByReference(L_STAFF_LOOKUP);
 
-        Entity order = orderLookup.getEntity();
+        if (Objects.nonNull(operationalTaskForm.getEntityId())) {
+            FilterValueHolder filter = staffLookup.getFilterValue();
 
-        if (Objects.isNull(order)) {
-            return;
+            filter.put(OperationalTaskDetailsCriteriaModifiers.OPERATIONAL_TASK_ID, operationalTaskForm.getEntityId());
+
+            staffLookup.setFilterValue(filter);
+            staffLookup.requestComponentUpdateState();
         }
+    }
 
-        Entity technology = order.getBelongsToField(OrderFields.TECHNOLOGY);
+    private void changedStateField(final ViewDefinitionState view, final List<String> references, final boolean enabled) {
+        for (String reference : references) {
+            FieldComponent fieldComponent = (FieldComponent) view.getComponentByReference(reference);
 
-        if (!Objects.isNull(technology)) {
-            technologyLookup.setFieldValue(technology.getId());
-            technologyLookup.requestComponentUpdateState();
+            fieldComponent.setEnabled(enabled);
+        }
+    }
+
+    private void clearFieldValue(final ViewDefinitionState view, final List<String> references) {
+        for (String reference : references) {
+            FieldComponent fieldComponent = (FieldComponent) view.getComponentByReference(reference);
+
+            fieldComponent.setFieldValue(null);
+            fieldComponent.requestComponentUpdateState();
         }
     }
 
@@ -386,12 +385,34 @@ public class OperationalTasksDetailsHooks {
         descriptionField.requestComponentUpdateState();
     }
 
+    public void setHasChangeovers(final ViewDefinitionState view) {
+        FormComponent operationalTaskForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
+        CheckBoxComponent hasChangeoversCheckBox = (CheckBoxComponent) view.getComponentByReference(OperationalTaskFields.HAS_CHANGEOVERS);
+
+        Long operationalTaskId = operationalTaskForm.getEntityId();
+
+        if (Objects.nonNull(operationalTaskId)) {
+            Entity operationalTaskWithColorDto = getOperationalTaskWithColorDtoDD().get(operationalTaskId);
+
+            if (Objects.nonNull(operationalTaskWithColorDto)) {
+                boolean hasChangeovers = operationalTaskWithColorDto.getBooleanField(OperationalTaskWithColorDtoFields.HAS_CHANGEOVERS);
+
+                hasChangeoversCheckBox.setChecked(hasChangeovers);
+                hasChangeoversCheckBox.requestComponentUpdateState();
+            }
+        }
+    }
+
     private DataDefinition getOperationalTaskDD() {
         return dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_OPERATIONAL_TASK);
     }
 
     private DataDefinition getOperationalTaskDtoDD() {
         return dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_OPERATIONAL_TASK_DTO);
+    }
+
+    private DataDefinition getOperationalTaskWithColorDtoDD() {
+        return dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_OPERATIONAL_TASK_WITH_COLOR_DTO);
     }
 
 }

@@ -57,6 +57,7 @@
 		<decimal name="operTaskFlagPercentExecutionWithColor"/>
 		<string name="percentageOfExecutionCellColor"/>
 		<integer name="actualStaff"/>
+		<boolean name="hasChangeovers"/>
 	</fields>
 
 	<hooks />

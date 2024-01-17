@@ -63,9 +63,13 @@ public final class OperationalTaskWithColorDtoFields {
 
     public static final String PRODUCT_NAME = "productName";
 
+    public static final String ORDER_PRODUCT_NUMBER = "orderProductNumber";
+
     public static final String PRODUCT_UNIT = "productUnit";
 
     public static final String PLANNED_QUANTITY = "plannedQuantity";
+
+    public static final String WASTES_QUANTITY = "wastesQuantity";
 
     public static final String USED_QUANTITY = "usedQuantity";
 
@@ -77,6 +81,8 @@ public final class OperationalTaskWithColorDtoFields {
 
     public static final String PERCENTAGE_OF_EXECUTION_CELL_COLOR = "percentageOfExecutionCellColor";
 
-    public static final String ORDER_PRODUCT_NUMBER = "orderProductNumber";
+    public static final String ACTUAL_STAFF = "actualStaff";
+
+    public static final String HAS_CHANGEOVERS = "hasChangeovers";
 
 }
