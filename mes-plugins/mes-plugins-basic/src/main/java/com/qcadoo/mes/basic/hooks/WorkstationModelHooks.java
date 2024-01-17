@@ -27,7 +27,10 @@ import com.qcadoo.mes.basic.constants.WorkstationFields;
 import com.qcadoo.mes.basic.states.constants.WorkstationStateStringValues;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.units.PossibleUnitConversions;
+import com.qcadoo.model.api.units.UnitConversionService;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -35,6 +38,13 @@ import java.util.Objects;
 
 @Service
 public class WorkstationModelHooks {
+
+    private static final String L_MM = "mm";
+
+    private static final String L_CM = "cm";
+
+    @Autowired
+    private UnitConversionService unitConversionService;
 
     public boolean validatesWith(final DataDefinition workstationDD, final Entity workstation) {
         boolean isValid = true;
@@ -56,7 +66,36 @@ public class WorkstationModelHooks {
             isValid = false;
         }
 
+        if (Objects.nonNull(minimumDimension) && Objects.nonNull(maximumDimension)
+                && Objects.nonNull(minimumDimensionUnit) && Objects.nonNull(maximumDimensionUnit)) {
+            if (!minimumDimensionUnit.equals(maximumDimensionUnit)) {
+                minimumDimension = convertToMM(minimumDimension, minimumDimensionUnit);
+                maximumDimension = convertToMM(maximumDimension, maximumDimensionUnit);
+            }
+
+            if (Objects.nonNull(minimumDimension) && Objects.nonNull(maximumDimension)
+                    && minimumDimension.compareTo(maximumDimension) > 0) {
+                workstation.addError(workstationDD.getField(WorkstationFields.MAXIMUM_DIMENSION), "basic.workstation.maximumDimension.smallerThanMinimum");
+
+                isValid = false;
+            }
+        }
+
         return isValid;
+    }
+
+    private BigDecimal convertToMM(final BigDecimal dimension, final String unit) {
+        if (L_MM.equals(unit)) {
+            return dimension;
+        } else {
+            PossibleUnitConversions possibleUnitConversions = unitConversionService.getPossibleConversions(unit, L_CM);
+
+            if (possibleUnitConversions.isDefinedFor(L_MM)) {
+                return possibleUnitConversions.convertTo(dimension, L_MM);
+            }
+        }
+
+        return null;
     }
 
     public void onCreate(final DataDefinition workstationDD, final Entity workstation) {

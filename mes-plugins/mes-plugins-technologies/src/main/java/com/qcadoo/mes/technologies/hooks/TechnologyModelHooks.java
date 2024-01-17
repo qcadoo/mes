@@ -103,12 +103,12 @@ public class TechnologyModelHooks {
             return;
         }
 
-        SearchCriteriaBuilder SearchCriteriaBuilder = technologyDD.find();
+        SearchCriteriaBuilder searchCriteriaBuilder = technologyDD.find();
 
-        SearchCriteriaBuilder.add(SearchRestrictions.eq(TechnologyFields.MASTER, true));
-        SearchCriteriaBuilder.add(SearchRestrictions.belongsTo(TechnologyFields.PRODUCT, technology.getBelongsToField(TechnologyFields.PRODUCT)));
+        searchCriteriaBuilder.add(SearchRestrictions.eq(TechnologyFields.MASTER, true));
+        searchCriteriaBuilder.add(SearchRestrictions.belongsTo(TechnologyFields.PRODUCT, technology.getBelongsToField(TechnologyFields.PRODUCT)));
 
-        Entity defaultTechnology = SearchCriteriaBuilder.setMaxResults(1).uniqueResult();
+        Entity defaultTechnology = searchCriteriaBuilder.setMaxResults(1).uniqueResult();
 
         if (Objects.nonNull(defaultTechnology) && defaultTechnology.getId().equals(technology.getId())) {
             return;

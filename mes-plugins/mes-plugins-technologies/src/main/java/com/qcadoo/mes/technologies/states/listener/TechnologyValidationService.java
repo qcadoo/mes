@@ -25,6 +25,7 @@ package com.qcadoo.mes.technologies.states.listener;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
+import com.qcadoo.commons.functional.Either;
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.basic.constants.*;
@@ -55,6 +56,10 @@ import static java.util.Comparator.reverseOrder;
 
 @Service
 public class TechnologyValidationService {
+
+    private static final String L_MM = "mm";
+
+    private static final String L_CM = "cm";
 
     private static final String L_PRODUCTION_IN_ONE_CYCLE_UNIT = "productionInOneCycleUNIT";
 
@@ -852,6 +857,8 @@ public class TechnologyValidationService {
                         for (Entity productAttributeValue : filteredProductAttributeValues) {
                             if (checkDimensionControlOfProductsWithWorkstation(stateChangeContext, nodeNumber, productAttributeValue, workstation)) {
                                 wrongWorkstations++;
+
+                                break;
                             }
                         }
                     }
@@ -874,6 +881,17 @@ public class TechnologyValidationService {
         }
     }
 
+    private List<Entity> filterProductAttributeValues(final List<Entity> productAttributeValues, final List<Entity> dimensionControlAttributes) {
+        return productAttributeValues.stream().filter(productAttributeValue ->
+                checkDimensionControlAttributesWithAttribute(dimensionControlAttributes, productAttributeValue.getBelongsToField(ProductAttributeValueFields.ATTRIBUTE))).collect(Collectors.toList());
+    }
+
+    private boolean checkDimensionControlAttributesWithAttribute(final List<Entity> dimensionControlAttributes, final Entity attribute) {
+        return dimensionControlAttributes.stream()
+                .anyMatch(dimensionControlAttribute ->
+                        dimensionControlAttribute.getBelongsToField(DimensionControlAttributeFields.ATTRIBUTE).getId().equals(attribute.getId()));
+    }
+
     private boolean checkDimensionControlOfProductsWithWorkstation(final StateChangeContext stateChangeContext, final String nodeNumber,
                                                                    final Entity productAttributeValue, final Entity workstation) {
         boolean isWrong = false;
@@ -888,61 +906,70 @@ public class TechnologyValidationService {
         String minimumDimensionUnit = workstation.getStringField(WorkstationFields.MINIMUM_DIMENSION_UNIT);
         String maximumDimensionUnit = workstation.getStringField(WorkstationFields.MAXIMUM_DIMENSION_UNIT);
 
-        if (Objects.nonNull(minimumDimension)) {
-            BigDecimal dimension;
+        if (Objects.nonNull(value) && Objects.nonNull(unit) && (Objects.nonNull(minimumDimension) || Objects.nonNull(maximumDimension))) {
+            Either<Exception, com.google.common.base.Optional<BigDecimal>> eitherDimension = BigDecimalUtils.tryParseAndIgnoreSeparator(value, LocaleContextHolder.getLocale());
 
-            if (unit.equals(minimumDimensionUnit)) {
-                dimension = new BigDecimal(value);
-            } else {
-                PossibleUnitConversions possibleUnitConversions = unitConversionService.getPossibleConversions(unit);
+            if (eitherDimension.isRight() && eitherDimension.getRight().isPresent()) {
+                if (Objects.nonNull(minimumDimension)) {
+                    BigDecimal dimension = eitherDimension.getRight().get();
 
-                if (possibleUnitConversions.isDefinedFor(minimumDimensionUnit)) {
-                    dimension = possibleUnitConversions.convertTo(new BigDecimal(value), minimumDimensionUnit);
-                } else {
-                    stateChangeContext.addValidationError("technologies.technology.validate.global.error.dimensionControlIncompatibleUnits", nodeNumber, number);
+                    if (!unit.equals(minimumDimensionUnit)) {
+                        PossibleUnitConversions possibleUnitConversions = unitConversionService.getPossibleConversions(unit, L_CM);
 
-                    return true;
+                        if (possibleUnitConversions.isDefinedFor(minimumDimensionUnit) && possibleUnitConversions.isDefinedFor(L_MM)) {
+                            dimension = convertToMM(dimension, unit);
+                            minimumDimension = convertToMM(minimumDimension, minimumDimensionUnit);
+                        } else {
+                            stateChangeContext.addValidationError("technologies.technology.validate.global.error.dimensionControlIncompatibleUnits", nodeNumber, number);
+
+                            return true;
+                        }
+                    }
+
+                    if (Objects.nonNull(dimension) && Objects.nonNull(minimumDimension)
+                            && dimension.compareTo(minimumDimension) < 0) {
+                        isWrong = true;
+                    }
                 }
-            }
+                if (Objects.nonNull(maximumDimension)) {
+                    BigDecimal dimension = eitherDimension.getRight().get();
 
-            if (dimension.compareTo(minimumDimension) < 0) {
-                isWrong = true;
-            }
-        }
-        if (Objects.nonNull(maximumDimension)) {
-            BigDecimal dimension;
+                    if (!unit.equals(maximumDimensionUnit)) {
+                        PossibleUnitConversions possibleUnitConversions = unitConversionService.getPossibleConversions(unit, L_CM);
 
-            if (unit.equals(maximumDimensionUnit)) {
-                dimension = new BigDecimal(value);
-            } else {
-                PossibleUnitConversions possibleUnitConversions = unitConversionService.getPossibleConversions(unit);
+                        if (possibleUnitConversions.isDefinedFor(maximumDimensionUnit) && possibleUnitConversions.isDefinedFor(L_MM)) {
+                            dimension = convertToMM(dimension, unit);
+                            maximumDimension = convertToMM(maximumDimension, maximumDimensionUnit);
+                        } else {
+                            stateChangeContext.addValidationError("technologies.technology.validate.global.error.dimensionControlIncompatibleUnits", nodeNumber, number);
 
-                if (possibleUnitConversions.isDefinedFor(maximumDimensionUnit)) {
-                    dimension = possibleUnitConversions.convertTo(new BigDecimal(value), maximumDimensionUnit);
-                } else {
-                    stateChangeContext.addValidationError("technologies.technology.validate.global.error.dimensionControlIncompatibleUnits", nodeNumber, number);
+                            return true;
+                        }
+                    }
 
-                    return true;
+                    if (Objects.nonNull(dimension) && Objects.nonNull(maximumDimension)
+                            && dimension.compareTo(maximumDimension) > 0) {
+                        isWrong = true;
+                    }
                 }
-            }
-
-            if (dimension.compareTo(maximumDimension) > 0) {
-                isWrong = true;
             }
         }
 
         return isWrong;
     }
 
-    private List<Entity> filterProductAttributeValues(final List<Entity> productAttributeValues, final List<Entity> dimensionControlAttributes) {
-        return productAttributeValues.stream().filter(productAttributeValue ->
-                checkDimensionControlAttributesWithAttribute(dimensionControlAttributes, productAttributeValue.getBelongsToField(ProductAttributeValueFields.ATTRIBUTE))).collect(Collectors.toList());
-    }
+    private BigDecimal convertToMM(final BigDecimal dimension, final String unit) {
+        if (L_MM.equals(unit)) {
+            return dimension;
+        } else {
+            PossibleUnitConversions possibleUnitConversions = unitConversionService.getPossibleConversions(unit, L_CM);
 
-    private boolean checkDimensionControlAttributesWithAttribute(final List<Entity> dimensionControlAttributes, final Entity attribute) {
-        return dimensionControlAttributes.stream()
-                .anyMatch(dimensionControlAttribute ->
-                        dimensionControlAttribute.getBelongsToField(DimensionControlAttributeFields.ATTRIBUTE).getId().equals(attribute.getId()));
+            if (possibleUnitConversions.isDefinedFor(L_MM)) {
+                return possibleUnitConversions.convertTo(dimension, L_MM);
+            }
+        }
+
+        return null;
     }
 
 }

@@ -31,7 +31,7 @@ public class DimensionControlAttributeHooks {
 
         if (dimensionControlAttributeDD.count(conjunction) != 0) {
             dimensionControlAttribute.addError(dimensionControlAttributeDD.getField(DimensionControlAttributeFields.ATTRIBUTE),
-                    "qcadooView.validate.field.error.invalidUniqueType");
+                    "technologies.dimensionControlAttribute.error.alreadyExists");
 
             return false;
         }
