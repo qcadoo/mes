@@ -202,12 +202,12 @@
 
         <model:model-field plugin="basic" model="palletNumber">
             <model:hasMany name="resources" model="resource"
-                           plugin="materialFlowResources" joinField="palletNumber" cascade="nullify"/>
+                           plugin="materialFlowResources" joinField="palletNumber"/>
         </model:model-field>
 
         <model:model-field plugin="basic" model="address">
             <model:hasMany name="documents" model="document"
-                           plugin="materialFlowResources" joinField="address" cascade="nullify"/>
+                           plugin="materialFlowResources" joinField="address"/>
         </model:model-field>
 
         <model:model-field plugin="materialFlow" model="location">
