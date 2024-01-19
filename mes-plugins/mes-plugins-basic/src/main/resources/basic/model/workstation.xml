@@ -60,12 +60,26 @@
         <manyToMany name="faultTypes" model="faultType" joinField="workstations"/>
         <boolean name="buffer" default="false"/>
         <boolean name="manualStateChange" persistent="false"/>
+
+        <decimal name="minimumDimension">
+            <validatesRange from="0" exclusively="true"/>
+        </decimal>
+        <decimal name="maximumDimension">
+            <validatesRange from="0" exclusively="true"/>
+        </decimal>
+        <dictionary name="minimumDimensionUnit" dictionary="units"/>
+        <dictionary name="maximumDimensionUnit" dictionary="units"/>
+
+        <integer name="entityId" persistent="false"/>
     </fields>
 
     <hooks>
+        <validatesWith class="com.qcadoo.mes.basic.hooks.WorkstationModelHooks" method="validatesWith"/>
         <onCreate class="com.qcadoo.mes.basic.hooks.WorkstationModelHooks" method="onCreate"/>
-        <onDelete class="com.qcadoo.mes.basic.hooks.WorkstationModelHooks" method="onDelete"/>
+        <onSave class="com.qcadoo.mes.basic.hooks.WorkstationModelHooks" method="onSave"/>
         <onCopy class="com.qcadoo.mes.basic.hooks.WorkstationModelHooks" method="onCopy"/>
+        <onDelete class="com.qcadoo.mes.basic.hooks.WorkstationModelHooks" method="onDelete"/>
+        <onView class="com.qcadoo.mes.basic.hooks.WorkstationModelHooks" method="onView"/>
     </hooks>
 
     <identifier expression="#number + ' - ' + #name"/>

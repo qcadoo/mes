@@ -31,4 +31,6 @@ public final class AttributeFieldsT {
 
     public static final String WORKSTATION_CHANGEOVER_NORMS = "workstationChangeoverNorms";
 
+    public static final String DIMENSION_CONTROL_ATTRIBUTES = "dimensionControlAttributes";
+
 }

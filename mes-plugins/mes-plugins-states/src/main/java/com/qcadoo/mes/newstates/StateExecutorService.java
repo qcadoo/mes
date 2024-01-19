@@ -1,26 +1,5 @@
 package com.qcadoo.mes.newstates;
 
-import static com.qcadoo.mes.states.constants.StateChangeStatus.IN_PROGRESS;
-import static com.qcadoo.mes.states.constants.StateChangeStatus.PAUSED;
-
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
-
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.Scope;
-import org.springframework.context.annotation.ScopedProxyMode;
-import org.springframework.core.annotation.AnnotationAwareOrderComparator;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
@@ -45,6 +24,21 @@ import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.GridComponent;
 import com.qcadoo.view.constants.QcadooViewConstants;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Scope;
+import org.springframework.context.annotation.ScopedProxyMode;
+import org.springframework.core.annotation.AnnotationAwareOrderComparator;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.*;
+
+import static com.qcadoo.mes.states.constants.StateChangeStatus.IN_PROGRESS;
+import static com.qcadoo.mes.states.constants.StateChangeStatus.PAUSED;
 
 @Service
 @Scope(value = "request", proxyMode = ScopedProxyMode.TARGET_CLASS)
@@ -154,6 +148,10 @@ public class StateExecutorService {
             saveStateChangeEntity(stateChangeEntity, StateChangeStatus.FAILURE);
 
             message("states.messages.change.failure", ComponentState.MessageType.FAILURE);
+
+            LOG.info(String.format("State change exception. Entity name : %S id : %d. Target state : %S",
+                    entity.getDataDefinition().getName(), entity.getId(), targetState));
+            LOG.warn("Can't perform state change", entityException);
 
             return entity;
         } catch (AnotherChangeInProgressException e) {

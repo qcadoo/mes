@@ -189,8 +189,11 @@
                                 </component>
                                 <component type="grid" name="workstations" reference="workstations"
                                            source="#{workstationsTechnologyOperationComponent}.workstations">
-                                    <option type="column" name="number" fields="number"/>
-                                    <option type="column" name="name" fields="name"/>
+                                    <option type="column" name="number" fields="number"
+                                            link="true" correspondingView="basic/workstationDetails" correspondingField="workstationId"/>
+                                    <option type="column" name="name" fields="name"
+                                            link="true" correspondingView="basic/workstationDetails" correspondingField="workstationId"/>
+                                    <option type="column" name="workstationId" fields="entityId" hidden="true"/>
                                     <option type="column" name="divisionNumber" fields="division"
                                             expression="#division['number']" width="100"/>
                                     <option type="column" name="productionLineNumber" fields="productionLine"

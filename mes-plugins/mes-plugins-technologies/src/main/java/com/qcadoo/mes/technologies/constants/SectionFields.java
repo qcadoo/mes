@@ -10,4 +10,6 @@ public final class SectionFields {
 
     public static final String LENGTH = "length";
 
+    public static final String UNIT = "unit";
+
 }

@@ -92,6 +92,8 @@ public final class TechnologiesConstants {
 
     public static final String MODEL_WORKSTATION_STATE_CHANGE = "workstationStateChange";
 
+    public static final String MODEL_DIMENSION_CONTROL_ATTRIBUTE = "dimensionControlAttribute";
+
     // VIEW
 
     public static final String VIEW_OPERATION_DETAILS = "operationDetails";

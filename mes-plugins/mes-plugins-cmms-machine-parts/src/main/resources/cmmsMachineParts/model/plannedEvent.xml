@@ -40,7 +40,8 @@
         <string name="ownerName"/>
 
         <enum name="state"
-              values="01new,02inPlan,03planned,04inRealization,05realized,06canceled,07accepted,08inEditing" default="01new"/>
+              values="01new,02inPlan,03planned,04inRealization,05realized,06canceled,07accepted,08inEditing"
+              default="01new"/>
 
         <belongsTo name="factory" model="factory" plugin="basic" required="true"/>
         <belongsTo name="division" model="division" plugin="basic" required="true"/>
@@ -53,7 +54,6 @@
         <boolean name="plannedSeparately" default="false"/>
         <boolean name="requiresShutdown" default="false"/>
         <boolean name="acceptanceEvents" default="false" persistent="false"/>
-
 
         <enum name="basedOn" values="01date,02counter" default="01date" required="true"/>
         <date name="date"/>
@@ -81,6 +81,7 @@
         <datetime name="startDate"/>
         <datetime name="finishDate"/>
         <boolean name="isDeadline"/>
+
         <manyToMany name="responsibleWorkers" joinField="plannedEvents" model="staff" cascade="nullify" plugin="basic"
                     copyable="false"/>
 
@@ -93,6 +94,7 @@
                  copyable="true"/>
 
         <text name="solutionDescription"/>
+
         <hasMany name="machinePartsForEvent" model="machinePartForEvent" joinField="plannedEvent" cascade="delete"
                  copyable="true"/>
 
@@ -112,8 +114,8 @@
         <boolean name="afterReview" default="false"/>
 
         <belongsTo name="maintenanceEvent" model="maintenanceEvent" plugin="cmmsMachineParts"/>
-
     </fields>
+
     <hooks>
         <validatesWith class="com.qcadoo.mes.cmmsMachineParts.validators.PlannedEventValidators"
                        method="validatesWith"/>

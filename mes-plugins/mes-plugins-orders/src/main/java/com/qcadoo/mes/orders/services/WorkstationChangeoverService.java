@@ -181,13 +181,15 @@ public class WorkstationChangeoverService {
                             if (attributeValue.getId().equals(toAttributeValue.getId())) {
                                 if (filteredProductAttributeValues.stream().anyMatch(previousProductAttributeValue ->
                                         filterProductAttributeValuesWithAttributeValue(previousProductAttributeValue, fromAttributeValue))) {
-                                    Entity workstationChangeoverForOperationalTask = createWorkstationChangeoverForOperationalTask(operationalTask, previousOperationalTask, workstationChangeoverNorm, workstation, attribute);
+                                    Entity workstationChangeoverForOperationalTask = createWorkstationChangeoverForOperationalTask(operationalTask, previousOperationalTask, workstationChangeoverNorm, workstation, attribute, fromAttributeValue, toAttributeValue);
 
                                     workstationChangeoverForOperationalTasks.add(workstationChangeoverForOperationalTask);
                                 }
                             }
                         } else {
-                            Entity workstationChangeoverForOperationalTask = createWorkstationChangeoverForOperationalTask(operationalTask, previousOperationalTask, workstationChangeoverNorm, workstation, attribute);
+                            Entity fromAttributeValue = previousProductAttributeValues.stream().findFirst().orElse(null);
+
+                            Entity workstationChangeoverForOperationalTask = createWorkstationChangeoverForOperationalTask(operationalTask, previousOperationalTask, workstationChangeoverNorm, workstation, attribute, fromAttributeValue, attributeValue);
 
                             workstationChangeoverForOperationalTasks.add(workstationChangeoverForOperationalTask);
                         }
@@ -281,13 +283,12 @@ public class WorkstationChangeoverService {
     private Entity createWorkstationChangeoverForOperationalTask(final Entity currentOperationalTask,
                                                                  final Entity previousOperationalTask,
                                                                  final Entity workstationChangeoverNorm,
-                                                                 final Entity workstation, final Entity attribute) {
+                                                                 final Entity workstation,
+                                                                 final Entity attribute, final Entity fromAttributeValue, final Entity toAttributeValue) {
         Entity workstationChangeoverForOperationalTask = getWorkstationChangeoverForOperationalTaskDD().create();
 
         String name = workstationChangeoverNorm.getStringField(WorkstationChangeoverNormFields.NAME);
         String description = workstationChangeoverNorm.getStringField(WorkstationChangeoverNormFields.DESCRIPTION);
-        Entity fromAttributeValue = workstationChangeoverNorm.getBelongsToField(WorkstationChangeoverNormFields.FROM_ATTRIBUTE_VALUE);
-        Entity toAttributeValue = workstationChangeoverNorm.getBelongsToField(WorkstationChangeoverNormFields.TO_ATTRIBUTE_VALUE);
         Integer duration = workstationChangeoverNorm.getIntegerField(WorkstationChangeoverNormFields.DURATION);
         boolean isParallel = workstationChangeoverNorm.getBooleanField(WorkstationChangeoverNormFields.IS_PARALLEL);
 

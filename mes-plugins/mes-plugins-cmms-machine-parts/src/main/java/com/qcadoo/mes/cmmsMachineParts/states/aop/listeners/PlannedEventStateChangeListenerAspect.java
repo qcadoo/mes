@@ -23,14 +23,6 @@
  */
 package com.qcadoo.mes.cmmsMachineParts.states.aop.listeners;
 
-import org.aspectj.lang.annotation.AfterReturning;
-import org.aspectj.lang.annotation.Aspect;
-import org.aspectj.lang.annotation.Before;
-import org.aspectj.lang.annotation.DeclarePrecedence;
-import org.aspectj.lang.annotation.Pointcut;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Configurable;
-
 import com.qcadoo.mes.cmmsMachineParts.PlannedEventChangeService;
 import com.qcadoo.mes.cmmsMachineParts.constants.CmmsMachinePartsConstants;
 import com.qcadoo.mes.cmmsMachineParts.states.AfterReviewEventsService;
@@ -45,6 +37,9 @@ import com.qcadoo.mes.states.annotation.RunInPhase;
 import com.qcadoo.mes.states.aop.AbstractStateListenerAspect;
 import com.qcadoo.mes.states.service.client.util.ViewContextHolder;
 import com.qcadoo.plugin.api.RunIfEnabled;
+import org.aspectj.lang.annotation.*;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Configurable;
 
 @Aspect
 @Configurable
@@ -88,13 +83,14 @@ public class PlannedEventStateChangeListenerAspect extends AbstractStateListener
     @Before(PHASE_EXECUTION_POINTCUT)
     public void createDocumentsForMachineParts(final StateChangeContext stateChangeContext, final int phase) {
         eventDocumentsService.createDocumentsForMachineParts(stateChangeContext);
+        plannedEventChangeService.updatePlannedEventFinishDate(stateChangeContext);
     }
 
     @RunInPhase(PlannedEventStateChangePhase.LAST)
     @RunForStateTransition(targetState = PlannedEventStateStringValues.CANCELED)
     @Before("phaseExecution(stateChangeContext, phase) && cflow(viewClientExecution(viewContext))")
     public void askForRevokeReason(final StateChangeContext stateChangeContext, final int phase,
-            final ViewContextHolder viewContext) {
+                                   final ViewContextHolder viewContext) {
         plannedEventChangeService.showReasonForm(stateChangeContext, viewContext);
     }
 
@@ -102,7 +98,7 @@ public class PlannedEventStateChangeListenerAspect extends AbstractStateListener
     @RunForStateTransition(sourceState = PlannedEventStateStringValues.IN_EDITING, targetState = PlannedEventStateStringValues.IN_REALIZATION)
     @Before("phaseExecution(stateChangeContext, phase) && cflow(viewClientExecution(viewContext))")
     public void askForNotAcceptReason(final StateChangeContext stateChangeContext, final int phase,
-            final ViewContextHolder viewContext) {
+                                      final ViewContextHolder viewContext) {
         plannedEventChangeService.showReasonForm(stateChangeContext, viewContext);
     }
 

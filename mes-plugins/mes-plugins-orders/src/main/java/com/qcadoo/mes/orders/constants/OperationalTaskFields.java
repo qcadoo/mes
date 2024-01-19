@@ -69,8 +69,12 @@ public final class OperationalTaskFields {
 
     public static final String SHOULD_SKIP = "shouldSkip";
 
+    public static final String HAS_CHANGEOVERS = "hasChangeovers";
+
     public static final String CURRENT_WORKSTATION_CHANGEOVER_FOR_OPERATIONAL_TASKS = "currentWorkstationChangeoverForOperationalTasks";
 
     public static final String PREVIOUS_WORKSTATION_CHANGEOVER_FOR_OPERATIONAL_TASKS = "previousWorkstationChangeoverForOperationalTasks";
+
+    public static final String PREVIOUS_WORKSTATION_CHANGEOVER_FOR_SCHEDULE_POSITIONS = "previousWorkstationChangeoverForSchedulePositions";
 
 }

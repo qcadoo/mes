@@ -68,6 +68,7 @@
                     joinField="operationalTasksStaff" copyable="true"/>
 
         <boolean name="shouldSkip" persistent="false"/>
+        <boolean name="hasChangeovers" persistent="false"/>
 
         <hasMany name="currentWorkstationChangeoverForOperationalTasks" model="workstationChangeoverForOperationalTask"
                  joinField="currentOperationalTask" cascade="delete"/>

@@ -25,16 +25,20 @@ package com.qcadoo.mes.technologies.states.listener;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
+import com.qcadoo.commons.functional.Either;
 import com.qcadoo.localization.api.TranslationService;
-import com.qcadoo.mes.basic.constants.ProductFamilyElementType;
-import com.qcadoo.mes.basic.constants.ProductFields;
+import com.qcadoo.mes.basic.ParameterService;
+import com.qcadoo.mes.basic.constants.*;
 import com.qcadoo.mes.states.StateChangeContext;
+import com.qcadoo.mes.states.constants.StateChangeStatus;
 import com.qcadoo.mes.states.messages.constants.StateMessageType;
 import com.qcadoo.mes.technologies.TechnologyService;
 import com.qcadoo.mes.technologies.constants.*;
 import com.qcadoo.mes.technologies.tree.ProductStructureTreeService;
 import com.qcadoo.mes.technologies.tree.TechnologyTreeValidationService;
 import com.qcadoo.model.api.*;
+import com.qcadoo.model.api.units.PossibleUnitConversions;
+import com.qcadoo.model.api.units.UnitConversionService;
 import com.qcadoo.model.api.validators.ErrorMessage;
 import com.qcadoo.plugin.api.PluginUtils;
 import com.qcadoo.view.api.ComponentState.MessageType;
@@ -45,13 +49,17 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static com.qcadoo.mes.basic.constants.ProductFields.UNIT;
-import static com.qcadoo.mes.technologies.constants.TechnologyFields.OPERATION_COMPONENTS;
-import static com.qcadoo.mes.technologies.constants.TechnologyFields.PRODUCT;
+import static java.util.Comparator.reverseOrder;
 
 @Service
 public class TechnologyValidationService {
+
+    private static final String L_MM = "mm";
+
+    private static final String L_CM = "cm";
 
     private static final String L_PRODUCTION_IN_ONE_CYCLE_UNIT = "productionInOneCycleUNIT";
 
@@ -62,16 +70,22 @@ public class TechnologyValidationService {
     private static final String L_TECHNOLOGIES_TECHNOLOGY_VALIDATE_GLOBAL_ERROR_OPERATION_DONT_CONSUME_SUB_OPERATIONS_PRODUCTS_PLURAL = "technologies.technology.validate.global.error.operationDontConsumeSubOperationsProductsPlural";
 
     @Autowired
+    private TranslationService translationService;
+
+    @Autowired
+    private UnitConversionService unitConversionService;
+
+    @Autowired
+    private ParameterService parameterService;
+
+    @Autowired
+    private ProductStructureTreeService productStructureTreeService;
+
+    @Autowired
     private TechnologyService technologyService;
 
     @Autowired
     private TechnologyTreeValidationService technologyTreeValidationService;
-
-    @Autowired
-    private TranslationService translationService;
-
-    @Autowired
-    private ProductStructureTreeService productStructureTreeService;
 
     public boolean checkIfEveryInComponentsHasQuantities(final StateChangeContext stateChangeContext) {
         Entity technology = stateChangeContext.getOwner();
@@ -157,11 +171,11 @@ public class TechnologyValidationService {
     }
 
     public boolean checkIfRootOperationIsSubOrder(StateChangeContext stateChangeContext) {
-        if(PluginUtils.isEnabled("techSubcontracting")) {
+        if (PluginUtils.isEnabled("techSubcontracting")) {
             Entity technology = stateChangeContext.getOwner();
             final EntityTree operationComponents = technology.getTreeField(TechnologyFields.OPERATION_COMPONENTS);
             final EntityTreeNode root = operationComponents.getRoot();
-            if(root.getBooleanField("isSubcontracting")) {
+            if (root.getBooleanField("isSubcontracting")) {
                 stateChangeContext.addValidationError(
                         "technologies.technology.validate.global.error.rootOperationIsSubOrder");
                 return false;
@@ -226,7 +240,7 @@ public class TechnologyValidationService {
         Entity technology = stateChangeContext.getOwner();
 
         final Map<String, Set<String>> parentChildNodeNumbers = technologyTreeValidationService
-                .checkConsumingManyProductsFromOneSubOp(technology.getTreeField(OPERATION_COMPONENTS));
+                .checkConsumingManyProductsFromOneSubOp(technology.getTreeField(TechnologyFields.OPERATION_COMPONENTS));
 
         for (Map.Entry<String, Set<String>> parentChildNodeNumber : parentChildNodeNumbers.entrySet()) {
             for (String childNodeNumber : parentChildNodeNumber.getValue()) {
@@ -540,7 +554,7 @@ public class TechnologyValidationService {
 
         boolean isValid = true;
 
-        for (Entity operationComponent : techFromDB.getTreeField(OPERATION_COMPONENTS)) {
+        for (Entity operationComponent : techFromDB.getTreeField(TechnologyFields.OPERATION_COMPONENTS)) {
             boolean valid = true;
 
             valid = valid && checkIfUnitMatch(operationComponent);
@@ -641,7 +655,7 @@ public class TechnologyValidationService {
                 .getMainOutputProductComponent(technologyOperationComponent);
 
         if (Objects.nonNull(outputProduct)) {
-            final String outputProductionUnit = outputProduct.getBelongsToField(PRODUCT).getStringField(UNIT);
+            final String outputProductionUnit = outputProduct.getBelongsToField(TechnologyFields.PRODUCT).getStringField(UNIT);
 
             if (!productionInOneCycleUNIT.equals(outputProductionUnit)) {
                 technologyOperationComponent.addError(dataDefinition.getField(L_PRODUCTION_IN_ONE_CYCLE_UNIT),
@@ -814,6 +828,148 @@ public class TechnologyValidationService {
             }
 
         }
+    }
+
+    public void checkDimensionControlOfProducts(final StateChangeContext stateChangeContext) {
+        Entity technology = stateChangeContext.getOwner();
+
+        Entity product = technology.getBelongsToField(TechnologyFields.PRODUCT);
+
+        if (Objects.nonNull(product)) {
+            Entity parameter = parameterService.getParameter();
+
+            List<Entity> dimensionControlAttributes = parameter.getHasManyField(ParameterFieldsT.DIMENSION_CONTROL_ATTRIBUTES);
+            List<Entity> productAttributeValues = product.getHasManyField(ProductFields.PRODUCT_ATTRIBUTE_VALUES);
+
+            List<Entity> filteredProductAttributeValues = filterProductAttributeValues(productAttributeValues, dimensionControlAttributes);
+
+            if (!filteredProductAttributeValues.isEmpty()) {
+                List<Entity> operationComponents = technology.getHasManyField(TechnologyFields.OPERATION_COMPONENTS);
+
+                for (Entity technologyOperationComponent : operationComponents.stream().sorted(Comparator.comparing(technologyOperationComponent ->
+                        technologyOperationComponent.getStringField(TechnologyOperationComponentFields.NODE_NUMBER), reverseOrder())).collect(Collectors.toList())) {
+                    String nodeNumber = technologyOperationComponent.getStringField(TechnologyOperationComponentFields.NODE_NUMBER);
+                    List<Entity> workstations = technologyOperationComponent.getHasManyField(TechnologyOperationComponentFields.WORKSTATIONS);
+
+                    int wrongWorkstations = 0;
+
+                    for (Entity workstation : workstations) {
+                        for (Entity productAttributeValue : filteredProductAttributeValues) {
+                            if (checkDimensionControlOfProductsWithWorkstation(stateChangeContext, nodeNumber, productAttributeValue, workstation)) {
+                                wrongWorkstations++;
+
+                                break;
+                            }
+                        }
+                    }
+
+                    if (stateChangeContext.getStatus().equals(StateChangeStatus.FAILURE)) {
+                        break;
+                    } else {
+                        if (wrongWorkstations > 0) {
+                            if (wrongWorkstations == workstations.size()) {
+                                stateChangeContext.addValidationError("technologies.technology.validate.global.error.dimensionControlAllWorkstations", nodeNumber);
+                            } else {
+                                stateChangeContext.addValidationError("technologies.technology.validate.global.error.dimensionControlAtLeastOneWorkstation", nodeNumber);
+                            }
+
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private List<Entity> filterProductAttributeValues(final List<Entity> productAttributeValues, final List<Entity> dimensionControlAttributes) {
+        return productAttributeValues.stream().filter(productAttributeValue ->
+                checkDimensionControlAttributesWithAttribute(dimensionControlAttributes, productAttributeValue.getBelongsToField(ProductAttributeValueFields.ATTRIBUTE))).collect(Collectors.toList());
+    }
+
+    private boolean checkDimensionControlAttributesWithAttribute(final List<Entity> dimensionControlAttributes, final Entity attribute) {
+        return dimensionControlAttributes.stream()
+                .anyMatch(dimensionControlAttribute ->
+                        dimensionControlAttribute.getBelongsToField(DimensionControlAttributeFields.ATTRIBUTE).getId().equals(attribute.getId()));
+    }
+
+    private boolean checkDimensionControlOfProductsWithWorkstation(final StateChangeContext stateChangeContext, final String nodeNumber,
+                                                                   final Entity productAttributeValue, final Entity workstation) {
+        boolean isWrong = false;
+
+        String value = productAttributeValue.getStringField(ProductAttributeValueFields.VALUE);
+        Entity attribute = productAttributeValue.getBelongsToField(ProductAttributeValueFields.ATTRIBUTE);
+        String unit = attribute.getStringField(AttributeFields.UNIT);
+
+        String number = workstation.getStringField(WorkstationFields.NUMBER);
+        BigDecimal minimumDimension = workstation.getDecimalField(WorkstationFields.MINIMUM_DIMENSION);
+        BigDecimal maximumDimension = workstation.getDecimalField(WorkstationFields.MAXIMUM_DIMENSION);
+        String minimumDimensionUnit = workstation.getStringField(WorkstationFields.MINIMUM_DIMENSION_UNIT);
+        String maximumDimensionUnit = workstation.getStringField(WorkstationFields.MAXIMUM_DIMENSION_UNIT);
+
+        if (Objects.nonNull(value) && Objects.nonNull(unit) && (Objects.nonNull(minimumDimension) || Objects.nonNull(maximumDimension))) {
+            Either<Exception, com.google.common.base.Optional<BigDecimal>> eitherDimension = BigDecimalUtils.tryParseAndIgnoreSeparator(value, LocaleContextHolder.getLocale());
+
+            if (eitherDimension.isRight() && eitherDimension.getRight().isPresent()) {
+                if (Objects.nonNull(minimumDimension)) {
+                    BigDecimal dimension = eitherDimension.getRight().get();
+
+                    if (!unit.equals(minimumDimensionUnit)) {
+                        PossibleUnitConversions possibleUnitConversions = unitConversionService.getPossibleConversions(unit, L_CM);
+
+                        if (possibleUnitConversions.isDefinedFor(minimumDimensionUnit) && (possibleUnitConversions.isDefinedFor(L_MM) || L_MM.equals(unit))) {
+                            dimension = convertToMM(dimension, unit);
+                            minimumDimension = convertToMM(minimumDimension, minimumDimensionUnit);
+                        } else {
+                            stateChangeContext.addValidationError("technologies.technology.validate.global.error.dimensionControlIncompatibleUnits", nodeNumber, number);
+
+                            return true;
+                        }
+                    }
+
+                    if (Objects.nonNull(dimension) && Objects.nonNull(minimumDimension)
+                            && dimension.compareTo(minimumDimension) < 0) {
+                        isWrong = true;
+                    }
+                }
+                if (Objects.nonNull(maximumDimension)) {
+                    BigDecimal dimension = eitherDimension.getRight().get();
+
+                    if (!unit.equals(maximumDimensionUnit)) {
+                        PossibleUnitConversions possibleUnitConversions = unitConversionService.getPossibleConversions(unit, L_CM);
+
+                        if (possibleUnitConversions.isDefinedFor(maximumDimensionUnit) && (possibleUnitConversions.isDefinedFor(L_MM) || L_MM.equals(unit))) {
+                            dimension = convertToMM(dimension, unit);
+                            maximumDimension = convertToMM(maximumDimension, maximumDimensionUnit);
+                        } else {
+                            stateChangeContext.addValidationError("technologies.technology.validate.global.error.dimensionControlIncompatibleUnits", nodeNumber, number);
+
+                            return true;
+                        }
+                    }
+
+                    if (Objects.nonNull(dimension) && Objects.nonNull(maximumDimension)
+                            && dimension.compareTo(maximumDimension) > 0) {
+                        isWrong = true;
+                    }
+                }
+            }
+        }
+
+        return isWrong;
+    }
+
+    private BigDecimal convertToMM(final BigDecimal dimension, final String unit) {
+        if (L_MM.equals(unit)) {
+            return dimension;
+        } else {
+            PossibleUnitConversions possibleUnitConversions = unitConversionService.getPossibleConversions(unit, L_CM);
+
+            if (possibleUnitConversions.isDefinedFor(L_MM)) {
+                return possibleUnitConversions.convertTo(dimension, L_MM);
+            }
+        }
+
+        return null;
     }
 
 }

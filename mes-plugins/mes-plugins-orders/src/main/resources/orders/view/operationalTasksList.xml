@@ -69,13 +69,14 @@
             <option type="column" name="state" fields="state" width="50"/>
             <option type="column" name="type" fields="type" width="50"/>
             <option type="column" name="actualStaff" fields="actualStaff" width="50"/>
+            <option type="column" name="hasChangeovers" fields="hasChangeovers" width="50"/>
 
             <option type="order" column="startDate" direction="desc"/>
 
             <option type="searchable" value="name,number,description,startDate,finishDate,staffName,divisionNumber,workstationNumber,orderNumber,state,type,
-							technologyOperationComponentNodeNumber,productNumber,productName,plannedQuantity,wastesQuantity,usedQuantity,remainingQuantity,doneInPercentage,productUnit,orderProductName,orderProductNumber,actualStaff"/>
+							technologyOperationComponentNodeNumber,productNumber,productName,plannedQuantity,wastesQuantity,usedQuantity,remainingQuantity,doneInPercentage,productUnit,orderProductName,orderProductNumber,actualStaff,hasChangeovers"/>
             <option type="orderable" value="name,number,description,startDate,finishDate,staffName,divisionNumber,workstationNumber,orderNumber,state,type,
-							technologyOperationComponentNodeNumber,productNumber,productName,plannedQuantity,wastesQuantity,usedQuantity,remainingQuantity,doneInPercentage,productUnit,orderProductName,orderProductNumber,actualStaff"/>
+							technologyOperationComponentNodeNumber,productNumber,productName,plannedQuantity,wastesQuantity,usedQuantity,remainingQuantity,doneInPercentage,productUnit,orderProductName,orderProductNumber,actualStaff,hasChangeovers"/>
 
             <option type="correspondingView" value="orders/operationalTaskDetails"/>
             <option type="correspondingComponent" value="form"/>

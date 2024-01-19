@@ -40,61 +40,135 @@
 
         <windowTab name="main" reference="main">
             <component type="form" name="technologiesGeneratorParameters" reference="form">
-                <component type="gridLayout" name="generatorTabGridLayout"  columns="3" rows="8">
+                <component type="gridLayout" name="technologiesGeneratorGridLayout" columns="3" rows="1">
                     <layoutElement column="1" row="1">
-                        <component type="checkbox" name="completeWarehousesFlowWhileChecking" field="#{form}.completeWarehousesFlowWhileChecking"
-                                   reference="completeWarehousesFlowWhileChecking" hasDescription="true">
-                            <option type="labelWidth" value="60"/>
-                        </component>
-                    </layoutElement>
-                    <layoutElement column="1" row="2">
-                        <component type="checkbox" name="moveProductsToSubsequentOperations" field="#{form}.moveProductsToSubsequentOperations"
-                                   reference="moveProductsToSubsequentOperations" hasDescription="true">
-                            <option type="labelWidth" value="60"/>
-                        </component>
-                    </layoutElement>
-                    <layoutElement column="1" row="3">
-                        <component type="checkbox" name="technologiesGeneratorCopyProductSize" field="#{form}.technologiesGeneratorCopyProductSize"
-                                   reference="technologiesGeneratorCopyProductSize">
-                            <option type="labelWidth" value="60"/>
-                        </component>
-                    </layoutElement>
-                    <layoutElement column="1" row="4">
-                        <component type="checkbox" name="allowCheckedTechnologyWithoutInProducts" field="#{form}.allowCheckedTechnologyWithoutInProducts"
-                                   reference="allowCheckedTechnologyWithoutInProducts">
-                            <option type="labelWidth" value="60"/>
-                        </component>
-                    </layoutElement>
-                    <layoutElement column="1" row="5">
-                        <component type="checkbox" name="acceptedTechnologyMarkedAsDefault" field="#{form}.acceptedTechnologyMarkedAsDefault"
-                                   reference="acceptedTechnologyMarkedAsDefault" hasDescription="true">
-                            <option type="labelWidth" value="60"/>
-                        </component>
-                    </layoutElement>
-                    <layoutElement column="1" row="6">
-                        <component type="checkbox" name="checkForTheExistenceOfInputProductPrices" field="#{form}.checkForTheExistenceOfInputProductPrices"
-                                   reference="checkForTheExistenceOfInputProductPrices" hasDescription="true">
-                            <option type="labelWidth" value="60"/>
-                        </component>
-                    </layoutElement>
-                    <layoutElement column="1" row="7">
-                        <component type="input" name="operationProductOutDefaultQuantity" field="operationProductOutDefaultQuantity"
-                                   reference="operationProductOutDefaultQuantity">
-                            <option type="alignment" value="right"/>
-                            <option type="labelWidth" value="60"/>
-                        </component>
-                    </layoutElement>
-                    <layoutElement column="1" row="8">
-                        <component type="input" name="operationProductInDefaultQuantity" field="operationProductInDefaultQuantity"
-                                   reference="operationProductInDefaultQuantity">
-                            <option type="alignment" value="right"/>
-                            <option type="labelWidth" value="60"/>
+                        <component type="gridLayout" name="leftGridLayout" columns="1" rows="8">
+                            <layoutElement column="1" row="1">
+                                <component type="checkbox" name="completeWarehousesFlowWhileChecking"
+                                           field="#{form}.completeWarehousesFlowWhileChecking"
+                                           reference="completeWarehousesFlowWhileChecking" hasDescription="true">
+                                    <option type="labelWidth" value="60"/>
+                                </component>
+                            </layoutElement>
+                            <layoutElement column="1" row="2">
+                                <component type="checkbox" name="moveProductsToSubsequentOperations"
+                                           field="#{form}.moveProductsToSubsequentOperations"
+                                           reference="moveProductsToSubsequentOperations" hasDescription="true">
+                                    <option type="labelWidth" value="60"/>
+                                </component>
+                            </layoutElement>
+                            <layoutElement column="1" row="3">
+                                <component type="checkbox" name="technologiesGeneratorCopyProductSize"
+                                           field="#{form}.technologiesGeneratorCopyProductSize"
+                                           reference="technologiesGeneratorCopyProductSize">
+                                    <option type="labelWidth" value="60"/>
+                                </component>
+                            </layoutElement>
+                            <layoutElement column="1" row="4">
+                                <component type="checkbox" name="allowCheckedTechnologyWithoutInProducts"
+                                           field="#{form}.allowCheckedTechnologyWithoutInProducts"
+                                           reference="allowCheckedTechnologyWithoutInProducts">
+                                    <option type="labelWidth" value="60"/>
+                                </component>
+                            </layoutElement>
+                            <layoutElement column="1" row="5">
+                                <component type="checkbox" name="acceptedTechnologyMarkedAsDefault"
+                                           field="#{form}.acceptedTechnologyMarkedAsDefault"
+                                           reference="acceptedTechnologyMarkedAsDefault" hasDescription="true">
+                                    <option type="labelWidth" value="60"/>
+                                </component>
+                            </layoutElement>
+                            <layoutElement column="1" row="6">
+                                <component type="checkbox" name="checkForTheExistenceOfInputProductPrices"
+                                           field="#{form}.checkForTheExistenceOfInputProductPrices"
+                                           reference="checkForTheExistenceOfInputProductPrices" hasDescription="true">
+                                    <option type="labelWidth" value="60"/>
+                                </component>
+                            </layoutElement>
+                            <layoutElement column="1" row="7">
+                                <component type="input" name="operationProductOutDefaultQuantity"
+                                           field="operationProductOutDefaultQuantity"
+                                           reference="operationProductOutDefaultQuantity">
+                                    <option type="alignment" value="right"/>
+                                    <option type="labelWidth" value="60"/>
+                                </component>
+                            </layoutElement>
+                            <layoutElement column="1" row="8">
+                                <component type="input" name="operationProductInDefaultQuantity"
+                                           field="operationProductInDefaultQuantity"
+                                           reference="operationProductInDefaultQuantity">
+                                    <option type="alignment" value="right"/>
+                                    <option type="labelWidth" value="60"/>
+                                </component>
+                            </layoutElement>
                         </component>
                     </layoutElement>
                     <layoutElement column="2" row="1">
-                        <component type="checkbox" name="updateTechnologiesOnPendingOrders" field="#{form}.updateTechnologiesOnPendingOrders"
-                                   reference="updateTechnologiesOnPendingOrders" hasDescription="true">
-                            <option type="labelWidth" value="60"/>
+                        <component type="gridLayout" name="rightGridLayout" columns="1" rows="2">
+                            <layoutElement column="1" row="1">
+                                <component type="checkbox" name="updateTechnologiesOnPendingOrders"
+                                           field="#{form}.updateTechnologiesOnPendingOrders"
+                                           reference="updateTechnologiesOnPendingOrders" hasDescription="true">
+                                    <option type="labelWidth" value="60"/>
+                                </component>
+                            </layoutElement>
+                            <layoutElement column="1" row="2">
+                                <component type="borderLayout" name="dimensionControlBorderLayout">
+                                    <component type="gridLayout" name="dimensionControlGridLayout"
+                                               columns="1" rows="2">
+                                        <layoutElement column="1" row="1">
+                                            <component type="checkbox" name="dimensionControlOfProducts"
+                                                       field="#{form}.dimensionControlOfProducts"
+                                                       reference="dimensionControlOfProducts" hasDescription="true">
+                                                <option type="labelWidth" value="80"/>
+
+                                                <listener event="onChange"
+                                                          class="com.qcadoo.view.api.listeners.RerenderListener"
+                                                          method="onChangeRerender"/>
+                                            </component>
+                                        </layoutElement>
+                                        <layoutElement column="1" row="2">
+                                            <component type="borderLayout" name="dimensionControlAttributesBorderLayout">
+                                                <component type="awesomeDynamicList" name="dimensionControlAttributes"
+                                                           source="#{form}.dimensionControlAttributes"
+                                                           reference="dimensionControlAttributes">
+                                                    <components>
+                                                        <component type="gridLayout" name="dimensionControlAttributesGridLayout"
+                                                                   columns="1" rows="1">
+                                                            <layoutElement column="1" row="1">
+                                                                <component type="lookup" name="attribute" field="attribute"
+                                                                           reference="attribute"
+                                                                           hasLabel="false">
+                                                                    <option type="column" fields="name" name="name"
+                                                                            link="true"/>
+
+                                                                    <option type="searchable" value="number,name"/>
+                                                                    <option type="orderable" value="number,name"/>
+
+                                                                    <option type="expression"
+                                                                            value="#number + ' - ' + #name"/>
+                                                                    <option type="fieldCode" value="number"/>
+
+                                                                    <criteriaModifier
+                                                                            class="com.qcadoo.mes.basic.criteriaModifiers.AttributeCriteriaModifiers"
+                                                                            method="showNumericForProduct"/>
+                                                                </component>
+                                                            </layoutElement>
+                                                        </component>
+                                                    </components>
+
+                                                    <option type="hasBorder" value="false"/>
+                                                    <option type="hasButtons" value="true"/>
+                                                </component>
+
+                                                <option type="label" value="dimensionControlAttributesLabel"/>
+                                            </component>
+                                        </layoutElement>
+                                    </component>
+
+                                    <option type="label" value="dimensionControlLabel"/>
+                                </component>
+                            </layoutElement>
                         </component>
                     </layoutElement>
                 </component>
@@ -104,5 +178,10 @@
             </component>
         </windowTab>
     </component>
+
+    <hooks>
+        <beforeRender class="com.qcadoo.mes.technologies.hooks.TechnologiesParametersHooks"
+                      method="onBeforeRender"/>
+    </hooks>
 
 </view>

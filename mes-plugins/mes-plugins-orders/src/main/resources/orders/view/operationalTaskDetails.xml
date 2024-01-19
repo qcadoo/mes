@@ -336,6 +336,11 @@
                                       method="onChangeRerender"/>
                         </component>
                     </layoutElement>
+                    <layoutElement column="2" row="9">
+                        <component type="checkbox" name="hasChangeovers"
+                                   reference="hasChangeovers" field="#{form}.hasChangeovers"
+                                   defaultEnabled="false" hasDescription="true"/>
+                    </layoutElement>
                 </component>
 
                 <option type="header" value="true"/>

@@ -128,8 +128,8 @@
                 </smallButton>
             </group>
 
-            <group name="atachments" defaultAuthorizationRole="ROLE_COMPANY_STRUCTURE">
-                <bigButton name="downloadAtachment" icon="generateIcon24.png" state="enabled">
+            <group name="attachments" defaultAuthorizationRole="ROLE_COMPANY_STRUCTURE">
+                <bigButton name="downloadAttachment" icon="generateIcon24.png" state="enabled">
                     <script>
                         <![CDATA[
 							this.addOnChangeListener({
@@ -142,6 +142,7 @@
                 </bigButton>
             </group>
         </ribbon>
+
         <windowTab name="mainTab" reference="mainTab">
             <component type="form" name="workstation" reference="form"
                        defaultAuthorizationRole="ROLE_COMPANY_STRUCTURE_EDIT">
@@ -170,6 +171,7 @@
 
                             <option type="expression" value="#number + ' - ' + #name"/>
                             <option type="fieldCode" value="number"/>
+
                             <criteriaModifier
                                     class="com.qcadoo.mes.basic.criteriaModifiers.WorkstationTypeCriteriaModifiers"
                                     method="showWorkstationTypesWithoutSubassembly"/>
@@ -228,6 +230,7 @@
                           class="com.qcadoo.mes.basic.listeners.AttachmentsListeners"/>
             </component>
         </windowTab>
+
         <windowTab name="companiesTab" reference="companiesTab">
             <component type="gridLayout" name="companiesGridLayout"
                        columns="2" rows="1">
@@ -255,6 +258,7 @@
                         <option type="column" name="name" fields="name" width="100"/>
                         <option type="column" name="city" fields="city"
                                 width="100"/>
+
                         <option type="searchable" value="number,name,city"/>
                         <option type="orderable" value="number,name,city"/>
 
@@ -267,16 +271,15 @@
 
                         <option type="weakRelation" value="true"/>
                         <option type="correspondingLookup" value="companiesLookup"/>
-
                     </component>
                 </layoutElement>
             </component>
         </windowTab>
-        <windowTab name="atachments">
+
+        <windowTab name="attachments">
             <component type="gridLayout" name="gridsLayout" columns="3"
                        rows="6" hasBorders="false">
                 <layoutElement column="1" row="1" height="6">
-
                     <component type="staticPage" name="multiUpload">
                         <option type="page" value="basic/multiUpload.jsp"/>
                     </component>
@@ -296,16 +299,18 @@
                                 link="true" attachment="true"/>
                         <option type="column" name="attachmentLocation" fields="attachment" hidden="true"/>
                         <option type="column" name="size" fields="size"/>
+
                         <option type="order" column="attachment" direction="desc"/>
 
                         <option type="deletable" value="true"/>
-                        <option type="deletableAuthorizationRole"  value="ROLE_COMPANY_STRUCTURE_EDIT"/>
+                        <option type="deletableAuthorizationRole" value="ROLE_COMPANY_STRUCTURE_EDIT"/>
                         <option type="fullscreen" value="true"/>
                         <option type="multiselect" value="true"/>
                     </component>
                 </layoutElement>
             </component>
         </windowTab>
+
         <windowTab name="subassembliesTab" reference="subassembliesTab">
             <component type="flowGridLayout" name="subassembliesGridLayout"
                        columns="2" rows="3">
@@ -335,11 +340,11 @@
                         <option type="correspondingView" value="basic/workstationDetailsAddSubassembly"/>
                         <option type="correspondingComponent" value="form"/>
                         <option type="correspondingViewInModal" value="true"/>
-
                     </component>
                 </layoutElement>
             </component>
         </windowTab>
+
         <windowTab name="machineWorkingPeriodsTab" reference="machineWorkingPeriodsTab">
             <component type="flowGridLayout" name="machineWorkingPeriodsGridLayout"
                        columns="1" rows="3">
@@ -349,11 +354,13 @@
                                defaultAuthorizationRole="ROLE_COMPANY_STRUCTURE_EDIT">
                         <option type="column" name="launchDate" fields="launchDate"
                                 width="50" link="true"/>
-                        <option type="column" name="launchedBy" fields="launchedBy" expression="#launchedBy['name'] + ' ' + #launchedBy['surname']"
+                        <option type="column" name="launchedBy" fields="launchedBy"
+                                expression="#launchedBy['name'] + ' ' + #launchedBy['surname']"
                                 width="100" link="true"/>
                         <option type="column" name="stopDate" fields="stopDate"
                                 width="50" link="true"/>
-                        <option type="column" name="stoppedBy" fields="stoppedBy" expression="#stoppedBy['name'] + ' ' + #stoppedBy['surname']"
+                        <option type="column" name="stoppedBy" fields="stoppedBy"
+                                expression="#stoppedBy['name'] + ' ' + #stoppedBy['surname']"
                                 width="100" link="true"/>
                         <option type="column" name="workingTime" fields="workingTime" width="50"
                                 expression="T(com.qcadoo.view.api.utils.TimeConverterService).convertTimeToString(#workingTime)"/>
@@ -371,12 +378,49 @@
                         <option type="correspondingView" value="basic/machineWorkingPeriodDetails"/>
                         <option type="correspondingComponent" value="form"/>
                         <option type="correspondingViewInModal" value="true"/>
-
                     </component>
                 </layoutElement>
             </component>
         </windowTab>
+
+        <windowTab name="productDimensionsTab" reference="productDimensionsTab">
+            <component type="gridLayout" name="productDimensionsGridLayout" columns="3"
+                       rows="2">
+                <layoutElement column="1" row="1">
+                    <component type="gridLayout" name="minimumDimensionGridLayout" columns="4"
+                               rows="1" hasBorders="false">
+                        <layoutElement column="1" row="1" width="3">
+                            <component type="input" name="minimumDimension" field="#{form}.minimumDimension"
+                                       reference="minimumDimension">
+                                <option type="alignment" value="right"/>
+                            </component>
+                        </layoutElement>
+                        <layoutElement column="4" row="1">
+                            <component type="select" name="minimumDimensionUnit" field="#{form}.minimumDimensionUnit"
+                                       reference="minimumDimensionUnit" hasLabel="false"/>
+                        </layoutElement>
+                    </component>
+                </layoutElement>
+                <layoutElement column="1" row="2">
+                    <component type="gridLayout" name="maximumDimensionGridLayout" columns="4"
+                               rows="1" hasBorders="false">
+                        <layoutElement column="1" row="1" width="3">
+                            <component type="input" name="maximumDimension" field="#{form}.maximumDimension"
+                                       reference="maximumDimension">
+                                <option type="alignment" value="right"/>
+                            </component>
+                        </layoutElement>
+                        <layoutElement column="4" row="1">
+                            <component type="select" name="maximumDimensionUnit" field="#{form}.maximumDimensionUnit"
+                                       reference="maximumDimensionUnit" hasLabel="false"/>
+                        </layoutElement>
+                    </component>
+                </layoutElement>
+            </component>
+        </windowTab>
+
     </component>
+
     <hooks>
         <beforeRender
                 class="com.qcadoo.mes.basic.hooks.WorkstationDetailsHooks"

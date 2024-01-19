@@ -21,4 +21,8 @@ public final class ParameterFieldsT {
 
     public static final String OPERATION_PRODUCT_OUT_DEFAULT_QUANTITY = "operationProductOutDefaultQuantity";
 
+    public static final String DIMENSION_CONTROL_OF_PRODUCTS = "dimensionControlOfProducts";
+
+    public static final String DIMENSION_CONTROL_ATTRIBUTES = "dimensionControlAttributes";
+
 }

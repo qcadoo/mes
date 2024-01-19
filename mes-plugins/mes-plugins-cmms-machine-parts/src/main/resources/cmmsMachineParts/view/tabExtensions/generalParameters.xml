@@ -31,7 +31,7 @@
                     view="generalParameters">
 
     <windowTab name="eventsTab" reference="eventsTab">
-        <component type="gridLayout" name="eventsGridLayout" columns="18" rows="3" hasBorders="false">
+        <component type="gridLayout" name="eventsGridLayout" columns="18" rows="4" hasBorders="false">
             <layoutElement column="1" row="1" width="5">
                 <component type="input" name="possibleWorkTimeDeviation"
                            field="#{form}.possibleWorkTimeDeviation" hasDescription="true"
@@ -40,23 +40,26 @@
                     <option type="labelWidth" value="60"/>
                 </component>
             </layoutElement>
-
             <layoutElement column="6" row="1">
                 <component type="input" name="percent" reference="percent" defaultEnabled="never">
                     <option type="textRepresentationOnDisabled" value="true"/>
                 </component>
             </layoutElement>
-
             <layoutElement column="1" row="2" width="5">
                 <component type="checkbox" name="acceptanceEvents" field="#{form}.acceptanceEvents"
                            reference="acceptanceEvents" hasDescription="true">
                     <option type="labelWidth" value="60"/>
                 </component>
             </layoutElement>
-
             <layoutElement column="1" row="3" width="5">
                 <component type="checkbox" name="requireTypeOfFault" field="#{form}.requireTypeOfFault"
                            reference="requireTypeOfFault" hasDescription="true">
+                    <option type="labelWidth" value="60"/>
+                </component>
+            </layoutElement>
+            <layoutElement column="1" row="4" width="5">
+                <component type="checkbox" name="updatePlannedEventFinishDate" field="#{form}.updatePlannedEventFinishDate"
+                           reference="updatePlannedEventFinishDate" hasDescription="true">
                     <option type="labelWidth" value="60"/>
                 </component>
             </layoutElement>
