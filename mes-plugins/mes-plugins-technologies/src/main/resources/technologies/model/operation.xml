@@ -80,6 +80,8 @@
         <boolean name="reservationRawMaterialResourceRequired" default="false"/>
         <decimal name="productDataNumber" default="0"/>
 
+        <hasMany name="dashboardOperations" joinField="dashboardOperation"
+                       plugin="basic" model="parameter" cascade="nullify"/>
     </fields>
 
     <hooks>

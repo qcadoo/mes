@@ -23,11 +23,15 @@
  */
 package com.qcadoo.mes.productFlowThruDivision.hooks;
 
-import org.springframework.stereotype.Service;
-
+import com.qcadoo.mes.materialFlow.constants.ParameterFieldsMF;
+import com.qcadoo.mes.materialFlow.constants.WhatToShowOnDashboard;
 import com.qcadoo.mes.productFlowThruDivision.constants.*;
+import com.qcadoo.mes.technologies.constants.ParameterFieldsT;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
+import org.springframework.stereotype.Service;
+
+import java.util.Objects;
 
 @Service
 public class ParameterHooksPFTD {
@@ -40,37 +44,48 @@ public class ParameterHooksPFTD {
         setIfNull(parameter, ParameterFieldsPFTD.DRAWN_DOCUMENTS, DrawnDocuments.TRANSFER.getStrValue());
         setIfNull(parameter, ParameterFieldsPFTD.DOCUMENTS_STATUS, DocumentsStatus.ACCEPTED.getStrValue());
         setIfNull(parameter, ParameterFieldsPFTD.PRODUCTS_TO_ISSUE, ProductsToIssue.ALL_INPUT_PRODUCTS.getStrValue());
-
     }
 
-    private void setIfNull(Entity entity, String name, Object value) {
-        if (entity.getField(name) == null) {
+    private void setIfNull(final Entity entity, final String name, final Object value) {
+        if (Objects.isNull(entity.getField(name))) {
             entity.setField(name, value);
         }
     }
 
-    public void onSave(final DataDefinition dataDefinition, final Entity parameter) {
+    public void onSave(final DataDefinition parameterDD, final Entity parameter) {
         if (parameter.getBooleanField(ParameterFieldsPFTD.GENERATE_WAREHOUSE_ISSUES_TO_ORDERS)) {
-            addErrorIfNull(parameter, dataDefinition, ParameterFieldsPFTD.ISSUE_LOCATION,
+            addErrorIfNull(parameterDD, parameter, ParameterFieldsPFTD.ISSUE_LOCATION,
                     "basic.parameter.error.issueLocation.isRequired");
-            addErrorIfNull(parameter, dataDefinition, ParameterFieldsPFTD.DAYS_BEFORE_ORDER_START,
+            addErrorIfNull(parameterDD, parameter, ParameterFieldsPFTD.DAYS_BEFORE_ORDER_START,
                     "basic.parameter.error.daysBeforeOrderStart.isRequired");
         }
-        addErrorIfNull(parameter, dataDefinition, ParameterFieldsPFTD.WAREHOUSE_ISSUE_PRODUCTS_SOURCE,
+
+        addErrorIfNull(parameterDD, parameter, ParameterFieldsPFTD.WAREHOUSE_ISSUE_PRODUCTS_SOURCE,
                 "basic.parameter.error.warehouseIssueProductsSource.isRequired");
-        addErrorIfNull(parameter, dataDefinition, ParameterFieldsPFTD.PRODUCTS_TO_ISSUE,
+        addErrorIfNull(parameterDD, parameter, ParameterFieldsPFTD.PRODUCTS_TO_ISSUE,
                 "qcadooView.validate.field.error.missing");
-        addErrorIfNull(parameter, dataDefinition, ParameterFieldsPFTD.DRAWN_DOCUMENTS,
+        addErrorIfNull(parameterDD, parameter, ParameterFieldsPFTD.DRAWN_DOCUMENTS,
                 "basic.parameter.error.drawndocuments.isRequired");
-        addErrorIfNull(parameter, dataDefinition, ParameterFieldsPFTD.MOMENT_OF_VALIDATION,
+        addErrorIfNull(parameterDD, parameter, ParameterFieldsPFTD.MOMENT_OF_VALIDATION,
                 "basic.parameter.error.momentofvalidation.isRequired");
-        addErrorIfNull(parameter, dataDefinition, ParameterFieldsPFTD.DOCUMENTS_STATUS,
+        addErrorIfNull(parameterDD, parameter, ParameterFieldsPFTD.DOCUMENTS_STATUS,
                 "basic.parameter.error.documentsStatus.isRequired");
+
+        clearOperationAndLocations(parameter);
     }
 
-    private void addErrorIfNull(Entity entity, DataDefinition dataDefinition, String fieldName, String error) {
-        if (entity.getField(fieldName) == null) {
+    private void addErrorIfNull(final DataDefinition dataDefinition, final Entity entity, final String fieldName, final String error) {
+        if (Objects.isNull(entity.getField(fieldName))) {
             entity.addError(dataDefinition.getField(fieldName), error);
         }
     }
+
+    private void clearOperationAndLocations(final Entity parameter) {
+        String whatToShowOnDashboard = parameter.getStringField(ParameterFieldsMF.WHAT_TO_SHOW_ON_DASHBOARD);
+
+        if (!WhatToShowOnDashboard.ORDERS.getStringValue().equals(whatToShowOnDashboard)) {
+            parameter.setField(ParameterFieldsT.DASHBOARD_OPERATION, null);
+        }
+    }
+
 }
