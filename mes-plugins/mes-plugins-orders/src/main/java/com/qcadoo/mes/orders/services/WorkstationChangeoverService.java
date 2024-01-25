@@ -187,7 +187,7 @@ public class WorkstationChangeoverService {
                                 }
                             }
                         } else {
-                            Entity fromAttributeValue = previousProductAttributeValues.stream().findFirst().orElse(null);
+                            Entity fromAttributeValue = filteredProductAttributeValues.stream().findFirst().orElse(null);
 
                             Entity workstationChangeoverForOperationalTask = createWorkstationChangeoverForOperationalTask(operationalTask, previousOperationalTask, workstationChangeoverNorm, workstation, attribute, fromAttributeValue, attributeValue);
 
