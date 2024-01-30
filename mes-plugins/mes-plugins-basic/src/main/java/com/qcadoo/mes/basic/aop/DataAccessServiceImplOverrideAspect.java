@@ -53,8 +53,8 @@ public class DataAccessServiceImplOverrideAspect {
     @Around("isFieldCopyable(fieldTypeClass, fieldDefinition, dataDefinition)")
     public boolean aroundIsFieldCopyable(final ProceedingJoinPoint pjp,
                                          final Class fieldTypeClass, final FieldDefinition fieldDefinition, final DataDefinition dataDefinition) throws Throwable {
-        if (parameterService.getParameter().getBooleanField(ParameterFields.COPY_ATTRIBUTES_TO_PRODUCTS)
-                && BasicConstants.MODEL_PRODUCT.equals(dataDefinition.getName()) && ProductFields.PRODUCT_ATTRIBUTE_VALUES.equals(fieldDefinition.getName())) {
+        if (BasicConstants.MODEL_PRODUCT.equals(dataDefinition.getName()) && ProductFields.PRODUCT_ATTRIBUTE_VALUES.equals(fieldDefinition.getName())
+                && parameterService.getParameter().getBooleanField(ParameterFields.COPY_ATTRIBUTES_TO_PRODUCTS)) {
             return (boolean) pjp.proceed();
         } else {
             return false;
