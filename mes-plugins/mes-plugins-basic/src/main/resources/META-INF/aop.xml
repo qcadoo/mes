@@ -32,6 +32,7 @@
 		<aspect name="com.qcadoo.mes.basic.logging.aspects.PasswordResetLoggingAspect"/>
 		<aspect name="com.qcadoo.mes.basic.logging.aspects.PasswordChangeLoggingAspect"/>
 		<aspect name="com.qcadoo.mes.basic.logging.aspects.RegexFailedValidationLoggingAspect"/>
+		<aspect name="com.qcadoo.mes.basic.aop.DataAccessServiceImplOverrideAspect"/>
 	</aspects>
 </aspectj>
                 
