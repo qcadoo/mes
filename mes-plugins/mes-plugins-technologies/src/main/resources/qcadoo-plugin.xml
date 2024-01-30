@@ -294,6 +294,10 @@
         </model:model-field>
 
         <model:model-field model="parameter" plugin="basic">
+            <model:boolean name="technologiesGeneratorCopyProductAttributes" default="false"/>
+        </model:model-field>
+
+        <model:model-field model="parameter" plugin="basic">
             <model:boolean name="allowCheckedTechnologyWithoutInProducts" default="false"/>
         </model:model-field>
 

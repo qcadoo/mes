@@ -42,7 +42,7 @@
             <component type="form" name="technologiesGeneratorParameters" reference="form">
                 <component type="gridLayout" name="technologiesGeneratorGridLayout" columns="3" rows="1">
                     <layoutElement column="1" row="1">
-                        <component type="gridLayout" name="leftGridLayout" columns="1" rows="8">
+                        <component type="gridLayout" name="leftGridLayout" columns="1" rows="9">
                             <layoutElement column="1" row="1">
                                 <component type="checkbox" name="completeWarehousesFlowWhileChecking"
                                            field="#{form}.completeWarehousesFlowWhileChecking"
@@ -65,27 +65,34 @@
                                 </component>
                             </layoutElement>
                             <layoutElement column="1" row="4">
+                                <component type="checkbox" name="technologiesGeneratorCopyProductAttributes"
+                                           field="#{form}.technologiesGeneratorCopyProductAttributes"
+                                           reference="technologiesGeneratorCopyProductAttributes" hasDescription="true">
+                                    <option type="labelWidth" value="60"/>
+                                </component>
+                            </layoutElement>
+                            <layoutElement column="1" row="5">
                                 <component type="checkbox" name="allowCheckedTechnologyWithoutInProducts"
                                            field="#{form}.allowCheckedTechnologyWithoutInProducts"
                                            reference="allowCheckedTechnologyWithoutInProducts">
                                     <option type="labelWidth" value="60"/>
                                 </component>
                             </layoutElement>
-                            <layoutElement column="1" row="5">
+                            <layoutElement column="1" row="6">
                                 <component type="checkbox" name="acceptedTechnologyMarkedAsDefault"
                                            field="#{form}.acceptedTechnologyMarkedAsDefault"
                                            reference="acceptedTechnologyMarkedAsDefault" hasDescription="true">
                                     <option type="labelWidth" value="60"/>
                                 </component>
                             </layoutElement>
-                            <layoutElement column="1" row="6">
+                            <layoutElement column="1" row="7">
                                 <component type="checkbox" name="checkForTheExistenceOfInputProductPrices"
                                            field="#{form}.checkForTheExistenceOfInputProductPrices"
                                            reference="checkForTheExistenceOfInputProductPrices" hasDescription="true">
                                     <option type="labelWidth" value="60"/>
                                 </component>
                             </layoutElement>
-                            <layoutElement column="1" row="7">
+                            <layoutElement column="1" row="8">
                                 <component type="input" name="operationProductOutDefaultQuantity"
                                            field="operationProductOutDefaultQuantity"
                                            reference="operationProductOutDefaultQuantity">
@@ -93,7 +100,7 @@
                                     <option type="labelWidth" value="60"/>
                                 </component>
                             </layoutElement>
-                            <layoutElement column="1" row="8">
+                            <layoutElement column="1" row="9">
                                 <component type="input" name="operationProductInDefaultQuantity"
                                            field="operationProductInDefaultQuantity"
                                            reference="operationProductInDefaultQuantity">
