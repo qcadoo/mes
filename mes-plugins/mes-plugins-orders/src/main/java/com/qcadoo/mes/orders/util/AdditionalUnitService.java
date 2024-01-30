@@ -49,7 +49,7 @@ public class AdditionalUnitService {
 
     public void setQuantityFieldForAdditionalUnit(final ViewDefinitionState view, final Entity order) {
         FieldComponent quantityForAdditionalUnitField = (FieldComponent) view
-                .getComponentByReference(OrderFields.PLANED_QUANTITY_FOR_ADDITIONAL_UNIT);
+                .getComponentByReference(OrderFields.PLANNED_QUANTITY_FOR_ADDITIONAL_UNIT);
         Entity product = order.getBelongsToField(OrderFields.PRODUCT);
         if (!isValidDecimalField(view, Lists.newArrayList(OrderFields.PLANNED_QUANTITY))) {
             return;
@@ -61,21 +61,21 @@ public class AdditionalUnitService {
         }
         if (quantityForAdditionalUnit.compareTo(BigDecimal.ZERO) == 0) {
             FieldComponent quantityForUnitField = (FieldComponent) view.getComponentByReference(OrderFields.PLANNED_QUANTITY);
-            quantityForUnitField.setFieldValue(numberService.format(quantityForAdditionalUnit));
+            quantityForUnitField.setFieldValue(numberService.formatWithMinimumFractionDigits(quantityForAdditionalUnit, 0));
             quantityForUnitField.requestComponentUpdateState();
         }
-        quantityForAdditionalUnitField.setFieldValue(numberService.format(quantityForAdditionalUnit));
+        quantityForAdditionalUnitField.setFieldValue(numberService.formatWithMinimumFractionDigits(quantityForAdditionalUnit, 0));
         quantityForAdditionalUnitField.requestComponentUpdateState();
     }
 
     public void setQuantityForUnit(final ViewDefinitionState view, final Entity order) {
-        if (!isValidDecimalField(view, Lists.newArrayList(OrderFields.PLANED_QUANTITY_FOR_ADDITIONAL_UNIT))) {
+        if (!isValidDecimalField(view, Lists.newArrayList(OrderFields.PLANNED_QUANTITY_FOR_ADDITIONAL_UNIT))) {
             return;
         }
         FieldComponent quantityForUnitField = (FieldComponent) view.getComponentByReference(OrderFields.PLANNED_QUANTITY);
         Entity product = order.getBelongsToField(BasicConstants.MODEL_PRODUCT);
         BigDecimal unitQuantity = getQuantityAfterConversion(order, product.getStringField(ProductFields.UNIT),
-                order.getDecimalField(OrderFields.PLANED_QUANTITY_FOR_ADDITIONAL_UNIT), getAdditionalUnit(product));
+                order.getDecimalField(OrderFields.PLANNED_QUANTITY_FOR_ADDITIONAL_UNIT), getAdditionalUnit(product));
         quantityForUnitField.setFieldValue(numberService.format(unitQuantity));
         quantityForUnitField.requestComponentUpdateState();
     }

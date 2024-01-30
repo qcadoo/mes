@@ -23,26 +23,6 @@
  */
 package com.qcadoo.mes.orders.hooks;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.math.BigDecimal;
-import java.nio.file.Files;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
-import java.util.Objects;
-import java.util.Optional;
-
-import com.qcadoo.mes.technologies.constants.TechnologyProductionLineFields;
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.joda.time.DateTime;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.google.common.collect.Lists;
 import com.qcadoo.commons.dateTime.DateRange;
 import com.qcadoo.localization.api.utils.DateUtils;
@@ -56,11 +36,7 @@ import com.qcadoo.mes.orders.OrderPackService;
 import com.qcadoo.mes.orders.OrderService;
 import com.qcadoo.mes.orders.OrderStateChangeReasonService;
 import com.qcadoo.mes.orders.TechnologyServiceO;
-import com.qcadoo.mes.orders.constants.OrderAttachmentFields;
-import com.qcadoo.mes.orders.constants.OrderFields;
-import com.qcadoo.mes.orders.constants.OrderStartDateBasedOn;
-import com.qcadoo.mes.orders.constants.OrdersConstants;
-import com.qcadoo.mes.orders.constants.ParameterFieldsO;
+import com.qcadoo.mes.orders.constants.*;
 import com.qcadoo.mes.orders.states.constants.OrderState;
 import com.qcadoo.mes.orders.states.constants.OrderStateChangeDescriber;
 import com.qcadoo.mes.orders.states.constants.OrderStateChangeFields;
@@ -68,17 +44,26 @@ import com.qcadoo.mes.orders.util.AdditionalUnitService;
 import com.qcadoo.mes.orders.util.OrderDatesService;
 import com.qcadoo.mes.states.service.StateChangeEntityBuilder;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
-import com.qcadoo.mes.technologies.states.constants.TechnologyState;
-import com.qcadoo.model.api.BigDecimalUtils;
-import com.qcadoo.model.api.DataDefinition;
-import com.qcadoo.model.api.DataDefinitionService;
-import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.FieldDefinition;
-import com.qcadoo.model.api.NumberService;
+import com.qcadoo.mes.technologies.constants.TechnologyProductionLineFields;
+import com.qcadoo.model.api.*;
 import com.qcadoo.model.api.file.FileService;
 import com.qcadoo.security.api.UserService;
 import com.qcadoo.security.constants.UserFields;
 import com.qcadoo.view.api.utils.TimeConverterService;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.joda.time.DateTime;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.math.BigDecimal;
+import java.nio.file.Files;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 @Service
 public class OrderHooks {
@@ -95,6 +80,9 @@ public class OrderHooks {
 
     @Autowired
     private NumberService numberService;
+
+    @Autowired
+    private DictionaryService dictionaryService;
 
     @Autowired
     private ParameterService parameterService;
@@ -295,13 +283,13 @@ public class OrderHooks {
             return;
         }
         List<Entity> lines = technology.getHasManyField(TechnologyFields.PRODUCTION_LINES);
-        if(lines.isEmpty()) {
+        if (lines.isEmpty()) {
             return;
         }
 
         boolean anyMatch = lines.stream().anyMatch(l -> l.getBelongsToField(TechnologyProductionLineFields.PRODUCTION_LINE).getId().equals(productionLine.getId()));
 
-        if(anyMatch) {
+        if (anyMatch) {
             return;
         }
 
@@ -470,14 +458,46 @@ public class OrderHooks {
         }
 
         BigDecimal plannedQuantity = order.getDecimalField(OrderFields.PLANNED_QUANTITY);
+        BigDecimal plannedQuantityForAdditionalUnit = order.getDecimalField(OrderFields.PLANNED_QUANTITY_FOR_ADDITIONAL_UNIT);
+        BigDecimal commissionedPlannedQuantity = order.getDecimalField(OrderFields.COMMISSIONED_PLANNED_QUANTITY);
+        BigDecimal commissionedCorrectedQuantity = order.getDecimalField(OrderFields.COMMISSIONED_CORRECTED_QUANTITY);
 
         if (Objects.isNull(plannedQuantity)) {
             order.addError(orderDD.getField(OrderFields.PLANNED_QUANTITY), "orders.validate.global.error.plannedQuantityError");
 
             return false;
         } else {
+            String unit = product.getStringField(ProductFields.UNIT);
+
+            if (dictionaryService.checkIfUnitIsInteger(unit)) {
+                if (!isIntegerValue(plannedQuantity)) {
+                    order.addError(orderDD.getField(OrderFields.PLANNED_QUANTITY), "orders.validate.global.error.unitIsNotIntegerError");
+
+                    return false;
+                }
+                if (!isIntegerValue(plannedQuantityForAdditionalUnit)) {
+                    order.addError(orderDD.getField(OrderFields.PLANNED_QUANTITY_FOR_ADDITIONAL_UNIT), "orders.validate.global.error.unitIsNotIntegerError");
+
+                    return false;
+                }
+                if (!isIntegerValue(commissionedPlannedQuantity)) {
+                    order.addError(orderDD.getField(OrderFields.COMMISSIONED_PLANNED_QUANTITY), "orders.validate.global.error.unitIsNotIntegerError");
+
+                    return false;
+                }
+                if (Objects.nonNull(commissionedCorrectedQuantity) && !isIntegerValue(commissionedCorrectedQuantity)) {
+                    order.addError(orderDD.getField(OrderFields.COMMISSIONED_CORRECTED_QUANTITY), "orders.validate.global.error.unitIsNotIntegerError");
+
+                    return false;
+                }
+            }
+
             return true;
         }
+    }
+
+    private boolean isIntegerValue(final BigDecimal value) {
+        return value.signum() == 0 || value.scale() <= 0 || value.stripTrailingZeros().scale() <= 0;
     }
 
     private boolean checkProductQuantities(final DataDefinition orderDD, final Entity order) {
@@ -838,7 +858,7 @@ public class OrderHooks {
             if (Objects.nonNull(commissionedCorrectedQuantity)) {
                 order.setField(OrderFields.PLANNED_QUANTITY,
                         numberService.setScaleWithDefaultMathContext(commissionedCorrectedQuantity));
-                order.setField(OrderFields.PLANED_QUANTITY_FOR_ADDITIONAL_UNIT,
+                order.setField(OrderFields.PLANNED_QUANTITY_FOR_ADDITIONAL_UNIT,
                         numberService.setScaleWithDefaultMathContext(additionalUnitService.getQuantityAfterConversion(order,
                                 additionalUnitService.getAdditionalUnit(product),
                                 numberService.setScaleWithDefaultMathContext(commissionedCorrectedQuantity),
@@ -846,7 +866,7 @@ public class OrderHooks {
             } else if (Objects.nonNull(commissionedPlannedQuantity)) {
                 order.setField(OrderFields.PLANNED_QUANTITY,
                         numberService.setScaleWithDefaultMathContext(commissionedPlannedQuantity));
-                order.setField(OrderFields.PLANED_QUANTITY_FOR_ADDITIONAL_UNIT,
+                order.setField(OrderFields.PLANNED_QUANTITY_FOR_ADDITIONAL_UNIT,
                         numberService.setScaleWithDefaultMathContext(additionalUnitService.getQuantityAfterConversion(order,
                                 additionalUnitService.getAdditionalUnit(product),
                                 numberService.setScaleWithDefaultMathContext(commissionedPlannedQuantity),
