@@ -47,7 +47,6 @@
 						        }
 					        });
 
-
 					        #{form}.addOnChangeListener({
 					            onSetValue: function(value) {
 								    var generated = #{generated}.getValue().content.value;
@@ -64,55 +63,45 @@
         </ribbon>
 
         <component type="form" name="product" reference="form">
-            <component type="gridLayout" name="gridsLayout" columns="1"
-                       rows="1" hasBorders="false">
-                <layoutElement column="1" row="1">
-                    <component type="checkbox" name="generated" defaultVisible="false"
-                               reference="generated" defaultEnabled="false"/>
-                    <component type="grid" name="products" reference="grid">
-                        <option type="column" name="number" fields="number"
-                                width="150"/>
-                        <option type="column" name="name" fields="name"
-                                width="300"/>
-                        <option type="column" name="globalTypeOfMaterial" fields="globalTypeOfMaterial" width="85"/>
-                        <option type="column" name="category" fields="category" width="85"/>
-                        <option type="column" name="parent" fields="parentName" width="200"/>
-                        <option type="column" name="ean" fields="ean" width="85"/>
-                        <option type="column" name="externalNumber" fields="externalNumber"
-                                hidden="true"/>
+            <component type="checkbox" name="generated" defaultVisible="false"
+                       reference="generated" defaultEnabled="false"/>
+            <component type="grid" name="products" reference="grid">
+                <option type="column" name="number" fields="number" width="150"/>
+                <option type="column" name="name" fields="name" width="300"/>
+                <option type="column" name="globalTypeOfMaterial" fields="globalTypeOfMaterial" width="85"/>
+                <option type="column" name="category" fields="category" width="85"/>
+                <option type="column" name="parent" fields="parentName" width="200"/>
+                <option type="column" name="ean" fields="ean" width="85"/>
+                <option type="column" name="assortment" fields="assortmentName" width="100"/>
+                <option type="column" name="externalNumber" fields="externalNumber" hidden="true"/>
 
-                        <option type="column" name="assortment" fields="assortmentName"/>
+                <option type="order" column="name" direction="asc"/>
 
-                        <option type="order" column="name" direction="asc"/>
+                <option type="searchable"
+                        value="number,name,globalTypeOfMaterial,category,ean,parent,assortment,externalNumber,hasAttachments"/>
+                <option type="orderable"
+                        value="number,name,globalTypeOfMaterial,category,ean,parent,assortment,externalNumber,hasAttachments"/>
 
-                        <option type="searchable"
-                                value="number,name,globalTypeOfMaterial,category,ean,parent,assortment,externalNumber,hasAttachments"/>
+                <option type="activable" value="false"/>
+                <option type="fullscreen" value="true"/>
+                <option type="multiselect" value="true"/>
 
-                        <option type="orderable"
-                                value="number,name,globalTypeOfMaterial,category,ean,parent,assortment,externalNumber,hasAttachments"/>
-
-                        <option type="activable" value="false"/>
-                        <option type="fullscreen" value="true"/>
-                        <option type="multiselect" value="true"/>
-
-                        <criteriaModifier
-                                class="com.qcadoo.mes.basic.criteriaModifiers.ProductCriteriaModifiers"
-                                method="showParticularProductOnly"/>
-
-                    </component>
-                </layoutElement>
-
-
+                <criteriaModifier
+                        class="com.qcadoo.mes.basic.criteriaModifiers.ProductCriteriaModifiers"
+                        method="showParticularProductOnly"/>
             </component>
 
-            <listener event="addMultipleDefaultProducts" class="com.qcadoo.mes.basic.listeners.CompanyDefaultProductsListeners"
+            <listener event="addMultipleDefaultProducts"
+                      class="com.qcadoo.mes.basic.listeners.CompanyDefaultProductsListeners"
                       method="addMultipleDefaultProducts"/>
         </component>
-        <option type="header" value="false"/>
 
+        <option type="fixedHeight" value="true"/>
+        <option type="header" value="false"/>
     </component>
+
     <hooks>
-    <beforeRender class="com.qcadoo.mes.basic.hooks.CompanyDefaultProductsHooks"
-                  method="onBeforeRender"/>
+        <beforeRender class="com.qcadoo.mes.basic.hooks.CompanyDefaultProductsHooks"
+                      method="onBeforeRender"/>
     </hooks>
 </view>
