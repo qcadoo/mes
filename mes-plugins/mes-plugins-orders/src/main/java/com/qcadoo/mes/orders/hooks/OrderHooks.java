@@ -487,7 +487,7 @@ public class OrderHooks {
                     return false;
                 }
             }
-            if (dictionaryService.checkIfUnitIsInteger(additionalUnit)) {
+            if (Objects.nonNull(additionalUnit) && dictionaryService.checkIfUnitIsInteger(additionalUnit)) {
                 if (Objects.nonNull(plannedQuantityForAdditionalUnit) && !isIntegerValue(plannedQuantityForAdditionalUnit)) {
                     order.addError(orderDD.getField(OrderFields.PLANNED_QUANTITY_FOR_ADDITIONAL_UNIT), "orders.validate.global.error.unitIsNotIntegerError");
 
