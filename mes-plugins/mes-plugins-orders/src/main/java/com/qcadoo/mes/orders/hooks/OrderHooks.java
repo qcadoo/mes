@@ -468,6 +468,7 @@ public class OrderHooks {
             return false;
         } else {
             String unit = product.getStringField(ProductFields.UNIT);
+            String additionalUnit = product.getStringField(ProductFields.ADDITIONAL_UNIT);
 
             if (dictionaryService.checkIfUnitIsInteger(unit)) {
                 if (!isIntegerValue(plannedQuantity)) {
@@ -475,12 +476,7 @@ public class OrderHooks {
 
                     return false;
                 }
-                if (!isIntegerValue(plannedQuantityForAdditionalUnit)) {
-                    order.addError(orderDD.getField(OrderFields.PLANNED_QUANTITY_FOR_ADDITIONAL_UNIT), "orders.validate.global.error.unitIsNotIntegerError");
-
-                    return false;
-                }
-                if (!isIntegerValue(commissionedPlannedQuantity)) {
+                if (Objects.nonNull(commissionedPlannedQuantity) && !isIntegerValue(commissionedPlannedQuantity)) {
                     order.addError(orderDD.getField(OrderFields.COMMISSIONED_PLANNED_QUANTITY), "orders.validate.global.error.unitIsNotIntegerError");
 
                     return false;
@@ -491,13 +487,20 @@ public class OrderHooks {
                     return false;
                 }
             }
+            if (dictionaryService.checkIfUnitIsInteger(additionalUnit)) {
+                if (Objects.nonNull(plannedQuantityForAdditionalUnit) && !isIntegerValue(plannedQuantityForAdditionalUnit)) {
+                    order.addError(orderDD.getField(OrderFields.PLANNED_QUANTITY_FOR_ADDITIONAL_UNIT), "orders.validate.global.error.unitIsNotIntegerError");
+
+                    return false;
+                }
+            }
 
             return true;
         }
     }
 
     private boolean isIntegerValue(final BigDecimal value) {
-        return value.signum() == 0 || value.scale() <= 0 || value.stripTrailingZeros().scale() <= 0;
+        return (value.signum() == 0) || (value.scale() <= 0) || (value.stripTrailingZeros().scale() <= 0);
     }
 
     private boolean checkProductQuantities(final DataDefinition orderDD, final Entity order) {
