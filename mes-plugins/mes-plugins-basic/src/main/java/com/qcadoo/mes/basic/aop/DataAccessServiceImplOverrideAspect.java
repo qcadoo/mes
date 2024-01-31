@@ -29,6 +29,7 @@ import com.qcadoo.mes.basic.constants.ParameterFields;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.FieldDefinition;
+import com.qcadoo.model.api.types.HasManyType;
 import com.qcadoo.plugin.api.RunIfEnabled;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
@@ -53,11 +54,10 @@ public class DataAccessServiceImplOverrideAspect {
     @Around("isFieldCopyable(fieldTypeClass, fieldDefinition, dataDefinition)")
     public boolean aroundIsFieldCopyable(final ProceedingJoinPoint pjp,
                                          final Class fieldTypeClass, final FieldDefinition fieldDefinition, final DataDefinition dataDefinition) throws Throwable {
-        if (BasicConstants.MODEL_PRODUCT.equals(dataDefinition.getName()) && ProductFields.PRODUCT_ATTRIBUTE_VALUES.equals(fieldDefinition.getName())
-                && parameterService.getParameter().getBooleanField(ParameterFields.COPY_ATTRIBUTES_TO_PRODUCTS)) {
-            return (boolean) pjp.proceed();
+        if (fieldTypeClass.equals(HasManyType.class) && BasicConstants.MODEL_PRODUCT.equals(dataDefinition.getName()) && ProductFields.PRODUCT_ATTRIBUTE_VALUES.equals(fieldDefinition.getName())) {
+            return parameterService.getParameter().getBooleanField(ParameterFields.COPY_ATTRIBUTES_TO_PRODUCTS);
         } else {
-            return false;
+            return (boolean) pjp.proceed();
         }
     }
 
