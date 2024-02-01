@@ -155,9 +155,9 @@ public class OperationalTaskHooks {
     public void setWorkstationChangeoverForOperationalTasks(final Entity operationalTask) {
         Long operationalTaskId = operationalTask.getId();
         String type = operationalTask.getStringField(OperationalTaskFields.TYPE);
-        boolean shouldSkip = operationalTask.getBooleanField(OperationalTaskFields.SHOULD_SKIP);
         Entity workstation = operationalTask.getBelongsToField(OperationalTaskFields.WORKSTATION);
         Date startDate = operationalTask.getDateField(OperationalTaskFields.START_DATE);
+        boolean shouldSkip = operationalTask.getBooleanField(OperationalTaskFields.SHOULD_SKIP);
 
         if (OperationalTaskType.EXECUTION_OPERATION_IN_ORDER.getStringValue().equals(type)) {
             if (Objects.isNull(workstation) || Objects.isNull(startDate)) {
