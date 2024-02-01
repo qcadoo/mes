@@ -458,43 +458,12 @@ public class OrderHooks {
         }
 
         BigDecimal plannedQuantity = order.getDecimalField(OrderFields.PLANNED_QUANTITY);
-        BigDecimal plannedQuantityForAdditionalUnit = order.getDecimalField(OrderFields.PLANNED_QUANTITY_FOR_ADDITIONAL_UNIT);
-        BigDecimal commissionedPlannedQuantity = order.getDecimalField(OrderFields.COMMISSIONED_PLANNED_QUANTITY);
-        BigDecimal commissionedCorrectedQuantity = order.getDecimalField(OrderFields.COMMISSIONED_CORRECTED_QUANTITY);
 
         if (Objects.isNull(plannedQuantity)) {
             order.addError(orderDD.getField(OrderFields.PLANNED_QUANTITY), "orders.validate.global.error.plannedQuantityError");
 
             return false;
         } else {
-            String unit = product.getStringField(ProductFields.UNIT);
-            String additionalUnit = product.getStringField(ProductFields.ADDITIONAL_UNIT);
-
-            if (dictionaryService.checkIfUnitIsInteger(unit)) {
-                if (!isIntegerValue(plannedQuantity)) {
-                    order.addError(orderDD.getField(OrderFields.PLANNED_QUANTITY), "orders.validate.global.error.unitIsNotIntegerError");
-
-                    return false;
-                }
-                if (Objects.nonNull(commissionedPlannedQuantity) && !isIntegerValue(commissionedPlannedQuantity)) {
-                    order.addError(orderDD.getField(OrderFields.COMMISSIONED_PLANNED_QUANTITY), "orders.validate.global.error.unitIsNotIntegerError");
-
-                    return false;
-                }
-                if (Objects.nonNull(commissionedCorrectedQuantity) && !isIntegerValue(commissionedCorrectedQuantity)) {
-                    order.addError(orderDD.getField(OrderFields.COMMISSIONED_CORRECTED_QUANTITY), "orders.validate.global.error.unitIsNotIntegerError");
-
-                    return false;
-                }
-            }
-            if (Objects.nonNull(additionalUnit) && dictionaryService.checkIfUnitIsInteger(additionalUnit)) {
-                if (Objects.nonNull(plannedQuantityForAdditionalUnit) && !isIntegerValue(plannedQuantityForAdditionalUnit)) {
-                    order.addError(orderDD.getField(OrderFields.PLANNED_QUANTITY_FOR_ADDITIONAL_UNIT), "orders.validate.global.error.unitIsNotIntegerError");
-
-                    return false;
-                }
-            }
-
             return true;
         }
     }
