@@ -23,12 +23,11 @@
  */
 package com.qcadoo.mes.technologiesGenerator;
 
+import com.qcadoo.mes.technologies.constants.ParameterFieldsT;
+import com.qcadoo.mes.technologiesGenerator.constants.GeneratorContextFields;
+import com.qcadoo.model.api.Entity;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
-
-import com.qcadoo.mes.technologiesGenerator.constants.GeneratorContextFields;
-import com.qcadoo.mes.technologies.constants.ParameterFieldsT;
-import com.qcadoo.model.api.Entity;
 
 public class GeneratorSettings {
 
@@ -38,13 +37,16 @@ public class GeneratorSettings {
 
     private final boolean copyProductSize;
 
+    private final boolean copyProductAttributes;
+
     private final Entity generationContext;
 
     public GeneratorSettings(final boolean fetchTechnologiesForComponents, final boolean createAndSwitchProducts,
-            final boolean copyProductSize, final Entity generationContext) {
+                             final boolean copyProductSize, final boolean copyProductAttributes, final Entity generationContext) {
         this.fetchTechnologiesForComponents = fetchTechnologiesForComponents;
         this.createAndSwitchProducts = createAndSwitchProducts;
         this.copyProductSize = copyProductSize;
+        this.copyProductAttributes = copyProductAttributes;
         this.generationContext = generationContext;
     }
 
@@ -60,6 +62,10 @@ public class GeneratorSettings {
         return copyProductSize;
     }
 
+    public boolean shouldCopyProductAttributes() {
+        return copyProductAttributes;
+    }
+
     public Entity getGenerationContext() {
         return generationContext;
     }
@@ -69,22 +75,27 @@ public class GeneratorSettings {
         if (obj == null) {
             return false;
         }
+
         if (obj == this) {
             return true;
         }
+
         if (obj.getClass() != getClass()) {
             return false;
         }
+
         GeneratorSettings rhs = (GeneratorSettings) obj;
+
         return new EqualsBuilder().append(this.fetchTechnologiesForComponents, rhs.fetchTechnologiesForComponents)
                 .append(this.createAndSwitchProducts, rhs.createAndSwitchProducts)
-                .append(this.copyProductSize, rhs.copyProductSize).isEquals();
+                .append(this.copyProductSize, rhs.copyProductSize)
+                .append(this.copyProductAttributes, rhs.copyProductAttributes).isEquals();
     }
 
     @Override
     public int hashCode() {
         return new HashCodeBuilder().append(fetchTechnologiesForComponents).append(createAndSwitchProducts)
-                .append(copyProductSize).toHashCode();
+                .append(copyProductSize).append(copyProductAttributes).toHashCode();
     }
 
     public static GeneratorSettings from(final Entity generationContextEntity, final Entity parameters) {
@@ -92,8 +103,12 @@ public class GeneratorSettings {
         boolean fetchTechForComponents = generationContextEntity
                 .getBooleanField(GeneratorContextFields.FETCH_TECHNOLOGIES_FOR_COMPONENTS);
 
+        boolean technologiesGeneratorCopyProductSizes = parameters.getBooleanField(ParameterFieldsT.TECHNOLOGIES_GENERATOR_COPY_PRODUCT_SIZE);
+        boolean technologiesGeneratorCopyProductAttributes = parameters.getBooleanField(ParameterFieldsT.TECHNOLOGIES_GENERATOR_COPY_PRODUCT_ATTRIBUTES);
+
         return new GeneratorSettings(fetchTechForComponents, createAndSwitchProd,
-                parameters.getBooleanField(ParameterFieldsT.COPY_PRODUCT_SIZE),
+                technologiesGeneratorCopyProductSizes, technologiesGeneratorCopyProductAttributes,
                 generationContextEntity);
     }
+
 }

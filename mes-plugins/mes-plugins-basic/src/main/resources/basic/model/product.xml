@@ -70,7 +70,7 @@
 
         <hasMany name="productAttachments" joinField="product" model="productAttachment" cascade="delete"/>
 
-        <hasMany name="productAttributeValues" joinField="product" model="productAttributeValue" cascade="delete"/>
+        <hasMany name="productAttributeValues" joinField="product" model="productAttributeValue" cascade="delete" copyable="true"/>
 
         <boolean name="showInProductData" default="false"/>
         <belongsTo name="productForm" model="forms"/>

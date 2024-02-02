@@ -21,22 +21,22 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.materialFlow.hooks;
-
-import java.util.Objects;
-
-import org.springframework.stereotype.Component;
+package com.qcadoo.mes.productFlowThruDivision.hooks;
 
 import com.qcadoo.mes.materialFlow.constants.ParameterFieldsMF;
 import com.qcadoo.mes.materialFlow.constants.WhatToShowOnDashboard;
+import com.qcadoo.mes.technologies.constants.ParameterFieldsT;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.LookupComponent;
 import com.qcadoo.view.constants.QcadooViewConstants;
+import org.springframework.stereotype.Component;
+
+import java.util.Objects;
 
 @Component
-public class DashboardParametersHooks {
+public class DashboardParametersHooksPDTD {
 
     public void onBeforeRender(final ViewDefinitionState view) {
         setFieldsEnabledAndClear(view);
@@ -47,7 +47,7 @@ public class DashboardParametersHooks {
         FieldComponent whatToShowOnDashboardField = (FieldComponent) view
                 .getComponentByReference(ParameterFieldsMF.WHAT_TO_SHOW_ON_DASHBOARD);
         LookupComponent dashboardOperationLookup = (LookupComponent) view
-                .getComponentByReference(ParameterFieldsMF.DASHBOARD_OPERATION);
+                .getComponentByReference(ParameterFieldsT.DASHBOARD_OPERATION);
 
         Long parameterId = parameterForm.getEntityId();
         String whatToShowOnDashboard = (String) whatToShowOnDashboardField.getFieldValue();

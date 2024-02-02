@@ -82,17 +82,20 @@
 
         <!--    orderProductResourceReservation  -->
         <model:model model="orderProductResourceReservation" resource="model/orderProductResourceReservation.xml"/>
-        <model:model model="trackingProductResourceReservation" resource="model/trackingProductResourceReservation.xml"/>
+        <model:model model="trackingProductResourceReservation"
+                     resource="model/trackingProductResourceReservation.xml"/>
 
         <model:model-field plugin="basicProductionCounting" model="productionCountingQuantity">
             <model:hasMany name="orderProductResourceReservations"
-                           model="orderProductResourceReservation" plugin="productFlowThruDivision" joinField="productionCountingQuantity" cascade="delete"/>
+                           model="orderProductResourceReservation" plugin="productFlowThruDivision"
+                           joinField="productionCountingQuantity" cascade="delete"/>
         </model:model-field>
 
 
         <model:model-field plugin="materialFlowResources" model="resource">
             <model:hasMany name="orderProductResourceReservations"
-                           model="orderProductResourceReservation" plugin="productFlowThruDivision" joinField="resource" cascade="nullify"/>
+                           model="orderProductResourceReservation" plugin="productFlowThruDivision" joinField="resource"
+                           cascade="nullify"/>
         </model:model-field>
 
 
@@ -108,7 +111,8 @@
 
         <model:model-field plugin="productionCounting" model="trackingOperationProductInComponent">
             <model:hasMany name="resourceReservations"
-                           model="trackingProductResourceReservation" plugin="productFlowThruDivision" joinField="trackingOperationProductInComponent" cascade="delete"/>
+                           model="trackingProductResourceReservation" plugin="productFlowThruDivision"
+                           joinField="trackingOperationProductInComponent" cascade="delete"/>
         </model:model-field>
 
 
@@ -541,7 +545,8 @@
 
         <model:model-field plugin="orders" model="order">
             <model:hasMany name="materialAvailabilityDto" plugin="productFlowThruDivision"
-                           model="materialAvailabilityDto" joinField="order" cascade="nullify" copyable="false" persistent="false"/>
+                           model="materialAvailabilityDto" joinField="order" cascade="nullify" copyable="false"
+                           persistent="false"/>
         </model:model-field>
 
         <model:model-field plugin="basic" model="product">
@@ -559,7 +564,8 @@
 
         <model:model-field plugin="orders" model="operationalTask">
             <model:hasMany name="operTaskMaterialAvailabilityDto" plugin="productFlowThruDivision"
-                           model="operTaskMaterialAvailabilityDto" joinField="operationalTask" cascade="nullify" copyable="false" persistent="false"/>
+                           model="operTaskMaterialAvailabilityDto" joinField="operationalTask" cascade="nullify"
+                           copyable="false" persistent="false"/>
         </model:model-field>
 
         <model:model-field plugin="basic" model="product">
@@ -573,6 +579,7 @@
                     class="com.qcadoo.mes.productFlowThruDivision.hooks.ProductionCountingQuantityHooksBPC"
                     method="onCreate"/>
         </model:model-hook>
+
         <model:model-hook plugin="basic" model="parameter">
             <model:onCreate
                     class="com.qcadoo.mes.productFlowThruDivision.hooks.ParameterHooksPFTD"
@@ -587,17 +594,23 @@
 
         <!-- view -->
 
+        <view:view-tab resource="view/tabExtensions/generalParameters.xml"/>
+        <view:view-tab resource="view/tabExtensions/dashboardParameters.xml"/>
+        <view:view-tab resource="view/tabExtensions/ordersParameters.xml"/>
+        <view:view-tab resource="view/tabExtensions/supplyParameters.xml"/>
+        <view:view-tab resource="view/tabExtensions/technologiesParameters.xml"/>
         <view:view-tab resource="view/tabExtensions/divisionDetails.xml"/>
         <view:view-tab resource="view/tabExtensions/locationDetails.xml"/>
         <view:view-tab resource="view/tabExtensions/technologyDetails.xml"/>
         <view:view-tab resource="view/tabExtensions/orderMaterialAvailability.xml"/>
-        <view:view-tab resource="view/tabExtensions/ordersParameters.xml"/>
-        <view:view-tab resource="view/tabExtensions/supplyParameters.xml"/>
         <view:view-tab resource="view/tabExtensions/productionCountingQuantityAdvancedDetails.xml"/>
-        <view:view-tab resource="view/tabExtensions/technologiesParameters.xml"/>
-        <view:view-tab resource="view/tabExtensions/generalParameters.xml" />
-        <view:view-tab resource="view/tabExtensions/orderDetails.xml" />
-        <view:view-tab resource="view/tabExtensions/trackingOperationProductInComponentDetailsResourcesTab.xml" />
+        <view:view-tab resource="view/tabExtensions/orderDetails.xml"/>
+        <view:view-tab resource="view/tabExtensions/trackingOperationProductInComponentDetailsResourcesTab.xml"/>
+
+        <view:view-hook plugin="materialFlow" view="dashboardParameters"
+                        type="beforeRender"
+                        class="com.qcadoo.mes.productFlowThruDivision.hooks.DashboardParametersHooksPDTD"
+                        method="onBeforeRender"/>
 
         <view:view-hook plugin="basic" view="divisionDetails"
                         type="beforeRender"
@@ -888,7 +901,7 @@
         <view:view-hook view="warehouseStocksList" type="beforeRender"
                         plugin="materialFlowResources"
                         class="com.qcadoo.mes.productFlowThruDivision.listeners.WarehouseStocksListListenersPFTD"
-                        method="onBeforeRender" />
+                        method="onBeforeRender"/>
 
     </modules>
 

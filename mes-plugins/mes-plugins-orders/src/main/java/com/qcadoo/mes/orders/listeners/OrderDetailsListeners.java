@@ -415,7 +415,7 @@ public class OrderDetailsListeners {
     public void onQuantityForAdditionalUnitChange(final ViewDefinitionState view, final ComponentState componentState,
                                                   final String[] args) {
         if (!additionalUnitService.isValidDecimalFieldWithoutMsg(view,
-                Lists.newArrayList(OrderFields.PLANED_QUANTITY_FOR_ADDITIONAL_UNIT))
+                Lists.newArrayList(OrderFields.PLANNED_QUANTITY_FOR_ADDITIONAL_UNIT))
                 || !additionalUnitService.isValidDecimalFieldWithoutMsg(view, Lists.newArrayList(OrderFields.PLANNED_QUANTITY))) {
             return;
         }
@@ -426,7 +426,7 @@ public class OrderDetailsListeners {
 
     public void onQuantityChange(final ViewDefinitionState view, final ComponentState componentState, final String[] args) {
         if (!additionalUnitService.isValidDecimalFieldWithoutMsg(view,
-                Lists.newArrayList(OrderFields.PLANED_QUANTITY_FOR_ADDITIONAL_UNIT))
+                Lists.newArrayList(OrderFields.PLANNED_QUANTITY_FOR_ADDITIONAL_UNIT))
                 || !additionalUnitService.isValidDecimalFieldWithoutMsg(view, Lists.newArrayList(OrderFields.PLANNED_QUANTITY))) {
             return;
         }

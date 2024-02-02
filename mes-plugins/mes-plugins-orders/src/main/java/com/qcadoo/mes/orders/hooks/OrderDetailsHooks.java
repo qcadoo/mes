@@ -23,19 +23,6 @@
  */
 package com.qcadoo.mes.orders.hooks;
 
-import java.math.BigDecimal;
-import java.math.MathContext;
-import java.math.RoundingMode;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-
-import com.qcadoo.mes.orders.criteriaModifiers.ProductionLineCriteriaModifiersO;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.stereotype.Service;
-
 import com.google.common.collect.Lists;
 import com.qcadoo.localization.api.utils.DateUtils;
 import com.qcadoo.mes.basic.ParameterService;
@@ -47,6 +34,7 @@ import com.qcadoo.mes.orders.TechnologyServiceO;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.mes.orders.constants.ParameterFieldsO;
+import com.qcadoo.mes.orders.criteriaModifiers.ProductionLineCriteriaModifiersO;
 import com.qcadoo.mes.orders.criteriaModifiers.TechnologyCriteriaModifiersO;
 import com.qcadoo.mes.orders.states.OrderStateService;
 import com.qcadoo.mes.orders.states.constants.OrderState;
@@ -58,12 +46,7 @@ import com.qcadoo.mes.states.constants.StateChangeStatus;
 import com.qcadoo.mes.states.service.client.util.StateChangeHistoryService;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
-import com.qcadoo.model.api.BigDecimalUtils;
-import com.qcadoo.model.api.DataDefinition;
-import com.qcadoo.model.api.DataDefinitionService;
-import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.ExpressionService;
-import com.qcadoo.model.api.NumberService;
+import com.qcadoo.model.api.*;
 import com.qcadoo.model.api.search.CustomRestriction;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
@@ -72,18 +55,24 @@ import com.qcadoo.plugin.api.PluginUtils;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ComponentState.MessageType;
 import com.qcadoo.view.api.ViewDefinitionState;
-import com.qcadoo.view.api.components.AwesomeDynamicListComponent;
-import com.qcadoo.view.api.components.FieldComponent;
-import com.qcadoo.view.api.components.FormComponent;
-import com.qcadoo.view.api.components.GridComponent;
-import com.qcadoo.view.api.components.LookupComponent;
-import com.qcadoo.view.api.components.WindowComponent;
+import com.qcadoo.view.api.components.*;
 import com.qcadoo.view.api.components.lookup.FilterValueHolder;
 import com.qcadoo.view.api.ribbon.Ribbon;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.api.ribbon.RibbonGroup;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
 import com.qcadoo.view.constants.QcadooViewConstants;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
+import java.math.MathContext;
+import java.math.RoundingMode;
+import java.util.Date;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
 @Service
 public class OrderDetailsHooks {
@@ -180,7 +169,7 @@ public class OrderDetailsHooks {
         enableOrDisableGenerateOperationalTasksButton(view);
         enableOrDisableShowOrderTechnologicalProcesses(view);
 
-        if (isValidDecimalField(view, Lists.newArrayList(OrderFields.PLANED_QUANTITY_FOR_ADDITIONAL_UNIT))
+        if (isValidDecimalField(view, Lists.newArrayList(OrderFields.PLANNED_QUANTITY_FOR_ADDITIONAL_UNIT))
                 && isValidDecimalField(view, Lists.newArrayList(OrderFields.PLANNED_QUANTITY))) {
             setQuantities(view);
         }
@@ -684,11 +673,11 @@ public class OrderDetailsHooks {
 
         Entity product = order.getBelongsToField(BasicConstants.MODEL_PRODUCT);
 
-        if (!isValidDecimalField(view, Lists.newArrayList(OrderFields.PLANED_QUANTITY_FOR_ADDITIONAL_UNIT))
+        if (!isValidDecimalField(view, Lists.newArrayList(OrderFields.PLANNED_QUANTITY_FOR_ADDITIONAL_UNIT))
                 || !isValidDecimalField(view, Lists.newArrayList(OrderFields.PLANNED_QUANTITY))) {
             return;
         }
-        if (Objects.nonNull(product) && (Objects.isNull(order.getDecimalField(OrderFields.PLANED_QUANTITY_FOR_ADDITIONAL_UNIT))
+        if (Objects.nonNull(product) && (Objects.isNull(order.getDecimalField(OrderFields.PLANNED_QUANTITY_FOR_ADDITIONAL_UNIT))
                 || !isValidQuantityForAdditionalUnit(order, product))) {
             additionalUnitService.setQuantityFieldForAdditionalUnit(view, order);
         }
@@ -772,7 +761,7 @@ public class OrderDetailsHooks {
         BigDecimal expectedVariable = additionalUnitService.getQuantityAfterConversion(order,
                 additionalUnitService.getAdditionalUnit(product), order.getDecimalField(OrderFields.PLANNED_QUANTITY),
                 product.getStringField(ProductFields.UNIT));
-        BigDecimal currentVariable = order.getDecimalField(OrderFields.PLANED_QUANTITY_FOR_ADDITIONAL_UNIT);
+        BigDecimal currentVariable = order.getDecimalField(OrderFields.PLANNED_QUANTITY_FOR_ADDITIONAL_UNIT);
 
         return expectedVariable.compareTo(currentVariable) == 0;
     }

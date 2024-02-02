@@ -23,39 +23,39 @@
  */
 package com.qcadoo.mes.orders.hooks;
 
-import static com.qcadoo.testing.model.EntityTestUtils.stubBelongsToField;
-import static com.qcadoo.testing.model.EntityTestUtils.stubDateField;
-import static com.qcadoo.testing.model.EntityTestUtils.stubDecimalField;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Matchers.notNull;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
-import static org.springframework.test.util.ReflectionTestUtils.setField;
-
-import java.math.BigDecimal;
-import java.util.Date;
-
-import org.junit.Before;
-import org.junit.Test;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-
 import com.qcadoo.commons.dateTime.DateRange;
+import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.orders.OrderService;
 import com.qcadoo.mes.orders.TechnologyServiceO;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.states.constants.OrderState;
 import com.qcadoo.mes.orders.util.OrderDatesService;
 import com.qcadoo.model.api.DataDefinition;
+import com.qcadoo.model.api.DictionaryService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.FieldDefinition;
+import org.junit.Before;
+import org.junit.Test;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
+
+import java.math.BigDecimal;
+import java.util.Date;
+
+import static com.qcadoo.testing.model.EntityTestUtils.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.verify;
+import static org.springframework.test.util.ReflectionTestUtils.setField;
 
 public class OrderHooksTest {
 
     private OrderHooks orderHooks;
+
+    @Mock
+    private DictionaryService dictionaryService;
 
     @Mock
     private OrderService orderService;
@@ -84,6 +84,7 @@ public class OrderHooksTest {
         setField(orderHooks, "orderService", orderService);
         setField(orderHooks, "orderDatesService", orderDatesService);
         setField(orderHooks, "technologyServiceO", technologyServiceO);
+        setField(orderHooks, "dictionaryService", dictionaryService);
     }
 
     @Test
@@ -192,6 +193,9 @@ public class OrderHooksTest {
         // given
         stubBelongsToField(order, OrderFields.PRODUCT, product);
         stubDecimalField(order, OrderFields.PLANNED_QUANTITY, BigDecimal.ONE);
+        stubStringField(product, ProductFields.UNIT, "szt.");
+
+        given(dictionaryService.checkIfUnitIsInteger(Mockito.anyString())).willReturn(false);
 
         // when
         boolean result = orderHooks.checkOrderPlannedQuantity(orderDD, order);

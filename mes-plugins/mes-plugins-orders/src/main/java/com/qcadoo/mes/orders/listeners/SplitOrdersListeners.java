@@ -3,10 +3,8 @@ package com.qcadoo.mes.orders.listeners;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.orders.constants.*;
 import com.qcadoo.mes.orders.util.AdditionalUnitService;
-import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.model.api.BigDecimalUtils;
 import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.EntityList;
 import com.qcadoo.model.api.NumberService;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
@@ -101,7 +99,7 @@ public class SplitOrdersListeners {
                     String number = order.getStringField(SplitOrderParentConstants.NUMBER) + "-" + threeCharacterNumber.format(counter);
                     entity.setField(OrderFields.NUMBER, number);
                     entity.setField(OrderFields.PLANNED_QUANTITY, newPlannedQuantity);
-                    entity.setField(OrderFields.PLANED_QUANTITY_FOR_ADDITIONAL_UNIT,
+                    entity.setField(OrderFields.PLANNED_QUANTITY_FOR_ADDITIONAL_UNIT,
                             numberService.setScaleWithDefaultMathContext(additionalUnitService.getQuantityAfterConversion(order,
                                     additionalUnitService.getAdditionalUnit(product),
                                     numberService.setScaleWithDefaultMathContext(newPlannedQuantity),
@@ -187,7 +185,7 @@ public class SplitOrdersListeners {
 
                 entity.setField(OrderFields.NUMBER, child.getStringField(SplitOrderChildConstants.NUMBER));
                 entity.setField(OrderFields.PLANNED_QUANTITY, child.getDecimalField(SplitOrderChildConstants.PLANNED_QUANTITY));
-                entity.setField(OrderFields.PLANED_QUANTITY_FOR_ADDITIONAL_UNIT,
+                entity.setField(OrderFields.PLANNED_QUANTITY_FOR_ADDITIONAL_UNIT,
                         numberService.setScaleWithDefaultMathContext(additionalUnitService.getQuantityAfterConversion(order,
                                 additionalUnitService.getAdditionalUnit(product),
                                 numberService.setScaleWithDefaultMathContext(child.getDecimalField(SplitOrderChildConstants.PLANNED_QUANTITY)),
@@ -208,7 +206,7 @@ public class SplitOrdersListeners {
             order.setField(OrderFields.DATE_FROM, parent.getDateField(SplitOrderParentConstants.DATE_FROM));
             order.setField(OrderFields.DATE_TO, parent.getDateField(SplitOrderParentConstants.DATE_TO));
             order.setField(OrderFields.PLANNED_QUANTITY, parent.getDecimalField(SplitOrderChildConstants.PLANNED_QUANTITY));
-            order.setField(OrderFields.PLANED_QUANTITY_FOR_ADDITIONAL_UNIT,
+            order.setField(OrderFields.PLANNED_QUANTITY_FOR_ADDITIONAL_UNIT,
                     numberService.setScaleWithDefaultMathContext(additionalUnitService.getQuantityAfterConversion(order,
                             additionalUnitService.getAdditionalUnit(product),
                             numberService.setScaleWithDefaultMathContext(parent.getDecimalField(SplitOrderChildConstants.PLANNED_QUANTITY)),

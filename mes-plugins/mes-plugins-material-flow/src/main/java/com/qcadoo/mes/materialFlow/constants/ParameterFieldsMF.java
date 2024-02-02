@@ -33,8 +33,6 @@ public final class ParameterFieldsMF {
 
     public static final String WHAT_TO_SHOW_ON_DASHBOARD = "whatToShowOnDashboard";
 
-    public static final String DASHBOARD_OPERATION = "dashboardOperation";
-
     public static final String DASHBOARD_COMPONENTS_LOCATION = "dashboardComponentsLocation";
 
     public static final String DASHBOARD_PRODUCTS_INPUT_LOCATION = "dashboardProductsInputLocation";

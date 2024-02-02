@@ -42,7 +42,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import static com.qcadoo.mes.orders.constants.OrderFields.COMMENT_REASON_TYPE_DEVIATIONS_QUANTITY;
 import static com.qcadoo.mes.orders.constants.OrderFields.COMMISSIONED_CORRECTED_QUANTITY;
-import static com.qcadoo.mes.orders.constants.OrderFields.PLANED_QUANTITY_FOR_ADDITIONAL_UNIT;
+import static com.qcadoo.mes.orders.constants.OrderFields.PLANNED_QUANTITY_FOR_ADDITIONAL_UNIT;
 import static com.qcadoo.mes.orders.constants.OrderFields.PLANNED_QUANTITY;
 import static com.qcadoo.mes.orders.constants.OrderFields.PRODUCT;
 import static com.qcadoo.mes.orders.constants.OrderFields.STATE;
@@ -74,7 +74,7 @@ public class OrderProductQuantityHooks {
                 || order.getStringField(STATE).equals(OrderState.IN_PROGRESS.getStringValue())
                 || order.getStringField(STATE).equals(OrderState.INTERRUPTED.getStringValue())
                 || order.getStringField(STATE).equals(OrderState.PENDING.getStringValue()))) {
-            List<String> references = Arrays.asList(PLANNED_QUANTITY, PLANED_QUANTITY_FOR_ADDITIONAL_UNIT);
+            List<String> references = Arrays.asList(PLANNED_QUANTITY, PLANNED_QUANTITY_FOR_ADDITIONAL_UNIT);
             changedEnabledFields(view, references, true);
 
         }

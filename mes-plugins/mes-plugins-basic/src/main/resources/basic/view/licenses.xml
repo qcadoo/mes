@@ -50,7 +50,7 @@
                     </layoutElement>
                     <layoutElement column="1" row="2">
                         <component type="input" name="numberTerminalLicenses" field="numberTerminalLicenses"
-                                   reference="numberTerminalLicenses">
+                                   reference="numberTerminalLicenses" defaultVisible="never">
                             <option type="labelWidth" value="55"/>
                             <option type="alignment" value="right"/>
                             <listener event="onInputChange"
@@ -60,7 +60,7 @@
                     </layoutElement>
                     <layoutElement column="1" row="3">
                         <component type="select" name="typeTerminalLicenses" field="typeTerminalLicenses"
-                                   reference="typeTerminalLicenses" defaultEnabled="false">
+                                   reference="typeTerminalLicenses" defaultVisible="false" defaultEnabled="false">
                             <option type="labelWidth" value="55"/>
                         </component>
                     </layoutElement>
@@ -71,9 +71,4 @@
             </component>
         </windowTab>
     </component>
-
-    <hooks>
-        <beforeRender class="com.qcadoo.mes.basic.hooks.ParametersHooks"
-                      method="onLicenseBeforeRender"/>
-    </hooks>
 </view>

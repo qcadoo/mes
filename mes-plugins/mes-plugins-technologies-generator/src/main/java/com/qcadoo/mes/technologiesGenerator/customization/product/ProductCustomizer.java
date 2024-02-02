@@ -23,11 +23,8 @@
  */
 package com.qcadoo.mes.technologiesGenerator.customization.product;
 
-import java.util.Objects;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
+import com.beust.jcommander.internal.Lists;
+import com.qcadoo.mes.basic.constants.ProductAttributeValueFields;
 import com.qcadoo.mes.basic.constants.ProductFamilyElementType;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.technologiesGenerator.GeneratorSettings;
@@ -37,6 +34,11 @@ import com.qcadoo.mes.technologiesGenerator.customization.product.domain.Product
 import com.qcadoo.mes.technologiesGenerator.customization.product.domain.ProductSuffixes;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.Objects;
 
 @Service
 public class ProductCustomizer {
@@ -45,7 +47,7 @@ public class ProductCustomizer {
     private CustomizedProductDataProvider customizedProductDataProvider;
 
     public Entity findOrCreate(final Entity product, final Entity mainProduct, final ProductSuffixes suffixes,
-            final GeneratorSettings settings) {
+                               final GeneratorSettings settings) {
         String generatedNumber = generateNumber(product, suffixes.getNumberSuffix());
 
         return customizedProductDataProvider.tryFind(product, generatedNumber).orElseGet(() -> customize(product, mainProduct,
@@ -65,7 +67,7 @@ public class ProductCustomizer {
     }
 
     private Entity customize(final Entity product, final Entity mainProduct, final String newNumber, final String newName,
-            final GeneratorSettings settings) {
+                             final GeneratorSettings settings) {
         DataDefinition productDD = product.getDataDefinition();
 
         Entity newProduct = productDD.copy(product.getId()).get(0);
@@ -80,7 +82,26 @@ public class ProductCustomizer {
             newProduct.setField(ProductFields.SIZE, mainProduct.getBelongsToField(ProductFields.SIZE));
         }
 
+        if (settings.shouldCopyProductAttributes() && Objects.nonNull(mainProduct)) {
+            newProduct.setField(ProductFields.PRODUCT_ATTRIBUTE_VALUES, copyProductAttributeValues(mainProduct));
+        }
+
         return productDD.save(newProduct);
+    }
+
+    private List<Entity> copyProductAttributeValues(final Entity product) {
+        List<Entity> productAttributeValues = Lists.newArrayList();
+
+        for (Entity productAttributeValue : product.getHasManyField(ProductFields.PRODUCT_ATTRIBUTE_VALUES)) {
+            Entity productAttributeValueCopy  = productAttributeValue.copy();
+
+            productAttributeValueCopy.setId(null);
+            productAttributeValueCopy.setField(ProductAttributeValueFields.PRODUCT, null);
+
+            productAttributeValues.add(productAttributeValueCopy);
+        }
+
+        return productAttributeValues;
     }
 
 }

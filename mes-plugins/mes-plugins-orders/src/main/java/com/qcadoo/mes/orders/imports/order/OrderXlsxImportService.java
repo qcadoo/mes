@@ -126,7 +126,7 @@ public class OrderXlsxImportService extends XlsxImportService {
                     plannedQuantity, unit);
         }
 
-        order.setField(OrderFields.PLANED_QUANTITY_FOR_ADDITIONAL_UNIT, plannedQuantityForAdditionalUnit);
+        order.setField(OrderFields.PLANNED_QUANTITY_FOR_ADDITIONAL_UNIT, plannedQuantityForAdditionalUnit);
     }
 
     private void validateNumber(final Entity order, final DataDefinition orderDD) {

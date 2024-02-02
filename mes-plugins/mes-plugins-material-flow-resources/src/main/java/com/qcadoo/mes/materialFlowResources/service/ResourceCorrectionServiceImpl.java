@@ -290,7 +290,7 @@ public class ResourceCorrectionServiceImpl implements ResourceCorrectionService 
         if (isInteger) {
             return numberService.setScaleWithDefaultMathContext(value, 0);
         } else {
-            return value;
+            return numberService.setScaleWithDefaultMathContext(value);
         }
     }
 

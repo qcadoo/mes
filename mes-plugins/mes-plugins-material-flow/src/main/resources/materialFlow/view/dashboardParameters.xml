@@ -38,7 +38,7 @@
             </group>
         </ribbon>
 
-        <windowTab name="main" reference="main">
+        <windowTab name="mainTab" reference="mainTab">
             <component type="form" name="dashboardParameters" reference="form">
                 <component type="flowGridLayout" name="dashboardGridLayout" columns="3" rows="8">
                     <layoutElement column="1" row="1">
@@ -50,7 +50,7 @@
                     <layoutElement column="1" row="2">
                         <component type="select" name="whatToShowOnDashboard" field="whatToShowOnDashboard"
                                    reference="whatToShowOnDashboard" hasDescription="true">
-                            <option type="labelWidth" value="60" />
+                            <option type="labelWidth" value="60"/>
 
                             <listener event="onSelectedEntityChange"
                                       class="com.qcadoo.view.api.listeners.RerenderListener"
@@ -58,8 +58,9 @@
                         </component>
                     </layoutElement>
                     <layoutElement column="1" row="3">
-                        <component type="input" name="numberVisibleOrdersTasksOnDashboard"  hasDescription="true"
-                                   field="#{form}.numberVisibleOrdersTasksOnDashboard" reference="numberVisibleOrdersTasksOnDashboard">
+                        <component type="input" name="numberVisibleOrdersTasksOnDashboard" hasDescription="true"
+                                   field="#{form}.numberVisibleOrdersTasksOnDashboard"
+                                   reference="numberVisibleOrdersTasksOnDashboard">
                             <option type="alignment" value="right"/>
                             <option type="labelWidth" value="60"/>
                         </component>
@@ -67,13 +68,14 @@
                     <layoutElement column="1" row="4">
                         <component type="select" name="dashboardShowForProduct" field="dashboardShowForProduct"
                                    reference="dashboardShowForProduct" hasDescription="true">
-                            <option type="labelWidth" value="60" />
+                            <option type="labelWidth" value="60"/>
                         </component>
                     </layoutElement>
                     <layoutElement column="1" row="5">
-                        <component type="select" name="quantityMadeOnTheBasisOfDashboard" field="quantityMadeOnTheBasisOfDashboard"
+                        <component type="select" name="quantityMadeOnTheBasisOfDashboard"
+                                   field="quantityMadeOnTheBasisOfDashboard"
                                    reference="quantityMadeOnTheBasisOfDashboard" hasDescription="true">
-                            <option type="labelWidth" value="60" />
+                            <option type="labelWidth" value="60"/>
                         </component>
                     </layoutElement>
                     <layoutElement column="1" row="6">
@@ -85,67 +87,15 @@
                     <layoutElement column="1" row="7">
                         <component type="select" name="dashboardOrderSorting" field="dashboardOrderSorting"
                                    reference="dashboardOrderSorting" hasDescription="true">
-                            <option type="labelWidth" value="60" />
+                            <option type="labelWidth" value="60"/>
                         </component>
                     </layoutElement>
-                    <layoutElement column="1" row="8">
-                        <component type="borderLayout" name="dashboardOrdersBorderLayout"
-                                   reference="dashboardButtonsBorderLayout">
-                            <option type="label" value="dashboardButtonsLabel" />
-
-                            <component type="gridLayout" name="gridLayout" columns="1"
-                                       rows="3">
-                                <layoutElement column="1" row="1">
-                                    <component type="lookup" name="dashboardOperation" field="dashboardOperation"
-                                               reference="dashboardOperation" hasDescription="true">
-                                        <option type="column" name="name" fields="name" link="true"/>
-
-                                        <option type="searchable" value="number,name"/>
-                                        <option type="orderable" value="number,name"/>
-
-                                        <option type="expression" value="#number + ' - ' + #name"/>
-                                        <option type="fieldCode" value="number"/>
-
-                                        <option type="labelWidth" value="60"/>
-                                    </component>
-                                </layoutElement>
-                                <layoutElement column="1" row="2">
-                                    <component type="lookup" name="dashboardComponentsLocation" field="dashboardComponentsLocation"
-                                               reference="dashboardComponentsLocation" hasDescription="true">
-                                        <option type="column" name="name" fields="name"/>
-
-                                        <option type="searchable" value="number,name"/>
-                                        <option type="orderable" value="number,name"/>
-
-                                        <option type="expression" value="#number + ' - ' + #name"/>
-                                        <option type="fieldCode" value="number"/>
-
-                                        <option type="labelWidth" value="60"/>
-                                    </component>
-                                </layoutElement>
-                                <layoutElement column="1" row="3">
-                                    <component type="lookup" name="dashboardProductsInputLocation" field="dashboardProductsInputLocation"
-                                               reference="dashboardProductsInputLocation" hasDescription="true">
-                                        <option type="column" name="name" fields="name"/>
-
-                                        <option type="searchable" value="number,name"/>
-                                        <option type="orderable" value="number,name"/>
-
-                                        <option type="expression" value="#number + ' - ' + #name"/>
-                                        <option type="fieldCode" value="number"/>
-
-                                        <option type="labelWidth" value="60"/>
-                                    </component>
-                                </layoutElement>
-                            </component>
-                        </component>
-                    </layoutElement>
-
                     <layoutElement column="2" row="1" width="2" minHeight="4">
                         <component type="grid" name="dashboardButtons" source="dashboardButtons"
                                    reference="dashboardButtons">
                             <option type="column" name="succession" fields="succession" link="true" width="5"/>
-                            <option type="column" name="identifier" fields="identifier" expression="'@' + #identifier" link="true" width="85"/>
+                            <option type="column" name="identifier" fields="identifier" expression="'@' + #identifier"
+                                    link="true" width="85"/>
                             <option type="column" name="active" fields="active" link="true" width="10"/>
 
                             <option type="order" column="succession" direction="asc"/>
@@ -153,9 +103,9 @@
                             <option type="searchable" value="succession,active"/>
                             <option type="orderable" value="succession,active"/>
 
-                            <option type="correspondingView" value="materialFlow/dashboardButtonDetails" />
-                            <option type="correspondingViewInModal" value="true" />
-                            <option type="correspondingComponent" value="form" />
+                            <option type="correspondingView" value="materialFlow/dashboardButtonDetails"/>
+                            <option type="correspondingViewInModal" value="true"/>
+                            <option type="correspondingComponent" value="form"/>
 
                             <option type="paginable" value="true"/>
                             <option type="multiselect" value="false"/>
@@ -174,8 +124,4 @@
         </windowTab>
     </component>
 
-    <hooks>
-        <beforeRender class="com.qcadoo.mes.materialFlow.hooks.DashboardParametersHooks"
-                      method="onBeforeRender"/>
-    </hooks>
 </view>

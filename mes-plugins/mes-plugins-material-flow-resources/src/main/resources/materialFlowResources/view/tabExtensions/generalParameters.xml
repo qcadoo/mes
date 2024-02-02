@@ -30,7 +30,7 @@
       plugin="basic" view="generalParameters">
 
     <windowTab name="productsTab" reference="productsTab">
-        <component type="gridLayout" name="productsGridLayout" columns="3" rows="4">
+        <component type="gridLayout" name="productsGridLayout" columns="3" rows="5">
             <layoutElement column="1" row="1">
                 <component type="checkbox" name="manyArticlesWithTheSameEAN" hasDescription="true"
                     reference="manyArticlesWithTheSameEAN" field="#{form}.manyArticlesWithTheSameEAN">
@@ -50,6 +50,12 @@
                 </component>
             </layoutElement>
             <layoutElement column="1" row="4">
+                <component type="checkbox" name="copyAttributesToProducts" hasDescription="true"
+                           reference="copyAttributesToProducts" field="#{form}.copyAttributesToProducts">
+                    <option type="labelWidth" value="80"/>
+                </component>
+            </layoutElement>
+            <layoutElement column="1" row="5">
                 <component type="borderLayout" name="costNormsBorderLayout">
                     <component type="gridLayout" name="costNormsGridLayout"
                            columns="1" rows="3">

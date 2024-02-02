@@ -82,7 +82,7 @@ public final class OrderFields {
 
     public static final String PLANNED_QUANTITY = "plannedQuantity";
 
-    public static final String PLANED_QUANTITY_FOR_ADDITIONAL_UNIT = "plannedQuantityForAdditionalUnit";
+    public static final String PLANNED_QUANTITY_FOR_ADDITIONAL_UNIT = "plannedQuantityForAdditionalUnit";
 
     public static final String DONE_QUANTITY = "doneQuantity";
 

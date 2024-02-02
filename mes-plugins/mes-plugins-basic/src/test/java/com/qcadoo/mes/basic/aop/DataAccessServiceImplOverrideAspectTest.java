@@ -1,7 +1,7 @@
 /**
  * ***************************************************************************
  * Copyright (c) 2010 Qcadoo Limited
- * Project: Qcadoo MES
+ * Project: Qcadoo Framework
  * Version: 1.4
  *
  * This file is part of Qcadoo.
@@ -21,28 +21,30 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.materialFlow.hooks;
+package com.qcadoo.mes.basic.aop;
 
-import com.qcadoo.mes.materialFlow.constants.ParameterFieldsMF;
-import com.qcadoo.mes.materialFlow.constants.WhatToShowOnDashboard;
 import com.qcadoo.model.api.DataDefinition;
-import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.FieldDefinition;
+import com.qcadoo.model.internal.DataAccessServiceImpl;
+import org.junit.Test;
 
-import org.springframework.stereotype.Component;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 
-@Component
-public class ParameterHooksMF {
+import static junit.framework.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
-    public void onSave(final DataDefinition parameterDD, final Entity parameter) {
-        clearOperationAndLocations(parameter);
-    }
+public class DataAccessServiceImplOverrideAspectTest {
 
-    private void clearOperationAndLocations(final Entity parameter) {
-        String whatToShowOnDashboard = parameter.getStringField(ParameterFieldsMF.WHAT_TO_SHOW_ON_DASHBOARD);
-
-        if (!WhatToShowOnDashboard.ORDERS.getStringValue().equals(whatToShowOnDashboard)) {
-            parameter.setField(ParameterFieldsMF.DASHBOARD_OPERATION, null);
-        }
+    @Test
+    public final void checkAroundShowWarehousesOnly() throws NoSuchMethodException {
+        Class<?> clazz = DataAccessServiceImpl.class;
+        assertEquals("com.qcadoo.model.internal.DataAccessServiceImpl", clazz.getCanonicalName());
+        final Method method = clazz.getDeclaredMethod("isFieldCopyable", Class.class, FieldDefinition.class, DataDefinition.class);
+        assertNotNull(method);
+        assertTrue(Modifier.isPrivate(method.getModifiers()));
+        assertEquals(boolean.class, method.getReturnType());
     }
 
 }

@@ -5,7 +5,9 @@ public final class ParameterFieldsT {
     private ParameterFieldsT() {
     }
 
-    public static final String COPY_PRODUCT_SIZE = "technologiesGeneratorCopyProductSize";
+    public static final String TECHNOLOGIES_GENERATOR_COPY_PRODUCT_SIZE = "technologiesGeneratorCopyProductSize";
+
+    public static final String TECHNOLOGIES_GENERATOR_COPY_PRODUCT_ATTRIBUTES = "technologiesGeneratorCopyProductAttributes";
 
     public static final String COMPLETE_WAREHOUSES_FLOW_WHILE_CHECKING = "completeWarehousesFlowWhileChecking";
 
@@ -24,5 +26,7 @@ public final class ParameterFieldsT {
     public static final String DIMENSION_CONTROL_OF_PRODUCTS = "dimensionControlOfProducts";
 
     public static final String DIMENSION_CONTROL_ATTRIBUTES = "dimensionControlAttributes";
+
+    public static final String DASHBOARD_OPERATION = "dashboardOperation";
 
 }

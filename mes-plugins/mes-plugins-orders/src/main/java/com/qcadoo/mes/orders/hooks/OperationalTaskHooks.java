@@ -5,10 +5,7 @@ import com.google.common.collect.Lists;
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.newstates.StateExecutorService;
 import com.qcadoo.mes.orders.OperationalTasksService;
-import com.qcadoo.mes.orders.constants.OperationalTaskFields;
-import com.qcadoo.mes.orders.constants.OrderFields;
-import com.qcadoo.mes.orders.constants.WorkstationChangeoverForOperationalTaskChangeoverType;
-import com.qcadoo.mes.orders.constants.WorkstationChangeoverForOperationalTaskFields;
+import com.qcadoo.mes.orders.constants.*;
 import com.qcadoo.mes.orders.services.WorkstationChangeoverService;
 import com.qcadoo.mes.orders.states.OperationalTasksServiceMarker;
 import com.qcadoo.mes.orders.states.constants.OperationalTaskStateStringValues;
@@ -157,17 +154,20 @@ public class OperationalTaskHooks {
 
     public void setWorkstationChangeoverForOperationalTasks(final Entity operationalTask) {
         Long operationalTaskId = operationalTask.getId();
-        boolean shouldSkip = operationalTask.getBooleanField(OperationalTaskFields.SHOULD_SKIP);
+        String type = operationalTask.getStringField(OperationalTaskFields.TYPE);
         Entity workstation = operationalTask.getBelongsToField(OperationalTaskFields.WORKSTATION);
         Date startDate = operationalTask.getDateField(OperationalTaskFields.START_DATE);
+        boolean shouldSkip = operationalTask.getBooleanField(OperationalTaskFields.SHOULD_SKIP);
 
-        if (Objects.isNull(workstation) || Objects.isNull(startDate)) {
-            deleteWorkstationChangeoverForOperationalTasks(operationalTask);
-            setPreviousWorkstationChangeoverForOperationalTasks(operationalTask, true);
-        } else {
-            if (!shouldSkip && (Objects.isNull(operationalTaskId) || checkIfOperationalTaskDataChanged(operationalTask, workstation, startDate))) {
-                setCurrentWorkstationChangeoverForOperationalTasks(operationalTask);
-                setPreviousWorkstationChangeoverForOperationalTasks(operationalTask, false);
+        if (OperationalTaskType.EXECUTION_OPERATION_IN_ORDER.getStringValue().equals(type)) {
+            if (Objects.isNull(workstation) || Objects.isNull(startDate)) {
+                deleteWorkstationChangeoverForOperationalTasks(operationalTask);
+                setPreviousWorkstationChangeoverForOperationalTasks(operationalTask, true);
+            } else {
+                if (!shouldSkip && (Objects.isNull(operationalTaskId) || checkIfOperationalTaskDataChanged(operationalTask, workstation, startDate))) {
+                    setCurrentWorkstationChangeoverForOperationalTasks(operationalTask);
+                    setPreviousWorkstationChangeoverForOperationalTasks(operationalTask, false);
+                }
             }
         }
     }
