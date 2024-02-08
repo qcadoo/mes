@@ -290,7 +290,9 @@ public class WorkstationChangeoverService {
                                                                  final Entity previousOperationalTask,
                                                                  final Entity workstationChangeoverNorm,
                                                                  final Entity workstation,
-                                                                 final Entity attribute, final Entity fromAttributeValue, final Entity toAttributeValue) {
+                                                                 final Entity attribute,
+                                                                 final Entity fromAttributeValue,
+                                                                 final Entity toAttributeValue) {
         Entity workstationChangeoverForOperationalTask = getWorkstationChangeoverForOperationalTaskDD().create();
 
         String name = workstationChangeoverNorm.getStringField(WorkstationChangeoverNormFields.NAME);
@@ -361,7 +363,7 @@ public class WorkstationChangeoverService {
                 .list().getEntities();
     }
 
-    private Entity getPreviousOperationalTask(final Entity workstation, final Date operationalTaskStartDate) {
+    public Entity getPreviousOperationalTask(final Entity workstation, final Date operationalTaskStartDate) {
         SearchCriteriaBuilder searchCriteriaBuilder = getOperationalTaskDD().find();
 
         addWorkstationAndDateSearchRestrictions(searchCriteriaBuilder, workstation, operationalTaskStartDate);
@@ -370,7 +372,8 @@ public class WorkstationChangeoverService {
                 .setMaxResults(1).uniqueResult();
     }
 
-    private void addWorkstationAndDateSearchRestrictions(final SearchCriteriaBuilder searchCriteriaBuilder, final Entity workstation, final Date startDate) {
+    private void addWorkstationAndDateSearchRestrictions(final SearchCriteriaBuilder searchCriteriaBuilder,
+                                                         final Entity workstation, final Date startDate) {
         searchCriteriaBuilder.createAlias(OperationalTaskFields.WORKSTATION, OperationalTaskFields.WORKSTATION, JoinType.LEFT);
         searchCriteriaBuilder.add(SearchRestrictions.eq(OperationalTaskFields.WORKSTATION + L_DOT + L_ID, workstation.getId()));
         searchCriteriaBuilder.add(SearchRestrictions.ne(OperationalTaskFields.STATE, OperationalTaskState.REJECTED.getStringValue()));
@@ -407,4 +410,14 @@ public class WorkstationChangeoverService {
         return dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_WORKSTATION_CHANGEOVER_FOR_SCHEDULE_POSITION);
     }
 
+    public Entity getPreviousSchedulePosition(Entity schedule, Entity workstation, Entity toc, Date startDate) {
+        return dataDefinitionService
+                .get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_SCHEDULE_POSITION).find()
+                .add(SearchRestrictions.belongsTo(SchedulePositionFields.WORKSTATION, workstation))
+                .add(SearchRestrictions.belongsTo(SchedulePositionFields.SCHEDULE, schedule))
+                .createAlias(SchedulePositionFields.TECHNOLOGY_OPERATION_COMPONENT, SchedulePositionFields.TECHNOLOGY_OPERATION_COMPONENT, JoinType.INNER)
+                .add(SearchRestrictions.ne(SchedulePositionFields.TECHNOLOGY_OPERATION_COMPONENT + ".id", toc.getId()))
+                .add(SearchRestrictions.le(SchedulePositionFields.END_TIME, startDate))
+                .addOrder(SearchOrders.desc(SchedulePositionFields.END_TIME)).setMaxResults(1).uniqueResult();
+    }
 }
