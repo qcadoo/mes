@@ -452,7 +452,6 @@ public class OrdersFromMOProductsGenerationService {
         orderService.setPlannedQuantityForAdditionalUnit(order);
 
         order.setField(L_IGNORE_MISSING_COMPONENTS, parameter.getBooleanField(L_IGNORE_MISSING_COMPONENTS));
-
         order.setField(OrderFields.DESCRIPTION, buildDescription(parameter, masterOrderProduct, technology, product));
 
         fillPCParametersForOrder(order, technology);
