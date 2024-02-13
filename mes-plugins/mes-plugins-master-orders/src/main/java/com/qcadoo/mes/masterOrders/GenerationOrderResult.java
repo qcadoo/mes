@@ -5,10 +5,9 @@ import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
+import org.springframework.context.i18n.LocaleContextHolder;
 
 import java.util.List;
-
-import org.springframework.context.i18n.LocaleContextHolder;
 
 public class GenerationOrderResult {
 
@@ -41,43 +40,43 @@ public class GenerationOrderResult {
 
     private List<String> productOrderSimpleErrors = Lists.newArrayList();
 
-    public void addProductOrderSimpleError(String prod) {
-        productOrderSimpleErrors.add(prod);
+    public void addProductOrderSimpleError(final String product) {
+        productOrderSimpleErrors.add(product);
     }
 
-    public void addNotGeneratedProductError(MasterOrderProductErrorContainer err) {
+    public void addNotGeneratedProductError(final MasterOrderProductErrorContainer err) {
         productOrderErrors.add(err);
     }
 
-    public void addGeneratedOrderNumber(String number) {
+    public void addGeneratedOrderNumber(final String number) {
         generatedOrderNumbers.add(number);
     }
 
-    public void addRealizationFromStock(String number) {
+    public void addRealizationFromStock(final String number) {
         realizationFromStock.add(number);
     }
 
-    public void addOrderWithoutPps(String number) {
+    public void addOrderWithoutPps(final String number) {
         ordersWithoutPps.add(number);
     }
 
-    public void addOrderWithoutGeneratedSubOrders(SubOrderErrorHolder error) {
+    public void addOrderWithoutGeneratedSubOrders(final SubOrderErrorHolder error) {
         ordersWithoutGeneratedSubOrders.add(error);
     }
 
-    public void addOrderWithGeneratedSubOrders(String number) {
+    public void addOrderWithGeneratedSubOrders(final String number) {
         ordersWithGeneratedSubOrders.add(number);
     }
 
-    public void addOrderWithNoGeneratedSubOrders(String number) {
+    public void addOrderWithNoGeneratedSubOrders(final String number) {
         ordersWithNoGeneratedSubOrders.add(number);
     }
 
-    public void addProductWithoutAcceptedTechnology(String number) {
+    public void addProductWithoutAcceptedTechnology(final String number) {
         productsWithoutAcceptedTechnologies.add(number);
     }
 
-    public void showMessage(ViewDefinitionState view) {
+    public void showMessage(final ViewDefinitionState view) {
 
         if (!realizationFromStock.isEmpty()) {
             view.addMessage("masterOrders.masterOrder.generationOrder.realizationFromStockNumbers",
@@ -162,7 +161,6 @@ public class GenerationOrderResult {
                         LocaleContextHolder.getLocale(), error.getNumber(),
                         translationService.translate(error.getError(), LocaleContextHolder.getLocale())));
             });
-
         }
 
         if (!ordersWithGeneratedSubOrders.isEmpty()) {
@@ -206,6 +204,7 @@ public class GenerationOrderResult {
             messages.add(translationService.translate("masterOrders.masterOrder.generationOrder.productsWithoutAcceptedTechnologies",
                     LocaleContextHolder.getLocale(), String.join(", ", productsWithoutAcceptedTechnologies)));
         }
+
         return messages;
     }
 
@@ -213,7 +212,16 @@ public class GenerationOrderResult {
         return realizationFromStock;
     }
 
-    public void setRealizationFromStock(List<String> realizationFromStock) {
+    public void setRealizationFromStock(final List<String> realizationFromStock) {
         this.realizationFromStock = realizationFromStock;
     }
+
+    public List<MasterOrderProductErrorContainer> getProductOrderErrors() {
+        return productOrderErrors;
+    }
+
+    public void setProductOrderErrors(final List<MasterOrderProductErrorContainer> productOrderErrors) {
+        this.productOrderErrors = productOrderErrors;
+    }
+
 }

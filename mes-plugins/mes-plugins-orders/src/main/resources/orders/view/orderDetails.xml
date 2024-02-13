@@ -35,7 +35,6 @@
             <group name="navigation">
                 <bigButton name="back" icon="backIcon24.png" state="enabled" action="#{window}.performBack"/>
             </group>
-
             <group name="actions" defaultAuthorizationRole="ROLE_PLANNING_ORDERS">
                 <bigButton name="save" icon="saveIcon24.png" state="enabled" action="#{form}.performSave;"
                            accesskey="s"/>
@@ -80,12 +79,10 @@
                     </script>
                 </smallButton>
             </group>
-
             <group name="orderDetailsActions">
                 <bigButton name="refresh" icon="updateIcon24.png" state="enabled" action="#{form}.performRefresh;"
                            accesskey="r"/>
             </group>
-
             <group name="states" if="#view.getComponentByReference('form').dataDefinition.activable">
                 <smallButton name="activate" icon="unactiveVisibleIcon.png" state="disabled"
                              action="#{form}.performActivate;">
@@ -179,8 +176,6 @@
                     </script>
                 </smallButton>
             </group>
-
-
             <group name="status">
                 <smallButton name="acceptOrder" icon="startIcon16.png"
                              state="disabled">
@@ -245,7 +240,6 @@
                     </script>
                 </smallButton>
             </group>
-
             <group name="operationalTasks" defaultAuthorizationRole="ROLE_PLANNING">
                 <smallButton name="generateOperationalTasks" icon="generateIcon16.png">
                     <script>
@@ -735,7 +729,7 @@
         </windowTab>
 
         <windowTab name="detailsTab">
-            <component type="gridLayout" name="detailsTablayout"
+            <component type="gridLayout" name="detailsGridLayout"
                        columns="3" rows="1">
                 <layoutElement column="1" row="1">
                     <component type="borderLayout" name="startDates">
@@ -1204,7 +1198,6 @@
                 </layoutElement>
             </component>
         </windowTab>
-
 
         <windowTab name="attachments">
             <component type="gridLayout" name="attachmentsLayout" columns="3"

@@ -4,7 +4,8 @@ import com.google.common.collect.Maps;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
-import com.qcadoo.mes.orders.constants.SplitOrderParentConstants;
+import com.qcadoo.mes.orders.constants.SplitOrderParentFields;
+import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ComponentState;
@@ -29,23 +30,28 @@ public class OrdersPlanningListListeners {
 
         Set<Long> selectedEntitiesIds = ordersGrid.getSelectedEntitiesIds();
 
-        Entity helper = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_SPLIT_ORDER_HELPER).create();
+        Entity helper = getSplitOrderHelperDD().create();
+
         helper = helper.getDataDefinition().save(helper);
+
         for (Long id : selectedEntitiesIds) {
-            Entity parent = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_SPLIT_ORDER_PARENT).create();
-            Entity order = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(id);
-            parent.setField(SplitOrderParentConstants.SPLIT_ORDER_HELPER, helper);
-            parent.setField(SplitOrderParentConstants.ORDER, order);
-            parent.setField(SplitOrderParentConstants.NUMBER, order.getStringField(OrderFields.NUMBER));
-            parent.setField(SplitOrderParentConstants.NAME, order.getStringField(OrderFields.NAME));
-            parent.setField(SplitOrderParentConstants.DATE_FROM, order.getDateField(OrderFields.DATE_FROM));
-            parent.setField(SplitOrderParentConstants.DATE_TO, order.getDateField(OrderFields.DATE_TO));
-            parent.setField(SplitOrderParentConstants.PLANNED_QUANTITY, order.getDecimalField(OrderFields.PLANNED_QUANTITY));
-            parent.setField(SplitOrderParentConstants.UNIT, order.getBelongsToField(OrderFields.PRODUCT).getStringField(ProductFields.UNIT));
+            Entity order = getOrderDD().get(id);
+
+            Entity parent = getSplitOrderParentDD().create();
+
+            parent.setField(SplitOrderParentFields.SPLIT_ORDER_HELPER, helper);
+            parent.setField(SplitOrderParentFields.ORDER, order);
+            parent.setField(SplitOrderParentFields.NUMBER, order.getStringField(OrderFields.NUMBER));
+            parent.setField(SplitOrderParentFields.NAME, order.getStringField(OrderFields.NAME));
+            parent.setField(SplitOrderParentFields.DATE_FROM, order.getDateField(OrderFields.DATE_FROM));
+            parent.setField(SplitOrderParentFields.DATE_TO, order.getDateField(OrderFields.DATE_TO));
+            parent.setField(SplitOrderParentFields.PLANNED_QUANTITY, order.getDecimalField(OrderFields.PLANNED_QUANTITY));
+            parent.setField(SplitOrderParentFields.UNIT, order.getBelongsToField(OrderFields.PRODUCT).getStringField(ProductFields.UNIT));
+
             parent = parent.getDataDefinition().save(parent);
+
             parent.getId();
         }
-
 
         Map<String, Object> parameters = Maps.newHashMap();
 
@@ -60,23 +66,28 @@ public class OrdersPlanningListListeners {
 
         Set<Long> selectedEntitiesIds = ordersGrid.getSelectedEntitiesIds();
 
-        Entity helper = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_SPLIT_ORDER_HELPER).create();
+        Entity helper = getSplitOrderHelperDD().create();
+
         helper = helper.getDataDefinition().save(helper);
+
         for (Long id : selectedEntitiesIds) {
-            Entity parent = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_SPLIT_ORDER_PARENT).create();
-            Entity order = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(id);
-            parent.setField(SplitOrderParentConstants.SPLIT_ORDER_HELPER, helper);
-            parent.setField(SplitOrderParentConstants.ORDER, order);
-            parent.setField(SplitOrderParentConstants.NUMBER, order.getStringField(OrderFields.NUMBER));
-            parent.setField(SplitOrderParentConstants.NAME, order.getStringField(OrderFields.NAME));
-            parent.setField(SplitOrderParentConstants.DATE_FROM, order.getDateField(OrderFields.DATE_FROM));
-            parent.setField(SplitOrderParentConstants.DATE_TO, order.getDateField(OrderFields.DATE_TO));
-            parent.setField(SplitOrderParentConstants.PLANNED_QUANTITY, order.getDecimalField(OrderFields.PLANNED_QUANTITY));
-            parent.setField(SplitOrderParentConstants.UNIT, order.getBelongsToField(OrderFields.PRODUCT).getStringField(ProductFields.UNIT));
+            Entity order = getOrderDD().get(id);
+
+            Entity parent = getSplitOrderParentDD().create();
+
+            parent.setField(SplitOrderParentFields.SPLIT_ORDER_HELPER, helper);
+            parent.setField(SplitOrderParentFields.ORDER, order);
+            parent.setField(SplitOrderParentFields.NUMBER, order.getStringField(OrderFields.NUMBER));
+            parent.setField(SplitOrderParentFields.NAME, order.getStringField(OrderFields.NAME));
+            parent.setField(SplitOrderParentFields.DATE_FROM, order.getDateField(OrderFields.DATE_FROM));
+            parent.setField(SplitOrderParentFields.DATE_TO, order.getDateField(OrderFields.DATE_TO));
+            parent.setField(SplitOrderParentFields.PLANNED_QUANTITY, order.getDecimalField(OrderFields.PLANNED_QUANTITY));
+            parent.setField(SplitOrderParentFields.UNIT, order.getBelongsToField(OrderFields.PRODUCT).getStringField(ProductFields.UNIT));
+
             parent = parent.getDataDefinition().save(parent);
+
             parent.getId();
         }
-
 
         Map<String, Object> parameters = Maps.newHashMap();
 
@@ -114,9 +125,20 @@ public class OrdersPlanningListListeners {
 
     public void openOrdersImportPage(final ViewDefinitionState view, final ComponentState state,
                                      final String[] args) {
-        StringBuilder url = new StringBuilder("../page/orders/ordersImport.html");
+        String url = "../page/orders/ordersImport.html";
+        view.openModal(url);
+    }
 
-        view.openModal(url.toString());
+    private DataDefinition getOrderDD() {
+        return dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER);
+    }
+
+    private DataDefinition getSplitOrderHelperDD() {
+        return dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_SPLIT_ORDER_HELPER);
+    }
+
+    private DataDefinition getSplitOrderParentDD() {
+        return dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_SPLIT_ORDER_PARENT);
     }
 
 }

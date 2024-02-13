@@ -56,7 +56,6 @@
 				        ]]>
                     </script>
                 </bigButton>
-
             </group>
         </ribbon>
 
@@ -77,7 +76,6 @@
                         </component>
                     </layoutElement>
                 </component>
-
 
                 <listener event="divideOrders"
                           class="com.qcadoo.mes.orders.listeners.SplitOrdersListeners"

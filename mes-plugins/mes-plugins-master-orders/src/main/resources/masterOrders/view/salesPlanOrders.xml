@@ -71,24 +71,23 @@
 
                                 QCD.translations['masterOrders.productsBySize.invalidPrecision.max'] =
                                 '#{translate(masterOrders.productsBySize.invalidPrecision.max)}';
+
+                                QCD.backBtn = QCD.backBtn || {};
+                                QCD.generateOrders = QCD.generateOrders || {};
+
+                                QCD.backBtn = #{window}.getRibbonItem("navigation.back");
+                                QCD.generateOrders = #{window}.getRibbonItem("action.generateOrders");
                             </script>
                             <script type="text/javascript" src="/masterOrders/public/js/salesPlanOrders.js"></script>
 
-
                             <option type="column" name="productFamily" fields="productFamily"
                                     expression="#productFamily['number']"/>
-
                             <option type="column" name="product" fields="product"
                                     expression="#product['number']"/>
-
                             <option type="column" name="size" fields="product"
                                     expression="#product['size']?.get('number')"/>
-
-
                             <option type="column" name="succession" fields="product"
                                     expression="#product['size']?.get('succession')" hidden="true"/>
-
-
                             <option type="column" name="plannedQuantity" fields="plannedQuantity"/>
                             <option type="column" name="orderedQuantity" fields="orderedQuantity"/>
 
@@ -102,8 +101,6 @@
                             <option type="suppressSelectEvent" value="true"/>
 
                             <option type="paginable" value="false"/>
-
-
                         </component>
                     </layoutElement>
                 </component>

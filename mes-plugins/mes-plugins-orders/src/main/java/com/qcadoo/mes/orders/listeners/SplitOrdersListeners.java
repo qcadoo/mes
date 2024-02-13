@@ -4,6 +4,7 @@ import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.orders.constants.*;
 import com.qcadoo.mes.orders.util.AdditionalUnitService;
 import com.qcadoo.model.api.BigDecimalUtils;
+import com.qcadoo.model.api.CopyException;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
 import com.qcadoo.view.api.ComponentState;
@@ -20,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.math.MathContext;
+import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.util.Date;
 import java.util.List;
@@ -29,15 +31,17 @@ import java.util.Optional;
 @Service
 public class SplitOrdersListeners {
 
+    private static final DecimalFormat L_THREE_CHARACTER_NUMBER = new DecimalFormat("000");
+
     private static final String L_PARENTS = "parents";
 
     private static final String L_CHILDES = "childes";
 
     private static final String L_GENERATED = "generated";
 
-    private static final DecimalFormat threeCharacterNumber = new DecimalFormat("000");
-    public static final String ORDERS_GROUP = "ordersGroup";
+    private static final String L_ORDERS_GROUP = "ordersGroup";
 
+    private static final String L_REGENERATE_PQC = "regeneratePQC";
 
     @Autowired
     private NumberService numberService;
@@ -49,237 +53,281 @@ public class SplitOrdersListeners {
     private AdditionalUnitService additionalUnitService;
 
     public void divideOrders(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        FormComponent splitForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
-
+        FormComponent splitOrderHelperForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         CheckBoxComponent generatedCheckBox = (CheckBoxComponent) view.getComponentByReference(L_GENERATED);
+
         state.performEvent(view, "save", args);
 
         if (state.isHasError()) {
             return;
         }
 
-        try {
+        boolean isGenerated = true;
 
-            Entity helper = splitForm.getEntity().getDataDefinition().get(splitForm.getEntityId());
-            Integer parts = helper.getIntegerField(SplitOrderHelperConstants.PARTS);
-            List<Entity> parents = helper.getHasManyField(SplitOrderHelperConstants.PARENTS);
+        try {
+            Entity splitOrderHelper = splitOrderHelperForm.getEntity().getDataDefinition().get(splitOrderHelperForm.getEntityId());
+
+            Integer parts = splitOrderHelper.getIntegerField(SplitOrderHelperFields.PARTS);
+            List<Entity> parents = splitOrderHelper.getHasManyField(SplitOrderHelperFields.PARENTS);
 
             for (Entity parent : parents) {
                 BigDecimal quantity = parent.getDecimalField(OrderFields.PLANNED_QUANTITY);
 
-                BigDecimal newPlannedQuantity = quantity.divide(new BigDecimal(parts), MathContext.DECIMAL64).setScale(0,
-                        BigDecimal.ROUND_DOWN);
+                BigDecimal plannedQuantity = quantity.divide(new BigDecimal(parts), MathContext.DECIMAL64).setScale(0,
+                        RoundingMode.DOWN);
 
-                if (BigDecimal.ZERO.compareTo(newPlannedQuantity) == 0) {
+                if (BigDecimal.ZERO.compareTo(plannedQuantity) == 0) {
                     throw new IllegalStateException("Error");
                 }
 
-                BigDecimal rest = quantity.subtract(newPlannedQuantity.multiply(new BigDecimal(parts), MathContext.DECIMAL64));
+                BigDecimal rest = quantity.subtract(plannedQuantity.multiply(new BigDecimal(parts), MathContext.DECIMAL64));
 
-                Entity order = parent.getBelongsToField(SplitOrderParentConstants.ORDER);
-                Entity technology = order.getBelongsToField(OrderFields.TECHNOLOGY);
+                Entity order = parent.getBelongsToField(SplitOrderParentFields.ORDER);
                 Entity product = order.getBelongsToField(OrderFields.PRODUCT);
 
-                String numberPrefix = parent.getStringField(SplitOrderParentConstants.NUMBER) + "-";
+                String numberPrefix = parent.getStringField(SplitOrderParentFields.NUMBER) + "-";
                 String baseNumber = numberGeneratorService.generateNumberWithPrefix(OrdersConstants.PLUGIN_IDENTIFIER,
                         OrdersConstants.MODEL_ORDER, 3, numberPrefix);
                 String suffix = baseNumber.replace(numberPrefix, "");
                 Integer counter = Integer.parseInt(suffix.replaceFirst("^0+(?!$)", ""));
 
-                for (Integer i = 0; i < parts; i++) {
+                for (int i = 0; i < parts; i++) {
+                    Entity orderPart;
 
-                    Entity entity = null;
                     if (i == parts - 1) {
-                        newPlannedQuantity = newPlannedQuantity.add(rest);
-                        entity = order;
+                        plannedQuantity = plannedQuantity.add(rest);
+
+                        orderPart = order;
                     } else {
-                        entity = order.getDataDefinition().copy(order.getId()).get(0);
-
+                        orderPart = order.getDataDefinition().copy(order.getId()).get(0);
                     }
-                    String number = order.getStringField(SplitOrderParentConstants.NUMBER) + "-" + threeCharacterNumber.format(counter);
-                    entity.setField(OrderFields.NUMBER, number);
-                    entity.setField(OrderFields.PLANNED_QUANTITY, newPlannedQuantity);
-                    entity.setField(OrderFields.PLANNED_QUANTITY_FOR_ADDITIONAL_UNIT,
-                            numberService.setScaleWithDefaultMathContext(additionalUnitService.getQuantityAfterConversion(order,
-                                    additionalUnitService.getAdditionalUnit(product),
-                                    numberService.setScaleWithDefaultMathContext(newPlannedQuantity),
-                                    product.getStringField(ProductFields.UNIT))));
-                    entity.setField(ORDERS_GROUP, order.getBelongsToField(ORDERS_GROUP));
-                    entity.setField("regeneratePQC", true);
 
-                    entity = entity.getDataDefinition().save(entity);
-                    if (!entity.isValid()) {
+                    String number = order.getStringField(SplitOrderParentFields.NUMBER) + "-" + L_THREE_CHARACTER_NUMBER.format(counter);
+                    BigDecimal plannedQuantityForAdditionalUnit = additionalUnitService.getQuantityAfterConversion(order,
+                            additionalUnitService.getAdditionalUnit(product),
+                            numberService.setScaleWithDefaultMathContext(plannedQuantity),
+                            product.getStringField(ProductFields.UNIT));
+
+                    orderPart.setField(OrderFields.NUMBER, number);
+                    orderPart.setField(OrderFields.PLANNED_QUANTITY,
+                            numberService.setScaleWithDefaultMathContext(plannedQuantity));
+                    orderPart.setField(OrderFields.PLANNED_QUANTITY_FOR_ADDITIONAL_UNIT,
+                            numberService.setScaleWithDefaultMathContext(plannedQuantityForAdditionalUnit));
+                    orderPart.setField(L_ORDERS_GROUP, order.getBelongsToField(L_ORDERS_GROUP));
+                    orderPart.setField(L_REGENERATE_PQC, true);
+
+                    orderPart = orderPart.getDataDefinition().save(orderPart);
+
+                    if (!orderPart.isValid()) {
                         throw new IllegalStateException("Undone split orders");
                     }
+
                     counter++;
                 }
             }
+        } catch (CopyException ce) {
+            ce.getEntity().getErrors().values().forEach(view::addMessage);
 
-
+            isGenerated = false;
         } catch (Exception ex) {
-            generatedCheckBox.setChecked(false);
-            view.addMessage("orders.splitOrdersDetails.messages.errors.splitOrdersError", ComponentState.MessageType.FAILURE);
-            return;
+            isGenerated = false;
         }
-        view.addMessage("orders.splitOrdersDetails.messages.success", ComponentState.MessageType.SUCCESS);
 
-        generatedCheckBox.setChecked(true);
+        if (isGenerated) {
+            view.addMessage("orders.splitOrdersDetails.messages.success", ComponentState.MessageType.SUCCESS);
+        } else {
+            view.addMessage("orders.splitOrdersDetails.messages.errors.splitOrdersError", ComponentState.MessageType.FAILURE);
+        }
+
+        generatedCheckBox.setChecked(isGenerated);
     }
 
     public void splitOrders(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        FormComponent splitForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
-        Entity splitEntity = splitForm.getPersistedEntityWithIncludedFormValues();
-
+        FormComponent splitOrderHelperForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         CheckBoxComponent generatedCheckBox = (CheckBoxComponent) view.getComponentByReference(L_GENERATED);
 
-        List<Entity> parents = splitEntity
-                .getHasManyField(SplitOrderHelperConstants.PARENTS);
+        Entity splitOrderHelper = splitOrderHelperForm.getPersistedEntityWithIncludedFormValues();
+
+        List<Entity> parents = splitOrderHelper.getHasManyField(SplitOrderHelperFields.PARENTS);
+
         int count = 0;
+
         for (Entity parent : parents) {
-            count = count + parent.getHasManyField(SplitOrderParentConstants.CHILDES).size();
+            count = count + parent.getHasManyField(SplitOrderParentFields.CHILDES).size();
         }
 
         if (count == 0) {
             view.addMessage("orders.splitOrdersDetails.messages.info.splitOrdersEmpty", ComponentState.MessageType.INFO);
+
             return;
         }
 
-        try {
+        boolean isGenerated = true;
 
-            if (!validate(splitEntity)) {
-                splitForm.setEntity(splitEntity);
+        try {
+            if (!validate(splitOrderHelper)) {
+                splitOrderHelperForm.setEntity(splitOrderHelper);
+
                 generatedCheckBox.setChecked(false);
                 view.addMessage("orders.splitOrdersDetails.messages.errors.splitOrdersError", ComponentState.MessageType.FAILURE);
+
                 return;
             }
 
-            trySplitOrders(splitEntity);
+            trySplitOrders(splitOrderHelper);
+        } catch (CopyException ce) {
+            ce.getEntity().getErrors().values().forEach(view::addMessage);
 
+            isGenerated = false;
         } catch (Exception ex) {
-            generatedCheckBox.setChecked(false);
-            splitForm.setEntity(splitEntity);
-            view.addMessage("orders.splitOrdersDetails.messages.errors.splitOrdersError", ComponentState.MessageType.FAILURE);
-            return;
-        }
-        view.addMessage("orders.splitOrdersDetails.messages.success", ComponentState.MessageType.SUCCESS);
+            splitOrderHelperForm.setEntity(splitOrderHelper);
 
-        generatedCheckBox.setChecked(true);
+            isGenerated = false;
+        }
+
+        if (isGenerated) {
+            view.addMessage("orders.splitOrdersDetails.messages.success", ComponentState.MessageType.SUCCESS);
+        } else {
+            view.addMessage("orders.splitOrdersDetails.messages.errors.splitOrdersError", ComponentState.MessageType.FAILURE);
+        }
+
+        generatedCheckBox.setChecked(isGenerated);
+    }
+
+    private boolean validate(final Entity splitOrderHelper) {
+        boolean isValid = true;
+
+        List<Entity> parents = splitOrderHelper.getHasManyField(SplitOrderHelperFields.PARENTS);
+
+        for (Entity parent : parents) {
+            if (parent.getDecimalField(SplitOrderParentFields.PLANNED_QUANTITY).compareTo(BigDecimal.ZERO) < 1) {
+                parent.addError(parent.getDataDefinition().getField(SplitOrderParentFields.PLANNED_QUANTITY), "orders.splitOrdersDetails.messages.errors.parentOrderPlannedQuantity");
+
+                isValid = false;
+            }
+
+            for (Entity child : parent.getHasManyField(SplitOrderParentFields.CHILDES)) {
+                Date dateFrom = child.getDateField(SplitOrderChildFields.DATE_FROM);
+                Date dateTo = child.getDateField(SplitOrderChildFields.DATE_TO);
+
+                if (Objects.nonNull(dateFrom) && Objects.nonNull(dateTo) && (dateFrom.after(dateTo) || dateFrom.equals(dateTo))) {
+                    child.addError(child.getDataDefinition().getField(SplitOrderChildFields.DATE_TO), "orders.validate.global.error.datesOrder");
+
+                    isValid = false;
+                } else {
+                    Entity validate = child.getDataDefinition().validate(child);
+
+                    if (!validate.isValid()) {
+                        child = validate;
+
+                        isValid = false;
+                    }
+                }
+            }
+        }
+
+        return isValid;
     }
 
     @Transactional
-    public void trySplitOrders(Entity splitEntity) {
-        List<Entity> parents = splitEntity
-                .getHasManyField(SplitOrderHelperConstants.PARENTS);
+    public void trySplitOrders(final Entity splitOrderHelper) {
+        List<Entity> parents = splitOrderHelper.getHasManyField(SplitOrderHelperFields.PARENTS);
+
         for (Entity parent : parents) {
-            Entity order = parent.getDataDefinition().get(parent.getId()).getBelongsToField(SplitOrderParentConstants.ORDER);
+            Entity order = parent.getDataDefinition().get(parent.getId()).getBelongsToField(SplitOrderParentFields.ORDER);
+
             Entity product = order.getBelongsToField(OrderFields.PRODUCT);
 
-            for (Entity child : parent.getHasManyField(SplitOrderParentConstants.CHILDES)) {
+            for (Entity child : parent.getHasManyField(SplitOrderParentFields.CHILDES)) {
+                BigDecimal plannedQuantityForAdditionalUnit = additionalUnitService.getQuantityAfterConversion(order,
+                        additionalUnitService.getAdditionalUnit(product),
+                        numberService.setScaleWithDefaultMathContext(child.getDecimalField(SplitOrderChildFields.PLANNED_QUANTITY)),
+                        product.getStringField(ProductFields.UNIT));
 
-                Entity entity = order.getDataDefinition().copy(order.getId()).get(0);
+                Entity orderPart = order.getDataDefinition().copy(order.getId()).get(0);
 
-                entity.setField(OrderFields.START_DATE, null);
-                entity.setField(OrderFields.FINISH_DATE, null);
-                entity.setField(OrderFields.DATE_FROM, null);
-                entity.setField(OrderFields.DATE_TO, null);
+                orderPart.setField(OrderFields.START_DATE, null);
+                orderPart.setField(OrderFields.FINISH_DATE, null);
+                orderPart.setField(OrderFields.DATE_FROM, null);
+                orderPart.setField(OrderFields.DATE_TO, null);
+                orderPart.setField(OrderFields.NUMBER, child.getStringField(SplitOrderChildFields.NUMBER));
+                orderPart.setField(OrderFields.PLANNED_QUANTITY,
+                        numberService.setScaleWithDefaultMathContext(child.getDecimalField(SplitOrderChildFields.PLANNED_QUANTITY)));
+                orderPart.setField(OrderFields.PLANNED_QUANTITY_FOR_ADDITIONAL_UNIT,
+                        numberService.setScaleWithDefaultMathContext(plannedQuantityForAdditionalUnit));
+                orderPart.setField(OrderFields.DATE_FROM, child.getDateField(SplitOrderChildFields.DATE_FROM));
+                orderPart.setField(OrderFields.DATE_TO, child.getDateField(SplitOrderChildFields.DATE_TO));
+                orderPart.setField(L_ORDERS_GROUP, order.getBelongsToField(L_ORDERS_GROUP));
+                orderPart.setField(L_REGENERATE_PQC, true);
 
-                entity.setField(OrderFields.NUMBER, child.getStringField(SplitOrderChildConstants.NUMBER));
-                entity.setField(OrderFields.PLANNED_QUANTITY, child.getDecimalField(SplitOrderChildConstants.PLANNED_QUANTITY));
-                entity.setField(OrderFields.PLANNED_QUANTITY_FOR_ADDITIONAL_UNIT,
-                        numberService.setScaleWithDefaultMathContext(additionalUnitService.getQuantityAfterConversion(order,
-                                additionalUnitService.getAdditionalUnit(product),
-                                numberService.setScaleWithDefaultMathContext(child.getDecimalField(SplitOrderChildConstants.PLANNED_QUANTITY)),
-                                product.getStringField(ProductFields.UNIT))));
-                entity.setField(OrderFields.DATE_FROM, child.getDateField(SplitOrderChildConstants.DATE_FROM));
-                entity.setField(OrderFields.DATE_TO, child.getDateField(SplitOrderChildConstants.DATE_TO));
-                entity.setField(ORDERS_GROUP, order.getBelongsToField(ORDERS_GROUP));
-                entity.setField("regeneratePQC", true);
-                entity = entity.getDataDefinition().save(entity);
-                if (!entity.isValid()) {
+                orderPart = orderPart.getDataDefinition().save(orderPart);
+
+                if (!orderPart.isValid()) {
                     throw new IllegalStateException("Undone split orders");
                 }
             }
+
+            BigDecimal plannedQuantityForAdditionalUnit = additionalUnitService.getQuantityAfterConversion(order,
+                    additionalUnitService.getAdditionalUnit(product),
+                    numberService.setScaleWithDefaultMathContext(parent.getDecimalField(SplitOrderChildFields.PLANNED_QUANTITY)),
+                    product.getStringField(ProductFields.UNIT));
+
             order.setField(OrderFields.START_DATE, null);
             order.setField(OrderFields.FINISH_DATE, null);
             order.setField(OrderFields.DATE_FROM, null);
             order.setField(OrderFields.DATE_TO, null);
-            order.setField(OrderFields.DATE_FROM, parent.getDateField(SplitOrderParentConstants.DATE_FROM));
-            order.setField(OrderFields.DATE_TO, parent.getDateField(SplitOrderParentConstants.DATE_TO));
-            order.setField(OrderFields.PLANNED_QUANTITY, parent.getDecimalField(SplitOrderChildConstants.PLANNED_QUANTITY));
+            order.setField(OrderFields.DATE_FROM, parent.getDateField(SplitOrderParentFields.DATE_FROM));
+            order.setField(OrderFields.DATE_TO, parent.getDateField(SplitOrderParentFields.DATE_TO));
+            order.setField(OrderFields.PLANNED_QUANTITY,
+                    numberService.setScaleWithDefaultMathContext(parent.getDecimalField(SplitOrderChildFields.PLANNED_QUANTITY)));
             order.setField(OrderFields.PLANNED_QUANTITY_FOR_ADDITIONAL_UNIT,
-                    numberService.setScaleWithDefaultMathContext(additionalUnitService.getQuantityAfterConversion(order,
-                            additionalUnitService.getAdditionalUnit(product),
-                            numberService.setScaleWithDefaultMathContext(parent.getDecimalField(SplitOrderChildConstants.PLANNED_QUANTITY)),
-                            product.getStringField(ProductFields.UNIT))));
+                    numberService.setScaleWithDefaultMathContext(plannedQuantityForAdditionalUnit));
+
             order = order.getDataDefinition().save(order);
+
             if (!order.isValid()) {
                 throw new IllegalStateException("Undone split orders");
             }
         }
-
-    }
-
-    private boolean validate(Entity splitEntity) {
-        boolean isValid = true;
-        List<Entity> parents = splitEntity
-                .getHasManyField(SplitOrderHelperConstants.PARENTS);
-
-        for (Entity parent : parents) {
-            if (parent.getDecimalField(SplitOrderParentConstants.PLANNED_QUANTITY).compareTo(BigDecimal.ZERO) < 1) {
-                parent.addError(parent.getDataDefinition().getField(SplitOrderParentConstants.PLANNED_QUANTITY), "orders.splitOrdersDetails.messages.errors.parentOrderPlannedQuantity");
-                isValid = false;
-            }
-
-            for (Entity child : parent.getHasManyField(SplitOrderParentConstants.CHILDES)) {
-                Date dateFrom = child.getDateField(SplitOrderChildConstants.DATE_FROM);
-                Date dateTo = child.getDateField(SplitOrderChildConstants.DATE_TO);
-
-                if (Objects.nonNull(dateFrom) && Objects.nonNull(dateTo) && (dateFrom.after(dateTo) || dateFrom.equals(dateTo))) {
-                    child.addError(child.getDataDefinition().getField(SplitOrderChildConstants.DATE_TO), "orders.validate.global.error.datesOrder");
-                    isValid = false;
-                } else {
-                    Entity validate = child.getDataDefinition().validate(child);
-                    if(!validate.isValid()) {
-                        child = validate;
-                        isValid = false;
-                    }
-                }
-
-
-            }
-        }
-        return isValid;
     }
 
     public void fillDates(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        FormComponent splitOrderHelperForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
-        FormComponent splitForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
-        Entity splitEntity = splitForm.getPersistedEntityWithIncludedFormValues();
-        Date dateFrom = splitEntity.getDateField(SplitOrderHelperConstants.DATE_FROM);
-        Date dateTo = splitEntity.getDateField(SplitOrderHelperConstants.DATE_TO);
+        Entity splitOrderHelper = splitOrderHelperForm.getPersistedEntityWithIncludedFormValues();
+
+        Date dateFrom = splitOrderHelper.getDateField(SplitOrderHelperFields.DATE_FROM);
+        Date dateTo = splitOrderHelper.getDateField(SplitOrderHelperFields.DATE_TO);
 
         if (Objects.nonNull(dateFrom) && Objects.nonNull(dateTo) && (dateFrom.after(dateTo) || dateFrom.equals(dateTo))) {
-            splitEntity.addError(splitEntity.getDataDefinition().getField(SplitOrderHelperConstants.DATE_TO), "orders.validate.global.error.datesOrder");
+            splitOrderHelper.addError(splitOrderHelper.getDataDefinition().getField(SplitOrderHelperFields.DATE_TO), "orders.validate.global.error.datesOrder");
+
             view.addMessage("qcadooView.validate.global.error.custom", ComponentState.MessageType.FAILURE);
-            splitForm.setEntity(splitEntity);
+
+            splitOrderHelperForm.setEntity(splitOrderHelper);
+
             return;
         }
 
-        AwesomeDynamicListComponent parents = (AwesomeDynamicListComponent) view.getComponentByReference(L_PARENTS);
-        List<FormComponent> parentsFormComponents = parents.getFormComponents();
+        AwesomeDynamicListComponent parentsADL = (AwesomeDynamicListComponent) view.getComponentByReference(L_PARENTS);
 
-        for (FormComponent parentFormComponent : parentsFormComponents) {
-            AwesomeDynamicListComponent childADL = (AwesomeDynamicListComponent) parentFormComponent.findFieldComponentByName(L_CHILDES);
+        for (FormComponent parentFormComponent : parentsADL.getFormComponents()) {
+            AwesomeDynamicListComponent childesADL = (AwesomeDynamicListComponent) parentFormComponent.findFieldComponentByName(L_CHILDES);
+
             Entity parent = parentFormComponent.getEntity();
-            parent.setField(SplitOrderChildConstants.DATE_FROM, splitEntity.getDateField(SplitOrderHelperConstants.DATE_FROM));
-            parent.setField(SplitOrderChildConstants.DATE_TO, splitEntity.getDateField(SplitOrderHelperConstants.DATE_TO));
-            parentFormComponent.setEntity(parent);
-            for (FormComponent form : childADL.getFormComponents()) {
 
-                Entity child = form.getEntity();
-                child.setField(SplitOrderChildConstants.DATE_FROM, splitEntity.getDateField(SplitOrderHelperConstants.DATE_FROM));
-                child.setField(SplitOrderChildConstants.DATE_TO, splitEntity.getDateField(SplitOrderHelperConstants.DATE_TO));
-                form.setEntity(child);
+            parent.setField(SplitOrderChildFields.DATE_FROM, splitOrderHelper.getDateField(SplitOrderHelperFields.DATE_FROM));
+            parent.setField(SplitOrderChildFields.DATE_TO, splitOrderHelper.getDateField(SplitOrderHelperFields.DATE_TO));
+
+            parentFormComponent.setEntity(parent);
+
+            for (FormComponent formComponent : childesADL.getFormComponents()) {
+                Entity child = formComponent.getEntity();
+
+                child.setField(SplitOrderChildFields.DATE_FROM, splitOrderHelper.getDateField(SplitOrderHelperFields.DATE_FROM));
+                child.setField(SplitOrderChildFields.DATE_TO, splitOrderHelper.getDateField(SplitOrderHelperFields.DATE_TO));
+
+                formComponent.setEntity(child);
             }
         }
 
@@ -287,111 +335,117 @@ public class SplitOrdersListeners {
     }
 
     public void onPlannedQuantityChange(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        AwesomeDynamicListComponent parentsADL = (AwesomeDynamicListComponent) view.getComponentByReference(L_PARENTS);
 
-        AwesomeDynamicListComponent parents = (AwesomeDynamicListComponent) view.getComponentByReference(L_PARENTS);
-        List<FormComponent> parentsFormComponents = parents.getFormComponents();
+        for (FormComponent parentFormComponent : parentsADL.getFormComponents()) {
+            Entity parent = parentFormComponent.getEntity();
 
-        for (FormComponent parentFormComponent : parentsFormComponents) {
-            Entity entity = parentFormComponent.getEntity();
+            AwesomeDynamicListComponent childesADL = (AwesomeDynamicListComponent) parentFormComponent.findFieldComponentByName(L_CHILDES);
 
-            AwesomeDynamicListComponent child = (AwesomeDynamicListComponent) parentFormComponent.findFieldComponentByName(L_CHILDES);
+            for (FormComponent formComponent : childesADL.getFormComponents()) {
+                FieldComponent plannedQuantityField = formComponent.findFieldComponentByName(SplitOrderChildFields.PLANNED_QUANTITY);
 
-            for (FormComponent form : child.getFormComponents()) {
-
-                FieldComponent plannedQuantityCmp = form.findFieldComponentByName(SplitOrderChildConstants.PLANNED_QUANTITY);
-                if (plannedQuantityCmp.getUuid().equals(state.getUuid())) {
-                    setParentPlannedQuantity(parentFormComponent, entity.getDataDefinition().get(entity.getId()), entity);
+                if (plannedQuantityField.getUuid().equals(state.getUuid())) {
+                    setParentPlannedQuantity(parentFormComponent, parent.getDataDefinition().get(parent.getId()), parent);
                 }
-
             }
         }
     }
 
     public void onAddOrder(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        AwesomeDynamicListComponent parents = (AwesomeDynamicListComponent) view.getComponentByReference(L_PARENTS);
+        AwesomeDynamicListComponent parentsADL = (AwesomeDynamicListComponent) view.getComponentByReference(L_PARENTS);
 
-        List<FormComponent> parentsFormComponents = parents.getFormComponents();
+        for (FormComponent parentFormComponent : parentsADL.getFormComponents()) {
+            Entity parent = parentFormComponent.getEntity();
 
-        for (FormComponent parentFormComponent : parentsFormComponents) {
-            Entity entity = parentFormComponent.getEntity();
+            AwesomeDynamicListComponent childesADL = (AwesomeDynamicListComponent) parentFormComponent.findFieldComponentByName(L_CHILDES);
 
-            AwesomeDynamicListComponent child = (AwesomeDynamicListComponent) parentFormComponent.findFieldComponentByName(L_CHILDES);
-
-            if (child.getUuid().equals(state.getUuid())) {
-
-                FormComponent formComponent = child.getFormComponents().get(child.getFormComponents().size() - 1);
+            if (childesADL.getUuid().equals(state.getUuid())) {
+                FormComponent formComponent = childesADL.getFormComponents().get(childesADL.getFormComponents().size() - 1);
 
                 Entity newChild = formComponent.getEntity();
-                newChild.setField(SplitOrderChildConstants.NUMBER, entity.getStringField(OrderFields.NUMBER));
-                newChild.setField(SplitOrderChildConstants.NAME, entity.getStringField(OrderFields.NAME));
-                newChild.setField(SplitOrderChildConstants.DATE_FROM, entity.getDateField(OrderFields.DATE_FROM));
-                newChild.setField(SplitOrderChildConstants.DATE_TO, entity.getDateField(OrderFields.DATE_TO));
-                newChild.setField(SplitOrderChildConstants.UNIT, entity.getStringField(ProductFields.UNIT));
+
+                newChild.setField(SplitOrderChildFields.NUMBER, parent.getStringField(OrderFields.NUMBER));
+                newChild.setField(SplitOrderChildFields.NAME, parent.getStringField(OrderFields.NAME));
+                newChild.setField(SplitOrderChildFields.DATE_FROM, parent.getDateField(OrderFields.DATE_FROM));
+                newChild.setField(SplitOrderChildFields.DATE_TO, parent.getDateField(OrderFields.DATE_TO));
+                newChild.setField(SplitOrderChildFields.UNIT, parent.getStringField(ProductFields.UNIT));
 
                 formComponent.setEntity(newChild);
 
                 updateChildesNumbers(parentFormComponent);
             }
         }
-
-
     }
 
-    private void updateChildesNumbers(FormComponent parentFormComponent) {
+    private void updateChildesNumbers(final FormComponent parentFormComponent) {
         Entity parent = parentFormComponent.getEntity();
 
-        AwesomeDynamicListComponent child = (AwesomeDynamicListComponent) parentFormComponent.findFieldComponentByName(L_CHILDES);
-        String numberPrefix = parent.getStringField(SplitOrderParentConstants.NUMBER) + "-";
+        String numberPrefix = parent.getStringField(SplitOrderParentFields.NUMBER) + "-";
         String baseNumber = numberGeneratorService.generateNumberWithPrefix(OrdersConstants.PLUGIN_IDENTIFIER,
                 OrdersConstants.MODEL_ORDER, 3, numberPrefix);
         String suffix = baseNumber.replace(numberPrefix, "");
         Integer counter = Integer.parseInt(suffix.replaceFirst("^0+(?!$)", ""));
 
-        for (FormComponent form : child.getFormComponents()) {
-            Entity entity = form.getEntity();
-            String number = parent.getStringField(SplitOrderParentConstants.NUMBER) + "-" + threeCharacterNumber.format(counter);
-            entity.setField(SplitOrderChildConstants.NUMBER, number);
-            form.setEntity(entity);
+        AwesomeDynamicListComponent childesADL = (AwesomeDynamicListComponent) parentFormComponent.findFieldComponentByName(L_CHILDES);
+
+        for (FormComponent formComponent : childesADL.getFormComponents()) {
+            Entity entity = formComponent.getEntity();
+
+            String number = parent.getStringField(SplitOrderParentFields.NUMBER) + "-" + L_THREE_CHARACTER_NUMBER.format(counter);
+
+            entity.setField(SplitOrderChildFields.NUMBER, number);
+
+            formComponent.setEntity(entity);
+
             counter++;
         }
     }
 
     public void onDeleteRow(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        AwesomeDynamicListComponent parents = (AwesomeDynamicListComponent) view.getComponentByReference(L_PARENTS);
-        List<FormComponent> parentsFormComponents = parents.getFormComponents();
+        AwesomeDynamicListComponent parentsADL = (AwesomeDynamicListComponent) view.getComponentByReference(L_PARENTS);
 
-        for (FormComponent parentFormComponent : parentsFormComponents) {
-            Entity entity = parentFormComponent.getEntity();
-            AwesomeDynamicListComponent child = (AwesomeDynamicListComponent) parentFormComponent.findFieldComponentByName(L_CHILDES);
+        for (FormComponent parentFormComponent : parentsADL.getFormComponents()) {
+            Entity parent = parentFormComponent.getEntity();
 
-            if (child.getUuid().equals(state.getUuid())) {
-                setParentPlannedQuantity(parentFormComponent, entity.getDataDefinition().get(entity.getId()), entity);
+            AwesomeDynamicListComponent childesADL = (AwesomeDynamicListComponent) parentFormComponent.findFieldComponentByName(L_CHILDES);
+
+            if (childesADL.getUuid().equals(state.getUuid())) {
+                setParentPlannedQuantity(parentFormComponent, parent.getDataDefinition().get(parent.getId()), parent);
+
                 updateChildesNumbers(parentFormComponent);
             }
         }
-
     }
 
+    private void setParentPlannedQuantity(final FormComponent parentFormComponent, final Entity parent, final Entity formParent) {
+        AwesomeDynamicListComponent childesADL = (AwesomeDynamicListComponent) parentFormComponent.findFieldComponentByName(L_CHILDES);
 
-    private void setParentPlannedQuantity(FormComponent parentFormComponent, Entity parent, Entity formParentEntity) {
-        AwesomeDynamicListComponent childs = (AwesomeDynamicListComponent) parentFormComponent.findFieldComponentByName(L_CHILDES);
-        for (FormComponent formComponent : childs.getFormComponents()) {
+        for (FormComponent formComponent : childesADL.getFormComponents()) {
             Entity persistedEntityWithIncludedFormValues = formComponent.getPersistedEntityWithIncludedFormValues();
+
             Entity validate = persistedEntityWithIncludedFormValues.getDataDefinition().validate(persistedEntityWithIncludedFormValues);
-            if(!validate.isValid()){
+
+            if (!validate.isValid()) {
                 formComponent.setEntity(persistedEntityWithIncludedFormValues);
+
                 return;
             }
         }
-        Optional<BigDecimal> plannedQuantity = childs.getEntities().stream().map(c -> BigDecimalUtils.convertNullToZero(c.getDecimalField("plannedQuantity"))).reduce(BigDecimal::add);
+
+        Optional<BigDecimal> plannedQuantity = childesADL.getEntities().stream()
+                .map(child -> BigDecimalUtils.convertNullToZero(child.getDecimalField(SplitOrderChildFields.PLANNED_QUANTITY)))
+                .reduce(BigDecimal::add);
+
         if (plannedQuantity.isPresent()) {
-            Entity order = parent.getBelongsToField(SplitOrderParentConstants.ORDER);
+            Entity order = parent.getBelongsToField(SplitOrderParentFields.ORDER);
 
             BigDecimal parentPlannedQuantity = order.getDecimalField(OrderFields.PLANNED_QUANTITY);
             BigDecimal plannedQuantityAfterSplit = parentPlannedQuantity.subtract(plannedQuantity.get(), numberService.getMathContext());
 
-            formParentEntity.setField(SplitOrderParentConstants.PLANNED_QUANTITY, plannedQuantityAfterSplit);
-            parentFormComponent.setEntity(formParentEntity);
+            formParent.setField(SplitOrderParentFields.PLANNED_QUANTITY, plannedQuantityAfterSplit);
+
+            parentFormComponent.setEntity(formParent);
         }
     }
 

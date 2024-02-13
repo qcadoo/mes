@@ -25,7 +25,6 @@ package com.qcadoo.mes.materialRequirementCoverageForOrder;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.basicProductionCounting.constants.BasicProductionCountingConstants;
 import com.qcadoo.mes.basicProductionCounting.constants.BasicProductionCountingFields;
@@ -33,17 +32,14 @@ import com.qcadoo.mes.deliveries.constants.DeliveriesConstants;
 import com.qcadoo.mes.deliveries.constants.DeliveryFields;
 import com.qcadoo.mes.deliveries.states.constants.DeliveryStateStringValues;
 import com.qcadoo.mes.materialFlowResources.MaterialFlowResourcesService;
-import com.qcadoo.mes.materialRequirementCoverageForOrder.constans.ColumnForCoveragesForOrderFields;
-import com.qcadoo.mes.materialRequirementCoverageForOrder.constans.CoverageForOrderFields;
 import com.qcadoo.mes.materialRequirementCoverageForOrder.constans.CoverageLocationFields;
 import com.qcadoo.mes.materialRequirementCoverageForOrder.constans.CoverageProductFields;
-import com.qcadoo.mes.materialRequirementCoverageForOrder.constans.CoverageProductForDelivery;
-import com.qcadoo.mes.materialRequirementCoverageForOrder.constans.CoverageProductForOrder;
 import com.qcadoo.mes.materialRequirementCoverageForOrder.constans.CoverageProductLoggingEventType;
 import com.qcadoo.mes.materialRequirementCoverageForOrder.constans.CoverageProductLoggingFields;
 import com.qcadoo.mes.materialRequirementCoverageForOrder.constans.CoverageProductLoggingState;
 import com.qcadoo.mes.materialRequirementCoverageForOrder.constans.CoverageProductState;
 import com.qcadoo.mes.materialRequirementCoverageForOrder.constans.CoverageType;
+import com.qcadoo.mes.materialRequirementCoverageForOrder.constans.*;
 import com.qcadoo.mes.materialRequirements.MaterialRequirementService;
 import com.qcadoo.mes.materialRequirements.constants.InputProductsRequiredForType;
 import com.qcadoo.mes.materialRequirements.constants.OrderFieldsMR;
@@ -52,40 +48,27 @@ import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.mes.orders.states.constants.OrderStateStringValues;
 import com.qcadoo.mes.productFlowThruDivision.ProductFlowThruDivisionService;
-import com.qcadoo.mes.productionCounting.constants.OrderFieldsPC;
-import com.qcadoo.mes.productionCounting.constants.ProductionCountingConstants;
-import com.qcadoo.mes.productionCounting.constants.ProductionTrackingFields;
-import com.qcadoo.mes.productionCounting.constants.TrackingOperationProductInComponentFields;
-import com.qcadoo.mes.productionCounting.constants.TypeOfProductionRecording;
+import com.qcadoo.mes.productionCounting.constants.*;
 import com.qcadoo.mes.technologies.ProductQuantitiesService;
 import com.qcadoo.mes.technologies.constants.OperationProductInComponentFields;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
 import com.qcadoo.mes.technologies.dto.OperationProductComponentWithQuantityContainer;
 import com.qcadoo.mes.technologies.states.constants.TechnologyState;
-import com.qcadoo.model.api.BigDecimalUtils;
-import com.qcadoo.model.api.DataDefinition;
-import com.qcadoo.model.api.DataDefinitionService;
-import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.NumberService;
+import com.qcadoo.model.api.*;
 import com.qcadoo.model.api.search.JoinType;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchOrders;
 import com.qcadoo.model.api.search.SearchRestrictions;
-
-import java.math.BigDecimal;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
-
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.math.BigDecimal;
+import java.util.*;
+import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
 @Service
 public class MaterialRequirementCoverageForOrderServiceImpl implements MaterialRequirementCoverageForOrderService {
@@ -882,39 +865,43 @@ public class MaterialRequirementCoverageForOrderServiceImpl implements MaterialR
     }
 
     @Override
-    public Optional<Entity> createMRCFO(Entity order) {
+    public Optional<Entity> createMRCFO(final Entity order) {
         Entity mcfo = createBaseCoverage(order);
 
         mcfo.setField(MaterialRequirementCoverageFields.COVERAGE_TYPE, CoverageType.ALL.getStringValue());
-        mcfo.setField(MaterialRequirementCoverageFields.INCLUDE_IN_CALCULATION_DELIVERIES, IncludeInCalculationDeliveries.CONFIRMED_DELIVERIES);
+        mcfo.setField(MaterialRequirementCoverageFields.INCLUDE_IN_CALCULATION_DELIVERIES, IncludeInCalculationDeliveries.CONFIRMED_DELIVERIES.getStringValue());
 
         return saveCoverage(mcfo);
     }
 
     private Optional<Entity> saveCoverage(Entity mcfo) {
         mcfo = mcfo.getDataDefinition().save(mcfo);
+
         if (!mcfo.isValid()) {
             mcfo = null;
         }
+
         return Optional.ofNullable(mcfo);
     }
 
-    private Entity createBaseCoverage(Entity order) {
+    private Entity createBaseCoverage(final Entity order) {
         Entity mcfo = getMRCDD().create();
-        mcfo.setField("order", order);
-        String mrcfoNumber = "~~" + new Date().getTime();
-        mcfo.setField(MaterialRequirementCoverageFields.NUMBER, mrcfoNumber);
 
+        mcfo.setField("order", order);
+
+        String mrcfoNumber = "~~" + new Date().getTime();
+
+        mcfo.setField(MaterialRequirementCoverageFields.NUMBER, mrcfoNumber);
         mcfo.setField(MaterialRequirementCoverageFields.SAVED, false);
+
         fillDatesMRCFO(mcfo, order);
         fillLocationMRCFO(mcfo, order);
+
         return mcfo;
     }
 
     private void fillLocationMRCFO(final Entity mcfo, final Entity order) {
-        Set<Entity> locations = Sets.newHashSet();
-
-        locations = productFlowThruDivisionService.getProductsLocations(order.getBelongsToField(OrderFields.TECHNOLOGY).getId());
+        Set<Entity> locations = productFlowThruDivisionService.getProductsLocations(order.getBelongsToField(OrderFields.TECHNOLOGY).getId());
         List<Entity> parameterCoverageLocations = parameterService.getParameter()
                 .getHasManyField(ParameterFieldsOS.COVERAGE_LOCATIONS);
 

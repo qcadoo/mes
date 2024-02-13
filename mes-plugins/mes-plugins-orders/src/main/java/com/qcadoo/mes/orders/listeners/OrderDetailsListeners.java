@@ -124,14 +124,14 @@ public class OrderDetailsListeners {
         for (Long id : selectedEntitiesIds) {
             Entity parent = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_SPLIT_ORDER_PARENT).create();
             Entity order = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(id);
-            parent.setField(SplitOrderParentConstants.SPLIT_ORDER_HELPER, helper);
-            parent.setField(SplitOrderParentConstants.ORDER, order);
-            parent.setField(SplitOrderParentConstants.NUMBER, order.getStringField(OrderFields.NUMBER));
-            parent.setField(SplitOrderParentConstants.NAME, order.getStringField(OrderFields.NAME));
-            parent.setField(SplitOrderParentConstants.DATE_FROM, order.getDateField(OrderFields.DATE_FROM));
-            parent.setField(SplitOrderParentConstants.DATE_TO, order.getDateField(OrderFields.DATE_TO));
-            parent.setField(SplitOrderParentConstants.PLANNED_QUANTITY, order.getDecimalField(OrderFields.PLANNED_QUANTITY));
-            parent.setField(SplitOrderParentConstants.UNIT, order.getBelongsToField(OrderFields.PRODUCT).getStringField(ProductFields.UNIT));
+            parent.setField(SplitOrderParentFields.SPLIT_ORDER_HELPER, helper);
+            parent.setField(SplitOrderParentFields.ORDER, order);
+            parent.setField(SplitOrderParentFields.NUMBER, order.getStringField(OrderFields.NUMBER));
+            parent.setField(SplitOrderParentFields.NAME, order.getStringField(OrderFields.NAME));
+            parent.setField(SplitOrderParentFields.DATE_FROM, order.getDateField(OrderFields.DATE_FROM));
+            parent.setField(SplitOrderParentFields.DATE_TO, order.getDateField(OrderFields.DATE_TO));
+            parent.setField(SplitOrderParentFields.PLANNED_QUANTITY, order.getDecimalField(OrderFields.PLANNED_QUANTITY));
+            parent.setField(SplitOrderParentFields.UNIT, order.getBelongsToField(OrderFields.PRODUCT).getStringField(ProductFields.UNIT));
             parent = parent.getDataDefinition().save(parent);
             parent.getId();
         }
@@ -154,14 +154,14 @@ public class OrderDetailsListeners {
         for (Long id : selectedEntitiesIds) {
             Entity parent = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_SPLIT_ORDER_PARENT).create();
             Entity order = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(id);
-            parent.setField(SplitOrderParentConstants.SPLIT_ORDER_HELPER, helper);
-            parent.setField(SplitOrderParentConstants.ORDER, order);
-            parent.setField(SplitOrderParentConstants.NUMBER, order.getStringField(OrderFields.NUMBER));
-            parent.setField(SplitOrderParentConstants.NAME, order.getStringField(OrderFields.NAME));
-            parent.setField(SplitOrderParentConstants.DATE_FROM, order.getDateField(OrderFields.DATE_FROM));
-            parent.setField(SplitOrderParentConstants.DATE_TO, order.getDateField(OrderFields.DATE_TO));
-            parent.setField(SplitOrderParentConstants.PLANNED_QUANTITY, order.getDecimalField(OrderFields.PLANNED_QUANTITY));
-            parent.setField(SplitOrderParentConstants.UNIT, order.getBelongsToField(OrderFields.PRODUCT).getStringField(ProductFields.UNIT));
+            parent.setField(SplitOrderParentFields.SPLIT_ORDER_HELPER, helper);
+            parent.setField(SplitOrderParentFields.ORDER, order);
+            parent.setField(SplitOrderParentFields.NUMBER, order.getStringField(OrderFields.NUMBER));
+            parent.setField(SplitOrderParentFields.NAME, order.getStringField(OrderFields.NAME));
+            parent.setField(SplitOrderParentFields.DATE_FROM, order.getDateField(OrderFields.DATE_FROM));
+            parent.setField(SplitOrderParentFields.DATE_TO, order.getDateField(OrderFields.DATE_TO));
+            parent.setField(SplitOrderParentFields.PLANNED_QUANTITY, order.getDecimalField(OrderFields.PLANNED_QUANTITY));
+            parent.setField(SplitOrderParentFields.UNIT, order.getBelongsToField(OrderFields.PRODUCT).getStringField(ProductFields.UNIT));
             parent = parent.getDataDefinition().save(parent);
             parent.getId();
         }

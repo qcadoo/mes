@@ -57,15 +57,21 @@ public class OrdersGenerationFromProductsListeners {
 
         GenerationOrderResult result = new GenerationOrderResult(translationService, parameterService);
 
+        boolean isGenerated = true;
+
         try {
             generateOrders(result, ids, ordersGenerationHelper);
 
             result.showMessage(view);
-        } catch (Exception exc) {
+
+            isGenerated = result.getProductOrderErrors().isEmpty();
+        } catch (Exception ex) {
             view.addMessage("orders.ordersGenerationFromProducts.error.ordersNotGenerated", ComponentState.MessageType.FAILURE);
+
+            isGenerated = false;
         }
 
-        generatedCheckBox.setChecked(true);
+        generatedCheckBox.setChecked(isGenerated);
     }
 
     private void generateOrders(final GenerationOrderResult result, final Set<Long> ids, final Entity ordersGenerationHelper) {
