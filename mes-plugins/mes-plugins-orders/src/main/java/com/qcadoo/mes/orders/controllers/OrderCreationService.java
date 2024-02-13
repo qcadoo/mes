@@ -1,7 +1,5 @@
 package com.qcadoo.mes.orders.controllers;
 
-import static com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperationComponentFieldsTNFO.ALL;
-
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.qcadoo.commons.functional.Either;
@@ -38,6 +36,7 @@ import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
+import com.qcadoo.model.api.validators.ErrorMessage;
 import com.qcadoo.model.api.validators.GlobalMessage;
 import com.qcadoo.security.api.SecurityService;
 import com.qcadoo.security.constants.QcadooSecurityConstants;
@@ -50,6 +49,8 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.util.*;
 import java.util.stream.Collectors;
+
+import static com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperationComponentFieldsTNFO.ALL;
 
 @Service
 public class OrderCreationService {
@@ -214,8 +215,21 @@ public class OrderCreationService {
                                 LocaleContextHolder.getLocale(), order.getStringField(OrderFields.NUMBER)));
             }
         } else {
-            return new OrderCreationResponse(translationService.translate(
-                    "basic.dashboard.orderDefinitionWizard.createOrder.validationError", LocaleContextHolder.getLocale()));
+            List<ErrorMessage> errorMessages = Lists.newArrayList();
+
+            Set<String> errorFieldNames = order.getErrors().keySet();
+
+            if (errorFieldNames.contains(OrderFields.PLANNED_QUANTITY) || errorFieldNames.contains(OrderFields.PLANNED_QUANTITY_FOR_ADDITIONAL_UNIT)) {
+                errorMessages = Lists.newArrayList(order.getErrors().values());
+            }
+
+            if (errorMessages.isEmpty()) {
+                return new OrderCreationResponse(translationService.translate("basic.dashboard.orderDefinitionWizard.createOrder.validationError", LocaleContextHolder.getLocale()));
+            } else {
+                for (ErrorMessage errorMessage : errorMessages) {
+                    return new OrderCreationResponse(translationService.translate(errorMessage.getMessage(), LocaleContextHolder.getLocale(), errorMessage.getVars()));
+                }
+            }
         }
 
         if (createOperationalTasks) {

@@ -24,11 +24,11 @@ public class OrderCreationResponse {
         OK, ERROR;
     }
 
-    public OrderCreationResponse(StatusCode code) {
+    public OrderCreationResponse(final StatusCode code) {
         this.code = code;
     }
 
-    public OrderCreationResponse(String message) {
+    public OrderCreationResponse(final String message) {
         this.code = code;
         this.message = message;
     }
@@ -41,7 +41,7 @@ public class OrderCreationResponse {
         return number;
     }
 
-    public void setNumber(String number) {
+    public void setNumber(final String number) {
         this.number = number;
     }
 
@@ -49,11 +49,11 @@ public class OrderCreationResponse {
         return message;
     }
 
-    public void setMessage(String message) {
+    public void setMessage(final String message) {
         this.message = message;
     }
 
-    public void setCode(StatusCode code) {
+    public void setCode(final StatusCode code) {
         this.code = code;
     }
 
@@ -61,7 +61,7 @@ public class OrderCreationResponse {
         return order;
     }
 
-    public void setOrder(OrderHolder order) {
+    public void setOrder(final OrderHolder order) {
         this.order = order;
     }
 
@@ -69,7 +69,7 @@ public class OrderCreationResponse {
         return additionalInformation;
     }
 
-    public void setAdditionalInformation(String additionalInformation) {
+    public void setAdditionalInformation(final String additionalInformation) {
         this.additionalInformation = additionalInformation;
     }
 
@@ -77,7 +77,8 @@ public class OrderCreationResponse {
         return operationalTasks;
     }
 
-    public void setOperationalTasks(List<OperationalTaskHolder> operationalTasks) {
+    public void setOperationalTasks(final List<OperationalTaskHolder> operationalTasks) {
         this.operationalTasks = operationalTasks;
     }
+
 }
