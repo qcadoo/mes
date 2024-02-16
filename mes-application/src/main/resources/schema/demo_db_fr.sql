@@ -43464,7 +43464,7 @@ COPY public.qcadooplugin_plugin (id, identifier, version, state, issystem, entit
 154	scheduleGantt	1.5.0	ENABLED	f	0	\N	Commercial
 156	oee	1.5.0	ENABLED	f	0	\N	\N
 159	mobileWMS	1.5.0	DISABLED	f	0	\N	\N
-160	optimizeCutting	1.5.0	DISABLED	f	0	\N	\N
+161	optimizeCutting	1.5.0	DISABLED	f	0	\N	\N
 \.
 
 
@@ -49458,7 +49458,7 @@ SELECT pg_catalog.setval('public.qcadoomodel_unitconversionitem_id_seq', 10, fal
 -- Name: qcadooplugin_plugin_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('public.qcadooplugin_plugin_id_seq', 160, true);
+SELECT pg_catalog.setval('public.qcadooplugin_plugin_id_seq', 161, true);
 
 
 --
