@@ -138,7 +138,7 @@ public class MaterialRequirementCoverageForOrderServiceImpl implements MaterialR
     }
 
     private void estimateProductDeliveriesInTime(final Map<Long, Entity> productAndCoverageProducts,
-            final List<Entity> includedDeliveries, final Date actualDate) {
+                                                 final List<Entity> includedDeliveries, final Date actualDate) {
         for (Entity delivery : includedDeliveries) {
             Date coverageDate = getCoverageProductLoggingDateForDelivery(delivery, actualDate);
 
@@ -152,7 +152,7 @@ public class MaterialRequirementCoverageForOrderServiceImpl implements MaterialR
     }
 
     private void estimateProductDelivery(final Map<Long, Entity> productAndCoverageProducts,
-            final CoverageProductForDelivery coverageProductForDelivery) {
+                                         final CoverageProductForDelivery coverageProductForDelivery) {
         BigDecimal quantity = coverageProductForDelivery.getDeliveryQuantity();
 
         coverageProductForDelivery.setQuantity(quantity);
@@ -189,7 +189,7 @@ public class MaterialRequirementCoverageForOrderServiceImpl implements MaterialR
     }
 
     private void fillCoverageProductForDelivery(final Map<Long, Entity> productAndCoverageProducts, final Entity product,
-            final Entity coverageProductLogging) {
+                                                final Entity coverageProductLogging) {
         if (coverageProductLogging != null) {
             if (productAndCoverageProducts.containsKey(product.getId())) {
                 updateCoverageProductForDelivery(productAndCoverageProducts, product, coverageProductLogging);
@@ -200,7 +200,7 @@ public class MaterialRequirementCoverageForOrderServiceImpl implements MaterialR
     }
 
     private void addCoverageProductForDelivery(final Map<Long, Entity> productAndCoverageProducts, final Entity product,
-            final Entity coverageProductLogging) {
+                                               final Entity coverageProductLogging) {
         Entity coverageProduct = getCoverageProductDD().create();
 
         coverageProduct.setField(CoverageProductFields.PRODUCT, product);
@@ -213,7 +213,7 @@ public class MaterialRequirementCoverageForOrderServiceImpl implements MaterialR
     }
 
     private void updateCoverageProductForDelivery(final Map<Long, Entity> productAndCoverageProducts, final Entity product,
-            final Entity coverageProductLogging) {
+                                                  final Entity coverageProductLogging) {
         Entity addedCoverageProduct = productAndCoverageProducts.get(product.getId());
 
         BigDecimal deliveredQuantity = BigDecimalUtils
@@ -234,7 +234,7 @@ public class MaterialRequirementCoverageForOrderServiceImpl implements MaterialR
     }
 
     private void estimateProductDemandInTime(final Map<Long, Entity> productAndCoverageProducts, final List<Entity> orders,
-            final Date coverageToDate, final Entity coveredOrder) {
+                                             final Date coverageToDate, final Entity coveredOrder) {
         for (Entity order : orders) {
             String coveredOrdersProductsSql = "select toc.id as tocId, parentToc.id as parentId, inputProd.id as prodId, opic.id as opicId, "
                     + "(select count(*) from #technologies_technology t where t.product = inputProd and t.master = true) "
@@ -318,10 +318,10 @@ public class MaterialRequirementCoverageForOrderServiceImpl implements MaterialR
     }
 
     private void estimateProductDemandForOperationInComponent(final Map<Long, Entity> productAndCoverageProducts,
-            final CoverageProductForOrder coverageProductForOrder, final Entity coveredOrder) {
+                                                              final CoverageProductForOrder coverageProductForOrder, final Entity coveredOrder) {
         if (checkIfContainsKey(coverageProductForOrder)
                 && checkIfProductWithOrderShouldBeAdded(productAndCoverageProducts, coverageProductForOrder.getProduct(),
-                        coverageProductForOrder.getOrder(), coverageProductForOrder.getTypeOfProductionRecording())) {
+                coverageProductForOrder.getOrder(), coverageProductForOrder.getTypeOfProductionRecording())) {
 
             fillProductTypeAndOrder(coverageProductForOrder, coveredOrder);
 
@@ -408,8 +408,8 @@ public class MaterialRequirementCoverageForOrderServiceImpl implements MaterialR
     }
 
     private void fillCoverageProductForOrder(final Map<Long, Entity> productAndCoverageProducts, final Entity product,
-            final ProductType productType, final Entity coverageProductLogging, final Entity retriveOrder,
-            final Entity coveredOrder, final BigDecimal plannedQuantity) {
+                                             final ProductType productType, final Entity coverageProductLogging, final Entity retriveOrder,
+                                             final Entity coveredOrder, final BigDecimal plannedQuantity) {
         if (coverageProductLogging != null) {
             if (productAndCoverageProducts.containsKey(product.getId())) {
                 updateCoverageProductForOrder(productAndCoverageProducts, product, productType, coverageProductLogging,
@@ -422,8 +422,8 @@ public class MaterialRequirementCoverageForOrderServiceImpl implements MaterialR
     }
 
     private void addCoverageProductForOrder(final Map<Long, Entity> productAndCoverageProducts, final Entity product,
-            final ProductType productType, final Entity coverageProductLogging, final Entity retriveOrder,
-            final Entity coveredOrder, final BigDecimal plannedQuantity) {
+                                            final ProductType productType, final Entity coverageProductLogging, final Entity retriveOrder,
+                                            final Entity coveredOrder, final BigDecimal plannedQuantity) {
         Entity coverageProduct = getCoverageProductDD().create();
 
         coverageProduct.setField(CoverageProductFields.PRODUCT, product);
@@ -441,8 +441,8 @@ public class MaterialRequirementCoverageForOrderServiceImpl implements MaterialR
     }
 
     private void updateCoverageProductForOrder(final Map<Long, Entity> productAndCoverageProducts, final Entity product,
-            final ProductType productType, final Entity coverageProductLogging, final Entity retriveOrder,
-            final Entity coveredOrder, final BigDecimal plannedQuantity) {
+                                               final ProductType productType, final Entity coverageProductLogging, final Entity retriveOrder,
+                                               final Entity coveredOrder, final BigDecimal plannedQuantity) {
         Entity addedCoverageProduct = productAndCoverageProducts.get(product.getId());
 
         BigDecimal demandQuantity = BigDecimalUtils
@@ -477,7 +477,7 @@ public class MaterialRequirementCoverageForOrderServiceImpl implements MaterialR
     }
 
     private boolean checkIfProductWithOrderShouldBeAdded(final Map<Long, Entity> productAndCoverageProducts, final Entity product,
-            final Entity order, final String typeOfProductionRecording) {
+                                                         final Entity order, final String typeOfProductionRecording) {
         if (!TypeOfProductionRecording.FOR_EACH.getStringValue().equals(typeOfProductionRecording)
                 && productAndCoverageProducts.containsKey(product.getId())) {
             Entity coverageProduct = productAndCoverageProducts.get(product.getId());
@@ -498,7 +498,7 @@ public class MaterialRequirementCoverageForOrderServiceImpl implements MaterialR
     }
 
     private void estimateProductLocationsInTime(final Map<Long, Entity> productAndCoverageProducts,
-            final List<Entity> coverageLocations, final Date actualDate) {
+                                                final List<Entity> coverageLocations, final Date actualDate) {
         for (Entry<Long, Entity> productAndCoverageProduct : productAndCoverageProducts.entrySet()) {
             Entity addedCoverageProduct = productAndCoverageProduct.getValue();
 
@@ -630,7 +630,7 @@ public class MaterialRequirementCoverageForOrderServiceImpl implements MaterialR
     }
 
     private void fillCoverageProductLogginState(final Entity coverageProduct, final Entity coverageProductLogging,
-            final BigDecimal reserveMissingQuantity) {
+                                                final BigDecimal reserveMissingQuantity) {
         String state = null;
 
         if (reserveMissingQuantity.compareTo(BigDecimal.ZERO) >= 0) {
@@ -697,7 +697,7 @@ public class MaterialRequirementCoverageForOrderServiceImpl implements MaterialR
     }
 
     private List<Entity> getDeliveriesFromDB(final Date coverageToDate, final boolean includeDraftDeliveries,
-            List<Entity> coverageLocations) {
+                                             List<Entity> coverageLocations) {
         if (includeDraftDeliveries) {
             SearchCriteriaBuilder scb = getDeliveryDD()
                     .find()
@@ -738,7 +738,7 @@ public class MaterialRequirementCoverageForOrderServiceImpl implements MaterialR
     }
 
     private BigDecimal subtractUsedQuantityFromProductionTrackings(final BigDecimal quantity, final Entity order,
-            final Entity technologyOperationComponent, final Entity product, final String typeOfProductionRecording) {
+                                                                   final Entity technologyOperationComponent, final Entity product, final String typeOfProductionRecording) {
         BigDecimal usedQuantity;
 
         if (TypeOfProductionRecording.BASIC.getStringValue().equals(typeOfProductionRecording)) {
@@ -779,7 +779,7 @@ public class MaterialRequirementCoverageForOrderServiceImpl implements MaterialR
     }
 
     private BigDecimal getUsedQuantityForOtherFromProductionTrackings(final Entity order,
-            final Entity technologyOperationComponent, final Entity product, final String typeOfProductionRecording) {
+                                                                      final Entity technologyOperationComponent, final Entity product, final String typeOfProductionRecording) {
         BigDecimal usedQuantity = BigDecimal.ZERO;
 
         SearchCriteriaBuilder searchCriteriaBuilder = dataDefinitionService
