@@ -169,7 +169,7 @@ public class MasterOrderXlsxImportService extends XlsxImportService {
         String comments = masterOrder.getStringField(MasterOrderFields.COMMENTS);
         String masterOrderPositionStatus = masterOrder.getStringField(MasterOrderFields.MASTER_ORDER_POSITION_STATUS);
 
-        if (Objects.nonNull(product) && Objects.nonNull(masterOrderQuantity) && Objects.nonNull(technology)) {
+        if (Objects.nonNull(product) && Objects.nonNull(masterOrderQuantity)) {
             List<Entity> masterOrderProducts = Lists.newArrayList();
 
             if (Objects.nonNull(masterOrderFromDB)) {
