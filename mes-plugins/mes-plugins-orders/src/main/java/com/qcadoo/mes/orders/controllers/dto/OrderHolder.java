@@ -70,6 +70,8 @@ public class OrderHolder {
 
     private boolean dashboardShowDescription;
 
+    private String deadline;
+
     public Long getId() {
         return id;
     }
@@ -250,7 +252,7 @@ public class OrderHolder {
                 .append(productionLineNumber, that.productionLineNumber).append(productNumber, that.productNumber)
                 .append(productName, that.productName).append(productUnit, that.productUnit).append(companyName, that.companyName)
                 .append(addressNumber, that.addressNumber).append(dashboardShowForProduct, that.dashboardShowForProduct)
-                .append(dashboardShowDescription, that.dashboardShowDescription).isEquals();
+                .append(dashboardShowDescription, that.dashboardShowDescription).append(deadline, that.deadline).isEquals();
     }
 
     @Override
@@ -259,7 +261,14 @@ public class OrderHolder {
                 .append(typeOfProductionRecording).append(plannedQuantity).append(doneQuantity).append(masterOrderQuantity)
                 .append(masterOrderNumber).append(orderCategory).append(productionLineNumber).append(productNumber)
                 .append(productName).append(productUnit).append(companyName).append(addressNumber).append(dashboardShowForProduct)
-                .append(dashboardShowDescription).toHashCode();
+                .append(dashboardShowDescription).append(deadline).toHashCode();
     }
 
+    public String getDeadline() {
+        return deadline;
+    }
+
+    public void setDeadline(String deadline) {
+        this.deadline = deadline;
+    }
 }

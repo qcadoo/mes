@@ -564,7 +564,9 @@ function createOrderDiv(order) {
 
     orderDiv = orderDiv + '</div>' +
     '<div class="card-body py-2">' +
-    (order.productionLineNumber ? '<span class="font-weight-bold">' + QCD.translate("basic.dashboard.orders.productionLineNumber.label") + ':</span> ' + order.productionLineNumber + '<br/>' : '') +
+    (order.productionLineNumber ? '<span class="float-left"><span class="font-weight-bold">' + QCD.translate("basic.dashboard.orders.productionLineNumber.label") + ':</span> ' + order.productionLineNumber + '</span>' : '') +
+    (order.deadline ? '<span class="float-right"><span class="font-weight-bold">' + QCD.translate("basic.dashboard.orders.deadline.label") + ':</span> ' + order.deadline + '</span>' : '') +
+    ((order.productionLineNumber || order.deadline) ? '<br/>' : '') +
     ('<span class="font-weight-bold">' + QCD.translate("basic.dashboard.orders.product.label") + ':</span> ' + product + '<br/>') +
     ((order.plannedQuantity && order.productUnit) ? '<span class="float-left"><span class="font-weight-bold">' + QCD.translate("basic.dashboard.orders.plannedQuantity.label") + ':</span> ' + order.plannedQuantity + ' ' + order.productUnit + '</span>' : '') +
     ((order.state == "03inProgress" || order.state == "04completed") ? '<span class="float-right"><span class="font-weight-bold">' + QCD.translate("basic.dashboard.orders.doneQuantity.label") + ':</span> ' + quantityMade + ' ' + order.productUnit + '</span>' : '') +
