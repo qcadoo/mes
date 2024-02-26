@@ -100,7 +100,7 @@ public class DashboardKanbanDataProvider {
 
     private String getOrderQueryProjections() {
         return "SELECT orderlistdto.id, orderlistdto.number, orderlistdto.name,  orderlistdto.reportedProductionQuantity,  "
-                + "orderlistdto.state, orderlistdto.typeofproductionrecording, "
+                + "orderlistdto.state, orderlistdto.typeofproductionrecording, to_char(orderlistdto.deadline, 'YYYY-MM-DD') AS deadline, "
                 + "orderlistdto.plannedquantity, orderlistdto.donequantity, mop.masterorderquantity, "
                 + "orderlistdto.masterordernumber AS masterOrderNumber, orderlistdto.ordercategory AS orderCategory, "
                 + "orderlistdto.productionlinenumber AS productionLineNumber, orderlistdto.productnumber AS productNumber, "
