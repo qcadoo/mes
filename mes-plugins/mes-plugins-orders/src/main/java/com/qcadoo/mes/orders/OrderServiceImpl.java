@@ -23,23 +23,11 @@
  */
 package com.qcadoo.mes.orders;
 
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
-
-import com.qcadoo.mes.technologies.constants.TechnologyProductionLineFields;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.google.common.collect.Sets;
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.basic.constants.ProductFields;
+import com.qcadoo.mes.basic.constants.UnitConversionItemFieldsB;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.mes.orders.constants.ParameterFieldsO;
@@ -49,22 +37,31 @@ import com.qcadoo.mes.productionLines.constants.ProductionLineFields;
 import com.qcadoo.mes.technologies.TechnologyService;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
 import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
+import com.qcadoo.mes.technologies.constants.TechnologyProductionLineFields;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchOrders;
 import com.qcadoo.model.api.search.SearchRestrictions;
+import com.qcadoo.model.api.units.PossibleUnitConversions;
+import com.qcadoo.model.api.units.UnitConversionService;
 import com.qcadoo.plugin.api.PluginUtils;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.CheckBoxComponent;
 import com.qcadoo.view.api.components.FieldComponent;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
+import java.util.*;
 
 @Service
 public class OrderServiceImpl implements OrderService {
 
     private static final String L_EMPTY_NUMBER = "";
 
-    public static final String L_DIVISION = "division";
+    private static final String L_DIVISION = "division";
 
     private static final Set<String> L_ORDER_STARTED_STATES = Collections
             .unmodifiableSet(Sets.newHashSet(OrderState.IN_PROGRESS.getStringValue(), OrderState.COMPLETED.getStringValue(),
@@ -74,23 +71,27 @@ public class OrderServiceImpl implements OrderService {
     private DataDefinitionService dataDefinitionService;
 
     @Autowired
+    private UnitConversionService unitConversionService;
+
+    @Autowired
     private TranslationService translationService;
 
     @Autowired
     private ParameterService parameterService;
 
     @Autowired
-    private TechnologyServiceO technologyServiceO;
+    private TechnologyService technologyService;
 
     @Autowired
-    private TechnologyService technologyService;
+    private TechnologyServiceO technologyServiceO;
 
     @Override
     public Entity getOrder(final Long orderId) {
-        return getOrderDataDefinition().get(orderId);
+        return getOrderDD().get(orderId);
     }
 
-    private DataDefinition getOrderDataDefinition() {
+    @Override
+    public DataDefinition getOrderDD() {
         return dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER);
     }
 
@@ -101,7 +102,7 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public String makeDefaultName(final Entity product, Entity technology, final Locale locale) {
-        if (technology == null) {
+        if (Objects.isNull(technology)) {
             technology = technologyServiceO.getDefaultTechnology(product);
         }
 
@@ -110,7 +111,7 @@ public class OrderServiceImpl implements OrderService {
         Calendar cal = Calendar.getInstance(locale);
         cal.setTime(new Date());
 
-        if (technology != null) {
+        if (Objects.nonNull(technology)) {
             technologyNumber = "tech. " + technology.getStringField(TechnologyFields.NUMBER);
 
             return translationService.translate("orders.order.name.default", locale, product.getStringField(OrderFields.NAME),
@@ -125,23 +126,25 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public Entity getProductionLine(final Entity technology) {
-
         Entity parameter = parameterService.getParameter();
+
         Entity defaultProductionLine = parameter.getBelongsToField(ParameterFieldsPL.DEFAULT_PRODUCTION_LINE);
         Entity productionLine = null;
 
-        if(technology == null) {
+        if (Objects.isNull(technology)) {
             return null;
         }
 
-        if(Objects.nonNull(defaultProductionLine)) {
+        if (Objects.nonNull(defaultProductionLine)) {
             List<Entity> lines = technology.getHasManyField(TechnologyFields.PRODUCTION_LINES);
+
             boolean anyMatch = lines.stream().anyMatch(l -> l.getBelongsToField(TechnologyProductionLineFields.PRODUCTION_LINE).getId().equals(defaultProductionLine.getId()));
+
             if (anyMatch) {
                 productionLine = defaultProductionLine;
             }
 
-            if(lines.isEmpty()) {
+            if (lines.isEmpty()) {
                 productionLine = defaultProductionLine;
             }
         }
@@ -149,28 +152,35 @@ public class OrderServiceImpl implements OrderService {
         if (Objects.nonNull(technology) && parameter.getBooleanField(ParameterFieldsO.PROMPT_DEFAULT_LINE_FROM_TECHNOLOGY)
                 && PluginUtils.isEnabled(L_PRODUCT_FLOW_THRU_DIVISION)) {
             Optional<Entity> maybeProductionLine = technologyService.getProductionLine(technology);
-            if(maybeProductionLine.isPresent()) {
+
+            if (maybeProductionLine.isPresent()) {
                 productionLine = maybeProductionLine.get();
             }
         }
+
         return productionLine;
     }
 
     @Override
     public Entity getDivision(final Entity technology) {
         Entity division = null;
+
         if (Objects.nonNull(technology)) {
             division = technology.getBelongsToField(L_DIVISION);
         }
+
         if (Objects.isNull(division)) {
             Entity productionLine = getProductionLine(technology);
+
             if (Objects.nonNull(productionLine)) {
                 List<Entity> divisions = productionLine.getManyToManyField(ProductionLineFields.DIVISIONS);
+
                 if (divisions.size() == 1) {
                     division = divisions.get(0);
                 }
             }
         }
+
         return division;
     }
 
@@ -193,7 +203,7 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public boolean checkComponentOrderHasTechnology(final DataDefinition dataDefinition, final Entity entity) {
-        Entity order = null;
+        Entity order;
 
         if (OrdersConstants.MODEL_ORDER.equals(entity.getDataDefinition().getName())) {
             order = entity;
@@ -201,11 +211,11 @@ public class OrderServiceImpl implements OrderService {
             order = entity.getBelongsToField(OrdersConstants.MODEL_ORDER);
         }
 
-        if (order == null) {
+        if (Objects.isNull(order)) {
             return true;
         }
 
-        if (order.getField(OrderFields.TECHNOLOGY) == null) {
+        if (Objects.isNull(order.getField(OrderFields.TECHNOLOGY))) {
             entity.addError(dataDefinition.getField(OrdersConstants.MODEL_ORDER),
                     "orders.validate.global.error.orderMustHaveTechnology");
 
@@ -216,21 +226,10 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public boolean checkAutogenealogyRequired() {
-        Entity parameter = parameterService.getParameter();
-
-        if (parameter.getField("batchForDoneOrder") == null) {
-            return false;
-        } else {
-            return !"01none".equals(parameter.getStringField("batchForDoneOrder"));
-        }
-    }
-
-    @Override
     public boolean checkRequiredBatch(final Entity order) {
         Entity technology = order.getBelongsToField(OrderFields.TECHNOLOGY);
 
-        if (technology != null) {
+        if (Objects.nonNull(technology)) {
             if (order.getHasManyField("genealogies").isEmpty()) {
                 if (technology.getBooleanField("batchRequired")) {
                     return false;
@@ -254,7 +253,7 @@ public class OrderServiceImpl implements OrderService {
                 }
             }
             for (Entity genealogy : order.getHasManyField("genealogies")) {
-                if (technology.getBooleanField("batchRequired") && genealogy.getField("batch") == null) {
+                if (technology.getBooleanField("batchRequired") && Objects.isNull(genealogy.getField("batch"))) {
                     return false;
                 }
                 if (technology.getBooleanField("shiftFeatureRequired")) {
@@ -294,16 +293,18 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public String buildOrderDescription(Entity masterOrder, Entity technology, Entity product,
-                                        boolean fillOrderDescriptionBasedOnTechnology, boolean fillOrderDescriptionBasedOnProductDescription) {
+    public String buildOrderDescription(final Entity masterOrder, final Entity technology, final Entity product,
+                                        final boolean fillOrderDescriptionBasedOnTechnology, final boolean fillOrderDescriptionBasedOnProductDescription) {
         StringBuilder builder = new StringBuilder();
-        if (masterOrder != null) {
+
+        if (Objects.nonNull(masterOrder)) {
             String poNumber = "";
             String direction = "";
-            if (masterOrder.getStringField("poNumber") != null) {
+
+            if (Objects.nonNull(masterOrder.getStringField("poNumber"))) {
                 poNumber = masterOrder.getStringField("poNumber");
             }
-            if (masterOrder.getStringField("direction") != null) {
+            if (Objects.nonNull(masterOrder.getStringField("direction"))) {
                 direction = masterOrder.getStringField("direction");
             }
 
@@ -324,55 +325,63 @@ public class OrderServiceImpl implements OrderService {
             buildMOTechnologyDescription(masterOrder, technology, fillOrderDescriptionBasedOnTechnology, builder);
             buildMOProductDescription(masterOrder, product, fillOrderDescriptionBasedOnProductDescription, builder);
         }
+
         buildTechnologyDescription(technology, fillOrderDescriptionBasedOnTechnology, builder);
         buildProductDescription(product, fillOrderDescriptionBasedOnProductDescription, builder);
 
         return builder.toString();
     }
 
-    private void buildMOTechnologyDescription(Entity masterOrder, Entity technology,
-                                              boolean fillOrderDescriptionBasedOnTechnology, StringBuilder builder) {
-        if (fillOrderDescriptionBasedOnTechnology && technology == null && masterOrder.getBelongsToField("technology") != null) {
+    private void buildMOTechnologyDescription(final Entity masterOrder, final Entity technology,
+                                              final boolean fillOrderDescriptionBasedOnTechnology, final StringBuilder builder) {
+        if (fillOrderDescriptionBasedOnTechnology && Objects.isNull(technology)
+                && Objects.nonNull(masterOrder.getBelongsToField("technology"))) {
             String technologyDescription = masterOrder.getBelongsToField("technology")
                     .getStringField(TechnologyFields.DESCRIPTION);
-            if (technologyDescription != null) {
+
+            if (Objects.nonNull(technologyDescription)) {
                 builder.append(technologyDescription);
             }
         }
     }
 
-    private void buildMOProductDescription(Entity masterOrder, Entity product,
-                                           boolean fillOrderDescriptionBasedOnProductDescription, StringBuilder builder) {
-        if (fillOrderDescriptionBasedOnProductDescription && product == null
-                && masterOrder.getBelongsToField("product") != null) {
+    private void buildMOProductDescription(final Entity masterOrder, final Entity product,
+                                           final boolean fillOrderDescriptionBasedOnProductDescription, final StringBuilder builder) {
+        if (fillOrderDescriptionBasedOnProductDescription && Objects.isNull(product)
+                && Objects.nonNull(masterOrder.getBelongsToField("product"))) {
             String productDescription = masterOrder.getBelongsToField("product").getStringField(ProductFields.DESCRIPTION);
-            if (productDescription != null) {
+
+            if (Objects.nonNull(productDescription)) {
                 if (builder.length() > 0) {
                     builder.append("\n");
                 }
+
                 builder.append(productDescription);
             }
         }
     }
 
-    private void buildTechnologyDescription(Entity technology, boolean fillOrderDescriptionBasedOnTechnology,
-                                            StringBuilder builder) {
-        if (fillOrderDescriptionBasedOnTechnology && technology != null) {
+    private void buildTechnologyDescription(final Entity technology, final boolean fillOrderDescriptionBasedOnTechnology,
+                                            final StringBuilder builder) {
+        if (fillOrderDescriptionBasedOnTechnology && Objects.nonNull(technology)) {
             String technologyDescription = technology.getStringField(TechnologyFields.DESCRIPTION);
-            if (technologyDescription != null) {
+
+            if (Objects.nonNull(technologyDescription)) {
                 builder.append(technologyDescription);
             }
         }
     }
 
-    private void buildProductDescription(Entity product, boolean fillOrderDescriptionBasedOnProductDescription,
-                                         StringBuilder builder) {
-        if (fillOrderDescriptionBasedOnProductDescription && product != null) {
+    private void buildProductDescription(final Entity product, final boolean fillOrderDescriptionBasedOnProductDescription,
+                                         final StringBuilder builder) {
+        if (fillOrderDescriptionBasedOnProductDescription && Objects.nonNull(product)) {
             String productDescription = product.getStringField(ProductFields.DESCRIPTION);
-            if (productDescription != null) {
+
+            if (Objects.nonNull(productDescription)) {
                 if (builder.length() > 0) {
                     builder.append("\n");
                 }
+
                 builder.append(productDescription);
             }
         }
@@ -381,11 +390,37 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public Optional<Entity> findLastOrder(final Entity order) {
         Entity productionLine = order.getBelongsToField(OrderFields.PRODUCTION_LINE);
-        Entity lastOrder = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).find()
+
+        Entity lastOrder = getOrderDD().find()
                 .add(SearchRestrictions.isNotNull(OrderFields.FINISH_DATE))
                 .add(SearchRestrictions.belongsTo(OrderFields.PRODUCTION_LINE, productionLine))
                 .add(SearchRestrictions.ne(OrderFields.STATE, OrderState.ABANDONED.getStringValue()))
                 .addOrder(SearchOrders.desc(OrderFields.FINISH_DATE)).setMaxResults(1).uniqueResult();
+
         return Optional.ofNullable(lastOrder);
     }
+
+    @Override
+    public void setPlannedQuantityForAdditionalUnit(final Entity order) {
+        Entity product = order.getBelongsToField(OrderFields.PRODUCT);
+        BigDecimal plannedQuantity = order.getDecimalField(OrderFields.PLANNED_QUANTITY);
+
+        if (Objects.nonNull(product)) {
+            String unit = product.getStringField(ProductFields.UNIT);
+            String additionalUnit = product.getStringField(ProductFields.ADDITIONAL_UNIT);
+
+            if (!StringUtils.isEmpty(additionalUnit)) {
+                PossibleUnitConversions unitConversions = unitConversionService.getPossibleConversions(unit,
+                        searchCriteriaBuilder -> searchCriteriaBuilder
+                                .add(SearchRestrictions.belongsTo(UnitConversionItemFieldsB.PRODUCT, product)));
+
+                if (unitConversions.isDefinedFor(additionalUnit)) {
+                    BigDecimal plannedQuantityForAdditionalUnit = unitConversions.convertTo(plannedQuantity, additionalUnit);
+
+                    order.setField(OrderFields.PLANNED_QUANTITY_FOR_ADDITIONAL_UNIT, plannedQuantityForAdditionalUnit);
+                }
+            }
+        }
+    }
+
 }

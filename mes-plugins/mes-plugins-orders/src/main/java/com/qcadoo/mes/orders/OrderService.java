@@ -23,12 +23,12 @@
  */
 package com.qcadoo.mes.orders;
 
-import java.util.Locale;
-import java.util.Optional;
-
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ViewDefinitionState;
+
+import java.util.Locale;
+import java.util.Optional;
 
 public interface OrderService {
 
@@ -43,6 +43,8 @@ public interface OrderService {
      * @return order
      */
     Entity getOrder(final Long orderId);
+
+    DataDefinition getOrderDD();
 
     /**
      * Is order started
@@ -99,13 +101,6 @@ public interface OrderService {
     boolean checkComponentOrderHasTechnology(final DataDefinition dataDefinition, final Entity entity);
 
     /**
-     * Checks autogenealogy required
-     * 
-     * @return boolean
-     */
-    boolean checkAutogenealogyRequired();
-
-    /**
      * Checks required batch
      * 
      * @param order
@@ -131,8 +126,11 @@ public interface OrderService {
      * @param fillOrderDescriptionBasedOnProductDescription
      * @return String
      */
-    String buildOrderDescription(Entity masterOrder, Entity technology, Entity product,
-            boolean fillOrderDescriptionBasedOnTechnology, boolean fillOrderDescriptionBasedOnProductDescription);
+    String buildOrderDescription(final Entity masterOrder, final Entity technology, final Entity product,
+            final boolean fillOrderDescriptionBasedOnTechnology, final boolean fillOrderDescriptionBasedOnProductDescription);
 
-    Optional<Entity> findLastOrder(Entity order);
+    Optional<Entity> findLastOrder(final Entity order);
+
+    void setPlannedQuantityForAdditionalUnit(final Entity order);
+
 }

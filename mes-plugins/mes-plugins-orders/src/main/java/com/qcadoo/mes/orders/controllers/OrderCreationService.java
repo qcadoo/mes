@@ -167,12 +167,13 @@ public class OrderCreationService {
 
         OrderCreationResponse response = new OrderCreationResponse(OrderCreationResponse.StatusCode.OK);
 
-        Entity order = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).create();
+        Entity order = orderService.getOrderDD().create();
 
         order.setField(OrderFields.NUMBER,
                 numberGeneratorService.generateNumber(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER, 6));
         order.setField(OrderFields.NAME, orderService.makeDefaultName(product, technology, LocaleContextHolder.getLocale()));
-
+        order.setField(OrderFields.STATE, OrderStateStringValues.PENDING);
+        order.setField(OrderFields.EXTERNAL_SYNCHRONIZED, true);
         order.setField(OrderFields.PRODUCT, product);
         order.setField(OrderFields.TECHNOLOGY, technology);
         order.setField(OrderFields.PRODUCTION_LINE, productionLine);
@@ -181,9 +182,10 @@ public class OrderCreationService {
         order.setField(OrderFields.DATE_FROM, orderCreationRequest.getStartDate());
         order.setField(OrderFields.DATE_TO, orderCreationRequest.getFinishDate());
 
-        order.setField(OrderFields.EXTERNAL_SYNCHRONIZED, true);
-        order.setField(OrderFields.STATE, OrderStateStringValues.PENDING);
         order.setField(OrderFields.PLANNED_QUANTITY, orderCreationRequest.getQuantity());
+
+        orderService.setPlannedQuantityForAdditionalUnit(order);
+
         order.setField(OrderFields.DESCRIPTION,
                 buildDescription(parameter, orderCreationRequest.getDescription(), technology, product));
 
@@ -195,11 +197,11 @@ public class OrderCreationService {
 
         if (order.isValid()) {
             if (!order.getGlobalMessages().isEmpty()) {
-                Optional<GlobalMessage> message = order.getGlobalMessages().stream()
-                        .filter(gm -> gm.getMessage().equals("orders.order.message.plannedQuantityChanged")).findFirst();
+                Optional<GlobalMessage> mayBeMessage = order.getGlobalMessages().stream()
+                        .filter(globalMessage -> globalMessage.getMessage().equals("orders.order.message.plannedQuantityChanged")).findFirst();
 
-                message.ifPresent(m -> response.setAdditionalInformation(translationService.translate(m.getMessage(),
-                        LocaleContextHolder.getLocale(), m.getVars()[0], m.getVars()[1])));
+                mayBeMessage.ifPresent(message -> response.setAdditionalInformation(translationService.translate(message.getMessage(),
+                        LocaleContextHolder.getLocale(), message.getVars()[0], message.getVars()[1])));
             }
 
             final StateChangeContext orderStateChangeContext = stateChangeContextBuilder
@@ -234,6 +236,7 @@ public class OrderCreationService {
 
         if (createOperationalTasks) {
             createOperationalTasks(order, orderCreationRequest);
+
             modifyProductionCountingQuantityForEach(order, orderCreationRequest.getTechnologyOperations());
         } else {
             modifyProductionCountingQuantity(order, orderCreationRequest.getMaterials());
@@ -291,7 +294,7 @@ public class OrderCreationService {
         }
     }
 
-    private void modifyProductionCountingQuantityForEach(Entity order, List<TechnologyOperationDto> technologyOperations) {
+    private void modifyProductionCountingQuantityForEach(final Entity order, final List<TechnologyOperationDto> technologyOperations) {
         for (TechnologyOperationDto technologyOperation : technologyOperations) {
             Entity technologyOperationComponent = getTechnologyOperationComponentDD().get(technologyOperation.getId());
 
@@ -492,10 +495,10 @@ public class OrderCreationService {
 
         Entity parent = null;
 
+        DataDefinition operationDD = getOperationDD();
+
         for (TechnologyOperationDto technologyOperation : orderCreationRequest.getTechnologyOperations()) {
-            Entity operation = dataDefinitionService
-                    .get(TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_OPERATION)
-                    .get(technologyOperation.getOperationId());
+            Entity operation = operationDD.get(technologyOperation.getOperationId());
 
             Entity technologyOperationComponent = getTechnologyOperationComponentDD().create();
 
@@ -602,6 +605,7 @@ public class OrderCreationService {
         return Either.right(technology);
     }
 
+
     private Either<String, Entity> createTechnology(final OrderCreationRequest orderCreationRequest) {
         Entity product = getProduct(orderCreationRequest.getProductId());
         Entity parameter = parameterService.getParameter();
@@ -696,9 +700,7 @@ public class OrderCreationService {
 
     private Entity getProductionLine(final Long productionLineId, final Entity technology) {
         if (Objects.nonNull(productionLineId)) {
-            return dataDefinitionService
-                    .get(ProductionLinesConstants.PLUGIN_IDENTIFIER, ProductionLinesConstants.MODEL_PRODUCTION_LINE)
-                    .get(productionLineId);
+            return getProductionLineDD().get(productionLineId);
         } else {
             return orderService.getProductionLine(technology);
         }
@@ -715,8 +717,7 @@ public class OrderCreationService {
         if (Objects.nonNull(product)) {
             return product;
         } else {
-            Entity newProduct = getProductDD()
-                    .create();
+            Entity newProduct = getProductDD().create();
 
             newProduct.setField(ProductFields.NUMBER, operation.getStringField(OperationFields.NUMBER));
             newProduct.setField(ProductFields.NAME, operation.getStringField(OperationFields.NAME));
@@ -729,10 +730,13 @@ public class OrderCreationService {
     }
 
     private Entity getCurrentUserProductionLine() {
-        Entity currentUser = dataDefinitionService.get(QcadooSecurityConstants.PLUGIN_IDENTIFIER, QcadooSecurityConstants.MODEL_USER)
-                .get(securityService.getCurrentUserId());
+        Entity currentUser = getUserDD().get(securityService.getCurrentUserId());
 
         return currentUser.getBelongsToField(UserFieldsPL.PRODUCTION_LINE);
+    }
+
+    private DataDefinition getUserDD() {
+        return dataDefinitionService.get(QcadooSecurityConstants.PLUGIN_IDENTIFIER, QcadooSecurityConstants.MODEL_USER);
     }
 
     private DataDefinition getProductDD() {
@@ -741,6 +745,16 @@ public class OrderCreationService {
 
     private DataDefinition getWorkstationDD() {
         return dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_WORKSTATION);
+    }
+
+    private DataDefinition getProductionLineDD() {
+        return dataDefinitionService
+                .get(ProductionLinesConstants.PLUGIN_IDENTIFIER, ProductionLinesConstants.MODEL_PRODUCTION_LINE);
+    }
+
+    private DataDefinition getOperationDD() {
+        return dataDefinitionService
+                .get(TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_OPERATION);
     }
 
     private DataDefinition getTechnologyDD() {

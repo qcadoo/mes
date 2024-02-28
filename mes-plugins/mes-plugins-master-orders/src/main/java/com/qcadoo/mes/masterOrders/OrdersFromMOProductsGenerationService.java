@@ -55,31 +55,31 @@ public class OrdersFromMOProductsGenerationService {
     private static final String L_CONSIDER_MINIMUM_STOCK_LEVEL_WHEN_CREATING_PRODUCTION_ORDERS = "considerMinimumStockLevelWhenCreatingProductionOrders";
 
     @Autowired
-    private TechnologyServiceO technologyServiceO;
-
-    @Autowired
-    private ParameterService parameterService;
-
-    @Autowired
     private DataDefinitionService dataDefinitionService;
 
     @Autowired
     private NumberGeneratorService numberGeneratorService;
 
     @Autowired
-    private NumberService numberService;
-
-    @Autowired
-    private OrderService orderService;
+    private DictionaryService dictionaryService;
 
     @Autowired
     private TranslationService translationService;
 
     @Autowired
+    private NumberService numberService;
+
+    @Autowired
+    private ParameterService parameterService;
+
+    @Autowired
+    private TechnologyServiceO technologyServiceO;
+
+    @Autowired
     private MaterialFlowResourcesService materialFlowResourcesService;
 
     @Autowired
-    private DictionaryService dictionaryService;
+    private OrderService orderService;
 
     @Autowired
     private OrdersGenerationService ordersGenerationService;
@@ -379,13 +379,12 @@ public class OrdersFromMOProductsGenerationService {
 
         order.setField(OrderFields.NUMBER, generateOrderNumber(masterOrderProduct));
         order.setField(OrderFields.NAME, generateOrderName(product, technology));
+        order.setField(OrderFields.STATE, OrderStateStringValues.PENDING);
+        order.setField(OrderFields.EXTERNAL_SYNCHRONIZED, true);
         order.setField(OrderFields.PRODUCT, product);
         order.setField(OrderFields.TECHNOLOGY, technology);
         order.setField(OrderFields.PRODUCTION_LINE, orderService.getProductionLine(technology));
         order.setField(OrderFields.DIVISION, orderService.getDivision(technology));
-
-        order.setField(OrderFields.EXTERNAL_SYNCHRONIZED, true);
-        order.setField(OrderFields.STATE, OrderStateStringValues.PENDING);
 
         if (realizationFromStock) {
             BigDecimal quantityRemainingToOrderWithMinState = quantityRemainingToOrder;
@@ -450,11 +449,11 @@ public class OrdersFromMOProductsGenerationService {
             order.setField(OrderFields.PLANNED_QUANTITY, quantityRemainingToOrder);
         }
 
+        orderService.setPlannedQuantityForAdditionalUnit(order);
+
         order.setField(L_IGNORE_MISSING_COMPONENTS, parameter.getBooleanField(L_IGNORE_MISSING_COMPONENTS));
 
-        String orderDescription = buildDescription(parameter, masterOrderProduct, technology, product);
-
-        order.setField(OrderFields.DESCRIPTION, orderDescription);
+        order.setField(OrderFields.DESCRIPTION, buildDescription(parameter, masterOrderProduct, technology, product));
 
         fillPCParametersForOrder(order, technology);
 

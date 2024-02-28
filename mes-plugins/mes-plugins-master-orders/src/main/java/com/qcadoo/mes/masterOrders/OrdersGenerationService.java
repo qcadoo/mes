@@ -57,16 +57,13 @@ public class OrdersGenerationService {
     private DataDefinitionService dataDefinitionService;
 
     @Autowired
-    private ShiftsService shiftsService;
-
-    @Autowired
-    private ChangeoverNormsService changeoverNormsService;
-
-    @Autowired
-    private LineChangeoverNormsForOrdersService lineChangeoverNormsForOrdersService;
+    private NumberGeneratorService numberGeneratorService;
 
     @Autowired
     private ParameterService parameterService;
+
+    @Autowired
+    private ShiftsService shiftsService;
 
     @Autowired
     private OrderService orderService;
@@ -75,7 +72,10 @@ public class OrdersGenerationService {
     private TechnologyServiceO technologyServiceO;
 
     @Autowired
-    private NumberGeneratorService numberGeneratorService;
+    private ChangeoverNormsService changeoverNormsService;
+
+    @Autowired
+    private LineChangeoverNormsForOrdersService lineChangeoverNormsForOrdersService;
 
     public void createOrders(final GenerationOrderResult result, final Set<Long> productIds, final BigDecimal plannedQuantity, final Date dateFrom,
                              final Date dateTo) {
@@ -205,19 +205,23 @@ public class OrdersGenerationService {
         order.setField(OrderFields.NUMBER,
                 numberGeneratorService.generateNumber(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER));
         order.setField(OrderFields.NAME, orderService.makeDefaultName(product, technology, LocaleContextHolder.getLocale()));
+        order.setField(OrderFields.STATE, OrderStateStringValues.PENDING);
+        order.setField(OrderFields.EXTERNAL_SYNCHRONIZED, true);
         order.setField(OrderFields.PRODUCT, product);
         order.setField(OrderFields.TECHNOLOGY, technology);
         order.setField(OrderFields.PRODUCTION_LINE, orderService.getProductionLine(technology));
         order.setField(OrderFields.DIVISION, orderService.getDivision(technology));
         order.setField(OrderFields.DATE_FROM, dateFrom);
         order.setField(OrderFields.DATE_TO, dateTo);
-        order.setField(OrderFields.EXTERNAL_SYNCHRONIZED, true);
-        order.setField(OrderFields.STATE, OrderStateStringValues.PENDING);
+
         order.setField(OrderFields.PLANNED_QUANTITY, plannedQuantity);
-        order.setField(OrderFields.PLANNED_QUANTITY_FOR_ADDITIONAL_UNIT, plannedQuantity);
+
+        orderService.setPlannedQuantityForAdditionalUnit(order);
+
+        order.setField(OrderFieldsMO.SALES_PLAN, salesPlan);
+
         order.setField(L_IGNORE_MISSING_COMPONENTS, parameter.getBooleanField(L_IGNORE_MISSING_COMPONENTS));
         order.setField(OrderFields.DESCRIPTION, buildDescription(parameter, technology, product));
-        order.setField(OrderFieldsMO.SALES_PLAN, salesPlan);
 
         return order.getDataDefinition().save(order);
     }
