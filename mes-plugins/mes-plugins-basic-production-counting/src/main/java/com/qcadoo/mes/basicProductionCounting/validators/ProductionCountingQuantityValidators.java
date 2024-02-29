@@ -49,12 +49,15 @@ public class ProductionCountingQuantityValidators {
 
     public static final String L_FOR_EACH = "03forEach";
 
+    private static final String L_CUMULATED = "02cumulated";
+
     public static final String TECHNOLOGY_OPERATION_COMPONENT_REQUIRED = "basicProductionCounting.productionCountingQuantity.technologyOperationComponent.error.technologyOperationComponentRequired";
 
     @Autowired
     private ProductionProgressModifyLockHelper progressModifyLockHelper;
 
-    public boolean validatesWith(final DataDefinition productionCountingQuantityDD, final Entity productionCountingQuantity) {
+    public boolean validatesWith(final DataDefinition productionCountingQuantityDD,
+                                 final Entity productionCountingQuantity) {
         boolean isValid = checkTypeOfProductionRecording(productionCountingQuantityDD, productionCountingQuantity);
         isValid = isValid && checkRoleAndTypeOfMaterial(productionCountingQuantityDD, productionCountingQuantity);
         isValid = isValid && checkIfMaterialExists(productionCountingQuantityDD, productionCountingQuantity);
@@ -104,7 +107,7 @@ public class ProductionCountingQuantityValidators {
                                                    Entity productionCountingQuantity) {
         String typeOfProductionRecording = productionCountingQuantity.getBelongsToField(ProductionCountingQuantityFields.ORDER)
                 .getStringField(L_TYPE_OF_PRODUCTION_RECORDING);
-        if (L_FOR_EACH.equals(typeOfProductionRecording) && Objects.isNull(
+        if ((L_FOR_EACH.equals(typeOfProductionRecording) || L_CUMULATED.equals(typeOfProductionRecording)) && Objects.isNull(
                 productionCountingQuantity.getBelongsToField(ProductionCountingQuantityFields.TECHNOLOGY_OPERATION_COMPONENT))) {
             productionCountingQuantity.addError(
                     productionCountingQuantityDD.getField(ProductionCountingQuantityFields.TECHNOLOGY_OPERATION_COMPONENT),
@@ -116,7 +119,8 @@ public class ProductionCountingQuantityValidators {
     }
 
     public boolean validatePlannedQuantity(final DataDefinition productionCountingQuantityDD,
-                                           final FieldDefinition plannedQuantityFieldDefinition, final Entity productionCountingQuantity, final Object oldValue,
+                                           final FieldDefinition plannedQuantityFieldDefinition,
+                                           final Entity productionCountingQuantity, final Object oldValue,
                                            final Object newValue) {
         if (!ProductionCountingQuantityTypeOfMaterial.COMPONENT.getStringValue()
                 .equals(productionCountingQuantity.getStringField(ProductionCountingQuantityFields.TYPE_OF_MATERIAL))
@@ -183,14 +187,14 @@ public class ProductionCountingQuantityValidators {
                     return false;
                 }
 
-                if(checkIfMainOperation(productionCountingQuantityDD, productionCountingQuantity)) {
+                if (checkIfMainOperation(productionCountingQuantityDD, productionCountingQuantity)) {
                     productionCountingQuantity.addError(
                             productionCountingQuantityDD.getField(ProductionCountingQuantityFields.TYPE_OF_MATERIAL),
                             "basicProductionCounting.productionCountingQuantity.typeOfMaterial.producedIntermediateProductInMainOperation");
                     return false;
                 }
 
-                if(!checkIfIntermediateProductExistsForOperation(productionCountingQuantityDD, productionCountingQuantity)) {
+                if (!checkIfIntermediateProductExistsForOperation(productionCountingQuantityDD, productionCountingQuantity)) {
                     productionCountingQuantity.addError(
                             productionCountingQuantityDD.getField(ProductionCountingQuantityFields.TYPE_OF_MATERIAL),
                             "basicProductionCounting.productionCountingQuantity.typeOfMaterial.producedIntermediateProductAlreadyExist");
@@ -218,7 +222,8 @@ public class ProductionCountingQuantityValidators {
         return true;
     }
 
-    private boolean checkIfFinalProductAddedToMainOperation(DataDefinition productionCountingQuantityDD, Entity productionCountingQuantity) {
+    private boolean checkIfFinalProductAddedToMainOperation(DataDefinition productionCountingQuantityDD,
+                                                            Entity productionCountingQuantity) {
         String typeOfMaterial = productionCountingQuantity.getStringField(ProductionCountingQuantityFields.TYPE_OF_MATERIAL);
 
         Entity toc = productionCountingQuantity.getBelongsToField(ProductionCountingQuantityFields.TECHNOLOGY_OPERATION_COMPONENT);
@@ -240,7 +245,8 @@ public class ProductionCountingQuantityValidators {
         return true;
     }
 
-    private boolean checkIfMainOperation(DataDefinition productionCountingQuantityDD, Entity productionCountingQuantity) {
+    private boolean checkIfMainOperation(DataDefinition productionCountingQuantityDD,
+                                         Entity productionCountingQuantity) {
         String typeOfMaterial = productionCountingQuantity.getStringField(ProductionCountingQuantityFields.TYPE_OF_MATERIAL);
 
         Entity toc = productionCountingQuantity.getBelongsToField(ProductionCountingQuantityFields.TECHNOLOGY_OPERATION_COMPONENT);
@@ -281,7 +287,7 @@ public class ProductionCountingQuantityValidators {
     }
 
     private boolean checkIfIntermediateProductExistsForOperation(final DataDefinition productionCountingQuantityDD,
-                                                     final Entity productionCountingQuantity) {
+                                                                 final Entity productionCountingQuantity) {
         Entity order = productionCountingQuantity.getBelongsToField(ProductionCountingQuantityFields.ORDER);
 
         Entity toc = productionCountingQuantity.getBelongsToField(ProductionCountingQuantityFields.TECHNOLOGY_OPERATION_COMPONENT);
