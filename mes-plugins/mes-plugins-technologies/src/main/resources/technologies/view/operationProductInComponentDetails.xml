@@ -172,6 +172,7 @@
                 <option type="fixedHeight" value="true"/>
             </component>
         </windowTab>
+
         <windowTab name="attributeTab">
             <component type="gridLayout" name="gridLayout" columns="1"
                        rows="1">
@@ -233,6 +234,7 @@
                 </layoutElement>
             </component>
         </windowTab>
+
         <windowTab name="sectionsTab" reference="sectionsTab">
             <component type="grid" name="sections" source="#{form}.sections"
                        reference="sections">
@@ -243,7 +245,6 @@
                         width="100"/>
                 <option type="column" name="unit" fields="unit" link="true"
                         width="50"/>
-
 
                 <option type="order" column="length" direction="asc"/>
 
