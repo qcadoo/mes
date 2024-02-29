@@ -64,7 +64,7 @@
 
         <component type="form" name="import" reference="form">
             <component type="gridLayout" name="gridLayout" columns="3"
-                       rows="1">
+                       rows="2">
                 <layoutElement column="1" row="1" width="2">
                     <component type="checkbox" name="imported" reference="imported">
                         <script>
@@ -83,6 +83,12 @@
                         <listener event="onInputChange"
                                   class="com.qcadoo.mes.masterOrders.listeners.MasterOrdersImportListeners"
                                   method="onInputChange"/>
+                    </component>
+                </layoutElement>
+                <layoutElement column="1" row="2" width="2">
+                    <component type="checkbox" name="shouldSkip" reference="shouldSkip" hasDescription="true">
+                        <option type="labelWidth" value="80"/>
+                        <option type="align" value="right"/>
                     </component>
                 </layoutElement>
             </component>

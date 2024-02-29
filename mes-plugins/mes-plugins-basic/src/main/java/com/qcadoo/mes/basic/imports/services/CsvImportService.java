@@ -30,7 +30,10 @@ import java.util.List;
 import java.util.Objects;
 import java.util.function.Function;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.NoTransactionException;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
@@ -48,11 +51,13 @@ import com.qcadoo.model.api.search.SearchCriterion;
 @Service
 public class CsvImportService extends ImportService {
 
+    private static final Logger LOG = LoggerFactory.getLogger(CsvImportService.class);
+
     @Transactional
     public ImportStatus importFile(final FileInputStream fis, final CellBinderRegistry cellBinderRegistry,
             final Boolean rollbackOnError, final String pluginIdentifier, final String modelName, final Entity belongsTo,
             final String belongsToName, final Boolean shouldUpdate, final Function<Entity, SearchCriterion> criteriaSupplier,
-            final Function<Entity, Boolean> checkOnUpdate) throws IOException {
+            final Function<Entity, Boolean> checkOnUpdate, final Boolean shouldSkip) throws IOException {
         ImportStatus importStatus = new ImportStatus();
 
         CSVParser parser = new CSVParserBuilder().withSeparator(';').build();
@@ -79,6 +84,13 @@ public class CsvImportService extends ImportService {
                 break;
             }
 
+            if (shouldSkip && !Objects.isNull(criteriaSupplier)) {
+                Entity entityToSkip = getEntity(pluginIdentifier, modelName, criteriaSupplier.apply(entity));
+                if (!Objects.isNull(entityToSkip)) {
+                    continue;
+                }
+            }
+
             if (shouldUpdate && !Objects.isNull(criteriaSupplier)) {
                 Entity entityToUpdate = getEntity(pluginIdentifier, modelName, criteriaSupplier.apply(entity));
 
@@ -93,7 +105,11 @@ public class CsvImportService extends ImportService {
         }
 
         if (rollbackOnError && importStatus.hasErrors()) {
-            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            try {
+                TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            } catch (NoTransactionException e) {
+                LOG.error(e.getMessage(), e);
+            }
         }
 
         return importStatus;
