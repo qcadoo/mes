@@ -40,10 +40,10 @@
             <validatesRange from="0" exclusively="true"/>
         </integer>
         <dictionary name="unit" dictionary="units" required="true"/>
-
     </fields>
 
     <hooks>
-
+        <validatesWith class="com.qcadoo.mes.technologies.hooks.SectionHooks"
+                       method="validatesWith"/>
     </hooks>
 </model>
