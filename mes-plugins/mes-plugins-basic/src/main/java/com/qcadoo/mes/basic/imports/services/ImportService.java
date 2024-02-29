@@ -83,6 +83,8 @@ public abstract class ImportService {
 
     private static final String L_SHOULD_UPDATE = "shouldUpdate";
 
+    private static final String L_SHOULD_SKIP = "shouldSkip";
+
     private static final String L_RESOURCES = "resources";
 
     private static final String L_BASIC_IMPORT_ERROR_FILE_REQUIRED = "basic.import.error.file.required";
@@ -166,6 +168,7 @@ public abstract class ImportService {
             final String belongsToName, final Function<Entity, SearchCriterion> criteriaSupplier,
             final Function<Entity, Boolean> checkOnUpdate) throws IOException {
         boolean shouldUpdate = shouldUpdate(view);
+        boolean shouldSkip = shouldSkip(view);
 
         FieldComponent importFileField = (FieldComponent) view.getComponentByReference(L_IMPORT_FILE);
         CheckBoxComponent importedCheckBox = (CheckBoxComponent) view.getComponentByReference(L_IMPORTED);
@@ -181,7 +184,7 @@ public abstract class ImportService {
         } else {
             try (FileInputStream fis = new FileInputStream(filePath)) {
                 ImportStatus importStatus = importFile(fis, cellBinderRegistry, rollbackOnError, pluginIdentifier, modelName,
-                        belongsTo, belongsToName, shouldUpdate, criteriaSupplier, checkOnUpdate);
+                        belongsTo, belongsToName, shouldUpdate, criteriaSupplier, checkOnUpdate, shouldSkip);
 
                 Integer rowsProcessed = importStatus.getRowsProcessed();
                 Integer rowsWithErrors = importStatus.getErrorsSize();
@@ -231,28 +234,28 @@ public abstract class ImportService {
             final Boolean rollbackOnError, final String pluginIdentifier, final String modelName, final Entity belongsTo,
             final String belongsToName) throws IOException {
         return importFile(fis, cellBinderRegistry, rollbackOnError, pluginIdentifier, modelName, belongsTo, belongsToName, false,
-                null, null);
+                null, null, false);
     }
 
     public ImportStatus importFile(final FileInputStream fis, final CellBinderRegistry cellBinderRegistry,
             final Boolean rollbackOnError, final String pluginIdentifier, final String modelName, final Entity belongsTo,
             final String belongsToName, final Function<Entity, SearchCriterion> criteriaSupplier) throws IOException {
         return importFile(fis, cellBinderRegistry, rollbackOnError, pluginIdentifier, modelName, belongsTo, belongsToName, true,
-                criteriaSupplier, null);
+                criteriaSupplier, null, false);
     }
 
     public ImportStatus importFile(final FileInputStream fis, final CellBinderRegistry cellBinderRegistry,
             final Boolean rollbackOnError, final String pluginIdentifier, final String modelName,
             final Function<Entity, SearchCriterion> criteriaSupplier) throws IOException {
         return importFile(fis, cellBinderRegistry, rollbackOnError, pluginIdentifier, modelName, null, null, true,
-                criteriaSupplier, null);
+                criteriaSupplier, null, false);
     }
 
     @Transactional
     public abstract ImportStatus importFile(final FileInputStream fis, final CellBinderRegistry cellBinderRegistry,
             final Boolean rollbackOnError, final String pluginIdentifier, final String modelName, final Entity belongsTo,
             final String belongsToName, final Boolean shouldUpdate, final Function<Entity, SearchCriterion> criteriaSupplier,
-            final Function<Entity, Boolean> checkOnUpdate) throws IOException;
+            final Function<Entity, Boolean> checkOnUpdate, final Boolean shouldSkip) throws IOException;
 
     public boolean shouldUpdate(final ViewDefinitionState view) {
         boolean shouldUpdate = false;
@@ -264,6 +267,18 @@ public abstract class ImportService {
         }
 
         return shouldUpdate;
+    }
+
+    private boolean shouldSkip(final ViewDefinitionState view) {
+        boolean shouldSkip = false;
+
+        CheckBoxComponent shouldSkipCheckBox = (CheckBoxComponent) view.getComponentByReference(L_SHOULD_SKIP);
+
+        if (Objects.nonNull(shouldSkipCheckBox)) {
+            shouldSkip = shouldSkipCheckBox.isChecked();
+        }
+
+        return shouldSkip;
     }
 
     public Entity createEntity(final String pluginIdentifier, final String modelName) {
