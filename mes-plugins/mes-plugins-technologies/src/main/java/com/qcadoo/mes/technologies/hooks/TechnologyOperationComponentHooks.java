@@ -23,35 +23,19 @@
  */
 package com.qcadoo.mes.technologies.hooks;
 
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.Map.Entry;
-import java.util.Objects;
-import java.util.Set;
-import java.util.stream.Collectors;
-
+import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
+import com.qcadoo.mes.technologies.TechnologyService;
+import com.qcadoo.mes.technologies.constants.*;
+import com.qcadoo.model.api.*;
+import com.qcadoo.model.api.search.SearchRestrictions;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
-import com.qcadoo.mes.technologies.TechnologyService;
-import com.qcadoo.mes.technologies.constants.AssignedToOperation;
-import com.qcadoo.mes.technologies.constants.OperationFields;
-import com.qcadoo.mes.technologies.constants.OperationProductOutComponentFields;
-import com.qcadoo.mes.technologies.constants.ProductStructureTreeNodeFields;
-import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
-import com.qcadoo.mes.technologies.constants.TechnologyFields;
-import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
-import com.qcadoo.model.api.DataDefinition;
-import com.qcadoo.model.api.DataDefinitionService;
-import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.EntityList;
-import com.qcadoo.model.api.EntityTree;
-import com.qcadoo.model.api.EntityTreeNode;
-import com.qcadoo.model.api.search.SearchRestrictions;
+import java.util.*;
+import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
 @Service
 public class TechnologyOperationComponentHooks {
@@ -205,15 +189,28 @@ public class TechnologyOperationComponentHooks {
 
             if (value instanceof EntityList) {
                 EntityList entities = (EntityList) value;
+
                 List<Entity> copies = Lists.newArrayList();
+
                 if (entry.getKey().equals(TechnologyOperationComponentFields.CHILDREN)) {
                     for (Entity entity : entities) {
                         copies.add(copyReferencedTechnologyOperations(entity, technology));
                     }
+                } else if (entry.getKey().equals(TechnologyOperationComponentFields.OPERATION_PRODUCT_IN_COMPONENTS)) {
+                    for (Entity entity : entities) {
+                        Entity fieldCopy = entity.copy();
+
+                        fieldCopy.setId(null);
+                        fieldCopy.setField(OperationProductInComponentFields.SECTIONS, copySections(entity.getHasManyField(OperationProductInComponentFields.SECTIONS)));
+
+                        copies.add(fieldCopy);
+                    }
                 } else {
                     for (Entity entity : entities) {
                         Entity fieldCopy = entity.copy();
+
                         fieldCopy.setId(null);
+
                         copies.add(fieldCopy);
                     }
                 }
@@ -230,6 +227,20 @@ public class TechnologyOperationComponentHooks {
         copy.setCopied(true);
 
         return copy;
+    }
+
+    private List<Entity> copySections(final List<Entity> entities) {
+        List<Entity> copies = Lists.newArrayList();
+
+        for (Entity entity : entities) {
+            Entity fieldCopy = entity.copy();
+
+            fieldCopy.setId(null);
+
+            copies.add(fieldCopy);
+        }
+
+        return copies;
     }
 
     private boolean checkForCyclicReferences(final Set<Long> technologies, final Entity referencedTechnology) {
