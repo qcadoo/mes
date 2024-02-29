@@ -23,20 +23,6 @@
  */
 package com.qcadoo.mes.basic.imports.services;
 
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.List;
-import java.util.Objects;
-import java.util.function.Function;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.NoTransactionException;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.interceptor.TransactionAspectSupport;
-
 import com.google.common.io.Files;
 import com.opencsv.CSVParser;
 import com.opencsv.CSVParserBuilder;
@@ -47,17 +33,28 @@ import com.qcadoo.mes.basic.imports.dtos.ImportStatus;
 import com.qcadoo.mes.basic.imports.helpers.RowProcessorHelper;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchCriterion;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
+
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.List;
+import java.util.Objects;
+import java.util.function.Function;
 
 @Service
 public class CsvImportService extends ImportService {
 
-    private static final Logger LOG = LoggerFactory.getLogger(CsvImportService.class);
-
     @Transactional
     public ImportStatus importFile(final FileInputStream fis, final CellBinderRegistry cellBinderRegistry,
-            final Boolean rollbackOnError, final String pluginIdentifier, final String modelName, final Entity belongsTo,
-            final String belongsToName, final Boolean shouldUpdate, final Function<Entity, SearchCriterion> criteriaSupplier,
-            final Function<Entity, Boolean> checkOnUpdate, final Boolean shouldSkip) throws IOException {
+                                   final Boolean rollbackOnError, final String pluginIdentifier, final String modelName,
+                                   final Entity belongsTo,
+                                   final String belongsToName, final Boolean shouldUpdate,
+                                   final Function<Entity, SearchCriterion> criteriaSupplier,
+                                   final Function<Entity, Boolean> checkOnUpdate,
+                                   final Boolean shouldSkip) throws IOException {
         ImportStatus importStatus = new ImportStatus();
 
         CSVParser parser = new CSVParserBuilder().withSeparator(';').build();
@@ -105,11 +102,7 @@ public class CsvImportService extends ImportService {
         }
 
         if (rollbackOnError && importStatus.hasErrors()) {
-            try {
-                TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-            } catch (NoTransactionException e) {
-                LOG.error(e.getMessage(), e);
-            }
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
         }
 
         return importStatus;

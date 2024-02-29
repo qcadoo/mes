@@ -34,10 +34,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.NoTransactionException;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
@@ -49,13 +46,14 @@ import java.util.function.Function;
 @Service
 public class XlsxImportService extends ImportService {
 
-    private static final Logger LOG = LoggerFactory.getLogger(XlsxImportService.class);
-
     @Transactional
     public ImportStatus importFile(final FileInputStream fis, final CellBinderRegistry cellBinderRegistry,
-            final Boolean rollbackOnError, final String pluginIdentifier, final String modelName, final Entity belongsTo,
-            final String belongsToName, final Boolean shouldUpdate, final Function<Entity, SearchCriterion> criteriaSupplier,
-            final Function<Entity, Boolean> checkOnUpdate, final Boolean shouldSkip) throws IOException {
+                                   final Boolean rollbackOnError, final String pluginIdentifier, final String modelName,
+                                   final Entity belongsTo,
+                                   final String belongsToName, final Boolean shouldUpdate,
+                                   final Function<Entity, SearchCriterion> criteriaSupplier,
+                                   final Function<Entity, Boolean> checkOnUpdate,
+                                   final Boolean shouldSkip) throws IOException {
         ImportStatus importStatus = new ImportStatus();
 
         XSSFWorkbook workbook = new XSSFWorkbook(fis);
@@ -111,11 +109,7 @@ public class XlsxImportService extends ImportService {
         }
 
         if (rollbackOnError && importStatus.hasErrors()) {
-//            try {
-                TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-//            } catch (NoTransactionException e) {
-//                LOG.error(e.getMessage(), e);
-//            }
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
         }
 
         return importStatus;
