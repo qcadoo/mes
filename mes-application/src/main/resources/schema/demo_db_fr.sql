@@ -50656,6 +50656,14 @@ UNION ALL
 
 
 --
+-- Name: basic_address address_externalnumber_unique; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.basic_address
+    ADD CONSTRAINT address_externalnumber_unique UNIQUE (externalnumber);
+
+
+--
 -- Name: advancedgenealogy_batch advancedgenealogy_batch_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -52536,6 +52544,14 @@ ALTER TABLE ONLY public.cmmsscheduler_recurringeventstatechange
 
 
 --
+-- Name: basic_company company_externalnumber_unique; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.basic_company
+    ADD CONSTRAINT company_externalnumber_unique UNIQUE (externalnumber);
+
+
+--
 -- Name: goodfood_confectionprotocol confectionprotocol_externalnumber_unique; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -52717,6 +52733,14 @@ ALTER TABLE ONLY public.deliveries_orderedproduct
 
 ALTER TABLE ONLY public.deliveries_parameterdeliveryordercolumn
     ADD CONSTRAINT deliveries_parameterdeliveryordercolumn_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: qcadoomodel_dictionaryitem dictionaryitem_externalnumber_unique; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.qcadoomodel_dictionaryitem
+    ADD CONSTRAINT dictionaryitem_externalnumber_unique UNIQUE (externalnumber);
 
 
 --
@@ -54493,6 +54517,14 @@ ALTER TABLE ONLY public.goodfood_pallet
 
 ALTER TABLE ONLY public.materialflowresources_position
     ADD CONSTRAINT position_id_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: basic_product product_externalnumber_unique; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.basic_product
+    ADD CONSTRAINT product_externalnumber_unique UNIQUE (externalnumber);
 
 
 --
