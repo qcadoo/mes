@@ -65,19 +65,10 @@ public class DocumentDetailsListeners {
     private static final Logger LOG = LoggerFactory.getLogger(DocumentDetailsListeners.class);
 
     @Autowired
+    private PluginManager pluginManager;
+
+    @Autowired
     private DataDefinitionService dataDefinitionService;
-
-    @Autowired
-    private ParameterService parameterService;
-
-    @Autowired
-    private ResourceManagementService resourceManagementService;
-
-    @Autowired
-    private ResourceStockService resourceStockService;
-
-    @Autowired
-    private ReceiptDocumentForReleaseHelper receiptDocumentForReleaseHelper;
 
     @Autowired
     private ReportService reportService;
@@ -86,16 +77,25 @@ public class DocumentDetailsListeners {
     private FileService fileService;
 
     @Autowired
-    private PluginManager pluginManager;
+    private ParameterService parameterService;
+
+    @Autowired
+    private ResourceStockService resourceStockService;
+
+    @Autowired
+    private ResourceManagementService resourceManagementService;
+
+    @Autowired
+    private ReceiptDocumentForReleaseHelper receiptDocumentForReleaseHelper;
 
     @Autowired
     private DispositionOrderPdfService dispositionOrderPdfService;
 
     @Autowired
-    private DocumentErrorsLogger documentErrorsLogger;
+    private DocumentService documentService;
 
     @Autowired
-    private DocumentService documentService;
+    private DocumentErrorsLogger documentErrorsLogger;
 
     @Autowired
     private DocumentStateChangeService documentStateChangeService;
@@ -299,7 +299,6 @@ public class DocumentDetailsListeners {
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
 
             documentErrorsLogger.saveResourceStockLackErrorsToSystemLogs(document);
-
             documentStateChangeService.buildFailureStateChangeAfterRollback(document.getId());
 
             document.setField(DocumentFields.STATE, DocumentState.DRAFT.getStringValue());

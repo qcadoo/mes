@@ -8,6 +8,9 @@ import com.qcadoo.model.api.Entity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.Objects;
+
 @Service
 public class StorageLocationHooks {
 
@@ -18,11 +21,32 @@ public class StorageLocationHooks {
     private PalletValidatorService palletValidatorService;
 
     public boolean validatesWith(final DataDefinition storageLocationDD, final Entity storageLocation) {
-        boolean isValid = checkResourcePalletNumbers(storageLocationDD, storageLocation);
+        boolean isValid = checkLocationChange(storageLocationDD, storageLocation);
 
+        isValid = isValid && checkResourcePalletNumbers(storageLocationDD, storageLocation);
         isValid = isValid && checkMaxNumberOfPallets(storageLocationDD, storageLocation);
 
         return isValid;
+    }
+
+    private boolean checkLocationChange(final DataDefinition storageLocationDD, final Entity storageLocation) {
+        Long storageLocationId = storageLocation.getId();
+        Entity location = storageLocation.getBelongsToField(StorageLocationFields.LOCATION);
+        List<Entity> resources = storageLocation.getHasManyField(StorageLocationFields.RESOURCES);
+
+        if (Objects.nonNull(storageLocationId)) {
+            Entity storageLocationFromDB = storageLocationDD.get(storageLocationId);
+            Entity locationFromDB = storageLocationFromDB.getBelongsToField(StorageLocationFields.LOCATION);
+
+            if (Objects.nonNull(location) && !location.getId().equals(locationFromDB.getId()) && !resources.isEmpty()) {
+                storageLocation.addError(storageLocationDD.getField(StorageLocationFields.LOCATION),
+                        "materialFlowResources.storageLocation.location.resourcesExists");
+
+                return false;
+            }
+        }
+
+        return true;
     }
 
     private boolean checkResourcePalletNumbers(final DataDefinition storageLocationDD, final Entity storageLocation) {
@@ -50,7 +74,6 @@ public class StorageLocationHooks {
     public void onSave(final DataDefinition storageLocationDD, final Entity storageLocation) {
         clearMaxNumberOfPallets(storageLocationDD, storageLocation);
     }
-
 
     private void clearMaxNumberOfPallets(final DataDefinition storageLocationDD, final Entity storageLocation) {
         boolean placeStorageLocation = storageLocation.getBooleanField(StorageLocationFields.PLACE_STORAGE_LOCATION);
