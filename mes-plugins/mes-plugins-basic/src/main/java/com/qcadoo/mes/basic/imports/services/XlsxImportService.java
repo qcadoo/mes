@@ -48,9 +48,12 @@ public class XlsxImportService extends ImportService {
 
     @Transactional
     public ImportStatus importFile(final FileInputStream fis, final CellBinderRegistry cellBinderRegistry,
-            final Boolean rollbackOnError, final String pluginIdentifier, final String modelName, final Entity belongsTo,
-            final String belongsToName, final Boolean shouldUpdate, final Function<Entity, SearchCriterion> criteriaSupplier,
-            final Function<Entity, Boolean> checkOnUpdate) throws IOException {
+                                   final Boolean rollbackOnError, final String pluginIdentifier, final String modelName,
+                                   final Entity belongsTo,
+                                   final String belongsToName, final Boolean shouldUpdate,
+                                   final Function<Entity, SearchCriterion> criteriaSupplier,
+                                   final Function<Entity, Boolean> checkOnUpdate,
+                                   final Boolean shouldSkip) throws IOException {
         ImportStatus importStatus = new ImportStatus();
 
         XSSFWorkbook workbook = new XSSFWorkbook(fis);
@@ -85,6 +88,13 @@ public class XlsxImportService extends ImportService {
 
             if (rowProcessorHelper.isEmpty()) {
                 break;
+            }
+
+            if (shouldSkip && !Objects.isNull(criteriaSupplier)) {
+                Entity entityToSkip = getEntity(pluginIdentifier, modelName, criteriaSupplier.apply(entity));
+                if (!Objects.isNull(entityToSkip)) {
+                    continue;
+                }
             }
 
             if (shouldUpdate && !Objects.isNull(criteriaSupplier)) {

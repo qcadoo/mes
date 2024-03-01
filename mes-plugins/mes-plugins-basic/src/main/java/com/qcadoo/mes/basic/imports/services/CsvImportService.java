@@ -23,17 +23,6 @@
  */
 package com.qcadoo.mes.basic.imports.services;
 
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.List;
-import java.util.Objects;
-import java.util.function.Function;
-
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.interceptor.TransactionAspectSupport;
-
 import com.google.common.io.Files;
 import com.opencsv.CSVParser;
 import com.opencsv.CSVParserBuilder;
@@ -44,15 +33,28 @@ import com.qcadoo.mes.basic.imports.dtos.ImportStatus;
 import com.qcadoo.mes.basic.imports.helpers.RowProcessorHelper;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchCriterion;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
+
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.List;
+import java.util.Objects;
+import java.util.function.Function;
 
 @Service
 public class CsvImportService extends ImportService {
 
     @Transactional
     public ImportStatus importFile(final FileInputStream fis, final CellBinderRegistry cellBinderRegistry,
-            final Boolean rollbackOnError, final String pluginIdentifier, final String modelName, final Entity belongsTo,
-            final String belongsToName, final Boolean shouldUpdate, final Function<Entity, SearchCriterion> criteriaSupplier,
-            final Function<Entity, Boolean> checkOnUpdate) throws IOException {
+                                   final Boolean rollbackOnError, final String pluginIdentifier, final String modelName,
+                                   final Entity belongsTo,
+                                   final String belongsToName, final Boolean shouldUpdate,
+                                   final Function<Entity, SearchCriterion> criteriaSupplier,
+                                   final Function<Entity, Boolean> checkOnUpdate,
+                                   final Boolean shouldSkip) throws IOException {
         ImportStatus importStatus = new ImportStatus();
 
         CSVParser parser = new CSVParserBuilder().withSeparator(';').build();
@@ -77,6 +79,13 @@ public class CsvImportService extends ImportService {
 
             if (rowProcessorService.isEmpty()) {
                 break;
+            }
+
+            if (shouldSkip && !Objects.isNull(criteriaSupplier)) {
+                Entity entityToSkip = getEntity(pluginIdentifier, modelName, criteriaSupplier.apply(entity));
+                if (!Objects.isNull(entityToSkip)) {
+                    continue;
+                }
             }
 
             if (shouldUpdate && !Objects.isNull(criteriaSupplier)) {

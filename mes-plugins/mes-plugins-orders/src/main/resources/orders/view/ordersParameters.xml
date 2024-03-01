@@ -216,10 +216,6 @@
                                         <option type="fieldCode" value="number"/>
 
                                         <option type="multiselect" value="true"/>
-
-                                        <criteriaModifier
-                                                class="com.qcadoo.mes.materialFlowResources.criteriaModifiers.LocationCriteriaModifiersMFR"
-                                                method="showWarehousesOnly"/>
                                     </component>
                                     <component type="grid" name="realizationLocations" reference="realizationLocations"
                                                source="#{form}.realizationLocations">
