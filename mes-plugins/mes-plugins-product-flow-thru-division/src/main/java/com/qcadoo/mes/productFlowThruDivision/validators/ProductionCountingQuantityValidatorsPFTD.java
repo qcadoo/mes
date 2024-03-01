@@ -23,17 +23,14 @@
  */
 package com.qcadoo.mes.productFlowThruDivision.validators;
 
-import org.springframework.stereotype.Service;
-
 import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityFields;
 import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityRole;
 import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityTypeOfMaterial;
-import com.qcadoo.mes.orders.constants.OrderFields;
-import com.qcadoo.mes.orders.states.constants.OrderState;
 import com.qcadoo.mes.productFlowThruDivision.constants.ProductionCountingQuantityFieldsPFTD;
 import com.qcadoo.mes.productFlowThruDivision.constants.ProductionFlowComponent;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
+import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -55,11 +52,11 @@ public class ProductionCountingQuantityValidatorsPFTD {
 
     private boolean checkResourceReservationQuantity(DataDefinition dataDefinition, Entity productionCountingQuantity) {
         List<Entity> reservations = productionCountingQuantity.getHasManyField("orderProductResourceReservations");
-        if(reservations == null || reservations.isEmpty()) {
+        if (reservations == null || reservations.isEmpty()) {
             return true;
         }
 
-        BigDecimal plannedQuantityFromResources =  productionCountingQuantity.getHasManyField("orderProductResourceReservations")
+        BigDecimal plannedQuantityFromResources = productionCountingQuantity.getHasManyField("orderProductResourceReservations")
                 .stream()
                 .map(rr -> rr.getDecimalField("planedQuantity"))
                 .filter(Objects::nonNull).reduce(BigDecimal.ZERO, BigDecimal::add);
@@ -78,47 +75,42 @@ public class ProductionCountingQuantityValidatorsPFTD {
     public boolean checkRequiredFields(final DataDefinition dataDefinition, final Entity productionCountingQuantity) {
         String role = productionCountingQuantity.getStringField(ProductionCountingQuantityFields.ROLE);
         String typeOfMaterial = productionCountingQuantity.getStringField(ProductionCountingQuantityFields.TYPE_OF_MATERIAL);
-        Entity order = productionCountingQuantity.getBelongsToField(ProductionCountingQuantityFields.ORDER);
-        if (!order.getStringField(OrderFields.STATE).equals(OrderState.PENDING.getStringValue())) {
-            if (ProductionCountingQuantityRole.USED.getStringValue().equals(role)
-                    && ProductionCountingQuantityTypeOfMaterial.COMPONENT.getStringValue().equals(typeOfMaterial)
-                    && productionCountingQuantity
-                            .getBelongsToField(ProductionCountingQuantityFieldsPFTD.COMPONENTS_LOCATION) == null) {
-                productionCountingQuantity.addError(
-                        dataDefinition.getField(ProductionCountingQuantityFieldsPFTD.COMPONENTS_LOCATION),
-                        L_QCADOO_VIEW_VALIDATE_FIELD_ERROR_MISSING);
-            }
-            if (ProductionCountingQuantityRole.PRODUCED.getStringValue().equals(role)
-                    && (ProductionCountingQuantityTypeOfMaterial.FINAL_PRODUCT.getStringValue().equals(typeOfMaterial)
-                        || ProductionCountingQuantityTypeOfMaterial.ADDITIONAL_FINAL_PRODUCT.getStringValue().equals(typeOfMaterial))
-                    && productionCountingQuantity
-                            .getBelongsToField(ProductionCountingQuantityFieldsPFTD.PRODUCTS_INPUT_LOCATION) == null) {
-                productionCountingQuantity.addError(
-                        dataDefinition.getField(ProductionCountingQuantityFieldsPFTD.PRODUCTS_INPUT_LOCATION),
-                        L_QCADOO_VIEW_VALIDATE_FIELD_ERROR_MISSING);
-            }
-            if (ProductionCountingQuantityTypeOfMaterial.INTERMEDIATE.getStringValue().equals(typeOfMaterial)
-                    && ProductionFlowComponent.WAREHOUSE.getStringValue().equals(
-                            productionCountingQuantity.getStringField(ProductionCountingQuantityFieldsPFTD.PRODUCTION_FLOW))
-                    && productionCountingQuantity
-                            .getBelongsToField(ProductionCountingQuantityFieldsPFTD.PRODUCTS_FLOW_LOCATION) == null) {
-                productionCountingQuantity.addError(
-                        dataDefinition.getField(ProductionCountingQuantityFieldsPFTD.PRODUCTS_FLOW_LOCATION),
-                        L_QCADOO_VIEW_VALIDATE_FIELD_ERROR_MISSING);
-            }
-            return productionCountingQuantity.isValid();
+        if (ProductionCountingQuantityRole.USED.getStringValue().equals(role)
+                && ProductionCountingQuantityTypeOfMaterial.COMPONENT.getStringValue().equals(typeOfMaterial)
+                && productionCountingQuantity
+                .getBelongsToField(ProductionCountingQuantityFieldsPFTD.COMPONENTS_LOCATION) == null) {
+            productionCountingQuantity.addError(
+                    dataDefinition.getField(ProductionCountingQuantityFieldsPFTD.COMPONENTS_LOCATION),
+                    L_QCADOO_VIEW_VALIDATE_FIELD_ERROR_MISSING);
         }
-        return checkComponentsWarehouses(productionCountingQuantity);
+        if (ProductionCountingQuantityRole.PRODUCED.getStringValue().equals(role)
+                && (ProductionCountingQuantityTypeOfMaterial.FINAL_PRODUCT.getStringValue().equals(typeOfMaterial)
+                || ProductionCountingQuantityTypeOfMaterial.ADDITIONAL_FINAL_PRODUCT.getStringValue().equals(typeOfMaterial))
+                && productionCountingQuantity
+                .getBelongsToField(ProductionCountingQuantityFieldsPFTD.PRODUCTS_INPUT_LOCATION) == null) {
+            productionCountingQuantity.addError(
+                    dataDefinition.getField(ProductionCountingQuantityFieldsPFTD.PRODUCTS_INPUT_LOCATION),
+                    L_QCADOO_VIEW_VALIDATE_FIELD_ERROR_MISSING);
+        }
+        if (ProductionCountingQuantityTypeOfMaterial.INTERMEDIATE.getStringValue().equals(typeOfMaterial)
+                && ProductionFlowComponent.WAREHOUSE.getStringValue().equals(
+                productionCountingQuantity.getStringField(ProductionCountingQuantityFieldsPFTD.PRODUCTION_FLOW))
+                && productionCountingQuantity
+                .getBelongsToField(ProductionCountingQuantityFieldsPFTD.PRODUCTS_FLOW_LOCATION) == null) {
+            productionCountingQuantity.addError(
+                    dataDefinition.getField(ProductionCountingQuantityFieldsPFTD.PRODUCTS_FLOW_LOCATION),
+                    L_QCADOO_VIEW_VALIDATE_FIELD_ERROR_MISSING);
+        }
+        checkComponentsWarehouses(productionCountingQuantity);
+        return productionCountingQuantity.isValid();
     }
 
-    private boolean checkComponentsWarehouses(final Entity pcq) {
+    private void checkComponentsWarehouses(final Entity pcq) {
         Entity componentsLocation = pcq.getBelongsToField(ProductionCountingQuantityFieldsPFTD.COMPONENTS_LOCATION);
         Entity componentsOutputLocation = pcq.getBelongsToField(ProductionCountingQuantityFieldsPFTD.COMPONENTS_OUTPUT_LOCATION);
         if (componentsLocation != null && componentsOutputLocation != null
                 && componentsLocation.getId().equals(componentsOutputLocation.getId())) {
             pcq.addGlobalError("technologies.technology.error.componentsLocationsAreSame", false);
-            return false;
         }
-        return true;
     }
 }
