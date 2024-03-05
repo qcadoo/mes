@@ -6,6 +6,7 @@ import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
 import java.util.Objects;
 
 @Component
@@ -16,19 +17,16 @@ public class SectionHooks {
     }
 
     private boolean checkSectionUnit(final DataDefinition sectionDD, final Entity section) {
-        Entity operationProductInComponent = section.getBelongsToField(SectionFields.OPERATION_PRODUCT_IN_COMPONENT);
-        String unit = section.getStringField(SectionFields.UNIT);
+        List<Entity> sections = section.getBelongsToField(SectionFields.OPERATION_PRODUCT_IN_COMPONENT).getHasManyField(OperationProductInComponentFields.SECTIONS);
+        if (!sections.isEmpty()) {
+            String unit = section.getStringField(SectionFields.UNIT);
 
-        if (Objects.nonNull(operationProductInComponent) && Objects.nonNull(unit)) {
-            String givenUnit = operationProductInComponent.getStringField(OperationProductInComponentFields.GIVEN_UNIT);
-
-            if (!unit.equals(givenUnit)) {
-                section.addError(sectionDD.getField(SectionFields.UNIT), "technologies.section.unit.error.notSameAsGivenUnit");
+            if (!unit.equals(sections.get(0).getStringField(SectionFields.UNIT))) {
+                section.addError(sectionDD.getField(SectionFields.UNIT), "technologies.section.unit.error.differentUnits");
 
                 return false;
             }
         }
-
         return true;
     }
 
