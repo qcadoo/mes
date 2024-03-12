@@ -7,7 +7,6 @@ import com.qcadoo.model.api.Entity;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
-import java.util.Objects;
 
 @Component
 public class SectionHooks {
@@ -20,8 +19,10 @@ public class SectionHooks {
         List<Entity> sections = section.getBelongsToField(SectionFields.OPERATION_PRODUCT_IN_COMPONENT).getHasManyField(OperationProductInComponentFields.SECTIONS);
         if (!sections.isEmpty()) {
             String unit = section.getStringField(SectionFields.UNIT);
+            Entity firstSection = sections.get(0);
 
-            if (!unit.equals(sections.get(0).getStringField(SectionFields.UNIT))) {
+            if (!unit.equals(firstSection.getStringField(SectionFields.UNIT))
+                    && !(firstSection.getId().equals(section.getId()) && sections.size() == 1)) {
                 section.addError(sectionDD.getField(SectionFields.UNIT), "technologies.section.unit.error.differentUnits");
 
                 return false;
