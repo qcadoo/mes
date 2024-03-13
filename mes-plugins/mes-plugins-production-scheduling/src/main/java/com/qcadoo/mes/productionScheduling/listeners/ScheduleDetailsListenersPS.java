@@ -144,14 +144,14 @@ public class ScheduleDetailsListenersPS {
                                           BigDecimal operationComponentRuns) {
         BigDecimal partialOperationComponentRuns = operationComponentRuns;
         Entity outputProduct = technologyService.getMainOutputProductComponent(technologyOperationComponent);
-        BigDecimal productComponentQuantity = basicProductionCountingService.getProductPlannedQuantity(order, technologyOperationComponent, outputProduct.getBelongsToField(OperationProductOutComponentFields.PRODUCT));
-        if (SPECIFIED.equals(technologyOperationComponent.getStringField(NEXT_OPERATION_AFTER_PRODUCED_TYPE))) {
-            partialOperationComponentRuns = operationWorkTimeService.getQuantityCyclesNeededToProducedNextOperationAfterProducedQuantity(technologyOperationComponent,
-                    operationComponentRuns, productComponentQuantity, outputProduct);
-        }
         Entity product = outputProduct.getBelongsToField(OperationProductOutComponentFields.PRODUCT);
         if (ProductFamilyElementType.PRODUCTS_FAMILY.getStringValue().equals(product.getField(ProductFields.ENTITY_TYPE))) {
             product = order.getBelongsToField(OrderFields.PRODUCT);
+        }
+        BigDecimal productComponentQuantity = basicProductionCountingService.getProductPlannedQuantity(order, technologyOperationComponent, product);
+        if (SPECIFIED.equals(technologyOperationComponent.getStringField(NEXT_OPERATION_AFTER_PRODUCED_TYPE))) {
+            partialOperationComponentRuns = operationWorkTimeService.getQuantityCyclesNeededToProducedNextOperationAfterProducedQuantity(technologyOperationComponent,
+                    operationComponentRuns, productComponentQuantity, outputProduct);
         }
         Entity schedulePosition = schedulePositionDD.create();
         schedulePosition.setField(SchedulePositionFields.SCHEDULE, schedule);
