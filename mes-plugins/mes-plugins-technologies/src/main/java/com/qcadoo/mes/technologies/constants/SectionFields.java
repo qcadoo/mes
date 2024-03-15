@@ -6,6 +6,8 @@ public final class SectionFields {
 
     }
 
+    public static final String OPERATION_PRODUCT_IN_COMPONENT = "operationProductInComponent";
+
     public static final String QUANTITY = "quantity";
 
     public static final String LENGTH = "length";

@@ -52,7 +52,8 @@ public class WorkstationChangeoverService {
                 previousProduct = previousSchedulePosition.getBelongsToField(SchedulePositionFields.ORDER).getBelongsToField(OrderFields.PRODUCT);
             } else {
                 previousOperationalTask = getPreviousOperationalTask(workstation, startDate);
-                if (previousOperationalTask != null) {
+                if (previousOperationalTask != null
+                        && OperationalTaskType.EXECUTION_OPERATION_IN_ORDER.getStringValue().equals(previousOperationalTask.getStringField(OperationalTaskFields.TYPE))) {
                     previousProduct = previousOperationalTask.getBelongsToField(OperationalTaskFields.ORDER).getBelongsToField(OrderFields.PRODUCT);
                 }
             }

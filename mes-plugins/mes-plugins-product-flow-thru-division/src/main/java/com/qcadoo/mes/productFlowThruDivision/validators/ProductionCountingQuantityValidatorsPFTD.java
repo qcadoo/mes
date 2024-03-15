@@ -92,6 +92,14 @@ public class ProductionCountingQuantityValidatorsPFTD {
                     dataDefinition.getField(ProductionCountingQuantityFieldsPFTD.PRODUCTS_INPUT_LOCATION),
                     L_QCADOO_VIEW_VALIDATE_FIELD_ERROR_MISSING);
         }
+        if (ProductionCountingQuantityRole.PRODUCED.getStringValue().equals(role)
+                && ProductionCountingQuantityTypeOfMaterial.WASTE.getStringValue().equals(typeOfMaterial)
+                && productionCountingQuantity
+                .getBelongsToField(ProductionCountingQuantityFieldsPFTD.WASTE_RECEPTION_WAREHOUSE) == null) {
+            productionCountingQuantity.addError(
+                    dataDefinition.getField(ProductionCountingQuantityFieldsPFTD.WASTE_RECEPTION_WAREHOUSE),
+                    L_QCADOO_VIEW_VALIDATE_FIELD_ERROR_MISSING);
+        }
         if (ProductionCountingQuantityTypeOfMaterial.INTERMEDIATE.getStringValue().equals(typeOfMaterial)
                 && ProductionFlowComponent.WAREHOUSE.getStringValue().equals(
                 productionCountingQuantity.getStringField(ProductionCountingQuantityFieldsPFTD.PRODUCTION_FLOW))

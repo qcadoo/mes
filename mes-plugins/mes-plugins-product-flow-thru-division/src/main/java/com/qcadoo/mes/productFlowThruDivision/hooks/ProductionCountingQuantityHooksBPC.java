@@ -54,7 +54,7 @@ public class ProductionCountingQuantityHooksBPC {
             String type = productionCountingQuantity.getStringField(ProductionCountingQuantityFields.TYPE_OF_MATERIAL);
 
             if (ProductionCountingQuantityTypeOfMaterial.FINAL_PRODUCT.getStringValue().equals(type)
-                || ProductionCountingQuantityTypeOfMaterial.ADDITIONAL_FINAL_PRODUCT.getStringValue().equals(type)) {
+                    || ProductionCountingQuantityTypeOfMaterial.ADDITIONAL_FINAL_PRODUCT.getStringValue().equals(type)) {
                 Entity opoc = getOperationProduct(TechnologiesConstants.MODEL_OPERATION_PRODUCT_OUT_COMPONENT,
                         productionCountingQuantity
                                 .getBelongsToField(ProductionCountingQuantityFields.TECHNOLOGY_OPERATION_COMPONENT),
@@ -74,14 +74,14 @@ public class ProductionCountingQuantityHooksBPC {
                 }
             } else {
                 if (ProductionCountingQuantityRole.USED.getStringValue().equals(role)) {
+                    Entity product = productionCountingQuantity.getBelongsToField(ProductionCountingQuantityFields.PRODUCT);
                     Entity opic = getOperationProduct(TechnologiesConstants.MODEL_OPERATION_PRODUCT_IN_COMPONENT,
                             productionCountingQuantity
                                     .getBelongsToField(ProductionCountingQuantityFields.TECHNOLOGY_OPERATION_COMPONENT),
-                            productionCountingQuantity.getBelongsToField(ProductionCountingQuantityFields.PRODUCT));
-                    if (Objects.isNull(opic)) {
-                        Entity parent = productionCountingQuantity.getBelongsToField(ProductionCountingQuantityFields.PRODUCT)
-                                .getBelongsToField(ProductFields.PARENT);
-                        if(Objects.nonNull(parent)) {
+                            product);
+                    if (Objects.isNull(opic) && Objects.nonNull(product)) {
+                        Entity parent = product.getBelongsToField(ProductFields.PARENT);
+                        if (Objects.nonNull(parent)) {
                             opic = getOperationProduct(TechnologiesConstants.MODEL_OPERATION_PRODUCT_IN_COMPONENT,
                                     productionCountingQuantity
                                             .getBelongsToField(ProductionCountingQuantityFields.TECHNOLOGY_OPERATION_COMPONENT),

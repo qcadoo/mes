@@ -145,6 +145,9 @@
                                    reference="consumptionOfRawMaterialsBasedOnStandards"
                                    field="#{form}.consumptionOfRawMaterialsBasedOnStandards">
                             <option type="labelWidth" value="60"/>
+                            <listener event="onSelectedEntityChange"
+                                      class="com.qcadoo.view.api.listeners.RerenderListener"
+                                      method="onChangeRerender"/>
                         </component>
                     </layoutElement>
 

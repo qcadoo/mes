@@ -197,6 +197,10 @@ public class GenerateMaterialRequirementCoverageListeners {
 
             if (materialRequirementCoverage.getGlobalMessages().isEmpty()) {
                 state.addMessage("orderSupplies.materialRequirementCoverage.report.generatedMessage", MessageType.SUCCESS);
+                if (Objects.nonNull(assignedOrder) && orderSuppliesService
+                        .getMaterialRequirementCoverage(materialRequirementCoverageId).getHasManyField(MaterialRequirementCoverageFields.COVERAGE_PRODUCTS).isEmpty()) {
+                    state.addMessage("orderSupplies.materialRequirementCoverage.report.coverageProductsIsEmpty", MessageType.INFO);
+                }
             } else {
                 materialRequirementCoverage.getGlobalMessages()
                         .forEach(message -> view.addMessage(message.getMessage(), MessageType.INFO, false));
