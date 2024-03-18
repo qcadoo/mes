@@ -688,7 +688,5 @@
 <script type="text/javascript"
    src="${pageContext.request.contextPath}/qcadooView/public/js/core/lib/bootstrap/bootstrap-table-locale-all.js?ver=${buildNumber}"></script>
 <script type="text/javascript"
-   src="${pageContext.request.contextPath}/qcadooView/public/js/core/lib/bootstrap/bootstrap-duration-picker.js?ver=${buildNumber}"></script>
-<script type="text/javascript"
    src="${pageContext.request.contextPath}/qcadooView/public/js/core/lib/bootstrap/bootstrap-table-i18n-enhance.js?ver=${buildNumber}"></script>
 <script type="text/javascript" src="${pageContext.request.contextPath}/basic/public/js/operationalTasksDefinitionWizard.js?ver=${buildNumber}"></script>
