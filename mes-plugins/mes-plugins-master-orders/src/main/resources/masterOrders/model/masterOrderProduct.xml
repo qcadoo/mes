@@ -91,7 +91,7 @@
                  model="masterOrderProductAttrValue" cascade="delete" copyable="true"/>
 
         <boolean name="isUpdateTechnologiesOnPendingOrders" persistent="false" default="false"/>
-
+        <datetime name="deliveryDate"/>
     </fields>
 
     <hooks>
