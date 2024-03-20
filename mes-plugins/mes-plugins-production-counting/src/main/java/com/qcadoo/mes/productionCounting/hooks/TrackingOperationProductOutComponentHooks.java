@@ -83,7 +83,8 @@ public class TrackingOperationProductOutComponentHooks {
                 && validateStorageLocationAndPalletNumber(trackingOperationProductOutComponentDD, trackingOperationProductOutComponent);
     }
 
-    private boolean validateUsedQuantity(final DataDefinition trackingOperationProductOutComponentDD, final Entity trackingOperationProductOutComponent) {
+    private boolean validateUsedQuantity(final DataDefinition trackingOperationProductOutComponentDD,
+                                         final Entity trackingOperationProductOutComponent) {
         Entity productionTracking = trackingOperationProductOutComponent
                 .getBelongsToField(TrackingOperationProductOutComponentFields.PRODUCTION_TRACKING);
 
@@ -130,8 +131,9 @@ public class TrackingOperationProductOutComponentHooks {
         return true;
     }
 
-    private boolean validateStorageLocationAndPalletNumber(final DataDefinition trackingOperationProductOutComponentDD, final Entity trackingOperationProductOutComponent) {
-        BigDecimal usedQuantity =  trackingOperationProductOutComponent.getDecimalField(TrackingOperationProductOutComponentFields.USED_QUANTITY);
+    private boolean validateStorageLocationAndPalletNumber(final DataDefinition trackingOperationProductOutComponentDD,
+                                                           final Entity trackingOperationProductOutComponent) {
+        BigDecimal usedQuantity = trackingOperationProductOutComponent.getDecimalField(TrackingOperationProductOutComponentFields.USED_QUANTITY);
         Entity storageLocation = trackingOperationProductOutComponent.getBelongsToField(TrackingOperationProductOutComponentFields.STORAGE_LOCATION);
         Entity palletNumber = trackingOperationProductOutComponent.getBelongsToField(TrackingOperationProductOutComponentFields.PALLET_NUMBER);
         String typeOfPallet = trackingOperationProductOutComponent.getStringField(TrackingOperationProductOutComponentFields.TYPE_OF_PALLET);
@@ -173,7 +175,8 @@ public class TrackingOperationProductOutComponentHooks {
         return true;
     }
 
-    public void onSave(final DataDefinition trackingOperationProductOutComponentDD, final Entity trackingOperationProductOutComponent) {
+    public void onSave(final DataDefinition trackingOperationProductOutComponentDD,
+                       final Entity trackingOperationProductOutComponent) {
         fillTrackingOperationProductInComponentsQuantities(trackingOperationProductOutComponent);
         fillOrderReportedQuantity(trackingOperationProductOutComponent);
         fillStorageLocation(trackingOperationProductOutComponent);
@@ -192,40 +195,42 @@ public class TrackingOperationProductOutComponentHooks {
             BigDecimal wastesQuantity = trackingOperationProductOutComponent
                     .getDecimalField(TrackingOperationProductOutComponentFields.WASTES_QUANTITY);
 
-            if (Objects.nonNull(usedQuantity) || Objects.nonNull(wastesQuantity)) {
-                Entity trackingOperationProductOutComponentDto = getTrackingOperationProductOutComponentDto().get(
-                        trackingOperationProductOutComponent.getId());
-                BigDecimal plannedQuantity = trackingOperationProductOutComponentDto
-                        .getDecimalField(TrackingOperationProductOutComponentDtoFields.PLANNED_QUANTITY);
-
-                BigDecimal quantity = BigDecimalUtils.convertNullToZero(usedQuantity).add(
+            Entity trackingOperationProductOutComponentDto = getTrackingOperationProductOutComponentDto().get(
+                    trackingOperationProductOutComponent.getId());
+            BigDecimal plannedQuantity = trackingOperationProductOutComponentDto
+                    .getDecimalField(TrackingOperationProductOutComponentDtoFields.PLANNED_QUANTITY);
+            Entity parameter = parameterService.getParameter();
+            BigDecimal quantity = BigDecimalUtils.convertNullToZero(usedQuantity);
+            if (parameter.getBooleanField(ParameterFieldsPC.WASTES_CONSUME_RAW_MATERIALS)) {
+                quantity = BigDecimalUtils.convertNullToZero(usedQuantity).add(
                         BigDecimalUtils.convertNullToZero(wastesQuantity), numberService.getMathContext());
-
-                BigDecimal ratio = quantity.divide(plannedQuantity, numberService.getMathContext());
-
-                List<Entity> trackingOperationProductInComponents = productionTracking
-                        .getHasManyField(ProductionTrackingFields.TRACKING_OPERATION_PRODUCT_IN_COMPONENTS);
-
-                trackingOperationProductInComponents.forEach(trackingOperationProductInComponent -> {
-                    int usedBatches = trackingOperationProductInComponent.getHasManyField(
-                            TrackingOperationProductInComponentFields.USED_BATCHES).size();
-
-                    if (usedBatches > L_ONE_BATCH) {
-                        clearUsedBatches(trackingOperationProductInComponent, trackingOperationProductOutComponent);
-
-                        fillQuantities(trackingOperationProductInComponent, ratio);
-                    } else if (usedBatches == L_ONE_BATCH) {
-                        fillQuantitiesInBatch(trackingOperationProductInComponent, ratio);
-                    } else {
-                        fillQuantities(trackingOperationProductInComponent, ratio);
-                    }
-                });
             }
+
+            BigDecimal ratio = quantity.divide(plannedQuantity, numberService.getMathContext());
+
+            List<Entity> trackingOperationProductInComponents = productionTracking
+                    .getHasManyField(ProductionTrackingFields.TRACKING_OPERATION_PRODUCT_IN_COMPONENTS);
+
+            trackingOperationProductInComponents.forEach(trackingOperationProductInComponent -> {
+                int usedBatches = trackingOperationProductInComponent.getHasManyField(
+                        TrackingOperationProductInComponentFields.USED_BATCHES).size();
+
+                if (usedBatches > L_ONE_BATCH) {
+                    clearUsedBatches(trackingOperationProductInComponent, trackingOperationProductOutComponent);
+
+                    fillQuantities(trackingOperationProductInComponent, ratio);
+                } else if (usedBatches == L_ONE_BATCH) {
+                    fillQuantitiesInBatch(trackingOperationProductInComponent, ratio);
+                } else {
+                    fillQuantities(trackingOperationProductInComponent, ratio);
+                }
+            });
         }
     }
 
-    private boolean checkIfShouldFillTrackingOperationProductInComponentsQuantities(final Entity trackingOperationProductOutComponent,
-                                                                                    final Entity productionTracking) {
+    private boolean checkIfShouldFillTrackingOperationProductInComponentsQuantities(
+            final Entity trackingOperationProductOutComponent,
+            final Entity productionTracking) {
         if (Objects.isNull(trackingOperationProductOutComponent.getId())) {
             return false;
         }
@@ -242,14 +247,14 @@ public class TrackingOperationProductOutComponentHooks {
         Entity order = productionTracking.getBelongsToField(ProductionTrackingFields.ORDER);
         String typeOfProductionRecording = order.getStringField(OrderFieldsPC.TYPE_OF_PRODUCTION_RECORDING);
         Entity orderProduct = order.getBelongsToField(OrderFields.PRODUCT);
+        Entity parameter = parameterService.getParameter();
 
-        boolean allowToOverrideQuantitiesFromTerminal = BooleanUtils.isTrue(parameterService.getParameter().getBooleanField(
+        boolean allowToOverrideQuantitiesFromTerminal = BooleanUtils.isTrue(parameter.getBooleanField(
                 ParameterFieldsPC.ALLOW_CHANGES_TO_USED_QUANTITY_ON_TERMINAL));
 
         return !trackingOperationProductOutComponent.getStringField(TrackingOperationProductOutComponentFields.TYPE_OF_MATERIAL)
                 .equals(ProductionCountingQuantityTypeOfMaterial.WASTE.getStringValue()) &&
-                (parameterService.getParameter()
-                        .getBooleanField(ParameterFieldsPC.CONSUMPTION_OF_RAW_MATERIALS_BASED_ON_STANDARDS)
+                (parameter.getBooleanField(ParameterFieldsPC.CONSUMPTION_OF_RAW_MATERIALS_BASED_ON_STANDARDS)
                         && allowToOverrideQuantitiesFromTerminal && (TypeOfProductionRecording.FOR_EACH
                         .getStringValue().equals(typeOfProductionRecording) || (TypeOfProductionRecording.CUMULATED.getStringValue()
                         .equals(typeOfProductionRecording) && product.getId().equals(orderProduct.getId()))));
@@ -310,7 +315,8 @@ public class TrackingOperationProductOutComponentHooks {
         }
     }
 
-    private void clearUsedBatches(Entity trackingOperationProductInComponent, final Entity trackingOperationProductOutComponent) {
+    private void clearUsedBatches(Entity trackingOperationProductInComponent,
+                                  final Entity trackingOperationProductOutComponent) {
         trackingOperationProductInComponent
                 .setField(TrackingOperationProductInComponentFields.USED_BATCHES, Lists.newArrayList());
 

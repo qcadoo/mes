@@ -79,6 +79,8 @@ public final class ParameterFieldsPC {
 
     public static final String CONSUMPTION_OF_RAW_MATERIALS_BASED_ON_STANDARDS = "consumptionOfRawMaterialsBasedOnStandards";
 
+    public static final String WASTES_CONSUME_RAW_MATERIALS = "wastesConsumeRawMaterials";
+
     public static final String ALLOW_CHANGES_TO_USED_QUANTITY_ON_TERMINAL = "allowChangesToUsedQuantityOnTerminal";
 
     public static final String ALLOW_ANOMALY_CREATION_ON_ACCEPTANCE_RECORD = "allowAnomalyCreationOnAcceptanceRecord";
