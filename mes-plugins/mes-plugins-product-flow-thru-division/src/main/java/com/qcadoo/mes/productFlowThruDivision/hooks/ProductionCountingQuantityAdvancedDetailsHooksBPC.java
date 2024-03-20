@@ -32,8 +32,6 @@ import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.states.constants.OrderStateStringValues;
 import com.qcadoo.mes.productFlowThruDivision.constants.ProductionCountingQuantityFieldsPFTD;
 import com.qcadoo.mes.productFlowThruDivision.constants.ProductionFlowComponent;
-import com.qcadoo.mes.productFlowThruDivision.constants.Range;
-import com.qcadoo.mes.productFlowThruDivision.constants.TechnologyFieldsPFTD;
 import com.qcadoo.mes.productionCounting.constants.OrderFieldsPC;
 import com.qcadoo.mes.productionCounting.constants.TypeOfProductionRecording;
 import com.qcadoo.model.api.Entity;
@@ -132,7 +130,8 @@ public class ProductionCountingQuantityAdvancedDetailsHooksBPC {
         wasteReceptionWarehouseLookup.requestComponentUpdateState();
 
         if (ProductionCountingQuantityRole.PRODUCED.getStringValue().equals(role)
-                && (ProductionCountingQuantityTypeOfMaterial.FINAL_PRODUCT.getStringValue().equals(type) || ProductionCountingQuantityTypeOfMaterial.ADDITIONAL_FINAL_PRODUCT.getStringValue().equals(type))) {
+                && (ProductionCountingQuantityTypeOfMaterial.FINAL_PRODUCT.getStringValue().equals(type)
+                || ProductionCountingQuantityTypeOfMaterial.ADDITIONAL_FINAL_PRODUCT.getStringValue().equals(type))) {
             productsInputLocationLookup.setEnabled(true);
             productsInputLocationLookup.setRequired(true);
             productsInputLocationLookup.requestComponentUpdateState();
@@ -154,92 +153,6 @@ public class ProductionCountingQuantityAdvancedDetailsHooksBPC {
 
         Entity ent = form.getPersistedEntityWithIncludedFormValues();
         Entity order = ent.getBelongsToField(ProductionCountingQuantityFields.ORDER);
-        if (ent.getId() == null) {
-            if (!ProductionCountingQuantityRole.USED.getStringValue().equals(role)
-                    || !ProductionCountingQuantityTypeOfMaterial.COMPONENT.getStringValue().equals(type)) {
-                componentsLocationLookup.setFieldValue(null);
-                componentsLocationLookup.requestComponentUpdateState();
-                componentsOutputLocationLookup.setFieldValue(null);
-                componentsOutputLocationLookup.requestComponentUpdateState();
-            }
-            if (!ProductionCountingQuantityRole.PRODUCED.getStringValue().equals(role)
-                    || !(ProductionCountingQuantityTypeOfMaterial.FINAL_PRODUCT.getStringValue().equals(type)
-                    || ProductionCountingQuantityTypeOfMaterial.ADDITIONAL_FINAL_PRODUCT.getStringValue().equals(type))) {
-                productsInputLocationLookup.setFieldValue(null);
-                productsInputLocationLookup.requestComponentUpdateState();
-            }
-            if (!ProductionCountingQuantityRole.PRODUCED.getStringValue().equals(role)
-                    || !ProductionCountingQuantityTypeOfMaterial.WASTE.getStringValue().equals(type)) {
-                wasteReceptionWarehouseLookup.setFieldValue(null);
-                wasteReceptionWarehouseLookup.requestComponentUpdateState();
-            }
-            if (!ProductionCountingQuantityTypeOfMaterial.INTERMEDIATE.getStringValue().equals(type)) {
-                productionFlowSelect.setFieldValue(null);
-                productionFlowSelect.requestComponentUpdateState();
-            }
-            if (!ProductionFlowComponent.WAREHOUSE.getStringValue().equals(productionFlowSelect.getFieldValue())) {
-                productsFlowLocationLookup.setFieldValue(null);
-                productsFlowLocationLookup.requestComponentUpdateState();
-            }
-
-            Entity technology = order.getBelongsToField(OrderFields.TECHNOLOGY);
-            String range = technology.getStringField(TechnologyFieldsPFTD.RANGE);
-
-            if (Range.ONE_DIVISION.getStringValue().equals(range)) {
-                if (ProductionCountingQuantityRole.USED.getStringValue().equals(role)
-                        && ProductionCountingQuantityTypeOfMaterial.COMPONENT.getStringValue().equals(type)) {
-                    if (technology.getBelongsToField(TechnologyFieldsPFTD.COMPONENTS_LOCATION) != null
-                            && componentsLocationLookup.isEmpty()) {
-                        componentsLocationLookup
-                                .setFieldValue(technology.getBelongsToField(TechnologyFieldsPFTD.COMPONENTS_LOCATION).getId());
-                        componentsLocationLookup.requestComponentUpdateState();
-                    }
-                    if (technology.getBelongsToField(TechnologyFieldsPFTD.COMPONENTS_OUTPUT_LOCATION) != null &&
-                            componentsOutputLocationLookup.isEmpty()) {
-                        componentsOutputLocationLookup.setFieldValue(
-                                technology.getBelongsToField(TechnologyFieldsPFTD.COMPONENTS_OUTPUT_LOCATION).getId());
-                        componentsOutputLocationLookup.requestComponentUpdateState();
-                    }
-                }
-
-                if (ProductionCountingQuantityTypeOfMaterial.INTERMEDIATE.getStringValue().equals(type)) {
-                    if ("".equals(productionFlowSelect.getFieldValue())) {
-                        productionFlowSelect.setFieldValue(technology.getField(TechnologyFieldsPFTD.PRODUCTION_FLOW));
-                        productionFlowSelect.requestComponentUpdateState();
-                    }
-
-                    if (ProductionFlowComponent.WAREHOUSE.getStringValue().equals(productionFlowSelect.getFieldValue())
-                            && technology.getBelongsToField(TechnologyFieldsPFTD.PRODUCTS_FLOW_LOCATION) != null
-                            && productsFlowLocationLookup.isEmpty()) {
-                        productsFlowLocationLookup
-                                .setFieldValue(technology.getBelongsToField(TechnologyFieldsPFTD.PRODUCTS_FLOW_LOCATION).getId());
-                        productsFlowLocationLookup.requestComponentUpdateState();
-                    }
-                }
-
-                if (ProductionCountingQuantityRole.PRODUCED.getStringValue().equals(role)) {
-                    if ((ProductionCountingQuantityTypeOfMaterial.FINAL_PRODUCT.getStringValue().equals(type)
-                            || ProductionCountingQuantityTypeOfMaterial.ADDITIONAL_FINAL_PRODUCT.getStringValue().equals(type))
-                            && technology.getBelongsToField(TechnologyFieldsPFTD.PRODUCTS_INPUT_LOCATION) != null
-                            && productsInputLocationLookup.isEmpty()) {
-                        productsInputLocationLookup
-                                .setFieldValue(technology.getBelongsToField(TechnologyFieldsPFTD.PRODUCTS_INPUT_LOCATION).getId());
-                        productsInputLocationLookup.requestComponentUpdateState();
-                    }
-
-                    if (ProductionCountingQuantityTypeOfMaterial.WASTE.getStringValue().equals(type)
-                            && technology.getBelongsToField(TechnologyFieldsPFTD.WASTE_RECEPTION_WAREHOUSE) != null
-                            && wasteReceptionWarehouseLookup.isEmpty()) {
-                        wasteReceptionWarehouseLookup.setFieldValue(
-                                technology.getBelongsToField(TechnologyFieldsPFTD.WASTE_RECEPTION_WAREHOUSE).getId());
-                        wasteReceptionWarehouseLookup.requestComponentUpdateState();
-                    }
-                }
-            }
-        } else if (!ProductionFlowComponent.WAREHOUSE.getStringValue().equals(productionFlowSelect.getFieldValue())) {
-            productsFlowLocationLookup.setFieldValue(null);
-            productsFlowLocationLookup.requestComponentUpdateState();
-        }
 
         if (ProductionCountingQuantityTypeOfMaterial.INTERMEDIATE.getStringValue().equals(type)
                 && TypeOfProductionRecording.CUMULATED.getStringValue()
