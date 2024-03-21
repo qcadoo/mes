@@ -35,7 +35,6 @@ import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.orders.OrderPackService;
 import com.qcadoo.mes.orders.OrderService;
 import com.qcadoo.mes.orders.OrderStateChangeReasonService;
-import com.qcadoo.mes.orders.TechnologyServiceO;
 import com.qcadoo.mes.orders.constants.*;
 import com.qcadoo.mes.orders.states.constants.OrderState;
 import com.qcadoo.mes.orders.states.constants.OrderStateChangeDescriber;
@@ -82,16 +81,10 @@ public class OrderHooks {
     private NumberService numberService;
 
     @Autowired
-    private DictionaryService dictionaryService;
-
-    @Autowired
     private ParameterService parameterService;
 
     @Autowired
     private ProductService productService;
-
-    @Autowired
-    private TechnologyServiceO technologyServiceO;
 
     @Autowired
     private OrderService orderService;
@@ -468,10 +461,6 @@ public class OrderHooks {
         }
     }
 
-    private boolean isIntegerValue(final BigDecimal value) {
-        return (value.signum() == 0) || (value.scale() <= 0) || (value.stripTrailingZeros().scale() <= 0);
-    }
-
     private boolean checkProductQuantities(final DataDefinition orderDD, final Entity order) {
         Entity product = order.getBelongsToField(OrderFields.PRODUCT);
 
@@ -795,10 +784,6 @@ public class OrderHooks {
     }
 
     public void copyProductQuantity(final DataDefinition orderDD, final Entity order) {
-        setProductQuantity(order);
-    }
-
-    public void setProductQuantity(final Entity order) {
         Long orderId = order.getId();
 
         if (Objects.isNull(orderId)) {
@@ -828,6 +813,9 @@ public class OrderHooks {
             Entity product = order.getBelongsToField(OrderFields.PRODUCT);
 
             if (Objects.nonNull(commissionedCorrectedQuantity)) {
+                if(commissionedCorrectedQuantity.compareTo(BigDecimal.ZERO) == 0) {
+                    order.addError(orderDD.getField(OrderFields.COMMISSIONED_CORRECTED_QUANTITY), "qcadooView.validate.field.error.outOfRange.toSmall");
+                }
                 order.setField(OrderFields.PLANNED_QUANTITY,
                         numberService.setScaleWithDefaultMathContext(commissionedCorrectedQuantity));
                 order.setField(OrderFields.PLANNED_QUANTITY_FOR_ADDITIONAL_UNIT,
@@ -836,6 +824,9 @@ public class OrderHooks {
                                 numberService.setScaleWithDefaultMathContext(commissionedCorrectedQuantity),
                                 product.getStringField(ProductFields.UNIT))));
             } else if (Objects.nonNull(commissionedPlannedQuantity)) {
+                if(commissionedPlannedQuantity.compareTo(BigDecimal.ZERO) == 0) {
+                    order.addError(orderDD.getField(OrderFields.COMMISSIONED_PLANNED_QUANTITY), "qcadooView.validate.field.error.outOfRange.toSmall");
+                }
                 order.setField(OrderFields.PLANNED_QUANTITY,
                         numberService.setScaleWithDefaultMathContext(commissionedPlannedQuantity));
                 order.setField(OrderFields.PLANNED_QUANTITY_FOR_ADDITIONAL_UNIT,
