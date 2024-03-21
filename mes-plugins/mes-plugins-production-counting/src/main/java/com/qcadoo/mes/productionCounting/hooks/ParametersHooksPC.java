@@ -47,6 +47,14 @@ public class ParametersHooksPC {
         FieldComponent releaseOfMaterials = (FieldComponent) view.getComponentByReference(ParameterFieldsPC.RELEASE_OF_MATERIALS);
         consumptionOfRawMaterialsBasedOnStandards.setEnabled(!ReleaseOfMaterials.MANUALLY_TO_ORDER_OR_GROUP.getStringValue().equals(releaseOfMaterials.getFieldValue().toString()));
         consumptionOfRawMaterialsBasedOnStandards.requestComponentUpdateState();
+        CheckBoxComponent wastesConsumeRawMaterials = (CheckBoxComponent) view
+                .getComponentByReference(ParameterFieldsPC.WASTES_CONSUME_RAW_MATERIALS);
+        if (consumptionOfRawMaterialsBasedOnStandards.isChecked()) {
+            wastesConsumeRawMaterials.setEnabled(true);
+        } else {
+            wastesConsumeRawMaterials.setChecked(true);
+            wastesConsumeRawMaterials.setEnabled(false);
+        }
     }
 
     private void setStatePriceBasedOn(ViewDefinitionState view) {
