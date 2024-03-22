@@ -96,7 +96,7 @@
                     <layoutElement column="3" row="1" height="7">
                         <component type="borderLayout" name="productQuantity">
                             <component type="gridLayout" name="productQuantityGridLayout"
-                                       columns="4" rows="6" reference="productQuantityGridLayout"
+                                       columns="4" rows="7" reference="productQuantityGridLayout"
                                        hasBorders="false">
                                 <layoutElement column="1" row="1" width="3">
                                     <component type="input" name="masterOrderQuantity"
