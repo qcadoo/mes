@@ -31,8 +31,6 @@ import java.util.stream.Collectors;
 @Service
 public class AttributeImportService {
 
-    private static final Integer HEADER_ROW_NUMBER = 0;
-
     public static final String L_PRODUCT = "product";
 
     public static final String L_RESOURCE = "resource";
