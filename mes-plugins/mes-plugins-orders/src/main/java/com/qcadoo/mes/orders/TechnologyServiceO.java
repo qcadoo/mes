@@ -23,7 +23,6 @@
  */
 package com.qcadoo.mes.orders;
 
-import com.google.common.collect.Lists;
 import com.qcadoo.mes.basic.ShiftsService;
 import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.basic.constants.ProductFields;
@@ -45,7 +44,6 @@ import com.qcadoo.security.api.SecurityService;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 import java.util.Objects;
@@ -61,8 +59,6 @@ public class TechnologyServiceO {
     private static final String L_MANY_DIVISIONS = "02manyDivisions";
 
     private static final String L_DIVISION = "division";
-
-    public static final String WITH_PATTERN_TECHNOLOGY = "01patternTechnology";
 
     @Autowired
     private DataDefinitionService dataDefinitionService;

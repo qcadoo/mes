@@ -26,18 +26,15 @@ package com.qcadoo.mes.orders.hooks;
 import com.qcadoo.commons.dateTime.DateRange;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.orders.OrderService;
-import com.qcadoo.mes.orders.TechnologyServiceO;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.states.constants.OrderState;
 import com.qcadoo.mes.orders.util.OrderDatesService;
 import com.qcadoo.model.api.DataDefinition;
-import com.qcadoo.model.api.DictionaryService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.FieldDefinition;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 import java.math.BigDecimal;
@@ -55,9 +52,6 @@ public class OrderHooksTest {
     private OrderHooks orderHooks;
 
     @Mock
-    private DictionaryService dictionaryService;
-
-    @Mock
     private OrderService orderService;
 
     @Mock
@@ -70,9 +64,6 @@ public class OrderHooksTest {
     private FieldDefinition dateToField, plannedQuantityField;
 
     @Mock
-    private TechnologyServiceO technologyServiceO;
-
-    @Mock
     private Entity order, product;
 
     @Before
@@ -83,8 +74,6 @@ public class OrderHooksTest {
 
         setField(orderHooks, "orderService", orderService);
         setField(orderHooks, "orderDatesService", orderDatesService);
-        setField(orderHooks, "technologyServiceO", technologyServiceO);
-        setField(orderHooks, "dictionaryService", dictionaryService);
     }
 
     @Test
@@ -194,8 +183,6 @@ public class OrderHooksTest {
         stubBelongsToField(order, OrderFields.PRODUCT, product);
         stubDecimalField(order, OrderFields.PLANNED_QUANTITY, BigDecimal.ONE);
         stubStringField(product, ProductFields.UNIT, "szt.");
-
-        given(dictionaryService.checkIfUnitIsInteger(Mockito.anyString())).willReturn(false);
 
         // when
         boolean result = orderHooks.checkOrderPlannedQuantity(orderDD, order);
