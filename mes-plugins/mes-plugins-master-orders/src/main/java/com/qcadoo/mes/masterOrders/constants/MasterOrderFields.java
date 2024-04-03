@@ -39,6 +39,8 @@ public final class MasterOrderFields {
 
     public static final String EXTERNAL_NUMBER = "externalNumber";
 
+    public static final String SYNCHRONIZE = "synchronize";
+
     public static final String EXTERNAL_PRODUCTION_ORDER_ID = "externalProductionOrderID";
 
     public static final String DEADLINE = "deadline";

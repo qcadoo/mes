@@ -42,6 +42,8 @@
         </string>
         <string name="externalNumber" unique="true"/>
         <string name="externalProductionOrderID" unique="true"/>
+        <boolean name="synchronize" default="false"/>
+        <datetime name="synchronizationDate"/>
 
         <datetime name="deadline">
             <validatesWith
