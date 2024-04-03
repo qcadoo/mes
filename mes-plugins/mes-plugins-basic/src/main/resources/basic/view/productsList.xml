@@ -107,6 +107,7 @@
 
             <option type="column" name="assortment" fields="assortmentName"/>
             <option type="column" name="model" fields="modelName"/>
+            <option type="column" name="description" fields="description"/>
             <option type="column" name="hasAttachments" fields="hasAttachments"/>
             <option type="column" name="unit" fields="unit"/>
             <option type="column" name="additionalUnit" fields="additionalUnit"/>
@@ -115,11 +116,14 @@
             <option type="order" column="name" direction="asc"/>
 
             <option type="searchable"
-                    value="number,name,globalTypeOfMaterial,category,ean,parent,assortment,model,externalNumber,hasAttachments,unit,additionalUnit,size,entityType,supplier"/>
+                    value="number,name,globalTypeOfMaterial,category,ean,parent,assortment,model,externalNumber,
+                    hasAttachments,unit,additionalUnit,size,entityType,supplier,description"/>
             <option type="multiSearch"
-                    value="number,name,globalTypeOfMaterial,category,ean,parent,assortment,model,externalNumber,hasAttachments,unit,additionalUnit,size,entityType,supplier"/>
+                    value="number,name,globalTypeOfMaterial,category,ean,parent,assortment,model,externalNumber,
+                    hasAttachments,unit,additionalUnit,size,entityType,supplier,description"/>
             <option type="orderable"
-                    value="number,name,globalTypeOfMaterial,category,ean,parent,assortment,model,externalNumber,hasAttachments,unit,additionalUnit,size,entityType,supplier"/>
+                    value="number,name,globalTypeOfMaterial,category,ean,parent,assortment,model,externalNumber,
+                    hasAttachments,unit,additionalUnit,size,entityType,supplier,description"/>
 
             <option type="correspondingView" value="basic/productDetails"/>
             <option type="correspondingComponent" value="form"/>
