@@ -42,8 +42,8 @@
         </string>
         <string name="externalNumber" unique="true"/>
         <string name="externalProductionOrderID" unique="true"/>
-        <boolean name="synchronize" default="false"/>
-        <datetime name="synchronizationDate"/>
+        <boolean name="synchronize" default="false" copyable="false"/>
+        <datetime name="synchronizationDate" copyable="false"/>
 
         <datetime name="deadline">
             <validatesWith
@@ -75,16 +75,16 @@
         <boolean name="externalSynchronized" default="true"/>
 
         <hasMany name="orders" joinField="masterOrder" model="order"
-                 plugin="orders" cascade="nullify"/>
+                 plugin="orders"/>
 
         <hasMany name="masterOrderProducts" joinField="masterOrder"
                  model="masterOrderProduct" cascade="delete" copyable="true"/>
 
         <hasMany name="masterOrderProductsDto" joinField="masterOrder" model="masterOrderPositionDto"
-                 cascade="nullify" copyable="false" persistent="false" />
+                 persistent="false" />
 
         <hasMany name="ordersDto" joinField="masterOrder" model="orderListDto"
-                 plugin="orders" cascade="nullify" copyable="false" persistent="false"/>
+                 plugin="orders" persistent="false"/>
 
         <enum name="state" values="01new,02inExecution,03completed,04declined"
               default="01new" required="true" copyable="false"/>
