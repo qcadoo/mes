@@ -25,10 +25,8 @@ package com.qcadoo.mes.masterOrders.hooks;
 
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.masterOrders.constants.MasterOrderFields;
-import com.qcadoo.mes.masterOrders.util.MasterOrderOrdersDataProvider;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.states.constants.OrderState;
-import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.EntityList;
 import com.qcadoo.model.api.search.SearchRestrictions;
@@ -45,16 +43,13 @@ import org.mockito.MockitoAnnotations;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
-import org.springframework.test.util.ReflectionTestUtils;
 
-import java.math.BigDecimal;
 import java.util.List;
 
 import static com.qcadoo.testing.model.EntityTestUtils.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -68,10 +63,7 @@ public class MasterOrderHooksTest {
     private MasterOrderHooks masterOrderHooks;
 
     @Mock
-    private DataDefinition masterOrderDD, orderDD;
-
-    @Mock
-    private Entity masterOrder, product, order1, order2, customer;
+    private Entity masterOrder, order1, order2, customer;
 
     @Captor
     private ArgumentCaptor<List<Entity>> entityListCaptor;
@@ -184,11 +176,6 @@ public class MasterOrderHooksTest {
         assertEquals(2, actualOrders.size());
         assertTrue(actualOrders.contains(order1));
         assertTrue(actualOrders.contains(order2));
-    }
-
-    private void stubOrdersPlannedQuantitiesSum(final Entity masterOrder, final BigDecimal quantitiesSum) {
-        given(masterOrderOrdersDataProvider.sumBelongingOrdersPlannedQuantities(eq(masterOrder), any(Entity.class))).willReturn(
-                quantitiesSum);
     }
 
     private static EntityList mockEntityList(final List<Entity> entities) {
