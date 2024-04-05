@@ -27,9 +27,7 @@ import com.beust.jcommander.internal.Lists;
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.masterOrders.constants.SalesVolumeFields;
-import com.qcadoo.mes.materialFlowResources.MaterialFlowResourcesService;
 import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.NumberService;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
@@ -54,12 +52,6 @@ public class SalesVolumeDetailsHooks {
 
     @Autowired
     private TranslationService translationService;
-
-    @Autowired
-    private NumberService numberService;
-
-    @Autowired
-    private MaterialFlowResourcesService materialFlowResourcesService;
 
     public void onBeforeRender(final ViewDefinitionState view) {
         setRibbonEnabled(view);
