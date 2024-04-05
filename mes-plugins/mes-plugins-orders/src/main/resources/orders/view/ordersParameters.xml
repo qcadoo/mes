@@ -149,96 +149,6 @@
                                    reference="orderStartDateBasedOn" hasDescription="true">
                         </component>
                     </layoutElement>
-                    <layoutElement column="3" row="1" height="9">
-                        <component type="borderLayout" name="creatingOrdersForMasterOrder"
-                                   reference="creatingOrdersForMasterOrder">
-                            <option type="label" value="creatingOrdersForMasterOrder"/>
-                            <component type="gridLayout" name="gridLayout" columns="1"
-                                       rows="10">
-                                <layoutElement column="1" row="1">
-                                    <component type="checkbox" name="copyDescription" field="#{form}.copyDescription"
-                                               reference="copyDescription" hasDescription="true">
-                                        <option type="labelWidth" value="80"/>
-                                    </component>
-                                </layoutElement>
-
-                                <layoutElement column="1" row="2">
-                                    <component type="checkbox" name="copyNotesFromMasterOrderPosition"
-                                               field="#{form}.copyNotesFromMasterOrderPosition"
-                                               reference="copyNotesFromMasterOrderPosition" hasDescription="true">
-                                        <option type="labelWidth" value="80"/>
-                                    </component>
-                                </layoutElement>
-                                <layoutElement column="1" row="3">
-                                    <component type="checkbox" name="setMasterOrderDateBasedOnOrderDates"
-                                               field="#{form}.setMasterOrderDateBasedOnOrderDates"
-                                               reference="setMasterOrderDateBasedOnOrderDates" hasDescription="true">
-                                        <option type="labelWidth" value="80"/>
-                                    </component>
-                                </layoutElement>
-                                <layoutElement column="1" row="4">
-                                    <component type="checkbox" name="createCollectiveOrders"
-                                               field="#{form}.createCollectiveOrders"
-                                               reference="createCollectiveOrders" hasDescription="true">
-                                        <option type="labelWidth" value="80"/>
-                                    </component>
-                                </layoutElement>
-                                <layoutElement column="1" row="5">
-                                    <component type="checkbox" name="realizationFromStock"
-                                               field="#{form}.realizationFromStock"
-                                               reference="realizationFromStock" hasDescription="true">
-                                        <option type="labelWidth" value="80"/>
-                                        <listener event="onChange"
-                                                  class="com.qcadoo.mes.orders.listeners.ParametersListenersO"
-                                                  method="onRealizationFromStock"/>
-                                    </component>
-                                </layoutElement>
-                                <layoutElement column="1" row="6">
-                                    <component type="checkbox" name="alwaysOrderItemsWithPersonalization"
-                                               field="#{form}.alwaysOrderItemsWithPersonalization"
-                                               reference="alwaysOrderItemsWithPersonalization" hasDescription="true">
-                                        <listener event="onChange"
-                                                  class="com.qcadoo.mes.orders.listeners.ParametersListenersO"
-                                                  method="onAlwaysOrderItemsWithPersonalization"/>
-                                        <option type="labelWidth" value="80"/>
-                                    </component>
-                                </layoutElement>
-                                <layoutElement column="1" row="7" height="4">
-                                    <component type="lookup" name="locationsLookup" reference="locationsLookup"
-                                               field="#{form}.realizationLocations" defaultVisible="false" persistent="false"
-                                               hasLabel="false">
-                                        <option type="column" name="name" fields="name" link="true"/>
-
-                                        <option type="searchable" value="number,name"/>
-                                        <option type="orderable" value="number,name"/>
-
-                                        <option type="expression" value="#number + ' - ' + #name"/>
-                                        <option type="fieldCode" value="number"/>
-
-                                        <option type="multiselect" value="true"/>
-                                    </component>
-                                    <component type="grid" name="realizationLocations" reference="realizationLocations"
-                                               source="#{form}.realizationLocations">
-                                        <option type="column" name="number" fields="number" width="50"/>
-                                        <option type="column" name="name" fields="name" width="100"/>
-
-                                        <option type="searchable" value="number,name"/>
-                                        <option type="orderable" value="number,name"/>
-
-                                        <option type="order" column="number" direction="asc"/>
-
-                                        <option type="fullscreen" value="true"/>
-                                        <option type="multiselect" value="true"/>
-                                        <option type="creatable" value="true"/>
-                                        <option type="deletable" value="true"/>
-
-                                        <option type="weakRelation" value="true"/>
-                                        <option type="correspondingLookup" value="locationsLookup"/>
-                                    </component>
-                                </layoutElement>
-                            </component>
-                        </component>
-                    </layoutElement>
                 </component>
 
                 <listener event="redirectToDeviationsDictionary"
@@ -247,6 +157,123 @@
 
                 <option type="header" value="true"/>
                 <option type="expression" value=""/>
+            </component>
+        </windowTab>
+
+        <windowTab name="ordersFromMasterOrdersTab">
+            <component type="flowGridLayout" name="ordersFromMasterOrdersTabGridLayout"
+                       columns="3" rows="10">
+                <layoutElement column="1" row="1">
+                    <component type="checkbox" name="copyDescription" field="#{form}.copyDescription"
+                               reference="copyDescription" hasDescription="true">
+                        <option type="labelWidth" value="80"/>
+                    </component>
+                </layoutElement>
+
+                <layoutElement column="1" row="2">
+                    <component type="checkbox" name="copyNotesFromMasterOrderPosition"
+                               field="#{form}.copyNotesFromMasterOrderPosition"
+                               reference="copyNotesFromMasterOrderPosition" hasDescription="true">
+                        <option type="labelWidth" value="80"/>
+                    </component>
+                </layoutElement>
+                <layoutElement column="1" row="3">
+                    <component type="checkbox" name="setMasterOrderDateBasedOnOrderDates"
+                               field="#{form}.setMasterOrderDateBasedOnOrderDates"
+                               reference="setMasterOrderDateBasedOnOrderDates" hasDescription="true">
+                        <option type="labelWidth" value="80"/>
+                    </component>
+                </layoutElement>
+                <layoutElement column="1" row="4">
+                    <component type="checkbox" name="createCollectiveOrders"
+                               field="#{form}.createCollectiveOrders"
+                               reference="createCollectiveOrders" hasDescription="true">
+                        <option type="labelWidth" value="80"/>
+                    </component>
+                </layoutElement>
+                <layoutElement column="1" row="5">
+                    <component type="checkbox" name="realizationFromStock"
+                               field="#{form}.realizationFromStock"
+                               reference="realizationFromStock" hasDescription="true">
+                        <option type="labelWidth" value="80"/>
+                        <listener event="onChange"
+                                  class="com.qcadoo.mes.orders.listeners.ParametersListenersO"
+                                  method="onRealizationFromStock"/>
+                    </component>
+                </layoutElement>
+                <layoutElement column="1" row="6">
+                    <component type="checkbox" name="alwaysOrderItemsWithPersonalization"
+                               field="#{form}.alwaysOrderItemsWithPersonalization"
+                               reference="alwaysOrderItemsWithPersonalization" hasDescription="true">
+                        <listener event="onChange"
+                                  class="com.qcadoo.mes.orders.listeners.ParametersListenersO"
+                                  method="onAlwaysOrderItemsWithPersonalization"/>
+                        <option type="labelWidth" value="80"/>
+                    </component>
+                </layoutElement>
+                <layoutElement column="1" row="7" height="4">
+                    <component type="lookup" name="locationsLookup" reference="locationsLookup"
+                               field="#{form}.realizationLocations" defaultVisible="false" persistent="false"
+                               hasLabel="false">
+                        <option type="column" name="name" fields="name" link="true"/>
+
+                        <option type="searchable" value="number,name"/>
+                        <option type="orderable" value="number,name"/>
+
+                        <option type="expression" value="#number + ' - ' + #name"/>
+                        <option type="fieldCode" value="number"/>
+
+                        <option type="multiselect" value="true"/>
+                    </component>
+                    <component type="grid" name="realizationLocations" reference="realizationLocations"
+                               source="#{form}.realizationLocations">
+                        <option type="column" name="number" fields="number" width="50"/>
+                        <option type="column" name="name" fields="name" width="100"/>
+
+                        <option type="searchable" value="number,name"/>
+                        <option type="orderable" value="number,name"/>
+
+                        <option type="order" column="number" direction="asc"/>
+
+                        <option type="fullscreen" value="true"/>
+                        <option type="multiselect" value="true"/>
+                        <option type="creatable" value="true"/>
+                        <option type="deletable" value="true"/>
+
+                        <option type="weakRelation" value="true"/>
+                        <option type="correspondingLookup" value="locationsLookup"/>
+                    </component>
+                </layoutElement>
+                <layoutElement column="2" row="1">
+                    <component type="checkbox" name="deadlineForOrderBasedOnDeliveryDate"
+                               field="#{form}.deadlineForOrderBasedOnDeliveryDate"
+                               reference="deadlineForOrderBasedOnDeliveryDate" hasDescription="true">
+                        <option type="labelWidth" value="80"/>
+                        <listener event="onChange"
+                                  class="com.qcadoo.view.api.listeners.RerenderListener"
+                                  method="onChangeRerender"/>
+                    </component>
+                </layoutElement>
+                <layoutElement column="2" row="2">
+                    <component type="gridLayout" name="deadlineForOrderEarlierThanDeliveryDateGridLayout"
+                               hasBorders="false" columns="6" rows="1">
+                        <layoutElement column="1" row="1" width="5">
+                            <component type="input" name="deadlineForOrderEarlierThanDeliveryDate"
+                                       field="#{form}.deadlineForOrderEarlierThanDeliveryDate" reference="deadlineForOrderEarlierThanDeliveryDate"
+                                       hasDescription="true">
+                                <option type="alignment" value="right"/>
+                                <option type="labelWidth" value="70"/>
+                            </component>
+                        </layoutElement>
+                        <layoutElement column="6" row="1">
+                            <component type="input" name="deadlineForOrderEarlierThanDeliveryDateUnit"
+                                       reference="deadlineForOrderEarlierThanDeliveryDateUnit" defaultEnabled="never"
+                                       hasLabel="false">
+                                <option type="textRepresentationOnDisabled" value="true"/>
+                            </component>
+                        </layoutElement>
+                    </component>
+                </layoutElement>
             </component>
         </windowTab>
 

@@ -365,6 +365,16 @@
                            joinField="attributeOnTheLabel"/>
         </model:model-field>
 
+        <model:model-field plugin="basic" model="parameter">
+            <model:boolean name="deadlineForOrderBasedOnDeliveryDate" default="false"/>
+        </model:model-field>
+
+        <model:model-field plugin="basic" model="parameter">
+            <model:integer name="deadlineForOrderEarlierThanDeliveryDate" default="0">
+                <model:validatesRange from="0"/>
+            </model:integer>
+        </model:model-field>
+
         <model:model-hook plugin="qcadooModel" model="dictionaryItem">
             <model:validatesWith
                     class="com.qcadoo.mes.orders.hooks.DictionaryItemHooksO"

@@ -24,6 +24,7 @@
 package com.qcadoo.mes.orders.hooks;
 
 import com.google.common.collect.Lists;
+import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.orders.OrderService;
 import com.qcadoo.mes.orders.constants.ParameterFieldsO;
 import com.qcadoo.model.api.DataDefinition;
@@ -34,6 +35,7 @@ import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.GridComponent;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Service;
 
 import static com.qcadoo.mes.orders.constants.ParameterFieldsO.*;
@@ -57,6 +59,9 @@ public class ParametersHooksO {
 
     @Autowired
     private OrderService orderService;
+
+    @Autowired
+    private TranslationService translationService;
 
     public void onSave(final DataDefinition parameterDD, final Entity parameter) {
         if (!parameter.getBooleanField(ParameterFieldsO.REALIZATION_FROM_STOCK)) {
@@ -184,6 +189,19 @@ public class ParametersHooksO {
         }
         optimalPackSize.requestComponentUpdateState();
         restFeedingLastPack.requestComponentUpdateState();
+
+        CheckBoxComponent deadlineForOrderBasedOnDeliveryDate = (CheckBoxComponent) view.getComponentByReference(DEADLINE_FOR_ORDER_BASED_ON_DELIVERY_DATE);
+        FieldComponent deadlineForOrderEarlierThanDeliveryDate = (FieldComponent) view.getComponentByReference(DEADLINE_FOR_ORDER_EARLIER_THAN_DELIVERY_DATE);
+        if (deadlineForOrderBasedOnDeliveryDate.isChecked()) {
+            deadlineForOrderEarlierThanDeliveryDate.setEnabled(true);
+        } else {
+            deadlineForOrderEarlierThanDeliveryDate.setEnabled(false);
+            deadlineForOrderEarlierThanDeliveryDate.setFieldValue(0);
+        }
+
+        FieldComponent deadlineForOrderEarlierThanDeliveryDateUnit = (FieldComponent) view.getComponentByReference("deadlineForOrderEarlierThanDeliveryDateUnit");
+        deadlineForOrderEarlierThanDeliveryDateUnit.setFieldValue(translationService.translate("orders.ordersParameters.window.ordersFromMasterOrdersTab.deadlineForOrderEarlierThanDeliveryDateUnit", view.getLocale()));
+        deadlineForOrderEarlierThanDeliveryDateUnit.requestComponentUpdateState();
     }
 
     public void showTimeFields(final ViewDefinitionState view) {
