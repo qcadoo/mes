@@ -23,23 +23,11 @@
  */
 package com.qcadoo.mes.masterOrders.hooks;
 
-import java.math.BigDecimal;
-import java.util.Date;
-
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.google.common.base.Strings;
 import com.qcadoo.localization.api.utils.DateUtils;
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.masterOrders.OrdersFromMOProductsGenerationService;
-import com.qcadoo.mes.masterOrders.constants.MasterOrderFields;
-import com.qcadoo.mes.masterOrders.constants.MasterOrderPositionDtoFields;
-import com.qcadoo.mes.masterOrders.constants.MasterOrderProductFields;
-import com.qcadoo.mes.masterOrders.constants.MasterOrdersConstants;
-import com.qcadoo.mes.masterOrders.constants.OrderFieldsMO;
-import com.qcadoo.mes.masterOrders.constants.ParameterFieldsMO;
+import com.qcadoo.mes.masterOrders.constants.*;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.model.api.BigDecimalUtils;
@@ -52,6 +40,16 @@ import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.LookupComponent;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
 import com.qcadoo.view.constants.QcadooViewConstants;
+import org.apache.commons.lang3.StringUtils;
+import org.joda.time.DateTime;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
+import java.util.Date;
+
+import static com.qcadoo.mes.orders.constants.ParameterFieldsO.DEADLINE_FOR_ORDER_BASED_ON_DELIVERY_DATE;
+import static com.qcadoo.mes.orders.constants.ParameterFieldsO.DEADLINE_FOR_ORDER_EARLIER_THAN_DELIVERY_DATE;
 
 @Service
 public class OrderDetailsHooksMO {
@@ -94,7 +92,7 @@ public class OrderDetailsHooksMO {
     }
 
     private void fillMasterOrderFields(final ViewDefinitionState view, final Entity masterOrder, final Entity product,
-            Entity productComponent) {
+                                       Entity productComponent) {
         FieldComponent numberField = (FieldComponent) view.getComponentByReference(OrderFields.NUMBER);
         LookupComponent companyLookup = (LookupComponent) view.getComponentByReference(OrderFields.COMPANY);
         FieldComponent deadlineField = (FieldComponent) view.getComponentByReference(OrderFields.DEADLINE);
@@ -113,6 +111,14 @@ public class OrderDetailsHooksMO {
             String masterOrderNumber = masterOrder.getStringField(MasterOrderFields.NUMBER);
             Entity masterOrderCompany = masterOrder.getBelongsToField(MasterOrderFields.COMPANY);
             Date masterOrderDeadline = masterOrder.getDateField(MasterOrderFields.DEADLINE);
+            boolean deadlineForOrderBasedOnDeliveryDate = parameter.getBooleanField(DEADLINE_FOR_ORDER_BASED_ON_DELIVERY_DATE);
+            if (deadlineForOrderBasedOnDeliveryDate) {
+                masterOrderDeadline = productComponent.getDateField(MasterOrderProductFields.DELIVERY_DATE);
+                Integer deadlineForOrderEarlierThanDeliveryDate = parameter.getIntegerField(DEADLINE_FOR_ORDER_EARLIER_THAN_DELIVERY_DATE);
+                if (masterOrderDeadline != null && deadlineForOrderEarlierThanDeliveryDate != null && deadlineForOrderEarlierThanDeliveryDate > 0) {
+                    masterOrderDeadline = new DateTime(masterOrderDeadline).minusDays(deadlineForOrderEarlierThanDeliveryDate).toDate();
+                }
+            }
             Date masterOrderStartDate = masterOrder.getDateField(MasterOrderFields.START_DATE);
             Date masterOrderFinishDate = masterOrder.getDateField(MasterOrderFields.FINISH_DATE);
             Entity masterOrderAddress = masterOrder.getBelongsToField(MasterOrderFields.ADDRESS);
@@ -144,7 +150,7 @@ public class OrderDetailsHooksMO {
                 addressLookup.requestComponentUpdateState();
             }
 
-            if (StringUtils.isEmpty((String) deadlineField.getFieldValue()) && (masterOrderDeadline != null)) {
+            if (StringUtils.isEmpty((String) deadlineField.getFieldValue()) && masterOrderDeadline != null) {
                 deadlineField.setFieldValue(DateUtils.toDateTimeString(masterOrderDeadline));
                 deadlineField.requestComponentUpdateState();
             }

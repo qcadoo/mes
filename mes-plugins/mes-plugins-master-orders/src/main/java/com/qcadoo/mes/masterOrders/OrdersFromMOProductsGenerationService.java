@@ -1,33 +1,11 @@
 package com.qcadoo.mes.masterOrders;
 
-import java.math.BigDecimal;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.stream.Collectors;
-
-import com.qcadoo.mes.materialFlow.constants.MaterialFlowConstants;
-import com.qcadoo.mes.materialFlowResources.constants.MaterialFlowResourcesConstants;
-import org.apache.commons.lang3.StringUtils;
-import org.joda.time.DateTime;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.stereotype.Service;
-
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.basic.constants.ProductFields;
-import com.qcadoo.mes.masterOrders.constants.MasterOrderFields;
-import com.qcadoo.mes.masterOrders.constants.MasterOrderPositionDtoFields;
-import com.qcadoo.mes.masterOrders.constants.MasterOrderProductFields;
-import com.qcadoo.mes.masterOrders.constants.MasterOrdersConstants;
-import com.qcadoo.mes.masterOrders.constants.OrderFieldsMO;
-import com.qcadoo.mes.masterOrders.constants.ParameterFieldsMO;
+import com.qcadoo.mes.masterOrders.constants.*;
 import com.qcadoo.mes.masterOrders.hooks.MasterOrderPositionStatus;
 import com.qcadoo.mes.materialFlowResources.MaterialFlowResourcesService;
 import com.qcadoo.mes.orders.OrderService;
@@ -38,17 +16,25 @@ import com.qcadoo.mes.orders.constants.ParameterFieldsO;
 import com.qcadoo.mes.orders.states.constants.OrderState;
 import com.qcadoo.mes.orders.states.constants.OrderStateStringValues;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
-import com.qcadoo.model.api.DataDefinition;
-import com.qcadoo.model.api.DataDefinitionService;
-import com.qcadoo.model.api.DictionaryService;
-import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.NumberService;
+import com.qcadoo.model.api.*;
 import com.qcadoo.model.api.search.SearchOrders;
 import com.qcadoo.model.api.search.SearchQueryBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.model.constants.DictionaryItemFields;
 import com.qcadoo.plugin.api.PluginUtils;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
+import org.apache.commons.lang3.StringUtils;
+import org.joda.time.DateTime;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
+import java.util.*;
+import java.util.stream.Collectors;
+
+import static com.qcadoo.mes.orders.constants.ParameterFieldsO.DEADLINE_FOR_ORDER_BASED_ON_DELIVERY_DATE;
+import static com.qcadoo.mes.orders.constants.ParameterFieldsO.DEADLINE_FOR_ORDER_EARLIER_THAN_DELIVERY_DATE;
 
 @Service
 public class OrdersFromMOProductsGenerationService {
@@ -104,8 +90,9 @@ public class OrdersFromMOProductsGenerationService {
     @Autowired
     private OrdersGenerationService ordersGenerationService;
 
-    public GenerationOrderResult generateOrders(final List<Entity> masterOrderProducts, final Date start, final Date finish,
-            final boolean generatePPS) {
+    public GenerationOrderResult generateOrders(final List<Entity> masterOrderProducts, final Date start,
+                                                final Date finish,
+                                                final boolean generatePPS) {
         GenerationOrderResult result = new GenerationOrderResult(translationService, parameterService);
 
         boolean automaticPps = parameterService.getParameter().getBooleanField(L_PPS_IS_AUTOMATIC);
@@ -147,7 +134,7 @@ public class OrdersFromMOProductsGenerationService {
 
                 MasterOrderProduct masterOrderProduct = MasterOrderProduct.newMasterOrderProduct()
                         .minStateQuantity(minStateQuantity)
-                        .createCollectiveOrders(createCollectiveOrders).product(entry.getKey().getProduct())
+                        .createCollectiveOrders(true).product(entry.getKey().getProduct())
                         .technology(entry.getKey().getTechnology()).groupedMasterOrderProduct(entry.getValue())
                         .quantityRemainingToOrder(quantityRemainingToOrderResult.getDecimalField("quantityRemainingToOrder"))
                         .build();
@@ -165,7 +152,7 @@ public class OrdersFromMOProductsGenerationService {
                 BigDecimal minStateQuantity = positionDto.getDecimalField(MasterOrderPositionDtoFields.WAREHOUSE_MINIMUM_STATE_QUANTITY);
 
                 MasterOrderProduct masterOrderProduct = MasterOrderProduct.newMasterOrderProduct()
-                        .createCollectiveOrders(createCollectiveOrders)
+                        .createCollectiveOrders(false)
                         .minStateQuantity(minStateQuantity)
                         .product(mop.getBelongsToField(MasterOrderProductFields.PRODUCT))
                         .technology(mop.getBelongsToField(MasterOrderProductFields.TECHNOLOGY))
@@ -209,8 +196,9 @@ public class OrdersFromMOProductsGenerationService {
         return groupedMap;
     }
 
-    private void generateOrder(final boolean generatePPS, final boolean automaticPps, final GenerationOrderResult result,
-            final MasterOrderProduct masterOrderProduct, final Date start, final Date finish) {
+    private void generateOrder(final boolean generatePPS, final boolean automaticPps,
+                               final GenerationOrderResult result,
+                               final MasterOrderProduct masterOrderProduct, final Date start, final Date finish) {
         if (PluginUtils.isEnabled("integrationBaseLinker")) {
             createDocuments();
         }
@@ -373,8 +361,9 @@ public class OrdersFromMOProductsGenerationService {
     }
 
     private boolean onlyUpdateMasterOrderPosition(boolean realizationFromStock,
-            boolean considerMinimumStockLevelWhenCreatingProductionOrders, BigDecimal stockQuantity, BigDecimal minStock,
-            BigDecimal quantityRemainingToOrder) {
+                                                  boolean considerMinimumStockLevelWhenCreatingProductionOrders,
+                                                  BigDecimal stockQuantity, BigDecimal minStock,
+                                                  BigDecimal quantityRemainingToOrder) {
         if (realizationFromStock) {
             if (considerMinimumStockLevelWhenCreatingProductionOrders) {
                 BigDecimal quantityRemainingToOrderWithMinState = minStock.add(quantityRemainingToOrder);
@@ -411,8 +400,10 @@ public class OrdersFromMOProductsGenerationService {
     }
 
     private Entity createOrder(final MasterOrderProduct masterOrderProduct, final boolean realizationFromStock,
-            final boolean considerMinimumStockLevelWhenCreatingProductionOrders, final BigDecimal quantityRemainingToOrder,
-            final BigDecimal stockQuantity, final BigDecimal minStock, final Date start, final Date finish) {
+                               final boolean considerMinimumStockLevelWhenCreatingProductionOrders,
+                               final BigDecimal quantityRemainingToOrder,
+                               final BigDecimal stockQuantity, final BigDecimal minStock, final Date start,
+                               final Date finish) {
         Entity parameter = parameterService.getParameter();
 
         Entity product = masterOrderProduct.getProduct();
@@ -426,6 +417,14 @@ public class OrdersFromMOProductsGenerationService {
             Entity masterOrder = masterOrderProduct.getMasterOrder();
 
             Date masterOrderDeadline = masterOrder.getDateField(MasterOrderFields.DEADLINE);
+            boolean deadlineForOrderBasedOnDeliveryDate = parameter.getBooleanField(DEADLINE_FOR_ORDER_BASED_ON_DELIVERY_DATE);
+            if (deadlineForOrderBasedOnDeliveryDate) {
+                masterOrderDeadline = masterOrderProduct.getMasterOrderProduct().getDateField(MasterOrderProductFields.DELIVERY_DATE);
+                Integer deadlineForOrderEarlierThanDeliveryDate = parameter.getIntegerField(DEADLINE_FOR_ORDER_EARLIER_THAN_DELIVERY_DATE);
+                if (masterOrderDeadline != null && deadlineForOrderEarlierThanDeliveryDate != null && deadlineForOrderEarlierThanDeliveryDate > 0) {
+                    masterOrderDeadline = new DateTime(masterOrderDeadline).minusDays(deadlineForOrderEarlierThanDeliveryDate).toDate();
+                }
+            }
             Date masterOrderStartDate = masterOrder.getDateField(MasterOrderFields.START_DATE);
             Date masterOrderFinishDate = masterOrder.getDateField(MasterOrderFields.FINISH_DATE);
 
@@ -527,7 +526,7 @@ public class OrdersFromMOProductsGenerationService {
     }
 
     private void fillDates(final Entity parameter, final Entity order, final Date masterOrderDeadline,
-            final Date masterOrderStartDate, final Date masterOrderFinishDate) {
+                           final Date masterOrderStartDate, final Date masterOrderFinishDate) {
         if (!parameter.getBooleanField(L_ORDERS_GENERATION_NOT_COMPLETE_DATES)) {
             order.setField(OrderFields.DATE_FROM, masterOrderStartDate);
             order.setField(OrderFields.DATE_TO, masterOrderFinishDate);
@@ -535,8 +534,9 @@ public class OrdersFromMOProductsGenerationService {
         }
     }
 
-    public String buildDescription(final Entity parameter, final MasterOrderProduct masterOrderProduct, final Entity technology,
-            Entity product) {
+    public String buildDescription(final Entity parameter, final MasterOrderProduct masterOrderProduct,
+                                   final Entity technology,
+                                   Entity product) {
         boolean copyDescription = parameter.getBooleanField(ParameterFieldsMO.COPY_DESCRIPTION);
         boolean copyNotesFromMasterOrderPosition = parameter.getBooleanField(L_COPY_NOTES_FROM_MASTER_ORDER_POSITION);
         boolean fillOrderDescriptionBasedOnTechnology = parameter
@@ -580,7 +580,7 @@ public class OrdersFromMOProductsGenerationService {
     }
 
     private void buildProductDescription(Entity product, boolean fillOrderDescriptionBasedOnProductDescription,
-            StringBuilder descriptionBuilder) {
+                                         StringBuilder descriptionBuilder) {
         if (fillOrderDescriptionBasedOnProductDescription && Objects.nonNull(product)) {
             String productDescription = product.getStringField(ProductFields.DESCRIPTION);
             if (StringUtils.isNoneBlank(productDescription)) {
@@ -599,7 +599,7 @@ public class OrdersFromMOProductsGenerationService {
     }
 
     public String buildDescription(final Entity parameter, final Entity masterOrder, final Entity masterOrderProduct,
-            final Entity technology, Entity product) {
+                                   final Entity technology, Entity product) {
         boolean copyDescription = parameter.getBooleanField(ParameterFieldsMO.COPY_DESCRIPTION);
         boolean copyNotesFromMasterOrderPosition = parameter.getBooleanField(L_COPY_NOTES_FROM_MASTER_ORDER_POSITION);
         boolean fillOrderDescriptionBasedOnTechnology = parameter

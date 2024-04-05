@@ -73,9 +73,6 @@ public class MasterOrderHooksTest {
     @Mock
     private Entity masterOrder, product, order1, order2, customer;
 
-    @Mock
-    private MasterOrderOrdersDataProvider masterOrderOrdersDataProvider;
-
     @Captor
     private ArgumentCaptor<List<Entity>> entityListCaptor;
 
@@ -84,8 +81,6 @@ public class MasterOrderHooksTest {
         masterOrderHooks = new MasterOrderHooks();
 
         MockitoAnnotations.initMocks(this);
-
-        ReflectionTestUtils.setField(masterOrderHooks, "masterOrderOrdersDataProvider", masterOrderOrdersDataProvider);
 
         PowerMockito.mockStatic(SearchRestrictions.class);
     }

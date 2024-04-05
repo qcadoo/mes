@@ -24,9 +24,9 @@
 package com.qcadoo.mes.masterOrders.hooks;
 
 import com.google.common.base.Preconditions;
+import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.masterOrders.constants.MasterOrderFields;
 import com.qcadoo.mes.masterOrders.constants.MasterOrderState;
-import com.qcadoo.mes.masterOrders.util.MasterOrderOrdersDataProvider;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.states.constants.OrderState;
 import com.qcadoo.model.api.DataDefinition;
@@ -40,12 +40,13 @@ import java.util.List;
 
 import static com.qcadoo.mes.masterOrders.constants.MasterOrderFields.COMPANY;
 import static com.qcadoo.mes.masterOrders.constants.MasterOrderFields.DEADLINE;
+import static com.qcadoo.mes.orders.constants.ParameterFieldsO.DEADLINE_FOR_ORDER_BASED_ON_DELIVERY_DATE;
 
 @Service
 public class MasterOrderHooks {
 
     @Autowired
-    private MasterOrderOrdersDataProvider masterOrderOrdersDataProvider;
+    private ParameterService parameterService;
 
     public void onCreate(final DataDefinition dataDefinition, final Entity masterOrder) {
         setExternalSynchronizedField(masterOrder);
@@ -77,8 +78,10 @@ public class MasterOrderHooks {
         Preconditions.checkArgument(masterOrder.getId() != null, "Method expects already persisted entity");
         Date deadline = masterOrder.getDateField(DEADLINE);
         Entity customer = masterOrder.getBelongsToField(COMPANY);
+        Entity parameter = parameterService.getParameter();
+        boolean deadlineForOrderBasedOnDeliveryDate = parameter.getBooleanField(DEADLINE_FOR_ORDER_BASED_ON_DELIVERY_DATE);
 
-        if (deadline == null && customer == null) {
+        if (!deadlineForOrderBasedOnDeliveryDate && deadline == null && customer == null) {
             return;
         }
 
@@ -90,13 +93,13 @@ public class MasterOrderHooks {
                 continue;
             }
 
-            if (!ObjectUtils.equals(order.getDateField(OrderFields.DEADLINE), deadline)) {
-                order.setField(OrderFields.DEADLINE, deadline);
+            if (!ObjectUtils.equals(order.getBelongsToField(OrderFields.COMPANY), customer)) {
+                order.setField(OrderFields.COMPANY, customer);
                 hasBeenChanged = true;
             }
 
-            if (!ObjectUtils.equals(order.getBelongsToField(OrderFields.COMPANY), customer)) {
-                order.setField(OrderFields.COMPANY, customer);
+            if (!deadlineForOrderBasedOnDeliveryDate && !ObjectUtils.equals(order.getDateField(OrderFields.DEADLINE), deadline)) {
+                order.setField(OrderFields.DEADLINE, deadline);
                 hasBeenChanged = true;
             }
         }
@@ -104,7 +107,6 @@ public class MasterOrderHooks {
         if (hasBeenChanged) {
             masterOrder.setField(MasterOrderFields.ORDERS, allOrders);
         }
-
     }
 
     private void clearExternalFields(final Entity masterOrder) {

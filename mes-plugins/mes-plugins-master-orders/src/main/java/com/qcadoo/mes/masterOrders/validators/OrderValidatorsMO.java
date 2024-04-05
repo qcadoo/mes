@@ -36,6 +36,7 @@ import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.JoinType;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
+import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -44,6 +45,7 @@ import java.util.Locale;
 import java.util.Objects;
 
 import static com.qcadoo.mes.orders.constants.ParameterFieldsO.DEADLINE_FOR_ORDER_BASED_ON_DELIVERY_DATE;
+import static com.qcadoo.mes.orders.constants.ParameterFieldsO.DEADLINE_FOR_ORDER_EARLIER_THAN_DELIVERY_DATE;
 import static com.qcadoo.model.api.search.SearchProjections.alias;
 import static com.qcadoo.model.api.search.SearchProjections.id;
 import static com.qcadoo.model.api.search.SearchRestrictions.*;
@@ -112,6 +114,10 @@ public class OrderValidatorsMO {
                 return isValid;
             } else {
                 deadlineFromMaster = masterOrderProductComponent.getDateField(MasterOrderProductFields.DELIVERY_DATE);
+                Integer deadlineForOrderEarlierThanDeliveryDate = parameter.getIntegerField(DEADLINE_FOR_ORDER_EARLIER_THAN_DELIVERY_DATE);
+                if (deadlineFromMaster != null && deadlineForOrderEarlierThanDeliveryDate != null && deadlineForOrderEarlierThanDeliveryDate > 0) {
+                    deadlineFromMaster = new DateTime(deadlineFromMaster).minusDays(deadlineForOrderEarlierThanDeliveryDate).toDate();
+                }
                 message = "masterOrders.order.masterOrderProduct.deadline.fieldIsNotTheSame";
             }
         }
