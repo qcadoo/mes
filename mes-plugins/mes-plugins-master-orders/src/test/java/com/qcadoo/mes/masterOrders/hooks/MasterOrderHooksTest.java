@@ -24,6 +24,7 @@
 package com.qcadoo.mes.masterOrders.hooks;
 
 import com.google.common.collect.Lists;
+import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.masterOrders.constants.MasterOrderFields;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.states.constants.OrderState;
@@ -43,6 +44,7 @@ import org.mockito.MockitoAnnotations;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.List;
 
@@ -63,7 +65,10 @@ public class MasterOrderHooksTest {
     private MasterOrderHooks masterOrderHooks;
 
     @Mock
-    private Entity masterOrder, order1, order2, customer;
+    private Entity masterOrder, order1, order2, customer, parameter;
+
+    @Mock
+    private ParameterService parameterService;
 
     @Captor
     private ArgumentCaptor<List<Entity>> entityListCaptor;
@@ -74,7 +79,11 @@ public class MasterOrderHooksTest {
 
         MockitoAnnotations.initMocks(this);
 
+        ReflectionTestUtils.setField(masterOrderHooks, "parameterService", parameterService);
+
         PowerMockito.mockStatic(SearchRestrictions.class);
+
+        given(parameterService.getParameter()).willReturn(parameter);
     }
 
     @Test
