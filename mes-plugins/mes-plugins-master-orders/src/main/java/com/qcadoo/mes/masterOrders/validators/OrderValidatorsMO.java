@@ -36,6 +36,7 @@ import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.JoinType;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
+import com.qcadoo.model.api.search.SearchRestrictions;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -109,7 +110,7 @@ public class OrderValidatorsMO {
         Entity parameter = parameterService.getParameter();
         boolean deadlineForOrderBasedOnDeliveryDate = parameter.getBooleanField(DEADLINE_FOR_ORDER_BASED_ON_DELIVERY_DATE);
         if (deadlineForOrderBasedOnDeliveryDate) {
-            Entity masterOrderProductComponent = order.getBelongsToField(OrderFieldsMO.MASTER_ORDER_PRODUCT_COMPONENT);
+            Entity masterOrderProductComponent = findMasterOrderProduct(masterOrder, order.getBelongsToField(OrderFields.PRODUCT));
             if (masterOrderProductComponent == null) {
                 return isValid;
             } else {
@@ -233,6 +234,14 @@ public class OrderValidatorsMO {
         return entity == null
                 ? translationService.translate("masterOrders.order.masterOrder.hasNot" + fieldName, Locale.getDefault())
                 : entity.getStringField(MasterOrderFields.NUMBER) + " - " + entity.getStringField(MasterOrderFields.NAME);
+    }
+
+    private Entity findMasterOrderProduct(Entity masterOrder, Entity product) {
+        return dataDefinitionService
+                .get(MasterOrdersConstants.PLUGIN_IDENTIFIER, MasterOrdersConstants.MODEL_MASTER_ORDER_PRODUCT).find()
+                .add(SearchRestrictions.belongsTo(MasterOrderProductFields.MASTER_ORDER, masterOrder))
+                .add(SearchRestrictions.belongsTo(MasterOrderProductFields.PRODUCT, product))
+                .setMaxResults(1).uniqueResult();
     }
 
 }

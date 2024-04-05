@@ -81,7 +81,7 @@ public class MasterOrderHooks {
         Entity parameter = parameterService.getParameter();
         boolean deadlineForOrderBasedOnDeliveryDate = parameter.getBooleanField(DEADLINE_FOR_ORDER_BASED_ON_DELIVERY_DATE);
 
-        if (!deadlineForOrderBasedOnDeliveryDate && deadline == null && customer == null) {
+        if (deadline == null && customer == null) {
             return;
         }
 
