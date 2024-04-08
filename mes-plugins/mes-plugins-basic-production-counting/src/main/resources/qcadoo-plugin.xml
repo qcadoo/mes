@@ -83,6 +83,7 @@
 
         <model:model model="productionCountingQuantityChange"
                      resource="model/productionCountingQuantityChange.xml"/>
+        <model:model model="section" resource="model/section.xml"/>
 
         <model:model-field model="batch" plugin="advancedGenealogy">
             <model:manyToMany name="productionCountingQuantities" model="productionCountingQuantity"
@@ -206,6 +207,7 @@
         <view:view resource="view/productionCountingQuantityList.xml"/>
         <view:view resource="view/productionCountingAttributeValueDetails.xml"/>
         <view:view resource="view/useReplacement.xml"/>
+        <view:view resource="view/sectionDetails.xml"/>
 
         <menu:menu-category name="requirements"/>
 
