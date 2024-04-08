@@ -118,6 +118,8 @@ public class ProductionCountingQuantityAdvancedDetailsHooks {
     private void hideTab(ViewDefinitionState view) {
         ComponentState attributesTab = view.getComponentByReference(ATTRIBUTES);
         ComponentState batchesTab = view.getComponentByReference(L_BATCHES_TAB);
+        ComponentState sectionsTab = view.getComponentByReference("sectionsTab");
+
         FieldComponent roleField = (FieldComponent) view.getComponentByReference(ProductionCountingQuantityFields.ROLE);
         FieldComponent materialField = (FieldComponent) view
                 .getComponentByReference(ProductionCountingQuantityFields.TYPE_OF_MATERIAL);
@@ -126,6 +128,7 @@ public class ProductionCountingQuantityAdvancedDetailsHooks {
                 && checkIfIsComponent((String) materialField.getFieldValue());
         attributesTab.setVisible(isProduced);
         batchesTab.setVisible(isUsedMaterial);
+        sectionsTab.setVisible(checkIfIsUsed((String) roleField.getFieldValue()));
     }
 
     private void setCriteriaModifierParameters(final ViewDefinitionState view) {
