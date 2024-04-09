@@ -100,7 +100,8 @@ public class BasicProductionCountingServiceImpl implements BasicProductionCounti
         updateProductionCountingQuantities(order, productComponentQuantities, nonComponents);
     }
 
-    private Entity createProductionCountingOperationRun(final Entity technologyOperationComponent, final BigDecimal runs) {
+    private Entity createProductionCountingOperationRun(final Entity technologyOperationComponent,
+                                                        final BigDecimal runs) {
         Entity productionCountingOperationRun = getProductionCountingOperationRunDD().create();
 
         productionCountingOperationRun.setField(ProductionCountingOperationRunFields.TECHNOLOGY_OPERATION_COMPONENT,
@@ -265,9 +266,13 @@ public class BasicProductionCountingServiceImpl implements BasicProductionCounti
         order.setField(OrderFieldsBPC.PRODUCTION_COUNTING_OPERATION_RUNS, productionCountingOperationRuns);
     }
 
-    private Entity prepareProductionCountingQuantity(final Entity order, final Entity technologyOperationComponent, final Entity attribute,
-                                                     final Entity technologyInputProductType, final Entity operationProductComponent, Entity product, final String role,
-                                                     final boolean isNonComponent, final BigDecimal plannedQuantity, final boolean isWaste) {
+    private Entity prepareProductionCountingQuantity(final Entity order, final Entity technologyOperationComponent,
+                                                     final Entity attribute,
+                                                     final Entity technologyInputProductType,
+                                                     final Entity operationProductComponent, Entity product,
+                                                     final String role,
+                                                     final boolean isNonComponent, final BigDecimal plannedQuantity,
+                                                     final boolean isWaste) {
         Entity productionCountingQuantity = getProductionCountingQuantityDD().create();
 
         productionCountingQuantity.setField(ProductionCountingQuantityFields.TECHNOLOGY_OPERATION_COMPONENT,
@@ -288,6 +293,21 @@ public class BasicProductionCountingServiceImpl implements BasicProductionCounti
             productionCountingQuantity.setField(ProductionCountingQuantityFields.SHOW_MATERIAL_COMPONENT_IN_WORK_PLAN,
                     operationProductComponent.getBooleanField("showMaterialComponent"));
         }
+
+        if ("01used".equals(role)) {
+            List<Entity> sections = new ArrayList<>();
+            DataDefinition dataDefinition = dataDefinitionService.get(BasicProductionCountingConstants.PLUGIN_IDENTIFIER,
+                    BasicProductionCountingConstants.MODEL_SECTION);
+            BigDecimal orderPlannedQuantity = order.getDecimalField(OrderFields.PLANNED_QUANTITY);
+            for (Entity topicSection : operationProductComponent.getHasManyField(OperationProductInComponentFields.SECTIONS)) {
+                Entity pcqSection = dataDefinition.create();
+                pcqSection.setField(SectionFieldsBPC.QUANTITY, topicSection.getIntegerField(SectionFields.QUANTITY) * orderPlannedQuantity.intValue());
+                pcqSection.setField(SectionFieldsBPC.LENGTH, topicSection.getField(SectionFields.LENGTH));
+                pcqSection.setField(SectionFieldsBPC.UNIT, topicSection.getField(SectionFields.UNIT));
+                sections.add(pcqSection);
+            }
+            productionCountingQuantity.setField(ProductionCountingQuantityFields.SECTIONS, sections);
+        }
         return productionCountingQuantity;
     }
 
@@ -301,7 +321,8 @@ public class BasicProductionCountingServiceImpl implements BasicProductionCounti
         }
     }
 
-    private String getTypeOfMaterial(final Entity order, final Entity technologyOperationComponent, final Entity product,
+    private String getTypeOfMaterial(final Entity order, final Entity technologyOperationComponent,
+                                     final Entity product,
                                      final String role, boolean isNonComponent, boolean isWaste) {
         if (isNonComponent) {
             return ProductionCountingQuantityTypeOfMaterial.INTERMEDIATE.getStringValue();
@@ -335,7 +356,8 @@ public class BasicProductionCountingServiceImpl implements BasicProductionCounti
         return orderProduct != null && product.getId().equals(orderProduct.getId());
     }
 
-    private boolean checkIfTechnologyOperationComponentsAreSame(final Entity order, final Entity technologyOperationComponent) {
+    private boolean checkIfTechnologyOperationComponentsAreSame(final Entity order,
+                                                                final Entity technologyOperationComponent) {
         Entity orderTechnologyOperationComponent = getOrderTechnologyOperationComponent(order);
 
         return orderTechnologyOperationComponent != null
@@ -426,7 +448,8 @@ public class BasicProductionCountingServiceImpl implements BasicProductionCounti
     }
 
     private void updateProductionCountingQuantity(final Entity order, final Entity technologyOperationComponent,
-                                                  final Entity product, final String role, final boolean isNonComponent, final BigDecimal plannedQuantity) {
+                                                  final Entity product, final String role, final boolean isNonComponent,
+                                                  final BigDecimal plannedQuantity) {
         Entity productionCountingQuantity = getProductionCountingQuantityDD()
                 .find()
                 .add(SearchRestrictions.belongsTo(ProductionCountingQuantityFields.ORDER, order))
@@ -495,7 +518,8 @@ public class BasicProductionCountingServiceImpl implements BasicProductionCounti
     }
 
     @Override
-    public List<Entity> getUsedMaterialsFromProductionCountingQuantities(final Entity order, final boolean onlyComponents) {
+    public List<Entity> getUsedMaterialsFromProductionCountingQuantities(final Entity order,
+                                                                         final boolean onlyComponents) {
         SearchCriteriaBuilder scb = getProductionCountingQuantityDD()
                 .find()
                 .add(SearchRestrictions.belongsTo(ProductionCountingQuantityFields.ORDER, order))
@@ -577,7 +601,8 @@ public class BasicProductionCountingServiceImpl implements BasicProductionCounti
     }
 
     @Override
-    public void fillUnitFields(final ViewDefinitionState view, final String productName, final List<String> referenceNames) {
+    public void fillUnitFields(final ViewDefinitionState view, final String productName,
+                               final List<String> referenceNames) {
         LookupComponent productLookup = (LookupComponent) view.getComponentByReference(productName);
         Entity product = productLookup.getEntity();
 
@@ -646,7 +671,7 @@ public class BasicProductionCountingServiceImpl implements BasicProductionCounti
             String type = productionCountingQuantity.getStringField(ProductionCountingQuantityFields.TYPE_OF_MATERIAL);
 
             if (ProductionCountingQuantityTypeOfMaterial.FINAL_PRODUCT.getStringValue().equals(type)
-                || ProductionCountingQuantityTypeOfMaterial.ADDITIONAL_FINAL_PRODUCT.getStringValue().equals(type)) {
+                    || ProductionCountingQuantityTypeOfMaterial.ADDITIONAL_FINAL_PRODUCT.getStringValue().equals(type)) {
                 Entity opoc = getOperationProduct(opocs,
                         productionCountingQuantity
                                 .getBelongsToField(ProductionCountingQuantityFields.TECHNOLOGY_OPERATION_COMPONENT),
