@@ -35,20 +35,34 @@ public final class MasterOrderDtoFields {
 
     public static final String NAME = "name";
 
+    public static final String EXTERNAL_NUMBER = "externalNumber";
+
+    public static final String EXTERNAL_SYNCHRONIZED = "externalSynchronized";
+
     public static final String DEADLINE = "deadline";
 
     public static final String COMPANY = "company";
 
+    public static final String COMPANY_CATEGORY = "companyCategory";
+
     public static final String COMPANY_PAYER = "companyPayer";
 
-    public static final String STATUS = "status";
-
     public static final String MASTER_ORDER_STATE = "masterOrderState";
+
+    public static final String STATE = "state";
 
     public static final String ORDERED_POSITION_QUANTITY = "orderedPositionQuantity";
 
     public static final String COMMISSIONED_POSITION_QUANTITY = "commissionedPositionQuantity";
 
     public static final String QUANTITY_FOR_COMMISSION = "quantityForCommission";
+
+    public static final String DESCRIPTION = "description";
+
+    public static final String SALES_PLAN_NUMBER = "salesPlanNumber";
+
+    public static final String SALES_PLAN_NAME = "salesPlanName";
+
+    public static final String WAREHOUSE_ORDER = "warehouseOrder";
 
 }

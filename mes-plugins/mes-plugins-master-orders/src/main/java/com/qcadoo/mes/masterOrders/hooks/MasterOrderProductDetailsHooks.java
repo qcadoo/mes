@@ -159,7 +159,7 @@ public class MasterOrderProductDetailsHooks {
                     .getDecimalField(MasterOrderPositionDtoFields.CUMULATED_MASTER_ORDER_QUANTITY)));
             cumulatedOrderQuantity.requestComponentUpdateState();
 
-            FieldComponent leftToRelease = (FieldComponent) view.getComponentByReference(MasterOrderProductFields.LEFT_TO_RELASE);
+            FieldComponent leftToRelease = (FieldComponent) view.getComponentByReference(MasterOrderProductFields.LEFT_TO_RELEASE);
             leftToRelease.setFieldValue(numberService.format(masterOrderPositionDto
                     .getDecimalField(MasterOrderPositionDtoFields.LEFT_TO_RELEASE)));
             leftToRelease.requestComponentUpdateState();
