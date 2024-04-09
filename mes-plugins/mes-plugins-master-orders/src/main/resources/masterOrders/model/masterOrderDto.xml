@@ -34,6 +34,7 @@
         <string name="number"/>
         <string name="name"/>
         <string name="externalNumber"/>
+        <boolean name="externalSynchronized" default="true"/>
         <datetime name="deadline"/>
         <string name="company"/>
         <string name="companyCategory"/>

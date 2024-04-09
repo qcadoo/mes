@@ -41,6 +41,7 @@
             <validatesLength max="2048"/>
         </string>
         <string name="externalNumber" unique="true"/>
+        <boolean name="externalSynchronized" default="true"/>
         <string name="externalProductionOrderID" unique="true"/>
         <boolean name="synchronize" default="false" copyable="false"/>
         <datetime name="synchronizationDate" copyable="false"/>
@@ -71,8 +72,6 @@
         </belongsTo>
 
         <belongsTo name="address" plugin="basic" model="address"/>
-
-        <boolean name="externalSynchronized" default="true"/>
 
         <hasMany name="orders" joinField="masterOrder" model="order"
                  plugin="orders"/>

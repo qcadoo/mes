@@ -43,7 +43,7 @@ public final class MasterOrderProductFields {
 
     public static final String PRODUCED_ORDER_QUANTITY = "producedOrderQuantity";
 
-    public static final String LEFT_TO_RELASE = "leftToRelease";
+    public static final String LEFT_TO_RELEASE = "leftToRelease";
 
     public static final String QUANTITY_TAKEN_FROM_WAREHOUSE = "quantityTakenFromWarehouse";
 

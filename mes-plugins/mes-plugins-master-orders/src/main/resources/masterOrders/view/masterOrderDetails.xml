@@ -621,8 +621,8 @@
                     </component>
                 </layoutElement>
                 <layoutElement column="1" row="2">
-                    <component type="checkbox" name="synchronize"
-                               field="#{form}.synchronize" reference="synchronize">
+                    <component type="checkbox" name="synchronize" field="#{form}.synchronize"
+                               reference="synchronize" defaultEnabled="never">
                     </component>
                 </layoutElement>
                 <layoutElement column="1" row="3">
