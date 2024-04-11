@@ -71,7 +71,9 @@ public class MasterOrderHooks {
     }
 
     protected void setExternalSynchronizedField(final Entity masterOrder) {
-        masterOrder.setField(MasterOrderFields.EXTERNAL_SYNCHRONIZED, true);
+        if (masterOrder.getField(MasterOrderFields.EXTERNAL_SYNCHRONIZED) == null) {
+            masterOrder.setField(MasterOrderFields.EXTERNAL_SYNCHRONIZED, true);
+        }
     }
 
     protected void changedDeadlineAndInOrder(final Entity masterOrder) {
