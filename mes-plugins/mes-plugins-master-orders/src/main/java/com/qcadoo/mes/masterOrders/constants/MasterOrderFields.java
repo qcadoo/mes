@@ -39,7 +39,13 @@ public final class MasterOrderFields {
 
     public static final String EXTERNAL_NUMBER = "externalNumber";
 
+    public static final String EXTERNAL_SYNCHRONIZED = "externalSynchronized";
+
     public static final String EXTERNAL_PRODUCTION_ORDER_ID = "externalProductionOrderID";
+
+    public static final String SYNCHRONIZE = "synchronize";
+
+    public static final String SYNCHRONIZATION_DATE = "synchronizationDate";
 
     public static final String DEADLINE = "deadline";
 
@@ -58,8 +64,6 @@ public final class MasterOrderFields {
     public static final String COMPANY_PAYER = "companyPayer";
 
     public static final String ADDRESS = "address";
-
-    public static final String EXTERNAL_SYNCHRONIZED = "externalSynchronized";
 
     public static final String ORDERS = "orders";
 
@@ -81,7 +85,16 @@ public final class MasterOrderFields {
 
     public static final String MASTER_ORDER_POSITION_STATUS = "masterOrderPositionStatus";
 
+    public static final String PRODUCTS_BY_SIZE_HELPERS = "productsBySizeHelpers";
+
+    public static final String PRODUCTS_BY_ATTRIBUTE_HELPERS = "productsByAttributeHelpers";
+
+    public static final String SALES_PLAN = "salesPlan";
+
     public static final String COMPANY_CATEGORY = "companyCategory";
 
     public static final String WAREHOUSE_ORDER = "warehouseOrder";
+
+    public static final String MASTER_ORDERS_MATERIAL_REQUIREMENTS = "masterOrdersMaterialRequirements";
+
 }

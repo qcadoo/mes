@@ -78,4 +78,6 @@ public final class ProductionCountingQuantityFields {
     public static final String ATTRIBUTE = "attribute";
 
     public static final String IS_ORDER_CREATE = "isOrderCreate";
+
+    public static final String SECTIONS = "sections";
 }

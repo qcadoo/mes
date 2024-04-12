@@ -620,6 +620,17 @@
                         <option type="alignment" value="right"/>
                     </component>
                 </layoutElement>
+                <layoutElement column="1" row="2">
+                    <component type="checkbox" name="synchronize" field="#{form}.synchronize"
+                               reference="synchronize" defaultEnabled="never">
+                    </component>
+                </layoutElement>
+                <layoutElement column="1" row="3">
+                    <component type="calendar" name="synchronizationDate" field="#{form}.synchronizationDate"
+                               reference="synchronizationDate" defaultEnabled="never">
+                        <option type="withTimePicker" value="true"/>
+                    </component>
+                </layoutElement>
             </component>
         </windowTab>
 

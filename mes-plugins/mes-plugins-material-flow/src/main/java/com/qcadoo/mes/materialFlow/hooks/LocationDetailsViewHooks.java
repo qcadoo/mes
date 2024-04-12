@@ -23,17 +23,14 @@
  */
 package com.qcadoo.mes.materialFlow.hooks;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
 import com.qcadoo.mes.materialFlow.constants.MaterialFlowConstants;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
-import com.qcadoo.plugin.api.PluginUtils;
 import com.qcadoo.view.api.ViewDefinitionState;
-import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.constants.QcadooViewConstants;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 @Component
 public class LocationDetailsViewHooks {
@@ -59,14 +56,6 @@ public class LocationDetailsViewHooks {
         if (externalNumber != null) {
             form.setFormEnabled(false);
         }
-        enableFields(state);
     }
 
-    private void enableFields(final ViewDefinitionState view) {
-        if(PluginUtils.isEnabled("walusiak")) {
-            FieldComponent fieldComponent = (FieldComponent) view.getComponentByReference("warehouseNumberInOptima");
-            fieldComponent.setEnabled(true);
-            fieldComponent.requestComponentUpdateState();
-        }
-    }
 }

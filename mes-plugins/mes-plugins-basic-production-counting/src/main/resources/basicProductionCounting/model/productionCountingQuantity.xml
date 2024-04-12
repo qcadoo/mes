@@ -75,7 +75,10 @@
                  model="productionCountingAttributeValue" cascade="delete"/>
 
         <manyToMany name="batches" model="batch" plugin="advancedGenealogy"
-                    joinField="productionCountingQuantities" cascade="nullify" copyable="true"/>
+                    joinField="productionCountingQuantities" copyable="true"/>
+
+        <hasMany name="sections" model="section" joinField="productionCountingQuantity" copyable="true"
+                 cascade="delete"/>
     </fields>
 
     <hooks>

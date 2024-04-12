@@ -24,32 +24,26 @@
     ***************************************************************************
 
 -->
-<model name="masterOrderDto" activable="true" auditable="false" deletable="false" insertable="false"
-        updatable="false"
+<model name="section"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
        xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
 
     <fields>
-        <string name="masterOrderDefinitionNumber"/>
-        <string name="number"/>
-        <string name="name"/>
-        <string name="externalNumber"/>
-        <boolean name="externalSynchronized" default="true"/>
-        <datetime name="deadline"/>
-        <string name="company"/>
-        <string name="companyCategory"/>
-        <string name="companyPayer"/>
-        <string name="masterOrderState"/>
-        <enum name="state" values="01new,02inExecution,03completed,04declined"/>
-        <integer name="orderedPositionQuantity"/>
-        <integer name="commissionedPositionQuantity"/>
-        <integer name="quantityForCommission"/>
-        <string name="description"/>
-        <string name="salesPlanNumber"/>
-        <string name="salesPlanName"/>
-        <boolean name="warehouseOrder"/>
+        <belongsTo name="productionCountingQuantity" model="productionCountingQuantity" required="true"/>
+
+        <decimal name="length" required="true">
+            <validatesRange from="0" exclusively="true"/>
+            <validatesUnscaledValue max="9"/>
+            <validatesScale max="5"/>
+        </decimal>
+        <integer name="quantity" required="true">
+            <validatesRange from="0" exclusively="true"/>
+        </integer>
+        <dictionary name="unit" dictionary="units" required="true"/>
     </fields>
 
-    <masterModel plugin="masterOrders" model="masterOrder"/>
-
+    <hooks>
+        <validatesWith class="com.qcadoo.mes.basicProductionCounting.hooks.SectionHooksBPC"
+                       method="validatesWith"/>
+    </hooks>
 </model>

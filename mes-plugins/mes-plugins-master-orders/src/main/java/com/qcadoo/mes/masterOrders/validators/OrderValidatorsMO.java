@@ -25,6 +25,7 @@ package com.qcadoo.mes.masterOrders.validators;
 
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.localization.api.utils.DateUtils;
+import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.masterOrders.constants.MasterOrderFields;
 import com.qcadoo.mes.masterOrders.constants.MasterOrderProductFields;
 import com.qcadoo.mes.masterOrders.constants.MasterOrdersConstants;
@@ -35,6 +36,8 @@ import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.JoinType;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
+import com.qcadoo.model.api.search.SearchRestrictions;
+import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -42,6 +45,8 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.Objects;
 
+import static com.qcadoo.mes.orders.constants.ParameterFieldsO.DEADLINE_FOR_ORDER_BASED_ON_DELIVERY_DATE;
+import static com.qcadoo.mes.orders.constants.ParameterFieldsO.DEADLINE_FOR_ORDER_EARLIER_THAN_DELIVERY_DATE;
 import static com.qcadoo.model.api.search.SearchProjections.alias;
 import static com.qcadoo.model.api.search.SearchProjections.id;
 import static com.qcadoo.model.api.search.SearchRestrictions.*;
@@ -54,6 +59,9 @@ public class OrderValidatorsMO {
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
+
+    @Autowired
+    private ParameterService parameterService;
 
     public boolean checkOrderNumber(final DataDefinition orderDD, final Entity order) {
         Entity masterOrder = order.getBelongsToField(OrderFieldsMO.MASTER_ORDER);
@@ -97,12 +105,26 @@ public class OrderValidatorsMO {
             isValid = false;
         }
 
-        if (!checkIfDeadlineIsCorrect(order, masterOrder)) {
-            Date deadline = masterOrder.getDateField(MasterOrderFields.DEADLINE);
-
-            order.addError(orderDD.getField(OrderFields.DEADLINE), "masterOrders.order.masterOrder.deadline.fieldIsNotTheSame",
-                    deadline == null ? translationService.translate("masterOrders.order.masterOrder.deadline.hasNotDeadline",
-                            Locale.getDefault()) : DateUtils.toDateTimeString(deadline));
+        Date deadlineFromMaster = masterOrder.getDateField(MasterOrderFields.DEADLINE);
+        String message = "masterOrders.order.masterOrder.deadline.fieldIsNotTheSame";
+        Entity parameter = parameterService.getParameter();
+        boolean deadlineForOrderBasedOnDeliveryDate = parameter.getBooleanField(DEADLINE_FOR_ORDER_BASED_ON_DELIVERY_DATE);
+        if (deadlineForOrderBasedOnDeliveryDate) {
+            Entity masterOrderProductComponent = findMasterOrderProduct(masterOrder, order.getBelongsToField(OrderFields.PRODUCT));
+            if (masterOrderProductComponent == null) {
+                return isValid;
+            } else {
+                deadlineFromMaster = masterOrderProductComponent.getDateField(MasterOrderProductFields.DELIVERY_DATE);
+                Integer deadlineForOrderEarlierThanDeliveryDate = parameter.getIntegerField(DEADLINE_FOR_ORDER_EARLIER_THAN_DELIVERY_DATE);
+                if (deadlineFromMaster != null && deadlineForOrderEarlierThanDeliveryDate != null && deadlineForOrderEarlierThanDeliveryDate > 0) {
+                    deadlineFromMaster = new DateTime(deadlineFromMaster).minusDays(deadlineForOrderEarlierThanDeliveryDate).toDate();
+                }
+                message = "masterOrders.order.masterOrderProduct.deadline.fieldIsNotTheSame";
+            }
+        }
+        if (!checkIfDeadlineIsCorrect(order.getDateField(OrderFields.DEADLINE), deadlineFromMaster)) {
+            order.addError(orderDD.getField(OrderFields.DEADLINE), message,
+                    DateUtils.toDateTimeString(deadlineFromMaster));
 
             isValid = false;
         }
@@ -117,7 +139,7 @@ public class OrderValidatorsMO {
             return true;
         }
 
-        if(order.getBooleanField("isUpdateTechnologiesOnPendingOrders")) {
+        if (order.getBooleanField("isUpdateTechnologiesOnPendingOrders")) {
             return true;
         }
 
@@ -131,14 +153,15 @@ public class OrderValidatorsMO {
 
         Entity masterOrder = orderDD.find(query.toString()).setLong("oid", mo.getId()).setMaxResults(1).uniqueResult();
 
-        if (Objects.isNull(masterOrder) || masterOrder.getLongField("positions") == 0l) {
+        if (Objects.isNull(masterOrder) || masterOrder.getLongField("positions") == 0L) {
             return true;
         }
 
         return checkIfOrderMatchesAnyOfMasterOrderProductsWithTechnology(order, masterOrder);
     }
 
-    private boolean checkIfOrderMatchesAnyOfMasterOrderProductsWithTechnology(final Entity order, final Entity masterOrder) {
+    private boolean checkIfOrderMatchesAnyOfMasterOrderProductsWithTechnology(final Entity order,
+                                                                              final Entity masterOrder) {
         if (hasMatchingMasterOrderProducts(order, masterOrder)) {
             return true;
         }
@@ -183,47 +206,42 @@ public class OrderValidatorsMO {
         }
     }
 
-    private boolean checkIfBelongToFieldIsTheSame(final Entity order, final Entity masterOrder, final String reference) {
+    private boolean checkIfBelongToFieldIsTheSame(final Entity order, final Entity masterOrder,
+                                                  final String reference) {
         Entity fieldFromMaster = masterOrder.getBelongsToField(reference);
         Entity fieldFromOrder = order.getBelongsToField(reference);
 
-        if ((fieldFromMaster == null && fieldFromOrder == null) || (fieldFromMaster == null && fieldFromOrder != null)) {
+        if (fieldFromMaster == null) {
             return true;
         }
 
-        if (fieldFromMaster != null && fieldFromOrder != null && fieldFromOrder.getId().equals(fieldFromMaster.getId())) {
-            return true;
-        }
-
-        return false;
+        return fieldFromOrder != null && fieldFromOrder.getId().equals(fieldFromMaster.getId());
     }
 
-    private boolean checkIfDeadlineIsCorrect(final Entity order, final Entity masterOrder) {
-        Date deadlineFromMaster = masterOrder.getDateField(MasterOrderFields.DEADLINE);
-        Date deadlineFromOrder = order.getDateField(OrderFields.DEADLINE);
-
-        if ((deadlineFromMaster == null && deadlineFromOrder == null)
-                || (deadlineFromMaster == null && deadlineFromOrder != null)) {
+    private boolean checkIfDeadlineIsCorrect(final Date deadlineFromOrder, final Date deadlineFromMaster) {
+        if (deadlineFromMaster == null) {
             return true;
         }
 
-        if ((deadlineFromMaster != null && deadlineFromOrder == null)) {
+        if (deadlineFromOrder == null) {
             return false;
         }
 
-        if (deadlineFromOrder.equals(deadlineFromMaster)) {
-            return true;
-        }
-
-        order.addError(order.getDataDefinition().getField(OrderFields.DEADLINE), "masterOrders.masterOrder.deadline.isIncorrect");
-
-        return false;
+        return deadlineFromOrder.equals(deadlineFromMaster);
     }
 
     private String createInfoAboutEntity(final Entity entity, final String fieldName) {
         return entity == null
                 ? translationService.translate("masterOrders.order.masterOrder.hasNot" + fieldName, Locale.getDefault())
                 : entity.getStringField(MasterOrderFields.NUMBER) + " - " + entity.getStringField(MasterOrderFields.NAME);
+    }
+
+    private Entity findMasterOrderProduct(Entity masterOrder, Entity product) {
+        return dataDefinitionService
+                .get(MasterOrdersConstants.PLUGIN_IDENTIFIER, MasterOrdersConstants.MODEL_MASTER_ORDER_PRODUCT).find()
+                .add(SearchRestrictions.belongsTo(MasterOrderProductFields.MASTER_ORDER, masterOrder))
+                .add(SearchRestrictions.belongsTo(MasterOrderProductFields.PRODUCT, product))
+                .setMaxResults(1).uniqueResult();
     }
 
 }

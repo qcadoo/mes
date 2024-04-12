@@ -111,4 +111,8 @@ public final class ParameterFieldsO {
 
     public static final String PPS_IS_AUTOMATIC = "ppsIsAutomatic";
 
+    public static final String DEADLINE_FOR_ORDER_BASED_ON_DELIVERY_DATE = "deadlineForOrderBasedOnDeliveryDate";
+
+    public static final String DEADLINE_FOR_ORDER_EARLIER_THAN_DELIVERY_DATE = "deadlineForOrderEarlierThanDeliveryDate";
+
 }
