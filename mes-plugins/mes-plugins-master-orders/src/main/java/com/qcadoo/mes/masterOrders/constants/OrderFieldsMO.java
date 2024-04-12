@@ -37,4 +37,6 @@ public final class OrderFieldsMO {
 
     public static final String MASTER_ORDER_PRODUCT_COMPONENT = "masterOrderProductComponent";
 
+    public static final String VENDOR_INFO = "vendorInfo";
+
 }

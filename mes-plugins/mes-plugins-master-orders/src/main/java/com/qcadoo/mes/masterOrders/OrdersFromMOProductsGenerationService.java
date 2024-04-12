@@ -143,12 +143,10 @@ public class OrdersFromMOProductsGenerationService {
             }
         } else {
             masterOrderProductsEntities.forEach(mop -> {
-                BigDecimal quantityRemainingToOrder = dataDefinitionService
-                        .get(MasterOrdersConstants.PLUGIN_IDENTIFIER, MasterOrdersConstants.MODEL_MASTER_ORDER_POSITION_DTO)
-                        .get(mop.getId()).getDecimalField(MasterOrderPositionDtoFields.QUANTITY_REMAINING_TO_ORDER_WITHOUT_STOCK);
                 Entity positionDto = dataDefinitionService
                         .get(MasterOrdersConstants.PLUGIN_IDENTIFIER, MasterOrdersConstants.MODEL_MASTER_ORDER_POSITION_DTO)
                         .get(mop.getId());
+                BigDecimal quantityRemainingToOrder = positionDto.getDecimalField(MasterOrderPositionDtoFields.QUANTITY_REMAINING_TO_ORDER_WITHOUT_STOCK);
                 BigDecimal minStateQuantity = positionDto.getDecimalField(MasterOrderPositionDtoFields.WAREHOUSE_MINIMUM_STATE_QUANTITY);
 
                 MasterOrderProduct masterOrderProduct = MasterOrderProduct.newMasterOrderProduct()
@@ -431,6 +429,7 @@ public class OrdersFromMOProductsGenerationService {
             order.setField(OrderFields.COMPANY, masterOrder.getBelongsToField(MasterOrderFields.COMPANY));
             order.setField(OrderFields.ADDRESS, masterOrder.getBelongsToField(MasterOrderFields.ADDRESS));
             order.setField(OrderFieldsMO.MASTER_ORDER, masterOrder);
+            order.setField(OrderFieldsMO.VENDOR_INFO, masterOrderProduct.getMasterOrderProduct().getStringField(MasterOrderProductFields.VENDOR_INFO));
 
             fillDates(parameter, order, masterOrderDeadline, masterOrderStartDate, masterOrderFinishDate);
         }

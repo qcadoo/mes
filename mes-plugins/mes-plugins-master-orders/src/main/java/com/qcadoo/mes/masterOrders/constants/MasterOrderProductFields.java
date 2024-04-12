@@ -61,4 +61,6 @@ public final class MasterOrderProductFields {
 
     public static final String DELIVERY_DATE = "deliveryDate";
 
+    public static final String VENDOR_INFO = "vendorInfo";
+
 }
