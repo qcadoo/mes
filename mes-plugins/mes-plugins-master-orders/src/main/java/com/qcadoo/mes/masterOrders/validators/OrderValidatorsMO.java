@@ -37,6 +37,7 @@ import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.JoinType;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
+import com.qcadoo.plugin.api.PluginUtils;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -110,7 +111,7 @@ public class OrderValidatorsMO {
         Entity parameter = parameterService.getParameter();
         boolean deadlineForOrderBasedOnDeliveryDate = parameter.getBooleanField(DEADLINE_FOR_ORDER_BASED_ON_DELIVERY_DATE);
         if (deadlineForOrderBasedOnDeliveryDate) {
-            Entity masterOrderProductComponent = findMasterOrderProduct(masterOrder, order.getBelongsToField(OrderFields.PRODUCT));
+            Entity masterOrderProductComponent = findMasterOrderProduct(masterOrder, order.getBelongsToField(OrderFields.PRODUCT), order.getStringField(OrderFieldsMO.VENDOR_INFO));
             if (masterOrderProductComponent == null) {
                 return isValid;
             } else {
@@ -236,12 +237,15 @@ public class OrderValidatorsMO {
                 : entity.getStringField(MasterOrderFields.NUMBER) + " - " + entity.getStringField(MasterOrderFields.NAME);
     }
 
-    private Entity findMasterOrderProduct(Entity masterOrder, Entity product) {
-        return dataDefinitionService
+    private Entity findMasterOrderProduct(Entity masterOrder, Entity product, String vendorInfo) {
+        SearchCriteriaBuilder scb = dataDefinitionService
                 .get(MasterOrdersConstants.PLUGIN_IDENTIFIER, MasterOrdersConstants.MODEL_MASTER_ORDER_PRODUCT).find()
                 .add(SearchRestrictions.belongsTo(MasterOrderProductFields.MASTER_ORDER, masterOrder))
-                .add(SearchRestrictions.belongsTo(MasterOrderProductFields.PRODUCT, product))
-                .setMaxResults(1).uniqueResult();
+                .add(SearchRestrictions.belongsTo(MasterOrderProductFields.PRODUCT, product));
+        if (PluginUtils.isEnabled("moldrew")) {
+            scb.add(SearchRestrictions.eq(MasterOrderProductFields.VENDOR_INFO, vendorInfo));
+        }
+        return scb.setMaxResults(1).uniqueResult();
     }
 
 }

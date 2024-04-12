@@ -23,28 +23,24 @@
  */
 package com.qcadoo.mes.masterOrders.validators;
 
-import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.basic.constants.ProductFamilyElementType;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.masterOrders.constants.MasterOrderProductFields;
 import com.qcadoo.mes.masterOrders.util.MasterOrderOrdersDataProvider;
 import com.qcadoo.mes.orders.constants.OrderFields;
-import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.model.api.DataDefinition;
-import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.FieldDefinition;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchProjections;
 import com.qcadoo.model.api.search.SearchRestrictions;
+import com.qcadoo.plugin.api.PluginUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Collection;
-import java.util.List;
-import java.util.Objects;
 
 import static com.qcadoo.model.api.search.SearchRestrictions.*;
 
@@ -52,13 +48,7 @@ import static com.qcadoo.model.api.search.SearchRestrictions.*;
 public class MasterOrderProductValidators {
 
     @Autowired
-    private DataDefinitionService dataDefinitionService;
-
-    @Autowired
     private MasterOrderOrdersDataProvider masterOrderOrdersDataProvider;
-
-    @Autowired
-    private ParameterService parameterService;
 
     public boolean onValidate(final DataDefinition masterOrderProductDD, final Entity masterOrderProduct) {
         boolean isValid = checkIfEntityAlreadyExistsForProductAndMasterOrder(masterOrderProductDD, masterOrderProduct);
@@ -80,6 +70,9 @@ public class MasterOrderProductValidators {
 
     private boolean checkIfEntityAlreadyExistsForProductAndMasterOrder(final DataDefinition masterOrderProductDD,
                                                                        final Entity masterOrderProduct) {
+        if (PluginUtils.isEnabled("moldrew")) {
+            return true;
+        }
         SearchCriteriaBuilder searchCriteriaBuilder = masterOrderProductDD.find()
                 .add(SearchRestrictions.belongsTo(MasterOrderProductFields.MASTER_ORDER,
                         masterOrderProduct.getBelongsToField(MasterOrderProductFields.MASTER_ORDER)))
@@ -125,13 +118,15 @@ public class MasterOrderProductValidators {
         return true;
     }
 
-    public boolean checkIfCanChangeTechnology(final DataDefinition masterOrderProductDD, final FieldDefinition fieldDefinition,
-                                              final Entity masterOrderProduct, final Object fieldOldValue, final Object fieldNewValue) {
+    public boolean checkIfCanChangeTechnology(final DataDefinition masterOrderProductDD,
+                                              final FieldDefinition fieldDefinition,
+                                              final Entity masterOrderProduct, final Object fieldOldValue,
+                                              final Object fieldNewValue) {
         if (masterOrderProduct.getId() == null) {
             return true;
         }
 
-        if(masterOrderProduct.getBooleanField("isUpdateTechnologiesOnPendingOrders")) {
+        if (masterOrderProduct.getBooleanField("isUpdateTechnologiesOnPendingOrders")) {
             return true;
         }
 
@@ -159,8 +154,10 @@ public class MasterOrderProductValidators {
         return false;
     }
 
-    public boolean checkIfCanChangeProduct(final DataDefinition masterOrderProductDD, final FieldDefinition fieldDefinition,
-                                           final Entity masterOrderProduct, final Object fieldOldValue, final Object fieldNewValue) {
+    public boolean checkIfCanChangeProduct(final DataDefinition masterOrderProductDD,
+                                           final FieldDefinition fieldDefinition,
+                                           final Entity masterOrderProduct, final Object fieldOldValue,
+                                           final Object fieldNewValue) {
         if (masterOrderProduct.getId() == null) {
             return true;
         }

@@ -257,7 +257,11 @@
         </model:model-field>
 
         <model:model-field plugin="basic" model="product">
-                <model:belongsTo name="orderedProductConfigurator" model="orderedProductConfigurator" plugin="masterOrders"/>
+            <model:belongsTo name="orderedProductConfigurator" model="orderedProductConfigurator" plugin="masterOrders"/>
+        </model:model-field>
+
+        <model:model-field plugin="orders" model="order">
+            <model:string name="vendorInfo" copyable="false"/>
         </model:model-field>
 
         <model:model-hook model="product" plugin="basic">
