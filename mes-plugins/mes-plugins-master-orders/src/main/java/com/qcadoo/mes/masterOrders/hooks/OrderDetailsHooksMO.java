@@ -142,7 +142,7 @@ public class OrderDetailsHooksMO {
             numberField.setFieldValue(generatedNumber);
             numberField.requestComponentUpdateState();
 
-            if (StringUtils.isEmpty((String) vendorInfoField.getFieldValue()) && (vendorInfo != null)) {
+            if (vendorInfo != null && StringUtils.isEmpty((String) vendorInfoField.getFieldValue())) {
                 vendorInfoField.setFieldValue(vendorInfo);
                 vendorInfoField.requestComponentUpdateState();
             }
