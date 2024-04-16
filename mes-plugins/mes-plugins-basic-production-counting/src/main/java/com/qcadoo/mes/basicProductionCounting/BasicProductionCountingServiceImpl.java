@@ -298,10 +298,9 @@ public class BasicProductionCountingServiceImpl implements BasicProductionCounti
             List<Entity> sections = new ArrayList<>();
             DataDefinition dataDefinition = dataDefinitionService.get(BasicProductionCountingConstants.PLUGIN_IDENTIFIER,
                     BasicProductionCountingConstants.MODEL_SECTION);
-            BigDecimal orderPlannedQuantity = order.getDecimalField(OrderFields.PLANNED_QUANTITY);
             for (Entity topicSection : operationProductComponent.getHasManyField(OperationProductInComponentFields.SECTIONS)) {
                 Entity pcqSection = dataDefinition.create();
-                pcqSection.setField(SectionFieldsBPC.QUANTITY, topicSection.getIntegerField(SectionFields.QUANTITY) * orderPlannedQuantity.intValue());
+                pcqSection.setField(SectionFieldsBPC.QUANTITY, topicSection.getIntegerField(SectionFields.QUANTITY));
                 pcqSection.setField(SectionFieldsBPC.LENGTH, topicSection.getField(SectionFields.LENGTH));
                 pcqSection.setField(SectionFieldsBPC.UNIT, topicSection.getField(SectionFields.UNIT));
                 sections.add(pcqSection);
