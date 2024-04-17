@@ -31,6 +31,7 @@ import com.qcadoo.mes.masterOrders.util.MasterOrderOrdersDataProvider;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.model.api.*;
+import com.qcadoo.model.api.search.SearchCriterion;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.model.constants.DictionaryItemFields;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,6 +42,8 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
+
+import static com.qcadoo.model.api.search.SearchRestrictions.and;
 
 @Service
 public class MasterOrderProductHooks {
@@ -123,7 +126,8 @@ public class MasterOrderProductHooks {
         }
     }
 
-    private boolean isCompleteMasterOrderAfterOrderingPositions(final Entity masterOrderProduct, final Entity masterOrder) {
+    private boolean isCompleteMasterOrderAfterOrderingPositions(final Entity masterOrderProduct,
+                                                                final Entity masterOrder) {
         return parameterService.getParameter().getBooleanField(ParameterFieldsMO.COMPLETE_MASTER_ORDER_AFTER_ORDERING_POSITIONS)
                 && !masterOrder.getHasManyField(MasterOrderFields.MASTER_ORDER_PRODUCTS).isEmpty()
                 && !MasterOrderState.COMPLETED.getStringValue().equals(masterOrder.getStringField(MasterOrderFields.STATE))
@@ -153,9 +157,16 @@ public class MasterOrderProductHooks {
 
         Entity masterOrder = masterOrderProduct.getBelongsToField(MasterOrderProductFields.MASTER_ORDER);
         Entity product = masterOrderProduct.getBelongsToField(MasterOrderProductFields.PRODUCT);
+        SearchCriterion searchCriterion;
 
-        long numOfBelongingOrdersMatchingProduct = masterOrderOrdersDataProvider.countBelongingOrders(masterOrder,
-                SearchRestrictions.belongsTo(OrderFields.PRODUCT, product));
+        String vendorInfo = masterOrderProduct.getStringField(MasterOrderProductFields.VENDOR_INFO);
+        if (vendorInfo != null) {
+            searchCriterion = and(SearchRestrictions.belongsTo(OrderFields.PRODUCT, product), SearchRestrictions.eq(MasterOrderProductFields.VENDOR_INFO, vendorInfo));
+        } else {
+            searchCriterion = and(SearchRestrictions.belongsTo(OrderFields.PRODUCT, product), SearchRestrictions.isNull(MasterOrderProductFields.VENDOR_INFO));
+        }
+
+        long numOfBelongingOrdersMatchingProduct = masterOrderOrdersDataProvider.countBelongingOrders(masterOrder, searchCriterion);
 
         if (numOfBelongingOrdersMatchingProduct > 0) {
             masterOrderProduct.addGlobalError("masterOrders.masterOrderProduct.delete.existsAssignedOrder");
