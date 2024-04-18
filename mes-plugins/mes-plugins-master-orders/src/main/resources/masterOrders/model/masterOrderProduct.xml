@@ -29,12 +29,7 @@
        xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
 
     <fields>
-        <belongsTo name="product" plugin="basic" model="product"
-                   required="true">
-            <validatesWith
-                    class="com.qcadoo.mes.masterOrders.validators.MasterOrderProductValidators"
-                    method="checkIfCanChangeProduct"/>
-        </belongsTo>
+        <belongsTo name="product" plugin="basic" model="product" required="true"/>
         <belongsTo name="technology" plugin="technologies" model="technology">
             <validatesWith
                     class="com.qcadoo.mes.masterOrders.validators.MasterOrderProductValidators"
