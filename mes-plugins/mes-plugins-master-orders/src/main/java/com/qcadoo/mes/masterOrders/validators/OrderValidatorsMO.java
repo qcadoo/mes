@@ -163,16 +163,21 @@ public class OrderValidatorsMO {
 
     private boolean checkIfOrderMatchesAnyOfMasterOrderProductsWithTechnology(final Entity order,
                                                                               final Entity masterOrder) {
-        if (hasMatchingMasterOrderProducts(order, masterOrder)) {
+        String orderVendorInfo = order.getStringField(OrderFieldsMO.VENDOR_INFO);
+        if (hasMatchingMasterOrderProducts(order, masterOrder, orderVendorInfo)) {
             return true;
         }
 
-        addMatchValidationError(order, OrderFields.PRODUCT, null);
+        if (orderVendorInfo != null) {
+            order.addError(order.getDataDefinition().getField(OrderFields.PRODUCT), "masterOrders.order.masterOrder.product.masterOrderProductWithVendorInfoDoesNotExist");
+        } else {
+            order.addError(order.getDataDefinition().getField(OrderFields.PRODUCT), "masterOrders.order.masterOrder.product.masterOrderProductDoesNotExist");
+        }
 
         return false;
     }
 
-    private boolean hasMatchingMasterOrderProducts(final Entity order, final Entity masterOrder) {
+    private boolean hasMatchingMasterOrderProducts(final Entity order, final Entity masterOrder, String orderVendorInfo) {
         Entity orderTechnology = order.getBelongsToField(OrderFields.TECHNOLOGY);
         Entity orderProduct = order.getBelongsToField(OrderFields.PRODUCT);
 
@@ -191,20 +196,13 @@ public class OrderValidatorsMO {
             masterProductsCriteria.add(or(isNull(MasterOrderProductFields.TECHNOLOGY),
                     belongsTo(MasterOrderProductFields.TECHNOLOGY, orderTechnology)));
         }
+        if (orderVendorInfo != null) {
+            masterProductsCriteria.add(SearchRestrictions.eq(MasterOrderProductFields.VENDOR_INFO, orderVendorInfo));
+        } else {
+            masterProductsCriteria.add(SearchRestrictions.isNull(MasterOrderProductFields.VENDOR_INFO));
+        }
 
         return masterCriteria.setMaxResults(1).uniqueResult() != null;
-    }
-
-    private void addMatchValidationError(final Entity toOrder, final String fieldName, final String entityInfo) {
-        if (entityInfo == null) {
-            String errorMessage = String.format("masterOrders.order.masterOrder.%s.masterOrderProductDoesNotExist", fieldName);
-
-            toOrder.addError(toOrder.getDataDefinition().getField(fieldName), errorMessage);
-        } else {
-            String errorMessage = String.format("masterOrders.order.masterOrder.%s.fieldIsNotTheSame", fieldName);
-
-            toOrder.addError(toOrder.getDataDefinition().getField(fieldName), errorMessage, entityInfo);
-        }
     }
 
     private boolean checkIfBelongToFieldIsTheSame(final Entity order, final Entity masterOrder,
