@@ -157,13 +157,13 @@ public class MasterOrderProductHooks {
 
         Entity masterOrder = masterOrderProduct.getBelongsToField(MasterOrderProductFields.MASTER_ORDER);
         Entity product = masterOrderProduct.getBelongsToField(MasterOrderProductFields.PRODUCT);
-        SearchCriterion searchCriterion;
-
         String vendorInfo = masterOrderProduct.getStringField(MasterOrderProductFields.VENDOR_INFO);
+
+        SearchCriterion searchCriterion;
         if (vendorInfo != null) {
-            searchCriterion = and(SearchRestrictions.belongsTo(OrderFields.PRODUCT, product), SearchRestrictions.eq(MasterOrderProductFields.VENDOR_INFO, vendorInfo));
+            searchCriterion = and(SearchRestrictions.belongsTo(OrderFields.PRODUCT, product), SearchRestrictions.eq(OrderFieldsMO.VENDOR_INFO, vendorInfo));
         } else {
-            searchCriterion = and(SearchRestrictions.belongsTo(OrderFields.PRODUCT, product), SearchRestrictions.isNull(MasterOrderProductFields.VENDOR_INFO));
+            searchCriterion = and(SearchRestrictions.belongsTo(OrderFields.PRODUCT, product), SearchRestrictions.isNull(OrderFieldsMO.VENDOR_INFO));
         }
 
         long numOfBelongingOrdersMatchingProduct = masterOrderOrdersDataProvider.countBelongingOrders(masterOrder, searchCriterion);
