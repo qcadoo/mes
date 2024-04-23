@@ -166,4 +166,6 @@ public final class OrderFields {
 
     public static final String ADDITIONAL_FINAL_PRODUCTS = "additionalFinalProducts";
 
+    public static final String PRIORITY = "priority";
+
 }
