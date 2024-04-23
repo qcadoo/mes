@@ -698,6 +698,12 @@
                                    defaultEnabled="true" hasDescription="true">
                         </component>
                     </layoutElement>
+                    <layoutElement column="3" row="4">
+                        <component type="input" name="priority" field="#{form}.priority"
+                                   reference="priority" hasDescription="true">
+                            <option type="alignment" value="right"/>
+                        </component>
+                    </layoutElement>
                 </component>
 
                 <option type="header" value="true"/>
