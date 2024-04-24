@@ -37,7 +37,6 @@ import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.JoinType;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
-import com.qcadoo.plugin.api.PluginUtils;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -177,7 +176,8 @@ public class OrderValidatorsMO {
         return false;
     }
 
-    private boolean hasMatchingMasterOrderProducts(final Entity order, final Entity masterOrder, String orderVendorInfo) {
+    private boolean hasMatchingMasterOrderProducts(final Entity order, final Entity masterOrder,
+                                                   String orderVendorInfo) {
         Entity orderTechnology = order.getBelongsToField(OrderFields.TECHNOLOGY);
         Entity orderProduct = order.getBelongsToField(OrderFields.PRODUCT);
 
@@ -240,8 +240,10 @@ public class OrderValidatorsMO {
                 .get(MasterOrdersConstants.PLUGIN_IDENTIFIER, MasterOrdersConstants.MODEL_MASTER_ORDER_PRODUCT).find()
                 .add(SearchRestrictions.belongsTo(MasterOrderProductFields.MASTER_ORDER, masterOrder))
                 .add(SearchRestrictions.belongsTo(MasterOrderProductFields.PRODUCT, product));
-        if (PluginUtils.isEnabled("moldrew")) {
+        if (vendorInfo != null) {
             scb.add(SearchRestrictions.eq(MasterOrderProductFields.VENDOR_INFO, vendorInfo));
+        } else {
+            scb.add(SearchRestrictions.isNull(MasterOrderProductFields.VENDOR_INFO));
         }
         return scb.setMaxResults(1).uniqueResult();
     }
