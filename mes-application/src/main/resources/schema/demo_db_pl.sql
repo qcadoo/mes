@@ -5671,6 +5671,8 @@ CREATE TABLE public.arch_orders_order (
     expirationdate date,
     additionalfinalproducts character varying(255),
     optimizecuttingsolution text,
+    vendorinfo character varying(255),
+    priority integer DEFAULT 100,
     archived boolean DEFAULT false
 );
 
@@ -10636,7 +10638,9 @@ CREATE TABLE public.orders_order (
     reportedproductionquantity numeric(12,5),
     expirationdate date,
     additionalfinalproducts character varying(255),
-    optimizecuttingsolution text
+    optimizecuttingsolution text,
+    vendorinfo character varying(255),
+    priority integer DEFAULT 100
 );
 
 
@@ -23871,7 +23875,12 @@ CREATE TABLE public.orders_schedule (
     additionaltimeextendsoperation boolean DEFAULT true,
     includetpz boolean DEFAULT true,
     onlyworkstationsoflinefromorder boolean DEFAULT false,
-    token character varying(36)
+    token character varying(36),
+    plannerworkstationassigncriterion character varying(255) DEFAULT '01minDeadlineForOrder'::character varying,
+    deadlinesort boolean DEFAULT true,
+    operationlevelsort boolean DEFAULT true,
+    orderprioritysort boolean DEFAULT false,
+    abcanalysissort boolean DEFAULT false
 );
 
 
@@ -37978,7 +37987,7 @@ COPY public.arch_orders_operationaltaskstatechange (id, dateandtime, sourcestate
 -- Data for Name: arch_orders_order; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.arch_orders_order (id, number, name, description, commentreasontypecorrectiondatefrom, commentreasontypecorrectiondateto, commentreasondeviationeffectivestart, commentreasondeviationeffectiveend, externalnumber, commentreasontypedeviationsquantity, datefrom, dateto, effectivedatefrom, effectivedateto, deadline, correcteddatefrom, correcteddateto, startdate, finishdate, state, company_id, product_id, technology_id, productionline_id, plannedquantity, donequantity, externalsynchronized, commissionedplannedquantity, commissionedcorrectedquantity, amountofproductproduced, remainingamountofproducttoproduce, ownlinechangeoverduration, registerproductiontime, registerquantityinproduct, laborworktime, includetpz, inputproductsrequiredfortype, generatedenddate, machineworktime, ownlinechangeover, registerquantityoutproduct, operationdurationquantityunit, realizationtime, calculate, includeadditionaltime, typeofproductionrecording, masterorder_id, active, productpriceperunit, failuresyncmessage, targetstate, ignorerequiredcomponents, automaticallymoveoverusage, updatecomponentsavailability, technologyprototype_id, level, parent_id, ignoremissingcomponents, masterorderproduct_id, dateschanged, sourcecorrecteddatefrom, sourcecorrecteddateto, sourcestartdate, sourcefinishdate, batchnumber, root_id, includeordersforcomponent, plannedfinishallorders, plannedstartallorders, calculatedfinishallorders, registerfilled, workplandelivered, calculatedstartallorders, scadacreatedorupdatestate, entityversion, workertochange, masterorderproductcomponent_id, wastesquantity, existsrepairorders, ordercategory, address_id, finalproductiontracking, updatefinishdate, ordersgroup_id, plannedquantityforadditionalunit, division_id, salesplan_id, reportedproductionquantity, expirationdate, additionalfinalproducts, optimizecuttingsolution, archived) FROM stdin;
+COPY public.arch_orders_order (id, number, name, description, commentreasontypecorrectiondatefrom, commentreasontypecorrectiondateto, commentreasondeviationeffectivestart, commentreasondeviationeffectiveend, externalnumber, commentreasontypedeviationsquantity, datefrom, dateto, effectivedatefrom, effectivedateto, deadline, correcteddatefrom, correcteddateto, startdate, finishdate, state, company_id, product_id, technology_id, productionline_id, plannedquantity, donequantity, externalsynchronized, commissionedplannedquantity, commissionedcorrectedquantity, amountofproductproduced, remainingamountofproducttoproduce, ownlinechangeoverduration, registerproductiontime, registerquantityinproduct, laborworktime, includetpz, inputproductsrequiredfortype, generatedenddate, machineworktime, ownlinechangeover, registerquantityoutproduct, operationdurationquantityunit, realizationtime, calculate, includeadditionaltime, typeofproductionrecording, masterorder_id, active, productpriceperunit, failuresyncmessage, targetstate, ignorerequiredcomponents, automaticallymoveoverusage, updatecomponentsavailability, technologyprototype_id, level, parent_id, ignoremissingcomponents, masterorderproduct_id, dateschanged, sourcecorrecteddatefrom, sourcecorrecteddateto, sourcestartdate, sourcefinishdate, batchnumber, root_id, includeordersforcomponent, plannedfinishallorders, plannedstartallorders, calculatedfinishallorders, registerfilled, workplandelivered, calculatedstartallorders, scadacreatedorupdatestate, entityversion, workertochange, masterorderproductcomponent_id, wastesquantity, existsrepairorders, ordercategory, address_id, finalproductiontracking, updatefinishdate, ordersgroup_id, plannedquantityforadditionalunit, division_id, salesplan_id, reportedproductionquantity, expirationdate, additionalfinalproducts, optimizecuttingsolution, vendorinfo, priority, archived) FROM stdin;
 \.
 
 
@@ -42490,7 +42499,7 @@ COPY public.orders_operationaltaskstatechange (id, dateandtime, sourcestate, tar
 -- Data for Name: orders_order; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.orders_order (id, number, name, description, commentreasontypecorrectiondatefrom, commentreasontypecorrectiondateto, commentreasondeviationeffectivestart, commentreasondeviationeffectiveend, externalnumber, commentreasontypedeviationsquantity, datefrom, dateto, effectivedatefrom, effectivedateto, deadline, correcteddatefrom, correcteddateto, startdate, finishdate, state, company_id, product_id, technology_id, productionline_id, plannedquantity, donequantity, externalsynchronized, commissionedplannedquantity, commissionedcorrectedquantity, amountofproductproduced, remainingamountofproducttoproduce, ownlinechangeoverduration, registerproductiontime, registerquantityinproduct, laborworktime, includetpz, inputproductsrequiredfortype, generatedenddate, machineworktime, ownlinechangeover, registerquantityoutproduct, operationdurationquantityunit, realizationtime, calculate, includeadditionaltime, typeofproductionrecording, masterorder_id, active, productpriceperunit, failuresyncmessage, targetstate, ignorerequiredcomponents, automaticallymoveoverusage, updatecomponentsavailability, technologyprototype_id, level, parent_id, ignoremissingcomponents, masterorderproduct_id, dateschanged, sourcecorrecteddatefrom, sourcecorrecteddateto, sourcestartdate, sourcefinishdate, batchnumber, root_id, includeordersforcomponent, plannedfinishallorders, plannedstartallorders, calculatedfinishallorders, registerfilled, workplandelivered, calculatedstartallorders, scadacreatedorupdatestate, entityversion, workertochange, masterorderproductcomponent_id, wastesquantity, existsrepairorders, ordercategory, address_id, finalproductiontracking, updatefinishdate, ordersgroup_id, plannedquantityforadditionalunit, division_id, salesplan_id, reportedproductionquantity, expirationdate, additionalfinalproducts, optimizecuttingsolution) FROM stdin;
+COPY public.orders_order (id, number, name, description, commentreasontypecorrectiondatefrom, commentreasontypecorrectiondateto, commentreasondeviationeffectivestart, commentreasondeviationeffectiveend, externalnumber, commentreasontypedeviationsquantity, datefrom, dateto, effectivedatefrom, effectivedateto, deadline, correcteddatefrom, correcteddateto, startdate, finishdate, state, company_id, product_id, technology_id, productionline_id, plannedquantity, donequantity, externalsynchronized, commissionedplannedquantity, commissionedcorrectedquantity, amountofproductproduced, remainingamountofproducttoproduce, ownlinechangeoverduration, registerproductiontime, registerquantityinproduct, laborworktime, includetpz, inputproductsrequiredfortype, generatedenddate, machineworktime, ownlinechangeover, registerquantityoutproduct, operationdurationquantityunit, realizationtime, calculate, includeadditionaltime, typeofproductionrecording, masterorder_id, active, productpriceperunit, failuresyncmessage, targetstate, ignorerequiredcomponents, automaticallymoveoverusage, updatecomponentsavailability, technologyprototype_id, level, parent_id, ignoremissingcomponents, masterorderproduct_id, dateschanged, sourcecorrecteddatefrom, sourcecorrecteddateto, sourcestartdate, sourcefinishdate, batchnumber, root_id, includeordersforcomponent, plannedfinishallorders, plannedstartallorders, calculatedfinishallorders, registerfilled, workplandelivered, calculatedstartallorders, scadacreatedorupdatestate, entityversion, workertochange, masterorderproductcomponent_id, wastesquantity, existsrepairorders, ordercategory, address_id, finalproductiontracking, updatefinishdate, ordersgroup_id, plannedquantityforadditionalunit, division_id, salesplan_id, reportedproductionquantity, expirationdate, additionalfinalproducts, optimizecuttingsolution, vendorinfo, priority) FROM stdin;
 \.
 
 
@@ -42626,7 +42635,7 @@ COPY public.orders_reasontypeofchangingorderstate (id, orderstatechange_id, reas
 -- Data for Name: orders_schedule; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.orders_schedule (id, number, name, starttime, state, sortorder, workstationassigncriterion, workerassigncriterion, approvetime, scheduleforbuffer, additionaltimeextendsoperation, includetpz, onlyworkstationsoflinefromorder, token) FROM stdin;
+COPY public.orders_schedule (id, number, name, starttime, state, sortorder, workstationassigncriterion, workerassigncriterion, approvetime, scheduleforbuffer, additionaltimeextendsoperation, includetpz, onlyworkstationsoflinefromorder, token, plannerworkstationassigncriterion, deadlinesort, operationlevelsort, orderprioritysort, abcanalysissort) FROM stdin;
 \.
 
 
@@ -58018,13 +58027,73 @@ CREATE OR REPLACE VIEW public.masterorders_masterorderposition_manyproducts AS
      LEFT JOIN public.basic_model model ON ((model.id = _product.model_id)))
      LEFT JOIN public.basic_company company ON ((company.id = masterorder.company_id)))
      LEFT JOIN public.technologies_technology technology ON ((technology.id = masterorderproduct.technology_id)))
-     LEFT JOIN public.orders_order orders ON (((orders.masterorder_id = masterorderproduct.masterorder_id) AND (orders.product_id = masterorderproduct.product_id))))
+     LEFT JOIN public.orders_order orders ON (((orders.masterorder_id = masterorderproduct.masterorder_id) AND (orders.product_id = masterorderproduct.product_id) AND (orders.vendorinfo IS NULL))))
      LEFT JOIN public.basic_company companypayer ON ((companypayer.id = masterorder.companypayer_id)))
      LEFT JOIN public.basic_assortment assortment ON ((assortment.id = _product.assortment_id)))
      LEFT JOIN public.masterorders_salesplan salesplan ON ((salesplan.id = masterorder.salesplan_id)))
      LEFT JOIN warehousestatehelper wsh ON ((wsh.product_id = masterorderproduct.product_id)))
      LEFT JOIN public.masterorders_position_deliveryproductquantityhelper mopdpqh ON ((mopdpqh.product_id = masterorderproduct.product_id)))
      LEFT JOIN productioncountingquantityoutput pcqo ON ((pcqo.productid = masterorderproduct.product_id)))
+  WHERE (masterorderproduct.vendorinfo IS NULL)
+  GROUP BY masterorderdefinition.number, masterorder.id, masterorderproduct.product_id, masterorderproduct.id, masterorder.name, masterorder.deadline, masterorder.masterorderstate, masterorderproduct.masterorderpositionstatus, masterorderproduct.comments, _product.number, _product.name, _product.unit, technology.number, company.name, masterorder.active, companypayer.name, assortment.name, model.name, company.contractorcategory, salesplan.number, salesplan.name, masterorder.warehouseorder
+UNION ALL
+ SELECT masterorderproduct.id,
+    masterorderdefinition.number AS masterorderdefinitionnumber,
+    (masterorder.id)::integer AS masterorderid,
+    (masterorderproduct.product_id)::integer AS productid,
+    (masterorderproduct.id)::integer AS masterorderproductid,
+    masterorder.name,
+    masterorder.number,
+    masterorder.deadline,
+    masterorder.masterorderstate AS masterorderstatus,
+    masterorderproduct.masterorderpositionstatus,
+    COALESCE(masterorderproduct.masterorderquantity, (0)::numeric) AS masterorderquantity,
+    COALESCE(( SELECT sum(orders.plannedquantity) AS sum), (0)::numeric) AS cumulatedmasterorderquantity,
+    COALESCE(( SELECT sum(orders.donequantity) AS sum), (0)::numeric) AS producedorderquantity,
+        CASE
+            WHEN ((COALESCE(masterorderproduct.masterorderquantity, (0)::numeric) - COALESCE(( SELECT sum(orders.donequantity) AS sum), (0)::numeric)) > (0)::numeric) THEN (COALESCE(masterorderproduct.masterorderquantity, (0)::numeric) - COALESCE(( SELECT sum(orders.donequantity) AS sum), (0)::numeric))
+            ELSE (0)::numeric
+        END AS lefttorelease,
+    masterorderproduct.comments,
+    _product.number AS productnumber,
+    _product.name AS productname,
+    _product.unit,
+    technology.number AS technologyname,
+    company.name AS companyname,
+    masterorder.active,
+    companypayer.name AS companypayer,
+    assortment.name AS assortmentname,
+    masterorder.state,
+    masterorder.description,
+    masterorderproduct.quantitytakenfromwarehouse,
+    GREATEST((((COALESCE(masterorderproduct.masterorderquantity, (0)::numeric) - COALESCE(( SELECT sum(orders.plannedquantity) AS sum), (0)::numeric)) - COALESCE(masterorderproduct.quantitytakenfromwarehouse, (0)::numeric)))::numeric(14,5), (0)::numeric(14,5)) AS quantityremainingtoorder,
+    ((COALESCE(masterorderproduct.masterorderquantity, (0)::numeric) - COALESCE(( SELECT sum(orders.plannedquantity) AS sum), (0)::numeric)))::numeric(14,5) AS quantityremainingtoorderwithoutstock,
+    model.name AS modelname,
+    company.contractorcategory AS companycategory,
+    salesplan.number AS salesplannumber,
+    salesplan.name AS salesplanname,
+    ( SELECT sum(warehouseminimumstate.minimumstate) AS sum
+           FROM public.warehouseminimalstate_warehouseminimumstate warehouseminimumstate
+          WHERE (warehouseminimumstate.product_id = masterorderproduct.product_id)) AS warehouseminimumstatequantity,
+    masterorder.warehouseorder,
+    COALESCE(min(wsh.quantity), (0)::numeric) AS warehousestate,
+    COALESCE(min(mopdpqh.quantity), (0)::numeric) AS deliveredquantity,
+    COALESCE(min(pcqo.quantity), (0)::numeric) AS producequantity
+   FROM (((((((((((((public.masterorders_masterorderproduct masterorderproduct
+     LEFT JOIN public.masterorders_masterorder masterorder ON ((masterorderproduct.masterorder_id = masterorder.id)))
+     LEFT JOIN public.masterorders_masterorderdefinition masterorderdefinition ON ((masterorderdefinition.id = masterorder.masterorderdefinition_id)))
+     LEFT JOIN public.basic_product _product ON ((_product.id = masterorderproduct.product_id)))
+     LEFT JOIN public.basic_model model ON ((model.id = _product.model_id)))
+     LEFT JOIN public.basic_company company ON ((company.id = masterorder.company_id)))
+     LEFT JOIN public.technologies_technology technology ON ((technology.id = masterorderproduct.technology_id)))
+     LEFT JOIN public.orders_order orders ON (((orders.masterorder_id = masterorderproduct.masterorder_id) AND (orders.product_id = masterorderproduct.product_id) AND ((orders.vendorinfo)::text = (masterorderproduct.vendorinfo)::text))))
+     LEFT JOIN public.basic_company companypayer ON ((companypayer.id = masterorder.companypayer_id)))
+     LEFT JOIN public.basic_assortment assortment ON ((assortment.id = _product.assortment_id)))
+     LEFT JOIN public.masterorders_salesplan salesplan ON ((salesplan.id = masterorder.salesplan_id)))
+     LEFT JOIN warehousestatehelper wsh ON ((wsh.product_id = masterorderproduct.product_id)))
+     LEFT JOIN public.masterorders_position_deliveryproductquantityhelper mopdpqh ON ((mopdpqh.product_id = masterorderproduct.product_id)))
+     LEFT JOIN productioncountingquantityoutput pcqo ON ((pcqo.productid = masterorderproduct.product_id)))
+  WHERE (masterorderproduct.vendorinfo IS NOT NULL)
   GROUP BY masterorderdefinition.number, masterorder.id, masterorderproduct.product_id, masterorderproduct.id, masterorder.name, masterorder.deadline, masterorder.masterorderstate, masterorderproduct.masterorderpositionstatus, masterorderproduct.comments, _product.number, _product.name, _product.unit, technology.number, company.name, masterorder.active, companypayer.name, assortment.name, model.name, company.contractorcategory, salesplan.number, salesplan.name, masterorder.warehouseorder;
 
 
