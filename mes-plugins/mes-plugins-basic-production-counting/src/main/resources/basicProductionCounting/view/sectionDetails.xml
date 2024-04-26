@@ -45,7 +45,7 @@
                 </layoutElement>
                 <layoutElement column="1" row="2" width="3">
                     <component type="input" name="quantity" field="quantity"
-                               reference="quantity">
+                               reference="quantity" hasDescription="true">
                         <option type="alignment" value="right"/>
                     </component>
                 </layoutElement>

@@ -194,10 +194,6 @@ public class MasterOrderValidators {
         return false;
     }
 
-    private boolean masterOrderHasAnyOrders(final Entity masterOrder) {
-        return masterOrderOrdersDataProvider.countBelongingOrders(masterOrder, null) > 0;
-    }
-
     private void addUnsupportedOrdersError(final Entity targetEntity, final String errorTargetFieldName,
                                            final String errorMessageKey,
                                            final Collection<String> unsupportedOrderNumbers) {

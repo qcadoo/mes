@@ -81,10 +81,6 @@
 
         <belongsTo name="technology" plugin="technologies" model="technology"/>
 
-<!--
-        <belongsTo name="technologyPrototype" plugin="technologies" model="technology"/>
--->
-
         <belongsTo name="productionLine" plugin="productionLines"
                    model="productionLine"/>
 
@@ -207,6 +203,9 @@
 
         <hasMany name="splitOrderParents" joinField="order" model="splitOrderParent"
                  cascade="delete"/>
+        <integer name="priority" default="100">
+            <validatesRange from="0"/>
+        </integer>
     </fields>
 
     <hooks>

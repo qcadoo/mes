@@ -34,12 +34,10 @@ import com.qcadoo.model.api.utils.EntityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
 import java.util.Collection;
 import java.util.List;
 
 import static com.qcadoo.model.api.search.SearchProjections.*;
-import static com.qcadoo.model.api.search.SearchRestrictions.belongsTo;
 import static com.qcadoo.model.api.search.SearchRestrictions.eq;
 
 @Service
@@ -47,8 +45,6 @@ public class MasterOrderOrdersDataProvider {
 
     public static final SearchProjection ORDER_NUMBER_PROJECTION = list().add(
             alias(field(OrderFields.NUMBER), OrderFields.NUMBER)).add(alias(id(), "id"));
-
-    private static final String QUANTITIES_SUM_ALIAS = "quantity";
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
@@ -87,17 +83,5 @@ public class MasterOrderOrdersDataProvider {
 
     private DataDefinition getOrderDD() {
         return dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER);
-    }
-
-    public BigDecimal sumBelongingOrdersDoneQuantities(final Entity masterOrder, final Entity product) {
-        SearchProjection quantitiesSumProjection = list().add(alias(sum(OrderFields.DONE_QUANTITY), QUANTITIES_SUM_ALIAS))
-                .add(rowCount());
-        SearchCriterion productCriterion = belongsTo(OrderFields.PRODUCT, product);
-        List<Entity> quantitiesSumProjectionResults = findBelongingOrders(masterOrder, quantitiesSumProjection, productCriterion,
-                SearchOrders.desc(QUANTITIES_SUM_ALIAS));
-        for (Entity entity : quantitiesSumProjectionResults) {
-            return entity.getDecimalField(QUANTITIES_SUM_ALIAS);
-        }
-        return BigDecimal.ZERO;
     }
 }

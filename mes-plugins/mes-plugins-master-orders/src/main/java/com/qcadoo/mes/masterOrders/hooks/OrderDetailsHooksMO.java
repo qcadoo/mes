@@ -103,6 +103,7 @@ public class OrderDetailsHooksMO {
                 .getComponentByReference(OrderFields.TECHNOLOGY);
         FieldComponent plannedQuantityField = (FieldComponent) view.getComponentByReference(OrderFields.PLANNED_QUANTITY);
         FieldComponent descriptionField = (FieldComponent) view.getComponentByReference(OrderFields.DESCRIPTION);
+        FieldComponent vendorInfoField = (FieldComponent) view.getComponentByReference(OrderFieldsMO.VENDOR_INFO);
 
         LookupComponent addressLookup = (LookupComponent) view.getComponentByReference(OrderFields.ADDRESS);
         if (masterOrder != null && productComponent != null && productComponent.getId() != null) {
@@ -122,6 +123,7 @@ public class OrderDetailsHooksMO {
             Date masterOrderStartDate = masterOrder.getDateField(MasterOrderFields.START_DATE);
             Date masterOrderFinishDate = masterOrder.getDateField(MasterOrderFields.FINISH_DATE);
             Entity masterOrderAddress = masterOrder.getBelongsToField(MasterOrderFields.ADDRESS);
+            String vendorInfo = productComponent.getStringField(MasterOrderProductFields.VENDOR_INFO);
             Entity masterOrderProductDto = dataDefinitionService
                     .get(MasterOrdersConstants.PLUGIN_IDENTIFIER, MasterOrdersConstants.MODEL_MASTER_ORDER_POSITION_DTO)
                     .get(productComponent.getId());
@@ -139,6 +141,11 @@ public class OrderDetailsHooksMO {
 
             numberField.setFieldValue(generatedNumber);
             numberField.requestComponentUpdateState();
+
+            if (vendorInfo != null && StringUtils.isEmpty((String) vendorInfoField.getFieldValue())) {
+                vendorInfoField.setFieldValue(vendorInfo);
+                vendorInfoField.requestComponentUpdateState();
+            }
 
             if ((companyLookup.getEntity() == null) && (masterOrderCompany != null)) {
                 companyLookup.setFieldValue(masterOrderCompany.getId());
