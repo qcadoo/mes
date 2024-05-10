@@ -5,13 +5,13 @@ import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
+import com.qcadoo.plugin.api.PluginUtils;
 import com.qcadoo.view.api.components.lookup.FilterValueHolder;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.stream.Collectors;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 @Service
 public class BatchCriteriaModifierPC {
@@ -23,7 +23,7 @@ public class BatchCriteriaModifierPC {
 
     public void filterByOrder(final SearchCriteriaBuilder scb, final FilterValueHolder filterValue) {
 
-        if (filterValue.has(ORDER_ID)) {
+        if (filterValue.has(ORDER_ID) && PluginUtils.isEnabled("advancedGenealogyForOrders")) {
             Long orderId = filterValue.getLong(ORDER_ID);
             List<Entity> entities = dataDefinitionService
                     .get(AdvancedGenealogyConstants.PLUGIN_IDENTIFIER, AdvancedGenealogyConstants.MODEL_TRACKING_RECORD)

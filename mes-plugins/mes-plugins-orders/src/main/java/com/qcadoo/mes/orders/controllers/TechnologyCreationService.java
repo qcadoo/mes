@@ -1,8 +1,5 @@
 package com.qcadoo.mes.orders.controllers;
 
-import static com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperationComponentFieldsTNFO.ALL;
-import static com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperationComponentFieldsTNFO.NEXT_OPERATION_AFTER_PRODUCED_QUANTITY;
-
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.qcadoo.commons.functional.Either;
@@ -10,9 +7,7 @@ import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.basic.constants.*;
 import com.qcadoo.mes.orders.controllers.dto.TechnologyOperationDto;
-import com.qcadoo.mes.orders.controllers.requests.OrderCreationRequest;
 import com.qcadoo.mes.orders.controllers.requests.TechnologyCreationRequest;
-import com.qcadoo.mes.orders.controllers.responses.OrderCreationResponse;
 import com.qcadoo.mes.orders.controllers.responses.TechnologyCreationResponse;
 import com.qcadoo.mes.states.StateChangeContext;
 import com.qcadoo.mes.states.service.StateChangeContextBuilder;
@@ -22,7 +17,6 @@ import com.qcadoo.mes.technologies.controller.dataProvider.MaterialDto;
 import com.qcadoo.mes.technologies.states.aop.TechnologyStateChangeAspect;
 import com.qcadoo.mes.technologies.states.constants.TechnologyState;
 import com.qcadoo.mes.technologies.states.constants.TechnologyStateStringValues;
-import com.qcadoo.mes.technologies.tree.builder.api.TechnologyOperationComponent;
 import com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperationComponentFieldsTNFO;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
@@ -40,6 +34,9 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
+
+import static com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperationComponentFieldsTNFO.ALL;
+import static com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperationComponentFieldsTNFO.NEXT_OPERATION_AFTER_PRODUCED_QUANTITY;
 
 @Service
 public class TechnologyCreationService {
@@ -134,22 +131,24 @@ public class TechnologyCreationService {
 
         if ("01oneDivision".equals(range)) {
             Entity division = technology.getBelongsToField("division");
-            Entity componentsLocation = division.getBelongsToField(COMPONENTS_LOCATION);
-            technology.setField(COMPONENTS_LOCATION, componentsLocation);
+            if (division != null) {
+                Entity componentsLocation = division.getBelongsToField(COMPONENTS_LOCATION);
+                technology.setField(COMPONENTS_LOCATION, componentsLocation);
 
-            Entity componentsOutput = division.getBelongsToField(COMPONENTS_OUTPUT_LOCATION);
-            technology.setField(COMPONENTS_OUTPUT_LOCATION, componentsOutput);
+                Entity componentsOutput = division.getBelongsToField(COMPONENTS_OUTPUT_LOCATION);
+                technology.setField(COMPONENTS_OUTPUT_LOCATION, componentsOutput);
 
-            Entity productsInput = division.getBelongsToField(PRODUCTS_INPUT_LOCATION);
-            technology.setField(PRODUCTS_INPUT_LOCATION, productsInput);
+                Entity productsInput = division.getBelongsToField(PRODUCTS_INPUT_LOCATION);
+                technology.setField(PRODUCTS_INPUT_LOCATION, productsInput);
 
-            Entity productsWaste = division.getBelongsToField(WASTE_RECEPTION_WAREHOUSE);
-            technology.setField(WASTE_RECEPTION_WAREHOUSE, productsWaste);
+                Entity productsWaste = division.getBelongsToField(WASTE_RECEPTION_WAREHOUSE);
+                technology.setField(WASTE_RECEPTION_WAREHOUSE, productsWaste);
 
-            Entity productsFlow = division.getBelongsToField(PRODUCTS_FLOW_LOCATION);
-            technology.setField(PRODUCTS_FLOW_LOCATION, productsFlow);
+                Entity productsFlow = division.getBelongsToField(PRODUCTS_FLOW_LOCATION);
+                technology.setField(PRODUCTS_FLOW_LOCATION, productsFlow);
 
-            technology = technology.getDataDefinition().save(technology);
+                technology = technology.getDataDefinition().save(technology);
+            }
         }
 
         Entity parent = null;

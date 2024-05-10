@@ -87,7 +87,7 @@
 
         <boolean name="isUpdateTechnologiesOnPendingOrders" persistent="false" default="false"/>
         <datetime name="deliveryDate"/>
-        <string name="vendorInfo" copyable="false"/>
+        <string name="vendorInfo"/>
     </fields>
 
     <hooks>

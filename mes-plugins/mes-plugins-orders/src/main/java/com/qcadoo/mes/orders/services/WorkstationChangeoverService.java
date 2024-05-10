@@ -52,8 +52,7 @@ public class WorkstationChangeoverService {
                 previousProduct = previousSchedulePosition.getBelongsToField(SchedulePositionFields.ORDER).getBelongsToField(OrderFields.PRODUCT);
             } else {
                 previousOperationalTask = getPreviousOperationalTask(workstation, startDate);
-                if (previousOperationalTask != null
-                        && OperationalTaskType.EXECUTION_OPERATION_IN_ORDER.getStringValue().equals(previousOperationalTask.getStringField(OperationalTaskFields.TYPE))) {
+                if (previousOperationalTask != null) {
                     previousProduct = previousOperationalTask.getBelongsToField(OperationalTaskFields.ORDER).getBelongsToField(OrderFields.PRODUCT);
                 }
             }
@@ -379,6 +378,7 @@ public class WorkstationChangeoverService {
         searchCriteriaBuilder.add(SearchRestrictions.eq(OperationalTaskFields.WORKSTATION + L_DOT + L_ID, workstation.getId()));
         searchCriteriaBuilder.add(SearchRestrictions.ne(OperationalTaskFields.STATE, OperationalTaskState.REJECTED.getStringValue()));
         searchCriteriaBuilder.add(SearchRestrictions.le(OperationalTaskFields.FINISH_DATE, startDate));
+        searchCriteriaBuilder.add(SearchRestrictions.eq(OperationalTaskFields.TYPE, OperationalTaskType.EXECUTION_OPERATION_IN_ORDER.getStringValue()));
     }
 
     public boolean hasWorkstationChangeoverForOperationalTasks(final Entity workstationChangeoverNorm) {
