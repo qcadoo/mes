@@ -4,6 +4,7 @@ import com.qcadoo.mes.newstates.BasicStateService;
 import com.qcadoo.mes.orders.TechnologyServiceO;
 import com.qcadoo.mes.orders.constants.*;
 import com.qcadoo.mes.orders.hooks.OperationalTaskHooks;
+import com.qcadoo.mes.orders.services.WorkstationChangeoverService;
 import com.qcadoo.mes.orders.states.OperationalTaskOrderStateService;
 import com.qcadoo.mes.orders.states.ProductionLineScheduleStateService;
 import com.qcadoo.mes.orders.states.constants.OperationalTaskStateStringValues;
@@ -59,6 +60,9 @@ public class ScheduleStateService extends BasicStateService implements ScheduleS
 
     @Autowired
     private ProductionLineScheduleStateService productionLineScheduleStateService;
+
+    @Autowired
+    private WorkstationChangeoverService workstationChangeoverService;
 
     @Override
     public StateChangeEntityDescriber getChangeEntityDescriber() {
@@ -283,8 +287,23 @@ public class ScheduleStateService extends BasicStateService implements ScheduleS
             operationalTaskHooksPS.setStaff(operationalTaskDD, operationalTask);
             operationalTask = operationalTaskDD.fastSave(operationalTask);
             List<Entity> workstationChangeovers = position.getHasManyField(SchedulePositionFields.CURRENT_WORKSTATION_CHANGEOVER_FOR_SCHEDULE_POSITIONS);
+            boolean recalculateChangeovers = false;
             for (Entity workstationChangeover : workstationChangeovers) {
-                createWorkstationChangeoverForOperationalTask(operationalTask, workstationChangeover);
+                Entity workstationChangeoverNorm = workstationChangeover.getBelongsToField(WorkstationChangeoverForSchedulePositionFields.WORKSTATION_CHANGEOVER_NORM);
+                if (workstationChangeoverNorm == null) {
+                    recalculateChangeovers = true;
+                    break;
+                }
+            }
+            if (recalculateChangeovers) {
+                List<Entity> workstationChangeoverForOperationalTasks = workstationChangeoverService.findWorkstationChangeoverForOperationalTasks(operationalTask);
+                for (Entity workstationChangeoverForOperationalTask : workstationChangeoverForOperationalTasks) {
+                    workstationChangeoverService.getWorkstationChangeoverForOperationalTaskDD().save(workstationChangeoverForOperationalTask);
+                }
+            } else {
+                for (Entity workstationChangeover : workstationChangeovers) {
+                    createWorkstationChangeoverForOperationalTask(operationalTask, workstationChangeover);
+                }
             }
         }
         schedule.addGlobalMessage("productionScheduling.operationDurationDetailsInOrder.info.operationalTasksCreated");
