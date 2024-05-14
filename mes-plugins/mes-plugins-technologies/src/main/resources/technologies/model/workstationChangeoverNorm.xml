@@ -43,7 +43,7 @@
         <belongsTo name="fromAttributeValue" model="attributeValue" plugin="basic"/>
         <belongsTo name="toAttributeValue" model="attributeValue" plugin="basic"/>
         <integer name="duration" required="true"/>
-        <boolean name="isParallel"/>
+        <boolean name="isParallel" default="false"/>
     </fields>
 
     <hooks>
