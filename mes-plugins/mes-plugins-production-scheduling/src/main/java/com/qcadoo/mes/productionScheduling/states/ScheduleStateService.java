@@ -287,14 +287,7 @@ public class ScheduleStateService extends BasicStateService implements ScheduleS
             operationalTaskHooksPS.setStaff(operationalTaskDD, operationalTask);
             operationalTask = operationalTaskDD.fastSave(operationalTask);
             List<Entity> workstationChangeovers = position.getHasManyField(SchedulePositionFields.CURRENT_WORKSTATION_CHANGEOVER_FOR_SCHEDULE_POSITIONS);
-            boolean recalculateChangeovers = false;
-            for (Entity workstationChangeover : workstationChangeovers) {
-                Entity workstationChangeoverNorm = workstationChangeover.getBelongsToField(WorkstationChangeoverForSchedulePositionFields.WORKSTATION_CHANGEOVER_NORM);
-                if (workstationChangeoverNorm == null) {
-                    recalculateChangeovers = true;
-                    break;
-                }
-            }
+            boolean recalculateChangeovers = isRecalculateChangeovers(workstationChangeovers);
             if (recalculateChangeovers) {
                 List<Entity> workstationChangeoverForOperationalTasks = workstationChangeoverService.findWorkstationChangeoverForOperationalTasks(operationalTask);
                 for (Entity workstationChangeoverForOperationalTask : workstationChangeoverForOperationalTasks) {
@@ -307,6 +300,18 @@ public class ScheduleStateService extends BasicStateService implements ScheduleS
             }
         }
         schedule.addGlobalMessage("productionScheduling.operationDurationDetailsInOrder.info.operationalTasksCreated");
+    }
+
+    private boolean isRecalculateChangeovers(List<Entity> workstationChangeovers) {
+        boolean recalculateChangeovers = false;
+        for (Entity workstationChangeover : workstationChangeovers) {
+            Entity workstationChangeoverNorm = workstationChangeover.getBelongsToField(WorkstationChangeoverForSchedulePositionFields.WORKSTATION_CHANGEOVER_NORM);
+            if (workstationChangeoverNorm == null) {
+                recalculateChangeovers = true;
+                break;
+            }
+        }
+        return recalculateChangeovers;
     }
 
     private void createWorkstationChangeoverForOperationalTask(final Entity currentOperationalTask,
