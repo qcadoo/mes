@@ -35,7 +35,6 @@ import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.validators.ErrorMessage;
 import com.qcadoo.view.api.ComponentState;
-import com.qcadoo.view.api.components.FormComponent;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -177,7 +176,7 @@ public class DocumentValidators {
         return true;
     }
 
-    public void validatePositionsAndCreateResources(final FormComponent documentForm, final Entity document) {
+    public void validatePositionsAndCreateResources(final ComponentState documentForm, final Entity document) {
         if (!document.getHasManyField(DocumentFields.POSITIONS).isEmpty()) {
             if (validatePositions(document)) {
                 String blockedResources = documentService.getBlockedResources(document);
