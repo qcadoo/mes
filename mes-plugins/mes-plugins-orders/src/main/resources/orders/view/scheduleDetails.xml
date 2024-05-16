@@ -46,11 +46,12 @@
                                 var deleteButton = #{window}.getRibbonItem("actions.delete");
 								var isSaved = (#{form}.getValue().content && #{form}.getValue().content.entityId);
 								var state = #{state}.getValue().content.value;
+								var token = #{token}.getValue().content.value;
 								var tabItemNames = ["setAPlan.getOperations", "setAPlan.assignOperationsToWorkstations", "setAPlan.assignWorkersToOperations"];
 								var generatePlan = #{scheduleTab}.getRibbonItem("setAPlan.generatePlan");
 								var saveActions = ["actions.save","actions.saveNew","actions.saveBack"];
 
-                                if (isSaved && state == "01draft") {
+                                if (isSaved && state == "01draft" && !token) {
                                     approveSchedule.enable();
                                     generatePlan.enable("#{translate(orders.scheduleDetails.window.scheduleTab.ribbon.setAPlan.generatePlan.message)}");
                                 } else {
@@ -58,7 +59,7 @@
                                     generatePlan.disable("#{translate(orders.scheduleDetails.window.scheduleTab.ribbon.setAPlan.generatePlan.message)}");
                                 }
 
-                                if (isSaved && state != "03rejected") {
+                                if (isSaved && state != "03rejected" && !token) {
                                     rejectSchedule.enable();
                                 } else {
                                     rejectSchedule.disable();
@@ -67,7 +68,7 @@
                                 for (var elementKey in tabItemNames) {
 									var ribbonItem = #{scheduleTab}.getRibbonItem(tabItemNames[elementKey]);
 
-									if (isSaved && state == "01draft") {
+									if (isSaved && state == "01draft" && !token) {
 										ribbonItem.enable();
 									} else {
 										ribbonItem.disable();
@@ -77,13 +78,13 @@
    								for(var elementKey in saveActions){
    									var ribbonItem = #{window}.getRibbonItem(saveActions[elementKey]);
 
-   									if(state != "01draft"){
+   									if(state != "01draft" || token){
    										ribbonItem.disable();
  									} else {
 										ribbonItem.enable();
  									}
      							}
-     							if(state != "01draft"){
+     							if(state != "01draft" || token){
      							    this.setEnabled(false, true);
      							    #{orders}.setEditable(false);
      							    #{positions}.setEditable(false);
@@ -92,7 +93,7 @@
                                     #{orders}.setEditable(true);
      							    #{positions}.setEditable(true);
                                 }
-                                if (state == "02approved" || !isSaved) {
+                                if (state == "02approved" || !isSaved || token) {
                                     deleteButton.disable();
                                 } else {
                                     deleteButton.enable();
@@ -108,8 +109,10 @@
                                    reference="name"/>
                         <component type="checkbox" name="isSetFieldsFromParameter"
                                    defaultVisible="false" field="isSetFieldsFromParameter"
-                                   reference="isSetFieldsFromParameter">
-                        </component>
+                                   reference="isSetFieldsFromParameter"/>
+                        <component type="input" name="token"
+                                   defaultVisible="false" field="token"
+                                   reference="token"/>
                     </layoutElement>
                     <layoutElement column="1" row="2">
                         <component type="input" name="number" reference="number"
