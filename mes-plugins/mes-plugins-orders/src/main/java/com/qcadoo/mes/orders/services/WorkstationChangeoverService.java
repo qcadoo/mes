@@ -193,9 +193,11 @@ public class WorkstationChangeoverService {
                                 fromAttributeValue = mayBeProductAttributeValue.get().getBelongsToField(ProductAttributeValueFields.ATTRIBUTE_VALUE);
                             }
 
-                            Entity workstationChangeoverForOperationalTask = createWorkstationChangeoverForOperationalTask(operationalTask, previousOperationalTask, workstationChangeoverNorm, workstation, attribute, fromAttributeValue, attributeValue);
+                            if (fromAttributeValue == null || !attributeValue.getId().equals(fromAttributeValue.getId())) {
+                                Entity workstationChangeoverForOperationalTask = createWorkstationChangeoverForOperationalTask(operationalTask, previousOperationalTask, workstationChangeoverNorm, workstation, attribute, fromAttributeValue, attributeValue);
 
-                            workstationChangeoverForOperationalTasks.add(workstationChangeoverForOperationalTask);
+                                workstationChangeoverForOperationalTasks.add(workstationChangeoverForOperationalTask);
+                            }
                         }
                     });
                 }

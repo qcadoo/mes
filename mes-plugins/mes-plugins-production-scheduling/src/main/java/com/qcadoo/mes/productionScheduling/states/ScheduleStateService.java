@@ -288,14 +288,15 @@ public class ScheduleStateService extends BasicStateService implements ScheduleS
             operationalTask = operationalTaskDD.fastSave(operationalTask);
             List<Entity> workstationChangeovers = position.getHasManyField(SchedulePositionFields.CURRENT_WORKSTATION_CHANGEOVER_FOR_SCHEDULE_POSITIONS);
             boolean recalculateChangeovers = isRecalculateChangeovers(workstationChangeovers);
+            DataDefinition dataDefinition = workstationChangeoverService.getWorkstationChangeoverForOperationalTaskDD();
             if (recalculateChangeovers) {
                 List<Entity> workstationChangeoverForOperationalTasks = workstationChangeoverService.findWorkstationChangeoverForOperationalTasks(operationalTask);
                 for (Entity workstationChangeoverForOperationalTask : workstationChangeoverForOperationalTasks) {
-                    workstationChangeoverService.getWorkstationChangeoverForOperationalTaskDD().save(workstationChangeoverForOperationalTask);
+                    dataDefinition.save(workstationChangeoverForOperationalTask);
                 }
             } else {
                 for (Entity workstationChangeover : workstationChangeovers) {
-                    createWorkstationChangeoverForOperationalTask(operationalTask, workstationChangeover);
+                    createWorkstationChangeoverForOperationalTask(operationalTask, workstationChangeover, dataDefinition);
                 }
             }
         }
@@ -315,8 +316,7 @@ public class ScheduleStateService extends BasicStateService implements ScheduleS
     }
 
     private void createWorkstationChangeoverForOperationalTask(final Entity currentOperationalTask,
-                                                               final Entity workstationChangeover) {
-        DataDefinition dataDefinition = getWorkstationChangeoverForOperationalTaskDD();
+                                                               final Entity workstationChangeover, DataDefinition dataDefinition) {
         Entity workstationChangeoverForOperationalTask = dataDefinition.create();
 
         Entity workstationChangeoverNorm = workstationChangeover.getBelongsToField(WorkstationChangeoverForSchedulePositionFields.WORKSTATION_CHANGEOVER_NORM);
@@ -354,9 +354,4 @@ public class ScheduleStateService extends BasicStateService implements ScheduleS
 
         dataDefinition.save(workstationChangeoverForOperationalTask);
     }
-
-    private DataDefinition getWorkstationChangeoverForOperationalTaskDD() {
-        return dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_WORKSTATION_CHANGEOVER_FOR_OPERATIONAL_TASK);
-    }
-
 }
