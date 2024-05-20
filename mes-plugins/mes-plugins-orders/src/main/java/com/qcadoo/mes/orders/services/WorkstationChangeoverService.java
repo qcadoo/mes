@@ -193,7 +193,7 @@ public class WorkstationChangeoverService {
                                 fromAttributeValue = mayBeProductAttributeValue.get().getBelongsToField(ProductAttributeValueFields.ATTRIBUTE_VALUE);
                             }
 
-                            if (fromAttributeValue == null || !attributeValue.getId().equals(fromAttributeValue.getId())) {
+                            if (fromAttributeValue != null && !attributeValue.getId().equals(fromAttributeValue.getId())) {
                                 Entity workstationChangeoverForOperationalTask = createWorkstationChangeoverForOperationalTask(operationalTask, previousOperationalTask, workstationChangeoverNorm, workstation, attribute, fromAttributeValue, attributeValue);
 
                                 workstationChangeoverForOperationalTasks.add(workstationChangeoverForOperationalTask);
