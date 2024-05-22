@@ -81,7 +81,4 @@ public final class PositionFields {
 
     public static final String PICKING_WORKER = "pickingWorker";
 
-    public static final String REST_AFTER_SHIFT_DISPOSITION = "restAfterShiftDisposition";
-
-    public static final String REST_AFTER_SHIFT_DISPOSITION_ADD_UNIT = "restAfterShiftDispositionAddUnit";
 }
