@@ -56,7 +56,7 @@
         <windowTab name="mainTab" reference="mainTab">
             <component type="form" name="ordersParameters" reference="form">
                 <component type="flowGridLayout" name="mainTabGridLayout"
-                           columns="3" rows="9">
+                           columns="3" rows="7">
                     <layoutElement column="1" row="1">
                         <component type="lookup" name="defaultProductionLine"
                                    field="#{form}.defaultProductionLine" reference="defaultProductionLine">
@@ -93,27 +93,20 @@
                         </component>
                     </layoutElement>
                     <layoutElement column="1" row="5">
-                        <component type="checkbox" name="allowTechnologyTreeChangeInPendingOrder"
-                                   field="#{form}.allowTechnologyTreeChangeInPendingOrder"
-                                   reference="allowTechnologyTreeChangeInPendingOrder">
-                            <option type="labelWidth" value="80"/>
-                        </component>
-                    </layoutElement>
-                    <layoutElement column="1" row="6">
                         <component type="checkbox" name="fillOrderDescriptionBasedOnTechnologyDescription"
                                    field="#{form}.fillOrderDescriptionBasedOnTechnologyDescription"
                                    reference="fillOrderDescriptionBasedOnTechnologyDescription" hasDescription="true">
                             <option type="labelWidth" value="80"/>
                         </component>
                     </layoutElement>
-                    <layoutElement column="1" row="7">
+                    <layoutElement column="1" row="6">
                         <component type="checkbox" name="fillOrderDescriptionBasedOnProductDescription"
                                    field="#{form}.fillOrderDescriptionBasedOnProductDescription"
                                    reference="fillOrderDescriptionBasedOnProductDescription" hasDescription="true">
                             <option type="labelWidth" value="80"/>
                         </component>
                     </layoutElement>
-                    <layoutElement column="1" row="8">
+                    <layoutElement column="1" row="7">
                         <component type="checkbox" name="flagPercentageOfExecutionWithColor"
                                    field="#{form}.flagPercentageOfExecutionWithColor"
                                    reference="flagPercentageOfExecutionWithColor" hasDescription="true">
