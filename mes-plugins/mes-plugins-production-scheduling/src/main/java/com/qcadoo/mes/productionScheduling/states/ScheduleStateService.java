@@ -7,6 +7,7 @@ import com.qcadoo.mes.orders.hooks.OperationalTaskHooks;
 import com.qcadoo.mes.orders.services.WorkstationChangeoverService;
 import com.qcadoo.mes.orders.states.OperationalTaskOrderStateService;
 import com.qcadoo.mes.orders.states.ProductionLineScheduleStateService;
+import com.qcadoo.mes.orders.states.constants.OperationalTaskState;
 import com.qcadoo.mes.orders.states.constants.OperationalTaskStateStringValues;
 import com.qcadoo.mes.orders.states.constants.OrderStateStringValues;
 import com.qcadoo.mes.orders.states.constants.ScheduleStateStringValues;
@@ -17,17 +18,11 @@ import com.qcadoo.mes.technologies.constants.WorkstationChangeoverNormFields;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.search.JoinType;
-import com.qcadoo.model.api.search.SearchOrders;
-import com.qcadoo.model.api.search.SearchProjections;
-import com.qcadoo.model.api.search.SearchRestrictions;
+import com.qcadoo.model.api.search.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Comparator;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.qcadoo.model.api.search.SearchOrders.desc;
@@ -39,6 +34,10 @@ public class ScheduleStateService extends BasicStateService implements ScheduleS
     private static final String L_TYPE_OF_PRODUCTION_RECORDING = "typeOfProductionRecording";
 
     private static final String L_FOR_EACH = "03forEach";
+
+    private static final String L_DOT = ".";
+
+    private static final String L_ID = "id";
 
     @Autowired
     private ScheduleStateChangeDescriber scheduleStateChangeDescriber;
@@ -159,8 +158,7 @@ public class ScheduleStateService extends BasicStateService implements ScheduleS
         List<Entity> scheduleOrders = entity.getHasManyField(ScheduleFields.POSITIONS).stream()
                 .map(e -> e.getBelongsToField(SchedulePositionFields.ORDER)).distinct().collect(Collectors.toList());
         if (!scheduleOrders.isEmpty()) {
-            List<Entity> orders = dataDefinitionService
-                    .get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_OPERATIONAL_TASK).find()
+            List<Entity> orders = getOperationalTaskDD().find()
                     .add(SearchRestrictions.ne(OperationalTaskFields.STATE, OperationalTaskStateStringValues.REJECTED))
                     .createAlias(OperationalTaskFields.ORDER, OperationalTaskFields.ORDER, JoinType.INNER)
                     .add(SearchRestrictions.in(OperationalTaskFields.ORDER + ".id",
@@ -256,8 +254,9 @@ public class ScheduleStateService extends BasicStateService implements ScheduleS
     }
 
     private void generateOperationalTasks(Entity schedule) {
-        DataDefinition operationalTaskDD = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER,
-                OrdersConstants.MODEL_OPERATIONAL_TASK);
+        DataDefinition operationalTaskDD = getOperationalTaskDD();
+        DataDefinition workstationChangeoverForOperationalTaskDD = workstationChangeoverService.getWorkstationChangeoverForOperationalTaskDD();
+        List<Entity> scheduleTasks = new ArrayList<>();
         for (Entity position : schedule.getHasManyField(ScheduleFields.POSITIONS).stream().sorted(Comparator.comparing(e -> e.getDateField(SchedulePositionFields.START_TIME))).collect(Collectors.toList())) {
             Entity operationalTask = operationalTaskDD.create();
             operationalTask.setField(OperationalTaskFields.START_DATE, position.getField(SchedulePositionFields.START_TIME));
@@ -286,19 +285,32 @@ public class ScheduleStateService extends BasicStateService implements ScheduleS
             operationalTaskHooks.fillNameAndDescription(operationalTask);
             operationalTaskHooksPS.setStaff(operationalTaskDD, operationalTask);
             operationalTask = operationalTaskDD.fastSave(operationalTask);
+            scheduleTasks.add(operationalTask);
             List<Entity> workstationChangeovers = position.getHasManyField(SchedulePositionFields.CURRENT_WORKSTATION_CHANGEOVER_FOR_SCHEDULE_POSITIONS);
             boolean recalculateChangeovers = isRecalculateChangeovers(workstationChangeovers);
-            DataDefinition dataDefinition = workstationChangeoverService.getWorkstationChangeoverForOperationalTaskDD();
             if (recalculateChangeovers) {
                 List<Entity> workstationChangeoverForOperationalTasks = workstationChangeoverService.findWorkstationChangeoverForOperationalTasks(operationalTask);
                 for (Entity workstationChangeoverForOperationalTask : workstationChangeoverForOperationalTasks) {
-                    dataDefinition.save(workstationChangeoverForOperationalTask);
+                    workstationChangeoverForOperationalTaskDD.save(workstationChangeoverForOperationalTask);
                 }
             } else {
                 for (Entity workstationChangeover : workstationChangeovers) {
-                    createWorkstationChangeoverForOperationalTask(operationalTask, workstationChangeover, dataDefinition);
+                    createWorkstationChangeoverForOperationalTask(operationalTask, workstationChangeover, workstationChangeoverForOperationalTaskDD);
                 }
             }
+        }
+        for (Entity scheduleTask : scheduleTasks) {
+            Optional<Entity> nextOperationalTask = getNextOperationalTask(scheduleTask, schedule);
+            nextOperationalTask.ifPresent(not -> {
+                List<Entity> currentWorkstationChangeoverForOperationalTasks = not.getHasManyField(OperationalTaskFields.CURRENT_WORKSTATION_CHANGEOVER_FOR_OPERATIONAL_TASKS);
+                currentWorkstationChangeoverForOperationalTasks.forEach(workstationChangeoverForOperationalTask ->
+                        workstationChangeoverForOperationalTaskDD.delete(workstationChangeoverForOperationalTask.getId()));
+                List<Entity> workstationChangeoverForOperationalTasks = workstationChangeoverService.findWorkstationChangeoverForOperationalTasks(not, scheduleTask);
+                for (Entity workstationChangeoverForOperationalTask : workstationChangeoverForOperationalTasks) {
+                    workstationChangeoverForOperationalTaskDD.save(workstationChangeoverForOperationalTask);
+                }
+            });
+
         }
         schedule.addGlobalMessage("productionScheduling.operationDurationDetailsInOrder.info.operationalTasksCreated");
     }
@@ -316,7 +328,8 @@ public class ScheduleStateService extends BasicStateService implements ScheduleS
     }
 
     private void createWorkstationChangeoverForOperationalTask(final Entity currentOperationalTask,
-                                                               final Entity workstationChangeover, DataDefinition dataDefinition) {
+                                                               final Entity workstationChangeover,
+                                                               DataDefinition dataDefinition) {
         Entity workstationChangeoverForOperationalTask = dataDefinition.create();
 
         Entity workstationChangeoverNorm = workstationChangeover.getBelongsToField(WorkstationChangeoverForSchedulePositionFields.WORKSTATION_CHANGEOVER_NORM);
@@ -353,5 +366,39 @@ public class ScheduleStateService extends BasicStateService implements ScheduleS
         workstationChangeoverForOperationalTask.setField(WorkstationChangeoverForOperationalTaskFields.FINISH_DATE, workstationChangeover.getDateField(WorkstationChangeoverForSchedulePositionFields.FINISH_DATE));
 
         dataDefinition.save(workstationChangeoverForOperationalTask);
+    }
+
+    private Optional<Entity> getNextOperationalTask(final Entity operationalTask, Entity schedule) {
+        SearchCriteriaBuilder searchCriteriaBuilder = getOperationalTaskDD().find();
+
+        Entity workstation = operationalTask.getBelongsToField(OperationalTaskFields.WORKSTATION);
+        Date endDate = operationalTask.getDateField(OperationalTaskFields.FINISH_DATE);
+
+        addWorkstationAndDateSearchRestrictions(searchCriteriaBuilder, workstation, endDate);
+
+        Entity nextOperationalTask = searchCriteriaBuilder.addOrder(SearchOrders.asc(OperationalTaskFields.START_DATE))
+                .setMaxResults(1).uniqueResult();
+
+        if (nextOperationalTask != null) {
+            Entity schedulePosition = nextOperationalTask.getBelongsToField(OperationalTaskFields.SCHEDULE_POSITION);
+            if (schedulePosition != null && schedulePosition.getBelongsToField(SchedulePositionFields.SCHEDULE).getId().equals(schedule.getId())) {
+                nextOperationalTask = null;
+            }
+        }
+
+        return Optional.ofNullable(nextOperationalTask);
+    }
+
+    private void addWorkstationAndDateSearchRestrictions(final SearchCriteriaBuilder searchCriteriaBuilder,
+                                                         final Entity workstation, final Date endDate) {
+        searchCriteriaBuilder.createAlias(OperationalTaskFields.WORKSTATION, OperationalTaskFields.WORKSTATION, JoinType.LEFT);
+        searchCriteriaBuilder.add(SearchRestrictions.eq(OperationalTaskFields.WORKSTATION + L_DOT + L_ID, workstation.getId()));
+        searchCriteriaBuilder.add(SearchRestrictions.ne(OperationalTaskFields.STATE, OperationalTaskState.REJECTED.getStringValue()));
+        searchCriteriaBuilder.add(SearchRestrictions.ge(OperationalTaskFields.START_DATE, endDate));
+        searchCriteriaBuilder.add(SearchRestrictions.eq(OperationalTaskFields.TYPE, OperationalTaskType.EXECUTION_OPERATION_IN_ORDER.getStringValue()));
+    }
+
+    private DataDefinition getOperationalTaskDD() {
+        return dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_OPERATIONAL_TASK);
     }
 }
