@@ -91,7 +91,7 @@ public class XlsxImportService extends ImportService {
             }
 
             if (shouldSkip && !Objects.isNull(criteriaSupplier)) {
-                Entity entityToSkip = getEntity(pluginIdentifier, modelName, criteriaSupplier.apply(entity));
+                Entity entityToSkip = getEntityToSkip(pluginIdentifier, modelName, criteriaSupplier, entity);
                 if (!Objects.isNull(entityToSkip)) {
                     continue;
                 }
@@ -113,6 +113,11 @@ public class XlsxImportService extends ImportService {
         }
 
         return importStatus;
+    }
+
+    protected Entity getEntityToSkip(String pluginIdentifier, String modelName,
+                                     Function<Entity, SearchCriterion> criteriaSupplier, Entity entity) {
+        return getEntity(pluginIdentifier, modelName, criteriaSupplier.apply(entity));
     }
 
     private int getDependentIndex(final String dependentFieldName, final CellBinderRegistry cellBinderRegistry) {
