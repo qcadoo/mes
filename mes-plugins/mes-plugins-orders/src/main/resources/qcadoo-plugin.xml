@@ -258,9 +258,6 @@
         </model:model-field>
 
         <model:model-field plugin="basic" model="parameter">
-            <model:boolean name="allowTechnologyTreeChangeInPendingOrder" default="false"/>
-        </model:model-field>
-        <model:model-field plugin="basic" model="parameter">
             <model:boolean name="reasonNeededWhenCorrectingTheRequestedVolume" default="false"/>
         </model:model-field>
 

@@ -149,8 +149,6 @@ public class DocumentPositionService {
             documentPositionDTO.setProduct(resultSet.getString("product"));
             documentPositionDTO.setProductName(resultSet.getString("productName"));
             documentPositionDTO.setQuantity(resultSet.getBigDecimal("quantity"));
-            documentPositionDTO.setRestAfterShiftDisposition(resultSet.getBigDecimal("restAfterShiftDisposition"));
-            documentPositionDTO.setRestAfterShiftDispositionAddUnit(resultSet.getBigDecimal("restAfterShiftDispositionAddUnit"));
             documentPositionDTO.setUnit(resultSet.getString("unit"));
             documentPositionDTO.setGivenquantity(resultSet.getBigDecimal("givenquantity"));
             documentPositionDTO.setGivenunit(resultSet.getString("givenunit"));

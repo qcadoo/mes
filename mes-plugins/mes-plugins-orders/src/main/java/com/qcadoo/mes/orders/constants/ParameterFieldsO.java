@@ -57,8 +57,6 @@ public final class ParameterFieldsO {
 
     public static final String ALLOW_QUANTITY_CHANGE_IN_ACCEPTED_ORDER = "allowQuantityChangeInAcceptedOrder";
 
-    public static final String ALLOW_TECHNOLOGY_TREE_CHANGE_INPENDING_ORDER = "allowTechnologyTreeChangeInPendingOrder";
-
     public static final String REASON_NEEDED_WHEN_CORRECTING_THE_REQUESTED_VOLUME = "reasonNeededWhenCorrectingTheRequestedVolume";
 
     public static final String ORDER_CATEGORY_COLORS = "orderCategoryColors";

@@ -151,6 +151,10 @@ public class OrderHooks {
             order.setField(OrderFields.EXTERNAL_SYNCHRONIZED, true);
         }
 
+        if (Objects.isNull(order.getField(OrderFields.PRIORITY))) {
+            order.setField(OrderFields.PRIORITY, 100);
+        }
+
         fillStartDateFromParameters(order);
     }
 
@@ -813,7 +817,7 @@ public class OrderHooks {
             Entity product = order.getBelongsToField(OrderFields.PRODUCT);
 
             if (Objects.nonNull(commissionedCorrectedQuantity)) {
-                if(commissionedCorrectedQuantity.compareTo(BigDecimal.ZERO) == 0) {
+                if (commissionedCorrectedQuantity.compareTo(BigDecimal.ZERO) == 0) {
                     order.addError(orderDD.getField(OrderFields.COMMISSIONED_CORRECTED_QUANTITY), "qcadooView.validate.field.error.outOfRange.toSmall");
                 }
                 order.setField(OrderFields.PLANNED_QUANTITY,
@@ -824,7 +828,7 @@ public class OrderHooks {
                                 numberService.setScaleWithDefaultMathContext(commissionedCorrectedQuantity),
                                 product.getStringField(ProductFields.UNIT))));
             } else if (Objects.nonNull(commissionedPlannedQuantity)) {
-                if(commissionedPlannedQuantity.compareTo(BigDecimal.ZERO) == 0) {
+                if (commissionedPlannedQuantity.compareTo(BigDecimal.ZERO) == 0) {
                     order.addError(orderDD.getField(OrderFields.COMMISSIONED_PLANNED_QUANTITY), "qcadooView.validate.field.error.outOfRange.toSmall");
                 }
                 order.setField(OrderFields.PLANNED_QUANTITY,

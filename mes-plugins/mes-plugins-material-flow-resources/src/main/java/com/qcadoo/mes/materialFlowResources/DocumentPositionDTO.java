@@ -25,12 +25,6 @@ public class DocumentPositionDTO {
     @JsonDeserialize(using = BigDecimalDeserializer.class)
     private BigDecimal quantity;
 
-    @JsonDeserialize(using = BigDecimalDeserializer.class)
-    private BigDecimal restAfterShiftDisposition;
-
-    @JsonDeserialize(using = BigDecimalDeserializer.class)
-    private BigDecimal restAfterShiftDispositionAddUnit;
-
     @SearchAttribute(searchType = SearchAttribute.SEARCH_TYPE.EXACT_MATCH)
     private String unit;
 
@@ -290,8 +284,6 @@ public class DocumentPositionDTO {
         hash = 67 * hash + Objects.hashCode(this.pickingDate);
         hash = 67 * hash + Objects.hashCode(this.pickingWorker);
         hash = 67 * hash + Objects.hashCode(this.sellingPrice);
-        hash = 67 * hash + Objects.hashCode(this.restAfterShiftDisposition);
-        hash = 67 * hash + Objects.hashCode(this.restAfterShiftDispositionAddUnit);
         return hash;
     }
 
@@ -364,12 +356,6 @@ public class DocumentPositionDTO {
         if (!Objects.equals(this.sellingPrice, other.sellingPrice)) {
             return false;
         }
-        if (!Objects.equals(this.restAfterShiftDisposition, other.restAfterShiftDisposition)) {
-            return false;
-        }
-        if (!Objects.equals(this.restAfterShiftDispositionAddUnit, other.restAfterShiftDispositionAddUnit)) {
-            return false;
-        }
         return true;
     }
 
@@ -381,8 +367,6 @@ public class DocumentPositionDTO {
                 + ", productionDate=" + productionDate + ", pallet=" + palletNumber + ", type_of_pallet=" + typeOfPallet
                 + ", storage_location=" + storageLocation + ", price=" + price + ", batch=" + batch + ", resource=" + resource
                 + ", resourceNumber=" + resourceNumber + ", pickingDate=" + pickingDate + ", pickingWorker=" + pickingWorker
-                + ", restAfterShiftDisposition=" + restAfterShiftDisposition
-                + ", restAfterShiftDispositionAddUnit=" + restAfterShiftDispositionAddUnit
                 + '}';
     }
 
@@ -416,21 +400,5 @@ public class DocumentPositionDTO {
 
     public void setPickingWorker(String pickingWorker) {
         this.pickingWorker = pickingWorker;
-    }
-
-    public BigDecimal getRestAfterShiftDisposition() {
-        return restAfterShiftDisposition;
-    }
-
-    public void setRestAfterShiftDisposition(BigDecimal restAfterShiftDisposition) {
-        this.restAfterShiftDisposition = restAfterShiftDisposition;
-    }
-
-    public BigDecimal getRestAfterShiftDispositionAddUnit() {
-        return restAfterShiftDispositionAddUnit;
-    }
-
-    public void setRestAfterShiftDispositionAddUnit(BigDecimal restAfterShiftDispositionAddUnit) {
-        this.restAfterShiftDispositionAddUnit = restAfterShiftDispositionAddUnit;
     }
 }
