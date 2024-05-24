@@ -2,7 +2,6 @@ package com.qcadoo.mes.materialFlowResources.listeners;
 
 import com.qcadoo.mes.materialFlowResources.constants.StocktakingFields;
 import com.qcadoo.mes.materialFlowResources.print.StocktakingReportService;
-import com.qcadoo.mes.materialFlowResources.print.helper.ResourceDataProvider;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
@@ -18,18 +17,13 @@ import java.util.Date;
 @Service
 public class StocktakingDetailsListeners {
 
-    
-
     private static final Logger LOG = LoggerFactory.getLogger(StocktakingDetailsListeners.class);
-
-    @Autowired
-    private ResourceDataProvider resourceDataProvider;
 
     @Autowired
     private StocktakingReportService reportService;
 
     public void generate(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        state.performEvent(view, "save", new String[0]);
+        state.performEvent(view, "save");
 
         if (state.isHasError()) {
             return;

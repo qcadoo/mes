@@ -17,6 +17,7 @@ public class ResourceDto {
     private BigDecimal availableQuantity;
     private BigDecimal reservedQuantity;
     private String givenUnit;
+    private String productUnit;
     private Long storageLocationId;
     private String storageLocationNumber;
     private Long productId;
@@ -198,5 +199,13 @@ public class ResourceDto {
     @Override public int hashCode() {
         return Objects.hash(id, number, storageLocationId, storageLocationNumber, productId,
                 productNumber, palletNumberId, batch, palletNumberNumber);
+    }
+
+    public String getProductUnit() {
+        return productUnit;
+    }
+
+    public void setProductUnit(String productUnit) {
+        this.productUnit = productUnit;
     }
 }

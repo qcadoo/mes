@@ -13,14 +13,11 @@ import com.qcadoo.mes.materialFlowResources.constants.StocktakingFields;
 import com.qcadoo.mes.materialFlowResources.print.helper.Resource;
 import com.qcadoo.mes.materialFlowResources.print.helper.ResourceDataProvider;
 import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.NumberService;
 import com.qcadoo.report.api.FontUtils;
 import com.qcadoo.report.api.pdf.HeaderAlignment;
 import com.qcadoo.report.api.pdf.PdfDocumentService;
 import com.qcadoo.report.api.pdf.PdfHelper;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -31,8 +28,6 @@ import java.util.stream.Collectors;
 @Service
 public class StocktakingPdfReportService extends PdfDocumentService {
 
-    private static final Logger LOG = LoggerFactory.getLogger(StocktakingPdfReportService.class);
-
     @Autowired
     private TranslationService translationService;
 
@@ -42,24 +37,21 @@ public class StocktakingPdfReportService extends PdfDocumentService {
     @Autowired
     private ResourceDataProvider resourceDataProvider;
 
-    @Autowired
-    private NumberService numberService;
-
     @Override
     protected void buildPdfContent(Document document, Entity entity, Locale locale) throws DocumentException {
-
         appendDocumentHeader(document, locale);
         appendDocumentContextTable(document, entity, locale);
         appendDocumentData(document, entity, locale);
     }
 
-    private void appendDocumentData(final Document document, final Entity entity, final Locale locale) throws DocumentException {
+    private void appendDocumentData(final Document document, final Entity entity,
+                                    final Locale locale) throws DocumentException {
         PdfPTable dataTable = prepareDataTable(locale);
         dataTable.setHeaderRows(1);
         List<Long> storageLocationIdsToQuery = Lists.newArrayList();
         List<Entity> storageLocations = entity.getHasManyField(StocktakingFields.STORAGE_LOCATIONS);
         if (!storageLocations.isEmpty()) {
-            storageLocationIdsToQuery = storageLocations.stream().map(e -> e.getId()).collect(Collectors.toList());
+            storageLocationIdsToQuery = storageLocations.stream().map(Entity::getId).collect(Collectors.toList());
         }
         String currentStorageLocation = StringUtils.EMPTY;
         List<Resource> resources = resourceDataProvider.findResourcesAndGroup(entity
@@ -87,14 +79,18 @@ public class StocktakingPdfReportService extends PdfDocumentService {
             dataTable.getDefaultCell().enableBorderSide(PdfPCell.TOP);
 
             dataTable.addCell(new Phrase(extractPalletNumber(resource), FontUtils.getDejavuRegular10Dark()));
-            dataTable.addCell(new Phrase(extractProductNumber(resource), FontUtils.getDejavuRegular10Dark()));
+            PdfPTable product = new PdfPTable(1);
+            product.getDefaultCell().setBorderWidth(0);
+            product.addCell(new Phrase(extractProductNumber(resource), FontUtils.getDejavuRegular8Dark()));
+            product.addCell(new Phrase(extractProductName(resource), FontUtils.getDejavuRegular7Dark()));
+            dataTable.addCell(product);
+            PdfPTable batch = new PdfPTable(1);
+            batch.getDefaultCell().setBorderWidth(0);
+            batch.addCell(new Phrase(extractBatch(resource), FontUtils.getDejavuRegular7Dark()));
+            batch.addCell(new Phrase(extractExpirationDate(resource), FontUtils.getDejavuRegular7Dark()));
+            dataTable.addCell(batch);
             dataTable.getDefaultCell().setHorizontalAlignment(Element.ALIGN_LEFT);
-            dataTable.addCell(new Phrase(extractProductName(resource), FontUtils.getDejavuRegular7Dark()));
-            dataTable.getDefaultCell().setHorizontalAlignment(Element.ALIGN_RIGHT);
-            dataTable.addCell(new Phrase(extractConversion(resource), FontUtils.getDejavuRegular10Dark()));
-            dataTable.getDefaultCell().setHorizontalAlignment(Element.ALIGN_LEFT);
-            dataTable.addCell(new Phrase(extractExpirationDate(resource), FontUtils.getDejavuRegular7Dark()));
-            dataTable.addCell(new Phrase(extractBatch(resource), FontUtils.getDejavuRegular7Dark()));
+            dataTable.addCell(new Phrase(extractUnit(resource), FontUtils.getDejavuRegular7Dark()));
             dataTable.getDefaultCell().enableBorderSide(Rectangle.LEFT);
             dataTable.getDefaultCell().enableBorderSide(Rectangle.RIGHT);
             dataTable.addCell(new Phrase("", FontUtils.getDejavuRegular10Dark()));
@@ -115,22 +111,22 @@ public class StocktakingPdfReportService extends PdfDocumentService {
         return Objects.isNull(resource.getExpirationDate()) ? "" : DateUtils.toDateString(resource.getExpirationDate());
     }
 
-    private String extractConversion(Resource resource) {
-        return Objects.isNull(resource.getConversion()) ? "" : numberService.formatWithMinimumFractionDigits(
-                resource.getConversion(), 0);
+    private String extractUnit(Resource resource) {
+        return resource.getProductUnit();
     }
 
     private String extractProductName(Resource resource) {
         return StringUtils.isNoneBlank(resource.getProductName()) ? resource.getProductName().substring(0,
-                Math.min(12, resource.getProductName().length())) : "";
+                Math.min(32, resource.getProductName().length())) : "";
+    }
+
+    private String extractProductNumber(Resource resource) {
+        return StringUtils.isNoneBlank(resource.getProductNumber()) ? resource.getProductNumber().substring(0,
+                Math.min(28, resource.getProductNumber().length())) : "";
     }
 
     private String extractPalletNumber(Resource resource) {
         return StringUtils.isNoneBlank(resource.getPalletNumberNumber()) ? resource.getPalletNumberNumber() : "";
-    }
-
-    private String extractProductNumber(Resource resource) {
-        return resource.getProductNumber();
     }
 
     private PdfPTable prepareDataTable(Locale locale) {
@@ -146,34 +142,29 @@ public class StocktakingPdfReportService extends PdfDocumentService {
         alignments.put(translationService.translate("materialFlowResources.stocktaking.report.data.pallet", locale),
                 HeaderAlignment.RIGHT);
 
-        header.add(translationService.translate("materialFlowResources.stocktaking.report.data.productNumber", locale));
-        alignments.put(
-                translationService.translate("materialFlowResources.stocktaking.report.data.productNumber", locale),
-                HeaderAlignment.RIGHT);
+        String product = translationService.translate("materialFlowResources.stocktaking.report.data.productNumber", locale) + "\n"
+                + translationService.translate("materialFlowResources.stocktaking.report.data.productName", locale);
 
-        header.add(translationService.translate("materialFlowResources.stocktaking.report.data.productName", locale));
-        alignments.put(translationService.translate("materialFlowResources.stocktaking.report.data.productName", locale),
-                HeaderAlignment.LEFT);
+        header.add(product);
+        alignments.put(product, HeaderAlignment.LEFT);
 
-        header.add(translationService.translate("materialFlowResources.stocktaking.report.data.conversion", locale));
-        alignments.put(translationService.translate("materialFlowResources.stocktaking.report.data.conversion", locale),
-                HeaderAlignment.RIGHT);
+        String batch = translationService.translate("materialFlowResources.stocktaking.report.data.batch", locale) + "\n"
+                + translationService.translate("materialFlowResources.stocktaking.report.data.expirationDate", locale);
 
-        header.add(translationService.translate("materialFlowResources.stocktaking.report.data.expirationDate", locale));
-        alignments.put(translationService.translate("materialFlowResources.stocktaking.report.data.expirationDate", locale),
-                HeaderAlignment.LEFT);
+        header.add(batch);
+        alignments.put(batch, HeaderAlignment.LEFT);
 
-        header.add(translationService.translate("materialFlowResources.stocktaking.report.data.batch", locale));
-        alignments.put(translationService.translate("materialFlowResources.stocktaking.report.data.batch", locale),
+        header.add(translationService.translate("materialFlowResources.stocktaking.report.data.unit", locale));
+        alignments.put(translationService.translate("materialFlowResources.stocktaking.report.data.unit", locale),
                 HeaderAlignment.LEFT);
 
         header.add(translationService.translate("materialFlowResources.stocktaking.report.data.quantity", locale));
         alignments.put(translationService.translate("materialFlowResources.stocktaking.report.data.quantity", locale),
                 HeaderAlignment.LEFT);
 
-        int[] columnWidths = { 90, 70, 95, 105, 65, 71, 85, 79 };
+        int[] columnWidths = {90, 70, 210, 150, 60, 80};
 
-        return pdfHelper.createTableWithHeader(8, header, false, columnWidths, alignments);
+        return pdfHelper.createTableWithHeader(6, header, false, columnWidths, alignments);
     }
 
     private void appendDocumentContextTable(final Document document, final Entity entity, final Locale locale)
@@ -189,8 +180,8 @@ public class StocktakingPdfReportService extends PdfDocumentService {
 
         dynamicHeaderTable.setSpacingBefore(5);
 
-        Map<String, Object> firstColumn = new LinkedHashMap<String, Object>();
-        Map<String, Object> secondColumn = new LinkedHashMap<String, Object>();
+        Map<String, Object> firstColumn = new LinkedHashMap<>();
+        Map<String, Object> secondColumn = new LinkedHashMap<>();
 
         firstColumn.put("materialFlowResources.stocktaking.report.number", entity.getStringField(StocktakingFields.NUMBER));
 
