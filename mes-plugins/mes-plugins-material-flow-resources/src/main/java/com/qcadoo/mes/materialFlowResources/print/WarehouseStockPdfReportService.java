@@ -85,11 +85,13 @@ public class WarehouseStockPdfReportService extends PdfDocumentService {
             dataTable.addCell(new Phrase(extractPalletNumber(resource), FontUtils.getDejavuRegular10Dark()));
             PdfPTable product = new PdfPTable(1);
             product.getDefaultCell().setBorderWidth(0);
+            product.getDefaultCell().setFixedHeight(10f);
             product.addCell(new Phrase(extractProductNumber(resource), FontUtils.getDejavuRegular8Dark()));
             product.addCell(new Phrase(extractProductName(resource), FontUtils.getDejavuRegular7Dark()));
             dataTable.addCell(product);
             PdfPTable batch = new PdfPTable(1);
             batch.getDefaultCell().setBorderWidth(0);
+            batch.getDefaultCell().setFixedHeight(10f);
             batch.addCell(new Phrase(extractBatch(resource), FontUtils.getDejavuRegular7Dark()));
             batch.addCell(new Phrase(extractExpirationDate(resource), FontUtils.getDejavuRegular7Dark()));
             dataTable.addCell(batch);
@@ -128,13 +130,11 @@ public class WarehouseStockPdfReportService extends PdfDocumentService {
     }
 
     private String extractProductName(Resource resource) {
-        return StringUtils.isNoneBlank(resource.getProductName()) ? resource.getProductName().substring(0,
-                Math.min(32, resource.getProductName().length())) : "";
+        return resource.getProductName();
     }
 
     private String extractProductNumber(Resource resource) {
-        return StringUtils.isNoneBlank(resource.getProductNumber()) ? resource.getProductNumber().substring(0,
-                Math.min(28, resource.getProductNumber().length())) : "";
+        return resource.getProductNumber();
     }
 
     private String extractPalletNumber(Resource resource) {
@@ -175,7 +175,7 @@ public class WarehouseStockPdfReportService extends PdfDocumentService {
         alignments.put(translationService.translate("materialFlowResources.warehouseStockReport.report.data.quantity", locale),
                 HeaderAlignment.RIGHT);
 
-        int[] columnWidths = {90, 70, 210, 150, 60, 80};
+        int[] columnWidths = {90, 70, 230, 130, 60, 80};
 
         return pdfHelper.createTableWithHeader(6, header, false, columnWidths, alignments);
     }
