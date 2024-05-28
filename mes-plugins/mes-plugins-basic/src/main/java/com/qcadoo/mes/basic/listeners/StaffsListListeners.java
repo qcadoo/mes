@@ -23,15 +23,18 @@
  */
 package com.qcadoo.mes.basic.listeners;
 
-import java.util.Set;
-import java.util.stream.Collectors;
-
-import org.springframework.stereotype.Service;
-
+import com.beust.jcommander.internal.Lists;
+import com.lowagie.text.pdf.Barcode128;
+import com.qcadoo.mes.basic.constants.StaffFields;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.GridComponent;
 import com.qcadoo.view.constants.QcadooViewConstants;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class StaffsListListeners {
@@ -50,11 +53,27 @@ public class StaffsListListeners {
         if (staffIds.isEmpty()) {
             view.addMessage("basic.staffsList.error.notSelected", ComponentState.MessageType.INFO);
         } else {
-            String redirectUrl = new StringBuilder("/basic/staffLabelsReport.pdf?")
-                    .append(staffIds.stream().map(staffId -> "ids=" + staffId.toString()).collect(Collectors.joining("&")))
-                    .toString();
+            List<String> invalidNumbers = Lists.newArrayList();
 
-            view.redirectTo(redirectUrl, true, false);
+            staffsGrid.getSelectedEntities().forEach(staff -> {
+                String number = staff.getStringField(StaffFields.NUMBER);
+
+                try {
+                    Barcode128.getRawText(number, false);
+                } catch (RuntimeException exception) {
+                    invalidNumbers.add(number);
+                }
+            });
+
+            if (invalidNumbers.isEmpty()) {
+                String redirectUrl = new StringBuilder("/basic/staffLabelsReport.pdf?")
+                        .append(staffIds.stream().map(staffId -> "ids=" + staffId.toString()).collect(Collectors.joining("&")))
+                        .toString();
+
+                view.redirectTo(redirectUrl, true, false);
+            } else {
+                view.addMessage("basic.staff.staffLabelsReport.number.invalidCharacters", ComponentState.MessageType.FAILURE, String.join(", ", invalidNumbers));
+            }
         }
     }
 
