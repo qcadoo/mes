@@ -571,7 +571,6 @@ public final class ProductionTrackingListenerServicePFTD {
         for (Entity trackingOperationProductOutComponent : trackingOperationProductOutComponents) {
             Entity product = trackingOperationProductOutComponent.getBelongsToField(TrackingOperationProductOutComponentFields.PRODUCT);
             Entity productionTracking = trackingOperationProductOutComponent.getBelongsToField(TrackingOperationProductOutComponentFields.PRODUCTION_TRACKING);
-            Entity batch = productionTracking.getBelongsToField(ProductionTrackingFields.BATCH);
             Entity storageLocation = trackingOperationProductOutComponent.getBelongsToField(TrackingOperationProductOutComponentFields.STORAGE_LOCATION);
             Entity palletNumber = trackingOperationProductOutComponent.getBelongsToField(TrackingOperationProductOutComponentFields.PALLET_NUMBER);
             String typeOfPallet = trackingOperationProductOutComponent.getStringField(TrackingOperationProductOutComponentFields.TYPE_OF_PALLET);
@@ -594,7 +593,10 @@ public final class ProductionTrackingListenerServicePFTD {
                 }
             } else {
                 price = getNominalCost(product);
-                batch = null;
+            }
+            Entity batch = null;
+            if (isFinalProductForOrder(order, product)) {
+                batch = productionTracking.getBelongsToField(ProductionTrackingFields.BATCH);
             }
 
             Entity existingPosition = filterPosition(positions, product, givenUnit.orElse(null), batch, storageLocation, palletNumber);
