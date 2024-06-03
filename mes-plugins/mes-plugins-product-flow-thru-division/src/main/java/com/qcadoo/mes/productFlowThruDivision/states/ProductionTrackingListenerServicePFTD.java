@@ -587,7 +587,7 @@ public final class ProductionTrackingListenerServicePFTD {
             BigDecimal price;
 
             if (isFinalProduct) {
-                if (isNominalProductCost) {
+                if (isNominalProductCost || isWasteForOrder(trackingOperationProductOutComponent)) {
                     price = getNominalCost(product);
                 } else {
                     price = realProductionCostService.calculateRealProductionCost(order);
@@ -782,7 +782,8 @@ public final class ProductionTrackingListenerServicePFTD {
 
     private Entity createInternalInboundDocumentForFinalProducts(final Entity locationTo, final Entity order,
                                                                  final Collection<Entity> trackingOperationProductOutComponents,
-                                                                 final boolean isBasedOnNominalCost, final Entity user) {
+                                                                 final boolean isBasedOnNominalCost,
+                                                                 final Entity user) {
         DocumentBuilder internalInboundBuilder = documentManagementService.getDocumentBuilder(user);
 
         internalInboundBuilder.internalInbound(locationTo);
@@ -827,7 +828,7 @@ public final class ProductionTrackingListenerServicePFTD {
 
             BigDecimal price;
 
-            if (isBasedOnNominalCost) {
+            if (isBasedOnNominalCost || isWasteForOrder(trackingOperationProductOutComponent)) {
                 price = getNominalCost(product);
             } else {
                 price = realProductionCostService.calculateRealProductionCost(order);
@@ -925,10 +926,14 @@ public final class ProductionTrackingListenerServicePFTD {
         return order.getBelongsToField(OrderFields.PRODUCT).getId().equals(product.getId());
     }
 
-    private boolean isFinalProductOrWasteForOrder(final Entity technologyOperationComponent) {
-        return technologyOperationComponent.getStringField(TrackingOperationProductOutComponentFields.TYPE_OF_MATERIAL).equals(ProductionCountingQuantityTypeOfMaterial.FINAL_PRODUCT.getStringValue()) ||
-                technologyOperationComponent.getStringField(TrackingOperationProductOutComponentFields.TYPE_OF_MATERIAL).equals(ProductionCountingQuantityTypeOfMaterial.ADDITIONAL_FINAL_PRODUCT.getStringValue()) ||
-                technologyOperationComponent.getStringField(TrackingOperationProductOutComponentFields.TYPE_OF_MATERIAL).equals(ProductionCountingQuantityTypeOfMaterial.WASTE.getStringValue());
+    private boolean isFinalProductOrWasteForOrder(final Entity trackingOperationProductOutComponent) {
+        return trackingOperationProductOutComponent.getStringField(TrackingOperationProductOutComponentFields.TYPE_OF_MATERIAL).equals(ProductionCountingQuantityTypeOfMaterial.FINAL_PRODUCT.getStringValue()) ||
+                trackingOperationProductOutComponent.getStringField(TrackingOperationProductOutComponentFields.TYPE_OF_MATERIAL).equals(ProductionCountingQuantityTypeOfMaterial.ADDITIONAL_FINAL_PRODUCT.getStringValue()) ||
+                isWasteForOrder(trackingOperationProductOutComponent);
+    }
+
+    private boolean isWasteForOrder(final Entity trackingOperationProductOutComponent) {
+        return trackingOperationProductOutComponent.getStringField(TrackingOperationProductOutComponentFields.TYPE_OF_MATERIAL).equals(ProductionCountingQuantityTypeOfMaterial.WASTE.getStringValue());
     }
 
     public void updateCostsForOrder(final Entity order) {
