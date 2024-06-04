@@ -48,15 +48,15 @@
 								var state = #{state}.getValue().content.value;
 								var token = #{token}.getValue().content.value;
 								var tabItemNames = ["setAPlan.getOperations", "setAPlan.assignOperationsToWorkstations", "setAPlan.assignWorkersToOperations"];
-								var generatePlan = #{scheduleTab}.getRibbonItem("setAPlan.generatePlan");
+								var generatePlan = #{window}.getRibbonItem("setAPlan.generatePlan");
 								var saveActions = ["actions.save","actions.saveNew","actions.saveBack"];
 
                                 if (isSaved && state == "01draft" && !token) {
                                     approveSchedule.enable();
-                                    generatePlan.enable("#{translate(orders.scheduleDetails.window.scheduleTab.ribbon.setAPlan.generatePlan.message)}");
+                                    generatePlan.enable("#{translate(orders.scheduleDetails.window.ribbon.setAPlan.generatePlan.message)}");
                                 } else {
                                     approveSchedule.disable();
-                                    generatePlan.disable("#{translate(orders.scheduleDetails.window.scheduleTab.ribbon.setAPlan.generatePlan.message)}");
+                                    generatePlan.disable("#{translate(orders.scheduleDetails.window.ribbon.setAPlan.generatePlan.message)}");
                                 }
 
                                 if (isSaved && state != "03rejected" && !token) {
@@ -66,7 +66,7 @@
                                 }
 
                                 for (var elementKey in tabItemNames) {
-									var ribbonItem = #{scheduleTab}.getRibbonItem(tabItemNames[elementKey]);
+									var ribbonItem = #{window}.getRibbonItem(tabItemNames[elementKey]);
 
 									if (isSaved && state == "01draft" && !token) {
 										ribbonItem.enable();
