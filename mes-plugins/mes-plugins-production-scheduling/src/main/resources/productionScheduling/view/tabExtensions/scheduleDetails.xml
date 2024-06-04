@@ -48,6 +48,9 @@
 
             <option type="column" name="quantity" fields="quantity" width="40"/>
             <option type="column" name="productUnit" fields="productUnit" width="40"/>
+            <option type="column" name="setupTime" fields="setupTime"
+                    expression="T(com.qcadoo.view.api.utils.TimeConverterService).convertTimeToString(#setupTime)"
+                    width="60"/>
             <option type="column" name="startTime" fields="startTime" width="100"/>
             <option type="column" name="endTime" fields="endTime" width="100"/>
             <option type="column" name="laborWorkTime" fields="laborWorkTime"
