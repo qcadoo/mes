@@ -77,7 +77,7 @@ public class ProductionLineScheduleDetailsListeners {
         }
         FormComponent formComponent = (FormComponent) state;
         Entity schedule = formComponent.getPersistedEntityWithIncludedFormValues();
-        List<Entity> orders = schedule.getManyToManyField(ProductionLineScheduleFields.ORDERS);;
+        List<Entity> orders = schedule.getManyToManyField(ProductionLineScheduleFields.ORDERS);
         if (orders.isEmpty()) {
             view.addMessage("orders.error.productionLineScheduleNoOrders", ComponentState.MessageType.INFO);
             return;

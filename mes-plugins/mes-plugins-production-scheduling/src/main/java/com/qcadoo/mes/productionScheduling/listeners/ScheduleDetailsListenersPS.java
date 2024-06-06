@@ -185,7 +185,7 @@ public class ScheduleDetailsListenersPS {
             if (ordersToAvoid.contains(order.getId())) {
                 continue;
             }
-            List<Entity> workstations = schedulePositionValidators.getWorkstationsFromTOC(schedule, position, order);
+            List<Entity> workstations = schedulePositionValidators.getWorkstationsFromTOC(schedule, position.getBelongsToField(SchedulePositionFields.TECHNOLOGY_OPERATION_COMPONENT), order);
             if (workstations.isEmpty()) {
                 ordersToAvoid.add(order.getId());
                 continue;
