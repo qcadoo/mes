@@ -76,6 +76,9 @@
 
             <option type="fixedHeight" value="true"/>
 
+            <option type="footerRow" value="true"/>
+            <option type="columnsToSummaryTime" value="setupTime"/>
+
         </component>
     </windowTab>
 </windowTabExtension>
