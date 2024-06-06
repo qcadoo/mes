@@ -52,6 +52,8 @@
         <integer name="setupTime" default="0" />
         <datetime name="startTime"/>
         <datetime name="endTime"/>
+        <datetime name="orderDeadline"/>
+        <boolean name="endTimeAfterOrderDeadline"/>
     </fields>
 
     <masterModel plugin="orders" model="schedulePosition"/>

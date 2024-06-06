@@ -53,6 +53,10 @@
                     width="60"/>
             <option type="column" name="startTime" fields="startTime" width="100"/>
             <option type="column" name="endTime" fields="endTime" width="100"/>
+            <option type="column" name="orderDeadline" fields="orderDeadline" width="100"
+                    classesCondition="rowObject['endTimeAfterOrderDeadline']>0"
+                    classesNames="red-cell"/>
+            <option type="column" name="endTimeAfterOrderDeadline" fields="endTimeAfterOrderDeadline" hidden="true"/>
             <option type="column" name="laborWorkTime" fields="laborWorkTime"
                     expression="T(com.qcadoo.view.api.utils.TimeConverterService).convertTimeToString(#laborWorkTime)"
                     width="60"/>
@@ -70,9 +74,9 @@
             <option type="order" column="nodeNumber" direction="desc"/>
 
             <option type="searchable"
-                    value="orderProductPlanedQuantity,orderProductNumber,staffName,workstationNumber,nodeNumber,operationNumber,operationName,orderNumber,productNumber,productName,productUnit,quantity,startTime,endTime"/>
+                    value="orderProductPlanedQuantity,orderProductNumber,staffName,workstationNumber,nodeNumber,operationNumber,operationName,orderNumber,productNumber,productName,productUnit,quantity,startTime,endTime,orderDeadline"/>
             <option type="orderable"
-                    value="orderProductPlanedQuantity,orderProductNumber,staffName,workstationNumber,nodeNumber,operationNumber,operationName,orderNumber,productNumber,productName,productUnit,quantity,startTime,endTime"/>
+                    value="orderProductPlanedQuantity,orderProductNumber,staffName,workstationNumber,nodeNumber,operationNumber,operationName,orderNumber,productNumber,productName,productUnit,quantity,startTime,endTime,orderDeadline"/>
 
             <option type="fixedHeight" value="true"/>
 
