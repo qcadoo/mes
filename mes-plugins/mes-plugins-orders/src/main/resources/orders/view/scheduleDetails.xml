@@ -261,6 +261,13 @@
                 <option type="deletable" value="true"/>
                 <option type="creatable" value="true"/>
 
+                <listener event="addExistingEntity"
+                          method="informAboutGetOperations"
+                          class="com.qcadoo.mes.orders.listeners.ScheduleDetailsListeners"/>
+                <listener event="remove"
+                          method="informAboutGetOperations"
+                          class="com.qcadoo.mes.orders.listeners.ScheduleDetailsListeners"/>
+
             </component>
         </windowTab>
 
