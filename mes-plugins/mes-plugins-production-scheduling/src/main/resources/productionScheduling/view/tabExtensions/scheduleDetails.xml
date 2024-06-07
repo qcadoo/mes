@@ -79,6 +79,7 @@
                     value="orderProductPlanedQuantity,orderProductNumber,staffName,workstationNumber,nodeNumber,operationNumber,operationName,orderNumber,productNumber,productName,productUnit,quantity,startTime,endTime,orderDeadline"/>
 
             <option type="fixedHeight" value="true"/>
+            <option type="multiselect" value="true"/>
 
             <option type="footerRow" value="true"/>
             <option type="columnsToSummaryTime" value="setupTime"/>
