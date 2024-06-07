@@ -299,6 +299,12 @@ public class ScheduleStateService extends BasicStateService implements ScheduleS
                 }
             }
         }
+        recalculateTaskChangeovers(schedule, scheduleTasks, workstationChangeoverForOperationalTaskDD);
+        schedule.addGlobalMessage("productionScheduling.operationDurationDetailsInOrder.info.operationalTasksCreated");
+    }
+
+    private void recalculateTaskChangeovers(Entity schedule, List<Entity> scheduleTasks,
+                           DataDefinition workstationChangeoverForOperationalTaskDD) {
         for (Entity scheduleTask : scheduleTasks) {
             Optional<Entity> nextOperationalTask = getNextOperationalTask(scheduleTask, schedule);
             nextOperationalTask.ifPresent(not -> {
@@ -310,9 +316,7 @@ public class ScheduleStateService extends BasicStateService implements ScheduleS
                     workstationChangeoverForOperationalTaskDD.save(workstationChangeoverForOperationalTask);
                 }
             });
-
         }
-        schedule.addGlobalMessage("productionScheduling.operationDurationDetailsInOrder.info.operationalTasksCreated");
     }
 
     private boolean isRecalculateChangeovers(List<Entity> workstationChangeovers) {

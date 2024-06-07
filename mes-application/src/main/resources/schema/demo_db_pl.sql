@@ -23953,6 +23953,21 @@ ALTER SEQUENCE public.orders_scheduleposition_id_seq OWNED BY public.orders_sche
 
 
 --
+-- Name: orders_workstationchangeoverforscheduleposition; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.orders_workstationchangeoverforscheduleposition (
+    id bigint NOT NULL,
+    currentscheduleposition_id bigint,
+    previousscheduleposition_id bigint,
+    previousoperationaltask_id bigint,
+    workstationchangeovernorm_id bigint,
+    startdate timestamp without time zone,
+    finishdate timestamp without time zone
+);
+
+
+--
 -- Name: orders_schedulepositiondto; Type: VIEW; Schema: public; Owner: -
 --
 
@@ -23975,8 +23990,11 @@ CREATE VIEW public.orders_schedulepositiondto AS
     scheduleposition.machineworktime,
     scheduleposition.laborworktime,
     scheduleposition.starttime,
-    scheduleposition.endtime
-   FROM ((((((((public.orders_scheduleposition scheduleposition
+    scheduleposition.endtime,
+    (sum(date_part('epoch'::text, (wcsp.finishdate - wcsp.startdate))))::integer AS setuptime,
+    _order.deadline AS orderdeadline,
+    (scheduleposition.endtime > _order.deadline) AS endtimeafterorderdeadline
+   FROM (((((((((public.orders_scheduleposition scheduleposition
      LEFT JOIN public.orders_schedule schedule ON ((schedule.id = scheduleposition.schedule_id)))
      LEFT JOIN public.orders_order _order ON ((_order.id = scheduleposition.order_id)))
      LEFT JOIN public.basic_product orderproduct ON ((orderproduct.id = _order.product_id)))
@@ -23984,7 +24002,9 @@ CREATE VIEW public.orders_schedulepositiondto AS
      LEFT JOIN public.basic_staff staff ON ((staff.id = scheduleposition.staff_id)))
      LEFT JOIN public.technologies_technologyoperationcomponent technologyoperationcomponent ON ((technologyoperationcomponent.id = scheduleposition.technologyoperationcomponent_id)))
      LEFT JOIN public.technologies_operation operation ON ((operation.id = technologyoperationcomponent.operation_id)))
-     LEFT JOIN public.basic_workstation workstation ON ((workstation.id = scheduleposition.workstation_id)));
+     LEFT JOIN public.basic_workstation workstation ON ((workstation.id = scheduleposition.workstation_id)))
+     LEFT JOIN public.orders_workstationchangeoverforscheduleposition wcsp ON ((wcsp.currentscheduleposition_id = scheduleposition.id)))
+  GROUP BY scheduleposition.id, ((schedule.id)::integer), (((staff.surname)::text || ' '::text) || (staff.name)::text), workstation.number, technologyoperationcomponent.nodenumber, operation.name, operation.number, _order.number, orderproduct.number, _order.plannedquantity, product.name, product.number, product.unit, scheduleposition.quantity, scheduleposition.additionaltime, scheduleposition.machineworktime, scheduleposition.laborworktime, scheduleposition.starttime, scheduleposition.endtime, _order.deadline, (scheduleposition.endtime > _order.deadline);
 
 
 --
@@ -24274,21 +24294,6 @@ CREATE SEQUENCE public.orders_workstationchangeoverforoperationaltaskdto_id_seq
     NO MINVALUE
     NO MAXVALUE
     CACHE 1;
-
-
---
--- Name: orders_workstationchangeoverforscheduleposition; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.orders_workstationchangeoverforscheduleposition (
-    id bigint NOT NULL,
-    currentscheduleposition_id bigint,
-    previousscheduleposition_id bigint,
-    previousoperationaltask_id bigint,
-    workstationchangeovernorm_id bigint,
-    startdate timestamp without time zone,
-    finishdate timestamp without time zone
-);
 
 
 --

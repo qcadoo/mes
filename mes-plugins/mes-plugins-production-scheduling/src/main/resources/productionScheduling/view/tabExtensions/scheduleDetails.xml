@@ -30,23 +30,6 @@
                     view="scheduleDetails">
 
     <windowTab name="scheduleTab" reference="scheduleTab">
-        <ribbon>
-            <group name="setAPlan">
-                <bigButton name="getOperations" icon="generateIcon24.png"
-                           action="#{form}.fireEvent(getOperations);" state="disabled">
-                </bigButton>
-                <bigButton name="assignOperationsToWorkstations" icon="generateIcon24.png"
-                           action="#{form}.fireEvent(assignOperationsToWorkstations);" state="disabled">
-                </bigButton>
-                <bigButton name="assignWorkersToOperations" icon="generateIcon24.png"
-                           action="#{form}.fireEvent(assignWorkersToOperations);" state="disabled">
-                </bigButton>
-                <bigButton name="generatePlan" icon="generateIcon24.png"
-                           action="#{form}.fireEvent(generatePlan);" state="disabled">
-                </bigButton>
-            </group>
-        </ribbon>
-
         <component type="grid" name="positions" source="#{form}.positionsDto" model="schedulePositionDto"
                    reference="positions" useDto="true">
 
@@ -65,8 +48,15 @@
 
             <option type="column" name="quantity" fields="quantity" width="40"/>
             <option type="column" name="productUnit" fields="productUnit" width="40"/>
+            <option type="column" name="setupTime" fields="setupTime"
+                    expression="T(com.qcadoo.view.api.utils.TimeConverterService).convertTimeToString(#setupTime)"
+                    width="60"/>
             <option type="column" name="startTime" fields="startTime" width="100"/>
             <option type="column" name="endTime" fields="endTime" width="100"/>
+            <option type="column" name="orderDeadline" fields="orderDeadline" width="100"
+                    classesCondition="rowObject['endTimeAfterOrderDeadline']>0"
+                    classesNames="red-cell"/>
+            <option type="column" name="endTimeAfterOrderDeadline" fields="endTimeAfterOrderDeadline" hidden="true"/>
             <option type="column" name="laborWorkTime" fields="laborWorkTime"
                     expression="T(com.qcadoo.view.api.utils.TimeConverterService).convertTimeToString(#laborWorkTime)"
                     width="60"/>
@@ -84,11 +74,15 @@
             <option type="order" column="nodeNumber" direction="desc"/>
 
             <option type="searchable"
-                    value="orderProductPlanedQuantity,orderProductNumber,staffName,workstationNumber,nodeNumber,operationNumber,operationName,orderNumber,productNumber,productName,productUnit,quantity,startTime,endTime"/>
+                    value="orderProductPlanedQuantity,orderProductNumber,staffName,workstationNumber,nodeNumber,operationNumber,operationName,orderNumber,productNumber,productName,productUnit,quantity,startTime,endTime,orderDeadline"/>
             <option type="orderable"
-                    value="orderProductPlanedQuantity,orderProductNumber,staffName,workstationNumber,nodeNumber,operationNumber,operationName,orderNumber,productNumber,productName,productUnit,quantity,startTime,endTime"/>
+                    value="orderProductPlanedQuantity,orderProductNumber,staffName,workstationNumber,nodeNumber,operationNumber,operationName,orderNumber,productNumber,productName,productUnit,quantity,startTime,endTime,orderDeadline"/>
 
             <option type="fixedHeight" value="true"/>
+            <option type="multiselect" value="true"/>
+
+            <option type="footerRow" value="true"/>
+            <option type="columnsToSummaryTime" value="setupTime"/>
 
         </component>
     </windowTab>

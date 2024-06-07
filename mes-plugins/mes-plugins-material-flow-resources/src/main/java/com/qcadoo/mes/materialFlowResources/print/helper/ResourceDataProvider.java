@@ -83,6 +83,7 @@ public class ResourceDataProvider {
         query.append("product.id AS productid, ");
         query.append("product.number AS productnumber, ");
         query.append("product.name AS productname, ");
+        query.append("product.unit AS productunit, ");
         query.append("palletnumber.id AS palletnumberid, ");
         query.append("palletnumber.number AS palletnumbernumber, ");
         query.append("batch.number AS batch ");

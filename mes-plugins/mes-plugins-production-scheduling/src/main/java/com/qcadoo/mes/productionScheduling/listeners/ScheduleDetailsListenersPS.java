@@ -101,14 +101,13 @@ public class ScheduleDetailsListenersPS {
     @Transactional
     public void getOperations(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         long start = System.currentTimeMillis();
-        GridComponent ordersGrid = (GridComponent) view.getComponentByReference(ScheduleFields.ORDERS);
-        List<Entity> orders = ordersGrid.getEntities();
+        FormComponent formComponent = (FormComponent) state;
+        Entity schedule = formComponent.getPersistedEntityWithIncludedFormValues();
+        List<Entity> orders = schedule.getManyToManyField(ScheduleFields.ORDERS);
         if (orders.isEmpty()) {
             view.addMessage("productionScheduling.error.scheduleNoOrders", ComponentState.MessageType.INFO);
             return;
         }
-        FormComponent formComponent = (FormComponent) state;
-        Entity schedule = formComponent.getEntity();
         boolean includeTpz = schedule.getBooleanField(ScheduleFields.INCLUDE_TPZ);
         DataDefinition schedulePositionDD = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER,
                 OrdersConstants.MODEL_SCHEDULE_POSITION);
@@ -186,7 +185,7 @@ public class ScheduleDetailsListenersPS {
             if (ordersToAvoid.contains(order.getId())) {
                 continue;
             }
-            List<Entity> workstations = schedulePositionValidators.getWorkstationsFromTOC(schedule, position, order);
+            List<Entity> workstations = schedulePositionValidators.getWorkstationsFromTOC(schedule, position.getBelongsToField(SchedulePositionFields.TECHNOLOGY_OPERATION_COMPONENT), order);
             if (workstations.isEmpty()) {
                 ordersToAvoid.add(order.getId());
                 continue;

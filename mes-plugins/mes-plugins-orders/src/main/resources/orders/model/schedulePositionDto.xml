@@ -49,8 +49,11 @@
         <integer name="additionalTime" default="0" />
         <integer name="machineWorkTime" default="0" />
         <integer name="laborWorkTime" default="0" />
+        <integer name="setupTime" default="0" />
         <datetime name="startTime"/>
         <datetime name="endTime"/>
+        <datetime name="orderDeadline"/>
+        <boolean name="endTimeAfterOrderDeadline"/>
     </fields>
 
     <masterModel plugin="orders" model="schedulePosition"/>

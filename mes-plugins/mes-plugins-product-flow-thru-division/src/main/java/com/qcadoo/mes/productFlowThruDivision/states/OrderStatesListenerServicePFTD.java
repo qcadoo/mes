@@ -54,7 +54,6 @@ import com.qcadoo.mes.productFlowThruDivision.constants.*;
 import com.qcadoo.mes.productFlowThruDivision.realProductionCost.RealProductionCostService;
 import com.qcadoo.mes.productFlowThruDivision.reservation.OrderReservationsService;
 import com.qcadoo.mes.productFlowThruDivision.service.ProductionCountingDocumentService;
-import com.qcadoo.mes.productionCounting.ProductionCountingService;
 import com.qcadoo.mes.productionCounting.constants.*;
 import com.qcadoo.mes.productionCounting.states.constants.ProductionTrackingStateStringValues;
 import com.qcadoo.mes.productionCounting.utils.ProductionTrackingDocumentsHelper;
@@ -64,7 +63,10 @@ import com.qcadoo.mes.states.messages.constants.StateMessageType;
 import com.qcadoo.mes.technologies.constants.OperationFields;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
 import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
-import com.qcadoo.model.api.*;
+import com.qcadoo.model.api.BigDecimalUtils;
+import com.qcadoo.model.api.DataDefinition;
+import com.qcadoo.model.api.DataDefinitionService;
+import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchQueryBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
@@ -164,7 +166,7 @@ public class OrderStatesListenerServicePFTD {
                 stateChangeContext.setOwner(order);
             }
 
-            Either<String, Void> result = tryAcceptInboundDocumentsFor(order);
+            Either<String, Void> result = tryAcceptInboundDocumentsFor(order, isNominalProductCost);
 
             if (result.isLeft()) {
                 stateChangeContext.addMessage(result.getLeft(), StateMessageType.FAILURE);
@@ -185,19 +187,13 @@ public class OrderStatesListenerServicePFTD {
     }
 
     @Transactional(/* isolation = Isolation.READ_UNCOMMITTED */)
-    private Either<String, Void> tryAcceptInboundDocumentsFor(final Entity order) {
+    private Either<String, Void> tryAcceptInboundDocumentsFor(final Entity order, boolean isNominalProductCost) {
         updateDocumentQuantities(order);
 
         DataDefinition documentDD = getDocumentDD();
 
         SearchResult searchResult = documentDD.find().add(SearchRestrictions.belongsTo(DocumentFieldsPFTD.ORDER, order))
                 .add(SearchRestrictions.eq(DocumentFields.TYPE, DocumentType.INTERNAL_INBOUND.getStringValue())).list();
-
-        String priceBasedOn = parameterService.getParameter().getStringField(ParameterFieldsPC.PRICE_BASED_ON);
-
-        boolean isNominalProductCost = Objects.nonNull(priceBasedOn)
-                && priceBasedOn.equals(PriceBasedOn.NOMINAL_PRODUCT_COST.getStringValue())
-                || !Strings.isNullOrEmpty(order.getStringField(OrderFields.ADDITIONAL_FINAL_PRODUCTS));
 
         Optional<BigDecimal> price;
 

@@ -17,6 +17,7 @@ public class Resource {
     private BigDecimal availableQuantity;
     private BigDecimal reservedQuantity;
     private String givenUnit;
+    private String productUnit;
     private Long storageLocationId;
     private String storageLocationNumber;
     private Long productId;
@@ -38,6 +39,7 @@ public class Resource {
         this.availableQuantity = dto.getAvailableQuantity();
         this.reservedQuantity = dto.getReservedQuantity();
         this.givenUnit = dto.getGivenUnit();
+        this.productUnit = dto.getProductUnit();
         this.storageLocationId = dto.getStorageLocationId();
         this.storageLocationNumber = dto.getStorageLocationNumber();
         this.productId = dto.getProductId();
@@ -216,5 +218,13 @@ public class Resource {
 
     @Override public int hashCode() {
         return Objects.hash(expirationDate, conversion, storageLocationId, productId, palletNumberId, batch);
+    }
+
+    public String getProductUnit() {
+        return productUnit;
+    }
+
+    public void setProductUnit(String productUnit) {
+        this.productUnit = productUnit;
     }
 }
