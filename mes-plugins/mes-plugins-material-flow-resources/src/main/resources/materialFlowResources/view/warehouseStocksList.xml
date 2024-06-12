@@ -45,6 +45,7 @@
             <option type="column" name="quantity" fields="quantity" width="100"/>
             <option type="column" name="reservedQuantity" fields="reservedQuantity" width="100"/>
             <option type="column" name="availableQuantity" fields="availableQuantity" width="100"/>
+            <option type="column" name="blockedQuantity" fields="blockedQuantity" width="100"/>
             <option type="column" name="unit" fields="productUnit" width="60"/>
             <option type="column" name="quantityInAdditionalUnit" fields="quantityInAdditionalUnit" width="100"/>
             <option type="column" name="familyNumber" fields="familyNumber" width="100"/>
@@ -52,13 +53,12 @@
             <option type="order" column="locationName" direction="asc"/>
 
             <option type="searchable"
-                    value="locationNumber,locationName,productNumber,productName,productGlobalTypeOfMaterial,quantity,unit,reservedQuantity,availableQuantity,quantityInAdditionalUnit,familyNumber"/>
+                    value="locationNumber,locationName,productNumber,productName,productGlobalTypeOfMaterial,quantity,unit,reservedQuantity,availableQuantity,blockedQuantity,quantityInAdditionalUnit,familyNumber"/>
             <option type="orderable"
-                    value="locationNumber,locationName,productNumber,productName,productGlobalTypeOfMaterial,quantity,unit,reservedQuantity,availableQuantity,quantityInAdditionalUnit,familyNumber"/>
+                    value="locationNumber,locationName,productNumber,productName,productGlobalTypeOfMaterial,quantity,unit,reservedQuantity,availableQuantity,blockedQuantity,quantityInAdditionalUnit,familyNumber"/>
 
-            <!-- column orderedQuantity from deliveriesToMaterialFlow -->
             <option type="columnsToSummary"
-                    value="quantity,reservedQuantity,availableQuantity,orderedQuantity,quantityInAdditionalUnit"/>
+                    value="quantity,reservedQuantity,availableQuantity,blockedQuantity,orderedQuantity,quantityInAdditionalUnit"/>
 
             <option type="footerRow" value="true"/>
             <option type="fullscreen" value="true"/>

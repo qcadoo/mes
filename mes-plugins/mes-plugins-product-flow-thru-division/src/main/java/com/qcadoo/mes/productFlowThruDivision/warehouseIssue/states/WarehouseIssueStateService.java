@@ -1,23 +1,10 @@
 package com.qcadoo.mes.productFlowThruDivision.warehouseIssue.states;
 
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.stream.Collectors;
-
-import org.apache.commons.collections.MultiHashMap;
-import org.apache.commons.collections.MultiMap;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.qcadoo.mes.materialFlow.constants.LocationFields;
 import com.qcadoo.mes.materialFlow.constants.MaterialFlowConstants;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
-import com.qcadoo.mes.productFlowThruDivision.reservation.ReservationsServiceForProductsToIssue;
 import com.qcadoo.mes.productFlowThruDivision.service.WarehouseIssueService;
 import com.qcadoo.mes.productFlowThruDivision.warehouseIssue.CreationDocumentResponse;
 import com.qcadoo.mes.productFlowThruDivision.warehouseIssue.UpdateIssuesLocationsQuantityStatusHolder;
@@ -30,6 +17,13 @@ import com.qcadoo.mes.states.constants.StateChangeStatus;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
+import org.apache.commons.collections.MultiHashMap;
+import org.apache.commons.collections.MultiMap;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class WarehouseIssueStateService {
@@ -45,9 +39,6 @@ public class WarehouseIssueStateService {
 
     @Autowired
     private IssueValidators issueValidators;
-
-    @Autowired
-    private ReservationsServiceForProductsToIssue reservationsServiceForProductsToIssue;
 
     public boolean checkIfAnyNotIssuedPositionsExists(final StateChangeContext stateChangeContext) {
         Entity warehouseIssue = stateChangeContext.getOwner();
