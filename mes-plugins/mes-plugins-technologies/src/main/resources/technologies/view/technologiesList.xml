@@ -333,6 +333,7 @@
             <option type="column" name="number" fields="number" link="true"
                     width="100"/>
             <option type="column" name="name" fields="name" link="true" width="150"/>
+            <option type="column" name="description" fields="description" link="true" width="80"/>
             <option type="column" name="productNumber" fields="productNumber"
                     width="100"/>
 			<option type="column" name="productGlobalTypeOfMaterial" fields="productGlobalTypeOfMaterial"
@@ -358,9 +359,9 @@
                     width="55"/>
 
             <option type="order" column="number" direction="desc"/>
-            <option type="searchable" value="name,number,productNumber,state,technologyGroupNumber,productGlobalTypeOfMaterial,
+            <option type="searchable" value="name,number,description,productNumber,state,technologyGroupNumber,productGlobalTypeOfMaterial,
                 divisionName,master,standardPerformance,attachmentsExists,dateAndTime,productionLineNumber,assortmentName,isTemplateAccepted"/>
-            <option type="orderable" value="name,number,productNumber,state,technologyGroupNumber,productGlobalTypeOfMaterial,
+            <option type="orderable" value="name,number,description,productNumber,state,technologyGroupNumber,productGlobalTypeOfMaterial,
                 divisionName,master,standardPerformance,attachmentsExists,dateAndTime,productionLineNumber,assortmentName,isTemplateAccepted"/>
 
             <option type="correspondingView" value="technologies/technologyDetails"/>
