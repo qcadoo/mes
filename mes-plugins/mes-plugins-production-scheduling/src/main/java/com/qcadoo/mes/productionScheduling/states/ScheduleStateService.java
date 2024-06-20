@@ -395,7 +395,7 @@ public class ScheduleStateService extends BasicStateService implements ScheduleS
 
     private void addWorkstationAndDateSearchRestrictions(final SearchCriteriaBuilder searchCriteriaBuilder,
                                                          final Entity workstation, final Date endDate) {
-        searchCriteriaBuilder.createAlias(OperationalTaskFields.WORKSTATION, OperationalTaskFields.WORKSTATION, JoinType.LEFT);
+        searchCriteriaBuilder.createAlias(OperationalTaskFields.WORKSTATION, OperationalTaskFields.WORKSTATION, JoinType.INNER);
         searchCriteriaBuilder.add(SearchRestrictions.eq(OperationalTaskFields.WORKSTATION + L_DOT + L_ID, workstation.getId()));
         searchCriteriaBuilder.add(SearchRestrictions.ne(OperationalTaskFields.STATE, OperationalTaskState.REJECTED.getStringValue()));
         searchCriteriaBuilder.add(SearchRestrictions.ge(OperationalTaskFields.START_DATE, endDate));
