@@ -25,7 +25,6 @@ import java.util.Objects;
 @Service
 public class TrackingOperationProductInComponentHooks {
 
-    private static final String PRODUCT = "product";
     public static final String L_AUTOMATICALLY_USE_THE_BATCH_PLANNED_IN_ORDER = "automaticallyUseTheBatchPlannedInOrder";
 
     @Autowired
@@ -34,7 +33,7 @@ public class TrackingOperationProductInComponentHooks {
     @Autowired
     private ParameterService parameterService;
 
-    public void onSave(final DataDefinition trackingOperationProductOutComponentDD,
+    public void onSave(final DataDefinition trackingOperationProductInComponentDD,
                        final Entity trackingOperationProductInComponent) {
 
         if (Objects.isNull(trackingOperationProductInComponent.getId())) {
@@ -153,6 +152,10 @@ public class TrackingOperationProductInComponentHooks {
                         pCQBaseProduct.getField(ProductionCountingQuantityFields.PRODUCTION_FLOW));
                 productionCountingQuantity.setField(ProductionCountingQuantityFields.PRODUCTS_FLOW_LOCATION,
                         pCQBaseProduct.getField(ProductionCountingQuantityFields.PRODUCTS_FLOW_LOCATION));
+            }
+            if (Objects.isNull(productionTracking.getBelongsToField(ProductionTrackingFields.TECHNOLOGY_OPERATION_COMPONENT))) {
+                productionCountingQuantity.setField(ProductionCountingQuantityFields.TECHNOLOGY_OPERATION_COMPONENT,
+                        pCQBaseProduct.getBelongsToField(ProductionCountingQuantityFields.TECHNOLOGY_OPERATION_COMPONENT).getId());
             }
         }
         productionCountingQuantity = productionCountingQuantity.getDataDefinition().save(productionCountingQuantity);
