@@ -46,8 +46,7 @@ import com.qcadoo.mes.technologies.constants.TechnologyFields;
 import com.qcadoo.mes.technologies.constants.TechnologyProductionLineFields;
 import com.qcadoo.model.api.*;
 import com.qcadoo.model.api.file.FileService;
-import com.qcadoo.security.api.UserService;
-import com.qcadoo.security.constants.UserFields;
+import com.qcadoo.security.api.SecurityService;
 import com.qcadoo.view.api.utils.TimeConverterService;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -102,7 +101,7 @@ public class OrderHooks {
     private OrderStateChangeReasonService orderStateChangeReasonService;
 
     @Autowired
-    private UserService userService;
+    private SecurityService securityService;
 
     @Autowired
     private ShiftsService shiftsService;
@@ -356,7 +355,7 @@ public class OrderHooks {
 
             if (StringUtils.isEmpty(workerToChange)) {
                 orderStateChange.setField(OrderStateChangeFields.WORKER,
-                        userService.getCurrentUserEntity().getField(UserFields.USER_NAME));
+                        securityService.getCurrentUserOrQcadooBotName());
             } else {
                 orderStateChange.setField(OrderStateChangeFields.WORKER, workerToChange);
                 order.setField(OrderFields.WORKER_TO_CHANGE, null);
