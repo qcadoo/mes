@@ -38,6 +38,4 @@ public final class ResourceStockDtoFields {
 
     public static final String AVAILABLE_QUANTITY = "availableQuantity";
 
-    public static final String BLOCKED_FOR_QUALITY_CONTROL = "blockedForQualityControl";
-
 }

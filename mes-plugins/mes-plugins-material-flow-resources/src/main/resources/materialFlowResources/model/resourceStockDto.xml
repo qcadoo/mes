@@ -45,7 +45,7 @@
         <decimal name="orderedQuantity"/>
         <decimal name="reservedQuantity"/>
         <decimal name="availableQuantity"/>
-        <boolean name="blockedForQualityControl" default="false"/>
+        <decimal name="blockedQuantity"/>
     </fields>
 
     <masterModel plugin="materialFlowResources" model="resourceStock"/>

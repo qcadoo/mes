@@ -101,14 +101,7 @@ public class MaterialFlowResourcesServiceImpl implements MaterialFlowResourcesSe
     @Override
     public Map<Long, BigDecimal> getQuantitiesForProductsAndLocation(final List<Entity> products,
                                                                      final Entity location) {
-        return getQuantitiesForProductsAndLocation(products, location, false);
-    }
-
-    @Override
-    public Map<Long, BigDecimal> getQuantitiesForProductsAndLocation(final List<Entity> products, final Entity location,
-                                                                     final boolean withoutBlockedForQualityControl) {
-        return getQuantitiesForProductsAndLocation(products, location, withoutBlockedForQualityControl,
-                ResourceStockDtoFields.AVAILABLE_QUANTITY);
+        return getQuantitiesForProductsAndLocation(products, location, false, ResourceStockDtoFields.AVAILABLE_QUANTITY);
     }
 
     @Override
@@ -117,21 +110,22 @@ public class MaterialFlowResourcesServiceImpl implements MaterialFlowResourcesSe
                                                                      final String fieldName) {
         Map<Long, BigDecimal> quantities = Maps.newHashMap();
 
-        if (products.size() > 0) {
+        if (!products.isEmpty()) {
             List<Integer> productIds = products.stream().map(product -> product.getId().intValue()).collect(Collectors.toList());
             Integer locationId = location.getId().intValue();
 
             StringBuilder query = new StringBuilder();
 
-            query.append("SELECT ");
-            query.append("resourceStockDto.product_id AS product_id, resourceStockDto.quantity AS quantity, resourceStockDto.availableQuantity AS availableQuantity ");
+            query.append("SELECT resourceStockDto.product_id AS product_id, ");
+            if (withoutBlockedForQualityControl) {
+                query.append("(resourceStockDto.quantity - resourceStockDto.blockedQuantity) AS quantity, ");
+            } else {
+                query.append("resourceStockDto.quantity AS quantity, ");
+            }
+            query.append("resourceStockDto.availableQuantity AS availableQuantity ");
             query.append("FROM #materialFlowResources_resourceStockDto resourceStockDto ");
             query.append("WHERE resourceStockDto.product_id IN (:productIds) ");
             query.append("AND resourceStockDto.location_id = :locationId ");
-
-            if (withoutBlockedForQualityControl) {
-                query.append("AND resourceStockDto.blockedForQualityControl = false ");
-            }
 
             SearchQueryBuilder searchQueryBuilder = getResourceStockDtoDD().find(query.toString());
 
@@ -141,7 +135,7 @@ public class MaterialFlowResourcesServiceImpl implements MaterialFlowResourcesSe
             List<Entity> resourceStocks = searchQueryBuilder.list().getEntities();
 
             resourceStocks.forEach(resourceStock -> quantities.put(
-                    Long.valueOf(resourceStock.getIntegerField(ResourceStockDtoFields.PRODUCT_ID).intValue()),
+                    (long) resourceStock.getIntegerField(ResourceStockDtoFields.PRODUCT_ID),
                     ResourceStockDtoFields.AVAILABLE_QUANTITY.equals(fieldName)
                             ? resourceStock.getDecimalField(ResourceStockDtoFields.AVAILABLE_QUANTITY)
                             : resourceStock.getDecimalField(ResourceStockDtoFields.QUANTITY)));

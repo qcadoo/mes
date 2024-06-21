@@ -43,9 +43,6 @@ public interface MaterialFlowResourcesService {
     Map<Long, BigDecimal> getQuantitiesForProductsAndLocation(final List<Entity> products, final Entity location);
 
     Map<Long, BigDecimal> getQuantitiesForProductsAndLocation(final List<Entity> products, final Entity location,
-                                                              final boolean withoutBlockedForQualityControl);
-
-    Map<Long, BigDecimal> getQuantitiesForProductsAndLocation(final List<Entity> products, final Entity location,
                                                               final boolean withoutBlockedForQualityControl,
                                                               final String fieldName);
 
