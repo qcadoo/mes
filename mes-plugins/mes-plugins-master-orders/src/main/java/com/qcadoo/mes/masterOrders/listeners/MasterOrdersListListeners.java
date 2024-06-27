@@ -23,6 +23,7 @@
  */
 package com.qcadoo.mes.masterOrders.listeners;
 
+import com.google.common.collect.Maps;
 import com.qcadoo.mes.masterOrders.constants.MasterOrderFields;
 import com.qcadoo.mes.masterOrders.constants.MasterOrderState;
 import com.qcadoo.mes.masterOrders.constants.MasterOrdersConstants;
@@ -33,8 +34,13 @@ import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.GridComponent;
 import com.qcadoo.view.constants.QcadooViewConstants;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class MasterOrdersListListeners {
@@ -54,6 +60,28 @@ public class MasterOrdersListListeners {
             } else if(status.equals(MasterOrderState.DECLINED.getStringValue())){
                 masterOrderDB.setField(MasterOrderFields.STATE, MasterOrderState.DECLINED.getStringValue());
                 masterOrderDB.getDataDefinition().save(masterOrderDB);
+            }
+        }
+    }
+
+    public void setDeadline(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        GridComponent grid = (GridComponent) view.getComponentByReference(QcadooViewConstants.L_GRID);
+
+        Set<Long> ids = grid.getSelectedEntitiesIds();
+
+        if (ids.isEmpty()) {
+            view.addMessage("masterOrders.masterOrder.notSelected", ComponentState.MessageType.INFO);
+        } else {
+            if (!state.isHasError()) {
+                Map<String, Object> parameters = Maps.newHashMap();
+                parameters.put("form.masterOrderIds", ids.stream().map(String::valueOf).collect(Collectors.joining(",")));
+
+                JSONObject context = new JSONObject(parameters);
+                StringBuilder url = new StringBuilder(MasterOrdersConstants.PLUGIN_IDENTIFIER + "/deadlineHelperDetails.html");
+                url.append("?context=");
+                url.append(context);
+
+                view.openModal(url.toString());
             }
         }
     }
