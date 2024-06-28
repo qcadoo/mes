@@ -51,8 +51,7 @@
                    plugin="materialFlow"/>
         <belongsTo name="relatedDelivery" model="delivery"/>
         <belongsTo name="currency" model="currency" plugin="basic"/>
-        <hasMany name="relatedDeliveries" joinField="relatedDelivery" model="delivery"
-                 cascade="nullify"/>
+        <hasMany name="relatedDeliveries" joinField="relatedDelivery" model="delivery"/>
 
         <string name="externalNumber" unique="true"/>
         <boolean name="externalSynchronized" default="true"/>
