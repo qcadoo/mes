@@ -63,15 +63,11 @@ public final class WorkstationFields {
 
     public static final String STAFF = "staff";
 
-    public static final String BUFFER = "buffer";
-
     public static final String STATE = "state";
 
     public static final String MACHINE_WORKING_PERIODS = "machineWorkingPeriods";
 
     public static final String MANUAL_STATE_CHANGE = "manualStateChange";
-
-    public static final String ENTITY_ID = "entityId";
 
     public static final String MINIMUM_DIMENSION = "minimumDimension";
 

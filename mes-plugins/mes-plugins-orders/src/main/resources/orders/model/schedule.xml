@@ -48,7 +48,6 @@
               values="01workstationLastOperatorLatestFinished,02workstationLastOperatorEarliestFinished,03workstationDefaultOperator"
               default="01workstationLastOperatorLatestFinished"
               required="true"/>
-        <boolean name="scheduleForBuffer" default="false"/>
         <boolean name="additionalTimeExtendsOperation" default="true"/>
         <boolean name="includeTpz" default="true"/>
         <boolean name="onlyWorkstationsOfLineFromOrder" default="false"/>

@@ -355,23 +355,17 @@ public class ScheduleDetailsListenersPS {
 
     private Date getFinishDate(Map<Long, Date> workstationsFinishDates, Date scheduleStartTime, Entity schedule,
                                Entity workstation) {
-        Date finishDate;
-        if (schedule.getBooleanField(ScheduleFields.SCHEDULE_FOR_BUFFER)
-                && workstation.getBooleanField(WorkstationFields.BUFFER)) {
+        Date finishDate = workstationsFinishDates.get(workstation.getId());
+        if (finishDate == null) {
+            Date operationalTasksMaxFinishDate = getOperationalTasksMaxFinishDateForWorkstation(scheduleStartTime,
+                    workstation);
+            if (operationalTasksMaxFinishDate != null) {
+                finishDate = operationalTasksMaxFinishDate;
+                workstationsFinishDates.put(workstation.getId(), finishDate);
+            }
+        }
+        if (finishDate == null) {
             finishDate = scheduleStartTime;
-        } else {
-            finishDate = workstationsFinishDates.get(workstation.getId());
-            if (finishDate == null) {
-                Date operationalTasksMaxFinishDate = getOperationalTasksMaxFinishDateForWorkstation(scheduleStartTime,
-                        workstation);
-                if (operationalTasksMaxFinishDate != null) {
-                    finishDate = operationalTasksMaxFinishDate;
-                    workstationsFinishDates.put(workstation.getId(), finishDate);
-                }
-            }
-            if (finishDate == null) {
-                finishDate = scheduleStartTime;
-            }
         }
         return finishDate;
     }

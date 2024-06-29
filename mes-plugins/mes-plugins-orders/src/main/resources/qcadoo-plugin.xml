@@ -328,10 +328,6 @@
         </model:model-field>
 
         <model:model-field plugin="basic" model="parameter">
-            <model:boolean name="scheduleForBuffer" default="false"/>
-        </model:model-field>
-
-        <model:model-field plugin="basic" model="parameter">
             <model:boolean name="additionalTimeExtendsOperation" default="true"/>
         </model:model-field>
 
