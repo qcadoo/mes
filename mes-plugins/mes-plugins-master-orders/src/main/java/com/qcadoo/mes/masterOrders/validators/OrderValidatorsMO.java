@@ -45,6 +45,7 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.Objects;
 
+import static com.qcadoo.mes.masterOrders.constants.ParameterFieldsMO.ALLOW_MASTER_ORDER_DEADLINE_CHANGE;
 import static com.qcadoo.mes.orders.constants.ParameterFieldsO.DEADLINE_FOR_ORDER_BASED_ON_DELIVERY_DATE;
 import static com.qcadoo.mes.orders.constants.ParameterFieldsO.DEADLINE_FOR_ORDER_EARLIER_THAN_DELIVERY_DATE;
 import static com.qcadoo.model.api.search.SearchProjections.alias;
@@ -105,9 +106,13 @@ public class OrderValidatorsMO {
             isValid = false;
         }
 
+        Entity parameter = parameterService.getParameter();
+        if (parameter.getBooleanField(ALLOW_MASTER_ORDER_DEADLINE_CHANGE)) {
+            return isValid;
+        }
+
         Date deadlineFromMaster = masterOrder.getDateField(MasterOrderFields.DEADLINE);
         String message = "masterOrders.order.masterOrder.deadline.fieldIsNotTheSame";
-        Entity parameter = parameterService.getParameter();
         boolean deadlineForOrderBasedOnDeliveryDate = parameter.getBooleanField(DEADLINE_FOR_ORDER_BASED_ON_DELIVERY_DATE);
         if (deadlineForOrderBasedOnDeliveryDate) {
             Entity masterOrderProductComponent = findMasterOrderProduct(masterOrder, order.getBelongsToField(OrderFields.PRODUCT), order.getStringField(OrderFieldsMO.VENDOR_INFO));

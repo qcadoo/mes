@@ -28,7 +28,6 @@ import com.qcadoo.plugin.api.PluginManager;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
-import com.qcadoo.view.api.components.GridComponent;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -253,7 +252,7 @@ public class ScheduleDetailsListenersPS {
             } else {
                 allMachineWorkTimesEqualsZero = false;
             }
-            Date finishDate = getFinishDate(workstationsFinishDates, scheduleStartTime, schedule, workstation);
+            Date finishDate = getFinishDate(workstationsFinishDates, scheduleStartTime, workstation);
             finishDate = getFinishDateWithChildren(position, finishDate);
             Entity previousPosition = workstationsPositions.get(workstation.getId());
             List<Entity> workstationChangeovers = workstationChangeoverService.findWorkstationChangeoversForSchedulePosition(finishDate, workstation, position, previousPosition);
@@ -353,8 +352,7 @@ public class ScheduleDetailsListenersPS {
         return partialOperationWorkTime.getMachineWorkTime();
     }
 
-    private Date getFinishDate(Map<Long, Date> workstationsFinishDates, Date scheduleStartTime, Entity schedule,
-                               Entity workstation) {
+    private Date getFinishDate(Map<Long, Date> workstationsFinishDates, Date scheduleStartTime, Entity workstation) {
         Date finishDate = workstationsFinishDates.get(workstation.getId());
         if (finishDate == null) {
             Date operationalTasksMaxFinishDate = getOperationalTasksMaxFinishDateForWorkstation(scheduleStartTime,
