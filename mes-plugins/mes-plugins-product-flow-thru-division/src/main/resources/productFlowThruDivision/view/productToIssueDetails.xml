@@ -100,7 +100,7 @@
                                       class="com.qcadoo.mes.productFlowThruDivision.warehouseIssue.listeners.ProductsToIssueDetailsListeners" />
                         </component>
                     </layoutElement>
-                    <layoutElement column="5" row="5">
+                    <layoutElement column="5" row="4">
                         <component type="input" name="additionalDemandQuantityUnit"
                                    reference="additionalDemandQuantityUnit" defaultEnabled="false" hasLabel="false">
                             <option type="textRepresentationOnDisabled" value="true"/>
