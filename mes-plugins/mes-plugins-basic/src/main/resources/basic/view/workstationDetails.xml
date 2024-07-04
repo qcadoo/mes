@@ -217,10 +217,6 @@
                             <option type="fieldCode" value="number"/>
                         </component>
                     </layoutElement>
-                    <layoutElement column="2" row="8">
-                        <component type="checkbox" field="buffer" name="buffer" reference="buffer"
-                                   hasDescription="true"/>
-                    </layoutElement>
                 </component>
 
                 <option type="header" value="true"/>

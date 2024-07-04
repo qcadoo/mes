@@ -107,7 +107,7 @@
         </windowTab>
         <windowTab name="scheduleTab" reference="scheduleTab">
             <component type="gridLayout" name="scheduleGridLayout"
-                       columns="2" rows="7">
+                       columns="2" rows="6">
                 <layoutElement column="1" row="1">
                     <component type="select" name="scheduleSortOrder" field="#{form}.scheduleSortOrder"
                                reference="scheduleSortOrder">
@@ -124,27 +124,20 @@
                     </component>
                 </layoutElement>
                 <layoutElement column="1" row="4">
-                    <component type="checkbox" name="scheduleForBuffer"
-                               reference="scheduleForBuffer"
-                               field="#{form}.scheduleForBuffer"
-                               hasDescription="true">
-                    </component>
-                </layoutElement>
-                <layoutElement column="1" row="5">
                     <component type="checkbox" name="additionalTimeExtendsOperation"
                                reference="additionalTimeExtendsOperation"
                                field="#{form}.additionalTimeExtendsOperation"
                                hasDescription="true">
                     </component>
                 </layoutElement>
-                <layoutElement column="1" row="6">
+                <layoutElement column="1" row="5">
                     <component type="checkbox" name="includeTpzS"
                                reference="includeTpzS"
                                field="#{form}.includeTpzS"
                                hasDescription="true">
                     </component>
                 </layoutElement>
-                <layoutElement column="1" row="7">
+                <layoutElement column="1" row="6">
                     <component type="checkbox" name="skipFinishedTasks"
                                reference="skipFinishedTasks"
                                field="#{form}.skipFinishedTasks"

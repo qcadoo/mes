@@ -103,7 +103,7 @@
 					]]>
                 </script>
                 <component type="gridLayout" name="gridLayout" columns="3"
-                           rows="11">
+                           rows="10">
                     <layoutElement column="1" row="1">
                         <component type="input" name="name" field="name"
                                    reference="name"/>
@@ -149,27 +149,20 @@
                         </component>
                     </layoutElement>
                     <layoutElement column="1" row="8">
-                        <component type="checkbox" name="scheduleForBuffer"
-                                   reference="scheduleForBuffer"
-                                   field="scheduleForBuffer"
-                                   hasDescription="true">
-                        </component>
-                    </layoutElement>
-                    <layoutElement column="1" row="9">
                         <component type="checkbox" name="includeTpz"
                                    reference="includeTpz"
                                    field="includeTpz"
                                    hasDescription="true">
                         </component>
                     </layoutElement>
-                    <layoutElement column="1" row="10">
+                    <layoutElement column="1" row="9">
                         <component type="checkbox" name="additionalTimeExtendsOperation"
                                    reference="additionalTimeExtendsOperation"
                                    field="additionalTimeExtendsOperation"
                                    hasDescription="true">
                         </component>
                     </layoutElement>
-                    <layoutElement column="1" row="11">
+                    <layoutElement column="1" row="10">
                         <component type="calendar" name="approveTime" reference="approveTime"
                                    field="approveTime" defaultEnabled="never">
                             <option type="withTimePicker" value="true"/>

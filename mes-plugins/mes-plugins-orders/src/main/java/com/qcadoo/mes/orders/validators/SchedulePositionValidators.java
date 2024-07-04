@@ -88,13 +88,6 @@ public class SchedulePositionValidators {
                         .collect(Collectors.toList());
             }
         }
-        if (schedule.getBooleanField(ScheduleFields.SCHEDULE_FOR_BUFFER)) {
-            List<Entity> bufferWorkstations = workstations.stream().filter(e -> e.getBooleanField(WorkstationFields.BUFFER))
-                    .collect(Collectors.toList());
-            if (!bufferWorkstations.isEmpty()) {
-                return bufferWorkstations;
-            }
-        }
         return workstations;
     }
 

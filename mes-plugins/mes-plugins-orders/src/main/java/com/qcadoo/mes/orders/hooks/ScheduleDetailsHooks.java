@@ -54,8 +54,6 @@ public class ScheduleDetailsHooks {
                     parameter.getStringField(ScheduleFields.WORKSTATION_ASSIGN_CRITERION), view);
             fillWithProperty(ScheduleFields.WORKER_ASSIGN_CRITERION,
                     parameter.getStringField(ScheduleFields.WORKER_ASSIGN_CRITERION), view);
-            fillCheckboxWithProperty(ScheduleFields.SCHEDULE_FOR_BUFFER,
-                    parameter.getBooleanField(ScheduleFields.SCHEDULE_FOR_BUFFER), view);
             fillCheckboxWithProperty(ScheduleFields.ADDITIONAL_TIME_EXTENDS_OPERATION,
                     parameter.getBooleanField(ScheduleFields.ADDITIONAL_TIME_EXTENDS_OPERATION), view);
             fillCheckboxWithProperty(ScheduleFields.INCLUDE_TPZ,

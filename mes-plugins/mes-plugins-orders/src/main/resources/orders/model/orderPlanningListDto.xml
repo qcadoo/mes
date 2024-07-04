@@ -63,6 +63,7 @@
         <string name="company"/>
         <boolean name="hasPacks"/>
         <string name="salesPlanNumber"/>
+        <integer name="priority"/>
 
     </fields>
     <hooks>
