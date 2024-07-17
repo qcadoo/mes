@@ -397,6 +397,12 @@
                          width="50"/>
         </view:view-grid-column>
 
+        <view:view-grid-column plugin="orders"
+                               view="ordersPlanningList" component="grid">
+            <view:column name="masterOrderName" fields="masterOrderName" orderable="true" multiSearch="true" searchable="true"
+                         width="50"/>
+        </view:view-grid-column>
+
         <view:view-grid-column plugin="deliveries"
                                view="deliveriesList" component="grid">
             <view:column name="salesPlanNumber" fields="salesPlan" expression="#salesPlan?.get('number')" orderable="true" multiSearch="true" searchable="true"
