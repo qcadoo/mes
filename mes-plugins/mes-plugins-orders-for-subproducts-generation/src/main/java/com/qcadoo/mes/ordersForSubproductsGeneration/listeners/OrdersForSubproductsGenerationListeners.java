@@ -50,20 +50,18 @@ import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.constants.QcadooViewConstants;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.stereotype.Service;
 
 import static java.util.stream.Collectors.groupingBy;
 
@@ -71,8 +69,6 @@ import static java.util.stream.Collectors.groupingBy;
 public class OrdersForSubproductsGenerationListeners {
 
     protected static final Logger LOG = LoggerFactory.getLogger(OrdersForSubproductsGenerationListeners.class);
-
-    
 
     private static final String L_ORDERS_GROUP = "ordersGroup";
 
@@ -99,7 +95,7 @@ public class OrdersForSubproductsGenerationListeners {
     private ParameterService parameterService;
 
     public final void generateSimpleOrdersForSubProducts(final ViewDefinitionState view, final ComponentState state,
-            final String[] args) {
+                                                         final String[] args) {
         FormComponent subOrdersForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
         Entity subOrders = subOrdersForm.getEntity();
@@ -117,7 +113,7 @@ public class OrdersForSubproductsGenerationListeners {
     }
 
     private void simpleGenerate(final ViewDefinitionState view, final ComponentState state, final Entity subOrders) {
-        LOG.info(String.format("Start generation orders for components. Sub orders: %d", subOrders.getId()));
+        LOG.info(String.format("Start generation orders for components. Sub orders: %d.", subOrders.getId()));
 
         Integer generatedOrders = 0;
 
@@ -127,6 +123,7 @@ public class OrdersForSubproductsGenerationListeners {
         Entity subOrdersOrder = subOrders.getBelongsToField(SubOrdersFields.ORDER);
 
         if (Objects.nonNull(subOrdersOrdersGroup)) {
+            LOG.info(String.format("Orders group: %S", subOrdersOrdersGroup.getStringField(L_NUMBER)));
             orders = subOrdersOrdersGroup.getHasManyField(L_ORDERS);
         } else if (Objects.nonNull(subOrdersOrder)) {
             orders.add(subOrdersOrder);
@@ -161,7 +158,7 @@ public class OrdersForSubproductsGenerationListeners {
                 for (Entity subOrderForActualLevel : subOrdersForActualLevel) {
                     registryEntries = materialRequirementCoverageHelper.findComponentEntries(subOrderForActualLevel);
 
-					generatedOrders = generateSimpleOrders(registryEntries, subOrderForActualLevel, generatedOrders);
+                    generatedOrders = generateSimpleOrders(registryEntries, subOrderForActualLevel, generatedOrders);
                 }
 
                 ++index;
@@ -170,7 +167,7 @@ public class OrdersForSubproductsGenerationListeners {
 
         if (generatedOrders > 0) {
 
-            if(parameterService.getParameter().getBooleanField(L_MERGING_ORDERS_FOR_COMPONENTS)) {
+            if (parameterService.getParameter().getBooleanField(L_MERGING_ORDERS_FOR_COMPONENTS)) {
 
                 List<Long> rootOrdersIds = orders.stream().map(Entity::getId).collect(Collectors.toList());
 
@@ -188,7 +185,7 @@ public class OrdersForSubproductsGenerationListeners {
 
                 ordersByProduct.forEach((product, ordersForProduct) -> {
 
-                    if(ordersForProduct.size() > 1) {
+                    if (ordersForProduct.size() > 1) {
 
                         Entity orderGroup = ordersForProduct.get(0).getBelongsToField(L_ORDERS_GROUP);
                         String number = orderGroup.getStringField(L_NUMBER) + "-" + product.getStringField(ProductFields.NUMBER);
@@ -204,7 +201,7 @@ public class OrdersForSubproductsGenerationListeners {
                         mergedOrder.setField(OrderFieldsOFSPG.ROOT, null);
                         mergedOrder.setField(OrderFieldsOFSPG.PARENT, null);
                         Entity saved = mergedOrder.getDataDefinition().save(mergedOrder);
-                        if(saved.isValid()) {
+                        if (saved.isValid()) {
                             ordersMergedSuccess.add(number);
                             ordersForProduct.stream().filter(o -> !o.getId().equals(mergedOrder.getId())).forEach(o -> o.getDataDefinition().delete(o.getId()));
                         } else {
@@ -214,12 +211,12 @@ public class OrdersForSubproductsGenerationListeners {
 
                 });
 
-                if(!ordersMergedSuccess.isEmpty()) {
+                if (!ordersMergedSuccess.isEmpty()) {
                     state.addMessage("ordersForSubproductsGeneration.generationSubOrdersAction.ordersMergedMessageSuccess",
                             ComponentState.MessageType.SUCCESS, false, String.join(", ", ordersMergedSuccess));
                 }
 
-                if(!ordersMergedFailure.isEmpty()) {
+                if (!ordersMergedFailure.isEmpty()) {
                     state.addMessage("ordersForSubproductsGeneration.generationSubOrdersAction.ordersMergedMessageFailure",
                             ComponentState.MessageType.FAILURE, false, String.join(", ", ordersMergedFailure));
                 }
@@ -232,11 +229,14 @@ public class OrdersForSubproductsGenerationListeners {
                     ComponentState.MessageType.SUCCESS, false);
         }
 
-        LOG.info(String.format("Finish generation orders for components. Sub orders: %d", subOrders.getId()));
+        LOG.info(String.format("Finish generation orders for components. Sub orders: %d.", subOrders.getId()));
+        if (Objects.nonNull(subOrdersOrdersGroup)) {
+            LOG.info(String.format("Orders group: %S", subOrdersOrdersGroup.getStringField(L_NUMBER)));
+        }
     }
 
     private Integer generateSimpleOrders(final List<Entity> registryEntries, final Entity order,
-            Integer generatedOrders) {
+                                         Integer generatedOrders) {
         int index = 1;
 
         for (Entity registryEntry : registryEntries) {
@@ -255,7 +255,7 @@ public class OrdersForSubproductsGenerationListeners {
 
         if (!nodes.isEmpty()) {
             String componentsWithCheckedTechnology = nodes.stream().map(
-                    node -> node.getBelongsToField(ProductStructureTreeNodeFields.PRODUCT).getStringField(ProductFields.NUMBER))
+                            node -> node.getBelongsToField(ProductStructureTreeNodeFields.PRODUCT).getStringField(ProductFields.NUMBER))
                     .collect(Collectors.joining(", "));
 
             view.addMessage("ordersForSubproductsGeneration.ordersForSubproducts.generate.componentsWithCheckedTechnologies",
@@ -264,7 +264,7 @@ public class OrdersForSubproductsGenerationListeners {
     }
 
     public final void generateOrdersForSubProducts(final ViewDefinitionState view, final ComponentState state,
-            final String[] args) {
+                                                   final String[] args) {
         Optional<Entity> optionalMrc = getGeneratingMRC();
 
         if (optionalMrc.isPresent()) {
@@ -279,13 +279,13 @@ public class OrdersForSubproductsGenerationListeners {
                         mrc.getBelongsToField(CoverageForOrderFields.ORDER).getStringField(OrderFields.NUMBER));
             }
         } else {
-			FormComponent materialRequirementForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
+            FormComponent materialRequirementForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
-			Entity materialRequirement = materialRequirementForm.getEntity();
-			Entity materialRequirementFromDB = materialRequirement.getDataDefinition().get(materialRequirement.getId());
+            Entity materialRequirement = materialRequirementForm.getEntity();
+            Entity materialRequirementFromDB = materialRequirement.getDataDefinition().get(materialRequirement.getId());
 
             Entity assignedOrder = materialRequirementFromDB.getBelongsToField("order");
-            if(Objects.isNull(assignedOrder.getDateField(OrderFields.START_DATE))) {
+            if (Objects.isNull(assignedOrder.getDateField(OrderFields.START_DATE))) {
                 state.addMessage("ordersForSubproductsGeneration.generationSubOrdersAction.datesIsEmptyInOrder", ComponentState.MessageType.INFO, false);
                 return;
             }
@@ -350,9 +350,10 @@ public class OrdersForSubproductsGenerationListeners {
         return false;
     }
 
-    private void generate(final ViewDefinitionState view, final ComponentState state, final Entity materialRequirementCoverage) {
+    private void generate(final ViewDefinitionState view, final ComponentState state,
+                          final Entity materialRequirementCoverage) {
         LOG.info(String.format("Start generation orders for components. Material requirement coverage: %d",
-				materialRequirementCoverage.getId()));
+                materialRequirementCoverage.getId()));
 
         Integer generatedOrders = 0;
 
@@ -364,14 +365,14 @@ public class OrdersForSubproductsGenerationListeners {
 
                 List<Entity> products = ordersForSubproductsGenerationService.getComponentProducts(materialRequirementCoverage, order);
 
-				generatedOrders = generateOrders(products, order, generatedOrders);
+                generatedOrders = generateOrders(products, order, generatedOrders);
 
                 int index;
 
                 if (!products.isEmpty()) {
-					materialRequirementCoverage.setField(CoverageForOrderFieldsOFSPG.GENERATED_ORDERS, true);
+                    materialRequirementCoverage.setField(CoverageForOrderFieldsOFSPG.GENERATED_ORDERS, true);
 
-					materialRequirementCoverage.getDataDefinition().save(materialRequirementCoverage);
+                    materialRequirementCoverage.getDataDefinition().save(materialRequirementCoverage);
                 }
 
                 index = 1;
@@ -388,7 +389,7 @@ public class OrdersForSubproductsGenerationListeners {
 
                     for (Entity subOrderForActualLevel : subOrdersForActualLevel) {
                         Optional<Entity> mayBeMaterialRequirementCoverage = forOrderService.createMRCFO(subOrderForActualLevel,
-								materialRequirementCoverage);
+                                materialRequirementCoverage);
 
                         if (mayBeMaterialRequirementCoverage.isPresent()) {
                             Entity materialRequirementCoverageForSubOrder = mayBeMaterialRequirementCoverage.get();
@@ -438,11 +439,12 @@ public class OrdersForSubproductsGenerationListeners {
         return generatedOrders;
     }
 
-	private void fillGenerationProgressFlag(final Entity entity, final String fieldName, final boolean orderGenerationInProgress) {
-		entity.setField(fieldName, orderGenerationInProgress);
+    private void fillGenerationProgressFlag(final Entity entity, final String fieldName,
+                                            final boolean orderGenerationInProgress) {
+        entity.setField(fieldName, orderGenerationInProgress);
 
-		entity.getDataDefinition().fastSave(entity);
-	}
+        entity.getDataDefinition().fastSave(entity);
+    }
 
     private DataDefinition orderDD() {
         return dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER);

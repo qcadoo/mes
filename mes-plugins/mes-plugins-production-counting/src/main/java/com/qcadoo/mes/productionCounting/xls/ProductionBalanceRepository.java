@@ -1343,7 +1343,7 @@ class ProductionBalanceRepository {
 
         if (componentsBalance.isEmpty()) {
             query.append("(NULL::integer, NULL::numeric, NULL::numeric, NULL::numeric, NULL::numeric, NULL::numeric, ");
-            query.append("NULL::numeric, NULL::numeric, NULL::numeric, NULL::numeric) ");
+            query.append("NULL::numeric, NULL::numeric, NULL::numeric, NULL::numeric, NULL::numeric) ");
         } else {
             for (int i = 0; i < componentsBalance.size(); i++) {
                 OrderBalance orderBalance = componentsBalance.get(i);
