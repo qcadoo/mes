@@ -23223,6 +23223,8 @@ CREATE VIEW public.orders_orderplanninglistdto AS
     product.unit,
     productionline.number AS productionlinenumber,
     masterorder.number AS masterordernumber,
+    masterorder.name AS masterordername,
+    masterorder.machinetype,
     division.name AS divisionname,
     division.number AS divisionnumber,
     COALESCE(ordersorder.plannedquantityforadditionalunit, ordersorder.plannedquantity) AS plannedquantityforadditionalunit,
