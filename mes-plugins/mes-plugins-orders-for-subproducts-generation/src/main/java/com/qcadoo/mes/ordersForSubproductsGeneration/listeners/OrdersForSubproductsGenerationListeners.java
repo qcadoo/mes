@@ -113,7 +113,7 @@ public class OrdersForSubproductsGenerationListeners {
     }
 
     private void simpleGenerate(final ViewDefinitionState view, final ComponentState state, final Entity subOrders) {
-        LOG.info(String.format("Start generation orders for components. Sub orders: %d.", subOrders.getId()));
+        LOG.info("Start generation orders for components. Sub orders: {}.", subOrders.getId());
 
         Integer generatedOrders = 0;
 
@@ -123,7 +123,7 @@ public class OrdersForSubproductsGenerationListeners {
         Entity subOrdersOrder = subOrders.getBelongsToField(SubOrdersFields.ORDER);
 
         if (Objects.nonNull(subOrdersOrdersGroup)) {
-            LOG.info(String.format("Orders group: %S", subOrdersOrdersGroup.getStringField(L_NUMBER)));
+            LOG.info("Orders group: {}", subOrdersOrdersGroup.getStringField(L_NUMBER));
             orders = subOrdersOrdersGroup.getHasManyField(L_ORDERS);
         } else if (Objects.nonNull(subOrdersOrder)) {
             orders.add(subOrdersOrder);
@@ -229,9 +229,9 @@ public class OrdersForSubproductsGenerationListeners {
                     ComponentState.MessageType.SUCCESS, false);
         }
 
-        LOG.info(String.format("Finish generation orders for components. Sub orders: %d.", subOrders.getId()));
+        LOG.info("Finish generation orders for components. Sub orders: {}.", subOrders.getId());
         if (Objects.nonNull(subOrdersOrdersGroup)) {
-            LOG.info(String.format("Orders group: %S", subOrdersOrdersGroup.getStringField(L_NUMBER)));
+            LOG.info("Orders group: {}", subOrdersOrdersGroup.getStringField(L_NUMBER));
         }
     }
 
