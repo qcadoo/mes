@@ -185,11 +185,6 @@
                            joinField="technology"/>
         </model:model-field>
 
-<!--        <model:model-field plugin="technologies" model="technology">
-            <model:hasMany name="ordersUsingPrototype" plugin="orders" model="order"
-                           joinField="technologyPrototype"/>
-        </model:model-field>-->
-
         <model:model-field plugin="basic" model="parameter">
             <model:boolean name="createCollectiveOrders" default="false"/>
         </model:model-field>

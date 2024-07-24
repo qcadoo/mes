@@ -206,6 +206,7 @@
         <integer name="priority" default="100">
             <validatesRange from="0"/>
         </integer>
+        <string name="vendorInfo" copyable="false"/>
     </fields>
 
     <hooks>

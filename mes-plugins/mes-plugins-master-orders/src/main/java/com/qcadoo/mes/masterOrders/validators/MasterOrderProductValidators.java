@@ -26,7 +26,6 @@ package com.qcadoo.mes.masterOrders.validators;
 import com.qcadoo.mes.basic.constants.ProductFamilyElementType;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.masterOrders.constants.MasterOrderProductFields;
-import com.qcadoo.mes.masterOrders.constants.OrderFieldsMO;
 import com.qcadoo.mes.masterOrders.util.MasterOrderOrdersDataProvider;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.model.api.DataDefinition;
@@ -178,9 +177,9 @@ public class MasterOrderProductValidators {
 
         SearchCriterion searchCriterion;
         if (oldVendorInfo != null) {
-            searchCriterion = and(SearchRestrictions.belongsTo(OrderFields.PRODUCT, oldProductValue), SearchRestrictions.eq(OrderFieldsMO.VENDOR_INFO, oldVendorInfo));
+            searchCriterion = and(SearchRestrictions.belongsTo(OrderFields.PRODUCT, oldProductValue), SearchRestrictions.eq(OrderFields.VENDOR_INFO, oldVendorInfo));
         } else {
-            searchCriterion = and(SearchRestrictions.belongsTo(OrderFields.PRODUCT, oldProductValue), SearchRestrictions.isNull(OrderFieldsMO.VENDOR_INFO));
+            searchCriterion = and(SearchRestrictions.belongsTo(OrderFields.PRODUCT, oldProductValue), SearchRestrictions.isNull(OrderFields.VENDOR_INFO));
         }
 
         Collection<String> unsupportedOrderNumbers = masterOrderOrdersDataProvider.findBelongingOrderNumbers(masterOrder,

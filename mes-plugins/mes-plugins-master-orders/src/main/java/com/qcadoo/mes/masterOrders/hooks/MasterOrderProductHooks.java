@@ -161,9 +161,9 @@ public class MasterOrderProductHooks {
 
         SearchCriterion searchCriterion;
         if (vendorInfo != null) {
-            searchCriterion = and(SearchRestrictions.belongsTo(OrderFields.PRODUCT, product), SearchRestrictions.eq(OrderFieldsMO.VENDOR_INFO, vendorInfo));
+            searchCriterion = and(SearchRestrictions.belongsTo(OrderFields.PRODUCT, product), SearchRestrictions.eq(OrderFields.VENDOR_INFO, vendorInfo));
         } else {
-            searchCriterion = and(SearchRestrictions.belongsTo(OrderFields.PRODUCT, product), SearchRestrictions.isNull(OrderFieldsMO.VENDOR_INFO));
+            searchCriterion = and(SearchRestrictions.belongsTo(OrderFields.PRODUCT, product), SearchRestrictions.isNull(OrderFields.VENDOR_INFO));
         }
 
         long numOfBelongingOrdersMatchingProduct = masterOrderOrdersDataProvider.countBelongingOrders(masterOrder, searchCriterion);
