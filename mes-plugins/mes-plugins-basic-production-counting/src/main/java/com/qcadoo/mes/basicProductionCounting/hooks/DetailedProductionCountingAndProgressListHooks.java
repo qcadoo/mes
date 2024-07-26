@@ -43,16 +43,15 @@ import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.GridComponent;
 import com.qcadoo.view.constants.QcadooViewConstants;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
 import org.json.JSONException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 @Service
 public class DetailedProductionCountingAndProgressListHooks {
@@ -60,8 +59,6 @@ public class DetailedProductionCountingAndProgressListHooks {
     private static final Logger LOG = LoggerFactory.getLogger(DetailedProductionCountingAndProgressListHooks.class);
 
     private static final String L_ORDER = "order";
-
-    public static final String L_ORDER_FORM = "order";
 
     @Autowired
     private OrderService orderService;
@@ -81,9 +78,6 @@ public class DetailedProductionCountingAndProgressListHooks {
 
         if (!grid.getSelectedEntitiesIds().isEmpty()
                 && grid.getSelectedEntitiesIds().size() == 1) {
-            FormComponent orderForm = (FormComponent) view.getComponentByReference(L_ORDER_FORM);
-
-            Long orderId = orderForm.getEntityId();
 
             Entity pcq = dataDefinitionService
                     .get(BasicProductionCountingConstants.PLUGIN_IDENTIFIER,

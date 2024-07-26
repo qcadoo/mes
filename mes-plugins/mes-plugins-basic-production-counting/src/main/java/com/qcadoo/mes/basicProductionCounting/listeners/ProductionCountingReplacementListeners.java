@@ -3,7 +3,11 @@ package com.qcadoo.mes.basicProductionCounting.listeners;
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.basicProductionCounting.constants.BasicProductionCountingConstants;
 import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityFields;
-import com.qcadoo.model.api.BigDecimalUtils;
+import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityRole;
+import com.qcadoo.mes.basicProductionCounting.constants.SectionFieldsBPC;
+import com.qcadoo.mes.technologies.constants.OperationProductInComponentFields;
+import com.qcadoo.mes.technologies.constants.SectionFields;
+import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
@@ -21,8 +25,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 @Service
 public class ProductionCountingReplacementListeners {
@@ -85,6 +89,7 @@ public class ProductionCountingReplacementListeners {
         BigDecimal replacesQuantity = entity.getDecimalField(L_REPLACES_QUANTITY);
 
         BigDecimal pcqPlannedQuantity = productionCountingQuantity.getDecimalField(ProductionCountingQuantityFields.PLANNED_QUANTITY);
+        String role = productionCountingQuantity.getStringField(ProductionCountingQuantityFields.ROLE);
 
         BigDecimal newPcqPlannedQuantity = pcqPlannedQuantity.subtract(replacesQuantity, numberService.getMathContext());
         if (BigDecimal.ZERO.compareTo(newPcqPlannedQuantity) >= 0) {
@@ -100,6 +105,19 @@ public class ProductionCountingReplacementListeners {
         in.setField(ProductionCountingQuantityFields.PRODUCT, entity.getBelongsToField(PRODUCT).getId());
         in.setField(ProductionCountingQuantityFields.REPLACEMENT_TO, productionCountingQuantity.getBelongsToField(ProductionCountingQuantityFields.PRODUCT).getId());
         in.setField(ProductionCountingQuantityFields.PLANNED_QUANTITY, plannedQuantity);
+        if (ProductionCountingQuantityRole.USED.getStringValue().equals(role)) {
+            List<Entity> sections = new ArrayList<>();
+            DataDefinition dataDefinition = dataDefinitionService.get(BasicProductionCountingConstants.PLUGIN_IDENTIFIER,
+                    BasicProductionCountingConstants.MODEL_SECTION);
+            for (Entity originalSection : productionCountingQuantity.getHasManyField(ProductionCountingQuantityFields.SECTIONS)) {
+                Entity pcqSection = dataDefinition.create();
+                pcqSection.setField(SectionFieldsBPC.QUANTITY, originalSection.getIntegerField(SectionFieldsBPC.QUANTITY));
+                pcqSection.setField(SectionFieldsBPC.LENGTH, originalSection.getField(SectionFieldsBPC.LENGTH));
+                pcqSection.setField(SectionFieldsBPC.UNIT, originalSection.getField(SectionFieldsBPC.UNIT));
+                sections.add(pcqSection);
+            }
+            in.setField(ProductionCountingQuantityFields.SECTIONS, sections);
+        }
         in = in.getDataDefinition().save(in);
         if(!in.isValid()) {
             throw new EntityRuntimeException(in);
