@@ -158,10 +158,11 @@ public class OrderHooks {
     }
 
     private void fillStartDateFromParameters(final Entity order) {
+        Entity parameter = parameterService.getParameter();
         if (Objects.isNull(order.getId())
-                && parameterService.getParameter().getBooleanField(ParameterFieldsO.ADVISE_START_DATE_OF_THE_ORDER)
+                && parameter.getBooleanField(ParameterFieldsO.ADVISE_START_DATE_OF_THE_ORDER)
                 && Objects.isNull(order.getDateField(OrderFields.START_DATE))) {
-            String basedOn = parameterService.getParameter().getStringField(ParameterFieldsO.ORDER_START_DATE_BASED_ON);
+            String basedOn = parameter.getStringField(ParameterFieldsO.ORDER_START_DATE_BASED_ON);
 
             if (OrderStartDateBasedOn.CURRENT_DATE.getStringValue().equals(basedOn)) {
                 order.setField(OrderFields.START_DATE, new Date());
@@ -196,12 +197,26 @@ public class OrderHooks {
         copyStartDate(orderDD, order);
         copyEndDate(orderDD, order);
         copyProductQuantity(orderDD, order);
-        onCorrectingTheRequestedVolume(orderDD, order);
+        Entity parameter = parameterService.getParameter();
+        onCorrectingTheRequestedVolume(orderDD, order, parameter);
         auditDatesChanges(order);
         setRemainingQuantity(order);
-        setAdditionalFields(order);
+        setAdditionalFields(order, parameter);
         fillExpirationDate(order);
         checkMinimalQuantity(order);
+        checkDimensionControlOfProducts(order, parameter);
+    }
+
+    private void checkDimensionControlOfProducts(Entity order, Entity parameter) {
+        Entity technology = order.getBelongsToField(OrderFields.TECHNOLOGY);
+
+        if (Objects.isNull(technology)) {
+            return;
+        }
+
+        if (parameter.getBooleanField(ParameterFieldsO.ORDER_DIMENSION_CONTROL_OF_PRODUCTS)) {
+
+        }
     }
 
     private void fillExpirationDate(final Entity order) {
@@ -251,10 +266,10 @@ public class OrderHooks {
 
     }
 
-    private void setAdditionalFields(final Entity order) {
+    private void setAdditionalFields(final Entity order, Entity parameter) {
         if (Objects.isNull(order.getId())) {
-            order.setField("includeTpz", parameterService.getParameter().getBooleanField("includeTpzPS"));
-            order.setField("includeAdditionalTime", parameterService.getParameter().getBooleanField("includeAdditionalTimePS"));
+            order.setField("includeTpz", parameter.getBooleanField("includeTpzPS"));
+            order.setField("includeAdditionalTime", parameter.getBooleanField("includeAdditionalTimePS"));
         }
     }
 
@@ -267,7 +282,6 @@ public class OrderHooks {
     }
 
     private void setProductionLine(Entity order) {
-
         Entity productionLine = order.getBelongsToField(OrderFields.PRODUCTION_LINE);
         if (Objects.isNull(productionLine)) {
             return;
@@ -304,7 +318,8 @@ public class OrderHooks {
         order.setField(OrderFields.REMAINING_AMOUNT_OF_PRODUCT_TO_PRODUCE, remainingAmountOfProductToProduce);
     }
 
-    public boolean setDateChanged(final DataDefinition dataDefinition, final FieldDefinition fieldDefinition, final Entity order,
+    public boolean setDateChanged(final DataDefinition dataDefinition, final FieldDefinition fieldDefinition,
+                                  final Entity order,
                                   final Object fieldOldValue, final Object fieldNewValue) {
         OrderState orderState = OrderState.of(order);
 
@@ -674,7 +689,8 @@ public class OrderHooks {
     }
 
     private boolean checkEffectiveDeviationNeeded(final Entity order, final String dateFieldName,
-                                                  final String reasonTypeFieldName, final String messageTranslationKey, final String differenceAsString) {
+                                                  final String reasonTypeFieldName, final String messageTranslationKey,
+                                                  final String differenceAsString) {
         if (Objects.nonNull(order.getField(dateFieldName)) && order.getHasManyField(reasonTypeFieldName).isEmpty()) {
             order.addError(order.getDataDefinition().getField(reasonTypeFieldName), messageTranslationKey, differenceAsString);
 
@@ -861,8 +877,8 @@ public class OrderHooks {
         }
     }
 
-    public void onCorrectingTheRequestedVolume(final DataDefinition orderDD, final Entity order) {
-        if (!neededWhenCorrectingTheRequestedVolume()) {
+    private void onCorrectingTheRequestedVolume(final DataDefinition orderDD, final Entity order, Entity parameter) {
+        if (!neededWhenCorrectingTheRequestedVolume(parameter)) {
             return;
         }
 
@@ -891,9 +907,8 @@ public class OrderHooks {
         }
     }
 
-    public boolean neededWhenCorrectingTheRequestedVolume() {
-        return parameterService.getParameter()
-                .getBooleanField(ParameterFieldsO.REASON_NEEDED_WHEN_CORRECTING_THE_REQUESTED_VOLUME);
+    private boolean neededWhenCorrectingTheRequestedVolume(Entity parameter) {
+        return parameter.getBooleanField(ParameterFieldsO.REASON_NEEDED_WHEN_CORRECTING_THE_REQUESTED_VOLUME);
     }
 
     public void setCommissionedPlannedQuantity(final DataDefinition orderDD, final Entity order) {

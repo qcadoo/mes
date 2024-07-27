@@ -36,7 +36,7 @@ public class TechnologiesParametersHooks {
         setDimensionControlAttributesEnabled(view);
     }
 
-    public void setDimensionControlAttributesEnabled(final ViewDefinitionState view) {
+    private void setDimensionControlAttributesEnabled(final ViewDefinitionState view) {
         CheckBoxComponent dimensionControlOfProductsCheckBox = (CheckBoxComponent) view.getComponentByReference(ParameterFieldsT.DIMENSION_CONTROL_OF_PRODUCTS);
         AwesomeDynamicListComponent dimensionControlAttributesADL = (AwesomeDynamicListComponent) view
                 .getComponentByReference(ParameterFieldsT.DIMENSION_CONTROL_ATTRIBUTES);

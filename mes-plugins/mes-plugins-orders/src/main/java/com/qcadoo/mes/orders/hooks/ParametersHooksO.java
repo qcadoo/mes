@@ -30,6 +30,7 @@ import com.qcadoo.mes.orders.constants.ParameterFieldsO;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ViewDefinitionState;
+import com.qcadoo.view.api.components.AwesomeDynamicListComponent;
 import com.qcadoo.view.api.components.CheckBoxComponent;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.GridComponent;
@@ -37,6 +38,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 import static com.qcadoo.mes.orders.constants.ParameterFieldsO.*;
 
@@ -103,6 +106,15 @@ public class ParametersHooksO {
                         .compareTo(parameter.getDecimalField(OPTIMAL_PACK_SIZE)) >= 0) {
             parameter.addError(parameterDD.getField(REST_FEEDING_LAST_PACK),
                     "basic.parameter.restFeedingLastPackBiggerThanOptimalPackSize.error");
+            isValid = false;
+        }
+
+        boolean dimensionControlOfProducts = parameter.getBooleanField(ParameterFieldsO.ORDER_DIMENSION_CONTROL_OF_PRODUCTS);
+        List<Entity> dimensionControlAttributes = parameter.getHasManyField(ParameterFieldsO.ORDER_DIMENSION_CONTROL_ATTRIBUTES);
+
+        if (dimensionControlOfProducts && dimensionControlAttributes.isEmpty()) {
+            parameter.addGlobalError("basic.parameter.dimensionControlOfProducts.error.areEmpty");
+
             isValid = false;
         }
 
@@ -202,6 +214,24 @@ public class ParametersHooksO {
         FieldComponent deadlineForOrderEarlierThanDeliveryDateUnit = (FieldComponent) view.getComponentByReference("deadlineForOrderEarlierThanDeliveryDateUnit");
         deadlineForOrderEarlierThanDeliveryDateUnit.setFieldValue(translationService.translate("orders.ordersParameters.window.ordersFromMasterOrdersTab.deadlineForOrderEarlierThanDeliveryDateUnit", view.getLocale()));
         deadlineForOrderEarlierThanDeliveryDateUnit.requestComponentUpdateState();
+
+        setDimensionControlAttributesEnabled(view);
+    }
+
+    private void setDimensionControlAttributesEnabled(final ViewDefinitionState view) {
+        CheckBoxComponent dimensionControlOfProductsCheckBox = (CheckBoxComponent) view.getComponentByReference(ParameterFieldsO.ORDER_DIMENSION_CONTROL_OF_PRODUCTS);
+        AwesomeDynamicListComponent dimensionControlAttributesADL = (AwesomeDynamicListComponent) view
+                .getComponentByReference(ParameterFieldsO.ORDER_DIMENSION_CONTROL_ATTRIBUTES);
+
+        if (dimensionControlOfProductsCheckBox.isChecked()) {
+            dimensionControlAttributesADL.setEnabled(true);
+            dimensionControlAttributesADL.getFormComponents().forEach(formComponent -> formComponent.setFormEnabled(true));
+        } else {
+            dimensionControlAttributesADL.setEnabled(false);
+            dimensionControlAttributesADL.setFieldValue(null);
+        }
+
+        dimensionControlAttributesADL.requestComponentUpdateState();
     }
 
     public void showTimeFields(final ViewDefinitionState view) {
