@@ -862,7 +862,7 @@ public class TechnologyValidationService {
 
                     for (Entity workstation : workstations) {
                         for (Entity productAttributeValue : filteredProductAttributeValues) {
-                            if (checkDimensionControlOfProductsWithWorkstation(stateChangeContext, nodeNumber, productAttributeValue, workstation)) {
+                            if (checkDimensionControlOfProductsWithWorkstation(stateChangeContext, null, nodeNumber, productAttributeValue, workstation)) {
                                 wrongWorkstations++;
 
                                 break;
@@ -902,9 +902,10 @@ public class TechnologyValidationService {
     }
 
     public boolean checkDimensionControlOfProductsWithWorkstation(final StateChangeContext stateChangeContext,
-                                                                   final String nodeNumber,
-                                                                   final Entity productAttributeValue,
-                                                                   final Entity workstation) {
+                                                                  final Entity order,
+                                                                  final String nodeNumber,
+                                                                  final Entity productAttributeValue,
+                                                                  final Entity workstation) {
         boolean isWrong = false;
 
         String value = productAttributeValue.getStringField(ProductAttributeValueFields.VALUE);
@@ -933,6 +934,8 @@ public class TechnologyValidationService {
                         } else {
                             if (stateChangeContext != null) {
                                 stateChangeContext.addValidationError("technologies.technology.validate.global.error.dimensionControlIncompatibleUnits", nodeNumber, number);
+                            } else if (order != null) {
+                                order.addGlobalError("technologies.technology.validate.global.error.dimensionControlIncompatibleUnits", nodeNumber, number);
                             }
                             return true;
                         }
@@ -955,6 +958,8 @@ public class TechnologyValidationService {
                         } else {
                             if (stateChangeContext != null) {
                                 stateChangeContext.addValidationError("technologies.technology.validate.global.error.dimensionControlIncompatibleUnits", nodeNumber, number);
+                            } else if (order != null) {
+                                order.addGlobalError("technologies.technology.validate.global.error.dimensionControlIncompatibleUnits", nodeNumber, number);
                             }
 
                             return true;

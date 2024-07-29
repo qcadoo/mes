@@ -42,8 +42,11 @@ import com.qcadoo.mes.orders.states.constants.OrderStateChangeFields;
 import com.qcadoo.mes.orders.util.AdditionalUnitService;
 import com.qcadoo.mes.orders.util.OrderDatesService;
 import com.qcadoo.mes.states.service.StateChangeEntityBuilder;
+import com.qcadoo.mes.technologies.constants.OperationFields;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
+import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
 import com.qcadoo.mes.technologies.constants.TechnologyProductionLineFields;
+import com.qcadoo.mes.technologies.states.listener.TechnologyValidationService;
 import com.qcadoo.model.api.*;
 import com.qcadoo.model.api.file.FileService;
 import com.qcadoo.security.api.SecurityService;
@@ -62,6 +65,9 @@ import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.stream.Collectors;
+
+import static java.util.Comparator.reverseOrder;
 
 @Service
 public class OrderHooks {
@@ -115,6 +121,9 @@ public class OrderHooks {
     @Autowired
     private FileService fileService;
 
+    @Autowired
+    private TechnologyValidationService technologyValidationService;
+
     public boolean validatesWith(final DataDefinition orderDD, final Entity order) {
         Entity parameter = parameterService.getParameter();
 
@@ -129,6 +138,7 @@ public class OrderHooks {
         isValid = isValid && checkOrderPacksQuantity(orderDD, order);
         isValid = isValid && checkOrderTechnologicalProcessesQuantity(orderDD, order);
         isValid = isValid && checkOrderProduct(orderDD, order);
+        isValid = isValid && checkDimensionControlOfProducts(order, parameter);
 
         return isValid;
     }
@@ -198,25 +208,60 @@ public class OrderHooks {
         copyEndDate(orderDD, order);
         copyProductQuantity(orderDD, order);
         Entity parameter = parameterService.getParameter();
-        onCorrectingTheRequestedVolume(orderDD, order, parameter);
+        onCorrectingTheRequestedVolume(order, parameter);
         auditDatesChanges(order);
         setRemainingQuantity(order);
         setAdditionalFields(order, parameter);
         fillExpirationDate(order);
         checkMinimalQuantity(order);
-        checkDimensionControlOfProducts(order, parameter);
     }
 
-    private void checkDimensionControlOfProducts(Entity order, Entity parameter) {
+    private boolean checkDimensionControlOfProducts(Entity order, Entity parameter) {
         Entity technology = order.getBelongsToField(OrderFields.TECHNOLOGY);
 
         if (Objects.isNull(technology)) {
-            return;
+            return true;
         }
 
         if (parameter.getBooleanField(ParameterFieldsO.ORDER_DIMENSION_CONTROL_OF_PRODUCTS)) {
+            Entity product = technology.getBelongsToField(TechnologyFields.PRODUCT);
 
+            List<Entity> dimensionControlAttributes = parameter.getHasManyField(ParameterFieldsO.ORDER_DIMENSION_CONTROL_ATTRIBUTES);
+            List<Entity> productAttributeValues = product.getHasManyField(ProductFields.PRODUCT_ATTRIBUTE_VALUES);
+
+            List<Entity> filteredProductAttributeValues = technologyValidationService.filterProductAttributeValues(productAttributeValues, dimensionControlAttributes);
+
+            if (!filteredProductAttributeValues.isEmpty()) {
+                List<Entity> operationComponents = technology.getHasManyField(TechnologyFields.OPERATION_COMPONENTS);
+
+                for (Entity technologyOperationComponent : operationComponents.stream().sorted(Comparator.comparing(technologyOperationComponent ->
+                        technologyOperationComponent.getStringField(TechnologyOperationComponentFields.NODE_NUMBER), reverseOrder())).collect(Collectors.toList())) {
+                    String nodeNumber = technologyOperationComponent.getStringField(TechnologyOperationComponentFields.NODE_NUMBER);
+                    List<Entity> workstations = technologyOperationComponent.getHasManyField(TechnologyOperationComponentFields.WORKSTATIONS);
+
+                    int wrongWorkstations = 0;
+
+                    for (Entity workstation : workstations) {
+                        for (Entity productAttributeValue : filteredProductAttributeValues) {
+                            if (technologyValidationService.checkDimensionControlOfProductsWithWorkstation(null, order, nodeNumber, productAttributeValue, workstation)) {
+                                wrongWorkstations++;
+
+                                break;
+                            }
+                        }
+                    }
+
+                    if (wrongWorkstations > 0 && wrongWorkstations == workstations.size()) {
+                        order.addGlobalError("orders.order.validate.global.error.dimensionControlAllWorkstations",
+                                technologyOperationComponent.getBelongsToField(TechnologyOperationComponentFields.OPERATION)
+                                        .getStringField(OperationFields.NUMBER));
+
+                        return false;
+                    }
+                }
+            }
         }
+        return true;
     }
 
     private void fillExpirationDate(final Entity order) {
@@ -622,7 +667,8 @@ public class OrderHooks {
         return true;
     }
 
-    private boolean checkReasonNeeded(final Entity order, final String dateFieldName, final String reasonTypeFieldName,
+    private boolean checkReasonNeeded(final Entity order, final String dateFieldName,
+                                      final String reasonTypeFieldName,
                                       final String messageTranslationKey) {
         if (Objects.nonNull(order.getField(dateFieldName)) && order.getHasManyField(reasonTypeFieldName).isEmpty()) {
             order.addError(order.getDataDefinition().getField(reasonTypeFieldName), messageTranslationKey);
@@ -877,7 +923,7 @@ public class OrderHooks {
         }
     }
 
-    private void onCorrectingTheRequestedVolume(final DataDefinition orderDD, final Entity order, Entity parameter) {
+    private void onCorrectingTheRequestedVolume(final Entity order, Entity parameter) {
         if (!neededWhenCorrectingTheRequestedVolume(parameter)) {
             return;
         }
