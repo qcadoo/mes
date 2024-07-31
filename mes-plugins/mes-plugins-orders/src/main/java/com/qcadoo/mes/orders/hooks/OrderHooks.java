@@ -239,17 +239,7 @@ public class OrderHooks {
                     String nodeNumber = technologyOperationComponent.getStringField(TechnologyOperationComponentFields.NODE_NUMBER);
                     List<Entity> workstations = technologyOperationComponent.getHasManyField(TechnologyOperationComponentFields.WORKSTATIONS);
 
-                    int wrongWorkstations = 0;
-
-                    for (Entity workstation : workstations) {
-                        for (Entity productAttributeValue : filteredProductAttributeValues) {
-                            if (technologyValidationService.checkDimensionControlOfProductsWithWorkstation(null, order, nodeNumber, productAttributeValue, workstation)) {
-                                wrongWorkstations++;
-
-                                break;
-                            }
-                        }
-                    }
+                    int wrongWorkstations = getWrongWorkstationsCount(order, workstations, filteredProductAttributeValues, nodeNumber);
 
                     if (wrongWorkstations > 0 && wrongWorkstations == workstations.size()) {
                         order.addGlobalError("orders.order.validate.global.error.dimensionControlAllWorkstations",
@@ -262,6 +252,22 @@ public class OrderHooks {
             }
         }
         return true;
+    }
+
+    private int getWrongWorkstationsCount(Entity order, List<Entity> workstations,
+                                          List<Entity> filteredProductAttributeValues, String nodeNumber) {
+        int wrongWorkstations = 0;
+
+        for (Entity workstation : workstations) {
+            for (Entity productAttributeValue : filteredProductAttributeValues) {
+                if (technologyValidationService.checkDimensionControlOfProductsWithWorkstation(null, order, nodeNumber, productAttributeValue, workstation)) {
+                    wrongWorkstations++;
+
+                    break;
+                }
+            }
+        }
+        return wrongWorkstations;
     }
 
     private void fillExpirationDate(final Entity order) {

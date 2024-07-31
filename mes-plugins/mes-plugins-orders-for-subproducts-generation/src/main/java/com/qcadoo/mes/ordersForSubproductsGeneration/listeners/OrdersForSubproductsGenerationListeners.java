@@ -285,7 +285,7 @@ public class OrdersForSubproductsGenerationListeners {
             Entity materialRequirementFromDB = materialRequirement.getDataDefinition().get(materialRequirement.getId());
 
             Entity assignedOrder = materialRequirementFromDB.getBelongsToField("order");
-            if (Objects.isNull(assignedOrder.getDateField(OrderFields.START_DATE))) {
+            if (Objects.nonNull(assignedOrder) && Objects.isNull(assignedOrder.getDateField(OrderFields.START_DATE))) {
                 state.addMessage("ordersForSubproductsGeneration.generationSubOrdersAction.datesIsEmptyInOrder", ComponentState.MessageType.INFO, false);
                 return;
             }
