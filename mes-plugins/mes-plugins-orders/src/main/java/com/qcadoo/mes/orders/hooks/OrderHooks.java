@@ -224,7 +224,7 @@ public class OrderHooks {
         }
 
         if (parameter.getBooleanField(ParameterFieldsO.ORDER_DIMENSION_CONTROL_OF_PRODUCTS)) {
-            Entity product = technology.getBelongsToField(TechnologyFields.PRODUCT);
+            Entity product = order.getBelongsToField(OrderFields.PRODUCT);
 
             List<Entity> dimensionControlAttributes = parameter.getHasManyField(ParameterFieldsO.ORDER_DIMENSION_CONTROL_ATTRIBUTES);
             List<Entity> productAttributeValues = product.getHasManyField(ProductFields.PRODUCT_ATTRIBUTE_VALUES);
