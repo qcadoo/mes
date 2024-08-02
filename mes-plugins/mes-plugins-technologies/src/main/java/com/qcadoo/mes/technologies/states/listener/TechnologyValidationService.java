@@ -257,12 +257,14 @@ public class TechnologyValidationService {
         return checkTopComponentsProducesProductForTechnology(stateChangeContext, null, technology);
     }
 
-    public boolean checkTopComponentsProducesProductForTechnology(final FormComponent technologyForm, final Entity technology) {
+    public boolean checkTopComponentsProducesProductForTechnology(final FormComponent technologyForm,
+                                                                  final Entity technology) {
         return checkTopComponentsProducesProductForTechnology(null, technologyForm, technology);
     }
 
     private boolean checkTopComponentsProducesProductForTechnology(final StateChangeContext stateChangeContext,
-                                                                   final FormComponent technologyForm, final Entity technology) {
+                                                                   final FormComponent technologyForm,
+                                                                   final Entity technology) {
         final Entity savedTechnology = technology.getDataDefinition().get(technology.getId());
         final Entity product = savedTechnology.getBelongsToField(TechnologyFields.PRODUCT);
         final EntityTree operationComponents = savedTechnology.getTreeField(TechnologyFields.OPERATION_COMPONENTS);
@@ -314,7 +316,8 @@ public class TechnologyValidationService {
         return checkIfOperationsUsesSubOperationsProds(stateChangeContext, null, savedTechnology);
     }
 
-    public boolean checkIfOperationsUsesSubOperationsProds(final FormComponent technologyForm, final Entity technology) {
+    public boolean checkIfOperationsUsesSubOperationsProds(final FormComponent technologyForm,
+                                                           final Entity technology) {
         return checkIfOperationsUsesSubOperationsProds(null, technologyForm, technology);
     }
 
@@ -327,7 +330,8 @@ public class TechnologyValidationService {
         return checkIfOperationsUsesSubOperationsWasteProds(stateChangeContext, savedTechnology);
     }
 
-    public boolean checkIfOperationsUsesSubOperationsWasteProds(final StateChangeContext stateChangeContext, final Entity technology) {
+    public boolean checkIfOperationsUsesSubOperationsWasteProds(final StateChangeContext stateChangeContext,
+                                                                final Entity technology) {
         final EntityTree operationComponents = technology.getTreeField(TechnologyFields.OPERATION_COMPONENTS);
 
         Set<Entity> operations = checkIfConsumesSubOpsWasteProds(operationComponents);
@@ -406,7 +410,8 @@ public class TechnologyValidationService {
     }
 
     private boolean checkIfOperationsUsesSubOperationsProds(final StateChangeContext stateChangeContext,
-                                                            final FormComponent technologyForm, final Entity technology) {
+                                                            final FormComponent technologyForm,
+                                                            final Entity technology) {
         final EntityTree operationComponents = technology.getTreeField(TechnologyFields.OPERATION_COMPONENTS);
 
         Set<Entity> operations = checkIfConsumesSubOpsProds(operationComponents);
@@ -679,7 +684,8 @@ public class TechnologyValidationService {
         return checkIfTechnologyTreeIsSet(null, technologyForm, technology);
     }
 
-    public boolean checkIfTechnologyTreeIsSet(final StateChangeContext stateChangeContext, final FormComponent technologyForm,
+    public boolean checkIfTechnologyTreeIsSet(final StateChangeContext stateChangeContext,
+                                              final FormComponent technologyForm,
                                               final Entity technology) {
         final EntityTree operations = technology.getTreeField(TechnologyFields.OPERATION_COMPONENTS);
 
@@ -769,7 +775,8 @@ public class TechnologyValidationService {
         return true;
     }
 
-    private Entity useChangingTechnologyInCheckingCycle(final StateChangeContext stateChangeContext, final Entity product,
+    private Entity useChangingTechnologyInCheckingCycle(final StateChangeContext stateChangeContext,
+                                                        final Entity product,
                                                         final Entity subTechnology) {
         Entity technology = stateChangeContext.getOwner();
 
@@ -855,7 +862,7 @@ public class TechnologyValidationService {
 
                     for (Entity workstation : workstations) {
                         for (Entity productAttributeValue : filteredProductAttributeValues) {
-                            if (checkDimensionControlOfProductsWithWorkstation(stateChangeContext, nodeNumber, productAttributeValue, workstation)) {
+                            if (checkDimensionControlOfProductsWithWorkstation(stateChangeContext, null, nodeNumber, productAttributeValue, workstation)) {
                                 wrongWorkstations++;
 
                                 break;
@@ -881,19 +888,24 @@ public class TechnologyValidationService {
         }
     }
 
-    private List<Entity> filterProductAttributeValues(final List<Entity> productAttributeValues, final List<Entity> dimensionControlAttributes) {
+    public List<Entity> filterProductAttributeValues(final List<Entity> productAttributeValues,
+                                                     final List<Entity> dimensionControlAttributes) {
         return productAttributeValues.stream().filter(productAttributeValue ->
                 checkDimensionControlAttributesWithAttribute(dimensionControlAttributes, productAttributeValue.getBelongsToField(ProductAttributeValueFields.ATTRIBUTE))).collect(Collectors.toList());
     }
 
-    private boolean checkDimensionControlAttributesWithAttribute(final List<Entity> dimensionControlAttributes, final Entity attribute) {
+    private boolean checkDimensionControlAttributesWithAttribute(final List<Entity> dimensionControlAttributes,
+                                                                 final Entity attribute) {
         return dimensionControlAttributes.stream()
                 .anyMatch(dimensionControlAttribute ->
                         dimensionControlAttribute.getBelongsToField(DimensionControlAttributeFields.ATTRIBUTE).getId().equals(attribute.getId()));
     }
 
-    private boolean checkDimensionControlOfProductsWithWorkstation(final StateChangeContext stateChangeContext, final String nodeNumber,
-                                                                   final Entity productAttributeValue, final Entity workstation) {
+    public boolean checkDimensionControlOfProductsWithWorkstation(final StateChangeContext stateChangeContext,
+                                                                  final Entity order,
+                                                                  final String nodeNumber,
+                                                                  final Entity productAttributeValue,
+                                                                  final Entity workstation) {
         boolean isWrong = false;
 
         String value = productAttributeValue.getStringField(ProductAttributeValueFields.VALUE);
@@ -920,8 +932,11 @@ public class TechnologyValidationService {
                             dimension = convertToMM(dimension, unit);
                             minimumDimension = convertToMM(minimumDimension, minimumDimensionUnit);
                         } else {
-                            stateChangeContext.addValidationError("technologies.technology.validate.global.error.dimensionControlIncompatibleUnits", nodeNumber, number);
-
+                            if (stateChangeContext != null) {
+                                stateChangeContext.addValidationError("technologies.technology.validate.global.error.dimensionControlIncompatibleUnits", nodeNumber, number);
+                            } else if (order != null) {
+                                order.addGlobalError("technologies.technology.validate.global.error.dimensionControlIncompatibleUnits", nodeNumber, number);
+                            }
                             return true;
                         }
                     }
@@ -941,7 +956,11 @@ public class TechnologyValidationService {
                             dimension = convertToMM(dimension, unit);
                             maximumDimension = convertToMM(maximumDimension, maximumDimensionUnit);
                         } else {
-                            stateChangeContext.addValidationError("technologies.technology.validate.global.error.dimensionControlIncompatibleUnits", nodeNumber, number);
+                            if (stateChangeContext != null) {
+                                stateChangeContext.addValidationError("technologies.technology.validate.global.error.dimensionControlIncompatibleUnits", nodeNumber, number);
+                            } else if (order != null) {
+                                order.addGlobalError("technologies.technology.validate.global.error.dimensionControlIncompatibleUnits", nodeNumber, number);
+                            }
 
                             return true;
                         }

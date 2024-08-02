@@ -141,6 +141,13 @@ public class OperationOrderInfoHeader {
                     buildOrderedProductValue(product, pcq));
         }
 
+        String orderVendorInfo = order.getStringField(OrderFields.VENDOR_INFO);
+        if (Objects.nonNull(orderVendorInfo)) {
+            pdfHelper.addTableCellAsOneColumnTable(operationTable,
+                    translationService.translate("workPlans.workPlan.report.operation.orderVendorInfo", locale),
+                    orderVendorInfo);
+        }
+
         operationTable.completeRow();
     }
 

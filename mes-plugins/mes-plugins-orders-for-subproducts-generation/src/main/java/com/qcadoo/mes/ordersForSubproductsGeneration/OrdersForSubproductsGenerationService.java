@@ -201,6 +201,7 @@ public class OrdersForSubproductsGenerationService {
 
         Entity technology = technologyServiceO.getDefaultTechnology(product);
         order.setField(OrderFieldsOFSPG.PARENT, parentOrder);
+        order.setField(OrderFields.PRIORITY, parentOrder.getIntegerField(OrderFields.PRIORITY));
 
         if (Objects.isNull(parentOrder.getBelongsToField(OrderFieldsOFSPG.PARENT))) {
             order.setField(OrderFieldsOFSPG.ROOT, parentOrder);
@@ -270,6 +271,7 @@ public class OrdersForSubproductsGenerationService {
 
         Entity technology = technologyServiceO.getDefaultTechnology(product);
         order.setField(OrderFieldsOFSPG.PARENT, parentOrder);
+        order.setField(OrderFields.PRIORITY, parentOrder.getIntegerField(OrderFields.PRIORITY));
 
         if (Objects.isNull(parentOrder.getBelongsToField(OrderFieldsOFSPG.PARENT))) {
             order.setField(OrderFieldsOFSPG.ROOT, parentOrder);

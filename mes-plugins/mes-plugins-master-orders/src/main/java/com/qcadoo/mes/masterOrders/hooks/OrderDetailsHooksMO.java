@@ -103,7 +103,7 @@ public class OrderDetailsHooksMO {
                 .getComponentByReference(OrderFields.TECHNOLOGY);
         FieldComponent plannedQuantityField = (FieldComponent) view.getComponentByReference(OrderFields.PLANNED_QUANTITY);
         FieldComponent descriptionField = (FieldComponent) view.getComponentByReference(OrderFields.DESCRIPTION);
-        FieldComponent vendorInfoField = (FieldComponent) view.getComponentByReference(OrderFieldsMO.VENDOR_INFO);
+        FieldComponent vendorInfoField = (FieldComponent) view.getComponentByReference(OrderFields.VENDOR_INFO);
 
         LookupComponent addressLookup = (LookupComponent) view.getComponentByReference(OrderFields.ADDRESS);
         if (masterOrder != null && productComponent != null && productComponent.getId() != null) {

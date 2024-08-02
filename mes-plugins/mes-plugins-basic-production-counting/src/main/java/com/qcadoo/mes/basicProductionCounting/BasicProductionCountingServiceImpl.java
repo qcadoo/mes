@@ -289,12 +289,12 @@ public class BasicProductionCountingServiceImpl implements BasicProductionCounti
                 numberService.setScaleWithDefaultMathContext(plannedQuantity));
         productionCountingQuantity.setField(ProductionCountingQuantityFields.FLOW_FILLED, Boolean.TRUE);
 
-        if ("01used".equals(role) && operationProductComponent.getBooleanField("showMaterialComponent")) {
+        if (ProductionCountingQuantityRole.USED.getStringValue().equals(role) && operationProductComponent.getBooleanField("showMaterialComponent")) {
             productionCountingQuantity.setField(ProductionCountingQuantityFields.SHOW_MATERIAL_COMPONENT_IN_WORK_PLAN,
                     operationProductComponent.getBooleanField("showMaterialComponent"));
         }
 
-        if ("01used".equals(role)) {
+        if (ProductionCountingQuantityRole.USED.getStringValue().equals(role)) {
             List<Entity> sections = new ArrayList<>();
             DataDefinition dataDefinition = dataDefinitionService.get(BasicProductionCountingConstants.PLUGIN_IDENTIFIER,
                     BasicProductionCountingConstants.MODEL_SECTION);

@@ -11879,7 +11879,10 @@ CREATE TABLE public.basic_parameter (
     operationlevelsort boolean DEFAULT true,
     orderprioritysort boolean DEFAULT false,
     abcanalysissort boolean DEFAULT false,
-    allowmasterorderdeadlinechange boolean DEFAULT false
+    allowmasterorderdeadlinechange boolean DEFAULT false,
+    scheduleduration integer DEFAULT 90,
+    plandimensioncontrolofproducts boolean DEFAULT false,
+    orderdimensioncontrolofproducts boolean DEFAULT false
 );
 
 
@@ -22567,6 +22570,36 @@ ALTER SEQUENCE public.orders_changedateshelper_id_seq OWNED BY public.orders_cha
 
 
 --
+-- Name: orders_dimensioncontrolattribute; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.orders_dimensioncontrolattribute (
+    id bigint NOT NULL,
+    parameter_id bigint,
+    attribute_id bigint
+);
+
+
+--
+-- Name: orders_dimensioncontrolattribute_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.orders_dimensioncontrolattribute_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: orders_dimensioncontrolattribute_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.orders_dimensioncontrolattribute_id_seq OWNED BY public.orders_dimensioncontrolattribute.id;
+
+
+--
 -- Name: orders_group_material_requirement_number_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
@@ -23888,7 +23921,8 @@ CREATE TABLE public.orders_schedule (
     deadlinesort boolean DEFAULT true,
     operationlevelsort boolean DEFAULT true,
     orderprioritysort boolean DEFAULT false,
-    abcanalysissort boolean DEFAULT false
+    abcanalysissort boolean DEFAULT false,
+    includetpzchanged boolean DEFAULT false
 );
 
 
@@ -28504,6 +28538,36 @@ CREATE SEQUENCE public.productionpershift_reasontypeofcorrectionplan_id_seq
 --
 
 ALTER SEQUENCE public.productionpershift_reasontypeofcorrectionplan_id_seq OWNED BY public.productionpershift_reasontypeofcorrectionplan.id;
+
+
+--
+-- Name: productionplans_dimensioncontrolattribute; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.productionplans_dimensioncontrolattribute (
+    id bigint NOT NULL,
+    parameter_id bigint,
+    attribute_id bigint
+);
+
+
+--
+-- Name: productionplans_dimensioncontrolattribute_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.productionplans_dimensioncontrolattribute_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: productionplans_dimensioncontrolattribute_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.productionplans_dimensioncontrolattribute_id_seq OWNED BY public.productionplans_dimensioncontrolattribute.id;
 
 
 --
@@ -35893,6 +35957,13 @@ ALTER TABLE ONLY public.orders_changedateshelper ALTER COLUMN id SET DEFAULT nex
 
 
 --
+-- Name: orders_dimensioncontrolattribute id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.orders_dimensioncontrolattribute ALTER COLUMN id SET DEFAULT nextval('public.orders_dimensioncontrolattribute_id_seq'::regclass);
+
+
+--
 -- Name: orders_operationaltask id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -36562,6 +36633,13 @@ ALTER TABLE ONLY public.productionpershift_progressforday ALTER COLUMN id SET DE
 --
 
 ALTER TABLE ONLY public.productionpershift_reasontypeofcorrectionplan ALTER COLUMN id SET DEFAULT nextval('public.productionpershift_reasontypeofcorrectionplan_id_seq'::regclass);
+
+
+--
+-- Name: productionplans_dimensioncontrolattribute id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.productionplans_dimensioncontrolattribute ALTER COLUMN id SET DEFAULT nextval('public.productionplans_dimensioncontrolattribute_id_seq'::regclass);
 
 
 --
@@ -39269,8 +39347,8 @@ COPY public.basic_palletnumberhelper (id, quantity, active, createdate, updateda
 -- Data for Name: basic_parameter; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.basic_parameter (id, country_id, currency_id, unit, additionaltextinfooter, company_id, registerproductiontime, reasonneededwhendelayedeffectivedatefrom, earliereffectivedatetotime, reasonneededwhencorrectingtherequestedvolume, reasonneededwhencorrectingdateto, reasonneededwhenchangingstatetodeclined, imageurlinworkplan, hidedescriptioninworkplans, defaultproductionline_id, reasonneededwhenearliereffectivedateto, earliereffectivedatefromtime, defaultaddress, allowquantitychangeinacceptedorder, reasonneededwhendelayedeffectivedateto, justone, registerquantityinproduct, reasonneededwhenchangingstatetointerrupted, registerquantityoutproduct, dontprintordersinworkplans, location_id, typeofproductionrecording, dontprintinputproductsinworkplans, delayedeffectivedatefromtime, hideemptycolumnsfororders, reasonneededwhenchangingstatetoabandoned, autocloseorder, allowtoclose, dontprintoutputproductsinworkplans, inputproductsrequiredfortype, otheraddress, reasonneededwhenearliereffectivedatefrom, defaultdescription, delayedeffectivedatetotime, hidetechnologyandorderinworkplans, reasonneededwhencorrectingdatefrom, ssccnumberprefix, lowerlimit, negativetrend, upperlimit, positivetrend, dueweight, printoperationatfirstpageinworkplans, averagelaborhourlycostpb, materialcostsusedpb, additionaloverheadpb, materialcostmarginpb, includetpzpb, productioncostmarginpb, averagemachinehourlycostpb, includeadditionaltimepb, batchnumberuniqueness, defaultcoveragefromdays, includedraftdeliveries, coveragetype, hideemptycolumnsforoffers, hideemptycolumnsforrequests, validateproductionrecordtimes, workstationsquantityfromproductionline, lockproductionprogress, hidebarcodeoperationcomponentinworkplans, ignoremissingcomponents, additionaloutputrows, additionalinputrows, allowmultipleregisteringtimeforworker, pricebasedon, takeactualprogressinworkplans, confectionplanrequirereasontypethreshold, confectionplancorrectionreasontype, automaticsavecoverage, externaldeliveriesextension, warehouse_id, documentstate, positivepurchaseprice, sameordernumber, automaticdeliveriesminstate, possibleworktimedeviation, ordersincludeperiod, includerequirements, entityversion, labelsbtpath, profitpb, registrationpriceoverheadpb, sourceofoperationcostspb, acceptanceevents, useblackbox, generatewarehouseissuestoorders, daysbeforeorderstart, issuelocation_id, consumptionofrawmaterialsbasedonstandards, documentpositionparameters_id, includecomponents, warehouseissuesreservestates, drawndocuments, issuedquantityuptoneed, documentsstatus, warehouseissueproductssource, productstoissue, trackingcorrectionrecalculatepps, deliveredbiggerthanordered, ordersganttparameters_id, additionalimage, autorecalculateorder, ppsisautomatic, ppsproducedamountrecalculateplan, ppsalgorithm, baselinkerparameters_id, technologiesgeneratorcopyproductsize, cartonlabelsbtpath, maxproductsquantity, allowerrorsinmasterorderpositions, companyname_id, hideassignedstaff, fillorderdescriptionbasedontechnologydescription, allowanomalycreationonacceptancerecord, includelevelandsuffix, orderedproductsunit, allowincompleteunits, acceptrecordsfromterminal, allowchangestousedquantityonterminal, includeadditionaltimeps, includetpzps, ordersgenerationnotcompletedates, canchangeprodlineforacceptedorders, generateeachonseparatepage, includewagegroups, ordersgeneratedbycoverage, automaticallygenerateordersforcomponents, seteffectivedatefromoninprogress, seteffectivedatetooncompleted, copydescription, exporttopdfonlyvisiblecolumns, additionalcartonlabelsquantity, maxcartonlabelsquantity, exporttocsvonlyvisiblecolumns, flagpercentageofexecutionwithcolor, opertaskflagpercentexecutionwithcolor, automaticclosingoforderwithingroups, copynotesfrommasterorderposition, manuallysendwarehousedocuments, realizationfromstock, alwaysorderitemswithpersonalization, selectorder, availabilityofrawmaterials, selectoperationaltask, stoppages, repair, employeeprogress, includeunacceptableproduction, calculateamounttimeemployeesonacceptancerecord, notshowtasksdownloadedbyanotheremployee, createcollectiveorders, completemasterorderafterorderingpositions, hideorderedproductworkplan, selectiontasksbyorderdateinterminal, showprogress, showdelays, requiresupplieridentification, numberpattern_id, generatebatchfororderedproduct, generatebatchoforderedproduct, acceptbatchtrackingwhenclosingorder, completewarehousesflowwhilechecking, qualitycontrol, finalqualitycontrolwithoutresources, terminalproductattribute_id, oeefor, oeeworktimefrom, range, division_id, showqronordersgrouppdf, advisestartdateoftheorder, orderstartdatebasedon, showchartondashboard, whattoshowondashboard, dashboardoperation_id, dashboardcomponentslocation_id, dashboardproductsinputlocation_id, momentofvalidation, moveproductstosubsequentoperations, demandcausesofwastes, wmsapk, wmsversion, applicationconfigured, materialcostsused, usenominalcostpricenotspecified, sourceofoperationcosts, standardlaborcost_id, averagemachinehourlycost, averagelaborhourlycost, includetpz, includeadditionaltime, materialcostmargin, productioncostmargin, additionaloverhead, registrationpriceoverhead, profit, applicationconfigurationfinished, generatepacksfororders, includepacksgeneratingprocessesfororder, optimalpacksize, restfeedinglastpack, deliveryusenominalcostwhenpricenotspecified, deliverypricefillbasedon, allowcheckedtechnologywithoutinproducts, requireassortment, changeorderdatesbasedonchangegroupdates, acceptedtechnologymarkedasdefault, terminalscanning, processsource, showproductdescriptiononordersgrouppdf, attributeonordersgrouppdf_id, copyattributestosizeproducts, materialcostsusedmc, usenominalcostpricenotspecifiedmc, productattribute_id, materialattribute_id, attributeonthelabel_id, requiretypeoffault, workingstationinputtype, allowchangeordeleteordertechnologicalprocess, technicalproductioncostoverhead, technicalproductioncostoverheadpb, synchronizeadditionalproductdata, processterminalplaceofperformance, emptylabelbtpath, schedulesortorder, workstationassigncriterion, workerassigncriterion, additionaltimeextendsoperation, synchronizeproductcategory, completenominalcostinarticleandproducts, copynominalcostfamilyofproductssizes, onlypackagesinproduction, allowtilelengthtobeedited, analyzeavailableresources, analyzeplannedquantity, analyzemaxquantity, numberpatternordergroup_id, otcopydescriptionfromproductionorder, setorderdatesbasedontaskdates, automaticallygeneratetasksfororder, automaticallygenerateprocessesfororder, includeadditionaltimesg, includetpzsg, includetpzs, dashboardshowforproduct, dashboardshowdescription, receivedeliveryinordercurrency, sortbyproducttypepriorityordersgrouppdf, attributeonordersgrouprequirementpdf_id, quantitymadeonthebasisofdashboard, producingmorethanplanned, logo, synchronizemasterorderattributes, synchronizedocumentpositionattributes, dashboardordersorting, completestationandemployeeingeneratedtasks, considerexceptionswhenpromptingcurrentshift, productionorderedquantityclosestheorder, receiptofproducts, releaseofmaterials, considerminimumstocklevelwhencreatingproductionorders, fillorderdescriptionbasedonproductdescription, ganttrunadjusterror, checkfortheexistenceofinputproductprices, automaticupdatecostnorms, costssource, automaticreleaseaftergeneration, analyzeactualstaff, analyzeactualstaffmaxquantity, analyzegetquantityfromshiftassignment, setmasterorderdatebasedonorderdates, notshowtasksblockedbyprevious, promptdefaultlinefromtechnology, numberofficelicenses, numberterminallicenses, typeterminallicenses, notshoworderfilters, notincludedateswhenretrievingorders, requirequalityrating, synchronizeproductsize, masterorderreleaselocation_id, demandworkstation, skipfinishedtasks, onlyonebatchtrackingfororder, producedbatchfromordertrackingrecord, packaginglocation_id, includeworkstationongetrrforot, notincludeworkstationwhensearchingot, generatetransferdocumentsonrepair, howmanydaysrecalculateplan, operationproductindefaultquantity, operationproductoutdefaultquantity, manyarticleswiththesameean, includeincalculationdeliveries, transferordersgrouptoordersforcomponents, automaticallyusethebatchplannedinorder, productdeliverybatchevidence, productdeliverybatchnumberpattern_id, showmachineperiodregistration, mergingordersforcomponents, tasksselectionby, recalculateplantasksorder, numbervisibleorderstasksondashboard, updatetechnologiesonpendingorders, sharingregistrationrecord, noexchangeratedownload, createfailtodowntime, optimizecuttinglengthattribute_id, optimizecuttingfinalwasteunit, optimizecuttingfinalwaste, dimensioncontrolofproducts, showplannedeventsonchart, updateplannedeventfinishdate, copyattributestoproducts, technologiesgeneratorcopyproductattributes, allowtotalregistration, workingtimetotalregistration, wastesconsumerawmaterials, moldrewclient_id, deadlinefororderbasedondeliverydate, deadlinefororderearlierthandeliverydate, operationaltasksrecalculationtoken, plannerworkstationassigncriterion, deadlinesort, operationlevelsort, orderprioritysort, abcanalysissort, allowmasterorderdeadlinechange) FROM stdin;
-1	\N	39	一块	\N	1	t	f	0	f	f	f	\N	f	1	f	0	\N	t	f	f	t	f	t	f	\N	02cumulated	f	0	f	f	f	f	f	01startOrder	\N	f	\N	0	f	f	0005900125	\N	\N	\N	\N	\N	f	\N	06costForOrder	\N	\N	f	\N	\N	f	01globally	14	f	\N	f	f	f	f	f	f	t	\N	\N	f	01nominalProductCost	f	\N	\N	f	\N	\N	01draft	f	f	f	\N	\N	f	0	\N	\N	\N	02parameters	f	\N	f	\N	\N	t	1	f	f	01transfer	f	01accepted	01order	01allInputProducts	f	t	\N	\N	f	f	f	\N	\N	\N	\N	150	\N	\N	f	t	f	t	\N	f	f	t	f	f	f	t	f	f	f	f	f	f	t	f	50	3000	f	t	t	f	f	f	f	f	t	f	t	t	t	f	t	f	f	f	f	f	f	f	f	f	\N	\N	f	f	t	t	f	\N	01productionLine	01staffWorkTimes	01oneDivision	\N	f	t	03endDateLastOrderOnTheLine	t	01orders	\N	\N	\N	01orderAcceptance	t	f	\N	\N	f	01nominal	f	01technologyOperation	\N	\N	\N	f	f	0.00000	0.00000	0.00000	0.00000	0.00000	f	f	f	\N	\N	f	01lastPurchasePrice	f	f	f	f	01operationNumber	01orderPackages	f	\N	f	01nominal	f	\N	\N	\N	f	01scanTheNumber	f	0.00000	0.00000	f	01workstation	\N	01desc	01shortestTime	01workstationLastOperatorLatestFinished	t	t	f	f	f	f	f	f	\N	\N	f	f	f	f	\N	\N	t	01number	f	f	t	\N	01approvedProduction	t	\N	f	f	01startDate	f	f	f	01onAcceptanceRegistrationRecord	01onAcceptanceRegistrationRecord	f	f	t	f	f	01mes	f	f	\N	f	f	f	t	10000	0	03over51Employees	f	f	t	f	\N	f	f	f	f	\N	f	f	t	7	\N	\N	f	01confirmedDeliveries	f	f	f	\N	f	f	02taskDate	01operationsLevelAndTasksStartDate	50	f	f	f	f	\N	\N	\N	f	f	f	f	f	f	01duplicatedForEachOrder	t	\N	f	0	\N	01minDeadlineForOrder	t	t	f	f	f
+COPY public.basic_parameter (id, country_id, currency_id, unit, additionaltextinfooter, company_id, registerproductiontime, reasonneededwhendelayedeffectivedatefrom, earliereffectivedatetotime, reasonneededwhencorrectingtherequestedvolume, reasonneededwhencorrectingdateto, reasonneededwhenchangingstatetodeclined, imageurlinworkplan, hidedescriptioninworkplans, defaultproductionline_id, reasonneededwhenearliereffectivedateto, earliereffectivedatefromtime, defaultaddress, allowquantitychangeinacceptedorder, reasonneededwhendelayedeffectivedateto, justone, registerquantityinproduct, reasonneededwhenchangingstatetointerrupted, registerquantityoutproduct, dontprintordersinworkplans, location_id, typeofproductionrecording, dontprintinputproductsinworkplans, delayedeffectivedatefromtime, hideemptycolumnsfororders, reasonneededwhenchangingstatetoabandoned, autocloseorder, allowtoclose, dontprintoutputproductsinworkplans, inputproductsrequiredfortype, otheraddress, reasonneededwhenearliereffectivedatefrom, defaultdescription, delayedeffectivedatetotime, hidetechnologyandorderinworkplans, reasonneededwhencorrectingdatefrom, ssccnumberprefix, lowerlimit, negativetrend, upperlimit, positivetrend, dueweight, printoperationatfirstpageinworkplans, averagelaborhourlycostpb, materialcostsusedpb, additionaloverheadpb, materialcostmarginpb, includetpzpb, productioncostmarginpb, averagemachinehourlycostpb, includeadditionaltimepb, batchnumberuniqueness, defaultcoveragefromdays, includedraftdeliveries, coveragetype, hideemptycolumnsforoffers, hideemptycolumnsforrequests, validateproductionrecordtimes, workstationsquantityfromproductionline, lockproductionprogress, hidebarcodeoperationcomponentinworkplans, ignoremissingcomponents, additionaloutputrows, additionalinputrows, allowmultipleregisteringtimeforworker, pricebasedon, takeactualprogressinworkplans, confectionplanrequirereasontypethreshold, confectionplancorrectionreasontype, automaticsavecoverage, externaldeliveriesextension, warehouse_id, documentstate, positivepurchaseprice, sameordernumber, automaticdeliveriesminstate, possibleworktimedeviation, ordersincludeperiod, includerequirements, entityversion, labelsbtpath, profitpb, registrationpriceoverheadpb, sourceofoperationcostspb, acceptanceevents, useblackbox, generatewarehouseissuestoorders, daysbeforeorderstart, issuelocation_id, consumptionofrawmaterialsbasedonstandards, documentpositionparameters_id, includecomponents, warehouseissuesreservestates, drawndocuments, issuedquantityuptoneed, documentsstatus, warehouseissueproductssource, productstoissue, trackingcorrectionrecalculatepps, deliveredbiggerthanordered, ordersganttparameters_id, additionalimage, autorecalculateorder, ppsisautomatic, ppsproducedamountrecalculateplan, ppsalgorithm, baselinkerparameters_id, technologiesgeneratorcopyproductsize, cartonlabelsbtpath, maxproductsquantity, allowerrorsinmasterorderpositions, companyname_id, hideassignedstaff, fillorderdescriptionbasedontechnologydescription, allowanomalycreationonacceptancerecord, includelevelandsuffix, orderedproductsunit, allowincompleteunits, acceptrecordsfromterminal, allowchangestousedquantityonterminal, includeadditionaltimeps, includetpzps, ordersgenerationnotcompletedates, canchangeprodlineforacceptedorders, generateeachonseparatepage, includewagegroups, ordersgeneratedbycoverage, automaticallygenerateordersforcomponents, seteffectivedatefromoninprogress, seteffectivedatetooncompleted, copydescription, exporttopdfonlyvisiblecolumns, additionalcartonlabelsquantity, maxcartonlabelsquantity, exporttocsvonlyvisiblecolumns, flagpercentageofexecutionwithcolor, opertaskflagpercentexecutionwithcolor, automaticclosingoforderwithingroups, copynotesfrommasterorderposition, manuallysendwarehousedocuments, realizationfromstock, alwaysorderitemswithpersonalization, selectorder, availabilityofrawmaterials, selectoperationaltask, stoppages, repair, employeeprogress, includeunacceptableproduction, calculateamounttimeemployeesonacceptancerecord, notshowtasksdownloadedbyanotheremployee, createcollectiveorders, completemasterorderafterorderingpositions, hideorderedproductworkplan, selectiontasksbyorderdateinterminal, showprogress, showdelays, requiresupplieridentification, numberpattern_id, generatebatchfororderedproduct, generatebatchoforderedproduct, acceptbatchtrackingwhenclosingorder, completewarehousesflowwhilechecking, qualitycontrol, finalqualitycontrolwithoutresources, terminalproductattribute_id, oeefor, oeeworktimefrom, range, division_id, showqronordersgrouppdf, advisestartdateoftheorder, orderstartdatebasedon, showchartondashboard, whattoshowondashboard, dashboardoperation_id, dashboardcomponentslocation_id, dashboardproductsinputlocation_id, momentofvalidation, moveproductstosubsequentoperations, demandcausesofwastes, wmsapk, wmsversion, applicationconfigured, materialcostsused, usenominalcostpricenotspecified, sourceofoperationcosts, standardlaborcost_id, averagemachinehourlycost, averagelaborhourlycost, includetpz, includeadditionaltime, materialcostmargin, productioncostmargin, additionaloverhead, registrationpriceoverhead, profit, applicationconfigurationfinished, generatepacksfororders, includepacksgeneratingprocessesfororder, optimalpacksize, restfeedinglastpack, deliveryusenominalcostwhenpricenotspecified, deliverypricefillbasedon, allowcheckedtechnologywithoutinproducts, requireassortment, changeorderdatesbasedonchangegroupdates, acceptedtechnologymarkedasdefault, terminalscanning, processsource, showproductdescriptiononordersgrouppdf, attributeonordersgrouppdf_id, copyattributestosizeproducts, materialcostsusedmc, usenominalcostpricenotspecifiedmc, productattribute_id, materialattribute_id, attributeonthelabel_id, requiretypeoffault, workingstationinputtype, allowchangeordeleteordertechnologicalprocess, technicalproductioncostoverhead, technicalproductioncostoverheadpb, synchronizeadditionalproductdata, processterminalplaceofperformance, emptylabelbtpath, schedulesortorder, workstationassigncriterion, workerassigncriterion, additionaltimeextendsoperation, synchronizeproductcategory, completenominalcostinarticleandproducts, copynominalcostfamilyofproductssizes, onlypackagesinproduction, allowtilelengthtobeedited, analyzeavailableresources, analyzeplannedquantity, analyzemaxquantity, numberpatternordergroup_id, otcopydescriptionfromproductionorder, setorderdatesbasedontaskdates, automaticallygeneratetasksfororder, automaticallygenerateprocessesfororder, includeadditionaltimesg, includetpzsg, includetpzs, dashboardshowforproduct, dashboardshowdescription, receivedeliveryinordercurrency, sortbyproducttypepriorityordersgrouppdf, attributeonordersgrouprequirementpdf_id, quantitymadeonthebasisofdashboard, producingmorethanplanned, logo, synchronizemasterorderattributes, synchronizedocumentpositionattributes, dashboardordersorting, completestationandemployeeingeneratedtasks, considerexceptionswhenpromptingcurrentshift, productionorderedquantityclosestheorder, receiptofproducts, releaseofmaterials, considerminimumstocklevelwhencreatingproductionorders, fillorderdescriptionbasedonproductdescription, ganttrunadjusterror, checkfortheexistenceofinputproductprices, automaticupdatecostnorms, costssource, automaticreleaseaftergeneration, analyzeactualstaff, analyzeactualstaffmaxquantity, analyzegetquantityfromshiftassignment, setmasterorderdatebasedonorderdates, notshowtasksblockedbyprevious, promptdefaultlinefromtechnology, numberofficelicenses, numberterminallicenses, typeterminallicenses, notshoworderfilters, notincludedateswhenretrievingorders, requirequalityrating, synchronizeproductsize, masterorderreleaselocation_id, demandworkstation, skipfinishedtasks, onlyonebatchtrackingfororder, producedbatchfromordertrackingrecord, packaginglocation_id, includeworkstationongetrrforot, notincludeworkstationwhensearchingot, generatetransferdocumentsonrepair, howmanydaysrecalculateplan, operationproductindefaultquantity, operationproductoutdefaultquantity, manyarticleswiththesameean, includeincalculationdeliveries, transferordersgrouptoordersforcomponents, automaticallyusethebatchplannedinorder, productdeliverybatchevidence, productdeliverybatchnumberpattern_id, showmachineperiodregistration, mergingordersforcomponents, tasksselectionby, recalculateplantasksorder, numbervisibleorderstasksondashboard, updatetechnologiesonpendingorders, sharingregistrationrecord, noexchangeratedownload, createfailtodowntime, optimizecuttinglengthattribute_id, optimizecuttingfinalwasteunit, optimizecuttingfinalwaste, dimensioncontrolofproducts, showplannedeventsonchart, updateplannedeventfinishdate, copyattributestoproducts, technologiesgeneratorcopyproductattributes, allowtotalregistration, workingtimetotalregistration, wastesconsumerawmaterials, moldrewclient_id, deadlinefororderbasedondeliverydate, deadlinefororderearlierthandeliverydate, operationaltasksrecalculationtoken, plannerworkstationassigncriterion, deadlinesort, operationlevelsort, orderprioritysort, abcanalysissort, allowmasterorderdeadlinechange, scheduleduration, plandimensioncontrolofproducts, orderdimensioncontrolofproducts) FROM stdin;
+1	\N	39	一块	\N	1	t	f	0	f	f	f	\N	f	1	f	0	\N	t	f	f	t	f	t	f	\N	02cumulated	f	0	f	f	f	f	f	01startOrder	\N	f	\N	0	f	f	0005900125	\N	\N	\N	\N	\N	f	\N	06costForOrder	\N	\N	f	\N	\N	f	01globally	14	f	\N	f	f	f	f	f	f	t	\N	\N	f	01nominalProductCost	f	\N	\N	f	\N	\N	01draft	f	f	f	\N	\N	f	0	\N	\N	\N	02parameters	f	\N	f	\N	\N	t	1	f	f	01transfer	f	01accepted	01order	01allInputProducts	f	t	\N	\N	f	f	f	\N	\N	\N	\N	150	\N	\N	f	t	f	t	\N	f	f	t	f	f	f	t	f	f	f	f	f	f	t	f	50	3000	f	t	t	f	f	f	f	f	t	f	t	t	t	f	t	f	f	f	f	f	f	f	f	f	\N	\N	f	f	t	t	f	\N	01productionLine	01staffWorkTimes	01oneDivision	\N	f	t	03endDateLastOrderOnTheLine	t	01orders	\N	\N	\N	01orderAcceptance	t	f	\N	\N	f	01nominal	f	01technologyOperation	\N	\N	\N	f	f	0.00000	0.00000	0.00000	0.00000	0.00000	f	f	f	\N	\N	f	01lastPurchasePrice	f	f	f	f	01operationNumber	01orderPackages	f	\N	f	01nominal	f	\N	\N	\N	f	01scanTheNumber	f	0.00000	0.00000	f	01workstation	\N	01desc	01shortestTime	01workstationLastOperatorLatestFinished	t	t	f	f	f	f	f	f	\N	\N	f	f	f	f	\N	\N	t	01number	f	f	t	\N	01approvedProduction	t	\N	f	f	01startDate	f	f	f	01onAcceptanceRegistrationRecord	01onAcceptanceRegistrationRecord	f	f	t	f	f	01mes	f	f	\N	f	f	f	t	10000	0	03over51Employees	f	f	t	f	\N	f	f	f	f	\N	f	f	t	7	\N	\N	f	01confirmedDeliveries	f	f	f	\N	f	f	02taskDate	01operationsLevelAndTasksStartDate	50	f	f	f	f	\N	\N	\N	f	f	f	f	f	f	01duplicatedForEachOrder	t	\N	f	0	\N	01minDeadlineForOrder	t	t	f	f	f	90	f	f
 \.
 
 
@@ -42492,6 +42570,14 @@ COPY public.orders_changedateshelper (id, datefrom, dateto, commentreasontypecor
 
 
 --
+-- Data for Name: orders_dimensioncontrolattribute; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY public.orders_dimensioncontrolattribute (id, parameter_id, attribute_id) FROM stdin;
+\.
+
+
+--
 -- Data for Name: orders_operationaltask; Type: TABLE DATA; Schema: public; Owner: -
 --
 
@@ -42647,7 +42733,7 @@ COPY public.orders_reasontypeofchangingorderstate (id, orderstatechange_id, reas
 -- Data for Name: orders_schedule; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.orders_schedule (id, number, name, starttime, state, sortorder, workstationassigncriterion, workerassigncriterion, approvetime, additionaltimeextendsoperation, includetpz, onlyworkstationsoflinefromorder, token, plannerworkstationassigncriterion, deadlinesort, operationlevelsort, orderprioritysort, abcanalysissort) FROM stdin;
+COPY public.orders_schedule (id, number, name, starttime, state, sortorder, workstationassigncriterion, workerassigncriterion, approvetime, additionaltimeextendsoperation, includetpz, onlyworkstationsoflinefromorder, token, plannerworkstationassigncriterion, deadlinesort, operationlevelsort, orderprioritysort, abcanalysissort, includetpzchanged) FROM stdin;
 \.
 
 
@@ -43285,6 +43371,14 @@ COPY public.productionpershift_progressforday (id, day, corrected, dateofday, ac
 --
 
 COPY public.productionpershift_reasontypeofcorrectionplan (id, productionpershift_id, reasontype, date, entityversion) FROM stdin;
+\.
+
+
+--
+-- Data for Name: productionplans_dimensioncontrolattribute; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY public.productionplans_dimensioncontrolattribute (id, parameter_id, attribute_id) FROM stdin;
 \.
 
 
@@ -48425,6 +48519,13 @@ SELECT pg_catalog.setval('public.orders_changedateshelper_id_seq', 1, false);
 
 
 --
+-- Name: orders_dimensioncontrolattribute_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('public.orders_dimensioncontrolattribute_id_seq', 1, false);
+
+
+--
 -- Name: orders_group_material_requirement_number_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
@@ -49486,6 +49587,13 @@ SELECT pg_catalog.setval('public.productionpershift_progressforday_id_seq', 1, f
 --
 
 SELECT pg_catalog.setval('public.productionpershift_reasontypeofcorrectionplan_id_seq', 1, false);
+
+
+--
+-- Name: productionplans_dimensioncontrolattribute_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('public.productionplans_dimensioncontrolattribute_id_seq', 1, false);
 
 
 --
@@ -54201,6 +54309,14 @@ ALTER TABLE ONLY public.orders_changedateshelper
 
 
 --
+-- Name: orders_dimensioncontrolattribute orders_dimensioncontrolattribute_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.orders_dimensioncontrolattribute
+    ADD CONSTRAINT orders_dimensioncontrolattribute_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: orders_operationaltask orders_operationaltask_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -55046,6 +55162,14 @@ ALTER TABLE ONLY public.productionpershift_progressforday
 
 ALTER TABLE ONLY public.productionpershift_reasontypeofcorrectionplan
     ADD CONSTRAINT productionpershift_reasontypeofcorrectionplan_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: productionplans_dimensioncontrolattribute productionplans_dimensioncontrolattribute_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.productionplans_dimensioncontrolattribute
+    ADD CONSTRAINT productionplans_dimensioncontrolattribute_pkey PRIMARY KEY (id);
 
 
 --
@@ -62638,6 +62762,22 @@ ALTER TABLE ONLY public.orders_ordercategorycolor
 
 
 --
+-- Name: orders_dimensioncontrolattribute orderdimensioncontrolattribute_attribute_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.orders_dimensioncontrolattribute
+    ADD CONSTRAINT orderdimensioncontrolattribute_attribute_fkey FOREIGN KEY (attribute_id) REFERENCES public.basic_attribute(id) DEFERRABLE;
+
+
+--
+-- Name: orders_dimensioncontrolattribute orderdimensioncontrolattribute_paramter_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.orders_dimensioncontrolattribute
+    ADD CONSTRAINT orderdimensioncontrolattribute_paramter_fkey FOREIGN KEY (parameter_id) REFERENCES public.basic_parameter(id) DEFERRABLE;
+
+
+--
 -- Name: deliveries_orderedproduct orderedproduct_batch_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -63619,6 +63759,22 @@ ALTER TABLE ONLY public.productionpershift_plandailyprogress
 
 ALTER TABLE ONLY public.productionpershift_plandailyprogress
     ADD CONSTRAINT plandailyprogress_shift_fkey FOREIGN KEY (shift_id) REFERENCES public.basic_shift(id) DEFERRABLE;
+
+
+--
+-- Name: productionplans_dimensioncontrolattribute plandimensioncontrolattribute_attribute_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.productionplans_dimensioncontrolattribute
+    ADD CONSTRAINT plandimensioncontrolattribute_attribute_fkey FOREIGN KEY (attribute_id) REFERENCES public.basic_attribute(id) DEFERRABLE;
+
+
+--
+-- Name: productionplans_dimensioncontrolattribute plandimensioncontrolattribute_paramter_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.productionplans_dimensioncontrolattribute
+    ADD CONSTRAINT plandimensioncontrolattribute_paramter_fkey FOREIGN KEY (parameter_id) REFERENCES public.basic_parameter(id) DEFERRABLE;
 
 
 --

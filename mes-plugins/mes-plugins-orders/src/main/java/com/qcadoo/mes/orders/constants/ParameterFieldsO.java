@@ -113,4 +113,7 @@ public final class ParameterFieldsO {
 
     public static final String DEADLINE_FOR_ORDER_EARLIER_THAN_DELIVERY_DATE = "deadlineForOrderEarlierThanDeliveryDate";
 
+    public static final String ORDER_DIMENSION_CONTROL_OF_PRODUCTS = "orderDimensionControlOfProducts";
+
+    public static final String ORDER_DIMENSION_CONTROL_ATTRIBUTES = "orderDimensionControlAttributes";
 }

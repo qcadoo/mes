@@ -130,6 +130,7 @@ public class ScheduleDetailsListenersPS {
         }
 
         schedule.setField(ScheduleFields.POSITIONS, positions);
+        schedule.setField(ScheduleFields.INCLUDE_TPZ_CHANGED, false);
         schedule = schedule.getDataDefinition().save(schedule);
         formComponent.setEntity(schedule);
         view.addMessage("productionScheduling.info.schedulePositionsGenerated", ComponentState.MessageType.SUCCESS);

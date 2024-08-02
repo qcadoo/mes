@@ -115,7 +115,7 @@ public class OrderValidatorsMO {
         String message = "masterOrders.order.masterOrder.deadline.fieldIsNotTheSame";
         boolean deadlineForOrderBasedOnDeliveryDate = parameter.getBooleanField(DEADLINE_FOR_ORDER_BASED_ON_DELIVERY_DATE);
         if (deadlineForOrderBasedOnDeliveryDate) {
-            Entity masterOrderProductComponent = findMasterOrderProduct(masterOrder, order.getBelongsToField(OrderFields.PRODUCT), order.getStringField(OrderFieldsMO.VENDOR_INFO));
+            Entity masterOrderProductComponent = findMasterOrderProduct(masterOrder, order.getBelongsToField(OrderFields.PRODUCT), order.getStringField(OrderFields.VENDOR_INFO));
             if (masterOrderProductComponent == null) {
                 return isValid;
             } else {
@@ -167,7 +167,7 @@ public class OrderValidatorsMO {
 
     private boolean checkIfOrderMatchesAnyOfMasterOrderProductsWithTechnology(final Entity order,
                                                                               final Entity masterOrder) {
-        String orderVendorInfo = order.getStringField(OrderFieldsMO.VENDOR_INFO);
+        String orderVendorInfo = order.getStringField(OrderFields.VENDOR_INFO);
         if (hasMatchingMasterOrderProducts(order, masterOrder, orderVendorInfo)) {
             return true;
         }

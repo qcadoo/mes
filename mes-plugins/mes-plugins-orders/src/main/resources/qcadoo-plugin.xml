@@ -121,6 +121,22 @@
         <model:model model="splitOrderParent" resource="model/splitOrderParent.xml"/>
         <model:model model="splitOrderChild" resource="model/splitOrderChild.xml"/>
 
+        <model:model model="dimensionControlAttribute" resource="model/dimensionControlAttribute.xml"/>
+
+        <model:model-field plugin="basic" model="parameter">
+            <model:boolean name="orderDimensionControlOfProducts" default="false"/>
+        </model:model-field>
+
+        <model:model-field plugin="basic" model="parameter">
+            <model:hasMany name="orderDimensionControlAttributes" plugin="orders"
+                           model="dimensionControlAttribute" joinField="parameter" cascade="delete"/>
+        </model:model-field>
+
+        <model:model-field plugin="basic" model="attribute">
+            <model:hasMany name="orderDimensionControlAttributes" plugin="orders"
+                           model="dimensionControlAttribute" joinField="attribute" cascade="delete"/>
+        </model:model-field>
+
         <model:model-field plugin="productionLines" model="productionLine">
             <model:hasMany name="positions" model="productionLineSchedulePosition" plugin="orders" joinField="productionLine"/>
         </model:model-field>
@@ -184,11 +200,6 @@
             <model:hasMany name="orders" plugin="orders" model="order"
                            joinField="technology"/>
         </model:model-field>
-
-<!--        <model:model-field plugin="technologies" model="technology">
-            <model:hasMany name="ordersUsingPrototype" plugin="orders" model="order"
-                           joinField="technologyPrototype"/>
-        </model:model-field>-->
 
         <model:model-field plugin="basic" model="parameter">
             <model:boolean name="createCollectiveOrders" default="false"/>

@@ -142,6 +142,63 @@
                                    reference="orderStartDateBasedOn" hasDescription="true">
                         </component>
                     </layoutElement>
+                    <layoutElement column="3" row="1">
+                        <component type="borderLayout" name="dimensionControlBorderLayout">
+                            <component type="gridLayout" name="dimensionControlGridLayout"
+                                       columns="1" rows="2">
+                                <layoutElement column="1" row="1">
+                                    <component type="checkbox" name="orderDimensionControlOfProducts"
+                                               field="#{form}.orderDimensionControlOfProducts"
+                                               reference="orderDimensionControlOfProducts" hasDescription="true">
+                                        <option type="labelWidth" value="80"/>
+
+                                        <listener event="onChange"
+                                                  class="com.qcadoo.view.api.listeners.RerenderListener"
+                                                  method="onChangeRerender"/>
+                                    </component>
+                                </layoutElement>
+                                <layoutElement column="1" row="2">
+                                    <component type="borderLayout" name="dimensionControlAttributesBorderLayout">
+                                        <component type="awesomeDynamicList" name="orderDimensionControlAttributes"
+                                                   source="#{form}.orderDimensionControlAttributes"
+                                                   reference="orderDimensionControlAttributes">
+                                            <components>
+                                                <component type="gridLayout" name="dimensionControlAttributesGridLayout"
+                                                           columns="1" rows="1">
+                                                    <layoutElement column="1" row="1">
+                                                        <component type="lookup" name="attribute" field="attribute"
+                                                                   reference="attribute"
+                                                                   hasLabel="false">
+                                                            <option type="column" fields="name" name="name"
+                                                                    link="true"/>
+
+                                                            <option type="searchable" value="number,name"/>
+                                                            <option type="orderable" value="number,name"/>
+
+                                                            <option type="expression"
+                                                                    value="#number + ' - ' + #name"/>
+                                                            <option type="fieldCode" value="number"/>
+
+                                                            <criteriaModifier
+                                                                    class="com.qcadoo.mes.basic.criteriaModifiers.AttributeCriteriaModifiers"
+                                                                    method="showNumericForProduct"/>
+                                                        </component>
+                                                    </layoutElement>
+                                                </component>
+                                            </components>
+
+                                            <option type="hasBorder" value="false"/>
+                                            <option type="hasButtons" value="true"/>
+                                        </component>
+
+                                        <option type="label" value="dimensionControlAttributesLabel"/>
+                                    </component>
+                                </layoutElement>
+                            </component>
+
+                            <option type="label" value="dimensionControlLabel"/>
+                        </component>
+                    </layoutElement>
                 </component>
 
                 <listener event="redirectToDeviationsDictionary"

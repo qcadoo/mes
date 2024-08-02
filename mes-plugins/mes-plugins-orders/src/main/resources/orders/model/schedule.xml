@@ -50,6 +50,7 @@
               required="true"/>
         <boolean name="additionalTimeExtendsOperation" default="true"/>
         <boolean name="includeTpz" default="true"/>
+        <boolean name="includeTpzChanged" default="false"/>
         <boolean name="onlyWorkstationsOfLineFromOrder" default="false"/>
         <datetime name="approveTime" />
 
