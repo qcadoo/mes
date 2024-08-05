@@ -20,9 +20,7 @@ public class WarehouseIssueParameterService {
 
         if (productsSource != null) {
             WarehouseIssueProductsSource warehouseIssueProductsSource = WarehouseIssueProductsSource.parseString(productsSource);
-            if (WarehouseIssueProductsSource.ORDER.equals(warehouseIssueProductsSource)) {
-                return true;
-            }
+            return WarehouseIssueProductsSource.ORDER.equals(warehouseIssueProductsSource);
         }
         return false;
     }

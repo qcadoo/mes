@@ -35,8 +35,6 @@ public class WarehouseIssueFields {
 
     public static final String ORDER = "order";
 
-    public static final String ORDER_LIST_DTO = "orderListDto";
-
     public static final String ORDER_START_DATE = "orderStartDate";
 
     public static final String ORDER_PRODUCTION_LINE_NUMBER = "orderProductionLineNumber";
@@ -46,8 +44,6 @@ public class WarehouseIssueFields {
     public static final String DIVISION = "division";
 
     public static final String WORKER_WHO_ISSUED = "workerWhoIssued";
-
-    public static final String WORKER_WHO_COLLECTED = "workerWhoCollected";
 
     public static final String DATE_OF_ISSUED = "dateOfIssued";
 

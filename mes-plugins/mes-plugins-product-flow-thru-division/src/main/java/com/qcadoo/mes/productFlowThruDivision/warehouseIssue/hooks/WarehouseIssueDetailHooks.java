@@ -21,15 +21,8 @@
  */
 package com.qcadoo.mes.productFlowThruDivision.warehouseIssue.hooks;
 
-import java.math.BigDecimal;
-import java.util.Objects;
-import java.util.Set;
-
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.google.common.collect.Sets;
+import com.qcadoo.localization.api.utils.DateUtils;
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.basic.constants.UserFieldsB;
 import com.qcadoo.mes.orders.constants.OrderFields;
@@ -41,32 +34,32 @@ import com.qcadoo.mes.productFlowThruDivision.warehouseIssue.constans.Collection
 import com.qcadoo.mes.productFlowThruDivision.warehouseIssue.constans.IssueFields;
 import com.qcadoo.mes.productFlowThruDivision.warehouseIssue.constans.WarehouseIssueFields;
 import com.qcadoo.mes.productFlowThruDivision.warehouseIssue.states.constants.WarehouseIssueStringValues;
+import com.qcadoo.mes.productionLines.constants.ProductionLineFields;
 import com.qcadoo.model.api.BigDecimalUtils;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.security.api.UserService;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
-import com.qcadoo.view.api.components.FieldComponent;
-import com.qcadoo.view.api.components.FormComponent;
-import com.qcadoo.view.api.components.GridComponent;
-import com.qcadoo.view.api.components.LookupComponent;
-import com.qcadoo.view.api.components.WindowComponent;
+import com.qcadoo.view.api.components.*;
 import com.qcadoo.view.api.components.lookup.FilterValueHolder;
 import com.qcadoo.view.api.ribbon.Ribbon;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.api.ribbon.RibbonGroup;
-import com.qcadoo.view.api.utils.NumberGeneratorService;
 import com.qcadoo.view.constants.QcadooViewConstants;
 import com.qcadoo.view.constants.RowStyle;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
+import java.util.Objects;
+import java.util.Set;
 
 @Service
 public class WarehouseIssueDetailHooks {
 
     private static final String L_PRODUCTS_TO_ISSUES = "productsToIssues";
-
-    @Autowired
-    private NumberGeneratorService numberGeneratorService;
 
     @Autowired
     private UserService userService;
@@ -82,8 +75,15 @@ public class WarehouseIssueDetailHooks {
 
     public void onBeforeRender(final ViewDefinitionState view) {
         setViewState(view);
-        setCriteriaModifierParameters(view);
+        Long orderId = (Long) view.getComponentByReference(WarehouseIssueFields.ORDER).getFieldValue();
+        Entity order = null;
+
+        if (Objects.nonNull(orderId)) {
+            order = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(orderId);
+        }
+        setCriteriaModifierParameters(view, order);
         fillWorkerWhoIssued(view);
+        fillOrderFields(view, order);
         hideOrderFields(view);
         disableProductsToIssueGrid(view);
         updateRibbonState(view);
@@ -204,27 +204,11 @@ public class WarehouseIssueDetailHooks {
 
             GridComponent grid = (GridComponent) view.getComponentByReference("issues");
 
-            if (state.equals(WarehouseIssueStringValues.IN_PROGRESS)) {
-                grid.setEnabled(true);
-            } else {
-                grid.setEnabled(false);
-            }
+            grid.setEnabled(state.equals(WarehouseIssueStringValues.IN_PROGRESS));
         }
     }
 
-    public void setCriteriaModifierParameters(final ViewDefinitionState view) {
-        Long orderId = (Long) view.getComponentByReference(WarehouseIssueFields.ORDER).getFieldValue();
-
-        Entity order = null;
-
-        if (Objects.nonNull(orderId)) {
-            order = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(orderId);
-        }
-
-        setCriteriaModifierParameters(view, order);
-    }
-
-    public void setCriteriaModifierParameters(final ViewDefinitionState view, final Entity order) {
+    private void setCriteriaModifierParameters(final ViewDefinitionState view, final Entity order) {
         LookupComponent technologyOperationComponentLookup = (LookupComponent) view
                 .getComponentByReference(WarehouseIssueFields.TECHNOLOGY_OPERATION_COMPONENT);
         LookupComponent divisionLookup = (LookupComponent) view.getComponentByReference(WarehouseIssueFields.DIVISION);
@@ -255,6 +239,28 @@ public class WarehouseIssueDetailHooks {
             if (Objects.nonNull(currentUserStaff)) {
                 workerWhoIssued.setFieldValue(currentUserStaff.getId());
             }
+        }
+    }
+
+    private void fillOrderFields(final ViewDefinitionState view, final Entity order) {
+        FieldComponent orderStartDateComponent = (FieldComponent) view
+                .getComponentByReference(WarehouseIssueFields.ORDER_START_DATE);
+        FieldComponent orderProductionLineComponent = (FieldComponent) view
+                .getComponentByReference(WarehouseIssueFields.ORDER_PRODUCTION_LINE_NUMBER);
+
+        if (order != null) {
+            String orderStartDate = DateUtils.toDateTimeString(order.getDateField(OrderFields.START_DATE));
+            orderStartDateComponent.setFieldValue(orderStartDate);
+            orderStartDateComponent.requestComponentUpdateState();
+
+            Entity orderProductionLine = order.getBelongsToField(OrderFields.PRODUCTION_LINE);
+            orderProductionLineComponent.setFieldValue(orderProductionLine.getStringField(ProductionLineFields.NUMBER));
+            orderProductionLineComponent.requestComponentUpdateState();
+        } else {
+            orderStartDateComponent.setFieldValue(null);
+            orderStartDateComponent.requestComponentUpdateState();
+            orderProductionLineComponent.setFieldValue(null);
+            orderProductionLineComponent.requestComponentUpdateState();
         }
     }
 

@@ -203,7 +203,8 @@
 
             <option type="column" name="dateOfCreation" fields="dateOfCreation" width="35"/>
 
-			<option type="column" name="orderStartDate" fields="orderStartDate" width="35"/>
+			<option type="column" name="orderStartDate" fields="order"
+                    expression="#order['startDate']" width="35"/>
 
             <option type="correspondingView" value="productFlowThruDivision/warehouseIssueDetails"/>
             <option type="correspondingComponent" value="form"/>

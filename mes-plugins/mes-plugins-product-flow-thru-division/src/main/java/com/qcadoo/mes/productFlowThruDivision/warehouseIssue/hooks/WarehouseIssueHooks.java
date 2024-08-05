@@ -23,15 +23,6 @@
  */
 package com.qcadoo.mes.productFlowThruDivision.warehouseIssue.hooks;
 
-import java.util.Date;
-import java.util.Objects;
-
-import com.qcadoo.mes.materialFlowResources.constants.DocumentFields;
-import com.qcadoo.mes.productFlowThruDivision.warehouseIssue.states.constants.WarehouseIssueStringValues;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.mes.productFlowThruDivision.constants.ProductFlowThruDivisionConstants;
 import com.qcadoo.mes.productFlowThruDivision.warehouseIssue.WarehouseIssueGenerator;
@@ -39,11 +30,16 @@ import com.qcadoo.mes.productFlowThruDivision.warehouseIssue.WarehouseIssueParam
 import com.qcadoo.mes.productFlowThruDivision.warehouseIssue.constans.WarehouseIssueFields;
 import com.qcadoo.mes.productFlowThruDivision.warehouseIssue.states.constants.WarehouseIssueState;
 import com.qcadoo.mes.productFlowThruDivision.warehouseIssue.states.constants.WarehouseIssueStateChangeDescriber;
-import com.qcadoo.mes.productionLines.constants.ProductionLineFields;
+import com.qcadoo.mes.productFlowThruDivision.warehouseIssue.states.constants.WarehouseIssueStringValues;
 import com.qcadoo.mes.states.service.StateChangeEntityBuilder;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.Date;
+import java.util.Objects;
 
 @Service
 public class WarehouseIssueHooks {
@@ -78,9 +74,6 @@ public class WarehouseIssueHooks {
         if (Objects.isNull(warehouseIssue.getField(WarehouseIssueFields.NUMBER))) {
             warehouseIssue.setField(WarehouseIssueFields.NUMBER, warehouseIssueGenerator.setNumberFromSequence());
         }
-        if (warehouseIssueParameterService.issueForOrder()) {
-            fillOrderFields(warehouseIssue);
-        }
     }
 
     public boolean onDelete(final DataDefinition warehouseIssueDD, final Entity warehouseIssue) {
@@ -89,20 +82,6 @@ public class WarehouseIssueHooks {
             return false;
         }
         return true;
-    }
-
-    private void fillOrderFields(Entity warehouseIssue) {
-        Entity order = getOrderDD().get(warehouseIssue.getBelongsToField(WarehouseIssueFields.ORDER).getId());
-
-        if (Objects.isNull(warehouseIssue.getDateField(WarehouseIssueFields.ORDER_START_DATE))) {
-            warehouseIssue.setField(WarehouseIssueFields.ORDER_START_DATE, order.getDateField(OrderFields.START_DATE));
-        }
-        if (Objects.isNull(warehouseIssue.getStringField(WarehouseIssueFields.ORDER_PRODUCTION_LINE_NUMBER))) {
-            Entity orderProductionLine = order.getBelongsToField(OrderFields.PRODUCTION_LINE);
-
-            warehouseIssue.setField(WarehouseIssueFields.ORDER_PRODUCTION_LINE_NUMBER,
-                    orderProductionLine.getStringField(ProductionLineFields.NUMBER));
-        }
     }
 
     public void onCopy(final DataDefinition warehouseIssueDD, final Entity warehouseIssue) {
