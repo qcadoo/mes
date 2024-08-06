@@ -392,6 +392,10 @@ public class OrderDetailsListeners {
         view.redirectTo("/orders/ordersOrderReport." + args[0] + "?id=" + state.getFieldValue(), true, false);
     }
 
+    public void printProductionGuide(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        view.redirectTo("/basicProductionCounting/manifestoReport." + args[0] + "?id=" + state.getFieldValue() + "&fromOrder=true", true, false);
+    }
+
     public void changeState(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         state.performEvent(view, "save", args);
 

@@ -31,7 +31,7 @@ import org.springframework.stereotype.Service;
 public class DetailedProductionCountingAndProgressListListeners {
 
     public void printManifestoReport(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        view.redirectTo("/basicProductionCounting/manifestoReport." + args[0] + "?id=" + state.getFieldValue(), true, false);
+        view.redirectTo("/basicProductionCounting/manifestoReport." + args[0] + "?id=" + state.getFieldValue() + "&fromOrder=false", true, false);
     }
 
 }

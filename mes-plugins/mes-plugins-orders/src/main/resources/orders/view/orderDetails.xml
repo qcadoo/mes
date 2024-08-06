@@ -125,8 +125,62 @@
                 </smallButton>
             </group>
             <group name="orderParameters">
+                <smallButton name="print" icon="pdfIcon16.png">
+                    <script>
+                        <![CDATA[
+							#{form}.addOnChangeListener({
+								onSetValue: function(value) {
+									if (!value || !value.content) {
+										return;
+									}
+									if (!value.content.entityId) {
+										this.disable();
+									} else {
+										this.enable();
+									}
+								}
+							});
+
+                            this.addOnChangeListener({
+                                onClick: function() {
+                                    #{form}.performEvent({
+                                        name : 'printOrderReport',
+                                        args : ['pdf']
+                                    });
+                                }
+                            });
+						]]>
+                    </script>
+                </smallButton>
+                <smallButton name="printProductionGuide" icon="pdfIcon16.png">
+                    <script>
+                        <![CDATA[
+							#{form}.addOnChangeListener({
+								onSetValue: function(value) {
+									if (!value || !value.content) {
+										return;
+									}
+									if (!value.content.entityId) {
+										this.disable();
+									} else {
+										this.enable();
+									}
+								}
+							});
+
+                            this.addOnChangeListener({
+                                onClick: function() {
+                                    #{form}.performEvent({
+                                        name : 'printProductionGuide',
+                                        args : ['pdf']
+                                    });
+                                }
+                            });
+						]]>
+                    </script>
+                </smallButton>
                 <smallButton name="orderParameters" icon="settingsIcon16.png"
-                           state="disabled">
+                             state="disabled">
                     <script>
                         <![CDATA[
 							this.addOnChangeListener({
@@ -148,33 +202,6 @@
 									}
 								}
 							});
-						]]>
-                    </script>
-                </smallButton>
-                <smallButton name="print" icon="pdfIcon16.png">
-                    <script>
-                        <![CDATA[
-							#{form}.addOnChangeListener({
-								onSetValue: function(value) {
-									if (! value || ! value.content) {
-										return;
-									}
-									if (! value.content.entityId) {
-										this.disable();
-									} else {
-										this.enable();
-									}
-								}
-							});
-
-                            this.addOnChangeListener({
-                                onClick: function() {
-                                    #{form}.performEvent({
-                                        name : 'printOrderReport',
-                                        args : ['pdf']
-                                    });
-                                }
-                            });
 						]]>
                     </script>
                 </smallButton>
@@ -716,6 +743,8 @@
                 <listener event="showOrderParameters" method="showOrderParameters"
                           class="com.qcadoo.mes.orders.listeners.OrderDetailsListeners"/>
                 <listener event="printOrderReport" method="printOrderReport"
+                          class="com.qcadoo.mes.orders.listeners.OrderDetailsListeners"/>
+                <listener event="printProductionGuide" method="printProductionGuide"
                           class="com.qcadoo.mes.orders.listeners.OrderDetailsListeners"/>
                 <listener event="showOperationalTasks" method="showOperationalTasks"
                           class="com.qcadoo.mes.orders.listeners.OrderDetailsListeners"/>
