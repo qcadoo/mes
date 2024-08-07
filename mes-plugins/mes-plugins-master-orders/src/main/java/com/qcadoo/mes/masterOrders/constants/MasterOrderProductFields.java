@@ -63,4 +63,6 @@ public final class MasterOrderProductFields {
 
     public static final String VENDOR_INFO = "vendorInfo";
 
+    public static final String PRICE = "price";
+
 }

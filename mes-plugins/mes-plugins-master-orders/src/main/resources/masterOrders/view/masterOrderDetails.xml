@@ -514,6 +514,8 @@
                         classesNames="green-cell"/>
                 <option type="column" name="unit" fields="unit"
                          width="60"/>
+                <option type="column" name="price" fields="price"
+                        width="60"/>
                 <option type="column" name="assortmentName" fields="assortmentName"
                         width="120"/>
                 <option type="column" name="modelName"
@@ -522,9 +524,9 @@
                 <option type="order" column="number" direction="asc"/>
 
                 <option type="searchable"
-                        value="productNumber,productName,technologyName,masterOrderPositionStatus,comments,quantityRemainingToOrder,quantityTakenFromWarehouse,masterOrderQuantity,cumulatedOrderQuantity,leftToRelease,producedOrderQuantity,unit,assortmentName,modelName,warehouseMinimumStateQuantity"/>
+                        value="productNumber,productName,technologyName,masterOrderPositionStatus,comments,quantityRemainingToOrder,quantityTakenFromWarehouse,masterOrderQuantity,cumulatedOrderQuantity,leftToRelease,producedOrderQuantity,unit,assortmentName,modelName,warehouseMinimumStateQuantity,price"/>
                 <option type="orderable"
-                        value="productNumber,productName,technologyName,masterOrderPositionStatus,comments,quantityRemainingToOrder,quantityTakenFromWarehouse,masterOrderQuantity,cumulatedOrderQuantity,leftToRelease,producedOrderQuantity,unit,assortmentName,modelName,warehouseMinimumStateQuantity"/>
+                        value="productNumber,productName,technologyName,masterOrderPositionStatus,comments,quantityRemainingToOrder,quantityTakenFromWarehouse,masterOrderQuantity,cumulatedOrderQuantity,leftToRelease,producedOrderQuantity,unit,assortmentName,modelName,warehouseMinimumStateQuantity,price"/>
 
                 <option type="correspondingView" value="masterOrders/masterOrderProductDetails"/>
                 <option type="correspondingComponent" value="form"/>

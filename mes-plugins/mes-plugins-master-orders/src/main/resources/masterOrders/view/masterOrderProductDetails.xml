@@ -37,7 +37,7 @@
             <component type="form" name="masterOrderProductDetails"
                        reference="form">
                 <component type="gridLayout" name="gridLayout" columns="3"
-                           rows="7">
+                           rows="8">
                     <layoutElement column="1" row="1" width="2">
                         <component type="lookup" name="product" reference="product"
                                    field="product" hasDescription="true">
@@ -91,6 +91,11 @@
                     <layoutElement column="1" row="7" width="2">
                         <component type="calendar" name="deliveryDate" reference="deliveryDate" field="deliveryDate">
                             <option type="withTimePicker" value="true"/>
+                        </component>
+                    </layoutElement>
+                    <layoutElement column="1" row="8" width="2">
+                        <component type="input" name="price" field="price" reference="price">
+                            <option type="alignment" value="right"/>
                         </component>
                     </layoutElement>
                     <layoutElement column="3" row="1" height="7">
