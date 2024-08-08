@@ -81,6 +81,8 @@ public class MasterOrderCellBinderRegistry {
         cellBinderRegistry.setCellBinder(optional(MasterOrderFields.COMMENTS));
         cellBinderRegistry.setCellBinder(optional(MasterOrderFields.MASTER_ORDER_POSITION_STATUS,
                 masterOrderPositionStatusCellParser.masterOrderPositionStatus()));
+        cellBinderRegistry.setCellBinder(optional(MasterOrderFields.DELIVERY_DATE, dateTimeCellParser));
+        cellBinderRegistry.setCellBinder(optional(MasterOrderFields.PRICE, bigDecimalCellParser));
     }
 
     public CellBinderRegistry getCellBinderRegistry() {

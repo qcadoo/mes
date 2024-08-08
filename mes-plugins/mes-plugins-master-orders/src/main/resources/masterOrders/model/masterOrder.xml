@@ -97,12 +97,18 @@
         <belongsTo name="technology" plugin="technologies" model="technology" persistent="false"/>
         <text name="comments" persistent="false"/>
         <dictionary name="masterOrderPositionStatus" dictionary="masterOrderPositionStatus" persistent="false"/>
+        <datetime name="deliveryDate" persistent="false"/>
+        <decimal name="price" persistent="false">
+            <validatesRange from="0" exclusively="true"/>
+            <validatesUnscaledValue max="9"/>
+            <validatesScale max="5"/>
+        </decimal>
 
         <hasMany name="productsBySizeHelpers" joinField="masterOrder" model="productsBySizeHelper"
-                 plugin="masterOrders" cascade="nullify"/>
+                 plugin="masterOrders"/>
 
         <hasMany name="productsByAttributeHelpers" joinField="masterOrder" model="productsByAttributeHelper"
-                 plugin="masterOrders" cascade="nullify"/>
+                 plugin="masterOrders"/>
 
         <belongsTo name="salesPlan" model="salesPlan"/>
 
