@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Service
 public class WorkstationChangeoverNormService {
@@ -46,11 +47,25 @@ public class WorkstationChangeoverNormService {
         addWorkstationSearchRestrictions(searchCriteriaBuilder, workstation);
         addAttributeSearchRestrictions(searchCriteriaBuilder, attribute);
 
-        return searchCriteriaBuilder.add(SearchRestrictions.eq(WorkstationChangeoverNormFields.ACTIVE, true))
+        List<Entity> norms = searchCriteriaBuilder.add(SearchRestrictions.eq(WorkstationChangeoverNormFields.ACTIVE, true))
                 .list().getEntities();
+        return filterNorms(norms);
     }
 
-    private void addWorkstationSearchRestrictions(final SearchCriteriaBuilder searchCriteriaBuilder, final Entity workstation) {
+    private List<Entity> filterNorms(List<Entity> norms) {
+        if (norms.size() > 1) {
+            List<Entity> workstationNorms = norms.stream().filter(e -> e.getBelongsToField(WorkstationChangeoverNormFields.WORKSTATION) != null).collect(Collectors.toList());
+            if (workstationNorms.isEmpty()) {
+                norms = norms.stream().filter(e -> e.getBelongsToField(WorkstationChangeoverNormFields.WORKSTATION_TYPE) != null).collect(Collectors.toList());
+            } else {
+                norms = workstationNorms;
+            }
+        }
+        return norms;
+    }
+
+    private void addWorkstationSearchRestrictions(final SearchCriteriaBuilder searchCriteriaBuilder,
+                                                  final Entity workstation) {
         if (Objects.nonNull(workstation)) {
             Entity workstationType = workstation.getBelongsToField(WorkstationFields.WORKSTATION_TYPE);
 
@@ -68,7 +83,8 @@ public class WorkstationChangeoverNormService {
         }
     }
 
-    private void addAttributeSearchRestrictions(final SearchCriteriaBuilder searchCriteriaBuilder, final Entity attribute) {
+    private void addAttributeSearchRestrictions(final SearchCriteriaBuilder searchCriteriaBuilder,
+                                                final Entity attribute) {
         if (Objects.nonNull(attribute)) {
             searchCriteriaBuilder.createAlias(WorkstationChangeoverNormFields.ATTRIBUTE, WorkstationChangeoverNormFields.ATTRIBUTE, JoinType.LEFT);
             searchCriteriaBuilder.add(SearchRestrictions.eq(WorkstationChangeoverNormFields.ATTRIBUTE + L_DOT + L_ID, attribute.getId()));
@@ -81,8 +97,8 @@ public class WorkstationChangeoverNormService {
         if (Objects.nonNull(workstationType)) {
             return getWorkstationChangeoverNormDtoDD().find().add(
                     SearchRestrictions.or(
-                        SearchRestrictions.eq(WorkstationChangeoverNormDtoFields.WORKSTATION_ID, workstation.getId().intValue()),
-                        SearchRestrictions.eq(WorkstationChangeoverNormDtoFields.WORKSTATION_TYPE_ID, workstationType.getId().intValue())
+                            SearchRestrictions.eq(WorkstationChangeoverNormDtoFields.WORKSTATION_ID, workstation.getId().intValue()),
+                            SearchRestrictions.eq(WorkstationChangeoverNormDtoFields.WORKSTATION_TYPE_ID, workstationType.getId().intValue())
                     )
             ).list().getEntities();
         } else {
