@@ -1895,12 +1895,13 @@ QCD.technologyConfigurator = (function () {
             success: function (data) {
                 logoutIfSessionExpired(data);
                 if (data.code === 'OK') {
-                    window.parent.goToPage('/page/technologies/technologiesList.html', false, false);
                     showMessage('success',
                         QCD.translate("technologies.technologyConfigurator.technologyConfiguratorWizard.success"),
                         data.message,
                         false);
-
+                    setTimeout(function () {
+                        window.parent.goToPage('/page/technologies/technologiesList.html', false, false);
+                    }, 1000);
                 } else {
                     showMessage(
                         'failure',
