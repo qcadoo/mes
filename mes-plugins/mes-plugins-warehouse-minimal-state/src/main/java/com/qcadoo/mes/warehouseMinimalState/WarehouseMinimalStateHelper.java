@@ -41,7 +41,7 @@ public class WarehouseMinimalStateHelper {
     private DataDefinitionService dataDefinitionService;
 
     public boolean checkIfLowerThanMinimum(long productId, BigDecimal quantity, BigDecimal minimumState) {
-        return quantity.compareTo(minimumState) == -1;
+        return quantity.compareTo(minimumState) < 0;
     }
 
     public BigDecimal getOrderedQuantityForProductAndLocation(final Long warehouse, final Long product) {
