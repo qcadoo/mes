@@ -23,37 +23,20 @@
  */
 package com.qcadoo.mes.productFlowThruDivision.warehouseIssue.listeners;
 
-import java.math.BigDecimal;
-import java.util.*;
-import java.util.stream.Collectors;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.stereotype.Service;
-
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 import com.qcadoo.localization.api.TranslationService;
-import com.qcadoo.localization.api.utils.DateUtils;
 import com.qcadoo.mes.basic.constants.ProductFields;
-import com.qcadoo.mes.orders.constants.OrderFields;
-import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.mes.productFlowThruDivision.constants.ProductFlowThruDivisionConstants;
 import com.qcadoo.mes.productFlowThruDivision.service.WarehouseIssueService;
-import com.qcadoo.mes.productFlowThruDivision.warehouseIssue.WarehouseIssueParameterService;
 import com.qcadoo.mes.productFlowThruDivision.warehouseIssue.constans.CollectionProducts;
-import com.qcadoo.mes.productFlowThruDivision.warehouseIssue.constans.IssueFields;
 import com.qcadoo.mes.productFlowThruDivision.warehouseIssue.constans.ProductsToIssueFields;
 import com.qcadoo.mes.productFlowThruDivision.warehouseIssue.constans.WarehouseIssueFields;
 import com.qcadoo.mes.productFlowThruDivision.warehouseIssue.hooks.IssueDetailsHooks;
-import com.qcadoo.mes.productFlowThruDivision.warehouseIssue.hooks.WarehouseIssueDetailHooks;
 import com.qcadoo.mes.productFlowThruDivision.warehouseIssue.hooks.WarehouseIssueHooks;
-import com.qcadoo.mes.productionLines.constants.ProductionLineFields;
-import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.NumberService;
 import com.qcadoo.model.api.validators.ErrorMessage;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
@@ -62,20 +45,21 @@ import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.GridComponent;
 import com.qcadoo.view.api.components.LookupComponent;
 import com.qcadoo.view.constants.QcadooViewConstants;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class WarehouseIssueDetailsListeners {
 
-
-
-    @Autowired
-    private WarehouseIssueDetailHooks warehouseIssueDetailHooks;
-
     @Autowired
     private WarehouseIssueHooks warehouseIssueHooks;
-
-    @Autowired
-    private NumberService numberService;
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
@@ -88,9 +72,6 @@ public class WarehouseIssueDetailsListeners {
 
     @Autowired
     private TranslationService translationService;
-
-    @Autowired
-    private WarehouseIssueParameterService warehouseIssueParameterService;
 
     public void showProductAttributes(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         GridComponent positionGird = (GridComponent) view.getComponentByReference("productsToIssues");
@@ -186,8 +167,6 @@ public class WarehouseIssueDetailsListeners {
     }
 
     public void onCollectionProductsChange(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        warehouseIssueDetailHooks.setViewState(view);
-
         FieldComponent collectionProductsField = (FieldComponent) view
                 .getComponentByReference(WarehouseIssueFields.COLLECTION_PRODUCTS);
         LookupComponent operation = (LookupComponent) view
@@ -209,15 +188,6 @@ public class WarehouseIssueDetailsListeners {
     }
 
     public void onOrderChange(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        Entity order = null;
-
-        if (state.getFieldValue() != null) {
-            order = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(
-                    (Long) state.getFieldValue());
-        }
-
-        // warehouseIssue.setField(WarehouseIssueFields.ORDER, order);
-
         LookupComponent technologyOperationComponentLookup = (LookupComponent) view
                 .getComponentByReference(WarehouseIssueFields.TECHNOLOGY_OPERATION_COMPONENT);
 
@@ -226,50 +196,11 @@ public class WarehouseIssueDetailsListeners {
 
         GridComponent grid = (GridComponent) view.getComponentByReference(WarehouseIssueFields.PRODUCTS_TO_ISSUES);
         grid.setFieldValue(null);
-        grid.setEntities(new ArrayList<Entity>());
-
-        FieldComponent orderStartDateComponent = (FieldComponent) view
-                .getComponentByReference(WarehouseIssueFields.ORDER_START_DATE);
-        FieldComponent orderProductionLineComponent = (FieldComponent) view
-                .getComponentByReference(WarehouseIssueFields.ORDER_PRODUCTION_LINE_NUMBER);
-
-        // LookupComponent orderLookup = (LookupComponent) view.getComponentByReference("order");
-
-        if (order != null) {
-            // orderLookup.setFieldValue(order.getId());
-            // orderLookup.requestComponentUpdateState();
-            String orderStartDate = DateUtils.toDateTimeString(order.getDateField(OrderFields.START_DATE));
-            orderStartDateComponent.setFieldValue(orderStartDate);
-            orderStartDateComponent.requestComponentUpdateState();
-
-            Entity orderProductionLine = order.getBelongsToField(OrderFields.PRODUCTION_LINE);
-            orderProductionLineComponent.setFieldValue(orderProductionLine.getStringField(ProductionLineFields.NUMBER));
-            orderProductionLineComponent.requestComponentUpdateState();
-        } else {
-            // orderLookup.setFieldValue(null);
-            // orderLookup.requestComponentUpdateState();
-            orderStartDateComponent.setFieldValue(null);
-            orderStartDateComponent.requestComponentUpdateState();
-            orderProductionLineComponent.setFieldValue(null);
-            orderProductionLineComponent.requestComponentUpdateState();
-        }
-
-        // form.setEntity(warehouseIssue);
-        warehouseIssueDetailHooks.setCriteriaModifierParameters(view, order);
-        warehouseIssueDetailHooks.setViewState(view);
+        grid.setEntities(new ArrayList<>());
     }
 
     public void fillUnits(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         issueDetailsHooks.onBeforeRender(view);
-    }
-
-    private DataDefinition getIssueDD() {
-        return dataDefinitionService.get(ProductFlowThruDivisionConstants.PLUGIN_IDENTIFIER,
-                ProductFlowThruDivisionConstants.MODEL_ISSUE);
-    }
-
-    private DataDefinition getOrderDD() {
-        return dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER);
     }
 
 }

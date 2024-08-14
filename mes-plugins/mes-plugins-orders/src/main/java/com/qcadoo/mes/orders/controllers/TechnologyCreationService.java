@@ -21,10 +21,7 @@ import com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperationCompon
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.NumberService;
 import com.qcadoo.model.api.search.SearchRestrictions;
-import com.qcadoo.security.api.SecurityService;
-import com.qcadoo.view.api.utils.NumberGeneratorService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Service;
@@ -69,15 +66,6 @@ public class TechnologyCreationService {
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
-
-    @Autowired
-    private SecurityService securityService;
-
-    @Autowired
-    private NumberService numberService;
-
-    @Autowired
-    private NumberGeneratorService numberGeneratorService;
 
     @Autowired
     private TranslationService translationService;

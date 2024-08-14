@@ -116,11 +116,15 @@ public class ManifestoReportPdf extends ReportPdfView {
 
     private Entity order;
 
+    private boolean fromOrder;
+
     @Override
-    protected void prepareWriter(final Map<String, Object> model, final PdfWriter writer, final HttpServletRequest request)
+    protected void prepareWriter(final Map<String, Object> model, final PdfWriter writer,
+                                 final HttpServletRequest request)
             throws DocumentException {
         super.prepareWriter(model, writer, request);
 
+        fromOrder = Boolean.parseBoolean(model.get("fromOrder").toString());
         Long orderId = Long.valueOf(model.get("id").toString());
 
         order = orderService.getOrder(orderId);
@@ -128,22 +132,36 @@ public class ManifestoReportPdf extends ReportPdfView {
 
     @Override
     protected void addTitle(final Document document, final Locale locale) {
-        document.addTitle(translationService.translate("basicProductionCounting.detailedProductionCountingAndProgress.report.title", locale, order.getStringField(OrderFields.NUMBER)));
+        if (fromOrder) {
+            document.addTitle(translationService.translate("basicProductionCounting.detailedProductionCountingAndProgress.report.fromOrder.title", locale, order.getStringField(OrderFields.NUMBER)));
+        } else {
+            document.addTitle(translationService.translate("basicProductionCounting.detailedProductionCountingAndProgress.report.title", locale, order.getStringField(OrderFields.NUMBER)));
+        }
     }
 
     @Override
-    protected String addContent(final Document document, final Map<String, Object> model, final Locale locale, final PdfWriter writer)
+    protected String addContent(final Document document, final Map<String, Object> model, final Locale locale,
+                                final PdfWriter writer)
             throws DocumentException, IOException {
-        pdfHelper.addDocumentHeader(document, "", translationService.translate("basicProductionCounting.detailedProductionCountingAndProgress.report.title", locale, order.getStringField(OrderFields.NUMBER)), "", new Date());
+        if (fromOrder) {
+            pdfHelper.addDocumentHeader(document, "", translationService.translate("basicProductionCounting.detailedProductionCountingAndProgress.report.fromOrder.title", locale, order.getStringField(OrderFields.NUMBER)), "", new Date());
+        } else {
+            pdfHelper.addDocumentHeader(document, "", translationService.translate("basicProductionCounting.detailedProductionCountingAndProgress.report.title", locale, order.getStringField(OrderFields.NUMBER)), "", new Date());
+        }
 
         createHeaderTable(document, order, locale);
         createOperationsTable(document, writer, order, locale);
         createProductsTable(document, order, locale);
 
-        return translationService.translate("basicProductionCounting.detailedProductionCountingAndProgress.report.fileName", locale, order.getStringField(OrderFields.NUMBER));
+        if (fromOrder) {
+            return translationService.translate("basicProductionCounting.detailedProductionCountingAndProgress.report.fromOrder.fileName", locale, order.getStringField(OrderFields.NUMBER));
+        } else {
+            return translationService.translate("basicProductionCounting.detailedProductionCountingAndProgress.report.fileName", locale, order.getStringField(OrderFields.NUMBER));
+        }
     }
 
-    private void createHeaderTable(final Document document, final Entity order, final Locale locale) throws DocumentException {
+    private void createHeaderTable(final Document document, final Entity order,
+                                   final Locale locale) throws DocumentException {
         List<HeaderPair> headerValues = getHeaderTableContents(order);
 
         PdfPTable headerTable = pdfHelper.createPanelTable(2);
@@ -204,7 +222,8 @@ public class ManifestoReportPdf extends ReportPdfView {
         return headerValues;
     }
 
-    private void createOperationsTable(final Document document, final PdfWriter writer, final Entity order, final Locale locale) throws DocumentException {
+    private void createOperationsTable(final Document document, final PdfWriter writer, final Entity order,
+                                       final Locale locale) throws DocumentException {
         List<HeaderPair> headerValues = getOrdersTableHeaders();
 
         List<String> header = Lists.newArrayList();
@@ -270,7 +289,8 @@ public class ManifestoReportPdf extends ReportPdfView {
         return code128.createImageWithBarcode(cb, null, null);
     }
 
-    private void createProductsTable(final Document document, final Entity order, final Locale locale) throws DocumentException {
+    private void createProductsTable(final Document document, final Entity order,
+                                     final Locale locale) throws DocumentException {
         List<HeaderPair> headerValues = getProductsTableHeaders();
 
         List<String> header = Lists.newArrayList();

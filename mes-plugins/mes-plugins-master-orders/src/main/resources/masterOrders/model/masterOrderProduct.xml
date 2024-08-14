@@ -73,6 +73,12 @@
             <validatesScale max="5"/>
         </decimal>
 
+        <decimal name="price" copyable="false">
+            <validatesRange from="0" exclusively="true"/>
+            <validatesUnscaledValue max="9"/>
+            <validatesScale max="5"/>
+        </decimal>
+
         <string name="defaultTechnology" persistent="false">
             <validatesLength max="2048"/>
         </string>

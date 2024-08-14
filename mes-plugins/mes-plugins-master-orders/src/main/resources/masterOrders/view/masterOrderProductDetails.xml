@@ -37,7 +37,7 @@
             <component type="form" name="masterOrderProductDetails"
                        reference="form">
                 <component type="gridLayout" name="gridLayout" columns="3"
-                           rows="7">
+                           rows="8">
                     <layoutElement column="1" row="1" width="2">
                         <component type="lookup" name="product" reference="product"
                                    field="product" hasDescription="true">
@@ -93,84 +93,89 @@
                             <option type="withTimePicker" value="true"/>
                         </component>
                     </layoutElement>
+                    <layoutElement column="1" row="8" width="2">
+                        <component type="input" name="price" field="price" reference="price">
+                            <option type="alignment" value="right"/>
+                        </component>
+                    </layoutElement>
                     <layoutElement column="3" row="1" height="7">
                         <component type="borderLayout" name="productQuantity">
                             <component type="gridLayout" name="productQuantityGridLayout"
-                                       columns="4" rows="7" reference="productQuantityGridLayout"
+                                       columns="6" rows="7" reference="productQuantityGridLayout"
                                        hasBorders="false">
-                                <layoutElement column="1" row="1" width="3">
+                                <layoutElement column="1" row="1" width="5">
                                     <component type="input" name="masterOrderQuantity"
                                                field="masterOrderQuantity" reference="masterOrderQuantity">
                                         <option type="alignment" value="right"/>
                                     </component>
                                 </layoutElement>
-                                <layoutElement column="4" row="1">
+                                <layoutElement column="6" row="1">
                                     <component type="input" name="masterOrderQuantityUnit"
                                                reference="masterOrderQuantityUnit" hasLabel="false">
                                         <option type="textRepresentationOnDisabled" value="true"/>
                                     </component>
                                 </layoutElement>
-                                <layoutElement column="1" row="2" width="3">
+                                <layoutElement column="1" row="2" width="5">
                                     <component type="input" name="cumulatedOrderQuantity"
                                                field="cumulatedOrderQuantity" reference="cumulatedOrderQuantity"
                                                defaultEnabled="never">
                                         <option type="alignment" value="right"/>
                                     </component>
                                 </layoutElement>
-                                <layoutElement column="4" row="2">
+                                <layoutElement column="6" row="2">
                                     <component type="input" name="cumulatedOrderQuantityUnit"
                                                reference="cumulatedOrderQuantityUnit" hasLabel="false">
                                         <option type="textRepresentationOnDisabled" value="true"/>
                                     </component>
                                 </layoutElement>
 
-                                <layoutElement column="1" row="3" width="3">
+                                <layoutElement column="1" row="3" width="5">
                                     <component type="input" name="quantityTakenFromWarehouse" defaultEnabled="never"
                                                field="quantityTakenFromWarehouse" reference="quantityTakenFromWarehouse">
                                         <option type="alignment" value="right"/>
                                     </component>
                                 </layoutElement>
-                                <layoutElement column="4" row="3">
+                                <layoutElement column="6" row="3">
                                     <component type="input" name="quantityTakenFromWarehouseUnit"
                                                reference="quantityTakenFromWarehouseUnit" hasLabel="false">
                                         <option type="textRepresentationOnDisabled" value="true"/>
                                     </component>
                                 </layoutElement>
 
-                                <layoutElement column="1" row="4" width="3">
+                                <layoutElement column="1" row="4" width="5">
                                     <component type="input" name="leftToRelease"
                                                field="leftToRelease" reference="leftToRelease"
                                                defaultEnabled="never">
                                         <option type="alignment" value="right"/>
                                     </component>
                                 </layoutElement>
-                                <layoutElement column="4" row="4">
+                                <layoutElement column="6" row="4">
                                     <component type="input" name="leftToReleaseUnit"
                                                reference="leftToReleaseUnit" hasLabel="false">
                                         <option type="textRepresentationOnDisabled" value="true"/>
                                     </component>
                                 </layoutElement>
-                                <layoutElement column="1" row="5" width="3">
+                                <layoutElement column="1" row="5" width="5">
                                     <component type="input" name="producedOrderQuantity"
                                                field="producedOrderQuantity" reference="producedOrderQuantity"
                                                defaultEnabled="never">
                                         <option type="alignment" value="right"/>
                                     </component>
                                 </layoutElement>
-                                <layoutElement column="4" row="5">
+                                <layoutElement column="6" row="5">
                                     <component type="input" name="producedOrderQuantityUnit"
                                                reference="producedOrderQuantityUnit" hasLabel="false">
                                         <option type="textRepresentationOnDisabled" value="true"/>
                                     </component>
                                 </layoutElement>
-                                <layoutElement column="1" row="6" width="3">
+                                <layoutElement column="1" row="6" width="5">
                                     <component type="input" name="quantityRemainingToOrder"
                                                field="quantityRemainingToOrder" reference="quantityRemainingToOrder"
                                                defaultEnabled="never">
                                         <option type="alignment" value="right"/>
                                     </component>
                                 </layoutElement>
-                                <layoutElement column="4" row="6">
+                                <layoutElement column="6" row="6">
                                     <component type="input" name="quantityRemainingToOrderUnit"
                                                reference="quantityRemainingToOrderUnit" hasLabel="false">
                                         <option type="textRepresentationOnDisabled" value="true"/>

@@ -85,7 +85,7 @@ public class WarehouseMinimalStateAspectOS {
             int ordersIncludePeriod = getOrdersIncludePeriod();
             BigDecimal planned = getPlannedQuantity(productId, ordersIncludePeriod);
             BigDecimal quantityWithoutPlanned = quantity.subtract(planned, numberService.getMathContext());
-            return quantityWithoutPlanned.compareTo(minimumState) == -1;
+            return quantityWithoutPlanned.compareTo(minimumState) < 0;
         } else {
             return (boolean) pjp.proceed();
         }

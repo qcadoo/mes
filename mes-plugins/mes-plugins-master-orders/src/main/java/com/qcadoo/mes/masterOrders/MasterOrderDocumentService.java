@@ -125,6 +125,7 @@ public class MasterOrderDocumentService {
 
             position.setField(PositionFields.QUANTITY, quantity);
             position.setField(PositionFields.PRODUCT, product);
+            position.setField(PositionFields.SELLING_PRICE, mo.getDecimalField(MasterOrderProductFields.PRICE));
 
             position.setField(PositionFields.DOCUMENT, documentBuilder.getDocument());
 

@@ -42,7 +42,7 @@ public class WarehouseStocksListResolver {
                 && BigDecimal.ZERO.compareTo(BigDecimalUtils.convertNullToZero(warehouseStocks.getDecimalField("minimumState"))) != 0) {
 
             if (BigDecimalUtils.convertNullToZero(warehouseStocks.getDecimalField("minimumState")).compareTo(
-                    BigDecimalUtils.convertNullToZero(warehouseStocks.getDecimalField("quantity"))) == 1) {
+                    BigDecimalUtils.convertNullToZero(warehouseStocks.getDecimalField("quantity"))) > 0) {
                 rowStyles.add(RowStyle.RED_BACKGROUND);
             }
 

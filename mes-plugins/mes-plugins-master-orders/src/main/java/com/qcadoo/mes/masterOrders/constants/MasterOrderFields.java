@@ -97,4 +97,8 @@ public final class MasterOrderFields {
 
     public static final String MASTER_ORDERS_MATERIAL_REQUIREMENTS = "masterOrdersMaterialRequirements";
 
+    public static final String DELIVERY_DATE = "deliveryDate";
+
+    public static final String PRICE = "price";
+
 }

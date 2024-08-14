@@ -1,20 +1,5 @@
 package com.qcadoo.mes.productFlowThruDivision.warehouseIssue;
 
-import java.time.LocalDate;
-import java.time.ZoneId;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
-
-import com.qcadoo.mes.productFlowThruDivision.warehouseIssue.states.aop.WarehouseIssueStateChangeAspect;
-import com.qcadoo.mes.productFlowThruDivision.warehouseIssue.states.client.WarehouseIssueStateChangeViewClient;
-import com.qcadoo.mes.productFlowThruDivision.warehouseIssue.states.constants.WarehouseIssueStringValues;
-import com.qcadoo.mes.states.StateChangeContext;
-import com.qcadoo.mes.states.service.StateChangeContextBuilder;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
-import org.springframework.stereotype.Service;
-
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.qcadoo.mes.basic.ParameterService;
@@ -22,7 +7,6 @@ import com.qcadoo.mes.basicProductionCounting.constants.BasicProductionCountingC
 import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityFields;
 import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityRole;
 import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityTypeOfMaterial;
-import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.mes.orders.states.constants.OrderState;
 import com.qcadoo.mes.productFlowThruDivision.constants.ParameterFieldsPFTD;
@@ -31,20 +15,28 @@ import com.qcadoo.mes.productFlowThruDivision.constants.ProductsToIssue;
 import com.qcadoo.mes.productFlowThruDivision.service.WarehouseIssueService;
 import com.qcadoo.mes.productFlowThruDivision.warehouseIssue.constans.CollectionProducts;
 import com.qcadoo.mes.productFlowThruDivision.warehouseIssue.constans.WarehouseIssueFields;
+import com.qcadoo.mes.productFlowThruDivision.warehouseIssue.states.aop.WarehouseIssueStateChangeAspect;
 import com.qcadoo.mes.productFlowThruDivision.warehouseIssue.states.constants.WarehouseIssueState;
-import com.qcadoo.mes.productionLines.constants.ProductionLineFields;
+import com.qcadoo.mes.productFlowThruDivision.warehouseIssue.states.constants.WarehouseIssueStringValues;
+import com.qcadoo.mes.states.StateChangeContext;
+import com.qcadoo.mes.states.service.StateChangeContextBuilder;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
 import com.qcadoo.mes.technologies.states.constants.TechnologyState;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.search.SearchCriteriaBuilder;
-import com.qcadoo.model.api.search.SearchProjections;
-import com.qcadoo.model.api.search.SearchQueryBuilder;
-import com.qcadoo.model.api.search.SearchRestrictions;
-import com.qcadoo.model.api.search.SearchResult;
+import com.qcadoo.model.api.search.*;
 import com.qcadoo.tenant.api.MultiTenantService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.stereotype.Service;
+
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
 
 @Service
 public class WarehouseIssueGenerator {
@@ -185,11 +177,6 @@ public class WarehouseIssueGenerator {
     }
 
     private Entity createNewWarehouseIssue(final Entity orderDto, final Entity placeOfIssue) {
-        Entity order = getOrderDD().get(orderDto.getId());
-
-        String productionLineNumber = order.getBelongsToField(OrderFields.PRODUCTION_LINE)
-                .getStringField(ProductionLineFields.NUMBER);
-
         Entity warehouseIssue = getWarehouseIssueDD().create();
 
         warehouseIssue.setField(WarehouseIssueFields.COLLECTION_PRODUCTS, CollectionProducts.ON_ORDER.getStringValue());
@@ -197,8 +184,6 @@ public class WarehouseIssueGenerator {
         warehouseIssue.setField(WarehouseIssueFields.ORDER, orderDto);
         warehouseIssue.setField(WarehouseIssueFields.PLACE_OF_ISSUE, placeOfIssue);
         warehouseIssue.setField(WarehouseIssueFields.STATE, WarehouseIssueState.DRAFT.getStringValue());
-        warehouseIssue.setField(WarehouseIssueFields.ORDER_START_DATE, order.getDateField(OrderFields.START_DATE));
-        warehouseIssue.setField(WarehouseIssueFields.ORDER_PRODUCTION_LINE_NUMBER, productionLineNumber);
         warehouseIssue.setField(WarehouseIssueFields.PRODUCTS_TO_ISSUE_MODE,
                 warehouseIssueParameterService.getProductsToIssue().getStrValue());
 
