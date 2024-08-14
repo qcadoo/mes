@@ -5380,6 +5380,7 @@ CREATE TABLE public.arch_masterorders_masterorderproduct (
     line character varying(255),
     vendorinfo character varying(255),
     vendorso character varying(255),
+    price numeric(14,5),
     archived boolean DEFAULT false
 );
 
@@ -8729,8 +8730,6 @@ CREATE TABLE public.arch_productflowthrudivision_warehouseissue (
     createuser character varying(255),
     updateuser character varying(255),
     entityversion bigint DEFAULT 0,
-    orderstartdate timestamp without time zone,
-    orderproductionlinenumber character varying(255),
     productstoissuemode character varying(255) DEFAULT '01allInputProducts'::character varying,
     archived boolean DEFAULT false
 );
@@ -17349,7 +17348,8 @@ CREATE TABLE public.masterorders_masterorderproduct (
     deliverydate timestamp without time zone,
     line character varying(255),
     vendorinfo character varying(255),
-    vendorso character varying(255)
+    vendorso character varying(255),
+    price numeric(14,5)
 );
 
 
@@ -19028,7 +19028,8 @@ SELECT
     NULL::boolean AS warehouseorder,
     NULL::numeric AS warehousestate,
     NULL::numeric AS deliveredquantity,
-    NULL::numeric AS producequantity;
+    NULL::numeric AS producequantity,
+    NULL::numeric(14,5) AS price;
 
 
 --
@@ -19072,7 +19073,8 @@ CREATE VIEW public.masterorders_masterorderpositiondto AS
     masterorders_masterorderposition_manyproducts.warehouseorder,
     masterorders_masterorderposition_manyproducts.warehousestate,
     masterorders_masterorderposition_manyproducts.deliveredquantity,
-    masterorders_masterorderposition_manyproducts.producequantity
+    masterorders_masterorderposition_manyproducts.producequantity,
+    masterorders_masterorderposition_manyproducts.price
    FROM public.masterorders_masterorderposition_manyproducts;
 
 
@@ -25366,10 +25368,7 @@ ALTER SEQUENCE public.ordersupplies_coverageproductselected_id_seq OWNED BY publ
 CREATE VIEW public.ordersupplies_coverageproducttypedto AS
  SELECT prod.id AS productid,
     tech.id AS technologyid,
-        CASE
-            WHEN ((tech.technologytype IS NULL) AND ((tech.state)::text = '02accepted'::text) AND (tech.master = true)) THEN '02intermediate'::text
-            ELSE '01component'::text
-        END AS producttype
+    '02intermediate'::text AS producttype
    FROM (public.basic_product prod
      LEFT JOIN public.technologies_technology tech ON ((tech.product_id = prod.id)))
   WHERE ((tech.technologytype IS NULL) AND ((tech.state)::text = '02accepted'::text) AND (tech.master = true));
@@ -25710,8 +25709,6 @@ CREATE TABLE public.productflowthrudivision_warehouseissue (
     createuser character varying(255),
     updateuser character varying(255),
     entityversion bigint DEFAULT 0,
-    orderstartdate timestamp without time zone,
-    orderproductionlinenumber character varying(255),
     productstoissuemode character varying(255) DEFAULT '01allInputProducts'::character varying
 );
 
@@ -26304,7 +26301,7 @@ CREATE VIEW public.productflowthrudivision_producttoissuedto AS
     locationfrom.number AS locationfromnumber,
     locationto.number AS locationtonumber,
     o.number AS ordernumber,
-    issue.orderstartdate,
+    o.startdate AS orderstartdate,
     issue.state,
     product.number AS productnumber,
     product.name AS productname,
@@ -37959,7 +37956,7 @@ COPY public.arch_masterorders_masterorder (id, number, name, description, extern
 -- Data for Name: arch_masterorders_masterorderproduct; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.arch_masterorders_masterorderproduct (id, product_id, technology_id, masterorder_id, masterorderquantity, cumulatedorderquantity, producedorderquantity, entityversion, lefttorelease, comments, masterorderpositionstatus, quantitytakenfromwarehouse, quantityremainingtoorder, deliverydate, line, vendorinfo, vendorso, archived) FROM stdin;
+COPY public.arch_masterorders_masterorderproduct (id, product_id, technology_id, masterorder_id, masterorderquantity, cumulatedorderquantity, producedorderquantity, entityversion, lefttorelease, comments, masterorderpositionstatus, quantitytakenfromwarehouse, quantityremainingtoorder, deliverydate, line, vendorinfo, vendorso, price, archived) FROM stdin;
 \.
 
 
@@ -38367,7 +38364,7 @@ COPY public.arch_productflowthrudivision_producttoissuecorrection (id, productto
 -- Data for Name: arch_productflowthrudivision_warehouseissue; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.arch_productflowthrudivision_warehouseissue (id, number, description, order_id, placeofissue_id, division_id, workerwhoissued_id, workerwhocollected_id, dateofissued, dateofcreation, technologyoperationcomponent_id, collectionproducts, state, createdate, updatedate, createuser, updateuser, entityversion, orderstartdate, orderproductionlinenumber, productstoissuemode, archived) FROM stdin;
+COPY public.arch_productflowthrudivision_warehouseissue (id, number, description, order_id, placeofissue_id, division_id, workerwhoissued_id, workerwhocollected_id, dateofissued, dateofcreation, technologyoperationcomponent_id, collectionproducts, state, createdate, updatedate, createuser, updateuser, entityversion, productstoissuemode, archived) FROM stdin;
 \.
 
 
@@ -42003,7 +42000,7 @@ COPY public.masterorders_masterorderdefinition (id, number, name, parameter_id, 
 -- Data for Name: masterorders_masterorderproduct; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.masterorders_masterorderproduct (id, product_id, technology_id, masterorder_id, masterorderquantity, cumulatedorderquantity, producedorderquantity, entityversion, lefttorelease, comments, masterorderpositionstatus, quantitytakenfromwarehouse, quantityremainingtoorder, deliverydate, line, vendorinfo, vendorso) FROM stdin;
+COPY public.masterorders_masterorderproduct (id, product_id, technology_id, masterorder_id, masterorderquantity, cumulatedorderquantity, producedorderquantity, entityversion, lefttorelease, comments, masterorderpositionstatus, quantitytakenfromwarehouse, quantityremainingtoorder, deliverydate, line, vendorinfo, vendorso, price) FROM stdin;
 \.
 
 
@@ -43105,7 +43102,7 @@ COPY public.productflowthrudivision_trackingproductresourcereservation (id, prio
 -- Data for Name: productflowthrudivision_warehouseissue; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.productflowthrudivision_warehouseissue (id, number, description, order_id, placeofissue_id, division_id, workerwhoissued_id, workerwhocollected_id, dateofissued, dateofcreation, technologyoperationcomponent_id, collectionproducts, state, createdate, updatedate, createuser, updateuser, entityversion, orderstartdate, orderproductionlinenumber, productstoissuemode) FROM stdin;
+COPY public.productflowthrudivision_warehouseissue (id, number, description, order_id, placeofissue_id, division_id, workerwhoissued_id, workerwhocollected_id, dateofissued, dateofcreation, technologyoperationcomponent_id, collectionproducts, state, createdate, updatedate, createuser, updateuser, entityversion, productstoissuemode) FROM stdin;
 \.
 
 
@@ -58156,7 +58153,8 @@ CREATE OR REPLACE VIEW public.masterorders_masterorderposition_manyproducts AS
     masterorder.warehouseorder,
     COALESCE(min(wsh.quantity), (0)::numeric) AS warehousestate,
     COALESCE(min(mopdpqh.quantity), (0)::numeric) AS deliveredquantity,
-    COALESCE(min(pcqo.quantity), (0)::numeric) AS producequantity
+    COALESCE(min(pcqo.quantity), (0)::numeric) AS producequantity,
+    masterorderproduct.price
    FROM (((((((((((((public.masterorders_masterorderproduct masterorderproduct
      LEFT JOIN public.masterorders_masterorder masterorder ON ((masterorderproduct.masterorder_id = masterorder.id)))
      LEFT JOIN public.masterorders_masterorderdefinition masterorderdefinition ON ((masterorderdefinition.id = masterorder.masterorderdefinition_id)))
@@ -58215,7 +58213,8 @@ UNION ALL
     masterorder.warehouseorder,
     COALESCE(min(wsh.quantity), (0)::numeric) AS warehousestate,
     COALESCE(min(mopdpqh.quantity), (0)::numeric) AS deliveredquantity,
-    COALESCE(min(pcqo.quantity), (0)::numeric) AS producequantity
+    COALESCE(min(pcqo.quantity), (0)::numeric) AS producequantity,
+    masterorderproduct.price
    FROM (((((((((((((public.masterorders_masterorderproduct masterorderproduct
      LEFT JOIN public.masterorders_masterorder masterorder ON ((masterorderproduct.masterorder_id = masterorder.id)))
      LEFT JOIN public.masterorders_masterorderdefinition masterorderdefinition ON ((masterorderdefinition.id = masterorder.masterorderdefinition_id)))
