@@ -24377,14 +24377,14 @@ CREATE VIEW public.ordersforsubproductsgeneration_relatedorderdto AS
     COALESCE(o.amountofproductproduced, (0)::numeric) AS producedquantity,
     o.datefrom,
     o.dateto,
-    pl.number AS productionlinenumber,
+    COALESCE(pl.number, ''::character varying(255)) AS productionlinenumber,
     o.state,
     (o.root_id)::integer AS rootid,
     COALESCE(o.level, 0) AS level,
     NULL::bigint AS order_id
    FROM ((public.orders_order o
      JOIN public.basic_product p ON ((p.id = o.product_id)))
-     JOIN public.productionlines_productionline pl ON ((pl.id = o.productionline_id)));
+     LEFT JOIN public.productionlines_productionline pl ON ((pl.id = o.productionline_id)));
 
 
 --
