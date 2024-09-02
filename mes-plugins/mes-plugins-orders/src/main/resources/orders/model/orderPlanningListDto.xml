@@ -65,6 +65,7 @@
         <boolean name="hasPacks"/>
         <string name="salesPlanNumber"/>
         <integer name="priority"/>
+        <boolean name="dateChange"/>
 
     </fields>
     <hooks>

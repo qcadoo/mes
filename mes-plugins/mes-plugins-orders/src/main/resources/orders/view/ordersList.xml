@@ -253,6 +253,7 @@
             <option type="column" name="additionalFinalProducts" fields="additionalFinalProducts" width="60"/>
             <option type="column" name="companyName" fields="companyName" width="50"/>
 			<option type="column" name="orderCategory" fields="orderCategory" width="40"/>
+			<option type="column" name="dateChange" fields="dateChange" width="30"/>
 
             <option type="correspondingView" value="orders/orderDetails"/>
             <option type="correspondingComponent" value="form"/>
@@ -260,9 +261,9 @@
             <option type="order" column="deadline" direction="desc"/>
 
             <option type="searchable"
-                    value="additionalFinalProducts,name,number,state,dateFrom,dateTo,deadline,technologyNumber,productNumber,productName,plannedQuantity,unit,companyName,plannedQuantityForAdditionalUnit,unitForAdditionalUnit,orderCategory"/>
+                    value="additionalFinalProducts,name,number,state,dateFrom,dateTo,deadline,technologyNumber,productNumber,productName,plannedQuantity,unit,companyName,plannedQuantityForAdditionalUnit,unitForAdditionalUnit,orderCategory,dateChange"/>
             <option type="orderable"
-                    value="additionalFinalProducts,name,number,state,dateFrom,dateTo,deadline,technologyNumber,productNumber,productName,plannedQuantity,unit,companyName,plannedQuantityForAdditionalUnit,unitForAdditionalUnit,orderCategory"/>
+                    value="additionalFinalProducts,name,number,state,dateFrom,dateTo,deadline,technologyNumber,productNumber,productName,plannedQuantity,unit,companyName,plannedQuantityForAdditionalUnit,unitForAdditionalUnit,orderCategory,dateChange"/>
 
             <option type="footerRow" value="true"/>
             <option type="columnsToSummary" value="plannedQuantity,plannedQuantityForAdditionalUnit"/>
