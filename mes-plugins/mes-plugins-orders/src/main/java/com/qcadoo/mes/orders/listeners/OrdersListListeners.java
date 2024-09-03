@@ -27,7 +27,6 @@ import com.qcadoo.mes.orders.TechnologyServiceO;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.mes.orders.states.client.OrderStateChangeViewClient;
-import com.qcadoo.mes.orders.states.constants.OrderStateStringValues;
 import com.qcadoo.mes.states.service.client.util.ViewContextHolder;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
 import com.qcadoo.mes.technologies.states.TechnologyStateChangeViewClient;
@@ -35,14 +34,10 @@ import com.qcadoo.mes.technologies.states.constants.TechnologyStateStringValues;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.GridComponent;
 import com.qcadoo.view.constants.QcadooViewConstants;
-
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -60,23 +55,6 @@ public class OrdersListListeners {
 
     @Autowired
     private TechnologyServiceO technologyServiceO;
-
-    public void generateProductionCounting(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        List<Entity> orders = getOrderDD().find().add(SearchRestrictions.eq(OrderFields.STATE, OrderStateStringValues.PENDING))
-                .add(SearchRestrictions.isNotNull(OrderFields.TECHNOLOGY))
-                .add(SearchRestrictions.isEmpty("productionCountingQuantities")).setMaxResults(50).list().getEntities();
-        if (orders.isEmpty()) {
-            view.addMessage("orders.ordersList.info.allOrdersHasGeneratedProductionCounting", ComponentState.MessageType.INFO);
-        }
-        for (Entity order : orders) {
-            order.getDataDefinition().save(order);
-        }
-        if (!orders.isEmpty()) {
-            view.addMessage("orders.ordersList.info.generatedProductionCounting", ComponentState.MessageType.INFO,
-                    String.valueOf(orders.size()));
-        }
-
-    }
 
     public void changeState(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         GridComponent gridComponent = (GridComponent) view.getComponentByReference(QcadooViewConstants.L_GRID);
