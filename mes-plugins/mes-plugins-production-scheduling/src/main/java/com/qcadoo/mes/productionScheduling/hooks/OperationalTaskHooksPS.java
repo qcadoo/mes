@@ -105,7 +105,7 @@ public class OperationalTaskHooksPS {
         boolean includeTpz = parameter.getBooleanField("includeTpzSG");
 
         BigDecimal operationComponentRuns = basicProductionCountingService.getOperationComponentRuns(order, technologyOperationComponent);
-        Optional<Entity> techOperCompWorkstationTime = normService.getTechOperCompWorkstationTime(technologyOperationComponent, workstation);
+        Optional<Entity> techOperCompWorkstationTime = normService.getTechOperCompWorkstationTime(technologyOperationComponent, workstation.getId());
         BigDecimal staffFactor = normService.getStaffFactor(technologyOperationComponent, operationalTask.getIntegerField(OperationalTaskFields.ACTUAL_STAFF));
 
         Integer machineWorkTime;
