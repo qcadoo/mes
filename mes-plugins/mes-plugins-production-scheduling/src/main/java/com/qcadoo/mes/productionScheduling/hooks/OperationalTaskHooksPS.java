@@ -87,7 +87,8 @@ public class OperationalTaskHooksPS {
         }
     }
 
-    private void updateFinishDate(final Entity operationalTask, final Entity technologyOperationComponent, final Integer actualStaff, final Entity operationalTaskDB) {
+    private void updateFinishDate(final Entity operationalTask, final Entity technologyOperationComponent,
+                                  final Integer actualStaff, final Entity operationalTaskDB) {
         if (!Objects.isNull(technologyOperationComponent) && technologyOperationComponent
                 .getBooleanField(TechnologyOperationComponentFieldsTNFO.TJ_DECREASES_FOR_ENLARGED_STAFF) &&
                 (Objects.isNull(operationalTask.getId()) && !actualStaff.equals(technologyOperationComponent.getIntegerField(TechnologyOperationComponentFieldsTNFO.MIN_STAFF))
@@ -105,7 +106,10 @@ public class OperationalTaskHooksPS {
         boolean includeTpz = parameter.getBooleanField("includeTpzSG");
 
         BigDecimal operationComponentRuns = basicProductionCountingService.getOperationComponentRuns(order, technologyOperationComponent);
-        Optional<Entity> techOperCompWorkstationTime = normService.getTechOperCompWorkstationTime(technologyOperationComponent, workstation.getId());
+        Optional<Entity> techOperCompWorkstationTime = Optional.empty();
+        if (Objects.nonNull(workstation)) {
+            techOperCompWorkstationTime = normService.getTechOperCompWorkstationTime(technologyOperationComponent, workstation.getId());
+        }
         BigDecimal staffFactor = normService.getStaffFactor(technologyOperationComponent, operationalTask.getIntegerField(OperationalTaskFields.ACTUAL_STAFF));
 
         Integer machineWorkTime;
