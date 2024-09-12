@@ -61,6 +61,7 @@
         <integer name="masterOrderId"/>
         <integer name="productId"/>
         <integer name="productionLineId"/>
+        <boolean name="dateChange"/>
     </fields>
 
     <hooks/>

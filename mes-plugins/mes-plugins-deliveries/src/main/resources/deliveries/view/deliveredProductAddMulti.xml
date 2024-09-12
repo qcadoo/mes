@@ -169,7 +169,9 @@
                                     </layoutElement>
                                     <layoutElement column="13" row="1" width="3">
                                         <component type="calendar" name="expirationDate" field="expirationDate"
-                                                   reference="expirationDate"/>
+                                                   reference="expirationDate">
+                                            <option type="labelWidth" value="35"/>
+                                        </component>
                                     </layoutElement>
                                     <layoutElement column="6" row="2" width="3">
                                         <component type="lookup" name="batch" field="batch"

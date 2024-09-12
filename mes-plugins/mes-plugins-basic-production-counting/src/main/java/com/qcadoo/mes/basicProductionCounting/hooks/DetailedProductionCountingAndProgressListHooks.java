@@ -29,6 +29,7 @@ import com.qcadoo.mes.basic.constants.GlobalTypeOfMaterial;
 import com.qcadoo.mes.basicProductionCounting.ProductionTrackingUpdateService;
 import com.qcadoo.mes.basicProductionCounting.constants.BasicProductionCountingConstants;
 import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityFields;
+import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityRole;
 import com.qcadoo.mes.basicProductionCounting.hooks.util.ProductionProgressModifyLockHelper;
 import com.qcadoo.mes.orders.OrderService;
 import com.qcadoo.mes.orders.constants.OrderFields;
@@ -147,9 +148,14 @@ public class DetailedProductionCountingAndProgressListHooks {
         List<ErrorMessage> errors = Lists.newArrayList();
         for (Entity productionCountingQuantity : selectedEntities) {
             String typeOfMaterial = productionCountingQuantity.getStringField(ProductionCountingQuantityFields.TYPE_OF_MATERIAL);
+            String role = productionCountingQuantity.getStringField(ProductionCountingQuantityFields.ROLE);
 
             if (GlobalTypeOfMaterial.FINAL_PRODUCT.getStringValue().equals(typeOfMaterial)) {
                 state.addMessage("basicProductionCounting.productionCountingQuantity.error.cantDeleteFinal",
+                        ComponentState.MessageType.INFO);
+            } else if (GlobalTypeOfMaterial.INTERMEDIATE.getStringValue().equals(typeOfMaterial)
+                    && ProductionCountingQuantityRole.PRODUCED.getStringValue().equals(role)) {
+                state.addMessage("basicProductionCounting.productionCountingQuantity.error.cantDeleteIntermediate",
                         ComponentState.MessageType.INFO);
             } else {
                 ids.add(productionCountingQuantity.getId());
@@ -170,7 +176,7 @@ public class DetailedProductionCountingAndProgressListHooks {
         } else if (ids.size() > 1 && deleteSuccessful) {
             state.addMessage("qcadooView.message.deleteMessages", ComponentState.MessageType.SUCCESS, String.valueOf(ids.size()));
         } else if (!deleteSuccessful) {
-            errors.stream().forEach(error -> state.addMessage(error));
+            errors.forEach(state::addMessage);
         }
     }
 

@@ -236,7 +236,7 @@ public class ScheduleDetailsListenersPS {
             Integer laborWorkTime = position.getIntegerField(SchedulePositionFields.LABOR_WORK_TIME);
             Integer machineWorkTime = position.getIntegerField(SchedulePositionFields.MACHINE_WORK_TIME);
             Integer additionalTime = position.getIntegerField(SchedulePositionFields.ADDITIONAL_TIME);
-            Optional<Entity> techOperCompWorkstationTime = normService.getTechOperCompWorkstationTime(technologyOperationComponent, workstation);
+            Optional<Entity> techOperCompWorkstationTime = normService.getTechOperCompWorkstationTime(technologyOperationComponent, workstation.getId());
             if (techOperCompWorkstationTime.isPresent()) {
                 OperationWorkTime operationWorkTime = operationWorkTimeService.estimateTechOperationWorkTimeForWorkstation(
                         technologyOperationComponent,
@@ -338,7 +338,7 @@ public class ScheduleDetailsListenersPS {
                                        Entity workstation) {
         BigDecimal partialOperationComponentRuns = child.getDecimalField(SchedulePositionFields.PARTIAL_OPERATION_RUNS);
         BigDecimal staffFactor = normService.getStaffFactor(operationComponent, operationComponent.getIntegerField(TechnologyOperationComponentFieldsTNFO.OPTIMAL_STAFF));
-        Optional<Entity> techOperCompWorkstationTime = normService.getTechOperCompWorkstationTime(operationComponent, workstation);
+        Optional<Entity> techOperCompWorkstationTime = normService.getTechOperCompWorkstationTime(operationComponent, workstation.getId());
         OperationWorkTime partialOperationWorkTime;
         if (techOperCompWorkstationTime.isPresent()) {
             partialOperationWorkTime = operationWorkTimeService.estimateTechOperationWorkTimeForWorkstation(

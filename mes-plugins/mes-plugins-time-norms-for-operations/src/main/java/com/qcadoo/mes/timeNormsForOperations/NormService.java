@@ -23,15 +23,6 @@
  */
 package com.qcadoo.mes.timeNormsForOperations;
 
-import java.math.BigDecimal;
-import java.util.List;
-import java.util.Optional;
-
-import com.qcadoo.model.api.EntityTree;
-import com.qcadoo.model.api.EntityTreeNode;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.technologies.TechnologyService;
 import com.qcadoo.mes.technologies.constants.OperationFields;
@@ -41,6 +32,12 @@ import com.qcadoo.mes.timeNormsForOperations.constants.TechOperCompWorkstationTi
 import com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperationComponentFieldsTNFO;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.Optional;
 
 @Service
 public class NormService {
@@ -93,12 +90,12 @@ public class NormService {
         return operationComponent.getDecimalField(TechnologyOperationComponentFieldsTNFO.PRODUCTION_IN_ONE_CYCLE);
     }
 
-    public Optional<Entity> getTechOperCompWorkstationTime(Entity technologyOperationComponent, Entity workstation) {
+    public Optional<Entity> getTechOperCompWorkstationTime(Entity technologyOperationComponent, long workstationId) {
         List<Entity> techOperCompWorkstationTimes = technologyOperationComponent
                 .getHasManyField(TechnologyOperationComponentFieldsTNFO.TECH_OPER_COMP_WORKSTATION_TIMES);
         for (Entity techOperCompWorkstationTime : techOperCompWorkstationTimes) {
             if (techOperCompWorkstationTime.getBelongsToField(TechOperCompWorkstationTimeFields.WORKSTATION).getId()
-                    .equals(workstation.getId())) {
+                    .equals(workstationId)) {
                 return Optional.of(techOperCompWorkstationTime);
             }
         }
