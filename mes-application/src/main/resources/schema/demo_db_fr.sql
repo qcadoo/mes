@@ -23096,7 +23096,8 @@ CREATE VIEW public.orders_orderlistdto AS
     ''::character varying(255) AS annotation,
     (product.id)::integer AS productid,
     ordersorder.reportedproductionquantity,
-    (productionline.id)::integer AS productionlineid
+    (productionline.id)::integer AS productionlineid,
+    (ordersorder.correcteddatefrom IS NOT NULL) AS datechange
    FROM (((((((((public.orders_order ordersorder
      JOIN public.basic_product product ON ((product.id = ordersorder.product_id)))
      LEFT JOIN public.technologies_technology technology ON ((technology.id = ordersorder.technology_id)))
@@ -23284,7 +23285,8 @@ CREATE VIEW public.orders_orderplanninglistdto AS
     (date_part('day'::text, (date_trunc('day'::text, ordersorder.deadline) - (('now'::text)::date)::timestamp without time zone)))::integer AS daystodeadline,
     packs.haspacks,
     salesplan.number AS salesplannumber,
-    ordersorder.priority
+    ordersorder.priority,
+    (ordersorder.correcteddatefrom IS NOT NULL) AS datechange
    FROM ((((((((public.orders_order ordersorder
      JOIN public.basic_product product ON ((product.id = ordersorder.product_id)))
      LEFT JOIN public.technologies_technology technology ON ((technology.id = ordersorder.technology_id)))
