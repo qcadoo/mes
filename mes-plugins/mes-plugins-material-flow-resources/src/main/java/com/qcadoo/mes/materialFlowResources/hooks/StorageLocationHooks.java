@@ -1,9 +1,11 @@
 package com.qcadoo.mes.materialFlowResources.hooks;
 
 import com.qcadoo.mes.materialFlowResources.PalletValidatorService;
+import com.qcadoo.mes.materialFlowResources.constants.DocumentFields;
+import com.qcadoo.mes.materialFlowResources.constants.DocumentType;
+import com.qcadoo.mes.materialFlowResources.constants.PositionFields;
 import com.qcadoo.mes.materialFlowResources.constants.StorageLocationFields;
 import com.qcadoo.model.api.DataDefinition;
-import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -13,9 +15,6 @@ import java.util.Objects;
 
 @Service
 public class StorageLocationHooks {
-
-    @Autowired
-    private DataDefinitionService dataDefinitionService;
 
     @Autowired
     private PalletValidatorService palletValidatorService;
@@ -38,11 +37,17 @@ public class StorageLocationHooks {
             Entity storageLocationFromDB = storageLocationDD.get(storageLocationId);
             Entity locationFromDB = storageLocationFromDB.getBelongsToField(StorageLocationFields.LOCATION);
 
-            if (Objects.nonNull(location) && !location.getId().equals(locationFromDB.getId()) && !resources.isEmpty()) {
-                storageLocation.addError(storageLocationDD.getField(StorageLocationFields.LOCATION),
-                        "materialFlowResources.storageLocation.location.resourcesExists");
-
-                return false;
+            if (Objects.nonNull(location) && !location.getId().equals(locationFromDB.getId())) {
+                if (!resources.isEmpty()) {
+                    storageLocation.addError(storageLocationDD.getField(StorageLocationFields.LOCATION),
+                            "materialFlowResources.storageLocation.location.resourcesExists");
+                    return false;
+                } else if (storageLocation.getHasManyField(StorageLocationFields.POSITIONS).stream()
+                        .anyMatch(e -> DocumentType.isInbound(e.getBelongsToField(PositionFields.DOCUMENT).getStringField(DocumentFields.TYPE)))) {
+                    storageLocation.addError(storageLocationDD.getField(StorageLocationFields.LOCATION),
+                            "materialFlowResources.storageLocation.location.inboundDocumentExists");
+                    return false;
+                }
             }
         }
 
