@@ -163,7 +163,8 @@ public class DocumentValidators {
         return true;
     }
 
-    private boolean checkIfWarehouseHasChanged(final Entity oldDocument, final Entity newDocument, final String warehouseField) {
+    private boolean checkIfWarehouseHasChanged(final Entity oldDocument, final Entity newDocument,
+                                               final String warehouseField) {
         Entity oldWarehouse = oldDocument.getBelongsToField(warehouseField);
         Entity newWarehouse = newDocument.getBelongsToField(warehouseField);
 
@@ -197,8 +198,13 @@ public class DocumentValidators {
                             documentForm.addMessage("materialFlow.document.validate.global.error.invalidResource.batchRequired",
                                     ComponentState.MessageType.FAILURE, false, productNumber);
                         } else {
-                            documentForm.addMessage("materialFlow.document.validate.global.error.invalidResource",
-                                    ComponentState.MessageType.FAILURE, false, resourceNumber, productNumber);
+                            if (ire.getErrors().values().stream().anyMatch(e -> e.getMessage().equals("documentGrid.error.position.existsOtherResourceForPalletAndStorageLocation"))) {
+                                documentForm.addMessage("documentGrid.error.position.existsOtherResourceForPalletAndStorageLocation",
+                                        ComponentState.MessageType.FAILURE, false);
+                            } else {
+                                documentForm.addMessage("materialFlow.document.validate.global.error.invalidResource",
+                                        ComponentState.MessageType.FAILURE, false, resourceNumber, productNumber);
+                            }
                         }
                     }
                 } else {
