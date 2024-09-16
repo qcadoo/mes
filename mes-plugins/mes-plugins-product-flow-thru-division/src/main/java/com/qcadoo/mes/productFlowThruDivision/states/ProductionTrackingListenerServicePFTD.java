@@ -173,7 +173,7 @@ public final class ProductionTrackingListenerServicePFTD {
         List<Entity> trackingOperationProductOutComponents = productionTracking
                 .getHasManyField(ProductionTrackingFields.TRACKING_OPERATION_PRODUCT_OUT_COMPONENTS);
         Multimap<Long, Entity> groupedRecordOutProducts = productionTrackingDocumentsHelper
-                .fillFromBPCProductOut(trackingOperationProductOutComponents, order, true);
+                .fillFromBPCProductOut(trackingOperationProductOutComponents, order, technologyOperationComponent, true);
         List<Entity> trackingOperationProductInComponents = productionTracking
                 .getHasManyField(ProductionTrackingFields.TRACKING_OPERATION_PRODUCT_IN_COMPONENTS);
         Multimap<Long, Entity> groupedRecordInProducts = productionTrackingDocumentsHelper
@@ -519,15 +519,13 @@ public final class ProductionTrackingListenerServicePFTD {
                     return updateInternalInboundDocumentForFinalProducts(order, existingInboundDocument,
                             intermediateRecords, false, false);
                 }
-            } else {
-                if (Objects.nonNull(finalProductRecord)) {
-                    Entity inboundForFinalProduct = createInternalInboundDocumentForFinalProducts(locationTo, order,
-                            finalProductRecord, user);
+            } else if (Objects.nonNull(finalProductRecord)) {
+                Entity inboundForFinalProduct = createInternalInboundDocumentForFinalProducts(locationTo, order,
+                        finalProductRecord, user);
 
-                    if (Objects.nonNull(inboundForFinalProduct) && !inboundForFinalProduct.isValid()
-                            || intermediateRecords.isEmpty()) {
-                        return inboundForFinalProduct;
-                    }
+                if (Objects.nonNull(inboundForFinalProduct) && !inboundForFinalProduct.isValid()
+                        || intermediateRecords.isEmpty()) {
+                    return inboundForFinalProduct;
                 }
             }
 

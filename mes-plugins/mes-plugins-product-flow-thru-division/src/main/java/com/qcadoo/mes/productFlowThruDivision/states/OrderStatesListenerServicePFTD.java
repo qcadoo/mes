@@ -247,7 +247,8 @@ public class OrderStatesListenerServicePFTD {
         return nominalCost;
     }
 
-    private void fillInDocumentPositionsPrice(final Entity document, final Entity orderProduct, final Optional<BigDecimal> price) {
+    private void fillInDocumentPositionsPrice(final Entity document, final Entity orderProduct,
+                                              final Optional<BigDecimal> price) {
         Preconditions.checkNotNull(orderProduct, "Can't find order product.");
         Preconditions.checkNotNull(orderProduct.getId(), "Can't find order product.");
 
@@ -294,7 +295,8 @@ public class OrderStatesListenerServicePFTD {
         return Either.right(null);
     }
 
-    private Map<Entity, BigDecimal> getProductsAndQuantitiesMap(final MultiMap groupedProductQuantities, final Entity order) {
+    private Map<Entity, BigDecimal> getProductsAndQuantitiesMap(final MultiMap groupedProductQuantities,
+                                                                final Entity order) {
         Map<Entity, BigDecimal> map = Maps.newHashMap();
 
         for (Object pcq : groupedProductQuantities.values()) {
@@ -313,8 +315,10 @@ public class OrderStatesListenerServicePFTD {
         return map;
     }
 
-    private Either<String, Void> createTransferDocumentsForUnusedMaterials(final Entity locationFrom, final Entity locationTo,
-                                                                           final Map<Entity, BigDecimal> products, final Entity order) {
+    private Either<String, Void> createTransferDocumentsForUnusedMaterials(final Entity locationFrom,
+                                                                           final Entity locationTo,
+                                                                           final Map<Entity, BigDecimal> products,
+                                                                           final Entity order) {
         DocumentBuilder document = documentManagementService.getDocumentBuilder().transfer(locationFrom, locationTo);
 
         if (products.isEmpty()) {
@@ -374,7 +378,8 @@ public class OrderStatesListenerServicePFTD {
         return document.build();
     }
 
-    private MultiMap groupProductionCountingQuantitiesByField(final List<Entity> productionCountingQuantities, final String field) {
+    private MultiMap groupProductionCountingQuantitiesByField(final List<Entity> productionCountingQuantities,
+                                                              final String field) {
         MultiMap map = new MultiHashMap();
 
         for (Entity pcq : productionCountingQuantities) {
@@ -479,7 +484,7 @@ public class OrderStatesListenerServicePFTD {
         }
 
         Multimap<Long, Entity> groupedRecordOutProducts = productionTrackingDocumentsHelper
-                .fillFromBPCProductOut(trackingOperationProductOutComponents, order, true);
+                .fillFromBPCProductOut(trackingOperationProductOutComponents, order, null, true);
 
         for (Long warehouseId : groupedRecordOutProducts.keySet()) {
             Entity locationTo = getLocationDD().get(warehouseId);
