@@ -40,8 +40,6 @@ import java.util.stream.Collectors;
 @Service
 public class ProductionTrackingDocumentsHelper {
 
-    private static final String L_USED_QUANTITY = "usedQuantity";
-
     private static final String L_WAREHOUSE = "01warehouse";
 
     private static final String L_WITHIN_THE_PROCESS = "02withinTheProcess";
@@ -66,7 +64,7 @@ public class ProductionTrackingDocumentsHelper {
         List<Entity> productionCountingQuantities = scb.list().getEntities();
 
         for (Entity topic : trackingOperationProductInComponents) {
-            BigDecimal usedQuantity = topic.getDecimalField(L_USED_QUANTITY);
+            BigDecimal usedQuantity = topic.getDecimalField(TrackingOperationProductInComponentFields.USED_QUANTITY);
 
             if (Objects.nonNull(usedQuantity) && BigDecimal.ZERO.compareTo(usedQuantity) < 0) {
                 Entity product = topic.getBelongsToField(TrackingOperationProductInComponentFields.PRODUCT);
@@ -204,7 +202,8 @@ public class ProductionTrackingDocumentsHelper {
     }
 
     public Multimap<Long, Entity> fillFromBPCProductOut(final List<Entity> trackingOperationProductOutComponents,
-                                                        final Entity order, Entity ptTechnologyOperationComponent, final boolean withWaste) {
+                                                        final Entity order, Entity ptTechnologyOperationComponent,
+                                                        final boolean withWaste) {
         List<Entity> productionCountingQuantities = getProductionCountingQuantityDD().find()
                 .add(SearchRestrictions.belongsTo(ProductionCountingQuantityFields.ORDER, order)).add(SearchRestrictions
                         .eq(ProductionCountingQuantityFields.ROLE, ProductionCountingQuantityRole.PRODUCED.getStringValue()))
@@ -213,37 +212,42 @@ public class ProductionTrackingDocumentsHelper {
         Multimap<Long, Entity> groupedRecordOutProducts = ArrayListMultimap.create();
 
         for (Entity productionCountingQuantity : productionCountingQuantities) {
-            Entity warehouse;
+            BigDecimal producedQuantity = productionCountingQuantity.getDecimalField(ProductionCountingQuantityFields.PRODUCED_QUANTITY);
+            Entity technologyOperationComponent = productionCountingQuantity.getBelongsToField(ProductionCountingQuantityFields.TECHNOLOGY_OPERATION_COMPONENT);
+            if (Objects.nonNull(producedQuantity) && producedQuantity.compareTo(BigDecimal.ZERO) > 0
+                    && (technologyOperationComponent == null || ptTechnologyOperationComponent == null
+                    || technologyOperationComponent.getId().equals(ptTechnologyOperationComponent.getId()))) {
+                Entity warehouse;
 
-            if (withWaste && ProductionCountingQuantityTypeOfMaterial.WASTE.getStringValue()
-                    .equals(productionCountingQuantity.getStringField(ProductionCountingQuantityFields.TYPE_OF_MATERIAL))) {
-                warehouse = productionCountingQuantity
-                        .getBelongsToField(ProductionCountingQuantityFields.WASTE_RECEPTION_WAREHOUSE);
-                if (Objects.isNull(warehouse)) {
+                if (withWaste && ProductionCountingQuantityTypeOfMaterial.WASTE.getStringValue()
+                        .equals(productionCountingQuantity.getStringField(ProductionCountingQuantityFields.TYPE_OF_MATERIAL))) {
+                    warehouse = productionCountingQuantity
+                            .getBelongsToField(ProductionCountingQuantityFields.WASTE_RECEPTION_WAREHOUSE);
+                    if (Objects.isNull(warehouse)) {
+                        continue;
+                    }
+                } else if (ProductionCountingQuantityTypeOfMaterial.INTERMEDIATE.getStringValue()
+                        .equals(productionCountingQuantity.getStringField(ProductionCountingQuantityFields.TYPE_OF_MATERIAL))
+                        && L_WAREHOUSE.equals(
+                        productionCountingQuantity.getStringField(ProductionCountingQuantityFields.PRODUCTION_FLOW))) {
+                    warehouse = productionCountingQuantity.getBelongsToField(ProductionCountingQuantityFields.PRODUCTS_FLOW_LOCATION);
+                } else if (ProductionCountingQuantityTypeOfMaterial.FINAL_PRODUCT.getStringValue()
+                        .equals(productionCountingQuantity.getStringField(ProductionCountingQuantityFields.TYPE_OF_MATERIAL))
+                        || ProductionCountingQuantityTypeOfMaterial.ADDITIONAL_FINAL_PRODUCT.getStringValue()
+                        .equals(productionCountingQuantity.getStringField(ProductionCountingQuantityFields.TYPE_OF_MATERIAL))) {
+                    warehouse = productionCountingQuantity
+                            .getBelongsToField(ProductionCountingQuantityFields.PRODUCTS_INPUT_LOCATION);
+                } else {
                     continue;
                 }
-            } else if (ProductionCountingQuantityTypeOfMaterial.INTERMEDIATE.getStringValue()
-                    .equals(productionCountingQuantity.getStringField(ProductionCountingQuantityFields.TYPE_OF_MATERIAL))
-                    && L_WAREHOUSE.equals(
-                    productionCountingQuantity.getStringField(ProductionCountingQuantityFields.PRODUCTION_FLOW))) {
-                warehouse = productionCountingQuantity.getBelongsToField(ProductionCountingQuantityFields.PRODUCTS_FLOW_LOCATION);
-            } else if (ProductionCountingQuantityTypeOfMaterial.FINAL_PRODUCT.getStringValue()
-                    .equals(productionCountingQuantity.getStringField(ProductionCountingQuantityFields.TYPE_OF_MATERIAL))
-                    || ProductionCountingQuantityTypeOfMaterial.ADDITIONAL_FINAL_PRODUCT.getStringValue()
-                    .equals(productionCountingQuantity.getStringField(ProductionCountingQuantityFields.TYPE_OF_MATERIAL))) {
-                warehouse = productionCountingQuantity
-                        .getBelongsToField(ProductionCountingQuantityFields.PRODUCTS_INPUT_LOCATION);
-            } else {
-                continue;
-            }
 
-            Entity product = productionCountingQuantity.getBelongsToField(ProductionCountingQuantityFields.PRODUCT);
-            Entity technologyOperationComponent = productionCountingQuantity.getBelongsToField(ProductionCountingQuantityFields.TECHNOLOGY_OPERATION_COMPONENT);
-            List<Entity> filteredTrackingOperationProductOutComponents = findProductionRecordsByProduct(trackingOperationProductOutComponents,
-                    product, technologyOperationComponent, ptTechnologyOperationComponent);
+                Entity product = productionCountingQuantity.getBelongsToField(ProductionCountingQuantityFields.PRODUCT);
+                List<Entity> filteredTrackingOperationProductOutComponents = findProductionRecordsByProduct(trackingOperationProductOutComponents,
+                        product);
 
-            if (Objects.nonNull(filteredTrackingOperationProductOutComponents) && !filteredTrackingOperationProductOutComponents.isEmpty()) {
-                groupedRecordOutProducts.putAll(warehouse.getId(), filteredTrackingOperationProductOutComponents);
+                if (Objects.nonNull(filteredTrackingOperationProductOutComponents) && !filteredTrackingOperationProductOutComponents.isEmpty()) {
+                    groupedRecordOutProducts.putAll(warehouse.getId(), filteredTrackingOperationProductOutComponents);
+                }
             }
         }
 
@@ -251,15 +255,11 @@ public class ProductionTrackingDocumentsHelper {
     }
 
     private List<Entity> findProductionRecordsByProduct(final List<Entity> trackingOperationProductComponents,
-                                                        final Entity product,
-                                                        Entity technologyOperationComponent,
-                                                        Entity ptTechnologyOperationComponent) {
+                                                        final Entity product) {
         return trackingOperationProductComponents.stream().filter(trackingOperationProductComponent -> {
-            BigDecimal usedQuantity = trackingOperationProductComponent.getDecimalField(L_USED_QUANTITY);
+            BigDecimal usedQuantity = trackingOperationProductComponent.getDecimalField(TrackingOperationProductOutComponentFields.USED_QUANTITY);
 
             return product.getId().equals(trackingOperationProductComponent.getBelongsToField(TrackingOperationProductOutComponentFields.PRODUCT).getId())
-                    && (technologyOperationComponent == null || ptTechnologyOperationComponent == null
-                    || technologyOperationComponent.getId().equals(ptTechnologyOperationComponent.getId()))
                     && Objects.nonNull(usedQuantity) && BigDecimal.ZERO.compareTo(usedQuantity) < 0;
         }).collect(Collectors.toList());
     }
@@ -267,9 +267,9 @@ public class ProductionTrackingDocumentsHelper {
     public Entity findProductionRecordByProduct(final List<Entity> trackingOperationProductComponents,
                                                 final Entity product) {
         return trackingOperationProductComponents.stream().filter(trackingOperationProductComponent -> {
-            BigDecimal usedQuantity = trackingOperationProductComponent.getDecimalField(L_USED_QUANTITY);
+            BigDecimal usedQuantity = trackingOperationProductComponent.getDecimalField(TrackingOperationProductInComponentFields.USED_QUANTITY);
 
-            return product.getId().equals(trackingOperationProductComponent.getBelongsToField(TrackingOperationProductOutComponentFields.PRODUCT).getId())
+            return product.getId().equals(trackingOperationProductComponent.getBelongsToField(TrackingOperationProductInComponentFields.PRODUCT).getId())
                     && Objects.nonNull(usedQuantity) && BigDecimal.ZERO.compareTo(usedQuantity) < 0;
         }).findFirst().orElse(null);
     }
