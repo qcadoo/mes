@@ -1,10 +1,7 @@
 package com.qcadoo.mes.materialFlowResources.hooks;
 
 import com.qcadoo.mes.materialFlowResources.PalletValidatorService;
-import com.qcadoo.mes.materialFlowResources.constants.DocumentFields;
-import com.qcadoo.mes.materialFlowResources.constants.DocumentType;
-import com.qcadoo.mes.materialFlowResources.constants.PositionFields;
-import com.qcadoo.mes.materialFlowResources.constants.StorageLocationFields;
+import com.qcadoo.mes.materialFlowResources.constants.*;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,8 +39,9 @@ public class StorageLocationHooks {
                     storageLocation.addError(storageLocationDD.getField(StorageLocationFields.LOCATION),
                             "materialFlowResources.storageLocation.location.resourcesExists");
                     return false;
-                } else if (storageLocation.getHasManyField(StorageLocationFields.POSITIONS).stream()
-                        .anyMatch(e -> DocumentType.isInbound(e.getBelongsToField(PositionFields.DOCUMENT).getStringField(DocumentFields.TYPE)))) {
+                } else if (storageLocation.getHasManyField(StorageLocationFields.POSITIONS).stream().map(p -> p.getBelongsToField(PositionFields.DOCUMENT))
+                        .anyMatch(d -> DocumentType.isInbound(d.getStringField(DocumentFields.TYPE)) &&
+                                DocumentState.DRAFT.getStringValue().equals(d.getStringField(DocumentFields.STATE)))) {
                     storageLocation.addError(storageLocationDD.getField(StorageLocationFields.LOCATION),
                             "materialFlowResources.storageLocation.location.inboundDocumentExists");
                     return false;
