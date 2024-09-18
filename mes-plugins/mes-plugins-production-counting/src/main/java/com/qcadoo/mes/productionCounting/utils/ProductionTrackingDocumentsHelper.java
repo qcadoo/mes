@@ -184,19 +184,17 @@ public class ProductionTrackingDocumentsHelper {
             Entity trackingOperationProductInComponent = findProductionRecordByProduct(trackingOperationProductInComponents,
                     product);
 
-            if (Objects.nonNull(trackingOperationProductInComponent)) {
-                if (!checkIfProductExists(groupedRecordInProducts, warehouse, product)) {
-                    groupedRecordInProducts.put(warehouse.getId(), trackingOperationProductInComponent);
-                }
+            if (Objects.nonNull(trackingOperationProductInComponent) && !checkIfProductExists(groupedRecordInProducts, warehouse, product)) {
+                groupedRecordInProducts.put(warehouse.getId(), trackingOperationProductInComponent);
             }
         }
 
         return groupedRecordInProducts;
     }
 
-    private boolean checkIfProductExists(final Multimap<Long, Entity> groupedRecordInProducts, final Entity warehouse,
+    private boolean checkIfProductExists(final Multimap<Long, Entity> groupedRecordProducts, final Entity warehouse,
                                          final Entity product) {
-        return groupedRecordInProducts.get(warehouse.getId()).stream()
+        return groupedRecordProducts.get(warehouse.getId()).stream()
                 .anyMatch(trackingOperationProductInComponent -> trackingOperationProductInComponent
                         .getBelongsToField(TrackingOperationProductInComponentFields.PRODUCT).getId().equals(product.getId()));
     }
@@ -212,32 +210,12 @@ public class ProductionTrackingDocumentsHelper {
         Multimap<Long, Entity> groupedRecordOutProducts = ArrayListMultimap.create();
 
         for (Entity productionCountingQuantity : productionCountingQuantities) {
-            BigDecimal producedQuantity = productionCountingQuantity.getDecimalField(ProductionCountingQuantityFields.PRODUCED_QUANTITY);
             Entity technologyOperationComponent = productionCountingQuantity.getBelongsToField(ProductionCountingQuantityFields.TECHNOLOGY_OPERATION_COMPONENT);
-            if (Objects.nonNull(producedQuantity) && producedQuantity.compareTo(BigDecimal.ZERO) > 0
-                    && (technologyOperationComponent == null || ptTechnologyOperationComponent == null
-                    || technologyOperationComponent.getId().equals(ptTechnologyOperationComponent.getId()))) {
-                Entity warehouse;
+            if (technologyOperationComponent == null || ptTechnologyOperationComponent == null
+                    || technologyOperationComponent.getId().equals(ptTechnologyOperationComponent.getId())) {
+                Entity warehouse = getWarehouseForOutProducts(withWaste, productionCountingQuantity);
 
-                if (withWaste && ProductionCountingQuantityTypeOfMaterial.WASTE.getStringValue()
-                        .equals(productionCountingQuantity.getStringField(ProductionCountingQuantityFields.TYPE_OF_MATERIAL))) {
-                    warehouse = productionCountingQuantity
-                            .getBelongsToField(ProductionCountingQuantityFields.WASTE_RECEPTION_WAREHOUSE);
-                    if (Objects.isNull(warehouse)) {
-                        continue;
-                    }
-                } else if (ProductionCountingQuantityTypeOfMaterial.INTERMEDIATE.getStringValue()
-                        .equals(productionCountingQuantity.getStringField(ProductionCountingQuantityFields.TYPE_OF_MATERIAL))
-                        && L_WAREHOUSE.equals(
-                        productionCountingQuantity.getStringField(ProductionCountingQuantityFields.PRODUCTION_FLOW))) {
-                    warehouse = productionCountingQuantity.getBelongsToField(ProductionCountingQuantityFields.PRODUCTS_FLOW_LOCATION);
-                } else if (ProductionCountingQuantityTypeOfMaterial.FINAL_PRODUCT.getStringValue()
-                        .equals(productionCountingQuantity.getStringField(ProductionCountingQuantityFields.TYPE_OF_MATERIAL))
-                        || ProductionCountingQuantityTypeOfMaterial.ADDITIONAL_FINAL_PRODUCT.getStringValue()
-                        .equals(productionCountingQuantity.getStringField(ProductionCountingQuantityFields.TYPE_OF_MATERIAL))) {
-                    warehouse = productionCountingQuantity
-                            .getBelongsToField(ProductionCountingQuantityFields.PRODUCTS_INPUT_LOCATION);
-                } else {
+                if (Objects.isNull(warehouse)) {
                     continue;
                 }
 
@@ -245,13 +223,35 @@ public class ProductionTrackingDocumentsHelper {
                 List<Entity> filteredTrackingOperationProductOutComponents = findProductionRecordsByProduct(trackingOperationProductOutComponents,
                         product);
 
-                if (Objects.nonNull(filteredTrackingOperationProductOutComponents) && !filteredTrackingOperationProductOutComponents.isEmpty()) {
+                if (Objects.nonNull(filteredTrackingOperationProductOutComponents) && !filteredTrackingOperationProductOutComponents.isEmpty()
+                        && !checkIfProductExists(groupedRecordOutProducts, warehouse, product)) {
                     groupedRecordOutProducts.putAll(warehouse.getId(), filteredTrackingOperationProductOutComponents);
                 }
             }
         }
 
         return groupedRecordOutProducts;
+    }
+
+    private Entity getWarehouseForOutProducts(boolean withWaste, Entity productionCountingQuantity) {
+        Entity warehouse = null;
+        if (withWaste && ProductionCountingQuantityTypeOfMaterial.WASTE.getStringValue()
+                .equals(productionCountingQuantity.getStringField(ProductionCountingQuantityFields.TYPE_OF_MATERIAL))) {
+            warehouse = productionCountingQuantity
+                    .getBelongsToField(ProductionCountingQuantityFields.WASTE_RECEPTION_WAREHOUSE);
+        } else if (ProductionCountingQuantityTypeOfMaterial.INTERMEDIATE.getStringValue()
+                .equals(productionCountingQuantity.getStringField(ProductionCountingQuantityFields.TYPE_OF_MATERIAL))
+                && L_WAREHOUSE.equals(
+                productionCountingQuantity.getStringField(ProductionCountingQuantityFields.PRODUCTION_FLOW))) {
+            warehouse = productionCountingQuantity.getBelongsToField(ProductionCountingQuantityFields.PRODUCTS_FLOW_LOCATION);
+        } else if (ProductionCountingQuantityTypeOfMaterial.FINAL_PRODUCT.getStringValue()
+                .equals(productionCountingQuantity.getStringField(ProductionCountingQuantityFields.TYPE_OF_MATERIAL))
+                || ProductionCountingQuantityTypeOfMaterial.ADDITIONAL_FINAL_PRODUCT.getStringValue()
+                .equals(productionCountingQuantity.getStringField(ProductionCountingQuantityFields.TYPE_OF_MATERIAL))) {
+            warehouse = productionCountingQuantity
+                    .getBelongsToField(ProductionCountingQuantityFields.PRODUCTS_INPUT_LOCATION);
+        }
+        return warehouse;
     }
 
     private List<Entity> findProductionRecordsByProduct(final List<Entity> trackingOperationProductComponents,
