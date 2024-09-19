@@ -124,8 +124,12 @@ public final class ProductionTrackingListenerServicePFTD {
     public Entity onAccept(final Entity productionTracking, final String sourceState) {
         boolean isCorrection = productionTracking.getBooleanField(ProductionTrackingFields.IS_CORRECTION);
 
-        if (!isCorrection && !ProductionTrackingStateStringValues.CORRECTED.equals(sourceState)) {
-            createWarehouseDocuments(productionTracking);
+        if (!ProductionTrackingStateStringValues.CORRECTED.equals(sourceState)) {
+            if (isCorrection) {
+                createWarehouseDocumentsForCorrection(productionTracking);
+            } else {
+                createWarehouseDocuments(productionTracking);
+            }
         }
 
         return productionTracking;
@@ -270,6 +274,67 @@ public final class ProductionTrackingListenerServicePFTD {
             }
 
             updateCostsForOrder(order);
+        }
+    }
+
+    private void createWarehouseDocumentsForCorrection(Entity productionTracking) {
+        Entity parameter = parameterService.getParameter();
+        String receiptOfProducts = parameter.getStringField(ParameterFieldsPC.RECEIPT_OF_PRODUCTS);
+        if (ReceiptOfProducts.END_OF_THE_ORDER.getStringValue().equals(receiptOfProducts)) {
+            Entity order = productionTracking.getBelongsToField(ProductionTrackingFields.ORDER);
+            Entity technologyOperationComponent = productionTracking
+                    .getBelongsToField(ProductionTrackingFields.TECHNOLOGY_OPERATION_COMPONENT);
+            List<Entity> trackingOperationProductOutComponents = productionTracking
+                    .getHasManyField(ProductionTrackingFields.TRACKING_OPERATION_PRODUCT_OUT_COMPONENTS);
+            Multimap<Long, Entity> groupedRecordOutProducts = productionTrackingDocumentsHelper
+                    .fillFromBPCProductOut(trackingOperationProductOutComponents, order, technologyOperationComponent, true);
+
+            for (Long locationId : groupedRecordOutProducts.keySet()) {
+                Entity locationTo = getLocationDD().get(locationId);
+                Entity inboundDocument = createOrUpdateInternalInboundDocumentForFinalProducts(locationTo, order,
+                        groupedRecordOutProducts.get(locationId), productionTracking.getBelongsToField(L_USER));
+
+                if (Objects.nonNull(inboundDocument) && !inboundDocument.isValid()) {
+                    for (ErrorMessage error : inboundDocument.getGlobalErrors()) {
+                        productionTracking.addGlobalError(error.getMessage(), error.getVars());
+                    }
+
+                    productionTracking.addGlobalError(
+                            "productFlowThruDivision.productionTracking.productionTrackingError.createInternalInboundDocument");
+
+                    return;
+                }
+            }
+
+            for (Entity document : order.getHasManyField(OrderFieldsPFTD.DOCUMENTS)) {
+                if (DocumentType.isInbound(document.getStringField(DocumentFields.TYPE))
+                        && DocumentState.DRAFT.getStringValue().equals(document.getStringField(DocumentFields.STATE))) {
+                    boolean warehouseFound = false;
+                    for (Long locationId : groupedRecordOutProducts.keySet()) {
+                        if (locationId.equals(document.getBelongsToField(DocumentFields.LOCATION_TO).getId())) {
+                            List<Entity> positions = document.getHasManyField(DocumentFields.POSITIONS);
+                            for (Entity position : positions) {
+                                boolean productFound = false;
+                                for (Entity topoc : groupedRecordOutProducts.get(locationId)) {
+                                    if (position.getBelongsToField(PositionFields.PRODUCT).getId().equals(topoc.getBelongsToField(TrackingOperationProductOutComponentFields.PRODUCT).getId())) {
+                                        productFound = true;
+                                        break;
+                                    }
+                                }
+                                if (!productFound) {
+                                    getPositionDD().delete(position.getId());
+                                }
+                            }
+                            warehouseFound = true;
+                        }
+                    }
+                    if (!warehouseFound) {
+                        getDocumentDD().delete(document.getId());
+                    }
+                }
+            }
+
+            TransactionAspectSupport.currentTransactionStatus().flush();
         }
     }
 
@@ -876,8 +941,7 @@ public final class ProductionTrackingListenerServicePFTD {
 
         String receiptOfProducts = parameterService.getParameter().getStringField(ParameterFieldsPC.RECEIPT_OF_PRODUCTS);
 
-        if ((OrderState.COMPLETED.equals(OrderState.of(order)) || !isFinalProduct || isBasedOnNominalCost
-                || orderClosingHelper.orderShouldBeClosedWithRecalculate(productionTracking))
+        if (OrderState.COMPLETED.equals(OrderState.of(order)) || !isFinalProduct || isBasedOnNominalCost
                 || orderClosingHelper.orderShouldBeClosedWithRecalculate(productionTracking)) {
 
             if (ReceiptOfProducts.ON_ACCEPTANCE_REGISTRATION_RECORD.getStringValue().equals(receiptOfProducts)) {
