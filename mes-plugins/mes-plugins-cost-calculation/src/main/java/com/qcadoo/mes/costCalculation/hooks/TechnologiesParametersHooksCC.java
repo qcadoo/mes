@@ -1,17 +1,18 @@
 package com.qcadoo.mes.costCalculation.hooks;
 
-import java.util.Arrays;
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.qcadoo.mes.basic.util.CurrencyService;
 import com.qcadoo.mes.costCalculation.constants.CostCalculationConstants;
 import com.qcadoo.mes.costCalculation.constants.CostCalculationFields;
 import com.qcadoo.mes.costCalculation.constants.SourceOfOperationCosts;
+import com.qcadoo.model.api.DataDefinition;
+import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.Arrays;
+import java.util.List;
 
 @Service
 public class TechnologiesParametersHooksCC {
@@ -53,5 +54,16 @@ public class TechnologiesParametersHooksCC {
         FieldComponent materialCostMarginProc = (FieldComponent) viewDefinitionState.getComponentByReference(componentName);
         materialCostMarginProc.setFieldValue("%");
         materialCostMarginProc.requestComponentUpdateState();
+    }
+
+    public boolean validatesWith(final DataDefinition dataDefinition, final Entity parameter) {
+        String sourceOfOperationCosts = parameter.getStringField(CostCalculationFields.SOURCE_OF_OPERATION_COSTS);
+        if (SourceOfOperationCosts.STANDARD_LABOR_COSTS.getStringValue().equals(sourceOfOperationCosts)
+                && parameter.getBelongsToField(CostCalculationFields.STANDARD_LABOR_COST) == null) {
+            parameter.addError(dataDefinition.getField(CostCalculationFields.STANDARD_LABOR_COST),
+                    "qcadooView.validate.field.error.missing");
+            return false;
+        }
+        return true;
     }
 }
