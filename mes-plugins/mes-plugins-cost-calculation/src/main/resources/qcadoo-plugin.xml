@@ -225,12 +225,6 @@
                            joinField="offer"/>
         </model:model-field>
 
-        <model:model-hook plugin="basic" model="parameter">
-            <model:validatesWith
-                    class="com.qcadoo.mes.costCalculation.hooks.TechnologiesParametersHooksCC"
-                    method="validatesWith"/>
-        </model:model-hook>
-
         <model:model-hook plugin="orders" model="order">
             <model:onCreate
                     class="com.qcadoo.mes.costCalculation.hooks.OrderHooksCC"

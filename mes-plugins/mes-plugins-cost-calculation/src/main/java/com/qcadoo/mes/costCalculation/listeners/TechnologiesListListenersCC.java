@@ -1,13 +1,5 @@
 package com.qcadoo.mes.costCalculation.listeners;
 
-import java.math.BigDecimal;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.google.common.collect.Maps;
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.costCalculation.constants.CostCalculationConstants;
@@ -23,6 +15,13 @@ import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.GridComponent;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
 import com.qcadoo.view.constants.QcadooViewConstants;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 public class TechnologiesListListenersCC {
@@ -37,7 +36,7 @@ public class TechnologiesListListenersCC {
     private ParameterService parameterService;
 
     public final void createCostCalculation(final ViewDefinitionState view, final ComponentState componentState,
-            final String[] args) {
+                                            final String[] args) {
         GridComponent grid = (GridComponent) view.getComponentByReference(QcadooViewConstants.L_GRID);
         List<Entity> selectedEntities = grid.getSelectedEntities();
 
@@ -86,7 +85,7 @@ public class TechnologiesListListenersCC {
             costCalculation.setField(CostCalculationFields.PROFIT, parameter.getDecimalField(CostCalculationFields.PROFIT));
             costCalculation.setField(CostCalculationFields.NUMBER, numberGeneratorService
                     .generateNumber(CostCalculationConstants.PLUGIN_IDENTIFIER, CostCalculationConstants.MODEL_COST_CALCULATION));
-            costCalculation = costCalculationDD.save(costCalculation);
+            costCalculation = costCalculationDD.fastSave(costCalculation);
             String url = "../page/costCalculation/costCalculationDetails.html";
             Map<String, Object> parameters = Maps.newHashMap();
             parameters.put("form.id", costCalculation.getId());

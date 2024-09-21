@@ -23,13 +23,12 @@
  */
 package com.qcadoo.mes.costCalculation.validators;
 
-import org.springframework.stereotype.Service;
-
 import com.qcadoo.mes.costCalculation.constants.CostCalculationFields;
 import com.qcadoo.mes.costCalculation.constants.MaterialCostsUsed;
 import com.qcadoo.mes.costCalculation.constants.SourceOfOperationCosts;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
+import org.springframework.stereotype.Service;
 
 @Service
 public class CostCalculationValidators {
