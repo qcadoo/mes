@@ -23,11 +23,14 @@
  */
 package com.qcadoo.mes.productFlowThruDivision.validators;
 
+import com.qcadoo.mes.basicProductionCounting.constants.BasicProductionCountingFields;
 import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityFields;
 import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityRole;
 import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityTypeOfMaterial;
 import com.qcadoo.mes.productFlowThruDivision.constants.ProductionCountingQuantityFieldsPFTD;
 import com.qcadoo.mes.productFlowThruDivision.constants.ProductionFlowComponent;
+import com.qcadoo.mes.productionCounting.constants.OrderFieldsPC;
+import com.qcadoo.mes.productionCounting.constants.TypeOfProductionRecording;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 import org.springframework.stereotype.Service;
@@ -102,7 +105,44 @@ public class ProductionCountingQuantityValidatorsPFTD {
                     L_QCADOO_VIEW_VALIDATE_FIELD_ERROR_MISSING);
         }
         checkComponentsWarehouses(productionCountingQuantity);
+        checkWastesWarehouse(productionCountingQuantity);
         return productionCountingQuantity.isValid();
+    }
+
+    private void checkWastesWarehouse(Entity pcq) {
+        String role = pcq.getStringField(ProductionCountingQuantityFields.ROLE);
+        String typeOfMaterial = pcq.getStringField(ProductionCountingQuantityFields.TYPE_OF_MATERIAL);
+        if (ProductionCountingQuantityRole.PRODUCED.getStringValue().equals(role)
+                && ProductionCountingQuantityTypeOfMaterial.WASTE.getStringValue().equals(typeOfMaterial)) {
+            Entity wasteReceptionWarehouse = pcq.getBelongsToField(ProductionCountingQuantityFieldsPFTD.WASTE_RECEPTION_WAREHOUSE);
+            Entity product = pcq.getBelongsToField(ProductionCountingQuantityFields.PRODUCT);
+            Entity basicProductionCounting = pcq.getBelongsToField(ProductionCountingQuantityFields.BASIC_PRODUCTION_COUNTING);
+            Long id = pcq.getId();
+            if (basicProductionCounting != null) {
+                boolean cumulated = TypeOfProductionRecording.CUMULATED.getStringValue().equals(
+                        basicProductionCounting.getBelongsToField(BasicProductionCountingFields.ORDER).getStringField(OrderFieldsPC.TYPE_OF_PRODUCTION_RECORDING));
+                if (cumulated) {
+                    if (wasteReceptionWarehouse == null) {
+                        if (basicProductionCounting.getHasManyField(BasicProductionCountingFields.PRODUCTION_COUNTING_QUANTITIES)
+                                .stream().anyMatch(e -> ProductionCountingQuantityRole.PRODUCED.getStringValue().equals(e.getStringField(ProductionCountingQuantityFields.ROLE))
+                                        && ProductionCountingQuantityTypeOfMaterial.WASTE.getStringValue().equals(e.getStringField(ProductionCountingQuantityFields.TYPE_OF_MATERIAL))
+                                        && product.getId().equals(e.getBelongsToField(ProductionCountingQuantityFields.PRODUCT).getId())
+                                        && e.getBelongsToField(ProductionCountingQuantityFieldsPFTD.WASTE_RECEPTION_WAREHOUSE) != null
+                                        && (id == null || !id.equals(e.getId())))) {
+                            pcq.addGlobalError("productFlowThruDivision.location.wastes.locationsAreDifferent", false);
+                        }
+                    } else if (basicProductionCounting.getHasManyField(BasicProductionCountingFields.PRODUCTION_COUNTING_QUANTITIES)
+                            .stream().anyMatch(e -> ProductionCountingQuantityRole.PRODUCED.getStringValue().equals(e.getStringField(ProductionCountingQuantityFields.ROLE))
+                                    && ProductionCountingQuantityTypeOfMaterial.WASTE.getStringValue().equals(e.getStringField(ProductionCountingQuantityFields.TYPE_OF_MATERIAL))
+                                    && product.getId().equals(e.getBelongsToField(ProductionCountingQuantityFields.PRODUCT).getId())
+                                    && (e.getBelongsToField(ProductionCountingQuantityFieldsPFTD.WASTE_RECEPTION_WAREHOUSE) == null
+                                    || !wasteReceptionWarehouse.getId().equals(e.getBelongsToField(ProductionCountingQuantityFieldsPFTD.WASTE_RECEPTION_WAREHOUSE).getId()))
+                                    && (id == null || !id.equals(e.getId())))) {
+                        pcq.addGlobalError("productFlowThruDivision.location.wastes.locationsAreDifferent", false);
+                    }
+                }
+            }
+        }
     }
 
     private void checkComponentsWarehouses(final Entity pcq) {

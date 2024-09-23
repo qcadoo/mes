@@ -24,7 +24,10 @@
 package com.qcadoo.mes.productFlowThruDivision.states;
 
 import com.qcadoo.mes.basic.ParameterService;
-import com.qcadoo.mes.productFlowThruDivision.constants.*;
+import com.qcadoo.mes.productFlowThruDivision.constants.OperationProductInComponentFieldsPFTD;
+import com.qcadoo.mes.productFlowThruDivision.constants.OperationProductOutComponentFieldsPFTD;
+import com.qcadoo.mes.productFlowThruDivision.constants.Range;
+import com.qcadoo.mes.productFlowThruDivision.constants.TechnologyFieldsPFTD;
 import com.qcadoo.mes.productFlowThruDivision.listeners.TechnologyDetailsListenersPFTD;
 import com.qcadoo.mes.productionCounting.constants.TechnologyFieldsPC;
 import com.qcadoo.mes.productionCounting.constants.TypeOfProductionRecording;
@@ -36,12 +39,13 @@ import com.qcadoo.mes.technologies.constants.*;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchRestrictions;
-
-import java.util.*;
-import java.util.stream.Collectors;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Service
 public class TechnologyStateValidationServicePFTD {
@@ -88,9 +92,9 @@ public class TechnologyStateValidationServicePFTD {
                             .add(SearchRestrictions.in("id", ids)).list().getEntities();
 
                     Map<Long, Map<Long, List<Entity>>> componentsLocation = opics.stream()
-                            .filter(opic -> Objects.nonNull(((Entity) opic).getBelongsToField(OperationProductInComponentFields.PRODUCT)))
-                            .collect(Collectors.groupingBy(opic -> ((Entity) opic).getBelongsToField(OperationProductInComponentFields.PRODUCT).getId(),
-                                    Collectors.groupingBy(u -> ((Entity) u).getBelongsToField("componentsLocation").getId())));
+                            .filter(opic -> Objects.nonNull(opic.getBelongsToField(OperationProductInComponentFields.PRODUCT)))
+                            .collect(Collectors.groupingBy(opic -> opic.getBelongsToField(OperationProductInComponentFields.PRODUCT).getId(),
+                                    Collectors.groupingBy(u -> u.getBelongsToField("componentsLocation").getId())));
                     for (Map.Entry<Long, Map<Long, List<Entity>>> productEntry : componentsLocation.entrySet()) {
                         Map<Long, List<Entity>> productLocations = productEntry.getValue();
 
@@ -102,6 +106,8 @@ public class TechnologyStateValidationServicePFTD {
                     if (differentLocation) {
                         stateChangeContext.addValidationError("productFlowThruDivision.location.components.locationsAreDifferent");
                     }
+
+                    checkWastesWarehouse(technology, stateChangeContext);
                 }
             }
         }
@@ -160,7 +166,8 @@ public class TechnologyStateValidationServicePFTD {
 
     }
 
-    private void checkIfForOneDivisionLocationIsSet(final Entity technology, final StateChangeContext stateChangeContext) {
+    private void checkIfForOneDivisionLocationIsSet(final Entity technology,
+                                                    final StateChangeContext stateChangeContext) {
         if (technology.getField(TechnologyFieldsPFTD.RANGE).equals(Range.ONE_DIVISION.getStringValue())) {
             if (technology.getBelongsToField(TechnologyFieldsPFTD.COMPONENTS_LOCATION) == null) {
                 stateChangeContext.addFieldValidationError(TechnologyFieldsPFTD.COMPONENTS_LOCATION,
@@ -198,6 +205,34 @@ public class TechnologyStateValidationServicePFTD {
                     }
                 }
             }
+        }
+    }
+
+    private void checkWastesWarehouse(Entity technology, StateChangeContext stateChangeContext) {
+        List<Long> ids = operationComponentDataProvider.getWasteProductsForTechnology(technology.getId());
+
+        if (ids.isEmpty()) {
+            return;
+        }
+
+        boolean differentLocation = false;
+        List<Entity> opocs = dataDefinitionService
+                .get(TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_OPERATION_PRODUCT_OUT_COMPONENT).find().add(SearchRestrictions.in("id", ids)).list().getEntities();
+
+        Map<Long, List<Entity>> wastesLocation = opocs.stream()
+                .collect(Collectors.groupingBy(opoc -> opoc.getBelongsToField(OperationProductOutComponentFields.PRODUCT).getId()));
+        for (Map.Entry<Long, List<Entity>> productEntry : wastesLocation.entrySet()) {
+            List<Entity> productLocations = productEntry.getValue();
+
+            if (!productLocations.stream().allMatch(opoc -> opoc.getBelongsToField(OperationProductOutComponentFieldsPFTD.WASTE_RECEPTION_WAREHOUSE) == null)
+                    && (productLocations.stream().anyMatch(opoc -> opoc.getBelongsToField(OperationProductOutComponentFieldsPFTD.WASTE_RECEPTION_WAREHOUSE) == null)
+                    || (long) productLocations.stream().map(opoc -> opoc.getBelongsToField(OperationProductOutComponentFieldsPFTD.WASTE_RECEPTION_WAREHOUSE).getId()).collect(Collectors.toSet()).size() > 1)) {
+                differentLocation = true;
+            }
+        }
+
+        if (differentLocation) {
+            stateChangeContext.addValidationError("productFlowThruDivision.location.wastes.locationsAreDifferent");
         }
     }
 

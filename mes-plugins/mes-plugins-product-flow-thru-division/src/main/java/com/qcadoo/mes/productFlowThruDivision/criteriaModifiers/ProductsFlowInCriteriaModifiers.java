@@ -43,7 +43,7 @@ public class ProductsFlowInCriteriaModifiers {
     private OperationComponentDataProvider operationComponentDataProvider;
 
     public void showComponents(final SearchCriteriaBuilder scb, final FilterValueHolder filterValue) {
-        Long technologyId = null;
+        Long technologyId;
         if (filterValue.has(TECHNOLOGY_PARAMETER)) {
             technologyId = filterValue.getLong(TECHNOLOGY_PARAMETER);
 
@@ -64,7 +64,7 @@ public class ProductsFlowInCriteriaModifiers {
     }
 
     public void showIntermediateIn(final SearchCriteriaBuilder scb, final FilterValueHolder filterValue) {
-        Long technologyId = null;
+        Long technologyId;
         if (filterValue.has(TECHNOLOGY_PARAMETER)) {
             technologyId = filterValue.getLong(TECHNOLOGY_PARAMETER);
 
@@ -85,7 +85,7 @@ public class ProductsFlowInCriteriaModifiers {
     }
 
     public void showIntermediateOut(final SearchCriteriaBuilder scb, final FilterValueHolder filterValue) {
-        Long technologyId = null;
+        Long technologyId;
         if (filterValue.has(TECHNOLOGY_PARAMETER)) {
             technologyId = filterValue.getLong(TECHNOLOGY_PARAMETER);
 
@@ -106,15 +106,14 @@ public class ProductsFlowInCriteriaModifiers {
     }
 
     public void showWaste(final SearchCriteriaBuilder scb, final FilterValueHolder filterValue) {
-        Long technologyId = null;
+        Long technologyId;
         if (filterValue.has(TECHNOLOGY_PARAMETER)) {
             technologyId = filterValue.getLong(TECHNOLOGY_PARAMETER);
 
             List<Long> ids = operationComponentDataProvider.getWasteProductsForTechnology(technologyId);
 
             if (!ids.isEmpty()) {
-                scb.add(SearchRestrictions
-                        .in("id", ids));
+                scb.add(SearchRestrictions.in("id", ids));
                 return;
             }
 
@@ -127,7 +126,7 @@ public class ProductsFlowInCriteriaModifiers {
     }
 
     public void showFinal(final SearchCriteriaBuilder scb, final FilterValueHolder filterValue) {
-        Long technologyId = null;
+        Long technologyId;
         if (filterValue.has(TECHNOLOGY_PARAMETER)) {
             technologyId = filterValue.getLong(TECHNOLOGY_PARAMETER);
 
@@ -148,7 +147,7 @@ public class ProductsFlowInCriteriaModifiers {
     }
 
     public void showOPOCTechnology(final SearchCriteriaBuilder scb, final FilterValueHolder filterValue) {
-        Long technologyId = null;
+        Long technologyId;
         if (!filterValue.has(TECHNOLOGY_PARAMETER)) {
             technologyId = 0L;
         } else {

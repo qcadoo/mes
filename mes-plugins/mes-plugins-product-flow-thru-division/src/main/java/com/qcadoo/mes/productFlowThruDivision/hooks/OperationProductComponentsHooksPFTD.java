@@ -23,12 +23,11 @@
  */
 package com.qcadoo.mes.productFlowThruDivision.hooks;
 
-import org.springframework.stereotype.Service;
-
 import com.qcadoo.mes.productFlowThruDivision.constants.OperationProductInComponentFieldsPFTD;
 import com.qcadoo.mes.productFlowThruDivision.constants.ProductionFlowComponent;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
+import org.springframework.stereotype.Service;
 
 @Service
 public class OperationProductComponentsHooksPFTD {
