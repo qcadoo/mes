@@ -43533,16 +43533,11 @@ COPY public.qcadoomodel_unitconversionitem (id, quantityfrom, quantityto, unitfr
 COPY public.qcadooplugin_plugin (id, identifier, version, state, issystem, entityversion, groupname, license) FROM stdin;
 2	ercWarehouse	1.5.0	DISABLED	f	0	supplies	Commercial
 3	urcMasterOrders	1.5.0	DISABLED	f	0	\N	Commercial
-6	integrationBarTender	1.5.0	DISABLED	f	0	other	Commercial
 8	urcDeliveriesToWarehouse	1.5.0	DISABLED	f	0	supplies	Commercial
-9	orcWalusiak	1.5.0	DISABLED	f	0	other	Commercial
 12	srcWarehouse	1.5.0	DISABLED	f	0	supplies	Commercial
 14	integration	1.5.0	DISABLED	f	0	other	Commercial
-15	cdnrcGoodFood	1.5.0	DISABLED	f	0	other	Commercial
-16	integrationScada	1.5.0	DISABLED	f	0	other	Commercial
 20	urcTechnologies	1.5.0	DISABLED	f	0	technologies	Commercial
 78	nutritionFacts	1.5.0	DISABLED	f	0	framework	Commercial
-79	walusiak	1.5.0	DISABLED	f	0	other	Commercial
 22	qcadooModel	1.5.0	ENABLED	t	0	framework	AGPL
 23	qcadooSecurity	1.5.0	ENABLED	t	0	framework	AGPL
 24	qcadooView	1.5.0	ENABLED	t	0	framework	AGPL
@@ -43584,7 +43579,6 @@ COPY public.qcadooplugin_plugin (id, identifier, version, state, issystem, entit
 83	urcCostNormsForProduct	1.5.0	DISABLED	f	0	basic	Commercial
 86	urcAdvGenealogyForOrders	1.5.0	DISABLED	f	0	genealogy	Commercial
 88	urcCostNormsForMaterials	1.5.0	DISABLED	f	0	planning	Commercial
-93	goodFood	1.5.0	DISABLED	f	0	other	Commercial
 94	urcMaterialFlowResources	1.5.0	DISABLED	f	0	supplies	Commercial
 97	cfcSimple	1.5.0	DISABLED	f	0	other	Commercial
 98	urcMaterialAvailability	1.5.0	DISABLED	f	0	planning	Commercial
@@ -43636,7 +43630,6 @@ COPY public.qcadooplugin_plugin (id, identifier, version, state, issystem, entit
 152	integrationPipedrive	1.5.0	DISABLED	f	0	\N	\N
 153	arch	1.5.0	DISABLED	f	0	\N	Commercial
 53	warehouseMinimalState	1.5.0	ENABLED	f	0	other	AGPL
-151	integrationScales	1.5.0	DISABLED	f	0	\N	Commercial
 150	integrationAsana	1.5.0	DISABLED	f	0	\N	Commercial
 68	advancedGenealogyForOrders	1.5.0	ENABLED	f	0	genealogy	Commercial
 157	luxon	1.5.0	DISABLED	f	0	\N	\N
