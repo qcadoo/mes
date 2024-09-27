@@ -106,7 +106,8 @@ public class ProductionTrackingDetailsListeners {
     @Autowired
     private OperationalTasksService operationalTasksService;
 
-    public void copyProductionTracking(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+    public void copyProductionTracking(final ViewDefinitionState view, final ComponentState state,
+                                       final String[] args) {
         if (parameterService.getParameter().getBooleanField(ParameterFieldsPC.JUST_ONE)) {
             view.addMessage("productionCounting.productionTracking.messages.error.canExistOnlyOneProductionTrackingRecord", ComponentState.MessageType.FAILURE, false);
             return;
@@ -115,7 +116,8 @@ public class ProductionTrackingDetailsListeners {
         form.performEvent(view, "copy");
     }
 
-    public void copyProductionTrackings(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+    public void copyProductionTrackings(final ViewDefinitionState view, final ComponentState state,
+                                        final String[] args) {
         if (parameterService.getParameter().getBooleanField(ParameterFieldsPC.JUST_ONE)) {
             view.addMessage("productionCounting.productionTracking.messages.error.canExistOnlyOneProductionTrackingRecord", ComponentState.MessageType.FAILURE, false);
             return;
@@ -205,7 +207,7 @@ public class ProductionTrackingDetailsListeners {
                     .getHasManyField(ProductionTrackingFields.TRACKING_OPERATION_PRODUCT_OUT_COMPONENTS);
 
             Multimap<Long, Entity> groupedRecordInProducts = productionTrackingDocumentsHelper
-                    .fillFromBPCProductIn(trackingOperationProductInComponents, order, toc, true);
+                    .fillFromBPCProductIn(trackingOperationProductInComponents, order, toc, true, true);
 
             List<Long> productIds = productionTrackingDocumentsHelper
                     .findProductsWithInsufficientQuantity(groupedRecordInProducts, trackingOperationProductOutComponents);
@@ -332,7 +334,8 @@ public class ProductionTrackingDetailsListeners {
         }
     }
 
-    public void enableOrDisableFields(final ViewDefinitionState view, final ComponentState componentState, final String[] args) {
+    public void enableOrDisableFields(final ViewDefinitionState view, final ComponentState componentState,
+                                      final String[] args) {
         Entity order = getOrderFromLookup(view);
 
         if (Objects.isNull(order)) {
@@ -352,7 +355,8 @@ public class ProductionTrackingDetailsListeners {
         return orderLookup.getEntity();
     }
 
-    public void onOrderChange(final ViewDefinitionState view, final ComponentState componentState, final String[] args) {
+    public void onOrderChange(final ViewDefinitionState view, final ComponentState componentState,
+                              final String[] args) {
         clearFields(view, componentState, args);
         enableOrDisableFields(view, componentState, args);
         checkJustOne(view, componentState, args);
@@ -443,7 +447,8 @@ public class ProductionTrackingDetailsListeners {
         trackingOperationProductOutComponentsGrid.setEntities(Lists.newArrayList());
     }
 
-    public void onTechnologyOperationComponentChange(final ViewDefinitionState view, final ComponentState componentState,
+    public void onTechnologyOperationComponentChange(final ViewDefinitionState view,
+                                                     final ComponentState componentState,
                                                      final String[] args) {
         LookupComponent technologyOperationComponentLookup = (LookupComponent) view
                 .getComponentByReference(ProductionTrackingFields.TECHNOLOGY_OPERATION_COMPONENT);

@@ -27,7 +27,6 @@ import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.google.common.collect.Multimap;
 import com.qcadoo.commons.functional.Either;
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.basic.constants.CurrencyFields;
@@ -41,7 +40,6 @@ import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuanti
 import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityTypeOfMaterial;
 import com.qcadoo.mes.costNormsForMaterials.constants.OrderFieldsCNFM;
 import com.qcadoo.mes.costNormsForMaterials.orderRawMaterialCosts.OrderMaterialsCostDataGenerator;
-import com.qcadoo.mes.materialFlow.constants.MaterialFlowConstants;
 import com.qcadoo.mes.materialFlowResources.constants.*;
 import com.qcadoo.mes.materialFlowResources.service.DocumentBuilder;
 import com.qcadoo.mes.materialFlowResources.service.DocumentManagementService;
@@ -54,9 +52,10 @@ import com.qcadoo.mes.productFlowThruDivision.constants.*;
 import com.qcadoo.mes.productFlowThruDivision.realProductionCost.RealProductionCostService;
 import com.qcadoo.mes.productFlowThruDivision.reservation.OrderReservationsService;
 import com.qcadoo.mes.productFlowThruDivision.service.ProductionCountingDocumentService;
-import com.qcadoo.mes.productionCounting.constants.*;
-import com.qcadoo.mes.productionCounting.states.constants.ProductionTrackingStateStringValues;
-import com.qcadoo.mes.productionCounting.utils.ProductionTrackingDocumentsHelper;
+import com.qcadoo.mes.productionCounting.constants.ParameterFieldsPC;
+import com.qcadoo.mes.productionCounting.constants.PriceBasedOn;
+import com.qcadoo.mes.productionCounting.constants.ProductionCountingConstants;
+import com.qcadoo.mes.productionCounting.constants.ReceiptOfProducts;
 import com.qcadoo.mes.states.StateChangeContext;
 import com.qcadoo.mes.states.StateEnum;
 import com.qcadoo.mes.states.messages.constants.StateMessageType;
@@ -132,9 +131,6 @@ public class OrderStatesListenerServicePFTD {
     private DocumentStateChangeService documentStateChangeService;
 
     @Autowired
-    private ProductionTrackingDocumentsHelper productionTrackingDocumentsHelper;
-
-    @Autowired
     private BasicProductionCountingService basicProductionCountingService;
 
     @Autowired
@@ -188,8 +184,6 @@ public class OrderStatesListenerServicePFTD {
 
     @Transactional(/* isolation = Isolation.READ_UNCOMMITTED */)
     private Either<String, Void> tryAcceptInboundDocumentsFor(final Entity order, boolean isNominalProductCost) {
-        updateDocumentQuantities(order);
-
         DataDefinition documentDD = getDocumentDD();
 
         SearchResult searchResult = documentDD.find().add(SearchRestrictions.belongsTo(DocumentFieldsPFTD.ORDER, order))
@@ -471,55 +465,6 @@ public class OrderStatesListenerServicePFTD {
         return savedDocument;
     }
 
-    private void updateDocumentQuantities(final Entity order) {
-        List<Entity> productionTrackings = getProductionTrackingDD().find()
-                .add(SearchRestrictions.belongsTo(ProductionTrackingFields.ORDER, order))
-                .add(SearchRestrictions.eq(ProductionTrackingFields.STATE, ProductionTrackingStateStringValues.ACCEPTED))
-                .list().getEntities();
-
-        List<Entity> trackingOperationProductOutComponents = Lists.newArrayList();
-
-        for (Entity productionTracking : productionTrackings) {
-            trackingOperationProductOutComponents.addAll(Lists.newArrayList(productionTracking.getHasManyField(ProductionTrackingFields.TRACKING_OPERATION_PRODUCT_OUT_COMPONENTS)));
-        }
-
-        Multimap<Long, Entity> groupedRecordOutProducts = productionTrackingDocumentsHelper
-                .fillFromBPCProductOut(trackingOperationProductOutComponents, order, null, true);
-
-        for (Long warehouseId : groupedRecordOutProducts.keySet()) {
-            Entity locationTo = getLocationDD().get(warehouseId);
-
-            List<Entity> finalProductRecord = Lists.newArrayList();
-
-            Collection<Entity> intermediateRecords = Lists.newArrayList();
-
-            for (Entity trackingOperationProductOutComponent : groupedRecordOutProducts.get(warehouseId)) {
-                if (isFinalProductOrWasteForOrder(trackingOperationProductOutComponent)) {
-                    finalProductRecord.add(trackingOperationProductOutComponent);
-                } else {
-                    intermediateRecords.add(trackingOperationProductOutComponent);
-                }
-            }
-
-            Entity existingInboundDocument = getDocumentDD().find()
-                    .add(SearchRestrictions.belongsTo(DocumentFieldsPFTD.ORDER, order))
-                    .add(SearchRestrictions.belongsTo(DocumentFields.LOCATION_TO, locationTo))
-                    .add(SearchRestrictions.eq(DocumentFields.STATE, DocumentState.DRAFT.getStringValue()))
-                    .add(SearchRestrictions.eq(DocumentFields.TYPE, DocumentType.INTERNAL_INBOUND.getStringValue()))
-                    .setMaxResults(1).uniqueResult();
-
-            if (Objects.nonNull(existingInboundDocument)) {
-                if (Objects.nonNull(finalProductRecord)) {
-                    productionTrackingListenerServicePFTD.updateInternalInboundDocumentForFinalProducts(order, existingInboundDocument,
-                            finalProductRecord, true, true);
-                } else {
-                    productionTrackingListenerServicePFTD.updateInternalInboundDocumentForFinalProducts(order, existingInboundDocument,
-                            intermediateRecords, false, true);
-                }
-            }
-        }
-    }
-
     public void checkMaterialAvailability(final StateChangeContext stateChangeContext) {
         Entity order = stateChangeContext.getOwner();
 
@@ -588,7 +533,6 @@ public class OrderStatesListenerServicePFTD {
                 return;
             }
         }
-
     }
 
     public void createCumulatedInternalOutboundDocument(final StateChangeContext stateChangeContext) {
@@ -597,24 +541,9 @@ public class OrderStatesListenerServicePFTD {
         productionCountingDocumentService.createCumulatedInternalOutboundDocument(order);
     }
 
-    private boolean isFinalProductOrWasteForOrder(final Entity toc) {
-        return toc.getStringField(TrackingOperationProductOutComponentFields.TYPE_OF_MATERIAL).equals(ProductionCountingQuantityTypeOfMaterial.FINAL_PRODUCT.getStringValue()) ||
-                toc.getStringField(TrackingOperationProductOutComponentFields.TYPE_OF_MATERIAL).equals(ProductionCountingQuantityTypeOfMaterial.ADDITIONAL_FINAL_PRODUCT.getStringValue()) ||
-                toc.getStringField(TrackingOperationProductOutComponentFields.TYPE_OF_MATERIAL).equals(ProductionCountingQuantityTypeOfMaterial.WASTE.getStringValue());
-    }
-
-    private DataDefinition getLocationDD() {
-        return dataDefinitionService.get(MaterialFlowConstants.PLUGIN_IDENTIFIER, MaterialFlowConstants.MODEL_LOCATION);
-    }
-
     private DataDefinition getDocumentDD() {
         return dataDefinitionService.get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER,
                 MaterialFlowResourcesConstants.MODEL_DOCUMENT);
-    }
-
-    private DataDefinition getProductionTrackingDD() {
-        return dataDefinitionService.get(ProductionCountingConstants.PLUGIN_IDENTIFIER,
-                ProductionCountingConstants.MODEL_PRODUCTION_TRACKING);
     }
 
     private DataDefinition getTrackingOperationProductInComponentDD() {
