@@ -367,7 +367,7 @@ public class PalletValidatorService {
     }
 
     public boolean tooManyPalletsInStorageLocationAndPositions(final String storageLocationNumber, final String palletNumberNumber,
-                                                               final Long positionId) {
+                                                               final Long positionId, Long documentId) {
         if (Objects.nonNull(storageLocationNumber) && isPlaceStorageLocation(storageLocationNumber)) {
             if (Objects.nonNull(palletNumberNumber)) {
                 StringBuilder query = new StringBuilder();
@@ -383,10 +383,9 @@ public class PalletValidatorService {
                 query.append("SELECT ");
                 query.append("position.palletnumber_id, ");
                 query.append("position.storagelocation_id ");
-                query.append("FROM materialflowresources_document document ");
-                query.append("JOIN materialflowresources_position position ");
-                query.append("ON position.document_id = document.id ");
+                query.append("FROM materialflowresources_position position ");
                 query.append("WHERE position.id <> :positionId ");
+                query.append("AND position.document_id = :documentId ");
                 query.append(") palletsInStorageLocation ");
                 query.append("JOIN materialflowresources_storagelocation storagelocation ");
                 query.append("ON storagelocation.id = palletsInStorageLocation.storagelocation_id ");
@@ -400,6 +399,7 @@ public class PalletValidatorService {
                 params.put("storageLocationNumber", storageLocationNumber);
                 params.put("palletNumberNumber", palletNumberNumber);
                 params.put("positionId", Optional.ofNullable(positionId).orElse(-1L));
+                params.put("documentId", documentId);
 
                 Long palletsInStorageLocation = jdbcTemplate.queryForObject(query.toString(), params, Long.class);
 

@@ -5,7 +5,6 @@ import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.materialFlowResources.MaterialFlowResourcesService;
 import com.qcadoo.mes.materialFlowResources.constants.*;
-import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.security.api.SecurityService;
 import com.qcadoo.security.api.UserService;
@@ -22,9 +21,6 @@ import java.util.Optional;
 
 @Component
 public class ReceiptDocumentForReleaseHelper {
-
-    @Autowired
-    private DataDefinitionService dataDefinitionService;
 
     @Autowired
     private TranslationService translationService;
@@ -77,13 +73,7 @@ public class ReceiptDocumentForReleaseHelper {
 
             fillPositions(linkedDocumentLocation, document, documentBuilder);
 
-            Entity connectedDocument;
-
-            if (parameterService.getParameter().getStringField("documentsStatus").equals("01accepted")) {
-                connectedDocument = documentBuilder.setAccepted().build();
-            } else {
-                connectedDocument = documentBuilder.build();
-            }
+            Entity connectedDocument = documentBuilder.build();
 
             if (!connectedDocument.isValid()) {
                 document.addGlobalError("materialFlowResources.document.error.creationConnectedDocument");

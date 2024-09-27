@@ -88,7 +88,7 @@ public class WarehouseIssueDocumentsService {
         }
 
         DrawnDocuments drawnDocument = warehouseIssueParameterService.getDrawnDocument();
-        DocumentsStatus documentsStatus = warehouseIssueParameterService.getDocuemtStatusCreatedDocuemnt();
+        DocumentsStatus documentsStatus = warehouseIssueParameterService.getDocumentStatusCreatedDocument();
 
         CreationDocumentResponse response = null;
 

@@ -30,6 +30,8 @@ public final class OrderFieldsPFTD {
 
     public static final String MATERIAL_AVAILABILITY = "materialAvailability";
 
+    public static final String DOCUMENTS = "documents";
+
     private OrderFieldsPFTD(){
 
     }

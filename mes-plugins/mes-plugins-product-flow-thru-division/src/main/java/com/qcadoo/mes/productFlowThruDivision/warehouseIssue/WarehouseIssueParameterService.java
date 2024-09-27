@@ -30,9 +30,9 @@ public class WarehouseIssueParameterService {
         return DrawnDocuments.parseString(drawnDocument);
     }
 
-    public DocumentsStatus getDocuemtStatusCreatedDocuemnt() {
-        String docuemntStatus = parameterService.getParameter().getStringField(ParameterFieldsPFTD.DOCUMENTS_STATUS);
-        return DocumentsStatus.parseString(docuemntStatus);
+    public DocumentsStatus getDocumentStatusCreatedDocument() {
+        String documentStatus = parameterService.getParameter().getStringField(ParameterFieldsPFTD.DOCUMENTS_STATUS);
+        return DocumentsStatus.parseString(documentStatus);
     }
 
     public ProductsToIssue getProductsToIssue() {

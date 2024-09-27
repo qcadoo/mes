@@ -23,13 +23,12 @@
  */
 package com.qcadoo.mes.costCalculation.validators;
 
-import org.springframework.stereotype.Service;
-
 import com.qcadoo.mes.costCalculation.constants.CostCalculationFields;
 import com.qcadoo.mes.costCalculation.constants.MaterialCostsUsed;
 import com.qcadoo.mes.costCalculation.constants.SourceOfOperationCosts;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
+import org.springframework.stereotype.Service;
 
 @Service
 public class CostCalculationValidators {
@@ -37,10 +36,6 @@ public class CostCalculationValidators {
     private static final String L_QCADOO_VIEW_VALIDATE_FIELD_ERROR_MISSING = "qcadooView.validate.field.error.missing";
 
     public boolean validatesWith(final DataDefinition dataDefinition, final Entity costCalculation) {
-        return checkRequiredFields(dataDefinition, costCalculation);
-    }
-
-    public boolean checkRequiredFields(final DataDefinition dataDefinition, final Entity costCalculation) {
         boolean isValid = true;
         String sourceOfOperationCosts = costCalculation.getStringField(CostCalculationFields.SOURCE_OF_OPERATION_COSTS);
         if (SourceOfOperationCosts.STANDARD_LABOR_COSTS.getStringValue().equals(sourceOfOperationCosts)
