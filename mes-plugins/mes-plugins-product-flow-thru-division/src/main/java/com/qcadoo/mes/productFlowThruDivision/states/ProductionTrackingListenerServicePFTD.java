@@ -199,12 +199,6 @@ public final class ProductionTrackingListenerServicePFTD {
                 return;
             }
 
-            errorsDisplayed = createOrUpdateInternalInboundDocumentForFinalProducts(productionTracking, groupedRecordOutFinalProducts, order, receiptOfProducts);
-
-            if (errorsDisplayed) {
-                return;
-            }
-
             errorsDisplayed = createInternalInboundDocumentForIntermediates(productionTracking, groupedRecordOutIntermediates, order, receiptOfProducts);
 
             if (errorsDisplayed) {
