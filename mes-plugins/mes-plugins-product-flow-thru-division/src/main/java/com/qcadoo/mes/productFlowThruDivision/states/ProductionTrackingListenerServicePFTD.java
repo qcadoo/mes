@@ -276,10 +276,9 @@ public final class ProductionTrackingListenerServicePFTD {
             Entity inboundDocument;
             final Collection<Entity> trackingOperationProductOutComponents = groupedRecordOutProducts.get(locationId);
             final Entity user = productionTracking.getBelongsToField(L_USER);
-            if (ReceiptOfProducts.ON_ACCEPTANCE_REGISTRATION_RECORD.getStringValue().equals(receiptOfProducts)) {
+            if (ReceiptOfProducts.ON_ACCEPTANCE_REGISTRATION_RECORD.getStringValue().equals(receiptOfProducts) ||
+                    ReceiptOfProducts.END_OF_THE_ORDER.getStringValue().equals(receiptOfProducts)) {
                 inboundDocument = createInternalInboundDocumentForFinalProducts(locationTo, order, trackingOperationProductOutComponents, true, user);
-            } else if (ReceiptOfProducts.END_OF_THE_ORDER.getStringValue().equals(receiptOfProducts)) {
-                inboundDocument = createInternalInboundDocumentForFinalProducts(locationTo, order, trackingOperationProductOutComponents, user);
             } else {
                 inboundDocument = null;
             }
