@@ -443,7 +443,6 @@ public class ProductionTrackingDocumentsHelper {
     }
 
     public static boolean filterIntermediates(final Entity trackingOperationProductInComponent) {
-        return !Strings.isNullOrEmpty(trackingOperationProductInComponent.getStringField(TrackingOperationProductInComponentFields.TYPE_OF_MATERIAL))
-                && !trackingOperationProductInComponent.getStringField(TrackingOperationProductInComponentFields.TYPE_OF_MATERIAL).equals(ProductionCountingQuantityTypeOfMaterial.INTERMEDIATE.getStringValue());
+        return !ProductionCountingQuantityTypeOfMaterial.INTERMEDIATE.getStringValue().equals(trackingOperationProductInComponent.getStringField(TrackingOperationProductInComponentFields.TYPE_OF_MATERIAL));
     }
 }
