@@ -5,7 +5,6 @@ import com.qcadoo.mes.basicProductionCounting.constants.BasicProductionCountingC
 import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityFields;
 import com.qcadoo.mes.materialFlowResources.exceptions.DocumentBuildException;
 import com.qcadoo.mes.productFlowThruDivision.service.ProductionCountingDocumentService;
-import com.qcadoo.mes.productFlowThruDivision.states.ProductionTrackingListenerServicePFTD;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchRestrictions;
@@ -34,8 +33,6 @@ public class DetailedProductionCountingAndProgressListenersBPC {
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
-    @Autowired
-    private ProductionTrackingListenerServicePFTD productionTrackingListenerServicePFTD;
 
     public void resourceIssue(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         FormComponent formComponent = (FormComponent) view.getComponentByReference(L_ORDER);
@@ -55,7 +52,7 @@ public class DetailedProductionCountingAndProgressListenersBPC {
             productionCountingDocumentService.createInternalOutboundDocument(order, pcqs, false);
             if (order.isValid()) {
                 productionCountingDocumentService.updateProductionCountingQuantity(pcqs);
-                productionTrackingListenerServicePFTD.updateCostsForOrder(order);
+                productionCountingDocumentService.updateCostsForOrder(order);
                 view.addMessage("productFlowThruDivision.productionCountingQuantity.success.createInternalOutboundDocument",
                         ComponentState.MessageType.SUCCESS);
             }

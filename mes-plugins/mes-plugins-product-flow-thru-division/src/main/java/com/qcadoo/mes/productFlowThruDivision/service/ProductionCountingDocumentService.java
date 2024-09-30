@@ -1,34 +1,40 @@
 package com.qcadoo.mes.productFlowThruDivision.service;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 import com.qcadoo.mes.advancedGenealogy.constants.BatchFields;
+import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.basic.constants.UnitConversionItemFieldsB;
 import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityFields;
 import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityTypeOfMaterial;
+import com.qcadoo.mes.costNormsForMaterials.CostNormsForMaterialsService;
+import com.qcadoo.mes.costNormsForMaterials.constants.OrderFieldsCNFM;
+import com.qcadoo.mes.costNormsForMaterials.orderRawMaterialCosts.domain.ProductWithQuantityAndCost;
+import com.qcadoo.mes.costNormsForProduct.CostNormsForProductService;
 import com.qcadoo.mes.materialFlow.constants.LocationFields;
 import com.qcadoo.mes.materialFlow.constants.MaterialFlowConstants;
 import com.qcadoo.mes.materialFlowResources.constants.DocumentFields;
+import com.qcadoo.mes.materialFlowResources.constants.DocumentType;
 import com.qcadoo.mes.materialFlowResources.constants.MaterialFlowResourcesConstants;
 import com.qcadoo.mes.materialFlowResources.constants.PositionFields;
 import com.qcadoo.mes.materialFlowResources.exceptions.DocumentBuildException;
 import com.qcadoo.mes.materialFlowResources.service.DocumentBuilder;
 import com.qcadoo.mes.materialFlowResources.service.DocumentManagementService;
+import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.productFlowThruDivision.constants.DocumentFieldsPFTD;
 import com.qcadoo.mes.productFlowThruDivision.constants.OrderProductResourceReservationFields;
 import com.qcadoo.mes.productFlowThruDivision.constants.TrackingProductResourceReservationFields;
+import com.qcadoo.mes.productFlowThruDivision.realProductionCost.RealProductionCostService;
 import com.qcadoo.mes.productFlowThruDivision.reservation.OrderReservationsService;
-import com.qcadoo.mes.productFlowThruDivision.states.ProductionTrackingListenerServicePFTD;
 import com.qcadoo.mes.productionCounting.ProductionTrackingService;
-import com.qcadoo.mes.productionCounting.constants.ProductionCountingConstants;
-import com.qcadoo.mes.productionCounting.constants.ProductionTrackingFields;
-import com.qcadoo.mes.productionCounting.constants.TrackingOperationProductInComponentFields;
-import com.qcadoo.mes.productionCounting.constants.UsedBatchFields;
+import com.qcadoo.mes.productionCounting.constants.*;
 import com.qcadoo.mes.productionCounting.states.constants.ProductionTrackingState;
 import com.qcadoo.mes.productionCounting.utils.ProductionTrackingDocumentsHelper;
 import com.qcadoo.model.api.*;
+import com.qcadoo.model.api.search.SearchQueryBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.model.api.units.PossibleUnitConversions;
 import com.qcadoo.model.api.units.UnitConversionService;
@@ -65,7 +71,7 @@ public class ProductionCountingDocumentService {
     private SecurityService securityService;
 
     @Autowired
-    private ProductionTrackingListenerServicePFTD productionTrackingListenerServicePFTD;
+    private CostNormsForMaterialsService costNormsForMaterialsService;
 
     @Autowired
     private UserService userService;
@@ -84,6 +90,15 @@ public class ProductionCountingDocumentService {
 
     @Autowired
     private OrderReservationsService orderReservationsService;
+
+    @Autowired
+    private ParameterService parameterService;
+
+    @Autowired
+    private RealProductionCostService realProductionCostService;
+
+    @Autowired
+    private CostNormsForProductService costNormsForProductService;
 
     public void createCumulatedInternalOutboundDocument(final Entity order) {
         List<Entity> productionTrackings = getProductionTrackingDD().find()
@@ -105,7 +120,7 @@ public class ProductionCountingDocumentService {
             createInternalOutboundDocumentPT(order, trackingOperationProductInComponents);
 
             if (order.isValid()) {
-                productionTrackingListenerServicePFTD.updateCostsForOrder(order);
+                updateCostsForOrder(order);
             }
         } catch (DocumentBuildException documentBuildException) {
             boolean errorsDisplayed = true;
@@ -626,6 +641,66 @@ public class ProductionCountingDocumentService {
 
             productionCountingQuantity.getDataDefinition().save(productionCountingQuantity);
         }
+    }
+
+    public void updateCostsForOrder(final Entity order) {
+        SearchQueryBuilder searchQueryBuilder = getPositionDD()
+                .find("SELECT prod.id AS product, SUM(position.quantity) AS quantity, SUM(position.quantity * position.price) AS price "
+                        + "FROM #materialFlowResources_position position "
+                        + "JOIN position.document AS document "
+                        + "JOIN position.product AS prod "
+                        + "WHERE document.order = :order_id AND document.type = :type "
+                        + "GROUP BY document.order, document.type, prod.id");
+
+        searchQueryBuilder.setLong("order_id", order.getId());
+        searchQueryBuilder.setString("type", DocumentType.INTERNAL_OUTBOUND.getStringValue());
+
+        List<Entity> positions = searchQueryBuilder.list().getEntities();
+
+        if (!positions.isEmpty()) {
+            List<ProductWithQuantityAndCost> productsWithQuantitiesAndCosts = Lists.newArrayList();
+
+            for (Entity position : positions) {
+                Long product = (Long) position.getField(PositionFields.PRODUCT);
+                BigDecimal quantity = position.getDecimalField(PositionFields.QUANTITY);
+                BigDecimal cost = position.getDecimalField(PositionFields.PRICE);
+
+                productsWithQuantitiesAndCosts.add(new ProductWithQuantityAndCost(product, quantity, cost));
+            }
+
+            List<Entity> technologyInstOperProductInComps = costNormsForMaterialsService.updateCostsForProductInOrder(order,
+                    productsWithQuantitiesAndCosts);
+
+            order.setField(OrderFieldsCNFM.TECHNOLOGY_INST_OPER_PRODUCT_IN_COMPS, technologyInstOperProductInComps);
+        }
+    }
+
+    public boolean isNominalProductCost(Entity order) {
+        String priceBasedOn = parameterService.getParameter().getStringField(ParameterFieldsPC.PRICE_BASED_ON);
+
+        return Objects.nonNull(priceBasedOn)
+                && priceBasedOn.equals(PriceBasedOn.NOMINAL_PRODUCT_COST.getStringValue())
+                || !Strings.isNullOrEmpty(order.getStringField(OrderFields.ADDITIONAL_FINAL_PRODUCTS));
+    }
+
+    public BigDecimal getPositionPrice(Entity order, Entity trackingOperationProductOutComponent,
+                                       boolean isNominalProductCost, Entity product) {
+        BigDecimal price;
+
+        if (isNominalProductCost || isWasteForOrder(trackingOperationProductOutComponent)) {
+            price = costNormsForProductService.getNominalCost(product);
+        } else {
+            price = realProductionCostService.calculateRealProductionCost(order);
+        }
+        return price;
+    }
+
+    private boolean isWasteForOrder(final Entity trackingOperationProductOutComponent) {
+        return trackingOperationProductOutComponent.getStringField(TrackingOperationProductOutComponentFields.TYPE_OF_MATERIAL).equals(ProductionCountingQuantityTypeOfMaterial.WASTE.getStringValue());
+    }
+
+    public static boolean isIntermediateForOrder(final Entity trackingOperationProductOutComponent) {
+        return trackingOperationProductOutComponent.getStringField(TrackingOperationProductOutComponentFields.TYPE_OF_MATERIAL).equals(ProductionCountingQuantityTypeOfMaterial.INTERMEDIATE.getStringValue());
     }
 
     private DataDefinition getProductionTrackingDD() {

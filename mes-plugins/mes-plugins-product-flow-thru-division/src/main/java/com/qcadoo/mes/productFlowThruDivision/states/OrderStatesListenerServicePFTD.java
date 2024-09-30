@@ -24,15 +24,12 @@
 package com.qcadoo.mes.productFlowThruDivision.states;
 
 import com.google.common.base.Preconditions;
-import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.qcadoo.commons.functional.Either;
 import com.qcadoo.mes.basic.ParameterService;
-import com.qcadoo.mes.basic.constants.CurrencyFields;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.basic.constants.UnitConversionItemFieldsB;
-import com.qcadoo.mes.basic.util.CurrencyService;
 import com.qcadoo.mes.basicProductionCounting.BasicProductionCountingService;
 import com.qcadoo.mes.basicProductionCounting.constants.BasicProductionCountingConstants;
 import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityFields;
@@ -40,6 +37,7 @@ import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuanti
 import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityTypeOfMaterial;
 import com.qcadoo.mes.costNormsForMaterials.constants.OrderFieldsCNFM;
 import com.qcadoo.mes.costNormsForMaterials.orderRawMaterialCosts.OrderMaterialsCostDataGenerator;
+import com.qcadoo.mes.costNormsForProduct.CostNormsForProductService;
 import com.qcadoo.mes.materialFlowResources.constants.*;
 import com.qcadoo.mes.materialFlowResources.service.DocumentBuilder;
 import com.qcadoo.mes.materialFlowResources.service.DocumentManagementService;
@@ -53,7 +51,6 @@ import com.qcadoo.mes.productFlowThruDivision.realProductionCost.RealProductionC
 import com.qcadoo.mes.productFlowThruDivision.reservation.OrderReservationsService;
 import com.qcadoo.mes.productFlowThruDivision.service.ProductionCountingDocumentService;
 import com.qcadoo.mes.productionCounting.constants.ParameterFieldsPC;
-import com.qcadoo.mes.productionCounting.constants.PriceBasedOn;
 import com.qcadoo.mes.productionCounting.constants.ProductionCountingConstants;
 import com.qcadoo.mes.productionCounting.constants.ReceiptOfProducts;
 import com.qcadoo.mes.states.StateChangeContext;
@@ -62,7 +59,6 @@ import com.qcadoo.mes.states.messages.constants.StateMessageType;
 import com.qcadoo.mes.technologies.constants.OperationFields;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
 import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
-import com.qcadoo.model.api.BigDecimalUtils;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -107,16 +103,13 @@ public class OrderStatesListenerServicePFTD {
     private UnitConversionService unitConversionService;
 
     @Autowired
-    private CurrencyService currencyService;
+    private CostNormsForProductService costNormsForProductService;
 
     @Autowired
     private ParameterService parameterService;
 
     @Autowired
     private OrderMaterialsCostDataGenerator orderMaterialsCostDataGenerator;
-
-    @Autowired
-    private ProductionTrackingListenerServicePFTD productionTrackingListenerServicePFTD;
 
     @Autowired
     private RealProductionCostService realProductionCostService;
@@ -146,16 +139,12 @@ public class OrderStatesListenerServicePFTD {
         if (ReceiptOfProducts.END_OF_THE_ORDER.getStringValue().equals(receiptOfProducts)) {
             Entity order = stateChangeContext.getOwner();
 
-            String priceBasedOn = parameterService.getParameter().getStringField(ParameterFieldsPC.PRICE_BASED_ON);
-
-            boolean isNominalProductCost = Objects.nonNull(priceBasedOn)
-                    && priceBasedOn.equals(PriceBasedOn.NOMINAL_PRODUCT_COST.getStringValue())
-                    || !Strings.isNullOrEmpty(order.getStringField(OrderFields.ADDITIONAL_FINAL_PRODUCTS));
+            boolean isNominalProductCost = productionCountingDocumentService.isNominalProductCost(order);
 
             if (!isNominalProductCost) {
                 order = updateCostsInOrder(order);
 
-                productionTrackingListenerServicePFTD.updateCostsForOrder(order);
+                productionCountingDocumentService.updateCostsForOrder(order);
 
                 fillRealProductionCost(order);
 
@@ -192,7 +181,7 @@ public class OrderStatesListenerServicePFTD {
         Optional<BigDecimal> price;
 
         if (isNominalProductCost) {
-            price = Optional.ofNullable(getNominalCost(order.getBelongsToField(OrderFields.PRODUCT)));
+            price = Optional.ofNullable(costNormsForProductService.getNominalCost(order.getBelongsToField(OrderFields.PRODUCT)));
         } else {
             price = Optional.ofNullable(realProductionCostService.calculateRealProductionCost(order));
         }
@@ -227,18 +216,6 @@ public class OrderStatesListenerServicePFTD {
         }
 
         return documentsForNotUsedMaterials;
-    }
-
-    private BigDecimal getNominalCost(final Entity product) {
-        BigDecimal nominalCost = BigDecimalUtils.convertNullToZero(product.getDecimalField("nominalCost"));
-        Entity currency = product.getBelongsToField("nominalCostCurrency");
-
-        if (Objects.nonNull(currency) && CurrencyService.PLN.equals(currencyService.getCurrencyAlphabeticCode())
-                && !CurrencyService.PLN.equals(currency.getStringField(CurrencyFields.ALPHABETIC_CODE))) {
-            nominalCost = currencyService.getConvertedValue(nominalCost, currency);
-        }
-
-        return nominalCost;
     }
 
     private void fillInDocumentPositionsPrice(final Entity document, final Entity orderProduct,

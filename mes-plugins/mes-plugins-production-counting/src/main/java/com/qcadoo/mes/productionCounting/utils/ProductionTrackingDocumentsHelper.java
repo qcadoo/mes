@@ -1,6 +1,5 @@
 package com.qcadoo.mes.productionCounting.utils;
 
-import com.google.common.base.Strings;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
