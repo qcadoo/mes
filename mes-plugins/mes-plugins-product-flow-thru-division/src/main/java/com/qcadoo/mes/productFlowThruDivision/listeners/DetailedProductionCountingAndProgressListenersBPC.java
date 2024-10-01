@@ -33,7 +33,6 @@ public class DetailedProductionCountingAndProgressListenersBPC {
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
-
     public void resourceIssue(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         FormComponent formComponent = (FormComponent) view.getComponentByReference(L_ORDER);
         Entity order = formComponent.getEntity().getDataDefinition().get(formComponent.getEntity().getId());

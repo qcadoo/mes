@@ -35,8 +35,7 @@ import com.qcadoo.mes.basicProductionCounting.constants.BasicProductionCountingC
 import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityFields;
 import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityRole;
 import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityTypeOfMaterial;
-import com.qcadoo.mes.costNormsForMaterials.constants.OrderFieldsCNFM;
-import com.qcadoo.mes.costNormsForMaterials.orderRawMaterialCosts.OrderMaterialsCostDataGenerator;
+import com.qcadoo.mes.costNormsForMaterials.CostNormsForMaterialsService;
 import com.qcadoo.mes.costNormsForProduct.CostNormsForProductService;
 import com.qcadoo.mes.materialFlowResources.constants.*;
 import com.qcadoo.mes.materialFlowResources.service.DocumentBuilder;
@@ -109,7 +108,7 @@ public class OrderStatesListenerServicePFTD {
     private ParameterService parameterService;
 
     @Autowired
-    private OrderMaterialsCostDataGenerator orderMaterialsCostDataGenerator;
+    private CostNormsForMaterialsService costNormsForMaterialsService;
 
     @Autowired
     private RealProductionCostService realProductionCostService;
@@ -142,9 +141,7 @@ public class OrderStatesListenerServicePFTD {
             boolean isNominalProductCost = productionCountingDocumentService.isNominalProductCost(order);
 
             if (!isNominalProductCost) {
-                order = updateCostsInOrder(order);
-
-                productionCountingDocumentService.updateCostsForOrder(order);
+                order = costNormsForMaterialsService.updateCostsInOrder(order);
 
                 fillRealProductionCost(order);
 
@@ -157,14 +154,6 @@ public class OrderStatesListenerServicePFTD {
                 stateChangeContext.addMessage(result.getLeft(), StateMessageType.FAILURE);
             }
         }
-    }
-
-    public Entity updateCostsInOrder(final Entity order) {
-        List<Entity> orderMaterialsCosts = orderMaterialsCostDataGenerator.generateUpdatedMaterialsListFor(order);
-
-        order.setField(OrderFieldsCNFM.TECHNOLOGY_INST_OPER_PRODUCT_IN_COMPS, orderMaterialsCosts);
-
-        return order.getDataDefinition().save(order);
     }
 
     public void fillRealProductionCost(final Entity order) {

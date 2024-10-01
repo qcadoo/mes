@@ -18,7 +18,7 @@ public class CostNormsForMaterialsServiceAspectPFTD {
     @Autowired
     private ProductionCountingDocumentService productionCountingDocumentService;
 
-    @AfterReturning(pointcut = "execution(private com.qcadoo.model.api.Entity com.qcadoo.mes.costNormsForMaterials.CostNormsForMaterialsService.updateCostsInOrder(com.qcadoo.model.api.Entity))", returning = "order")
+    @AfterReturning(pointcut = "execution(public com.qcadoo.model.api.Entity com.qcadoo.mes.costNormsForMaterials.CostNormsForMaterialsService.updateCostsInOrder(com.qcadoo.model.api.Entity))", returning = "order")
     public void afterUpdateCostsInOrder(final JoinPoint jp, final Entity order) throws Throwable {
         productionCountingDocumentService.updateCostsForOrder(order);
     }

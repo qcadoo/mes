@@ -200,19 +200,14 @@ public final class ProductionTrackingListenerServicePFTD {
             if (errorsDisplayed) {
                 return;
             }
+            if (!groupedRecordInComponents.isEmpty()) {
+                productionCountingDocumentService.updateCostsForOrder(order);
+            }
         }
 
         if (ReleaseOfMaterials.ON_ACCEPTANCE_REGISTRATION_RECORD.getStringValue()
                 .equals(releaseOfMaterials) || ReleaseOfMaterials.END_OF_THE_ORDER.getStringValue().equals(releaseOfMaterials)) {
-            boolean errorsDisplayed = createInternalOutboundDocument(productionTracking, groupedRecordInIntermediates, order);
-
-            if (errorsDisplayed) {
-                return;
-            }
-        }
-
-        if (!groupedRecordInComponents.isEmpty() || !groupedRecordInIntermediates.isEmpty()) {
-            productionCountingDocumentService.updateCostsForOrder(order);
+            createInternalOutboundDocument(productionTracking, groupedRecordInIntermediates, order);
         }
     }
 
@@ -338,7 +333,7 @@ public final class ProductionTrackingListenerServicePFTD {
             }
 
             for (Entity document : order.getHasManyField(OrderFieldsPFTD.DOCUMENTS)) {
-                if (DocumentType.isInbound(document.getStringField(DocumentFields.TYPE))
+                if (DocumentType.INTERNAL_INBOUND.getStringValue().equals(document.getStringField(DocumentFields.TYPE))
                         && DocumentState.DRAFT.getStringValue().equals(document.getStringField(DocumentFields.STATE))) {
                     boolean warehouseFound = false;
                     for (Long locationId : groupedRecordOutFinalProducts.keySet()) {
