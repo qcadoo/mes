@@ -233,11 +233,11 @@ public class ProductionTrackingDocumentsHelper {
             }
 
             Entity product = productionCountingQuantity.getBelongsToField(ProductionCountingQuantityFields.PRODUCT);
-            Entity trackingOperationProductOutComponent = findProductionRecordByProduct(trackingOperationProductOutComponents,
+            List<Entity> filteredTrackingOperationProductOutComponents = findProductionRecordsByProduct(trackingOperationProductOutComponents,
                     product);
 
-            if (Objects.nonNull(trackingOperationProductOutComponent) && !checkIfProductExists(groupedRecordOutProducts, warehouse, product)) {
-                groupedRecordOutProducts.put(warehouse.getId(), trackingOperationProductOutComponent);
+            if (!filteredTrackingOperationProductOutComponents.isEmpty() && !checkIfProductExists(groupedRecordOutProducts, warehouse, product)) {
+                groupedRecordOutProducts.putAll(warehouse.getId(), filteredTrackingOperationProductOutComponents);
             }
         }
 
@@ -264,6 +264,38 @@ public class ProductionTrackingDocumentsHelper {
                     .getBelongsToField(ProductionCountingQuantityFields.PRODUCTS_INPUT_LOCATION);
         }
         return warehouse;
+    }
+
+    public Multimap<Long, Entity> getFromPCQProductOutWithoutIntermediates(final Entity order,
+                                                                           Multimap<Long, Entity> groupedRecordOutFinalProducts) {
+        List<Entity> productionCountingQuantities = getProductionCountingQuantityDD().find()
+                .add(SearchRestrictions.belongsTo(ProductionCountingQuantityFields.ORDER, order)).add(SearchRestrictions
+                        .eq(ProductionCountingQuantityFields.ROLE, ProductionCountingQuantityRole.PRODUCED.getStringValue())).list().getEntities();
+
+        for (Entity productionCountingQuantity : productionCountingQuantities) {
+            Entity warehouse = getWarehouseForOutProducts(productionCountingQuantity, true, false, true);
+
+            if (Objects.isNull(warehouse)) {
+                continue;
+            }
+
+            BigDecimal producedQuantity = productionCountingQuantity.getDecimalField(ProductionCountingQuantityFields.PRODUCED_QUANTITY);
+            if (Objects.nonNull(producedQuantity) && BigDecimal.ZERO.compareTo(producedQuantity) < 0) {
+                groupedRecordOutFinalProducts.put(warehouse.getId(), productionCountingQuantity);
+            }
+        }
+
+        return groupedRecordOutFinalProducts;
+    }
+
+    private List<Entity> findProductionRecordsByProduct(final List<Entity> trackingOperationProductComponents,
+                                                        final Entity product) {
+        return trackingOperationProductComponents.stream().filter(trackingOperationProductComponent -> {
+            BigDecimal usedQuantity = trackingOperationProductComponent.getDecimalField(TrackingOperationProductOutComponentFields.USED_QUANTITY);
+
+            return product.getId().equals(trackingOperationProductComponent.getBelongsToField(TrackingOperationProductOutComponentFields.PRODUCT).getId())
+                    && Objects.nonNull(usedQuantity) && BigDecimal.ZERO.compareTo(usedQuantity) < 0;
+        }).collect(Collectors.toList());
     }
 
     public Entity findProductionRecordByProduct(final List<Entity> trackingOperationProductComponents,

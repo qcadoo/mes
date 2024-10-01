@@ -30,6 +30,7 @@ import com.qcadoo.mes.advancedGenealogy.constants.BatchFields;
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.basic.constants.UnitConversionItemFieldsB;
+import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityFields;
 import com.qcadoo.mes.materialFlow.constants.MaterialFlowConstants;
 import com.qcadoo.mes.materialFlowResources.constants.*;
 import com.qcadoo.mes.materialFlowResources.service.DocumentBuilder;
@@ -233,7 +234,7 @@ public final class ProductionTrackingListenerServicePFTD {
 
                 if (Objects.nonNull(existingInboundDocument)) {
                     inboundDocument = updateInternalInboundDocumentForFinalProducts(order, existingInboundDocument,
-                            trackingOperationProductOutComponents);
+                            trackingOperationProductOutComponents, false);
                 } else {
                     inboundDocument = createInternalInboundDocumentForFinalProducts(locationTo, order,
                             trackingOperationProductOutComponents, productionCountingDocumentService.isNominalProductCost(order), user);
@@ -332,17 +333,19 @@ public final class ProductionTrackingListenerServicePFTD {
                 return;
             }
 
+            Multimap<Long, Entity> PCQWarehouseOutProducts = productionTrackingDocumentsHelper.getFromPCQProductOutWithoutIntermediates(order, groupedRecordOutFinalProducts);
+
             for (Entity document : order.getHasManyField(OrderFieldsPFTD.DOCUMENTS)) {
                 if (DocumentType.INTERNAL_INBOUND.getStringValue().equals(document.getStringField(DocumentFields.TYPE))
                         && DocumentState.DRAFT.getStringValue().equals(document.getStringField(DocumentFields.STATE))) {
                     boolean warehouseFound = false;
-                    for (Long locationId : groupedRecordOutFinalProducts.keySet()) {
+                    for (Long locationId : PCQWarehouseOutProducts.keySet()) {
                         if (locationId.equals(document.getBelongsToField(DocumentFields.LOCATION_TO).getId())) {
                             List<Entity> positions = document.getHasManyField(DocumentFields.POSITIONS);
                             for (Entity position : positions) {
                                 boolean productFound = false;
-                                for (Entity topoc : groupedRecordOutFinalProducts.get(locationId)) {
-                                    if (position.getBelongsToField(PositionFields.PRODUCT).getId().equals(topoc.getBelongsToField(TrackingOperationProductOutComponentFields.PRODUCT).getId())) {
+                                for (Entity pcq : PCQWarehouseOutProducts.get(locationId)) {
+                                    if (position.getBelongsToField(PositionFields.PRODUCT).getId().equals(pcq.getBelongsToField(ProductionCountingQuantityFields.PRODUCT).getId())) {
                                         productFound = true;
                                         break;
                                     }
@@ -564,12 +567,20 @@ public final class ProductionTrackingListenerServicePFTD {
         return position;
     }
 
-    private Entity updateInternalInboundDocumentForFinalProducts(final Entity order,
-                                                                 final Entity existingInboundDocument,
-                                                                 final Collection<Entity> trackingOperationProductOutComponents) {
+    public Entity updateInternalInboundDocumentForFinalProducts(final Entity order,
+                                                                final Entity existingInboundDocument,
+                                                                final Collection<Entity> trackingOperationProductOutComponents,
+                                                                boolean cleanPositionsQuantity) {
         List<Entity> positions = Lists.newArrayList(existingInboundDocument.getHasManyField(DocumentFields.POSITIONS));
 
         boolean isNominalProductCost = productionCountingDocumentService.isNominalProductCost(order);
+
+        if (cleanPositionsQuantity) {
+            positions.forEach(position -> {
+                position.setField(PositionFields.QUANTITY, BigDecimal.ZERO);
+                position.setField(PositionFields.GIVEN_QUANTITY, BigDecimal.ZERO);
+            });
+        }
 
         for (Entity trackingOperationProductOutComponent : trackingOperationProductOutComponents) {
             Entity product = trackingOperationProductOutComponent.getBelongsToField(TrackingOperationProductOutComponentFields.PRODUCT);
