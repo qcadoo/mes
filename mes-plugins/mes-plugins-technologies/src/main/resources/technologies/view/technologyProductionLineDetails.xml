@@ -26,8 +26,7 @@
 -->
 <view defaultAuthorizationRole="ROLE_BASE_FUNCTIONALITY" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
       xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
-      name="technologyProductionLineDetails" modelName="technologyProductionLine"
-      modelPlugin="productFlowThruDivision">
+      name="technologyProductionLineDetails" modelName="technologyProductionLine">
 
     <component type="window" name="window">
         <ribbon>
@@ -49,7 +48,7 @@
                             <option type="fieldCode" value="number"/>
 
                             <criteriaModifier
-                                    class="com.qcadoo.mes.productFlowThruDivision.criteriaModifiers.TechnologyProductionLineCriteriaModifiers"
+                                    class="com.qcadoo.mes.technologies.criteriaModifiers.TechnologyProductionLineCriteriaModifiers"
                                     method="filterByTechnologyAndDivision"/>
                         </component>
                     </layoutElement>
@@ -91,7 +90,7 @@
     </component>
 
     <hooks>
-        <beforeRender class="com.qcadoo.mes.productFlowThruDivision.hooks.TechnologyProductionLineDetailsHooks"
+        <beforeRender class="com.qcadoo.mes.technologies.hooks.TechnologyProductionLineDetailsHooks"
                       method="onBeforeRender"/>
     </hooks>
 

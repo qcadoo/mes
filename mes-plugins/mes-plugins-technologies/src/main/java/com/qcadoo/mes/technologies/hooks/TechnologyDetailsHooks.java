@@ -25,10 +25,11 @@ package com.qcadoo.mes.technologies.hooks;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
+import com.qcadoo.mes.basic.ParameterService;
+import com.qcadoo.mes.basic.constants.WorkstationFields;
 import com.qcadoo.mes.states.constants.StateChangeStatus;
 import com.qcadoo.mes.states.service.client.util.StateChangeHistoryService;
-import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
-import com.qcadoo.mes.technologies.constants.TechnologyFields;
+import com.qcadoo.mes.technologies.constants.*;
 import com.qcadoo.mes.technologies.criteriaModifiers.QualityCardCriteriaModifiers;
 import com.qcadoo.mes.technologies.criteriaModifiers.TechnologyDetailsCriteriaModifiers;
 import com.qcadoo.mes.technologies.states.constants.TechnologyState;
@@ -47,8 +48,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Service;
 
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 
 import static com.qcadoo.mes.technologies.states.constants.TechnologyStateChangeFields.STATUS;
 
@@ -81,11 +81,24 @@ public class TechnologyDetailsHooks {
 
     private static final String L_ON_PRODUCT_CART = "onProductCart";
 
+    private static final String OPERATION_RANGE_DESCRIPTION = "operationRangeDescription";
+
+    private static final String RANGE_TECHNOLOGY_OPERATION_COMPONENT = "rangeTechnologyOperationComponent";
+
+    private static final String WORKSTATIONS_FOR_TOC_LOOKUP = "workstationsForTOClookup";
+
+    private static final String WORKSTATIONS_TECHNOLOGY_OPERATION_COMPONENT = "workstationsTechnologyOperationComponent";
+
+    private static final String WORKSTATIONS = "workstations";
+
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
     @Autowired
     private StateChangeHistoryService stateChangeHistoryService;
+
+    @Autowired
+    private ParameterService parameterService;
 
     public void onBeforeRender(final ViewDefinitionState view) {
         setTechnologyIdForMultiUploadField(view);
@@ -95,6 +108,185 @@ public class TechnologyDetailsHooks {
         setRibbonState(view);
         setProductDataRibbonState(view);
         fillCriteriaModifiers(view);
+        enableTab(view);
+        fillRangeAndDivision(view);
+        setFieldsRequiredOnRangeTab(view);
+        showHideDivisionField(view);
+        setCriteriaModifierParameters(view);
+        disableTab(view);
+    }
+
+    private void enableTab(final ViewDefinitionState view) {
+        FormComponent technologyForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
+
+        Long technologyId = technologyForm.getEntityId();
+
+        if (Objects.nonNull(technologyId)) {
+            Entity technology = getTechnologyDD().get(technologyId);
+
+            if (Objects.isNull(technology)) {
+                return;
+            }
+
+            String state = technology.getStringField(TechnologyFields.STATE);
+            boolean isTemplateAccepted = technology.getBooleanField(TechnologyFields.IS_TEMPLATE_ACCEPTED);
+
+            if (!isTemplateAccepted && TechnologyState.DRAFT.getStringValue().equals(state)) {
+                enableRangeGrids(view, true);
+            }
+        }
+    }
+
+    private void disableTab(final ViewDefinitionState view) {
+        FormComponent technologyForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
+
+        Long technologyId = technologyForm.getEntityId();
+
+        if (Objects.nonNull(technologyId)) {
+            Entity technology = getTechnologyDD().get(technologyId);
+
+            if (Objects.isNull(technology)) {
+                return;
+            }
+
+            String state = technology.getStringField(TechnologyFields.STATE);
+            boolean isTemplateAccepted = technology.getBooleanField(TechnologyFields.IS_TEMPLATE_ACCEPTED);
+
+            if (isTemplateAccepted || !TechnologyState.DRAFT.getStringValue().equals(state)) {
+                enableRangeGrids(view, false);
+                FieldComponent rangeField = (FieldComponent) view.getComponentByReference(TechnologyFields.RANGE);
+                rangeField.setEnabled(false);
+            }
+        }
+    }
+
+    private void enableRangeGrids(final ViewDefinitionState view, final boolean editable) {
+        GridComponent rangeTechnologyOperationComponent = (GridComponent) view
+                .getComponentByReference(RANGE_TECHNOLOGY_OPERATION_COMPONENT);
+        GridComponent productionLines = (GridComponent) view
+                .getComponentByReference(TechnologyFields.PRODUCTION_LINES);
+        GridComponent workstationsTechnologyOperationComponent = (GridComponent) view
+                .getComponentByReference(WORKSTATIONS_TECHNOLOGY_OPERATION_COMPONENT);
+        GridComponent workstations = (GridComponent) view
+                .getComponentByReference(WORKSTATIONS);
+
+        productionLines.setEnabled(editable);
+        workstations.setEnabled(editable && !workstationsTechnologyOperationComponent.getSelectedEntities().isEmpty());
+        rangeTechnologyOperationComponent.setEnabled(true);
+
+        rangeTechnologyOperationComponent.setEditable(editable);
+    }
+
+
+    private void setCriteriaModifierParameters(final ViewDefinitionState view) {
+        FormComponent technologyForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
+
+        Long technologyId = technologyForm.getEntityId();
+
+        if (Objects.isNull(technologyId)) {
+            return;
+        }
+
+        GridComponent rangeTechnologyOperationComponent = (GridComponent) view.getComponentByReference(RANGE_TECHNOLOGY_OPERATION_COMPONENT);
+        FilterValueHolder rangeTechnologyOperationComponentFilterValueHolder = rangeTechnologyOperationComponent.getFilterValue();
+
+        rangeTechnologyOperationComponentFilterValueHolder.put(TechnologyDetailsCriteriaModifiers.L_TECHNOLOGY_ID,
+                technologyId);
+
+        rangeTechnologyOperationComponent.setFilterValue(rangeTechnologyOperationComponentFilterValueHolder);
+
+        FieldComponent rangeField = (FieldComponent) view.getComponentByReference(TechnologyFields.RANGE);
+        String range = (String) rangeField.getFieldValue();
+        Entity division = null;
+
+        if (Range.ONE_DIVISION.getStringValue().equals(range)) {
+            Entity techEntity = technologyForm.getPersistedEntityWithIncludedFormValues();
+            division = techEntity.getBelongsToField(TechnologyFields.DIVISION);
+        } else {
+            GridComponent workstationsTechnologyOperationComponent = (GridComponent) view
+                    .getComponentByReference(WORKSTATIONS_TECHNOLOGY_OPERATION_COMPONENT);
+            Set<Long> selectedEntitiesIds = workstationsTechnologyOperationComponent.getSelectedEntitiesIds();
+            if (!selectedEntitiesIds.isEmpty()) {
+                Entity toc = getTechnologyOperationComponentDD().get(selectedEntitiesIds.stream().findFirst().get());
+                division = toc.getBelongsToField(TechnologyOperationComponentFields.DIVISION);
+            }
+        }
+
+        LookupComponent workstationsForTOCLookupComponent = (LookupComponent) view
+                .getComponentByReference(WORKSTATIONS_FOR_TOC_LOOKUP);
+
+        FilterValueHolder workstationsForTOCLookupComponentHolder = workstationsForTOCLookupComponent.getFilterValue();
+
+        if (Objects.nonNull(division)) {
+            workstationsForTOCLookupComponentHolder.put(WorkstationFields.DIVISION, division.getId());
+        } else if (workstationsForTOCLookupComponentHolder.has(WorkstationFields.DIVISION)) {
+            workstationsForTOCLookupComponentHolder.remove(WorkstationFields.DIVISION);
+        }
+
+        workstationsForTOCLookupComponent.setFilterValue(workstationsForTOCLookupComponentHolder);
+    }
+
+
+    private void fillRangeAndDivision(final ViewDefinitionState view) {
+        FormComponent technologyForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
+        FieldComponent rangeField = (FieldComponent) view.getComponentByReference(TechnologyFields.RANGE);
+        LookupComponent divisionLookup = (LookupComponent) view.getComponentByReference(TechnologyFields.DIVISION);
+
+        Long technologyId = technologyForm.getEntityId();
+
+        if (Objects.isNull(technologyId) && view.isViewAfterRedirect()) {
+            String range = parameterService.getParameter().getStringField(ParameterFieldsT.RANGE);
+            Entity division = parameterService.getParameter().getBelongsToField(ParameterFieldsT.DIVISION);
+
+            rangeField.setFieldValue(range);
+
+            if (Objects.nonNull(division)) {
+                divisionLookup.setFieldValue(division.getId());
+            } else {
+                divisionLookup.setFieldValue(null);
+            }
+        }
+
+        rangeField.requestComponentUpdateState();
+        divisionLookup.requestComponentUpdateState();
+    }
+
+    private void setFieldsRequiredOnRangeTab(final ViewDefinitionState view) {
+        List<String> references = Collections.singletonList(TechnologyFields.RANGE);
+
+        setFieldsRequired(view, references);
+    }
+
+    private void setFieldsRequired(final ViewDefinitionState view, final List<String> references) {
+        for (String reference : references) {
+            FieldComponent fieldComponent = (FieldComponent) view.getComponentByReference(reference);
+
+            fieldComponent.setRequired(true);
+            fieldComponent.requestComponentUpdateState();
+        }
+    }
+
+    private void showHideDivisionField(final ViewDefinitionState view) {
+        FieldComponent rangeField = (FieldComponent) view.getComponentByReference(TechnologyFields.RANGE);
+        FieldComponent divisionField = (FieldComponent) view.getComponentByReference(TechnologyFields.DIVISION);
+
+        String range = (String) rangeField.getFieldValue();
+        GridComponent rangeTechnologyOperationComponent = (GridComponent) view
+                .getComponentByReference(RANGE_TECHNOLOGY_OPERATION_COMPONENT);
+        ComponentState operationRangeDescriptionLabel = view.getComponentByReference(OPERATION_RANGE_DESCRIPTION);
+        if (Range.ONE_DIVISION.getStringValue().equals(range)) {
+            showField(divisionField, true);
+            rangeTechnologyOperationComponent.setVisible(false);
+            operationRangeDescriptionLabel.setVisible(false);
+        } else {
+            showField(divisionField, false);
+            rangeTechnologyOperationComponent.setVisible(true);
+            operationRangeDescriptionLabel.setVisible(true);
+        }
+    }
+
+    private void showField(final FieldComponent fieldComponent, final boolean isVisible) {
+        fieldComponent.setVisible(isVisible);
     }
 
     public void filterStateChangeHistory(final ViewDefinitionState view) {
@@ -323,4 +515,8 @@ public class TechnologyDetailsHooks {
         return dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_TECHNOLOGY);
     }
 
+    private DataDefinition getTechnologyOperationComponentDD() {
+        return dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
+                TechnologiesConstants.MODEL_TECHNOLOGY_OPERATION_COMPONENT);
+    }
 }

@@ -23,15 +23,14 @@
  */
 package com.qcadoo.mes.technologies.validators;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.qcadoo.mes.basic.ProductService;
+import com.qcadoo.mes.technologies.constants.Range;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
-import com.qcadoo.mes.technologies.states.constants.TechnologyState;
 import com.qcadoo.mes.technologies.states.constants.TechnologyStateStringValues;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 @Service
 public class TechnologyValidators {
@@ -42,8 +41,19 @@ public class TechnologyValidators {
     public boolean validatesWith(final DataDefinition technologyDD, final Entity technology) {
         boolean isValid = checkTechnologyDefault(technologyDD, technology);
         isValid = isValid && productService.checkIfProductIsNotRemoved(technologyDD, technology);
+        isValid = isValid && checkRangeAndDivision(technologyDD, technology);
 
         return isValid;
+    }
+
+    private boolean checkRangeAndDivision(DataDefinition technologyDD, Entity technology) {
+        String range = technology.getStringField(TechnologyFields.RANGE);
+        if (!Range.ONE_DIVISION.getStringValue().equals(range) && !Range.MANY_DIVISIONS.getStringValue().equals(range)) {
+            technology.addError(technologyDD.getField(TechnologyFields.RANGE), "qcadooView.validate.field.error.missing");
+
+            return false;
+        }
+        return true;
     }
 
     public boolean checkTechnologyDefault(final DataDefinition technologyDD, final Entity technology) {

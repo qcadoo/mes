@@ -2,6 +2,9 @@ package com.qcadoo.mes.technologies.constants;
 
 public final class ParameterFieldsT {
 
+    public static final String RANGE = "range";
+    public static final String DIVISION = "division";
+
     private ParameterFieldsT() {
     }
 

@@ -86,7 +86,7 @@
                             <option type="multiselect" value="true"/>
 
                             <criteriaModifier
-                                    class="com.qcadoo.mes.productFlowThruDivision.criteriaModifiers.TechnologyProductionLineCriteriaModifiers"
+                                    class="com.qcadoo.mes.technologies.criteriaModifiers.TechnologyProductionLineCriteriaModifiers"
                                     method="filterByTechnologyAndDivision"/>
                         </component>
                     </layoutElement>

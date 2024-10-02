@@ -333,18 +333,18 @@ public final class ProductionTrackingListenerServicePFTD {
                 return;
             }
 
-            Multimap<Long, Entity> PCQWarehouseOutProducts = productionTrackingDocumentsHelper.getFromPCQProductOutWithoutIntermediates(order, groupedRecordOutFinalProducts);
+            Multimap<Long, Entity> pcqWarehouseOutProducts = productionTrackingDocumentsHelper.getFromPCQProductOutWithoutIntermediates(order, groupedRecordOutFinalProducts);
 
             for (Entity document : order.getHasManyField(OrderFieldsPFTD.DOCUMENTS)) {
                 if (DocumentType.INTERNAL_INBOUND.getStringValue().equals(document.getStringField(DocumentFields.TYPE))
                         && DocumentState.DRAFT.getStringValue().equals(document.getStringField(DocumentFields.STATE))) {
                     boolean warehouseFound = false;
-                    for (Long locationId : PCQWarehouseOutProducts.keySet()) {
+                    for (Long locationId : pcqWarehouseOutProducts.keySet()) {
                         if (locationId.equals(document.getBelongsToField(DocumentFields.LOCATION_TO).getId())) {
                             List<Entity> positions = document.getHasManyField(DocumentFields.POSITIONS);
                             for (Entity position : positions) {
                                 boolean productFound = false;
-                                for (Entity pcq : PCQWarehouseOutProducts.get(locationId)) {
+                                for (Entity pcq : pcqWarehouseOutProducts.get(locationId)) {
                                     if (position.getBelongsToField(PositionFields.PRODUCT).getId().equals(pcq.getBelongsToField(ProductionCountingQuantityFields.PRODUCT).getId())) {
                                         productFound = true;
                                         break;

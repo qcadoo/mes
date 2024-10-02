@@ -27,7 +27,6 @@ import com.google.common.collect.Maps;
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.productFlowThruDivision.constants.*;
-import com.qcadoo.mes.productFlowThruDivision.hooks.TechnologyDetailsHooksPFTD;
 import com.qcadoo.mes.productionCounting.constants.TechnologyFieldsPC;
 import com.qcadoo.mes.productionCounting.constants.TypeOfProductionRecording;
 import com.qcadoo.mes.technologies.OperationComponentDataProvider;
@@ -56,9 +55,6 @@ import java.util.Objects;
 public class TechnologyDetailsListenersPFTD {
 
     @Autowired
-    private TechnologyDetailsHooksPFTD technologyDetailsHooksPFTD;
-
-    @Autowired
     private OperationComponentDataProvider operationComponentDataProvider;
 
     @Autowired
@@ -81,7 +77,7 @@ public class TechnologyDetailsListenersPFTD {
 
     @Transactional
     public void fillLocationsInComponents(final Entity technology) {
-        if (Range.ONE_DIVISION.getStringValue().equals(technology.getStringField(TechnologyFieldsPFTD.RANGE))) {
+        if (Range.ONE_DIVISION.getStringValue().equals(technology.getStringField(TechnologyFields.RANGE))) {
             fillForOneDivision(technology);
         } else {
             fillForManyDivision(technology);
@@ -345,7 +341,7 @@ public class TechnologyDetailsListenersPFTD {
         FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         Entity technology = form.getPersistedEntityWithIncludedFormValues();
 
-        if (Range.ONE_DIVISION.getStringValue().equals(technology.getStringField(TechnologyFieldsPFTD.RANGE))) {
+        if (Range.ONE_DIVISION.getStringValue().equals(technology.getStringField(TechnologyFields.RANGE))) {
             LookupComponent productsFlowLocationLookup = (LookupComponent) view
                     .getComponentByReference(TechnologyFieldsPFTD.PRODUCTS_FLOW_LOCATION);
 
@@ -359,11 +355,8 @@ public class TechnologyDetailsListenersPFTD {
         }
     }
 
-    public void onDivisionChange(final ViewDefinitionState view, final ComponentState componentState, final String[] args) {
-        technologyDetailsHooksPFTD.fillFieldsForOneDivisionRange(view);
-    }
-
-    private void setFieldsVisible(final ViewDefinitionState view, final List<String> references, final boolean isVisible) {
+    private void setFieldsVisible(final ViewDefinitionState view, final List<String> references,
+                                  final boolean isVisible) {
         for (String reference : references) {
             FieldComponent field = (FieldComponent) view.getComponentByReference(reference);
 
@@ -389,7 +382,8 @@ public class TechnologyDetailsListenersPFTD {
                 TechnologiesConstants.MODEL_OPERATION_PRODUCT_OUT_COMPONENT);
     }
 
-    public void createModelCard(final ViewDefinitionState view, final ComponentState componentState, final String[] args) {
+    public void createModelCard(final ViewDefinitionState view, final ComponentState componentState,
+                                final String[] args) {
         FormComponent technologyForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
         Entity technology = technologyForm.getPersistedEntityWithIncludedFormValues();
@@ -419,10 +413,11 @@ public class TechnologyDetailsListenersPFTD {
         view.redirectTo(url, false, true, parameters);
     }
 
-    public void addMultipleProductionLines(final ViewDefinitionState view, final ComponentState componentState, final String[] args) {
+    public void addMultipleProductionLines(final ViewDefinitionState view, final ComponentState componentState,
+                                           final String[] args) {
         FormComponent formComponent = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         Entity technology = formComponent.getPersistedEntityWithIncludedFormValues();
-        Entity division = technology.getBelongsToField(TechnologyFieldsPFTD.DIVISION);
+        Entity division = technology.getBelongsToField(TechnologyFields.DIVISION);
 
         Long technologyId = technology.getId();
 

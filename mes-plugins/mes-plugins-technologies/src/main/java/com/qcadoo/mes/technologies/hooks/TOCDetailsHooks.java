@@ -213,4 +213,17 @@ public class TOCDetailsHooks {
                 TechnologiesConstants.MODEL_TECHNOLOGY_OPERATION_COMPONENT);
     }
 
+    public void setDivisionFieldEnabled(final ViewDefinitionState view) {
+        FormComponent tocForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
+        if (tocForm.getEntityId() == null) {
+            return;
+        }
+
+        Entity technology = tocForm.getPersistedEntityWithIncludedFormValues().getBelongsToField(
+                TechnologyOperationComponentFields.TECHNOLOGY);
+        LookupComponent divisionLookupComponent = (LookupComponent) view.getComponentByReference(TechnologyOperationComponentFields.DIVISION);
+
+        divisionLookupComponent.setEnabled(!Range.ONE_DIVISION.getStringValue().equals(technology.getStringField(TechnologyFields.RANGE)));
+    }
+
 }

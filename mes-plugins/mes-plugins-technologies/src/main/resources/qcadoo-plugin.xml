@@ -129,7 +129,14 @@
 
         <model:model model="dimensionControlAttribute" resource="model/dimensionControlAttribute.xml"/>
 
+        <model:model model="technologyProductionLine" resource="model/technologyProductionLine.xml"/>
+
         <model:dictionary name="sampling"/>
+
+        <model:model-field plugin="productionLines" model="productionLine">
+            <model:hasMany name="technologyProductionLines" model="technologyProductionLine"
+                           plugin="technologies" joinField="productionLine"/>
+        </model:model-field>
 
         <model:model-field plugin="basic" model="parameter">
             <model:boolean name="dimensionControlOfProducts" default="false"/>
@@ -275,6 +282,16 @@
         <model:model-field plugin="basic" model="skill">
             <model:hasMany name="operationSkills" plugin="technologies"
                            model="operationSkill" joinField="skill" cascade="delete"/>
+        </model:model-field>
+
+        <model:model-field plugin="basic" model="parameter">
+            <model:enum name="range" values="01oneDivision,02manyDivisions"
+                        default="01oneDivision"/>
+        </model:model-field>
+
+        <model:model-field plugin="basic" model="parameter">
+            <model:belongsTo name="division" plugin="basic"
+                             model="division"/>
         </model:model-field>
 
         <model:model-field model="parameter" plugin="basic">
@@ -479,6 +496,9 @@
         <view:view resource="view/productDataOperationDetails.xml"/>
 
         <view:view resource="view/sectionDetails.xml"/>
+
+        <view:view resource="view/operationComponentDetails.xml"/>
+        <view:view resource="view/technologyProductionLineDetails.xml"/>
 
         <view:view-ribbon-group resource="view/ribbonExtensions/productDetails.xml"/>
         <view:view-ribbon-group resource="view/ribbonExtensions/pieceRateDetails.xml"/>

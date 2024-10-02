@@ -21,7 +21,7 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.productFlowThruDivision.hooks;
+package com.qcadoo.mes.technologies.hooks;
 
 
 import org.springframework.stereotype.Service;

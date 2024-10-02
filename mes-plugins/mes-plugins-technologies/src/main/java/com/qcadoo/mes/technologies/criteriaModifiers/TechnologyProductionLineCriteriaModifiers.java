@@ -21,7 +21,7 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.productFlowThruDivision.criteriaModifiers;
+package com.qcadoo.mes.technologies.criteriaModifiers;
 
 import java.util.List;
 import java.util.stream.Collectors;

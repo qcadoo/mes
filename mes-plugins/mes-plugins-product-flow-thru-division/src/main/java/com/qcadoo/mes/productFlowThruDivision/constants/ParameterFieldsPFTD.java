@@ -53,10 +53,6 @@ public final class ParameterFieldsPFTD {
 
     public static final String PRODUCTS_TO_ISSUE = "productsToIssue";
 
-    public static final String RANGE = "range";
-
-    public static final String DIVISION = "division";
-
     public static final String MATERIAL_COSTS_USED_MC = "materialCostsUsedMC";
 
     public static final String USE_NOMINAL_COST_PRICE_NOT_SPECIFIED_MC = "useNominalCostPriceNotSpecifiedMC";
