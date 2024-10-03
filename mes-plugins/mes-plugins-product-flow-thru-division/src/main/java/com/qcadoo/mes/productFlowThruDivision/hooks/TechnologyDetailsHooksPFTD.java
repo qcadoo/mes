@@ -39,7 +39,6 @@ import com.qcadoo.mes.technologies.states.constants.TechnologyState;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
-import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.*;
 import com.qcadoo.view.api.components.lookup.FilterValueHolder;
@@ -68,9 +67,6 @@ public class TechnologyDetailsHooksPFTD {
 
     private static final String L_FILL_LOCATIONS_IN_COMPONENTS = "fillLocationsInComponents";
     public static final String L_PRODUCTS_FLOW_WASTE_RECEPTION_WAREHOUSE = "productsFlowWasteReceptionWarehouse";
-    public static final String WORKSTATIONS = "workstations";
-    public static final String WORKSTATIONS_TECHNOLOGY_OPERATION_COMPONENT = "workstationsTechnologyOperationComponent";
-    public static final String OPERATION_WORKSTATIONS_DESCRIPTION = "operationWorkstationsDescription";
 
     public static final String MODEL_CARD = "modelCard";
     public static final String CREATE_MODEL_CARD = "createModelCard";
@@ -87,7 +83,6 @@ public class TechnologyDetailsHooksPFTD {
         enableTab(view);
         // range
         fillFieldsForOneDivisionRange(view);
-        hideWorkstationsTableForCumulatedProductionRecording(view);
         setCriteriaModifierParameters(view);
         // flow
         setFieldsRequiredOnFlowTab(view);
@@ -460,28 +455,6 @@ public class TechnologyDetailsHooksPFTD {
                         .getComponentByReference(TechnologyFieldsPFTD.PRODUCTION_FLOW);
                 productionFlowFieldComponent.setEnabled(false);
             }
-        }
-    }
-
-    private void hideWorkstationsTableForCumulatedProductionRecording(final ViewDefinitionState view) {
-        FieldComponent typeOfProductionRecordingFieldComponent = (FieldComponent) view
-                .getComponentByReference(TechnologyFieldsPC.TYPE_OF_PRODUCTION_RECORDING);
-
-        GridComponent workstationsTechnologyOperationComponent = (GridComponent) view
-                .getComponentByReference(WORKSTATIONS_TECHNOLOGY_OPERATION_COMPONENT);
-        GridComponent workstations = (GridComponent) view
-                .getComponentByReference(WORKSTATIONS);
-        ComponentState operationWorkstationsDescriptionLabel = view.getComponentByReference(OPERATION_WORKSTATIONS_DESCRIPTION);
-
-        if (Objects.nonNull(typeOfProductionRecordingFieldComponent) && TypeOfProductionRecording.FOR_EACH.getStringValue()
-                .equals(typeOfProductionRecordingFieldComponent.getFieldValue())) {
-            workstationsTechnologyOperationComponent.setVisible(true);
-            workstations.setVisible(true);
-            operationWorkstationsDescriptionLabel.setVisible(true);
-        } else {
-            workstationsTechnologyOperationComponent.setVisible(false);
-            workstations.setVisible(false);
-            operationWorkstationsDescriptionLabel.setVisible(false);
         }
     }
 

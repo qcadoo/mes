@@ -355,16 +355,6 @@ public class TechnologyDetailsListenersPFTD {
         }
     }
 
-    private void setFieldsVisible(final ViewDefinitionState view, final List<String> references,
-                                  final boolean isVisible) {
-        for (String reference : references) {
-            FieldComponent field = (FieldComponent) view.getComponentByReference(reference);
-
-            field.setVisible(isVisible);
-            field.requestComponentUpdateState();
-        }
-    }
-
     private void cleanOperationProduct(final Entity operationProduct) {
         operationProduct.setField(OperationProductInComponentFieldsPFTD.PRODUCTION_FLOW,
                 ProductionFlowComponent.WITHIN_THE_PROCESS.getStringValue());

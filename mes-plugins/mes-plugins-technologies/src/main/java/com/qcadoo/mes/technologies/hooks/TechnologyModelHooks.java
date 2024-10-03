@@ -66,10 +66,10 @@ public class TechnologyModelHooks {
 
     public void onCreate(final DataDefinition technologyDD, final Entity technology) {
         setInitialState(technology);
-        fillRangeAndDivision(technologyDD, technology);
+        fillRangeAndDivision(technology);
     }
 
-    private void fillRangeAndDivision(final DataDefinition technologyDD, final Entity technology) {
+    private void fillRangeAndDivision(final Entity technology) {
         String range = technology.getStringField(TechnologyFields.RANGE);
         Entity division = technology.getBelongsToField(TechnologyFields.DIVISION);
 
