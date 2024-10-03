@@ -37,7 +37,7 @@
             <validatesLength max="1024"/>
         </string>
         <string name="description">
-            <validatesLength max="1024"/>
+            <validatesLength max="2048"/>
         </string>
         <enum name="type" values="01otherCase,02executionOperationInOrder" required="true"
               default="01otherCase"/>
