@@ -111,7 +111,7 @@ public class TechnologyOperationComponentHooksPFTD {
     }
 
     private DataDefinition getTechnologyProductionLineDD() {
-        return dataDefinitionService.get(ProductFlowThruDivisionConstants.PLUGIN_IDENTIFIER,
+        return dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
                 TechnologiesConstants.MODEL_TECHNOLOGY_PRODUCTION_LINE);
     }
 

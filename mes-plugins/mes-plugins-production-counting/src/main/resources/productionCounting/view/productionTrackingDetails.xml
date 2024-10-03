@@ -50,17 +50,17 @@
                                 }
 
                             });
- #{form}.addOnChangeListener({
-					onSetValue: function(value) {
-						if (!value || !value.content)
-							return;
-						if (value.content.entityId) {
-							this.enable();
-						} else {
-							this.disable();
-						}
-					}
-				});
+                             #{form}.addOnChangeListener({
+                                onSetValue: function(value) {
+                                    if (!value || !value.content)
+                                        return;
+                                    if (value.content.entityId) {
+                                        this.enable();
+                                    } else {
+                                        this.disable();
+                                    }
+                                }
+                            });
                         ]]>
                     </script>
                 </smallButton>
