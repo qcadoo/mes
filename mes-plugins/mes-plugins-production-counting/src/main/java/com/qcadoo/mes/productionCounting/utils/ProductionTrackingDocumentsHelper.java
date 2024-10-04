@@ -256,10 +256,10 @@ public class ProductionTrackingDocumentsHelper {
                 && L_WAREHOUSE.equals(
                 productionCountingQuantity.getStringField(ProductionCountingQuantityFields.PRODUCTION_FLOW))) {
             warehouse = productionCountingQuantity.getBelongsToField(ProductionCountingQuantityFields.PRODUCTS_FLOW_LOCATION);
-        } else if (withFinalProducts && ProductionCountingQuantityTypeOfMaterial.FINAL_PRODUCT.getStringValue()
+        } else if (withFinalProducts && (ProductionCountingQuantityTypeOfMaterial.FINAL_PRODUCT.getStringValue()
                 .equals(productionCountingQuantity.getStringField(ProductionCountingQuantityFields.TYPE_OF_MATERIAL))
                 || ProductionCountingQuantityTypeOfMaterial.ADDITIONAL_FINAL_PRODUCT.getStringValue()
-                .equals(productionCountingQuantity.getStringField(ProductionCountingQuantityFields.TYPE_OF_MATERIAL))) {
+                .equals(productionCountingQuantity.getStringField(ProductionCountingQuantityFields.TYPE_OF_MATERIAL)))) {
             warehouse = productionCountingQuantity
                     .getBelongsToField(ProductionCountingQuantityFields.PRODUCTS_INPUT_LOCATION);
         }
