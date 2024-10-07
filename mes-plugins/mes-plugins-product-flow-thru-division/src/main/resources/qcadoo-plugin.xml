@@ -565,7 +565,6 @@
         <view:view-tab resource="view/tabExtensions/dashboardParameters.xml"/>
         <view:view-tab resource="view/tabExtensions/ordersParameters.xml"/>
         <view:view-tab resource="view/tabExtensions/supplyParameters.xml"/>
-        <view:view-tab resource="view/tabExtensions/technologiesParameters.xml"/>
         <view:view-tab resource="view/tabExtensions/divisionDetails.xml"/>
         <view:view-tab resource="view/tabExtensions/locationDetails.xml"/>
         <view:view-tab resource="view/tabExtensions/technologyDetails.xml"/>
