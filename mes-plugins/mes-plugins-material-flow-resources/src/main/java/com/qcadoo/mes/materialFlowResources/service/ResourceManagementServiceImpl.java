@@ -448,6 +448,7 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
         position.setField(PositionFields.RESOURCE_NUMBER, newPosition.getField(PositionFields.RESOURCE_NUMBER));
         position.setField(PositionFields.STORAGE_LOCATION, newPosition.getField(PositionFields.STORAGE_LOCATION));
         position.setField(PositionFields.CONVERSION, newPosition.getField(PositionFields.CONVERSION));
+        position.setField(PositionFields.GIVEN_UNIT, newPosition.getField(PositionFields.GIVEN_UNIT));
         position.setField(PositionFields.PALLET_NUMBER, newPosition.getField(PositionFields.PALLET_NUMBER));
         position.setField(PositionFields.TYPE_OF_PALLET, newPosition.getField(PositionFields.TYPE_OF_PALLET));
         position.setField(PositionFields.WASTE, newPosition.getField(PositionFields.WASTE));
@@ -481,11 +482,7 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
         for (Entity resource : resources) {
             Entity newPosition = createNewPosition(position, product, resource);
 
-            if (isFromOrder) {
-                quantity = recalculateQuantity(
-                        quantity, resource.getDecimalField(ResourceFields.CONVERSION), givenUnit,
-                        resource.getDecimalField(ResourceFields.CONVERSION), product.getStringField(ProductFields.UNIT));
-            } else {
+            if (!isFromOrder) {
                 quantity = recalculateQuantity(quantity, conversion, givenUnit, resource.getDecimalField(ResourceFields.CONVERSION),
                         product.getStringField(ProductFields.UNIT));
             }
@@ -668,10 +665,7 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
         for (Entity resource : resources) {
             Entity newPosition = createNewPosition(position, product, resource);
 
-            if (isFromOrder) {
-                quantity = recalculateQuantity(quantity, resource.getDecimalField(ResourceFields.CONVERSION), givenUnit,
-                        resource.getDecimalField(ResourceFields.CONVERSION), product.getStringField(ProductFields.UNIT));
-            } else {
+            if (!isFromOrder) {
                 quantity = recalculateQuantity(quantity, conversion, givenUnit, resource.getDecimalField(ResourceFields.CONVERSION),
                         product.getStringField(ProductFields.UNIT));
             }
@@ -1032,10 +1026,7 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
 
             newPosition.setField(PositionFields.RESOURCE, resource);
 
-            if (isFromOrder) {
-                quantity = recalculateQuantity(quantity, resource.getDecimalField(ResourceFields.CONVERSION), givenUnit,
-                        resource.getDecimalField(ResourceFields.CONVERSION), product.getStringField(ProductFields.UNIT));
-            } else {
+            if (!isFromOrder) {
                 quantity = recalculateQuantity(quantity, conversion, givenUnit, resource.getDecimalField(ResourceFields.CONVERSION),
                         product.getStringField(ProductFields.UNIT));
             }
