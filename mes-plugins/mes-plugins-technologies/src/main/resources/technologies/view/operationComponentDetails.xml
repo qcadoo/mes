@@ -26,8 +26,7 @@
 -->
 <view defaultAuthorizationRole="ROLE_BASE_FUNCTIONALITY" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
       xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
-      name="operationComponentDetails" modelName="technologyOperationComponent"
-      modelPlugin="technologies">
+      name="operationComponentDetails" modelName="technologyOperationComponent">
 
     <component type="window" name="window">
         <ribbon>
@@ -60,8 +59,8 @@
     </component>
 
     <hooks>
-        <beforeRender class="com.qcadoo.mes.productFlowThruDivision.hooks.TOCDetailsHooksPFTD"
-                      method="onBeforeRender"/>
+        <beforeRender class="com.qcadoo.mes.technologies.hooks.TOCDetailsHooks"
+                      method="setDivisionFieldEnabled"/>
     </hooks>
 
 </view>

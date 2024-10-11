@@ -21,21 +21,20 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.productFlowThruDivision.hooks;
+package com.qcadoo.mes.technologies.hooks;
 
-import java.util.Objects;
-
-import org.springframework.stereotype.Service;
-
-import com.qcadoo.mes.productFlowThruDivision.constants.TechnologyFieldsPFTD;
-import com.qcadoo.mes.productFlowThruDivision.criteriaModifiers.TechnologyProductionLineCriteriaModifiers;
+import com.qcadoo.mes.technologies.constants.TechnologyFields;
 import com.qcadoo.mes.technologies.constants.TechnologyProductionLineFields;
+import com.qcadoo.mes.technologies.criteriaModifiers.TechnologyProductionLineCriteriaModifiers;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.LookupComponent;
 import com.qcadoo.view.api.components.lookup.FilterValueHolder;
 import com.qcadoo.view.constants.QcadooViewConstants;
+import org.springframework.stereotype.Service;
+
+import java.util.Objects;
 
 @Service
 public class TechnologyProductionLineDetailsHooks {
@@ -46,7 +45,7 @@ public class TechnologyProductionLineDetailsHooks {
 
         Entity entity = form.getEntity();
         Entity technology = entity.getBelongsToField(TechnologyProductionLineFields.TECHNOLOGY);
-        Entity division = technology.getBelongsToField(TechnologyFieldsPFTD.DIVISION);
+        Entity division = technology.getBelongsToField(TechnologyFields.DIVISION);
 
         FilterValueHolder filterValueHolder = productionLineLookup.getFilterValue();
 

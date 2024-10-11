@@ -4,7 +4,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.stereotype.Service;
 
-import com.qcadoo.mes.productFlowThruDivision.criteriaModifiers.TechnologyProductionLineCriteriaModifiers;
+import com.qcadoo.mes.technologies.criteriaModifiers.TechnologyProductionLineCriteriaModifiers;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.GridComponent;
 import com.qcadoo.view.api.components.lookup.FilterValueHolder;

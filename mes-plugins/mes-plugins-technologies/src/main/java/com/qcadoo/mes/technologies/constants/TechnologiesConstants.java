@@ -25,6 +25,8 @@ package com.qcadoo.mes.technologies.constants;
 
 public final class TechnologiesConstants {
 
+    public static final String MODEL_TECHNOLOGY_PRODUCTION_LINE = "technologyProductionLine";
+
     private TechnologiesConstants() {
     }
 

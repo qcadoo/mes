@@ -31,6 +31,7 @@ import com.qcadoo.mes.basic.CalculationQuantityService;
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.basic.constants.ProductAttributeValueFields;
 import com.qcadoo.mes.basic.constants.ProductFields;
+import com.qcadoo.mes.basic.constants.UnitConversionItemFieldsB;
 import com.qcadoo.mes.materialFlowResources.DocumentPositionService;
 import com.qcadoo.mes.materialFlowResources.MaterialFlowResourcesService;
 import com.qcadoo.mes.materialFlowResources.constants.*;
@@ -40,6 +41,8 @@ import com.qcadoo.mes.materialFlowResources.helpers.NotEnoughResourcesErrorMessa
 import com.qcadoo.mes.materialFlowResources.helpers.NotEnoughResourcesErrorMessageHolderFactory;
 import com.qcadoo.model.api.*;
 import com.qcadoo.model.api.search.*;
+import com.qcadoo.model.api.units.PossibleUnitConversions;
+import com.qcadoo.model.api.units.UnitConversionService;
 import com.qcadoo.model.api.validators.ErrorMessage;
 import com.qcadoo.security.api.UserService;
 import com.qcadoo.security.constants.UserFields;
@@ -99,6 +102,9 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
 
     @Autowired
     private MaterialFlowResourcesService materialFlowResourcesService;
+
+    @Autowired
+    private UnitConversionService unitConversionService;
 
     @Override
     @Transactional
@@ -448,6 +454,7 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
         position.setField(PositionFields.RESOURCE_NUMBER, newPosition.getField(PositionFields.RESOURCE_NUMBER));
         position.setField(PositionFields.STORAGE_LOCATION, newPosition.getField(PositionFields.STORAGE_LOCATION));
         position.setField(PositionFields.CONVERSION, newPosition.getField(PositionFields.CONVERSION));
+        position.setField(PositionFields.GIVEN_UNIT, newPosition.getField(PositionFields.GIVEN_UNIT));
         position.setField(PositionFields.PALLET_NUMBER, newPosition.getField(PositionFields.PALLET_NUMBER));
         position.setField(PositionFields.TYPE_OF_PALLET, newPosition.getField(PositionFields.TYPE_OF_PALLET));
         position.setField(PositionFields.WASTE, newPosition.getField(PositionFields.WASTE));
@@ -477,17 +484,14 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
         BigDecimal quantity = position.getDecimalField(PositionFields.QUANTITY);
         BigDecimal conversion = BigDecimalUtils.convertNullToOne(position.getDecimalField(PositionFields.CONVERSION));
         String givenUnit = position.getStringField(PositionFields.GIVEN_UNIT);
+        String unit = product.getStringField(ProductFields.UNIT);
 
         for (Entity resource : resources) {
             Entity newPosition = createNewPosition(position, product, resource);
 
-            if (isFromOrder) {
-                quantity = recalculateQuantity(
-                        quantity, resource.getDecimalField(ResourceFields.CONVERSION), givenUnit,
-                        resource.getDecimalField(ResourceFields.CONVERSION), product.getStringField(ProductFields.UNIT));
-            } else {
+            if (!isFromOrder) {
                 quantity = recalculateQuantity(quantity, conversion, givenUnit, resource.getDecimalField(ResourceFields.CONVERSION),
-                        product.getStringField(ProductFields.UNIT));
+                        unit);
             }
 
             conversion = resource.getDecimalField(ResourceFields.CONVERSION);
@@ -495,9 +499,18 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
 
             BigDecimal resourceQuantity = resource.getDecimalField(ResourceFields.QUANTITY);
             BigDecimal resourceAvailableQuantity = resource.getDecimalField(ResourceFields.AVAILABLE_QUANTITY);
-            BigDecimal givenQuantity = calculationQuantityService.calculateAdditionalQuantity(quantity, conversion, givenUnit);
-            BigDecimal givenResourceAvailableQuantity = calculationQuantityService
-                    .calculateAdditionalQuantity(resourceAvailableQuantity, conversion, givenUnit);
+            PossibleUnitConversions unitConversions = unitConversionService.getPossibleConversions(unit, searchCriteriaBuilder -> searchCriteriaBuilder.add(SearchRestrictions.belongsTo(UnitConversionItemFieldsB.PRODUCT, product)));
+
+            BigDecimal givenQuantity;
+            BigDecimal givenResourceAvailableQuantity;
+            if (unitConversions.isDefinedFor(givenUnit)) {
+                givenQuantity = unitConversions.convertTo(quantity, givenUnit, BigDecimal.ROUND_FLOOR);
+                givenResourceAvailableQuantity = unitConversions.convertTo(resourceAvailableQuantity, givenUnit, BigDecimal.ROUND_FLOOR);
+            } else {
+                givenQuantity = calculationQuantityService.calculateAdditionalQuantity(quantity, conversion, givenUnit);
+                givenResourceAvailableQuantity = calculationQuantityService
+                        .calculateAdditionalQuantity(resourceAvailableQuantity, conversion, givenUnit);
+            }
 
             if (Objects.nonNull(position.getBelongsToField(PositionFields.RESOURCE))
                     && warehouse.getBooleanField(LocationFieldsMFR.DRAFT_MAKES_RESERVATION)
@@ -668,10 +681,7 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
         for (Entity resource : resources) {
             Entity newPosition = createNewPosition(position, product, resource);
 
-            if (isFromOrder) {
-                quantity = recalculateQuantity(quantity, resource.getDecimalField(ResourceFields.CONVERSION), givenUnit,
-                        resource.getDecimalField(ResourceFields.CONVERSION), product.getStringField(ProductFields.UNIT));
-            } else {
+            if (!isFromOrder) {
                 quantity = recalculateQuantity(quantity, conversion, givenUnit, resource.getDecimalField(ResourceFields.CONVERSION),
                         product.getStringField(ProductFields.UNIT));
             }
@@ -1032,10 +1042,7 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
 
             newPosition.setField(PositionFields.RESOURCE, resource);
 
-            if (isFromOrder) {
-                quantity = recalculateQuantity(quantity, resource.getDecimalField(ResourceFields.CONVERSION), givenUnit,
-                        resource.getDecimalField(ResourceFields.CONVERSION), product.getStringField(ProductFields.UNIT));
-            } else {
+            if (!isFromOrder) {
                 quantity = recalculateQuantity(quantity, conversion, givenUnit, resource.getDecimalField(ResourceFields.CONVERSION),
                         product.getStringField(ProductFields.UNIT));
             }

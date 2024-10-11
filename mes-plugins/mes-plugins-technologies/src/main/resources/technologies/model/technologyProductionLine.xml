@@ -41,9 +41,9 @@
 		</integer>
 	</fields>
 	<hooks>
-		<validatesWith class="com.qcadoo.mes.productFlowThruDivision.validators.TechnologyProductionLineModelValidators"
+		<validatesWith class="com.qcadoo.mes.technologies.validators.TechnologyProductionLineModelValidators"
 		               method="validatesWith"/>
-		<onSave class="com.qcadoo.mes.productFlowThruDivision.hooks.TechnologyProductionLineModelHooks"
+		<onSave class="com.qcadoo.mes.technologies.hooks.TechnologyProductionLineModelHooks"
 		        method="onSave"/>
 	</hooks>
 </model>

@@ -78,7 +78,6 @@
 
         <model:model model="modelCard" resource="model/modelCard.xml"/>
         <model:model model="modelCardProduct" resource="model/modelCardProduct.xml"/>
-        <model:model model="technologyProductionLine" resource="model/technologyProductionLine.xml"/>
 
         <!--    orderProductResourceReservation  -->
         <model:model model="orderProductResourceReservation" resource="model/orderProductResourceReservation.xml"/>
@@ -95,7 +94,7 @@
         <model:model-field plugin="materialFlowResources" model="resource">
             <model:hasMany name="orderProductResourceReservations"
                            model="orderProductResourceReservation" plugin="productFlowThruDivision" joinField="resource"
-                           cascade="nullify"/>
+            />
         </model:model-field>
 
 
@@ -184,38 +183,6 @@
         <model:model-field plugin="materialFlowResources" model="reservation">
             <model:belongsTo name="productsToIssue" model="productsToIssue"
                              plugin="productFlowThruDivision"/>
-        </model:model-field>
-
-        <!-- Range -->
-
-        <model:model-field plugin="basic" model="parameter">
-            <model:enum name="range" values="01oneDivision,02manyDivisions"
-                        default="01oneDivision"/>
-        </model:model-field>
-
-        <model:model-field plugin="basic" model="parameter">
-            <model:belongsTo name="division" plugin="basic"
-                             model="division"/>
-        </model:model-field>
-
-        <model:model-field plugin="technologies" model="technology">
-            <model:enum name="range" values="01oneDivision,02manyDivisions"
-                        default="02manyDivisions"/>
-        </model:model-field>
-
-        <model:model-field plugin="technologies" model="technology">
-            <model:belongsTo name="division" plugin="basic"
-                             model="division"/>
-        </model:model-field>
-
-        <model:model-field plugin="technologies" model="technology">
-            <model:hasMany name="productionLines" model="technologyProductionLine" plugin="productFlowThruDivision"
-                           joinField="technology" cascade="delete" copyable="true"/>
-        </model:model-field>
-
-        <model:model-field plugin="productionLines" model="productionLine">
-            <model:hasMany name="technologyProductionLines" model="technologyProductionLine"
-                           plugin="productFlowThruDivision" joinField="productionLine"/>
         </model:model-field>
 
         <!-- Flow -->
@@ -564,8 +531,8 @@
 
         <model:model-field plugin="orders" model="operationalTask">
             <model:hasMany name="operTaskMaterialAvailabilityDto" plugin="productFlowThruDivision"
-                           model="operTaskMaterialAvailabilityDto" joinField="operationalTask" cascade="nullify"
-                           copyable="false" persistent="false"/>
+                           model="operTaskMaterialAvailabilityDto" joinField="operationalTask"
+                           persistent="false"/>
         </model:model-field>
 
         <model:model-field plugin="basic" model="product">
@@ -598,7 +565,6 @@
         <view:view-tab resource="view/tabExtensions/dashboardParameters.xml"/>
         <view:view-tab resource="view/tabExtensions/ordersParameters.xml"/>
         <view:view-tab resource="view/tabExtensions/supplyParameters.xml"/>
-        <view:view-tab resource="view/tabExtensions/technologiesParameters.xml"/>
         <view:view-tab resource="view/tabExtensions/divisionDetails.xml"/>
         <view:view-tab resource="view/tabExtensions/locationDetails.xml"/>
         <view:view-tab resource="view/tabExtensions/technologyDetails.xml"/>
@@ -665,11 +631,6 @@
         <view:view-hook view="productionCountingQuantityAdvancedDetails" type="beforeRender"
                         plugin="basicProductionCounting"
                         class="com.qcadoo.mes.productFlowThruDivision.hooks.ProductionCountingQuantityAdvancedDetailsHooksBPC"
-                        method="onBeforeRender"/>
-
-        <view:view-hook plugin="technologies" view="technologiesParameters"
-                        type="beforeRender"
-                        class="com.qcadoo.mes.productFlowThruDivision.hooks.TechnologiesParametersHooksPFTD"
                         method="onBeforeRender"/>
 
         <view:view-hook view="detailedProductionCountingAndProgressList" type="beforeRender"
@@ -796,8 +757,6 @@
                             class="com.qcadoo.mes.productFlowThruDivision.listeners.DetailedProductionCountingAndProgressListenersBPC"
                             method="resourceIssue"/>
 
-        <view:view resource="view/operationComponentDetails.xml"/>
-        <view:view resource="view/technologyProductionLineDetails.xml"/>
         <view:view resource="view/productionLineAddMulti.xml"/>
 
         <model:model-field plugin="technologies"

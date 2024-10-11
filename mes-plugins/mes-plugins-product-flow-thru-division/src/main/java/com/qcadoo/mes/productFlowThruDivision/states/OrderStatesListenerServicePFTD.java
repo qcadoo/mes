@@ -24,23 +24,20 @@
 package com.qcadoo.mes.productFlowThruDivision.states;
 
 import com.google.common.base.Preconditions;
-import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 import com.qcadoo.commons.functional.Either;
 import com.qcadoo.mes.basic.ParameterService;
-import com.qcadoo.mes.basic.constants.CurrencyFields;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.basic.constants.UnitConversionItemFieldsB;
-import com.qcadoo.mes.basic.util.CurrencyService;
 import com.qcadoo.mes.basicProductionCounting.BasicProductionCountingService;
 import com.qcadoo.mes.basicProductionCounting.constants.BasicProductionCountingConstants;
 import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityFields;
 import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityRole;
 import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityTypeOfMaterial;
-import com.qcadoo.mes.costNormsForMaterials.constants.OrderFieldsCNFM;
-import com.qcadoo.mes.costNormsForMaterials.orderRawMaterialCosts.OrderMaterialsCostDataGenerator;
+import com.qcadoo.mes.costNormsForMaterials.CostNormsForMaterialsService;
+import com.qcadoo.mes.costNormsForProduct.CostNormsForProductService;
 import com.qcadoo.mes.materialFlow.constants.MaterialFlowConstants;
 import com.qcadoo.mes.materialFlowResources.constants.*;
 import com.qcadoo.mes.materialFlowResources.service.DocumentBuilder;
@@ -54,7 +51,10 @@ import com.qcadoo.mes.productFlowThruDivision.constants.*;
 import com.qcadoo.mes.productFlowThruDivision.realProductionCost.RealProductionCostService;
 import com.qcadoo.mes.productFlowThruDivision.reservation.OrderReservationsService;
 import com.qcadoo.mes.productFlowThruDivision.service.ProductionCountingDocumentService;
-import com.qcadoo.mes.productionCounting.constants.*;
+import com.qcadoo.mes.productionCounting.constants.ParameterFieldsPC;
+import com.qcadoo.mes.productionCounting.constants.ProductionCountingConstants;
+import com.qcadoo.mes.productionCounting.constants.ProductionTrackingFields;
+import com.qcadoo.mes.productionCounting.constants.ReceiptOfProducts;
 import com.qcadoo.mes.productionCounting.states.constants.ProductionTrackingStateStringValues;
 import com.qcadoo.mes.productionCounting.utils.ProductionTrackingDocumentsHelper;
 import com.qcadoo.mes.states.StateChangeContext;
@@ -63,7 +63,6 @@ import com.qcadoo.mes.states.messages.constants.StateMessageType;
 import com.qcadoo.mes.technologies.constants.OperationFields;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
 import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
-import com.qcadoo.model.api.BigDecimalUtils;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -108,16 +107,13 @@ public class OrderStatesListenerServicePFTD {
     private UnitConversionService unitConversionService;
 
     @Autowired
-    private CurrencyService currencyService;
+    private CostNormsForProductService costNormsForProductService;
 
     @Autowired
     private ParameterService parameterService;
 
     @Autowired
-    private OrderMaterialsCostDataGenerator orderMaterialsCostDataGenerator;
-
-    @Autowired
-    private ProductionTrackingListenerServicePFTD productionTrackingListenerServicePFTD;
+    private CostNormsForMaterialsService costNormsForMaterialsService;
 
     @Autowired
     private RealProductionCostService realProductionCostService;
@@ -132,13 +128,16 @@ public class OrderStatesListenerServicePFTD {
     private DocumentStateChangeService documentStateChangeService;
 
     @Autowired
-    private ProductionTrackingDocumentsHelper productionTrackingDocumentsHelper;
-
-    @Autowired
     private BasicProductionCountingService basicProductionCountingService;
 
     @Autowired
     private OrderReservationsService orderReservationsService;
+
+    @Autowired
+    private ProductionTrackingDocumentsHelper productionTrackingDocumentsHelper;
+
+    @Autowired
+    private ProductionTrackingListenerServicePFTD productionTrackingListenerServicePFTD;
 
     public void clearReservations(final StateChangeContext stateChangeContext) {
         orderReservationsService.clearReservationsForOrder(stateChangeContext.getOwner());
@@ -150,16 +149,10 @@ public class OrderStatesListenerServicePFTD {
         if (ReceiptOfProducts.END_OF_THE_ORDER.getStringValue().equals(receiptOfProducts)) {
             Entity order = stateChangeContext.getOwner();
 
-            String priceBasedOn = parameterService.getParameter().getStringField(ParameterFieldsPC.PRICE_BASED_ON);
-
-            boolean isNominalProductCost = Objects.nonNull(priceBasedOn)
-                    && priceBasedOn.equals(PriceBasedOn.NOMINAL_PRODUCT_COST.getStringValue())
-                    || !Strings.isNullOrEmpty(order.getStringField(OrderFields.ADDITIONAL_FINAL_PRODUCTS));
+            boolean isNominalProductCost = productionCountingDocumentService.isNominalProductCost(order);
 
             if (!isNominalProductCost) {
-                order = updateCostsInOrder(order);
-
-                productionTrackingListenerServicePFTD.updateCostsForOrder(order);
+                order = costNormsForMaterialsService.updateCostsInOrder(order);
 
                 fillRealProductionCost(order);
 
@@ -172,14 +165,6 @@ public class OrderStatesListenerServicePFTD {
                 stateChangeContext.addMessage(result.getLeft(), StateMessageType.FAILURE);
             }
         }
-    }
-
-    public Entity updateCostsInOrder(final Entity order) {
-        List<Entity> orderMaterialsCosts = orderMaterialsCostDataGenerator.generateUpdatedMaterialsListFor(order);
-
-        order.setField(OrderFieldsCNFM.TECHNOLOGY_INST_OPER_PRODUCT_IN_COMPS, orderMaterialsCosts);
-
-        return order.getDataDefinition().save(order);
     }
 
     public void fillRealProductionCost(final Entity order) {
@@ -198,7 +183,7 @@ public class OrderStatesListenerServicePFTD {
         Optional<BigDecimal> price;
 
         if (isNominalProductCost) {
-            price = Optional.ofNullable(getNominalCost(order.getBelongsToField(OrderFields.PRODUCT)));
+            price = Optional.ofNullable(costNormsForProductService.getNominalCost(order.getBelongsToField(OrderFields.PRODUCT)));
         } else {
             price = Optional.ofNullable(realProductionCostService.calculateRealProductionCost(order));
         }
@@ -233,18 +218,6 @@ public class OrderStatesListenerServicePFTD {
         }
 
         return documentsForNotUsedMaterials;
-    }
-
-    private BigDecimal getNominalCost(final Entity product) {
-        BigDecimal nominalCost = BigDecimalUtils.convertNullToZero(product.getDecimalField("nominalCost"));
-        Entity currency = product.getBelongsToField("nominalCostCurrency");
-
-        if (Objects.nonNull(currency) && CurrencyService.PLN.equals(currencyService.getCurrencyAlphabeticCode())
-                && !CurrencyService.PLN.equals(currency.getStringField(CurrencyFields.ALPHABETIC_CODE))) {
-            nominalCost = currencyService.getConvertedValue(nominalCost, currency);
-        }
-
-        return nominalCost;
     }
 
     private void fillInDocumentPositionsPrice(final Entity document, final Entity orderProduct,
@@ -484,22 +457,10 @@ public class OrderStatesListenerServicePFTD {
         }
 
         Multimap<Long, Entity> groupedRecordOutProducts = productionTrackingDocumentsHelper
-                .fillFromBPCProductOut(trackingOperationProductOutComponents, order, null, true);
+                .fillFromBPCProductOut(trackingOperationProductOutComponents, order, null, true, false, true);
 
         for (Long warehouseId : groupedRecordOutProducts.keySet()) {
             Entity locationTo = getLocationDD().get(warehouseId);
-
-            List<Entity> finalProductRecord = Lists.newArrayList();
-
-            Collection<Entity> intermediateRecords = Lists.newArrayList();
-
-            for (Entity trackingOperationProductOutComponent : groupedRecordOutProducts.get(warehouseId)) {
-                if (isFinalProductOrWasteForOrder(trackingOperationProductOutComponent)) {
-                    finalProductRecord.add(trackingOperationProductOutComponent);
-                } else {
-                    intermediateRecords.add(trackingOperationProductOutComponent);
-                }
-            }
 
             Entity existingInboundDocument = getDocumentDD().find()
                     .add(SearchRestrictions.belongsTo(DocumentFieldsPFTD.ORDER, order))
@@ -509,13 +470,8 @@ public class OrderStatesListenerServicePFTD {
                     .setMaxResults(1).uniqueResult();
 
             if (Objects.nonNull(existingInboundDocument)) {
-                if (Objects.nonNull(finalProductRecord)) {
-                    productionTrackingListenerServicePFTD.updateInternalInboundDocumentForFinalProducts(order, existingInboundDocument,
-                            finalProductRecord, true, true);
-                } else {
-                    productionTrackingListenerServicePFTD.updateInternalInboundDocumentForFinalProducts(order, existingInboundDocument,
-                            intermediateRecords, false, true);
-                }
+                productionTrackingListenerServicePFTD.updateInternalInboundDocumentForFinalProducts(order, existingInboundDocument,
+                        groupedRecordOutProducts.get(warehouseId), true);
             }
         }
     }
@@ -588,7 +544,6 @@ public class OrderStatesListenerServicePFTD {
                 return;
             }
         }
-
     }
 
     public void createCumulatedInternalOutboundDocument(final StateChangeContext stateChangeContext) {
@@ -597,10 +552,9 @@ public class OrderStatesListenerServicePFTD {
         productionCountingDocumentService.createCumulatedInternalOutboundDocument(order);
     }
 
-    private boolean isFinalProductOrWasteForOrder(final Entity toc) {
-        return toc.getStringField(TrackingOperationProductOutComponentFields.TYPE_OF_MATERIAL).equals(ProductionCountingQuantityTypeOfMaterial.FINAL_PRODUCT.getStringValue()) ||
-                toc.getStringField(TrackingOperationProductOutComponentFields.TYPE_OF_MATERIAL).equals(ProductionCountingQuantityTypeOfMaterial.ADDITIONAL_FINAL_PRODUCT.getStringValue()) ||
-                toc.getStringField(TrackingOperationProductOutComponentFields.TYPE_OF_MATERIAL).equals(ProductionCountingQuantityTypeOfMaterial.WASTE.getStringValue());
+    private DataDefinition getProductionTrackingDD() {
+        return dataDefinitionService.get(ProductionCountingConstants.PLUGIN_IDENTIFIER,
+                ProductionCountingConstants.MODEL_PRODUCTION_TRACKING);
     }
 
     private DataDefinition getLocationDD() {
@@ -610,11 +564,6 @@ public class OrderStatesListenerServicePFTD {
     private DataDefinition getDocumentDD() {
         return dataDefinitionService.get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER,
                 MaterialFlowResourcesConstants.MODEL_DOCUMENT);
-    }
-
-    private DataDefinition getProductionTrackingDD() {
-        return dataDefinitionService.get(ProductionCountingConstants.PLUGIN_IDENTIFIER,
-                ProductionCountingConstants.MODEL_PRODUCTION_TRACKING);
     }
 
     private DataDefinition getTrackingOperationProductInComponentDD() {

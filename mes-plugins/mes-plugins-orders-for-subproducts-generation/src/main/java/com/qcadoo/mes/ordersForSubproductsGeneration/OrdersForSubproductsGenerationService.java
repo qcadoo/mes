@@ -60,7 +60,6 @@ import com.qcadoo.mes.orders.constants.ParameterFieldsO;
 import com.qcadoo.mes.ordersForSubproductsGeneration.constants.CoverageForOrderFieldsOFSPG;
 import com.qcadoo.mes.ordersForSubproductsGeneration.constants.OrderFieldsOFSPG;
 import com.qcadoo.mes.productFlowThruDivision.constants.OrderFieldsPFTD;
-import com.qcadoo.mes.productFlowThruDivision.constants.TechnologyFieldsPFTD;
 import com.qcadoo.mes.productionCounting.constants.OrderFieldsPC;
 import com.qcadoo.mes.productionLines.constants.ProductionLineFields;
 import com.qcadoo.mes.technologies.TechnologyService;
@@ -357,7 +356,7 @@ public class OrdersForSubproductsGenerationService {
     }
 
     private void getDivision(final Entity parentOrder, final Entity order, final Entity technology) {
-        Entity division = technology.getBelongsToField(TechnologyFieldsPFTD.DIVISION);
+        Entity division = technology.getBelongsToField(TechnologyFields.DIVISION);
 
         if (Objects.nonNull(division)) {
             order.setField(OrderFields.DIVISION, division);

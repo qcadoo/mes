@@ -174,6 +174,24 @@
             <model:boolean name="allowMasterOrderDeadlineChange" default="false"/>
         </model:model-field>
 
+        <model:model-field model="parameter" plugin="basic">
+            <model:belongsTo name="priceListAttribute1" model="attribute" plugin="basic"/>
+        </model:model-field>
+
+        <model:model-field model="parameter" plugin="basic">
+            <model:belongsTo name="priceListAttribute2" model="attribute" plugin="basic"/>
+        </model:model-field>
+
+        <model:model-field plugin="basic" model="attribute">
+            <model:hasMany name="priceListAttributes1" plugin="basic" model="parameter"
+                           joinField="priceListAttribute1"/>
+        </model:model-field>
+
+        <model:model-field plugin="basic" model="attribute">
+            <model:hasMany name="priceListAttributes2" plugin="basic" model="parameter"
+                           joinField="priceListAttribute2"/>
+        </model:model-field>
+
         <model:model-field plugin="materialFlowResources" model="documentPositionParameters">
             <model:integer name="runningOutOfStockDays">
                 <model:validatesRange from="0"/>
@@ -182,12 +200,12 @@
 
         <model:model-field model="order" plugin="orders">
             <model:belongsTo name="salesPlan" model="salesPlan"
-                             plugin="masterOrders" lazy="true"/>
+                             plugin="masterOrders"/>
         </model:model-field>
 
         <model:model-field model="order" plugin="orders">
             <model:belongsTo name="masterOrder" model="masterOrder"
-                             plugin="masterOrders" lazy="true"/>
+                             plugin="masterOrders"/>
         </model:model-field>
 
         <model:model-field model="orderListDto" plugin="orders">
@@ -197,12 +215,12 @@
 
         <model:model-field model="order" plugin="orders">
             <model:belongsTo name="masterOrderProductComponent" model="masterOrderProduct"
-                             plugin="masterOrders" lazy="true"/>
+                             plugin="masterOrders"/>
         </model:model-field>
 
         <model:model-field model="order" plugin="orders">
             <model:belongsTo name="masterOrderProduct" model="product"
-                             plugin="basic" lazy="true"/>
+                             plugin="basic"/>
         </model:model-field>
 
         <model:model-field plugin="basic" model="address">
@@ -324,6 +342,10 @@
                         category="products" view="orderedProductConfiguratorsList"
                         defaultAuthorizationRole="ROLE_PLANNING"/>
 
+        <menu:menu-item-url name="salesParameters"
+                            category="parameters" url="/salesParameters.html"
+                            defaultAuthorizationRole="ROLE_PARAMETERS"/>
+
         <view:view resource="view/masterOrdersList.xml"/>
         <view:view resource="view/masterOrderDetails.xml"/>
 
@@ -371,11 +393,11 @@
         <view:view resource="view/orderedProductConfiguratorDetails.xml"/>
         <view:view resource="view/orderedProductConfiguratorAttributeDetails.xml"/>
         <view:view resource="view/deadlineHelperDetails.xml"/>
+        <view:view resource="view/salesParameters.xml"/>
 
         <view:view-ribbon-group resource="view/ribbonExtensions/productsList.xml"/>
 
         <view:view-tab resource="view/tabExtensions/orderDetails.xml"/>
-        <view:view-tab resource="view/tabExtensions/masterOrderDefinitionsParameters.xml"/>
         <view:view-tab resource="view/tabExtensions/salesVolumesParameters.xml"/>
 
         <view:view-grid-column plugin="orders" view="ordersList" component="grid">

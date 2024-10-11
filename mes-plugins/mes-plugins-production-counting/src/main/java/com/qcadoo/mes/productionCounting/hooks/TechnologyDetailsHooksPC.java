@@ -23,27 +23,33 @@
  */
 package com.qcadoo.mes.productionCounting.hooks;
 
-import java.util.List;
-import java.util.Objects;
-
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.productionCounting.ProductionCountingService;
 import com.qcadoo.mes.productionCounting.constants.TechnologyFieldsPC;
+import com.qcadoo.mes.productionCounting.constants.TypeOfProductionRecording;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
 import com.qcadoo.mes.technologies.states.constants.TechnologyState;
+import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.CheckBoxComponent;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
+import com.qcadoo.view.api.components.GridComponent;
 import com.qcadoo.view.constants.QcadooViewConstants;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.Objects;
 
 @Service
 public class TechnologyDetailsHooksPC {
+
+    private static final String WORKSTATIONS = "workstations";
+    private static final String WORKSTATIONS_TECHNOLOGY_OPERATION_COMPONENT = "workstationsTechnologyOperationComponent";
+    private static final String OPERATION_WORKSTATIONS_DESCRIPTION = "operationWorkstationsDescription";
 
     private static final List<String> L_TECHNOLOGY_FIELD_NAMES = Lists.newArrayList(
             TechnologyFieldsPC.REGISTER_QUANTITY_IN_PRODUCT, TechnologyFieldsPC.REGISTER_QUANTITY_OUT_PRODUCT,
@@ -81,6 +87,28 @@ public class TechnologyDetailsHooksPC {
         }
     }
 
+    private void hideWorkstationsTableForCumulatedProductionRecording(final ViewDefinitionState view) {
+        FieldComponent typeOfProductionRecordingFieldComponent = (FieldComponent) view
+                .getComponentByReference(TechnologyFieldsPC.TYPE_OF_PRODUCTION_RECORDING);
+
+        GridComponent workstationsTechnologyOperationComponent = (GridComponent) view
+                .getComponentByReference(WORKSTATIONS_TECHNOLOGY_OPERATION_COMPONENT);
+        GridComponent workstations = (GridComponent) view
+                .getComponentByReference(WORKSTATIONS);
+        ComponentState operationWorkstationsDescriptionLabel = view.getComponentByReference(OPERATION_WORKSTATIONS_DESCRIPTION);
+
+        if (Objects.nonNull(typeOfProductionRecordingFieldComponent) && TypeOfProductionRecording.FOR_EACH.getStringValue()
+                .equals(typeOfProductionRecordingFieldComponent.getFieldValue())) {
+            workstationsTechnologyOperationComponent.setVisible(true);
+            workstations.setVisible(true);
+            operationWorkstationsDescriptionLabel.setVisible(true);
+        } else {
+            workstationsTechnologyOperationComponent.setVisible(false);
+            workstations.setVisible(false);
+            operationWorkstationsDescriptionLabel.setVisible(false);
+        }
+    }
+
     private boolean getDefaultValueForProductionCountingFromParameter(final String fieldName) {
         return parameterService.getParameter().getBooleanField(fieldName);
     }
@@ -115,6 +143,7 @@ public class TechnologyDetailsHooksPC {
             pieceRateField.setEnabled(false);
             pieceRateField.setFieldValue(null);
         }
+        hideWorkstationsTableForCumulatedProductionRecording(view);
     }
 
 }

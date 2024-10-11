@@ -21,7 +21,7 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.productFlowThruDivision.validators;
+package com.qcadoo.mes.technologies.validators;
 
 import java.util.List;
 import java.util.Objects;
@@ -59,7 +59,7 @@ public class TechnologyProductionLineModelValidators {
 
             if (checkIfProductionLineIsAlreadyAdded(productionLine, productionLines)) {
                 entity.addError(dataDefinition.getField(TechnologyProductionLineFields.PRODUCTION_LINE),
-                        "productFlowThruDivision.technologyProductionLine.error.productionLine.alreadyAdded");
+                        "technologies.technologyProductionLine.error.productionLine.alreadyAdded");
 
                 isNotAlreadyAdded = false;
             }

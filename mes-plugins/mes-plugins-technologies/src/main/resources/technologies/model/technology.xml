@@ -85,6 +85,15 @@
             <validatesUnscaledValue max="5" />
             <validatesScale max="5" />
         </decimal>
+
+        <enum name="range" values="01oneDivision,02manyDivisions"
+                    default="02manyDivisions"/>
+
+        <belongsTo name="division" plugin="basic"
+                         model="division"/>
+
+        <hasMany name="productionLines" model="technologyProductionLine"
+                       joinField="technology" cascade="delete" copyable="true"/>
     </fields>
 
     <hooks>

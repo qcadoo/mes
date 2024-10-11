@@ -24,9 +24,12 @@
 package com.qcadoo.mes.technologies.hooks;
 
 import com.qcadoo.mes.technologies.constants.ParameterFieldsT;
+import com.qcadoo.mes.technologies.constants.Range;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.AwesomeDynamicListComponent;
 import com.qcadoo.view.api.components.CheckBoxComponent;
+import com.qcadoo.view.api.components.FieldComponent;
+import com.qcadoo.view.api.components.LookupComponent;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -34,6 +37,7 @@ public class TechnologiesParametersHooks {
 
     public void onBeforeRender(final ViewDefinitionState view) {
         setDimensionControlAttributesEnabled(view);
+        setDivisionField(view);
     }
 
     private void setDimensionControlAttributesEnabled(final ViewDefinitionState view) {
@@ -50,6 +54,23 @@ public class TechnologiesParametersHooks {
         }
 
         dimensionControlAttributesADL.requestComponentUpdateState();
+    }
+
+    private void setDivisionField(final ViewDefinitionState view) {
+        FieldComponent rangeField = (FieldComponent) view.getComponentByReference(ParameterFieldsT.RANGE);
+        LookupComponent divisionField = (LookupComponent) view.getComponentByReference(ParameterFieldsT.DIVISION);
+
+        String range = (String) rangeField.getFieldValue();
+
+        boolean isOneDivision = Range.ONE_DIVISION.getStringValue().equals(range);
+        boolean isManyDivisions = Range.MANY_DIVISIONS.getStringValue().equals(range);
+
+        if (isManyDivisions) {
+            divisionField.setFieldValue(null);
+        }
+
+        divisionField.setVisible(isOneDivision);
+        divisionField.requestComponentUpdateState();
     }
 
 }

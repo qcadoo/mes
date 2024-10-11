@@ -26,7 +26,7 @@ package com.qcadoo.mes.productFlowThruDivision.states;
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.productFlowThruDivision.constants.OperationProductInComponentFieldsPFTD;
 import com.qcadoo.mes.productFlowThruDivision.constants.OperationProductOutComponentFieldsPFTD;
-import com.qcadoo.mes.productFlowThruDivision.constants.Range;
+import com.qcadoo.mes.technologies.constants.Range;
 import com.qcadoo.mes.productFlowThruDivision.constants.TechnologyFieldsPFTD;
 import com.qcadoo.mes.productFlowThruDivision.listeners.TechnologyDetailsListenersPFTD;
 import com.qcadoo.mes.productionCounting.constants.TechnologyFieldsPC;
@@ -168,7 +168,7 @@ public class TechnologyStateValidationServicePFTD {
 
     private void checkIfForOneDivisionLocationIsSet(final Entity technology,
                                                     final StateChangeContext stateChangeContext) {
-        if (technology.getField(TechnologyFieldsPFTD.RANGE).equals(Range.ONE_DIVISION.getStringValue())) {
+        if (technology.getField(TechnologyFields.RANGE).equals(Range.ONE_DIVISION.getStringValue())) {
             if (technology.getBelongsToField(TechnologyFieldsPFTD.COMPONENTS_LOCATION) == null) {
                 stateChangeContext.addFieldValidationError(TechnologyFieldsPFTD.COMPONENTS_LOCATION,
                         L_QCADOO_VIEW_VALIDATE_FIELD_ERROR_MISSING);

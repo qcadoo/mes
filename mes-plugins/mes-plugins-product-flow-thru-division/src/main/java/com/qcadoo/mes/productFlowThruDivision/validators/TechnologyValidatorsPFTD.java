@@ -23,13 +23,11 @@
  */
 package com.qcadoo.mes.productFlowThruDivision.validators;
 
-import org.springframework.stereotype.Service;
-
 import com.qcadoo.mes.productFlowThruDivision.constants.ProductionFlowComponent;
-import com.qcadoo.mes.productFlowThruDivision.constants.Range;
 import com.qcadoo.mes.productFlowThruDivision.constants.TechnologyFieldsPFTD;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
+import org.springframework.stereotype.Service;
 
 @Service
 public class TechnologyValidatorsPFTD {
@@ -37,13 +35,6 @@ public class TechnologyValidatorsPFTD {
     private static final String L_QCADOO_VIEW_VALIDATE_FIELD_ERROR_MISSING = "qcadooView.validate.field.error.missing";
 
     public boolean checkRequiredFields(final DataDefinition dataDefinition, final Entity technology) {
-        String range = technology.getStringField(TechnologyFieldsPFTD.RANGE);
-        if (!Range.ONE_DIVISION.getStringValue().equals(range) && !Range.MANY_DIVISIONS.getStringValue().equals(range)) {
-            technology.addError(dataDefinition.getField(TechnologyFieldsPFTD.RANGE), L_QCADOO_VIEW_VALIDATE_FIELD_ERROR_MISSING);
-
-            return false;
-        }
-
         String productionFlow = technology.getStringField(TechnologyFieldsPFTD.PRODUCTION_FLOW);
         if (technology.getId() == null && !ProductionFlowComponent.WAREHOUSE.getStringValue().equals(productionFlow)
                 && !ProductionFlowComponent.WITHIN_THE_PROCESS.getStringValue().equals(productionFlow)) {

@@ -49,7 +49,7 @@ public class RealProductionCostDataProvider {
     }
 
     public BigDecimal getMaterialCostMargin(final BigDecimal materialCost, final BigDecimal margin) {
-        return materialCost.multiply(BigDecimalUtils.convertNullToZero(margin).divide(new BigDecimal(100l)),
+        return materialCost.multiply(BigDecimalUtils.convertNullToZero(margin).divide(new BigDecimal(100L)),
                 numberService.getMathContext());
     }
 

@@ -160,7 +160,7 @@ public class CostNormsForMaterialsService {
         form.setEntity(updateCostsInOrder(order));
     }
 
-    private Entity updateCostsInOrder(Entity order) {
+    public Entity updateCostsInOrder(Entity order) {
         List<Entity> orderMaterialsCosts = orderMaterialsCostDataGenerator.generateUpdatedMaterialsListFor(order);
         order.setField(OrderFieldsCNFM.TECHNOLOGY_INST_OPER_PRODUCT_IN_COMPS, orderMaterialsCosts);
         return order.getDataDefinition().save(order);

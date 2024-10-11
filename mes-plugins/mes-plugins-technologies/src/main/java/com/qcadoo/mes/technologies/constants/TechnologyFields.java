@@ -25,6 +25,9 @@ package com.qcadoo.mes.technologies.constants;
 
 public final class TechnologyFields {
 
+    public static final String RANGE = "range";
+    public static final String DIVISION = "division";
+
     private TechnologyFields() {
 
     }

@@ -37,7 +37,7 @@ import com.qcadoo.mes.materialFlowResources.MaterialFlowResourcesService;
 import com.qcadoo.mes.materialFlowResources.constants.ResourceStockDtoFields;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
-import com.qcadoo.mes.productFlowThruDivision.constants.Range;
+import com.qcadoo.mes.technologies.constants.Range;
 import com.qcadoo.mes.productFlowThruDivision.constants.*;
 import com.qcadoo.mes.productFlowThruDivision.hooks.TechnologyHooksPFTD;
 import com.qcadoo.mes.productFlowThruDivision.warehouseIssue.CreationDocumentResponse;
@@ -217,7 +217,7 @@ public class WarehouseIssueService {
     private List<Entity> createProductIssueEntryForDivision(final Entity divisionEntity, final Entity warehouseIssue,
             final Entity order) {
         if (Objects.nonNull(divisionEntity)) {
-            String range = order.getBelongsToField(OrderFields.TECHNOLOGY).getStringField(TechnologyFieldsPFTD.RANGE);
+            String range = order.getBelongsToField(OrderFields.TECHNOLOGY).getStringField(TechnologyFields.RANGE);
 
             List<Entity> coverageProducts = getProductionCountingQuantityDD().find()
                     .add(SearchRestrictions.belongsTo(ProductionCountingQuantityFields.ORDER, order))

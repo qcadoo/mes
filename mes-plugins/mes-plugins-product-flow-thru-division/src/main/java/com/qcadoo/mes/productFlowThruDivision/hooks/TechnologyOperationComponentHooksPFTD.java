@@ -28,13 +28,14 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.materialFlowResources.constants.DivisionFieldsMFR;
 import com.qcadoo.mes.productFlowThruDivision.constants.DivisionFieldsPFTD;
 import com.qcadoo.mes.productFlowThruDivision.constants.ProductFlowThruDivisionConstants;
-import com.qcadoo.mes.productFlowThruDivision.constants.Range;
+import com.qcadoo.mes.technologies.constants.Range;
 import com.qcadoo.mes.productFlowThruDivision.constants.TechnologyFieldsPFTD;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
 import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
@@ -74,13 +75,13 @@ public class TechnologyOperationComponentHooksPFTD {
                         .filter(e -> e.getBelongsToField(TechnologyOperationComponentFields.DIVISION) != null)
                         .map(e -> e.getBelongsToField(TechnologyOperationComponentFields.DIVISION).getId()).collect(Collectors.toSet());
                 if (divisionIds.size() > 1 || divisionIds.size() == 1 && !divisionIds.contains(division.getId())) {
-                    technology.setField(TechnologyFieldsPFTD.RANGE, Range.MANY_DIVISIONS.getStringValue());
-                    technology.setField(TechnologyFieldsPFTD.DIVISION, null);
+                    technology.setField(TechnologyFields.RANGE, Range.MANY_DIVISIONS.getStringValue());
+                    technology.setField(TechnologyFields.DIVISION, null);
                     technology.getDataDefinition().save(technology);
-                } else if (!Range.ONE_DIVISION.getStringValue().equals(technology.getField(TechnologyFieldsPFTD.RANGE))
-                        || !Objects.equals(technology.getField(TechnologyFieldsPFTD.DIVISION), division)) {
-                    technology.setField(TechnologyFieldsPFTD.RANGE, Range.ONE_DIVISION.getStringValue());
-                    technology.setField(TechnologyFieldsPFTD.DIVISION, division);
+                } else if (!Range.ONE_DIVISION.getStringValue().equals(technology.getField(TechnologyFields.RANGE))
+                        || !Objects.equals(technology.getField(TechnologyFields.DIVISION), division)) {
+                    technology.setField(TechnologyFields.RANGE, Range.ONE_DIVISION.getStringValue());
+                    technology.setField(TechnologyFields.DIVISION, division);
                     Long[] productionLinesIds = technology.getHasManyField(TechnologyFields.PRODUCTION_LINES).stream().map(Entity::getId).toArray(Long[]::new);
                     if (productionLinesIds.length > 0) {
                         getTechnologyProductionLineDD().delete(productionLinesIds);
@@ -93,7 +94,7 @@ public class TechnologyOperationComponentHooksPFTD {
     }
 
     private void fillLocationsForOneDivisionRange(Entity technology) {
-        Entity division = technology.getBelongsToField(TechnologyFieldsPFTD.DIVISION);
+        Entity division = technology.getBelongsToField(TechnologyFields.DIVISION);
 
         technology.setField(TechnologyFieldsPFTD.COMPONENTS_LOCATION, division.getBelongsToField(DivisionFieldsMFR.COMPONENTS_LOCATION));
         technology.setField(TechnologyFieldsPFTD.COMPONENTS_OUTPUT_LOCATION, division.getBelongsToField(DivisionFieldsMFR.COMPONENTS_OUTPUT_LOCATION));
@@ -110,8 +111,8 @@ public class TechnologyOperationComponentHooksPFTD {
     }
 
     private DataDefinition getTechnologyProductionLineDD() {
-        return dataDefinitionService.get(ProductFlowThruDivisionConstants.PLUGIN_IDENTIFIER,
-                ProductFlowThruDivisionConstants.MODEL_TECHNOLOGY_PRODUCTION_LINE);
+        return dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
+                TechnologiesConstants.MODEL_TECHNOLOGY_PRODUCTION_LINE);
     }
 
 }

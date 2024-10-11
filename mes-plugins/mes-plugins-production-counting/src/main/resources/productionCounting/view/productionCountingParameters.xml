@@ -41,7 +41,7 @@
         <windowTab name="productionCounting" reference="productionCounting">
             <component type="form" name="parameters" reference="form">
                 <component type="gridLayout" name="gridLayout" reference="gridLayout"
-                           columns="3" rows="8">
+                           columns="3" rows="7">
                     <layoutElement column="1" row="1">
                         <component type="select" name="typeOfProductionRecording"
                                    reference="typeOfProductionRecording" field="#{form}.typeOfProductionRecording"
@@ -120,19 +120,12 @@
                         </component>
                     </layoutElement>
                     <layoutElement column="2" row="6">
-                        <component type="checkbox" name="autoRecalculateOrder"
-                                   reference="autoRecalculateOrder" field="#{form}.autoRecalculateOrder"
-                                   hasDescription="true">
-                            <option type="labelWidth" value="80"/>
-                        </component>
-                    </layoutElement>
-                    <layoutElement column="2" row="7">
                         <component type="checkbox" name="validateProductionRecordTimes" hasDescription="true"
                                    reference="validateProductionRecordTimes" field="#{form}.validateProductionRecordTimes">
                             <option type="labelWidth" value="80"/>
                         </component>
                     </layoutElement>
-                    <layoutElement column="2" row="8">
+                    <layoutElement column="2" row="7">
                         <component type="checkbox" name="allowMultipleRegisteringTimeForWorker"
                                    reference="allowMultipleRegisteringTimeForWorker"
                                    field="#{form}.allowMultipleRegisteringTimeForWorker">

@@ -23,10 +23,10 @@
  */
 package com.qcadoo.mes.technologies.hooks;
 
+import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.states.service.StateChangeEntityBuilder;
 import com.qcadoo.mes.technologies.TechnologyService;
-import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
-import com.qcadoo.mes.technologies.constants.TechnologyFields;
+import com.qcadoo.mes.technologies.constants.*;
 import com.qcadoo.mes.technologies.states.constants.TechnologyState;
 import com.qcadoo.mes.technologies.states.constants.TechnologyStateChangeDescriber;
 import com.qcadoo.model.api.DataDefinition;
@@ -37,8 +37,10 @@ import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.model.api.utils.TreeNumberingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.util.Collections;
+import java.util.List;
 import java.util.Objects;
 
 @Service
@@ -59,8 +61,31 @@ public class TechnologyModelHooks {
     @Autowired
     private TreeNumberingService treeNumberingService;
 
+    @Autowired
+    private ParameterService parameterService;
+
     public void onCreate(final DataDefinition technologyDD, final Entity technology) {
         setInitialState(technology);
+        fillRangeAndDivision(technology);
+    }
+
+    private void fillRangeAndDivision(final Entity technology) {
+        String range = technology.getStringField(TechnologyFields.RANGE);
+        Entity division = technology.getBelongsToField(TechnologyFields.DIVISION);
+
+        if (StringUtils.isEmpty(range)) {
+            range = parameterService.getParameter().getStringField(ParameterFieldsT.RANGE);
+
+            if (StringUtils.isEmpty(range)) {
+                range = Range.MANY_DIVISIONS.getStringValue();
+            }
+        }
+        if (Objects.isNull(division)) {
+            division = parameterService.getParameter().getBelongsToField(ParameterFieldsT.DIVISION);
+        }
+
+        technology.setField(TechnologyFields.RANGE, range);
+        technology.setField(TechnologyFields.DIVISION, division);
     }
 
     public void onCopy(final DataDefinition technologyDD, final Entity technology) {
@@ -81,6 +106,55 @@ public class TechnologyModelHooks {
 
         setNewMasterTechnology(technologyDD, technology);
         qualityCardChange(technologyDD, technology);
+        fillDivision(technologyDD, technology);
+    }
+
+    private void fillDivision(final DataDefinition technologyDD, final Entity technology) {
+        if (Objects.nonNull(technology.getId())) {
+            if (technology.getField(TechnologyFields.RANGE).equals(Range.ONE_DIVISION.getStringValue())) {
+                List<Entity> tocs = getTechnologyOperationComponents(technology);
+
+                for (Entity toc : tocs) {
+                    toc.setField(TechnologyFields.DIVISION, technology.getBelongsToField(TechnologyFields.DIVISION));
+                    toc.getDataDefinition().save(toc);
+                }
+            } else {
+                technology.setField(TechnologyFields.DIVISION, null);
+            }
+            Entity technologyDB = technologyDD.get(technology.getId());
+            if (isDivisionChanged(technology, technologyDB)) {
+                Long[] productionLinesIds = technology.getHasManyField(TechnologyFields.PRODUCTION_LINES).stream().map(Entity::getId).toArray(Long[]::new);
+                if (productionLinesIds.length > 0) {
+                    getTechnologyProductionLineDD().delete(productionLinesIds);
+                }
+                List<Entity> tocs = getTechnologyOperationComponents(technology);
+
+                clearWorkstations(tocs);
+            }
+        }
+    }
+
+    private boolean isDivisionChanged(Entity technology, Entity technologyDB) {
+        return technology.getBelongsToField(TechnologyFields.DIVISION) != null
+                && technologyDB.getBelongsToField(TechnologyFields.DIVISION) == null
+                || technology.getField(TechnologyFields.RANGE).equals(Range.ONE_DIVISION.getStringValue())
+                && technology.getBelongsToField(TechnologyFields.DIVISION) == null
+                && technologyDB.getBelongsToField(TechnologyFields.DIVISION) != null
+                || technology.getBelongsToField(TechnologyFields.DIVISION) != null
+                && !technology.getBelongsToField(TechnologyFields.DIVISION).equals(technologyDB.getBelongsToField(TechnologyFields.DIVISION));
+    }
+
+    private void clearWorkstations(List<Entity> tocs) {
+        for (Entity toc : tocs) {
+            toc.setField(TechnologyOperationComponentFields.WORKSTATIONS, null);
+            toc.getDataDefinition().save(toc);
+        }
+    }
+
+    private List<Entity> getTechnologyOperationComponents(final Entity technology) {
+        return getTechnologyOperationComponentDD().find()
+                .add(SearchRestrictions.belongsTo(TechnologyOperationComponentFields.TECHNOLOGY, technology)).list()
+                .getEntities();
     }
 
     public void onUpdate(final DataDefinition technologyDD, final Entity technology) {
@@ -159,6 +233,11 @@ public class TechnologyModelHooks {
     private DataDefinition getTechnologyOperationComponentDD() {
         return dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
                 TechnologiesConstants.MODEL_TECHNOLOGY_OPERATION_COMPONENT);
+    }
+
+    private DataDefinition getTechnologyProductionLineDD() {
+        return dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
+                TechnologiesConstants.MODEL_TECHNOLOGY_PRODUCTION_LINE);
     }
 
 }
