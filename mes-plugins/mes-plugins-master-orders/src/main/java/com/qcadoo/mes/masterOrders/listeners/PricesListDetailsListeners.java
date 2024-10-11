@@ -48,11 +48,4 @@ public class PricesListDetailsListeners {
         }
         productCategoryField.requestComponentUpdateState();
     }
-
-    public void onChangeProductCategory(final ViewDefinitionState view, final ComponentState state,
-                                        final String[] args) {
-        LookupComponent productLookup = (LookupComponent) view.getComponentByReference(PricesListFields.PRODUCT);
-        productLookup.setFieldValue(null);
-        productLookup.requestComponentUpdateState();
-    }
 }

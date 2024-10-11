@@ -30,6 +30,10 @@ public class PricesListDetailsHooks {
     private ParameterService parameterService;
 
     public void onBeforeRender(final ViewDefinitionState view) {
+        LookupComponent productLookup = (LookupComponent) view.getComponentByReference(PricesListFields.PRODUCT);
+        FieldComponent productCategoryField = (FieldComponent) view.getComponentByReference(PricesListFields.PRODUCT_CATEGORY);
+        productCategoryField.setEnabled(Objects.isNull(productLookup.getEntity()));
+        productCategoryField.requestComponentUpdateState();
         Entity parameter = parameterService.getParameter();
         Entity priceListAttribute1 = parameter.getBelongsToField(ParameterFieldsMO.PRICE_LIST_ATTRIBUTE_1);
         Entity priceListAttribute2 = parameter.getBelongsToField(ParameterFieldsMO.PRICE_LIST_ATTRIBUTE_2);
