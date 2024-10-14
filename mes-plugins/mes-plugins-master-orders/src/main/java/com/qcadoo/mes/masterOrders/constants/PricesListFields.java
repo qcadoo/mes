@@ -45,4 +45,6 @@ public final class PricesListFields {
 
     public static final String VALUE_2 = "value2";
 
+    public static final String PRICE = "price";
+
 }
