@@ -68,7 +68,7 @@ public class PricesListHooks {
         if (maybePreviousComponent.isPresent()) {
             Entity previousComponent = maybePreviousComponent.get();
             previousComponent.setField(PricesListFields.DATE_TO, null);
-            dataDefinition.save(previousComponent);
+            dataDefinition.fastSave(previousComponent);
         }
         return true;
     }

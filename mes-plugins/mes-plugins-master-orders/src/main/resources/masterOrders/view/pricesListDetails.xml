@@ -37,9 +37,9 @@
 
         <windowTab name="mainTab">
             <component type="form" name="pricesList" reference="form">
-                <component type="gridLayout" name="gridLayout" columns="8"
+                <component type="gridLayout" name="gridLayout" columns="16"
                            rows="7" hasBorders="false">
-                    <layoutElement column="1" row="1" width="8">
+                    <layoutElement column="1" row="1" width="10">
                         <component type="lookup" name="product" reference="product"
                                    field="product">
                             <option type="column" name="name" fields="name" link="true"/>
@@ -56,11 +56,11 @@
                                       method="onChangeProduct"/>
                         </component>
                     </layoutElement>
-                    <layoutElement column="1" row="2" width="8">
+                    <layoutElement column="1" row="2" width="10">
                         <component type="select" name="productCategory" field="productCategory"
                                    reference="productCategory"/>
                     </layoutElement>
-                    <layoutElement column="1" row="3" width="7">
+                    <layoutElement column="1" row="3" width="9">
                         <component type="lookup" name="attribute1Value" reference="attribute1Value"
                                    field="attribute1Value" defaultVisible="false">
 
@@ -73,7 +73,7 @@
                             <option type="expression"
                                     value="'&lt;b&gt;' + #value"/>
                             <option type="fieldCode" value="value"/>
-                            <option type="labelWidth" value="35"/>
+                            <option type="labelWidth" value="33"/>
 
                             <listener event="onSelectedEntityChange"
                                       class="com.qcadoo.mes.masterOrders.listeners.PricesListDetailsListeners"
@@ -86,17 +86,17 @@
                         </component>
                         <component type="input" name="value1" field="value1" reference="value1"
                                    defaultVisible="false">
-                            <option type="labelWidth" value="35"/>
+                            <option type="labelWidth" value="33"/>
                         </component>
                     </layoutElement>
-                    <layoutElement column="8" row="3">
+                    <layoutElement column="10" row="3">
                         <component type="input" name="unit1" reference="unit1"
                                    defaultEnabled="false" hasLabel="false">
                             <option type="alignment" value="right"/>
                             <option type="textRepresentationOnDisabled" value="true"/>
                         </component>
                     </layoutElement>
-                    <layoutElement column="1" row="4" width="7">
+                    <layoutElement column="1" row="4" width="9">
                         <component type="lookup" name="attribute2Value" reference="attribute2Value"
                                    field="attribute2Value" defaultVisible="false">
 
@@ -109,7 +109,7 @@
                             <option type="expression"
                                     value="'&lt;b&gt;' + #value"/>
                             <option type="fieldCode" value="value"/>
-                            <option type="labelWidth" value="35"/>
+                            <option type="labelWidth" value="33"/>
 
                             <listener event="onSelectedEntityChange"
                                       class="com.qcadoo.mes.masterOrders.listeners.PricesListDetailsListeners"
@@ -122,29 +122,29 @@
                         </component>
                         <component type="input" name="value2" field="value2" reference="value2"
                                    defaultVisible="false">
-                            <option type="labelWidth" value="35"/>
+                            <option type="labelWidth" value="33"/>
                         </component>
                     </layoutElement>
-                    <layoutElement column="8" row="4">
+                    <layoutElement column="10" row="4">
                         <component type="input" name="unit2" reference="unit2"
                                    defaultEnabled="false" hasLabel="false">
                             <option type="alignment" value="right"/>
                             <option type="textRepresentationOnDisabled" value="true"/>
                         </component>
                     </layoutElement>
-                    <layoutElement column="1" row="5" width="8">
+                    <layoutElement column="1" row="5" width="10">
                         <component type="input" name="price" reference="price"
                                    field="price">
                             <option type="alignment" value="right"/>
                         </component>
                     </layoutElement>
-                    <layoutElement column="1" row="6" width="8">
+                    <layoutElement column="1" row="6" width="10">
                         <component type="calendar" name="dateFrom" field="dateFrom"
                                    reference="dateFrom">
                             <option type="withTimePicker" value="false"/>
                         </component>
                     </layoutElement>
-                    <layoutElement column="1" row="7" width="8">
+                    <layoutElement column="1" row="7" width="10">
                         <component type="calendar" name="dateTo" field="dateTo"
                                    reference="dateTo" defaultEnabled="never">
                             <option type="withTimePicker" value="false"/>
