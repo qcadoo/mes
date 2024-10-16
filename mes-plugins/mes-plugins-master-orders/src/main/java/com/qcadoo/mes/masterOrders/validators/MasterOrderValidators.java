@@ -55,9 +55,7 @@ public class MasterOrderValidators {
     private MasterOrderOrdersDataProvider masterOrderOrdersDataProvider;
 
     public boolean onValidate(final DataDefinition masterOrderDD, final Entity masterOrder) {
-        boolean isValid = true;
-
-        isValid = checkIfDatesAreOk(masterOrderDD, masterOrder) && isValid;
+        boolean isValid = checkIfDatesAreOk(masterOrderDD, masterOrder);
         isValid = checkIfCanChangeMasterOrderPrefixField(masterOrder) && isValid;
 
         return isValid;

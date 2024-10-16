@@ -330,6 +330,11 @@
                                  method="validatesWith"/>
         </model:model-hook>
 
+        <model:model-hook model="parameter" plugin="basic">
+            <model:validatesWith class="com.qcadoo.mes.masterOrders.validators.ParameterValidatorsMO"
+                                 method="onValidate"/>
+        </model:model-hook>
+
         <model:model-enum-value plugin="basic" model="log" enum="logType" value="masterOrderImport"/>
 
         <menu:menu-category name="sales" defaultAuthorizationRole="ROLE_PLANNING_MENU"/>
