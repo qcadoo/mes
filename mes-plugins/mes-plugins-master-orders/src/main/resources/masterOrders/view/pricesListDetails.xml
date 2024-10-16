@@ -153,7 +153,7 @@
                 </component>
 
                 <option type="header" value="true"/>
-                <option type="expression" value="#price"/>
+                <option type="expression" value="(#product == null ? '' : #product['number']) + (#productCategory == null ? '' : ' ' + #productCategory)"/>
             </component>
         </windowTab>
 
