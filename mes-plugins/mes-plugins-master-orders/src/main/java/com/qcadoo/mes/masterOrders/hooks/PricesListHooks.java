@@ -107,18 +107,18 @@ public class PricesListHooks {
                             "qcadooView.validate.field.error.invalidScale.max", String.valueOf(scale));
                     isValid = false;
                 }
+                entity
+                        .setField(
+                                PricesListFields.VALUE_1,
+                                BigDecimalUtils.toString(eitherNumber.getRight().get(),
+                                        priceListAttribute1.getIntegerField(AttributeFields.PRECISION)));
             } else {
                 entity.addError(dataDefinition.getField(PricesListFields.VALUE_1),
                         "qcadooView.validate.field.error.invalidNumericFormat");
                 isValid = false;
             }
-            entity
-                    .setField(
-                            PricesListFields.VALUE_1,
-                            BigDecimalUtils.toString(eitherNumber.getRight().get(),
-                                    priceListAttribute1.getIntegerField(AttributeFields.PRECISION)));
         }
-        String value2 = entity.getStringField(PricesListFields.VALUE_1);
+        String value2 = entity.getStringField(PricesListFields.VALUE_2);
         if (priceListAttribute2 != null && value2 != null && AttributeDataType.CONTINUOUS.getStringValue().equals(priceListAttribute2.getStringField(AttributeFields.DATA_TYPE))
                 && AttributeValueType.NUMERIC.getStringValue().equals(priceListAttribute2.getStringField(AttributeFields.VALUE_TYPE))) {
             Either<Exception, com.google.common.base.Optional<BigDecimal>> eitherNumber = BigDecimalUtils.tryParseAndIgnoreSeparator(
@@ -131,16 +131,16 @@ public class PricesListHooks {
                             "qcadooView.validate.field.error.invalidScale.max", String.valueOf(scale));
                     isValid = false;
                 }
+                entity
+                        .setField(
+                                PricesListFields.VALUE_2,
+                                BigDecimalUtils.toString(eitherNumber.getRight().get(),
+                                        priceListAttribute2.getIntegerField(AttributeFields.PRECISION)));
             } else {
                 entity.addError(dataDefinition.getField(PricesListFields.VALUE_2),
                         "qcadooView.validate.field.error.invalidNumericFormat");
                 isValid = false;
             }
-            entity
-                    .setField(
-                            PricesListFields.VALUE_2,
-                            BigDecimalUtils.toString(eitherNumber.getRight().get(),
-                                    priceListAttribute2.getIntegerField(AttributeFields.PRECISION)));
         }
         return isValid;
     }
