@@ -41,13 +41,10 @@ public class PricesListHooks {
         if (maybePreviousComponent.isPresent()) {
             DateTime dateFrom = new DateTime(entity.getDateField(PricesListFields.DATE_FROM));
             Entity previousComponent = maybePreviousComponent.get();
-            Date originalDateTo = previousComponent.getDateField(PricesListFields.DATE_TO);
-            if (originalDateTo == null || originalDateTo.compareTo(dateFrom.toDate()) != 0) {
-                previousComponent.setField(PricesListFields.DATE_TO, new DateTime(dateFrom.toDate()).minusDays(1).toDate());
-                Entity savedPrevious = dataDefinition.save(previousComponent);
-                if (!savedPrevious.isValid()) {
-                    savedPrevious.getErrors().forEach((key, value) -> entity.addGlobalError(value.getMessage()));
-                }
+            previousComponent.setField(PricesListFields.DATE_TO, new DateTime(dateFrom.toDate()).minusDays(1).toDate());
+            Entity savedPrevious = dataDefinition.save(previousComponent);
+            if (!savedPrevious.isValid()) {
+                savedPrevious.getErrors().forEach((key, value) -> entity.addGlobalError(value.getMessage()));
             }
         }
 
