@@ -77,7 +77,7 @@ public class PricesListDetailsHooks {
         }
         FieldComponent dateToField = (FieldComponent) view.getComponentByReference(PricesListFields.DATE_TO);
         FieldComponent priceField = (FieldComponent) view.getComponentByReference(PricesListFields.PRICE);
-        priceField.setEnabled(dateToField.getFieldValue() == null || dateToField.getFieldValue() == "");
+        priceField.setEnabled(dateToField.getFieldValue() == null || "".equals(dateToField.getFieldValue()));
     }
 
     private void setFilters(LookupComponent attribute1ValueLookup, LookupComponent attribute2ValueLookup,
