@@ -97,7 +97,7 @@ public class PieceRateItemHooks {
         return Optional.of(previousComponents.get(0));
     }
 
-    public boolean checkIfRateForGivenTimeExists(final Entity pieceRateItem) {
+    private boolean checkIfRateForGivenTimeExists(final Entity pieceRateItem) {
         Entity pieceRate = pieceRateItem.getBelongsToField(PieceRateItemFields.PIECE_RATE);
 
         Date dateFrom = pieceRateItem.getDateField(PieceRateItemFields.DATE_FROM);

@@ -154,7 +154,7 @@ public class TrackingOperationProductComponentDetailsListeners {
                     PossibleUnitConversions unitConversions = unitConversionService.getPossibleConversions(givenUnit, searchCriteriaBuilder -> searchCriteriaBuilder.add(SearchRestrictions.belongsTo(UnitConversionItemFieldsB.PRODUCT, product)));
 
                     if (unitConversions.isDefinedFor(baseUnit)) {
-                        BigDecimal convertedQuantity = unitConversions.convertTo(givenQuantity, baseUnit, BigDecimal.ROUND_FLOOR);
+                        BigDecimal convertedQuantity = unitConversions.convertTo(givenQuantity, baseUnit);
 
                         trackingOperationProductComponent.setField(TrackingOperationProductInComponentFields.USED_QUANTITY, convertedQuantity);
                     } else {

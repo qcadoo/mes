@@ -23,24 +23,28 @@
  */
 package com.qcadoo.mes.masterOrders.constants;
 
-public final class ParameterFieldsMO {
+public final class PricesListFields {
 
-    private ParameterFieldsMO() {
+    private PricesListFields() {
 
     }
 
-    public static final String COPY_DESCRIPTION = "copyDescription";
+    public static final String DATE_FROM = "dateFrom";
 
-    public static final String SAME_ORDER_NUMBER = "sameOrderNumber";
+    public static final String DATE_TO = "dateTo";
 
-    public static final String ADDITIONAL_IMAGE = "additionalImage";
+    public static final String PRODUCT = "product";
 
-    public static final String COMPLETE_MASTER_ORDER_AFTER_ORDERING_POSITIONS = "completeMasterOrderAfterOrderingPositions";
+    public static final String PRODUCT_CATEGORY = "productCategory";
 
-    public static final String ALLOW_MASTER_ORDER_DEADLINE_CHANGE = "allowMasterOrderDeadlineChange";
+    public static final String ATTRIBUTE_1_VALUE = "attribute1Value";
 
-    public static final String PRICE_LIST_ATTRIBUTE_1 = "priceListAttribute1";
+    public static final String ATTRIBUTE_2_VALUE = "attribute2Value";
 
-    public static final String PRICE_LIST_ATTRIBUTE_2 = "priceListAttribute2";
+    public static final String VALUE_1 = "value1";
+
+    public static final String VALUE_2 = "value2";
+
+    public static final String PRICE = "price";
 
 }

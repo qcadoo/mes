@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    ***************************************************************************
+    Copyright (c) 2010 Qcadoo Limited
+    Project: Qcadoo MES
+    Version: 1.4
+
+    This file is part of Qcadoo.
+
+    Qcadoo is free software; you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as published
+    by the Free Software Foundation; either version 3 of the License,
+    or (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty
+    of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+    See the GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+    ***************************************************************************
+
+-->
+<view defaultAuthorizationRole="ROLE_PLANNING" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns="http://schema.qcadoo.org/view"
+      xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
+      name="pricesListDetails" modelName="pricesList">
+
+    <component type="window" name="window" reference="window">
+
+        <ribbon>
+            <template name="standardFormTemplate" excludeItems="actions.copy"/>
+        </ribbon>
+
+        <windowTab name="mainTab">
+            <component type="form" name="pricesList" reference="form">
+                <component type="gridLayout" name="gridLayout" columns="16"
+                           rows="7" hasBorders="false">
+                    <layoutElement column="1" row="1" width="10">
+                        <component type="lookup" name="product" reference="product"
+                                   field="product">
+                            <option type="column" name="name" fields="name" link="true"/>
+
+                            <option type="searchable" value="name,number"/>
+                            <option type="orderable" value="name,number"/>
+
+                            <option type="expression"
+                                    value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name"/>
+                            <option type="fieldCode" value="number"/>
+
+                            <listener event="onSelectedEntityChange"
+                                      class="com.qcadoo.mes.masterOrders.listeners.PricesListDetailsListeners"
+                                      method="onChangeProduct"/>
+                        </component>
+                    </layoutElement>
+                    <layoutElement column="1" row="2" width="10">
+                        <component type="select" name="productCategory" field="productCategory"
+                                   reference="productCategory"/>
+                    </layoutElement>
+                    <layoutElement column="1" row="3" width="9">
+                        <component type="lookup" name="attribute1Value" reference="attribute1Value"
+                                   field="attribute1Value" defaultVisible="false">
+
+                            <option type="column" name="description" fields="description" link="true"
+                                    width="300"/>
+
+                            <option type="searchable" value="value,description"/>
+                            <option type="orderable" value="value,description"/>
+
+                            <option type="expression"
+                                    value="'&lt;b&gt;' + #value"/>
+                            <option type="fieldCode" value="value"/>
+                            <option type="labelWidth" value="33"/>
+
+                            <listener event="onSelectedEntityChange"
+                                      class="com.qcadoo.mes.masterOrders.listeners.PricesListDetailsListeners"
+                                      method="onChangeAttribute1Value"/>
+
+                            <criteriaModifier
+                                    class="com.qcadoo.mes.masterOrders.criteriaModifier.PricesListAttributeValueCriteriaModifiers"
+                                    method="filter1"/>
+
+                        </component>
+                        <component type="input" name="value1" field="value1" reference="value1"
+                                   defaultVisible="false">
+                            <option type="labelWidth" value="33"/>
+                        </component>
+                    </layoutElement>
+                    <layoutElement column="10" row="3">
+                        <component type="input" name="unit1" reference="unit1"
+                                   defaultEnabled="false" hasLabel="false">
+                            <option type="alignment" value="right"/>
+                            <option type="textRepresentationOnDisabled" value="true"/>
+                        </component>
+                    </layoutElement>
+                    <layoutElement column="1" row="4" width="9">
+                        <component type="lookup" name="attribute2Value" reference="attribute2Value"
+                                   field="attribute2Value" defaultVisible="false">
+
+                            <option type="column" name="description" fields="description" link="true"
+                                    width="300"/>
+
+                            <option type="searchable" value="value,description"/>
+                            <option type="orderable" value="value,description"/>
+
+                            <option type="expression"
+                                    value="'&lt;b&gt;' + #value"/>
+                            <option type="fieldCode" value="value"/>
+                            <option type="labelWidth" value="33"/>
+
+                            <listener event="onSelectedEntityChange"
+                                      class="com.qcadoo.mes.masterOrders.listeners.PricesListDetailsListeners"
+                                      method="onChangeAttribute2Value"/>
+
+                            <criteriaModifier
+                                    class="com.qcadoo.mes.masterOrders.criteriaModifier.PricesListAttributeValueCriteriaModifiers"
+                                    method="filter2"/>
+
+                        </component>
+                        <component type="input" name="value2" field="value2" reference="value2"
+                                   defaultVisible="false">
+                            <option type="labelWidth" value="33"/>
+                        </component>
+                    </layoutElement>
+                    <layoutElement column="10" row="4">
+                        <component type="input" name="unit2" reference="unit2"
+                                   defaultEnabled="false" hasLabel="false">
+                            <option type="alignment" value="right"/>
+                            <option type="textRepresentationOnDisabled" value="true"/>
+                        </component>
+                    </layoutElement>
+                    <layoutElement column="1" row="5" width="10">
+                        <component type="input" name="price" reference="price"
+                                   field="price">
+                            <option type="alignment" value="right"/>
+                        </component>
+                    </layoutElement>
+                    <layoutElement column="1" row="6" width="10">
+                        <component type="calendar" name="dateFrom" field="dateFrom"
+                                   reference="dateFrom">
+                            <option type="withTimePicker" value="false"/>
+                        </component>
+                    </layoutElement>
+                    <layoutElement column="1" row="7" width="10">
+                        <component type="calendar" name="dateTo" field="dateTo"
+                                   reference="dateTo" defaultEnabled="never">
+                            <option type="withTimePicker" value="false"/>
+                        </component>
+                    </layoutElement>
+                </component>
+
+                <option type="header" value="true"/>
+                <option type="expression" value="(#product == null ? '' : #product['number']) + (#productCategory == null ? '' : ' ' + #productCategory)"/>
+            </component>
+        </windowTab>
+
+    </component>
+
+    <hooks>
+        <beforeRender class="com.qcadoo.mes.masterOrders.hooks.PricesListDetailsHooks"
+                      method="onBeforeRender"/>
+    </hooks>
+
+</view>

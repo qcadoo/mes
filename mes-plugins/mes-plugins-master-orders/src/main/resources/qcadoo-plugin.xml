@@ -108,6 +108,7 @@
 
         <model:model model="orderedProductConfigurator" resource="model/orderedProductConfigurator.xml"/>
         <model:model model="orderedProductConfiguratorAttribute" resource="model/orderedProductConfiguratorAttribute.xml"/>
+        <model:model model="pricesList" resource="model/pricesList.xml"/>
 
         <model:dictionary name="masterOrderState"/>
         <model:dictionary name="masterOrderPositionStatus"/>
@@ -127,6 +128,10 @@
 
         <model:model-field plugin="basic" model="product">
             <model:hasMany name="salesPlanMaterialRequirementProducts" model="salesPlanMaterialRequirementProduct" plugin="masterOrders" joinField="product"/>
+        </model:model-field>
+
+        <model:model-field plugin="basic" model="product">
+            <model:hasMany name="pricesLists" model="pricesList" plugin="masterOrders" joinField="product"/>
         </model:model-field>
 
         <model:model-field plugin="basic" model="sizeGroup">
@@ -190,6 +195,16 @@
         <model:model-field plugin="basic" model="attribute">
             <model:hasMany name="priceListAttributes2" plugin="basic" model="parameter"
                            joinField="priceListAttribute2"/>
+        </model:model-field>
+
+        <model:model-field plugin="basic" model="attributeValue">
+            <model:hasMany name="pricesLists1" plugin="masterOrders" joinField="attribute1Value"
+                           model="pricesList"/>
+        </model:model-field>
+
+        <model:model-field plugin="basic" model="attributeValue">
+            <model:hasMany name="pricesLists2" plugin="masterOrders" joinField="attribute2Value"
+                           model="pricesList"/>
         </model:model-field>
 
         <model:model-field plugin="materialFlowResources" model="documentPositionParameters">
@@ -315,6 +330,11 @@
                                  method="validatesWith"/>
         </model:model-hook>
 
+        <model:model-hook model="parameter" plugin="basic">
+            <model:validatesWith class="com.qcadoo.mes.masterOrders.validators.ParameterValidatorsMO"
+                                 method="onValidate"/>
+        </model:model-hook>
+
         <model:model-enum-value plugin="basic" model="log" enum="logType" value="masterOrderImport"/>
 
         <menu:menu-category name="sales" defaultAuthorizationRole="ROLE_PLANNING_MENU"/>
@@ -337,6 +357,9 @@
         <menu:menu-item name="salesVolumesList"
                         category="materialFlow" view="salesVolumesList"
                         defaultAuthorizationRole="ROLE_PLANNING"/>
+
+        <menu:menu-item name="pricesListsList" category="sales"
+                        view="pricesListsList" defaultAuthorizationRole="ROLE_PLANNING"/>
 
         <menu:menu-item name="orderedProductConfiguratorsList"
                         category="products" view="orderedProductConfiguratorsList"
@@ -388,6 +411,8 @@
         <view:view resource="view/salesVolumesList.xml"/>
         <view:view resource="view/salesVolumeDetails.xml"/>
         <view:view resource="view/salesVolumeAddMulti.xml"/>
+        <view:view resource="view/pricesListsList.xml"/>
+        <view:view resource="view/pricesListDetails.xml"/>
 
         <view:view resource="view/orderedProductConfiguratorsList.xml"/>
         <view:view resource="view/orderedProductConfiguratorDetails.xml"/>

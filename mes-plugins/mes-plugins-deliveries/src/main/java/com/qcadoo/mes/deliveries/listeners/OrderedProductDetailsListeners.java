@@ -127,11 +127,13 @@ public class OrderedProductDetailsListeners {
         orderedProductDetailsHooks.fillCurrencyFields(view);
     }
 
-    public void calculatePriceFromTotalPrice(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+    public void calculatePriceFromTotalPrice(final ViewDefinitionState view, final ComponentState state,
+                                             final String[] args) {
         deliveriesService.recalculatePriceFromTotalPrice(view, OrderedProductFields.ORDERED_QUANTITY);
     }
 
-    public void calculatePriceFromPricePerUnit(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+    public void calculatePriceFromPricePerUnit(final ViewDefinitionState view, final ComponentState state,
+                                               final String[] args) {
         deliveriesService.recalculatePriceFromPricePerUnit(view, OrderedProductFields.ORDERED_QUANTITY);
     }
 
@@ -166,8 +168,8 @@ public class OrderedProductDetailsListeners {
     }
 
     private boolean decimalFieldsInvalid(final FormComponent formComponent) {
-        String[] fieldNames = { OrderedProductFields.ADDITIONAL_QUANTITY, OrderedProductFields.CONVERSION,
-                OrderedProductFields.ORDERED_QUANTITY };
+        String[] fieldNames = {OrderedProductFields.ADDITIONAL_QUANTITY, OrderedProductFields.CONVERSION,
+                OrderedProductFields.ORDERED_QUANTITY};
 
         boolean valid = false;
 
@@ -189,7 +191,8 @@ public class OrderedProductDetailsListeners {
         return valid;
     }
 
-    public void additionalQuantityChange(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+    public void additionalQuantityChange(final ViewDefinitionState view, final ComponentState state,
+                                         final String[] args) {
         FormComponent orderedProductForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         Entity orderedProduct = orderedProductForm.getEntity();
 
@@ -199,14 +202,19 @@ public class OrderedProductDetailsListeners {
             return;
         }
 
-        BigDecimal conversion = orderedProduct.getDecimalField(OrderedProductFields.CONVERSION);
         BigDecimal additionalQuantity = orderedProduct.getDecimalField(OrderedProductFields.ADDITIONAL_QUANTITY);
 
-        if (Objects.nonNull(conversion) && Objects.nonNull(additionalQuantity)) {
+        if (Objects.nonNull(additionalQuantity)) {
             String orderedQuantityUnit = product.getStringField(ProductFields.UNIT);
+            String additionalQuantityUnit = Optional.ofNullable(product.getStringField(ProductFields.ADDITIONAL_UNIT)).orElse(
+                    product.getStringField(ProductFields.UNIT));
 
-            BigDecimal newOrderedQuantity = calculationQuantityService.calculateQuantity(additionalQuantity, conversion,
-                    orderedQuantityUnit);
+            PossibleUnitConversions unitConversions = unitConversionService.getPossibleConversions(additionalQuantityUnit, searchCriteriaBuilder -> searchCriteriaBuilder.add(SearchRestrictions.belongsTo(UnitConversionItemFieldsB.PRODUCT, product)));
+
+            BigDecimal newOrderedQuantity = null;
+            if (unitConversions.isDefinedFor(orderedQuantityUnit)) {
+                newOrderedQuantity = unitConversions.convertTo(additionalQuantity, orderedQuantityUnit);
+            }
 
             FieldComponent orderedQuantityField = (FieldComponent) view
                     .getComponentByReference(OrderedProductFields.ORDERED_QUANTITY);
@@ -218,7 +226,8 @@ public class OrderedProductDetailsListeners {
         }
     }
 
-    public void setBatchLookupProductFilterValue(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+    public void setBatchLookupProductFilterValue(final ViewDefinitionState view, final ComponentState state,
+                                                 final String[] args) {
         FormComponent orderedProductForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
         Entity orderedProduct = orderedProductForm.getPersistedEntityWithIncludedFormValues();
@@ -237,7 +246,7 @@ public class OrderedProductDetailsListeners {
                     .add(SearchRestrictions.eq(QualityCardFields.STATE, "02accepted"))
                     .createAlias(QualityCardFields.PRODUCTS, QualityCardFields.PRODUCTS, JoinType.INNER)
                     .add(SearchRestrictions.eq(QualityCardFields.PRODUCTS + ".id", product.getId())).list().getEntities();
-            if(entities.size() == 1) {
+            if (entities.size() == 1) {
                 qualityCardLookup.setFieldValue(entities.get(0).getId());
             } else {
                 qualityCardLookup.setFieldValue(null);

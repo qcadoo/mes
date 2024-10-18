@@ -85,12 +85,12 @@ public class TechnologicalProcessRateItemHooks {
 
     private Optional<Entity> findPreviousTechnologicalProcessRateItem(final Entity technologicalProcessRateItem) {
         Entity technologicalProcessRate = technologicalProcessRateItem.getBelongsToField("technologicalProcessRate");
-        Date dateFrom = technologicalProcessRateItem.getDateField("dateFrom");
+        Date dateFrom = technologicalProcessRateItem.getDateField(L_DATE_FROM);
         SearchCriteriaBuilder scb = dataDefinitionService
                 .get(BasicConstants.PLUGIN_IDENTIFIER, "technologicalProcessRateItem")
-                .find().addOrder(SearchOrders.desc("dateFrom"))
+                .find().addOrder(SearchOrders.desc(L_DATE_FROM))
                 .add(SearchRestrictions.belongsTo("technologicalProcessRate", technologicalProcessRate))
-                .add(SearchRestrictions.lt("dateFrom", dateFrom));
+                .add(SearchRestrictions.lt(L_DATE_FROM, dateFrom));
 
         if (technologicalProcessRateItem.getId() != null) {
             scb.add(SearchRestrictions.idNe(technologicalProcessRateItem.getId()));
@@ -103,7 +103,7 @@ public class TechnologicalProcessRateItemHooks {
         return Optional.of(previousComponents.get(0));
     }
 
-    public boolean checkIfRateForGivenTimeExists(final Entity technologicalProcessRateItem) {
+    private boolean checkIfRateForGivenTimeExists(final Entity technologicalProcessRateItem) {
 
         Entity technologicalProcessRate = technologicalProcessRateItem.getBelongsToField("technologicalProcessRate");
 
@@ -134,8 +134,8 @@ public class TechnologicalProcessRateItemHooks {
             return true;
         }
         Entity dbEntity = dataDefinition.get(originalEntity.getId());
-        Date originalDateFrom = originalEntity.getDateField("dateFrom");
-        Date dbDateFrom = dbEntity.getDateField("dateFrom");
+        Date originalDateFrom = originalEntity.getDateField(L_DATE_FROM);
+        Date dbDateFrom = dbEntity.getDateField(L_DATE_FROM);
         return originalDateFrom.compareTo(dbDateFrom) != 0;
     }
 }
