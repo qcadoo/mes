@@ -457,8 +457,7 @@ public class OrderStatesListenerServicePFTD {
         }
 
         Multimap<Long, Entity> groupedRecordOutProducts = productionTrackingDocumentsHelper
-                .fillFromBPCProductOut(trackingOperationProductOutComponents, order, null, true, false, true);
-
+                .groupAndFilterOutProducts(order, trackingOperationProductOutComponents);
         for (Long warehouseId : groupedRecordOutProducts.keySet()) {
             Entity locationTo = getLocationDD().get(warehouseId);
 

@@ -134,8 +134,6 @@ public final class ProductionTrackingListenerServicePFTD {
                 .fillFromBPCProductOut(trackingOperationProductOutComponents, order, technologyOperationComponent, false, true, false);
         List<Entity> trackingOperationProductInComponents = productionTracking
                 .getHasManyField(ProductionTrackingFields.TRACKING_OPERATION_PRODUCT_IN_COMPONENTS);
-        Multimap<Long, Entity> groupedRecordInProducts = productionTrackingDocumentsHelper
-                .fillFromBPCProductIn(trackingOperationProductInComponents, order, technologyOperationComponent, true, true);
         Multimap<Long, Entity> groupedRecordInComponents = productionTrackingDocumentsHelper
                 .fillFromBPCProductIn(trackingOperationProductInComponents, order, technologyOperationComponent, true, false);
         Multimap<Long, Entity> groupedRecordInIntermediates = productionTrackingDocumentsHelper
@@ -148,7 +146,7 @@ public final class ProductionTrackingListenerServicePFTD {
 
         if (TypeOfProductionRecording.CUMULATED.getStringValue().equals(
                 order.getStringField(OrderFieldsPC.TYPE_OF_PRODUCTION_RECORDING))) {
-            List<Long> productIds = groupedRecordInProducts.values().stream().map(topic -> topic.getBelongsToField(TrackingOperationProductInComponentFields.PRODUCT).getId()).collect(Collectors.toList());
+            List<Long> productIds = groupedRecordInComponents.values().stream().map(topic -> topic.getBelongsToField(TrackingOperationProductInComponentFields.PRODUCT).getId()).collect(Collectors.toList());
             Set<Long> duplicatedProducts = productIds.stream()
                     .filter(i -> Collections.frequency(productIds, i) > 1)
                     .collect(Collectors.toSet());
