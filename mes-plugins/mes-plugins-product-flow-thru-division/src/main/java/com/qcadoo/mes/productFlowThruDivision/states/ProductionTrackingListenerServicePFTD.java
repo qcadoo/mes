@@ -161,15 +161,24 @@ public final class ProductionTrackingListenerServicePFTD {
             }
         }
 
-        if (!groupedRecordInProducts.isEmpty() && (ReleaseOfMaterials.ON_ACCEPTANCE_REGISTRATION_RECORD.getStringValue()
-                .equals(releaseOfMaterials) || ReleaseOfMaterials.END_OF_THE_ORDER.getStringValue()
-                .equals(releaseOfMaterials) && orderClosingHelper.orderShouldBeClosedWithRecalculate(productionTracking)) &&
-                !productionCountingDocumentService.checkIfProductsAvailableInStock(productionTracking, groupedRecordInProducts)) {
+        boolean releaseOnAcceptanceRegistrationRecord = ReleaseOfMaterials.ON_ACCEPTANCE_REGISTRATION_RECORD.getStringValue()
+                .equals(releaseOfMaterials);
+        boolean releaseOnEndOfTheOrder = ReleaseOfMaterials.END_OF_THE_ORDER.getStringValue()
+                .equals(releaseOfMaterials);
+        if (!groupedRecordInComponents.isEmpty() && (releaseOnAcceptanceRegistrationRecord || releaseOnEndOfTheOrder
+                && orderClosingHelper.orderShouldBeClosedWithRecalculate(productionTracking))
+                && !productionCountingDocumentService.checkIfProductsAvailableInStock(productionTracking, groupedRecordInComponents)) {
+            return;
+        }
+
+        if (!groupedRecordInIntermediates.isEmpty() && (releaseOnAcceptanceRegistrationRecord || releaseOnEndOfTheOrder)
+                && !productionCountingDocumentService.checkIfProductsAvailableInStock(productionTracking, groupedRecordInIntermediates)) {
             return;
         }
 
         if ((Objects.isNull(order.getDecimalField(DONE_QUANTITY)) || (Objects.nonNull(order.getDecimalField(DONE_QUANTITY)) && order.getDecimalField(DONE_QUANTITY).compareTo(BigDecimal.ZERO) == 0))
-                && trackingOperationProductOutComponents.stream().allMatch(p -> Objects.isNull(p.getDecimalField(TrackingOperationProductOutComponentFields.USED_QUANTITY)) || p.getDecimalField(TrackingOperationProductOutComponentFields.USED_QUANTITY).compareTo(BigDecimal.ZERO) == 0)
+                && trackingOperationProductOutComponents.stream().allMatch(p -> Objects.isNull(p.getDecimalField(TrackingOperationProductOutComponentFields.USED_QUANTITY))
+                || p.getDecimalField(TrackingOperationProductOutComponentFields.USED_QUANTITY).compareTo(BigDecimal.ZERO) == 0)
                 && orderClosingHelper.orderShouldBeClosedWithRecalculate(productionTracking)) {
             productionTracking.addGlobalError("orders.order.orderStates.doneQuantityMustBeGreaterThanZero", false);
             productionTracking.addGlobalError("productionCounting.order.orderCannotBeClosed", false);
@@ -194,8 +203,7 @@ public final class ProductionTrackingListenerServicePFTD {
             TransactionAspectSupport.currentTransactionStatus().flush();
         }
 
-        if (ReleaseOfMaterials.ON_ACCEPTANCE_REGISTRATION_RECORD.getStringValue()
-                .equals(releaseOfMaterials)) {
+        if (releaseOnAcceptanceRegistrationRecord) {
             boolean errorsDisplayed = createInternalOutboundDocument(productionTracking, groupedRecordInComponents, order);
 
             if (errorsDisplayed) {
@@ -206,8 +214,7 @@ public final class ProductionTrackingListenerServicePFTD {
             }
         }
 
-        if (ReleaseOfMaterials.ON_ACCEPTANCE_REGISTRATION_RECORD.getStringValue()
-                .equals(releaseOfMaterials) || ReleaseOfMaterials.END_OF_THE_ORDER.getStringValue().equals(releaseOfMaterials)) {
+        if (releaseOnAcceptanceRegistrationRecord || releaseOnEndOfTheOrder) {
             createInternalOutboundDocument(productionTracking, groupedRecordInIntermediates, order);
         }
     }

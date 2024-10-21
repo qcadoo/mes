@@ -202,7 +202,7 @@ public class ProductionCountingDocumentService {
 
                     BigDecimal availableQuantity = batchQuantities.values().stream().reduce(BigDecimal.ZERO, BigDecimal::add);
 
-                    if (Objects.isNull(availableQuantity) || quantity.compareTo(availableQuantity) > 0) {
+                    if (quantity.compareTo(availableQuantity) > 0) {
                         errorProducts.add(product.getStringField(ProductFields.NUMBER));
                     }
                 } else {
