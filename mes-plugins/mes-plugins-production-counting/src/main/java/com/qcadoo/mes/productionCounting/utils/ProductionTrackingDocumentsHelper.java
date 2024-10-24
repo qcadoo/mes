@@ -312,28 +312,6 @@ public class ProductionTrackingDocumentsHelper {
         return warehouse;
     }
 
-    public Multimap<Long, Entity> getFromPCQProductOutWithoutIntermediates(final Entity order,
-                                                                           Multimap<Long, Entity> groupedRecordOutFinalProducts) {
-        List<Entity> productionCountingQuantities = getProductionCountingQuantityDD().find()
-                .add(SearchRestrictions.belongsTo(ProductionCountingQuantityFields.ORDER, order)).add(SearchRestrictions
-                        .eq(ProductionCountingQuantityFields.ROLE, ProductionCountingQuantityRole.PRODUCED.getStringValue())).list().getEntities();
-
-        for (Entity productionCountingQuantity : productionCountingQuantities) {
-            Entity warehouse = getWarehouseForOutProducts(productionCountingQuantity, true, false, true);
-
-            if (Objects.isNull(warehouse)) {
-                continue;
-            }
-
-            BigDecimal producedQuantity = productionCountingQuantity.getDecimalField(ProductionCountingQuantityFields.PRODUCED_QUANTITY);
-            if (Objects.nonNull(producedQuantity) && BigDecimal.ZERO.compareTo(producedQuantity) < 0) {
-                groupedRecordOutFinalProducts.put(warehouse.getId(), productionCountingQuantity);
-            }
-        }
-
-        return groupedRecordOutFinalProducts;
-    }
-
     public Entity findProductionRecordByProduct(final List<Entity> trackingOperationProductComponents,
                                                 final Entity product) {
         return trackingOperationProductComponents.stream().filter(trackingOperationProductComponent -> {

@@ -699,10 +699,6 @@ public class ProductionCountingDocumentService {
         return trackingOperationProductOutComponent.getStringField(TrackingOperationProductOutComponentFields.TYPE_OF_MATERIAL).equals(ProductionCountingQuantityTypeOfMaterial.WASTE.getStringValue());
     }
 
-    public static boolean isIntermediateForOrder(final Entity trackingOperationProductOutComponent) {
-        return trackingOperationProductOutComponent.getStringField(TrackingOperationProductOutComponentFields.TYPE_OF_MATERIAL).equals(ProductionCountingQuantityTypeOfMaterial.INTERMEDIATE.getStringValue());
-    }
-
     private DataDefinition getProductionTrackingDD() {
         return dataDefinitionService
                 .get(ProductionCountingConstants.PLUGIN_IDENTIFIER, ProductionCountingConstants.MODEL_PRODUCTION_TRACKING);
