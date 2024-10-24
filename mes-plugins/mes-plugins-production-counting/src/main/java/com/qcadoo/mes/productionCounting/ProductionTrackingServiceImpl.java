@@ -23,22 +23,9 @@
  */
 package com.qcadoo.mes.productionCounting;
 
-import java.math.BigDecimal;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.stream.Collectors;
-
-import com.qcadoo.mes.basic.ParameterService;
-import com.qcadoo.mes.basic.constants.ParameterFields;
-import com.qcadoo.mes.productionCounting.constants.*;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.google.common.collect.Lists;
 import com.qcadoo.commons.functional.Either;
+import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.basic.util.ProductUnitsConversionService;
 import com.qcadoo.mes.basicProductionCounting.BasicProductionCountingService;
@@ -46,18 +33,12 @@ import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuanti
 import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityRole;
 import com.qcadoo.mes.newstates.StateExecutorService;
 import com.qcadoo.mes.orders.constants.OrderFields;
+import com.qcadoo.mes.productionCounting.constants.*;
 import com.qcadoo.mes.productionCounting.newstates.ProductionTrackingStateServiceMarker;
 import com.qcadoo.mes.productionCounting.states.constants.ProductionTrackingState;
 import com.qcadoo.mes.productionCounting.states.constants.ProductionTrackingStateStringValues;
 import com.qcadoo.mes.productionCounting.states.listener.ProductionTrackingListenerService;
-import com.qcadoo.mes.states.service.StateChangeContextBuilder;
-import com.qcadoo.mes.technologies.TechnologyService;
-import com.qcadoo.model.api.BigDecimalUtils;
-import com.qcadoo.model.api.DataDefinition;
-import com.qcadoo.model.api.DataDefinitionService;
-import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.EntityList;
-import com.qcadoo.model.api.NumberService;
+import com.qcadoo.model.api.*;
 import com.qcadoo.model.api.search.JoinType;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
@@ -68,6 +49,16 @@ import com.qcadoo.view.api.components.LookupComponent;
 import com.qcadoo.view.api.components.WindowComponent;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.constants.QcadooViewConstants;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
+import java.util.Date;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class ProductionTrackingServiceImpl implements ProductionTrackingService {
@@ -86,9 +77,6 @@ public class ProductionTrackingServiceImpl implements ProductionTrackingService 
     private DataDefinitionService dataDefinitionService;
 
     @Autowired
-    private StateChangeContextBuilder stateChangeContextBuilder;
-
-    @Autowired
     private StateExecutorService stateExecutorService;
 
     @Autowired
@@ -96,9 +84,6 @@ public class ProductionTrackingServiceImpl implements ProductionTrackingService 
 
     @Autowired
     private ProductUnitsConversionService productUnitsConversionService;
-
-    @Autowired
-    private TechnologyService technologyService;
 
     @Autowired
     private BasicProductionCountingService basicProductionCountingService;
@@ -208,7 +193,8 @@ public class ProductionTrackingServiceImpl implements ProductionTrackingService 
         copyTrackingOperationProductOutComponents(productionTracking, correctingProductionTracking);
     }
 
-    private void copyTrackingOperationProductOutComponents(Entity productionTracking, Entity correctingProductionTracking) {
+    private void copyTrackingOperationProductOutComponents(Entity productionTracking,
+                                                           Entity correctingProductionTracking) {
         EntityList trackingOperationProductOutComponents = productionTracking
                 .getHasManyField(ProductionTrackingFields.TRACKING_OPERATION_PRODUCT_OUT_COMPONENTS);
         List<Entity> copiedTrackingOperationProductOutComponents = Lists.newArrayList();
@@ -222,6 +208,17 @@ public class ProductionTrackingServiceImpl implements ProductionTrackingService 
                 copiedLacks.add(l.getDataDefinition().copy(l.getId()).get(0));
             });
             operationProductOutComponent.setField(TrackingOperationProductOutComponentFields.LACKS, copiedLacks);
+            List<Entity> copiedProdOutResourceAttrVals = Lists.newArrayList();
+            t.getHasManyField(TrackingOperationProductOutComponentFields.PROD_OUT_RESOURCE_ATTR_VALS).forEach(p -> {
+                Entity resourceAttributeEntity = getProdOutResourceAttrValDD().create();
+
+                resourceAttributeEntity.setField(ProdOutResourceAttrValFields.ATTRIBUTE, p.getBelongsToField(ProdOutResourceAttrValFields.ATTRIBUTE));
+                resourceAttributeEntity.setField(ProdOutResourceAttrValFields.VALUE, p.getStringField(ProdOutResourceAttrValFields.VALUE));
+                resourceAttributeEntity.setField(ProdOutResourceAttrValFields.ATTRIBUTE_VALUE,
+                        p.getBelongsToField(ProdOutResourceAttrValFields.ATTRIBUTE_VALUE));
+                copiedProdOutResourceAttrVals.add(resourceAttributeEntity);
+            });
+            operationProductOutComponent.setField(TrackingOperationProductOutComponentFields.PROD_OUT_RESOURCE_ATTR_VALS, copiedProdOutResourceAttrVals);
             copiedTrackingOperationProductOutComponents.add(operationProductOutComponent);
         });
         correctingProductionTracking.setField(ProductionTrackingFields.TRACKING_OPERATION_PRODUCT_OUT_COMPONENTS,
@@ -251,7 +248,8 @@ public class ProductionTrackingServiceImpl implements ProductionTrackingService 
                 productionTracking.getField(ProductionTrackingFields.LABOR_TIME));
     }
 
-    private void copyTrackingOperationProductInComponents(Entity productionTracking, Entity correctingProductionTracking) {
+    private void copyTrackingOperationProductInComponents(Entity productionTracking,
+                                                          Entity correctingProductionTracking) {
         EntityList trackingOperationProductInComponents = productionTracking
                 .getHasManyField(ProductionTrackingFields.TRACKING_OPERATION_PRODUCT_IN_COMPONENTS);
         List<Entity> copiedTrackingOperationProductInComponents = Lists.newArrayList();
@@ -284,13 +282,13 @@ public class ProductionTrackingServiceImpl implements ProductionTrackingService 
         if (correctedProductionTracking != null) {
             correctedProductionTracking.setField(ProductionTrackingFields.CORRECTION, null);
             correctedProductionTracking.setField(ProductionTrackingFields.ON_UNCORRECTION_PROCESS, true);
-            if(parameterService.getParameter().getBooleanField(ParameterFieldsPC.JUST_ONE)) {
+            if (parameterService.getParameter().getBooleanField(ParameterFieldsPC.JUST_ONE)) {
                 correctedProductionTracking.setField(ProductionTrackingFields.LAST_TRACKING, true);
             }
             changeState(correctedProductionTracking, ProductionTrackingState.ACCEPTED);
             correctingProductionTracking.setField(ProductionTrackingFields.IS_CORRECTION, false);
             correctingProductionTracking = correctingProductionTracking.getDataDefinition().save(correctingProductionTracking);
-            if(updateOrderReportedQuantity) {
+            if (updateOrderReportedQuantity) {
                 productionTrackingListenerService.updateOrderReportedQuantityAfterRemoveCorrection(correctedProductionTracking);
             }
         }
@@ -382,7 +380,8 @@ public class ProductionTrackingServiceImpl implements ProductionTrackingService 
     }
 
     @Override
-    public BigDecimal getTrackedQuantity(Entity trackingOperationProductOutComponent, List<Entity> trackings, boolean useTracking) {
+    public BigDecimal getTrackedQuantity(Entity trackingOperationProductOutComponent, List<Entity> trackings,
+                                         boolean useTracking) {
         BigDecimal trackedQuantity = BigDecimal.ZERO;
 
         for (Entity trackingProduct : trackings) {
@@ -419,5 +418,10 @@ public class ProductionTrackingServiceImpl implements ProductionTrackingService 
         }
 
         return scb.list().getEntities();
+    }
+
+    private DataDefinition getProdOutResourceAttrValDD() {
+        return dataDefinitionService.get(ProductionCountingConstants.PLUGIN_IDENTIFIER,
+                ProductionCountingConstants.MODEL_PROD_OUT_RESOURCE_ATTR_VAL);
     }
 }

@@ -33,7 +33,7 @@
         <belongsTo name="product" model="product" plugin="basic" required="true"/>
         <decimal name="plannedQuantity" persistent="false"/>
         <decimal name="usedQuantity">
-            <validatesRange from="0" exclusively="false"/>
+            <validatesRange from="0"/>
             <validatesUnscaledValue max="9"/>
             <validatesScale max="5"/>
         </decimal>
@@ -43,7 +43,7 @@
         </decimal>
 
         <decimal name="givenQuantity">
-            <validatesRange from="0" exclusively="false"/>
+            <validatesRange from="0"/>
             <validatesUnscaledValue max="9"/>
             <validatesScale max="5"/>
         </decimal>
@@ -52,7 +52,7 @@
         <decimal name="remainingQuantity" persistent="false"/>
 
         <decimal name="wastesQuantity">
-            <validatesRange from="0" exclusively="false"/>
+            <validatesRange from="0"/>
             <validatesUnscaledValue max="9"/>
             <validatesScale max="5"/>
         </decimal>
@@ -70,7 +70,7 @@
         <dictionary name="causeOfWastes" dictionary="causesOfWastes"/>
         <boolean name="manyReasonsForLacks" default="false"/>
         <hasMany name="lacks" joinField="trackingOperationProductOutComponent" model="lack" cascade="delete"/>
-        <hasMany name="lacksDto" joinField="trackingOperationProductOutComponent" model="lackDto" copyable="false" persistent="false"/>
+        <hasMany name="lacksDto" joinField="trackingOperationProductOutComponent" model="lackDto" persistent="false"/>
     </fields>
 
     <hooks>
