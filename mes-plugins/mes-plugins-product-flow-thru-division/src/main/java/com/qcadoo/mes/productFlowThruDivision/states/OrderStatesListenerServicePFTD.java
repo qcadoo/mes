@@ -36,10 +36,7 @@ import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuanti
 import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityRole;
 import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityTypeOfMaterial;
 import com.qcadoo.mes.materialFlow.constants.MaterialFlowConstants;
-import com.qcadoo.mes.materialFlowResources.constants.DocumentFields;
-import com.qcadoo.mes.materialFlowResources.constants.DocumentState;
-import com.qcadoo.mes.materialFlowResources.constants.MaterialFlowResourcesConstants;
-import com.qcadoo.mes.materialFlowResources.constants.PositionFields;
+import com.qcadoo.mes.materialFlowResources.constants.*;
 import com.qcadoo.mes.materialFlowResources.service.DocumentBuilder;
 import com.qcadoo.mes.materialFlowResources.service.DocumentManagementService;
 import com.qcadoo.mes.materialFlowResources.service.DocumentStateChangeService;
@@ -141,7 +138,6 @@ public class OrderStatesListenerServicePFTD {
         }
     }
 
-    @Transactional
     private Either<String, Void> tryAcceptInboundDocumentsFor(final Entity order) {
         List<Entity> productionTrackings = getProductionTrackingDD().find()
                 .add(SearchRestrictions.belongsTo(ProductionTrackingFields.ORDER, order))
@@ -164,8 +160,6 @@ public class OrderStatesListenerServicePFTD {
                     isNominalProductCost);
             Entity locationTo = getLocationDD().get(locationId);
             Entity document = createInternalInboundDocument(locationTo, order, entries);
-
-            document = acceptInboundDocument(document);
 
             if (!document.isValid()) {
                 documentStateChangeService.buildFailureStateChange(document.getId());
@@ -254,7 +248,7 @@ public class OrderStatesListenerServicePFTD {
             holder.setPalletNumberId(palletNumber.getId());
         }
         holder.setTypeOfPallet(trackingOperationProductOutComponent.getStringField(TrackingOperationProductOutComponentFields.TYPE_OF_PALLET));
-        //            fillAttributes(trackingOperationProductOutComponent, position);
+        holder.setPositionAttributeValues(productionTrackingDocumentsHelper.getAttributeValues(trackingOperationProductOutComponent));
 
         return holder;
     }
@@ -288,6 +282,7 @@ public class OrderStatesListenerServicePFTD {
         }
 
         internalInboundBuilder.setField(DocumentFieldsPFTD.ORDER, order);
+        internalInboundBuilder.setAccepted();
 
         return internalInboundBuilder.buildWithEntityRuntimeException();
     }
@@ -308,6 +303,7 @@ public class OrderStatesListenerServicePFTD {
         position.setField(PositionFields.STORAGE_LOCATION, outProductRecord.getStorageLocationId());
         position.setField(PositionFields.PALLET_NUMBER, outProductRecord.getPalletNumberId());
         position.setField(PositionFields.TYPE_OF_PALLET, outProductRecord.getTypeOfPallet());
+        position.setField(PositionFields.POSITION_ATTRIBUTE_VALUES, outProductRecord.getPositionAttributeValues());
 
         return position;
     }
@@ -419,7 +415,6 @@ public class OrderStatesListenerServicePFTD {
     private Entity acceptTransferDocument(DocumentBuilder document, final Entity order) {
         document.setAccepted();
 
-        document.setField(DocumentFields.TIME, new Date());
         document.setField(DocumentFieldsPFTD.ORDER, order);
 
         return document.build();
@@ -490,19 +485,6 @@ public class OrderStatesListenerServicePFTD {
 
         return results.stream().map(entity -> entity.getDecimalField("quantity")).filter(Objects::nonNull).reduce(BigDecimal.ZERO,
                 BigDecimal::add);
-    }
-
-    private Entity acceptInboundDocument(final Entity document) {
-        document.setField(DocumentFields.STATE, DocumentState.ACCEPTED.getStringValue());
-        document.setField(DocumentFields.TIME, new Date());
-
-        Entity savedDocument = document.getDataDefinition().save(document);
-
-        if (savedDocument.isValid()) {
-            resourceManagementService.createResourcesForReceiptDocuments(savedDocument);
-        }
-
-        return savedDocument;
     }
 
     public void checkMaterialAvailability(final StateChangeContext stateChangeContext) {

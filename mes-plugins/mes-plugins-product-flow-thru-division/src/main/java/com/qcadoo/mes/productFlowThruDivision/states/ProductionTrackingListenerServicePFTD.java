@@ -23,7 +23,6 @@
  */
 package com.qcadoo.mes.productFlowThruDivision.states;
 
-import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
 import com.qcadoo.mes.advancedGenealogy.constants.BatchFields;
@@ -32,7 +31,6 @@ import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.basic.constants.UnitConversionItemFieldsB;
 import com.qcadoo.mes.materialFlow.constants.MaterialFlowConstants;
 import com.qcadoo.mes.materialFlowResources.constants.MaterialFlowResourcesConstants;
-import com.qcadoo.mes.materialFlowResources.constants.PositionAttributeValueFields;
 import com.qcadoo.mes.materialFlowResources.constants.PositionFields;
 import com.qcadoo.mes.materialFlowResources.service.DocumentBuilder;
 import com.qcadoo.mes.materialFlowResources.service.DocumentManagementService;
@@ -148,12 +146,12 @@ public final class ProductionTrackingListenerServicePFTD {
         boolean releaseOnEndOfTheOrder = ReleaseOfMaterials.END_OF_THE_ORDER.getStringValue()
                 .equals(releaseOfMaterials);
         if (!groupedRecordInComponents.isEmpty() && releaseOnAcceptanceRegistrationRecord
-                && !productionCountingDocumentService.checkIfProductsAvailableInStock(productionTracking, groupedRecordInComponents)) {
+                && !productionTrackingDocumentsHelper.checkIfProductsAvailableInStock(productionTracking, groupedRecordInComponents)) {
             return;
         }
 
         if (!groupedRecordInIntermediates.isEmpty() && (releaseOnAcceptanceRegistrationRecord || releaseOnEndOfTheOrder)
-                && !productionCountingDocumentService.checkIfProductsAvailableInStock(productionTracking, groupedRecordInIntermediates)) {
+                && !productionTrackingDocumentsHelper.checkIfProductsAvailableInStock(productionTracking, groupedRecordInIntermediates)) {
             return;
         }
 
@@ -457,29 +455,6 @@ public final class ProductionTrackingListenerServicePFTD {
         return position;
     }
 
-    private void fillAttributes(final Entity trackingOperationProductOutComponent, final Entity position) {
-        List<Entity> positionAttributeValues = Lists.newArrayList();
-
-        trackingOperationProductOutComponent.getHasManyField(TrackingOperationProductOutComponentFields.PROD_OUT_RESOURCE_ATTR_VALS).forEach(aVal -> {
-            Entity positionAttributeValue = getPositionAttributeValueDD().create();
-
-            positionAttributeValue.setField(PositionAttributeValueFields.ATTRIBUTE,
-                    aVal.getBelongsToField(ProdOutResourceAttrValFields.ATTRIBUTE).getId());
-
-            if (Objects.nonNull(aVal.getBelongsToField(PositionAttributeValueFields.ATTRIBUTE_VALUE))) {
-                positionAttributeValue.setField(PositionAttributeValueFields.ATTRIBUTE_VALUE,
-                        aVal.getBelongsToField(ProdOutResourceAttrValFields.ATTRIBUTE_VALUE).getId());
-            }
-
-            positionAttributeValue.setField(PositionAttributeValueFields.VALUE,
-                    aVal.getStringField(ProdOutResourceAttrValFields.VALUE));
-
-            positionAttributeValues.add(positionAttributeValue);
-        });
-
-        position.setField(PositionFields.POSITION_ATTRIBUTE_VALUES, positionAttributeValues);
-    }
-
     private Entity createInternalInboundDocumentForFinalProducts(final Entity locationTo, final Entity order,
                                                                  final Collection<Entity> trackingOperationProductOutComponents,
                                                                  final Entity user) {
@@ -553,8 +528,7 @@ public final class ProductionTrackingListenerServicePFTD {
             if (order.getBelongsToField(OrderFields.PRODUCT).getId().equals(product.getId())) {
                 position.setField(PositionFields.EXPIRATION_DATE, expirationDate);
             }
-
-            fillAttributes(trackingOperationProductOutComponent, position);
+            position.setField(PositionFields.POSITION_ATTRIBUTE_VALUES, productionTrackingDocumentsHelper.getAttributeValues(trackingOperationProductOutComponent));
 
             internalInboundBuilder.addPosition(position);
         }
@@ -574,10 +548,4 @@ public final class ProductionTrackingListenerServicePFTD {
     private DataDefinition getLocationDD() {
         return dataDefinitionService.get(MaterialFlowConstants.PLUGIN_IDENTIFIER, MaterialFlowConstants.MODEL_LOCATION);
     }
-
-    private DataDefinition getPositionAttributeValueDD() {
-        return dataDefinitionService.get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER,
-                MaterialFlowResourcesConstants.MODEL_POSITION_ATTRIBUTE_VALUE);
-    }
-
 }

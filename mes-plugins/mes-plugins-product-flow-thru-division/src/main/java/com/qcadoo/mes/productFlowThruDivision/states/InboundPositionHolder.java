@@ -1,8 +1,15 @@
 package com.qcadoo.mes.productFlowThruDivision.states;
 
+import com.google.common.collect.Lists;
+import com.qcadoo.mes.productionCounting.constants.ProdOutResourceAttrValFields;
+import com.qcadoo.model.api.Entity;
+
 import java.math.BigDecimal;
+import java.util.Comparator;
 import java.util.Date;
+import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 public class InboundPositionHolder {
 
@@ -18,6 +25,7 @@ public class InboundPositionHolder {
     private Long storageLocationId;
     private Long palletNumberId;
     private String typeOfPallet;
+    private List<Entity> positionAttributeValues = Lists.newArrayList();
 
     public Long getProductId() {
         return productId;
@@ -124,11 +132,21 @@ public class InboundPositionHolder {
         InboundPositionHolder that = (InboundPositionHolder) o;
         return Objects.equals(productId, that.productId) && Objects.equals(batchId, that.batchId)
                 && Objects.equals(storageLocationId, that.storageLocationId) && Objects.equals(palletNumberId, that.palletNumberId)
-                && Objects.equals(givenUnit, that.givenUnit);
+                && Objects.equals(givenUnit, that.givenUnit)
+                && Objects.equals(positionAttributeValues.stream().sorted(Comparator.comparing(e -> e.getBelongsToField(ProdOutResourceAttrValFields.ATTRIBUTE).getId())).collect(Collectors.toList()),
+                that.positionAttributeValues.stream().sorted(Comparator.comparing(e -> e.getBelongsToField(ProdOutResourceAttrValFields.ATTRIBUTE).getId())).collect(Collectors.toList()));
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(productId, batchId, storageLocationId, palletNumberId, givenUnit);
+        return Objects.hash(productId, batchId, storageLocationId, palletNumberId, givenUnit, positionAttributeValues.stream().sorted(Comparator.comparing(e -> e.getBelongsToField(ProdOutResourceAttrValFields.ATTRIBUTE).getId())).collect(Collectors.toList()));
+    }
+
+    public List<Entity> getPositionAttributeValues() {
+        return positionAttributeValues;
+    }
+
+    public void setPositionAttributeValues(List<Entity> positionAttributeValues) {
+        this.positionAttributeValues = positionAttributeValues;
     }
 }
