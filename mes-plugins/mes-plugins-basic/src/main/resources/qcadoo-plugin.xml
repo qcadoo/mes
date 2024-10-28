@@ -94,12 +94,15 @@
         <security:role identifier="ROLE_MACHINE_PARTS"/>
         <security:role identifier="ROLE_COUNTRIES"/>
         <security:role identifier="ROLE_PARAMETERS"/>
+        <security:role identifier="ROLE_PARAMETERS_MENU"/>
 
         <security:role identifier="ROLE_TECHNOLOGIES"/>
         <security:role identifier="ROLE_TECHNOLOGIES_ADVANCED"/>
 
         <security:role identifier="ROLE_PLANNING"/>
         <security:role identifier="ROLE_PLANNING_MENU"/>
+        <security:role identifier="ROLE_PLANNING_PARAMETERS"/>
+        <security:role identifier="ROLE_PLANNER_PARAMETERS"/>
         <security:role identifier="ROLE_ORDERS_VIEW"/>
         <security:role identifier="ROLE_PLANNING_ORDERS"/>
         <security:role identifier="ROLE_PLANNING_MASTER_ORDERS"/>
@@ -386,7 +389,7 @@
         <menu:menu-category name="staff"/>
         <menu:menu-category name="products"/>
         <menu:menu-category name="companyStructure" defaultAuthorizationRole="ROLE_COMPANY_STRUCTURE"/>
-        <menu:menu-category name="parameters" defaultAuthorizationRole="ROLE_PARAMETERS"/>
+        <menu:menu-category name="parameters" defaultAuthorizationRole="ROLE_PARAMETERS_MENU"/>
 
         <menu:menu-item-url name="home" category="home"
                             url="/dashboard.html"/>

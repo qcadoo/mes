@@ -510,7 +510,7 @@
         </model:model-field>
 
         <model:model-field plugin="basic" model="staff">
-            <model:manyToMany name="orders" model="order" plugin="orders" joinField="staff" cascade="nullify"/>
+            <model:manyToMany name="orders" model="order" plugin="orders" joinField="staff"/>
         </model:model-field>
 
         <model:model-field plugin="basic" model="attribute">
@@ -576,7 +576,7 @@
                         url="/orderTechnologicalProcessesAnalysis.html" defaultAuthorizationRole="ROLE_ANALYSIS_VIEWER"/>
 
         <menu:menu-item-url name="planningParameters" category="parameters" url="/planningParameters.html"
-                            defaultAuthorizationRole="ROLE_PARAMETERS"/>
+                            defaultAuthorizationRole="ROLE_PLANNING_PARAMETERS"/>
 
         <menu:menu-item name="workstationChangeoverForOperationalTasksList" category="orders"
                         view="workstationChangeoverForOperationalTasksList" defaultAuthorizationRole="ROLE_PLANNING"/>
