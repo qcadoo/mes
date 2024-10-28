@@ -337,16 +337,16 @@
 
         <model:model-enum-value plugin="basic" model="log" enum="logType" value="masterOrderImport"/>
 
-        <menu:menu-category name="sales" defaultAuthorizationRole="ROLE_PLANNING_MENU"/>
+        <menu:menu-category name="sales" defaultAuthorizationRole="ROLE_SALE"/>
 
         <menu:menu-item name="masterOrders" category="sales"
-                        view="masterOrdersList" defaultAuthorizationRole="ROLE_PLANNING"/>
+                        view="masterOrdersList" defaultAuthorizationRole="ROLE_SALE"/>
 
         <menu:menu-item name="masterOrderPositions" category="sales" view="masterOrderPositionsList"
-                        defaultAuthorizationRole="ROLE_PLANNING"/>
+                        defaultAuthorizationRole="ROLE_SALE"/>
 
         <menu:menu-item name="salesPlansList" category="sales"
-                        view="salesPlansList" defaultAuthorizationRole="ROLE_PLANNING"/>
+                        view="salesPlansList" defaultAuthorizationRole="ROLE_SALE"/>
 
         <menu:menu-item name="salesPlanMaterialRequirementsList" category="requirements"
                         view="salesPlanMaterialRequirementsList" defaultAuthorizationRole="ROLE_REQUIREMENTS"/>
@@ -356,10 +356,10 @@
 
         <menu:menu-item name="salesVolumesList"
                         category="materialFlow" view="salesVolumesList"
-                        defaultAuthorizationRole="ROLE_PLANNING"/>
+                        defaultAuthorizationRole="ROLE_REQUIREMENTS"/>
 
         <menu:menu-item name="pricesListsList" category="sales"
-                        view="pricesListsList" defaultAuthorizationRole="ROLE_PLANNING"/>
+                        view="pricesListsList" defaultAuthorizationRole="ROLE_SALE"/>
 
         <menu:menu-item name="orderedProductConfiguratorsList"
                         category="products" view="orderedProductConfiguratorsList"

@@ -23,7 +23,7 @@
     ***************************************************************************
 
 -->
-<view defaultAuthorizationRole="ROLE_PLANNING" name="masterOrderDetails" modelName="masterOrder"
+<view defaultAuthorizationRole="ROLE_SALE" name="masterOrderDetails" modelName="masterOrder"
       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
       xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd">
 
