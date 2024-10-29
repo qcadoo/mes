@@ -222,7 +222,7 @@ public class ProductionCountingDocumentService {
             ProductionCountingQuantityHolder exist = entities.get(index);
 
             exist.setUsedQuantity(exist.getUsedQuantity().add(BigDecimalUtils.convertNullToZero(holder.getUsedQuantity())));
-            exist.setGivenQuantity(exist.getUsedQuantity().add(BigDecimalUtils.convertNullToZero(holder.getGivenQuantity())));
+            exist.setGivenQuantity(exist.getGivenQuantity().add(BigDecimalUtils.convertNullToZero(holder.getGivenQuantity())));
         } else {
             entities.add(holder);
         }
