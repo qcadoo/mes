@@ -555,7 +555,7 @@
                         view="ordersPlanningList" defaultAuthorizationRole="ROLE_ORDERS_VIEW"/>
 
         <menu:menu-item name="schedulesList" category="orders"
-                        view="schedulesList" defaultAuthorizationRole="ROLE_PLANNING"/>
+                        view="schedulesList" defaultAuthorizationRole="ROLE_SCHEDULES"/>
 
         <menu:menu-item name="productionLineSchedulesList" category="orders"
                         view="productionLineSchedulesList" defaultAuthorizationRole="ROLE_PRODUCTION_LINE_SCHEDULES"/>
