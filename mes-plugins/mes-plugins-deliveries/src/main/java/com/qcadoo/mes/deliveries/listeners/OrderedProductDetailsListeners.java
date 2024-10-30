@@ -23,7 +23,6 @@
  */
 package com.qcadoo.mes.deliveries.listeners;
 
-import com.qcadoo.mes.basic.CalculationQuantityService;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.basic.constants.UnitConversionItemFieldsB;
 import com.qcadoo.mes.deliveries.DeliveriesService;
@@ -62,9 +61,6 @@ public class OrderedProductDetailsListeners {
 
     @Autowired
     private UnitConversionService unitConversionService;
-
-    @Autowired
-    private CalculationQuantityService calculationQuantityService;
 
     @Autowired
     private DeliveriesService deliveriesService;
@@ -149,15 +145,19 @@ public class OrderedProductDetailsListeners {
             return;
         }
 
-        BigDecimal conversion = orderedProduct.getDecimalField(OrderedProductFields.CONVERSION);
         BigDecimal orderedQuantity = orderedProduct.getDecimalField(OrderedProductFields.ORDERED_QUANTITY);
 
-        if (Objects.nonNull(conversion) && Objects.nonNull(orderedQuantity)) {
+        if (Objects.nonNull(orderedQuantity)) {
+            String orderedQuantityUnit = product.getStringField(ProductFields.UNIT);
             String additionalQuantityUnit = Optional.ofNullable(product.getStringField(ProductFields.ADDITIONAL_UNIT)).orElse(
                     product.getStringField(ProductFields.UNIT));
 
-            BigDecimal newAdditionalQuantity = calculationQuantityService.calculateAdditionalQuantity(orderedQuantity,
-                    conversion, additionalQuantityUnit);
+            PossibleUnitConversions unitConversions = unitConversionService.getPossibleConversions(orderedQuantityUnit, searchCriteriaBuilder -> searchCriteriaBuilder.add(SearchRestrictions.belongsTo(UnitConversionItemFieldsB.PRODUCT, product)));
+
+            BigDecimal newAdditionalQuantity = null;
+            if (unitConversions.isDefinedFor(additionalQuantityUnit)) {
+                newAdditionalQuantity = unitConversions.convertTo(orderedQuantity, additionalQuantityUnit);
+            }
 
             FieldComponent additionalQuantityField = (FieldComponent) view
                     .getComponentByReference(OrderedProductFields.ADDITIONAL_QUANTITY);
