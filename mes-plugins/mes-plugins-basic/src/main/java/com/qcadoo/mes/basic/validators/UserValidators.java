@@ -23,21 +23,16 @@
  */
 package com.qcadoo.mes.basic.validators;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.basic.constants.ParameterFields;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.search.JoinType;
-import com.qcadoo.model.api.search.SearchCriteriaBuilder;
-import com.qcadoo.model.api.search.SearchOrders;
-import com.qcadoo.model.api.search.SearchProjections;
-import com.qcadoo.model.api.search.SearchRestrictions;
+import com.qcadoo.model.api.search.*;
 import com.qcadoo.security.constants.GroupFields;
 import com.qcadoo.security.constants.PermissionType;
 import com.qcadoo.security.constants.UserFields;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 @Service
 public class UserValidators {
@@ -57,14 +52,19 @@ public class UserValidators {
         if (PermissionType.OFFICE_LICENSE.getStringValue().equals(permissionType)
                 && noFreeLicenses(userDD, PermissionType.OFFICE_LICENSE.getStringValue(), user.getId(), parameter.getIntegerField(ParameterFields.NUMBER_OFFICE_LICENSES))
                 || PermissionType.TERMINAL_LICENSE.getStringValue().equals(permissionType)
-                && noFreeLicenses(userDD, PermissionType.TERMINAL_LICENSE.getStringValue(), user.getId(), parameter.getIntegerField(ParameterFields.NUMBER_TERMINAL_LICENSES))) {
+                && noFreeLicenses(userDD, PermissionType.TERMINAL_LICENSE.getStringValue(), user.getId(), parameter.getIntegerField(ParameterFields.NUMBER_TERMINAL_LICENSES))
+                || PermissionType.APS_LICENSE.getStringValue().equals(permissionType)
+                && noFreeLicenses(userDD, PermissionType.APS_LICENSE.getStringValue(), user.getId(), parameter.getIntegerField(ParameterFields.NUMBER_APS_LICENSES))
+                || PermissionType.WMS_MOBILE_LICENSE.getStringValue().equals(permissionType)
+                && noFreeLicenses(userDD, PermissionType.WMS_MOBILE_LICENSE.getStringValue(), user.getId(), parameter.getIntegerField(ParameterFields.NUMBER_WMS_MOBILE_LICENSES))) {
             user.addError(userDD.getField(UserFields.GROUP), "basic.user.error.group.thereAreNoFreeLicenses");
             return false;
         }
         return true;
     }
 
-    private boolean noFreeLicenses(final DataDefinition userDD, final String permissionType, final Long id, final long allLicenses) {
+    private boolean noFreeLicenses(final DataDefinition userDD, final String permissionType, final Long id,
+                                   final long allLicenses) {
         SearchCriteriaBuilder scb = userDD.find();
 
         if (id != null) {

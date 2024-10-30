@@ -40,7 +40,7 @@
         <windowTab name="mainTab" reference="mainTab">
             <component type="form" name="parameter" reference="form" defaultAuthorizationRole="ROLE_SUPERADMIN">
                 <component type="gridLayout" name="gridLayout"
-                           columns="3" rows="3" hasBorders="false">
+                           columns="3" rows="5" hasBorders="false">
                     <layoutElement column="1" row="1">
                         <component type="input" name="numberOfficeLicenses" field="numberOfficeLicenses"
                                    reference="numberOfficeLicenses">
@@ -49,6 +49,20 @@
                         </component>
                     </layoutElement>
                     <layoutElement column="1" row="2">
+                        <component type="input" name="numberAPSLicenses" field="numberAPSLicenses"
+                                   reference="numberAPSLicenses">
+                            <option type="labelWidth" value="55"/>
+                            <option type="alignment" value="right"/>
+                        </component>
+                    </layoutElement>
+                    <layoutElement column="1" row="3">
+                        <component type="input" name="numberWMSMobileLicenses" field="numberWMSMobileLicenses"
+                                   reference="numberWMSMobileLicenses">
+                            <option type="labelWidth" value="55"/>
+                            <option type="alignment" value="right"/>
+                        </component>
+                    </layoutElement>
+                    <layoutElement column="1" row="4">
                         <component type="input" name="numberTerminalLicenses" field="numberTerminalLicenses"
                                    reference="numberTerminalLicenses" defaultVisible="never">
                             <option type="labelWidth" value="55"/>
@@ -58,7 +72,7 @@
                                       method="onChangeRerender"/>
                         </component>
                     </layoutElement>
-                    <layoutElement column="1" row="3">
+                    <layoutElement column="1" row="5">
                         <component type="select" name="typeTerminalLicenses" field="typeTerminalLicenses"
                                    reference="typeTerminalLicenses" defaultVisible="false" defaultEnabled="false">
                             <option type="labelWidth" value="55"/>

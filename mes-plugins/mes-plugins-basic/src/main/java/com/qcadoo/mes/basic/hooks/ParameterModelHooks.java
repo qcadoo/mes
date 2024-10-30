@@ -69,6 +69,8 @@ public class ParameterModelHooks {
         parameter.setField(L_RECEIPT_OF_PRODUCTS, "01onAcceptanceRegistrationRecord");
         parameter.setField(ParameterFields.NUMBER_TERMINAL_LICENSES, 1);
         parameter.setField(ParameterFields.NUMBER_OFFICE_LICENSES, 1);
+        parameter.setField(ParameterFields.NUMBER_APS_LICENSES, 0);
+        parameter.setField(ParameterFields.NUMBER_WMS_MOBILE_LICENSES, 0);
         parameter.setField(ParameterFields.NUMBER_VISIBLE_ORDERS_TASKS_ON_DASHBOARD, 50);
         parameter.setField(L_TASKS_SELECTION_BY, "01orderDate");
     }
