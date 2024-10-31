@@ -25,7 +25,6 @@ package com.qcadoo.mes.deliveries.listeners;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.qcadoo.mes.basic.CalculationQuantityService;
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.basic.constants.*;
 import com.qcadoo.mes.basic.util.CurrencyService;
@@ -124,9 +123,6 @@ public class DeliveryDetailsListeners {
 
     @Autowired
     private DeliveredProductMultiPositionService deliveredProductMultiPositionService;
-
-    @Autowired
-    private CalculationQuantityService calculationQuantityService;
 
     @Autowired
     private MaterialFlowResourcesService materialFlowResourcesService;
@@ -259,7 +255,8 @@ public class DeliveryDetailsListeners {
     }
 
     private BigDecimal getPricePerUnit(final Entity deliveryCurrency, final Entity plnCurrency, final Entity product,
-                                       final List<Entity> productsToMessage, final Entity productCurrency, final BigDecimal price) {
+                                       final List<Entity> productsToMessage, final Entity productCurrency,
+                                       final BigDecimal price) {
         BigDecimal pricePerUnit = null;
 
         if (Objects.isNull(deliveryCurrency) || Objects.isNull(productCurrency) || deliveryCurrency.getId().equals(productCurrency.getId())) {
@@ -291,7 +288,8 @@ public class DeliveryDetailsListeners {
         return searchQueryBuilder.setMaxResults(1).uniqueResult();
     }
 
-    private void fillOrderedProductsCumulatedTotalPrice(final ViewDefinitionState view, final List<Entity> orderedProducts) {
+    private void fillOrderedProductsCumulatedTotalPrice(final ViewDefinitionState view,
+                                                        final List<Entity> orderedProducts) {
         BigDecimal totalPrice = orderedProducts.stream()
                 .filter(orderedProduct -> Objects.nonNull(orderedProduct.getDecimalField(OrderedProductFields.TOTAL_PRICE)))
                 .map(orderedProduct -> orderedProduct.getDecimalField(OrderedProductFields.TOTAL_PRICE))
@@ -304,7 +302,8 @@ public class DeliveryDetailsListeners {
         totalPriceComponent.requestComponentUpdateState();
     }
 
-    public void fillCompanyFieldsForSupplier(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+    public void fillCompanyFieldsForSupplier(final ViewDefinitionState view, final ComponentState state,
+                                             final String[] args) {
         LookupComponent supplierLookup = (LookupComponent) view.getComponentByReference(DeliveryFields.SUPPLIER);
         FieldComponent deliveryDateBufferField = (FieldComponent) view
                 .getComponentByReference(DeliveryFields.DELIVERY_DATE_BUFFER);
@@ -346,7 +345,8 @@ public class DeliveryDetailsListeners {
         contractorCategoryField.requestComponentUpdateState();
     }
 
-    public final void printDeliveryReport(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+    public final void printDeliveryReport(final ViewDefinitionState view, final ComponentState state,
+                                          final String[] args) {
         if (state instanceof FormComponent) {
             view.redirectTo("/deliveries/deliveryReport." + args[0] + "?id=" + state.getFieldValue(), true, false);
         } else {
@@ -354,7 +354,8 @@ public class DeliveryDetailsListeners {
         }
     }
 
-    public final void printOrderReport(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+    public final void printOrderReport(final ViewDefinitionState view, final ComponentState state,
+                                       final String[] args) {
         if (state instanceof FormComponent) {
             view.redirectTo("/deliveries/orderReport." + args[0] + "?id=" + state.getFieldValue(), true, false);
         } else {
@@ -376,7 +377,8 @@ public class DeliveryDetailsListeners {
         state.performEvent(view, "reset");
     }
 
-    public final void changeStorageLocations(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+    public final void changeStorageLocations(final ViewDefinitionState view, final ComponentState state,
+                                             final String[] args) {
         FormComponent deliveryForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         GridComponent deliveredProductsGrid = (GridComponent) view.getComponentByReference(DeliveryFields.DELIVERED_PRODUCTS);
 
@@ -408,7 +410,8 @@ public class DeliveryDetailsListeners {
         view.openModal(url);
     }
 
-    public final void assignStorageLocations(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+    public final void assignStorageLocations(final ViewDefinitionState view, final ComponentState state,
+                                             final String[] args) {
         FormComponent deliveryForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
         deleteOldEntries();
@@ -496,7 +499,8 @@ public class DeliveryDetailsListeners {
     }
 
     private Entity createDeliveredProductMultiPosition(final Entity orderedProduct,
-                                                       final DataDefinition deliveredProductMultiPositionDD, final List<Entity> deliveredProducts) {
+                                                       final DataDefinition deliveredProductMultiPositionDD,
+                                                       final List<Entity> deliveredProducts) {
         Entity deliveredProductMultiPosition = deliveredProductMultiPositionDD.create();
 
         Entity product = orderedProduct.getBelongsToField(OrderedProductFields.PRODUCT);
@@ -517,8 +521,13 @@ public class DeliveryDetailsListeners {
         }
 
         BigDecimal conversion = orderedProduct.getDecimalField(OrderedProductFields.CONVERSION);
-        BigDecimal additionalQuantity = calculationQuantityService.calculateAdditionalQuantity(quantity, conversion,
-                additionalUnit);
+
+        PossibleUnitConversions unitConversions = unitConversionService.getPossibleConversions(unit, searchCriteriaBuilder -> searchCriteriaBuilder.add(SearchRestrictions.belongsTo(UnitConversionItemFieldsB.PRODUCT, product)));
+
+        BigDecimal additionalQuantity = null;
+        if (unitConversions.isDefinedFor(additionalUnit)) {
+            additionalQuantity = unitConversions.convertTo(quantity, additionalUnit);
+        }
 
         deliveredProductMultiPosition.setField(DeliveredProductMultiPositionFields.PRODUCT, product);
         deliveredProductMultiPosition.setField(DeliveredProductMultiPositionFields.UNIT, unit);
@@ -622,7 +631,8 @@ public class DeliveryDetailsListeners {
         return deliveredProduct;
     }
 
-    public final void createRelatedDelivery(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+    public final void createRelatedDelivery(final ViewDefinitionState view, final ComponentState state,
+                                            final String[] args) {
         FormComponent deliveryForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
         Long deliveryId = deliveryForm.getEntityId();
@@ -780,7 +790,8 @@ public class DeliveryDetailsListeners {
         }
     }
 
-    public final void showRelatedDeliveries(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+    public final void showRelatedDeliveries(final ViewDefinitionState view, final ComponentState state,
+                                            final String[] args) {
         FormComponent deliveryForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
         Long deliveryId = deliveryForm.getEntityId();
@@ -821,11 +832,13 @@ public class DeliveryDetailsListeners {
         view.redirectTo(url, false, true, parameters);
     }
 
-    public void disableShowProductButton(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+    public void disableShowProductButton(final ViewDefinitionState view, final ComponentState state,
+                                         final String[] args) {
         deliveriesService.disableShowProductButton(view);
     }
 
-    public void validateColumnsWidthForOrder(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+    public void validateColumnsWidthForOrder(final ViewDefinitionState view, final ComponentState state,
+                                             final String[] args) {
         FormComponent deliveryForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         Long deliveryId = deliveryForm.getEntityId();
 
@@ -838,7 +851,8 @@ public class DeliveryDetailsListeners {
         }
     }
 
-    public void validateColumnsWidthForDelivery(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+    public void validateColumnsWidthForDelivery(final ViewDefinitionState view, final ComponentState state,
+                                                final String[] args) {
         FormComponent deliveryForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         Long deliveryId = deliveryForm.getEntityId();
 
@@ -884,7 +898,8 @@ public class DeliveryDetailsListeners {
         view.redirectTo(fileService.getUrl(zipFile.getAbsolutePath()) + "?clean", true, false);
     }
 
-    public void downloadProductAttachment(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+    public void downloadProductAttachment(final ViewDefinitionState view, final ComponentState state,
+                                          final String[] args) {
         FormComponent deliveryForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         GridComponent orderedProductsGrid = (GridComponent) view.getComponentByReference(DeliveryFields.ORDERED_PRODUCTS);
 
