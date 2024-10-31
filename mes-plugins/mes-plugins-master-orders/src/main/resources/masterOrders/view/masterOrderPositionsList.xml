@@ -33,7 +33,7 @@
         <ribbon>
             <template name="standardGridTemplate" excludeItems="actions.new, actions.copy, actions.delete"
                       excludeGroups="states"/>
-            <group name="orders">
+            <group name="orders" defaultAuthorizationRole="ROLE_PLANNING">
                 <bigButton name="createOrder" icon="generateIcon24.png" state="disabled">
                     <script>
                         <![CDATA[
