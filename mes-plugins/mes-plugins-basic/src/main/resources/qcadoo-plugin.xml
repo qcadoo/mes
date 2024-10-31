@@ -104,6 +104,7 @@
         <security:role identifier="ROLE_PLANNING_PARAMETERS"/>
         <security:role identifier="ROLE_PLANNER_PARAMETERS"/>
         <security:role identifier="ROLE_ORDERS_VIEW"/>
+        <security:role identifier="ROLE_ORDER_DETAILS_VIEW"/>
         <security:role identifier="ROLE_PLANNING_ORDERS"/>
         <security:role identifier="ROLE_PLANNING_MASTER_ORDERS"/>
         <security:role identifier="ROLE_SCHEDULES"/>
