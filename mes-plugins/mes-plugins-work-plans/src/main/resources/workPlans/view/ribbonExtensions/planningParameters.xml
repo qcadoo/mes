@@ -29,7 +29,7 @@
                  xsi:schemaLocation="http://schema.qcadoo.org/modules/ribbonExtension http://schema.qcadoo.org/modules/ribbonExtension.xsd"
                  plugin="orders" view="planningParameters">
 
-    <group name="parameters" defaultAuthorizationRole="ROLE_PLANNING">
+    <group name="parameters" defaultAuthorizationRole="ROLE_PLANNING_PARAMETERS">
         <bigButton name="workPlansParameters" icon="generateIcon24.png">
             <script>
                 <![CDATA[
