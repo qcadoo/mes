@@ -602,8 +602,17 @@ public class DeliveryDetailsListeners {
 
             deliveredProduct.setField(DeliveredProductFields.DELIVERED_QUANTITY,
                     numberService.setScaleWithDefaultMathContext(deliveredQuantity));
-            deliveredProduct.setField(DeliveredProductFields.ADDITIONAL_QUANTITY,
-                    numberService.setScaleWithDefaultMathContext(deliveredQuantity.multiply(conversion)));
+
+            String unit = product.getStringField(ProductFields.UNIT);
+            String additionalQuantityUnit = Optional.ofNullable(product.getStringField(ProductFields.ADDITIONAL_UNIT))
+                    .orElse(unit);
+            PossibleUnitConversions unitConversions = unitConversionService.getPossibleConversions(unit, searchCriteriaBuilder -> searchCriteriaBuilder.add(SearchRestrictions.belongsTo(UnitConversionItemFieldsB.PRODUCT, product)));
+
+            BigDecimal newAdditionalQuantity = null;
+            if (unitConversions.isDefinedFor(additionalQuantityUnit)) {
+                newAdditionalQuantity = unitConversions.convertTo(deliveredQuantity, additionalQuantityUnit);
+            }
+            deliveredProduct.setField(DeliveredProductFields.ADDITIONAL_QUANTITY, newAdditionalQuantity);
             deliveredProduct.setField(DeliveredProductFields.PRICE_PER_UNIT, numberService
                     .setScaleWithDefaultMathContext(orderedProduct.getDecimalField(OrderedProductFields.PRICE_PER_UNIT)));
             deliveredProduct.setField(DeliveredProductFields.TOTAL_PRICE, numberService
