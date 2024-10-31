@@ -222,6 +222,7 @@ public class OrderStatesListenerServicePFTD {
 
         InboundPositionHolder holder = new InboundPositionHolder();
 
+        holder.setProduct(product);
         holder.setProductId(product.getId());
         holder.setUsedQuantity(usedQuantity);
         holder.setConversion(conversion);
@@ -231,6 +232,7 @@ public class OrderStatesListenerServicePFTD {
         if (order.getBelongsToField(OrderFields.PRODUCT).getId().equals(product.getId())) {
             holder.setQualityRating(qualityRating);
             if (Objects.nonNull(batch)) {
+                holder.setBatch(batch);
                 holder.setBatchId(batch.getId());
             }
         }

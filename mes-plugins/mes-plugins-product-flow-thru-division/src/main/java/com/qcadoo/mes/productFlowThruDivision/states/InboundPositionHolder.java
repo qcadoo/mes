@@ -13,11 +13,13 @@ import java.util.stream.Collectors;
 
 public class InboundPositionHolder {
 
+    private Entity product;
     private Long productId;
     private BigDecimal usedQuantity;
     private BigDecimal conversion;
     private BigDecimal givenQuantity;
     private String givenUnit;
+    private Entity batch;
     private Long batchId;
     private String qualityRating;
     private BigDecimal price;
@@ -148,5 +150,21 @@ public class InboundPositionHolder {
 
     public void setPositionAttributeValues(List<Entity> positionAttributeValues) {
         this.positionAttributeValues = positionAttributeValues;
+    }
+
+    public Entity getProduct() {
+        return product;
+    }
+
+    public void setProduct(Entity product) {
+        this.product = product;
+    }
+
+    public Entity getBatch() {
+        return batch;
+    }
+
+    public void setBatch(Entity batch) {
+        this.batch = batch;
     }
 }
