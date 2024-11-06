@@ -579,7 +579,7 @@
                             defaultAuthorizationRole="ROLE_PLANNING_PARAMETERS"/>
 
         <menu:menu-item name="workstationChangeoverForOperationalTasksList" category="orders"
-                        view="workstationChangeoverForOperationalTasksList" defaultAuthorizationRole="ROLE_PLANNING"/>
+                        view="workstationChangeoverForOperationalTasksList" defaultAuthorizationRole="ROLE_WORKSTATION_CHANGEOVERS"/>
 
         <view:view resource="view/ordersList.xml"/>
         <view:view resource="view/ordersImport.xml"/>

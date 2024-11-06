@@ -23,7 +23,7 @@
     ***************************************************************************
 
 -->
-<view defaultAuthorizationRole="ROLE_PLANNING"
+<view defaultAuthorizationRole="ROLE_WORKSTATION_CHANGEOVERS"
       name="workstationChangeoverForOperationalTasksList" modelName="workstationChangeoverForOperationalTaskDto"
       menuAccessible="true"
       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"

@@ -111,6 +111,7 @@
         <security:role identifier="ROLE_PRODUCTION_LINE_SCHEDULES"/>
         <security:role identifier="ROLE_OPTIMIZE_CUTTING"/>
         <security:role identifier="ROLE_SALE"/>
+        <security:role identifier="ROLE_WORKSTATION_CHANGEOVERS"/>
 
         <security:role identifier="ROLE_PLANNING_ON_LINE_VIEW"/>
         <security:role identifier="ROLE_PLANNING_ON_LINE_ACTIONS"/>
