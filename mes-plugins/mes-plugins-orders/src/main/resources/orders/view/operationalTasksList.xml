@@ -25,7 +25,7 @@
 
 -->
 <view name="operationalTasksList" modelName="operationalTaskWithColorDto"
-      defaultAuthorizationRole="ROLE_PLANNING" menuAccessible="true"
+      defaultAuthorizationRole="ROLE_OPERATIONAL_TASKS" menuAccessible="true"
       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
       xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd">
 
