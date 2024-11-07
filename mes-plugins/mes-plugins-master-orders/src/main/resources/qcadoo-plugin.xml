@@ -62,7 +62,7 @@
             <version>[0.4.0</version>
         </dependency>
         <dependency>
-            <plugin>lineChangeoverNormsForOrders</plugin>
+            <plugin>lineChangeoverNorms</plugin>
             <version>[1.4.0</version>
         </dependency>
         <dependency>

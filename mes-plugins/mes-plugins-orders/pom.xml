@@ -16,11 +16,6 @@
 	<dependencies>
 		<dependency>
 			<groupId>com.qcadoo.mes</groupId>
-			<artifactId>mes-plugins-technologies</artifactId>
-			<version>1.5-SNAPSHOT-DEV</version>
-		</dependency>
-		<dependency>
-			<groupId>com.qcadoo.mes</groupId>
 			<artifactId>mes-plugins-time-norms-for-operations</artifactId>
 			<version>1.5-SNAPSHOT-DEV</version>
 		</dependency>
