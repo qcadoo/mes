@@ -98,7 +98,6 @@ public class CurrencyService {
                         ? numberService.setScaleWithDefaultMathContext(v.multiply(exRate, numberService.getMathContext()))
                         : v)
                 .orElse(null);
-
     }
 
     private boolean exRateExists(final BigDecimal exRate) {

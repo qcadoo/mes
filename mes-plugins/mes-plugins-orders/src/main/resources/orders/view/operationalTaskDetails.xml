@@ -25,7 +25,7 @@
 
 -->
 <view name="operationalTaskDetails" modelName="operationalTask"
-      defaultAuthorizationRole="ROLE_PLANNING"
+      defaultAuthorizationRole="ROLE_OPERATIONAL_TASKS"
       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
       xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd">
 
@@ -78,7 +78,7 @@
                     </script>
                 </bigButton>
             </group>
-            <group name="workstationChangeoverForOperationalTasks">
+            <group name="workstationChangeoverForOperationalTasks" defaultAuthorizationRole="ROLE_WORKSTATION_CHANGEOVERS">
                 <bigButton name="showWorkstationChangeoverForOperationalTasks" icon="genealogyIcon24.png">
                     <script>
                         <![CDATA[

@@ -62,7 +62,7 @@
 			</script>
 		</smallButton>
 	</group>
-	<group name="setAPlan" defaultAuthorizationRole="ROLE_PLANNING">
+	<group name="setAPlan" defaultAuthorizationRole="ROLE_SCHEDULES">
 		<bigButton name="getOperations" icon="generateIcon24.png"
 				   action="#{form}.fireEvent(getOperations);" state="disabled">
 		</bigButton>

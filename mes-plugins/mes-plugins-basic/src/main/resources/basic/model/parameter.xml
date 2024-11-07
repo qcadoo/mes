@@ -56,9 +56,15 @@
         <integer name="numberOfficeLicenses" required="true" default="1">
             <validatesRange from="0" exclusively="true"/>
         </integer>
+        <integer name="numberAPSLicenses" required="true" default="0">
+            <validatesRange from="0"/>
+        </integer>
+        <integer name="numberWMSMobileLicenses" required="true" default="0">
+            <validatesRange from="0"/>
+        </integer>
 
         <integer name="numberVisibleOrdersTasksOnDashboard" required="true" default="50">
-            <validatesRange from="1" to="500" exclusively="false"/>
+            <validatesRange from="1" to="500"/>
         </integer>
 
         <integer name="numberTerminalLicenses" required="true" default="1">

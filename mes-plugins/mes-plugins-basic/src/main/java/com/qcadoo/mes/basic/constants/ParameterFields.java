@@ -69,6 +69,10 @@ public final class ParameterFields {
 
     public static final String NUMBER_OFFICE_LICENSES = "numberOfficeLicenses";
 
+    public static final String NUMBER_APS_LICENSES = "numberAPSLicenses";
+
+    public static final String NUMBER_WMS_MOBILE_LICENSES = "numberWMSMobileLicenses";
+
     public static final String MANY_ARTICLES_WITH_THE_SAME_EAN = "manyArticlesWithTheSameEAN";
 
     public static final String NO_EXCHANGE_RATE_DOWNLOAD = "noExchangeRateDownload";

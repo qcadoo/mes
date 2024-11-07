@@ -24,7 +24,6 @@
 package com.qcadoo.mes.deliveries.hooks;
 
 import com.qcadoo.mes.advancedGenealogy.criteriaModifier.BatchCriteriaModifier;
-import com.qcadoo.mes.deliveries.DeliveriesService;
 import com.qcadoo.mes.deliveries.constants.DeliveredProductMultiFields;
 import com.qcadoo.mes.deliveries.constants.DeliveredProductMultiPositionFields;
 import com.qcadoo.mes.deliveries.constants.DeliveryFields;
@@ -47,14 +46,7 @@ import java.util.Objects;
 @Service
 public class DeliveredProductAddMultiHooks {
 
-    
-
     private static final String L_LOCATION = "location";
-
-    private static final String L_PRODUCT = "product";
-
-    @Autowired
-    private DeliveriesService deliveriesService;
 
     @Autowired
     private BatchCriteriaModifier batchCriteriaModifier;

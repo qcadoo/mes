@@ -24,7 +24,7 @@
     ***************************************************************************
 
 -->
-<view defaultAuthorizationRole="ROLE_PLANNING" name="masterOrderPositionsGroupedByProductList" modelName="masterOrderPositionDto"
+<view defaultAuthorizationRole="ROLE_SALE" name="masterOrderPositionsGroupedByProductList" modelName="masterOrderPositionDto"
       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
       xmlns="http://schema.qcadoo.org/view"
       xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd">

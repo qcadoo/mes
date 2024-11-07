@@ -23,8 +23,8 @@
  */
 package com.qcadoo.mes.deliveries.listeners;
 
-import com.qcadoo.mes.basic.CalculationQuantityService;
 import com.qcadoo.mes.basic.constants.ProductFields;
+import com.qcadoo.mes.basic.constants.UnitConversionItemFieldsB;
 import com.qcadoo.mes.deliveries.DeliveriesService;
 import com.qcadoo.mes.deliveries.constants.DeliveredProductFields;
 import com.qcadoo.mes.deliveries.constants.DeliveryFields;
@@ -32,6 +32,9 @@ import com.qcadoo.mes.deliveries.hooks.DeliveredProductDetailsHooks;
 import com.qcadoo.mes.materialFlowResources.MaterialFlowResourcesService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
+import com.qcadoo.model.api.search.SearchRestrictions;
+import com.qcadoo.model.api.units.PossibleUnitConversions;
+import com.qcadoo.model.api.units.UnitConversionService;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ComponentState.MessageType;
 import com.qcadoo.view.api.ViewDefinitionState;
@@ -54,7 +57,7 @@ public class DeliveredProductDetailsListeners {
     private NumberService numberService;
 
     @Autowired
-    private CalculationQuantityService calculationQuantityService;
+    private UnitConversionService unitConversionService;
 
     @Autowired
     private DeliveriesService deliveriesService;
@@ -65,7 +68,8 @@ public class DeliveredProductDetailsListeners {
     @Autowired
     private MaterialFlowResourcesService materialFlowResourcesService;
 
-    public void onSelectedEntityChange(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+    public void onSelectedEntityChange(final ViewDefinitionState view, final ComponentState state,
+                                       final String[] args) {
         fillConversion(view, state, args);
         quantityChange(view, state, args);
         fillOrderedQuantities(view, state, args);
@@ -95,11 +99,13 @@ public class DeliveredProductDetailsListeners {
         deliveredProductDetailsHooks.fillOrderedQuantities(view);
     }
 
-    public void calculatePriceFromTotalPrice(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+    public void calculatePriceFromTotalPrice(final ViewDefinitionState view, final ComponentState state,
+                                             final String[] args) {
         deliveriesService.recalculatePriceFromTotalPrice(view, DeliveredProductFields.DELIVERED_QUANTITY);
     }
 
-    public void calculatePriceFromPricePerUnit(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+    public void calculatePriceFromPricePerUnit(final ViewDefinitionState view, final ComponentState state,
+                                               final String[] args) {
         deliveriesService.recalculatePriceFromPricePerUnit(view, DeliveredProductFields.DELIVERED_QUANTITY);
     }
 
@@ -116,15 +122,19 @@ public class DeliveredProductDetailsListeners {
             return;
         }
 
-        BigDecimal conversion = deliveredProduct.getDecimalField(DeliveredProductFields.CONVERSION);
         BigDecimal deliveredQuantity = deliveredProduct.getDecimalField(DeliveredProductFields.DELIVERED_QUANTITY);
 
-        if (Objects.nonNull(conversion) && Objects.nonNull(deliveredQuantity)) {
+        if (Objects.nonNull(deliveredQuantity)) {
+            String deliveredQuantityUnit = product.getStringField(ProductFields.UNIT);
             String additionalQuantityUnit = Optional.ofNullable(product.getStringField(ProductFields.ADDITIONAL_UNIT))
                     .orElse(product.getStringField(ProductFields.UNIT));
 
-            BigDecimal newAdditionalQuantity = calculationQuantityService.calculateAdditionalQuantity(deliveredQuantity,
-                    conversion, additionalQuantityUnit);
+            PossibleUnitConversions unitConversions = unitConversionService.getPossibleConversions(deliveredQuantityUnit, searchCriteriaBuilder -> searchCriteriaBuilder.add(SearchRestrictions.belongsTo(UnitConversionItemFieldsB.PRODUCT, product)));
+
+            BigDecimal newAdditionalQuantity = null;
+            if (unitConversions.isDefinedFor(additionalQuantityUnit)) {
+                newAdditionalQuantity = unitConversions.convertTo(deliveredQuantity, additionalQuantityUnit);
+            }
 
             FieldComponent additionalQuantityField = (FieldComponent) view
                     .getComponentByReference(DeliveredProductFields.ADDITIONAL_QUANTITY);
@@ -156,7 +166,8 @@ public class DeliveredProductDetailsListeners {
         return valid;
     }
 
-    public void additionalQuantityChange(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+    public void additionalQuantityChange(final ViewDefinitionState view, final ComponentState state,
+                                         final String[] args) {
         FormComponent deliveredProductForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         Entity deliveredProduct = deliveredProductForm.getEntity();
         Entity product = deliveredProduct.getBelongsToField(DeliveredProductFields.PRODUCT);
@@ -165,14 +176,19 @@ public class DeliveredProductDetailsListeners {
             return;
         }
 
-        BigDecimal conversion = deliveredProduct.getDecimalField(DeliveredProductFields.CONVERSION);
         BigDecimal additionalQuantity = deliveredProduct.getDecimalField(DeliveredProductFields.ADDITIONAL_QUANTITY);
 
-        if (Objects.nonNull(conversion) && Objects.nonNull(additionalQuantity)) {
+        if (Objects.nonNull(additionalQuantity)) {
             String deliveredQuantityUnit = product.getStringField(ProductFields.UNIT);
+            String additionalQuantityUnit = Optional.ofNullable(product.getStringField(ProductFields.ADDITIONAL_UNIT))
+                    .orElse(product.getStringField(ProductFields.UNIT));
 
-            BigDecimal newDeliveredQuantity = calculationQuantityService.calculateQuantity(additionalQuantity, conversion,
-                    deliveredQuantityUnit);
+            PossibleUnitConversions unitConversions = unitConversionService.getPossibleConversions(additionalQuantityUnit, searchCriteriaBuilder -> searchCriteriaBuilder.add(SearchRestrictions.belongsTo(UnitConversionItemFieldsB.PRODUCT, product)));
+
+            BigDecimal newDeliveredQuantity = null;
+            if (unitConversions.isDefinedFor(deliveredQuantityUnit)) {
+                newDeliveredQuantity = unitConversions.convertTo(additionalQuantity, deliveredQuantityUnit);
+            }
 
             FieldComponent deliveredQuantityField = (FieldComponent) view
                     .getComponentByReference(DeliveredProductFields.DELIVERED_QUANTITY);
@@ -182,7 +198,8 @@ public class DeliveredProductDetailsListeners {
         }
     }
 
-    public void setBatchLookupProductFilterValue(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+    public void setBatchLookupProductFilterValue(final ViewDefinitionState view, final ComponentState state,
+                                                 final String[] args) {
         FormComponent deliveredProductForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
         Entity deliveredProduct = deliveredProductForm.getPersistedEntityWithIncludedFormValues();

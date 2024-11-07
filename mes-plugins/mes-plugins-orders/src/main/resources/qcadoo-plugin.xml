@@ -510,7 +510,7 @@
         </model:model-field>
 
         <model:model-field plugin="basic" model="staff">
-            <model:manyToMany name="orders" model="order" plugin="orders" joinField="staff" cascade="nullify"/>
+            <model:manyToMany name="orders" model="order" plugin="orders" joinField="staff"/>
         </model:model-field>
 
         <model:model-field plugin="basic" model="attribute">
@@ -555,13 +555,13 @@
                         view="ordersPlanningList" defaultAuthorizationRole="ROLE_ORDERS_VIEW"/>
 
         <menu:menu-item name="schedulesList" category="orders"
-                        view="schedulesList" defaultAuthorizationRole="ROLE_PLANNING"/>
+                        view="schedulesList" defaultAuthorizationRole="ROLE_SCHEDULES"/>
 
         <menu:menu-item name="productionLineSchedulesList" category="orders"
                         view="productionLineSchedulesList" defaultAuthorizationRole="ROLE_PRODUCTION_LINE_SCHEDULES"/>
 
         <menu:menu-item name="operationalTasks" category="orders"
-                        view="operationalTasksList" defaultAuthorizationRole="ROLE_PLANNING"/>
+                        view="operationalTasksList" defaultAuthorizationRole="ROLE_OPERATIONAL_TASKS"/>
 
         <menu:menu-item name="orderPacksList" category="orders"
                         view="orderPacksList" defaultAuthorizationRole="ROLE_PLANNING"/>
@@ -576,10 +576,10 @@
                         url="/orderTechnologicalProcessesAnalysis.html" defaultAuthorizationRole="ROLE_ANALYSIS_VIEWER"/>
 
         <menu:menu-item-url name="planningParameters" category="parameters" url="/planningParameters.html"
-                            defaultAuthorizationRole="ROLE_PARAMETERS"/>
+                            defaultAuthorizationRole="ROLE_PLANNING_PARAMETERS"/>
 
         <menu:menu-item name="workstationChangeoverForOperationalTasksList" category="orders"
-                        view="workstationChangeoverForOperationalTasksList" defaultAuthorizationRole="ROLE_PLANNING"/>
+                        view="workstationChangeoverForOperationalTasksList" defaultAuthorizationRole="ROLE_WORKSTATION_CHANGEOVERS"/>
 
         <view:view resource="view/ordersList.xml"/>
         <view:view resource="view/ordersImport.xml"/>

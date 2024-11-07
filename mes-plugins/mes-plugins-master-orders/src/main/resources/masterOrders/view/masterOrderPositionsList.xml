@@ -24,7 +24,7 @@
     ***************************************************************************
 
 -->
-<view defaultAuthorizationRole="ROLE_PLANNING" name="masterOrderPositionsList" modelName="masterOrderPositionDto"
+<view defaultAuthorizationRole="ROLE_SALE" name="masterOrderPositionsList" modelName="masterOrderPositionDto"
       menuAccessible="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
       xmlns="http://schema.qcadoo.org/view"
       xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd">
@@ -33,7 +33,7 @@
         <ribbon>
             <template name="standardGridTemplate" excludeItems="actions.new, actions.copy, actions.delete"
                       excludeGroups="states"/>
-            <group name="orders">
+            <group name="orders" defaultAuthorizationRole="ROLE_PLANNING_ORDERS">
                 <bigButton name="createOrder" icon="generateIcon24.png" state="disabled">
                     <script>
                         <![CDATA[

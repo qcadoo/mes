@@ -4,7 +4,6 @@ import com.google.common.base.Strings;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
-import com.qcadoo.mes.advancedGenealogy.constants.BatchFields;
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.basic.constants.UnitConversionItemFieldsB;
@@ -14,7 +13,6 @@ import com.qcadoo.mes.costNormsForMaterials.CostNormsForMaterialsService;
 import com.qcadoo.mes.costNormsForMaterials.constants.OrderFieldsCNFM;
 import com.qcadoo.mes.costNormsForMaterials.orderRawMaterialCosts.domain.ProductWithQuantityAndCost;
 import com.qcadoo.mes.costNormsForProduct.CostNormsForProductService;
-import com.qcadoo.mes.materialFlow.constants.LocationFields;
 import com.qcadoo.mes.materialFlow.constants.MaterialFlowConstants;
 import com.qcadoo.mes.materialFlowResources.constants.DocumentFields;
 import com.qcadoo.mes.materialFlowResources.constants.DocumentType;
@@ -50,7 +48,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
@@ -110,7 +107,7 @@ public class ProductionCountingDocumentService {
 
         for (Entity productionTracking : productionTrackings) {
             List<Entity> withoutIntermediateRecords = productionTracking.getHasManyField(ProductionTrackingFields.TRACKING_OPERATION_PRODUCT_IN_COMPONENTS)
-                    .stream().filter(ProductionTrackingDocumentsHelper::filterIntermediates)
+                    .stream().filter(ProductionCountingDocumentService::filterIntermediates)
                     .collect(Collectors.toList());
 
             trackingOperationProductInComponents.addAll(withoutIntermediateRecords);
@@ -147,7 +144,7 @@ public class ProductionCountingDocumentService {
         Multimap<Long, Entity> groupedRecordInProducts = productionTrackingDocumentsHelper.groupAndFilterInProducts(order,
                 trackingOperationProductInComponents);
 
-        if (checkIfProductsAvailableInStock(order, groupedRecordInProducts)) {
+        if (productionTrackingDocumentsHelper.checkIfProductsAvailableInStock(order, groupedRecordInProducts)) {
             for (Long locationId : groupedRecordInProducts.keySet()) {
                 List<ProductionCountingQuantityHolder> entries = mapToHolderFromInProduct(groupedRecordInProducts.get(locationId));
                 Entity locationFrom = getLocationDD().get(locationId);
@@ -159,84 +156,6 @@ public class ProductionCountingDocumentService {
                 }
             }
         }
-    }
-
-    public boolean checkIfProductsAvailableInStock(final Entity entity,
-                                                   final Multimap<Long, Entity> groupedRecordInProducts) {
-        DataDefinition locationDD = getLocationDD();
-
-        for (Long locationId : groupedRecordInProducts.keySet()) {
-            List<Entity> trackingOperationProductInComponents = (List<Entity>) groupedRecordInProducts.get(locationId);
-            Entity location = locationDD.get(locationId);
-
-            Map<Long, Map<String, BigDecimal>> productAndQuantities =
-                    productionTrackingDocumentsHelper.getQuantitiesForProductsAndLocation(trackingOperationProductInComponents, location);
-
-            checkIfResourcesAreSufficient(entity, productAndQuantities, trackingOperationProductInComponents, location);
-        }
-
-        return entity.isValid();
-    }
-
-    private boolean checkIfResourcesAreSufficient(final Entity entity,
-                                                  final Map<Long, Map<String, BigDecimal>> productAndQuantities,
-                                                  final Collection<Entity> trackingOperationProductInComponents,
-                                                  final Entity location) {
-        List<String> errorProducts = Lists.newArrayList();
-
-        StringBuilder errorMessage = new StringBuilder();
-
-        String locationNumber = location.getStringField(LocationFields.NUMBER);
-
-        for (Entity trackingOperationProductInComponent : trackingOperationProductInComponents) {
-            Entity product = trackingOperationProductInComponent.getBelongsToField(TrackingOperationProductInComponentFields.PRODUCT);
-            List<Entity> usedBatches = trackingOperationProductInComponent.getHasManyField(TrackingOperationProductInComponentFields.USED_BATCHES);
-
-            Map<String, BigDecimal> batchQuantities = productAndQuantities.get(product.getId());
-
-            if (Objects.isNull(batchQuantities)) {
-                errorProducts.add(product.getStringField(ProductFields.NUMBER));
-            } else {
-                if (usedBatches.isEmpty()) {
-                    BigDecimal quantity = trackingOperationProductInComponent.getDecimalField(TrackingOperationProductInComponentFields.USED_QUANTITY);
-
-                    BigDecimal availableQuantity = batchQuantities.values().stream().reduce(BigDecimal.ZERO, BigDecimal::add);
-
-                    if (Objects.isNull(availableQuantity) || quantity.compareTo(availableQuantity) > 0) {
-                        errorProducts.add(product.getStringField(ProductFields.NUMBER));
-                    }
-                } else {
-                    usedBatches.forEach(usedBatch -> {
-                        String batchNumber = usedBatch.getBelongsToField(UsedBatchFields.BATCH).getStringField(BatchFields.NUMBER);
-                        BigDecimal quantity = usedBatch.getDecimalField(UsedBatchFields.QUANTITY);
-
-                        BigDecimal availableQuantity = batchQuantities.get(batchNumber);
-
-                        if (Objects.isNull(availableQuantity) || quantity.compareTo(availableQuantity) > 0) {
-                            errorProducts.add(product.getStringField(ProductFields.NUMBER));
-                        }
-                    });
-                }
-            }
-        }
-
-        if (errorProducts.isEmpty()) {
-            return true;
-        }
-
-        errorMessage.append(errorProducts.stream().distinct().collect(Collectors.joining(", ")));
-
-        if (errorMessage.length() + locationNumber.length() < 255) {
-            entity.addGlobalError("materialFlow.error.position.quantity.notEnoughResources", false,
-                    errorMessage.toString(), locationNumber);
-        } else {
-            errorProducts.forEach(errorProduct ->
-                    entity.addGlobalError("materialFlow.error.position.quantity.notEnoughResources", false,
-                            errorProduct, locationNumber)
-            );
-        }
-
-        return false;
     }
 
     private List<ProductionCountingQuantityHolder> mapToHolderFromInProduct(
@@ -303,7 +222,7 @@ public class ProductionCountingDocumentService {
             ProductionCountingQuantityHolder exist = entities.get(index);
 
             exist.setUsedQuantity(exist.getUsedQuantity().add(BigDecimalUtils.convertNullToZero(holder.getUsedQuantity())));
-            exist.setGivenQuantity(exist.getUsedQuantity().add(BigDecimalUtils.convertNullToZero(holder.getGivenQuantity())));
+            exist.setGivenQuantity(exist.getGivenQuantity().add(BigDecimalUtils.convertNullToZero(holder.getGivenQuantity())));
         } else {
             entities.add(holder);
         }
@@ -699,8 +618,8 @@ public class ProductionCountingDocumentService {
         return trackingOperationProductOutComponent.getStringField(TrackingOperationProductOutComponentFields.TYPE_OF_MATERIAL).equals(ProductionCountingQuantityTypeOfMaterial.WASTE.getStringValue());
     }
 
-    public static boolean isIntermediateForOrder(final Entity trackingOperationProductOutComponent) {
-        return trackingOperationProductOutComponent.getStringField(TrackingOperationProductOutComponentFields.TYPE_OF_MATERIAL).equals(ProductionCountingQuantityTypeOfMaterial.INTERMEDIATE.getStringValue());
+    public static boolean filterIntermediates(final Entity trackingOperationProductInComponent) {
+        return !ProductionCountingQuantityTypeOfMaterial.INTERMEDIATE.getStringValue().equals(trackingOperationProductInComponent.getStringField(TrackingOperationProductInComponentFields.TYPE_OF_MATERIAL));
     }
 
     private DataDefinition getProductionTrackingDD() {
@@ -720,5 +639,4 @@ public class ProductionCountingDocumentService {
     private DataDefinition getUserDD() {
         return dataDefinitionService.get(QcadooSecurityConstants.PLUGIN_IDENTIFIER, QcadooSecurityConstants.MODEL_USER);
     }
-
 }

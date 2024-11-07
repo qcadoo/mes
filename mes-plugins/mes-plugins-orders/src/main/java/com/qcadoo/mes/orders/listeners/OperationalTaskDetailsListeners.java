@@ -29,12 +29,10 @@ import com.qcadoo.mes.orders.constants.OperationalTaskFields;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.constants.WorkstationChangeoverForOperationalTaskDtoFields;
 import com.qcadoo.mes.orders.hooks.OperationalTasksDetailsHooks;
-import com.qcadoo.mes.technologies.ProductQuantitiesService;
 import com.qcadoo.mes.technologies.TechnologyService;
 import com.qcadoo.mes.technologies.constants.OperationProductOutComponentFields;
 import com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperationComponentFieldsTNFO;
 import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.NumberService;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
@@ -67,12 +65,6 @@ public class OperationalTaskDetailsListeners {
     @Autowired
     private TechnologyService technologyService;
 
-    @Autowired
-    private ProductQuantitiesService productQuantitiesService;
-
-    @Autowired
-    private NumberService numberService;
-
     public final void onTypeChange(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         disableFieldsWhenOrderTypeIsSelected(view, state, args);
         disableButtons(view, state, args);
@@ -93,7 +85,8 @@ public class OperationalTaskDetailsListeners {
         view.redirectTo(url, false, true, parameters);
     }
 
-    public final void showOperationParameters(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+    public final void showOperationParameters(final ViewDefinitionState view, final ComponentState state,
+                                              final String[] args) {
         LookupComponent technologyOperationComponentLookup = (LookupComponent) view
                 .getComponentByReference(OperationalTaskFields.TECHNOLOGY_OPERATION_COMPONENT);
 
@@ -145,7 +138,8 @@ public class OperationalTaskDetailsListeners {
         view.redirectTo(url, false, true, parameters);
     }
 
-    public final void showWorkstationChangeoverForOperationalTasks(final ViewDefinitionState view, final ComponentState state,
+    public final void showWorkstationChangeoverForOperationalTasks(final ViewDefinitionState view,
+                                                                   final ComponentState state,
                                                                    final String[] args) {
         FormComponent operationalTaskForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
