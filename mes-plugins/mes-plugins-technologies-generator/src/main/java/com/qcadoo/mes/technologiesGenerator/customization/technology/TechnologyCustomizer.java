@@ -26,7 +26,7 @@ package com.qcadoo.mes.technologiesGenerator.customization.technology;
 import com.qcadoo.commons.functional.Either;
 import com.qcadoo.mes.basic.constants.ProductFamilyElementType;
 import com.qcadoo.mes.technologies.TechnologyNameAndNumberGenerator;
-import com.qcadoo.mes.technologies.constants.QualityCardFields;
+import com.qcadoo.mes.basic.constants.QualityCardFields;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
 import com.qcadoo.mes.technologies.dataProvider.TechnologyDataProvider;

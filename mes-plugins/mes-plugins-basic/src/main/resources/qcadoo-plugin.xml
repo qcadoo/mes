@@ -372,6 +372,11 @@
 
         <model:model model="licenseUsage" resource="model/licenseUsage.xml"/>
 
+        <model:model model="qualityCard" resource="model/qualityCard.xml"/>
+        <model:model model="qualityCardStateChange" resource="model/qualityCardStateChange.xml"/>
+
+        <model:dictionary name="sampling"/>
+
         <model:dictionary name="categories"/>
         <model:dictionary name="reasonTypeOfChangingOrderState"/>
 

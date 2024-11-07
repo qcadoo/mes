@@ -23,36 +23,36 @@
  */
 package com.qcadoo.mes.deliveries.hooks;
 
-import java.math.BigDecimal;
-import java.util.List;
-import java.util.Objects;
-
-import com.qcadoo.view.api.components.CheckBoxComponent;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.advancedGenealogy.criteriaModifier.BatchCriteriaModifier;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.deliveries.DeliveriesService;
 import com.qcadoo.mes.deliveries.constants.OrderedProductFields;
-import com.qcadoo.mes.technologies.criteriaModifiers.QualityCardCriteriaModifiers;
+import com.qcadoo.mes.deliveries.criteriaModifiers.QualityCardCriteriaModifiersD;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.security.api.SecurityService;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
+import com.qcadoo.view.api.components.CheckBoxComponent;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.LookupComponent;
 import com.qcadoo.view.api.components.lookup.FilterValueHolder;
 import com.qcadoo.view.constants.QcadooViewConstants;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.Objects;
 
 @Service
 public class OrderedProductDetailsHooks {
 
     public static final String TOTAL_PRICE_CURRENCY = "totalPriceCurrency";
     public static final String PRICE_PER_UNIT_CURRENCY = "pricePerUnitCurrency";
+
     @Autowired
     private DeliveriesService deliveriesService;
 
@@ -153,7 +153,7 @@ public class OrderedProductDetailsHooks {
         LookupComponent qualityCard = (LookupComponent) viewDefinitionState.getComponentByReference("qualityCard");
         if (product.getEntity() != null) {
             FilterValueHolder filter = qualityCard.getFilterValue();
-            filter.put(QualityCardCriteriaModifiers.L_PRODUCT_ID, product.getEntity().getId());
+            filter.put(QualityCardCriteriaModifiersD.L_PRODUCT_ID, product.getEntity().getId());
             qualityCard.setFilterValue(filter);
             qualityCard.requestComponentUpdateState();
         }

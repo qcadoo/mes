@@ -66,10 +66,6 @@ public final class TechnologiesConstants {
 
     public static final String MODEL_PRODUCT_TO_PRODUCT_GROUP_TECHNOLOGY = "productToProductGroupTechnology";
 
-    public static final String MODEL_QUALITY_CARD = "qualityCard";
-
-    public static final String MODEL_QUALITY_CARD_STATE_CHANGE = "qualityCardStateChange";
-
     public static final String MODEL_TECHNOLOGICAL_PROCESS = "technologicalProcess";
 
     public static final String MODEL_TECHNOLOGICAL_PROCESS_COMPONENT = "technologicalProcessComponent";

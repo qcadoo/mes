@@ -23,13 +23,13 @@
  */
 package com.qcadoo.mes.deliveries.listeners;
 
+import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.basic.constants.UnitConversionItemFieldsB;
 import com.qcadoo.mes.deliveries.DeliveriesService;
 import com.qcadoo.mes.deliveries.constants.OrderedProductFields;
 import com.qcadoo.mes.deliveries.hooks.OrderedProductDetailsHooks;
-import com.qcadoo.mes.technologies.constants.QualityCardFields;
-import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
+import com.qcadoo.mes.basic.constants.QualityCardFields;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
@@ -242,7 +242,7 @@ public class OrderedProductDetailsListeners {
         if (Objects.nonNull(product)) {
             LookupComponent qualityCardLookup = (LookupComponent) view.getComponentByReference(OrderedProductFields.QUALITY_CARD);
             List<Entity> entities = dataDefinitionService
-                    .get(TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_QUALITY_CARD).find()
+                    .get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_QUALITY_CARD).find()
                     .add(SearchRestrictions.eq(QualityCardFields.STATE, "02accepted"))
                     .createAlias(QualityCardFields.PRODUCTS, QualityCardFields.PRODUCTS, JoinType.INNER)
                     .add(SearchRestrictions.eq(QualityCardFields.PRODUCTS + ".id", product.getId())).list().getEntities();

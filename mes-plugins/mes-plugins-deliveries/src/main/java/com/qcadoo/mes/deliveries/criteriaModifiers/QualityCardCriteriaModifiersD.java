@@ -1,6 +1,6 @@
 package com.qcadoo.mes.deliveries.criteriaModifiers;
 
-import com.qcadoo.mes.technologies.constants.QualityCardFields;
+import com.qcadoo.mes.basic.constants.QualityCardFields;
 import com.qcadoo.model.api.search.JoinType;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;

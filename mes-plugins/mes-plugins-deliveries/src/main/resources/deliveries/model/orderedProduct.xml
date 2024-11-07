@@ -64,10 +64,10 @@
         <string name="batchNumber"/>
         <belongsTo name="batch" model="batch" plugin="advancedGenealogy"/>
 
-        <belongsTo name="qualityCard" model="qualityCard" plugin="technologies"/>
+        <belongsTo name="qualityCard" model="qualityCard" plugin="basic"/>
 
         <hasMany name="deliveredProducts" model="deliveredProduct"
-                 joinField="orderedProduct" cascade="nullify" copyable="false"/>
+                 joinField="orderedProduct"/>
 
         <boolean name="addBatch" default="false" persistent="false"/>
 

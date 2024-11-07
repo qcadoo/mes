@@ -25,7 +25,9 @@ package com.qcadoo.mes.technologies.listeners;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.basic.constants.ProductFields;
+import com.qcadoo.mes.basic.constants.QualityCardFields;
 import com.qcadoo.mes.technologies.TechnologyService;
 import com.qcadoo.mes.technologies.constants.*;
 import com.qcadoo.mes.technologies.hooks.TechnologyDetailsHooks;
@@ -379,7 +381,7 @@ public class TechnologyDetailsListeners {
 
     private DataDefinition getQualityCardDD() {
         return dataDefinitionService
-                .get(TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_QUALITY_CARD);
+                .get(TechnologiesConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_QUALITY_CARD);
     }
 
 }

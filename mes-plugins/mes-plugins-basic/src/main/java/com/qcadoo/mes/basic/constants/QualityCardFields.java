@@ -1,4 +1,4 @@
-package com.qcadoo.mes.technologies.constants;
+package com.qcadoo.mes.basic.constants;
 
 public final class QualityCardFields {
 

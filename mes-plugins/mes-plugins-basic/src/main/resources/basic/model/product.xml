@@ -85,6 +85,7 @@
         <boolean name="machinePart"/>
         <boolean name="synchronize" copyable="false"/>
         <belongsTo name="batchNumberPattern" model="numberPattern"/>
+        <manyToMany name="qualityCards" model="qualityCard" joinField="products" lazy="true"/>
     </fields>
 
     <hooks>
