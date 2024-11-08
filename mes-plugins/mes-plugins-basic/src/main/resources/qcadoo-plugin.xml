@@ -262,6 +262,7 @@
         <security:role identifier="ROLE_CLEAN_EXTERNAL_NUMBER"/>
 
         <security:role identifier="ROLE_DASHBOARD_KANBAN"/>
+        <security:role identifier="ROLE_DASHBOARD_PARAMETERS"/>
         <security:role identifier="ROLE_DASHBOARD_KANBAN_CREATE_ORDERS"/>
         <security:role identifier="ROLE_DASHBOARD_KANBAN_GOTO_ORDER_EDIT"/>
         <security:role identifier="ROLE_DASHBOARD_KANBAN_PRINT_LABEL"/>

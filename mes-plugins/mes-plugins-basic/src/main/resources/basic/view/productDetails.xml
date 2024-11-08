@@ -462,7 +462,7 @@
                 </layoutElement>
                 <layoutElement column="1" row="4" width="3">
                     <component type="checkbox" name="showInProductData" field="#{form}.showInProductData"
-                               reference="showInProductData" defaultVisible="true" hasDescription="true">
+                               reference="showInProductData" defaultVisible="false" hasDescription="true">
                     </component>
                 </layoutElement>
             </component>

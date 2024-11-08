@@ -31,6 +31,7 @@ import com.qcadoo.mes.basic.util.UnitService;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.security.api.SecurityService;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.*;
@@ -77,6 +78,9 @@ public class ProductDetailsHooks {
 
     @Autowired
     private UnitService unitService;
+
+    @Autowired
+    private SecurityService securityService;
 
     public void onBeforeRender(final ViewDefinitionState view) {
         generateProductNumber(view);
@@ -235,6 +239,8 @@ public class ProductDetailsHooks {
     }
 
     public void enableCharacteristicsTabForExternalItems(final ViewDefinitionState view) {
+        ComponentState showInProductData = view.getComponentByReference(ProductFields.SHOW_IN_PRODUCT_DATA );
+        showInProductData.setVisible(securityService.hasCurrentUserRole("ROLE_TECHNOLOGIES"));
         FormComponent productForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         Long productId = productForm.getEntityId();
 

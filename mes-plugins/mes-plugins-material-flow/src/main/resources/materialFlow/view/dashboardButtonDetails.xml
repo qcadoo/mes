@@ -25,7 +25,7 @@
 
 -->
 <view name="dashboardButtonDetails" modelPlugin="basic" modelName="dashboardButton"
-      defaultAuthorizationRole="ROLE_PARAMETERS"
+      defaultAuthorizationRole="ROLE_DASHBOARD_PARAMETERS"
       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
       xmlns="http://schema.qcadoo.org/view"
       xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd">
