@@ -522,11 +522,15 @@ public class DeliveryDetailsListeners {
 
         BigDecimal conversion = orderedProduct.getDecimalField(OrderedProductFields.CONVERSION);
 
-        PossibleUnitConversions unitConversions = unitConversionService.getPossibleConversions(unit, searchCriteriaBuilder -> searchCriteriaBuilder.add(SearchRestrictions.belongsTo(UnitConversionItemFieldsB.PRODUCT, product)));
-
         BigDecimal additionalQuantity = null;
-        if (unitConversions.isDefinedFor(additionalUnit)) {
-            additionalQuantity = unitConversions.convertTo(quantity, additionalUnit);
+        if (unit.equals(additionalUnit)) {
+            additionalQuantity = quantity;
+        } else {
+            PossibleUnitConversions unitConversions = unitConversionService.getPossibleConversions(unit, searchCriteriaBuilder -> searchCriteriaBuilder.add(SearchRestrictions.belongsTo(UnitConversionItemFieldsB.PRODUCT, product)));
+
+            if (unitConversions.isDefinedFor(additionalUnit)) {
+                additionalQuantity = unitConversions.convertTo(quantity, additionalUnit);
+            }
         }
 
         deliveredProductMultiPosition.setField(DeliveredProductMultiPositionFields.PRODUCT, product);
@@ -606,11 +610,17 @@ public class DeliveryDetailsListeners {
             String unit = product.getStringField(ProductFields.UNIT);
             String additionalQuantityUnit = Optional.ofNullable(product.getStringField(ProductFields.ADDITIONAL_UNIT))
                     .orElse(unit);
-            PossibleUnitConversions unitConversions = unitConversionService.getPossibleConversions(unit, searchCriteriaBuilder -> searchCriteriaBuilder.add(SearchRestrictions.belongsTo(UnitConversionItemFieldsB.PRODUCT, product)));
+
 
             BigDecimal newAdditionalQuantity = null;
-            if (unitConversions.isDefinedFor(additionalQuantityUnit)) {
-                newAdditionalQuantity = unitConversions.convertTo(deliveredQuantity, additionalQuantityUnit);
+            if (unit.equals(additionalQuantityUnit)) {
+                newAdditionalQuantity = deliveredQuantity;
+            } else {
+                PossibleUnitConversions unitConversions = unitConversionService.getPossibleConversions(unit, searchCriteriaBuilder -> searchCriteriaBuilder.add(SearchRestrictions.belongsTo(UnitConversionItemFieldsB.PRODUCT, product)));
+
+                if (unitConversions.isDefinedFor(additionalQuantityUnit)) {
+                    newAdditionalQuantity = unitConversions.convertTo(deliveredQuantity, additionalQuantityUnit);
+                }
             }
             deliveredProduct.setField(DeliveredProductFields.ADDITIONAL_QUANTITY, newAdditionalQuantity);
             deliveredProduct.setField(DeliveredProductFields.PRICE_PER_UNIT, numberService
