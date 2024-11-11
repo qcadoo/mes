@@ -152,11 +152,15 @@ public class OrderedProductDetailsListeners {
             String additionalQuantityUnit = Optional.ofNullable(product.getStringField(ProductFields.ADDITIONAL_UNIT)).orElse(
                     product.getStringField(ProductFields.UNIT));
 
-            PossibleUnitConversions unitConversions = unitConversionService.getPossibleConversions(orderedQuantityUnit, searchCriteriaBuilder -> searchCriteriaBuilder.add(SearchRestrictions.belongsTo(UnitConversionItemFieldsB.PRODUCT, product)));
-
             BigDecimal newAdditionalQuantity = null;
-            if (unitConversions.isDefinedFor(additionalQuantityUnit)) {
-                newAdditionalQuantity = unitConversions.convertTo(orderedQuantity, additionalQuantityUnit);
+            if (orderedQuantityUnit.equals(additionalQuantityUnit)) {
+                newAdditionalQuantity = orderedQuantity;
+            } else {
+                PossibleUnitConversions unitConversions = unitConversionService.getPossibleConversions(orderedQuantityUnit, searchCriteriaBuilder -> searchCriteriaBuilder.add(SearchRestrictions.belongsTo(UnitConversionItemFieldsB.PRODUCT, product)));
+
+                if (unitConversions.isDefinedFor(additionalQuantityUnit)) {
+                    newAdditionalQuantity = unitConversions.convertTo(orderedQuantity, additionalQuantityUnit);
+                }
             }
 
             FieldComponent additionalQuantityField = (FieldComponent) view
@@ -209,11 +213,15 @@ public class OrderedProductDetailsListeners {
             String additionalQuantityUnit = Optional.ofNullable(product.getStringField(ProductFields.ADDITIONAL_UNIT)).orElse(
                     product.getStringField(ProductFields.UNIT));
 
-            PossibleUnitConversions unitConversions = unitConversionService.getPossibleConversions(additionalQuantityUnit, searchCriteriaBuilder -> searchCriteriaBuilder.add(SearchRestrictions.belongsTo(UnitConversionItemFieldsB.PRODUCT, product)));
-
             BigDecimal newOrderedQuantity = null;
-            if (unitConversions.isDefinedFor(orderedQuantityUnit)) {
-                newOrderedQuantity = unitConversions.convertTo(additionalQuantity, orderedQuantityUnit);
+            if (orderedQuantityUnit.equals(additionalQuantityUnit)) {
+                newOrderedQuantity = additionalQuantity;
+            } else {
+                PossibleUnitConversions unitConversions = unitConversionService.getPossibleConversions(additionalQuantityUnit, searchCriteriaBuilder -> searchCriteriaBuilder.add(SearchRestrictions.belongsTo(UnitConversionItemFieldsB.PRODUCT, product)));
+
+                if (unitConversions.isDefinedFor(orderedQuantityUnit)) {
+                    newOrderedQuantity = unitConversions.convertTo(additionalQuantity, orderedQuantityUnit);
+                }
             }
 
             FieldComponent orderedQuantityField = (FieldComponent) view
