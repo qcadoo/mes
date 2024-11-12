@@ -144,7 +144,7 @@
 
                                             <listener event="onInputChange"
                                                       class="com.qcadoo.mes.deliveries.listeners.DeliveredProductAddMultiListeners"
-                                                      method="quantityChanged"/>
+                                                      method="conversionChanged"/>
                                         </component>
                                     </layoutElement>
                                     <layoutElement column="9" row="1" width="3">

@@ -24,6 +24,7 @@
 package com.qcadoo.mes.deliveries.listeners;
 
 import com.qcadoo.mes.advancedGenealogy.constants.BatchFields;
+import com.qcadoo.mes.basic.CalculationQuantityService;
 import com.qcadoo.mes.basic.constants.PalletNumberFields;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.basic.constants.UnitConversionItemFieldsB;
@@ -96,6 +97,9 @@ public class DeliveredProductAddMultiListeners {
 
     @Autowired
     private MaterialFlowResourcesService materialFlowResourcesService;
+
+    @Autowired
+    private CalculationQuantityService calculationQuantityService;
 
     public void createDeliveredProducts(final ViewDefinitionState view, final ComponentState state,
                                         final String[] args) {
@@ -490,6 +494,47 @@ public class DeliveredProductAddMultiListeners {
                             newAdditionalQuantity = unitConversions.convertTo(quantity, additionalQuantityUnit);
                         }
                     }
+
+                    FieldComponent additionalQuantityField = deliveredProductMultiPositionsFormComponent
+                            .findFieldComponentByName(DeliveredProductMultiPositionFields.ADDITIONAL_QUANTITY);
+
+                    additionalQuantityField
+                            .setFieldValue(numberService.formatWithMinimumFractionDigits(newAdditionalQuantity, 0));
+                    additionalQuantityField.requestComponentUpdateState();
+                }
+
+                break;
+            }
+        }
+    }
+
+    public void conversionChanged(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        AwesomeDynamicListComponent deliveredProductMultiPositions = (AwesomeDynamicListComponent) view
+                .getComponentByReference(DeliveredProductMultiFields.DELIVERED_PRODUCT_MULTI_POSITIONS);
+
+        List<FormComponent> deliveredProductMultiPositionsFormComponents = deliveredProductMultiPositions.getFormComponents();
+
+        for (FormComponent deliveredProductMultiPositionsFormComponent : deliveredProductMultiPositionsFormComponents) {
+            Entity deliveredProductMultiPosition = deliveredProductMultiPositionsFormComponent
+                    .getPersistedEntityWithIncludedFormValues();
+
+            boolean quantityComponentInForm = state.getUuid().equals(deliveredProductMultiPositionsFormComponent
+                    .findFieldComponentByName(DeliveredProductMultiPositionFields.QUANTITY).getUuid());
+            boolean conversionComponentInForm = state.getUuid().equals(deliveredProductMultiPositionsFormComponent
+                    .findFieldComponentByName(DeliveredProductMultiPositionFields.CONVERSION).getUuid());
+
+            if (quantityComponentInForm || conversionComponentInForm) {
+                Entity product = deliveredProductMultiPosition.getBelongsToField(DeliveredProductMultiPositionFields.PRODUCT);
+                BigDecimal quantity = deliveredProductMultiPosition.getDecimalField(DeliveredProductMultiPositionFields.QUANTITY);
+                BigDecimal conversion = deliveredProductMultiPosition
+                        .getDecimalField(DeliveredProductMultiPositionFields.CONVERSION);
+
+                if (Objects.nonNull(conversion) && Objects.nonNull(quantity) && Objects.nonNull(product)) {
+                    String additionalQuantityUnit = Optional.ofNullable(product.getStringField(ProductFields.ADDITIONAL_UNIT))
+                            .orElse(product.getStringField(ProductFields.UNIT));
+
+                    BigDecimal newAdditionalQuantity = calculationQuantityService.calculateAdditionalQuantity(quantity,
+                            conversion, additionalQuantityUnit);
 
                     FieldComponent additionalQuantityField = deliveredProductMultiPositionsFormComponent
                             .findFieldComponentByName(DeliveredProductMultiPositionFields.ADDITIONAL_QUANTITY);
