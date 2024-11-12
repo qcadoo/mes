@@ -107,7 +107,7 @@
 
                                     <listener event="onInputChange"
                                               class="com.qcadoo.mes.deliveries.listeners.OrderedProductDetailsListeners"
-                                              method="quantityChange"/>
+                                              method="conversionChange"/>
                                 </component>
                             </layoutElement>
                         </component>

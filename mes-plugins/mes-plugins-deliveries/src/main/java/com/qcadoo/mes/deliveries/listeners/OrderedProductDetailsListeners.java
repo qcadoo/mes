@@ -23,6 +23,7 @@
  */
 package com.qcadoo.mes.deliveries.listeners;
 
+import com.qcadoo.mes.basic.CalculationQuantityService;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.basic.constants.UnitConversionItemFieldsB;
 import com.qcadoo.mes.deliveries.DeliveriesService;
@@ -70,6 +71,9 @@ public class OrderedProductDetailsListeners {
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
+
+    @Autowired
+    private CalculationQuantityService calculationQuantityService;
 
     public void onProductChange(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         fillUnitFields(view, state, args);
@@ -162,6 +166,36 @@ public class OrderedProductDetailsListeners {
                     newAdditionalQuantity = unitConversions.convertTo(orderedQuantity, additionalQuantityUnit);
                 }
             }
+
+            FieldComponent additionalQuantityField = (FieldComponent) view
+                    .getComponentByReference(OrderedProductFields.ADDITIONAL_QUANTITY);
+
+            additionalQuantityField.setFieldValue(numberService.formatWithMinimumFractionDigits(newAdditionalQuantity, 0));
+            additionalQuantityField.requestComponentUpdateState();
+        }
+    }
+
+    public void conversionChange(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        deliveriesService.recalculatePrice(view, OrderedProductFields.ORDERED_QUANTITY);
+
+        FormComponent orderedProductForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
+        Entity orderedProduct = orderedProductForm.getEntity();
+
+        Entity product = orderedProduct.getBelongsToField(OrderedProductFields.PRODUCT);
+
+        if (decimalFieldsInvalid(orderedProductForm) || Objects.isNull(product)) {
+            return;
+        }
+
+        BigDecimal conversion = orderedProduct.getDecimalField(OrderedProductFields.CONVERSION);
+        BigDecimal orderedQuantity = orderedProduct.getDecimalField(OrderedProductFields.ORDERED_QUANTITY);
+
+        if (Objects.nonNull(conversion) && Objects.nonNull(orderedQuantity)) {
+            String additionalQuantityUnit = Optional.ofNullable(product.getStringField(ProductFields.ADDITIONAL_UNIT)).orElse(
+                    product.getStringField(ProductFields.UNIT));
+
+            BigDecimal newAdditionalQuantity = calculationQuantityService.calculateAdditionalQuantity(orderedQuantity,
+                    conversion, additionalQuantityUnit);
 
             FieldComponent additionalQuantityField = (FieldComponent) view
                     .getComponentByReference(OrderedProductFields.ADDITIONAL_QUANTITY);
