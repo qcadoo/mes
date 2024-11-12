@@ -381,7 +381,7 @@ public class TechnologyDetailsListeners {
 
     private DataDefinition getQualityCardDD() {
         return dataDefinitionService
-                .get(TechnologiesConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_QUALITY_CARD);
+                .get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_QUALITY_CARD);
     }
 
 }
