@@ -23,6 +23,7 @@
  */
 package com.qcadoo.mes.deliveries.listeners;
 
+import com.qcadoo.mes.basic.CalculationQuantityService;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.basic.constants.UnitConversionItemFieldsB;
 import com.qcadoo.mes.deliveries.DeliveriesService;
@@ -67,6 +68,9 @@ public class DeliveredProductDetailsListeners {
 
     @Autowired
     private MaterialFlowResourcesService materialFlowResourcesService;
+
+    @Autowired
+    private CalculationQuantityService calculationQuantityService;
 
     public void onSelectedEntityChange(final ViewDefinitionState view, final ComponentState state,
                                        final String[] args) {
@@ -139,6 +143,33 @@ public class DeliveredProductDetailsListeners {
                     newAdditionalQuantity = unitConversions.convertTo(deliveredQuantity, additionalQuantityUnit);
                 }
             }
+
+            FieldComponent additionalQuantityField = (FieldComponent) view
+                    .getComponentByReference(DeliveredProductFields.ADDITIONAL_QUANTITY);
+
+            additionalQuantityField.setFieldValue(numberService.formatWithMinimumFractionDigits(newAdditionalQuantity, 0));
+            additionalQuantityField.requestComponentUpdateState();
+        }
+    }
+
+    public void conversionChange(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        FormComponent deliveredProductForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
+        Entity deliveredProduct = deliveredProductForm.getEntity();
+        Entity product = deliveredProduct.getBelongsToField(DeliveredProductFields.PRODUCT);
+
+        if (decimalFieldsInvalid(deliveredProductForm) || Objects.isNull(product)) {
+            return;
+        }
+
+        BigDecimal conversion = deliveredProduct.getDecimalField(DeliveredProductFields.CONVERSION);
+        BigDecimal deliveredQuantity = deliveredProduct.getDecimalField(DeliveredProductFields.DELIVERED_QUANTITY);
+
+        if (Objects.nonNull(conversion) && Objects.nonNull(deliveredQuantity)) {
+            String additionalQuantityUnit = Optional.ofNullable(product.getStringField(ProductFields.ADDITIONAL_UNIT))
+                    .orElse(product.getStringField(ProductFields.UNIT));
+
+            BigDecimal newAdditionalQuantity = calculationQuantityService.calculateAdditionalQuantity(deliveredQuantity,
+                    conversion, additionalQuantityUnit);
 
             FieldComponent additionalQuantityField = (FieldComponent) view
                     .getComponentByReference(DeliveredProductFields.ADDITIONAL_QUANTITY);
