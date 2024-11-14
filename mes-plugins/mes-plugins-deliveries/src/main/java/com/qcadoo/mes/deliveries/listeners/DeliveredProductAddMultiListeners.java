@@ -27,8 +27,8 @@ import com.qcadoo.mes.advancedGenealogy.constants.BatchFields;
 import com.qcadoo.mes.basic.CalculationQuantityService;
 import com.qcadoo.mes.basic.constants.PalletNumberFields;
 import com.qcadoo.mes.basic.constants.ProductFields;
-import com.qcadoo.mes.basic.constants.UnitConversionItemFieldsB;
 import com.qcadoo.mes.deliveries.DeliveredProductMultiPositionService;
+import com.qcadoo.mes.deliveries.DeliveriesService;
 import com.qcadoo.mes.deliveries.constants.*;
 import com.qcadoo.mes.deliveries.helpers.DeliveredMultiProduct;
 import com.qcadoo.mes.deliveries.helpers.DeliveredMultiProductContainer;
@@ -39,9 +39,6 @@ import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
-import com.qcadoo.model.api.search.SearchRestrictions;
-import com.qcadoo.model.api.units.PossibleUnitConversions;
-import com.qcadoo.model.api.units.UnitConversionService;
 import com.qcadoo.model.api.validators.ErrorMessage;
 import com.qcadoo.plugin.api.PluginUtils;
 import com.qcadoo.view.api.ComponentState;
@@ -87,7 +84,7 @@ public class DeliveredProductAddMultiListeners {
     private NumberService numberService;
 
     @Autowired
-    private UnitConversionService unitConversionService;
+    private DeliveriesService deliveriesService;
 
     @Autowired
     private DeliveredProductAddMultiHooks deliveredProductAddMultiHooks;
@@ -371,27 +368,17 @@ public class DeliveredProductAddMultiListeners {
                 deliveredProductAddMultiHooks.filterBatch(batchLookup, product);
 
                 if (Objects.nonNull(product)) {
+                    conversionField.setEnabled(Objects.nonNull(product.getStringField(ProductFields.ADDITIONAL_UNIT)));
                     String unit = product.getStringField(ProductFields.UNIT);
                     deliveredProductMultiPosition.setField(DeliveredProductMultiPositionFields.UNIT, unit);
-                    String additionalUnit = product.getStringField(ProductFields.ADDITIONAL_UNIT);
+                    String additionalUnit = Optional.ofNullable(product.getStringField(ProductFields.ADDITIONAL_UNIT))
+                            .orElse(unit);
+                    BigDecimal conversion = deliveriesService.getConversion(product, unit, additionalUnit, null);
+                    deliveredProductMultiPosition.setField(DeliveredProductMultiPositionFields.CONVERSION, conversion);
+                    deliveredProductMultiPosition.setField(DeliveredProductMultiPositionFields.ADDITIONAL_UNIT,
+                            additionalUnit);
+
                     Entity batch = batchLookup.getEntity();
-
-                    if (Objects.nonNull(additionalUnit)) {
-                        conversionField.setEnabled(true);
-
-                        deliveredProductMultiPosition.setField(DeliveredProductMultiPositionFields.ADDITIONAL_UNIT,
-                                additionalUnit);
-
-                        BigDecimal conversion = getConversion(product, unit, additionalUnit);
-
-                        deliveredProductMultiPosition.setField(DeliveredProductMultiPositionFields.CONVERSION, conversion);
-                    } else {
-                        conversionField.setEnabled(false);
-
-                        deliveredProductMultiPosition.setField(DeliveredProductMultiPositionFields.ADDITIONAL_UNIT, unit);
-                        deliveredProductMultiPosition.setField(DeliveredProductMultiPositionFields.CONVERSION, BigDecimal.ONE);
-                    }
-
                     if (Objects.nonNull(batch)) {
                         if (!product.getId().equals(batch.getBelongsToField(BatchFields.PRODUCT).getId())) {
                             deliveredProductMultiPosition.setField(DeliveredProductMultiPositionFields.BATCH, null);
@@ -428,35 +415,16 @@ public class DeliveredProductAddMultiListeners {
             }
 
             String unit = product.getStringField(ProductFields.UNIT);
-            String additionalQuantityUnit = Optional.ofNullable(product.getStringField(ProductFields.ADDITIONAL_UNIT))
-                    .orElse(product.getStringField(ProductFields.UNIT));
+            String additionalUnit = Optional.ofNullable(product.getStringField(ProductFields.ADDITIONAL_UNIT))
+                    .orElse(unit);
 
-            BigDecimal newAdditionalQuantity = null;
-            if (unit.equals(additionalQuantityUnit)) {
-                newAdditionalQuantity = quantity;
-            } else {
-                PossibleUnitConversions unitConversions = unitConversionService.getPossibleConversions(unit, searchCriteriaBuilder -> searchCriteriaBuilder.add(SearchRestrictions.belongsTo(UnitConversionItemFieldsB.PRODUCT, product)));
-
-                if (unitConversions.isDefinedFor(additionalQuantityUnit)) {
-                    newAdditionalQuantity = unitConversions.convertTo(quantity, additionalQuantityUnit);
-                }
-            }
+            BigDecimal conversion = deliveriesService.getConversion(product, unit, additionalUnit, deliveredProductMultiPosition.getDecimalField(DeliveredProductMultiPositionFields.CONVERSION));
+            BigDecimal newAdditionalQuantity = calculationQuantityService.calculateAdditionalQuantity(quantity,
+                    conversion, additionalUnit);
 
             deliveredProductMultiPosition.setField(DeliveredProductMultiPositionFields.QUANTITY, quantity);
             deliveredProductMultiPosition.setField(DeliveredProductMultiPositionFields.ADDITIONAL_QUANTITY,
                     newAdditionalQuantity);
-        }
-    }
-
-    private BigDecimal getConversion(final Entity product, final String unit, final String additionalUnit) {
-        PossibleUnitConversions unitConversions = unitConversionService.getPossibleConversions(unit,
-                searchCriteriaBuilder -> searchCriteriaBuilder
-                        .add(SearchRestrictions.belongsTo(UnitConversionItemFieldsB.PRODUCT, product)));
-
-        if (unitConversions.isDefinedFor(additionalUnit)) {
-            return unitConversions.asUnitToConversionMap().get(additionalUnit);
-        } else {
-            return BigDecimal.ZERO;
         }
     }
 
@@ -481,60 +449,13 @@ public class DeliveredProductAddMultiListeners {
 
                 if (Objects.nonNull(quantity) && Objects.nonNull(product)) {
                     String unit = product.getStringField(ProductFields.UNIT);
-                    String additionalQuantityUnit = Optional.ofNullable(product.getStringField(ProductFields.ADDITIONAL_UNIT))
+                    String additionalUnit = Optional.ofNullable(product.getStringField(ProductFields.ADDITIONAL_UNIT))
                             .orElse(unit);
 
-                    BigDecimal newAdditionalQuantity = null;
-                    if (unit.equals(additionalQuantityUnit)) {
-                        newAdditionalQuantity = quantity;
-                    } else {
-                        PossibleUnitConversions unitConversions = unitConversionService.getPossibleConversions(unit, searchCriteriaBuilder -> searchCriteriaBuilder.add(SearchRestrictions.belongsTo(UnitConversionItemFieldsB.PRODUCT, product)));
-
-                        if (unitConversions.isDefinedFor(additionalQuantityUnit)) {
-                            newAdditionalQuantity = unitConversions.convertTo(quantity, additionalQuantityUnit);
-                        }
-                    }
-
-                    FieldComponent additionalQuantityField = deliveredProductMultiPositionsFormComponent
-                            .findFieldComponentByName(DeliveredProductMultiPositionFields.ADDITIONAL_QUANTITY);
-
-                    additionalQuantityField
-                            .setFieldValue(numberService.formatWithMinimumFractionDigits(newAdditionalQuantity, 0));
-                    additionalQuantityField.requestComponentUpdateState();
-                }
-
-                break;
-            }
-        }
-    }
-
-    public void conversionChanged(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        AwesomeDynamicListComponent deliveredProductMultiPositions = (AwesomeDynamicListComponent) view
-                .getComponentByReference(DeliveredProductMultiFields.DELIVERED_PRODUCT_MULTI_POSITIONS);
-
-        List<FormComponent> deliveredProductMultiPositionsFormComponents = deliveredProductMultiPositions.getFormComponents();
-
-        for (FormComponent deliveredProductMultiPositionsFormComponent : deliveredProductMultiPositionsFormComponents) {
-            Entity deliveredProductMultiPosition = deliveredProductMultiPositionsFormComponent
-                    .getPersistedEntityWithIncludedFormValues();
-
-            boolean quantityComponentInForm = state.getUuid().equals(deliveredProductMultiPositionsFormComponent
-                    .findFieldComponentByName(DeliveredProductMultiPositionFields.QUANTITY).getUuid());
-            boolean conversionComponentInForm = state.getUuid().equals(deliveredProductMultiPositionsFormComponent
-                    .findFieldComponentByName(DeliveredProductMultiPositionFields.CONVERSION).getUuid());
-
-            if (quantityComponentInForm || conversionComponentInForm) {
-                Entity product = deliveredProductMultiPosition.getBelongsToField(DeliveredProductMultiPositionFields.PRODUCT);
-                BigDecimal quantity = deliveredProductMultiPosition.getDecimalField(DeliveredProductMultiPositionFields.QUANTITY);
-                BigDecimal conversion = deliveredProductMultiPosition
-                        .getDecimalField(DeliveredProductMultiPositionFields.CONVERSION);
-
-                if (Objects.nonNull(conversion) && Objects.nonNull(quantity) && Objects.nonNull(product)) {
-                    String additionalQuantityUnit = Optional.ofNullable(product.getStringField(ProductFields.ADDITIONAL_UNIT))
-                            .orElse(product.getStringField(ProductFields.UNIT));
-
+                    BigDecimal conversion = deliveriesService.getConversion(product, unit, additionalUnit, deliveredProductMultiPosition
+                            .getDecimalField(DeliveredProductMultiPositionFields.CONVERSION));
                     BigDecimal newAdditionalQuantity = calculationQuantityService.calculateAdditionalQuantity(quantity,
-                            conversion, additionalQuantityUnit);
+                            conversion, additionalUnit);
 
                     FieldComponent additionalQuantityField = deliveredProductMultiPositionsFormComponent
                             .findFieldComponentByName(DeliveredProductMultiPositionFields.ADDITIONAL_QUANTITY);
@@ -569,19 +490,12 @@ public class DeliveredProductAddMultiListeners {
 
                 if (Objects.nonNull(additionalQuantity) && Objects.nonNull(product)) {
                     String unit = product.getStringField(ProductFields.UNIT);
-                    String additionalQuantityUnit = Optional.ofNullable(product.getStringField(ProductFields.ADDITIONAL_UNIT))
+                    String additionalUnit = Optional.ofNullable(product.getStringField(ProductFields.ADDITIONAL_UNIT))
                             .orElse(product.getStringField(ProductFields.UNIT));
 
-                    BigDecimal newQuantity = null;
-                    if (unit.equals(additionalQuantityUnit)) {
-                        newQuantity = additionalQuantity;
-                    } else {
-                        PossibleUnitConversions unitConversions = unitConversionService.getPossibleConversions(additionalQuantityUnit, searchCriteriaBuilder -> searchCriteriaBuilder.add(SearchRestrictions.belongsTo(UnitConversionItemFieldsB.PRODUCT, product)));
-
-                        if (unitConversions.isDefinedFor(unit)) {
-                            newQuantity = unitConversions.convertTo(additionalQuantity, unit);
-                        }
-                    }
+                    BigDecimal conversion = deliveriesService.getConversion(product, unit, additionalUnit, deliveredProductMultiPosition.getDecimalField(DeliveredProductMultiPositionFields.CONVERSION));
+                    BigDecimal newQuantity = calculationQuantityService.calculateQuantity(additionalQuantity,
+                            conversion, unit);
 
                     FieldComponent quantityField = deliveredProductMultiPositionsFormComponent
                             .findFieldComponentByName(DeliveredProductMultiPositionFields.QUANTITY);

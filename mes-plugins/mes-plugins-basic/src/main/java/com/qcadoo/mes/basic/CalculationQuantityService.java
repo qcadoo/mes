@@ -19,7 +19,7 @@ public class CalculationQuantityService {
 
     public BigDecimal calculateQuantity(BigDecimal additionalQuantity, BigDecimal conversion, String unit) {
         BigDecimal quantity = additionalQuantity.divide(conversion, NumberService.DEFAULT_MAX_FRACTION_DIGITS_IN_DECIMAL,
-                BigDecimal.ROUND_FLOOR);
+                BigDecimal.ROUND_HALF_UP);
         if (dictionaryService.checkIfUnitIsInteger(unit)) {
             return numberService.setScaleWithDefaultMathContext(quantity, 0);
         }

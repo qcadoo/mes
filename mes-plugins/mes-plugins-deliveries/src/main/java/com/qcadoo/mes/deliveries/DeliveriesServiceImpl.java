@@ -36,6 +36,8 @@ import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
 import com.qcadoo.model.api.search.*;
+import com.qcadoo.model.api.units.PossibleUnitConversions;
+import com.qcadoo.model.api.units.UnitConversionService;
 import com.qcadoo.plugin.api.PluginUtils;
 import com.qcadoo.security.api.SecurityService;
 import com.qcadoo.view.api.ComponentState;
@@ -95,6 +97,9 @@ public class DeliveriesServiceImpl implements DeliveriesService {
 
     @Autowired
     private SecurityService securityService;
+
+    @Autowired
+    private UnitConversionService unitConversionService;
 
     @Override
     public Entity getDelivery(final Long deliveryId) {
@@ -263,13 +268,15 @@ public class DeliveriesServiceImpl implements DeliveriesService {
     }
 
     @Override
-    public void fillUnitFields(final ViewDefinitionState view, final String productName, final List<String> referenceNames) {
+    public void fillUnitFields(final ViewDefinitionState view, final String productName,
+                               final List<String> referenceNames) {
         Entity product = getProductEntityByComponentName(view, productName);
 
         fillUnitFields(view, product, referenceNames);
     }
 
-    public void fillUnitFields(final ViewDefinitionState view, final Entity product, final List<String> referenceNames) {
+    public void fillUnitFields(final ViewDefinitionState view, final Entity product,
+                               final List<String> referenceNames) {
         String unit = "";
 
         if (Objects.nonNull(product)) {
@@ -297,7 +304,8 @@ public class DeliveriesServiceImpl implements DeliveriesService {
     }
 
     @Override
-    public void fillUnitFields(final ViewDefinitionState view, final String productName, final List<String> referenceNames,
+    public void fillUnitFields(final ViewDefinitionState view, final String productName,
+                               final List<String> referenceNames,
                                final List<String> additionalUnitNames) {
         Entity product = getProductEntityByComponentName(view, productName);
 
@@ -720,7 +728,8 @@ public class DeliveriesServiceImpl implements DeliveriesService {
     }
 
     public Optional<Entity> getOrderedProductForDeliveredProduct(final Entity deliveredProduct,
-                                                                 final SearchCriterion batchCustomSearchCriterion, final SearchCriterion offerCustomSearchCriterion,
+                                                                 final SearchCriterion batchCustomSearchCriterion,
+                                                                 final SearchCriterion offerCustomSearchCriterion,
                                                                  final SearchCriterion operationCustomSearchCriterion) {
         SearchCriteriaBuilder searchCriteriaBuilder = getSearchCriteriaBuilderForOrderedProduct(getOrderedProductDD().find(),
                 deliveredProduct, batchCustomSearchCriterion, offerCustomSearchCriterion, operationCustomSearchCriterion);
@@ -868,14 +877,16 @@ public class DeliveriesServiceImpl implements DeliveriesService {
 
     }
 
-    public SearchCriteriaBuilder getSearchCriteriaBuilderForOrderedProduct(final SearchCriteriaBuilder searchCriteriaBuilder,
-                                                                           final Entity deliveredProduct) {
+    public SearchCriteriaBuilder getSearchCriteriaBuilderForOrderedProduct(
+            final SearchCriteriaBuilder searchCriteriaBuilder,
+            final Entity deliveredProduct) {
         return getSearchCriteriaBuilderForOrderedProduct(searchCriteriaBuilder, deliveredProduct, null, null, null);
     }
 
-    public SearchCriteriaBuilder getSearchCriteriaBuilderForOrderedProduct(final SearchCriteriaBuilder searchCriteriaBuilder,
-                                                                           final Entity deliveredProduct, final SearchCriterion batchCustomSearchCriterion,
-                                                                           final SearchCriterion offerCustomSearchCriterion, final SearchCriterion operationCustomSearchCriterion) {
+    public SearchCriteriaBuilder getSearchCriteriaBuilderForOrderedProduct(
+            final SearchCriteriaBuilder searchCriteriaBuilder,
+            final Entity deliveredProduct, final SearchCriterion batchCustomSearchCriterion,
+            final SearchCriterion offerCustomSearchCriterion, final SearchCriterion operationCustomSearchCriterion) {
         Entity delivery = deliveredProduct.getBelongsToField(DeliveredProductFields.DELIVERY);
         Entity supplier = delivery.getBelongsToField(DeliveryFields.SUPPLIER);
         Entity product = deliveredProduct.getBelongsToField(DeliveredProductFields.PRODUCT);
@@ -936,14 +947,16 @@ public class DeliveriesServiceImpl implements DeliveriesService {
         return searchCriteriaBuilder;
     }
 
-    public SearchCriteriaBuilder getSearchCriteriaBuilderForDeliveredProduct(final SearchCriteriaBuilder searchCriteriaBuilder,
-                                                                             final Entity deliveredProduct) {
+    public SearchCriteriaBuilder getSearchCriteriaBuilderForDeliveredProduct(
+            final SearchCriteriaBuilder searchCriteriaBuilder,
+            final Entity deliveredProduct) {
         return getSearchCriteriaBuilderForDeliveredProduct(searchCriteriaBuilder, deliveredProduct, true, null, null, null);
     }
 
-    public SearchCriteriaBuilder getSearchCriteriaBuilderForDeliveredProduct(final SearchCriteriaBuilder searchCriteriaBuilder,
-                                                                             final Entity deliveredProduct, final boolean checkOther, final SearchCriterion batchCustomSearchCriterion,
-                                                                             final SearchCriterion offerCustomSearchCriterion, final SearchCriterion operationCustomSearchCriterion) {
+    public SearchCriteriaBuilder getSearchCriteriaBuilderForDeliveredProduct(
+            final SearchCriteriaBuilder searchCriteriaBuilder,
+            final Entity deliveredProduct, final boolean checkOther, final SearchCriterion batchCustomSearchCriterion,
+            final SearchCriterion offerCustomSearchCriterion, final SearchCriterion operationCustomSearchCriterion) {
         Entity delivery = deliveredProduct.getBelongsToField(DeliveredProductFields.DELIVERY);
         Entity supplier = delivery.getBelongsToField(DeliveryFields.SUPPLIER);
         Entity product = deliveredProduct.getBelongsToField(DeliveredProductFields.PRODUCT);
@@ -1070,6 +1083,25 @@ public class DeliveriesServiceImpl implements DeliveriesService {
             return SearchRestrictions.or(SearchRestrictions.isNull(L_OPERATION),
                     SearchRestrictions.not(SearchRestrictions.in(L_OPERATION + "." + L_ID, operationIds)));
         }
+    }
+
+    public BigDecimal getConversion(final Entity product, String unit, String additionalUnit, BigDecimal dbConversion) {
+        BigDecimal conversion = BigDecimal.ONE;
+        if (!unit.equals(additionalUnit)) {
+            PossibleUnitConversions unitConversions = unitConversionService.getPossibleConversions(unit,
+                    searchCriteriaBuilder -> searchCriteriaBuilder
+                            .add(SearchRestrictions.belongsTo(UnitConversionItemFieldsB.PRODUCT, product)));
+
+            if (unitConversions.isDefinedFor(additionalUnit)) {
+                conversion = unitConversions.asUnitToConversionMap().get(additionalUnit);
+            } else {
+                conversion = BigDecimal.ZERO;
+            }
+            if (Objects.nonNull(dbConversion) && dbConversion.compareTo(numberService.setScaleWithDefaultMathContext(conversion)) != 0) {
+                conversion = dbConversion;
+            }
+        }
+        return conversion;
     }
 
 }
