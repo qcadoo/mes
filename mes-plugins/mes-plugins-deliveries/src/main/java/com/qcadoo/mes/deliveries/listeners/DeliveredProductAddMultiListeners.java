@@ -374,7 +374,7 @@ public class DeliveredProductAddMultiListeners {
                     String additionalUnit = Optional.ofNullable(product.getStringField(ProductFields.ADDITIONAL_UNIT))
                             .orElse(unit);
                     BigDecimal conversion = deliveriesService.getConversion(product, unit, additionalUnit, null);
-                    deliveredProductMultiPosition.setField(DeliveredProductMultiPositionFields.CONVERSION, conversion);
+                    deliveredProductMultiPosition.setField(DeliveredProductMultiPositionFields.CONVERSION, numberService.setScaleWithDefaultMathContext(conversion));
                     deliveredProductMultiPosition.setField(DeliveredProductMultiPositionFields.ADDITIONAL_UNIT,
                             additionalUnit);
 

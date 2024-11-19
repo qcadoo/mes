@@ -528,7 +528,7 @@ public class DeliveryDetailsListeners {
         deliveredProductMultiPosition.setField(DeliveredProductMultiPositionFields.ADDITIONAL_QUANTITY, additionalQuantity);
         deliveredProductMultiPosition.setField(DeliveredProductMultiPositionFields.BATCH,
                 orderedProduct.getBelongsToField(OrderedProductFields.BATCH));
-        deliveredProductMultiPosition.setField(DeliveredProductMultiPositionFields.CONVERSION, conversion);
+        deliveredProductMultiPosition.setField(DeliveredProductMultiPositionFields.CONVERSION, numberService.setScaleWithDefaultMathContext(conversion));
         deliveredProductMultiPosition.setField(DeliveredProductMultiPositionFields.PRICE_PER_UNIT,
                 orderedProduct.getDecimalField(OrderedProductFields.PRICE_PER_UNIT));
 
@@ -588,7 +588,7 @@ public class DeliveryDetailsListeners {
 
         deliveredProduct.setField(DeliveredProductFields.PRODUCT, product);
         deliveredProduct.setField(DeliveredProductFields.BATCH, orderedProduct.getBelongsToField(OrderedProductFields.BATCH));
-        deliveredProduct.setField(DeliveredProductFields.CONVERSION, conversion);
+        deliveredProduct.setField(DeliveredProductFields.CONVERSION, numberService.setScaleWithDefaultMathContext(conversion));
         deliveredProduct.setField(DeliveredProductFields.IS_WASTE, false);
         deliveredProduct.setField(DeliveredProductFields.DELIVERY, delivery);
 
