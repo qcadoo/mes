@@ -70,6 +70,7 @@
         <dictionary name="maximumDimensionUnit" dictionary="units"/>
 
         <integer name="entityId" persistent="false"/>
+        <boolean name="virtual" default="false"/>
     </fields>
 
     <hooks>

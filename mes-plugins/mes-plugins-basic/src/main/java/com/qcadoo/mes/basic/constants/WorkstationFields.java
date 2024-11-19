@@ -77,4 +77,6 @@ public final class WorkstationFields {
 
     public static final String MAXIMUM_DIMENSION_UNIT = "maximumDimensionUnit";
 
+    public static final String VIRTUAL = "virtual";
+
 }
