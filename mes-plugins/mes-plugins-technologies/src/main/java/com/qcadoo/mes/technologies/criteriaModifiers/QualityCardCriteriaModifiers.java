@@ -63,7 +63,7 @@ public class QualityCardCriteriaModifiers {
 
         StringBuilder query = new StringBuilder();
         query.append("SELECT qd.id ");
-        query.append("FROM technologies_qualitycard qd ");
+        query.append("FROM basic_qualitycard qd ");
         query.append("WHERE CAST(array(SELECT p.product_id FROM jointable_product_qualitycard p where p.qualitycard_id = qd.id) as bigint[]) @> CAST(ARRAY[ :products ] as bigint[]) ");
 
         return jdbcTemplate.queryForList(query.toString(), parameters, Long.class);
