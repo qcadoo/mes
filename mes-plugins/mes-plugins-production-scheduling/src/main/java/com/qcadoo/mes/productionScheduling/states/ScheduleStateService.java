@@ -304,7 +304,7 @@ public class ScheduleStateService extends BasicStateService implements ScheduleS
     }
 
     private void recalculateTaskChangeovers(Entity schedule, List<Entity> scheduleTasks,
-                           DataDefinition workstationChangeoverForOperationalTaskDD) {
+                                            DataDefinition workstationChangeoverForOperationalTaskDD) {
         for (Entity scheduleTask : scheduleTasks) {
             Optional<Entity> nextOperationalTask = getNextOperationalTask(scheduleTask, schedule);
             nextOperationalTask.ifPresent(not -> {
@@ -373,9 +373,12 @@ public class ScheduleStateService extends BasicStateService implements ScheduleS
     }
 
     private Optional<Entity> getNextOperationalTask(final Entity operationalTask, Entity schedule) {
+        Entity workstation = operationalTask.getBelongsToField(OperationalTaskFields.WORKSTATION);
+        if (workstation == null) {
+            return Optional.empty();
+        }
         SearchCriteriaBuilder searchCriteriaBuilder = getOperationalTaskDD().find();
 
-        Entity workstation = operationalTask.getBelongsToField(OperationalTaskFields.WORKSTATION);
         Date endDate = operationalTask.getDateField(OperationalTaskFields.FINISH_DATE);
 
         addWorkstationAndDateSearchRestrictions(searchCriteriaBuilder, workstation, endDate);
