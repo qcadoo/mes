@@ -10398,6 +10398,20 @@ CREATE TABLE public.basic_productattachment (
 
 
 --
+-- Name: basic_qualitycard; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.basic_qualitycard (
+    id bigint NOT NULL,
+    number character varying(255),
+    name character varying(2048),
+    description character varying(2048),
+    state character varying(255) DEFAULT '01new'::character varying,
+    sampling character varying(255)
+);
+
+
+--
 -- Name: basic_subassembly; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -10461,7 +10475,8 @@ CREATE TABLE public.basic_workstation (
     minimumdimension numeric(12,5),
     minimumdimensionunit character varying(255),
     maximumdimension numeric(12,5),
-    maximumdimensionunit character varying(255)
+    maximumdimensionunit character varying(255),
+    virtual boolean DEFAULT false
 );
 
 
@@ -10705,20 +10720,6 @@ CREATE TABLE public.qualitycontrol_qualitycontrolattachment (
 
 
 --
--- Name: technologies_qualitycard; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.technologies_qualitycard (
-    id bigint NOT NULL,
-    number character varying(255),
-    name character varying(2048),
-    description character varying(2048),
-    state character varying(255) DEFAULT '01new'::character varying,
-    sampling character varying(255)
-);
-
-
---
 -- Name: technologies_technologyattachment; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -10840,7 +10841,7 @@ UNION ALL
     qualitycard.number AS pinnedtoobjectidentifier,
     qualitycard.name AS pinnedtoobjectidentifiername,
     (qualitycard.id)::integer AS pinnedtoobjectid,
-    'technologies_qualitycard'::text AS pinnedtomodelname,
+    'basic_qualitycard'::text AS pinnedtomodelname,
     qualitycardattachment.attachment,
     qualitycardattachment.name,
     qualitycardattachment.size,
@@ -10848,7 +10849,7 @@ UNION ALL
     (7000000 + row_number() OVER ()) AS id,
     'qualityControl/qualityCardDetails'::text AS pinnedtocorrespondingview
    FROM (public.qualitycontrol_qualitycardattachment qualitycardattachment
-     LEFT JOIN public.technologies_qualitycard qualitycard ON ((qualitycardattachment.qualitycard_id = qualitycard.id)))
+     LEFT JOIN public.basic_qualitycard qualitycard ON ((qualitycardattachment.qualitycard_id = qualitycard.id)))
 UNION ALL
  SELECT '09workstations'::text AS pinnedto,
     workstation.number AS pinnedtoobjectidentifier,
@@ -12094,6 +12095,61 @@ CREATE SEQUENCE public.basic_productdto_id_seq
     NO MINVALUE
     NO MAXVALUE
     CACHE 1;
+
+
+--
+-- Name: basic_qualitycard_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.basic_qualitycard_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: basic_qualitycard_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.basic_qualitycard_id_seq OWNED BY public.basic_qualitycard.id;
+
+
+--
+-- Name: basic_qualitycardstatechange; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.basic_qualitycardstatechange (
+    id bigint NOT NULL,
+    dateandtime timestamp without time zone,
+    sourcestate character varying(255),
+    targetstate character varying(255),
+    status character varying(255),
+    phase integer,
+    worker character varying(255),
+    qualitycard_id bigint,
+    shift_id bigint
+);
+
+
+--
+-- Name: basic_qualitycardstatechange_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.basic_qualitycardstatechange_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: basic_qualitycardstatechange_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.basic_qualitycardstatechange_id_seq OWNED BY public.basic_qualitycardstatechange.id;
 
 
 --
@@ -15766,7 +15822,7 @@ CREATE VIEW public.deliveries_orderedproductdto AS
      LEFT JOIN public.technologies_operation operation ON ((operation.id = orderedproduct.operation_id)))
      LEFT JOIN product_attachments attachments ON ((attachments.productid = product.id)))
      LEFT JOIN public.advancedgenealogy_batch batch ON ((batch.id = orderedproduct.batch_id)))
-     LEFT JOIN public.technologies_qualitycard qualitycard ON ((qualitycard.id = orderedproduct.qualitycard_id)));
+     LEFT JOIN public.basic_qualitycard qualitycard ON ((qualitycard.id = orderedproduct.qualitycard_id)));
 
 
 --
@@ -29338,7 +29394,7 @@ CREATE VIEW public.qualitycontrol_qualitycarddto AS
     qc.description,
     qc.state,
     (count(qualitycardattachment.id) <> 0) AS attachmentsexists
-   FROM (public.technologies_qualitycard qc
+   FROM (public.basic_qualitycard qc
      LEFT JOIN public.qualitycontrol_qualitycardattachment qualitycardattachment ON ((qualitycardattachment.qualitycard_id = qc.id)))
   GROUP BY qc.id, qc.number, qc.name, qc.description, qc.state;
 
@@ -31984,61 +32040,6 @@ ALTER SEQUENCE public.technologies_producttoproductgrouptechnology_id_seq OWNED 
 
 
 --
--- Name: technologies_qualitycard_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE public.technologies_qualitycard_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: technologies_qualitycard_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE public.technologies_qualitycard_id_seq OWNED BY public.technologies_qualitycard.id;
-
-
---
--- Name: technologies_qualitycardstatechange; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.technologies_qualitycardstatechange (
-    id bigint NOT NULL,
-    dateandtime timestamp without time zone,
-    sourcestate character varying(255),
-    targetstate character varying(255),
-    status character varying(255),
-    phase integer,
-    worker character varying(255),
-    qualitycard_id bigint,
-    shift_id bigint
-);
-
-
---
--- Name: technologies_qualitycardstatechange_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE public.technologies_qualitycardstatechange_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: technologies_qualitycardstatechange_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE public.technologies_qualitycardstatechange_id_seq OWNED BY public.technologies_qualitycardstatechange.id;
-
-
---
 -- Name: technologies_section; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -34670,6 +34671,20 @@ ALTER TABLE ONLY public.basic_productattributevalue ALTER COLUMN id SET DEFAULT 
 
 
 --
+-- Name: basic_qualitycard id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.basic_qualitycard ALTER COLUMN id SET DEFAULT nextval('public.basic_qualitycard_id_seq'::regclass);
+
+
+--
+-- Name: basic_qualitycardstatechange id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.basic_qualitycardstatechange ALTER COLUMN id SET DEFAULT nextval('public.basic_qualitycardstatechange_id_seq'::regclass);
+
+
+--
 -- Name: basic_reportcolumnwidth id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -37281,20 +37296,6 @@ ALTER TABLE ONLY public.technologies_producttoproductgrouptechnology ALTER COLUM
 
 
 --
--- Name: technologies_qualitycard id; Type: DEFAULT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.technologies_qualitycard ALTER COLUMN id SET DEFAULT nextval('public.technologies_qualitycard_id_seq'::regclass);
-
-
---
--- Name: technologies_qualitycardstatechange id; Type: DEFAULT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.technologies_qualitycardstatechange ALTER COLUMN id SET DEFAULT nextval('public.technologies_qualitycardstatechange_id_seq'::regclass);
-
-
---
 -- Name: technologies_section id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -39443,6 +39444,22 @@ COPY public.basic_productattributevalue (id, product_id, attribute_id, attribute
 
 
 --
+-- Data for Name: basic_qualitycard; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY public.basic_qualitycard (id, number, name, description, state, sampling) FROM stdin;
+\.
+
+
+--
+-- Data for Name: basic_qualitycardstatechange; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY public.basic_qualitycardstatechange (id, dateandtime, sourcestate, targetstate, status, phase, worker, qualitycard_id, shift_id) FROM stdin;
+\.
+
+
+--
 -- Data for Name: basic_reportcolumnwidth; Type: TABLE DATA; Schema: public; Owner: -
 --
 
@@ -39575,7 +39592,7 @@ COPY public.basic_viewedactivity (id, user_id, log_id) FROM stdin;
 -- Data for Name: basic_workstation; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.basic_workstation (id, number, name, description, workstationtype_id, operation_id, active, productionline_id, division_id, serialnumber, udtnumber, series, producer, productiondate, wnknumber, entityversion, staff_id, dateofadmission, dateofwithdrawal, state, minimumdimension, minimumdimensionunit, maximumdimension, maximumdimensionunit) FROM stdin;
+COPY public.basic_workstation (id, number, name, description, workstationtype_id, operation_id, active, productionline_id, division_id, serialnumber, udtnumber, series, producer, productiondate, wnknumber, entityversion, staff_id, dateofadmission, dateofwithdrawal, state, minimumdimension, minimumdimensionunit, maximumdimension, maximumdimensionunit, virtual) FROM stdin;
 \.
 
 
@@ -41743,6 +41760,11 @@ COPY public.jointable_group_role (group_id, role_id) FROM stdin;
 32	169
 33	169
 38	169
+4	170
+2	170
+3	170
+32	170
+33	170
 \.
 
 
@@ -43538,8 +43560,8 @@ COPY public.qcadoomodel_dictionary (id, name, pluginidentifier, active, entityve
 21	causesOfWastes	productionCounting	t	0
 22	typeOfProducts	basic	t	0
 23	contractorCategory	basic	t	0
-24	sampling	technologies	t	0
 25	toolCategory	cmmsMachineParts	t	0
+24	sampling	basic	t	0
 \.
 
 
@@ -43973,6 +43995,7 @@ COPY public.qcadoosecurity_role (id, identifier, description, entityversion) FRO
 167	ROLE_ORDER_DETAILS_VIEW	\N	0
 168	ROLE_WORKSTATION_CHANGEOVERS	\N	0
 169	ROLE_OPERATIONAL_TASKS	\N	0
+170	ROLE_DASHBOARD_PARAMETERS	\N	0
 \.
 
 
@@ -45012,22 +45035,6 @@ COPY public.technologies_productstructuretreenode (id, priority, technology_id, 
 --
 
 COPY public.technologies_producttoproductgrouptechnology (id, finalproduct_id, productfamily_id, orderproduct_id) FROM stdin;
-\.
-
-
---
--- Data for Name: technologies_qualitycard; Type: TABLE DATA; Schema: public; Owner: -
---
-
-COPY public.technologies_qualitycard (id, number, name, description, state, sampling) FROM stdin;
-\.
-
-
---
--- Data for Name: technologies_qualitycardstatechange; Type: TABLE DATA; Schema: public; Owner: -
---
-
-COPY public.technologies_qualitycardstatechange (id, dateandtime, sourcestate, targetstate, status, phase, worker, qualitycard_id, shift_id) FROM stdin;
 \.
 
 
@@ -46717,6 +46724,20 @@ SELECT pg_catalog.setval('public.basic_productattributevalue_id_seq', 1, false);
 --
 
 SELECT pg_catalog.setval('public.basic_productdto_id_seq', 1, false);
+
+
+--
+-- Name: basic_qualitycard_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('public.basic_qualitycard_id_seq', 1, false);
+
+
+--
+-- Name: basic_qualitycardstatechange_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('public.basic_qualitycardstatechange_id_seq', 1, false);
 
 
 --
@@ -49796,7 +49817,7 @@ SELECT pg_catalog.setval('public.qcadoosecurity_persistenttoken_id_seq', 1, fals
 -- Name: qcadoosecurity_role_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('public.qcadoosecurity_role_id_seq', 169, true);
+SELECT pg_catalog.setval('public.qcadoosecurity_role_id_seq', 170, true);
 
 
 --
@@ -50434,20 +50455,6 @@ SELECT pg_catalog.setval('public.technologies_productstructuretreenode_id_seq', 
 --
 
 SELECT pg_catalog.setval('public.technologies_producttoproductgrouptechnology_id_seq', 1, false);
-
-
---
--- Name: technologies_qualitycard_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
---
-
-SELECT pg_catalog.setval('public.technologies_qualitycard_id_seq', 1, false);
-
-
---
--- Name: technologies_qualitycardstatechange_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
---
-
-SELECT pg_catalog.setval('public.technologies_qualitycardstatechange_id_seq', 1, false);
 
 
 --
@@ -52418,6 +52425,22 @@ ALTER TABLE ONLY public.basic_productattachment
 
 ALTER TABLE ONLY public.basic_productattributevalue
     ADD CONSTRAINT basic_productattributevalue_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: basic_qualitycard basic_qualitycard_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.basic_qualitycard
+    ADD CONSTRAINT basic_qualitycard_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: basic_qualitycardstatechange basic_qualitycardstatechange_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.basic_qualitycardstatechange
+    ADD CONSTRAINT basic_qualitycardstatechange_pkey PRIMARY KEY (id);
 
 
 --
@@ -55965,22 +55988,6 @@ ALTER TABLE ONLY public.technologies_producttoproductgrouptechnology
 
 
 --
--- Name: technologies_qualitycard technologies_qualitycard_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.technologies_qualitycard
-    ADD CONSTRAINT technologies_qualitycard_pkey PRIMARY KEY (id);
-
-
---
--- Name: technologies_qualitycardstatechange technologies_qualitycardstatechange_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.technologies_qualitycardstatechange
-    ADD CONSTRAINT technologies_qualitycardstatechange_pkey PRIMARY KEY (id);
-
-
---
 -- Name: technologies_section technologies_section_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -58677,7 +58684,7 @@ CREATE OR REPLACE VIEW public.technologies_technologydto AS
      LEFT JOIN public.technologies_technologyattachment technologyattachment ON ((technologyattachment.technology_id = technology.id)))
      LEFT JOIN public.technologiesgenerator_generatorcontext generatorcontext ON ((generatorcontext.id = technology.generatorcontext_id)))
      LEFT JOIN public.technologies_technologystatechange technologystatechange ON (((technologystatechange.technology_id = technology.id) AND ((technologystatechange.status)::text = '03successful'::text) AND (technologystatechange.sourcestate IS NULL) AND ((technologystatechange.targetstate)::text = '01draft'::text))))
-     LEFT JOIN public.technologies_qualitycard qualitycard ON ((qualitycard.id = technology.qualitycard_id)))
+     LEFT JOIN public.basic_qualitycard qualitycard ON ((qualitycard.id = technology.qualitycard_id)))
      LEFT JOIN public.technologies_technologyproductionline tpl ON (((tpl.technology_id = technology.id) AND tpl.master)))
      LEFT JOIN public.productionlines_productionline productionline ON ((productionline.id = tpl.productionline_id)))
   GROUP BY technology.id, product.number, product.globaltypeofmaterial, technologygroup.number, division.name, product.name, generatorcontext.number, technologystatechange.dateandtime, tpl.standardperformance, productionline.number, assortment.name, qualitycard.number;
@@ -59456,7 +59463,7 @@ ALTER TABLE ONLY public.costcalculation_calculationresult
 --
 
 ALTER TABLE ONLY public.qualitycontrol_changequalitycards
-    ADD CONSTRAINT changequalitycards_qualitycard_fkey FOREIGN KEY (qualitycard_id) REFERENCES public.technologies_qualitycard(id) DEFERRABLE;
+    ADD CONSTRAINT changequalitycards_qualitycard_fkey FOREIGN KEY (qualitycard_id) REFERENCES public.basic_qualitycard(id) DEFERRABLE;
 
 
 --
@@ -62944,7 +62951,7 @@ ALTER TABLE ONLY public.deliveries_orderedproduct
 --
 
 ALTER TABLE ONLY public.deliveries_orderedproduct
-    ADD CONSTRAINT orderedproduct_qualitycard_fkey FOREIGN KEY (qualitycard_id) REFERENCES public.technologies_qualitycard(id) DEFERRABLE;
+    ADD CONSTRAINT orderedproduct_qualitycard_fkey FOREIGN KEY (qualitycard_id) REFERENCES public.basic_qualitycard(id) DEFERRABLE;
 
 
 --
@@ -64520,7 +64527,7 @@ ALTER TABLE ONLY public.jointable_product_qualitycard
 --
 
 ALTER TABLE ONLY public.jointable_product_qualitycard
-    ADD CONSTRAINT product_qualitycard_qualitycard_fkey FOREIGN KEY (qualitycard_id) REFERENCES public.technologies_qualitycard(id) DEFERRABLE;
+    ADD CONSTRAINT product_qualitycard_qualitycard_fkey FOREIGN KEY (qualitycard_id) REFERENCES public.basic_qualitycard(id) DEFERRABLE;
 
 
 --
@@ -65512,22 +65519,22 @@ ALTER TABLE ONLY public.qcadoomodel_unitconversionitem
 --
 
 ALTER TABLE ONLY public.qualitycontrol_qualitycardattachment
-    ADD CONSTRAINT qualitycardattachment_qualitycard_fkey FOREIGN KEY (qualitycard_id) REFERENCES public.technologies_qualitycard(id) DEFERRABLE;
+    ADD CONSTRAINT qualitycardattachment_qualitycard_fkey FOREIGN KEY (qualitycard_id) REFERENCES public.basic_qualitycard(id) DEFERRABLE;
 
 
 --
--- Name: technologies_qualitycardstatechange qualitycardstatechange_qualitycard_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: basic_qualitycardstatechange qualitycardstatechange_qualitycard_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.technologies_qualitycardstatechange
-    ADD CONSTRAINT qualitycardstatechange_qualitycard_fkey FOREIGN KEY (qualitycard_id) REFERENCES public.technologies_qualitycard(id) DEFERRABLE;
+ALTER TABLE ONLY public.basic_qualitycardstatechange
+    ADD CONSTRAINT qualitycardstatechange_qualitycard_fkey FOREIGN KEY (qualitycard_id) REFERENCES public.basic_qualitycard(id) DEFERRABLE;
 
 
 --
--- Name: technologies_qualitycardstatechange qualitycardstatechange_shift_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: basic_qualitycardstatechange qualitycardstatechange_shift_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.technologies_qualitycardstatechange
+ALTER TABLE ONLY public.basic_qualitycardstatechange
     ADD CONSTRAINT qualitycardstatechange_shift_fkey FOREIGN KEY (shift_id) REFERENCES public.basic_shift(id) DEFERRABLE;
 
 
@@ -65568,7 +65575,7 @@ ALTER TABLE ONLY public.qualitycontrol_qualitycontrol
 --
 
 ALTER TABLE ONLY public.qualitycontrol_qualitycontrol
-    ADD CONSTRAINT qualitycontrol_qualitycard_fkey FOREIGN KEY (qualitycard_id) REFERENCES public.technologies_qualitycard(id);
+    ADD CONSTRAINT qualitycontrol_qualitycard_fkey FOREIGN KEY (qualitycard_id) REFERENCES public.basic_qualitycard(id);
 
 
 --
@@ -65616,7 +65623,7 @@ ALTER TABLE ONLY public.qualitycontrol_qualitycontrolattribute
 --
 
 ALTER TABLE ONLY public.qualitycontrol_qualitycontrolattribute
-    ADD CONSTRAINT qualitycontrolattribute_qualitycard_fkey FOREIGN KEY (qualitycard_id) REFERENCES public.technologies_qualitycard(id) DEFERRABLE;
+    ADD CONSTRAINT qualitycontrolattribute_qualitycard_fkey FOREIGN KEY (qualitycard_id) REFERENCES public.basic_qualitycard(id) DEFERRABLE;
 
 
 --
@@ -65768,7 +65775,7 @@ ALTER TABLE ONLY public.qualitycontrol_qualitydeliveredproduct
 --
 
 ALTER TABLE ONLY public.qualitycontrol_qualitydeliveredproduct
-    ADD CONSTRAINT qualitydeliveredproduct_qualitycard_fkey FOREIGN KEY (qualitycard_id) REFERENCES public.technologies_qualitycard(id) DEFERRABLE;
+    ADD CONSTRAINT qualitydeliveredproduct_qualitycard_fkey FOREIGN KEY (qualitycard_id) REFERENCES public.basic_qualitycard(id) DEFERRABLE;
 
 
 --
@@ -67408,7 +67415,7 @@ ALTER TABLE ONLY public.technologies_operationproductoutcomponent
 --
 
 ALTER TABLE ONLY public.technologies_technology
-    ADD CONSTRAINT technology_qualitycard_fkey FOREIGN KEY (qualitycard_id) REFERENCES public.technologies_qualitycard(id) DEFERRABLE;
+    ADD CONSTRAINT technology_qualitycard_fkey FOREIGN KEY (qualitycard_id) REFERENCES public.basic_qualitycard(id) DEFERRABLE;
 
 
 --

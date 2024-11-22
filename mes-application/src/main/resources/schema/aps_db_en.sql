@@ -2,8 +2,8 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 14.2
--- Dumped by pg_dump version 14.2
+-- Dumped from database version 14.6
+-- Dumped by pg_dump version 14.6
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -10475,7 +10475,8 @@ CREATE TABLE public.basic_workstation (
     minimumdimension numeric(12,5),
     minimumdimensionunit character varying(255),
     maximumdimension numeric(12,5),
-    maximumdimensionunit character varying(255)
+    maximumdimensionunit character varying(255),
+    virtual boolean DEFAULT false
 );
 
 
@@ -10840,7 +10841,7 @@ UNION ALL
     qualitycard.number AS pinnedtoobjectidentifier,
     qualitycard.name AS pinnedtoobjectidentifiername,
     (qualitycard.id)::integer AS pinnedtoobjectid,
-    'technologies_qualitycard'::text AS pinnedtomodelname,
+    'basic_qualitycard'::text AS pinnedtomodelname,
     qualitycardattachment.attachment,
     qualitycardattachment.name,
     qualitycardattachment.size,
@@ -39588,7 +39589,7 @@ COPY public.basic_viewedactivity (id, user_id, log_id) FROM stdin;
 -- Data for Name: basic_workstation; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.basic_workstation (id, number, name, description, workstationtype_id, operation_id, active, productionline_id, division_id, serialnumber, udtnumber, series, producer, productiondate, wnknumber, entityversion, staff_id, dateofadmission, dateofwithdrawal, state, minimumdimension, minimumdimensionunit, maximumdimension, maximumdimensionunit) FROM stdin;
+COPY public.basic_workstation (id, number, name, description, workstationtype_id, operation_id, active, productionline_id, division_id, serialnumber, udtnumber, series, producer, productiondate, wnknumber, entityversion, staff_id, dateofadmission, dateofwithdrawal, state, minimumdimension, minimumdimensionunit, maximumdimension, maximumdimensionunit, virtual) FROM stdin;
 \.
 
 
@@ -43529,8 +43530,8 @@ COPY public.qcadoomodel_dictionary (id, name, pluginidentifier, active, entityve
 22	typeOfProducts	basic	t	0
 23	contractorCategory	basic	t	0
 25	toolCategory	cmmsMachineParts	t	0
-24	sampling	basic	t	0
 20	qualityRating	qualityControl	f	0
+24	sampling	basic	t	0
 \.
 
 
