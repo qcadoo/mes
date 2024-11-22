@@ -2,8 +2,8 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 14.6
--- Dumped by pg_dump version 14.6
+-- Dumped from database version 14.2
+-- Dumped by pg_dump version 14.2
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -43707,7 +43707,6 @@ COPY public.qcadooplugin_plugin (id, identifier, version, state, issystem, entit
 159	mobileWMS	1.5.0	DISABLED	f	0	\N	\N
 161	optimizeCutting	1.5.0	DISABLED	f	0	\N	\N
 162	moldrew	1.5.0	DISABLED	f	0	\N	\N
-163	productionPlans	1.5.0	DISABLED	f	0	\N	\N
 76	urcProductionCounting	1.5.0	DISABLED	f	0	tracking	Commercial
 131	deliveriesMinState	1.5.0	DISABLED	f	0	deliveries	AGPL
 38	emailNotifications	1.5.0	DISABLED	f	0	basic	AGPL
@@ -43725,6 +43724,7 @@ COPY public.qcadooplugin_plugin (id, identifier, version, state, issystem, entit
 141	productFlowThruDivision	1.5.0	DISABLED	f	0	other	AGPL
 155	qualityControl	1.5.0	DISABLED	f	0	other	Commercial
 156	oee	1.5.0	DISABLED	f	0	other	Commercial
+163	productionPlans	1.5.0	ENABLED	f	0	other	Commercial
 \.
 
 
@@ -44086,7 +44086,6 @@ COPY public.qcadooview_item (id, pluginidentifier, name, active, category_id, vi
 48	orders	productionOrders	t	7	48	5	ROLE_ORDERS_VIEW	0
 47	orders	productionOrdersPlanning	t	7	47	4	ROLE_ORDERS_VIEW	0
 204	arch	archivingList	t	16	203	8	ROLE_ARCHIVING	0
-221	masterOrders	salesParameters	t	21	220	8	ROLE_PARAMETERS	0
 3	qcadooMenu	menu	t	1	3	3	ROLE_MENU_VIEW	0
 161	basic	formsList	f	4	160	27	ROLE_FORMS	0
 222	masterOrders	pricesListsList	f	23	221	4	ROLE_SALE	0
@@ -44194,6 +44193,7 @@ COPY public.qcadooview_item (id, pluginidentifier, name, active, category_id, vi
 188	masterOrders	salesPlanMaterialRequirementsList	f	9	187	1	ROLE_REQUIREMENTS	0
 189	ordersGroups	ordersGroupMaterialRequirementsList	f	9	188	2	ROLE_REQUIREMENTS	0
 171	basicProductionCounting	productionCountingQuantityList	f	9	170	3	ROLE_BASE_FUNCTIONALITY	0
+221	masterOrders	salesParameters	f	21	220	8	ROLE_PARAMETERS	0
 \.
 
 
