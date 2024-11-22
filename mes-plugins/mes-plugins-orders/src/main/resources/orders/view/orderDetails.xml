@@ -273,7 +273,7 @@
                 </smallButton>
             </group>
 
-            <group name="operationalTasks" defaultAuthorizationRole="ROLE_PLANNING">
+            <group name="operationalTasks" defaultAuthorizationRole="ROLE_OPERATIONAL_TASKS">
                 <smallButton name="generateOperationalTasks" icon="generateIcon16.png">
                     <script>
                         <![CDATA[

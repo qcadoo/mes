@@ -101,8 +101,6 @@
 
         <model:model model="operationProductInProductDto" resource="model/operationProductInProductDto.xml"/>
 
-        <model:model model="qualityCard" resource="model/qualityCard.xml"/>
-        <model:model model="qualityCardStateChange" resource="model/qualityCardStateChange.xml"/>
         <model:model model="technologyOperationComponentDto" resource="model/technologyOperationComponentDto.xml"/>
         <model:model model="technologicalProcess" resource="model/technologicalProcess.xml"/>
         <model:model model="technologicalProcessComponent" resource="model/technologicalProcessComponent.xml"/>
@@ -130,8 +128,6 @@
         <model:model model="dimensionControlAttribute" resource="model/dimensionControlAttribute.xml"/>
 
         <model:model model="technologyProductionLine" resource="model/technologyProductionLine.xml"/>
-
-        <model:dictionary name="sampling"/>
 
         <model:model-field plugin="productionLines" model="productionLine">
             <model:hasMany name="technologyProductionLines" model="technologyProductionLine"
@@ -342,8 +338,8 @@
             </model:decimal>
         </model:model-field>
 
-        <model:model-field plugin="basic" model="product">
-            <model:manyToMany name="qualityCards" plugin="technologies" model="qualityCard" joinField="products" lazy="true"/>
+        <model:model-field plugin="basic" model="qualityCard">
+            <model:hasMany name="technologies" model="technology" joinField="qualityCard" plugin="technologies"/>
         </model:model-field>
 
         <model:model-field plugin="basic" model="staff">

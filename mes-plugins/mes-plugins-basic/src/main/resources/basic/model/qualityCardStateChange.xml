@@ -41,8 +41,8 @@
 			  required="true"/>
 		<integer name="phase"/>
 		<string name="worker"/>
-		<belongsTo name="qualityCard" model="qualityCard" plugin="technologies"/>
-		<belongsTo name="shift" model="shift" plugin="basic"/>
+		<belongsTo name="qualityCard" model="qualityCard"/>
+		<belongsTo name="shift" model="shift"/>
 	</fields>
 
 	<hooks/>

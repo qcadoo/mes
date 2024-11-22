@@ -177,7 +177,7 @@ public final class ProductionTrackingListenerService {
 
         trackingOperationProductOutComponents.forEach(trackingOperationProductOutComponent -> {
             Entity product = trackingOperationProductOutComponent.getBelongsToField(TrackingOperationProductOutComponentFields.PRODUCT);
-            BigDecimal usedQuantity =  trackingOperationProductOutComponent.getDecimalField(TrackingOperationProductOutComponentFields.USED_QUANTITY);
+            BigDecimal usedQuantity = trackingOperationProductOutComponent.getDecimalField(TrackingOperationProductOutComponentFields.USED_QUANTITY);
             Entity storageLocation = trackingOperationProductOutComponent.getBelongsToField(TrackingOperationProductOutComponentFields.STORAGE_LOCATION);
             Entity palletNumber = trackingOperationProductOutComponent.getBelongsToField(TrackingOperationProductOutComponentFields.PALLET_NUMBER);
 
@@ -313,9 +313,8 @@ public final class ProductionTrackingListenerService {
 
         } else if (StateChangeStatus.PAUSED.equals(orderStateChangeContext.getStatus())) {
             productionTracking.addGlobalMessage("productionCounting.order.orderWillBeClosedAfterExtSync", false, false);
-
         } else {
-            productionTracking.addGlobalError("productionCounting.order.orderCannotBeClosed", false);
+            productionTracking.addGlobalMessage("productionCounting.order.orderCannotBeClosed", false, false);
 
             List<ErrorMessage> errors = Lists.newArrayList();
 
@@ -342,7 +341,7 @@ public final class ProductionTrackingListenerService {
                     errorMessages.append(", ");
                 }
 
-                productionTracking.addGlobalError("orders.order.orderStates.error", errorMessages.toString());
+                productionTracking.addGlobalMessage("orders.order.orderStates.error", errorMessages.toString());
             }
         }
     }
@@ -450,7 +449,8 @@ public final class ProductionTrackingListenerService {
         return orderWastesQuantity;
     }
 
-    private void updateProductionCountingQuantitySubtraction(final Entity productionTracking, final Operation operation) {
+    private void updateProductionCountingQuantitySubtraction(final Entity productionTracking,
+                                                             final Operation operation) {
         final Entity order = productionTracking.getBelongsToField(ProductionTrackingFields.ORDER);
         String typeOfProductionRecording = order.getStringField(OrderFieldsPC.TYPE_OF_PRODUCTION_RECORDING);
 
@@ -743,8 +743,10 @@ public final class ProductionTrackingListenerService {
                 .uniqueResult();
     }
 
-    private List<Entity> getInProductionCountingQuantities(final Entity trackingOperationProductComponent, final Entity order,
-                                                           Entity technologyOperationComponent, final boolean isForEach) {
+    private List<Entity> getInProductionCountingQuantities(final Entity trackingOperationProductComponent,
+                                                           final Entity order,
+                                                           Entity technologyOperationComponent,
+                                                           final boolean isForEach) {
         Entity product = trackingOperationProductComponent.getBelongsToField(L_PRODUCT);
 
         SearchCriteriaBuilder searchCriteriaBuilder = order
@@ -766,7 +768,8 @@ public final class ProductionTrackingListenerService {
         return searchCriteriaBuilder.list().getEntities();
     }
 
-    private Entity getOutProductionCountingQuantity(final Entity trackingOperationProductOutComponent, final Entity order,
+    private Entity getOutProductionCountingQuantity(final Entity trackingOperationProductOutComponent,
+                                                    final Entity order,
                                                     Entity technologyOperationComponent, final boolean isForEach) {
         Entity product = trackingOperationProductOutComponent.getBelongsToField(L_PRODUCT);
 

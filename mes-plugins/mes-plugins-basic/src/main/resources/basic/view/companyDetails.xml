@@ -33,7 +33,7 @@
 
         <ribbon>
             <template name="standardFormTemplate"/>
-            <group name="orderProduction" defaultAuthorizationRole="ROLE_BASE_FUNCTIONALITY">
+            <group name="orderProduction" defaultAuthorizationRole="ROLE_ORDERS_VIEW">
                 <bigButton name="redirectToFilteredOrderProductionList"
                            icon="genealogyIcon24.png">
                     <script>

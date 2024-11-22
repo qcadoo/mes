@@ -262,6 +262,7 @@
         <security:role identifier="ROLE_CLEAN_EXTERNAL_NUMBER"/>
 
         <security:role identifier="ROLE_DASHBOARD_KANBAN"/>
+        <security:role identifier="ROLE_DASHBOARD_PARAMETERS"/>
         <security:role identifier="ROLE_DASHBOARD_KANBAN_CREATE_ORDERS"/>
         <security:role identifier="ROLE_DASHBOARD_KANBAN_GOTO_ORDER_EDIT"/>
         <security:role identifier="ROLE_DASHBOARD_KANBAN_PRINT_LABEL"/>
@@ -371,6 +372,11 @@
         <model:model model="pieceRateItem" resource="model/pieceRateItem.xml"/>
 
         <model:model model="licenseUsage" resource="model/licenseUsage.xml"/>
+
+        <model:model model="qualityCard" resource="model/qualityCard.xml"/>
+        <model:model model="qualityCardStateChange" resource="model/qualityCardStateChange.xml"/>
+
+        <model:dictionary name="sampling"/>
 
         <model:dictionary name="categories"/>
         <model:dictionary name="reasonTypeOfChangingOrderState"/>

@@ -25,6 +25,9 @@ package com.qcadoo.mes.basic.constants;
 
 public final class BasicConstants {
 
+    public static final String MODEL_QUALITY_CARD = "qualityCard";
+    public static final String MODEL_QUALITY_CARD_STATE_CHANGE = "qualityCardStateChange";
+
     private BasicConstants() {
 
     }

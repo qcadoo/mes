@@ -25,6 +25,7 @@ package com.qcadoo.mes.deliveries.listeners;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.qcadoo.mes.basic.CalculationQuantityService;
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.basic.constants.*;
 import com.qcadoo.mes.basic.util.CurrencyService;
@@ -39,8 +40,6 @@ import com.qcadoo.mes.materialFlowResources.MaterialFlowResourcesService;
 import com.qcadoo.model.api.*;
 import com.qcadoo.model.api.file.FileService;
 import com.qcadoo.model.api.search.*;
-import com.qcadoo.model.api.units.PossibleUnitConversions;
-import com.qcadoo.model.api.units.UnitConversionService;
 import com.qcadoo.plugin.api.PluginUtils;
 import com.qcadoo.report.api.pdf.PdfHelper;
 import com.qcadoo.view.api.ComponentState;
@@ -104,9 +103,6 @@ public class DeliveryDetailsListeners {
     private CurrencyService currencyService;
 
     @Autowired
-    private UnitConversionService unitConversionService;
-
-    @Autowired
     private FileService fileService;
 
     @Autowired
@@ -126,6 +122,9 @@ public class DeliveryDetailsListeners {
 
     @Autowired
     private MaterialFlowResourcesService materialFlowResourcesService;
+
+    @Autowired
+    private CalculationQuantityService calculationQuantityService;
 
     public void fillPrices(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         Entity parameter = parameterService.getParameter();
@@ -505,11 +504,6 @@ public class DeliveryDetailsListeners {
 
         Entity product = orderedProduct.getBelongsToField(OrderedProductFields.PRODUCT);
         String unit = product.getStringField(ProductFields.UNIT);
-        String additionalUnit = product.getStringField(ProductFields.ADDITIONAL_UNIT);
-
-        if (Objects.isNull(additionalUnit)) {
-            additionalUnit = unit;
-        }
 
         BigDecimal alreadyAssignedQuantity = deliveredProductMultiPositionService.countAlreadyAssignedQuantity(orderedProduct,
                 orderedProduct.getBelongsToField(L_OFFER), deliveredProducts);
@@ -520,18 +514,12 @@ public class DeliveryDetailsListeners {
             quantity = BigDecimal.ZERO;
         }
 
-        BigDecimal conversion = orderedProduct.getDecimalField(OrderedProductFields.CONVERSION);
+        String additionalUnit = Optional.ofNullable(product.getStringField(ProductFields.ADDITIONAL_UNIT))
+                .orElse(unit);
+        BigDecimal conversion = deliveriesService.getConversion(product, unit, additionalUnit, orderedProduct.getDecimalField(OrderedProductFields.CONVERSION));
 
-        BigDecimal additionalQuantity = null;
-        if (unit.equals(additionalUnit)) {
-            additionalQuantity = quantity;
-        } else {
-            PossibleUnitConversions unitConversions = unitConversionService.getPossibleConversions(unit, searchCriteriaBuilder -> searchCriteriaBuilder.add(SearchRestrictions.belongsTo(UnitConversionItemFieldsB.PRODUCT, product)));
-
-            if (unitConversions.isDefinedFor(additionalUnit)) {
-                additionalQuantity = unitConversions.convertTo(quantity, additionalUnit);
-            }
-        }
+        BigDecimal additionalQuantity = calculationQuantityService.calculateAdditionalQuantity(quantity,
+                conversion, additionalUnit);
 
         deliveredProductMultiPosition.setField(DeliveredProductMultiPositionFields.PRODUCT, product);
         deliveredProductMultiPosition.setField(DeliveredProductMultiPositionFields.UNIT, unit);
@@ -540,7 +528,7 @@ public class DeliveryDetailsListeners {
         deliveredProductMultiPosition.setField(DeliveredProductMultiPositionFields.ADDITIONAL_QUANTITY, additionalQuantity);
         deliveredProductMultiPosition.setField(DeliveredProductMultiPositionFields.BATCH,
                 orderedProduct.getBelongsToField(OrderedProductFields.BATCH));
-        deliveredProductMultiPosition.setField(DeliveredProductMultiPositionFields.CONVERSION, conversion);
+        deliveredProductMultiPosition.setField(DeliveredProductMultiPositionFields.CONVERSION, numberService.setScaleWithDefaultMathContext(conversion));
         deliveredProductMultiPosition.setField(DeliveredProductMultiPositionFields.PRICE_PER_UNIT,
                 orderedProduct.getDecimalField(OrderedProductFields.PRICE_PER_UNIT));
 
@@ -593,11 +581,14 @@ public class DeliveryDetailsListeners {
 
         Entity location = delivery.getBelongsToField(DeliveryFields.LOCATION);
         Entity product = orderedProduct.getBelongsToField(OrderedProductFields.PRODUCT);
-        BigDecimal conversion = orderedProduct.getDecimalField(OrderedProductFields.CONVERSION);
+        String unit = product.getStringField(ProductFields.UNIT);
+        String additionalUnit = Optional.ofNullable(product.getStringField(ProductFields.ADDITIONAL_UNIT))
+                .orElse(unit);
+        BigDecimal conversion = deliveriesService.getConversion(product, unit, additionalUnit, orderedProduct.getDecimalField(OrderedProductFields.CONVERSION));
 
         deliveredProduct.setField(DeliveredProductFields.PRODUCT, product);
         deliveredProduct.setField(DeliveredProductFields.BATCH, orderedProduct.getBelongsToField(OrderedProductFields.BATCH));
-        deliveredProduct.setField(DeliveredProductFields.CONVERSION, conversion);
+        deliveredProduct.setField(DeliveredProductFields.CONVERSION, numberService.setScaleWithDefaultMathContext(conversion));
         deliveredProduct.setField(DeliveredProductFields.IS_WASTE, false);
         deliveredProduct.setField(DeliveredProductFields.DELIVERY, delivery);
 
@@ -607,21 +598,8 @@ public class DeliveryDetailsListeners {
             deliveredProduct.setField(DeliveredProductFields.DELIVERED_QUANTITY,
                     numberService.setScaleWithDefaultMathContext(deliveredQuantity));
 
-            String unit = product.getStringField(ProductFields.UNIT);
-            String additionalQuantityUnit = Optional.ofNullable(product.getStringField(ProductFields.ADDITIONAL_UNIT))
-                    .orElse(unit);
-
-
-            BigDecimal newAdditionalQuantity = null;
-            if (unit.equals(additionalQuantityUnit)) {
-                newAdditionalQuantity = deliveredQuantity;
-            } else {
-                PossibleUnitConversions unitConversions = unitConversionService.getPossibleConversions(unit, searchCriteriaBuilder -> searchCriteriaBuilder.add(SearchRestrictions.belongsTo(UnitConversionItemFieldsB.PRODUCT, product)));
-
-                if (unitConversions.isDefinedFor(additionalQuantityUnit)) {
-                    newAdditionalQuantity = unitConversions.convertTo(deliveredQuantity, additionalQuantityUnit);
-                }
-            }
+            BigDecimal newAdditionalQuantity = calculationQuantityService.calculateAdditionalQuantity(deliveredQuantity,
+                    conversion, additionalUnit);
             deliveredProduct.setField(DeliveredProductFields.ADDITIONAL_QUANTITY, newAdditionalQuantity);
             deliveredProduct.setField(DeliveredProductFields.PRICE_PER_UNIT, numberService
                     .setScaleWithDefaultMathContext(orderedProduct.getDecimalField(OrderedProductFields.PRICE_PER_UNIT)));
@@ -774,26 +752,6 @@ public class DeliveryDetailsListeners {
         newOrderedProduct.setField(L_OFFER, orderedProduct.getBelongsToField(L_OFFER));
 
         return newOrderedProduct;
-    }
-
-
-    public BigDecimal getConversion(final Entity product) {
-        String unit = product.getStringField(ProductFields.UNIT);
-        String additionalUnit = product.getStringField(ProductFields.ADDITIONAL_UNIT);
-
-        if (Objects.isNull(additionalUnit)) {
-            return BigDecimal.ONE;
-        }
-
-        PossibleUnitConversions unitConversions = unitConversionService.getPossibleConversions(unit,
-                searchCriteriaBuilder -> searchCriteriaBuilder
-                        .add(SearchRestrictions.belongsTo(UnitConversionItemFieldsB.PRODUCT, product)));
-
-        if (unitConversions.isDefinedFor(additionalUnit)) {
-            return unitConversions.asUnitToConversionMap().get(additionalUnit);
-        } else {
-            return BigDecimal.ZERO;
-        }
     }
 
     private BigDecimal getLackQuantity(final Entity orderedProduct, final Entity deliveredProduct) {

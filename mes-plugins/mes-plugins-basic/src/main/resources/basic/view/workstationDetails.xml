@@ -217,6 +217,11 @@
                             <option type="fieldCode" value="number"/>
                         </component>
                     </layoutElement>
+                    <layoutElement column="2" row="8">
+                        <component type="checkbox" name="virtual" field="virtual"
+                                   reference="virtual" hasDescription="true">
+                        </component>
+                    </layoutElement>
                 </component>
 
                 <option type="header" value="true"/>

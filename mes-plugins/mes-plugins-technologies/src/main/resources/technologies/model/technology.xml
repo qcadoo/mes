@@ -72,7 +72,7 @@
 
         <boolean name="additionalActions" default="false"/>
 
-        <belongsTo name="qualityCard" model="qualityCard"/>
+        <belongsTo name="qualityCard" model="qualityCard" plugin="basic"/>
 
         <hasMany name="operationComponentDtos" model="technologyOperationComponentDto" joinField="technology"
                  persistent="false"/>

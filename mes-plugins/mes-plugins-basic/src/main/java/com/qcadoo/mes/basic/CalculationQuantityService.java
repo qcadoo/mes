@@ -1,12 +1,12 @@
 package com.qcadoo.mes.basic;
 
-import java.math.BigDecimal;
-
+import com.qcadoo.model.api.DictionaryService;
+import com.qcadoo.model.api.NumberService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.qcadoo.model.api.DictionaryService;
-import com.qcadoo.model.api.NumberService;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 
 @Service
 public class CalculationQuantityService {
@@ -19,7 +19,7 @@ public class CalculationQuantityService {
 
     public BigDecimal calculateQuantity(BigDecimal additionalQuantity, BigDecimal conversion, String unit) {
         BigDecimal quantity = additionalQuantity.divide(conversion, NumberService.DEFAULT_MAX_FRACTION_DIGITS_IN_DECIMAL,
-                BigDecimal.ROUND_FLOOR);
+                RoundingMode.HALF_UP);
         if (dictionaryService.checkIfUnitIsInteger(unit)) {
             return numberService.setScaleWithDefaultMathContext(quantity, 0);
         }

@@ -30,6 +30,7 @@ import com.qcadoo.mes.basic.constants.DashboardButtonFields;
 import com.qcadoo.mes.basic.constants.ParameterFields;
 import com.qcadoo.mes.basic.services.DashboardView;
 import com.qcadoo.mes.materialFlow.constants.ParameterFieldsMF;
+import com.qcadoo.mes.materialFlow.constants.WhatToShowOnDashboard;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchOrders;
 import com.qcadoo.model.api.search.SearchRestrictions;
@@ -86,6 +87,11 @@ public class DashboardViewMF implements DashboardView {
 
         mav.setViewName("basic/dashboard");
 
+        String whatToShowOnDashboard = getWhatToShowOnDashboard(parameter);
+        if (WhatToShowOnDashboard.OPERATIONAL_TASKS.getStringValue().equals(whatToShowOnDashboard) &&
+                !securityService.hasCurrentUserRole("ROLE_OPERATIONAL_TASKS")) {
+            whatToShowOnDashboard = null;
+        }
         mav.addObject("locale", locale.getLanguage());
         mav.addObject("translationsMap", translationService.getMessagesGroup("dashboard", locale));
         mav.addObject("useCompressedStaticResources", useCompressedStaticResources);
@@ -95,7 +101,7 @@ public class DashboardViewMF implements DashboardView {
         mav.addObject("enableOrdersLinkOnDashboard", securityService.hasCurrentUserRole("ROLE_DASHBOARD_KANBAN_GOTO_ORDER_EDIT"));
         mav.addObject("enablePrintLabelOnDashboard", securityService.hasCurrentUserRole("ROLE_DASHBOARD_KANBAN_PRINT_LABEL"));
         mav.addObject("enableRegistrationTerminalOnDashboard", securityService.hasCurrentUserRole("ROLE_PRODUCTION_REGISTRATION_TERMINAL"));
-        mav.addObject("whatToShowOnDashboard", getWhatToShowOnDashboard(parameter));
+        mav.addObject("whatToShowOnDashboard", whatToShowOnDashboard);
         mav.addObject("quantityMadeOnTheBasisOfDashboard", parameter.getStringField("quantityMadeOnTheBasisOfDashboard"));
         mav.addObject("dashboardButtons", filterDashboardButtons(getDashboardButtons(parameter), currentUser));
 
@@ -122,7 +128,8 @@ public class DashboardViewMF implements DashboardView {
                 .addOrder(SearchOrders.asc(DashboardButtonFields.SUCCESSION)).list().getEntities());
     }
 
-    private LinkedList<Entity> filterDashboardButtons(final LinkedList<Entity> dashboardButtons, final Entity currentUser) {
+    private LinkedList<Entity> filterDashboardButtons(final LinkedList<Entity> dashboardButtons,
+                                                      final Entity currentUser) {
         LinkedList<Entity> filteredDashboardButtons = Lists.newLinkedList();
 
         dashboardButtons.forEach(dashboardButton -> {

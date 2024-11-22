@@ -26,6 +26,8 @@ package com.qcadoo.mes.basic;
 import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.basic.constants.StaffFields;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.security.api.SecurityService;
+import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
@@ -51,10 +53,15 @@ public class StaffService {
     @Autowired
     private NumberGeneratorService numberGeneratorService;
 
+    @Autowired
+    private SecurityService securityService;
+
     public void onBeforeRender(final ViewDefinitionState view) {
         generateStaffNumber(view);
         setOwnerCompany(view);
         setFilters(view);
+        ComponentState skillsTab = view.getComponentByReference("skillsTab");
+        skillsTab.setVisible(securityService.hasCurrentUserRole("ROLE_SKILLS"));
     }
 
     private void setFilters(final ViewDefinitionState view) {

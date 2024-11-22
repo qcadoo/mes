@@ -29,7 +29,7 @@
                  xmlns="http://schema.qcadoo.org/modules/ribbonExtension"
                  xsi:schemaLocation="http://schema.qcadoo.org/modules/ribbonExtension http://schema.qcadoo.org/modules/ribbonExtension.xsd">
 
-    <group name="parameters">
+    <group name="parameters" defaultAuthorizationRole="ROLE_DASHBOARD_PARAMETERS">
         <bigButton name="dashboardParameters" icon="generateIcon24.png">
             <script>
                 <![CDATA[

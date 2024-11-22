@@ -59,10 +59,6 @@
             <version>[1.1.8</version>
         </dependency>
         <dependency>
-            <plugin>technologies</plugin>
-            <version>[1.1.7</version>
-        </dependency>
-        <dependency>
             <plugin>materialFlowResources</plugin>
             <version>[1.2.1</version>
         </dependency>
@@ -229,7 +225,7 @@
                           method="onSave"/>
         </model:model-hook>
 
-        <model:model-field plugin="technologies" model="qualityCard">
+        <model:model-field plugin="basic" model="qualityCard">
             <model:hasMany name="orderedProducts" plugin="deliveries" model="orderedProduct" joinField="qualityCard"/>
         </model:model-field>
 

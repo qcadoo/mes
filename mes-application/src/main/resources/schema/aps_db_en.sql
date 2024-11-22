@@ -10398,6 +10398,20 @@ CREATE TABLE public.basic_productattachment (
 
 
 --
+-- Name: basic_qualitycard; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.basic_qualitycard (
+    id bigint NOT NULL,
+    number character varying(255),
+    name character varying(2048),
+    description character varying(2048),
+    state character varying(255) DEFAULT '01new'::character varying,
+    sampling character varying(255)
+);
+
+
+--
 -- Name: basic_subassembly; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -10461,7 +10475,8 @@ CREATE TABLE public.basic_workstation (
     minimumdimension numeric(12,5),
     minimumdimensionunit character varying(255),
     maximumdimension numeric(12,5),
-    maximumdimensionunit character varying(255)
+    maximumdimensionunit character varying(255),
+    virtual boolean DEFAULT false
 );
 
 
@@ -10705,20 +10720,6 @@ CREATE TABLE public.qualitycontrol_qualitycontrolattachment (
 
 
 --
--- Name: technologies_qualitycard; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.technologies_qualitycard (
-    id bigint NOT NULL,
-    number character varying(255),
-    name character varying(2048),
-    description character varying(2048),
-    state character varying(255) DEFAULT '01new'::character varying,
-    sampling character varying(255)
-);
-
-
---
 -- Name: technologies_technologyattachment; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -10840,7 +10841,7 @@ UNION ALL
     qualitycard.number AS pinnedtoobjectidentifier,
     qualitycard.name AS pinnedtoobjectidentifiername,
     (qualitycard.id)::integer AS pinnedtoobjectid,
-    'technologies_qualitycard'::text AS pinnedtomodelname,
+    'basic_qualitycard'::text AS pinnedtomodelname,
     qualitycardattachment.attachment,
     qualitycardattachment.name,
     qualitycardattachment.size,
@@ -10848,7 +10849,7 @@ UNION ALL
     (7000000 + row_number() OVER ()) AS id,
     'qualityControl/qualityCardDetails'::text AS pinnedtocorrespondingview
    FROM (public.qualitycontrol_qualitycardattachment qualitycardattachment
-     LEFT JOIN public.technologies_qualitycard qualitycard ON ((qualitycardattachment.qualitycard_id = qualitycard.id)))
+     LEFT JOIN public.basic_qualitycard qualitycard ON ((qualitycardattachment.qualitycard_id = qualitycard.id)))
 UNION ALL
  SELECT '09workstations'::text AS pinnedto,
     workstation.number AS pinnedtoobjectidentifier,
@@ -12094,6 +12095,61 @@ CREATE SEQUENCE public.basic_productdto_id_seq
     NO MINVALUE
     NO MAXVALUE
     CACHE 1;
+
+
+--
+-- Name: basic_qualitycard_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.basic_qualitycard_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: basic_qualitycard_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.basic_qualitycard_id_seq OWNED BY public.basic_qualitycard.id;
+
+
+--
+-- Name: basic_qualitycardstatechange; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.basic_qualitycardstatechange (
+    id bigint NOT NULL,
+    dateandtime timestamp without time zone,
+    sourcestate character varying(255),
+    targetstate character varying(255),
+    status character varying(255),
+    phase integer,
+    worker character varying(255),
+    qualitycard_id bigint,
+    shift_id bigint
+);
+
+
+--
+-- Name: basic_qualitycardstatechange_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.basic_qualitycardstatechange_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: basic_qualitycardstatechange_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.basic_qualitycardstatechange_id_seq OWNED BY public.basic_qualitycardstatechange.id;
 
 
 --
@@ -15766,7 +15822,7 @@ CREATE VIEW public.deliveries_orderedproductdto AS
      LEFT JOIN public.technologies_operation operation ON ((operation.id = orderedproduct.operation_id)))
      LEFT JOIN product_attachments attachments ON ((attachments.productid = product.id)))
      LEFT JOIN public.advancedgenealogy_batch batch ON ((batch.id = orderedproduct.batch_id)))
-     LEFT JOIN public.technologies_qualitycard qualitycard ON ((qualitycard.id = orderedproduct.qualitycard_id)));
+     LEFT JOIN public.basic_qualitycard qualitycard ON ((qualitycard.id = orderedproduct.qualitycard_id)));
 
 
 --
@@ -29338,7 +29394,7 @@ CREATE VIEW public.qualitycontrol_qualitycarddto AS
     qc.description,
     qc.state,
     (count(qualitycardattachment.id) <> 0) AS attachmentsexists
-   FROM (public.technologies_qualitycard qc
+   FROM (public.basic_qualitycard qc
      LEFT JOIN public.qualitycontrol_qualitycardattachment qualitycardattachment ON ((qualitycardattachment.qualitycard_id = qc.id)))
   GROUP BY qc.id, qc.number, qc.name, qc.description, qc.state;
 
@@ -31984,61 +32040,6 @@ ALTER SEQUENCE public.technologies_producttoproductgrouptechnology_id_seq OWNED 
 
 
 --
--- Name: technologies_qualitycard_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE public.technologies_qualitycard_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: technologies_qualitycard_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE public.technologies_qualitycard_id_seq OWNED BY public.technologies_qualitycard.id;
-
-
---
--- Name: technologies_qualitycardstatechange; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.technologies_qualitycardstatechange (
-    id bigint NOT NULL,
-    dateandtime timestamp without time zone,
-    sourcestate character varying(255),
-    targetstate character varying(255),
-    status character varying(255),
-    phase integer,
-    worker character varying(255),
-    qualitycard_id bigint,
-    shift_id bigint
-);
-
-
---
--- Name: technologies_qualitycardstatechange_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE public.technologies_qualitycardstatechange_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: technologies_qualitycardstatechange_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE public.technologies_qualitycardstatechange_id_seq OWNED BY public.technologies_qualitycardstatechange.id;
-
-
---
 -- Name: technologies_section; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -34670,6 +34671,20 @@ ALTER TABLE ONLY public.basic_productattributevalue ALTER COLUMN id SET DEFAULT 
 
 
 --
+-- Name: basic_qualitycard id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.basic_qualitycard ALTER COLUMN id SET DEFAULT nextval('public.basic_qualitycard_id_seq'::regclass);
+
+
+--
+-- Name: basic_qualitycardstatechange id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.basic_qualitycardstatechange ALTER COLUMN id SET DEFAULT nextval('public.basic_qualitycardstatechange_id_seq'::regclass);
+
+
+--
 -- Name: basic_reportcolumnwidth id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -37281,20 +37296,6 @@ ALTER TABLE ONLY public.technologies_producttoproductgrouptechnology ALTER COLUM
 
 
 --
--- Name: technologies_qualitycard id; Type: DEFAULT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.technologies_qualitycard ALTER COLUMN id SET DEFAULT nextval('public.technologies_qualitycard_id_seq'::regclass);
-
-
---
--- Name: technologies_qualitycardstatechange id; Type: DEFAULT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.technologies_qualitycardstatechange ALTER COLUMN id SET DEFAULT nextval('public.technologies_qualitycardstatechange_id_seq'::regclass);
-
-
---
 -- Name: technologies_section id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -39268,23 +39269,20 @@ COPY public.basic_currency (id, currency, alphabeticcode, isocode, minorunit, ex
 
 COPY public.basic_dashboardbutton (id, parameter_id, identifier, item_id, icon, succession, active) FROM stdin;
 1	1	basic.dashboardButton.identifier.orders.ordersPlanningList	47	/qcadooView/public/css/core/images/dashboard/orders.png	1	t
-2	1	basic.dashboardButton.identifier.orders.operationalTasksList	46	/qcadooView/public/css/core/images/dashboard/operationalTasks.png	2	f
-3	1	basic.dashboardButton.identifier.orders.schedulesList	149	/qcadooView/public/css/core/images/dashboard/schedules.png	3	f
 4	1	basic.dashboardButton.identifier.technology.technologiesList	39	/qcadooView/public/css/core/images/dashboard/technologies.png	4	t
-5	1	basic.dashboardButton.identifier.requirements.generateMaterialRequirementCoverage	100	/qcadooView/public/css/core/images/dashboard/materialRequirementCoverage.png	5	t
-6	1	basic.dashboardButton.identifier.requirements.deliveriesList	62	/qcadooView/public/css/core/images/dashboard/deliveries.png	6	f
-7	1	basic.dashboardButton.identifier.materialFlow.warehouseStocksList	72	/qcadooView/public/css/core/images/dashboard/warehouseStocks.png	7	f
-8	1	basic.dashboardButton.identifier.materialFlow.resourcesList	75	/qcadooView/public/css/core/images/dashboard/resources.png	8	t
-9	1	basic.dashboardButton.identifier.materialFlow.documentsList	73	/qcadooView/public/css/core/images/dashboard/documents.png	9	f
-10	1	basic.dashboardButton.identifier.ordersTracking.productionTrackingsList	96	/qcadooView/public/css/core/images/dashboard/productionTrackings.png	10	t
-11	1	basic.dashboardButton.identifier.ordersTracking.productionBalancesList	95	/qcadooView/public/css/core/images/dashboard/productionBalances.png	11	t
-12	1	basic.dashboardButton.identifier.ordersTracking.productionRegistrationTerminal	115	/qcadooView/public/css/core/images/dashboard/productionRegistrationTerminal.png	12	f
-13	1	basic.dashboardButton.identifier.ordersTracking.processConfirmationTerminal	190	/qcadooView/public/css/core/images/dashboard/productionRegistrationTerminal.png	13	f
-14	1	basic.dashboardButton.identifier.orders.productionLineSchedulesList	200	/qcadooView/public/css/core/images/dashboard/schedules.png	14	f
-15	1	basic.dashboardButton.identifier.orders.salesPlansList	181	/qcadooView/public/css/core/images/dashboard/orders.png	15	f
-16	1	basic.dashboardButton.identifier.orders.masterOrdersList	77	/qcadooView/public/css/core/images/dashboard/orders.png	16	f
-17	1	basic.dashboardButton.identifier.orders.sgOrdersGantt	202	/qcadooView/public/css/core/images/dashboard/schedules.png	17	f
-18	1	basic.dashboardButton.identifier.orders.operationalTasksGantt	154	/qcadooView/public/css/core/images/dashboard/schedules.png	18	f
+2	1	basic.dashboardButton.identifier.orders.operationalTasksList	46	/qcadooView/public/css/core/images/dashboard/operationalTasks.png	2	t
+3	1	basic.dashboardButton.identifier.orders.schedulesList	149	/qcadooView/public/css/core/images/dashboard/schedules.png	3	t
+10	1	basic.dashboardButton.identifier.ordersTracking.productionTrackingsList	96	/qcadooView/public/css/core/images/dashboard/productionTrackings.png	9	t
+11	1	basic.dashboardButton.identifier.ordersTracking.productionBalancesList	95	/qcadooView/public/css/core/images/dashboard/productionBalances.png	10	f
+14	1	basic.dashboardButton.identifier.orders.productionLineSchedulesList	200	/qcadooView/public/css/core/images/dashboard/schedules.png	11	f
+15	1	basic.dashboardButton.identifier.orders.salesPlansList	181	/qcadooView/public/css/core/images/dashboard/orders.png	12	f
+16	1	basic.dashboardButton.identifier.orders.masterOrdersList	77	/qcadooView/public/css/core/images/dashboard/orders.png	13	f
+17	1	basic.dashboardButton.identifier.orders.sgOrdersGantt	202	/qcadooView/public/css/core/images/dashboard/schedules.png	14	f
+18	1	basic.dashboardButton.identifier.orders.operationalTasksGantt	154	/qcadooView/public/css/core/images/dashboard/schedules.png	15	t
+6	1	basic.dashboardButton.identifier.requirements.deliveriesList	62	/qcadooView/public/css/core/images/dashboard/deliveries.png	5	f
+7	1	basic.dashboardButton.identifier.materialFlow.warehouseStocksList	72	/qcadooView/public/css/core/images/dashboard/warehouseStocks.png	6	f
+8	1	basic.dashboardButton.identifier.materialFlow.resourcesList	75	/qcadooView/public/css/core/images/dashboard/resources.png	7	f
+9	1	basic.dashboardButton.identifier.materialFlow.documentsList	73	/qcadooView/public/css/core/images/dashboard/documents.png	8	f
 \.
 
 
@@ -39398,7 +39396,7 @@ COPY public.basic_palletnumberhelper (id, quantity, active, createdate, updateda
 --
 
 COPY public.basic_parameter (id, country_id, currency_id, unit, additionaltextinfooter, company_id, registerproductiontime, reasonneededwhendelayedeffectivedatefrom, earliereffectivedatetotime, reasonneededwhencorrectingtherequestedvolume, reasonneededwhencorrectingdateto, reasonneededwhenchangingstatetodeclined, imageurlinworkplan, hidedescriptioninworkplans, defaultproductionline_id, reasonneededwhenearliereffectivedateto, earliereffectivedatefromtime, defaultaddress, allowquantitychangeinacceptedorder, reasonneededwhendelayedeffectivedateto, justone, registerquantityinproduct, reasonneededwhenchangingstatetointerrupted, registerquantityoutproduct, dontprintordersinworkplans, location_id, typeofproductionrecording, dontprintinputproductsinworkplans, delayedeffectivedatefromtime, hideemptycolumnsfororders, reasonneededwhenchangingstatetoabandoned, autocloseorder, allowtoclose, dontprintoutputproductsinworkplans, inputproductsrequiredfortype, otheraddress, reasonneededwhenearliereffectivedatefrom, defaultdescription, delayedeffectivedatetotime, hidetechnologyandorderinworkplans, reasonneededwhencorrectingdatefrom, ssccnumberprefix, lowerlimit, negativetrend, upperlimit, positivetrend, dueweight, printoperationatfirstpageinworkplans, averagelaborhourlycostpb, materialcostsusedpb, additionaloverheadpb, materialcostmarginpb, includetpzpb, productioncostmarginpb, averagemachinehourlycostpb, includeadditionaltimepb, batchnumberuniqueness, defaultcoveragefromdays, includedraftdeliveries, coveragetype, hideemptycolumnsforoffers, hideemptycolumnsforrequests, validateproductionrecordtimes, workstationsquantityfromproductionline, lockproductionprogress, hidebarcodeoperationcomponentinworkplans, ignoremissingcomponents, additionaloutputrows, additionalinputrows, allowmultipleregisteringtimeforworker, pricebasedon, takeactualprogressinworkplans, confectionplanrequirereasontypethreshold, confectionplancorrectionreasontype, automaticsavecoverage, externaldeliveriesextension, warehouse_id, documentstate, positivepurchaseprice, sameordernumber, automaticdeliveriesminstate, possibleworktimedeviation, ordersincludeperiod, includerequirements, entityversion, labelsbtpath, profitpb, registrationpriceoverheadpb, sourceofoperationcostspb, acceptanceevents, useblackbox, generatewarehouseissuestoorders, daysbeforeorderstart, issuelocation_id, consumptionofrawmaterialsbasedonstandards, documentpositionparameters_id, includecomponents, warehouseissuesreservestates, drawndocuments, issuedquantityuptoneed, documentsstatus, warehouseissueproductssource, productstoissue, trackingcorrectionrecalculatepps, deliveredbiggerthanordered, ordersganttparameters_id, additionalimage, autorecalculateorder, ppsisautomatic, ppsproducedamountrecalculateplan, ppsalgorithm, baselinkerparameters_id, technologiesgeneratorcopyproductsize, cartonlabelsbtpath, maxproductsquantity, allowerrorsinmasterorderpositions, companyname_id, hideassignedstaff, fillorderdescriptionbasedontechnologydescription, allowanomalycreationonacceptancerecord, includelevelandsuffix, orderedproductsunit, allowincompleteunits, acceptrecordsfromterminal, allowchangestousedquantityonterminal, includeadditionaltimeps, includetpzps, ordersgenerationnotcompletedates, canchangeprodlineforacceptedorders, generateeachonseparatepage, includewagegroups, ordersgeneratedbycoverage, automaticallygenerateordersforcomponents, seteffectivedatefromoninprogress, seteffectivedatetooncompleted, copydescription, exporttopdfonlyvisiblecolumns, additionalcartonlabelsquantity, maxcartonlabelsquantity, exporttocsvonlyvisiblecolumns, flagpercentageofexecutionwithcolor, opertaskflagpercentexecutionwithcolor, automaticclosingoforderwithingroups, copynotesfrommasterorderposition, manuallysendwarehousedocuments, realizationfromstock, alwaysorderitemswithpersonalization, selectorder, availabilityofrawmaterials, selectoperationaltask, stoppages, repair, employeeprogress, includeunacceptableproduction, calculateamounttimeemployeesonacceptancerecord, notshowtasksdownloadedbyanotheremployee, createcollectiveorders, completemasterorderafterorderingpositions, hideorderedproductworkplan, selectiontasksbyorderdateinterminal, showprogress, showdelays, requiresupplieridentification, numberpattern_id, generatebatchfororderedproduct, generatebatchoforderedproduct, acceptbatchtrackingwhenclosingorder, completewarehousesflowwhilechecking, qualitycontrol, finalqualitycontrolwithoutresources, terminalproductattribute_id, oeefor, oeeworktimefrom, range, division_id, showqronordersgrouppdf, advisestartdateoftheorder, orderstartdatebasedon, showchartondashboard, whattoshowondashboard, dashboardoperation_id, dashboardcomponentslocation_id, dashboardproductsinputlocation_id, momentofvalidation, moveproductstosubsequentoperations, demandcausesofwastes, wmsapk, wmsversion, applicationconfigured, materialcostsused, usenominalcostpricenotspecified, sourceofoperationcosts, standardlaborcost_id, averagemachinehourlycost, averagelaborhourlycost, includetpz, includeadditionaltime, materialcostmargin, productioncostmargin, additionaloverhead, registrationpriceoverhead, profit, applicationconfigurationfinished, generatepacksfororders, includepacksgeneratingprocessesfororder, optimalpacksize, restfeedinglastpack, deliveryusenominalcostwhenpricenotspecified, deliverypricefillbasedon, allowcheckedtechnologywithoutinproducts, requireassortment, changeorderdatesbasedonchangegroupdates, acceptedtechnologymarkedasdefault, terminalscanning, processsource, showproductdescriptiononordersgrouppdf, attributeonordersgrouppdf_id, copyattributestosizeproducts, materialcostsusedmc, usenominalcostpricenotspecifiedmc, productattribute_id, materialattribute_id, attributeonthelabel_id, requiretypeoffault, workingstationinputtype, allowchangeordeleteordertechnologicalprocess, technicalproductioncostoverhead, technicalproductioncostoverheadpb, synchronizeadditionalproductdata, processterminalplaceofperformance, emptylabelbtpath, schedulesortorder, workstationassigncriterion, workerassigncriterion, additionaltimeextendsoperation, synchronizeproductcategory, completenominalcostinarticleandproducts, copynominalcostfamilyofproductssizes, onlypackagesinproduction, allowtilelengthtobeedited, analyzeavailableresources, analyzeplannedquantity, analyzemaxquantity, numberpatternordergroup_id, otcopydescriptionfromproductionorder, setorderdatesbasedontaskdates, automaticallygeneratetasksfororder, automaticallygenerateprocessesfororder, includeadditionaltimesg, includetpzsg, includetpzs, dashboardshowforproduct, dashboardshowdescription, receivedeliveryinordercurrency, sortbyproducttypepriorityordersgrouppdf, attributeonordersgrouprequirementpdf_id, quantitymadeonthebasisofdashboard, producingmorethanplanned, logo, synchronizemasterorderattributes, synchronizedocumentpositionattributes, dashboardordersorting, completestationandemployeeingeneratedtasks, considerexceptionswhenpromptingcurrentshift, productionorderedquantityclosestheorder, receiptofproducts, releaseofmaterials, considerminimumstocklevelwhencreatingproductionorders, fillorderdescriptionbasedonproductdescription, ganttrunadjusterror, checkfortheexistenceofinputproductprices, automaticupdatecostnorms, costssource, automaticreleaseaftergeneration, analyzeactualstaff, analyzeactualstaffmaxquantity, analyzegetquantityfromshiftassignment, setmasterorderdatebasedonorderdates, notshowtasksblockedbyprevious, promptdefaultlinefromtechnology, numberofficelicenses, numberterminallicenses, typeterminallicenses, notshoworderfilters, notincludedateswhenretrievingorders, requirequalityrating, synchronizeproductsize, masterorderreleaselocation_id, demandworkstation, skipfinishedtasks, onlyonebatchtrackingfororder, producedbatchfromordertrackingrecord, packaginglocation_id, includeworkstationongetrrforot, notincludeworkstationwhensearchingot, generatetransferdocumentsonrepair, howmanydaysrecalculateplan, operationproductindefaultquantity, operationproductoutdefaultquantity, manyarticleswiththesameean, includeincalculationdeliveries, transferordersgrouptoordersforcomponents, automaticallyusethebatchplannedinorder, productdeliverybatchevidence, productdeliverybatchnumberpattern_id, showmachineperiodregistration, mergingordersforcomponents, tasksselectionby, recalculateplantasksorder, numbervisibleorderstasksondashboard, updatetechnologiesonpendingorders, sharingregistrationrecord, noexchangeratedownload, createfailtodowntime, optimizecuttinglengthattribute_id, optimizecuttingfinalwasteunit, optimizecuttingfinalwaste, dimensioncontrolofproducts, showplannedeventsonchart, updateplannedeventfinishdate, copyattributestoproducts, technologiesgeneratorcopyproductattributes, allowtotalregistration, workingtimetotalregistration, wastesconsumerawmaterials, moldrewclient_id, deadlinefororderbasedondeliverydate, deadlinefororderearlierthandeliverydate, operationaltasksrecalculationtoken, plannerworkstationassigncriterion, deadlinesort, operationlevelsort, orderprioritysort, abcanalysissort, allowmasterorderdeadlinechange, scheduleduration, plandimensioncontrolofproducts, orderdimensioncontrolofproducts, pricelistattribute1_id, pricelistattribute2_id, recalculateplanafterfinishtaskinterminal, numberapslicenses, numberwmsmobilelicenses) FROM stdin;
-1	\N	5	pc	\N	1	t	f	0	f	f	f	\N	f	1	f	0	\N	t	f	f	t	f	t	f	\N	02cumulated	f	0	f	f	f	f	f	01startOrder	\N	f	\N	0	f	f	0005900125	\N	\N	\N	\N	\N	f	\N	06costForOrder	\N	\N	f	\N	\N	f	01globally	14	f	\N	f	f	f	f	f	f	t	\N	\N	f	01nominalProductCost	f	\N	\N	f	\N	\N	01draft	f	f	f	\N	\N	f	0	\N	\N	\N	02parameters	f	\N	f	\N	\N	t	1	f	f	01transfer	f	01accepted	01order	01allInputProducts	f	t	\N	\N	f	f	f	\N	\N	\N	\N	150	\N	\N	f	t	f	t	\N	f	f	t	f	f	f	t	f	f	f	f	f	f	t	f	50	3000	f	t	t	f	f	f	f	f	t	f	t	t	t	f	t	f	f	f	f	f	f	f	f	f	\N	\N	f	f	t	t	f	\N	01productionLine	01staffWorkTimes	01oneDivision	\N	f	t	03endDateLastOrderOnTheLine	t	01orders	\N	\N	\N	01orderAcceptance	t	f	\N	\N	f	01nominal	f	01technologyOperation	\N	\N	\N	f	f	0.00000	0.00000	0.00000	0.00000	0.00000	f	f	f	\N	\N	f	01lastPurchasePrice	f	f	f	f	01operationNumber	01orderPackages	f	\N	f	01nominal	f	\N	\N	\N	f	01scanTheNumber	f	0.00000	0.00000	f	01workstation	\N	01desc	01shortestTime	01workstationLastOperatorLatestFinished	t	t	f	f	f	f	f	f	\N	\N	f	f	f	f	\N	\N	t	01number	f	f	t	\N	01approvedProduction	t	\N	f	f	01startDate	f	f	f	01onAcceptanceRegistrationRecord	01onAcceptanceRegistrationRecord	f	f	t	f	f	01mes	f	f	\N	f	f	f	t	10000	0	03over51Employees	f	f	t	f	\N	f	f	f	f	\N	f	f	t	7	\N	\N	f	01confirmedDeliveries	f	f	f	\N	f	f	02taskDate	01operationsLevelAndTasksStartDate	50	f	f	f	f	\N	\N	\N	f	f	f	f	f	f	01duplicatedForEachOrder	t	\N	f	0	\N	01minDeadlineForOrder	t	t	f	f	f	90	f	f	\N	\N	f	0	0
+1	\N	5	pc	\N	1	t	f	0	f	f	f	\N	f	1	f	0	\N	t	f	f	t	f	t	f	\N	03forEach	f	0	f	f	f	f	f	01startOrder	\N	f	\N	0	f	f	0005900125	\N	\N	\N	\N	\N	f	\N	03lastPurchase	\N	\N	f	\N	\N	f	01globally	14	f	\N	f	f	f	f	f	f	t	\N	\N	f	01nominalProductCost	f	\N	\N	f	\N	\N	01draft	f	f	f	\N	\N	f	0	\N	\N	\N	02parameters	f	\N	f	\N	\N	t	1	f	f	01transfer	f	01accepted	01order	01allInputProducts	f	t	\N	\N	f	f	f	\N	\N	\N	\N	150	\N	\N	f	t	f	t	\N	f	f	t	f	f	f	t	f	f	f	f	f	f	t	f	50	3000	f	t	t	f	f	f	f	f	t	f	t	t	t	f	t	f	f	f	f	f	f	f	f	f	\N	\N	f	f	t	t	f	\N	01productionLine	01staffWorkTimes	01oneDivision	\N	f	t	03endDateLastOrderOnTheLine	t	02operationalTasks	\N	\N	\N	01orderAcceptance	t	f	\N	\N	t	01nominal	f	01technologyOperation	\N	\N	\N	f	f	0.00000	0.00000	0.00000	0.00000	0.00000	f	f	f	\N	\N	f	01lastPurchasePrice	f	f	f	f	01operationNumber	01orderPackages	f	\N	f	01nominal	f	\N	\N	\N	f	01scanTheNumber	f	0.00000	0.00000	f	01workstation	\N	01desc	01shortestTime	01workstationLastOperatorLatestFinished	t	t	f	f	f	f	f	f	\N	\N	f	f	f	f	\N	\N	t	01number	f	f	t	\N	01approvedProduction	t	\N	f	f	01startDate	f	f	f	04doNotCreateDocuments	04doNotCreateDocuments	f	f	t	f	f	01mes	f	f	\N	f	f	f	t	10000	0	03over51Employees	f	f	t	f	\N	f	f	f	f	\N	f	f	t	7	\N	\N	f	01confirmedDeliveries	f	f	f	\N	f	f	02taskDate	01operationsLevelAndTasksStartDate	50	f	f	f	f	\N	\N	\N	f	f	f	f	f	f	01duplicatedForEachOrder	t	\N	f	0	\N	01minDeadlineForOrder	t	t	f	f	f	90	f	f	\N	\N	f	0	0
 \.
 
 
@@ -39439,6 +39437,22 @@ COPY public.basic_productattachment (id, product_id, attachment, name, size, ext
 --
 
 COPY public.basic_productattributevalue (id, product_id, attribute_id, attributevalue_id, value) FROM stdin;
+\.
+
+
+--
+-- Data for Name: basic_qualitycard; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY public.basic_qualitycard (id, number, name, description, state, sampling) FROM stdin;
+\.
+
+
+--
+-- Data for Name: basic_qualitycardstatechange; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY public.basic_qualitycardstatechange (id, dateandtime, sourcestate, targetstate, status, phase, worker, qualitycard_id, shift_id) FROM stdin;
 \.
 
 
@@ -39575,7 +39589,7 @@ COPY public.basic_viewedactivity (id, user_id, log_id) FROM stdin;
 -- Data for Name: basic_workstation; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.basic_workstation (id, number, name, description, workstationtype_id, operation_id, active, productionline_id, division_id, serialnumber, udtnumber, series, producer, productiondate, wnknumber, entityversion, staff_id, dateofadmission, dateofwithdrawal, state, minimumdimension, minimumdimensionunit, maximumdimension, maximumdimensionunit) FROM stdin;
+COPY public.basic_workstation (id, number, name, description, workstationtype_id, operation_id, active, productionline_id, division_id, serialnumber, udtnumber, series, producer, productiondate, wnknumber, entityversion, staff_id, dateofadmission, dateofwithdrawal, state, minimumdimension, minimumdimensionunit, maximumdimension, maximumdimensionunit, virtual) FROM stdin;
 \.
 
 
@@ -39996,8 +40010,6 @@ COPY public.deliveries_columnfordeliveries (id, identifier, name, description, c
 9	totalPrice	deliveries.columnForDeliveries.name.value.totalPrice	deliveries.columnForDeliveries.description.value.totalPrice	com.qcadoo.mes.deliveries.columnExtension.DeliveriesColumnFiller	02right	1	9	0
 10	currency	deliveries.columnForDeliveries.name.value.currency	deliveries.columnForDeliveries.description.value.currency	com.qcadoo.mes.deliveries.columnExtension.DeliveriesColumnFiller	01left	1	10	0
 11	offerNumber	deliveries.columnForDeliveries.name.value.offerNumber	deliveries.columnForDeliveries.description.value.offerNumber	com.qcadoo.mes.supplyNegotiations.columnExtension.DeliveriesColumnFillerSN	01left	1	11	0
-12	operationNumber	deliveries.columnForDeliveries.name.value.operationNumber	deliveries.columnForDeliveries.description.value.operationNumber	com.qcadoo.mes.techSubcontrForDeliveries.columnExtension.DeliveriesColumnFillerTSFD	01left	1	12	0
-13	catalogNumber	deliveries.columnForDeliveries.name.value.catalogNumber	deliveries.columnForDeliveries.description.value.catalogNumber	com.qcadoo.mes.catNumbersInDeliveries.columnExtension.DeliveriesColumnFillerCNID	01left	1	13	0
 \.
 
 
@@ -40016,8 +40028,6 @@ COPY public.deliveries_columnfororders (id, identifier, name, description, colum
 8	totalPrice	deliveries.columnForOrders.name.value.totalPrice	deliveries.columnForOrders.description.value.totalPrice	com.qcadoo.mes.deliveries.columnExtension.DeliveriesColumnFiller	02right	1	8	0
 9	currency	deliveries.columnForOrders.name.value.currency	deliveries.columnForOrders.description.value.currency	com.qcadoo.mes.deliveries.columnExtension.DeliveriesColumnFiller	01left	1	9	0
 10	offerNumber	deliveries.columnForOrders.name.value.offerNumber	deliveries.columnForOrders.description.value.offerNumber	com.qcadoo.mes.supplyNegotiations.columnExtension.DeliveriesColumnFillerSN	01left	1	10	0
-11	operationNumber	deliveries.columnForOrders.name.value.operationNumber	deliveries.columnForOrders.description.value.operationNumber	com.qcadoo.mes.techSubcontrForDeliveries.columnExtension.DeliveriesColumnFillerTSFD	01left	1	11	0
-12	catalogNumber	deliveries.columnForOrders.name.value.catalogNumber	deliveries.columnForOrders.description.value.catalogNumber	com.qcadoo.mes.catNumbersInDeliveries.columnExtension.DeliveriesColumnFillerCNID	01left	1	12	0
 \.
 
 
@@ -40124,8 +40134,6 @@ COPY public.deliveries_parameterdeliveryordercolumn (id, parameter_id, columnfor
 8	1	8	8	0
 9	1	9	9	0
 10	1	10	10	0
-11	1	11	11	0
-12	1	12	12	0
 \.
 
 
@@ -41743,6 +41751,11 @@ COPY public.jointable_group_role (group_id, role_id) FROM stdin;
 32	169
 33	169
 38	169
+4	170
+2	170
+3	170
+32	170
+33	170
 \.
 
 
@@ -42519,16 +42532,6 @@ COPY public.materialflowresources_warehousestockreport (id, warehousestockdate, 
 --
 
 COPY public.materialrequirementcoveragefororder_columnforcoveragesfororder (id, identifier, name, description, columnfiller, alignment, succession, entityversion) FROM stdin;
-1	productNumber	materialRequirementCoverageForOrder.columnForCoveragesForOrder.name.value.productNumber	materialRequirementCoverageForOrder.columnForCoveragesForOrder.description.value.productNumber	com.qcadoo.mes.materialRequirementCoverageForOrder.columnExtension.MaterialRequirementCoverageForOrderColumnFiller	01left	1	0
-2	productName	materialRequirementCoverageForOrder.columnForCoveragesForOrder.name.value.productName	materialRequirementCoverageForOrder.columnForCoveragesForOrder.description.value.productName	com.qcadoo.mes.materialRequirementCoverageForOrder.columnExtension.MaterialRequirementCoverageForOrderColumnFiller	01left	2	0
-3	state	materialRequirementCoverageForOrder.columnForCoveragesForOrder.name.value.state	materialRequirementCoverageForOrder.columnForCoveragesForOrder.description.value.state	com.qcadoo.mes.materialRequirementCoverageForOrder.columnExtension.MaterialRequirementCoverageForOrderColumnFiller	01left	3	0
-4	lackFromDate	materialRequirementCoverageForOrder.columnForCoveragesForOrder.name.value.lackFromDate	materialRequirementCoverageForOrder.columnForCoveragesForOrder.description.value.lackFromDate	com.qcadoo.mes.materialRequirementCoverageForOrder.columnExtension.MaterialRequirementCoverageForOrderColumnFiller	01left	4	0
-5	demandQuantity	materialRequirementCoverageForOrder.columnForCoveragesForOrder.name.value.demandQuantity	materialRequirementCoverageForOrder.columnForCoveragesForOrder.description.value.demandQuantity	com.qcadoo.mes.materialRequirementCoverageForOrder.columnExtension.MaterialRequirementCoverageForOrderColumnFiller	02right	5	0
-6	coveredQuantity	materialRequirementCoverageForOrder.columnForCoveragesForOrder.name.value.coveredQuantity	materialRequirementCoverageForOrder.columnForCoveragesForOrder.description.value.coveredQuantity	com.qcadoo.mes.materialRequirementCoverageForOrder.columnExtension.MaterialRequirementCoverageForOrderColumnFiller	02right	6	0
-7	reserveMissingQuantity	materialRequirementCoverageForOrder.columnForCoveragesForOrder.name.value.reserveMissingQuantity	materialRequirementCoverageForOrder.columnForCoveragesForOrder.description.value.reserveMissingQuantity	com.qcadoo.mes.materialRequirementCoverageForOrder.columnExtension.MaterialRequirementCoverageForOrderColumnFiller	02right	7	0
-8	productUnit	materialRequirementCoverageForOrder.columnForCoveragesForOrder.name.value.productUnit	materialRequirementCoverageForOrder.columnForCoveragesForOrder.description.value.productUnit	com.qcadoo.mes.materialRequirementCoverageForOrder.columnExtension.MaterialRequirementCoverageForOrderColumnFiller	01left	8	0
-9	locationsQuantity	materialRequirementCoverageForOrder.columnForCoveragesForOrder.name.value.locationsQuantity	materialRequirementCoverageForOrder.columnForCoveragesForOrder.description.value.locationsQuantity	com.qcadoo.mes.materialRequirementCoverageForOrder.columnExtension.MaterialRequirementCoverageForOrderColumnFiller	02right	9	0
-10	deliveredQuantity	materialRequirementCoverageForOrder.columnForCoveragesForOrder.name.value.deliveredQuantity	materialRequirementCoverageForOrder.columnForCoveragesForOrder.description.value.deliveredQuantity	com.qcadoo.mes.materialRequirementCoverageForOrder.columnExtension.MaterialRequirementCoverageForOrderColumnFiller	02right	10	0
 \.
 
 
@@ -43010,17 +43013,6 @@ COPY public.ordersgroups_sizegroupcolor (id, parameter_id, sizegroup_id, color, 
 --
 
 COPY public.ordersupplies_columnforcoverages (id, identifier, name, description, columnfiller, alignment, succession, entityversion) FROM stdin;
-1	productNumber	orderSupplies.columnForCoverages.name.value.productNumber	orderSupplies.columnForCoverages.description.value.productNumber	com.qcadoo.mes.orderSupplies.columnExtension.OrderSuppliesColumnFiller	01left	1	0
-2	productName	orderSupplies.columnForCoverages.name.value.productName	orderSupplies.columnForCoverages.description.value.productName	com.qcadoo.mes.orderSupplies.columnExtension.OrderSuppliesColumnFiller	01left	2	0
-3	state	orderSupplies.columnForCoverages.name.value.state	orderSupplies.columnForCoverages.description.value.state	com.qcadoo.mes.orderSupplies.columnExtension.OrderSuppliesColumnFiller	01left	3	0
-4	lackFromDate	orderSupplies.columnForCoverages.name.value.lackFromDate	orderSupplies.columnForCoverages.description.value.lackFromDate	com.qcadoo.mes.orderSupplies.columnExtension.OrderSuppliesColumnFiller	01left	4	0
-5	demandQuantity	orderSupplies.columnForCoverages.name.value.demandQuantity	orderSupplies.columnForCoverages.description.value.demandQuantity	com.qcadoo.mes.orderSupplies.columnExtension.OrderSuppliesColumnFiller	02right	5	0
-6	coveredQuantity	orderSupplies.columnForCoverages.name.value.coveredQuantity	orderSupplies.columnForCoverages.description.value.coveredQuantity	com.qcadoo.mes.orderSupplies.columnExtension.OrderSuppliesColumnFiller	02right	6	0
-7	reserveMissingQuantity	orderSupplies.columnForCoverages.name.value.reserveMissingQuantity	orderSupplies.columnForCoverages.description.value.reserveMissingQuantity	com.qcadoo.mes.orderSupplies.columnExtension.OrderSuppliesColumnFiller	02right	7	0
-8	productUnit	orderSupplies.columnForCoverages.name.value.productUnit	orderSupplies.columnForCoverages.description.value.productUnit	com.qcadoo.mes.orderSupplies.columnExtension.OrderSuppliesColumnFiller	02right	8	0
-9	locationsQuantity	orderSupplies.columnForCoverages.name.value.locationsQuantity	orderSupplies.columnForCoverages.description.value.locationsQuantity	com.qcadoo.mes.orderSupplies.columnExtension.OrderSuppliesColumnFiller	02right	9	0
-10	deliveredQuantity	orderSupplies.columnForCoverages.name.value.deliveredQuantity	orderSupplies.columnForCoverages.description.value.deliveredQuantity	com.qcadoo.mes.orderSupplies.columnExtension.OrderSuppliesColumnFiller	02right	10	0
-11	produceQuantity	orderSupplies.columnForCoverages.name.value.produceQuantity	orderSupplies.columnForCoverages.description.value.produceQuantity	com.qcadoo.mes.orderSupplies.columnExtension.OrderSuppliesColumnFiller	02right	11	0
 \.
 
 
@@ -43534,12 +43526,12 @@ COPY public.qcadoomodel_dictionary (id, name, pluginidentifier, active, entityve
 16	masterOrderState	masterOrders	t	0
 17	occupationType	assignmentToShift	t	0
 18	productionLinePlacesForSCADA	productionLines	t	0
-20	qualityRating	qualityControl	t	0
 21	causesOfWastes	productionCounting	t	0
 22	typeOfProducts	basic	t	0
 23	contractorCategory	basic	t	0
-24	sampling	technologies	t	0
 25	toolCategory	cmmsMachineParts	t	0
+20	qualityRating	qualityControl	f	0
+24	sampling	basic	t	0
 \.
 
 
@@ -43643,10 +43635,7 @@ COPY public.qcadooplugin_plugin (id, identifier, version, state, issystem, entit
 32	qcadooUnitConversions	1.5.0	ENABLED	f	0	framework	AGPL
 33	basic	1.5.0	ENABLED	f	0	basic	AGPL
 34	states	1.5.0	ENABLED	f	0	other	AGPL
-35	ganttForShifts	1.5.0	ENABLED	f	0	basic	AGPL
 36	productionLines	1.5.0	ENABLED	f	0	basic	AGPL
-37	urcBasic	1.5.0	ENABLED	f	0	basic	Commercial
-39	productCatalogNumbers	1.5.0	ENABLED	f	0	basic	AGPL
 40	costNormsForOperation	1.5.0	ENABLED	f	0	technologies	AGPL
 42	orders	1.5.0	ENABLED	f	0	planning	AGPL
 45	costNormsForOperationInOrder	1.5.0	ENABLED	f	0	planning	AGPL
@@ -43656,18 +43645,9 @@ COPY public.qcadooplugin_plugin (id, identifier, version, state, issystem, entit
 51	masterOrders	1.5.0	ENABLED	f	0	planning	AGPL
 52	basicProductionCounting	1.5.0	ENABLED	f	0	tracking	AGPL
 54	cmmsMachineParts	1.5.0	ENABLED	f	0	other	AGPL
-55	urcOrders	1.5.0	ENABLED	f	0	planning	Commercial
-57	techSubcontracting	1.5.0	ENABLED	f	0	technologies	AGPL
-58	deliveriesToMaterialFlow	1.5.0	ENABLED	f	0	supplies	AGPL
-59	techSubcontrForDeliveries	1.5.0	ENABLED	f	0	supplies	AGPL
 60	assignmentToShift	1.5.0	ENABLED	f	0	planning	AGPL
 61	productionCounting	1.5.0	ENABLED	f	0	tracking	AGPL
-62	workPlans	1.5.0	ENABLED	f	0	planning	AGPL
-63	avgLaborCostCalcForOrder	1.5.0	ENABLED	f	0	planning	AGPL
 65	productionPerShift	1.5.0	ENABLED	f	0	planning	AGPL
-69	urcBasicProductionCounting	1.5.0	ENABLED	f	0	tracking	Commercial
-73	subcontractorPortal	1.5.0	ENABLED	f	0	other	Commercial
-76	urcProductionCounting	1.5.0	ENABLED	f	0	tracking	Commercial
 83	urcCostNormsForProduct	1.5.0	DISABLED	f	0	basic	Commercial
 86	urcAdvGenealogyForOrders	1.5.0	DISABLED	f	0	genealogy	Commercial
 88	urcCostNormsForMaterials	1.5.0	DISABLED	f	0	planning	Commercial
@@ -43679,7 +43659,6 @@ COPY public.qcadooplugin_plugin (id, identifier, version, state, issystem, entit
 104	cdnrcAneks	1.5.0	DISABLED	f	0	other	Commercial
 105	qcadooPlugin	1.5.0	ENABLED	t	0	framework	AGPL
 21	qcadooLocalization	1.5.0	ENABLED	t	0	framework	AGPL
-106	urcCore	1.5.0	ENABLED	f	0	other	Commercial
 107	qcadooCustomTranslations	1.5.0	ENABLED	f	0	framework	AGPL
 108	qcadooDictionaries	1.5.0	ENABLED	f	0	framework	AGPL
 109	costNormsForProduct	1.5.0	ENABLED	f	0	basic	AGPL
@@ -43687,7 +43666,6 @@ COPY public.qcadooplugin_plugin (id, identifier, version, state, issystem, entit
 112	technologies	1.5.0	ENABLED	f	0	technologies	AGPL
 113	timeNormsForOperations	1.5.0	ENABLED	f	0	technologies	AGPL
 114	materialFlow	1.5.0	ENABLED	f	0	flow	AGPL
-116	materialRequirements	1.5.0	ENABLED	f	0	calculations	AGPL
 118	operationTimeCalculations	1.5.0	ENABLED	f	0	calculations	AGPL
 44	lineChangeoverNorms	1.5.0	ENABLED	f	0	technologies	AGPL
 120	operationCostCalculations	1.5.0	ENABLED	f	0	calculations	AGPL
@@ -43695,44 +43673,58 @@ COPY public.qcadooplugin_plugin (id, identifier, version, state, issystem, entit
 125	costCalculation	1.5.0	ENABLED	f	0	calculations	AGPL
 126	lineChangeoverNormsForOrders	1.5.0	ENABLED	f	0	planning	AGPL
 127	productionScheduling	1.5.0	ENABLED	f	0	planning	AGPL
-130	catNumbersInDeliveries	1.5.0	ENABLED	f	0	supplies	AGPL
-132	techSubcontrForOperTasks	1.5.0	ENABLED	f	0	planning	AGPL
-133	ganttForOperations	1.5.0	ENABLED	f	0	planning	AGPL
-135	urcMaterialRequirements	1.5.0	ENABLED	f	0	planning	Commercial
-136	techSubcontrForProductionCounting	1.5.0	ENABLED	f	0	tracking	AGPL
-138	cmmsScheduler	1.5.0	ENABLED	f	0	other	Commercial
-139	deviationCausesReporting	1.5.0	ENABLED	f	0	planning	AGPL
-143	repairs	1.5.0	ENABLED	f	0	other	Commercial
-146	ordersGroups	1.5.0	ENABLED	f	0	other	Commercial
+69	urcBasicProductionCounting	1.5.0	DISABLED	f	0	tracking	Commercial
+135	urcMaterialRequirements	1.5.0	DISABLED	f	0	planning	Commercial
+55	urcOrders	1.5.0	DISABLED	f	0	planning	Commercial
+37	urcBasic	1.5.0	DISABLED	f	0	basic	Commercial
+106	urcCore	1.5.0	DISABLED	f	0	other	Commercial
+35	ganttForShifts	1.5.0	DISABLED	f	0	basic	AGPL
+146	ordersGroups	1.5.0	DISABLED	f	0	other	Commercial
+130	catNumbersInDeliveries	1.5.0	DISABLED	f	0	supplies	AGPL
+39	productCatalogNumbers	1.5.0	DISABLED	f	0	basic	AGPL
+73	subcontractorPortal	1.5.0	DISABLED	f	0	other	Commercial
+132	techSubcontrForOperTasks	1.5.0	DISABLED	f	0	planning	AGPL
+57	techSubcontracting	1.5.0	DISABLED	f	0	technologies	AGPL
+58	deliveriesToMaterialFlow	1.5.0	DISABLED	f	0	supplies	AGPL
+62	workPlans	1.5.0	DISABLED	f	0	planning	AGPL
+63	avgLaborCostCalcForOrder	1.5.0	DISABLED	f	0	planning	AGPL
+116	materialRequirements	1.5.0	DISABLED	f	0	calculations	AGPL
+133	ganttForOperations	1.5.0	DISABLED	f	0	planning	AGPL
+136	techSubcontrForProductionCounting	1.5.0	DISABLED	f	0	tracking	AGPL
+138	cmmsScheduler	1.5.0	DISABLED	f	0	other	Commercial
+139	deviationCausesReporting	1.5.0	DISABLED	f	0	planning	AGPL
+143	repairs	1.5.0	DISABLED	f	0	other	Commercial
 145	ordersGantt	1.5.0	ENABLED	f	0	other	Commercial
-38	emailNotifications	1.5.0	ENABLED	f	0	basic	AGPL
-41	technologiesGenerator	1.5.0	ENABLED	f	0	other	AGPL
 49	supplyNegotiations	1.5.0	ENABLED	f	0	supplies	AGPL
-56	timeGapsPreview	1.5.0	ENABLED	f	0	other	AGPL
-66	orderSupplies	1.5.0	ENABLED	f	0	supplies	AGPL
-67	catNumbersInNegot	1.5.0	ENABLED	f	0	supplies	AGPL
-71	techSubcontrForOrderSupplies	1.5.0	ENABLED	f	0	supplies	AGPL
-72	ordersForSubproductsGeneration	1.5.0	ENABLED	f	0	other	AGPL
 121	advancedGenealogy	1.5.0	ENABLED	f	0	genealogy	AGPL
-131	deliveriesMinState	1.5.0	ENABLED	f	0	deliveries	AGPL
-134	techSubcontrForNegot	1.5.0	ENABLED	f	0	supplies	AGPL
-141	productFlowThruDivision	1.5.0	ENABLED	f	0	other	AGPL
-142	materialRequirementCoverageForOrder	1.5.0	ENABLED	f	0	other	AGPL
 149	integrationBaseLinker	1.5.0	DISABLED	f	0	other	Commercial
 152	integrationPipedrive	1.5.0	DISABLED	f	0	\N	\N
 153	arch	1.5.0	DISABLED	f	0	\N	Commercial
 53	warehouseMinimalState	1.5.0	ENABLED	f	0	other	AGPL
 150	integrationAsana	1.5.0	DISABLED	f	0	\N	Commercial
-68	advancedGenealogyForOrders	1.5.0	ENABLED	f	0	genealogy	Commercial
 157	luxon	1.5.0	DISABLED	f	0	\N	\N
-158	configurator	1.5.0	ENABLED	f	0	\N	\N
-155	qualityControl	1.5.0	ENABLED	f	0	\N	\N
 154	scheduleGantt	1.5.0	ENABLED	f	0	\N	Commercial
-156	oee	1.5.0	ENABLED	f	0	\N	\N
 159	mobileWMS	1.5.0	DISABLED	f	0	\N	\N
 161	optimizeCutting	1.5.0	DISABLED	f	0	\N	\N
 162	moldrew	1.5.0	DISABLED	f	0	\N	\N
 163	productionPlans	1.5.0	DISABLED	f	0	\N	\N
+76	urcProductionCounting	1.5.0	DISABLED	f	0	tracking	Commercial
+131	deliveriesMinState	1.5.0	DISABLED	f	0	deliveries	AGPL
+38	emailNotifications	1.5.0	DISABLED	f	0	basic	AGPL
+71	techSubcontrForOrderSupplies	1.5.0	DISABLED	f	0	supplies	AGPL
+72	ordersForSubproductsGeneration	1.5.0	DISABLED	f	0	other	AGPL
+142	materialRequirementCoverageForOrder	1.5.0	DISABLED	f	0	other	AGPL
+66	orderSupplies	1.5.0	DISABLED	f	0	supplies	AGPL
+67	catNumbersInNegot	1.5.0	DISABLED	f	0	supplies	AGPL
+41	technologiesGenerator	1.5.0	DISABLED	f	0	other	AGPL
+56	timeGapsPreview	1.5.0	DISABLED	f	0	other	AGPL
+134	techSubcontrForNegot	1.5.0	DISABLED	f	0	supplies	AGPL
+59	techSubcontrForDeliveries	1.5.0	DISABLED	f	0	supplies	AGPL
+68	advancedGenealogyForOrders	1.5.0	DISABLED	f	0	genealogy	Commercial
+158	configurator	1.5.0	DISABLED	f	0	other	Commercial
+141	productFlowThruDivision	1.5.0	DISABLED	f	0	other	AGPL
+155	qualityControl	1.5.0	DISABLED	f	0	other	Commercial
+156	oee	1.5.0	DISABLED	f	0	other	Commercial
 \.
 
 
@@ -43973,6 +43965,7 @@ COPY public.qcadoosecurity_role (id, identifier, description, entityversion) FRO
 167	ROLE_ORDER_DETAILS_VIEW	\N	0
 168	ROLE_WORKSTATION_CHANGEOVERS	\N	0
 169	ROLE_OPERATIONAL_TASKS	\N	0
+170	ROLE_DASHBOARD_PARAMETERS	\N	0
 \.
 
 
@@ -44014,13 +44007,11 @@ COPY public.qcadooview_category (id, pluginidentifier, name, succession, authrol
 8	orders	ordersTracking	12	ROLE_ORDERS_TRACKING	0
 10	lineChangeoverNorms	calculations	13	\N	0
 11	advancedGenealogy	advancedGenealogy	14	ROLE_GENEALOGY	0
-20	qualityControl	quality	15	\N	0
-13	cmmsMachineParts	maintenance	16	\N	0
-14	subcontractorPortal	subcontractors	17	ROLE_SUBCONTRACTOR	0
-15	productionCounting	analysis	18	ROLE_ANALYSIS_VIEWER	0
-16	arch	archives	19	\N	0
 23	masterOrders	sales	11	ROLE_SALE	0
-21	basic	parameters	20	ROLE_PARAMETERS_MENU	0
+13	cmmsMachineParts	maintenance	15	\N	0
+15	productionCounting	analysis	16	ROLE_ANALYSIS_VIEWER	0
+16	arch	archives	17	\N	0
+21	basic	parameters	18	ROLE_PARAMETERS_MENU	0
 \.
 
 
@@ -44038,57 +44029,26 @@ COPY public.qcadooview_item (id, pluginidentifier, name, active, category_id, vi
 9	qcadooDictionaries	dictionaries	t	1	9	9	\N	0
 10	qcadooUnitConversions	unitConversions	t	1	10	10	ROLE_UNIT_CONVERSIONS	0
 11	basic	logsList	t	1	11	11	ROLE_LOGS	0
-17	basic	faultTypes	t	4	17	1	ROLE_FAULT_TYPES	0
-18	basic	palletNumberHelpers	t	4	18	2	ROLE_PALLET_NUMBERS	0
-19	basic	palletNumbers	t	4	19	3	ROLE_PALLET_NUMBERS	0
+215	orders	workstationChangeoverForOperationalTasksList	t	7	214	18	ROLE_WORKSTATION_CHANGEOVERS	0
 26	basic	countries	t	1	26	12	ROLE_COUNTRIES	0
 27	basic	companies	t	4	27	10	ROLE_COMPANY	0
 28	basic	conversion	t	4	28	11	ROLE_BASE_FUNCTIONALITY	0
 30	basic	dictionariesInBasic	t	4	30	12	ROLE_DICTIONARY_VIEW	0
 31	basic	home	t	2	31	1	\N	0
-36	technologies	technologyGroups	t	5	36	1	ROLE_TECHNOLOGIES	0
-37	technologies	operationGroups	t	5	37	2	ROLE_TECHNOLOGIES	0
+92	productionCounting	productionTrackingForProductGrouped	t	8	92	6	ROLE_PRODUCTION_TRACKING	0
 38	technologies	operations	t	5	38	3	ROLE_TECHNOLOGIES	0
 39	technologies	technologies	t	5	39	4	ROLE_TECHNOLOGIES	0
-40	technologiesGenerator	technologiesGenerator	t	5	40	5	\N	0
-51	lineChangeoverNorms	lineChangeoverNorms	t	5	51	6	\N	0
+93	productionCounting	productionTrackingForProduct	t	8	93	5	ROLE_PRODUCTION_TRACKING	0
 13	basic	divisions	t	3	13	2	ROLE_COMPANY_STRUCTURE	0
 32	productionLines	productionLines	t	3	32	3	ROLE_COMPANY_STRUCTURE	0
 15	basic	workstationTypes	t	3	15	4	ROLE_COMPANY_STRUCTURE	0
 14	basic	workstations	t	3	14	5	ROLE_COMPANY_STRUCTURE	0
-16	basic	subassemblies	t	3	16	6	ROLE_COMPANY_STRUCTURE	0
-45	materialFlow	locations	t	6	45	1	ROLE_MATERIAL_FLOW	0
-70	materialFlowResources	storageLocations	t	6	70	2	ROLE_MATERIAL_FLOW	0
-71	materialFlowResources	documentPositions	t	6	71	4	ROLE_DOCUMENT_POSITIONS	0
-72	materialFlowResources	warehouseStock	t	6	72	6	ROLE_WAREHOUSE_STATES	0
-68	materialFlowResources	storageLocationsState	t	6	68	7	ROLE_MATERIAL_FLOW	0
-74	materialFlowResources	resourceCorrections	t	6	74	11	ROLE_DOCUMENTS_CORRECTIONS_MIN_STATES	0
-69	materialFlowResources	reservations	t	6	69	12	ROLE_MATERIAL_FLOW	0
-78	warehouseMinimalState	warehouseMinimumStateList	t	6	78	13	ROLE_DOCUMENTS_CORRECTIONS_MIN_STATES	0
-100	orderSupplies	generateMaterialRequirementCoverage	t	9	100	1	ROLE_REQUIREMENTS	0
-49	materialRequirements	materialRequirements	t	9	49	2	ROLE_REQUIREMENTS	0
-97	workPlans	workPlans	t	7	97	12	ROLE_PLANNING	0
-106	deviationCausesReporting	deviationsReport	t	7	105	18	ROLE_PLANNING	0
-93	productionCounting	productionTrackingForProduct	t	8	93	7	ROLE_PRODUCTION_TRACKING	0
-92	productionCounting	productionTrackingForProductGrouped	t	8	92	8	ROLE_PRODUCTION_TRACKING	0
-60	costCalculation	costCalculation	t	10	60	1	ROLE_CALCULATIONS	0
+139	productionCounting	productionTrackingsDraftList	f	8	138	9	ROLE_PRODUCTION_TRACKING	0
+147	integrationBarTender	printedCartonLabelsList	f	8	146	12	ROLE_TERMINAL_CARTON_LABELS	0
 79	productionScheduling	orderTimePrediction	t	10	79	2	ROLE_CALCULATIONS	0
-50	lineChangeoverNorms	matchingChangeoverNorms	t	10	50	4	ROLE_CALCULATIONS	0
-55	advancedGenealogy	batches	t	11	55	1	ROLE_BATCHES	0
-105	advancedGenealogyForOrders	trackingRecordsForOrders	t	11	104	2	ROLE_BATCHES	0
-52	advancedGenealogy	tree	t	11	52	3	ROLE_ADVANCED_GENEALOGY	0
-53	advancedGenealogy	genealogyTables	t	11	53	4	ROLE_ADVANCED_GENEALOGY	0
-54	advancedGenealogy	trackingRecordsSimple	t	11	54	5	ROLE_ADVANCED_GENEALOGY	0
-102	cmmsScheduler	recurringEvents	t	13	102	4	ROLE_RECURRING_EVENTS	0
-80	cmmsMachineParts	sourceCostReports	t	13	80	6	ROLE_MAINTENANCE	0
-82	cmmsMachineParts	actions	t	4	82	16	ROLE_ACTIONS	0
-84	cmmsMachineParts	machineParts	t	4	84	17	ROLE_MACHINE_PARTS	0
-111	subcontractorPortal	subOrdersForSubcontractors	t	14	110	1	ROLE_SUBCONTRACTOR	0
 117	integrationBartender	cartonLabels	t	\N	116	\N	ROLE_TERMINAL_CARTON_LABELS	0
 123	deliveries	deliveryByPalletTypeReport	t	\N	122	1	ROLE_REQUIREMENTS	0
-133	qcadooView	attachmentViewer	f	1	132	14	\N	0
 135	goodFood	extrusionMixesList	t	\N	134	1	ROLE_TERMINAL_EXTRUSION_USER	0
-136	integrationScales	scales	t	4	135	22	ROLE_COMPANY_STRUCTURE	0
 138	arch	archOrdersGroups	t	16	137	3	ROLE_PLANNING	0
 140	arch	archMasterOrderPositionsList	t	16	139	2	ROLE_PLANNING	0
 141	arch	archMasterOrdersList	t	16	140	1	ROLE_PLANNING	0
@@ -44096,141 +44056,144 @@ COPY public.qcadooview_item (id, pluginidentifier, name, active, category_id, vi
 144	arch	archDocumentPositionsList	t	16	143	7	ROLE_DOCUMENTS_CORRECTIONS_MIN_STATES	0
 145	arch	archDocumentsList	t	16	144	6	ROLE_DOCUMENTS_CORRECTIONS_MIN_STATES	0
 146	integrationBarTender	printersList	t	1	145	15	ROLE_PRINTERS	0
-155	technologies	productsToProductGroupTechnology	t	5	154	7	ROLE_TECHNOLOGIES	0
 156	basic	numberPatternsList	t	1	155	16	ROLE_NUMBER_PATTERN	0
 23	basic	shifts	t	17	23	7	ROLE_SHIFTS	0
 132	basic	exceptionsForLineList	t	17	131	20	ROLE_SHIFTS	0
 22	basic	products	t	19	22	3	ROLE_PRODUCTS	0
 151	basic	productsAttributes	t	19	150	4	ROLE_PRODUCTS	0
 21	basic	productsFamilies	t	19	21	5	ROLE_PRODUCT_FAMILIES	0
-122	materialFlowResources	palletStorageState	t	6	121	8	ROLE_MATERIAL_FLOW	0
-125	materialFlowResources	palletBalances	t	6	124	14	ROLE_MATERIAL_FLOW	0
-130	materialFlowResources	stocktaking	t	6	129	15	ROLE_MATERIAL_FLOW	0
-131	materialFlowResources	warehouseStockReports	t	6	130	16	ROLE_MATERIAL_FLOW	0
-109	productFlowThruDivision	warehouseIssue	t	9	108	13	ROLE_REQUIREMENTS	0
-108	productFlowThruDivision	productsToIssue	t	9	107	14	ROLE_REQUIREMENTS	0
-129	productFlowThruDivision	issueList	t	9	128	15	ROLE_REQUIREMENTS	0
-114	ordersGroups	ordersGroups	t	7	113	6	ROLE_PLANNING	0
-87	timeGapsPreview	timeGaps	t	7	87	13	ROLE_TIME_GAPS	0
-91	assignmentToShift	assignmentToShift	t	7	91	14	ROLE_ASSIGNMENT_TO_SHIFT	0
-90	assignmentToShift	assignmentToShiftReportList	t	7	90	15	ROLE_ASSIGNMENT_TO_SHIFT	0
-98	productionPerShift	ppsReports	t	7	98	16	ROLE_PLANNING	0
-113	repairs	repairOrders	t	7	112	19	ROLE_REPAIR_ORDERS	0
-110	subcontractorPortal	subOrders	t	7	109	20	\N	0
+186	technologies	technologyInputProductTypesList	t	5	185	9	ROLE_TECHNOLOGIES	0
 96	productionCounting	productionTracking	t	8	96	1	ROLE_PRODUCTION_TRACKING_REGISTRATION	0
-115	urcProductionCounting	productionRegistrationTerminal	t	8	114	2	ROLE_PRODUCTION_REGISTRATION_TERMINAL	0
-127	productionCounting	trackingOperationProductInComponentAdditionalInformationReport	t	8	126	9	ROLE_PRODUCTION_TRACKING	0
-139	productionCounting	productionTrackingsDraftList	t	8	138	11	ROLE_PRODUCTION_TRACKING	0
-137	goodFood	printedLabelsList	t	8	136	12	ROLE_TERMINAL_PALLET_USER	0
-147	integrationBarTender	printedCartonLabelsList	t	8	146	14	ROLE_TERMINAL_CARTON_LABELS	0
-85	cmmsMachineParts	events	t	13	85	1	ROLE_EVENTS	0
-83	cmmsMachineParts	plannedEvents	t	13	83	2	ROLE_PLANNED_EVENTS_ACTIONS_VIEW	0
-103	cmmsScheduler	cmmsScheduler	t	13	103	3	ROLE_CMMS_SCHEDULER_PREVIEW	0
-86	cmmsMachineParts	sourceCostList	t	13	86	5	ROLE_SOURCE_COST	0
-81	cmmsMachineParts	timeUsageReport	t	13	81	7	ROLE_MAINTENANCE	0
-121	productionCounting	productionAnalysis	t	15	120	2	ROLE_ANALYSIS_VIEWER	0
-119	productionCounting	finalProductAnalysis	t	15	118	5	ROLE_ANALYSIS_VIEWER	0
-124	ordersGroups	plannedWorkingTimeAnalysis	t	15	123	7	ROLE_ANALYSIS_VIEWER	0
 25	basic	staff	t	18	25	9	ROLE_STAFF_WAGES	0
-24	basic	crews	t	18	24	8	ROLE_CREW	0
-148	basic	skillsList	t	18	147	23	ROLE_SKILLS	0
-34	wageGroups	wageGroups	t	18	34	14	ROLE_STAFF_WAGES	0
-33	wageGroups	wages	t	18	33	13	ROLE_STAFF_WAGES	0
-157	stoppage	stoppageReasonsList	t	4	156	26	ROLE_STOPPAGE_REASONS	0
 8	qcadooUsers	profile	t	1	8	8	ROLE_HOME_PROFILE	0
-178	configurator	configurator	t	1	177	17	ROLE_ADMIN	0
 165	basic	generalParameters	t	21	164	1	ROLE_PARAMETERS	0
 167	technologies	technologiesParameters	t	21	166	3	ROLE_PARAMETERS	0
-168	deliveries	supplyParameters	t	21	167	4	ROLE_PARAMETERS	0
-169	materialFlowResources	materialFlowResourcesParameters	t	21	168	5	ROLE_PARAMETERS	0
 170	productionCounting	productionCountingParameters	t	21	169	6	ROLE_PARAMETERS	0
 173	productionCounting	productionAnalysisParameters	t	21	172	7	ROLE_PARAMETERS	0
-182	basic	technologicalProcessRateList	t	18	181	24	ROLE_TECHNOLOGICAL_PROCESSES	0
-128	productionCounting	anomalyList	t	8	127	10	ROLE_ANOMALIES	0
-183	technologies	technologicalProcessesList	t	5	182	8	ROLE_TECHNOLOGICAL_PROCESSES	0
-184	technologies	technologicalProcessListsList	t	5	183	9	ROLE_TECHNOLOGICAL_PROCESSES	0
-186	technologies	technologyInputProductTypesList	t	5	185	10	ROLE_TECHNOLOGIES	0
 12	basic	factories	t	3	12	1	ROLE_COMPANY_STRUCTURE	0
-73	materialFlowResources	documents	t	6	73	3	ROLE_DOCUMENTS_CORRECTIONS_MIN_STATES	0
-153	materialFlowResources	documentPositionsAttributes	t	6	152	5	ROLE_DOCUMENT_POSITIONS	0
-189	ordersGroups	ordersGroupMaterialRequirementsList	t	9	188	4	ROLE_REQUIREMENTS	0
-171	basicProductionCounting	productionCountingQuantityList	t	9	170	5	ROLE_BASE_FUNCTIONALITY	0
-187	orders	orderPacksList	t	7	186	11	ROLE_PLANNING	0
-63	stoppage	stoppages	t	8	63	3	ROLE_STOPPAGES	0
-190	urcProductionCounting	processConfirmationTerminal	t	8	189	5	ROLE_PROCESS_CONFIRMATION_TERMINAL	0
-195	integrationBarTender	printedPalletLabelsList	t	8	194	13	ROLE_PRINTED_PALLET_LABELS	0
-185	costCalculation	standardLaborCostsList	t	10	184	3	ROLE_CALCULATIONS	0
-158	qualityControl	qualityCardList	t	20	157	1	ROLE_QUALITY_CONTROL	0
-159	qualityControl	qualityControlList	t	20	158	2	ROLE_QUALITY_CONTROL	0
-160	qualityControl	qualityControlAttributes	t	20	159	3	ROLE_QUALITY_CONTROL	0
+154	scheduleGantt	operationalTasksGantt	t	7	153	8	ROLE_OPERATIONAL_TASKS_GANTT_VIEW	0
 95	productionCounting	productionBalance	t	15	95	1	ROLE_PRODUCTION_COUNTING	0
-164	productionCounting	employeeWorkingTimeSettlement	t	15	163	3	ROLE_ANALYSIS_VIEWER	0
-120	productionCounting	beforeAdditionalActionsAnalysis	t	15	119	6	ROLE_ANALYSIS_VIEWER	0
-162	advancedGenealogyForOrders	genealogyAnalysis	t	15	161	8	ROLE_ANALYSIS_VIEWER	0
-107	productionPerShift	balancePerShift	t	15	106	9	\N	0
-194	orders	orderTechnologicalProcessesAnalysis	t	15	193	10	ROLE_ANALYSIS_VIEWER	0
-163	oee	oeeList	t	15	162	11	ROLE_OEE	0
-196	technologies	productionLineTechnologyGroupList	t	5	195	11	ROLE_TECHNOLOGIES	0
-75	materialFlowResources	resources	t	6	75	9	ROLE_RESOURCES	0
-152	materialFlowResources	resourcesAttributes	t	6	151	10	ROLE_RESOURCES	0
+176	basic	sizesList	t	19	175	6	ROLE_PRODUCTS_ADDITIONAL	0
+177	basic	sizeGroupsList	t	19	176	7	ROLE_PRODUCTS_ADDITIONAL	0
+207	technologies	technologyConfigurator	t	5	206	11	ROLE_TECHNOLOGIES	0
 20	basic	assortments	t	19	20	1	ROLE_PRODUCTS_ADDITIONAL	0
-176	basic	sizesList	t	19	175	7	ROLE_PRODUCTS_ADDITIONAL	0
-177	basic	sizeGroupsList	t	19	176	8	ROLE_PRODUCTS_ADDITIONAL	0
-179	basic	labelsList	t	4	178	28	ROLE_PRODUCTS_ADDITIONAL	0
+213	technologies	workstationChangeoverNormsList	t	5	212	12	ROLE_TECHNOLOGIES	0
 180	basic	modelsList	t	19	179	2	ROLE_PRODUCTS_ADDITIONAL	0
-193	productFlowThruDivision	modelCardsList	t	19	192	9	ROLE_PRODUCTS_ADDITIONAL	0
-35	productCatalogNumbers	productCatalogNumbers	t	19	35	6	ROLE_PRODUCTS_ADDITIONAL	0
 134	basic	attachmentsList	t	4	133	21	ROLE_ATTACHMENTS	0
-161	basic	formsList	t	4	160	27	ROLE_FORMS	0
-154	scheduleGantt	operationalTasksGantt	t	7	153	9	ROLE_OPERATIONAL_TASKS_GANTT_VIEW	0
-62	deliveries	deliveries	t	9	62	6	ROLE_DELIVERIES	0
-61	deliveries	supplyItems	t	9	61	7	ROLE_DELIVERIES	0
-197	ordersGroups	ordersGroupsProductionBalancesList	t	15	196	12	ROLE_ANALYSIS_VIEWER	0
-198	productionCounting	operationDurationAnalysis	t	15	197	13	ROLE_ANALYSIS_VIEWER	0
-188	masterOrders	salesPlanMaterialRequirementsList	t	9	187	3	ROLE_REQUIREMENTS	0
+201	basic	licenses	t	1	200	17	ROLE_ADMIN	0
 150	basic	attributesList	t	4	149	24	ROLE_ATTRIBUTES	0
-199	masterOrders	masterOrdersMaterialRequirementsList	t	9	198	17	ROLE_REQUIREMENTS	0
 142	arch	archOrdersList	t	16	141	4	ROLE_ORDERS_VIEW	0
 48	orders	productionOrders	t	7	48	5	ROLE_ORDERS_VIEW	0
 47	orders	productionOrdersPlanning	t	7	47	4	ROLE_ORDERS_VIEW	0
-200	orders	productionLineSchedulesList	t	7	199	21	ROLE_PRODUCTION_LINE_SCHEDULES	0
-201	basic	licenses	t	1	200	18	ROLE_ADMIN	0
-126	productionCounting	anomalyReasonList	t	4	125	19	ROLE_ANOMALIES	0
-202	scheduleGantt	sgOrdersGantt	t	7	201	22	ROLE_ORDERS_GANTT_VIEW	0
-203	cmmsMachineParts	toolsList	t	13	202	1	ROLE_TOOLS	0
-205	productionCounting	productionBalanceAnalysis	t	15	204	14	ROLE_ANALYSIS_VIEWER	0
-206	cmmsMachineParts	ordersToolRequirementsList	t	13	205	8	ROLE_TOOLS	0
-207	technologies	technologyConfigurator	t	5	206	12	ROLE_TECHNOLOGIES	0
-209	masterOrders	orderedProductConfiguratorsList	t	19	208	10	ROLE_PLANNING	0
-210	lineChangeoverNormsForOrders	lineChangeoverNormsForOrdersList	t	7	209	23	ROLE_LINE_CHANGEOVER_NORMS_IN_ORDERS	0
-211	productionCounting	linesProducedQuantitiesChart	t	15	210	15	ROLE_ANALYSIS_VIEWER	0
-212	costCalculation	additionalDirectCostsList	t	10	211	5	ROLE_CALCULATIONS	0
-116	ordersGantt	ordersGantt	f	7	115	10	ROLE_PLANNING_ON_LINE_VIEW	0
-213	technologies	workstationChangeoverNormsList	t	5	212	13	ROLE_TECHNOLOGIES	0
-214	basic	pieceRateList	t	18	213	25	ROLE_BASE_FUNCTIONALITY	0
 204	arch	archivingList	t	16	203	8	ROLE_ARCHIVING	0
-191	orders	orderTechnologicalProcessesList	t	8	190	4	ROLE_ORDER_TECHNOLOGICAL_PROCESSES	0
-192	orders	orderTechnologicalProcessWastesList	t	8	191	6	ROLE_ORDER_TECHNOLOGICAL_PROCESSES	0
-216	productionCounting	performanceAnalysisMv	t	15	215	16	ROLE_ANALYSIS_VIEWER	0
-217	productionCounting	employeePieceworkSettlement	t	15	216	17	ROLE_ANALYSIS_VIEWER	0
-218	scheduleGantt	workstationsWorkChart	t	3	217	7	ROLE_COMPANY_STRUCTURE	0
-219	subcontractorPortal	subOrderIssuedProductsReportsList	t	15	218	18	ROLE_ANALYSIS_VIEWER	0
-220	technologies	productData	t	5	219	14	ROLE_TECHNOLOGIES	0
-67	supplyNegotiations	requestsForQuotation	t	9	67	10	ROLE_REQUEST_FOR_QUOTATIONS	0
-66	supplyNegotiations	offer	t	9	66	8	ROLE_OFFERS	0
-65	supplyNegotiations	offersItems	t	9	65	9	ROLE_OFFERS	0
-64	supplyNegotiations	negotiation	t	9	64	11	ROLE_NEGOTIATIONS	0
 221	masterOrders	salesParameters	t	21	220	8	ROLE_PARAMETERS	0
 3	qcadooMenu	menu	t	1	3	3	ROLE_MENU_VIEW	0
-77	masterOrders	masterOrders	t	23	77	2	ROLE_SALE	0
-76	masterOrders	masterOrderPositions	t	23	76	3	ROLE_SALE	0
-181	masterOrders	salesPlansList	t	23	180	1	ROLE_SALE	0
-222	masterOrders	pricesListsList	t	23	221	4	ROLE_SALE	0
-208	masterOrders	salesVolumesList	t	6	207	17	ROLE_REQUIREMENTS	0
+161	basic	formsList	f	4	160	27	ROLE_FORMS	0
+222	masterOrders	pricesListsList	f	23	221	4	ROLE_SALE	0
+46	orders	operationalTasks	t	7	46	6	ROLE_OPERATIONAL_TASKS	0
+52	advancedGenealogy	tree	f	11	52	2	ROLE_ADVANCED_GENEALOGY	0
 166	orders	planningParameters	t	21	165	2	ROLE_PLANNING_PARAMETERS	0
-149	orders	schedulesList	t	7	148	8	ROLE_SCHEDULES	0
-215	orders	workstationChangeoverForOperationalTasksList	t	7	214	24	ROLE_WORKSTATION_CHANGEOVERS	0
-46	orders	operationalTasks	t	7	46	7	ROLE_OPERATIONAL_TASKS	0
+17	basic	faultTypes	f	4	17	1	ROLE_FAULT_TYPES	0
+18	basic	palletNumberHelpers	f	4	18	2	ROLE_PALLET_NUMBERS	0
+19	basic	palletNumbers	f	4	19	3	ROLE_PALLET_NUMBERS	0
+36	technologies	technologyGroups	f	5	36	1	ROLE_TECHNOLOGIES	0
+37	technologies	operationGroups	f	5	37	2	ROLE_TECHNOLOGIES	0
+16	basic	subassemblies	f	3	16	6	ROLE_COMPANY_STRUCTURE	0
+45	materialFlow	locations	f	6	45	1	ROLE_MATERIAL_FLOW	0
+70	materialFlowResources	storageLocations	f	6	70	2	ROLE_MATERIAL_FLOW	0
+71	materialFlowResources	documentPositions	f	6	71	4	ROLE_DOCUMENT_POSITIONS	0
+72	materialFlowResources	warehouseStock	f	6	72	6	ROLE_WAREHOUSE_STATES	0
+68	materialFlowResources	storageLocationsState	f	6	68	7	ROLE_MATERIAL_FLOW	0
+74	materialFlowResources	resourceCorrections	f	6	74	11	ROLE_DOCUMENTS_CORRECTIONS_MIN_STATES	0
+69	materialFlowResources	reservations	f	6	69	12	ROLE_MATERIAL_FLOW	0
+78	warehouseMinimalState	warehouseMinimumStateList	f	6	78	13	ROLE_DOCUMENTS_CORRECTIONS_MIN_STATES	0
+60	costCalculation	costCalculation	f	10	60	1	ROLE_CALCULATIONS	0
+50	lineChangeoverNorms	matchingChangeoverNorms	f	10	50	4	ROLE_CALCULATIONS	0
+55	advancedGenealogy	batches	f	11	55	1	ROLE_BATCHES	0
+82	cmmsMachineParts	actions	f	4	82	16	ROLE_ACTIONS	0
+84	cmmsMachineParts	machineParts	f	4	84	17	ROLE_MACHINE_PARTS	0
+133	qcadooView	attachmentViewer	f	1	132	14	\N	0
+136	integrationScales	scales	f	4	135	22	ROLE_COMPANY_STRUCTURE	0
+122	materialFlowResources	palletStorageState	f	6	121	8	ROLE_MATERIAL_FLOW	0
+125	materialFlowResources	palletBalances	f	6	124	14	ROLE_MATERIAL_FLOW	0
+130	materialFlowResources	stocktaking	f	6	129	15	ROLE_MATERIAL_FLOW	0
+131	materialFlowResources	warehouseStockReports	f	6	130	16	ROLE_MATERIAL_FLOW	0
+85	cmmsMachineParts	events	f	13	85	1	ROLE_EVENTS	0
+83	cmmsMachineParts	plannedEvents	f	13	83	2	ROLE_PLANNED_EVENTS_ACTIONS_VIEW	0
+121	productionCounting	productionAnalysis	f	15	120	2	ROLE_ANALYSIS_VIEWER	0
+119	productionCounting	finalProductAnalysis	f	15	118	5	ROLE_ANALYSIS_VIEWER	0
+24	basic	crews	f	18	24	8	ROLE_CREW	0
+148	basic	skillsList	f	18	147	23	ROLE_SKILLS	0
+34	wageGroups	wageGroups	f	18	34	14	ROLE_STAFF_WAGES	0
+33	wageGroups	wages	f	18	33	13	ROLE_STAFF_WAGES	0
+157	stoppage	stoppageReasonsList	f	4	156	26	ROLE_STOPPAGE_REASONS	0
+168	deliveries	supplyParameters	f	21	167	4	ROLE_PARAMETERS	0
+169	materialFlowResources	materialFlowResourcesParameters	f	21	168	5	ROLE_PARAMETERS	0
+182	basic	technologicalProcessRateList	f	18	181	24	ROLE_TECHNOLOGICAL_PROCESSES	0
+73	materialFlowResources	documents	f	6	73	3	ROLE_DOCUMENTS_CORRECTIONS_MIN_STATES	0
+53	advancedGenealogy	genealogyTables	f	11	53	3	ROLE_ADVANCED_GENEALOGY	0
+127	productionCounting	trackingOperationProductInComponentAdditionalInformationReport	f	8	126	7	ROLE_PRODUCTION_TRACKING	0
+128	productionCounting	anomalyList	f	8	127	8	ROLE_ANOMALIES	0
+137	goodFood	printedLabelsList	f	8	136	10	ROLE_TERMINAL_PALLET_USER	0
+54	advancedGenealogy	trackingRecordsSimple	f	11	54	4	ROLE_ADVANCED_GENEALOGY	0
+149	orders	schedulesList	t	7	148	7	ROLE_SCHEDULES	0
+51	lineChangeoverNorms	lineChangeoverNorms	f	5	51	5	\N	0
+155	technologies	productsToProductGroupTechnology	f	5	154	6	ROLE_TECHNOLOGIES	0
+183	technologies	technologicalProcessesList	f	5	182	7	ROLE_TECHNOLOGICAL_PROCESSES	0
+184	technologies	technologicalProcessListsList	f	5	183	8	ROLE_TECHNOLOGICAL_PROCESSES	0
+90	assignmentToShift	assignmentToShiftReportList	f	7	90	12	ROLE_ASSIGNMENT_TO_SHIFT	0
+91	assignmentToShift	assignmentToShift	f	7	91	11	ROLE_ASSIGNMENT_TO_SHIFT	0
+98	productionPerShift	ppsReports	f	7	98	13	ROLE_PLANNING	0
+80	cmmsMachineParts	sourceCostReports	f	13	80	4	ROLE_MAINTENANCE	0
+81	cmmsMachineParts	timeUsageReport	f	13	81	5	ROLE_MAINTENANCE	0
+86	cmmsMachineParts	sourceCostList	f	13	86	3	ROLE_SOURCE_COST	0
+153	materialFlowResources	documentPositionsAttributes	f	6	152	5	ROLE_DOCUMENT_POSITIONS	0
+185	costCalculation	standardLaborCostsList	f	10	184	3	ROLE_CALCULATIONS	0
+164	productionCounting	employeeWorkingTimeSettlement	f	15	163	3	ROLE_ANALYSIS_VIEWER	0
+120	productionCounting	beforeAdditionalActionsAnalysis	f	15	119	6	ROLE_ANALYSIS_VIEWER	0
+75	materialFlowResources	resources	f	6	75	9	ROLE_RESOURCES	0
+152	materialFlowResources	resourcesAttributes	f	6	151	10	ROLE_RESOURCES	0
+179	basic	labelsList	f	4	178	28	ROLE_PRODUCTS_ADDITIONAL	0
+126	productionCounting	anomalyReasonList	f	4	125	19	ROLE_ANOMALIES	0
+203	cmmsMachineParts	toolsList	f	13	202	1	ROLE_TOOLS	0
+212	costCalculation	additionalDirectCostsList	f	10	211	5	ROLE_CALCULATIONS	0
+214	basic	pieceRateList	f	18	213	25	ROLE_BASE_FUNCTIONALITY	0
+218	scheduleGantt	workstationsWorkChart	f	3	217	7	ROLE_COMPANY_STRUCTURE	0
+77	masterOrders	masterOrders	f	23	77	2	ROLE_SALE	0
+76	masterOrders	masterOrderPositions	f	23	76	3	ROLE_SALE	0
+181	masterOrders	salesPlansList	f	23	180	1	ROLE_SALE	0
+208	masterOrders	salesVolumesList	f	6	207	17	ROLE_REQUIREMENTS	0
+63	stoppage	stoppages	f	8	63	2	ROLE_STOPPAGES	0
+191	orders	orderTechnologicalProcessesList	f	8	190	3	ROLE_ORDER_TECHNOLOGICAL_PROCESSES	0
+107	productionPerShift	balancePerShift	f	15	106	7	\N	0
+219	subcontractorPortal	subOrderIssuedProductsReportsList	f	15	218	14	ROLE_ANALYSIS_VIEWER	0
+192	orders	orderTechnologicalProcessWastesList	f	8	191	4	ROLE_ORDER_TECHNOLOGICAL_PROCESSES	0
+195	integrationBarTender	printedPalletLabelsList	f	8	194	11	ROLE_PRINTED_PALLET_LABELS	0
+116	ordersGantt	ordersGantt	f	7	115	9	ROLE_PLANNING_ON_LINE_VIEW	0
+187	orders	orderPacksList	f	7	186	10	ROLE_PLANNING	0
+194	orders	orderTechnologicalProcessesAnalysis	f	15	193	8	ROLE_ANALYSIS_VIEWER	0
+199	masterOrders	masterOrdersMaterialRequirementsList	f	9	198	12	ROLE_REQUIREMENTS	0
+209	masterOrders	orderedProductConfiguratorsList	f	19	208	8	ROLE_PLANNING	0
+206	cmmsMachineParts	ordersToolRequirementsList	f	13	205	6	ROLE_TOOLS	0
+198	productionCounting	operationDurationAnalysis	f	15	197	9	ROLE_ANALYSIS_VIEWER	0
+205	productionCounting	productionBalanceAnalysis	f	15	204	10	ROLE_ANALYSIS_VIEWER	0
+211	productionCounting	linesProducedQuantitiesChart	f	15	210	11	ROLE_ANALYSIS_VIEWER	0
+200	orders	productionLineSchedulesList	f	7	199	15	ROLE_PRODUCTION_LINE_SCHEDULES	0
+61	deliveries	supplyItems	f	9	61	5	ROLE_DELIVERIES	0
+62	deliveries	deliveries	f	9	62	4	ROLE_DELIVERIES	0
+64	supplyNegotiations	negotiation	f	9	64	9	ROLE_NEGOTIATIONS	0
+65	supplyNegotiations	offersItems	f	9	65	7	ROLE_OFFERS	0
+66	supplyNegotiations	offer	f	9	66	6	ROLE_OFFERS	0
+67	supplyNegotiations	requestsForQuotation	f	9	67	8	ROLE_REQUEST_FOR_QUOTATIONS	0
+202	scheduleGantt	sgOrdersGantt	f	7	201	16	ROLE_ORDERS_GANTT_VIEW	0
+210	lineChangeoverNormsForOrders	lineChangeoverNormsForOrdersList	f	7	209	17	ROLE_LINE_CHANGEOVER_NORMS_IN_ORDERS	0
+216	productionCounting	performanceAnalysisMv	f	15	215	12	ROLE_ANALYSIS_VIEWER	0
+196	technologies	productionLineTechnologyGroupList	f	5	195	10	ROLE_TECHNOLOGIES	0
+220	technologies	productData	f	5	219	13	ROLE_TECHNOLOGIES	0
+217	productionCounting	employeePieceworkSettlement	f	15	216	13	ROLE_ANALYSIS_VIEWER	0
+188	masterOrders	salesPlanMaterialRequirementsList	f	9	187	1	ROLE_REQUIREMENTS	0
+189	ordersGroups	ordersGroupMaterialRequirementsList	f	9	188	2	ROLE_REQUIREMENTS	0
+171	basicProductionCounting	productionCountingQuantityList	f	9	170	3	ROLE_BASE_FUNCTIONALITY	0
 \.
 
 
@@ -44280,16 +44243,13 @@ COPY public.qcadooview_view (id, pluginidentifier, name, view, url, entityversio
 32	productionLines	productionLinesList	productionLinesList	\N	0
 33	wageGroups	wagesList	wagesList	\N	0
 34	wageGroups	wageGroupsList	wageGroupsList	\N	0
-35	productCatalogNumbers	productCatalogNumbersList	productCatalogNumbersList	\N	0
 36	technologies	technologyGroupsList	technologyGroupsList	\N	0
 37	technologies	operationGroupsList	operationGroupsList	\N	0
 38	technologies	operationsList	operationsList	\N	0
 39	technologies	technologiesList	technologiesList	\N	0
-40	technologiesGenerator	recentlyGeneratedTechnologiesList	recentlyGeneratedTechnologiesList	\N	0
 45	materialFlow	locationsList	locationsList	\N	0
 47	orders	ordersPlanningList	ordersPlanningList	\N	0
 48	orders	ordersList	ordersList	\N	0
-49	materialRequirements	materialRequirementsList	materialRequirementsList	\N	0
 50	lineChangeoverNorms	matchingChangeoverNormsDetails	matchingChangeoverNormsDetails	\N	0
 51	lineChangeoverNorms	lineChangeoverNormsList	lineChangeoverNormsList	\N	0
 52	advancedGenealogy	genealogyTree	genealogyTree	\N	0
@@ -44323,7 +44283,6 @@ COPY public.qcadooview_view (id, pluginidentifier, name, view, url, entityversio
 84	cmmsMachineParts	machinePartsList	machinePartsList	\N	0
 85	cmmsMachineParts	eventsList	eventsList	\N	0
 86	cmmsMachineParts	sourceCostList	sourceCostList	\N	0
-87	timeGapsPreview	generateTimeGaps	generateTimeGaps	\N	0
 90	assignmentToShift	assignmentToShiftReportList	assignmentToShiftReportList	\N	0
 91	assignmentToShift	assignmentToShiftList	assignmentToShiftList	\N	0
 98	productionPerShift	ppsReportsList	ppsReportsList	\N	0
@@ -44331,19 +44290,6 @@ COPY public.qcadooview_view (id, pluginidentifier, name, view, url, entityversio
 93	productionCounting	productionTrackingsForProductList	productionTrackingsForProductList	\N	0
 95	productionCounting	productionBalancesList	productionBalancesList	\N	0
 96	productionCounting	productionTrackingsList	productionTrackingsList	\N	0
-97	workPlans	workPlansList	workPlansList	\N	0
-100	orderSupplies	generateMaterialRequirementCoverage	generateMaterialRequirementCoverage	\N	0
-102	cmmsScheduler	recurringEventsList	recurringEventsList	\N	0
-103	cmmsScheduler	cmmsScheduler	cmmsScheduler	\N	0
-104	advancedGenealogyForOrders	trackingRecordsForOrdersList	trackingRecordsForOrdersList	\N	0
-105	deviationCausesReporting	deviationsReportGenerator	deviationsReportGenerator	\N	0
-107	productFlowThruDivision	productsToIssueList	productsToIssueList	\N	0
-108	productFlowThruDivision	warehouseIssueList	warehouseIssueList	\N	0
-109	subcontractorPortal	subOrdersList	subOrdersList	\N	0
-110	subcontractorPortal	subOrdersListForSubcontractors	subOrdersListForSubcontractors	\N	0
-112	repairs	repairOrdersList	repairOrdersList	\N	0
-113	ordersGroups	ordersGroupsList	ordersGroupsList	\N	0
-114	urcProductionCounting	productionRegistrationTerminal	\N	/productionRegistrationTerminal.html	0
 115	ordersGantt	ordersGantt	\N	/ordersGantt.html	0
 116	integrationBartender	cartonLabels	cartonLabelsDetails	\N	0
 118	productionCounting	finalProductAnalysisGenerator	finalProductAnalysisGenerator	\N	0
@@ -44351,12 +44297,10 @@ COPY public.qcadooview_view (id, pluginidentifier, name, view, url, entityversio
 120	productionCounting	productionAnalysisList	productionAnalysisList	\N	0
 121	materialFlowResources	palletStorageStateList	palletStorageStateList	\N	0
 122	deliveries	deliveryByPalletTypeReportDetails	deliveryByPalletTypeReportDetails	\N	0
-123	ordersGroups	plannedWorkingTimeAnalysisList	plannedWorkingTimeAnalysisList	\N	0
 124	materialFlowResources	palletBalancesList	palletBalancesList	\N	0
 125	productionCounting	anomalyReasonList	anomalyReasonList	\N	0
 126	productionCounting	trackingOperationProductInComponentAdditionalInformationReport	trackingOperationProductInComponentAdditionalInformationReport	\N	0
 127	productionCounting	anomalyList	anomalyList	\N	0
-128	productFlowThruDivision	issueList	issueList	\N	0
 129	materialFlowResources	stocktakingsList	stocktakingsList	\N	0
 130	materialFlowResources	warehouseStockReportsList	warehouseStockReportsList	\N	0
 131	basic	exceptionsForLineList	exceptionsForLineList	\N	0
@@ -44387,12 +44331,7 @@ COPY public.qcadooview_view (id, pluginidentifier, name, view, url, entityversio
 155	basic	numberPatternsList	numberPatternsList	\N	0
 156	stoppage	stoppageReasonsList	stoppageReasonsList	\N	0
 106	productionPerShift	generateBalance	generateBalance	\N	0
-157	qualityControl	qualityCardList	qualityCardList	\N	0
-158	qualityControl	qualityControlList	qualityControlList	\N	0
-159	qualityControl	qualityControlAttributes	\N	/qualityControlAttributes.html	0
 160	basic	formsList	formsList	\N	0
-161	advancedGenealogyForOrders	genealogyAnalysis	\N	/genealogyAnalysis.html	0
-162	oee	oeeList	oeeList	\N	0
 163	productionCounting	employeeWorkingTimeSettlement	\N	/employeeWorkingTimeSettlement.html	0
 164	basic	generalParameters	\N	/generalParameters.html	0
 165	orders	planningParameters	\N	/planningParameters.html	0
@@ -44404,7 +44343,6 @@ COPY public.qcadooview_view (id, pluginidentifier, name, view, url, entityversio
 172	productionCounting	productionAnalysisParameters	\N	/productionAnalysisParameters.html	0
 175	basic	sizesList	sizesList	\N	0
 176	basic	sizeGroupsList	sizeGroupsList	\N	0
-177	configurator	configurator	\N	/configurator.html	0
 178	basic	labelsList	labelsList	\N	0
 179	basic	modelsList	modelsList	\N	0
 180	masterOrders	salesPlansList	salesPlansList	\N	0
@@ -44416,14 +44354,11 @@ COPY public.qcadooview_view (id, pluginidentifier, name, view, url, entityversio
 186	orders	orderPacksList	orderPacksList	\N	0
 187	masterOrders	salesPlanMaterialRequirementsList	salesPlanMaterialRequirementsList	\N	0
 188	ordersGroups	ordersGroupMaterialRequirementsList	ordersGroupMaterialRequirementsList	\N	0
-189	urcProductionCounting	processConfirmationTerminal	\N	/processConfirmationTerminal.html	0
 190	orders	orderTechnologicalProcessesList	orderTechnologicalProcessesList	\N	0
 191	orders	orderTechnologicalProcessWastesList	orderTechnologicalProcessWastesList	\N	0
-192	productFlowThruDivision	modelCardsList	modelCardsList	\N	0
 193	orders	orderTechnologicalProcessesAnalysis	\N	/orderTechnologicalProcessesAnalysis.html	0
 194	integrationBarTender	printedPalletLabelsList	printedPalletLabelsList	\N	0
 195	technologies	productionLineTechnologyGroupList	productionLineTechnologyGroupList	\N	0
-196	ordersGroups	ordersGroupsProductionBalancesList	ordersGroupsProductionBalancesList	\N	0
 197	productionCounting	operationDurationAnalysis	\N	/operationDurationAnalysis.html	0
 198	masterOrders	masterOrdersMaterialRequirementsList	masterOrdersMaterialRequirementsList	\N	0
 199	orders	productionLineSchedulesList	productionLineSchedulesList	\N	0
@@ -44738,7 +44673,6 @@ COPY public.supplynegotiations_columnforoffers (id, identifier, name, descriptio
 6	pricePerUnit	supplyNegotiations.columnForOffers.name.value.pricePerUnit	supplyNegotiations.columnForOffers.description.value.pricePerUnit	com.qcadoo.mes.supplyNegotiations.columnExtension.SupplyNegotiationsColumnFiller	02right	1	6	0
 7	totalPrice	supplyNegotiations.columnForOffers.name.value.totalPrice	supplyNegotiations.columnForOffers.description.value.totalPrice	com.qcadoo.mes.supplyNegotiations.columnExtension.SupplyNegotiationsColumnFiller	02right	1	7	0
 8	currency	supplyNegotiations.columnForOffers.name.value.currency	supplyNegotiations.columnForOffers.description.value.currency	com.qcadoo.mes.supplyNegotiations.columnExtension.SupplyNegotiationsColumnFiller	01left	1	8	0
-9	operationNumber	supplyNegotiations.columnForOffers.name.value.operationNumber	supplyNegotiations.columnForOffers.description.value.operationNumber	com.qcadoo.mes.techSubcontrForNegot.columnExtension.SupplyNegotiationsColumnFillerTSFN	01left	1	9	0
 \.
 
 
@@ -44753,8 +44687,6 @@ COPY public.supplynegotiations_columnforrequests (id, identifier, name, descript
 4	orderedQuantity	supplyNegotiations.columnForRequests.name.value.orderedQuantity	supplyNegotiations.columnForRequests.description.value.orderedQuantity	com.qcadoo.mes.supplyNegotiations.columnExtension.SupplyNegotiationsColumnFiller	02right	1	4	0
 5	productUnit	supplyNegotiations.columnForRequests.name.value.productUnit	supplyNegotiations.columnForRequests.description.value.productUnit	com.qcadoo.mes.supplyNegotiations.columnExtension.SupplyNegotiationsColumnFiller	01left	1	5	0
 6	annualVolume	supplyNegotiations.columnForRequests.name.value.annualVolume	supplyNegotiations.columnForRequests.description.value.annualVolume	com.qcadoo.mes.supplyNegotiations.columnExtension.SupplyNegotiationsColumnFiller	02right	1	6	0
-7	operationNumber	supplyNegotiations.columnForRequests.name.value.operationNumber	supplyNegotiations.columnForRequests.description.value.operationNumber	com.qcadoo.mes.techSubcontrForNegot.columnExtension.SupplyNegotiationsColumnFillerTSFN	01left	1	7	0
-8	catalogNumber	supplyNegotiations.columnForRequests.name.value.catalogNumber	supplyNegotiations.columnForRequests.description.value.catalogNumber	com.qcadoo.mes.catNumbersInNegot.columnExtension.SupplyNegotiationsColumnFillerCNIN	01left	1	8	0
 \.
 
 
@@ -44819,7 +44751,6 @@ COPY public.supplynegotiations_parametercolumnforoffers (id, parameter_id, colum
 6	1	6	6	0
 7	1	7	7	0
 8	1	8	8	0
-9	1	9	9	0
 \.
 
 
@@ -44834,8 +44765,6 @@ COPY public.supplynegotiations_parametercolumnforrequests (id, parameter_id, col
 4	1	4	4	0
 5	1	5	5	0
 6	1	6	6	0
-7	1	7	7	0
-8	1	8	8	0
 \.
 
 
@@ -45012,22 +44941,6 @@ COPY public.technologies_productstructuretreenode (id, priority, technology_id, 
 --
 
 COPY public.technologies_producttoproductgrouptechnology (id, finalproduct_id, productfamily_id, orderproduct_id) FROM stdin;
-\.
-
-
---
--- Data for Name: technologies_qualitycard; Type: TABLE DATA; Schema: public; Owner: -
---
-
-COPY public.technologies_qualitycard (id, number, name, description, state, sampling) FROM stdin;
-\.
-
-
---
--- Data for Name: technologies_qualitycardstatechange; Type: TABLE DATA; Schema: public; Owner: -
---
-
-COPY public.technologies_qualitycardstatechange (id, dateandtime, sourcestate, targetstate, status, phase, worker, qualitycard_id, shift_id) FROM stdin;
 \.
 
 
@@ -45300,14 +45213,6 @@ COPY public.warehouseminimalstate_warehouseminimumstatemulti (id, location_id, m
 --
 
 COPY public.workplans_columnforinputproducts (id, identifier, name, description, columnfiller, alignment, entityversion) FROM stdin;
-1	productNameOperationProductColumn	workPlans.columnForInputProducts.name.value.productNameOperationProductColumn	workPlans.columnForInputProducts.description.value.productNameOperationProductColumn	com.qcadoo.mes.workPlans.workPlansColumnExtension.WorkPlansColumnFiller	01left	0
-2	plannedQuantityOperationProductColumn	workPlans.columnForInputProducts.name.value.plannedQuantityOperationProductColumn	workPlans.columnForInputProducts.description.value.plannedQuantityOperationProductColumn	com.qcadoo.mes.workPlans.workPlansColumnExtension.WorkPlansColumnFiller	02right	0
-3	effectiveQuantityOperationProductColumn	workPlans.columnForInputProducts.name.value.effectiveQuantityOperationProductColumn	workPlans.columnForInputProducts.description.value.effectiveQuantityOperationProductColumn	com.qcadoo.mes.workPlans.workPlansColumnExtension.WorkPlansColumnFiller	02right	0
-4	attentionOperationProductColumn	workPlans.columnForInputProducts.name.value.attentionOperationProductColumn	workPlans.columnForInputProducts.description.value.attentionOperationProductColumn	com.qcadoo.mes.workPlans.workPlansColumnExtension.WorkPlansColumnFiller	01left	0
-5	employeeSignatureOperationProductColumn	workPlans.columnForInputProducts.name.value.employeeSignatureOperationProductColumn	workPlans.columnForInputProducts.description.value.employeeSignatureOperationProductColumn	com.qcadoo.mes.workPlans.workPlansColumnExtension.WorkPlansColumnFiller	01left	0
-6	quantityPerUnitOperationProductColumn	workPlans.columnForInputProducts.name.value.quantityPerUnitOperationProductColumn	workPlans.columnForInputProducts.description.value.quantityPerUnitOperationProductColumn	com.qcadoo.mes.workPlans.workPlansColumnExtension.WorkPlansColumnFiller	02right	0
-7	unitOperationProductColumn	workPlans.columnForInputProducts.name.value.unitOperationProductColumn	workPlans.columnForInputProducts.description.value.unitOperationProductColumn	com.qcadoo.mes.workPlans.workPlansColumnExtension.WorkPlansColumnFiller	01left	0
-8	batchNumbersOperationProductColumn	workPlans.columnForInputProducts.name.value.batchNumbers	workPlans.columnForInputProducts.description.value.batchNumbers	com.qcadoo.mes.advancedGenealogyForOrders.workPlansColumnExtension.AGFOcolumnFiller	02right	0
 \.
 
 
@@ -45316,12 +45221,6 @@ COPY public.workplans_columnforinputproducts (id, identifier, name, description,
 --
 
 COPY public.workplans_columnfororders (id, identifier, name, description, columnfiller, alignment, entityversion) FROM stdin;
-1	numberOrderColumn	workPlans.columnForOrders.name.value.numberOrderColumn	workPlans.columnForOrders.description.value.numberOrderColumn	com.qcadoo.mes.workPlans.workPlansColumnExtension.WorkPlansColumnFiller	01left	0
-2	nameOrderColumn	workPlans.columnForOrders.name.value.nameOrderColumn	workPlans.columnForOrders.description.value.nameOrderColumn	com.qcadoo.mes.workPlans.workPlansColumnExtension.WorkPlansColumnFiller	01left	0
-3	productNameOrderColumn	workPlans.columnForOrders.name.value.productNameOrderColumn	workPlans.columnForOrders.description.value.productNameOrderColumn	com.qcadoo.mes.workPlans.workPlansColumnExtension.WorkPlansColumnFiller	01left	0
-4	plannedQuantityOrderColumn	workPlans.columnForOrders.name.value.plannedQuantityOrderColumn	workPlans.columnForOrders.description.value.plannedQuantityOrderColumn	com.qcadoo.mes.workPlans.workPlansColumnExtension.WorkPlansColumnFiller	02right	0
-5	plannedEndDateOrderColumn	workPlans.columnForOrders.name.value.plannedEndDateOrderColumn	workPlans.columnForOrders.description.value.plannedEndDateOrderColumn	com.qcadoo.mes.workPlans.workPlansColumnExtension.WorkPlansColumnFiller	01left	0
-6	producedBatchesOrderColumn	workPlans.columnForOrders.name.value.producedBatches	workPlans.columnForOrders.description.value.producedBatches	com.qcadoo.mes.advancedGenealogyForOrders.workPlansColumnExtension.AGFOcolumnFiller	01left	0
 \.
 
 
@@ -45330,12 +45229,6 @@ COPY public.workplans_columnfororders (id, identifier, name, description, column
 --
 
 COPY public.workplans_columnforoutputproducts (id, identifier, name, description, columnfiller, alignment, entityversion) FROM stdin;
-1	unitOperationProductColumn	workPlans.columnForOutputProducts.name.value.unitOperationProductColumn	workPlans.columnForOutputProducts.description.value.unitOperationProductColumn	com.qcadoo.mes.workPlans.workPlansColumnExtension.WorkPlansColumnFiller	01left	0
-2	productNameOperationProductColumn	workPlans.columnForOutputProducts.name.value.productNameOperationProductColumn	workPlans.columnForOutputProducts.description.value.productNameOperationProductColumn	com.qcadoo.mes.workPlans.workPlansColumnExtension.WorkPlansColumnFiller	01left	0
-3	plannedQuantityOperationProductColumn	workPlans.columnForOutputProducts.name.value.plannedQuantityOperationProductColumn	workPlans.columnForOutputProducts.description.value.plannedQuantityOperationProductColumn	com.qcadoo.mes.workPlans.workPlansColumnExtension.WorkPlansColumnFiller	02right	0
-4	effectiveQuantityOperationProductColumn	workPlans.columnForOutputProducts.name.value.effectiveQuantityOperationProductColumn	workPlans.columnForOutputProducts.description.value.effectiveQuantityOperationProductColumn	com.qcadoo.mes.workPlans.workPlansColumnExtension.WorkPlansColumnFiller	02right	0
-5	attentionOperationProductColumn	workPlans.columnForOutputProducts.name.value.attentionOperationProductColumn	workPlans.columnForOutputProducts.description.value.attentionOperationProductColumn	com.qcadoo.mes.workPlans.workPlansColumnExtension.WorkPlansColumnFiller	01left	0
-6	employeeSignatureOperationProductColumn	workPlans.columnForOutputProducts.name.value.employeeSignatureOperationProductColumn	workPlans.columnForOutputProducts.description.value.employeeSignatureOperationProductColumn	com.qcadoo.mes.workPlans.workPlansColumnExtension.WorkPlansColumnFiller	01left	0
 \.
 
 
@@ -45344,12 +45237,6 @@ COPY public.workplans_columnforoutputproducts (id, identifier, name, description
 --
 
 COPY public.workplans_parameterinputcolumn (id, parameter_id, columnforinputproducts_id, succession, entityversion) FROM stdin;
-1	1	1	1	0
-2	1	2	2	0
-3	1	3	3	0
-5	1	5	6	0
-4	1	4	5	0
-6	1	7	4	0
 \.
 
 
@@ -45358,11 +45245,6 @@ COPY public.workplans_parameterinputcolumn (id, parameter_id, columnforinputprod
 --
 
 COPY public.workplans_parameterordercolumn (id, parameter_id, columnfororders_id, succession, entityversion) FROM stdin;
-1	1	1	1	0
-2	1	2	2	0
-3	1	3	3	0
-4	1	4	4	0
-5	1	5	5	0
 \.
 
 
@@ -45371,12 +45253,6 @@ COPY public.workplans_parameterordercolumn (id, parameter_id, columnfororders_id
 --
 
 COPY public.workplans_parameteroutputcolumn (id, parameter_id, columnforoutputproducts_id, succession, entityversion) FROM stdin;
-5	1	5	5	0
-6	1	6	6	0
-2	1	2	1	0
-3	1	3	2	0
-1	1	1	4	0
-4	1	4	3	0
 \.
 
 
@@ -46717,6 +46593,20 @@ SELECT pg_catalog.setval('public.basic_productattributevalue_id_seq', 1, false);
 --
 
 SELECT pg_catalog.setval('public.basic_productdto_id_seq', 1, false);
+
+
+--
+-- Name: basic_qualitycard_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('public.basic_qualitycard_id_seq', 1, false);
+
+
+--
+-- Name: basic_qualitycardstatechange_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('public.basic_qualitycardstatechange_id_seq', 1, false);
 
 
 --
@@ -49796,7 +49686,7 @@ SELECT pg_catalog.setval('public.qcadoosecurity_persistenttoken_id_seq', 1, fals
 -- Name: qcadoosecurity_role_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('public.qcadoosecurity_role_id_seq', 169, true);
+SELECT pg_catalog.setval('public.qcadoosecurity_role_id_seq', 170, true);
 
 
 --
@@ -50434,20 +50324,6 @@ SELECT pg_catalog.setval('public.technologies_productstructuretreenode_id_seq', 
 --
 
 SELECT pg_catalog.setval('public.technologies_producttoproductgrouptechnology_id_seq', 1, false);
-
-
---
--- Name: technologies_qualitycard_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
---
-
-SELECT pg_catalog.setval('public.technologies_qualitycard_id_seq', 1, false);
-
-
---
--- Name: technologies_qualitycardstatechange_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
---
-
-SELECT pg_catalog.setval('public.technologies_qualitycardstatechange_id_seq', 1, false);
 
 
 --
@@ -52418,6 +52294,22 @@ ALTER TABLE ONLY public.basic_productattachment
 
 ALTER TABLE ONLY public.basic_productattributevalue
     ADD CONSTRAINT basic_productattributevalue_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: basic_qualitycard basic_qualitycard_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.basic_qualitycard
+    ADD CONSTRAINT basic_qualitycard_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: basic_qualitycardstatechange basic_qualitycardstatechange_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.basic_qualitycardstatechange
+    ADD CONSTRAINT basic_qualitycardstatechange_pkey PRIMARY KEY (id);
 
 
 --
@@ -55965,22 +55857,6 @@ ALTER TABLE ONLY public.technologies_producttoproductgrouptechnology
 
 
 --
--- Name: technologies_qualitycard technologies_qualitycard_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.technologies_qualitycard
-    ADD CONSTRAINT technologies_qualitycard_pkey PRIMARY KEY (id);
-
-
---
--- Name: technologies_qualitycardstatechange technologies_qualitycardstatechange_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.technologies_qualitycardstatechange
-    ADD CONSTRAINT technologies_qualitycardstatechange_pkey PRIMARY KEY (id);
-
-
---
 -- Name: technologies_section technologies_section_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -58677,7 +58553,7 @@ CREATE OR REPLACE VIEW public.technologies_technologydto AS
      LEFT JOIN public.technologies_technologyattachment technologyattachment ON ((technologyattachment.technology_id = technology.id)))
      LEFT JOIN public.technologiesgenerator_generatorcontext generatorcontext ON ((generatorcontext.id = technology.generatorcontext_id)))
      LEFT JOIN public.technologies_technologystatechange technologystatechange ON (((technologystatechange.technology_id = technology.id) AND ((technologystatechange.status)::text = '03successful'::text) AND (technologystatechange.sourcestate IS NULL) AND ((technologystatechange.targetstate)::text = '01draft'::text))))
-     LEFT JOIN public.technologies_qualitycard qualitycard ON ((qualitycard.id = technology.qualitycard_id)))
+     LEFT JOIN public.basic_qualitycard qualitycard ON ((qualitycard.id = technology.qualitycard_id)))
      LEFT JOIN public.technologies_technologyproductionline tpl ON (((tpl.technology_id = technology.id) AND tpl.master)))
      LEFT JOIN public.productionlines_productionline productionline ON ((productionline.id = tpl.productionline_id)))
   GROUP BY technology.id, product.number, product.globaltypeofmaterial, technologygroup.number, division.name, product.name, generatorcontext.number, technologystatechange.dateandtime, tpl.standardperformance, productionline.number, assortment.name, qualitycard.number;
@@ -59456,7 +59332,7 @@ ALTER TABLE ONLY public.costcalculation_calculationresult
 --
 
 ALTER TABLE ONLY public.qualitycontrol_changequalitycards
-    ADD CONSTRAINT changequalitycards_qualitycard_fkey FOREIGN KEY (qualitycard_id) REFERENCES public.technologies_qualitycard(id) DEFERRABLE;
+    ADD CONSTRAINT changequalitycards_qualitycard_fkey FOREIGN KEY (qualitycard_id) REFERENCES public.basic_qualitycard(id) DEFERRABLE;
 
 
 --
@@ -62944,7 +62820,7 @@ ALTER TABLE ONLY public.deliveries_orderedproduct
 --
 
 ALTER TABLE ONLY public.deliveries_orderedproduct
-    ADD CONSTRAINT orderedproduct_qualitycard_fkey FOREIGN KEY (qualitycard_id) REFERENCES public.technologies_qualitycard(id) DEFERRABLE;
+    ADD CONSTRAINT orderedproduct_qualitycard_fkey FOREIGN KEY (qualitycard_id) REFERENCES public.basic_qualitycard(id) DEFERRABLE;
 
 
 --
@@ -64520,7 +64396,7 @@ ALTER TABLE ONLY public.jointable_product_qualitycard
 --
 
 ALTER TABLE ONLY public.jointable_product_qualitycard
-    ADD CONSTRAINT product_qualitycard_qualitycard_fkey FOREIGN KEY (qualitycard_id) REFERENCES public.technologies_qualitycard(id) DEFERRABLE;
+    ADD CONSTRAINT product_qualitycard_qualitycard_fkey FOREIGN KEY (qualitycard_id) REFERENCES public.basic_qualitycard(id) DEFERRABLE;
 
 
 --
@@ -65512,22 +65388,22 @@ ALTER TABLE ONLY public.qcadoomodel_unitconversionitem
 --
 
 ALTER TABLE ONLY public.qualitycontrol_qualitycardattachment
-    ADD CONSTRAINT qualitycardattachment_qualitycard_fkey FOREIGN KEY (qualitycard_id) REFERENCES public.technologies_qualitycard(id) DEFERRABLE;
+    ADD CONSTRAINT qualitycardattachment_qualitycard_fkey FOREIGN KEY (qualitycard_id) REFERENCES public.basic_qualitycard(id) DEFERRABLE;
 
 
 --
--- Name: technologies_qualitycardstatechange qualitycardstatechange_qualitycard_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: basic_qualitycardstatechange qualitycardstatechange_qualitycard_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.technologies_qualitycardstatechange
-    ADD CONSTRAINT qualitycardstatechange_qualitycard_fkey FOREIGN KEY (qualitycard_id) REFERENCES public.technologies_qualitycard(id) DEFERRABLE;
+ALTER TABLE ONLY public.basic_qualitycardstatechange
+    ADD CONSTRAINT qualitycardstatechange_qualitycard_fkey FOREIGN KEY (qualitycard_id) REFERENCES public.basic_qualitycard(id) DEFERRABLE;
 
 
 --
--- Name: technologies_qualitycardstatechange qualitycardstatechange_shift_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: basic_qualitycardstatechange qualitycardstatechange_shift_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.technologies_qualitycardstatechange
+ALTER TABLE ONLY public.basic_qualitycardstatechange
     ADD CONSTRAINT qualitycardstatechange_shift_fkey FOREIGN KEY (shift_id) REFERENCES public.basic_shift(id) DEFERRABLE;
 
 
@@ -65568,7 +65444,7 @@ ALTER TABLE ONLY public.qualitycontrol_qualitycontrol
 --
 
 ALTER TABLE ONLY public.qualitycontrol_qualitycontrol
-    ADD CONSTRAINT qualitycontrol_qualitycard_fkey FOREIGN KEY (qualitycard_id) REFERENCES public.technologies_qualitycard(id);
+    ADD CONSTRAINT qualitycontrol_qualitycard_fkey FOREIGN KEY (qualitycard_id) REFERENCES public.basic_qualitycard(id);
 
 
 --
@@ -65616,7 +65492,7 @@ ALTER TABLE ONLY public.qualitycontrol_qualitycontrolattribute
 --
 
 ALTER TABLE ONLY public.qualitycontrol_qualitycontrolattribute
-    ADD CONSTRAINT qualitycontrolattribute_qualitycard_fkey FOREIGN KEY (qualitycard_id) REFERENCES public.technologies_qualitycard(id) DEFERRABLE;
+    ADD CONSTRAINT qualitycontrolattribute_qualitycard_fkey FOREIGN KEY (qualitycard_id) REFERENCES public.basic_qualitycard(id) DEFERRABLE;
 
 
 --
@@ -65768,7 +65644,7 @@ ALTER TABLE ONLY public.qualitycontrol_qualitydeliveredproduct
 --
 
 ALTER TABLE ONLY public.qualitycontrol_qualitydeliveredproduct
-    ADD CONSTRAINT qualitydeliveredproduct_qualitycard_fkey FOREIGN KEY (qualitycard_id) REFERENCES public.technologies_qualitycard(id) DEFERRABLE;
+    ADD CONSTRAINT qualitydeliveredproduct_qualitycard_fkey FOREIGN KEY (qualitycard_id) REFERENCES public.basic_qualitycard(id) DEFERRABLE;
 
 
 --
@@ -67408,7 +67284,7 @@ ALTER TABLE ONLY public.technologies_operationproductoutcomponent
 --
 
 ALTER TABLE ONLY public.technologies_technology
-    ADD CONSTRAINT technology_qualitycard_fkey FOREIGN KEY (qualitycard_id) REFERENCES public.technologies_qualitycard(id) DEFERRABLE;
+    ADD CONSTRAINT technology_qualitycard_fkey FOREIGN KEY (qualitycard_id) REFERENCES public.basic_qualitycard(id) DEFERRABLE;
 
 
 --
