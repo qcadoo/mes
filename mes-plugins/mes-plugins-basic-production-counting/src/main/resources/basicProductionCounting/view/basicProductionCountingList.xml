@@ -24,7 +24,7 @@
     ***************************************************************************
 
 -->
-<view defaultAuthorizationRole="ROLE_BASE_FUNCTIONALITY" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
+<view defaultAuthorizationRole="ROLE_PRODUCTION_COUNTING_QUANTITY" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
 	xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
 	name="basicProductionCountingList" modelName="order" modelPlugin="orders">
 
@@ -35,7 +35,7 @@
 
 			<template name="standardGridTemplate" excludeItems="actions.new,actions.copy,actions.delete" />
 			
-			<group name="productionCounting">
+			<group name="productionCounting" defaultAuthorizationRole="ROLE_PRODUCTION_COUNTING_QUANTITY">
 				<bigButton name="showDetailedProductionCountingAndProgress"
 					icon="genealogyIcon24.png">
 					<script>

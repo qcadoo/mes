@@ -29,7 +29,7 @@
 	xsi:schemaLocation="http://schema.qcadoo.org/modules/ribbonExtension http://schema.qcadoo.org/modules/ribbonExtension.xsd"
 	plugin="orders" view="operationalTaskDetails">
 
-     <group name="basicProductionCounting">
+     <group name="basicProductionCounting" defaultAuthorizationRole="ROLE_PRODUCTION_COUNTING_QUANTITY">
 		 <bigButton name="productionCounting" icon="iconProducts24.png" state="disabled">
 			 <script>
 				 <![CDATA[
