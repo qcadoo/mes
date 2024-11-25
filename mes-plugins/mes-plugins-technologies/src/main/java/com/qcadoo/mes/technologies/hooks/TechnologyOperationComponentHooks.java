@@ -259,6 +259,45 @@ public class TechnologyOperationComponentHooks {
             setTechnologicalProcessListAssignDate(technologyOperationComponentDD, technologyOperationComponent,
                     technologyOperationComponentId);
         }
+        fillRangeAndDivision(technologyOperationComponentDD, technologyOperationComponent);
+    }
+
+    private void fillRangeAndDivision(DataDefinition technologyOperationComponentDD, Entity technologyOperationComponent) {
+        if(technologyOperationComponent.isCopied()) {
+            return;
+        }
+        Entity division = technologyOperationComponent.getBelongsToField(TechnologyOperationComponentFields.DIVISION);
+        if (division != null) {
+            Long technologyOperationComponentId = technologyOperationComponent.getId();
+            Entity technologyOperationComponentDB = null;
+            if (technologyOperationComponentId != null) {
+                technologyOperationComponentDB = technologyOperationComponentDD.get(technologyOperationComponentId);
+            }
+            if (technologyOperationComponentId == null || technologyOperationComponentDB.getBelongsToField(TechnologyOperationComponentFields.DIVISION) == null
+                    || !division.equals(technologyOperationComponentDB.getBelongsToField(TechnologyOperationComponentFields.DIVISION))) {
+                Entity technology = technologyOperationComponent.getBelongsToField(TechnologyOperationComponentFields.TECHNOLOGY);
+                technology = technology.getDataDefinition().get(technology.getId());
+                List<Entity> tocs = getTechnologyOperationComponents(technologyOperationComponentDD, technology);
+                Set<Long> divisionIds = tocs.stream()
+                        .filter(e -> technologyOperationComponentId == null || !e.getId().equals(technologyOperationComponentId))
+                        .filter(e -> e.getBelongsToField(TechnologyOperationComponentFields.DIVISION) != null)
+                        .map(e -> e.getBelongsToField(TechnologyOperationComponentFields.DIVISION).getId()).collect(Collectors.toSet());
+                if (divisionIds.size() > 1 || divisionIds.size() == 1 && !divisionIds.contains(division.getId())) {
+                    technology.setField(TechnologyFields.RANGE, Range.MANY_DIVISIONS.getStringValue());
+                    technology.setField(TechnologyFields.DIVISION, null);
+                    technology.getDataDefinition().save(technology);
+                } else if (!Range.ONE_DIVISION.getStringValue().equals(technology.getField(TechnologyFields.RANGE))
+                        || !Objects.equals(technology.getField(TechnologyFields.DIVISION), division)) {
+                    technology.setField(TechnologyFields.RANGE, Range.ONE_DIVISION.getStringValue());
+                    technology.setField(TechnologyFields.DIVISION, division);
+                    Long[] productionLinesIds = technology.getHasManyField(TechnologyFields.PRODUCTION_LINES).stream().map(Entity::getId).toArray(Long[]::new);
+                    if (productionLinesIds.length > 0) {
+                        getTechnologyProductionLineDD().delete(productionLinesIds);
+                    }
+                    technology.getDataDefinition().fastSave(technology);
+                }
+            }
+        }
     }
 
     private void setTechnologicalProcessListAssignDate(final DataDefinition technologyOperationComponentDD,
@@ -350,4 +389,14 @@ public class TechnologyOperationComponentHooks {
                 TechnologiesConstants.MODEL_OPERATION_PRODUCT_OUT_COMPONENT);
     }
 
+    private List<Entity> getTechnologyOperationComponents(DataDefinition technologyOperationComponentDD, final Entity technology) {
+        return technologyOperationComponentDD.find()
+                .add(SearchRestrictions.belongsTo(TechnologyOperationComponentFields.TECHNOLOGY, technology)).list()
+                .getEntities();
+    }
+
+    private DataDefinition getTechnologyProductionLineDD() {
+        return dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
+                TechnologiesConstants.MODEL_TECHNOLOGY_PRODUCTION_LINE);
+    }
 }
