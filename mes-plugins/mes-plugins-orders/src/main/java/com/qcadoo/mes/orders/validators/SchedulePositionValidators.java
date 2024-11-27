@@ -88,7 +88,7 @@ public class SchedulePositionValidators {
                         .collect(Collectors.toList());
             }
         }
-        return workstations.stream().filter(e -> e.getBooleanField(WorkstationFields.ACTIVE)).collect(Collectors.toList());
+        return workstations.stream().filter(Entity::isActive).collect(Collectors.toList());
     }
 
     private boolean validateDates(DataDefinition dataDefinition, Entity schedulePosition) {
