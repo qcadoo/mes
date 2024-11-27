@@ -26,7 +26,6 @@ package com.qcadoo.mes.productFlowThruDivision.hooks;
 import com.qcadoo.mes.materialFlowResources.constants.DivisionFieldsMFR;
 import com.qcadoo.mes.productFlowThruDivision.constants.DivisionFieldsPFTD;
 import com.qcadoo.mes.productFlowThruDivision.constants.TechnologyFieldsPFTD;
-import com.qcadoo.mes.technologies.constants.Range;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
 import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
 import com.qcadoo.model.api.DataDefinition;
@@ -35,7 +34,6 @@ import com.qcadoo.model.api.search.SearchRestrictions;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -67,19 +65,15 @@ public class TechnologyOperationComponentHooksPFTD {
                         .filter(e -> technologyOperationComponentId == null || !e.getId().equals(technologyOperationComponentId))
                         .filter(e -> e.getBelongsToField(TechnologyOperationComponentFields.DIVISION) != null)
                         .map(e -> e.getBelongsToField(TechnologyOperationComponentFields.DIVISION).getId()).collect(Collectors.toSet());
-                if (divisionIds.size() <= 1 && (divisionIds.size() != 1 || divisionIds.contains(division.getId()))
-                        && (!Range.ONE_DIVISION.getStringValue().equals(technology.getField(TechnologyFields.RANGE))
-                        || !Objects.equals(technology.getField(TechnologyFields.DIVISION), division))) {
-                    fillLocationsForOneDivisionRange(technology);
+                if (divisionIds.size() <= 1 && (divisionIds.size() != 1 || divisionIds.contains(division.getId()))) {
+                    fillLocationsForOneDivisionRange(technology, division);
                     technology.getDataDefinition().fastSave(technology);
                 }
             }
         }
     }
 
-    private void fillLocationsForOneDivisionRange(Entity technology) {
-        Entity division = technology.getBelongsToField(TechnologyFields.DIVISION);
-
+    private void fillLocationsForOneDivisionRange(Entity technology, Entity division) {
         technology.setField(TechnologyFieldsPFTD.COMPONENTS_LOCATION, division.getBelongsToField(DivisionFieldsMFR.COMPONENTS_LOCATION));
         technology.setField(TechnologyFieldsPFTD.COMPONENTS_OUTPUT_LOCATION, division.getBelongsToField(DivisionFieldsMFR.COMPONENTS_OUTPUT_LOCATION));
         technology.setField(TechnologyFieldsPFTD.PRODUCTS_INPUT_LOCATION, division.getBelongsToField(DivisionFieldsMFR.PRODUCTS_INPUT_LOCATION));
