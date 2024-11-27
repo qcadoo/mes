@@ -26,7 +26,6 @@ package com.qcadoo.mes.productFlowThruDivision.hooks;
 import com.qcadoo.mes.materialFlowResources.constants.DivisionFieldsMFR;
 import com.qcadoo.mes.productFlowThruDivision.constants.DivisionFieldsPFTD;
 import com.qcadoo.mes.productFlowThruDivision.constants.TechnologyFieldsPFTD;
-import com.qcadoo.mes.technologies.constants.TechnologyFields;
 import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
