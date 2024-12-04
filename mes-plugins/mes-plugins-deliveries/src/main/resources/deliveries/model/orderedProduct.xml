@@ -70,8 +70,6 @@
                  joinField="orderedProduct"/>
 
         <boolean name="addBatch" default="false" persistent="false"/>
-
-        <datetime name="pickingDate" copyable="false"/>
     </fields>
 
     <hooks>
