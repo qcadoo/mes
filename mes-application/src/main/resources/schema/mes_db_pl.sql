@@ -15698,8 +15698,7 @@ CREATE TABLE public.deliveries_orderedproduct (
     additionaldeliveredquantity numeric,
     batchnumber character varying(255),
     batch_id bigint,
-    qualitycard_id bigint,
-    pickingdate timestamp without time zone
+    qualitycard_id bigint
 );
 
 
@@ -40122,7 +40121,7 @@ COPY public.deliveries_deliverystatechange (id, dateandtime, sourcestate, target
 -- Data for Name: deliveries_orderedproduct; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.deliveries_orderedproduct (id, delivery_id, product_id, orderedquantity, priceperunit, totalprice, description, succession, operation_id, offer_id, actualversion, entityversion, additionalquantity, conversion, deliveredquantity, additionaldeliveredquantity, batchnumber, batch_id, qualitycard_id, pickingdate) FROM stdin;
+COPY public.deliveries_orderedproduct (id, delivery_id, product_id, orderedquantity, priceperunit, totalprice, description, succession, operation_id, offer_id, actualversion, entityversion, additionalquantity, conversion, deliveredquantity, additionaldeliveredquantity, batchnumber, batch_id, qualitycard_id) FROM stdin;
 \.
 
 
@@ -41765,6 +41764,11 @@ COPY public.jointable_group_role (group_id, role_id) FROM stdin;
 3	170
 32	170
 33	170
+3	171
+4	171
+2	171
+32	171
+33	171
 \.
 
 
@@ -43996,6 +44000,7 @@ COPY public.qcadoosecurity_role (id, identifier, description, entityversion) FRO
 168	ROLE_WORKSTATION_CHANGEOVERS	\N	0
 169	ROLE_OPERATIONAL_TASKS	\N	0
 170	ROLE_DASHBOARD_PARAMETERS	\N	0
+171	ROLE_PRODUCTION_COUNTING_QUANTITY	\N	0
 \.
 
 
@@ -44177,7 +44182,6 @@ COPY public.qcadooview_item (id, pluginidentifier, name, active, category_id, vi
 12	basic	factories	t	3	12	1	ROLE_COMPANY_STRUCTURE	0
 13	basic	divisions	t	3	13	2	ROLE_COMPANY_STRUCTURE	0
 189	ordersGroups	ordersGroupMaterialRequirementsList	t	9	188	4	ROLE_REQUIREMENTS	0
-171	basicProductionCounting	productionCountingQuantityList	t	9	170	5	ROLE_BASE_FUNCTIONALITY	0
 187	orders	orderPacksList	t	7	186	11	ROLE_PLANNING	0
 63	stoppage	stoppages	t	8	63	3	ROLE_STOPPAGES	0
 149	orders	schedulesList	t	7	148	8	ROLE_SCHEDULES	0
@@ -44254,6 +44258,7 @@ COPY public.qcadooview_item (id, pluginidentifier, name, active, category_id, vi
 166	orders	planningParameters	t	21	165	2	ROLE_PLANNING_PARAMETERS	0
 215	orders	workstationChangeoverForOperationalTasksList	t	7	214	24	ROLE_WORKSTATION_CHANGEOVERS	0
 46	orders	operationalTasks	t	7	46	7	ROLE_OPERATIONAL_TASKS	0
+171	basicProductionCounting	productionCountingQuantityList	t	9	170	5	ROLE_PRODUCTION_COUNTING_QUANTITY	0
 \.
 
 
@@ -49817,7 +49822,7 @@ SELECT pg_catalog.setval('public.qcadoosecurity_persistenttoken_id_seq', 1, fals
 -- Name: qcadoosecurity_role_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('public.qcadoosecurity_role_id_seq', 170, true);
+SELECT pg_catalog.setval('public.qcadoosecurity_role_id_seq', 171, true);
 
 
 --

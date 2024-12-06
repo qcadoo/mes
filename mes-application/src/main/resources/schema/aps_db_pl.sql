@@ -15698,8 +15698,7 @@ CREATE TABLE public.deliveries_orderedproduct (
     additionaldeliveredquantity numeric,
     batchnumber character varying(255),
     batch_id bigint,
-    qualitycard_id bigint,
-    pickingdate timestamp without time zone
+    qualitycard_id bigint
 );
 
 
@@ -40115,7 +40114,7 @@ COPY public.deliveries_deliverystatechange (id, dateandtime, sourcestate, target
 -- Data for Name: deliveries_orderedproduct; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.deliveries_orderedproduct (id, delivery_id, product_id, orderedquantity, priceperunit, totalprice, description, succession, operation_id, offer_id, actualversion, entityversion, additionalquantity, conversion, deliveredquantity, additionaldeliveredquantity, batchnumber, batch_id, qualitycard_id, pickingdate) FROM stdin;
+COPY public.deliveries_orderedproduct (id, delivery_id, product_id, orderedquantity, priceperunit, totalprice, description, succession, operation_id, offer_id, actualversion, entityversion, additionalquantity, conversion, deliveredquantity, additionaldeliveredquantity, batchnumber, batch_id, qualitycard_id) FROM stdin;
 \.
 
 
@@ -41756,6 +41755,11 @@ COPY public.jointable_group_role (group_id, role_id) FROM stdin;
 3	170
 32	170
 33	170
+3	171
+4	171
+2	171
+32	171
+33	171
 \.
 
 
@@ -43707,7 +43711,6 @@ COPY public.qcadooplugin_plugin (id, identifier, version, state, issystem, entit
 159	mobileWMS	1.5.0	DISABLED	f	0	\N	\N
 161	optimizeCutting	1.5.0	DISABLED	f	0	\N	\N
 162	moldrew	1.5.0	DISABLED	f	0	\N	\N
-163	productionPlans	1.5.0	DISABLED	f	0	\N	\N
 35	ganttForShifts	1.5.0	DISABLED	f	0	basic	AGPL
 131	deliveriesMinState	1.5.0	DISABLED	f	0	deliveries	AGPL
 38	emailNotifications	1.5.0	DISABLED	f	0	basic	AGPL
@@ -43725,6 +43728,7 @@ COPY public.qcadooplugin_plugin (id, identifier, version, state, issystem, entit
 141	productFlowThruDivision	1.5.0	DISABLED	f	0	other	AGPL
 155	qualityControl	1.5.0	DISABLED	f	0	other	Commercial
 156	oee	1.5.0	DISABLED	f	0	other	Commercial
+163	productionPlans	1.5.0	ENABLED	f	0	other	Commercial
 \.
 
 
@@ -43966,6 +43970,7 @@ COPY public.qcadoosecurity_role (id, identifier, description, entityversion) FRO
 168	ROLE_WORKSTATION_CHANGEOVERS	\N	0
 169	ROLE_OPERATIONAL_TASKS	\N	0
 170	ROLE_DASHBOARD_PARAMETERS	\N	0
+171	ROLE_PRODUCTION_COUNTING_QUANTITY	\N	0
 \.
 
 
@@ -43976,7 +43981,7 @@ COPY public.qcadoosecurity_role (id, identifier, description, entityversion) FRO
 COPY public.qcadoosecurity_user (id, username, email, firstname, lastname, enabled, description, password, lastactivity, staff_id, group_id, entityversion, factory_id, ipaddress, showonlymyregistrationrecords, productionline_id, groupchangedate, pswdlastchanged, afterfirstpswdchange, isblocked, showonlymyoperationaltasksandorders) FROM stdin;
 3	qcadoo_bot	\N	qcadoo_bot	qcadoo_bot	t	\N	\N	\N	\N	1	0	\N	\N	f	\N	2022-05-26 00:00:00	\N	f	f	f
 2	admin	admin@qcadoo.com	generated admin	generated admin	t	\N	$2a$11$fK09LNi7Y4ZHKWAg0PCLxeOP/oTENa6AKO4CcuxYRbtrOeStRZYVm	\N	\N	4	0	\N	\N	f	\N	2022-05-26 00:00:00	\N	t	f	f
-1	superadmin	superadmin@qcadoo.com	generated superadmin	generated superadmin	t	\N	$2a$11$tzoAWwNksWYQPgkvvczy6eQaJHMAFBlUlq5OzAz.GeNNMqTEt1FE2	2024-11-15 13:56:57.624	\N	2	0	\N	0:0:0:0:0:0:0:1	f	\N	2022-05-26 00:00:00	\N	t	f	f
+1	superadmin	superadmin@qcadoo.com	generated superadmin	generated superadmin	t	\N	$2a$11$tzoAWwNksWYQPgkvvczy6eQaJHMAFBlUlq5OzAz.GeNNMqTEt1FE2	2024-11-22 14:33:51.828	\N	2	0	\N	0:0:0:0:0:0:0:1	f	\N	2022-05-26 00:00:00	\N	t	f	f
 \.
 
 
@@ -44098,7 +44103,6 @@ COPY public.qcadooview_item (id, pluginidentifier, name, active, category_id, vi
 48	orders	productionOrders	t	7	48	5	ROLE_ORDERS_VIEW	0
 47	orders	productionOrdersPlanning	t	7	47	4	ROLE_ORDERS_VIEW	0
 204	arch	archivingList	t	16	203	8	ROLE_ARCHIVING	0
-221	masterOrders	salesParameters	t	21	220	8	ROLE_PARAMETERS	0
 3	qcadooMenu	menu	t	1	3	3	ROLE_MENU_VIEW	0
 154	scheduleGantt	operationalTasksGantt	t	7	153	8	ROLE_OPERATIONAL_TASKS_GANTT_VIEW	0
 185	costCalculation	standardLaborCostsList	f	10	184	3	ROLE_CALCULATIONS	0
@@ -44179,7 +44183,6 @@ COPY public.qcadooview_item (id, pluginidentifier, name, active, category_id, vi
 183	technologies	technologicalProcessesList	f	5	182	7	ROLE_TECHNOLOGICAL_PROCESSES	0
 184	technologies	technologicalProcessListsList	f	5	183	8	ROLE_TECHNOLOGICAL_PROCESSES	0
 24	basic	crews	f	18	24	8	ROLE_CREW	0
-171	basicProductionCounting	productionCountingQuantityList	f	9	170	3	ROLE_BASE_FUNCTIONALITY	0
 119	productionCounting	finalProductAnalysis	f	15	118	5	ROLE_ANALYSIS_VIEWER	0
 90	assignmentToShift	assignmentToShiftReportList	f	7	90	12	ROLE_ASSIGNMENT_TO_SHIFT	0
 189	ordersGroups	ordersGroupMaterialRequirementsList	f	9	188	2	ROLE_REQUIREMENTS	0
@@ -44194,6 +44197,8 @@ COPY public.qcadooview_item (id, pluginidentifier, name, active, category_id, vi
 66	supplyNegotiations	offer	f	9	66	6	ROLE_OFFERS	0
 67	supplyNegotiations	requestsForQuotation	f	9	67	8	ROLE_REQUEST_FOR_QUOTATIONS	0
 64	supplyNegotiations	negotiation	f	9	64	9	ROLE_NEGOTIATIONS	0
+221	masterOrders	salesParameters	f	21	220	8	ROLE_PARAMETERS	0
+171	basicProductionCounting	productionCountingQuantityList	f	9	170	3	ROLE_PRODUCTION_COUNTING_QUANTITY	0
 \.
 
 
@@ -49686,7 +49691,7 @@ SELECT pg_catalog.setval('public.qcadoosecurity_persistenttoken_id_seq', 1, fals
 -- Name: qcadoosecurity_role_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('public.qcadoosecurity_role_id_seq', 170, true);
+SELECT pg_catalog.setval('public.qcadoosecurity_role_id_seq', 171, true);
 
 
 --

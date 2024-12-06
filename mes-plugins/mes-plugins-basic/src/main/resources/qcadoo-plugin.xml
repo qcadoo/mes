@@ -118,6 +118,7 @@
         <security:role identifier="ROLE_PLANNING_ON_LINE_ACTIONS"/>
 
         <security:role identifier="ROLE_PRODUCTION_COUNTING"/>
+        <security:role identifier="ROLE_PRODUCTION_COUNTING_QUANTITY"/>
 
         <security:role identifier="ROLE_PRODUCTION_TRACKING"/>
 

@@ -15698,8 +15698,7 @@ CREATE TABLE public.deliveries_orderedproduct (
     additionaldeliveredquantity numeric,
     batchnumber character varying(255),
     batch_id bigint,
-    qualitycard_id bigint,
-    pickingdate timestamp without time zone
+    qualitycard_id bigint
 );
 
 
@@ -40104,7 +40103,7 @@ COPY public.deliveries_deliverystatechange (id, dateandtime, sourcestate, target
 -- Data for Name: deliveries_orderedproduct; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.deliveries_orderedproduct (id, delivery_id, product_id, orderedquantity, priceperunit, totalprice, description, succession, operation_id, offer_id, actualversion, entityversion, additionalquantity, conversion, deliveredquantity, additionaldeliveredquantity, batchnumber, batch_id, qualitycard_id, pickingdate) FROM stdin;
+COPY public.deliveries_orderedproduct (id, delivery_id, product_id, orderedquantity, priceperunit, totalprice, description, succession, operation_id, offer_id, actualversion, entityversion, additionalquantity, conversion, deliveredquantity, additionaldeliveredquantity, batchnumber, batch_id, qualitycard_id) FROM stdin;
 \.
 
 
@@ -41745,6 +41744,11 @@ COPY public.jointable_group_role (group_id, role_id) FROM stdin;
 3	170
 32	170
 33	170
+4	171
+2	171
+3	171
+32	171
+33	171
 \.
 
 
@@ -43955,6 +43959,7 @@ COPY public.qcadoosecurity_role (id, identifier, description, entityversion) FRO
 168	ROLE_WORKSTATION_CHANGEOVERS	\N	0
 169	ROLE_OPERATIONAL_TASKS	\N	0
 170	ROLE_DASHBOARD_PARAMETERS	\N	0
+171	ROLE_PRODUCTION_COUNTING_QUANTITY	\N	0
 \.
 
 
@@ -49506,7 +49511,7 @@ SELECT pg_catalog.setval('public.qcadoosecurity_persistenttoken_id_seq', 1, fals
 -- Name: qcadoosecurity_role_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('public.qcadoosecurity_role_id_seq', 170, true);
+SELECT pg_catalog.setval('public.qcadoosecurity_role_id_seq', 171, true);
 
 
 --

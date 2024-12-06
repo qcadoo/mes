@@ -212,7 +212,7 @@
         <menu:menu-category name="requirements"/>
 
         <menu:menu-item name="productionCountingQuantityList" category="requirements"
-                        view="productionCountingQuantityList" defaultAuthorizationRole="ROLE_BASE_FUNCTIONALITY"/>
+                        view="productionCountingQuantityList" defaultAuthorizationRole="ROLE_PRODUCTION_COUNTING_QUANTITY"/>
     </modules>
 
     <features>

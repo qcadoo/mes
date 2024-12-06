@@ -385,7 +385,7 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
         for (Entity position : document.getHasManyField(DocumentFields.POSITIONS)) {
             Entity product = position.getBelongsToField(PositionFields.PRODUCT);
 
-            Either<BigDecimal, List<Entity>> eitherPositions = updateResources(warehouse, document.getStringField(DocumentFields.STATE), position, warehouseAlgorithm,
+            Either<BigDecimal, List<Entity>> eitherPositions = updateResources(warehouse, position, warehouseAlgorithm,
                     isFromOrder, transferPalletToReceivingWarehouse);
 
             enoughResources = enoughResources && position.isValid();
@@ -468,7 +468,7 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
         }
     }
 
-    private Either<BigDecimal, List<Entity>> updateResources(final Entity warehouse, String documentState,
+    private Either<BigDecimal, List<Entity>> updateResources(final Entity warehouse,
                                                              final Entity position,
                                                              final WarehouseAlgorithm warehouseAlgorithm,
                                                              boolean isFromOrder,
@@ -514,7 +514,7 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
 
             if (Objects.nonNull(position.getBelongsToField(PositionFields.RESOURCE))
                     && warehouse.getBooleanField(LocationFieldsMFR.DRAFT_MAKES_RESERVATION)
-                    && DocumentState.DRAFT.getStringValue().equals(documentState)) {
+                    && !isFromOrder) {
                 BigDecimal reservedQuantity = resource.getDecimalField(ResourceFields.RESERVED_QUANTITY).subtract(quantity,
                         numberService.getMathContext());
 
