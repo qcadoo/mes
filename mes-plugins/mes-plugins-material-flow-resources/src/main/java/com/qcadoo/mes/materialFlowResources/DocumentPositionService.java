@@ -99,7 +99,8 @@ public class DocumentPositionService {
                 + "	LEFT JOIN basic_palletnumber palletnumber ON (p.palletnumber_id = palletnumber.id)\n"
                 + "	LEFT JOIN materialflowresources_resource resource ON (p.resource_id = resource.id)\n"
                 + "	LEFT JOIN advancedgenealogy_batch batch ON (p.batch_id = batch.id)\n"
-                + "	LEFT JOIN basic_staff staff ON (p.pickingworker_id = staff.id)\n"
+                + "	LEFT JOIN qcadoosecurity_user u ON (p.pickingworker_id = u.id)\n"
+                + "	LEFT JOIN basic_staff staff ON (u.staff_id = staff.id)\n"
                 + " LEFT JOIN (SELECT palletnumber_id, count(id) as resourcesCount FROM materialflowresources_resource GROUP BY palletnumber_id) r1 ON r1.palletnumber_id = resource.palletnumber_id \n"
                 + "	LEFT JOIN materialflowresources_storagelocation location ON (p.storagelocation_id = location.id) WHERE p.document_id = :documentId %s) q ";
 
