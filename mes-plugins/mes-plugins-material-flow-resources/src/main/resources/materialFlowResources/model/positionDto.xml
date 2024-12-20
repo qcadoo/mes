@@ -66,6 +66,8 @@
         <string name="resourceNumber"/>
         <string name="staff"/>
         <string name="invoiceNumber"/>
+        <datetime name="pickingDate"/>
+        <string name="pickingWorker"/>
     </fields>
 
     <masterModel plugin="materialFlowResources" model="position"/>
