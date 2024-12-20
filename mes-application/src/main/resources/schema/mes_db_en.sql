@@ -6051,7 +6051,7 @@ CREATE TABLE public.arch_materialflowresources_position (
     qualityrating character varying(255),
     pickingdate timestamp without time zone,
     pickingworker_id bigint,
-    wmsposition_id bigint,
+    documentpart_id bigint,
     archived boolean DEFAULT false
 );
 
@@ -20824,7 +20824,7 @@ CREATE TABLE public.materialflowresources_position (
     qualityrating character varying(255),
     pickingdate timestamp without time zone,
     pickingworker_id bigint,
-    wmsposition_id bigint
+    documentpart_id bigint
 );
 
 
@@ -22025,7 +22025,8 @@ CREATE TABLE public.mobilewms_wmsdocumentpart (
     pickingworker character varying(255),
     document_id bigint,
     parts integer,
-    type character varying(255) NOT NULL
+    type character varying(255) NOT NULL,
+    documentdate timestamp without time zone
 );
 
 
@@ -22046,46 +22047,6 @@ CREATE SEQUENCE public.mobilewms_wmsdocumentpart_id_seq
 --
 
 ALTER SEQUENCE public.mobilewms_wmsdocumentpart_id_seq OWNED BY public.mobilewms_wmsdocumentpart.id;
-
-
---
--- Name: mobilewms_wmsposition; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.mobilewms_wmsposition (
-    id bigint NOT NULL,
-    productnumber character varying(255),
-    storagelocationnumber character varying(255),
-    batchnumber character varying(255),
-    cartons numeric(14,5),
-    rest numeric(14,5),
-    quantity numeric(14,5),
-    conversion numeric(12,5),
-    unit character varying(255),
-    pickingdate timestamp without time zone,
-    documentpart_id bigint NOT NULL,
-    locationnumber character varying(255),
-    productname character varying(1024)
-);
-
-
---
--- Name: mobilewms_wmsposition_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE public.mobilewms_wmsposition_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: mobilewms_wmsposition_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE public.mobilewms_wmsposition_id_seq OWNED BY public.mobilewms_wmsposition.id;
 
 
 --
@@ -35951,13 +35912,6 @@ ALTER TABLE ONLY public.mobilewms_wmsdocumentpart ALTER COLUMN id SET DEFAULT ne
 
 
 --
--- Name: mobilewms_wmsposition id; Type: DEFAULT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.mobilewms_wmsposition ALTER COLUMN id SET DEFAULT nextval('public.mobilewms_wmsposition_id_seq'::regclass);
-
-
---
 -- Name: nutritionfacts_nutrientcalculation id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -38057,7 +38011,7 @@ COPY public.arch_materialflowresources_documentstatechange (id, dateandtime, doc
 -- Data for Name: arch_materialflowresources_position; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.arch_materialflowresources_position (id, document_id, product_id, quantity, price, productiondate, expirationdate, number, resource_id, givenunit, givenquantity, entityversion, storagelocation_id, conversion, palletnumber_id, typeofpallet, waste, resourcereceiptdocument, lastresource, resourcenumber, externaldocumentnumber, orderid, sellingprice, batch_id, qualityrating, pickingdate, pickingworker_id, wmsposition_id, archived) FROM stdin;
+COPY public.arch_materialflowresources_position (id, document_id, product_id, quantity, price, productiondate, expirationdate, number, resource_id, givenunit, givenquantity, entityversion, storagelocation_id, conversion, palletnumber_id, typeofpallet, waste, resourcereceiptdocument, lastresource, resourcenumber, externaldocumentnumber, orderid, sellingprice, batch_id, qualityrating, pickingdate, pickingworker_id, documentpart_id, archived) FROM stdin;
 \.
 
 
@@ -42424,7 +42378,7 @@ COPY public.materialflowresources_palletmovehelper (id) FROM stdin;
 -- Data for Name: materialflowresources_position; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.materialflowresources_position (id, document_id, product_id, quantity, price, productiondate, expirationdate, number, resource_id, givenunit, givenquantity, entityversion, storagelocation_id, conversion, palletnumber_id, typeofpallet, waste, resourcereceiptdocument, lastresource, resourcenumber, externaldocumentnumber, orderid, sellingprice, batch_id, qualityrating, pickingdate, pickingworker_id, wmsposition_id) FROM stdin;
+COPY public.materialflowresources_position (id, document_id, product_id, quantity, price, productiondate, expirationdate, number, resource_id, givenunit, givenquantity, entityversion, storagelocation_id, conversion, palletnumber_id, typeofpallet, waste, resourcereceiptdocument, lastresource, resourcenumber, externaldocumentnumber, orderid, sellingprice, batch_id, qualityrating, pickingdate, pickingworker_id, documentpart_id) FROM stdin;
 \.
 
 
@@ -42610,15 +42564,7 @@ COPY public.materialrequirements_materialrequirementproduct (id, materialrequire
 -- Data for Name: mobilewms_wmsdocumentpart; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.mobilewms_wmsdocumentpart (id, number, part, company, stateinwms, pickingworker, document_id, parts, type) FROM stdin;
-\.
-
-
---
--- Data for Name: mobilewms_wmsposition; Type: TABLE DATA; Schema: public; Owner: -
---
-
-COPY public.mobilewms_wmsposition (id, productnumber, storagelocationnumber, batchnumber, cartons, rest, quantity, conversion, unit, pickingdate, documentpart_id, locationnumber, productname) FROM stdin;
+COPY public.mobilewms_wmsdocumentpart (id, number, part, company, stateinwms, pickingworker, document_id, parts, type, documentdate) FROM stdin;
 \.
 
 
@@ -48559,13 +48505,6 @@ SELECT pg_catalog.setval('public.mobilewms_wmsdocumentpart_id_seq', 1, false);
 
 
 --
--- Name: mobilewms_wmsposition_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
---
-
-SELECT pg_catalog.setval('public.mobilewms_wmsposition_id_seq', 1, false);
-
-
---
 -- Name: model_card_number_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
@@ -53126,14 +53065,6 @@ ALTER TABLE ONLY public.emailnotifications_staffnotification
 
 ALTER TABLE ONLY public.mobilewms_wmsdocumentpart
     ADD CONSTRAINT esilco_wmsdocumentpart_pkey PRIMARY KEY (id);
-
-
---
--- Name: mobilewms_wmsposition esilco_wmsposition_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.mobilewms_wmsposition
-    ADD CONSTRAINT esilco_wmsposition_pkey PRIMARY KEY (id);
 
 
 --
@@ -64216,6 +64147,14 @@ ALTER TABLE ONLY public.materialflowresources_position
 
 
 --
+-- Name: materialflowresources_position position_documentpart_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.materialflowresources_position
+    ADD CONSTRAINT position_documentpart_fkey FOREIGN KEY (documentpart_id) REFERENCES public.mobilewms_wmsdocumentpart(id) DEFERRABLE;
+
+
+--
 -- Name: materialflowresources_position position_palletnumber_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -64269,14 +64208,6 @@ ALTER TABLE ONLY public.masterorders_position_warehousestatehelper
 
 ALTER TABLE ONLY public.masterorders_position_warehousestatehelper
     ADD CONSTRAINT position_warehousestatehelper_product_fkey FOREIGN KEY (product_id) REFERENCES public.basic_product(id) DEFERRABLE;
-
-
---
--- Name: materialflowresources_position position_wmsposition_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.materialflowresources_position
-    ADD CONSTRAINT position_wmsposition_fkey FOREIGN KEY (wmsposition_id) REFERENCES public.mobilewms_wmsposition(id) DEFERRABLE;
 
 
 --
@@ -67949,14 +67880,6 @@ ALTER TABLE ONLY public.materialflowresources_warehousestockreport
 
 ALTER TABLE ONLY public.mobilewms_wmsdocumentpart
     ADD CONSTRAINT wmsdocumentpart_document_fkey FOREIGN KEY (document_id) REFERENCES public.materialflowresources_document(id) DEFERRABLE;
-
-
---
--- Name: mobilewms_wmsposition wmsposition_documentpart_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.mobilewms_wmsposition
-    ADD CONSTRAINT wmsposition_documentpart_fkey FOREIGN KEY (documentpart_id) REFERENCES public.mobilewms_wmsdocumentpart(id) DEFERRABLE;
 
 
 --
