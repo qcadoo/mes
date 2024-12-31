@@ -47,8 +47,8 @@
         <decimal name="sellingPrice"/>
         <decimal name="value"/>
         <datetime name="documentDate"/>
-        <datetime name="expirationDate"/>
-        <datetime name="productionDate"/>
+        <date name="expirationDate"/>
+        <date name="productionDate"/>
         <enum name="documentType" values="01receipt,02internalInbound,03internalOutbound,04release,05transfer"/>
         <enum name="state" values="01draft,02accepted" default="01draft"/>
         <string name="documentNumber"/>
@@ -66,6 +66,8 @@
         <string name="resourceNumber"/>
         <string name="staff"/>
         <string name="invoiceNumber"/>
+        <date name="pickingDate"/>
+        <string name="pickingWorker"/>
     </fields>
 
     <masterModel plugin="materialFlowResources" model="position"/>
