@@ -20923,8 +20923,8 @@ CREATE VIEW public.materialflowresources_positiondto AS
     "position".price,
     product.unit AS productunit,
     document."time" AS documentdate,
-    ("position".expirationdate)::timestamp without time zone AS expirationdate,
-    ("position".productiondate)::timestamp without time zone AS productiondate,
+    "position".expirationdate,
+    "position".productiondate,
         CASE
             WHEN ("position".externaldocumentnumber IS NULL) THEN document.type
             ELSE '03internalOutbound'::character varying(255)
@@ -20965,8 +20965,10 @@ CREATE VIEW public.materialflowresources_positiondto AS
     "position".sellingprice,
     (((staff.surname)::text || ' '::text) || (staff.name)::text) AS staff,
     (document.suborder_id)::integer AS suborderid,
-    document.invoicenumber
-   FROM (((((((((((((((public.materialflowresources_position "position"
+    document.invoicenumber,
+    ("position".pickingdate)::date AS pickingdate,
+    (((pw.name)::text || ' '::text) || (pw.surname)::text) AS pickingworker
+   FROM (((((((((((((((((public.materialflowresources_position "position"
      LEFT JOIN public.materialflowresources_document document ON ((document.id = "position".document_id)))
      LEFT JOIN public.materialflow_location locationfrom ON ((locationfrom.id = document.locationfrom_id)))
      LEFT JOIN public.materialflow_location locationto ON ((locationto.id = document.locationto_id)))
@@ -20981,7 +20983,9 @@ CREATE VIEW public.materialflowresources_positiondto AS
      LEFT JOIN public.orders_order ordersorder ON (((ordersorder.id = document.order_id) OR (ordersorder.id = "position".orderid))))
      LEFT JOIN public.basic_palletnumber palletnumber ON ((palletnumber.id = "position".palletnumber_id)))
      LEFT JOIN public.advancedgenealogy_batch batch ON ((batch.id = "position".batch_id)))
-     LEFT JOIN public.basic_staff staff ON ((staff.id = document.staff_id)));
+     LEFT JOIN public.basic_staff staff ON ((staff.id = document.staff_id)))
+     LEFT JOIN public.qcadoosecurity_user u ON (("position".pickingworker_id = u.id)))
+     LEFT JOIN public.basic_staff pw ON ((u.staff_id = pw.id)));
 
 
 --
@@ -22026,7 +22030,8 @@ CREATE TABLE public.mobilewms_wmsdocumentpart (
     document_id bigint,
     parts integer,
     type character varying(255) NOT NULL,
-    documentdate timestamp without time zone
+    documentdate timestamp without time zone,
+    staff character varying(1024)
 );
 
 
@@ -42545,7 +42550,7 @@ COPY public.materialrequirements_materialrequirementproduct (id, materialrequire
 -- Data for Name: mobilewms_wmsdocumentpart; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.mobilewms_wmsdocumentpart (id, number, part, company, stateinwms, pickingworker, document_id, parts, type, documentdate) FROM stdin;
+COPY public.mobilewms_wmsdocumentpart (id, number, part, company, stateinwms, pickingworker, document_id, parts, type, documentdate, staff) FROM stdin;
 \.
 
 
