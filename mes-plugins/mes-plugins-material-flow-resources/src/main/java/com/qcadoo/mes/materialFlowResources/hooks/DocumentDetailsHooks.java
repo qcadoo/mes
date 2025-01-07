@@ -220,7 +220,7 @@ public class DocumentDetailsHooks {
                     && !reservationsService.reservationsEnabledForDocumentPositions(document));
             changeAddMultipleResourcesButtonState(window, DocumentType.isOutbound(document.getStringField(DocumentFields.TYPE)));
             if (pluginManager.isPluginEnabled(MOBILE_WMS)) {
-                if (document.getBooleanField(DocumentFields.WMS) && !document.getBooleanField(DocumentFields.EDIT_IN_WMS)) {
+                if (document.getBooleanField(DocumentFields.WMS)) {
                     toggleRibbon(window, false);
                     changeFillResourceButtonState(window, false);
                     changeAddMultipleResourcesButtonState(window, false);
