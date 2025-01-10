@@ -53,4 +53,6 @@ public final class LocationFieldsMFR {
 
 	public static final String COST_NORMS_LOCATIONS = "costNormsLocations";
 
+	public static final String TRANSFER_STORAGE_LOCATION = "transferStorageLocation";
+
 }

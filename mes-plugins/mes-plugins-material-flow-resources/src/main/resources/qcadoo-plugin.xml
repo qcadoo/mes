@@ -257,22 +257,27 @@
 
         <model:model-field plugin="materialFlow" model="location">
             <model:hasMany name="costNormsLocations" plugin="materialFlowResources" model="costNormsLocation"
-                           joinField="location" cascade="delete" copyable="false"/>
+                           joinField="location" cascade="delete"/>
+        </model:model-field>
+
+        <model:model-field plugin="materialFlow" model="location">
+            <model:belongsTo name="transferStorageLocation" model="storageLocation"
+                             plugin="materialFlowResources"/>
         </model:model-field>
 
         <model:model-field plugin="advancedGenealogy" model="batch">
             <model:hasMany name="resources" model="resource"
-                           plugin="materialFlowResources" joinField="batch" cascade="nullify"/>
+                           plugin="materialFlowResources" joinField="batch"/>
         </model:model-field>
 
         <model:model-field plugin="advancedGenealogy" model="batch">
             <model:hasMany name="oldResourceCorrections" model="resourceCorrection"
-                           plugin="materialFlowResources" joinField="oldBatch" cascade="nullify"/>
+                           plugin="materialFlowResources" joinField="oldBatch"/>
         </model:model-field>
 
         <model:model-field plugin="advancedGenealogy" model="batch">
             <model:hasMany name="newResourceCorrections" model="resourceCorrection"
-                           plugin="materialFlowResources" joinField="newBatch" cascade="nullify"/>
+                           plugin="materialFlowResources" joinField="newBatch"/>
         </model:model-field>
 
         <model:model-field plugin="qcadooSecurity" model="user">
@@ -411,6 +416,11 @@
         <view:view-hook plugin="basic" view="generalParameters"
                         type="beforeRender"
                         class="com.qcadoo.mes.materialFlowResources.hooks.GeneralParametersHooksMFR"
+                        method="onBeforeRender"/>
+
+        <view:view-hook plugin="materialFlow" view="locationDetails"
+                        type="beforeRender"
+                        class="com.qcadoo.mes.materialFlowResources.hooks.LocationDetailsHooks"
                         method="onBeforeRender"/>
 
         <view:resource uri="public/**/*"/>

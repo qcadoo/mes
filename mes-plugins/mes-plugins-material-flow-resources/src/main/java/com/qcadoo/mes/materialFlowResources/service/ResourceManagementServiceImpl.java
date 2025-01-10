@@ -33,7 +33,6 @@ import com.qcadoo.mes.basic.constants.ProductAttributeValueFields;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.basic.constants.UnitConversionItemFieldsB;
 import com.qcadoo.mes.materialFlowResources.DocumentPositionService;
-import com.qcadoo.mes.materialFlowResources.MaterialFlowResourcesService;
 import com.qcadoo.mes.materialFlowResources.constants.*;
 import com.qcadoo.mes.materialFlowResources.exceptions.InvalidResourceException;
 import com.qcadoo.mes.materialFlowResources.helpers.NotEnoughResourcesErrorMessageCopyToEntityHelper;
@@ -99,9 +98,6 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
 
     @Autowired
     private DocumentPositionService documentPositionService;
-
-    @Autowired
-    private MaterialFlowResourcesService materialFlowResourcesService;
 
     @Autowired
     private UnitConversionService unitConversionService;
@@ -252,7 +248,7 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
         newResource.setField(ResourceFields.BATCH, resource.getField(PositionFields.BATCH));
         newResource.setField(ResourceFields.EXPIRATION_DATE, resource.getField(PositionFields.EXPIRATION_DATE));
         newResource.setField(ResourceFields.PRODUCTION_DATE, resource.getField(PositionFields.PRODUCTION_DATE));
-        newResource.setField(ResourceFields.STORAGE_LOCATION, materialFlowResourcesService.findStorageLocationForProduct(warehouse, resource.getBelongsToField(ResourceFields.PRODUCT)).orElse(null));
+        newResource.setField(ResourceFields.STORAGE_LOCATION, warehouse.getBelongsToField(LocationFieldsMFR.TRANSFER_STORAGE_LOCATION));
 
         if (transferPalletToReceivingWarehouse) {
             newResource.setField(ResourceFields.PALLET_NUMBER, resource.getBelongsToField(ResourceFields.PALLET_NUMBER));
@@ -1081,7 +1077,7 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
         newPosition.setField(PositionFields.EXPIRATION_DATE, resource.getField(ResourceFields.EXPIRATION_DATE));
         newPosition.setField(PositionFields.RESOURCE, null);
         newPosition.setField(PositionFields.RESOURCE_NUMBER, resource.getStringField(ResourceFields.NUMBER));
-        newPosition.setField(PositionFields.STORAGE_LOCATION, getStorageLocation(position, resource));
+        newPosition.setField(PositionFields.STORAGE_LOCATION, resource.getBelongsToField(ResourceFields.STORAGE_LOCATION));
         newPosition.setField(PositionFields.CONVERSION, resource.getField(ResourceFields.CONVERSION));
         newPosition.setField(PositionFields.PALLET_NUMBER, resource.getField(ResourceFields.PALLET_NUMBER));
         newPosition.setField(PositionFields.TYPE_OF_PALLET, resource.getField(ResourceFields.TYPE_OF_PALLET));
@@ -1093,28 +1089,6 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
         newPosition.setField(PositionFields.POSITION_ATTRIBUTE_VALUES, prepareAttributes(resource));
 
         return newPosition;
-    }
-
-    private Entity getStorageLocation(final Entity position, final Entity resource) {
-        Entity storageLocation = resource.getBelongsToField(ResourceFields.STORAGE_LOCATION);
-
-        if (Objects.isNull(storageLocation)) {
-            Entity product = position.getBelongsToField(PositionFields.PRODUCT);
-            Entity document = position.getBelongsToField(PositionFields.DOCUMENT);
-            String documentType = document.getStringField(DocumentFields.TYPE);
-
-            if (DocumentType.TRANSFER.getStringValue().equals(documentType)) {
-                Entity locationTo = document.getBelongsToField(DocumentFields.LOCATION_TO);
-
-                Optional<Entity> mayBeStorageLocation = materialFlowResourcesService.findStorageLocationForProduct(locationTo, product);
-
-                if (mayBeStorageLocation.isPresent()) {
-                    storageLocation = mayBeStorageLocation.get();
-                }
-            }
-        }
-
-        return storageLocation;
     }
 
     private List<Entity> prepareAttributes(final Entity resource) {

@@ -41,27 +41,20 @@
             <validatesScale max="0"/>
         </decimal>
 
-        <hasMany name="positions" model="position" joinField="storageLocation"
-                 cascade="nullify" copyable="false" />
-        <hasMany name="resources" model="resource" joinField="storageLocation"
-                 cascade="nullify" copyable="false" />
-        <hasMany name="oldResourceCorrections" model="resourceCorrection" joinField="oldStorageLocation"
-                 cascade="nullify" copyable="false"/>
-        <hasMany name="newResourceCorrections" model="resourceCorrection" joinField="newStorageLocation"
-                 cascade="nullify" copyable="false"/>
+        <hasMany name="positions" model="position" joinField="storageLocation"/>
+        <hasMany name="resources" model="resource" joinField="storageLocation"/>
+        <hasMany name="oldResourceCorrections" model="resourceCorrection" joinField="oldStorageLocation"/>
+        <hasMany name="newResourceCorrections" model="resourceCorrection" joinField="newStorageLocation"/>
+        <hasMany name="transferLocations" plugin="materialFlow" model="location" joinField="transferStorageLocation"/>
 
         <boolean name="highStorageLocation" default="false"/>
 
-        <manyToMany name="stocktakings" model="stocktaking" joinField="storageLocations"
-                    copyable="false" cascade="nullify"/>
-        <manyToMany name="warehouseStockReports" model="warehouseStockReport" joinField="storageLocations"
-                    copyable="false" cascade="nullify"/>
+        <manyToMany name="stocktakings" model="stocktaking" joinField="storageLocations"/>
+        <manyToMany name="warehouseStockReports" model="warehouseStockReport" joinField="storageLocations"/>
 
-        <manyToMany name="storageLocationNumberHelpers" model="storageLocationNumberHelper" joinField="palletNumbers"
-                    copyable="false" cascade="nullify" />
+        <manyToMany name="storageLocationNumberHelpers" model="storageLocationNumberHelper" joinField="palletNumbers"/>
 
-        <manyToMany name="products" plugin="basic" model="product" joinField="storageLocations"
-                    copyable="false" cascade="nullify"/>
+        <manyToMany name="products" plugin="basic" model="product" joinField="storageLocations"/>
     </fields>
 
     <hooks>
