@@ -26,4 +26,9 @@ public class StorageLocationCriteriaModifiers {
         }
     }
 
+    public void showStorageLocationsForLocationWithoutProducts(final SearchCriteriaBuilder scb, final FilterValueHolder filterValue) {
+        showStorageLocationsForLocation(scb, filterValue);
+        scb.add(SearchRestrictions.isEmpty(StorageLocationFields.PRODUCTS));
+    }
+
 }

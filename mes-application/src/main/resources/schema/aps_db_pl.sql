@@ -5550,7 +5550,6 @@ CREATE TABLE public.arch_materialflowresources_document (
     pickingworker character varying(255),
     dateconfirmationofcompletion timestamp without time zone,
     locationchanged boolean DEFAULT false,
-    editinwms boolean DEFAULT true,
     staff_id bigint,
     ordersgroup_id bigint,
     invoicenumber character varying(2048),
@@ -5813,7 +5812,8 @@ CREATE TABLE public.deliveries_delivery (
     stateinwms character varying(255),
     datesendtowms timestamp without time zone,
     pickingworker character varying(255),
-    dateconfirmationofcompletion timestamp without time zone
+    dateconfirmationofcompletion timestamp without time zone,
+    pickingworkerusername character varying(255)
 );
 
 
@@ -5835,7 +5835,8 @@ CREATE TABLE public.materialflow_location (
     warehousenumberinoptima character varying(255),
     draftmakesreservation boolean DEFAULT false,
     realizationlocation_id bigint,
-    active boolean DEFAULT true
+    active boolean DEFAULT true,
+    transferstoragelocation_id bigint
 );
 
 
@@ -20317,7 +20318,6 @@ CREATE TABLE public.materialflowresources_document (
     stateinwms character varying(255),
     pickingworker character varying(255),
     dateconfirmationofcompletion timestamp without time zone,
-    editinwms boolean DEFAULT true,
     staff_id bigint,
     ordersgroup_id bigint,
     invoicenumber character varying(2048)
@@ -22031,7 +22031,8 @@ CREATE TABLE public.mobilewms_wmsdocumentpart (
     parts integer,
     type character varying(255) NOT NULL,
     documentdate timestamp without time zone,
-    staff character varying(1024)
+    staff character varying(1024),
+    locationto character varying(255)
 );
 
 
@@ -38000,7 +38001,7 @@ COPY public.arch_masterorders_productsbysizehelper (id, product_id, totalquantit
 -- Data for Name: arch_materialflowresources_document; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.arch_materialflowresources_document (id, number, type, "time", state, locationfrom_id, locationto_id, user_id, delivery_id, active, createdate, updatedate, createuser, updateuser, order_id, description, suborder_id, company_id, maintenanceevent_id, entityversion, plannedevent_id, name, createlinkeddocument, linkeddocumentlocation_id, address_id, dispositionshift_id, positionsfile, printed, generationdate, filename, acceptationinprogress, externalnumber, issend, wms, datesendtowms, stateinwms, pickingworker, dateconfirmationofcompletion, locationchanged, editinwms, staff_id, ordersgroup_id, invoicenumber, archived) FROM stdin;
+COPY public.arch_materialflowresources_document (id, number, type, "time", state, locationfrom_id, locationto_id, user_id, delivery_id, active, createdate, updatedate, createuser, updateuser, order_id, description, suborder_id, company_id, maintenanceevent_id, entityversion, plannedevent_id, name, createlinkeddocument, linkeddocumentlocation_id, address_id, dispositionshift_id, positionsfile, printed, generationdate, filename, acceptationinprogress, externalnumber, issend, wms, datesendtowms, stateinwms, pickingworker, dateconfirmationofcompletion, locationchanged, staff_id, ordersgroup_id, invoicenumber, archived) FROM stdin;
 \.
 
 
@@ -40041,7 +40042,7 @@ COPY public.deliveries_deliveredproductmultiposition (id, deliveredproductmulti_
 -- Data for Name: deliveries_delivery; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.deliveries_delivery (id, number, name, description, supplier_id, deliverydate, deliveryaddress, relateddelivery_id, currency_id, externalnumber, externalsynchronized, state, location_id, active, createdate, updatedate, createuser, updateuser, synchronizationstatus, entityversion, paymentform, salesplan_id, wms, stateinwms, datesendtowms, pickingworker, dateconfirmationofcompletion) FROM stdin;
+COPY public.deliveries_delivery (id, number, name, description, supplier_id, deliverydate, deliveryaddress, relateddelivery_id, currency_id, externalnumber, externalsynchronized, state, location_id, active, createdate, updatedate, createuser, updateuser, synchronizationstatus, entityversion, paymentform, salesplan_id, wms, stateinwms, datesendtowms, pickingworker, dateconfirmationofcompletion, pickingworkerusername) FROM stdin;
 \.
 
 
@@ -42262,7 +42263,7 @@ COPY public.masterorders_salesvolumemulti (id, dailysalesvolume, optimalstock, c
 -- Data for Name: materialflow_location; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.materialflow_location (id, number, name, externalnumber, algorithm, requireprice, requirebatch, requireproductiondate, requireexpirationdate, entityversion, warehousenumberinoptima, draftmakesreservation, realizationlocation_id, active) FROM stdin;
+COPY public.materialflow_location (id, number, name, externalnumber, algorithm, requireprice, requirebatch, requireproductiondate, requireexpirationdate, entityversion, warehousenumberinoptima, draftmakesreservation, realizationlocation_id, active, transferstoragelocation_id) FROM stdin;
 \.
 
 
@@ -42294,7 +42295,7 @@ COPY public.materialflowresources_costnormslocation (id, costnormsgenerator_id, 
 -- Data for Name: materialflowresources_document; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.materialflowresources_document (id, number, type, "time", state, locationfrom_id, locationto_id, user_id, delivery_id, active, createdate, updatedate, createuser, updateuser, order_id, description, suborder_id, company_id, maintenanceevent_id, entityversion, plannedevent_id, name, createlinkeddocument, linkeddocumentlocation_id, address_id, generationdate, filename, acceptationinprogress, externalnumber, issend, wms, datesendtowms, stateinwms, pickingworker, dateconfirmationofcompletion, editinwms, staff_id, ordersgroup_id, invoicenumber) FROM stdin;
+COPY public.materialflowresources_document (id, number, type, "time", state, locationfrom_id, locationto_id, user_id, delivery_id, active, createdate, updatedate, createuser, updateuser, order_id, description, suborder_id, company_id, maintenanceevent_id, entityversion, plannedevent_id, name, createlinkeddocument, linkeddocumentlocation_id, address_id, generationdate, filename, acceptationinprogress, externalnumber, issend, wms, datesendtowms, stateinwms, pickingworker, dateconfirmationofcompletion, staff_id, ordersgroup_id, invoicenumber) FROM stdin;
 \.
 
 
@@ -42550,7 +42551,7 @@ COPY public.materialrequirements_materialrequirementproduct (id, materialrequire
 -- Data for Name: mobilewms_wmsdocumentpart; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.mobilewms_wmsdocumentpart (id, number, part, company, stateinwms, pickingworker, document_id, parts, type, documentdate, staff) FROM stdin;
+COPY public.mobilewms_wmsdocumentpart (id, number, part, company, stateinwms, pickingworker, document_id, parts, type, documentdate, staff, locationto) FROM stdin;
 \.
 
 
@@ -61170,6 +61171,14 @@ ALTER TABLE ONLY public.productflowthrudivision_productstoissue
 
 ALTER TABLE ONLY public.materialflow_location
     ADD CONSTRAINT location_realizationlocation_fkey FOREIGN KEY (realizationlocation_id) REFERENCES public.basic_parameter(id) DEFERRABLE;
+
+
+--
+-- Name: materialflow_location location_transferstoragelocation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.materialflow_location
+    ADD CONSTRAINT location_transferstoragelocation_fkey FOREIGN KEY (transferstoragelocation_id) REFERENCES public.materialflowresources_storagelocation(id) DEFERRABLE;
 
 
 --

@@ -50,7 +50,6 @@
         <belongsTo name="linkedDocumentLocation"
                    model="location" plugin="materialFlow"/>
         <boolean name="wms" copyable="false" default="false"/>
-        <boolean name="editInWMS" copyable="false" default="true"/>
         <enum name="stateInWMS" values="01waiting,02inProgress,03delayed,04partiallyRealized,05realized" copyable="false"/>
         <datetime name="generationDate" copyable="false"/>
         <string name="fileName" copyable="false"/>

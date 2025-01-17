@@ -71,8 +71,6 @@ public final class DocumentFields {
 
     public static final String STATE_IN_WMS = "stateInWMS";
 
-    public static final String EDIT_IN_WMS = "editInWMS";
-
     public static final String STATE_CHANGES = "stateChanges";
 
     public static final String INVOICE_NUMBER = "invoiceNumber";

@@ -29,6 +29,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.qcadoo.mes.materialFlowResources.listeners.DocumentsListListeners.MOBILE_WMS;
+import static com.qcadoo.mes.materialFlowResources.listeners.DocumentsListListeners.REALIZED;
 
 @Repository
 public class DocumentPositionService {
@@ -498,13 +499,13 @@ public class DocumentPositionService {
         boolean readOnly = DocumentState.parseString(stateString) == DocumentState.ACCEPTED;
 
         if (pluginManager.isPluginEnabled(MOBILE_WMS)) {
-            query = "SELECT wms, editinwms FROM materialflowresources_document WHERE id = :id";
+            query = "SELECT wms, stateinwms FROM materialflowresources_document WHERE id = :id";
 
             Map<String, Object> documentResult = jdbcTemplate.queryForMap(query, Collections.singletonMap(ID, documentId));
 
             readOnly = readOnly || documentResult.get(DocumentFields.WMS) != null
-                    && (boolean) documentResult.get(DocumentFields.WMS) && documentResult.get(DocumentFields.EDIT_IN_WMS) != null
-                    && !(boolean) documentResult.get(DocumentFields.EDIT_IN_WMS);
+                    && (boolean) documentResult.get(DocumentFields.WMS)
+                    && !REALIZED.equals(documentResult.get(DocumentFields.STATE_IN_WMS));
         }
 
         return readOnly;
