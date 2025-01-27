@@ -83,6 +83,9 @@
 			<model:hasMany name="materialRequirements" model="materialRequirement" plugin="materialRequirements" joinField="location"/>
 		</model:model-field>
 		<model:model-field plugin="materialFlow" model="location">
+			<model:hasMany name="stockLevelMaterialRequirements" model="materialRequirement" plugin="materialRequirements" joinField="stockLevelLocation"/>
+		</model:model-field>
+		<model:model-field plugin="materialFlow" model="location">
 			<model:hasMany name="materialRequirementProducts" model="materialRequirementProduct" plugin="materialRequirements" joinField="location"/>
 		</model:model-field>
 

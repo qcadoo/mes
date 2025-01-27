@@ -142,7 +142,7 @@
                            rows="1">
                     <layoutElement column="1" row="1">
                         <component type="gridLayout" name="leftGridLayout" columns="1"
-                                   rows="11">
+                                   rows="12">
                             <layoutElement column="1" row="1">
                                 <component type="checkbox" name="generated" reference="generated"
                                            field="generated" defaultEnabled="false">
@@ -198,9 +198,24 @@
                                 <component type="checkbox" name="showCurrentStockLevel"
                                            reference="showCurrentStockLevel"
                                            field="showCurrentStockLevel" hasDescription="true">
+                                    <listener event="onChange"
+                                              class="com.qcadoo.view.api.listeners.RerenderListener"
+                                              method="onChangeRerender"/>
                                 </component>
                             </layoutElement>
                             <layoutElement column="1" row="11">
+                                <component type="lookup" name="stockLevelLocation" field="stockLevelLocation"
+                                           reference="stockLevelLocation" hasDescription="true">
+                                    <option type="column" name="name" fields="name"/>
+
+                                    <option type="searchable" value="number,name"/>
+                                    <option type="orderable" value="number,name"/>
+
+                                    <option type="expression" value="#number + ' - ' + #name"/>
+                                    <option type="fieldCode" value="number"/>
+                                </component>
+                            </layoutElement>
+                            <layoutElement column="1" row="12">
                                 <component type="checkbox" name="includeStartDateOrder"
                                            reference="includeStartDateOrder"
                                            field="includeStartDateOrder" hasDescription="true">
