@@ -52,6 +52,7 @@ public final class MaterialRequirementFields {
     public static final String INCLUDE_START_DATE_ORDER = "includeStartDateOrder";
 
     public static final String LOCATION = "location";
+    public static final String STOCK_LEVEL_LOCATION = "stockLevelLocation";
 
     public static final String MATERIAL_REQUIREMENT_PRODUCTS = "materialRequirementProducts";
 

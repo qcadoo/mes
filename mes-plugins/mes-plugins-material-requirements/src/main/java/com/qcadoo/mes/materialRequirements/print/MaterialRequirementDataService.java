@@ -17,9 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 @Service
 public class MaterialRequirementDataService {
@@ -164,6 +162,17 @@ public class MaterialRequirementDataService {
         return quantitiesInStock;
     }
 
+    public Map<Long, Map<Long, BigDecimal>> getQuantitiesInStock(List<MaterialRequirementEntry> materialRequirementEntries, Entity stockLevelLocation) {
+        Map<Long, Map<Long, BigDecimal>> quantitiesInStock = Maps.newHashMap();
+        Set<Entity> products = new HashSet<>();
+        for (MaterialRequirementEntry materialRequirementEntry : materialRequirementEntries) {
+            products.add(materialRequirementEntry.getProduct());
+        }
+        quantitiesInStock.put(stockLevelLocation.getId(),
+                materialFlowResourcesService.getQuantitiesForProductsAndLocation(new ArrayList<>(products), stockLevelLocation));
+        return quantitiesInStock;
+    }
+
     public BigDecimal getQuantity(final Map<Long, Map<Long, BigDecimal>> quantitiesInStock,
                                   final MaterialRequirementEntry material) {
         Map<Long, BigDecimal> quantitiesInWarehouse = quantitiesInStock.get(material.getWarehouseId());
@@ -173,6 +182,11 @@ public class MaterialRequirementDataService {
         } else {
             return BigDecimal.ZERO;
         }
+    }
+
+    public BigDecimal getQuantity(Map<Long, Map<Long, BigDecimal>> quantitiesInStock, MaterialRequirementEntry material, Entity stockLevelLocation) {
+        Map<Long, BigDecimal> quantitiesInWarehouse = quantitiesInStock.get(stockLevelLocation.getId());
+        return BigDecimalUtils.convertNullToZero(quantitiesInWarehouse.get(material.getId()));
     }
 
     public Map<String, MaterialRequirementEntry> getNeededProductQuantities(final List<MaterialRequirementEntry> materialRequirementEntries) {

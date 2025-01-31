@@ -3,19 +3,19 @@
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
  * Version: 1.4
- *
+ * <p>
  * This file is part of Qcadoo.
- *
+ * <p>
  * Qcadoo is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation; either version 3 of the License,
  * or (at your option) any later version.
- *
+ * <p>
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty
  * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU Affero General Public License for more details.
- *
+ * <p>
  * You should have received a copy of the GNU Affero General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
@@ -135,7 +135,14 @@ public final class MaterialRequirementPdfService extends PdfDocumentService {
                 translationService.translate("materialRequirements.materialRequirement.report.panel.mrpAlgorithm", locale),
                 translationService.translate("materialRequirements.materialRequirement.mrpAlgorithm.value."
                         + materialRequirement.getStringField(MaterialRequirementFields.MRP_ALGORITHM), locale));
-        pdfHelper.addTableCellAsOneColumnTable(panelTable, "", "");
+        Entity stockLevelLocation = materialRequirement.getBelongsToField(MaterialRequirementFields.STOCK_LEVEL_LOCATION);
+        if (stockLevelLocation != null) {
+            pdfHelper.addTableCellAsOneColumnTable(panelTable,
+                    translationService.translate("materialRequirements.materialRequirement.report.panel.stockLevelLocationNumber", locale),
+                    stockLevelLocation.getStringField(LocationFields.NUMBER));
+        } else {
+            pdfHelper.addTableCellAsOneColumnTable(panelTable, "", "");
+        }
 
         panelTable.setSpacingAfter(20);
         panelTable.setSpacingBefore(20);

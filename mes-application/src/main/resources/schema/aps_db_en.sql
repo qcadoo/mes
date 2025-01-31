@@ -21957,7 +21957,8 @@ CREATE TABLE public.materialrequirements_materialrequirement (
     includewarehouse boolean DEFAULT false,
     showcurrentstocklevel boolean DEFAULT false,
     includestartdateorder boolean DEFAULT false,
-    location_id bigint
+    location_id bigint,
+    stocklevellocation_id bigint
 );
 
 
@@ -42535,7 +42536,7 @@ COPY public.materialrequirementcoveragefororder_coverageproductlogging (id, cove
 -- Data for Name: materialrequirements_materialrequirement; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.materialrequirements_materialrequirement (id, name, number, date, worker, mrpalgorithm, generated, filename, active, entityversion, includewarehouse, showcurrentstocklevel, includestartdateorder, location_id) FROM stdin;
+COPY public.materialrequirements_materialrequirement (id, name, number, date, worker, mrpalgorithm, generated, filename, active, entityversion, includewarehouse, showcurrentstocklevel, includestartdateorder, location_id, stocklevellocation_id) FROM stdin;
 \.
 
 
@@ -61563,6 +61564,14 @@ ALTER TABLE ONLY public.jointable_materialrequirement_order
 
 ALTER TABLE ONLY public.jointable_materialrequirement_order
     ADD CONSTRAINT materialrequirement_order_order_fkey FOREIGN KEY (order_id) REFERENCES public.orders_order(id) DEFERRABLE;
+
+
+--
+-- Name: materialrequirements_materialrequirement materialrequirement_stocklevellocation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.materialrequirements_materialrequirement
+    ADD CONSTRAINT materialrequirement_stocklevellocation_fkey FOREIGN KEY (stocklevellocation_id) REFERENCES public.materialflow_location(id) DEFERRABLE;
 
 
 --
