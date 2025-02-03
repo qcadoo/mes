@@ -98,7 +98,7 @@
 
         <model:model-field plugin="basic" model="shift">
             <model:hasMany name="deliveryStateChanges" plugin="deliveries"
-                           model="deliveryStateChange" joinField="shift" cascade="nullify"/>
+                           model="deliveryStateChange" joinField="shift"/>
         </model:model-field>
 
         <model:model-field plugin="basic" model="parameter">
@@ -109,6 +109,34 @@
 
         <model:model-field plugin="basic" model="parameter">
             <model:boolean name="deliveryUseNominalCostWhenPriceNotSpecified" default="false"/>
+        </model:model-field>
+
+        <model:model-field plugin="basic" model="parameter">
+            <model:boolean name="acceptanceOfDelivery" default="false"/>
+        </model:model-field>
+
+        <model:model-field plugin="basic" model="parameter">
+            <model:boolean name="sendEmailToSupplier" default="false"/>
+        </model:model-field>
+
+        <model:model-field plugin="basic" model="parameter">
+            <model:text name="deliveryEmailSubject"/>
+        </model:model-field>
+
+        <model:model-field plugin="basic" model="parameter">
+            <model:text name="deliveryEmailBody"/>
+        </model:model-field>
+
+        <model:model-field plugin="basic" model="parameter">
+            <model:string name="emailUsername">
+                <model:validatesLength max="255"/>
+            </model:string>
+        </model:model-field>
+
+        <model:model-field plugin="basic" model="parameter">
+            <model:string name="emailPassword">
+                <model:validatesLength max="255"/>
+            </model:string>
         </model:model-field>
 
         <model:model-field plugin="basic" model="parameter">
@@ -293,6 +321,11 @@
             <model:validatesWith
                     class="com.qcadoo.mes.deliveries.hooks.SupplyParameterHooks"
                     method="checkIfNumberPatternIsSelected" />
+        </model:model-hook>
+        <model:model-hook model="parameter" plugin="basic">
+            <model:validatesWith
+                    class="com.qcadoo.mes.deliveries.hooks.SupplyParameterHooks"
+                    method="checkIfDeliveryEmailFieldsFilled" />
         </model:model-hook>
         <model:model-hook model="parameter" plugin="basic">
             <model:onSave

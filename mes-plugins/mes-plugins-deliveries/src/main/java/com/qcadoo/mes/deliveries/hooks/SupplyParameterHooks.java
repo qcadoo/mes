@@ -3,19 +3,19 @@
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
  * Version: 1.4
- *
+ * <p>
  * This file is part of Qcadoo.
- *
+ * <p>
  * Qcadoo is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation; either version 3 of the License,
  * or (at your option) any later version.
- *
+ * <p>
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty
  * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU Affero General Public License for more details.
- *
+ * <p>
  * You should have received a copy of the GNU Affero General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
@@ -24,7 +24,6 @@
 package com.qcadoo.mes.deliveries.hooks;
 
 import com.qcadoo.localization.api.TranslationService;
-import com.qcadoo.mes.advancedGenealogy.constants.ParameterFieldsAG;
 import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.basic.constants.NumberPatternFields;
 import com.qcadoo.mes.basic.constants.ProductFields;
@@ -55,7 +54,7 @@ public class SupplyParameterHooks {
     private TranslationService translationService;
 
     public void setFieldsVisibleAndRequired(final ViewDefinitionState view, final ComponentState componentState,
-            final String[] args) {
+                                            final String[] args) {
         setFieldsVisibleAndRequired(view);
     }
 
@@ -84,6 +83,26 @@ public class SupplyParameterHooks {
         boolean selectForAddress = OTHER.getStringValue().equals(defaultAddress.getFieldValue());
 
         changeFieldsState(view, OTHER_ADDRESS, selectForAddress);
+
+        CheckBoxComponent sendEmailToSupplier = (CheckBoxComponent) view
+                .getComponentByReference(ParameterFieldsD.SEND_EMAIL_TO_SUPPLIER);
+        boolean sendEmailToSupplierValue = sendEmailToSupplier.isChecked();
+        changeFieldEnabledAndRequired(view, ParameterFieldsD.DELIVERY_EMAIL_SUBJECT, sendEmailToSupplierValue);
+        changeFieldEnabledAndRequired(view, ParameterFieldsD.DELIVERY_EMAIL_BODY, sendEmailToSupplierValue);
+        changeFieldEnabledAndRequired(view, ParameterFieldsD.EMAIL_USERNAME, sendEmailToSupplierValue);
+        changeFieldEnabledAndRequired(view, ParameterFieldsD.EMAIL_PASSWORD, sendEmailToSupplierValue);
+    }
+
+    private void changeFieldEnabledAndRequired(final ViewDefinitionState view, final String fieldName, final boolean enabled) {
+        FieldComponent field = (FieldComponent) view.getComponentByReference(fieldName);
+        field.setEnabled(enabled);
+        field.setRequired(enabled);
+
+        if (!enabled) {
+            field.setFieldValue(null);
+        }
+
+        field.requestComponentUpdateState();
     }
 
     private void changeFieldsState(final ViewDefinitionState view, final String fieldName, final boolean selectForAddress) {
@@ -99,7 +118,6 @@ public class SupplyParameterHooks {
     }
 
     public void onCreate(final DataDefinition dataDefinition, final Entity parameter) {
-
         parameter.setField(ParameterFieldsD.DELIVERED_BIGGER_THAN_ORDERED, true);
     }
 
@@ -114,6 +132,33 @@ public class SupplyParameterHooks {
         return true;
     }
 
+    public final boolean checkIfDeliveryEmailFieldsFilled(final DataDefinition parameterDD, final Entity parameter) {
+        boolean isValid = true;
+        if (parameter.getBooleanField(ParameterFieldsD.SEND_EMAIL_TO_SUPPLIER)) {
+            if (parameter.getStringField(ParameterFieldsD.DELIVERY_EMAIL_SUBJECT) == null) {
+                parameter.addError(parameterDD.getField(ParameterFieldsD.DELIVERY_EMAIL_SUBJECT),
+                        "qcadooView.validate.field.error.missing");
+                isValid = false;
+            }
+            if (parameter.getStringField(ParameterFieldsD.DELIVERY_EMAIL_BODY) == null) {
+                parameter.addError(parameterDD.getField(ParameterFieldsD.DELIVERY_EMAIL_BODY),
+                        "qcadooView.validate.field.error.missing");
+                isValid = false;
+            }
+            if (parameter.getStringField(ParameterFieldsD.EMAIL_USERNAME) == null) {
+                parameter.addError(parameterDD.getField(ParameterFieldsD.EMAIL_USERNAME),
+                        "qcadooView.validate.field.error.missing");
+                isValid = false;
+            }
+            if (parameter.getStringField(ParameterFieldsD.EMAIL_PASSWORD) == null) {
+                parameter.addError(parameterDD.getField(ParameterFieldsD.EMAIL_PASSWORD),
+                        "qcadooView.validate.field.error.missing");
+                isValid = false;
+            }
+        }
+
+        return isValid;
+    }
 
     public void setUsedInForNumberPattern(final DataDefinition parameterDD, final Entity parameter) {
         Entity numberPattern = parameter.getBelongsToField(ParameterFieldsD.PRODUCT_DELIVERY_BATCH_NUMBER_PATTERN);

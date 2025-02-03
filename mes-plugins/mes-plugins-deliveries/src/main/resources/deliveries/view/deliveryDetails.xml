@@ -326,7 +326,6 @@
                     </script>
                 </bigButton>
             </group>
-
         </ribbon>
 
         <windowTab name="mainTab">
@@ -1000,8 +999,24 @@
                 </layoutElement>
             </component>
         </windowTab>
-
-
+        <windowTab name="paymentTab" reference="paymentTab">
+            <component type="gridLayout" name="gridLayout" columns="3"
+                       rows="2">
+                <layoutElement column="1" row="1">
+                    <component type="checkbox" name="releasedForPayment"
+                               reference="releasedForPayment" field="#{form}.releasedForPayment">
+                        <listener event="onChange"
+                                  class="com.qcadoo.view.api.listeners.RerenderListener"
+                                  method="onChangeRerender"/>
+                    </component>
+                </layoutElement>
+                <layoutElement column="1" row="2">
+                    <component type="input" name="paymentID" field="#{form}.paymentID"
+                               reference="paymentID">
+                    </component>
+                </layoutElement>
+            </component>
+        </windowTab>
     </component>
 
     <hooks>

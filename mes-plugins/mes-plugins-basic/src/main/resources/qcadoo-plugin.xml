@@ -298,6 +298,8 @@
         <security:role identifier="ROLE_OFFERS"/>
         <security:role identifier="ROLE_NEGOTIATIONS"/>
 
+        <security:role identifier="ROLE_RELEASE_FOR_PAYMENT"/>
+
         <model:model model="company" resource="model/company.xml"/>
         <model:model model="staff" resource="model/staff.xml"/>
         <model:model model="staffDto" resource="model/staffDto.xml"/>

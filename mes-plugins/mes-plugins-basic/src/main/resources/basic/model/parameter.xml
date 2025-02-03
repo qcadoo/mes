@@ -76,6 +76,14 @@
         <enum name="tasksSelectionBy" required="true"
               values="01orderDate,02taskDate,03taskStartDate"
               default="01orderDate"/>
+
+        <string name="emailHost">
+            <validatesLength max="255"/>
+        </string>
+
+        <integer name="emailPort">
+            <validatesRange from="0" exclusively="true"/>
+        </integer>
     </fields>
 
     <hooks>

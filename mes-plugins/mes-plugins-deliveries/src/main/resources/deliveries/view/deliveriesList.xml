@@ -192,6 +192,32 @@
                     </script>
                 </smallButton>
             </group>
+            <group name="email">
+                <bigButton name="sendEmail" state="enabled" icon="sendIcon24.png">
+                    <script>
+                        <![CDATA[
+                            this.addOnChangeListener({
+                                onClick: function() {
+                                    #{grid}.performEvent('sendEmail', []);
+                                }
+                            });
+                        ]]>
+                    </script>
+                </bigButton>
+            </group>
+            <group name="payment" defaultAuthorizationRole="ROLE_RELEASE_FOR_PAYMENT">
+                <bigButton name="releaseForPayment" state="enabled" icon="acceptIcon24.png">
+                    <script>
+                        <![CDATA[
+                            this.addOnChangeListener({
+                                onClick: function() {
+                                    #{grid}.performEvent('releaseForPayment', []);
+                                }
+                            });
+                        ]]>
+                    </script>
+                </bigButton>
+            </group>
         </ribbon>
 
         <windowTab name="mainTab" reference="mainTab">
@@ -202,7 +228,9 @@
                     <![CDATA[
 						var copyBtn = #{window}.getRibbonItem("actions.copy");
 						var deleteBtn = #{window}.getRibbonItem("actions.delete");
-						
+						var sendEmailBtn = #{window}.getRibbonItem("email.sendEmail");
+						var releaseForPaymentBtn = #{window}.getRibbonItem("payment.releaseForPayment");
+
 						var acceptBtn = #{window}.getRibbonItem("status.accept");
 						var declineDeliveryBtn = #{window}.getRibbonItem("status.declineDelivery");
 						var approveDeliveryBtn = #{window}.getRibbonItem("status.approveDelivery");
@@ -217,6 +245,10 @@
 									declineDeliveryBtn.disable();
 									approveDeliveryBtn.disable();
 									correctDeliveryBtn.disable();
+									sendEmailBtn.disable();
+									if(releaseForPaymentBtn){
+									    releaseForPaymentBtn.disable();
+									}
 								} else {
 									var noDifferentStates = true;
 									var wms = false;
@@ -252,6 +284,10 @@
 											declineDeliveryBtn.setIcon('deleteIcon16.png');
 											approveDeliveryBtn.enable();
 											correctDeliveryBtn.disable();
+											sendEmailBtn.disable();
+                                            if(releaseForPaymentBtn){
+									            releaseForPaymentBtn.disable();
+									        }
 										} else if (state == "02prepared") {
 											deleteBtn.disable();
 											acceptBtn.disable();
@@ -264,6 +300,10 @@
 											declineDeliveryBtn.setIcon('deleteIcon16.png');
 											approveDeliveryBtn.enable();
 											correctDeliveryBtn.enable();
+											sendEmailBtn.enable();
+											if(releaseForPaymentBtn){
+									            releaseForPaymentBtn.disable();
+									        }
 										} else if (state == "03duringCorrection") {
 											deleteBtn.disable();
 											acceptBtn.disable();
@@ -276,6 +316,10 @@
 											declineDeliveryBtn.setIcon('deleteIcon16.png');
 											approveDeliveryBtn.enable();
 											correctDeliveryBtn.disable();
+											sendEmailBtn.disable();
+											if(releaseForPaymentBtn){
+									            releaseForPaymentBtn.disable();
+									        }
 										} else if (state == "05approved"){
 											deleteBtn.disable();
 											acceptBtn.enable();
@@ -288,18 +332,30 @@
 											declineDeliveryBtn.setIcon('deleteIcon16.png');
 											approveDeliveryBtn.disable();
 											correctDeliveryBtn.enable();
+											sendEmailBtn.enable();
+                                            if(releaseForPaymentBtn){
+									            releaseForPaymentBtn.enable();
+									        }
 										} else if (state == "06received"){
 											deleteBtn.disable();
 											acceptBtn.disable();
 											declineDeliveryBtn.disable();
 											approveDeliveryBtn.disable();
 											correctDeliveryBtn.disable();
+											sendEmailBtn.disable();
+                                            if(releaseForPaymentBtn){
+									            releaseForPaymentBtn.enable();
+									        }
 										} else {
 											deleteBtn.enable();
 											acceptBtn.disable();
 											declineDeliveryBtn.disable();
 											approveDeliveryBtn.disable();
 											correctDeliveryBtn.disable();
+											sendEmailBtn.disable();
+											if(releaseForPaymentBtn){
+									            releaseForPaymentBtn.disable();
+									        }
 										}
 									} else {
 										deleteBtn.disable("#{translate(deliveries.deliveriesList.ribbon.message.deliveriesWithDifferentStatesSelected)}");
@@ -307,6 +363,10 @@
 										declineDeliveryBtn.disable("#{translate(deliveries.deliveriesList.ribbon.message.deliveriesWithDifferentStatesSelected)}");
 										approveDeliveryBtn.disable("#{translate(deliveries.deliveriesList.ribbon.message.deliveriesWithDifferentStatesSelected)}");
 										correctDeliveryBtn.disable("#{translate(deliveries.deliveriesList.ribbon.message.deliveriesWithDifferentStatesSelected)}");
+										sendEmailBtn.disable("#{translate(deliveries.deliveriesList.ribbon.message.deliveriesWithDifferentStatesSelected)}");
+										if(releaseForPaymentBtn){
+										    releaseForPaymentBtn.disable("#{translate(deliveries.deliveriesList.ribbon.message.deliveriesWithDifferentStatesSelected)}");
+										}
 									}
 									copyBtn.enable();
 									if(wms){
@@ -335,11 +395,14 @@
                 <option type="column" name="createDate" fields="createDate" width="100"/>
                 <option type="column" name="location" fields="location"
                         expression="#location['number']"/>
+                <option type="column" name="dateOfSendingEmail" fields="dateOfSendingEmail" width="100"/>
+                <option type="column" name="releasedForPayment" fields="releasedForPayment" width="30"/>
+                <option type="column" name="paymentID" fields="paymentID" width="50"/>
 
                 <option type="order" column="number" direction="desc"/>
 
-                <option type="searchable" value="name,number,supplierName,deliveryDate,contractorCategory,state,createDate,location"/>
-                <option type="orderable" value="name,number,supplierName,deliveryDate,contractorCategory,state,createDate,location"/>
+                <option type="searchable" value="name,number,supplierName,deliveryDate,contractorCategory,state,createDate,location,dateOfSendingEmail,releasedForPayment,paymentID"/>
+                <option type="orderable" value="name,number,supplierName,deliveryDate,contractorCategory,state,createDate,location,dateOfSendingEmail,releasedForPayment,paymentID"/>
 
                 <option type="correspondingView" value="deliveries/deliveryDetails"/>
                 <option type="correspondingComponent" value="form"/>
@@ -368,6 +431,12 @@
                 <listener event="changeState"
                           class="com.qcadoo.mes.deliveries.states.client.DeliveryStateChangeViewClient"
                           method="changeState"/>
+                <listener event="sendEmail"
+                          class="com.qcadoo.mes.deliveries.listeners.DeliveriesListListeners"
+                          method="sendEmail"/>
+                <listener event="releaseForPayment"
+                          class="com.qcadoo.mes.deliveries.listeners.DeliveriesListListeners"
+                          method="releaseForPayment"/>
             </component>
         </windowTab>
 
@@ -379,6 +448,10 @@
         <beforeRender
                 class="com.qcadoo.mes.deliveries.hooks.DeliveriesListHooks"
                 method="fillGridWithRelatedDeliveries"/>
+
+        <beforeRender
+                class="com.qcadoo.mes.deliveries.hooks.DeliveriesListHooks"
+                method="disableSendEmailButton"/>
 
         <beforeRender class="com.qcadoo.mes.deliveries.hooks.DeliveryDetailsHooks"
                       method="processRoles"/>

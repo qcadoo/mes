@@ -40,6 +40,7 @@ import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.CustomRestriction;
 import com.qcadoo.security.api.SecurityService;
 import com.qcadoo.security.api.UserService;
+import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.*;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
@@ -124,6 +125,30 @@ public class DeliveryDetailsHooks {
         updateCopyOrderedProductButtonsState(view);
         processRoles(view);
         setDeliveryIdForMultiUploadField(view);
+        togglePaymentTab(view);
+    }
+
+    private void togglePaymentTab(ViewDefinitionState view) {
+        boolean hasCurrentUserRole = securityService.hasCurrentUserRole("ROLE_RELEASE_FOR_PAYMENT");
+        ComponentState paymentTab = view.getComponentByReference("paymentTab");
+        if (hasCurrentUserRole) {
+            paymentTab.setVisible(true);
+            CheckBoxComponent releasedForPayment = (CheckBoxComponent) view
+                    .getComponentByReference(DeliveryFields.RELEASED_FOR_PAYMENT);
+            FieldComponent paymentID = (FieldComponent) view.getComponentByReference(DeliveryFields.PAYMENT_ID);
+            if (releasedForPayment.isChecked()) {
+                paymentID.setEnabled(true);
+            } else {
+                paymentID.setFieldValue(null);
+                paymentID.setEnabled(false);
+            }
+            FieldComponent stateField = (FieldComponent) view.getComponentByReference(DeliveryFields.STATE);
+
+            String state = stateField.getFieldValue().toString();
+            releasedForPayment.setEnabled(DeliveryState.RECEIVED.getStringValue().equals(state) || DeliveryState.APPROVED.getStringValue().equals(state));
+        } else {
+            paymentTab.setVisible(false);
+        }
     }
 
     private void generateDeliveryNumber(final ViewDefinitionState view) {

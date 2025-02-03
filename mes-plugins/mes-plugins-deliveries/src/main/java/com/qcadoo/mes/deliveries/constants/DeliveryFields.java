@@ -85,4 +85,9 @@ public final class DeliveryFields {
 
     public static final String STATE_IN_WMS = "stateInWMS";
 
+    public static final String DATE_OF_SENDING_EMAIL = "dateOfSendingEmail";
+    public static final String RELEASED_FOR_PAYMENT = "releasedForPayment";
+
+    public static final String PAYMENT_ID = "paymentID";
+
 }
