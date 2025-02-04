@@ -47,6 +47,7 @@ import static com.qcadoo.mes.deliveries.constants.ParameterFieldsD.OTHER_ADDRESS
 @Service
 public class SupplyParameterHooks {
 
+    public static final String QCADOO_VIEW_VALIDATE_FIELD_ERROR_MISSING = "qcadooView.validate.field.error.missing";
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
@@ -137,22 +138,22 @@ public class SupplyParameterHooks {
         if (parameter.getBooleanField(ParameterFieldsD.SEND_EMAIL_TO_SUPPLIER)) {
             if (parameter.getStringField(ParameterFieldsD.DELIVERY_EMAIL_SUBJECT) == null) {
                 parameter.addError(parameterDD.getField(ParameterFieldsD.DELIVERY_EMAIL_SUBJECT),
-                        "qcadooView.validate.field.error.missing");
+                        QCADOO_VIEW_VALIDATE_FIELD_ERROR_MISSING);
                 isValid = false;
             }
             if (parameter.getStringField(ParameterFieldsD.DELIVERY_EMAIL_BODY) == null) {
                 parameter.addError(parameterDD.getField(ParameterFieldsD.DELIVERY_EMAIL_BODY),
-                        "qcadooView.validate.field.error.missing");
+                        QCADOO_VIEW_VALIDATE_FIELD_ERROR_MISSING);
                 isValid = false;
             }
             if (parameter.getStringField(ParameterFieldsD.EMAIL_USERNAME) == null) {
                 parameter.addError(parameterDD.getField(ParameterFieldsD.EMAIL_USERNAME),
-                        "qcadooView.validate.field.error.missing");
+                        QCADOO_VIEW_VALIDATE_FIELD_ERROR_MISSING);
                 isValid = false;
             }
             if (parameter.getStringField(ParameterFieldsD.EMAIL_PASSWORD) == null) {
                 parameter.addError(parameterDD.getField(ParameterFieldsD.EMAIL_PASSWORD),
-                        "qcadooView.validate.field.error.missing");
+                        QCADOO_VIEW_VALIDATE_FIELD_ERROR_MISSING);
                 isValid = false;
             }
         }

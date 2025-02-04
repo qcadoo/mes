@@ -1,17 +1,23 @@
 package com.qcadoo.mes.deliveries.listeners;
 
 import com.google.common.base.Strings;
+import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.basic.constants.CompanyFields;
 import com.qcadoo.mes.basic.constants.ParameterFields;
 import com.qcadoo.mes.deliveries.constants.DeliveryFields;
 import com.qcadoo.mes.deliveries.constants.ParameterFieldsD;
+import com.qcadoo.mes.deliveries.print.OrderReportPdf;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.file.FileService;
+import com.qcadoo.report.api.ReportService;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.GridComponent;
 import com.qcadoo.view.constants.QcadooViewConstants;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.mail.MailAuthenticationException;
 import org.springframework.mail.MailPreparationException;
 import org.springframework.mail.MailSendException;
@@ -22,14 +28,25 @@ import org.springframework.stereotype.Service;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
-import java.util.Date;
-import java.util.Properties;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.util.*;
 
 @Service
 public class DeliveriesListListeners {
 
     @Autowired
     private ParameterService parameterService;
+
+    @Autowired
+    private OrderReportPdf orderReportPdf;
+
+    @Autowired
+    private TranslationService translationService;
+
+    @Autowired
+    private FileService fileService;
 
     public JavaMailSender getMailSender(Entity parameter) {
         JavaMailSenderImpl ms = new JavaMailSenderImpl();
@@ -67,11 +84,12 @@ public class DeliveriesListListeners {
         String body = parameter.getStringField(ParameterFieldsD.DELIVERY_EMAIL_BODY);
 
         Date date = new Date();
+        Set<String> suppliersWithoutEmail = new HashSet<>();
         for (Entity delivery : gridComponent.getSelectedEntities()) {
             String supplierEmail = delivery.getBelongsToField(DeliveryFields.SUPPLIER).getStringField(CompanyFields.EMAIL);
             if (!Strings.isNullOrEmpty(supplierEmail)) {
                 try {
-                    sendHtmlTextEmail(mailSender, username, supplierEmail, subject + " " + delivery.getStringField(DeliveryFields.NUMBER), body);
+                    sendHtmlTextEmail(mailSender, username, supplierEmail, subject + " " + delivery.getStringField(DeliveryFields.NUMBER), body, delivery);
                 } catch (MailSendException | MailAuthenticationException e) {
                     state.addMessage(
                             "deliveries.delivery.error.sendEmailError",
@@ -81,25 +99,62 @@ public class DeliveriesListListeners {
                 delivery.setField(DeliveryFields.DATE_OF_SENDING_EMAIL, date);
                 delivery.getDataDefinition().save(delivery);
             } else {
-                state.addMessage(
-                        "deliveries.delivery.error.supplierWithoutEmail",
-                        ComponentState.MessageType.FAILURE, delivery.getStringField(DeliveryFields.NUMBER));
+                suppliersWithoutEmail.add(delivery.getBelongsToField(DeliveryFields.SUPPLIER).getStringField(CompanyFields.NUMBER));
             }
+        }
+        if (suppliersWithoutEmail.isEmpty()) {
+            state.addMessage(
+                    "deliveries.delivery.info.sendEmail",
+                    ComponentState.MessageType.SUCCESS);
+        } else {
+            state.addMessage(
+                    "deliveries.delivery.error.suppliersWithoutEmail",
+                    ComponentState.MessageType.FAILURE, String.join(", ", suppliersWithoutEmail));
         }
     }
 
-    private void sendHtmlTextEmail(JavaMailSender mailSender, String username, String supplierEmail, String subject, String body) {
+    private void sendHtmlTextEmail(JavaMailSender mailSender, String username, String supplierEmail, String subject, String body, Entity delivery) {
+        File reportFile = getReportFile(delivery);
+        Map<String, Object> model = new HashMap<>();
+        model.put("id", delivery.getId());
+        orderReportPdf.buildPdfDocumentToFile(model, reportFile);
+        byte[] content = getFileContent(reportFile);
         MimeMessage mimeMessage = mailSender.createMimeMessage();
-        MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage);
         try {
+            MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage, true);
             mimeMessageHelper.setFrom(username);
             mimeMessageHelper.setTo(supplierEmail);
             mimeMessageHelper.setSubject(subject);
             mimeMessageHelper.setText(body, true);
+            mimeMessageHelper.addAttachment(reportFile.getName(), new ByteArrayResource(content));
         } catch (MessagingException e) {
             throw new MailPreparationException(e);
         }
         mailSender.send(mimeMessage);
+        fileService.remove(reportFile.getPath());
+    }
+
+    private byte[] getFileContent(File reportFile) {
+        byte[] content;
+        try {
+            content = Files.readAllBytes(reportFile.toPath());
+        } catch (IOException e) {
+            throw new IllegalStateException(e.getMessage(), e);
+        }
+        return content;
+    }
+
+    private File getReportFile(Entity delivery) {
+        String fileName = translationService.translate("deliveries.order.report.fileName", LocaleContextHolder.getLocale(),
+                delivery.getStringField(DeliveryFields.NUMBER), orderReportPdf.getStringFromDate(delivery.getDateField("updateDate")));
+        File reportFile;
+        try {
+            reportFile = fileService.createReportFile(fileName + "."
+                    + ReportService.ReportType.PDF.getExtension());
+        } catch (IOException e) {
+            throw new IllegalStateException(e.getMessage(), e);
+        }
+        return reportFile;
     }
 
     public void releaseForPayment(final ViewDefinitionState view, final ComponentState state,

@@ -388,7 +388,7 @@ public class OrderReportPdf extends ReportPdfView {
                 .add(SearchRestrictions.eq(DeliveryStateChangeFields.STATUS, "03successful")).setMaxResults(1).uniqueResult();
     }
 
-    private String getStringFromDate(final Date date) {
+    public String getStringFromDate(final Date date) {
         return simpleDateFormat.format(date);
     }
 
