@@ -203,6 +203,8 @@
         <security:role identifier="ROLE_DELIVERIES"/>
         <security:role identifier="ROLE_DELIVERIES_EDIT"/>
         <security:role identifier="ROLE_DELIVERIES_STATES_DECLINE"/>
+        <security:role identifier="ROLE_DELIVERIES_STATES_APPROVE"/>
+        <security:role identifier="ROLE_DELIVERIES_STATES_ACCEPT"/>
         <security:role identifier="ROLE_DELIVERIES_STATES_OTHER"/>
         <security:role identifier="ROLE_DELIVERIES_PRICE"/>
 

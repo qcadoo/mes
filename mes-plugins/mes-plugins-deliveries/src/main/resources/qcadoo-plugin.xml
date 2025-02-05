@@ -128,18 +128,6 @@
         </model:model-field>
 
         <model:model-field plugin="basic" model="parameter">
-            <model:string name="emailUsername">
-                <model:validatesLength max="255"/>
-            </model:string>
-        </model:model-field>
-
-        <model:model-field plugin="basic" model="parameter">
-            <model:string name="emailPassword">
-                <model:validatesLength max="255"/>
-            </model:string>
-        </model:model-field>
-
-        <model:model-field plugin="basic" model="parameter">
             <model:boolean name="productDeliveryBatchEvidence" default="false"/>
         </model:model-field>
 

@@ -90,8 +90,6 @@ public class SupplyParameterHooks {
         boolean sendEmailToSupplierValue = sendEmailToSupplier.isChecked();
         changeFieldEnabledAndRequired(view, ParameterFieldsD.DELIVERY_EMAIL_SUBJECT, sendEmailToSupplierValue);
         changeFieldEnabledAndRequired(view, ParameterFieldsD.DELIVERY_EMAIL_BODY, sendEmailToSupplierValue);
-        changeFieldEnabledAndRequired(view, ParameterFieldsD.EMAIL_USERNAME, sendEmailToSupplierValue);
-        changeFieldEnabledAndRequired(view, ParameterFieldsD.EMAIL_PASSWORD, sendEmailToSupplierValue);
     }
 
     private void changeFieldEnabledAndRequired(final ViewDefinitionState view, final String fieldName, final boolean enabled) {
@@ -143,16 +141,6 @@ public class SupplyParameterHooks {
             }
             if (parameter.getStringField(ParameterFieldsD.DELIVERY_EMAIL_BODY) == null) {
                 parameter.addError(parameterDD.getField(ParameterFieldsD.DELIVERY_EMAIL_BODY),
-                        QCADOO_VIEW_VALIDATE_FIELD_ERROR_MISSING);
-                isValid = false;
-            }
-            if (parameter.getStringField(ParameterFieldsD.EMAIL_USERNAME) == null) {
-                parameter.addError(parameterDD.getField(ParameterFieldsD.EMAIL_USERNAME),
-                        QCADOO_VIEW_VALIDATE_FIELD_ERROR_MISSING);
-                isValid = false;
-            }
-            if (parameter.getStringField(ParameterFieldsD.EMAIL_PASSWORD) == null) {
-                parameter.addError(parameterDD.getField(ParameterFieldsD.EMAIL_PASSWORD),
                         QCADOO_VIEW_VALIDATE_FIELD_ERROR_MISSING);
                 isValid = false;
             }

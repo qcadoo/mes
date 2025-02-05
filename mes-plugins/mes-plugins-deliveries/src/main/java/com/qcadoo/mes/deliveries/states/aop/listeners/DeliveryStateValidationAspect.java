@@ -3,19 +3,19 @@
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
  * Version: 1.4
- *
+ * <p>
  * This file is part of Qcadoo.
- *
+ * <p>
  * Qcadoo is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation; either version 3 of the License,
  * or (at your option) any later version.
- *
+ * <p>
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty
  * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU Affero General Public License for more details.
- *
+ * <p>
  * You should have received a copy of the GNU Affero General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
@@ -40,8 +40,6 @@ import org.aspectj.lang.annotation.Pointcut;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
-import static com.qcadoo.mes.states.aop.RunForStateTransitionAspect.WILDCARD_STATE;
-
 @Aspect
 @Configurable
 @RunIfEnabled(DeliveriesConstants.PLUGIN_IDENTIFIER)
@@ -55,7 +53,7 @@ public class DeliveryStateValidationAspect extends AbstractStateListenerAspect {
     }
 
     @RunInPhase(DeliveryStateChangePhase.PRE_VALIDATION)
-    @RunForStateTransition(sourceState = WILDCARD_STATE, targetState = DeliveryStateStringValues.APPROVED)
+    @RunForStateTransition(targetState = DeliveryStateStringValues.APPROVED)
     @Before(PHASE_EXECUTION_POINTCUT)
     public void preValidationOnApproved(final StateChangeContext stateChangeContext, final int phase) {
         validationService.validationOnApproved(stateChangeContext);
@@ -63,7 +61,7 @@ public class DeliveryStateValidationAspect extends AbstractStateListenerAspect {
 
     @RunInPhase(DeliveryStateChangePhase.PRE_VALIDATION)
     @RunForStateTransitions({
-            @RunForStateTransition(sourceState = DeliveryStateStringValues.APPROVED, targetState = DeliveryStateStringValues.RECEIVED)})
+            @RunForStateTransition(targetState = DeliveryStateStringValues.RECEIVED)})
     @Before(PHASE_EXECUTION_POINTCUT)
     public void preValidationOnReceived(final StateChangeContext stateChangeContext, final int phase) {
         validationService.validationOnReceived(stateChangeContext);

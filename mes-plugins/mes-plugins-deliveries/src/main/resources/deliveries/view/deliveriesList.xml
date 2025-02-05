@@ -169,9 +169,15 @@
                         <![CDATA[
 							this.addOnChangeListener({
 								onClick: function() {
-									if (window.confirm("#{translate(deliveries.deliveryDetails.window.ribbon.status.approveDelivery.confirm)}")) {
-										#{grid}.performEvent('changeState', ['05approved']);
-									};
+                                    if (this.state == "draft" || this.state == "prepare" || this.state == "correct") {
+                                        if (window.confirm("#{translate(deliveries.deliveryDetails.window.ribbon.status.approveDelivery.confirm)}")) {
+                                            #{grid}.performEvent('changeState', ['05approved']);
+                                        };
+									} else if (this.state == "accept") {
+                                        if (window.confirm("#{translate(deliveries.deliveryDetails.window.ribbon.status.acceptDelivery.confirm)}")) {
+                                            #{grid}.performEvent('changeState', ['07accepted']);
+                                        };
+									}
 								}
 							});
 						]]>
@@ -283,6 +289,8 @@
 											declineDeliveryBtn.setLabel("#{translate(deliveries.deliveryDetails.window.ribbon.status.declineDelivery)}");
 											declineDeliveryBtn.setIcon('deleteIcon16.png');
 											approveDeliveryBtn.enable();
+											approveDeliveryBtn.state = "draft";
+											approveDeliveryBtn.setLabel("#{translate(deliveries.deliveryDetails.window.ribbon.status.approveDelivery)}");
 											correctDeliveryBtn.disable();
 											sendEmailBtn.disable();
                                             if(releaseForPaymentBtn){
@@ -299,6 +307,8 @@
 											declineDeliveryBtn.setLabel("#{translate(deliveries.deliveryDetails.window.ribbon.status.declineDelivery)}");
 											declineDeliveryBtn.setIcon('deleteIcon16.png');
 											approveDeliveryBtn.enable();
+                                            approveDeliveryBtn.state = "prepare";
+											approveDeliveryBtn.setLabel("#{translate(deliveries.deliveryDetails.window.ribbon.status.approveDelivery)}");
 											correctDeliveryBtn.enable();
 											sendEmailBtn.enable();
 											if(releaseForPaymentBtn){
@@ -315,6 +325,8 @@
 											declineDeliveryBtn.setLabel("#{translate(deliveries.deliveryDetails.window.ribbon.status.declineDelivery)}");
 											declineDeliveryBtn.setIcon('deleteIcon16.png');
 											approveDeliveryBtn.enable();
+                                            approveDeliveryBtn.state = "correct";
+											approveDeliveryBtn.setLabel("#{translate(deliveries.deliveryDetails.window.ribbon.status.approveDelivery)}");
 											correctDeliveryBtn.disable();
 											sendEmailBtn.disable();
 											if(releaseForPaymentBtn){
@@ -330,15 +342,30 @@
 											declineDeliveryBtn.state = "decline";
 											declineDeliveryBtn.setLabel("#{translate(deliveries.deliveryDetails.window.ribbon.status.declineDelivery)}");
 											declineDeliveryBtn.setIcon('deleteIcon16.png');
-											approveDeliveryBtn.disable();
+								            approveDeliveryBtn.enable();
+                                            approveDeliveryBtn.state = "accept";
+											approveDeliveryBtn.setLabel("#{translate(deliveries.deliveryDetails.window.ribbon.status.acceptDelivery)}");
 											correctDeliveryBtn.enable();
 											sendEmailBtn.enable();
                                             if(releaseForPaymentBtn){
-									            releaseForPaymentBtn.enable();
+									            releaseForPaymentBtn.disable();
 									        }
 										} else if (state == "06received"){
 											deleteBtn.disable();
 											acceptBtn.disable();
+											declineDeliveryBtn.disable();
+											approveDeliveryBtn.disable();
+											correctDeliveryBtn.disable();
+											sendEmailBtn.disable();
+                                            if(releaseForPaymentBtn){
+									            releaseForPaymentBtn.enable();
+									        }
+										} else if (state == "07accepted"){
+											deleteBtn.disable();
+											acceptBtn.enable();
+											acceptBtn.state = "receive";
+											acceptBtn.setLabel("#{translate(deliveries.deliveryDetails.window.ribbon.status.receiveDelivery)}");
+											acceptBtn.setIcon('acceptIcon16.png');
 											declineDeliveryBtn.disable();
 											approveDeliveryBtn.disable();
 											correctDeliveryBtn.disable();

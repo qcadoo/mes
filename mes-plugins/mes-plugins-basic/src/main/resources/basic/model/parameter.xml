@@ -84,6 +84,14 @@
         <integer name="emailPort">
             <validatesRange from="0" exclusively="true"/>
         </integer>
+
+        <string name="emailUsername">
+            <validatesLength max="255"/>
+        </string>
+
+        <string name="emailPassword">
+            <validatesLength max="255"/>
+        </string>
     </fields>
 
     <hooks>

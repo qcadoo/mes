@@ -60,7 +60,14 @@ public enum DeliveryState implements StateEnum {
 
         @Override
         public boolean canChangeTo(final StateEnum targetState) {
-            return RECEIVED.equals(targetState) || DECLINED.equals(targetState) || DURING_CORRECTION.equals(targetState);
+            return RECEIVED.equals(targetState) || DECLINED.equals(targetState) || DURING_CORRECTION.equals(targetState) || ACCEPTED.equals(targetState);
+        }
+    },
+    ACCEPTED(DeliveryStateStringValues.ACCEPTED) {
+
+        @Override
+        public boolean canChangeTo(final StateEnum targetState) {
+            return RECEIVED.equals(targetState);
         }
     },
     RECEIVED(DeliveryStateStringValues.RECEIVED) {

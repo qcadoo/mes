@@ -79,4 +79,6 @@ public final class ParameterFields {
     public static final String EMAIL_HOST = "emailHost";
     public static final String EMAIL_PORT = "emailPort";
 
+    public static final String EMAIL_USERNAME = "emailUsername";
+    public static final String EMAIL_PASSWORD = "emailPassword";
 }

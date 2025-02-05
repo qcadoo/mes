@@ -34,6 +34,7 @@ import com.qcadoo.mes.deliveries.constants.*;
 import com.qcadoo.mes.deliveries.roles.DeliveryRole;
 import com.qcadoo.mes.deliveries.states.constants.DeliveryState;
 import com.qcadoo.mes.deliveries.states.constants.DeliveryStateChangeFields;
+import com.qcadoo.mes.deliveries.states.constants.DeliveryStateStringValues;
 import com.qcadoo.mes.states.constants.StateChangeStatus;
 import com.qcadoo.mes.states.service.client.util.StateChangeHistoryService;
 import com.qcadoo.model.api.Entity;
@@ -55,6 +56,7 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class DeliveryDetailsHooks {
@@ -361,9 +363,41 @@ public class DeliveryDetailsHooks {
 
     public void processRoles(final ViewDefinitionState view) {
         Entity currentUser = userService.getCurrentUserEntity();
+        String state;
 
+        FormComponent deliveryForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
+        if (deliveryForm != null) {
+            Long deliveryId = deliveryForm.getEntityId();
+
+            if (Objects.isNull(deliveryId)) {
+                state = DeliveryStateStringValues.DRAFT;
+            } else {
+                Entity delivery = deliveriesService.getDelivery(deliveryId);
+                state = delivery.getStringField(DeliveryFields.STATE);
+            }
+        } else {
+            GridComponent deliveriesGrid = (GridComponent) view.getComponentByReference(QcadooViewConstants.L_GRID);
+            Set<String> states = deliveriesGrid.getSelectedEntities().stream().map(e -> e.getStringField(DeliveryFields.STATE)).collect(Collectors.toSet());
+            if (states.size() == 1) {
+                state = states.stream().findFirst().get();
+            } else {
+                state = DeliveryStateStringValues.DRAFT;
+            }
+        }
         for (DeliveryRole role : DeliveryRole.values()) {
-            if (!securityService.hasRole(currentUser, role.toString())) {
+            if (role.equals(DeliveryRole.ROLE_DELIVERIES_STATES_APPROVE)) {
+                if (!securityService.hasRole(currentUser, role.toString())
+                        && (DeliveryStateStringValues.DRAFT.equals(state)
+                        || DeliveryStateStringValues.PREPARED.equals(state)
+                        || DeliveryStateStringValues.DURING_CORRECTION.equals(state))) {
+                    role.processRole(view);
+                }
+            } else if (role.equals(DeliveryRole.ROLE_DELIVERIES_STATES_ACCEPT)) {
+                if (!securityService.hasRole(currentUser, role.toString())
+                        && DeliveryStateStringValues.APPROVED.equals(state)) {
+                    role.processRole(view);
+                }
+            } else if (!securityService.hasRole(currentUser, role.toString())) {
                 role.processRole(view);
             }
         }

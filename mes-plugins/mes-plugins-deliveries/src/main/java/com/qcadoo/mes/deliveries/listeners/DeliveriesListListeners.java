@@ -53,8 +53,8 @@ public class DeliveriesListListeners {
         ms.setDefaultEncoding("utf-8");
         ms.setHost(parameter.getStringField(ParameterFields.EMAIL_HOST));
         ms.setPort(parameter.getIntegerField(ParameterFields.EMAIL_PORT) != null ? parameter.getIntegerField(ParameterFields.EMAIL_PORT) : -1);
-        ms.setUsername(parameter.getStringField(ParameterFieldsD.EMAIL_USERNAME));
-        ms.setPassword(parameter.getStringField(ParameterFieldsD.EMAIL_PASSWORD));
+        ms.setUsername(parameter.getStringField(ParameterFields.EMAIL_USERNAME));
+        ms.setPassword(parameter.getStringField(ParameterFields.EMAIL_PASSWORD));
         Properties mailProperties = new Properties();
         mailProperties.put("mail.transport.protocol", "smtp");
         mailProperties.put("mail.smtp.auth", true);
@@ -79,7 +79,7 @@ public class DeliveriesListListeners {
 
         Entity parameter = parameterService.getParameter();
         JavaMailSender mailSender = getMailSender(parameter);
-        String username = parameter.getStringField(ParameterFieldsD.EMAIL_USERNAME);
+        String username = parameter.getStringField(ParameterFields.EMAIL_USERNAME);
         String subject = parameter.getStringField(ParameterFieldsD.DELIVERY_EMAIL_SUBJECT);
         String body = parameter.getStringField(ParameterFieldsD.DELIVERY_EMAIL_BODY);
 

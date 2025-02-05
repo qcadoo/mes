@@ -55,7 +55,6 @@ public final class ParameterFieldsD {
     public static final String SEND_EMAIL_TO_SUPPLIER = "sendEmailToSupplier";
     public static final String DELIVERY_EMAIL_SUBJECT = "deliveryEmailSubject";
     public static final String DELIVERY_EMAIL_BODY = "deliveryEmailBody";
-    public static final String EMAIL_USERNAME = "emailUsername";
-    public static final String EMAIL_PASSWORD = "emailPassword";
+    public static final String ACCEPTANCE_OF_DELIVERY = "acceptanceOfDelivery";
 
 }

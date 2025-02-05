@@ -188,9 +188,15 @@
                         <![CDATA[
 							this.addOnChangeListener({
 								onClick: function() {
-									if (window.confirm("#{translate(deliveries.deliveryDetails.window.ribbon.status.approveDelivery.confirm)}")) {
-										#{form}.performEvent('changeState', ['05approved']);
-									};
+                                    if (this.state == "draft" || this.state == "prepare" || this.state == "correct") {
+                                        if (window.confirm("#{translate(deliveries.deliveryDetails.window.ribbon.status.approveDelivery.confirm)}")) {
+                                            #{form}.performEvent('changeState', ['05approved']);
+                                        };
+                                    } else if (this.state == "accept") {
+                                        if (window.confirm("#{translate(deliveries.deliveryDetails.window.ribbon.status.acceptDelivery.confirm)}")) {
+                                            #{form}.performEvent('changeState', ['07accepted']);
+                                        };
+									}
 								}
 							});
 						]]>
@@ -399,6 +405,8 @@
 									declineDeliveryBtn.setLabel("#{translate(deliveries.deliveryDetails.window.ribbon.status.declineDelivery)}");
 									declineDeliveryBtn.setIcon('deleteIcon16.png');
 									approveDeliveryBtn.enable();
+                                    approveDeliveryBtn.state = "draft";
+                                    approveDeliveryBtn.setLabel("#{translate(deliveries.deliveryDetails.window.ribbon.status.approveDelivery)}");
 									correctDeliveryBtn.disable();
 									if(createRelatedDeliveryBtn && showRelatedDeliveriesBtn){
                                         createRelatedDeliveryBtn.disable();
@@ -415,6 +423,8 @@
 									declineDeliveryBtn.setLabel("#{translate(deliveries.deliveryDetails.window.ribbon.status.declineDelivery)}");
 									declineDeliveryBtn.setIcon('deleteIcon16.png');
 									approveDeliveryBtn.enable();
+                                    approveDeliveryBtn.state = "prepare";
+                                    approveDeliveryBtn.setLabel("#{translate(deliveries.deliveryDetails.window.ribbon.status.approveDelivery)}");
 									correctDeliveryBtn.enable();
 									if(createRelatedDeliveryBtn && showRelatedDeliveriesBtn){
                                         createRelatedDeliveryBtn.disable();
@@ -431,6 +441,8 @@
 									declineDeliveryBtn.setLabel("#{translate(deliveries.deliveryDetails.window.ribbon.status.declineDelivery)}");
 									declineDeliveryBtn.setIcon('deleteIcon16.png');
 									approveDeliveryBtn.enable();
+                                    approveDeliveryBtn.state = "correct";
+                                    approveDeliveryBtn.setLabel("#{translate(deliveries.deliveryDetails.window.ribbon.status.approveDelivery)}");
 									correctDeliveryBtn.disable();
                                     if(createRelatedDeliveryBtn && showRelatedDeliveriesBtn){
                                         createRelatedDeliveryBtn.disable();
@@ -446,7 +458,9 @@
 									declineDeliveryBtn.state = "decline";
 									declineDeliveryBtn.setLabel("#{translate(deliveries.deliveryDetails.window.ribbon.status.declineDelivery)}");
 									declineDeliveryBtn.setIcon('deleteIcon16.png');
-									approveDeliveryBtn.disable();
+                                    approveDeliveryBtn.enable();
+                                    approveDeliveryBtn.state = "accept";
+                                    approveDeliveryBtn.setLabel("#{translate(deliveries.deliveryDetails.window.ribbon.status.acceptDelivery)}");
 									correctDeliveryBtn.enable();
 									if(createRelatedDeliveryBtn && showRelatedDeliveriesBtn){
                                         createRelatedDeliveryBtn.disable();
@@ -468,7 +482,20 @@
                                         createRelatedDeliveryBtn.enable();
                                         showRelatedDeliveriesBtn.enable();
 									}
-								} else {
+								} else if (state == "07accepted"){
+									deleteBtn.disable();
+									acceptBtn.enable();
+									acceptBtn.state = "receive";
+									acceptBtn.setLabel("#{translate(deliveries.deliveryDetails.window.ribbon.status.receiveDelivery)}");
+									acceptBtn.setIcon('acceptIcon16.png');
+									declineDeliveryBtn.disable();
+                                    approveDeliveryBtn.disable();
+									correctDeliveryBtn.disable();
+									if(createRelatedDeliveryBtn && showRelatedDeliveriesBtn){
+                                        createRelatedDeliveryBtn.disable();
+                                        showRelatedDeliveriesBtn.disable();
+									}
+                                } else {
 									saveBtn.disable();
 									saveBackBtn.disable();
 									saveNewBtn.disable();

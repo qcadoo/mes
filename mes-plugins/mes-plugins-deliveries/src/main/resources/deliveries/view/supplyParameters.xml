@@ -195,7 +195,7 @@
         </windowTab>
         <windowTab name="deliveryEmailTab" reference="deliveryEmailTab">
             <component type="gridLayout" name="emailGridLayout"
-                       columns="3" rows="9">
+                       columns="3" rows="7">
                 <layoutElement column="1" row="1">
                     <component type="checkbox" name="sendEmailToSupplier" hasDescription="true"
                                field="#{form}.sendEmailToSupplier" reference="sendEmailToSupplier">
@@ -213,16 +213,6 @@
                 <layoutElement column="1" row="4" height="4">
                     <component type="textarea" name="deliveryEmailBody"
                                field="#{form}.deliveryEmailBody" reference="deliveryEmailBody"/>
-                </layoutElement>
-                <layoutElement column="1" row="8">
-                    <component type="input" name="emailUsername" field="#{form}.emailUsername"
-                               reference="emailUsername" hasDescription="true">
-                    </component>
-                </layoutElement>
-                <layoutElement column="1" row="9">
-                    <component type="password" name="emailPassword" field="#{form}.emailPassword"
-                               reference="emailPassword">
-                    </component>
                 </layoutElement>
             </component>
         </windowTab>

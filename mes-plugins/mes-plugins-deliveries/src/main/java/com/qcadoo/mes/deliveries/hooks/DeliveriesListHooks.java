@@ -74,6 +74,7 @@ public class DeliveriesListHooks {
         RibbonActionItem sendEmail = email.getItemByName("sendEmail");
         if (!parameterService.getParameter().getBooleanField(ParameterFieldsD.SEND_EMAIL_TO_SUPPLIER)) {
             sendEmail.setEnabled(false);
+            sendEmail.requestUpdate(true);
         }
     }
 
