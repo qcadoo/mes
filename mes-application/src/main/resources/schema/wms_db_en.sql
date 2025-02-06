@@ -43669,8 +43669,8 @@ COPY public.qcadooplugin_plugin (id, identifier, version, state, issystem, entit
 113	timeNormsForOperations	1.5.0	DISABLED	f	0	technologies	AGPL
 41	technologiesGenerator	1.5.0	DISABLED	f	0	other	AGPL
 67	catNumbersInNegot	1.5.0	DISABLED	f	0	supplies	AGPL
-131	deliveriesMinState	1.5.0	DISABLED	f	0	deliveries	AGPL
-53	warehouseMinimalState	1.5.0	DISABLED	f	0	other	AGPL
+131	deliveriesMinState	1.5.0	ENABLED	f	0	deliveries	AGPL
+53	warehouseMinimalState	1.5.0	ENABLED	f	0	other	AGPL
 \.
 
 
