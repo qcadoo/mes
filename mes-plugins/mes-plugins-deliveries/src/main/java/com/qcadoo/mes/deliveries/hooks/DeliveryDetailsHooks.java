@@ -363,6 +363,27 @@ public class DeliveryDetailsHooks {
 
     public void processRoles(final ViewDefinitionState view) {
         Entity currentUser = userService.getCurrentUserEntity();
+        String state = getState(view);
+        for (DeliveryRole role : DeliveryRole.values()) {
+            if (role.equals(DeliveryRole.ROLE_DELIVERIES_STATES_APPROVE)) {
+                if (!securityService.hasRole(currentUser, role.toString())
+                        && (DeliveryStateStringValues.DRAFT.equals(state)
+                        || DeliveryStateStringValues.PREPARED.equals(state)
+                        || DeliveryStateStringValues.DURING_CORRECTION.equals(state))) {
+                    role.processRole(view);
+                }
+            } else if (role.equals(DeliveryRole.ROLE_DELIVERIES_STATES_ACCEPT)) {
+                if (!securityService.hasRole(currentUser, role.toString())
+                        && DeliveryStateStringValues.APPROVED.equals(state)) {
+                    role.processRole(view);
+                }
+            } else if (!securityService.hasRole(currentUser, role.toString())) {
+                role.processRole(view);
+            }
+        }
+    }
+
+    private String getState(ViewDefinitionState view) {
         String state;
 
         FormComponent deliveryForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
@@ -384,23 +405,7 @@ public class DeliveryDetailsHooks {
                 state = DeliveryStateStringValues.DRAFT;
             }
         }
-        for (DeliveryRole role : DeliveryRole.values()) {
-            if (role.equals(DeliveryRole.ROLE_DELIVERIES_STATES_APPROVE)) {
-                if (!securityService.hasRole(currentUser, role.toString())
-                        && (DeliveryStateStringValues.DRAFT.equals(state)
-                        || DeliveryStateStringValues.PREPARED.equals(state)
-                        || DeliveryStateStringValues.DURING_CORRECTION.equals(state))) {
-                    role.processRole(view);
-                }
-            } else if (role.equals(DeliveryRole.ROLE_DELIVERIES_STATES_ACCEPT)) {
-                if (!securityService.hasRole(currentUser, role.toString())
-                        && DeliveryStateStringValues.APPROVED.equals(state)) {
-                    role.processRole(view);
-                }
-            } else if (!securityService.hasRole(currentUser, role.toString())) {
-                role.processRole(view);
-            }
-        }
+        return state;
     }
 
     private void togglePriceFields(final ViewDefinitionState view) {
