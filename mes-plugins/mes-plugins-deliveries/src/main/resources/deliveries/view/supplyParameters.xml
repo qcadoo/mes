@@ -40,13 +40,9 @@
 
         <windowTab name="mainTab">
             <component type="form" name="supplyParametersForm" reference="form">
-                <component type="flowGridLayout" name="gridLayout" columns="2"
+                <component type="gridLayout" name="gridLayout" columns="3"
                            rows="7">
-                    <layoutElement column="1" row="1" height="2">
-                        <component type="textarea" name="defaultDescription"
-                                   field="#{form}.defaultDescription" reference="defaultDescription"/>
-                    </layoutElement>
-                    <layoutElement column="1" row="3">
+                    <layoutElement column="1" row="1">
                         <component type="lookup" name="location" reference="warehouse"
                                    field="#{form}.location">
                             <option type="column" name="name" fields="name" link="true"/>
@@ -58,6 +54,10 @@
                                     value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name"/>
                             <option type="fieldCode" value="number"/>
                         </component>
+                    </layoutElement>
+                    <layoutElement column="1" row="2" height="2">
+                        <component type="textarea" name="defaultDescription"
+                                   field="#{form}.defaultDescription" reference="defaultDescription"/>
                     </layoutElement>
                     <layoutElement column="1" row="4">
                         <component type="lookup" name="packagingLocation" reference="packagingLocation"
@@ -152,44 +152,35 @@
             </component>
         </windowTab>
         <windowTab name="orderPrintoutTab" reference="orderPrintoutTab">
-            <component type="gridLayout" name="emailGridLayout"
-                       columns="2" rows="9">
-                <layoutElement column="1" row="1" width="2" height="9">
-                    <component type="borderLayout" name="columnsForOrdersBorderLayout">
-                        <component type="gridLayout" name="columnForOrdersGridLayout"
-                                   columns="1" rows="9">
-                            <layoutElement column="1" row="1" height="8">
-                                <component type="grid" name="columnsForOrders"
-                                           source="#{form}.parameterDeliveryOrderColumns"
-                                           reference="columnsForOrders">
-                                    <option type="column" name="name" fields="columnForOrders"
-                                            expression="'@' + #columnForOrders.get('name')" link="true"/>
+            <component type="gridLayout" name="columnForOrdersGridLayout"
+                       columns="3" rows="9" hasBorders="false">
+                <layoutElement column="1" row="1" height="8" width="2">
+                    <component type="grid" name="columnsForOrders"
+                               source="#{form}.parameterDeliveryOrderColumns"
+                               reference="columnsForOrders">
+                        <option type="column" name="name" fields="columnForOrders"
+                                expression="'@' + #columnForOrders.get('name')" link="true"/>
 
-                                    <option type="order" column="succession" direction="desc"/>
+                        <option type="order" column="succession" direction="desc"/>
 
-                                    <option type="searchable" value="name"/>
-                                    <option type="orderable" value="name"/>
-                                    <option type="correspondingView"
-                                            value="deliveries/parameterOrderColumnDetails"/>
-                                    <option type="correspondingComponent" value="form"/>
-                                    <option type="correspondingViewInModal" value="true"/>
-                                    <option type="creatable" value="true"/>
-                                    <option type="deletable" value="true"/>
-                                    <option type="fullscreen" value="true"/>
-                                    <option type="multiselect" value="true"/>
-                                </component>
-                            </layoutElement>
-                            <layoutElement column="1" row="9">
-                                <component type="hidden" name="hideEmptyColumnsForOrders"
-                                           field="#{form}.hideEmptyColumnsForOrders"
-                                           reference="hideEmptyColumnsForOrders">
-                                    <option type="labelWidth" value="50"/>
-                                    <option type="align" value="left"/>
-                                </component>
-                            </layoutElement>
-                        </component>
-
-                        <option type="label" value="columnsForOrdersLabel"/>
+                        <option type="searchable" value="name"/>
+                        <option type="orderable" value="name"/>
+                        <option type="correspondingView"
+                                value="deliveries/parameterOrderColumnDetails"/>
+                        <option type="correspondingComponent" value="form"/>
+                        <option type="correspondingViewInModal" value="true"/>
+                        <option type="creatable" value="true"/>
+                        <option type="deletable" value="true"/>
+                        <option type="fullscreen" value="true"/>
+                        <option type="multiselect" value="true"/>
+                    </component>
+                </layoutElement>
+                <layoutElement column="1" row="9">
+                    <component type="hidden" name="hideEmptyColumnsForOrders"
+                               field="#{form}.hideEmptyColumnsForOrders"
+                               reference="hideEmptyColumnsForOrders">
+                        <option type="labelWidth" value="50"/>
+                        <option type="align" value="left"/>
                     </component>
                 </layoutElement>
             </component>
