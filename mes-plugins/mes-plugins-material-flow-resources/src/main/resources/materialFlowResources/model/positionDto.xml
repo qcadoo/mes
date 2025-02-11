@@ -64,6 +64,7 @@
         <integer name="orderId"/>
         <integer name="subOrderId"/>
         <string name="resourceNumber"/>
+        <string name="transferResourceNumber"/>
         <string name="staff"/>
         <string name="invoiceNumber"/>
         <date name="pickingDate"/>

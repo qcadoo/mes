@@ -49,6 +49,8 @@ public final class PositionFields {
 
     public static final String RESOURCE_NUMBER = "resourceNumber";
 
+    public static final String TRANSFER_RESOURCE_NUMBER = "transferResourceNumber";
+
     public static final String SELLING_PRICE = "sellingPrice";
 
     public static final String STORAGE_LOCATION = "storageLocation";
