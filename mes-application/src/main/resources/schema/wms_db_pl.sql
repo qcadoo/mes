@@ -2,8 +2,8 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 14.6
--- Dumped by pg_dump version 14.6
+-- Dumped from database version 14.2
+-- Dumped by pg_dump version 14.2
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -41499,10 +41499,7 @@ COPY public.jointable_group_role (group_id, role_id) FROM stdin;
 4	164
 2	164
 3	164
-4	165
 2	165
-3	165
-4	166
 2	166
 3	167
 4	167
@@ -41515,9 +41512,6 @@ COPY public.jointable_group_role (group_id, role_id) FROM stdin;
 4	169
 2	169
 38	169
-4	170
-2	170
-3	170
 32	96
 32	97
 32	98
@@ -41559,10 +41553,8 @@ COPY public.jointable_group_role (group_id, role_id) FROM stdin;
 32	163
 32	164
 32	36
-32	165
 32	37
 32	38
-32	166
 32	39
 32	168
 32	40
@@ -41651,10 +41643,8 @@ COPY public.jointable_group_role (group_id, role_id) FROM stdin;
 33	163
 33	164
 33	36
-33	165
 33	37
 33	38
-33	166
 33	39
 33	168
 33	40
@@ -41703,8 +41693,6 @@ COPY public.jointable_group_role (group_id, role_id) FROM stdin;
 33	93
 33	94
 33	95
-32	170
-33	170
 3	171
 4	171
 2	171
