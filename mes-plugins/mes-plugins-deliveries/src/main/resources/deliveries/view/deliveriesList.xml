@@ -346,7 +346,7 @@
                                             approveDeliveryBtn.state = "accept";
 											approveDeliveryBtn.setLabel("#{translate(deliveries.deliveryDetails.window.ribbon.status.acceptDelivery)}");
 											correctDeliveryBtn.enable();
-											sendEmailBtn.enable();
+											sendEmailBtn.disable();
                                             if(releaseForPaymentBtn){
 									            releaseForPaymentBtn.disable();
 									        }
