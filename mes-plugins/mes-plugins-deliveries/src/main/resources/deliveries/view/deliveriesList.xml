@@ -258,6 +258,7 @@
 								} else {
 									var noDifferentStates = true;
 									var wms = false;
+
                                     for (var i = 0; i < selectedEntitiesArray.length; i++) {
                                         if(selectedEntitiesArray[i].fields.wms == true
                                             && selectedEntitiesArray[i].fields.stateInWMS != '04realized'){
@@ -274,7 +275,22 @@
 												break;
 											}
 										}
-									} 
+									}
+									if(releaseForPaymentBtn){
+									    var releaseForPayment = true;
+									    for (var i = 0; i < selectedEntitiesArray.length; i++) {
+                                            if(selectedEntitiesArray[i].fields.state != '07accepted'
+                                                && selectedEntitiesArray[i].fields.state != '06received'){
+                                                releaseForPayment = false;
+                                                break;
+                                            }
+                                        }
+                                        if(releaseForPayment){
+                                            releaseForPaymentBtn.enable();
+                                        } else {
+                                            releaseForPaymentBtn.disable();
+                                        }
+									}
 									if (selectedEntitiesArray.length == 1 || noDifferentStates) {
 										var state = selectedEntitiesArray[0].fields.state;
 										
@@ -293,9 +309,6 @@
 											approveDeliveryBtn.setLabel("#{translate(deliveries.deliveryDetails.window.ribbon.status.approveDelivery)}");
 											correctDeliveryBtn.disable();
 											sendEmailBtn.disable();
-                                            if(releaseForPaymentBtn){
-									            releaseForPaymentBtn.disable();
-									        }
 										} else if (state == "02prepared") {
 											deleteBtn.disable();
 											acceptBtn.disable();
@@ -311,9 +324,6 @@
 											approveDeliveryBtn.setLabel("#{translate(deliveries.deliveryDetails.window.ribbon.status.approveDelivery)}");
 											correctDeliveryBtn.enable();
 											sendEmailBtn.enable();
-											if(releaseForPaymentBtn){
-									            releaseForPaymentBtn.disable();
-									        }
 										} else if (state == "03duringCorrection") {
 											deleteBtn.disable();
 											acceptBtn.disable();
@@ -329,9 +339,6 @@
 											approveDeliveryBtn.setLabel("#{translate(deliveries.deliveryDetails.window.ribbon.status.approveDelivery)}");
 											correctDeliveryBtn.disable();
 											sendEmailBtn.disable();
-											if(releaseForPaymentBtn){
-									            releaseForPaymentBtn.disable();
-									        }
 										} else if (state == "05approved"){
 											deleteBtn.disable();
 											acceptBtn.enable();
@@ -347,9 +354,6 @@
 											approveDeliveryBtn.setLabel("#{translate(deliveries.deliveryDetails.window.ribbon.status.acceptDelivery)}");
 											correctDeliveryBtn.enable();
 											sendEmailBtn.disable();
-                                            if(releaseForPaymentBtn){
-									            releaseForPaymentBtn.disable();
-									        }
 										} else if (state == "06received"){
 											deleteBtn.disable();
 											acceptBtn.disable();
@@ -357,9 +361,6 @@
 											approveDeliveryBtn.disable();
 											correctDeliveryBtn.disable();
 											sendEmailBtn.disable();
-                                            if(releaseForPaymentBtn){
-									            releaseForPaymentBtn.enable();
-									        }
 										} else if (state == "07accepted"){
 											deleteBtn.disable();
 											acceptBtn.enable();
@@ -370,9 +371,6 @@
 											approveDeliveryBtn.disable();
 											correctDeliveryBtn.disable();
 											sendEmailBtn.disable();
-                                            if(releaseForPaymentBtn){
-									            releaseForPaymentBtn.enable();
-									        }
 										} else {
 											deleteBtn.enable();
 											acceptBtn.disable();
@@ -380,9 +378,6 @@
 											approveDeliveryBtn.disable();
 											correctDeliveryBtn.disable();
 											sendEmailBtn.disable();
-											if(releaseForPaymentBtn){
-									            releaseForPaymentBtn.disable();
-									        }
 										}
 									} else {
 										deleteBtn.disable("#{translate(deliveries.deliveriesList.ribbon.message.deliveriesWithDifferentStatesSelected)}");
@@ -391,9 +386,6 @@
 										approveDeliveryBtn.disable("#{translate(deliveries.deliveriesList.ribbon.message.deliveriesWithDifferentStatesSelected)}");
 										correctDeliveryBtn.disable("#{translate(deliveries.deliveriesList.ribbon.message.deliveriesWithDifferentStatesSelected)}");
 										sendEmailBtn.disable("#{translate(deliveries.deliveriesList.ribbon.message.deliveriesWithDifferentStatesSelected)}");
-										if(releaseForPaymentBtn){
-										    releaseForPaymentBtn.disable("#{translate(deliveries.deliveriesList.ribbon.message.deliveriesWithDifferentStatesSelected)}");
-										}
 									}
 									copyBtn.enable();
 									if(wms){
