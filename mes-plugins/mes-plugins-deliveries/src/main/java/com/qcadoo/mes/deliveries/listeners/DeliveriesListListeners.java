@@ -86,7 +86,7 @@ public class DeliveriesListListeners {
 
         Date date = new Date();
         Set<String> suppliersWithoutEmail = new HashSet<>();
-        Set<String> suppliersWithWrongEmail = new HashSet<>();
+        Set<String> suppliersWithInvalidEmail = new HashSet<>();
         for (Entity delivery : gridComponent.getSelectedEntities()) {
             String supplierEmail = delivery.getBelongsToField(DeliveryFields.SUPPLIER).getStringField(CompanyFields.EMAIL);
             if (!Strings.isNullOrEmpty(supplierEmail)) {
@@ -94,7 +94,7 @@ public class DeliveriesListListeners {
                     sendHtmlTextEmail(mailSender, username, supplierEmail, subject + " " + delivery.getStringField(DeliveryFields.NUMBER), body, delivery);
                 } catch (MailSendException e) {
                     if (e.getMessageExceptions().length > 0 && e.getMessageExceptions()[0] instanceof SendFailedException) {
-                        suppliersWithWrongEmail.add(delivery.getBelongsToField(DeliveryFields.SUPPLIER).getStringField(CompanyFields.NUMBER));
+                        suppliersWithInvalidEmail.add(delivery.getBelongsToField(DeliveryFields.SUPPLIER).getStringField(CompanyFields.NUMBER));
                         continue;
                     } else {
                         state.addMessage(
@@ -114,14 +114,21 @@ public class DeliveriesListListeners {
                 suppliersWithoutEmail.add(delivery.getBelongsToField(DeliveryFields.SUPPLIER).getStringField(CompanyFields.NUMBER));
             }
         }
-        if (suppliersWithoutEmail.isEmpty() && suppliersWithWrongEmail.isEmpty()) {
+        if (suppliersWithoutEmail.isEmpty() && suppliersWithInvalidEmail.isEmpty()) {
             state.addMessage(
                     "deliveries.delivery.info.sendEmail",
                     ComponentState.MessageType.SUCCESS);
         } else {
-            state.addMessage(
-                    "deliveries.delivery.error.suppliersWithoutEmail",
-                    ComponentState.MessageType.FAILURE, String.join(", ", suppliersWithoutEmail));
+            if(!suppliersWithoutEmail.isEmpty()) {
+                state.addMessage(
+                        "deliveries.delivery.error.suppliersWithoutEmail",
+                        ComponentState.MessageType.FAILURE, String.join(", ", suppliersWithoutEmail));
+            }
+            if(!suppliersWithInvalidEmail.isEmpty()) {
+                state.addMessage(
+                        "deliveries.delivery.error.suppliersWithInvalidEmail",
+                        ComponentState.MessageType.FAILURE, String.join(", ", suppliersWithInvalidEmail));
+            }
         }
     }
 
