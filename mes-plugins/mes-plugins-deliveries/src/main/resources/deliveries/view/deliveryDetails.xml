@@ -467,7 +467,6 @@
                                         showRelatedDeliveriesBtn.disable();
 									}
 								} else if (state == "06received") {
-									saveBtn.disable();
 									saveBackBtn.disable();
 									saveNewBtn.disable();
 									cancelBtn.disable();

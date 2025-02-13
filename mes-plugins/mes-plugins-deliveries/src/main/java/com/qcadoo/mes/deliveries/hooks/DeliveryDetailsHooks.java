@@ -147,7 +147,7 @@ public class DeliveryDetailsHooks {
             FieldComponent stateField = (FieldComponent) view.getComponentByReference(DeliveryFields.STATE);
 
             String state = stateField.getFieldValue().toString();
-            releasedForPayment.setEnabled(DeliveryState.RECEIVED.getStringValue().equals(state) || DeliveryState.APPROVED.getStringValue().equals(state));
+            releasedForPayment.setEnabled(DeliveryState.RECEIVED.getStringValue().equals(state) || DeliveryState.ACCEPTED.getStringValue().equals(state));
         } else {
             paymentTab.setVisible(false);
         }
