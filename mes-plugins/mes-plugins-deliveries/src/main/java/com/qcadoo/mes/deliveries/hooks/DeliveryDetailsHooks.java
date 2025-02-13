@@ -185,7 +185,8 @@ public class DeliveryDetailsHooks {
         if (Objects.isNull(deliveryForm.getEntityId())) {
             changeFieldsEnabled(view, true, false, false, false);
         } else {
-            if (DeliveryState.PREPARED.getStringValue().equals(state) || DeliveryState.APPROVED.getStringValue().equals(state)) {
+            if (DeliveryState.PREPARED.getStringValue().equals(state) || DeliveryState.APPROVED.getStringValue().equals(state)
+                    || DeliveryState.ACCEPTED.getStringValue().equals(state)) {
                 changeFieldsEnabled(view, false, false, true, true);
             } else if (DeliveryState.DECLINED.getStringValue().equals(state) || DeliveryState.RECEIVED.getStringValue().equals(state)) {
                 changeFieldsEnabled(view, false, false, false, false);
