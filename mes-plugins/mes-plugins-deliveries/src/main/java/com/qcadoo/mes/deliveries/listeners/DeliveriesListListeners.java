@@ -27,6 +27,7 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
 import javax.mail.MessagingException;
+import javax.mail.SendFailedException;
 import javax.mail.internet.MimeMessage;
 import java.io.File;
 import java.io.IOException;
@@ -85,12 +86,23 @@ public class DeliveriesListListeners {
 
         Date date = new Date();
         Set<String> suppliersWithoutEmail = new HashSet<>();
+        Set<String> suppliersWithWrongEmail = new HashSet<>();
         for (Entity delivery : gridComponent.getSelectedEntities()) {
             String supplierEmail = delivery.getBelongsToField(DeliveryFields.SUPPLIER).getStringField(CompanyFields.EMAIL);
             if (!Strings.isNullOrEmpty(supplierEmail)) {
                 try {
                     sendHtmlTextEmail(mailSender, username, supplierEmail, subject + " " + delivery.getStringField(DeliveryFields.NUMBER), body, delivery);
-                } catch (MailSendException | MailAuthenticationException e) {
+                } catch (MailSendException e) {
+                    if (e.getMessageExceptions().length > 0 && e.getMessageExceptions()[0] instanceof SendFailedException) {
+                        suppliersWithWrongEmail.add(delivery.getBelongsToField(DeliveryFields.SUPPLIER).getStringField(CompanyFields.NUMBER));
+                        continue;
+                    } else {
+                        state.addMessage(
+                                "deliveries.delivery.error.sendEmailError",
+                                ComponentState.MessageType.FAILURE);
+                        return;
+                    }
+                } catch (MailAuthenticationException e) {
                     state.addMessage(
                             "deliveries.delivery.error.sendEmailError",
                             ComponentState.MessageType.FAILURE);
@@ -102,7 +114,7 @@ public class DeliveriesListListeners {
                 suppliersWithoutEmail.add(delivery.getBelongsToField(DeliveryFields.SUPPLIER).getStringField(CompanyFields.NUMBER));
             }
         }
-        if (suppliersWithoutEmail.isEmpty()) {
+        if (suppliersWithoutEmail.isEmpty() && suppliersWithWrongEmail.isEmpty()) {
             state.addMessage(
                     "deliveries.delivery.info.sendEmail",
                     ComponentState.MessageType.SUCCESS);
