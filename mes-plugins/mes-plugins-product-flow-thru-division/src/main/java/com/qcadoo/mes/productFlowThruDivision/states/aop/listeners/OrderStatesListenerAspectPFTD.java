@@ -3,19 +3,19 @@
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo Framework
  * Version: 1.4
- *
+ * <p>
  * This file is part of Qcadoo.
- *
+ * <p>
  * Qcadoo is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation; either version 3 of the License,
  * or (at your option) any later version.
- *
+ * <p>
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty
  * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU Affero General Public License for more details.
- *
+ * <p>
  * You should have received a copy of the GNU Affero General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
@@ -25,7 +25,6 @@ package com.qcadoo.mes.productFlowThruDivision.states.aop.listeners;
 
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.orders.states.aop.OrderStateChangeAspect;
-import com.qcadoo.mes.orders.states.aop.listener.OperationalTaskOrderStateAspect;
 import com.qcadoo.mes.orders.states.constants.OrderStateChangePhase;
 import com.qcadoo.mes.productFlowThruDivision.constants.ProductFlowThruDivisionConstants;
 import com.qcadoo.mes.productFlowThruDivision.states.OrderStatesListenerServicePFTD;
@@ -40,8 +39,6 @@ import com.qcadoo.plugin.api.RunIfEnabled;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.annotation.Pointcut;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
@@ -68,7 +65,7 @@ public class OrderStatesListenerAspectPFTD extends AbstractStateListenerAspect {
     @Before(PHASE_EXECUTION_POINTCUT)
     public void onCompletedLast(final StateChangeContext stateChangeContext, final int phase) {
         Entity owner = stateChangeContext.getOwner();
-        if(owner.isValid()) {
+        if (owner.isValid()) {
             listenerService.acceptInboundDocumentsForOrder(stateChangeContext);
             listenerService.clearReservations(stateChangeContext);
         }
@@ -90,7 +87,6 @@ public class OrderStatesListenerAspectPFTD extends AbstractStateListenerAspect {
     }
 
 
-
     @RunInPhase(OrderStateChangePhase.EXT_SYNC)
     @RunForStateTransition(sourceState = WILDCARD_STATE, targetState = COMPLETED)
     @Before(PHASE_EXECUTION_POINTCUT)
@@ -99,13 +95,6 @@ public class OrderStatesListenerAspectPFTD extends AbstractStateListenerAspect {
         if (ReleaseOfMaterials.END_OF_THE_ORDER.getStringValue().equals(releaseOfMaterials)) {
             listenerService.createCumulatedInternalOutboundDocument(stateChangeContext);
         }
-    }
-
-    @RunInPhase(OrderStateChangePhase.EXT_SYNC)
-    @RunForStateTransition(sourceState = WILDCARD_STATE, targetState = ABANDONED)
-    @Before(PHASE_EXECUTION_POINTCUT)
-    public void onAbandoned(final StateChangeContext stateChangeContext, final int phase) {
-        listenerService.acceptInboundDocumentsForOrder(stateChangeContext);
     }
 
     @RunInPhase(OrderStateChangePhase.DEFAULT)
