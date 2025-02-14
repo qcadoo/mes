@@ -15,6 +15,7 @@ import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.GridComponent;
 import com.qcadoo.view.constants.QcadooViewConstants;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.core.io.ByteArrayResource;
@@ -81,6 +82,12 @@ public class DeliveriesListListeners {
         Entity parameter = parameterService.getParameter();
         JavaMailSender mailSender = getMailSender(parameter);
         String username = parameter.getStringField(ParameterFields.EMAIL_USERNAME);
+        if (StringUtils.isEmpty(username)) {
+            state.addMessage(
+                    "deliveries.delivery.error.sendEmailError",
+                    ComponentState.MessageType.FAILURE);
+            return;
+        }
         String subject = parameter.getStringField(ParameterFieldsD.DELIVERY_EMAIL_SUBJECT);
         String body = parameter.getStringField(ParameterFieldsD.DELIVERY_EMAIL_BODY);
 
@@ -114,6 +121,10 @@ public class DeliveriesListListeners {
                 suppliersWithoutEmail.add(delivery.getBelongsToField(DeliveryFields.SUPPLIER).getStringField(CompanyFields.NUMBER));
             }
         }
+        addMessage(state, suppliersWithoutEmail, suppliersWithInvalidEmail);
+    }
+
+    private void addMessage(ComponentState state, Set<String> suppliersWithoutEmail, Set<String> suppliersWithInvalidEmail) {
         if (suppliersWithoutEmail.isEmpty() && suppliersWithInvalidEmail.isEmpty()) {
             state.addMessage(
                     "deliveries.delivery.info.sendEmail",
