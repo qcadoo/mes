@@ -45,4 +45,6 @@ public final class DeliveryStateStringValues {
 
     public static final String RECEIVED = "06received";
 
+    public static final String ACCEPTED = "07accepted";
+
 }

@@ -448,6 +448,7 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
         position.setField(PositionFields.EXPIRATION_DATE, newPosition.getField(PositionFields.EXPIRATION_DATE));
         position.setField(PositionFields.RESOURCE, newPosition.getField(PositionFields.RESOURCE));
         position.setField(PositionFields.RESOURCE_NUMBER, newPosition.getField(PositionFields.RESOURCE_NUMBER));
+        position.setField(PositionFields.TRANSFER_RESOURCE_NUMBER, newPosition.getField(PositionFields.TRANSFER_RESOURCE_NUMBER));
         position.setField(PositionFields.STORAGE_LOCATION, newPosition.getField(PositionFields.STORAGE_LOCATION));
         position.setField(PositionFields.CONVERSION, newPosition.getField(PositionFields.CONVERSION));
         position.setField(PositionFields.GIVEN_UNIT, newPosition.getField(PositionFields.GIVEN_UNIT));
@@ -733,6 +734,7 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
                 newPosition.setField(PositionFields.QUANTITY,
                         numberService.setScaleWithDefaultMathContext(resourceAvailableQuantity));
                 newPosition.setField(PositionFields.GIVEN_QUANTITY, givenResourceAvailableQuantity);
+                newPosition.setField(PositionFields.TRANSFER_RESOURCE_NUMBER, newResource.getStringField(ResourceFields.NUMBER));
 
                 if (BigDecimal.ZERO.compareTo(quantity) == 0 || BigDecimal.ZERO.compareTo(
                         calculationQuantityService.calculateAdditionalQuantity(quantity, conversion, givenUnit)) == 0) {
@@ -768,6 +770,7 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
 
                 newPosition.setField(PositionFields.QUANTITY, numberService.setScaleWithDefaultMathContext(quantity));
                 newPosition.setField(PositionFields.GIVEN_QUANTITY, givenQuantity);
+                newPosition.setField(PositionFields.TRANSFER_RESOURCE_NUMBER, newResource.getStringField(ResourceFields.NUMBER));
 
                 if (!newResource.isValid()) {
                     copyResourceErrorsToPosition(newPosition, newResource);

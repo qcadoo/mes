@@ -156,6 +156,32 @@
                 </layoutElement>
             </component>
         </windowTab>
+        <windowTab name="emailTab" reference="emailTab">
+            <component type="gridLayout" name="emailGridLayout"
+                       columns="3" rows="4">
+                <layoutElement column="1" row="1">
+                    <component type="input" name="emailHost" field="#{form}.emailHost"
+                               reference="emailHost">
+                    </component>
+                </layoutElement>
+                <layoutElement column="1" row="2">
+                    <component type="input" name="emailPort" field="#{form}.emailPort"
+                               reference="emailPort">
+                        <option type="alignment" value="right"/>
+                    </component>
+                </layoutElement>
+                <layoutElement column="1" row="3">
+                    <component type="input" name="emailUsername" field="#{form}.emailUsername"
+                               reference="emailUsername" hasDescription="true">
+                    </component>
+                </layoutElement>
+                <layoutElement column="1" row="4">
+                    <component type="input" name="emailPassword" field="#{form}.emailPassword"
+                               reference="emailPassword">
+                    </component>
+                </layoutElement>
+            </component>
+        </windowTab>
 
     </component>
 

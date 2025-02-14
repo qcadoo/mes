@@ -54,7 +54,7 @@
                  joinField="parameter" cascade="delete" copyable="true"/>
         <file name="logo"/>
         <integer name="numberOfficeLicenses" required="true" default="1">
-            <validatesRange from="0" exclusively="true"/>
+            <validatesRange from="0"/>
         </integer>
         <integer name="numberAPSLicenses" required="true" default="0">
             <validatesRange from="0"/>
@@ -76,6 +76,22 @@
         <enum name="tasksSelectionBy" required="true"
               values="01orderDate,02taskDate,03taskStartDate"
               default="01orderDate"/>
+
+        <string name="emailHost">
+            <validatesLength max="255"/>
+        </string>
+
+        <integer name="emailPort">
+            <validatesRange from="0" exclusively="true"/>
+        </integer>
+
+        <string name="emailUsername">
+            <validatesLength max="255"/>
+        </string>
+
+        <string name="emailPassword">
+            <validatesLength max="255"/>
+        </string>
     </fields>
 
     <hooks>

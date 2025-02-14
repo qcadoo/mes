@@ -40,13 +40,9 @@
 
         <windowTab name="mainTab">
             <component type="form" name="supplyParametersForm" reference="form">
-                <component type="flowGridLayout" name="gridLayout" columns="3"
-                           rows="13">
-                    <layoutElement column="1" row="1" height="2">
-                        <component type="textarea" name="defaultDescription"
-                                   field="#{form}.defaultDescription" reference="defaultDescription"/>
-                    </layoutElement>
-                    <layoutElement column="1" row="3">
+                <component type="gridLayout" name="gridLayout" columns="3"
+                           rows="7">
+                    <layoutElement column="1" row="1">
                         <component type="lookup" name="location" reference="warehouse"
                                    field="#{form}.location">
                             <option type="column" name="name" fields="name" link="true"/>
@@ -58,6 +54,10 @@
                                     value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name"/>
                             <option type="fieldCode" value="number"/>
                         </component>
+                    </layoutElement>
+                    <layoutElement column="1" row="2" height="2">
+                        <component type="textarea" name="defaultDescription"
+                                   field="#{form}.defaultDescription" reference="defaultDescription"/>
                     </layoutElement>
                     <layoutElement column="1" row="4">
                         <component type="lookup" name="packagingLocation" reference="packagingLocation"
@@ -88,36 +88,41 @@
                                    reference="otherAddress" hasLabel="false"/>
                     </layoutElement>
                     <layoutElement column="1" row="7">
-                        <component type="checkbox" name="positivePurchasePrice" hasDescription="true"
-                                   field="#{form}.positivePurchasePrice" reference="positivePurchasePrice">
-                        <option type="labelWidth" value="50" />
-                        </component>
-                    </layoutElement>
-                    <layoutElement column="1" row="8">
-                        <component type="checkbox" name="deliveredBiggerThanOrdered" hasDescription="true"
-                                   field="#{form}.deliveredBiggerThanOrdered" reference="deliveredBiggerThanOrdered">
-                            <option type="labelWidth" value="50" />
-                        </component>
-                    </layoutElement>
-                    <layoutElement column="1" row="9">
                         <component type="checkbox" name="requireSupplierIdentification" hasDescription="true"
                                    field="#{form}.requireSupplierIdentification" reference="requireSupplierIdentification">
                             <option type="labelWidth" value="50" />
                         </component>
                     </layoutElement>
-                    <layoutElement column="1" row="10">
+                    <layoutElement column="2" row="1">
+                        <component type="checkbox" name="acceptanceOfDelivery" hasDescription="true"
+                                   field="#{form}.acceptanceOfDelivery" reference="acceptanceOfDelivery">
+                            <option type="labelWidth" value="50" />
+                        </component>
+                    </layoutElement>
+                    <layoutElement column="2" row="2">
+                        <component type="checkbox" name="deliveredBiggerThanOrdered" hasDescription="true"
+                                   field="#{form}.deliveredBiggerThanOrdered" reference="deliveredBiggerThanOrdered">
+                            <option type="labelWidth" value="50" />
+                        </component>
+                    </layoutElement>
+                    <layoutElement column="2" row="3">
+                        <component type="checkbox" name="positivePurchasePrice" hasDescription="true"
+                                   field="#{form}.positivePurchasePrice" reference="positivePurchasePrice">
+                        <option type="labelWidth" value="50" />
+                        </component>
+                    </layoutElement>
+                    <layoutElement column="2" row="4">
                         <component type="select" name="deliveryPriceFillBasedOn" field="#{form}.deliveryPriceFillBasedOn"
                                    reference="deliveryPriceFillBasedOn">
                         </component>
                     </layoutElement>
-                    <layoutElement column="1" row="11">
+                    <layoutElement column="2" row="5">
                         <component type="checkbox" name="deliveryUseNominalCostWhenPriceNotSpecified" hasDescription="true"
                                    field="#{form}.deliveryUseNominalCostWhenPriceNotSpecified" reference="deliveryUseNominalCostWhenPriceNotSpecified">
                             <option type="labelWidth" value="50" />
                         </component>
                     </layoutElement>
-
-                    <layoutElement column="1" row="12">
+                    <layoutElement column="2" row="6">
                         <component type="checkbox" name="productDeliveryBatchEvidence" hasDescription="true"
                                    field="#{form}.productDeliveryBatchEvidence" reference="productDeliveryBatchEvidence">
                             <option type="labelWidth" value="50" />
@@ -126,8 +131,7 @@
                                       method="onChangeRerender"/>
                         </component>
                     </layoutElement>
-
-                    <layoutElement column="1" row="13">
+                    <layoutElement column="2" row="7">
                         <component type="lookup" name="productDeliveryBatchNumberPattern" field="#{form}.productDeliveryBatchNumberPattern"
                                    reference="productDeliveryBatchNumberPattern" hasDescription="true">
                             <option type="column" name="name" fields="name"/>
@@ -141,50 +145,67 @@
                                     method="restrictNumberPatternForUnusedDelivery"/>
                         </component>
                     </layoutElement>
-
-
-                    <layoutElement column="2" row="1" width="2" height="13">
-                        <component type="borderLayout" name="columnsForOrdersBorderLayout">
-                            <component type="gridLayout" name="columnForOrdersGridLayout"
-                                       columns="1" rows="13">
-                                <layoutElement column="1" row="1" height="12">
-                                    <component type="grid" name="columnsForOrders"
-                                               source="#{form}.parameterDeliveryOrderColumns"
-                                               reference="columnsForOrders">
-                                        <option type="column" name="name" fields="columnForOrders"
-                                                expression="'@' + #columnForOrders.get('name')" link="true"/>
-
-                                        <option type="order" column="succession" direction="desc"/>
-
-                                        <option type="searchable" value="name"/>
-                                        <option type="orderable" value="name"/>
-                                        <option type="correspondingView"
-                                                value="deliveries/parameterOrderColumnDetails"/>
-                                        <option type="correspondingComponent" value="form"/>
-                                        <option type="correspondingViewInModal" value="true"/>
-                                        <option type="creatable" value="true"/>
-                                        <option type="deletable" value="true"/>
-                                        <option type="fullscreen" value="true"/>
-                                        <option type="multiselect" value="true"/>
-                                    </component>
-                                </layoutElement>
-                                <layoutElement column="1" row="13">
-                                    <component type="hidden" name="hideEmptyColumnsForOrders"
-                                               field="#{form}.hideEmptyColumnsForOrders"
-                                               reference="hideEmptyColumnsForOrders">
-                                        <option type="labelWidth" value="50"/>
-                                        <option type="align" value="left"/>
-                                    </component>
-                                </layoutElement>
-                            </component>
-
-                            <option type="label" value="columnsForOrdersLabel"/>
-                        </component>
-                    </layoutElement>
                 </component>
 
                 <option type="header" value="true"/>
                 <option type="expression" value="#name"/>
+            </component>
+        </windowTab>
+        <windowTab name="orderPrintoutTab" reference="orderPrintoutTab">
+            <component type="gridLayout" name="columnForOrdersGridLayout"
+                       columns="3" rows="9" hasBorders="false">
+                <layoutElement column="1" row="1" height="8" width="2">
+                    <component type="grid" name="columnsForOrders"
+                               source="#{form}.parameterDeliveryOrderColumns"
+                               reference="columnsForOrders">
+                        <option type="column" name="name" fields="columnForOrders"
+                                expression="'@' + #columnForOrders.get('name')" link="true"/>
+
+                        <option type="order" column="succession" direction="desc"/>
+
+                        <option type="searchable" value="name"/>
+                        <option type="orderable" value="name"/>
+                        <option type="correspondingView"
+                                value="deliveries/parameterOrderColumnDetails"/>
+                        <option type="correspondingComponent" value="form"/>
+                        <option type="correspondingViewInModal" value="true"/>
+                        <option type="creatable" value="true"/>
+                        <option type="deletable" value="true"/>
+                        <option type="fullscreen" value="true"/>
+                        <option type="multiselect" value="true"/>
+                    </component>
+                </layoutElement>
+                <layoutElement column="1" row="9">
+                    <component type="hidden" name="hideEmptyColumnsForOrders"
+                               field="#{form}.hideEmptyColumnsForOrders"
+                               reference="hideEmptyColumnsForOrders">
+                        <option type="labelWidth" value="50"/>
+                        <option type="align" value="left"/>
+                    </component>
+                </layoutElement>
+            </component>
+        </windowTab>
+        <windowTab name="deliveryEmailTab" reference="deliveryEmailTab">
+            <component type="gridLayout" name="emailGridLayout"
+                       columns="3" rows="7">
+                <layoutElement column="1" row="1">
+                    <component type="checkbox" name="sendEmailToSupplier" hasDescription="true"
+                               field="#{form}.sendEmailToSupplier" reference="sendEmailToSupplier">
+                        <option type="labelWidth" value="50" />
+                        <listener event="onChange"
+                                  class="com.qcadoo.view.api.listeners.RerenderListener"
+                                  method="onChangeRerender"/>
+                    </component>
+                </layoutElement>
+                <layoutElement column="1" row="2" height="2">
+                    <component type="textarea" name="deliveryEmailSubject"
+                               field="#{form}.deliveryEmailSubject" reference="deliveryEmailSubject"
+                               hasDescription="true"/>
+                </layoutElement>
+                <layoutElement column="1" row="4" height="4">
+                    <component type="textarea" name="deliveryEmailBody"
+                               field="#{form}.deliveryEmailBody" reference="deliveryEmailBody"/>
+                </layoutElement>
             </component>
         </windowTab>
 

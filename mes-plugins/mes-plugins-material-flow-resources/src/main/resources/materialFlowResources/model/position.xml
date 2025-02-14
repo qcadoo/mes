@@ -57,6 +57,7 @@
         <priority name="number" scope="document"/>
         <belongsTo name="resource" model="resource"/>
         <string name="resourceNumber"/>
+        <string name="transferResourceNumber"/>
 
         <belongsTo name="storageLocation" model="storageLocation"/>
 

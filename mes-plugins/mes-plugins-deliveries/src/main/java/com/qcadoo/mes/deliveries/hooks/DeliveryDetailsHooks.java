@@ -34,12 +34,14 @@ import com.qcadoo.mes.deliveries.constants.*;
 import com.qcadoo.mes.deliveries.roles.DeliveryRole;
 import com.qcadoo.mes.deliveries.states.constants.DeliveryState;
 import com.qcadoo.mes.deliveries.states.constants.DeliveryStateChangeFields;
+import com.qcadoo.mes.deliveries.states.constants.DeliveryStateStringValues;
 import com.qcadoo.mes.states.constants.StateChangeStatus;
 import com.qcadoo.mes.states.service.client.util.StateChangeHistoryService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.CustomRestriction;
 import com.qcadoo.security.api.SecurityService;
 import com.qcadoo.security.api.UserService;
+import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.*;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
@@ -54,6 +56,7 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class DeliveryDetailsHooks {
@@ -124,6 +127,30 @@ public class DeliveryDetailsHooks {
         updateCopyOrderedProductButtonsState(view);
         processRoles(view);
         setDeliveryIdForMultiUploadField(view);
+        togglePaymentTab(view);
+    }
+
+    private void togglePaymentTab(ViewDefinitionState view) {
+        boolean hasCurrentUserRole = securityService.hasCurrentUserRole("ROLE_RELEASE_FOR_PAYMENT");
+        ComponentState paymentTab = view.getComponentByReference("paymentTab");
+        if (hasCurrentUserRole) {
+            paymentTab.setVisible(true);
+            CheckBoxComponent releasedForPayment = (CheckBoxComponent) view
+                    .getComponentByReference(DeliveryFields.RELEASED_FOR_PAYMENT);
+            FieldComponent paymentID = (FieldComponent) view.getComponentByReference(DeliveryFields.PAYMENT_ID);
+            if (releasedForPayment.isChecked()) {
+                paymentID.setEnabled(true);
+            } else {
+                paymentID.setFieldValue(null);
+                paymentID.setEnabled(false);
+            }
+            FieldComponent stateField = (FieldComponent) view.getComponentByReference(DeliveryFields.STATE);
+
+            String state = stateField.getFieldValue().toString();
+            releasedForPayment.setEnabled(DeliveryState.RECEIVED.getStringValue().equals(state) || DeliveryState.ACCEPTED.getStringValue().equals(state));
+        } else {
+            paymentTab.setVisible(false);
+        }
     }
 
     private void generateDeliveryNumber(final ViewDefinitionState view) {
@@ -158,7 +185,8 @@ public class DeliveryDetailsHooks {
         if (Objects.isNull(deliveryForm.getEntityId())) {
             changeFieldsEnabled(view, true, false, false, false);
         } else {
-            if (DeliveryState.PREPARED.getStringValue().equals(state) || DeliveryState.APPROVED.getStringValue().equals(state)) {
+            if (DeliveryState.PREPARED.getStringValue().equals(state) || DeliveryState.APPROVED.getStringValue().equals(state)
+                    || DeliveryState.ACCEPTED.getStringValue().equals(state)) {
                 changeFieldsEnabled(view, false, false, true, true);
             } else if (DeliveryState.DECLINED.getStringValue().equals(state) || DeliveryState.RECEIVED.getStringValue().equals(state)) {
                 changeFieldsEnabled(view, false, false, false, false);
@@ -336,12 +364,49 @@ public class DeliveryDetailsHooks {
 
     public void processRoles(final ViewDefinitionState view) {
         Entity currentUser = userService.getCurrentUserEntity();
-
+        String state = getState(view);
         for (DeliveryRole role : DeliveryRole.values()) {
-            if (!securityService.hasRole(currentUser, role.toString())) {
+            if (role.equals(DeliveryRole.ROLE_DELIVERIES_STATES_APPROVE)) {
+                if (!securityService.hasRole(currentUser, role.toString())
+                        && (DeliveryStateStringValues.DRAFT.equals(state)
+                        || DeliveryStateStringValues.PREPARED.equals(state)
+                        || DeliveryStateStringValues.DURING_CORRECTION.equals(state))) {
+                    role.processRole(view);
+                }
+            } else if (role.equals(DeliveryRole.ROLE_DELIVERIES_STATES_ACCEPT)) {
+                if (!securityService.hasRole(currentUser, role.toString())
+                        && DeliveryStateStringValues.APPROVED.equals(state)) {
+                    role.processRole(view);
+                }
+            } else if (!securityService.hasRole(currentUser, role.toString())) {
                 role.processRole(view);
             }
         }
+    }
+
+    private String getState(ViewDefinitionState view) {
+        String state;
+
+        FormComponent deliveryForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
+        if (deliveryForm != null) {
+            Long deliveryId = deliveryForm.getEntityId();
+
+            if (Objects.isNull(deliveryId)) {
+                state = DeliveryStateStringValues.DRAFT;
+            } else {
+                Entity delivery = deliveriesService.getDelivery(deliveryId);
+                state = delivery.getStringField(DeliveryFields.STATE);
+            }
+        } else {
+            GridComponent deliveriesGrid = (GridComponent) view.getComponentByReference(QcadooViewConstants.L_GRID);
+            Set<String> states = deliveriesGrid.getSelectedEntities().stream().map(e -> e.getStringField(DeliveryFields.STATE)).collect(Collectors.toSet());
+            if (states.size() == 1) {
+                state = states.stream().findFirst().get();
+            } else {
+                state = DeliveryStateStringValues.DRAFT;
+            }
+        }
+        return state;
     }
 
     private void togglePriceFields(final ViewDefinitionState view) {

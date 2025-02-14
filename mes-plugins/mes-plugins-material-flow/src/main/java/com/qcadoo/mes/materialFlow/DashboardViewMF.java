@@ -37,6 +37,7 @@ import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.plugin.api.PluginUtils;
 import com.qcadoo.security.api.SecurityService;
 import com.qcadoo.security.api.UserService;
+import com.qcadoo.view.api.LogoComponent;
 import com.qcadoo.view.constants.MenuItemFields;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -65,6 +66,9 @@ public class DashboardViewMF implements DashboardView {
     @Autowired
     private ParameterService parameterService;
 
+    @Autowired
+    private LogoComponent logoComponent;
+
     @Value("${useCompressedStaticResources}")
     private boolean useCompressedStaticResources;
 
@@ -81,6 +85,7 @@ public class DashboardViewMF implements DashboardView {
 
             mav.addObject("translationsMap", translationService.getMessagesGroup("configurator", locale));
             mav.addObject("locale", locale.getLanguage());
+            mav.addObject("logoPath", logoComponent.prepareMenuLogoPath(false));
 
             return mav;
         }

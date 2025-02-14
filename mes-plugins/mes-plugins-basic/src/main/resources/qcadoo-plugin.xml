@@ -203,6 +203,8 @@
         <security:role identifier="ROLE_DELIVERIES"/>
         <security:role identifier="ROLE_DELIVERIES_EDIT"/>
         <security:role identifier="ROLE_DELIVERIES_STATES_DECLINE"/>
+        <security:role identifier="ROLE_DELIVERIES_STATES_APPROVE"/>
+        <security:role identifier="ROLE_DELIVERIES_STATES_ACCEPT"/>
         <security:role identifier="ROLE_DELIVERIES_STATES_OTHER"/>
         <security:role identifier="ROLE_DELIVERIES_PRICE"/>
 
@@ -216,22 +218,6 @@
         <security:role identifier="ROLE_REPAIR_ORDERS"/>
 
         <security:role identifier="ROLE_DOCUMENTS_CORRECTIONS_MIN_STATES"/>
-
-        <security:role identifier="ROLE_TERMINAL_USER"/>
-        <security:role identifier="ROLE_TERMINAL_CONFECTION_USER"/>
-        <security:role identifier="ROLE_TERMINAL_EXTRUSION_USER"/>
-        <security:role identifier="ROLE_TERMINAL_EXTRUSION_PRINT"/>
-        <security:role identifier="ROLE_EXTRUSION_PROTOCOLS_LIST"/>
-        <security:role identifier="ROLE_TERMINAL_PALLET_USER"/>
-        <security:role identifier="ROLE_PALLET_LIST"/>
-        <security:role identifier="ROLE_PALLET_LIST_EDIT"/>
-        <security:role identifier="ROLE_TERMINAL_PALLET_PRINT_MULTIPLE"/>
-        <security:role identifier="ROLE_TERMINAL_CONFECTION_PRINT_MULTIPLE"/>
-        <security:role identifier="ROLE_TERMINAL_CARTON_LABELS"/>
-        <security:role identifier="ROLE_TERMINAL_PALLET_PRINT_MULTIPLE"/>
-        <security:role identifier="ROLE_PALLET_DETAILS_FIX_STATE"/>
-        <security:role identifier="ROLE_PRINTED_LABEL_DETAILS_REPRINT"/>
-        <security:role identifier="ROLE_PRINTED_PALLET_LABELS"/>
 
         <security:role identifier="ROLE_SUBCONTRACTOR"/>
         <security:role identifier="ROLE_LOGS"/>
@@ -284,6 +270,8 @@
 
         <security:role identifier="ROLE_OPERATIONAL_TASKS_GANTT_EDIT"/>
 
+        <security:role identifier="ROLE_OPERATIONAL_TASKS_GANTT_RECALCULATE"/>
+
         <security:role identifier="ROLE_ORDERS_GANTT_VIEW"/>
 
         <security:role identifier="ROLE_ORDERS_GANTT_EDIT"/>
@@ -297,6 +285,9 @@
         <security:role identifier="ROLE_REQUEST_FOR_QUOTATIONS"/>
         <security:role identifier="ROLE_OFFERS"/>
         <security:role identifier="ROLE_NEGOTIATIONS"/>
+
+        <security:role identifier="ROLE_RELEASE_FOR_PAYMENT"/>
+        <security:role identifier="ROLE_EMAIL_PARAMETERS"/>
 
         <model:model model="company" resource="model/company.xml"/>
         <model:model model="staff" resource="model/staff.xml"/>
