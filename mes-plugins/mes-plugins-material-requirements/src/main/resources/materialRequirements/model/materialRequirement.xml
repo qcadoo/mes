@@ -45,6 +45,7 @@
         <manyToMany name="orders" model="order" plugin="orders"
                     joinField="materialRequirements"/>
 
+        <boolean name="showReplacements" default="false"/>
         <boolean name="includeWarehouse" default="false"/>
         <boolean name="showCurrentStockLevel" default="false"/>
         <boolean name="includeStartDateOrder" default="false"/>

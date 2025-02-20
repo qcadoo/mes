@@ -44,5 +44,6 @@ public final class MaterialRequirementProductFields {
     public static final String BATCH_STOCK = "batchStock";
 
     public static final String ORDER_START_DATE = "orderStartDate";
+    public static final String REPLACEMENT_EXISTS = "replacementExists";
 
 }

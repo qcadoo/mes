@@ -26,6 +26,7 @@ package com.qcadoo.mes.materialRequirements;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.lowagie.text.DocumentException;
+import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.basicProductionCounting.BasicProductionCountingService;
 import com.qcadoo.mes.materialFlowResources.MaterialFlowResourcesService;
 import com.qcadoo.mes.materialRequirements.constants.MaterialRequirementFields;
@@ -184,8 +185,10 @@ public class MaterialRequirementServiceImpl implements MaterialRequirementServic
                     orderStartDate = warehouseDateKey.getDate();
                 }
 
+                boolean replacementExists = !materialRequirementEntry.getProduct().getHasManyField(ProductFields.SUBSTITUTE_COMPONENTS).isEmpty();
                 if (batches.isEmpty()) {
-                    Entity materialRequirementProduct = createMaterialRequirementProduct(materialRequirement, productId, locationId, null, quantity, currentStock, null, orderStartDate);
+                    Entity materialRequirementProduct = createMaterialRequirementProduct(materialRequirement, productId,
+                            locationId, null, quantity, currentStock, null, orderStartDate, replacementExists);
 
                     materialRequirementProducts.add(materialRequirementProduct);
                 } else {
@@ -205,7 +208,8 @@ public class MaterialRequirementServiceImpl implements MaterialRequirementServic
                             }
                         }
 
-                        Entity materialRequirementProduct = createMaterialRequirementProduct(materialRequirement, productId, locationId, batchId, quantity, currentStock, batchStock, orderStartDate);
+                        Entity materialRequirementProduct = createMaterialRequirementProduct(materialRequirement, productId,
+                                locationId, batchId, quantity, currentStock, batchStock, orderStartDate, replacementExists);
 
                         materialRequirementProducts.add(materialRequirementProduct);
                     }
@@ -218,7 +222,7 @@ public class MaterialRequirementServiceImpl implements MaterialRequirementServic
 
     private Entity createMaterialRequirementProduct(final Entity materialRequirement, final Long productId, final Long locationId, final Long batchId,
                                                     final BigDecimal quantity, final BigDecimal currentStock, final BigDecimal batchStock,
-                                                    final Date orderStartDate) {
+                                                    final Date orderStartDate, boolean replacementExists) {
         Entity materialRequirementProduct = getMaterialRequirementProductDD().create();
 
         materialRequirementProduct.setField(MaterialRequirementProductFields.MATERIAL_REQUIREMENT, materialRequirement);
@@ -232,6 +236,7 @@ public class MaterialRequirementServiceImpl implements MaterialRequirementServic
         materialRequirementProduct.setField(MaterialRequirementProductFields.BATCH_STOCK,
                 numberService.setScaleWithDefaultMathContext(batchStock));
         materialRequirementProduct.setField(MaterialRequirementProductFields.ORDER_START_DATE, orderStartDate);
+        materialRequirementProduct.setField(MaterialRequirementProductFields.REPLACEMENT_EXISTS, replacementExists);
 
         return materialRequirementProduct.getDataDefinition().save(materialRequirementProduct);
     }
