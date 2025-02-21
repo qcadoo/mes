@@ -51,6 +51,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.*;
@@ -83,6 +84,13 @@ public final class MaterialRequirementPdfService extends PdfDocumentService {
 
     @Autowired
     private MaterialFlowResourcesService materialFlowResourcesService;
+
+    private Map<Entity, List<Entity>> replacements = new HashMap<>();
+
+    public void generateDocument(final Entity entity, Map<Entity, List<Entity>> replacements, final Locale locale) throws IOException, DocumentException {
+        this.replacements = replacements;
+        generateDocument(entity, locale, PageSize.A4);
+    }
 
     @Override
     protected void buildPdfContent(final Document document, final Entity materialRequirement, final Locale locale)
@@ -341,7 +349,11 @@ public final class MaterialRequirementPdfService extends PdfDocumentService {
                 }
             }
 
-            table.getDefaultCell().enableBorderSide(PdfCell.BOTTOM);
+            List<Entity> substituteComponents = replacements.get(materialRequirementProduct);
+
+            if (substituteComponents == null) {
+                table.getDefaultCell().enableBorderSide(PdfCell.BOTTOM);
+            }
             table.getDefaultCell().enableBorderSide(PdfCell.TOP);
 
             if (Objects.isNull(actualProduct) || !actualProduct.equals(productNumber)) {
@@ -384,6 +396,38 @@ public final class MaterialRequirementPdfService extends PdfDocumentService {
                 table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_RIGHT);
                 table.addCell(new Phrase(numberService.format(batchStock), FontUtils.getDejavuBold7Dark()));
                 table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_LEFT);
+            }
+
+            if (substituteComponents != null) {
+                table.getDefaultCell().disableBorderSide(PdfCell.BOTTOM);
+                table.getDefaultCell().disableBorderSide(PdfCell.TOP);
+                for (Entity substituteComponent : substituteComponents) {
+                    if (includeWarehouse) {
+                        table.addCell(new Phrase("", FontUtils.getDejavuRegular7Light()));
+                    }
+
+                    if (includeStartDateOrder) {
+                        table.addCell(new Phrase("", FontUtils.getDejavuRegular7Light()));
+                    }
+
+                    product = substituteComponent.getBelongsToField(MaterialRequirementProductFields.PRODUCT);
+                    table.addCell(new Phrase("- " + product.getStringField(ProductFields.NUMBER), FontUtils.getDejavuRegular7Light()));
+                    table.addCell(new Phrase(product.getStringField(ProductFields.NAME), FontUtils.getDejavuRegular7Light()));
+                    table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_RIGHT);
+                    table.addCell(new Phrase(numberService.format(substituteComponent.getDecimalField(MaterialRequirementProductFields.QUANTITY)), FontUtils.getDejavuRegular7Light()));
+                    table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_LEFT);
+                    table.addCell(new Phrase(product.getStringField(ProductFields.UNIT), FontUtils.getDejavuRegular7Light()));
+
+                    if (showCurrentStockLevel) {
+                        table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_RIGHT);
+                        table.addCell(new Phrase(numberService.format(BigDecimal.ZERO), FontUtils.getDejavuRegular7Light()));
+                        table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_LEFT);
+                    }
+                    table.addCell(new Phrase("", FontUtils.getDejavuRegular7Light()));
+                    if (showCurrentStockLevel) {
+                        table.addCell(new Phrase("", FontUtils.getDejavuRegular7Light()));
+                    }
+                }
             }
         }
 

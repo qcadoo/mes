@@ -56,4 +56,6 @@ public final class MaterialRequirementFields {
 
     public static final String MATERIAL_REQUIREMENT_PRODUCTS = "materialRequirementProducts";
 
+    public static final String SHOW_REPLACEMENTS = "showReplacements";
+
 }

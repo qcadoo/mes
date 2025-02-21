@@ -3,19 +3,19 @@
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
  * Version: 1.4
- *
+ * <p>
  * This file is part of Qcadoo.
- *
+ * <p>
  * Qcadoo is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation; either version 3 of the License,
  * or (at your option) any later version.
- *
+ * <p>
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty
  * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU Affero General Public License for more details.
- *
+ * <p>
  * You should have received a copy of the GNU Affero General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
@@ -24,6 +24,7 @@
 package com.qcadoo.mes.materialRequirements.print.xls;
 
 import com.google.common.collect.Lists;
+import com.lowagie.text.PageSize;
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.localization.api.utils.DateUtils;
 import com.qcadoo.mes.advancedGenealogy.constants.BatchFields;
@@ -42,9 +43,12 @@ import com.qcadoo.report.api.xls.XlsHelper;
 import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.*;
 
@@ -74,6 +78,13 @@ public final class MaterialRequirementXlsService extends XlsDocumentService {
 
     @Autowired
     private MaterialFlowResourcesService materialFlowResourcesService;
+
+    private Map<Entity, List<Entity>> replacements = new HashMap<>();
+
+    public void generateDocument(final Entity entity, Map<Entity, List<Entity>> replacements, final Locale locale) throws IOException {
+        this.replacements = replacements;
+        generateDocument(entity, locale, PageSize.A4);
+    }
 
     @Override
     protected void addHeader(final HSSFSheet sheet, final Locale locale, final Entity materialRequirement) {
@@ -138,7 +149,12 @@ public final class MaterialRequirementXlsService extends XlsDocumentService {
             HSSFCell cellBatchStock = header.createCell(column);
             cellBatchStock.setCellValue(translationService.translate("materialRequirements.materialRequirement.report.batchStock", locale));
             xlsHelper.setCellStyle(sheet, cellBatchStock);
+            column += 1;
         }
+
+        HSSFCell cellReplaceExists = header.createCell(column);
+        cellReplaceExists.setCellValue(translationService.translate("materialRequirements.materialRequirement.report.replacementExists", locale));
+        xlsHelper.setCellStyle(sheet, cellReplaceExists);
     }
 
     @Override
@@ -177,6 +193,7 @@ public final class MaterialRequirementXlsService extends XlsDocumentService {
             String productNumber = product.getStringField(ProductFields.NUMBER);
             String productName = product.getStringField(ProductFields.NAME);
             String unit = product.getStringField(ProductFields.UNIT);
+            boolean replacementExists = materialRequirementProduct.getBooleanField(MaterialRequirementProductFields.REPLACEMENT_EXISTS);
 
             HSSFRow row = sheet.createRow(rowNum++);
 
@@ -265,6 +282,92 @@ public final class MaterialRequirementXlsService extends XlsDocumentService {
             if (showCurrentStockLevel) {
                 row.createCell(column).setCellValue(numberService.format(batchStock));
                 column += 1;
+            }
+
+            row.createCell(column).setCellValue(replacementExists ? translationService.translate("qcadooView.true", LocaleContextHolder.getLocale())
+                    : translationService.translate("qcadooView.false", LocaleContextHolder.getLocale()));
+            column += 1;
+        }
+
+        for (int i = 0; i < column; i++) {
+            sheet.autoSizeColumn((short) i);
+        }
+    }
+
+    @Override
+    protected void addExtraSheets(final HSSFWorkbook workbook, final Entity entity, final Locale locale) {
+        if (entity.getBooleanField(MaterialRequirementFields.SHOW_REPLACEMENTS)) {
+            createReplacementsSheet(entity, createSheet(workbook,
+                            translationService.translate("materialRequirements.materialRequirement.report.xls.sheet.replacements", locale)),
+                    locale);
+        }
+    }
+
+    private void createReplacementsSheet(Entity entity, HSSFSheet sheet, Locale locale) {
+        boolean showCurrentStockLevel = entity.getBooleanField(MaterialRequirementFields.SHOW_CURRENT_STOCK_LEVEL);
+
+        HSSFRow header = sheet.createRow(0);
+
+        int column = 0;
+
+        HSSFCell cellReplacementTo = header.createCell(column);
+        cellReplacementTo.setCellValue(translationService.translate("materialRequirements.materialRequirement.report.replacementTo", locale));
+        xlsHelper.setCellStyle(sheet, cellReplacementTo);
+        column += 1;
+
+        HSSFCell cellProductNumber = header.createCell(column);
+        cellProductNumber.setCellValue(translationService.translate("materialRequirements.materialRequirement.report.productNumber", locale));
+        xlsHelper.setCellStyle(sheet, cellProductNumber);
+        column += 1;
+
+        HSSFCell cellProductName = header.createCell(column);
+        cellProductName.setCellValue(translationService.translate("materialRequirements.materialRequirement.report.productName", locale));
+        xlsHelper.setCellStyle(sheet, cellProductName);
+        column += 1;
+
+        HSSFCell cellQuantity = header.createCell(column);
+        cellQuantity.setCellValue(translationService.translate("materialRequirements.materialRequirement.report.quantity", locale));
+        xlsHelper.setCellStyle(sheet, cellQuantity);
+        column += 1;
+
+        HSSFCell cell3 = header.createCell(column);
+        cell3.setCellValue(translationService.translate("materialRequirements.materialRequirement.report.product.unit", locale));
+        xlsHelper.setCellStyle(sheet, cell3);
+        column += 1;
+
+        if (showCurrentStockLevel) {
+            HSSFCell cellStockLevel = header.createCell(column);
+            cellStockLevel.setCellValue(
+                    translationService.translate("materialRequirements.materialRequirement.report.currentStock", locale));
+            xlsHelper.setCellStyle(sheet, cellStockLevel);
+        }
+
+        int rowNum = 1;
+        column = 0;
+
+        for (Map.Entry<Entity, List<Entity>> replacement : replacements.entrySet()) {
+            String replacementTo = replacement.getKey().getBelongsToField(MaterialRequirementProductFields.PRODUCT).getStringField(ProductFields.NUMBER);
+
+            for (Entity substituteComponent : replacement.getValue()) {
+                Entity product = substituteComponent.getBelongsToField(MaterialRequirementProductFields.PRODUCT);
+                HSSFRow row = sheet.createRow(rowNum++);
+
+                column = 0;
+                row.createCell(column).setCellValue(replacementTo);
+                column += 1;
+                row.createCell(column).setCellValue(product.getStringField(ProductFields.NUMBER));
+                column += 1;
+                row.createCell(column).setCellValue(product.getStringField(ProductFields.NAME));
+                column += 1;
+                row.createCell(column).setCellValue(numberService.format(substituteComponent.getDecimalField(MaterialRequirementProductFields.QUANTITY)));
+                column += 1;
+                row.createCell(column).setCellValue(product.getStringField(ProductFields.UNIT));
+                column += 1;
+
+                if (showCurrentStockLevel) {
+                    row.createCell(column).setCellValue(numberService.format(BigDecimal.ZERO));
+                    column += 1;
+                }
             }
         }
 

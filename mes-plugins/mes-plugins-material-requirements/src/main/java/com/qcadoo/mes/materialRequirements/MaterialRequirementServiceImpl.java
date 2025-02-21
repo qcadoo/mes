@@ -27,6 +27,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.lowagie.text.DocumentException;
 import com.qcadoo.mes.basic.constants.ProductFields;
+import com.qcadoo.mes.basic.constants.SubstituteComponentFields;
 import com.qcadoo.mes.basicProductionCounting.BasicProductionCountingService;
 import com.qcadoo.mes.materialFlowResources.MaterialFlowResourcesService;
 import com.qcadoo.mes.materialRequirements.constants.MaterialRequirementFields;
@@ -46,10 +47,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -116,8 +114,34 @@ public class MaterialRequirementServiceImpl implements MaterialRequirementServic
 
         createMaterialRequirementProducts(materialRequirementWithFileName);
 
-        materialRequirementPdfService.generateDocument(materialRequirementWithFileName, state.getLocale());
-        materialRequirementXlsService.generateDocument(materialRequirementWithFileName, state.getLocale());
+        Map<Entity, List<Entity>> replacements = new HashMap<>();
+        if (materialRequirement.getBooleanField(MaterialRequirementFields.SHOW_REPLACEMENTS)) {
+            replacements = createReplacements(materialRequirementWithFileName);
+        }
+
+        materialRequirementPdfService.generateDocument(materialRequirementWithFileName, replacements, state.getLocale());
+        materialRequirementXlsService.generateDocument(materialRequirementWithFileName, replacements, state.getLocale());
+    }
+
+    private Map<Entity, List<Entity>> createReplacements(Entity materialRequirementWithFileName) {
+        Map<Entity, List<Entity>> replacements = new HashMap<>();
+        for (Entity materialRequirementProduct : materialRequirementWithFileName.getHasManyField(MaterialRequirementFields.MATERIAL_REQUIREMENT_PRODUCTS)) {
+            Entity product = materialRequirementProduct.getBelongsToField(MaterialRequirementProductFields.PRODUCT);
+            if (!product.getHasManyField(ProductFields.SUBSTITUTE_COMPONENTS).isEmpty()) {
+                List<Entity> substituteComponents = new ArrayList<>();
+                for (Entity substituteComponent : product.getHasManyField(ProductFields.SUBSTITUTE_COMPONENTS)) {
+                    Entity materialRequirementSubstitute = getMaterialRequirementProductDD().create();
+                    materialRequirementSubstitute.setField(MaterialRequirementProductFields.PRODUCT, substituteComponent.getBelongsToField(SubstituteComponentFields.PRODUCT));
+                    materialRequirementSubstitute.setField(MaterialRequirementProductFields.QUANTITY,
+                            numberService.setScaleWithDefaultMathContext(substituteComponent.getDecimalField(SubstituteComponentFields.QUANTITY)
+                                    .multiply(materialRequirementProduct.getDecimalField(MaterialRequirementProductFields.QUANTITY),
+                                            numberService.getMathContext())));
+                    substituteComponents.add(materialRequirementSubstitute);
+                }
+                replacements.put(materialRequirementProduct, substituteComponents);
+            }
+        }
+        return replacements;
     }
 
     private void createMaterialRequirementProducts(final Entity materialRequirement) {
