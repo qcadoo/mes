@@ -365,7 +365,7 @@ public final class MaterialRequirementXlsService extends XlsDocumentService {
                 column += 1;
 
                 if (showCurrentStockLevel) {
-                    row.createCell(column).setCellValue(numberService.format(BigDecimal.ZERO));
+                    row.createCell(column).setCellValue(numberService.format(substituteComponent.getDecimalField(MaterialRequirementProductFields.CURRENT_STOCK)));
                     column += 1;
                 }
             }

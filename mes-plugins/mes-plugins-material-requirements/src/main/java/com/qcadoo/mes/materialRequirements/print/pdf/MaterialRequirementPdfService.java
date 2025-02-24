@@ -420,7 +420,7 @@ public final class MaterialRequirementPdfService extends PdfDocumentService {
 
                     if (showCurrentStockLevel) {
                         table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_RIGHT);
-                        table.addCell(new Phrase(numberService.format(BigDecimal.ZERO), FontUtils.getDejavuRegular7Light()));
+                        table.addCell(new Phrase(numberService.format(substituteComponent.getDecimalField(MaterialRequirementProductFields.CURRENT_STOCK)), FontUtils.getDejavuRegular7Light()));
                         table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_LEFT);
                     }
                     table.addCell(new Phrase("", FontUtils.getDejavuRegular7Light()));

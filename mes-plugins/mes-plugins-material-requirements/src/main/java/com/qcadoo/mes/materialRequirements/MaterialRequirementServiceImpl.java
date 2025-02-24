@@ -124,6 +124,8 @@ public class MaterialRequirementServiceImpl implements MaterialRequirementServic
     }
 
     private Map<Entity, List<Entity>> createReplacements(Entity materialRequirementWithFileName) {
+        boolean showCurrentStockLevel = materialRequirementWithFileName.getBooleanField(MaterialRequirementFields.SHOW_CURRENT_STOCK_LEVEL);
+        Entity stockLevelLocation = materialRequirementWithFileName.getBelongsToField(MaterialRequirementFields.STOCK_LEVEL_LOCATION);
         Map<Entity, List<Entity>> replacements = new HashMap<>();
         for (Entity materialRequirementProduct : materialRequirementWithFileName.getHasManyField(MaterialRequirementFields.MATERIAL_REQUIREMENT_PRODUCTS)) {
             Entity product = materialRequirementProduct.getBelongsToField(MaterialRequirementProductFields.PRODUCT);
@@ -132,6 +134,7 @@ public class MaterialRequirementServiceImpl implements MaterialRequirementServic
                 for (Entity substituteComponent : product.getHasManyField(ProductFields.SUBSTITUTE_COMPONENTS)) {
                     Entity materialRequirementSubstitute = getMaterialRequirementProductDD().create();
                     materialRequirementSubstitute.setField(MaterialRequirementProductFields.PRODUCT, substituteComponent.getBelongsToField(SubstituteComponentFields.PRODUCT));
+                    materialRequirementSubstitute.setField(MaterialRequirementProductFields.LOCATION, materialRequirementProduct.getBelongsToField(MaterialRequirementProductFields.LOCATION));
                     materialRequirementSubstitute.setField(MaterialRequirementProductFields.QUANTITY,
                             numberService.setScaleWithDefaultMathContext(substituteComponent.getDecimalField(SubstituteComponentFields.QUANTITY)
                                     .multiply(materialRequirementProduct.getDecimalField(MaterialRequirementProductFields.QUANTITY),
@@ -139,6 +142,32 @@ public class MaterialRequirementServiceImpl implements MaterialRequirementServic
                     substituteComponents.add(materialRequirementSubstitute);
                 }
                 replacements.put(materialRequirementProduct, substituteComponents);
+            }
+        }
+
+        if (showCurrentStockLevel) {
+            Map<Long, Map<Long, BigDecimal>> quantitiesInStock = Maps.newHashMap();
+            if (stockLevelLocation != null) {
+                Set<Entity> products = replacements.values().stream().flatMap(List::stream).map(e -> e.getBelongsToField(MaterialRequirementProductFields.PRODUCT))
+                        .collect(Collectors.toSet());
+                quantitiesInStock.put(stockLevelLocation.getId(),
+                        materialFlowResourcesService.getQuantitiesForProductsAndLocation(new ArrayList<>(products), stockLevelLocation));
+            } else {
+                List<Entity> substituteComponents = replacements.values().stream().flatMap(List::stream).filter(e -> Objects.nonNull(e.getBelongsToField(MaterialRequirementProductFields.LOCATION)))
+                        .collect(Collectors.toList());
+                quantitiesInStock = materialRequirementDataService.getReplacementQuantitiesInStock(substituteComponents);
+            }
+            for (Entity substituteComponent : replacements.values().stream().flatMap(List::stream).collect(Collectors.toList())) {
+                if (stockLevelLocation != null) {
+                    substituteComponent.setField(MaterialRequirementProductFields.CURRENT_STOCK,
+                            BigDecimalUtils.convertNullToZero(materialRequirementDataService.getQuantity(quantitiesInStock,
+                                    substituteComponent.getBelongsToField(MaterialRequirementProductFields.PRODUCT).getId(), stockLevelLocation)));
+                } else {
+                    substituteComponent.setField(MaterialRequirementProductFields.CURRENT_STOCK, Objects.nonNull(substituteComponent.getBelongsToField(MaterialRequirementProductFields.LOCATION)) ?
+                            BigDecimalUtils.convertNullToZero(materialRequirementDataService.getQuantity(quantitiesInStock,
+                                    substituteComponent.getBelongsToField(MaterialRequirementProductFields.PRODUCT).getId(),
+                                    substituteComponent.getBelongsToField(MaterialRequirementProductFields.LOCATION).getId())) : BigDecimal.ZERO);
+                }
             }
         }
         return replacements;
@@ -158,14 +187,14 @@ public class MaterialRequirementServiceImpl implements MaterialRequirementServic
         Map<Long, Map<Long, BigDecimal>> quantitiesInStock = Maps.newHashMap();
 
         if (showCurrentStockLevel) {
-            List<MaterialRequirementEntry> materialRequirementEntries;
             if (stockLevelLocation != null) {
-                materialRequirementEntries = warehouseDateKeys.stream()
-                        .flatMap(warehouseDateKey -> materialRequirementEntriesMap.get(warehouseDateKey).stream())
-                        .collect(Collectors.toList());
-                quantitiesInStock = materialRequirementDataService.getQuantitiesInStock(materialRequirementEntries, stockLevelLocation);
+                Set<Entity> products = warehouseDateKeys.stream()
+                        .flatMap(warehouseDateKey -> materialRequirementEntriesMap.get(warehouseDateKey).stream()).map(MaterialRequirementEntry::getProduct)
+                        .collect(Collectors.toSet());
+                quantitiesInStock.put(stockLevelLocation.getId(),
+                        materialFlowResourcesService.getQuantitiesForProductsAndLocation(new ArrayList<>(products), stockLevelLocation));
             } else {
-                materialRequirementEntries = warehouseDateKeys.stream()
+                List<MaterialRequirementEntry> materialRequirementEntries = warehouseDateKeys.stream()
                         .filter(warehouseDateKey -> Objects.nonNull(warehouseDateKey.getWarehouseId()))
                         .flatMap(warehouseDateKey -> materialRequirementEntriesMap.get(warehouseDateKey).stream())
                         .collect(Collectors.toList());
@@ -198,10 +227,10 @@ public class MaterialRequirementServiceImpl implements MaterialRequirementServic
 
                 if (showCurrentStockLevel) {
                     if (stockLevelLocation != null) {
-                        currentStock = BigDecimalUtils.convertNullToZero(materialRequirementDataService.getQuantity(quantitiesInStock, materialRequirementEntry, stockLevelLocation));
+                        currentStock = BigDecimalUtils.convertNullToZero(materialRequirementDataService.getQuantity(quantitiesInStock, materialRequirementEntry.getId(), stockLevelLocation));
                     } else {
                         currentStock = Objects.nonNull(locationId) ?
-                                BigDecimalUtils.convertNullToZero(materialRequirementDataService.getQuantity(quantitiesInStock, materialRequirementEntry)) : BigDecimal.ZERO;
+                                BigDecimalUtils.convertNullToZero(materialRequirementDataService.getQuantity(quantitiesInStock, materialRequirementEntry.getId(), materialRequirementEntry.getWarehouseId())) : BigDecimal.ZERO;
                     }
                 }
 
