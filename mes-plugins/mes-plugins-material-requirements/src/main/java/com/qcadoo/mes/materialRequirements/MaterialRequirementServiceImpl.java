@@ -93,7 +93,8 @@ public class MaterialRequirementServiceImpl implements MaterialRequirementServic
     }
 
     @Override
-    public void setInputProductsRequiredForTypeDefaultValue(final Entity entity, final String fieldName, final String fieldValue) {
+    public void setInputProductsRequiredForTypeDefaultValue(final Entity entity, final String fieldName,
+                                                            final String fieldValue) {
         String inputProductsRequiredForType = entity.getStringField(fieldName);
 
         if (Objects.isNull(inputProductsRequiredForType)) {
@@ -124,8 +125,6 @@ public class MaterialRequirementServiceImpl implements MaterialRequirementServic
     }
 
     private Map<Entity, List<Entity>> createReplacements(Entity materialRequirementWithFileName) {
-        boolean showCurrentStockLevel = materialRequirementWithFileName.getBooleanField(MaterialRequirementFields.SHOW_CURRENT_STOCK_LEVEL);
-        Entity stockLevelLocation = materialRequirementWithFileName.getBelongsToField(MaterialRequirementFields.STOCK_LEVEL_LOCATION);
         Map<Entity, List<Entity>> replacements = new HashMap<>();
         for (Entity materialRequirementProduct : materialRequirementWithFileName.getHasManyField(MaterialRequirementFields.MATERIAL_REQUIREMENT_PRODUCTS)) {
             Entity product = materialRequirementProduct.getBelongsToField(MaterialRequirementProductFields.PRODUCT);
@@ -145,6 +144,14 @@ public class MaterialRequirementServiceImpl implements MaterialRequirementServic
             }
         }
 
+        addCurrentStock(materialRequirementWithFileName, replacements);
+        return replacements;
+    }
+
+    private void addCurrentStock(Entity materialRequirementWithFileName,
+                                 Map<Entity, List<Entity>> replacements) {
+        boolean showCurrentStockLevel = materialRequirementWithFileName.getBooleanField(MaterialRequirementFields.SHOW_CURRENT_STOCK_LEVEL);
+        Entity stockLevelLocation = materialRequirementWithFileName.getBelongsToField(MaterialRequirementFields.STOCK_LEVEL_LOCATION);
         if (showCurrentStockLevel) {
             Map<Long, Map<Long, BigDecimal>> quantitiesInStock = Maps.newHashMap();
             if (stockLevelLocation != null) {
@@ -170,7 +177,6 @@ public class MaterialRequirementServiceImpl implements MaterialRequirementServic
                 }
             }
         }
-        return replacements;
     }
 
     private void createMaterialRequirementProducts(final Entity materialRequirement) {
@@ -273,8 +279,10 @@ public class MaterialRequirementServiceImpl implements MaterialRequirementServic
         materialRequirement.setField(MaterialRequirementFields.MATERIAL_REQUIREMENT_PRODUCTS, materialRequirementProducts);
     }
 
-    private Entity createMaterialRequirementProduct(final Entity materialRequirement, final Long productId, final Long locationId, final Long batchId,
-                                                    final BigDecimal quantity, final BigDecimal currentStock, final BigDecimal batchStock,
+    private Entity createMaterialRequirementProduct(final Entity materialRequirement, final Long productId,
+                                                    final Long locationId, final Long batchId,
+                                                    final BigDecimal quantity, final BigDecimal currentStock,
+                                                    final BigDecimal batchStock,
                                                     final Date orderStartDate, boolean replacementExists) {
         Entity materialRequirementProduct = getMaterialRequirementProductDD().create();
 
