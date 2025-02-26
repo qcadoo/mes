@@ -56,6 +56,7 @@
             <option type="column" name="produceQuantity" fields="produceQuantity" width="45"/>
             <option type="column" name="unit" fields="unit"
                     width="35"/>
+            <option type="column" name="supplier" fields="supplier" width="55"/>
 
             <option type="order" column="productNumber" direction="asc"/>
 
