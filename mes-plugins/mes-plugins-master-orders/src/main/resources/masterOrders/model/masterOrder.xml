@@ -118,6 +118,8 @@
 
         <manyToMany name="masterOrdersMaterialRequirements" model="masterOrdersMaterialRequirement"
                     plugin="masterOrders" joinField="masterOrders" />
+
+        <hasMany name="documents" model="document" plugin="materialFlowResources" joinField="masterOrder"/>
     </fields>
 
     <hooks>

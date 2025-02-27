@@ -297,6 +297,18 @@
             <model:belongsTo name="orderedProductConfigurator" model="orderedProductConfigurator" plugin="masterOrders"/>
         </model:model-field>
 
+        <model:model-field plugin="materialFlowResources" model="document">
+            <model:belongsTo name="masterOrder" model="masterOrder" plugin="masterOrders"/>
+        </model:model-field>
+
+        <model:model-field plugin="materialFlowResources" model="documentDto">
+            <model:string name="masterOrderNumber"/>
+        </model:model-field>
+
+        <model:model-field plugin="materialFlowResources" model="positionDto">
+            <model:string name="masterOrderNumber"/>
+        </model:model-field>
+
         <model:model-hook model="product" plugin="basic">
             <model:validatesWith class="com.qcadoo.mes.masterOrders.hooks.ProductHooksMO"
                                  method="validatesWith"/>
@@ -455,6 +467,18 @@
                                view="deliveriesList" component="grid">
             <view:column name="salesPlanName" fields="salesPlan" expression="#salesPlan?.get('name')" orderable="true" multiSearch="true" searchable="true"
                          width="50"/>
+        </view:view-grid-column>
+
+        <view:view-grid-column plugin="materialFlowResources"
+                               view="documentsList" component="grid">
+            <view:column name="masterOrderNumber" fields="masterOrderNumber" orderable="true"
+                         searchable="true" width="100"/>
+        </view:view-grid-column>
+
+        <view:view-grid-column plugin="materialFlowResources"
+                               view="documentPositionsList" component="grid">
+            <view:column name="masterOrderNumber" fields="masterOrderNumber" orderable="true"
+                         searchable="true" width="45"/>
         </view:view-grid-column>
 
         <view:view-hook plugin="orders" view="orderDetails"

@@ -93,8 +93,7 @@
 
         <model:model-field plugin="materialFlowResources" model="resource">
             <model:hasMany name="orderProductResourceReservations"
-                           model="orderProductResourceReservation" plugin="productFlowThruDivision" joinField="resource"
-            />
+                           model="orderProductResourceReservation" plugin="productFlowThruDivision" joinField="resource"/>
         </model:model-field>
 
 
@@ -158,26 +157,22 @@
 
         <model:model-field plugin="materialFlow" model="location">
             <model:hasMany name="componentsLocationDivisions"
-                           model="division" plugin="basic" joinField="componentsLocation"
-            />
+                           model="division" plugin="basic" joinField="componentsLocation"/>
         </model:model-field>
 
         <model:model-field plugin="materialFlow" model="location">
             <model:hasMany name="componentsOutputLocationDivisions"
-                           model="division" plugin="basic" joinField="componentsOutputLocation"
-            />
+                           model="division" plugin="basic" joinField="componentsOutputLocation"/>
         </model:model-field>
 
         <model:model-field plugin="materialFlow" model="location">
             <model:hasMany name="productsInputLocationDivisions"
-                           model="division" plugin="basic" joinField="productsInputLocation"
-            />
+                           model="division" plugin="basic" joinField="productsInputLocation"/>
         </model:model-field>
 
         <model:model-field plugin="materialFlow" model="location">
             <model:hasMany name="productsFlowLocations"
-                           model="division" plugin="basic" joinField="productsFlowLocation"
-            />
+                           model="division" plugin="basic" joinField="productsFlowLocation"/>
         </model:model-field>
 
         <model:model-field plugin="materialFlowResources" model="reservation">
@@ -244,6 +239,10 @@
         </model:model-field>
 
         <model:model-field plugin="materialFlowResources" model="documentDto">
+            <model:string name="orderNumber"/>
+        </model:model-field>
+
+        <model:model-field plugin="materialFlowResources" model="positionDto">
             <model:string name="orderNumber"/>
         </model:model-field>
 
@@ -648,10 +647,6 @@
             <view:column name="orderNumber" fields="orderNumber" orderable="true"
                          searchable="true" width="100"/>
         </view:view-grid-column>
-
-        <model:model-field plugin="materialFlowResources" model="positionDto">
-            <model:string name="orderNumber"/>
-        </model:model-field>
 
         <view:view-grid-column plugin="materialFlowResources"
                                view="documentPositionsList" component="grid">
