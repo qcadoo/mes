@@ -237,7 +237,7 @@
                 </bigButton>
             </group>
 
-            <group name="documents" defaultAuthorizationRole="ROLE_PLANNING_ORDERS">
+            <group name="documents" defaultAuthorizationRole="ROLE_MASTER_ORDERS_CREATE_RELEASE">
                 <bigButton name="createReleaseDocument" icon="generateIcon24.png">
                     <script>
                         <![CDATA[
