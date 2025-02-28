@@ -57,6 +57,8 @@ public class MaterialRequirementDetailsHooks {
         FieldComponent numberField = (FieldComponent) view.getComponentByReference(MaterialRequirementFields.NUMBER);
         FieldComponent nameField = (FieldComponent) view.getComponentByReference(MaterialRequirementFields.NAME);
         FieldComponent mrpAlgorithmField = (FieldComponent) view.getComponentByReference(MaterialRequirementFields.MRP_ALGORITHM);
+        CheckBoxComponent showReplacementsCheckBox = (CheckBoxComponent) view
+                .getComponentByReference(MaterialRequirementFields.SHOW_REPLACEMENTS);
         CheckBoxComponent includeWarehouseCheckBox = (CheckBoxComponent) view
                 .getComponentByReference(MaterialRequirementFields.INCLUDE_WAREHOUSE);
         CheckBoxComponent showCurrentStockLevelCheckBox = (CheckBoxComponent) view
@@ -75,6 +77,7 @@ public class MaterialRequirementDetailsHooks {
         numberField.setEnabled(!isGenerated);
         nameField.setEnabled(!isGenerated);
         mrpAlgorithmField.setEnabled(!isGenerated);
+        showReplacementsCheckBox.setEnabled(!isGenerated);
         includeWarehouseCheckBox.setEnabled(!isGenerated);
         showCurrentStockLevelCheckBox.setEnabled(!isGenerated && includeWarehouse);
         stockLevelLocationLookup.setEnabled(!isGenerated && includeWarehouse);

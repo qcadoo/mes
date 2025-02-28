@@ -1,7 +1,7 @@
 /**
  * ***************************************************************************
  * Copyright (c) 2010 Qcadoo Limited
- * Project: Qcadoo MES
+ * Project: Qcadoo Framework
  * Version: 1.4
  *
  * This file is part of Qcadoo.
@@ -21,29 +21,16 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.materialRequirements.constants;
+package com.qcadoo.mes.masterOrders.constants;
 
-public final class MaterialRequirementProductFields {
 
-    private MaterialRequirementProductFields() {
+public final class DocumentFieldsMO {
+
+    private DocumentFieldsMO(){
 
     }
 
-    public static final String MATERIAL_REQUIREMENT = "materialRequirement";
+    public static final String MASTER_ORDER = "masterOrder";
 
-    public static final String PRODUCT = "product";
-
-    public static final String LOCATION = "location";
-
-    public static final String BATCH = "batch";
-
-    public static final String QUANTITY = "quantity";
-
-    public static final String CURRENT_STOCK = "currentStock";
-
-    public static final String BATCH_STOCK = "batchStock";
-
-    public static final String ORDER_START_DATE = "orderStartDate";
-    public static final String REPLACEMENT_EXISTS = "replacementExists";
 
 }

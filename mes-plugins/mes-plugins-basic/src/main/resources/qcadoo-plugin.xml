@@ -107,6 +107,7 @@
         <security:role identifier="ROLE_ORDER_DETAILS_VIEW"/>
         <security:role identifier="ROLE_PLANNING_ORDERS"/>
         <security:role identifier="ROLE_PLANNING_MASTER_ORDERS"/>
+        <security:role identifier="ROLE_MASTER_ORDERS_CREATE_RELEASE"/>
         <security:role identifier="ROLE_SCHEDULES"/>
         <security:role identifier="ROLE_PRODUCTION_LINE_SCHEDULES"/>
         <security:role identifier="ROLE_OPTIMIZE_CUTTING"/>

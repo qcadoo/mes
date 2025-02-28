@@ -38,6 +38,7 @@ import java.util.*;
 @Service
 public class DeliveriesListListeners {
 
+    public static final String DELIVERIES_DELIVERY_ERROR_SEND_EMAIL_ERROR = "deliveries.delivery.error.sendEmailError";
     @Autowired
     private ParameterService parameterService;
 
@@ -84,7 +85,7 @@ public class DeliveriesListListeners {
         String username = parameter.getStringField(ParameterFields.EMAIL_USERNAME);
         if (StringUtils.isEmpty(username)) {
             state.addMessage(
-                    "deliveries.delivery.error.sendEmailError",
+                    DELIVERIES_DELIVERY_ERROR_SEND_EMAIL_ERROR,
                     ComponentState.MessageType.FAILURE);
             return;
         }
@@ -105,13 +106,13 @@ public class DeliveriesListListeners {
                         continue;
                     } else {
                         state.addMessage(
-                                "deliveries.delivery.error.sendEmailError",
+                                DELIVERIES_DELIVERY_ERROR_SEND_EMAIL_ERROR,
                                 ComponentState.MessageType.FAILURE);
                         return;
                     }
                 } catch (MailAuthenticationException e) {
                     state.addMessage(
-                            "deliveries.delivery.error.sendEmailError",
+                            DELIVERIES_DELIVERY_ERROR_SEND_EMAIL_ERROR,
                             ComponentState.MessageType.FAILURE);
                     return;
                 }
@@ -130,12 +131,12 @@ public class DeliveriesListListeners {
                     "deliveries.delivery.info.sendEmail",
                     ComponentState.MessageType.SUCCESS);
         } else {
-            if(!suppliersWithoutEmail.isEmpty()) {
+            if (!suppliersWithoutEmail.isEmpty()) {
                 state.addMessage(
                         "deliveries.delivery.error.suppliersWithoutEmail",
                         ComponentState.MessageType.FAILURE, String.join(", ", suppliersWithoutEmail));
             }
-            if(!suppliersWithInvalidEmail.isEmpty()) {
+            if (!suppliersWithInvalidEmail.isEmpty()) {
                 state.addMessage(
                         "deliveries.delivery.error.suppliersWithInvalidEmail",
                         ComponentState.MessageType.FAILURE, String.join(", ", suppliersWithInvalidEmail));

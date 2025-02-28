@@ -26,6 +26,8 @@ package com.qcadoo.mes.materialRequirements;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.lowagie.text.DocumentException;
+import com.qcadoo.mes.basic.constants.ProductFields;
+import com.qcadoo.mes.basic.constants.SubstituteComponentFields;
 import com.qcadoo.mes.basicProductionCounting.BasicProductionCountingService;
 import com.qcadoo.mes.materialFlowResources.MaterialFlowResourcesService;
 import com.qcadoo.mes.materialRequirements.constants.MaterialRequirementFields;
@@ -45,10 +47,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -94,7 +93,8 @@ public class MaterialRequirementServiceImpl implements MaterialRequirementServic
     }
 
     @Override
-    public void setInputProductsRequiredForTypeDefaultValue(final Entity entity, final String fieldName, final String fieldValue) {
+    public void setInputProductsRequiredForTypeDefaultValue(final Entity entity, final String fieldName,
+                                                            final String fieldValue) {
         String inputProductsRequiredForType = entity.getStringField(fieldName);
 
         if (Objects.isNull(inputProductsRequiredForType)) {
@@ -115,8 +115,68 @@ public class MaterialRequirementServiceImpl implements MaterialRequirementServic
 
         createMaterialRequirementProducts(materialRequirementWithFileName);
 
-        materialRequirementPdfService.generateDocument(materialRequirementWithFileName, state.getLocale());
-        materialRequirementXlsService.generateDocument(materialRequirementWithFileName, state.getLocale());
+        Map<Entity, List<Entity>> replacements = new HashMap<>();
+        if (materialRequirement.getBooleanField(MaterialRequirementFields.SHOW_REPLACEMENTS)) {
+            replacements = createReplacements(materialRequirementWithFileName);
+        }
+
+        materialRequirementPdfService.generateDocument(materialRequirementWithFileName, replacements, state.getLocale());
+        materialRequirementXlsService.generateDocument(materialRequirementWithFileName, replacements, state.getLocale());
+    }
+
+    private Map<Entity, List<Entity>> createReplacements(Entity materialRequirementWithFileName) {
+        Map<Entity, List<Entity>> replacements = new HashMap<>();
+        for (Entity materialRequirementProduct : materialRequirementWithFileName.getHasManyField(MaterialRequirementFields.MATERIAL_REQUIREMENT_PRODUCTS)) {
+            Entity product = materialRequirementProduct.getBelongsToField(MaterialRequirementProductFields.PRODUCT);
+            if (!product.getHasManyField(ProductFields.SUBSTITUTE_COMPONENTS).isEmpty()) {
+                List<Entity> substituteComponents = new ArrayList<>();
+                for (Entity substituteComponent : product.getHasManyField(ProductFields.SUBSTITUTE_COMPONENTS)) {
+                    Entity materialRequirementSubstitute = getMaterialRequirementProductDD().create();
+                    materialRequirementSubstitute.setField(MaterialRequirementProductFields.PRODUCT, substituteComponent.getBelongsToField(SubstituteComponentFields.PRODUCT));
+                    materialRequirementSubstitute.setField(MaterialRequirementProductFields.LOCATION, materialRequirementProduct.getBelongsToField(MaterialRequirementProductFields.LOCATION));
+                    materialRequirementSubstitute.setField(MaterialRequirementProductFields.QUANTITY,
+                            numberService.setScaleWithDefaultMathContext(substituteComponent.getDecimalField(SubstituteComponentFields.QUANTITY)
+                                    .multiply(materialRequirementProduct.getDecimalField(MaterialRequirementProductFields.QUANTITY),
+                                            numberService.getMathContext())));
+                    substituteComponents.add(materialRequirementSubstitute);
+                }
+                replacements.put(materialRequirementProduct, substituteComponents);
+            }
+        }
+
+        addCurrentStock(materialRequirementWithFileName, replacements);
+        return replacements;
+    }
+
+    private void addCurrentStock(Entity materialRequirementWithFileName,
+                                 Map<Entity, List<Entity>> replacements) {
+        boolean showCurrentStockLevel = materialRequirementWithFileName.getBooleanField(MaterialRequirementFields.SHOW_CURRENT_STOCK_LEVEL);
+        Entity stockLevelLocation = materialRequirementWithFileName.getBelongsToField(MaterialRequirementFields.STOCK_LEVEL_LOCATION);
+        if (showCurrentStockLevel) {
+            Map<Long, Map<Long, BigDecimal>> quantitiesInStock = Maps.newHashMap();
+            if (stockLevelLocation != null) {
+                Set<Entity> products = replacements.values().stream().flatMap(List::stream).map(e -> e.getBelongsToField(MaterialRequirementProductFields.PRODUCT))
+                        .collect(Collectors.toSet());
+                quantitiesInStock.put(stockLevelLocation.getId(),
+                        materialFlowResourcesService.getQuantitiesForProductsAndLocation(new ArrayList<>(products), stockLevelLocation));
+            } else {
+                List<Entity> substituteComponents = replacements.values().stream().flatMap(List::stream).filter(e -> Objects.nonNull(e.getBelongsToField(MaterialRequirementProductFields.LOCATION)))
+                        .collect(Collectors.toList());
+                quantitiesInStock = materialRequirementDataService.getReplacementQuantitiesInStock(substituteComponents);
+            }
+            for (Entity substituteComponent : replacements.values().stream().flatMap(List::stream).collect(Collectors.toList())) {
+                if (stockLevelLocation != null) {
+                    substituteComponent.setField(MaterialRequirementProductFields.CURRENT_STOCK,
+                            BigDecimalUtils.convertNullToZero(materialRequirementDataService.getQuantity(quantitiesInStock,
+                                    substituteComponent.getBelongsToField(MaterialRequirementProductFields.PRODUCT).getId(), stockLevelLocation)));
+                } else {
+                    substituteComponent.setField(MaterialRequirementProductFields.CURRENT_STOCK, Objects.nonNull(substituteComponent.getBelongsToField(MaterialRequirementProductFields.LOCATION)) ?
+                            BigDecimalUtils.convertNullToZero(materialRequirementDataService.getQuantity(quantitiesInStock,
+                                    substituteComponent.getBelongsToField(MaterialRequirementProductFields.PRODUCT).getId(),
+                                    substituteComponent.getBelongsToField(MaterialRequirementProductFields.LOCATION).getId())) : BigDecimal.ZERO);
+                }
+            }
+        }
     }
 
     private void createMaterialRequirementProducts(final Entity materialRequirement) {
@@ -133,14 +193,14 @@ public class MaterialRequirementServiceImpl implements MaterialRequirementServic
         Map<Long, Map<Long, BigDecimal>> quantitiesInStock = Maps.newHashMap();
 
         if (showCurrentStockLevel) {
-            List<MaterialRequirementEntry> materialRequirementEntries;
             if (stockLevelLocation != null) {
-                materialRequirementEntries = warehouseDateKeys.stream()
-                        .flatMap(warehouseDateKey -> materialRequirementEntriesMap.get(warehouseDateKey).stream())
-                        .collect(Collectors.toList());
-                quantitiesInStock = materialRequirementDataService.getQuantitiesInStock(materialRequirementEntries, stockLevelLocation);
+                Set<Entity> products = warehouseDateKeys.stream()
+                        .flatMap(warehouseDateKey -> materialRequirementEntriesMap.get(warehouseDateKey).stream()).map(MaterialRequirementEntry::getProduct)
+                        .collect(Collectors.toSet());
+                quantitiesInStock.put(stockLevelLocation.getId(),
+                        materialFlowResourcesService.getQuantitiesForProductsAndLocation(new ArrayList<>(products), stockLevelLocation));
             } else {
-                materialRequirementEntries = warehouseDateKeys.stream()
+                List<MaterialRequirementEntry> materialRequirementEntries = warehouseDateKeys.stream()
                         .filter(warehouseDateKey -> Objects.nonNull(warehouseDateKey.getWarehouseId()))
                         .flatMap(warehouseDateKey -> materialRequirementEntriesMap.get(warehouseDateKey).stream())
                         .collect(Collectors.toList());
@@ -173,10 +233,10 @@ public class MaterialRequirementServiceImpl implements MaterialRequirementServic
 
                 if (showCurrentStockLevel) {
                     if (stockLevelLocation != null) {
-                        currentStock = BigDecimalUtils.convertNullToZero(materialRequirementDataService.getQuantity(quantitiesInStock, materialRequirementEntry, stockLevelLocation));
+                        currentStock = BigDecimalUtils.convertNullToZero(materialRequirementDataService.getQuantity(quantitiesInStock, materialRequirementEntry.getId(), stockLevelLocation));
                     } else {
                         currentStock = Objects.nonNull(locationId) ?
-                                BigDecimalUtils.convertNullToZero(materialRequirementDataService.getQuantity(quantitiesInStock, materialRequirementEntry)) : BigDecimal.ZERO;
+                                BigDecimalUtils.convertNullToZero(materialRequirementDataService.getQuantity(quantitiesInStock, materialRequirementEntry.getId(), materialRequirementEntry.getWarehouseId())) : BigDecimal.ZERO;
                     }
                 }
 
@@ -184,8 +244,10 @@ public class MaterialRequirementServiceImpl implements MaterialRequirementServic
                     orderStartDate = warehouseDateKey.getDate();
                 }
 
+                boolean replacementExists = !materialRequirementEntry.getProduct().getHasManyField(ProductFields.SUBSTITUTE_COMPONENTS).isEmpty();
                 if (batches.isEmpty()) {
-                    Entity materialRequirementProduct = createMaterialRequirementProduct(materialRequirement, productId, locationId, null, quantity, currentStock, null, orderStartDate);
+                    Entity materialRequirementProduct = createMaterialRequirementProduct(materialRequirement, productId,
+                            locationId, null, quantity, currentStock, null, orderStartDate, replacementExists);
 
                     materialRequirementProducts.add(materialRequirementProduct);
                 } else {
@@ -205,7 +267,8 @@ public class MaterialRequirementServiceImpl implements MaterialRequirementServic
                             }
                         }
 
-                        Entity materialRequirementProduct = createMaterialRequirementProduct(materialRequirement, productId, locationId, batchId, quantity, currentStock, batchStock, orderStartDate);
+                        Entity materialRequirementProduct = createMaterialRequirementProduct(materialRequirement, productId,
+                                locationId, batchId, quantity, currentStock, batchStock, orderStartDate, replacementExists);
 
                         materialRequirementProducts.add(materialRequirementProduct);
                     }
@@ -216,9 +279,11 @@ public class MaterialRequirementServiceImpl implements MaterialRequirementServic
         materialRequirement.setField(MaterialRequirementFields.MATERIAL_REQUIREMENT_PRODUCTS, materialRequirementProducts);
     }
 
-    private Entity createMaterialRequirementProduct(final Entity materialRequirement, final Long productId, final Long locationId, final Long batchId,
-                                                    final BigDecimal quantity, final BigDecimal currentStock, final BigDecimal batchStock,
-                                                    final Date orderStartDate) {
+    private Entity createMaterialRequirementProduct(final Entity materialRequirement, final Long productId,
+                                                    final Long locationId, final Long batchId,
+                                                    final BigDecimal quantity, final BigDecimal currentStock,
+                                                    final BigDecimal batchStock,
+                                                    final Date orderStartDate, boolean replacementExists) {
         Entity materialRequirementProduct = getMaterialRequirementProductDD().create();
 
         materialRequirementProduct.setField(MaterialRequirementProductFields.MATERIAL_REQUIREMENT, materialRequirement);
@@ -232,6 +297,7 @@ public class MaterialRequirementServiceImpl implements MaterialRequirementServic
         materialRequirementProduct.setField(MaterialRequirementProductFields.BATCH_STOCK,
                 numberService.setScaleWithDefaultMathContext(batchStock));
         materialRequirementProduct.setField(MaterialRequirementProductFields.ORDER_START_DATE, orderStartDate);
+        materialRequirementProduct.setField(MaterialRequirementProductFields.REPLACEMENT_EXISTS, replacementExists);
 
         return materialRequirementProduct.getDataDefinition().save(materialRequirementProduct);
     }

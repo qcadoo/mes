@@ -49,6 +49,7 @@
             <validatesScale max="5"/>
         </decimal>
         <date name="orderStartDate"/>
+        <boolean name="replacementExists" default="false"/>
 
     </fields>
 

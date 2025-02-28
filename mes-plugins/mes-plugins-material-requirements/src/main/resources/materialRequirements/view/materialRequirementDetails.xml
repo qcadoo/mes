@@ -139,129 +139,88 @@
                 </script>
 
                 <component type="gridLayout" name="gridLayout" columns="3"
-                           rows="1">
+                           rows="8">
                     <layoutElement column="1" row="1">
-                        <component type="gridLayout" name="leftGridLayout" columns="1"
-                                   rows="12">
-                            <layoutElement column="1" row="1">
-                                <component type="checkbox" name="generated" reference="generated"
-                                           field="generated" defaultEnabled="false">
-                                    <option type="textRepresentationOnDisabled" value="false"/>
-                                </component>
-                            </layoutElement>
-                            <layoutElement column="1" row="2">
-                                <component type="input" name="date" reference="date"
-                                           field="date" defaultEnabled="false">
-                                    <option type="textRepresentationOnDisabled" value="false"/>
-                                </component>
-                            </layoutElement>
-                            <layoutElement column="1" row="3">
-                                <component type="input" name="worker" reference="worker"
-                                           field="worker" defaultEnabled="false">
-                                    <option type="textRepresentationOnDisabled" value="false"/>
-                                </component>
-                            </layoutElement>
-                            <layoutElement column="1" row="4">
-                                <component type="input" name="number" reference="number"
-                                           field="number"/>
-                            </layoutElement>
-                            <layoutElement column="1" row="5" height="2">
-                                <component type="textarea" name="name" reference="name"
-                                           field="name"/>
-                            </layoutElement>
-                            <layoutElement column="1" row="7">
-                                <component type="select" name="mrpAlgorithm" reference="mrpAlgorithm"
-                                           field="mrpAlgorithm">
-                                </component>
-                            </layoutElement>
-                            <layoutElement column="1" row="8">
-                                <component type="checkbox" name="includeWarehouse" reference="includeWarehouse"
-                                           field="includeWarehouse" hasDescription="true">
-                                    <listener event="onChange"
-                                              class="com.qcadoo.view.api.listeners.RerenderListener"
-                                              method="onChangeRerender"/>
-                                </component>
-                            </layoutElement>
-                            <layoutElement column="1" row="9">
-                                <component type="lookup" name="location" field="location"
-                                           reference="location">
-                                    <option type="column" name="name" fields="name"/>
-
-                                    <option type="searchable" value="number,name"/>
-                                    <option type="orderable" value="number,name"/>
-
-                                    <option type="expression" value="#number + ' - ' + #name"/>
-                                    <option type="fieldCode" value="number"/>
-                                </component>
-                            </layoutElement>
-                            <layoutElement column="1" row="10">
-                                <component type="checkbox" name="showCurrentStockLevel"
-                                           reference="showCurrentStockLevel"
-                                           field="showCurrentStockLevel" hasDescription="true">
-                                    <listener event="onChange"
-                                              class="com.qcadoo.view.api.listeners.RerenderListener"
-                                              method="onChangeRerender"/>
-                                </component>
-                            </layoutElement>
-                            <layoutElement column="1" row="11">
-                                <component type="lookup" name="stockLevelLocation" field="stockLevelLocation"
-                                           reference="stockLevelLocation" hasDescription="true">
-                                    <option type="column" name="name" fields="name"/>
-
-                                    <option type="searchable" value="number,name"/>
-                                    <option type="orderable" value="number,name"/>
-
-                                    <option type="expression" value="#number + ' - ' + #name"/>
-                                    <option type="fieldCode" value="number"/>
-                                </component>
-                            </layoutElement>
-                            <layoutElement column="1" row="12">
-                                <component type="checkbox" name="includeStartDateOrder"
-                                           reference="includeStartDateOrder"
-                                           field="includeStartDateOrder" hasDescription="true">
-                                </component>
-                            </layoutElement>
+                        <component type="checkbox" name="generated" reference="generated"
+                                   field="generated" defaultEnabled="false">
+                            <option type="textRepresentationOnDisabled" value="false"/>
                         </component>
                     </layoutElement>
-                    <layoutElement column="2" row="1" width="2">
-                        <component type="gridLayout" name="rightGridLayout" columns="1"
-                                   rows="1">
-                            <layoutElement column="1" row="1">
-                                <component type="lookup" name="order" reference="orderLookup"
-                                           field="orders" defaultVisible="false" persistent="false" hasLabel="false">
-                                    <option type="column" name="name" fields="name" link="true"
-                                            width="100"/>
-                                    <option type="column" name="dateFrom" fields="dateFrom"
-                                            link="false" width="100"/>
-                                    <option type="column" name="dateTo" fields="dateTo"
-                                            link="false" width="100"/>
+                    <layoutElement column="1" row="2">
+                        <component type="input" name="date" reference="date"
+                                   field="date" defaultEnabled="false">
+                            <option type="textRepresentationOnDisabled" value="false"/>
+                        </component>
+                    </layoutElement>
+                    <layoutElement column="1" row="3">
+                        <component type="input" name="worker" reference="worker"
+                                   field="worker" defaultEnabled="false">
+                            <option type="textRepresentationOnDisabled" value="false"/>
+                        </component>
+                    </layoutElement>
+                    <layoutElement column="1" row="4">
+                        <component type="input" name="number" reference="number"
+                                   field="number"/>
+                    </layoutElement>
+                    <layoutElement column="1" row="5" height="2">
+                        <component type="textarea" name="name" reference="name"
+                                   field="name"/>
+                    </layoutElement>
+                    <layoutElement column="1" row="7">
+                        <component type="select" name="mrpAlgorithm" reference="mrpAlgorithm"
+                                   field="mrpAlgorithm">
+                        </component>
+                    </layoutElement>
+                    <layoutElement column="1" row="8">
+                        <component type="checkbox" name="showReplacements" reference="showReplacements"
+                                   field="showReplacements" hasDescription="true">
+                        </component>
+                    </layoutElement>
+                    <layoutElement column="2" row="1">
+                        <component type="checkbox" name="includeWarehouse" reference="includeWarehouse"
+                                   field="includeWarehouse" hasDescription="true">
+                            <listener event="onChange"
+                                      class="com.qcadoo.view.api.listeners.RerenderListener"
+                                      method="onChangeRerender"/>
+                        </component>
+                    </layoutElement>
+                    <layoutElement column="2" row="2">
+                        <component type="lookup" name="location" field="location"
+                                   reference="location">
+                            <option type="column" name="name" fields="name"/>
 
-                                    <option type="searchable" value="number,name,dateFrom,dateTo"/>
-                                    <option type="orderable" value="number,name,dateFrom,dateTo"/>
+                            <option type="searchable" value="number,name"/>
+                            <option type="orderable" value="number,name"/>
 
-                                    <option type="expression"
-                                            value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name"/>
-                                    <option type="fieldCode" value="number"/>
+                            <option type="expression" value="#number + ' - ' + #name"/>
+                            <option type="fieldCode" value="number"/>
+                        </component>
+                    </layoutElement>
+                    <layoutElement column="2" row="3">
+                        <component type="checkbox" name="showCurrentStockLevel"
+                                   reference="showCurrentStockLevel"
+                                   field="showCurrentStockLevel" hasDescription="true">
+                            <listener event="onChange"
+                                      class="com.qcadoo.view.api.listeners.RerenderListener"
+                                      method="onChangeRerender"/>
+                        </component>
+                    </layoutElement>
+                    <layoutElement column="2" row="4">
+                        <component type="lookup" name="stockLevelLocation" field="stockLevelLocation"
+                                   reference="stockLevelLocation" hasDescription="true">
+                            <option type="column" name="name" fields="name"/>
 
-                                    <option type="multiselect" value="true"/>
-                                </component>
-                                <component type="grid" name="orders"
-                                           reference="orders" source="#{form}.orders"
-                                           defaultEnabled="false">
-                                    <option type="column" name="number" fields="number" width="50"/>
-                                    <option type="column" name="name" fields="name"/>
+                            <option type="searchable" value="number,name"/>
+                            <option type="orderable" value="number,name"/>
 
-                                    <option type="order" column="number" direction="desc"/>
-
-                                    <option type="paginable" value="false"/>
-                                    <option type="multiselect" value="true"/>
-                                    <option type="creatable" value="true"/>
-                                    <option type="deletable" value="true"/>
-
-                                    <option type="weakRelation" value="true"/>
-                                    <option type="correspondingLookup" value="orderLookup"/>
-                                </component>
-                            </layoutElement>
+                            <option type="expression" value="#number + ' - ' + #name"/>
+                            <option type="fieldCode" value="number"/>
+                        </component>
+                    </layoutElement>
+                    <layoutElement column="2" row="5">
+                        <component type="checkbox" name="includeStartDateOrder"
+                                   reference="includeStartDateOrder"
+                                   field="includeStartDateOrder" hasDescription="true">
                         </component>
                     </layoutElement>
                 </component>
@@ -275,6 +234,48 @@
                 <listener event="generateMaterialRequirement"
                           class="com.qcadoo.mes.materialRequirements.listeners.MaterialRequirementDetailsListeners"
                           method="generateMaterialRequirement"/>
+            </component>
+        </windowTab>
+
+        <windowTab name="ordersTab">
+            <component type="gridLayout" name="rightGridLayout" columns="1"
+                       rows="1">
+                <layoutElement column="1" row="1">
+                    <component type="lookup" name="order" reference="orderLookup"
+                               field="orders" defaultVisible="false" persistent="false" hasLabel="false">
+                        <option type="column" name="name" fields="name" link="true"
+                                width="100"/>
+                        <option type="column" name="dateFrom" fields="dateFrom"
+                                link="false" width="100"/>
+                        <option type="column" name="dateTo" fields="dateTo"
+                                link="false" width="100"/>
+
+                        <option type="searchable" value="number,name,dateFrom,dateTo"/>
+                        <option type="orderable" value="number,name,dateFrom,dateTo"/>
+
+                        <option type="expression"
+                                value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name"/>
+                        <option type="fieldCode" value="number"/>
+
+                        <option type="multiselect" value="true"/>
+                    </component>
+                    <component type="grid" name="orders"
+                               reference="orders" source="#{form}.orders"
+                               defaultEnabled="false">
+                        <option type="column" name="number" fields="number" width="50"/>
+                        <option type="column" name="name" fields="name"/>
+
+                        <option type="order" column="number" direction="desc"/>
+
+                        <option type="paginable" value="false"/>
+                        <option type="multiselect" value="true"/>
+                        <option type="creatable" value="true"/>
+                        <option type="deletable" value="true"/>
+
+                        <option type="weakRelation" value="true"/>
+                        <option type="correspondingLookup" value="orderLookup"/>
+                    </component>
+                </layoutElement>
             </component>
         </windowTab>
 
@@ -304,13 +305,15 @@
                         width="60"/>
                 <option type="column" name="orderStartDate" fields="orderStartDate"
                         width="80"/>
+                <option type="column" name="replacementExists" fields="replacementExists"
+                        width="60"/>
 
                 <option type="order" column="productNumber" direction="asc"/>
 
                 <option type="searchable"
-                        value="productNumber,productName,quantity,productUnit,batchNumber,locationNumber,currentStock,batchStock,orderStartDate"/>
+                        value="productNumber,productName,quantity,productUnit,batchNumber,locationNumber,currentStock,batchStock,orderStartDate,replacementExists"/>
                 <option type="orderable"
-                        value="productNumber,productName,quantity,productUnit,batchNumber,locationNumber,currentStock,batchStock,orderStartDate"/>
+                        value="productNumber,productName,quantity,productUnit,batchNumber,locationNumber,currentStock,batchStock,orderStartDate,replacementExists"/>
 
                 <option type="fullscreen" value="true"/>
                 <option type="multiselect" value="true"/>

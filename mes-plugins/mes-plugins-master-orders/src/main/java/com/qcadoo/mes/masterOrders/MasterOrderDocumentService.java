@@ -5,6 +5,7 @@ import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.basic.constants.UnitConversionItemFieldsB;
+import com.qcadoo.mes.masterOrders.constants.DocumentFieldsMO;
 import com.qcadoo.mes.masterOrders.constants.MasterOrderFields;
 import com.qcadoo.mes.masterOrders.constants.MasterOrderProductFields;
 import com.qcadoo.mes.materialFlowResources.constants.*;
@@ -26,7 +27,6 @@ import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.constants.QcadooViewConstants;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -85,11 +85,9 @@ public class MasterOrderDocumentService {
 
         DocumentBuilder documentBuilder = documentManagementService.getDocumentBuilder(user);
         documentBuilder.release(masterOrderReleaseLocation);
-        documentBuilder.setField(DocumentFields.DESCRIPTION,
-                translationService.translate("masterOrders.masterOrder.releaseDocument.description",
-                        LocaleContextHolder.getLocale(), masterOrderFormEntity.getStringField(MasterOrderFields.NUMBER)));
         documentBuilder.setField(DocumentFields.COMPANY, masterOrderFormEntity.getBelongsToField(MasterOrderFields.COMPANY));
         documentBuilder.setField(DocumentFields.ADDRESS, masterOrderFormEntity.getBelongsToField(MasterOrderFields.ADDRESS));
+        documentBuilder.setField(DocumentFieldsMO.MASTER_ORDER, masterOrderFormEntity);
 
         for (Entity masterOrderProduct : masterOrderProducts) {
             Entity mo = masterOrderProduct.getDataDefinition().getMasterModelEntity(masterOrderProduct.getId());

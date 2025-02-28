@@ -176,12 +176,14 @@
 
             <option type="column" name="warehouseOrder" fields="warehouseOrder"/>
 
+            <option type="column" name="supplier" fields="supplier" width="55"/>
+
             <option type="order" column="number" direction="desc"/>
 
             <option type="searchable"
-                    value="masterOrderDefinitionNumber,number,name,deadline,companyName,companyCategory,description,companyPayer,quantityRemainingToOrder,quantityTakenFromWarehouse,masterOrderStatus,productNumber,productName,modelName,technologyName,salesPlanNumber,salesPlanName,masterOrderPositionStatus,comments,masterOrderQuantity,cumulatedMasterOrderQuantity,producedOrderQuantity,leftToRelease,unit,assortmentName,state,warehouseMinimumStateQuantity,warehouseOrder,warehouseState,deliveredQuantity,produceQuantity,price"/>
+                    value="masterOrderDefinitionNumber,number,name,deadline,companyName,companyCategory,description,companyPayer,quantityRemainingToOrder,quantityTakenFromWarehouse,masterOrderStatus,productNumber,productName,modelName,technologyName,salesPlanNumber,salesPlanName,masterOrderPositionStatus,comments,masterOrderQuantity,cumulatedMasterOrderQuantity,producedOrderQuantity,leftToRelease,unit,assortmentName,state,warehouseMinimumStateQuantity,warehouseOrder,warehouseState,deliveredQuantity,produceQuantity,price,supplier"/>
             <option type="orderable"
-                    value="masterOrderDefinitionNumber,number,name,deadline,companyName,companyCategory,description,companyPayer,quantityRemainingToOrder,quantityTakenFromWarehouse,masterOrderStatus,productNumber,productName,modelName,technologyName,salesPlanNumber,salesPlanName,masterOrderPositionStatus,comments,masterOrderQuantity,cumulatedMasterOrderQuantity,producedOrderQuantity,leftToRelease,unit,assortmentName,state,warehouseMinimumStateQuantity,warehouseOrder,warehouseState,deliveredQuantity,produceQuantity,price"/>
+                    value="masterOrderDefinitionNumber,number,name,deadline,companyName,companyCategory,description,companyPayer,quantityRemainingToOrder,quantityTakenFromWarehouse,masterOrderStatus,productNumber,productName,modelName,technologyName,salesPlanNumber,salesPlanName,masterOrderPositionStatus,comments,masterOrderQuantity,cumulatedMasterOrderQuantity,producedOrderQuantity,leftToRelease,unit,assortmentName,state,warehouseMinimumStateQuantity,warehouseOrder,warehouseState,deliveredQuantity,produceQuantity,price,supplier"/>
 
             <option type="correspondingView" value="masterOrders/masterOrderProductDetails"/>
             <option type="correspondingComponent" value="form"/>

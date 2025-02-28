@@ -5553,6 +5553,7 @@ CREATE TABLE public.arch_materialflowresources_document (
     staff_id bigint,
     ordersgroup_id bigint,
     invoicenumber character varying(2048),
+    masterorder_id bigint,
     archived boolean DEFAULT false
 );
 
@@ -19104,7 +19105,8 @@ SELECT
     NULL::numeric AS warehousestate,
     NULL::numeric AS deliveredquantity,
     NULL::numeric AS producequantity,
-    NULL::numeric(14,5) AS price;
+    NULL::numeric(14,5) AS price,
+    NULL::character varying(255) AS supplier;
 
 
 --
@@ -19149,7 +19151,8 @@ CREATE VIEW public.masterorders_masterorderpositiondto AS
     masterorders_masterorderposition_manyproducts.warehousestate,
     masterorders_masterorderposition_manyproducts.deliveredquantity,
     masterorders_masterorderposition_manyproducts.producequantity,
-    masterorders_masterorderposition_manyproducts.price
+    masterorders_masterorderposition_manyproducts.price,
+    masterorders_masterorderposition_manyproducts.supplier
    FROM public.masterorders_masterorderposition_manyproducts;
 
 
@@ -20332,7 +20335,8 @@ CREATE TABLE public.materialflowresources_document (
     dateconfirmationofcompletion timestamp without time zone,
     staff_id bigint,
     ordersgroup_id bigint,
-    invoicenumber character varying(2048)
+    invoicenumber character varying(2048),
+    masterorder_id bigint
 );
 
 
@@ -20456,8 +20460,9 @@ CREATE VIEW public.materialflowresources_documentdto AS
     document.pickingworker,
     (((stf.surname)::text || ' '::text) || (stf.name)::text) AS staff,
     og.number AS ordersgroup,
-    document.invoicenumber
-   FROM ((((((((((((public.materialflowresources_document document
+    document.invoicenumber,
+    mo.number AS masterordernumber
+   FROM (((((((((((((public.materialflowresources_document document
      LEFT JOIN public.materialflow_location locationfrom ON ((locationfrom.id = document.locationfrom_id)))
      LEFT JOIN public.materialflow_location locationto ON ((locationto.id = document.locationto_id)))
      LEFT JOIN public.basic_company company ON ((company.id = document.company_id)))
@@ -20469,7 +20474,8 @@ CREATE VIEW public.materialflowresources_documentdto AS
      LEFT JOIN public.orders_order ordersorder ON ((ordersorder.id = document.order_id)))
      LEFT JOIN public.subcontractorportal_suborder suborder ON ((suborder.id = document.suborder_id)))
      LEFT JOIN public.basic_staff stf ON ((stf.id = document.staff_id)))
-     LEFT JOIN public.ordersgroups_ordersgroup og ON ((og.id = document.ordersgroup_id)));
+     LEFT JOIN public.ordersgroups_ordersgroup og ON ((og.id = document.ordersgroup_id)))
+     LEFT JOIN public.masterorders_masterorder mo ON ((mo.id = document.masterorder_id)));
 
 
 --
@@ -20981,8 +20987,9 @@ CREATE VIEW public.materialflowresources_positiondto AS
     (document.suborder_id)::integer AS suborderid,
     document.invoicenumber,
     ("position".pickingdate)::date AS pickingdate,
-    (((pw.name)::text || ' '::text) || (pw.surname)::text) AS pickingworker
-   FROM (((((((((((((((((public.materialflowresources_position "position"
+    (((pw.name)::text || ' '::text) || (pw.surname)::text) AS pickingworker,
+    mo.number AS masterordernumber
+   FROM ((((((((((((((((((public.materialflowresources_position "position"
      LEFT JOIN public.materialflowresources_document document ON ((document.id = "position".document_id)))
      LEFT JOIN public.materialflow_location locationfrom ON ((locationfrom.id = document.locationfrom_id)))
      LEFT JOIN public.materialflow_location locationto ON ((locationto.id = document.locationto_id)))
@@ -20999,7 +21006,8 @@ CREATE VIEW public.materialflowresources_positiondto AS
      LEFT JOIN public.advancedgenealogy_batch batch ON ((batch.id = "position".batch_id)))
      LEFT JOIN public.basic_staff staff ON ((staff.id = document.staff_id)))
      LEFT JOIN public.qcadoosecurity_user u ON (("position".pickingworker_id = u.id)))
-     LEFT JOIN public.basic_staff pw ON ((u.staff_id = pw.id)));
+     LEFT JOIN public.basic_staff pw ON ((u.staff_id = pw.id)))
+     LEFT JOIN public.masterorders_masterorder mo ON ((mo.id = document.masterorder_id)));
 
 
 --
@@ -21972,7 +21980,8 @@ CREATE TABLE public.materialrequirements_materialrequirement (
     showcurrentstocklevel boolean DEFAULT false,
     includestartdateorder boolean DEFAULT false,
     location_id bigint,
-    stocklevellocation_id bigint
+    stocklevellocation_id bigint,
+    showreplacements boolean DEFAULT false
 );
 
 
@@ -22008,7 +22017,8 @@ CREATE TABLE public.materialrequirements_materialrequirementproduct (
     currentstock numeric(14,5),
     orderstartdate date,
     batch_id bigint,
-    batchstock numeric(14,5)
+    batchstock numeric(14,5),
+    replacementexists boolean DEFAULT false
 );
 
 
@@ -38016,7 +38026,7 @@ COPY public.arch_masterorders_productsbysizehelper (id, product_id, totalquantit
 -- Data for Name: arch_materialflowresources_document; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.arch_materialflowresources_document (id, number, type, "time", state, locationfrom_id, locationto_id, user_id, delivery_id, active, createdate, updatedate, createuser, updateuser, order_id, description, suborder_id, company_id, maintenanceevent_id, entityversion, plannedevent_id, name, createlinkeddocument, linkeddocumentlocation_id, address_id, dispositionshift_id, positionsfile, printed, generationdate, filename, acceptationinprogress, externalnumber, issend, wms, datesendtowms, stateinwms, pickingworker, dateconfirmationofcompletion, locationchanged, staff_id, ordersgroup_id, invoicenumber, archived) FROM stdin;
+COPY public.arch_materialflowresources_document (id, number, type, "time", state, locationfrom_id, locationto_id, user_id, delivery_id, active, createdate, updatedate, createuser, updateuser, order_id, description, suborder_id, company_id, maintenanceevent_id, entityversion, plannedevent_id, name, createlinkeddocument, linkeddocumentlocation_id, address_id, dispositionshift_id, positionsfile, printed, generationdate, filename, acceptationinprogress, externalnumber, issend, wms, datesendtowms, stateinwms, pickingworker, dateconfirmationofcompletion, locationchanged, staff_id, ordersgroup_id, invoicenumber, masterorder_id, archived) FROM stdin;
 \.
 
 
@@ -42013,6 +42023,14 @@ COPY public.jointable_group_role (group_id, role_id) FROM stdin;
 49	5
 49	34
 49	123
+4	177
+4	178
+2	178
+3	178
+32	178
+33	178
+38	178
+43	178
 \.
 
 
@@ -42588,7 +42606,7 @@ COPY public.materialflowresources_costnormslocation (id, costnormsgenerator_id, 
 -- Data for Name: materialflowresources_document; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.materialflowresources_document (id, number, type, "time", state, locationfrom_id, locationto_id, user_id, delivery_id, active, createdate, updatedate, createuser, updateuser, order_id, description, suborder_id, company_id, maintenanceevent_id, entityversion, plannedevent_id, name, createlinkeddocument, linkeddocumentlocation_id, address_id, generationdate, filename, acceptationinprogress, externalnumber, issend, wms, datesendtowms, stateinwms, pickingworker, dateconfirmationofcompletion, staff_id, ordersgroup_id, invoicenumber) FROM stdin;
+COPY public.materialflowresources_document (id, number, type, "time", state, locationfrom_id, locationto_id, user_id, delivery_id, active, createdate, updatedate, createuser, updateuser, order_id, description, suborder_id, company_id, maintenanceevent_id, entityversion, plannedevent_id, name, createlinkeddocument, linkeddocumentlocation_id, address_id, generationdate, filename, acceptationinprogress, externalnumber, issend, wms, datesendtowms, stateinwms, pickingworker, dateconfirmationofcompletion, staff_id, ordersgroup_id, invoicenumber, masterorder_id) FROM stdin;
 \.
 
 
@@ -42828,7 +42846,7 @@ COPY public.materialrequirementcoveragefororder_coverageproductlogging (id, cove
 -- Data for Name: materialrequirements_materialrequirement; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.materialrequirements_materialrequirement (id, name, number, date, worker, mrpalgorithm, generated, filename, active, entityversion, includewarehouse, showcurrentstocklevel, includestartdateorder, location_id, stocklevellocation_id) FROM stdin;
+COPY public.materialrequirements_materialrequirement (id, name, number, date, worker, mrpalgorithm, generated, filename, active, entityversion, includewarehouse, showcurrentstocklevel, includestartdateorder, location_id, stocklevellocation_id, showreplacements) FROM stdin;
 \.
 
 
@@ -42836,7 +42854,7 @@ COPY public.materialrequirements_materialrequirement (id, name, number, date, wo
 -- Data for Name: materialrequirements_materialrequirementproduct; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.materialrequirements_materialrequirementproduct (id, materialrequirement_id, product_id, location_id, quantity, currentstock, orderstartdate, batch_id, batchstock) FROM stdin;
+COPY public.materialrequirements_materialrequirementproduct (id, materialrequirement_id, product_id, location_id, quantity, currentstock, orderstartdate, batch_id, batchstock, replacementexists) FROM stdin;
 \.
 
 
@@ -44214,6 +44232,8 @@ COPY public.qcadoosecurity_role (id, identifier, description, entityversion) FRO
 174	ROLE_DELIVERIES_STATES_ACCEPT	\N	0
 175	ROLE_OPERATIONAL_TASKS_GANTT_RECALCULATE	\N	0
 176	ROLE_EMAIL_PARAMETERS	\N	0
+177	ROLE_USERS_VIEW	\N	0
+178	ROLE_MASTER_ORDERS_CREATE_RELEASE	\N	0
 \.
 
 
@@ -44268,7 +44288,6 @@ COPY public.qcadooview_item (id, pluginidentifier, name, active, category_id, vi
 4	qcadooCustomTranslations	customTranslations	t	1	4	4	\N	0
 5	qcadooUsers	groups	t	1	5	5	\N	0
 6	qcadooUsers	roles	t	1	6	6	\N	0
-7	qcadooUsers	users	t	1	7	7	\N	0
 9	qcadooDictionaries	dictionaries	t	1	9	9	\N	0
 10	qcadooUnitConversions	unitConversions	t	1	10	10	ROLE_UNIT_CONVERSIONS	0
 11	basic	logsList	t	1	11	11	ROLE_LOGS	0
@@ -44355,6 +44374,7 @@ COPY public.qcadooview_item (id, pluginidentifier, name, active, category_id, vi
 117	integrationBartender	cartonLabels	t	\N	116	\N	ROLE_ADMIN	0
 147	integrationBarTender	printedCartonLabelsList	t	8	146	3	ROLE_ADMIN	0
 195	integrationBarTender	printedPalletLabelsList	t	8	194	2	ROLE_ADMIN	0
+7	qcadooUsers	users	t	1	7	7	ROLE_USERS_VIEW	0
 \.
 
 
@@ -49758,7 +49778,7 @@ SELECT pg_catalog.setval('public.qcadoosecurity_persistenttoken_id_seq', 1, fals
 -- Name: qcadoosecurity_role_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('public.qcadoosecurity_role_id_seq', 176, true);
+SELECT pg_catalog.setval('public.qcadoosecurity_role_id_seq', 178, true);
 
 
 --
@@ -58217,8 +58237,9 @@ CREATE OR REPLACE VIEW public.masterorders_masterorderposition_manyproducts AS
     COALESCE(min(wsh.quantity), (0)::numeric) AS warehousestate,
     COALESCE(min(mopdpqh.quantity), (0)::numeric) AS deliveredquantity,
     COALESCE(min(pcqo.quantity), (0)::numeric) AS producequantity,
-    masterorderproduct.price
-   FROM (((((((((((((public.masterorders_masterorderproduct masterorderproduct
+    masterorderproduct.price,
+    sup.number AS supplier
+   FROM ((((((((((((((public.masterorders_masterorderproduct masterorderproduct
      LEFT JOIN public.masterorders_masterorder masterorder ON ((masterorderproduct.masterorder_id = masterorder.id)))
      LEFT JOIN public.masterorders_masterorderdefinition masterorderdefinition ON ((masterorderdefinition.id = masterorder.masterorderdefinition_id)))
      LEFT JOIN public.basic_product _product ON ((_product.id = masterorderproduct.product_id)))
@@ -58232,8 +58253,9 @@ CREATE OR REPLACE VIEW public.masterorders_masterorderposition_manyproducts AS
      LEFT JOIN warehousestatehelper wsh ON ((wsh.product_id = masterorderproduct.product_id)))
      LEFT JOIN public.masterorders_position_deliveryproductquantityhelper mopdpqh ON ((mopdpqh.product_id = masterorderproduct.product_id)))
      LEFT JOIN productioncountingquantityoutput pcqo ON ((pcqo.productid = masterorderproduct.product_id)))
+     LEFT JOIN public.basic_company sup ON ((sup.id = _product.supplier_id)))
   WHERE (masterorderproduct.vendorinfo IS NULL)
-  GROUP BY masterorderdefinition.number, masterorder.id, masterorderproduct.product_id, masterorderproduct.id, masterorder.name, masterorder.deadline, masterorder.masterorderstate, masterorderproduct.masterorderpositionstatus, masterorderproduct.comments, _product.number, _product.name, _product.unit, technology.number, company.name, masterorder.active, companypayer.name, assortment.name, model.name, company.contractorcategory, salesplan.number, salesplan.name, masterorder.warehouseorder
+  GROUP BY masterorderdefinition.number, masterorder.id, masterorderproduct.product_id, masterorderproduct.id, masterorder.name, masterorder.deadline, masterorder.masterorderstate, masterorderproduct.masterorderpositionstatus, masterorderproduct.comments, _product.number, _product.name, _product.unit, technology.number, company.name, masterorder.active, companypayer.name, assortment.name, model.name, company.contractorcategory, salesplan.number, salesplan.name, masterorder.warehouseorder, sup.number
 UNION ALL
  SELECT masterorderproduct.id,
     masterorderdefinition.number AS masterorderdefinitionnumber,
@@ -58277,8 +58299,9 @@ UNION ALL
     COALESCE(min(wsh.quantity), (0)::numeric) AS warehousestate,
     COALESCE(min(mopdpqh.quantity), (0)::numeric) AS deliveredquantity,
     COALESCE(min(pcqo.quantity), (0)::numeric) AS producequantity,
-    masterorderproduct.price
-   FROM (((((((((((((public.masterorders_masterorderproduct masterorderproduct
+    masterorderproduct.price,
+    sup.number AS supplier
+   FROM ((((((((((((((public.masterorders_masterorderproduct masterorderproduct
      LEFT JOIN public.masterorders_masterorder masterorder ON ((masterorderproduct.masterorder_id = masterorder.id)))
      LEFT JOIN public.masterorders_masterorderdefinition masterorderdefinition ON ((masterorderdefinition.id = masterorder.masterorderdefinition_id)))
      LEFT JOIN public.basic_product _product ON ((_product.id = masterorderproduct.product_id)))
@@ -58292,8 +58315,9 @@ UNION ALL
      LEFT JOIN warehousestatehelper wsh ON ((wsh.product_id = masterorderproduct.product_id)))
      LEFT JOIN public.masterorders_position_deliveryproductquantityhelper mopdpqh ON ((mopdpqh.product_id = masterorderproduct.product_id)))
      LEFT JOIN productioncountingquantityoutput pcqo ON ((pcqo.productid = masterorderproduct.product_id)))
+     LEFT JOIN public.basic_company sup ON ((sup.id = _product.supplier_id)))
   WHERE (masterorderproduct.vendorinfo IS NOT NULL)
-  GROUP BY masterorderdefinition.number, masterorder.id, masterorderproduct.product_id, masterorderproduct.id, masterorder.name, masterorder.deadline, masterorder.masterorderstate, masterorderproduct.masterorderpositionstatus, masterorderproduct.comments, _product.number, _product.name, _product.unit, technology.number, company.name, masterorder.active, companypayer.name, assortment.name, model.name, company.contractorcategory, salesplan.number, salesplan.name, masterorder.warehouseorder;
+  GROUP BY masterorderdefinition.number, masterorder.id, masterorderproduct.product_id, masterorderproduct.id, masterorder.name, masterorder.deadline, masterorder.masterorderstate, masterorderproduct.masterorderpositionstatus, masterorderproduct.comments, _product.number, _product.name, _product.unit, technology.number, company.name, masterorder.active, companypayer.name, assortment.name, model.name, company.contractorcategory, salesplan.number, salesplan.name, masterorder.warehouseorder, sup.number;
 
 
 --
@@ -60373,6 +60397,14 @@ ALTER TABLE ONLY public.materialflowresources_document
 
 ALTER TABLE ONLY public.materialflowresources_document
     ADD CONSTRAINT document_maintenanceevent_fkey FOREIGN KEY (maintenanceevent_id) REFERENCES public.cmmsmachineparts_maintenanceevent(id) DEFERRABLE;
+
+
+--
+-- Name: materialflowresources_document document_masterorder_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.materialflowresources_document
+    ADD CONSTRAINT document_masterorder_fkey FOREIGN KEY (masterorder_id) REFERENCES public.masterorders_masterorder(id) DEFERRABLE;
 
 
 --

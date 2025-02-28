@@ -60,7 +60,7 @@ public class StateExecutorService {
     private ComponentMessagesHolder componentMessagesHolder;
 
     public <M extends StateService> void changeState(final Class<M> serviceMarker, final ViewDefinitionState view,
-            final String[] args) {
+                                                     final String[] args) {
         componentMessagesHolder = view;
 
         Long userId = securityService.getCurrentUserOrQcadooBotId();
@@ -76,7 +76,9 @@ public class StateExecutorService {
 
                 entity = changeState(serviceMarker, entity, userName, args[0]);
 
-                copyMessages(entity);
+                if (!entity.isValid()) {
+                    copyMessages(entity);
+                }
             });
         } else {
             Optional<FormComponent> maybeForm = view.tryFindComponentByReference(QcadooViewConstants.L_FORM);
@@ -98,7 +100,7 @@ public class StateExecutorService {
     }
 
     public <M extends StateService> Entity changeState(final Class<M> serviceMarker, Entity entity, final String userName,
-            final String targetState) {
+                                                       final String targetState) {
         List<M> services = lookupChangeStateServices(serviceMarker);
 
         StateChangeEntityDescriber describer = services.stream().findFirst().get().getChangeEntityDescriber();
@@ -191,8 +193,8 @@ public class StateExecutorService {
     }
 
     private Entity saveStateChangeContext(final Entity entity, Entity stateChangeEntity,
-            final StateChangeEntityDescriber describer, final String _sourceState, final String _targetState,
-            final StateChangeStatus status) {
+                                          final StateChangeEntityDescriber describer, final String _sourceState, final String _targetState,
+                                          final StateChangeStatus status) {
         final StateEnum sourceState = describer.parseStateEnum(_sourceState);
         final StateEnum targetState = describer.parseStateEnum(_targetState);
 
@@ -209,7 +211,7 @@ public class StateExecutorService {
 
     @Transactional
     private <M extends StateService> Entity performChangeState(final List<M> services, Entity entity,
-            final Entity stateChangeEntity, final StateChangeEntityDescriber describer) {
+                                                               final Entity stateChangeEntity, final StateChangeEntityDescriber describer) {
         LOG.info(String.format("Change state. Entity name : %S id : %d. Target state : %S", entity.getDataDefinition().getName(),
                 entity.getId(), stateChangeEntity.getStringField(describer.getTargetStateFieldName())));
 
@@ -253,14 +255,14 @@ public class StateExecutorService {
     }
 
     public Entity buildStateChangeEntity(final StateChangeEntityDescriber describer, final Entity owner, String userName,
-            final String sourceState, final String targetState) {
+                                         final String sourceState, final String targetState) {
         final Entity shift = shiftsService.getShiftFromDateWithTime(new Date());
 
         return buildStateChangeEntity(describer, owner, userName, sourceState, targetState, shift);
     }
 
     public Entity buildStateChangeEntity(final StateChangeEntityDescriber describer, final Entity owner, String userName,
-            final String sourceState, final String targetState, final Entity shift) {
+                                         final String sourceState, final String targetState, final Entity shift) {
         final Entity stateChangeEntity = describer.getDataDefinition().create();
 
         if (StringUtils.isEmpty(userName)) {
@@ -279,7 +281,7 @@ public class StateExecutorService {
     }
 
     private <M extends StateService> boolean canChangeState(final StateChangeEntityDescriber describer, final Entity owner,
-            final String targetStateString) {
+                                                            final String targetStateString) {
         final StateEnum sourceState = describer.parseStateEnum(owner.getStringField(describer.getOwnerStateFieldName()));
         final StateEnum targetState = describer.parseStateEnum(targetStateString);
 
@@ -292,7 +294,7 @@ public class StateExecutorService {
     }
 
     private <M extends StateService> Entity hookOnValidate(Entity entity, final Collection<M> services, final String sourceState,
-            final String targetState, final Entity stateChangeEntity, final StateChangeEntityDescriber describer) {
+                                                           final String targetState, final Entity stateChangeEntity, final StateChangeEntityDescriber describer) {
         for (StateService service : services) {
             entity = service.onValidate(entity, sourceState, targetState, stateChangeEntity, describer);
         }
@@ -315,8 +317,8 @@ public class StateExecutorService {
     }
 
     private <M extends StateService> Entity hookOnBeforeSave(Entity entity, final Collection<M> services,
-            final String sourceState, final String targetState, final Entity stateChangeEntity,
-            final StateChangeEntityDescriber describer) {
+                                                             final String sourceState, final String targetState, final Entity stateChangeEntity,
+                                                             final StateChangeEntityDescriber describer) {
         for (StateService service : services) {
             entity = service.onBeforeSave(entity, sourceState, targetState, stateChangeEntity, describer);
         }
@@ -325,8 +327,8 @@ public class StateExecutorService {
     }
 
     private <M extends StateService> boolean hookOnAfterSave(Entity entity, final Collection<M> services,
-            final String sourceState, final String targetState, final Entity stateChangeEntity,
-            final StateChangeEntityDescriber describer) {
+                                                             final String sourceState, final String targetState, final Entity stateChangeEntity,
+                                                             final StateChangeEntityDescriber describer) {
         for (StateService service : services) {
             entity = service.onAfterSave(entity, sourceState, targetState, stateChangeEntity, describer);
         }
@@ -351,7 +353,7 @@ public class StateExecutorService {
     }
 
     public <M extends StateService> void buildInitial(final Class<M> serviceMarker, final Entity entity,
-            final String initialState) {
+                                                      final String initialState) {
         List<M> services = lookupChangeStateServices(serviceMarker);
 
         StateChangeEntityDescriber describer = services.get(0).getChangeEntityDescriber();
@@ -397,7 +399,7 @@ public class StateExecutorService {
         }
 
         for (GlobalMessage globalMessage : entity.getGlobalMessages()) {
-             componentMessagesHolder.addMessage(globalMessage);
+            componentMessagesHolder.addMessage(globalMessage);
         }
     }
 

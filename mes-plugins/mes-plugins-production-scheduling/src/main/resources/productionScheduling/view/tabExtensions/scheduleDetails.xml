@@ -82,7 +82,7 @@
             <option type="multiselect" value="true"/>
 
             <option type="footerRow" value="true"/>
-            <option type="columnsToSummaryTime" value="setupTime"/>
+            <option type="columnsToSummaryTime" value="setupTime,laborWorkTime,machineWorkTime,additionalTime"/>
 
         </component>
     </windowTab>
