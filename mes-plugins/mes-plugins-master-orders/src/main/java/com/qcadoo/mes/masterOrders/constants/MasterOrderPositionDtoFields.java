@@ -65,6 +65,10 @@ public final class MasterOrderPositionDtoFields {
 
     public static final String QUANTITY_REMAINING_TO_ORDER = "quantityRemainingToOrder";
 
+    public static final String RELEASE_QUANTITY = "releaseQuantity";
+
+    public static final String QUANTITY_TO_RELEASE = "quantityToRelease";
+
     public static final String QUANTITY_TAKEN_FROM_WAREHOUSE = "quantityTakenFromWarehouse";
 
     public static final String QUANTITY_REMAINING_TO_ORDER_WITHOUT_STOCK = "quantityRemainingToOrderWithoutStock";

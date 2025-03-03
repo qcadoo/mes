@@ -98,10 +98,10 @@
                             <option type="alignment" value="right"/>
                         </component>
                     </layoutElement>
-                    <layoutElement column="3" row="1" height="7">
+                    <layoutElement column="3" row="1" height="8">
                         <component type="borderLayout" name="productQuantity">
                             <component type="gridLayout" name="productQuantityGridLayout"
-                                       columns="6" rows="7" reference="productQuantityGridLayout"
+                                       columns="6" rows="8" reference="productQuantityGridLayout"
                                        hasBorders="false">
                                 <layoutElement column="1" row="1" width="5">
                                     <component type="input" name="masterOrderQuantity"
@@ -181,7 +181,32 @@
                                         <option type="textRepresentationOnDisabled" value="true"/>
                                     </component>
                                 </layoutElement>
-
+                                <layoutElement column="1" row="7" width="5">
+                                    <component type="input" name="releaseQuantity"
+                                               field="releaseQuantity" reference="releaseQuantity"
+                                               defaultEnabled="never">
+                                        <option type="alignment" value="right"/>
+                                    </component>
+                                </layoutElement>
+                                <layoutElement column="6" row="7">
+                                    <component type="input" name="releaseQuantityUnit"
+                                               reference="releaseQuantityUnit" hasLabel="false">
+                                        <option type="textRepresentationOnDisabled" value="true"/>
+                                    </component>
+                                </layoutElement>
+                                <layoutElement column="1" row="8" width="5">
+                                    <component type="input" name="quantityToRelease"
+                                               field="quantityToRelease" reference="quantityToRelease"
+                                               defaultEnabled="never">
+                                        <option type="alignment" value="right"/>
+                                    </component>
+                                </layoutElement>
+                                <layoutElement column="6" row="8">
+                                    <component type="input" name="quantityToReleaseUnit"
+                                               reference="quantityToReleaseUnit" hasLabel="false">
+                                        <option type="textRepresentationOnDisabled" value="true"/>
+                                    </component>
+                                </layoutElement>
                             </component>
                             <option type="label" value="productQuantityLabel"/>
                         </component>

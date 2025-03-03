@@ -79,7 +79,7 @@ public class MasterOrderProductDetailsHooks {
 
         for (String reference : Arrays.asList("cumulatedOrderQuantityUnit", "masterOrderQuantityUnit",
                 "producedOrderQuantityUnit", "leftToReleaseUnit", "quantityRemainingToOrderUnit",
-                "quantityTakenFromWarehouseUnit")) {
+                "quantityTakenFromWarehouseUnit", "releaseQuantityUnit", "quantityToReleaseUnit")) {
             FieldComponent fieldComponent = (FieldComponent) view.getComponentByReference(reference);
             fieldComponent.setFieldValue(unit);
             fieldComponent.requestComponentUpdateState();
@@ -126,7 +126,7 @@ public class MasterOrderProductDetailsHooks {
     private void showErrorWhenCumulatedQuantity(final ViewDefinitionState view) {
         if (view.isViewAfterRedirect()) {
             FormComponent masterOrderProductForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
-            
+
             Entity masterOrderProduct = masterOrderProductForm.getPersistedEntityWithIncludedFormValues();
 
             if (Objects.isNull(masterOrderProduct) || !masterOrderProduct.isValid()) {
@@ -175,6 +175,18 @@ public class MasterOrderProductDetailsHooks {
             quantityRemainingToOrder.setFieldValue(numberService.format(masterOrderPositionDto
                     .getDecimalField(MasterOrderPositionDtoFields.QUANTITY_REMAINING_TO_ORDER)));
             quantityRemainingToOrder.requestComponentUpdateState();
+
+            FieldComponent releaseQuantity = (FieldComponent) view
+                    .getComponentByReference(MasterOrderProductFields.RELEASE_QUANTITY);
+            releaseQuantity.setFieldValue(numberService.format(masterOrderPositionDto
+                    .getDecimalField(MasterOrderPositionDtoFields.RELEASE_QUANTITY)));
+            releaseQuantity.requestComponentUpdateState();
+
+            FieldComponent quantityToRelease = (FieldComponent) view
+                    .getComponentByReference(MasterOrderProductFields.QUANTITY_TO_RELEASE);
+            quantityToRelease.setFieldValue(numberService.format(masterOrderPositionDto
+                    .getDecimalField(MasterOrderPositionDtoFields.QUANTITY_TO_RELEASE)));
+            quantityToRelease.requestComponentUpdateState();
         }
     }
 

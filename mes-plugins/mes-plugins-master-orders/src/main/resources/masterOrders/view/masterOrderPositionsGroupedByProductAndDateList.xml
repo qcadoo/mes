@@ -56,6 +56,8 @@
             <option type="column" name="warehouseState" fields="warehouseState" width="45"/>
             <option type="column" name="deliveredQuantity" fields="deliveredQuantity" width="45"/>
             <option type="column" name="produceQuantity" fields="produceQuantity" width="45"/>
+            <option type="column" name="releaseQuantity" fields="releaseQuantity" width="45"/>
+            <option type="column" name="quantityToRelease" fields="quantityToRelease" width="45"/>
             <option type="column" name="unit" fields="unit"
                     width="35"/>
             <option type="column" name="supplier" fields="supplier" width="55"/>

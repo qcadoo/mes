@@ -53,6 +53,8 @@
         <decimal name="producedOrderQuantity"/>
         <decimal name="quantityTakenFromWarehouse"/>
         <decimal name="quantityRemainingToOrder"/>
+        <decimal name="releaseQuantity"/>
+        <decimal name="quantityToRelease"/>
         <decimal name="quantityRemainingToOrderWithoutStock"/>
         <decimal name="warehouseMinimumStateQuantity"/>
         <decimal name="warehouseState"/>
