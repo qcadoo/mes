@@ -92,6 +92,10 @@
         <string name="emailPassword">
             <validatesLength max="255"/>
         </string>
+
+        <string name="emailForConfirmation">
+            <validatesLength max="255"/>
+        </string>
     </fields>
 
     <hooks>

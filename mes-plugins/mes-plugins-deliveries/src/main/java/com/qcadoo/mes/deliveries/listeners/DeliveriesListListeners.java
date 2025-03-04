@@ -16,6 +16,7 @@ import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.GridComponent;
 import com.qcadoo.view.constants.QcadooViewConstants;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.validator.routines.EmailValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.core.io.ByteArrayResource;
@@ -89,6 +90,15 @@ public class DeliveriesListListeners {
                     ComponentState.MessageType.FAILURE);
             return;
         }
+        String emailForConfirmation = parameter.getStringField(ParameterFields.EMAIL_FOR_CONFIRMATION);
+        if (!Strings.isNullOrEmpty(emailForConfirmation)) {
+            if (!EmailValidator.getInstance().isValid(emailForConfirmation)) {
+                emailForConfirmation = null;
+                state.addMessage(
+                        "deliveries.delivery.info.invalidEmailForConfirmation",
+                        ComponentState.MessageType.INFO);
+            }
+        }
         String subject = parameter.getStringField(ParameterFieldsD.DELIVERY_EMAIL_SUBJECT);
         String body = parameter.getStringField(ParameterFieldsD.DELIVERY_EMAIL_BODY);
 
@@ -99,7 +109,7 @@ public class DeliveriesListListeners {
             String supplierEmail = delivery.getBelongsToField(DeliveryFields.SUPPLIER).getStringField(CompanyFields.EMAIL);
             if (!Strings.isNullOrEmpty(supplierEmail)) {
                 try {
-                    sendHtmlTextEmail(mailSender, username, supplierEmail, subject + " " + delivery.getStringField(DeliveryFields.NUMBER), body, delivery);
+                    sendHtmlTextEmail(mailSender, username, supplierEmail, subject + " " + delivery.getStringField(DeliveryFields.NUMBER), body, delivery, emailForConfirmation);
                 } catch (MailSendException e) {
                     if (e.getMessageExceptions().length > 0 && e.getMessageExceptions()[0] instanceof SendFailedException) {
                         suppliersWithInvalidEmail.add(delivery.getBelongsToField(DeliveryFields.SUPPLIER).getStringField(CompanyFields.NUMBER));
@@ -125,7 +135,8 @@ public class DeliveriesListListeners {
         addMessage(state, suppliersWithoutEmail, suppliersWithInvalidEmail);
     }
 
-    private void addMessage(ComponentState state, Set<String> suppliersWithoutEmail, Set<String> suppliersWithInvalidEmail) {
+    private void addMessage(ComponentState state, Set<String> suppliersWithoutEmail,
+                            Set<String> suppliersWithInvalidEmail) {
         if (suppliersWithoutEmail.isEmpty() && suppliersWithInvalidEmail.isEmpty()) {
             state.addMessage(
                     "deliveries.delivery.info.sendEmail",
@@ -144,7 +155,9 @@ public class DeliveriesListListeners {
         }
     }
 
-    private void sendHtmlTextEmail(JavaMailSender mailSender, String username, String supplierEmail, String subject, String body, Entity delivery) {
+    private void sendHtmlTextEmail(JavaMailSender mailSender, String username, String supplierEmail, String subject,
+                                   String body, Entity delivery,
+                                   String emailForConfirmation) {
         File reportFile = getReportFile(delivery);
         Map<String, Object> model = new HashMap<>();
         model.put("id", delivery.getId());
@@ -155,6 +168,9 @@ public class DeliveriesListListeners {
             MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage, true);
             mimeMessageHelper.setFrom(username);
             mimeMessageHelper.setTo(supplierEmail);
+            if (!Strings.isNullOrEmpty(emailForConfirmation)) {
+                mimeMessageHelper.setCc(emailForConfirmation);
+            }
             mimeMessageHelper.setSubject(subject);
             mimeMessageHelper.setText(body, true);
             mimeMessageHelper.addAttachment(reportFile.getName(), new ByteArrayResource(content));

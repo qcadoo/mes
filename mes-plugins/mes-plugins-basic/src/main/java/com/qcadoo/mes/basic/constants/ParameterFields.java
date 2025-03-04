@@ -76,9 +76,14 @@ public final class ParameterFields {
     public static final String MANY_ARTICLES_WITH_THE_SAME_EAN = "manyArticlesWithTheSameEAN";
 
     public static final String NO_EXCHANGE_RATE_DOWNLOAD = "noExchangeRateDownload";
+
     public static final String EMAIL_HOST = "emailHost";
+
     public static final String EMAIL_PORT = "emailPort";
 
     public static final String EMAIL_USERNAME = "emailUsername";
+
     public static final String EMAIL_PASSWORD = "emailPassword";
+
+    public static final String EMAIL_FOR_CONFIRMATION = "emailForConfirmation";
 }
