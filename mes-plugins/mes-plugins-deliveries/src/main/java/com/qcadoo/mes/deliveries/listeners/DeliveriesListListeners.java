@@ -91,13 +91,11 @@ public class DeliveriesListListeners {
             return;
         }
         String emailForConfirmation = parameter.getStringField(ParameterFields.EMAIL_FOR_CONFIRMATION);
-        if (!Strings.isNullOrEmpty(emailForConfirmation)) {
-            if (!EmailValidator.getInstance().isValid(emailForConfirmation)) {
-                emailForConfirmation = null;
-                state.addMessage(
-                        "deliveries.delivery.info.invalidEmailForConfirmation",
-                        ComponentState.MessageType.INFO);
-            }
+        if (!Strings.isNullOrEmpty(emailForConfirmation) && !EmailValidator.getInstance().isValid(emailForConfirmation)) {
+            emailForConfirmation = null;
+            state.addMessage(
+                    "deliveries.delivery.info.invalidEmailForConfirmation",
+                    ComponentState.MessageType.INFO);
         }
         String subject = parameter.getStringField(ParameterFieldsD.DELIVERY_EMAIL_SUBJECT);
         String body = parameter.getStringField(ParameterFieldsD.DELIVERY_EMAIL_BODY);
