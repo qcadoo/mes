@@ -97,7 +97,10 @@ public class MasterOrderDocumentService {
                     .create();
 
             Entity product = mo.getBelongsToField(MasterOrderProductFields.PRODUCT);
-            BigDecimal quantity = mo.getDecimalField(MasterOrderProductFields.MASTER_ORDER_QUANTITY);
+            BigDecimal quantity = masterOrderProduct.getDecimalField(MasterOrderProductFields.QUANTITY_TO_RELEASE);
+            if (BigDecimal.ZERO.compareTo(quantity) >= 0) {
+                continue;
+            }
             BigDecimal conversion = BigDecimal.ONE;
             String additionalUnit = product.getStringField(ProductFields.ADDITIONAL_UNIT);
             String unit = product.getStringField(ProductFields.UNIT);

@@ -158,7 +158,7 @@
         </windowTab>
         <windowTab name="emailTab" reference="emailTab">
             <component type="gridLayout" name="emailGridLayout"
-                       columns="3" rows="4">
+                       columns="3" rows="5">
                 <layoutElement column="1" row="1">
                     <component type="input" name="emailHost" field="#{form}.emailHost"
                                reference="emailHost">
@@ -178,6 +178,11 @@
                 <layoutElement column="1" row="4">
                     <component type="input" name="emailPassword" field="#{form}.emailPassword"
                                reference="emailPassword">
+                    </component>
+                </layoutElement>
+                <layoutElement column="1" row="5">
+                    <component type="input" name="emailForConfirmation" field="#{form}.emailForConfirmation"
+                               reference="emailForConfirmation" hasDescription="true">
                     </component>
                 </layoutElement>
             </component>

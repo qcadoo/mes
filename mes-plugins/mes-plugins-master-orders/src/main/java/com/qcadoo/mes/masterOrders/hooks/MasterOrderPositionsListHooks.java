@@ -23,14 +23,10 @@
  */
 package com.qcadoo.mes.masterOrders.hooks;
 
-import static java.util.Comparator.naturalOrder;
-import static java.util.Comparator.nullsFirst;
-
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.qcadoo.mes.masterOrders.constants.MasterOrderPositionDtoFields;
 import com.qcadoo.mes.masterOrders.constants.MasterOrdersConstants;
-import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchRestrictions;
@@ -40,21 +36,16 @@ import com.qcadoo.view.api.components.WindowComponent;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.api.ribbon.RibbonGroup;
 import com.qcadoo.view.constants.QcadooViewConstants;
-
 import org.json.JSONException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
+
+import static java.util.Comparator.naturalOrder;
+import static java.util.Comparator.nullsFirst;
 
 @Service
 public class MasterOrderPositionsListHooks {
@@ -143,7 +134,8 @@ public class MasterOrderPositionsListHooks {
                 .thenComparing((Entity e) -> e.getDateField(MasterOrderPositionDtoFields.DEADLINE), nullsFirst(naturalOrder()))).collect(Collectors.toList()));
     }
 
-    private void groupPosition(Map<Integer, Map<Date, Entity>> positions, Map<Integer, Entity> positionsWithoutDeadline, Entity position, Integer productId, Date deadline) {
+    private void groupPosition(Map<Integer, Map<Date, Entity>> positions, Map<Integer, Entity> positionsWithoutDeadline,
+                               Entity position, Integer productId, Date deadline) {
         if (deadline != null) {
             if (positions.containsKey(productId)) {
                 Map<Date, Entity> productPositions = positions.get(productId);
@@ -187,5 +179,11 @@ public class MasterOrderPositionsListHooks {
         existingPosition.setField(MasterOrderPositionDtoFields.LEFT_TO_RELEASE,
                 existingPosition.getDecimalField(MasterOrderPositionDtoFields.LEFT_TO_RELEASE)
                         .add(position.getDecimalField(MasterOrderPositionDtoFields.LEFT_TO_RELEASE)));
+        existingPosition.setField(MasterOrderPositionDtoFields.RELEASE_QUANTITY,
+                existingPosition.getDecimalField(MasterOrderPositionDtoFields.RELEASE_QUANTITY)
+                        .add(position.getDecimalField(MasterOrderPositionDtoFields.RELEASE_QUANTITY)));
+        existingPosition.setField(MasterOrderPositionDtoFields.QUANTITY_TO_RELEASE,
+                existingPosition.getDecimalField(MasterOrderPositionDtoFields.QUANTITY_TO_RELEASE)
+                        .add(position.getDecimalField(MasterOrderPositionDtoFields.QUANTITY_TO_RELEASE)));
     }
 }

@@ -73,6 +73,18 @@
             <validatesScale max="5"/>
         </decimal>
 
+        <decimal name="releaseQuantity" copyable="false">
+            <validatesRange from="0"/>
+            <validatesUnscaledValue max="9"/>
+            <validatesScale max="5"/>
+        </decimal>
+
+        <decimal name="quantityToRelease" copyable="false">
+            <validatesRange from="0"/>
+            <validatesUnscaledValue max="9"/>
+            <validatesScale max="5"/>
+        </decimal>
+
         <decimal name="price" copyable="false">
             <validatesRange from="0" exclusively="true"/>
             <validatesUnscaledValue max="9"/>

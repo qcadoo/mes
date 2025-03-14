@@ -512,6 +512,8 @@
                         fields="producedOrderQuantity" width="60"
                         classesCondition="Number(rowObject['producedOrderQuantity']) >= Number(rowObject['masterOrderQuantity'])"
                         classesNames="green-cell"/>
+                <option type="column" name="releaseQuantity" fields="releaseQuantity" width="45"/>
+                <option type="column" name="quantityToRelease" fields="quantityToRelease" width="45"/>
                 <option type="column" name="unit" fields="unit"
                          width="60"/>
                 <option type="column" name="price" fields="price"
@@ -524,9 +526,9 @@
                 <option type="order" column="number" direction="asc"/>
 
                 <option type="searchable"
-                        value="productNumber,productName,technologyName,masterOrderPositionStatus,comments,quantityRemainingToOrder,quantityTakenFromWarehouse,masterOrderQuantity,cumulatedOrderQuantity,leftToRelease,producedOrderQuantity,unit,assortmentName,modelName,warehouseMinimumStateQuantity,price"/>
+                        value="productNumber,productName,technologyName,masterOrderPositionStatus,comments,quantityRemainingToOrder,quantityTakenFromWarehouse,masterOrderQuantity,cumulatedOrderQuantity,leftToRelease,producedOrderQuantity,releaseQuantity,quantityToRelease,unit,assortmentName,modelName,warehouseMinimumStateQuantity,price"/>
                 <option type="orderable"
-                        value="productNumber,productName,technologyName,masterOrderPositionStatus,comments,quantityRemainingToOrder,quantityTakenFromWarehouse,masterOrderQuantity,cumulatedOrderQuantity,leftToRelease,producedOrderQuantity,unit,assortmentName,modelName,warehouseMinimumStateQuantity,price"/>
+                        value="productNumber,productName,technologyName,masterOrderPositionStatus,comments,quantityRemainingToOrder,quantityTakenFromWarehouse,masterOrderQuantity,cumulatedOrderQuantity,leftToRelease,producedOrderQuantity,releaseQuantity,quantityToRelease,unit,assortmentName,modelName,warehouseMinimumStateQuantity,price"/>
 
                 <option type="correspondingView" value="masterOrders/masterOrderProductDetails"/>
                 <option type="correspondingComponent" value="form"/>
