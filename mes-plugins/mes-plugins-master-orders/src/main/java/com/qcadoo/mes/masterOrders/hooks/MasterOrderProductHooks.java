@@ -48,8 +48,6 @@ import static com.qcadoo.model.api.search.SearchRestrictions.and;
 @Service
 public class MasterOrderProductHooks {
 
-    private static final String L_MASTER_ORDER_POSITION_STATUS = "masterOrderPositionStatus";
-
     @Autowired
     private MasterOrderOrdersDataProvider masterOrderOrdersDataProvider;
 
@@ -73,7 +71,7 @@ public class MasterOrderProductHooks {
 
     private void setMasterOrderPositionStatus(final Entity masterOrderProduct) {
         if (Objects.isNull(masterOrderProduct.getId())) {
-            Entity item = dictionaryService.getItemEntityByTechnicalCode(L_MASTER_ORDER_POSITION_STATUS,
+            Entity item = dictionaryService.getItemEntityByTechnicalCode(MasterOrderProductFields.MASTER_ORDER_POSITION_STATUS,
                     MasterOrderPositionStatus.NEW.getStringValue());
 
             if (Objects.nonNull(item)) {

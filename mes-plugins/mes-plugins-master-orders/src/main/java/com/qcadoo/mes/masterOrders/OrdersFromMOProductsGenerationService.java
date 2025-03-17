@@ -41,8 +41,6 @@ public class OrdersFromMOProductsGenerationService {
 
     private static final String L_CREATE_COLLECTIVE_ORDERS = "createCollectiveOrders";
 
-    private static final String L_MASTER_ORDER_POSITION_STATUS = "masterOrderPositionStatus";
-
     private static final List<String> L_TECHNOLOGY_FIELD_NAMES = Lists.newArrayList("registerQuantityInProduct",
             "registerQuantityOutProduct", "registerProductionTime", "typeOfProductionRecording");
 
@@ -650,7 +648,7 @@ public class OrdersFromMOProductsGenerationService {
     }
 
     private void setMasterOrderPositionStatus(final Entity masterOrderProduct) {
-        Entity item = dictionaryService.getItemEntityByTechnicalCode(L_MASTER_ORDER_POSITION_STATUS,
+        Entity item = dictionaryService.getItemEntityByTechnicalCode(MasterOrderProductFields.MASTER_ORDER_POSITION_STATUS,
                 MasterOrderPositionStatus.ORDERED.getStringValue());
 
         if (Objects.nonNull(item)) {

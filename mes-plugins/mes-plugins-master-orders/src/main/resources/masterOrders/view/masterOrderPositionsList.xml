@@ -209,6 +209,9 @@
                 <predefinedFilter name="ordered">
                     <filterRestriction column="masterOrderPositionStatus" value="zlecona"/>
                 </predefinedFilter>
+                <predefinedFilter name="released">
+                    <filterRestriction column="masterOrderPositionStatus" value="wydana"/>
+                </predefinedFilter>
             </predefinedFilters>
 
             <listener event="createOrder"

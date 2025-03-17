@@ -2,7 +2,7 @@ package com.qcadoo.mes.masterOrders.hooks;
 
 public enum MasterOrderPositionStatus {
 
-    NEW("01new", "nowa"), ORDERED("02ordered", "zlecona");
+    NEW("01new", "nowa"), ORDERED("02ordered", "zlecona"), RELEASED("03released", "wydana");
 
     private final String technicalCode;
     private final String text;

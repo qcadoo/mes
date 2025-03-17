@@ -1,24 +1,22 @@
 package com.qcadoo.mes.masterOrders;
 
 import com.google.common.collect.Maps;
-import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.basic.constants.UnitConversionItemFieldsB;
 import com.qcadoo.mes.masterOrders.constants.DocumentFieldsMO;
 import com.qcadoo.mes.masterOrders.constants.MasterOrderFields;
 import com.qcadoo.mes.masterOrders.constants.MasterOrderProductFields;
+import com.qcadoo.mes.masterOrders.hooks.MasterOrderPositionStatus;
 import com.qcadoo.mes.materialFlowResources.constants.*;
 import com.qcadoo.mes.materialFlowResources.exceptions.DocumentBuildException;
 import com.qcadoo.mes.materialFlowResources.service.DocumentBuilder;
 import com.qcadoo.mes.materialFlowResources.service.DocumentManagementService;
-import com.qcadoo.model.api.BigDecimalUtils;
-import com.qcadoo.model.api.DataDefinitionService;
-import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.NumberService;
+import com.qcadoo.model.api.*;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.model.api.units.PossibleUnitConversions;
 import com.qcadoo.model.api.units.UnitConversionService;
+import com.qcadoo.model.constants.DictionaryItemFields;
 import com.qcadoo.security.api.SecurityService;
 import com.qcadoo.security.constants.QcadooSecurityConstants;
 import com.qcadoo.view.api.ComponentState;
@@ -52,7 +50,7 @@ public class MasterOrderDocumentService {
     private ParameterService parameterService;
 
     @Autowired
-    private TranslationService translationService;
+    private DictionaryService dictionaryService;
 
     @Autowired
     private UnitConversionService unitConversionService;
@@ -101,6 +99,7 @@ public class MasterOrderDocumentService {
             if (BigDecimal.ZERO.compareTo(quantity) >= 0) {
                 continue;
             }
+            setMasterOrderPositionStatus(mo);
             BigDecimal conversion = BigDecimal.ONE;
             String additionalUnit = product.getStringField(ProductFields.ADDITIONAL_UNIT);
             String unit = product.getStringField(ProductFields.UNIT);
@@ -131,7 +130,6 @@ public class MasterOrderDocumentService {
             position.setField(PositionFields.DOCUMENT, documentBuilder.getDocument());
 
             documentBuilder.addPosition(position);
-
         }
 
         try {
@@ -147,6 +145,17 @@ public class MasterOrderDocumentService {
             view.addMessage("masterOrders.masterOrder.createReleaseDocument.error", ComponentState.MessageType.FAILURE);
         }
 
+    }
+
+    private void setMasterOrderPositionStatus(final Entity masterOrderProduct) {
+        Entity item = dictionaryService.getItemEntityByTechnicalCode(MasterOrderProductFields.MASTER_ORDER_POSITION_STATUS,
+                MasterOrderPositionStatus.RELEASED.getStringValue());
+
+        if (Objects.nonNull(item)) {
+            masterOrderProduct.setField(MasterOrderProductFields.MASTER_ORDER_POSITION_STATUS,
+                    item.getStringField(DictionaryItemFields.NAME));
+            masterOrderProduct.getDataDefinition().save(masterOrderProduct);
+        }
     }
 
     private BigDecimal getAvailableQuantityForProductAndLocation(Entity product, Entity location) {
