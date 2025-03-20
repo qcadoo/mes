@@ -59,15 +59,11 @@ public class DocumentsListListeners {
 
     public static final String MOBILE_WMS = "mobileWMS";
 
-
     @Autowired
     private PluginManager pluginManager;
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
-
-    @Autowired
-    private ResourceManagementService resourceManagementService;
 
     @Autowired
     private ReceiptDocumentForReleaseHelper receiptDocumentForReleaseHelper;
@@ -118,7 +114,8 @@ public class DocumentsListListeners {
         }
     }
 
-    private boolean getDocumentsToAccept(final GridComponent gridComponent, final DataDefinition documentDD, final List<Entity> documentsFromDB) {
+    private boolean getDocumentsToAccept(final GridComponent gridComponent, final DataDefinition documentDD,
+                                         final List<Entity> documentsFromDB) {
         boolean allAccepted = true;
 
         for (Long documentId : gridComponent.getSelectedEntitiesIds()) {
@@ -167,7 +164,7 @@ public class DocumentsListListeners {
             }
 
             documentValidators.validatePositionsAndCreateResources(gridComponent, document);
-            
+
             if (!document.isValid()) {
                 TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
 

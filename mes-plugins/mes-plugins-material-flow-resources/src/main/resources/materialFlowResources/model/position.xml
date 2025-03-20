@@ -75,6 +75,7 @@
         <belongsTo name="pickingWorker" model="user" plugin="qcadooSecurity" copyable="false"/>
         <hasMany name="positionAttributeValues" joinField="position"
                        model="positionAttributeValue"/>
+        <string name="deliveryNumber"/>
     </fields>
     <hooks>
         <onCreate class="com.qcadoo.mes.materialFlowResources.hooks.PositionModelHooks" method="onCreate"/>

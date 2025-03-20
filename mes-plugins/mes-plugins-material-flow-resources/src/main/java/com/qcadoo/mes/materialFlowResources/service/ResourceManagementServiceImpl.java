@@ -57,10 +57,7 @@ import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 public class ResourceManagementServiceImpl implements ResourceManagementService {
@@ -170,6 +167,8 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
 
         if (Objects.nonNull(delivery)) {
             resource.setField(ResourceFields.DELIVERY_NUMBER, delivery.getStringField("number"));
+        } else if (Objects.nonNull(position.getStringField(PositionFields.DELIVERY_NUMBER))) {
+            resource.setField(ResourceFields.DELIVERY_NUMBER, position.getStringField(PositionFields.DELIVERY_NUMBER));
         }
 
         if (StringUtils.isEmpty(product.getStringField(ProductFields.ADDITIONAL_UNIT))) {
@@ -378,6 +377,7 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
         boolean transferPalletToReceivingWarehouse = documentPositionParameters.getBooleanField(
                 DocumentPositionParametersFields.TRANSFER_PALLET_TO_RECEIVING_WAREHOUSE) && buildConnectedDocument(document);
 
+        List<Entity> newPositions = new ArrayList<>();
         for (Entity position : document.getHasManyField(DocumentFields.POSITIONS)) {
             Entity product = position.getBelongsToField(PositionFields.PRODUCT);
 
@@ -403,6 +403,7 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
                         newPosition.setField(PositionFields.DOCUMENT, document);
 
                         Entity saved = newPosition.getDataDefinition().save(newPosition);
+                        newPositions.add(saved);
 
                         addPositionErrors(document, saved);
                     }
@@ -412,11 +413,13 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
                     copyPositionValues(position, generatedPositions.get(0));
 
                     Entity saved = position.getDataDefinition().save(position);
+                    newPositions.add(saved);
 
                     addPositionErrors(document, saved);
                 }
             }
         }
+        document.setField(DocumentFields.POSITIONS, newPositions);
 
         if (updatePositionsNumbers) {
             documentPositionService.updateDocumentPositionsNumbers(document.getId());
@@ -448,6 +451,7 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
         position.setField(PositionFields.EXPIRATION_DATE, newPosition.getField(PositionFields.EXPIRATION_DATE));
         position.setField(PositionFields.RESOURCE, newPosition.getField(PositionFields.RESOURCE));
         position.setField(PositionFields.RESOURCE_NUMBER, newPosition.getField(PositionFields.RESOURCE_NUMBER));
+        position.setField(PositionFields.DELIVERY_NUMBER, newPosition.getField(PositionFields.DELIVERY_NUMBER));
         position.setField(PositionFields.TRANSFER_RESOURCE_NUMBER, newPosition.getField(PositionFields.TRANSFER_RESOURCE_NUMBER));
         position.setField(PositionFields.STORAGE_LOCATION, newPosition.getField(PositionFields.STORAGE_LOCATION));
         position.setField(PositionFields.CONVERSION, newPosition.getField(PositionFields.CONVERSION));
@@ -1080,6 +1084,7 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
         newPosition.setField(PositionFields.EXPIRATION_DATE, resource.getField(ResourceFields.EXPIRATION_DATE));
         newPosition.setField(PositionFields.RESOURCE, null);
         newPosition.setField(PositionFields.RESOURCE_NUMBER, resource.getStringField(ResourceFields.NUMBER));
+        newPosition.setField(PositionFields.DELIVERY_NUMBER, resource.getStringField(ResourceFields.DELIVERY_NUMBER));
         newPosition.setField(PositionFields.STORAGE_LOCATION, resource.getBelongsToField(ResourceFields.STORAGE_LOCATION));
         newPosition.setField(PositionFields.CONVERSION, resource.getField(ResourceFields.CONVERSION));
         newPosition.setField(PositionFields.PALLET_NUMBER, resource.getField(ResourceFields.PALLET_NUMBER));

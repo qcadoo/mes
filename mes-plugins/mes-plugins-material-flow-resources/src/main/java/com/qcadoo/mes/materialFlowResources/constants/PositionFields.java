@@ -83,4 +83,6 @@ public final class PositionFields {
 
     public static final String PICKING_WORKER = "pickingWorker";
 
+    public static final String DELIVERY_NUMBER = "deliveryNumber";
+
 }

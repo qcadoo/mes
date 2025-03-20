@@ -110,6 +110,8 @@ public class ReceiptDocumentForReleaseHelper {
             copiedPosition.setField(PositionFields.RESOURCE_NUMBER, null);
             copiedPosition.setField(PositionFields.TYPE_OF_PALLET, null);
 
+            copiedPosition.setField(PositionFields.DELIVERY_NUMBER, position.getStringField(PositionFields.DELIVERY_NUMBER));
+
             if (transferPalletToReceivingWarehouse) {
                 copiedPosition.setField(PositionFields.PALLET_NUMBER, position.getBelongsToField(PositionFields.PALLET_NUMBER));
             } else {
