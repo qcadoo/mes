@@ -109,20 +109,6 @@
         </ribbon>
 
         <component type="grid" name="masterOrderPositions" reference="grid">
-            <script>
-                <![CDATA[
-                    this.addOnChangeListener({
-						onChange: function(selectedEntitiesArray) {
-							if (selectedEntitiesArray && selectedEntitiesArray.length == 1) {
-								#{window}.getRibbonItem("orders.createOrder").enable();
-							} else {
-								#{window}.getRibbonItem("orders.createOrder").disable();
-							}
-						}
-					});
-				]]>
-            </script>
-
             <option type="column" name="masterOrderDefinitionNumber" fields="masterOrderDefinitionNumber" link="true"
                     width="50"/>
             <option type="column" name="number" fields="number"
