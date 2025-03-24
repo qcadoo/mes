@@ -7,6 +7,7 @@ import com.qcadoo.mes.basic.constants.UnitConversionItemFieldsB;
 import com.qcadoo.mes.masterOrders.constants.DocumentFieldsMO;
 import com.qcadoo.mes.masterOrders.constants.MasterOrderFields;
 import com.qcadoo.mes.masterOrders.constants.MasterOrderProductFields;
+import com.qcadoo.mes.masterOrders.constants.ParameterFieldsMO;
 import com.qcadoo.mes.masterOrders.hooks.MasterOrderPositionStatus;
 import com.qcadoo.mes.materialFlowResources.constants.*;
 import com.qcadoo.mes.materialFlowResources.exceptions.DocumentBuildException;
@@ -35,8 +36,6 @@ import java.util.Objects;
 @Service
 public class MasterOrderDocumentService {
 
-
-    public static final String L_MASTER_ORDER_RELEASE_LOCATION = "masterOrderReleaseLocation";
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
@@ -65,7 +64,7 @@ public class MasterOrderDocumentService {
         Entity user = dataDefinitionService.get(QcadooSecurityConstants.PLUGIN_IDENTIFIER, QcadooSecurityConstants.MODEL_USER)
                 .get(securityService.getCurrentUserId());
 
-        Entity masterOrderReleaseLocation = parameterService.getParameter().getBelongsToField(L_MASTER_ORDER_RELEASE_LOCATION);
+        Entity masterOrderReleaseLocation = parameterService.getParameter().getBelongsToField(ParameterFieldsMO.MASTER_ORDER_RELEASE_LOCATION);
         if (masterOrderReleaseLocation.getBooleanField(LocationFieldsMFR.DRAFT_MAKES_RESERVATION)) {
             for (Entity masterOrderProduct : masterOrderProducts) {
                 Entity mo = masterOrderProduct.getDataDefinition().getMasterModelEntity(masterOrderProduct.getId());

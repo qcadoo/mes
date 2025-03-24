@@ -55,8 +55,6 @@ public class MasterOrderDetailsListeners {
 
     private static final String L_WINDOW_ACTIVE_MENU = "window.activeMenu";
 
-    private static final String L_MASTER_ORDER_RELEASE_LOCATION = "masterOrderReleaseLocation";
-
     private static final String L_ORDERS = "orders";
 
     private static final String L_CREATE_ORDER = "createOrder";
@@ -79,7 +77,8 @@ public class MasterOrderDetailsListeners {
         masterOrderForm.performEvent(view, "reset");
     }
 
-    public void onRemoveSelectedEntity(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+    public void onRemoveSelectedEntity(final ViewDefinitionState view, final ComponentState state,
+                                       final String[] args) {
         FormComponent masterOrderForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
         masterOrderForm.performEvent(view, "reset");
@@ -151,7 +150,8 @@ public class MasterOrderDetailsListeners {
         view.openModal(url, parameters);
     }
 
-    public void addProductsByAttribute(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+    public void addProductsByAttribute(final ViewDefinitionState view, final ComponentState state,
+                                       final String[] args) {
         FormComponent masterOrderForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
         Entity productsByAttributeHelper = getProductsByAttributeHelperDD().create();
@@ -172,7 +172,7 @@ public class MasterOrderDetailsListeners {
                 .getComponentByReference(MasterOrderFields.MASTER_ORDER_PRODUCTS);
 
         List<Entity> masterOrderProducts = masterOrderProductsGrid.getSelectedEntities();
-        Entity masterOrderReleaseLocation = parameterService.getParameter().getBelongsToField(L_MASTER_ORDER_RELEASE_LOCATION);
+        Entity masterOrderReleaseLocation = parameterService.getParameter().getBelongsToField(ParameterFieldsMO.MASTER_ORDER_RELEASE_LOCATION);
 
         if (Objects.isNull(masterOrderReleaseLocation)) {
             view.addMessage("masterOrders.masterOrder.createReleaseDocument.masterOrderReleaseLocationIsEmpty", ComponentState.MessageType.FAILURE);

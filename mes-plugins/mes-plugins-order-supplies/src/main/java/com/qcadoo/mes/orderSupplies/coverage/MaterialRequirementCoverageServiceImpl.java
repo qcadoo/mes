@@ -36,6 +36,7 @@ import java.util.stream.Collectors;
 import com.google.common.base.Strings;
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.costCalculation.constants.MaterialCostsUsed;
+import com.qcadoo.mes.deliveries.constants.IncludeInCalculationDeliveries;
 import com.qcadoo.mes.orderSupplies.constants.*;
 import com.qcadoo.mes.productionCounting.constants.ParameterFieldsPC;
 import org.joda.time.DateTime;

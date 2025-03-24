@@ -43,4 +43,6 @@ public final class ParameterFieldsMO {
 
     public static final String PRICE_LIST_ATTRIBUTE_2 = "priceListAttribute2";
 
+    public static final String MASTER_ORDER_RELEASE_LOCATION = "masterOrderReleaseLocation";
+
 }

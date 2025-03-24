@@ -1,4 +1,4 @@
-package com.qcadoo.mes.orderSupplies.constants;
+package com.qcadoo.mes.deliveries.constants;
 
 public enum IncludeInCalculationDeliveries {
 
@@ -8,7 +8,7 @@ public enum IncludeInCalculationDeliveries {
 
     private final String mode;
 
-    private IncludeInCalculationDeliveries(final String mode) {
+    IncludeInCalculationDeliveries(final String mode) {
         this.mode = mode;
     }
 

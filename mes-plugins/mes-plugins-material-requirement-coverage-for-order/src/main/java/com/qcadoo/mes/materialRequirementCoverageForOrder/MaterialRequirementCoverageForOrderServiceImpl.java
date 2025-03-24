@@ -30,6 +30,7 @@ import com.qcadoo.mes.basicProductionCounting.constants.BasicProductionCountingC
 import com.qcadoo.mes.basicProductionCounting.constants.BasicProductionCountingFields;
 import com.qcadoo.mes.deliveries.constants.DeliveriesConstants;
 import com.qcadoo.mes.deliveries.constants.DeliveryFields;
+import com.qcadoo.mes.deliveries.constants.IncludeInCalculationDeliveries;
 import com.qcadoo.mes.deliveries.states.constants.DeliveryStateStringValues;
 import com.qcadoo.mes.materialFlowResources.MaterialFlowResourcesService;
 import com.qcadoo.mes.materialRequirementCoverageForOrder.constans.CoverageLocationFields;

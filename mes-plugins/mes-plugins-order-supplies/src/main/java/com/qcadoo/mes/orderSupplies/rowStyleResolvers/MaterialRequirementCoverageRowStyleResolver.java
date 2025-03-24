@@ -5,7 +5,7 @@ import com.google.common.collect.Sets;
 import com.qcadoo.mes.deliveries.constants.DeliveriesConstants;
 import com.qcadoo.mes.deliveries.constants.DeliveryFields;
 import com.qcadoo.mes.deliveries.states.constants.DeliveryStateStringValues;
-import com.qcadoo.mes.orderSupplies.constants.IncludeInCalculationDeliveries;
+import com.qcadoo.mes.deliveries.constants.IncludeInCalculationDeliveries;
 import com.qcadoo.mes.orderSupplies.constants.MaterialRequirementCoverageFields;
 import com.qcadoo.mes.orderSupplies.constants.OrderSuppliesConstants;
 import com.qcadoo.model.api.DataDefinitionService;
