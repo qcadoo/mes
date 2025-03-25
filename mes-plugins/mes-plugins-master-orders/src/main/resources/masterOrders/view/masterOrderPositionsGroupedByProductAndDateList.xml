@@ -35,7 +35,7 @@
                       excludeGroups="states"/>
             <group name="deliveries">
                 <bigButton name="createDelivery" icon="genealogyIcon24.png"
-                           action="#{form}.fireEvent(createDelivery);" state="enabled"/>
+                           action="#{window}.fireEvent(createDelivery);" state="enabled"/>
             </group>
         </ribbon>
 
