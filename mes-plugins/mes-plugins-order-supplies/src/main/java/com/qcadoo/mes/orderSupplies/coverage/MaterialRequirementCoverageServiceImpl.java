@@ -23,22 +23,29 @@
  */
 package com.qcadoo.mes.orderSupplies.coverage;
 
-import java.math.BigDecimal;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.stream.Collectors;
-
 import com.google.common.base.Strings;
+import com.google.common.collect.ComparisonChain;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import com.google.common.collect.Ordering;
 import com.qcadoo.mes.basic.ParameterService;
+import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.costCalculation.constants.MaterialCostsUsed;
+import com.qcadoo.mes.deliveries.DeliveriesService;
+import com.qcadoo.mes.deliveries.constants.DeliveriesConstants;
+import com.qcadoo.mes.deliveries.constants.DeliveryFields;
 import com.qcadoo.mes.deliveries.constants.IncludeInCalculationDeliveries;
+import com.qcadoo.mes.materialFlow.constants.LocationFields;
+import com.qcadoo.mes.materialFlowResources.constants.MaterialFlowResourcesConstants;
+import com.qcadoo.mes.orderSupplies.OrderSuppliesService;
 import com.qcadoo.mes.orderSupplies.constants.*;
+import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.productionCounting.constants.ParameterFieldsPC;
+import com.qcadoo.model.api.*;
+import com.qcadoo.model.api.search.JoinType;
+import com.qcadoo.model.api.search.SearchCriteriaBuilder;
+import com.qcadoo.model.api.search.SearchQueryBuilder;
+import com.qcadoo.model.api.search.SearchRestrictions;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,28 +56,10 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.google.common.collect.ComparisonChain;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import com.google.common.collect.Ordering;
-import com.qcadoo.mes.basic.constants.ProductFields;
-import com.qcadoo.mes.deliveries.DeliveriesService;
-import com.qcadoo.mes.deliveries.constants.DeliveriesConstants;
-import com.qcadoo.mes.deliveries.constants.DeliveryFields;
-import com.qcadoo.mes.deliveries.states.constants.DeliveryStateStringValues;
-import com.qcadoo.mes.materialFlow.constants.LocationFields;
-import com.qcadoo.mes.materialFlowResources.constants.MaterialFlowResourcesConstants;
-import com.qcadoo.mes.orderSupplies.OrderSuppliesService;
-import com.qcadoo.mes.orders.constants.OrderFields;
-import com.qcadoo.model.api.BigDecimalUtils;
-import com.qcadoo.model.api.DataDefinition;
-import com.qcadoo.model.api.DataDefinitionService;
-import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.NumberService;
-import com.qcadoo.model.api.search.JoinType;
-import com.qcadoo.model.api.search.SearchCriteriaBuilder;
-import com.qcadoo.model.api.search.SearchQueryBuilder;
-import com.qcadoo.model.api.search.SearchRestrictions;
+import java.math.BigDecimal;
+import java.util.*;
+import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
 @Service
 public class MaterialRequirementCoverageServiceImpl implements MaterialRequirementCoverageService {
@@ -156,7 +145,8 @@ public class MaterialRequirementCoverageServiceImpl implements MaterialRequireme
     }
 
     private void estimateProductProducedInTimeFromPQ(final Map<Long, Entity> productAndCoverageProducts,
-                                                     final Date coverageToDate, final Date actualDate, final List<Entity> orderStates) {
+                                                     final Date coverageToDate, final Date actualDate,
+                                                     final List<Entity> orderStates) {
 
         List<String> states = Lists.newArrayList();
 
@@ -340,7 +330,8 @@ public class MaterialRequirementCoverageServiceImpl implements MaterialRequireme
     }
 
     private void fillFromProductionCounting(final Map<Long, Entity> productAndCoverageProducts, Entity assignedOrder,
-                                            final Date coverageToDate, final Date actualDate, final List<Entity> orderStates) {
+                                            final Date coverageToDate, final Date actualDate,
+                                            final List<Entity> orderStates) {
         List<String> states = Lists.newArrayList();
 
         if (!orderStates.isEmpty()) {
@@ -415,7 +406,7 @@ public class MaterialRequirementCoverageServiceImpl implements MaterialRequireme
                         actualDate);
 
                 BigDecimal price = BigDecimal.ZERO;
-                if(!Strings.isNullOrEmpty(priceField)) {
+                if (!Strings.isNullOrEmpty(priceField)) {
                     price = reg.getDecimalField(priceField);
                 }
 
@@ -427,8 +418,10 @@ public class MaterialRequirementCoverageServiceImpl implements MaterialRequireme
     }
 
     private void estimateProductDeliveriesInTime(final Entity materialRequirementCoverage,
-                                                 final Map<Long, Entity> productAndCoverageProducts, final List<Entity> includedDeliveries, final Date actualDate,
-                                                 final Date coverageToDate, final String includeInCalculationDeliveries) {
+                                                 final Map<Long, Entity> productAndCoverageProducts,
+                                                 final List<Entity> includedDeliveries, final Date actualDate,
+                                                 final Date coverageToDate,
+                                                 final String includeInCalculationDeliveries) {
         for (Entity delivery : includedDeliveries) {
             Date coverageDate = getCoverageProductLoggingDateForDelivery(delivery, actualDate);
 
@@ -469,7 +462,8 @@ public class MaterialRequirementCoverageServiceImpl implements MaterialRequireme
         return coverageDate;
     }
 
-    private Entity createCoverageProductLoggingForDelivery(final CoverageProductForDelivery coverageProductForDelivery) {
+    private Entity createCoverageProductLoggingForDelivery(
+            final CoverageProductForDelivery coverageProductForDelivery) {
         Entity coverageProductLogging = orderSuppliesService.getCoverageProductLoggingDD().create();
 
         coverageProductLogging.setField(CoverageProductLoggingFields.DATE, coverageProductForDelivery.getCoverageDate());
@@ -483,7 +477,8 @@ public class MaterialRequirementCoverageServiceImpl implements MaterialRequireme
         return coverageProductLogging;
     }
 
-    private void fillCoverageProductForDelivery(final Map<Long, Entity> productAndCoverageProducts, final Entity product,
+    private void fillCoverageProductForDelivery(final Map<Long, Entity> productAndCoverageProducts,
+                                                final Entity product,
                                                 final Entity coverageProductLogging) {
         if (coverageProductLogging != null) {
             if (productAndCoverageProducts.containsKey(product.getId())) {
@@ -507,7 +502,8 @@ public class MaterialRequirementCoverageServiceImpl implements MaterialRequireme
         productAndCoverageProducts.put(product.getId(), coverageProduct);
     }
 
-    private void updateCoverageProductForDelivery(final Map<Long, Entity> productAndCoverageProducts, final Entity product,
+    private void updateCoverageProductForDelivery(final Map<Long, Entity> productAndCoverageProducts,
+                                                  final Entity product,
                                                   final Entity coverageProductLogging) {
         Entity addedCoverageProduct = productAndCoverageProducts.get(product.getId());
 
@@ -529,7 +525,8 @@ public class MaterialRequirementCoverageServiceImpl implements MaterialRequireme
     }
 
     private void estimateProductLocationsInTime(final Entity materialRequirementCoverage,
-                                                final Map<Long, Entity> productAndCoverageProducts, final List<Entity> coverageLocations, final Date actualDate) {
+                                                final Map<Long, Entity> productAndCoverageProducts,
+                                                final List<Entity> coverageLocations, final Date actualDate) {
         for (Entity coverageLocation : coverageLocations) {
             Entity location = coverageLocation.getBelongsToField(CoverageLocationFields.LOCATION);
 
@@ -699,7 +696,8 @@ public class MaterialRequirementCoverageServiceImpl implements MaterialRequireme
         coverageProductLogging.setField(CoverageProductLoggingFields.STATE, state);
     }
 
-    private List<Entity> filterCoverageProducts(final Map<Long, Entity> productAndCoverageProducts, final String coverageType) {
+    private List<Entity> filterCoverageProducts(final Map<Long, Entity> productAndCoverageProducts,
+                                                final String coverageType) {
         return filterCoverageProductsWithCoverageType(getCoverageProducts(productAndCoverageProducts), coverageType);
     }
 
@@ -708,7 +706,8 @@ public class MaterialRequirementCoverageServiceImpl implements MaterialRequireme
         return Lists.newArrayList(productAndCoverageProducts.values());
     }
 
-    private List<Entity> filterCoverageProductsWithCoverageType(final List<Entity> coverageProducts, final String coverageType) {
+    private List<Entity> filterCoverageProductsWithCoverageType(final List<Entity> coverageProducts,
+                                                                final String coverageType) {
         List<Entity> filteredCoverageProducts = Lists.newArrayList();
 
         for (Entity coverageProduct : coverageProducts) {
@@ -736,20 +735,7 @@ public class MaterialRequirementCoverageServiceImpl implements MaterialRequireme
 
     private List<Entity> getDeliveriesFromDB(final Date coverageToDate, final String includeInCalculationDeliveries,
                                              List<Entity> coverageLocations) {
-        List<String> states = Lists.newArrayList(DeliveryStateStringValues.APPROVED);
-
-        if (IncludeInCalculationDeliveries.CONFIRMED_DELIVERIES.getStringValue().equals(includeInCalculationDeliveries)) {
-            states.add(DeliveryStateStringValues.APPROVED);
-        } else if (IncludeInCalculationDeliveries.UNCONFIRMED_DELIVERIES.getStringValue().equals(includeInCalculationDeliveries)) {
-            states.add(DeliveryStateStringValues.APPROVED);
-            states.add(DeliveryStateStringValues.PREPARED);
-            states.add(DeliveryStateStringValues.DURING_CORRECTION);
-            states.add(DeliveryStateStringValues.DRAFT);
-        } else {
-            states.add(DeliveryStateStringValues.APPROVED);
-            states.add(DeliveryStateStringValues.PREPARED);
-            states.add(DeliveryStateStringValues.DURING_CORRECTION);
-        }
+        List<String> states = IncludeInCalculationDeliveries.getStates(includeInCalculationDeliveries);
 
         SearchCriteriaBuilder scb = getDeliveryDD()
                 .find()

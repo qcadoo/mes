@@ -1,29 +1,13 @@
 package com.qcadoo.mes.masterOrders.helpers;
 
-import java.math.BigDecimal;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
-import org.springframework.stereotype.Service;
-
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.qcadoo.mes.basic.constants.ProductFamilyElementType;
 import com.qcadoo.mes.basic.constants.ProductFields;
+import com.qcadoo.mes.basic.constants.UnitConversionItemFieldsB;
 import com.qcadoo.mes.deliveries.DeliveriesService;
 import com.qcadoo.mes.deliveries.constants.CompanyProductFields;
-import com.qcadoo.mes.masterOrders.constants.MasterOrdersConstants;
-import com.qcadoo.mes.masterOrders.constants.SalesPlanFields;
-import com.qcadoo.mes.masterOrders.constants.SalesPlanMaterialRequirementFields;
-import com.qcadoo.mes.masterOrders.constants.SalesPlanMaterialRequirementProductFields;
-import com.qcadoo.mes.masterOrders.constants.SalesPlanProductFields;
+import com.qcadoo.mes.masterOrders.constants.*;
 import com.qcadoo.mes.materialFlowResources.MaterialFlowResourcesService;
 import com.qcadoo.mes.technologies.ProductQuantitiesService;
 import com.qcadoo.mes.technologies.ProductQuantitiesWithComponentsService;
@@ -31,17 +15,29 @@ import com.qcadoo.mes.technologies.TechnologyService;
 import com.qcadoo.mes.technologies.constants.ProductBySizeGroupFields;
 import com.qcadoo.mes.technologies.dto.OperationProductComponentHolder;
 import com.qcadoo.mes.technologies.tree.ProductStructureTreeService;
-import com.qcadoo.model.api.BigDecimalUtils;
-import com.qcadoo.model.api.DataDefinition;
-import com.qcadoo.model.api.DataDefinitionService;
-import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.NumberService;
+import com.qcadoo.model.api.*;
+import com.qcadoo.model.api.search.JoinType;
+import com.qcadoo.model.api.search.SearchRestrictions;
+import com.qcadoo.model.api.units.PossibleUnitConversions;
+import com.qcadoo.model.api.units.UnitConversionService;
 import com.qcadoo.plugin.api.PluginManager;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class SalesPlanMaterialRequirementHelper {
 
     private static final String ORDERS_FOR_SUBPRODUCTS_GENERATION = "ordersForSubproductsGeneration";
+
+    private static final String L_DOT = ".";
+
+    private static final String L_ID = "id";
 
     @Autowired
     private PluginManager pluginManager;
@@ -73,6 +69,9 @@ public class SalesPlanMaterialRequirementHelper {
     @Autowired
     private TechnologyService technologyService;
 
+    @Autowired
+    private UnitConversionService unitConversionService;
+
     public List<Entity> generateSalesPlanMaterialRequirementProducts(final Entity salesPlanMaterialRequirement) {
         List<Entity> salesPlanMaterialRequirementProducts = Lists.newArrayList();
 
@@ -87,7 +86,7 @@ public class SalesPlanMaterialRequirementHelper {
     }
 
     private void createSalesPlanMaterialRequirementProducts(final List<Entity> salesPlanMaterialRequirementProducts,
-            final Entity salesPlan, final boolean includeComponents) {
+                                                            final Entity salesPlan, final boolean includeComponents) {
         List<Entity> salesPlanProducts = salesPlan.getHasManyField(SalesPlanFields.PRODUCTS);
 
         for (Entity salesPlanProduct : salesPlanProducts) {
@@ -150,7 +149,8 @@ public class SalesPlanMaterialRequirementHelper {
         return technology;
     }
 
-    private Entity createSalesPlanMaterialRequirementProductFromProduct(final List<Entity> salesPlanMaterialRequirementProducts,
+    private Entity createSalesPlanMaterialRequirementProductFromProduct(
+            final List<Entity> salesPlanMaterialRequirementProducts,
             final Entity product, final BigDecimal neededQuantity) {
         Optional<Entity> mayBeSalesPlanMaterialRequirementProduct = salesPlanMaterialRequirementProducts.stream()
                 .filter(salesPlanMaterialRequirementProduct -> filterByProduct(salesPlanMaterialRequirementProduct, product,
@@ -224,7 +224,7 @@ public class SalesPlanMaterialRequirementHelper {
     }
 
     private boolean filterByProduct(final Entity salesPlanMaterialRequirementProduct, final Entity product,
-            final String fieldName) {
+                                    final String fieldName) {
         Entity salesPlanMaterialRequirementProductProduct = salesPlanMaterialRequirementProduct
                 .getBelongsToField(SalesPlanMaterialRequirementProductFields.PRODUCT);
 
@@ -300,7 +300,8 @@ public class SalesPlanMaterialRequirementHelper {
         }
     }
 
-    public List<Entity> getSalesPlanMaterialRequirementProducts(final List<Entity> salesPlanMaterialRequirementProducts) {
+    public List<Entity> getSalesPlanMaterialRequirementProducts(
+            final List<Entity> salesPlanMaterialRequirementProducts) {
         return salesPlanMaterialRequirementProducts.stream()
                 .map(salesPlanMaterialRequirementProduct -> salesPlanMaterialRequirementProduct
                         .getBelongsToField(SalesPlanMaterialRequirementProductFields.PRODUCT))
@@ -314,6 +315,69 @@ public class SalesPlanMaterialRequirementHelper {
 
     public Set<Long> getProductIds(final List<Entity> products) {
         return products.stream().map(Entity::getId).collect(Collectors.toSet());
+    }
+
+    public List<Entity> getCompanyProducts(final Set<Long> productIds, final Entity company) {
+        List<Entity> companyProducts = Lists.newArrayList();
+
+        if (!productIds.isEmpty() && Objects.nonNull(company)) {
+            companyProducts = deliveriesService.getCompanyProductDD().find()
+                    .createAlias(CompanyProductFields.PRODUCT, CompanyProductFields.PRODUCT, JoinType.LEFT)
+                    .createAlias(CompanyProductFields.COMPANY, CompanyProductFields.COMPANY, JoinType.LEFT)
+                    .add(SearchRestrictions.in(CompanyProductFields.PRODUCT + L_DOT + L_ID, productIds))
+                    .add(SearchRestrictions.eq(CompanyProductFields.COMPANY + L_DOT + L_ID, company.getId())).list()
+                    .getEntities();
+        }
+
+        return companyProducts;
+    }
+
+    public BigDecimal getConversion(final Entity product) {
+        String unit = product.getStringField(ProductFields.UNIT);
+        String additionalUnit = product.getStringField(ProductFields.ADDITIONAL_UNIT);
+
+        if (Objects.isNull(additionalUnit)) {
+            return BigDecimal.ONE;
+        }
+
+        PossibleUnitConversions unitConversions = unitConversionService.getPossibleConversions(unit,
+                searchCriteriaBuilder -> searchCriteriaBuilder
+                        .add(SearchRestrictions.belongsTo(UnitConversionItemFieldsB.PRODUCT, product)));
+
+        if (unitConversions.isDefinedFor(additionalUnit)) {
+            return unitConversions.asUnitToConversionMap().get(additionalUnit);
+        } else {
+            return BigDecimal.ZERO;
+        }
+    }
+
+    public BigDecimal getMinimumOrderQuantity(final Entity product, final List<Entity> companyProducts,
+                                               final List<Entity> companyProductsFamilies) {
+        Optional<Entity> mayBeCompanyProduct = deliveriesService.getCompanyProduct(companyProducts, product.getId());
+
+        BigDecimal minimumOrderQuantity = null;
+
+        if (mayBeCompanyProduct.isPresent()) {
+            Entity companyProduct = mayBeCompanyProduct.get();
+
+            minimumOrderQuantity = companyProduct.getDecimalField(CompanyProductFields.MINIMUM_ORDER_QUANTITY);
+        } else {
+            Entity parent = product.getBelongsToField(ProductFields.PARENT);
+
+            if (Objects.nonNull(parent)) {
+                Optional<Entity> mayBeCompanyProductsFamily = deliveriesService.getCompanyProduct(companyProductsFamilies,
+                        parent.getId());
+
+                if (mayBeCompanyProductsFamily.isPresent()) {
+                    Entity companyProductsFamily = mayBeCompanyProductsFamily.get();
+
+                    minimumOrderQuantity = companyProductsFamily
+                            .getDecimalField(CompanyProductFields.MINIMUM_ORDER_QUANTITY);
+                }
+            }
+        }
+
+        return minimumOrderQuantity;
     }
 
     private Map<Long, Map<Long, BigDecimal>> getResourceStocks(final List<Entity> products) {

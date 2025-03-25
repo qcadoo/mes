@@ -33,6 +33,7 @@ import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.GridComponent;
 import com.qcadoo.view.api.components.WindowComponent;
+import com.qcadoo.view.api.ribbon.Ribbon;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.api.ribbon.RibbonGroup;
 import com.qcadoo.view.constants.QcadooViewConstants;
@@ -56,6 +57,10 @@ public class MasterOrderPositionsListHooks {
     private static final String L_ORDERS = "orders";
 
     private static final String L_CREATE_ORDER = "createOrder";
+
+    private static final String L_DELIVERIES = "deliveries";
+
+    private static final String L_CREATE_DELIVERY = "createDelivery";
 
     public void disableButton(final ViewDefinitionState view) {
         GridComponent masterOrderPositionComponent = (GridComponent) view.getComponentByReference(QcadooViewConstants.L_GRID);
@@ -92,6 +97,17 @@ public class MasterOrderPositionsListHooks {
         createOrderRibbonActionItem.requestUpdate(true);
         window.requestRibbonRender();
         createOrderRibbonActionItem.setMessage("masterOrders.masterOrder.masterOrdersPosition.lessEntitiesSelectedThanAllowed");
+    }
+
+    public void setRibbonEnabled(final ViewDefinitionState view) {
+        WindowComponent window = (WindowComponent) view.getComponentByReference(QcadooViewConstants.L_WINDOW);
+        GridComponent grid = (GridComponent) view
+                .getComponentByReference(QcadooViewConstants.L_GRID);
+        Ribbon ribbon = window.getRibbon();
+        RibbonGroup deliveriesRibbonGroup = ribbon.getGroupByName(L_DELIVERIES);
+        RibbonActionItem createDeliveryRibbonActionItem = deliveriesRibbonGroup.getItemByName(L_CREATE_DELIVERY);
+        createDeliveryRibbonActionItem.setEnabled(!grid.getSelectedEntitiesIds().isEmpty());
+        createDeliveryRibbonActionItem.requestUpdate(true);
     }
 
     public void groupByProduct(final ViewDefinitionState view) throws JSONException {

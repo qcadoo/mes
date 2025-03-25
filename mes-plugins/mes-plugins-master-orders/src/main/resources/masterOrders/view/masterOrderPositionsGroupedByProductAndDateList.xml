@@ -33,6 +33,10 @@
         <ribbon>
             <template name="standardGridTemplate" excludeItems="actions.new, actions.copy, actions.delete"
                       excludeGroups="states"/>
+            <group name="deliveries">
+                <bigButton name="createDelivery" icon="genealogyIcon24.png"
+                           action="#{form}.fireEvent(createDelivery);" state="enabled"/>
+            </group>
         </ribbon>
 
         <component type="hidden" name="positionsIds" persistent="false"
@@ -69,9 +73,16 @@
 
         <option type="fixedHeight" value="true"/>
         <option type="header" value="false"/>
+
+        <listener event="createDelivery"
+                  class="com.qcadoo.mes.masterOrders.listeners.MasterOrderPositionsListListeners"
+                  method="createDelivery"/>
     </component>
 
     <hooks>
+        <beforeRender
+                class="com.qcadoo.mes.masterOrders.hooks.MasterOrderPositionsListHooks"
+                method="setRibbonEnabled"/>
         <beforeRender
                 class="com.qcadoo.mes.masterOrders.hooks.MasterOrderPositionsListHooks"
                 method="groupByProductAndDate"/>

@@ -1,10 +1,8 @@
 package com.qcadoo.mes.masterOrders.helpers;
 
-import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.qcadoo.mes.deliveries.constants.*;
-import com.qcadoo.mes.deliveries.states.constants.DeliveryStateStringValues;
 import com.qcadoo.mes.masterOrders.constants.MasterOrderProductFields;
 import com.qcadoo.mes.masterOrders.constants.ParameterFieldsMO;
 import com.qcadoo.mes.materialFlowResources.MaterialFlowResourcesService;
@@ -167,20 +165,8 @@ public class MasterOrderPositionsHelper {
     }
 
     private List<Entity> getDeliveriesFromDB(Entity masterOrderReleaseLocation, String includeInCalculationDeliveries) {
-        List<String> states = Lists.newArrayList(DeliveryStateStringValues.APPROVED);
+        List<String> states = IncludeInCalculationDeliveries.getStates(includeInCalculationDeliveries);
 
-        if (IncludeInCalculationDeliveries.CONFIRMED_DELIVERIES.getStringValue().equals(includeInCalculationDeliveries)) {
-            states.add(DeliveryStateStringValues.APPROVED);
-        } else if (IncludeInCalculationDeliveries.UNCONFIRMED_DELIVERIES.getStringValue().equals(includeInCalculationDeliveries)) {
-            states.add(DeliveryStateStringValues.APPROVED);
-            states.add(DeliveryStateStringValues.PREPARED);
-            states.add(DeliveryStateStringValues.DURING_CORRECTION);
-            states.add(DeliveryStateStringValues.DRAFT);
-        } else {
-            states.add(DeliveryStateStringValues.APPROVED);
-            states.add(DeliveryStateStringValues.PREPARED);
-            states.add(DeliveryStateStringValues.DURING_CORRECTION);
-        }
         SearchCriteriaBuilder scb = getDeliveryDD()
                 .find()
                 .add(SearchRestrictions.in(DeliveryFields.STATE, states))

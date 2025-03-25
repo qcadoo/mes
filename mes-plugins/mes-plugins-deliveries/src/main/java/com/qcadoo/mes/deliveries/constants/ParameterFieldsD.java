@@ -41,7 +41,7 @@ public final class ParameterFieldsD {
 
     public static final String DELIVERED_BIGGER_THAN_ORDERED = "deliveredBiggerThanOrdered";
 
-    public static final String REQUIRE_SUPPLIER_IDENTYFICATION = "requireSupplierIdentification";
+    public static final String REQUIRE_SUPPLIER_IDENTIFICATION = "requireSupplierIdentification";
 
     public static final String POSITIVE_PURCHASE_PRICE = "positivePurchasePrice";
 

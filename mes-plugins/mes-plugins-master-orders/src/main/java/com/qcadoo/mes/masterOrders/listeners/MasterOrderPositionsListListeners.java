@@ -23,34 +23,37 @@
  */
 package com.qcadoo.mes.masterOrders.listeners;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
-import java.util.stream.Collectors;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.qcadoo.mes.basic.ParameterService;
+import com.qcadoo.mes.basic.constants.BasicConstants;
+import com.qcadoo.mes.basic.constants.ParameterFields;
+import com.qcadoo.mes.basic.constants.ProductFields;
+import com.qcadoo.mes.deliveries.DeliveriesService;
+import com.qcadoo.mes.deliveries.constants.*;
 import com.qcadoo.mes.masterOrders.OrdersFromMOProductsGenerationService;
 import com.qcadoo.mes.masterOrders.constants.GeneratingOrdersHelperFields;
 import com.qcadoo.mes.masterOrders.constants.MasterOrderPositionDtoFields;
 import com.qcadoo.mes.masterOrders.constants.MasterOrdersConstants;
 import com.qcadoo.mes.masterOrders.helpers.MasterOrderPositionsHelper;
-import com.qcadoo.model.api.DataDefinition;
-import com.qcadoo.model.api.DataDefinitionService;
-import com.qcadoo.model.api.Entity;
+import com.qcadoo.mes.masterOrders.helpers.SalesPlanMaterialRequirementHelper;
+import com.qcadoo.model.api.*;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.CheckBoxComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.GridComponent;
+import com.qcadoo.view.api.utils.NumberGeneratorService;
 import com.qcadoo.view.constants.QcadooViewConstants;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
+
+import java.math.BigDecimal;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class MasterOrderPositionsListListeners {
@@ -72,6 +75,169 @@ public class MasterOrderPositionsListListeners {
 
     @Autowired
     private MasterOrderPositionsHelper masterOrderPositionsHelper;
+
+    @Autowired
+    private DeliveriesService deliveriesService;
+
+    @Autowired
+    private NumberGeneratorService numberGeneratorService;
+
+    @Autowired
+    private SalesPlanMaterialRequirementHelper salesPlanMaterialRequirementHelper;
+
+    @Autowired
+    private NumberService numberService;
+
+    @Transactional
+    public void createDelivery(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        GridComponent grid = (GridComponent) view.getComponentByReference(QcadooViewConstants.L_GRID);
+
+        List<Entity> masterOrderPositions = grid.getSelectedEntities();
+
+        if (!masterOrderPositions.isEmpty()) {
+            Entity parameter = parameterService.getParameter();
+            Entity delivery = createDelivery(masterOrderPositions, parameter);
+
+            if (delivery.isValid()) {
+                Long deliveryId = delivery.getId();
+
+                Map<String, Object> parameters = Maps.newHashMap();
+                parameters.put("form.id", deliveryId);
+
+                parameters.put(L_WINDOW_ACTIVE_MENU, "requirements.deliveries");
+
+                String url = "../page/deliveries/deliveryDetails.html";
+                view.redirectTo(url, false, true, parameters);
+            } else {
+                delivery.getErrors().keySet().stream().filter(DeliveryFields.SUPPLIER::equals).findAny().ifPresent(fieldName -> {
+                    if (parameter.getBooleanField(ParameterFieldsD.REQUIRE_SUPPLIER_IDENTIFICATION)) {
+                        view.addMessage("deliveries.delivery.supplier.isRequired", ComponentState.MessageType.FAILURE);
+                    }
+                });
+
+                TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            }
+        }
+    }
+
+    private Entity createDelivery(final List<Entity> masterOrderPositions, Entity parameter) {
+        Entity delivery = deliveriesService.getDeliveryDD().create();
+
+        Entity supplier = getSupplier(masterOrderPositions).orElse(null);
+
+        Set<Long> productIds = masterOrderPositions.stream().map(e -> e.getIntegerField(MasterOrderPositionDtoFields.PRODUCT_ID)
+                .longValue()).collect(Collectors.toSet());
+        List<Entity> products = getProductsDD().find().add(SearchRestrictions.in("id", productIds)).list().getEntities();
+        Set<Long> parentIds = salesPlanMaterialRequirementHelper.getParentIds(products);
+
+        List<Entity> companyProducts = salesPlanMaterialRequirementHelper.getCompanyProducts(productIds, supplier);
+        List<Entity> companyProductsFamilies = salesPlanMaterialRequirementHelper.getCompanyProducts(parentIds, supplier);
+
+        List<Entity> orderedProducts = createOrderedProducts(masterOrderPositions, companyProducts,
+                companyProductsFamilies);
+
+        if (!orderedProducts.isEmpty()) {
+            String number = numberGeneratorService.generateNumber(DeliveriesConstants.PLUGIN_IDENTIFIER,
+                    DeliveriesConstants.MODEL_DELIVERY);
+
+            delivery.setField(DeliveryFields.NUMBER, number);
+            delivery.setField(DeliveryFields.SUPPLIER, supplier);
+            Entity currency = null;
+            if (supplier != null) {
+                currency = supplier.getBelongsToField(CompanyFieldsD.CURRENCY);
+            }
+            if (currency == null) {
+                currency = parameter.getBelongsToField(ParameterFields.CURRENCY);
+            }
+            delivery.setField(DeliveryFields.CURRENCY, currency);
+            delivery.setField(DeliveryFields.LOCATION, parameter.getBelongsToField(ParameterFieldsD.LOCATION));
+            delivery.setField(DeliveryFields.DELIVERY_ADDRESS, deliveriesService.getDeliveryAddressDefaultValue());
+            delivery.setField(DeliveryFields.ORDERED_PRODUCTS, orderedProducts);
+            delivery.setField(DeliveryFields.EXTERNAL_SYNCHRONIZED, true);
+
+            delivery = delivery.getDataDefinition().save(delivery);
+        }
+
+        return delivery;
+    }
+
+    private List<Entity> createOrderedProducts(List<Entity> masterOrderPositions, List<Entity> companyProducts,
+                                               List<Entity> companyProductsFamilies) {
+        List<Entity> orderedProducts = Lists.newArrayList();
+
+        masterOrderPositions.forEach(masterOrderPosition -> createOrderedProduct(orderedProducts,
+                masterOrderPosition, companyProducts, companyProductsFamilies));
+
+        return orderedProducts;
+    }
+
+    private void createOrderedProduct(List<Entity> orderedProducts, Entity masterOrderPosition,
+                                      List<Entity> companyProducts, List<Entity> companyProductsFamilies) {
+        Entity product = getProductsDD().get(masterOrderPosition.getIntegerField(MasterOrderPositionDtoFields.PRODUCT_ID).longValue());
+        BigDecimal quantity = masterOrderPosition.getDecimalField(MasterOrderPositionDtoFields.MASTER_ORDER_QUANTITY);
+        BigDecimal currentStock = masterOrderPosition.getDecimalField(MasterOrderPositionDtoFields.WAREHOUSE_STATE);
+        BigDecimal minimumOrderQuantity = BigDecimalUtils
+                .convertNullToZero(salesPlanMaterialRequirementHelper.getMinimumOrderQuantity(product, companyProducts, companyProductsFamilies));
+
+        BigDecimal conversion = salesPlanMaterialRequirementHelper.getConversion(product);
+        BigDecimal orderedQuantity = getOrderedQuantity(quantity, currentStock, minimumOrderQuantity);
+        BigDecimal additionalQuantity;
+
+        Optional<Entity> mayBeOrderedProduct = orderedProducts.stream()
+                .filter(orderedProduct -> filterByProduct(orderedProduct, masterOrderPosition)).findFirst();
+
+        Entity orderedProduct;
+
+        if (mayBeOrderedProduct.isPresent()) {
+            orderedProduct = mayBeOrderedProduct.get();
+
+            orderedQuantity = orderedQuantity.add(orderedProduct.getDecimalField(OrderedProductFields.ORDERED_QUANTITY),
+                    numberService.getMathContext());
+            additionalQuantity = orderedQuantity.multiply(conversion, numberService.getMathContext());
+
+            orderedProduct.setField(OrderedProductFields.ORDERED_QUANTITY, orderedQuantity);
+            orderedProduct.setField(OrderedProductFields.ADDITIONAL_QUANTITY, additionalQuantity);
+        } else {
+            additionalQuantity = orderedQuantity.multiply(conversion, numberService.getMathContext());
+
+            orderedProduct = deliveriesService.getOrderedProductDD().create();
+
+            orderedProduct.setField(OrderedProductFields.PRODUCT, product);
+            orderedProduct.setField(OrderedProductFields.CONVERSION, conversion);
+            orderedProduct.setField(OrderedProductFields.ORDERED_QUANTITY, orderedQuantity);
+            orderedProduct.setField(OrderedProductFields.ADDITIONAL_QUANTITY, additionalQuantity);
+
+            orderedProducts.add(orderedProduct);
+        }
+    }
+
+    private boolean filterByProduct(final Entity orderedProduct, final Entity masterOrderPosition) {
+        Entity orderedProductProduct = orderedProduct.getBelongsToField(OrderedProductFields.PRODUCT);
+        Long masterOrderPositionProductId = masterOrderPosition.getIntegerField(MasterOrderPositionDtoFields.PRODUCT_ID).longValue();
+
+        return Objects.nonNull(orderedProductProduct) && orderedProductProduct.getId().equals(masterOrderPositionProductId);
+    }
+
+    private BigDecimal getOrderedQuantity(final BigDecimal quantity, final BigDecimal currentStock,
+                                          final BigDecimal minimumOrderQuantity) {
+        BigDecimal orderedQuantity = quantity.subtract(currentStock, numberService.getMathContext());
+
+        if (BigDecimal.ZERO.compareTo(orderedQuantity) >= 0) {
+            orderedQuantity = BigDecimal.ZERO;
+        } else if (orderedQuantity.compareTo(minimumOrderQuantity) < 0) {
+            orderedQuantity = minimumOrderQuantity;
+        }
+
+        return orderedQuantity;
+    }
+
+    private Optional<Entity> getSupplier(final List<Entity> masterOrderPositions) {
+        Optional<Entity> masterOrderPosition = masterOrderPositions.stream()
+                .filter(mop -> Objects.nonNull(mop
+                        .getStringField(MasterOrderPositionDtoFields.SUPPLIER)))
+                .findFirst();
+        return masterOrderPosition.map(entity -> getProductsDD().get(entity.getIntegerField(MasterOrderPositionDtoFields.PRODUCT_ID).longValue()).getBelongsToField(ProductFields.SUPPLIER));
+    }
 
     public void createOrder(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         GridComponent masterOrderPositionGrid = (GridComponent) view.getComponentByReference(QcadooViewConstants.L_GRID);
@@ -155,7 +321,8 @@ public class MasterOrderPositionsListListeners {
 
     }
 
-    public void showGroupedByProductAndDate(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+    public void showGroupedByProductAndDate(final ViewDefinitionState view, final ComponentState state,
+                                            final String[] args) {
         GridComponent masterOrderPositionGrid = (GridComponent) view.getComponentByReference(QcadooViewConstants.L_GRID);
 
         Map<String, Object> parameters = Maps.newHashMap();
@@ -167,7 +334,8 @@ public class MasterOrderPositionsListListeners {
 
     }
 
-    public void updateWarehouseStateAndDelivery(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+    public void updateWarehouseStateAndDelivery(final ViewDefinitionState view, final ComponentState state,
+                                                final String[] args) {
         List<Entity> masterOrderProducts = dataDefinitionService.get(MasterOrdersConstants.PLUGIN_IDENTIFIER,
                 MasterOrdersConstants.MODEL_MASTER_ORDER_PRODUCT).find().list().getEntities();
         if (!masterOrderProducts.isEmpty()) {
@@ -212,6 +380,11 @@ public class MasterOrderPositionsListListeners {
     private DataDefinition getMasterOrderPositionDtoDD() {
         return dataDefinitionService.get(MasterOrdersConstants.PLUGIN_IDENTIFIER,
                 MasterOrdersConstants.MODEL_MASTER_ORDER_POSITION_DTO);
+    }
+
+    private DataDefinition getProductsDD() {
+        return dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER,
+                BasicConstants.MODEL_PRODUCT);
     }
 
 }
