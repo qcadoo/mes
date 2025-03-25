@@ -138,7 +138,7 @@ public class MasterOrderPositionsHelper {
                 if (positionsProductIds.contains(productId)) {
                     BigDecimal quantity = numberService.setScaleWithDefaultMathContext(deliveryProduct.getDecimalField(OrderedProductFields.ORDERED_QUANTITY));
                     if (productAndQuantities.containsKey(productId)) {
-                        productAndQuantities.put(productId, productAndQuantities.get(deliveryProduct.getId()).add(quantity, numberService.getMathContext()));
+                        productAndQuantities.put(productId, productAndQuantities.get(productId).add(quantity, numberService.getMathContext()));
                     } else {
                         productAndQuantities.put(productId, quantity);
                     }

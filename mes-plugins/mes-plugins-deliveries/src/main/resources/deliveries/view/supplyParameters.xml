@@ -147,7 +147,8 @@
                     </layoutElement>
                     <layoutElement column="3" row="1">
                         <component type="select" name="includeInCalculationDeliveries"
-                                   field="#{form}.includeInCalculationDeliveries" reference="includeInCalculationDeliveries"/>
+                                   field="#{form}.includeInCalculationDeliveries" reference="includeInCalculationDeliveries"
+                                   hasDescription="true"/>
                     </layoutElement>
                 </component>
 
