@@ -35,7 +35,7 @@
                       excludeGroups="states"/>
             <group name="deliveries">
                 <bigButton name="createDelivery" icon="genealogyIcon24.png"
-                           action="#{window}.fireEvent(createDelivery);" state="enabled"/>
+                           action="#{grid}.fireEvent(createDelivery);" state="enabled"/>
             </group>
         </ribbon>
 
@@ -69,14 +69,15 @@
             <option type="order" column="productNumber" direction="asc"/>
 
             <option type="fullscreen" value="true"/>
+            <option type="multiselect" value="true"/>
+
+            <listener event="createDelivery"
+                      class="com.qcadoo.mes.masterOrders.listeners.MasterOrderPositionsListListeners"
+                      method="createDelivery"/>
         </component>
 
         <option type="fixedHeight" value="true"/>
         <option type="header" value="false"/>
-
-        <listener event="createDelivery"
-                  class="com.qcadoo.mes.masterOrders.listeners.MasterOrderPositionsListListeners"
-                  method="createDelivery"/>
     </component>
 
     <hooks>

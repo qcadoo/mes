@@ -77,5 +77,5 @@ public final class MasterOrderPositionDtoFields {
 
     public static final String SUPPLIER = "supplier";
 
-    public static final String WAREHOUSE_STATE = "warehousestate";
+    public static final String WAREHOUSE_STATE = "warehouseState";
 }
