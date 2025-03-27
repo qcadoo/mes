@@ -165,42 +165,25 @@ public class MasterOrderPositionsListListeners {
                                                List<Entity> companyProductsFamilies) {
         List<Entity> orderedProducts = Lists.newArrayList();
 
-        masterOrderPositions.forEach(masterOrderPosition -> createOrderedProduct(orderedProducts,
-                masterOrderPosition, companyProducts, companyProductsFamilies));
+        Map<Entity, BigDecimal> quantityMap = Maps.newHashMap();
+        Map<Entity, BigDecimal> currentStockMap = Maps.newHashMap();
+        Map<Entity, BigDecimal> minimumOrderQuantityMap = Maps.newHashMap();
 
-        return orderedProducts;
-    }
+        masterOrderPositions.forEach(masterOrderPosition -> {
+            Entity product = getProductsDD().get(masterOrderPosition.getIntegerField(MasterOrderPositionDtoFields.PRODUCT_ID).longValue());
+            BigDecimal quantity = masterOrderPosition.getDecimalField(MasterOrderPositionDtoFields.MASTER_ORDER_QUANTITY);
 
-    private void createOrderedProduct(List<Entity> orderedProducts, Entity masterOrderPosition,
-                                      List<Entity> companyProducts, List<Entity> companyProductsFamilies) {
-        Entity product = getProductsDD().get(masterOrderPosition.getIntegerField(MasterOrderPositionDtoFields.PRODUCT_ID).longValue());
-        BigDecimal quantity = masterOrderPosition.getDecimalField(MasterOrderPositionDtoFields.MASTER_ORDER_QUANTITY);
-        BigDecimal currentStock = masterOrderPosition.getDecimalField(MasterOrderPositionDtoFields.WAREHOUSE_STATE);
-        BigDecimal minimumOrderQuantity = BigDecimalUtils
-                .convertNullToZero(salesPlanMaterialRequirementHelper.getMinimumOrderQuantity(product, companyProducts, companyProductsFamilies));
+            quantityMap.merge(product, quantity, BigDecimal::add);
+            currentStockMap.putIfAbsent(product, masterOrderPosition.getDecimalField(MasterOrderPositionDtoFields.WAREHOUSE_STATE));
+            minimumOrderQuantityMap.putIfAbsent(product, BigDecimalUtils
+                    .convertNullToZero(salesPlanMaterialRequirementHelper.getMinimumOrderQuantity(product, companyProducts, companyProductsFamilies)));
+        });
+        for (Entity product : quantityMap.keySet()) {
+            BigDecimal conversion = salesPlanMaterialRequirementHelper.getConversion(product);
+            BigDecimal orderedQuantity = getOrderedQuantity(quantityMap.get(product), currentStockMap.get(product), minimumOrderQuantityMap.get(product));
+            BigDecimal additionalQuantity = orderedQuantity.multiply(conversion, numberService.getMathContext());
 
-        BigDecimal conversion = salesPlanMaterialRequirementHelper.getConversion(product);
-        BigDecimal orderedQuantity = getOrderedQuantity(quantity, currentStock, minimumOrderQuantity);
-        BigDecimal additionalQuantity;
-
-        Optional<Entity> mayBeOrderedProduct = orderedProducts.stream()
-                .filter(orderedProduct -> filterByProduct(orderedProduct, masterOrderPosition)).findFirst();
-
-        Entity orderedProduct;
-
-        if (mayBeOrderedProduct.isPresent()) {
-            orderedProduct = mayBeOrderedProduct.get();
-
-            orderedQuantity = orderedQuantity.add(orderedProduct.getDecimalField(OrderedProductFields.ORDERED_QUANTITY),
-                    numberService.getMathContext());
-            additionalQuantity = orderedQuantity.multiply(conversion, numberService.getMathContext());
-
-            orderedProduct.setField(OrderedProductFields.ORDERED_QUANTITY, orderedQuantity);
-            orderedProduct.setField(OrderedProductFields.ADDITIONAL_QUANTITY, additionalQuantity);
-        } else {
-            additionalQuantity = orderedQuantity.multiply(conversion, numberService.getMathContext());
-
-            orderedProduct = deliveriesService.getOrderedProductDD().create();
+            Entity orderedProduct = deliveriesService.getOrderedProductDD().create();
 
             orderedProduct.setField(OrderedProductFields.PRODUCT, product);
             orderedProduct.setField(OrderedProductFields.CONVERSION, conversion);
@@ -209,13 +192,8 @@ public class MasterOrderPositionsListListeners {
 
             orderedProducts.add(orderedProduct);
         }
-    }
 
-    private boolean filterByProduct(final Entity orderedProduct, final Entity masterOrderPosition) {
-        Entity orderedProductProduct = orderedProduct.getBelongsToField(OrderedProductFields.PRODUCT);
-        Long masterOrderPositionProductId = masterOrderPosition.getIntegerField(MasterOrderPositionDtoFields.PRODUCT_ID).longValue();
-
-        return Objects.nonNull(orderedProductProduct) && orderedProductProduct.getId().equals(masterOrderPositionProductId);
+        return orderedProducts;
     }
 
     private BigDecimal getOrderedQuantity(final BigDecimal quantity, final BigDecimal currentStock,
@@ -310,27 +288,15 @@ public class MasterOrderPositionsListListeners {
     }
 
     public void showGroupedByProduct(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        GridComponent masterOrderPositionGrid = (GridComponent) view.getComponentByReference(QcadooViewConstants.L_GRID);
-
-        Map<String, Object> parameters = Maps.newHashMap();
-
-        parameters.put("positionsIds", masterOrderPositionGrid.getSelectedEntitiesIds().stream().map(String::valueOf).collect(Collectors.joining(",")));
-
         String url = "../page/masterOrders/masterOrderPositionsGroupedByProductList.html";
-        view.redirectTo(url, false, true, parameters);
+        view.redirectTo(url, false, true);
 
     }
 
     public void showGroupedByProductAndDate(final ViewDefinitionState view, final ComponentState state,
                                             final String[] args) {
-        GridComponent masterOrderPositionGrid = (GridComponent) view.getComponentByReference(QcadooViewConstants.L_GRID);
-
-        Map<String, Object> parameters = Maps.newHashMap();
-
-        parameters.put("positionsIds", masterOrderPositionGrid.getSelectedEntitiesIds().stream().map(String::valueOf).collect(Collectors.joining(",")));
-
         String url = "../page/masterOrders/masterOrderPositionsGroupedByProductAndDateList.html";
-        view.redirectTo(url, false, true, parameters);
+        view.redirectTo(url, false, true);
 
     }
 
