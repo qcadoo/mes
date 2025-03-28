@@ -24,7 +24,7 @@
     ***************************************************************************
 
 -->
-<view defaultAuthorizationRole="ROLE_SALE" name="masterOrderPositionsGroupedByProductList" modelName="masterOrderPositionDto"
+<view defaultAuthorizationRole="ROLE_SALE" name="masterOrderPositionsGroupedByProductList" modelName="masterOrderPositionProductDto"
       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
       xmlns="http://schema.qcadoo.org/view"
       xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd">
@@ -33,16 +33,18 @@
         <ribbon>
             <template name="standardGridTemplate" excludeItems="actions.new, actions.copy, actions.delete"
                       excludeGroups="states"/>
+            <group name="deliveries">
+                <bigButton name="createDelivery" icon="genealogyIcon24.png"
+                           action="#{grid}.fireEvent(createDelivery);" state="enabled"/>
+            </group>
         </ribbon>
 
-        <component type="hidden" name="positionsIds" persistent="false"
-                   reference="positionsIds">
-        </component>
         <component type="grid" name="masterOrderPositions" reference="grid">
             <option type="column" name="productNumber" fields="productNumber"
                     width="55"/>
             <option type="column" name="productName" fields="productName"
                     width="55"/>
+            <option type="column" name="masterOrderPositionStatus" fields="masterOrderPositionStatus" width="55"/>
             <option type="column" name="masterOrderQuantity" fields="masterOrderQuantity" width="45"/>
             <option type="column" name="cumulatedMasterOrderQuantity" fields="cumulatedMasterOrderQuantity" width="45"/>
             <option type="column" name="producedOrderQuantity" fields="producedOrderQuantity" width="45"
@@ -62,7 +64,17 @@
 
             <option type="order" column="productNumber" direction="asc"/>
 
+            <option type="searchable"
+                    value="productNumber,productName,masterOrderPositionStatus,masterOrderQuantity,cumulatedMasterOrderQuantity,producedOrderQuantity,quantityTakenFromWarehouse,quantityRemainingToOrder,leftToRelease,warehouseState,deliveredQuantity,produceQuantity,releaseQuantity,quantityToRelease,unit,supplier"/>
+            <option type="orderable"
+                    value="productNumber,productName,masterOrderPositionStatus,masterOrderQuantity,cumulatedMasterOrderQuantity,producedOrderQuantity,quantityTakenFromWarehouse,quantityRemainingToOrder,leftToRelease,warehouseState,deliveredQuantity,produceQuantity,releaseQuantity,quantityToRelease,unit,supplier"/>
+
             <option type="fullscreen" value="true"/>
+            <option type="multiselect" value="true"/>
+
+            <listener event="createDelivery"
+                      class="com.qcadoo.mes.masterOrders.listeners.MasterOrderPositionsListListeners"
+                      method="createDelivery"/>
         </component>
 
         <option type="fixedHeight" value="true"/>
@@ -72,7 +84,7 @@
     <hooks>
         <beforeRender
                 class="com.qcadoo.mes.masterOrders.hooks.MasterOrderPositionsListHooks"
-                method="groupByProduct"/>
+                method="setRibbonEnabled"/>
     </hooks>
 
 </view>

@@ -1,57 +1,29 @@
 package com.qcadoo.mes.masterOrders.listeners;
 
-import java.math.BigDecimal;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.interceptor.TransactionAspectSupport;
-
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.qcadoo.localization.api.utils.DateUtils;
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.basic.constants.ParameterFields;
-import com.qcadoo.mes.basic.constants.ProductFields;
-import com.qcadoo.mes.basic.constants.UnitConversionItemFieldsB;
 import com.qcadoo.mes.deliveries.DeliveriesService;
-import com.qcadoo.mes.deliveries.constants.CompanyFieldsD;
-import com.qcadoo.mes.deliveries.constants.CompanyProductFields;
-import com.qcadoo.mes.deliveries.constants.DeliveriesConstants;
-import com.qcadoo.mes.deliveries.constants.DeliveryFields;
-import com.qcadoo.mes.deliveries.constants.OrderedProductFields;
-import com.qcadoo.mes.deliveries.constants.ParameterFieldsD;
-import com.qcadoo.mes.masterOrders.constants.DeliveryFieldsMO;
-import com.qcadoo.mes.masterOrders.constants.MasterOrdersConstants;
-import com.qcadoo.mes.masterOrders.constants.SalesPlanFields;
-import com.qcadoo.mes.masterOrders.constants.SalesPlanMaterialRequirementFields;
-import com.qcadoo.mes.masterOrders.constants.SalesPlanMaterialRequirementProductFields;
+import com.qcadoo.mes.deliveries.constants.*;
+import com.qcadoo.mes.masterOrders.constants.*;
 import com.qcadoo.mes.masterOrders.helpers.SalesPlanMaterialRequirementHelper;
-import com.qcadoo.model.api.BigDecimalUtils;
-import com.qcadoo.model.api.DataDefinition;
-import com.qcadoo.model.api.DataDefinitionService;
-import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.NumberService;
-import com.qcadoo.model.api.search.JoinType;
+import com.qcadoo.model.api.*;
 import com.qcadoo.model.api.search.SearchRestrictions;
-import com.qcadoo.model.api.units.PossibleUnitConversions;
-import com.qcadoo.model.api.units.UnitConversionService;
 import com.qcadoo.security.api.SecurityService;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
-import com.qcadoo.view.api.components.CheckBoxComponent;
-import com.qcadoo.view.api.components.FieldComponent;
-import com.qcadoo.view.api.components.FormComponent;
-import com.qcadoo.view.api.components.GridComponent;
-import com.qcadoo.view.api.components.LookupComponent;
+import com.qcadoo.view.api.components.*;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
 import com.qcadoo.view.constants.QcadooViewConstants;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
+
+import java.math.BigDecimal;
+import java.util.*;
 
 @Service
 public class SalesPlanMaterialRequirementDetailsListeners {
@@ -61,10 +33,6 @@ public class SalesPlanMaterialRequirementDetailsListeners {
     private static final String L_GRID_OPTIONS = "grid.options";
 
     private static final String L_FILTERS = "filters";
-
-    private static final String L_DOT = ".";
-
-    private static final String L_ID = "id";
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
@@ -79,9 +47,6 @@ public class SalesPlanMaterialRequirementDetailsListeners {
     private NumberGeneratorService numberGeneratorService;
 
     @Autowired
-    private UnitConversionService unitConversionService;
-
-    @Autowired
     private ParameterService parameterService;
 
     @Autowired
@@ -91,7 +56,7 @@ public class SalesPlanMaterialRequirementDetailsListeners {
     private SalesPlanMaterialRequirementHelper salesPlanMaterialRequirementHelper;
 
     public void generateSalesPlanMaterialRequirement(final ViewDefinitionState view, final ComponentState state,
-            final String[] args) {
+                                                     final String[] args) {
         FormComponent salesPlanMaterialRequirementForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         CheckBoxComponent generatedCheckBox = (CheckBoxComponent) view
                 .getComponentByReference(SalesPlanMaterialRequirementFields.GENERATED);
@@ -126,7 +91,8 @@ public class SalesPlanMaterialRequirementDetailsListeners {
     }
 
     private boolean validateSalesPlanMaterialRequirement(final FormComponent salesPlanMaterialRequirementForm,
-            final LookupComponent salesPlanLookup, final Entity salesPlan) {
+                                                         final LookupComponent salesPlanLookup,
+                                                         final Entity salesPlan) {
         boolean isValid = true;
 
         if (Objects.isNull(salesPlan)) {
@@ -172,7 +138,7 @@ public class SalesPlanMaterialRequirementDetailsListeners {
                 }
             } else {
                 delivery.getErrors().keySet().stream().filter(DeliveryFields.SUPPLIER::equals).findAny().ifPresent(fieldName -> {
-                    if (parameter.getBooleanField(ParameterFieldsD.REQUIRE_SUPPLIER_IDENTYFICATION)) {
+                    if (parameter.getBooleanField(ParameterFieldsD.REQUIRE_SUPPLIER_IDENTIFICATION)) {
                         view.addMessage("deliveries.delivery.supplier.isRequired", ComponentState.MessageType.FAILURE);
                     }
                 });
@@ -183,7 +149,7 @@ public class SalesPlanMaterialRequirementDetailsListeners {
     }
 
     private Entity createDelivery(final Entity salesPlanMaterialRequirement,
-            final List<Entity> salesPlanMaterialRequirementProducts, Entity parameter) {
+                                  final List<Entity> salesPlanMaterialRequirementProducts, Entity parameter) {
         Entity delivery = deliveriesService.getDeliveryDD().create();
 
         Entity supplier = getSupplier(salesPlanMaterialRequirementProducts).orElse(null);
@@ -194,8 +160,8 @@ public class SalesPlanMaterialRequirementDetailsListeners {
         Set<Long> parentIds = salesPlanMaterialRequirementHelper.getParentIds(products);
         Set<Long> productIds = salesPlanMaterialRequirementHelper.getProductIds(products);
 
-        List<Entity> companyProducts = getCompanyProducts(productIds, supplier);
-        List<Entity> companyProductsFamilies = getCompanyProducts(parentIds, supplier);
+        List<Entity> companyProducts = salesPlanMaterialRequirementHelper.getCompanyProducts(productIds, supplier);
+        List<Entity> companyProductsFamilies = salesPlanMaterialRequirementHelper.getCompanyProducts(parentIds, supplier);
 
         List<Entity> orderedProducts = createOrderedProducts(salesPlanMaterialRequirementProducts, companyProducts,
                 companyProductsFamilies);
@@ -233,23 +199,9 @@ public class SalesPlanMaterialRequirementDetailsListeners {
                 .findFirst();
     }
 
-    private List<Entity> getCompanyProducts(final Set<Long> productIds, final Entity company) {
-        List<Entity> companyProducts = Lists.newArrayList();
-
-        if (!productIds.isEmpty() && Objects.nonNull(company)) {
-            companyProducts = deliveriesService.getCompanyProductDD().find()
-                    .createAlias(CompanyProductFields.PRODUCT, CompanyProductFields.PRODUCT, JoinType.LEFT)
-                    .createAlias(CompanyProductFields.COMPANY, CompanyProductFields.COMPANY, JoinType.LEFT)
-                    .add(SearchRestrictions.in(CompanyProductFields.PRODUCT + L_DOT + L_ID, productIds))
-                    .add(SearchRestrictions.eq(CompanyProductFields.COMPANY + L_DOT + L_ID, company.getId())).list()
-                    .getEntities();
-        }
-
-        return companyProducts;
-    }
-
     private List<Entity> createOrderedProducts(final List<Entity> salesPlanMaterialRequirementProducts,
-            final List<Entity> companyProducts, final List<Entity> companyProductsFamilies) {
+                                               final List<Entity> companyProducts,
+                                               final List<Entity> companyProductsFamilies) {
         List<Entity> orderedProducts = Lists.newArrayList();
 
         salesPlanMaterialRequirementProducts.forEach(salesPlanMaterialRequirementProduct -> createOrderedProduct(orderedProducts,
@@ -258,8 +210,10 @@ public class SalesPlanMaterialRequirementDetailsListeners {
         return orderedProducts;
     }
 
-    private Entity createOrderedProduct(final List<Entity> orderedProducts, final Entity salesPlanMaterialRequirementProduct,
-            final List<Entity> companyProducts, final List<Entity> companyProductsFamilies) {
+    private Entity createOrderedProduct(final List<Entity> orderedProducts,
+                                        final Entity salesPlanMaterialRequirementProduct,
+                                        final List<Entity> companyProducts,
+                                        final List<Entity> companyProductsFamilies) {
         Entity product = salesPlanMaterialRequirementProduct.getBelongsToField(SalesPlanMaterialRequirementProductFields.PRODUCT);
         BigDecimal quantity = BigDecimalUtils.convertNullToZero(
                 salesPlanMaterialRequirementProduct.getDecimalField(SalesPlanMaterialRequirementProductFields.QUANTITY));
@@ -268,9 +222,9 @@ public class SalesPlanMaterialRequirementDetailsListeners {
         BigDecimal neededQuantity = BigDecimalUtils.convertNullToZero(
                 salesPlanMaterialRequirementProduct.getDecimalField(SalesPlanMaterialRequirementProductFields.NEEDED_QUANTITY));
         BigDecimal minimumOrderQuantity = BigDecimalUtils
-                .convertNullToZero(getMinimumOrderQuantity(product, companyProducts, companyProductsFamilies));
+                .convertNullToZero(salesPlanMaterialRequirementHelper.getMinimumOrderQuantity(product, companyProducts, companyProductsFamilies));
 
-        BigDecimal conversion = getConversion(product);
+        BigDecimal conversion = salesPlanMaterialRequirementHelper.getConversion(product);
         BigDecimal orderedQuantity = getOrderedQuantity(quantity, currentStock, neededQuantity, minimumOrderQuantity);
         BigDecimal additionalQuantity;
 
@@ -312,37 +266,8 @@ public class SalesPlanMaterialRequirementDetailsListeners {
         return orderedProduct;
     }
 
-    private BigDecimal getMinimumOrderQuantity(final Entity product, final List<Entity> companyProducts,
-            final List<Entity> companyProductsFamilies) {
-        Optional<Entity> mayBeCompanyProduct = deliveriesService.getCompanyProduct(companyProducts, product.getId());
-
-        BigDecimal minimumOrderQuantity = null;
-
-        if (mayBeCompanyProduct.isPresent()) {
-            Entity companyProduct = mayBeCompanyProduct.get();
-
-            minimumOrderQuantity = companyProduct.getDecimalField(CompanyProductFields.MINIMUM_ORDER_QUANTITY);
-        } else {
-            Entity parent = product.getBelongsToField(ProductFields.PARENT);
-
-            if (Objects.nonNull(parent)) {
-                Optional<Entity> mayBeCompanyProductsFamily = deliveriesService.getCompanyProduct(companyProductsFamilies,
-                        parent.getId());
-
-                if (mayBeCompanyProductsFamily.isPresent()) {
-                    Entity companyProductsFamily = mayBeCompanyProductsFamily.get();
-
-                    minimumOrderQuantity = companyProductsFamily
-                            .getDecimalField(CompanyProductFields.MINIMUM_ORDER_QUANTITY);
-                }
-            }
-        }
-
-        return minimumOrderQuantity;
-    }
-
     private BigDecimal getOrderedQuantity(final BigDecimal quantity, final BigDecimal currentStock,
-            final BigDecimal neededQuantity, final BigDecimal minimumOrderQuantity) {
+                                          final BigDecimal neededQuantity, final BigDecimal minimumOrderQuantity) {
         BigDecimal orderedQuantity;
 
         if (BigDecimal.ZERO.compareTo(quantity) == 0) {
@@ -370,30 +295,12 @@ public class SalesPlanMaterialRequirementDetailsListeners {
                 && orderedProductProduct.getId().equals(salesPlanMaterialRequirementProductProduct.getId());
     }
 
-    private BigDecimal getConversion(final Entity product) {
-        String unit = product.getStringField(ProductFields.UNIT);
-        String additionalUnit = product.getStringField(ProductFields.ADDITIONAL_UNIT);
-
-        if (Objects.isNull(additionalUnit)) {
-            return BigDecimal.ONE;
-        }
-
-        PossibleUnitConversions unitConversions = unitConversionService.getPossibleConversions(unit,
-                searchCriteriaBuilder -> searchCriteriaBuilder
-                        .add(SearchRestrictions.belongsTo(UnitConversionItemFieldsB.PRODUCT, product)));
-
-        if (unitConversions.isDefinedFor(additionalUnit)) {
-            return unitConversions.asUnitToConversionMap().get(additionalUnit);
-        } else {
-            return BigDecimal.ZERO;
-        }
-    }
-
     private Entity getSalesPlanMaterialRequirement(final Long salesPlanMaterialRequirementId) {
         return getSalesPlanMaterialRequirementDD().get(salesPlanMaterialRequirementId);
     }
 
-    private List<Entity> getSalesPlanMaterialRequirementProducts(final Set<Long> salesPlanMaterialRequirementProductIds) {
+    private List<Entity> getSalesPlanMaterialRequirementProducts(
+            final Set<Long> salesPlanMaterialRequirementProductIds) {
         return getSalesPlanMaterialRequirementProductDD().find()
                 .add(SearchRestrictions.in("id", salesPlanMaterialRequirementProductIds)).list().getEntities();
     }
@@ -409,7 +316,7 @@ public class SalesPlanMaterialRequirementDetailsListeners {
     }
 
     public final void showTechnologiesWithUsingProduct(final ViewDefinitionState view, final ComponentState state,
-            final String[] args) {
+                                                       final String[] args) {
         GridComponent salesPlanMaterialRequirementProductsGrid = (GridComponent) view
                 .getComponentByReference(QcadooViewConstants.L_GRID);
 
@@ -424,7 +331,8 @@ public class SalesPlanMaterialRequirementDetailsListeners {
         view.redirectTo(url, false, true, parameters);
     }
 
-    public final void showSalesPlanDeliveries(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+    public final void showSalesPlanDeliveries(final ViewDefinitionState view, final ComponentState state,
+                                              final String[] args) {
         FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         Entity entity = form.getEntity();
 
@@ -446,7 +354,7 @@ public class SalesPlanMaterialRequirementDetailsListeners {
         view.redirectTo(url, false, true, parameters);
     }
 
-    private String applyInOperator(final String value){
+    private String applyInOperator(final String value) {
         return "[" + value + "]";
     }
 }

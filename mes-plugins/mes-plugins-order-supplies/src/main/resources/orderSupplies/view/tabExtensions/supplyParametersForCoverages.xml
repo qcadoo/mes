@@ -80,15 +80,7 @@
                 <component type="select" name="coverageType" field="#{form}.coverageType"
                            reference="coverageType"/>
             </layoutElement>
-<!--            <layoutElement column="2" row="2">
-                <component type="checkbox" name="includeDraftDeliveries"
-                           field="#{form}.includeDraftDeliveries" reference="includeDraftDeliveries"/>
-            </layoutElement>        -->
             <layoutElement column="2" row="2">
-                <component type="select" name="includeInCalculationDeliveries"
-                           field="#{form}.includeInCalculationDeliveries" reference="includeInCalculationDeliveries"/>
-            </layoutElement>
-            <layoutElement column="2" row="3">
                 <component type="checkbox" name="automaticSaveCoverage"
                            field="#{form}.automaticSaveCoverage" reference="automaticSaveCoverage"/>
             </layoutElement>

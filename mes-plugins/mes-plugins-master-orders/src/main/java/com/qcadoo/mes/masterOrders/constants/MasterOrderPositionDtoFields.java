@@ -74,4 +74,8 @@ public final class MasterOrderPositionDtoFields {
     public static final String QUANTITY_REMAINING_TO_ORDER_WITHOUT_STOCK = "quantityRemainingToOrderWithoutStock";
 
     public static final String WAREHOUSE_MINIMUM_STATE_QUANTITY = "warehouseMinimumStateQuantity";
+
+    public static final String SUPPLIER = "supplier";
+
+    public static final String WAREHOUSE_STATE = "warehouseState";
 }

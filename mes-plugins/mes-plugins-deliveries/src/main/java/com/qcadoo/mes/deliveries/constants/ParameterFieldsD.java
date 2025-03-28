@@ -41,7 +41,7 @@ public final class ParameterFieldsD {
 
     public static final String DELIVERED_BIGGER_THAN_ORDERED = "deliveredBiggerThanOrdered";
 
-    public static final String REQUIRE_SUPPLIER_IDENTYFICATION = "requireSupplierIdentification";
+    public static final String REQUIRE_SUPPLIER_IDENTIFICATION = "requireSupplierIdentification";
 
     public static final String POSITIVE_PURCHASE_PRICE = "positivePurchasePrice";
 
@@ -56,5 +56,7 @@ public final class ParameterFieldsD {
     public static final String DELIVERY_EMAIL_SUBJECT = "deliveryEmailSubject";
     public static final String DELIVERY_EMAIL_BODY = "deliveryEmailBody";
     public static final String ACCEPTANCE_OF_DELIVERY = "acceptanceOfDelivery";
+
+    public static final String INCLUDE_IN_CALCULATION_DELIVERIES = "includeInCalculationDeliveries";
 
 }

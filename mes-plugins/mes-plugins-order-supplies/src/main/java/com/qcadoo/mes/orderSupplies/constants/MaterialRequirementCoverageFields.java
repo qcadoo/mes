@@ -49,8 +49,6 @@ public final class MaterialRequirementCoverageFields {
 
     public static final String COVERAGE_TYPE = "coverageType";
 
-    public static final String INCLUDE_DRAFT_DELIVERIES = "includeDraftDeliveries";
-
     public static final String INCLUDE_IN_CALCULATION_DELIVERIES = "includeInCalculationDeliveries";
 
     public static final String COVERAGE_LOCATIONS = "coverageLocations";

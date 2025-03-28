@@ -27,6 +27,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.qcadoo.localization.api.utils.DateUtils;
 import com.qcadoo.mes.basic.ParameterService;
+import com.qcadoo.mes.deliveries.constants.ParameterFieldsD;
 import com.qcadoo.mes.orderSupplies.OrderSuppliesService;
 import com.qcadoo.mes.orderSupplies.constants.*;
 import com.qcadoo.model.api.DataDefinition;
@@ -224,7 +225,7 @@ public class GenerateMaterialRequirementCoverageHooks {
         }
         showReplacementsAvailability.requestUpdate(true);
 
-        if(generated) {
+        if (generated) {
             generateCoverageAnalysis.setEnabled(true);
         } else {
             generateCoverageAnalysis.setEnabled(false);
@@ -235,7 +236,7 @@ public class GenerateMaterialRequirementCoverageHooks {
     private boolean isReplacement(Long coverageProductId) {
         Entity pc = dataDefinitionService.get(OrderSuppliesConstants.PLUGIN_IDENTIFIER,
                 OrderSuppliesConstants.MODEL_COVERAGE_PRODUCT_DTO).get(coverageProductId);
-        if(Objects.isNull(pc)) {
+        if (Objects.isNull(pc)) {
             return false;
         }
         return pc.getBooleanField(L_REPLACEMENT);
@@ -269,10 +270,10 @@ public class GenerateMaterialRequirementCoverageHooks {
             field.requestComponentUpdateState();
         }
 
-        if (StringUtils.isNotEmpty(parameter.getStringField(ParameterFieldsOS.INCLUDE_IN_CALCULATION_DELIVERIES))) {
-            FieldComponent field = (FieldComponent) view.getComponentByReference(ParameterFieldsOS.INCLUDE_IN_CALCULATION_DELIVERIES);
+        if (StringUtils.isNotEmpty(parameter.getStringField(ParameterFieldsD.INCLUDE_IN_CALCULATION_DELIVERIES))) {
+            FieldComponent field = (FieldComponent) view.getComponentByReference(ParameterFieldsD.INCLUDE_IN_CALCULATION_DELIVERIES);
 
-            field.setFieldValue(parameter.getStringField(ParameterFieldsOS.INCLUDE_IN_CALCULATION_DELIVERIES));
+            field.setFieldValue(parameter.getStringField(ParameterFieldsD.INCLUDE_IN_CALCULATION_DELIVERIES));
             field.requestComponentUpdateState();
         }
 

@@ -225,6 +225,12 @@
             <model:boolean name="requireSupplierIdentification" default="false"/>
         </model:model-field>
 
+        <model:model-field model="parameter" plugin="basic">
+            <model:enum name="includeInCalculationDeliveries"
+                        values="01confirmedDeliveries,02unconfirmedDeliveries,03nonDraftDeliveries"
+                        required="true" default="01confirmedDeliveries"/>
+        </model:model-field>
+
         <model:model-hook plugin="basic" model="company">
             <model:onDelete class="com.qcadoo.mes.deliveries.hooks.CompanyHooksD"
                             method="onDelete"/>

@@ -161,7 +161,7 @@ public class MaterialRequirementCoverageForOrderReportPdfService extends PdfDocu
 
         pdfHelper.addTableCellAsOneColumnTable(
                 leftPanelOptions,
-                translationService.translate("orderSupplies.materialRequirementCoverage.report.includeDraftDeliveries", locale),
+                translationService.translate("materialRequirementCoverageForOrder.coverageForOrder.report.includeDraftDeliveries", locale),
                 materialRequirementCoverage.getBooleanField(CoverageForOrderFields.INCLUDE_DRAFT_DELIVERIES) ? translationService
                         .translate("qcadooView.true", locale) : translationService.translate("qcadooView.false", locale));
 

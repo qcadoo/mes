@@ -144,7 +144,7 @@ public class DeliveryHooks {
 
     public boolean validate(final DataDefinition deliveryDD, final Entity delivery) {
         if (Objects.isNull(delivery.getBelongsToField(DeliveryFields.SUPPLIER))
-                && parameterService.getParameter().getBooleanField(ParameterFieldsD.REQUIRE_SUPPLIER_IDENTYFICATION)) {
+                && parameterService.getParameter().getBooleanField(ParameterFieldsD.REQUIRE_SUPPLIER_IDENTIFICATION)) {
             delivery.addError(deliveryDD.getField(DeliveryFields.SUPPLIER), "qcadooView.validate.field.error.missing");
             return false;
         }

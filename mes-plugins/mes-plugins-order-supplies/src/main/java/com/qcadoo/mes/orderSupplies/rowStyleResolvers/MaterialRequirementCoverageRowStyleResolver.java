@@ -1,24 +1,22 @@
 package com.qcadoo.mes.orderSupplies.rowStyleResolvers;
 
-import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.qcadoo.mes.deliveries.constants.DeliveriesConstants;
 import com.qcadoo.mes.deliveries.constants.DeliveryFields;
+import com.qcadoo.mes.deliveries.constants.IncludeInCalculationDeliveries;
 import com.qcadoo.mes.deliveries.states.constants.DeliveryStateStringValues;
-import com.qcadoo.mes.orderSupplies.constants.IncludeInCalculationDeliveries;
 import com.qcadoo.mes.orderSupplies.constants.MaterialRequirementCoverageFields;
 import com.qcadoo.mes.orderSupplies.constants.OrderSuppliesConstants;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.constants.RowStyle;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 @Service
 public class MaterialRequirementCoverageRowStyleResolver {
@@ -43,27 +41,15 @@ public class MaterialRequirementCoverageRowStyleResolver {
         return rowStyles;
     }
 
-    private String determineRowStyle(final Long productId, final Date coverageToDate, final String includeInCalculationDeliveries) {
+    private String determineRowStyle(final Long productId, final Date coverageToDate,
+                                     final String includeInCalculationDeliveries) {
         StringBuilder query = new StringBuilder();
         query.append("select delivery.state as state ");
         query.append("from #deliveries_delivery delivery ");
         query.append("join delivery.orderedProducts orderedProduct ");
         query.append("where delivery.active = true and delivery.deliveryDate <= :deliveryDate ");
         query.append("and orderedProduct.product = :productId and delivery.state in (:states) ");
-        List<String> states = Lists.newArrayList(DeliveryStateStringValues.APPROVED);
-
-        if (IncludeInCalculationDeliveries.CONFIRMED_DELIVERIES.getStringValue().equals(includeInCalculationDeliveries)) {
-            states.add(DeliveryStateStringValues.APPROVED);
-        } else if (IncludeInCalculationDeliveries.UNCONFIRMED_DELIVERIES.getStringValue().equals(includeInCalculationDeliveries)) {
-            states.add(DeliveryStateStringValues.APPROVED);
-            states.add(DeliveryStateStringValues.PREPARED);
-            states.add(DeliveryStateStringValues.DURING_CORRECTION);
-            states.add(DeliveryStateStringValues.DRAFT);
-        } else {
-            states.add(DeliveryStateStringValues.APPROVED);
-            states.add(DeliveryStateStringValues.PREPARED);
-            states.add(DeliveryStateStringValues.DURING_CORRECTION);
-        }
+        List<String> states = IncludeInCalculationDeliveries.getStates(includeInCalculationDeliveries);
 
         List<Entity> orderedDeliveries = dataDefinitionService
                 .get(DeliveriesConstants.PLUGIN_IDENTIFIER, DeliveriesConstants.MODEL_DELIVERY).find(query.toString())
