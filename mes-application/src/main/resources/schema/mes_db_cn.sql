@@ -43991,7 +43991,7 @@ COPY public.qcadoomodel_dictionaryitem (id, name, externalnumber, description, t
 39	标签打印机	\N	\N	05stickerPrinter	\N	t	0	f	1
 40	新的订单	\N	\N	01new	15	t	0	f	2
 41	已生产的订单	\N	\N	02ordered	15	t	0	f	1
-42	wydana	\N	\N	03released	15	t	0	f	3
+42	issued	\N	\N	03released	15	t	0	f	3
 \.
 
 

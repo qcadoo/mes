@@ -43945,7 +43945,7 @@ COPY public.qcadoomodel_dictionaryitem (id, name, externalnumber, description, t
 2	CHEP EUR	\N	\N	02chepEur	5	t	0	f	1
 11	Work on line	\N	\N	01workOnLine	17	f	0	f	3
 13	Other tasks	\N	\N	02otherCase	17	f	0	f	1
-42	wydana	\N	\N	03released	15	t	0	f	3
+42	issued	\N	\N	03released	15	t	0	f	3
 \.
 
 

@@ -43991,7 +43991,7 @@ COPY public.qcadoomodel_dictionaryitem (id, name, externalnumber, description, t
 40	Nouveau	\N	\N	01new	15	t	0	f	2
 41	Commandé	\N	\N	02ordered	15	t	0	f	1
 2	CHEP EUR	\N	\N	02chepEur	5	t	0	f	2
-42	wydana	\N	\N	03released	15	t	0	f	3
+42	issued	\N	\N	03released	15	t	0	f	3
 \.
 
 
