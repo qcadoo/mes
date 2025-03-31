@@ -262,7 +262,9 @@ public class DeliveryDetailsListeners {
             pricePerUnit = price;
         } else if (deliveryCurrency.getId().equals(plnCurrency.getId()) && !deliveryCurrency.getId().equals(productCurrency.getId())) {
             pricePerUnit = currencyService.getConvertedValue(price, productCurrency);
-        } else if (!deliveryCurrency.getId().equals(plnCurrency.getId()) && !deliveryCurrency.getId().equals(productCurrency.getId())) {
+        } else if (productCurrency.getId().equals(plnCurrency.getId()) && !deliveryCurrency.getId().equals(productCurrency.getId())) {
+            pricePerUnit = currencyService.getRevertedValue(price, deliveryCurrency);
+        } else {
             productsToMessage.add(product);
         }
 
