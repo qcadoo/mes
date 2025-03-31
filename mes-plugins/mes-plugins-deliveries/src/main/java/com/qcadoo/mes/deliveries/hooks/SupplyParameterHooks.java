@@ -131,6 +131,16 @@ public class SupplyParameterHooks {
         return true;
     }
 
+    public final boolean checkIfIncludeInCalculationDeliveriesIsSelected(final DataDefinition parameterDD, final Entity parameter) {
+        if (parameter.getStringField(ParameterFieldsD.INCLUDE_IN_CALCULATION_DELIVERIES) == null) {
+            parameter.addError(parameterDD.getField(ParameterFieldsD.INCLUDE_IN_CALCULATION_DELIVERIES),
+                    "basic.parameter.message.includeInCalculationDeliveriesIsNotSelected");
+            return false;
+        }
+
+        return true;
+    }
+
     public final boolean checkIfDeliveryEmailFieldsFilled(final DataDefinition parameterDD, final Entity parameter) {
         boolean isValid = true;
         if (parameter.getBooleanField(ParameterFieldsD.SEND_EMAIL_TO_SUPPLIER)) {
