@@ -33,7 +33,7 @@
         <string name="productNumber"/>
         <string name="productName"/>
         <datetime name="deadline"/>
-        <string name="masterOrderPositionStatus"/>
+        <dictionary name="masterOrderPositionStatus" dictionary="masterOrderPositionStatus"/>
         <decimal name="masterOrderQuantity"/>
         <decimal name="cumulatedMasterOrderQuantity"/>
         <decimal name="producedOrderQuantity"/>

@@ -45,7 +45,7 @@
         <string name="technologyName"/>
         <string name="salesPlanNumber"/>
         <string name="salesPlanName"/>
-        <string name="masterOrderPositionStatus"/>
+        <dictionary name="masterOrderPositionStatus" dictionary="masterOrderPositionStatus"/>
         <string name="comments"/>
         <decimal name="masterOrderQuantity"/>
         <decimal name="cumulatedMasterOrderQuantity"/>

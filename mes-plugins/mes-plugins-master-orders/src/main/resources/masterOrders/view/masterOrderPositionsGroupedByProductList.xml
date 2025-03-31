@@ -72,6 +72,23 @@
             <option type="fullscreen" value="true"/>
             <option type="multiselect" value="true"/>
 
+            <option type="hasPredefinedFilters" value="true"/>
+            <option type="defaultPredefinedFilterName" value="new"/>
+
+            <predefinedFilters>
+                <predefinedFilter name="all">
+                </predefinedFilter>
+                <predefinedFilter name="new">
+                    <filterRestriction column="masterOrderPositionStatus" value="nowa"/>
+                </predefinedFilter>
+                <predefinedFilter name="ordered">
+                    <filterRestriction column="masterOrderPositionStatus" value="zlecona"/>
+                </predefinedFilter>
+                <predefinedFilter name="released">
+                    <filterRestriction column="masterOrderPositionStatus" value="wydana"/>
+                </predefinedFilter>
+            </predefinedFilters>
+
             <listener event="createDelivery"
                       class="com.qcadoo.mes.masterOrders.listeners.MasterOrderPositionsListListeners"
                       method="createDelivery"/>
