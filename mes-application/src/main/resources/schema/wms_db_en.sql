@@ -39354,7 +39354,7 @@ COPY public.basic_dashboardbutton (id, parameter_id, identifier, item_id, icon, 
 22	1	basic.dashboardButton.identifier.orders.ordersPlanningList	246	/qcadooView/public/css/core/images/dashboard/orders.png	8	f
 23	1	basic.dashboardButton.identifier.orders.operationalTasksList	243	/qcadooView/public/css/core/images/dashboard/operationalTasks.png	9	f
 24	1	basic.dashboardButton.identifier.orders.salesPlansList	255	/qcadooView/public/css/core/images/dashboard/orders.png	10	f
-25	1	basic.dashboardButton.identifier.orders.masterOrdersList	\N	/qcadooView/public/css/core/images/dashboard/orders.png	11	f
+25	1	basic.dashboardButton.identifier.orders.masterOrdersList	\N	/qcadooView/public/css/core/images/dashboard/orders.png	11	t
 \.
 
 
