@@ -25,13 +25,12 @@ package com.qcadoo.mes.materialFlowResources.imports.position;
 
 import com.qcadoo.mes.basic.imports.dtos.CellBinderRegistry;
 import com.qcadoo.mes.basic.imports.helpers.CellParser;
-import com.qcadoo.mes.basic.imports.parsers.DictionaryCellParsers;
 import com.qcadoo.mes.materialFlowResources.constants.PositionFields;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import static com.qcadoo.mes.basic.imports.dtos.CellBinder.optional;
 import static com.qcadoo.mes.basic.imports.dtos.CellBinder.required;
 
@@ -59,7 +58,7 @@ public class PositionCellBinderRegistry {
     private CellParser batchCellParser;
 
     @Autowired
-    private DictionaryCellParsers dictionaryCellParsers;
+    private CellParser typeOfLoadUnitCellParser;
 
     @PostConstruct
     private void init() {
@@ -72,7 +71,7 @@ public class PositionCellBinderRegistry {
         cellBinderRegistry.setCellBinder(optional(PositionFields.PRODUCTION_DATE, dateCellParser));
         cellBinderRegistry.setCellBinder(optional(PositionFields.EXPIRATION_DATE, dateCellParser));
         cellBinderRegistry.setCellBinder(optional(PositionFields.STORAGE_LOCATION, storageLocationCellParser));
-        cellBinderRegistry.setCellBinder(optional(PositionFields.TYPE_OF_PALLET, dictionaryCellParsers.typeOfPallet()));
+        cellBinderRegistry.setCellBinder(optional(PositionFields.TYPE_OF_LOAD_UNIT, typeOfLoadUnitCellParser));
         cellBinderRegistry.setCellBinder(optional(PositionFields.PALLET_NUMBER, palletNumberCellParser));
     }
 

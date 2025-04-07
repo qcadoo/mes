@@ -63,11 +63,11 @@ public class PalletBalanceXlsService extends XlsDocumentService {
         final FontsContainer fontsContainer = new FontsContainer(sheet.getWorkbook());
         final StylesContainer stylesContainer = new StylesContainer(sheet.getWorkbook(), fontsContainer);
 
-        List<String> typesOfPallet = palletBalanceReportHelper.getTypesOfPallet();
+        List<String> typesOfLoadUnit = palletBalanceReportHelper.getTypesOfLoadUnit();
         HSSFRow headerRow = sheet.createRow(0);
         HSSFRow typesOfPalletRow = sheet.createRow(1);
         addDateHeader(sheet, locale, headerRow, stylesContainer);
-        addTypesOfPalletHeader(sheet, locale, headerRow, typesOfPalletRow, stylesContainer, typesOfPallet);
+        addTypesOfPalletHeader(sheet, locale, headerRow, typesOfPalletRow, stylesContainer, typesOfLoadUnit);
     }
 
     private void addDateHeader(HSSFSheet sheet, Locale locale, HSSFRow headerRow, StylesContainer stylesContainer) {
@@ -78,10 +78,10 @@ public class PalletBalanceXlsService extends XlsDocumentService {
     }
 
     private void addTypesOfPalletHeader(HSSFSheet sheet, Locale locale, HSSFRow headerRow, HSSFRow typesOfPalletRow,
-            StylesContainer stylesContainer, List<String> typesOfPallet) {
+            StylesContainer stylesContainer, List<String> typesOfLoadUnit) {
 
         int columnIndex = 1;
-        int typesOfPalletCount = typesOfPallet.size();
+        int typesOfPalletCount = typesOfLoadUnit.size();
         int lastColumnIndex = typesOfPalletCount + columnIndex - 1;
 
         for (String key : HEADER_KEYS) {
@@ -106,7 +106,7 @@ public class PalletBalanceXlsService extends XlsDocumentService {
                         translationService.translate("materialFlowResource.palletBalance.report.header." + key, locale),
                         headerRow, columnIndex, lastColumnIndex, stylesContainer);
                 for (int i = 0; i < typesOfPalletCount; i++) {
-                    createHeaderCell(stylesContainer, typesOfPalletRow, typesOfPallet.get(i), columnIndex + i,
+                    createHeaderCell(stylesContainer, typesOfPalletRow, typesOfLoadUnit.get(i), columnIndex + i,
                             HorizontalAlignment.LEFT);
                 }
                 columnIndex = lastColumnIndex + 1;
@@ -133,14 +133,14 @@ public class PalletBalanceXlsService extends XlsDocumentService {
         Date dateFrom = palletBalance.getDateField(PalletBalanceFields.DATE_FROM);
         Date dateTo = DateUtils.truncate(palletBalance.getDateField(PalletBalanceFields.DATE_TO), Calendar.DATE);
         boolean includeWeekends = palletBalance.getBooleanField(PalletBalanceFields.INCLUDE_WEEKENDS);
-        List<String> typesOfPallet = palletBalanceReportHelper.getTypesOfPallet();
+        List<String> typesOfLoadUnit = palletBalanceReportHelper.getTypesOfLoadUnit();
 
         Map<Date, List<PalletBalanceRowDto>> inbounds = palletBalanceReportHelper.getInbounds(dateFrom);
         Map<Date, List<PalletBalanceRowDto>> outbounds = palletBalanceReportHelper.getOutbounds(dateFrom);
         Map<Date, List<PalletBalanceRowDto>> initialState = Maps.newHashMap();
         Map<Date, Integer> moves = palletBalanceReportHelper.getMoves(dateFrom);
         Map<Date, List<PalletBalanceRowDto>> finalState = palletBalanceReportHelper.getCurrentState(dateTo);
-        palletBalanceReportHelper.fillFinalAndInitialState(typesOfPallet, finalState, initialState, inbounds, outbounds,
+        palletBalanceReportHelper.fillFinalAndInitialState(typesOfLoadUnit, finalState, initialState, inbounds, outbounds,
                 dateFrom, dateTo);
 
         int columnIndex = 1;
@@ -158,11 +158,11 @@ public class PalletBalanceXlsService extends XlsDocumentService {
             createRegularCell(stylesContainer, row, 0, currentDate.toString("dd.MM.yyyy"));
             Date current = currentDate.toDate();
 
-            columnIndex = createRowPart(initialState, row, columnIndex, typesOfPallet, current, stylesContainer);
-            columnIndex = createRowPart(inbounds, row, columnIndex, typesOfPallet, current, stylesContainer);
-            columnIndex = createRowPart(outbounds, row, columnIndex, typesOfPallet, current, stylesContainer);
+            columnIndex = createRowPart(initialState, row, columnIndex, typesOfLoadUnit, current, stylesContainer);
+            columnIndex = createRowPart(inbounds, row, columnIndex, typesOfLoadUnit, current, stylesContainer);
+            columnIndex = createRowPart(outbounds, row, columnIndex, typesOfLoadUnit, current, stylesContainer);
             columnIndex = createMovesRowPart(moves, row, columnIndex, current, stylesContainer);
-            createRowPart(finalState, row, columnIndex, typesOfPallet, current, stylesContainer);
+            createRowPart(finalState, row, columnIndex, typesOfLoadUnit, current, stylesContainer);
 
             columnMax = columnIndex;
             columnIndex = 1;
@@ -175,11 +175,11 @@ public class PalletBalanceXlsService extends XlsDocumentService {
     }
 
     private int createRowPart(Map<Date, List<PalletBalanceRowDto>> data, HSSFRow row, int columnIndex,
-            List<String> typesOfPallet, Date currentDate, StylesContainer stylesContainer) {
-        for (String typeOfPallet : typesOfPallet) {
+            List<String> typesOfLoadUnit, Date currentDate, StylesContainer stylesContainer) {
+        for (String typeOfLoadUnit : typesOfLoadUnit) {
             if (data.containsKey(currentDate)) {
                 PalletBalanceRowDto stateForDay = data.get(currentDate).stream()
-                        .filter(dto -> typeOfPallet.equals(dto.getTypeOfPallet())).findAny().orElse(new PalletBalanceRowDto());
+                        .filter(dto -> typeOfLoadUnit.equals(dto.getTypeOfLoadUnit())).findAny().orElse(new PalletBalanceRowDto());
                 createNumericCell(stylesContainer, row, columnIndex, stateForDay.getPalletsCount());
 
             } else {

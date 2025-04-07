@@ -56,7 +56,7 @@ public class DocumentPositionDTO {
     private String pickingWorker;
 
     @SearchAttribute(searchType = SearchAttribute.SEARCH_TYPE.EXACT_MATCH)
-    private String typeOfPallet;
+    private String typeOfLoadUnit;
 
     private String storageLocation;
 
@@ -188,12 +188,12 @@ public class DocumentPositionDTO {
         this.palletNumber = palletNumber;
     }
 
-    public String getTypeOfPallet() {
-        return typeOfPallet;
+    public String getTypeOfLoadUnit() {
+        return typeOfLoadUnit;
     }
 
-    public void setTypeOfPallet(String typeOfPallet) {
-        this.typeOfPallet = typeOfPallet;
+    public void setTypeOfLoadUnit(String typeOfLoadUnit) {
+        this.typeOfLoadUnit = typeOfLoadUnit;
     }
 
     public String getStorageLocation() {
@@ -274,7 +274,7 @@ public class DocumentPositionDTO {
         hash = 67 * hash + Objects.hashCode(this.expirationDate);
         hash = 67 * hash + Objects.hashCode(this.productionDate);
         hash = 67 * hash + Objects.hashCode(this.palletNumber);
-        hash = 67 * hash + Objects.hashCode(this.typeOfPallet);
+        hash = 67 * hash + Objects.hashCode(this.typeOfLoadUnit);
         hash = 67 * hash + Objects.hashCode(this.storageLocation);
         hash = 67 * hash + Objects.hashCode(this.price);
         hash = 67 * hash + Objects.hashCode(this.batch);
@@ -329,7 +329,7 @@ public class DocumentPositionDTO {
         if (!Objects.equals(this.palletNumber, other.palletNumber)) {
             return false;
         }
-        if (!Objects.equals(this.typeOfPallet, other.typeOfPallet)) {
+        if (!Objects.equals(this.typeOfLoadUnit, other.typeOfLoadUnit)) {
             return false;
         }
         if (!Objects.equals(this.storageLocation, other.storageLocation)) {
@@ -364,7 +364,7 @@ public class DocumentPositionDTO {
         return "DocumentPositionDTO{" + "id=" + id + ", document=" + document + ", product=" + product
                 + ", quantity=" + quantity + ", unit=" + unit + ", givenquantity=" + givenquantity
                 + ", givenunit=" + givenunit + ", conversion=" + conversion + ", expirationDate=" + expirationDate
-                + ", productionDate=" + productionDate + ", pallet=" + palletNumber + ", type_of_pallet=" + typeOfPallet
+                + ", productionDate=" + productionDate + ", pallet=" + palletNumber + ", type_of_loadUnit=" + typeOfLoadUnit
                 + ", storage_location=" + storageLocation + ", price=" + price + ", batch=" + batch + ", resource=" + resource
                 + ", resourceNumber=" + resourceNumber + ", pickingDate=" + pickingDate + ", pickingWorker=" + pickingWorker
                 + '}';

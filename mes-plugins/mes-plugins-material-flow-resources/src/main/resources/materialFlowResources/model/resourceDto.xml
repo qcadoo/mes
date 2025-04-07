@@ -52,7 +52,7 @@
         <string name="batchNumber"/>
         <string name="storageLocationNumber"/>
         <string name="palletNumber"/>
-        <string name="typeOfPallet"/>
+        <string name="typeOfLoadUnit"/>
         <string name="qualityRating"/>
         <string name="userName"/>
         <boolean name="isCorrected"/>

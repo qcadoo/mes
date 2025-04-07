@@ -214,10 +214,10 @@ public class MaterialFlowResourcesServiceImpl implements MaterialFlowResourcesSe
         return Optional.ofNullable(scb.setMaxResults(1).uniqueResult());
     }
 
-    public String getTypeOfPalletByPalletNumber(final Long locationId, final String palletNumberNumber) {
+    public Long getTypeOfLoadUnitByPalletNumber(final Long locationId, final String palletNumberNumber) {
         StringBuilder query = new StringBuilder();
 
-        query.append("SELECT resource.typeofpallet ");
+        query.append("SELECT resource.typeofloadunit_id ");
         query.append("FROM materialflowresources_resource resource ");
         query.append("LEFT JOIN basic_palletnumber palletnumber ");
         query.append("ON palletnumber.id = resource.palletnumber_id ");
@@ -231,7 +231,7 @@ public class MaterialFlowResourcesServiceImpl implements MaterialFlowResourcesSe
         params.put("palletNumberNumber", palletNumberNumber);
 
         try {
-            return jdbcTemplate.queryForObject(query.toString(), params, String.class);
+            return jdbcTemplate.queryForObject(query.toString(), params, Long.class);
         } catch (EmptyResultDataAccessException e) {
             return null;
         }

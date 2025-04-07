@@ -46,7 +46,7 @@ public class ResourceDTO implements AbstractDTO {
 
     private String palletNumber;
 
-    private String typeOfPallet;
+    private String typeOfLoadUnit;
 
     @JsonFormat(shape = JsonFormat.Shape.BOOLEAN)
     private Boolean waste;
@@ -172,12 +172,12 @@ public class ResourceDTO implements AbstractDTO {
         this.palletNumber = palletNumber;
     }
 
-    public String getTypeOfPallet() {
-        return typeOfPallet;
+    public String getTypeOfLoadUnit() {
+        return typeOfLoadUnit;
     }
 
-    public void setTypeOfPallet(String typeOfPallet) {
-        this.typeOfPallet = typeOfPallet;
+    public void setTypeOfLoadUnit(String typeOfLoadUnit) {
+        this.typeOfLoadUnit = typeOfLoadUnit;
     }
 
     public Boolean isWaste() {

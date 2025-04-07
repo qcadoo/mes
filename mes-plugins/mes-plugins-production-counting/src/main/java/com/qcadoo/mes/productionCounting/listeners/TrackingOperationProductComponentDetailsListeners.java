@@ -33,6 +33,7 @@ import com.qcadoo.mes.basicProductionCounting.BasicProductionCountingService;
 import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityFields;
 import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityRole;
 import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityTypeOfMaterial;
+import com.qcadoo.mes.deliveries.constants.DeliveredProductFields;
 import com.qcadoo.mes.materialFlowResources.MaterialFlowResourcesService;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.productionCounting.constants.ProductionTrackingFields;
@@ -251,10 +252,10 @@ public class TrackingOperationProductComponentDetailsListeners {
         trackingOperationProductComponentForm.performEvent(view, "reset");
     }
 
-    public void fillTypeOfPalletField(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+    public void fillTypeOfLoadUnitField(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         FormComponent trackingOperationProductOutComponentForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         LookupComponent palletNumberLookup = (LookupComponent) view.getComponentByReference(TrackingOperationProductOutComponentFields.PALLET_NUMBER);
-        FieldComponent typeOfPalletField = (FieldComponent) view.getComponentByReference(TrackingOperationProductOutComponentFields.TYPE_OF_PALLET);
+        LookupComponent typeOfLoadUnitLookup = (LookupComponent) view.getComponentByReference(TrackingOperationProductOutComponentFields.TYPE_OF_LOAD_UNIT);
 
         Entity trackingOperationProductOutComponent = trackingOperationProductOutComponentForm.getPersistedEntityWithIncludedFormValues();
 
@@ -273,14 +274,14 @@ public class TrackingOperationProductComponentDetailsListeners {
 
                 if (Objects.nonNull(productsInputLocation)) {
                     Entity palletNumber = palletNumberLookup.getEntity();
-                    String typeOfPallet = null;
+                    Long typeOfLoadUnit = null;
 
                     if (Objects.nonNull(palletNumber)) {
-                        typeOfPallet = materialFlowResourcesService.getTypeOfPalletByPalletNumber(productsInputLocation.getId(), palletNumber.getStringField(PalletNumberFields.NUMBER));
+                        typeOfLoadUnit = materialFlowResourcesService.getTypeOfLoadUnitByPalletNumber(productsInputLocation.getId(), palletNumber.getStringField(PalletNumberFields.NUMBER));
                     }
 
-                    typeOfPalletField.setFieldValue(typeOfPallet);
-                    typeOfPalletField.requestComponentUpdateState();
+                    typeOfLoadUnitLookup.setFieldValue(typeOfLoadUnit);
+                    typeOfLoadUnitLookup.requestComponentUpdateState();
                 }
             }
         }

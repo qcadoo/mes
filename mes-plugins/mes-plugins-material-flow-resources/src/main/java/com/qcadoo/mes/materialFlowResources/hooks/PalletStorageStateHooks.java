@@ -65,7 +65,7 @@ public abstract class PalletStorageStateHooks {
 
     public List<Entity> createHelperEntities(final Set<Long> palletIds) {
         StringBuilder sql = new StringBuilder();
-        sql.append("SELECT palletNumber, storageLocationNumber, locationNumber, typeOfPallet ");
+        sql.append("SELECT palletNumber, storageLocationNumber, locationNumber, typeOfLoadUnit ");
         sql.append("FROM materialflowresources_palletstoragestatedto ");
         sql.append("WHERE id IN (:ids)");
 
@@ -81,7 +81,7 @@ public abstract class PalletStorageStateHooks {
         entity.setField(PALLET_NUMBER, dto.getPalletNumber());
         entity.setField(STORAGE_LOCATION_NUMBER, dto.getStorageLocationNumber());
         entity.setField(LOCATION_NUMBER, dto.getLocationNumber());
-        entity.setField(TYPE_OF_PALLET, dto.getTypeOfPallet());
+        entity.setField(TYPE_OF_LOAD_UNIT, dto.getTypeOfLoadUnit());
         return entity;
     }
 

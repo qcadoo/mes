@@ -145,7 +145,7 @@ public class DeliveryStateServiceMF {
                                 currency),
                         getBatch(deliveredProduct), getProductionDate(deliveredProduct), getExpirationDate(deliveredProduct),
                         null, getStorageLocation(deliveredProduct), getPalletNumber(deliveredProduct),
-                        getTypeOfPallet(deliveredProduct), isWaste(deliveredProduct),
+                        getTypeOfLoadUnit(deliveredProduct), isWaste(deliveredProduct),
                         deliveredProduct.getStringField(L_QUALITY_RATING), attributes);
             }
         }
@@ -359,8 +359,8 @@ public class DeliveryStateServiceMF {
         return deliveredProduct.getDateField(DeliveredProductFields.EXPIRATION_DATE);
     }
 
-    private String getTypeOfPallet(final Entity deliveredProduct) {
-        return deliveredProduct.getStringField(DeliveredProductFields.PALLET_TYPE);
+    private Entity getTypeOfLoadUnit(final Entity deliveredProduct) {
+        return deliveredProduct.getBelongsToField(DeliveredProductFields.TYPE_OF_LOAD_UNIT);
     }
 
     private Entity getPalletNumber(final Entity deliveredProduct) {

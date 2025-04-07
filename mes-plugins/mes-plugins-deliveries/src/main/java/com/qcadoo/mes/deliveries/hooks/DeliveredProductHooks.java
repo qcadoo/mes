@@ -54,13 +54,7 @@ public class DeliveredProductHooks {
     private static final String L_OFFER = "offer";
 
     @Autowired
-    private DataDefinitionService dataDefinitionService;
-
-    @Autowired
     private NumberService numberService;
-
-    @Autowired
-    private NamedParameterJdbcTemplate jdbcTemplate;
 
     @Autowired
     private ParameterService parameterService;
@@ -77,19 +71,13 @@ public class DeliveredProductHooks {
     @Autowired
     private BatchModelValidators batchModelValidators;
 
-    @Autowired
-    private MaterialFlowResourcesService materialFlowResourcesService;
-
-    public void onCreate(final DataDefinition deliveredProductDD, final Entity deliveredProduct) {
-    }
-
     public void onSave(final DataDefinition deliveredProductDD, final Entity deliveredProduct) {
         deliveriesService.calculatePricePerUnit(deliveredProduct, DeliveredProductFields.DELIVERED_QUANTITY);
 
         updateDeliveredAndAdditionalQuantityInOrderedProduct(deliveredProductDD, deliveredProduct);
 
         createBatch(deliveredProduct);
-        setPalletType(deliveredProduct);
+        setTypeOfLoadUnit(deliveredProduct);
     }
 
     private void updateDeliveredAndAdditionalQuantityInOrderedProduct(final DataDefinition deliveredProductDD,
@@ -234,11 +222,11 @@ public class DeliveredProductHooks {
         }
     }
 
-    private void setPalletType(final Entity deliveredProduct) {
+    private void setTypeOfLoadUnit(final Entity deliveredProduct) {
         Entity palletNumber = deliveredProduct.getBelongsToField(DeliveredProductFields.PALLET_NUMBER);
 
         if (Objects.isNull(palletNumber)) {
-            deliveredProduct.setField(DeliveredProductFields.PALLET_TYPE, null);
+            deliveredProduct.setField(DeliveredProductFields.TYPE_OF_LOAD_UNIT, null);
         }
     }
 

@@ -45,7 +45,7 @@
         <string name="additionalUnit"/>
         <date name="expirationDate"/>
         <string name="palletNumber"/>
-        <string name="typeOfPallet"/>
+        <string name="typeOfLoadUnit"/>
         <string name="storageLocationNumber"/>
         <string name="locationNumber"/>
     </fields>

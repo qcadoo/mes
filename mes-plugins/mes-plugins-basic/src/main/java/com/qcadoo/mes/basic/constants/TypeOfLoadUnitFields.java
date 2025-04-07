@@ -21,26 +21,14 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.materialFlowResources.constants;
+package com.qcadoo.mes.basic.constants;
 
-public final class DocumentPositionParametersItemValues {
+public final class TypeOfLoadUnitFields {
 
-    private DocumentPositionParametersItemValues() {
+    private TypeOfLoadUnitFields() {
 
     }
 
-    public static final String STORAGE_LOCATION = "storageLocation";
-
-    public static final String PRODUCTION_DATE = "productionDate";
-
-    public static final String EXPIRATION_DATE = "expirationDate";
-
-    public static final String BATCH = "batch";
-
-    public static final String PRICE = "price";
-
-    public static final String PALLET_WITH_FREE_PALECE = "palletWithFreePlace";
-
-    public static final String PALLET_TO_SHIFT = "palletToShift";
+    public static final String NAME = "name";
 
 }

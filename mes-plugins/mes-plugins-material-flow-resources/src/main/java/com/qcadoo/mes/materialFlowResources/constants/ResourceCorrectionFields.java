@@ -42,9 +42,9 @@ public final class ResourceCorrectionFields {
 
     public static final String OLD_EXPIRATION_DATE = "oldExpirationDate";
 
-    public static final String OLD_TYPE_OF_PALLET = "oldTypeOfPallet";
+    public static final String OLD_TYPE_OF_LOAD_UNIT = "oldTypeOfLoadUnit";
 
-    public static final String NEW_TYPE_OF_PALLET = "newTypeOfPallet";
+    public static final String NEW_TYPE_OF_LOAD_UNIT = "newTypeOfLoadUnit";
 
     public static final String NEW_BATCH = "newBatch";
 

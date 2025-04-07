@@ -61,14 +61,14 @@ public class ResourceModelHooks {
             resource.setField(ResourceFields.NUMBER, number);
         }
 
-        setTypeOfPallet(resource);
+        setTypeOfLoadUnit(resource);
     }
 
-    private void setTypeOfPallet(final Entity resource) {
+    private void setTypeOfLoadUnit(final Entity resource) {
         Entity palletNumber = resource.getBelongsToField(ResourceFields.PALLET_NUMBER);
 
         if (Objects.isNull(palletNumber)) {
-            resource.setField(ResourceFields.TYPE_OF_PALLET, null);
+            resource.setField(ResourceFields.TYPE_OF_LOAD_UNIT, null);
         }
     }
 

@@ -10,14 +10,14 @@ public class MovedPalletDto {
 
     private String locationNumber;
 
-    private String typeOfPallet;
+    private String typeOfLoadUnit;
 
-    public String getTypeOfPallet() {
-        return typeOfPallet;
+    public String getTypeOfLoadUnit() {
+        return typeOfLoadUnit;
     }
 
-    public void setTypeOfPallet(String typeOfPallet) {
-        this.typeOfPallet = typeOfPallet;
+    public void setTypeOfLoadUnit(String typeOfLoadUnit) {
+        this.typeOfLoadUnit = typeOfLoadUnit;
     }
 
     public String getLocationNumber() {
@@ -53,11 +53,11 @@ public class MovedPalletDto {
         MovedPalletDto that = (MovedPalletDto) o;
         return Objects.equals(palletNumber, that.palletNumber)
                 && Objects.equals(storageLocationNumber, that.storageLocationNumber)
-                && Objects.equals(locationNumber, that.locationNumber) && Objects.equals(typeOfPallet, that.typeOfPallet);
+                && Objects.equals(locationNumber, that.locationNumber) && Objects.equals(typeOfLoadUnit, that.typeOfLoadUnit);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(palletNumber, storageLocationNumber, locationNumber, typeOfPallet);
+        return Objects.hash(palletNumber, storageLocationNumber, locationNumber, typeOfLoadUnit);
     }
 }

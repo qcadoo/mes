@@ -20,14 +20,12 @@ import static org.apache.commons.lang3.ArrayUtils.indexOf;
 @Service
 public class PalletStorageStateDetailsHooks {
 
-
-
     @Autowired
     private TranslationService translationService;
 
     public void setupHeaderLabel(final ViewDefinitionState view) {
         String[] descriminatorFiltersFields = new String[] { PalletStorageStateDtoFields.PALLET_NUMBER,
-                PalletStorageStateDtoFields.TYPE_OF_PALLET, PalletStorageStateDtoFields.LOCATION_NUMBER,
+                PalletStorageStateDtoFields.TYPE_OF_LOAD_UNIT, PalletStorageStateDtoFields.LOCATION_NUMBER,
                 PalletStorageStateDtoFields.STORAGE_LOCATION_NUMBER };
 
         Map<String, String> filters = ((GridComponent) view.getComponentByReference(QcadooViewConstants.L_GRID)).getFilters();

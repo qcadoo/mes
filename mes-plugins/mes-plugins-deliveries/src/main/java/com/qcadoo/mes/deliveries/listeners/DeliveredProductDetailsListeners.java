@@ -24,6 +24,7 @@
 package com.qcadoo.mes.deliveries.listeners;
 
 import com.qcadoo.mes.basic.CalculationQuantityService;
+import com.qcadoo.mes.basic.constants.PalletNumberFields;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.deliveries.DeliveriesService;
 import com.qcadoo.mes.deliveries.constants.DeliveredProductFields;
@@ -88,8 +89,25 @@ public class DeliveredProductDetailsListeners {
         deliveredProductDetailsHooks.fillCurrencyFields(view);
     }
 
-    public void fillPalletTypeField(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        deliveredProductDetailsHooks.fillPalletTypeField(view);
+    public void fillTypeOfLoadUnitField(final ViewDefinitionState view, final ComponentState state,
+                                        final String[] args) {
+        FormComponent deliveredProductForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
+        LookupComponent palletNumberLookup = (LookupComponent) view.getComponentByReference(DeliveredProductFields.PALLET_NUMBER);
+        LookupComponent typeOfLoadUnitLookup = (LookupComponent) view.getComponentByReference(DeliveredProductFields.TYPE_OF_LOAD_UNIT);
+
+        Entity deliveredProduct = deliveredProductForm.getEntity();
+        Entity delivery = deliveredProduct.getBelongsToField(DeliveredProductFields.DELIVERY);
+
+        Entity location = delivery.getBelongsToField(DeliveryFields.LOCATION);
+        Entity palletNumber = palletNumberLookup.getEntity();
+        Long typeOfLoadUnit = null;
+
+        if (Objects.nonNull(palletNumber)) {
+            typeOfLoadUnit = materialFlowResourcesService.getTypeOfLoadUnitByPalletNumber(location.getId(), palletNumber.getStringField(PalletNumberFields.NUMBER));
+        }
+
+        typeOfLoadUnitLookup.setFieldValue(typeOfLoadUnit);
+        typeOfLoadUnitLookup.requestComponentUpdateState();
     }
 
     public void fillOrderedQuantities(final ViewDefinitionState view, final ComponentState state, final String[] args) {

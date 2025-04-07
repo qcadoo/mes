@@ -285,6 +285,22 @@
                            plugin="materialFlowResources"/>
         </model:model-field>
 
+        <model:model-field plugin="basic" model="typeOfLoadUnit">
+            <model:hasMany name="positions" plugin="materialFlowResources" model="position" joinField="typeOfLoadUnit"/>
+        </model:model-field>
+
+        <model:model-field plugin="basic" model="typeOfLoadUnit">
+            <model:hasMany name="resources" plugin="materialFlowResources" model="resource" joinField="typeOfLoadUnit"/>
+        </model:model-field>
+
+        <model:model-field plugin="basic" model="typeOfLoadUnit">
+            <model:hasMany name="oldResourceCorrections" plugin="materialFlowResources" model="resourceCorrection" joinField="oldTypeOfLoadUnit"/>
+        </model:model-field>
+
+        <model:model-field plugin="basic" model="typeOfLoadUnit">
+            <model:hasMany name="newResourceCorrections" plugin="materialFlowResources" model="resourceCorrection" joinField="newTypeOfLoadUnit"/>
+        </model:model-field>
+
         <model:model-hook plugin="basic" model="parameter">
             <model:onCreate class="com.qcadoo.mes.materialFlowResources.hooks.ParametersHooksMFR"
                             method="onCreate"/>

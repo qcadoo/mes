@@ -4,7 +4,6 @@ import com.google.common.base.Optional;
 import com.qcadoo.commons.functional.Either;
 import com.qcadoo.mes.advancedGenealogy.criteriaModifier.BatchCriteriaModifier;
 import com.qcadoo.mes.basic.CalculationQuantityService;
-import com.qcadoo.mes.basic.constants.PalletNumberFields;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.materialFlowResources.MaterialFlowResourcesService;
 import com.qcadoo.mes.materialFlowResources.constants.ResourceFields;
@@ -105,7 +104,8 @@ public class ResourceDetailsHooks {
         }
     }
 
-    public void onConversionChange(final ViewDefinitionState viewDefinitionState, final ComponentState state, final String[] args) {
+    public void onConversionChange(final ViewDefinitionState viewDefinitionState, final ComponentState state,
+                                   final String[] args) {
         FieldComponent conversionField = (FieldComponent) viewDefinitionState.getComponentByReference(ResourceFields.CONVERSION);
         FieldComponent quantityInAdditionalUnitField = (FieldComponent) viewDefinitionState
                 .getComponentByReference(ResourceFields.QUANTITY_IN_ADDITIONAL_UNIT);
@@ -131,7 +131,8 @@ public class ResourceDetailsHooks {
 
     }
 
-    public void onQuantityChange(final ViewDefinitionState viewDefinitionState, final ComponentState state, final String[] args) {
+    public void onQuantityChange(final ViewDefinitionState viewDefinitionState, final ComponentState state,
+                                 final String[] args) {
         FieldComponent quantityField = (FieldComponent) viewDefinitionState.getComponentByReference(ResourceFields.QUANTITY);
         FieldComponent quantityInAdditionalUnitField = (FieldComponent) viewDefinitionState
                 .getComponentByReference(ResourceFields.QUANTITY_IN_ADDITIONAL_UNIT);
@@ -158,7 +159,8 @@ public class ResourceDetailsHooks {
         }
     }
 
-    public void onQuantityInAdditionalUnitChange(final ViewDefinitionState viewDefinitionState, final ComponentState state,
+    public void onQuantityInAdditionalUnitChange(final ViewDefinitionState viewDefinitionState,
+                                                 final ComponentState state,
                                                  final String[] args) {
         FieldComponent quantityField = (FieldComponent) viewDefinitionState.getComponentByReference(ResourceFields.QUANTITY);
         FieldComponent quantityInAdditionalUnitField = (FieldComponent) viewDefinitionState
@@ -185,22 +187,4 @@ public class ResourceDetailsHooks {
             quantityField.setFieldValue(null);
         }
     }
-
-    public void fillTypeOfPalletField(final ViewDefinitionState view) {
-        LookupComponent locationLookup = (LookupComponent) view.getComponentByReference(ResourceFields.LOCATION);
-        LookupComponent palletNumberLookup = (LookupComponent) view.getComponentByReference(ResourceFields.PALLET_NUMBER);
-        FieldComponent typeOfPalletField = (FieldComponent) view.getComponentByReference(ResourceFields.TYPE_OF_PALLET);
-
-        Entity location = locationLookup.getEntity();
-        Entity palletNumber = palletNumberLookup.getEntity();
-        String typeOfPallet = null;
-
-        if (Objects.nonNull(palletNumber)) {
-            typeOfPallet = materialFlowResourcesService.getTypeOfPalletByPalletNumber(location.getId(), palletNumber.getStringField(PalletNumberFields.NUMBER));
-        }
-
-        typeOfPalletField.setFieldValue(typeOfPallet);
-        typeOfPalletField.requestComponentUpdateState();
-    }
-
 }

@@ -44,7 +44,7 @@
         <boolean name="expirationDateCorrected"/>
         <boolean name="storageLocationCorrected"/>
         <boolean name="palletNumberCorrected"/>
-        <boolean name="typeOfPalletCorrected"/>
+        <boolean name="typeOfLoadUnitCorrected"/>
         <string name="deliveryNumber"/>
         <string name="newPalletNumber"/>
         <string name="oldPalletNumber"/>

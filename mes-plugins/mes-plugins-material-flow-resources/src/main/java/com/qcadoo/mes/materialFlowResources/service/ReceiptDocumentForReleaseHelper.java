@@ -108,7 +108,7 @@ public class ReceiptDocumentForReleaseHelper {
             copiedPosition.setField(PositionFields.DOCUMENT, null);
             copiedPosition.setField(PositionFields.RESOURCE, null);
             copiedPosition.setField(PositionFields.RESOURCE_NUMBER, null);
-            copiedPosition.setField(PositionFields.TYPE_OF_PALLET, null);
+            copiedPosition.setField(PositionFields.TYPE_OF_LOAD_UNIT, null);
 
             copiedPosition.setField(PositionFields.DELIVERY_NUMBER, position.getStringField(PositionFields.DELIVERY_NUMBER));
 

@@ -465,7 +465,7 @@ public class DocumentPositionValidator {
         params.put("conversion", vo.getUnit().equals(vo.getGivenunit()) ? 1 : vo.getConversion());
         params.put("expirationDate", vo.getExpirationDate());
         params.put("palletnumber_id", palletNumberId);
-        params.put("typeofpallet", Objects.nonNull(palletNumberId) ? vo.getTypeOfPallet() : null);
+        params.put("typeofloadunit", Objects.nonNull(palletNumberId) ? vo.getTypeOfLoadUnit() : null);
         params.put("storagelocation_id", storageLocationId);
         params.put("document_id", vo.getDocument());
         params.put("productionDate", vo.getProductionDate());
@@ -628,7 +628,7 @@ public class DocumentPositionValidator {
             Long positionId = position.getId();
             String storageLocationNumber = position.getStorageLocation();
             String palletNumber = position.getPalletNumber();
-            String typeOfPallet = position.getTypeOfPallet();
+            String typeOfLoadUnit = position.getTypeOfLoadUnit();
 
             if (Strings.isNullOrEmpty(storageLocationNumber) && !Strings.isNullOrEmpty(palletNumber)) {
                 errors.add(translationService.translate("documentGrid.error.position.storageLocation.required",
@@ -644,17 +644,17 @@ public class DocumentPositionValidator {
                         "documentGrid.error.position.existsOtherResourceForPallet",
                         LocaleContextHolder.getLocale()));
             } else if (palletValidatorService.existsOtherResourceForPalletNumberOnSameLocation(locationId, storageLocationNumber,
-                    palletNumber, typeOfPallet, null)) {
+                    palletNumber, typeOfLoadUnit, null)) {
                 errors.add(translationService.translate(
                         "documentGrid.error.position.existsOtherResourceForPalletAndStorageLocation",
                         LocaleContextHolder.getLocale()));
             } else if (palletValidatorService.existsOtherPositionForPalletNumber(locationId, storageLocationNumber,
-                    palletNumber, typeOfPallet, positionId, documentId)) {
+                    palletNumber, typeOfLoadUnit, positionId, documentId)) {
                 errors.add(translationService.translate(
                         "documentGrid.error.position.existsOtherPositionForPalletAndStorageLocation",
                         LocaleContextHolder.getLocale()));
             } else if (palletValidatorService.existsOtherDeliveredProductForPalletNumber(locationId, storageLocationNumber,
-                    palletNumber, typeOfPallet, null)) {
+                    palletNumber, typeOfLoadUnit, null)) {
                 errors.add(translationService.translate(
                         "documentGrid.error.position.existsOtherDeliveredProductForPalletAndStorageLocation",
                         LocaleContextHolder.getLocale()));

@@ -119,6 +119,8 @@ public final class BasicConstants {
 
     public static final String MODEL_LICENSE_USAGE = "licenseUsage";
 
+    public static final String MODEL_TYPE_OF_LOAD_UNIT = "typeOfLoadUnit";
+
     // VIEW
 
     public static final String VIEW_HOME = "home";

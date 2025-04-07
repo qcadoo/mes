@@ -26,7 +26,7 @@ public class InboundPositionHolder {
     private Date expirationDate;
     private Long storageLocationId;
     private Long palletNumberId;
-    private String typeOfPallet;
+    private Long typeOfLoadUnitId;
     private List<Entity> positionAttributeValues = Lists.newArrayList();
 
     public Long getProductId() {
@@ -101,14 +101,6 @@ public class InboundPositionHolder {
         this.qualityRating = qualityRating;
     }
 
-    public String getTypeOfPallet() {
-        return typeOfPallet;
-    }
-
-    public void setTypeOfPallet(String typeOfPallet) {
-        this.typeOfPallet = typeOfPallet;
-    }
-
     public Long getPalletNumberId() {
         return palletNumberId;
     }
@@ -134,14 +126,14 @@ public class InboundPositionHolder {
         InboundPositionHolder that = (InboundPositionHolder) o;
         return Objects.equals(productId, that.productId) && Objects.equals(batchId, that.batchId)
                 && Objects.equals(storageLocationId, that.storageLocationId) && Objects.equals(palletNumberId, that.palletNumberId)
-                && Objects.equals(givenUnit, that.givenUnit)
+                && Objects.equals(typeOfLoadUnitId, that.typeOfLoadUnitId) && Objects.equals(givenUnit, that.givenUnit)
                 && Objects.equals(positionAttributeValues.stream().sorted(Comparator.comparing(e -> e.getBelongsToField(ProdOutResourceAttrValFields.ATTRIBUTE).getId())).collect(Collectors.toList()),
                 that.positionAttributeValues.stream().sorted(Comparator.comparing(e -> e.getBelongsToField(ProdOutResourceAttrValFields.ATTRIBUTE).getId())).collect(Collectors.toList()));
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(productId, batchId, storageLocationId, palletNumberId, givenUnit, positionAttributeValues.stream().sorted(Comparator.comparing(e -> e.getBelongsToField(ProdOutResourceAttrValFields.ATTRIBUTE).getId())).collect(Collectors.toList()));
+        return Objects.hash(productId, batchId, storageLocationId, palletNumberId, typeOfLoadUnitId, givenUnit, positionAttributeValues.stream().sorted(Comparator.comparing(e -> e.getBelongsToField(ProdOutResourceAttrValFields.ATTRIBUTE).getId())).collect(Collectors.toList()));
     }
 
     public List<Entity> getPositionAttributeValues() {
@@ -166,5 +158,13 @@ public class InboundPositionHolder {
 
     public void setBatch(Entity batch) {
         this.batch = batch;
+    }
+
+    public Long getTypeOfLoadUnitId() {
+        return typeOfLoadUnitId;
+    }
+
+    public void setTypeOfLoadUnitId(Long typeOfLoadUnitId) {
+        this.typeOfLoadUnitId = typeOfLoadUnitId;
     }
 }

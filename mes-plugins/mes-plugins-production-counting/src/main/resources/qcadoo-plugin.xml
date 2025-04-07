@@ -418,6 +418,10 @@
                            joinField="location" cascade="delete"/>
         </model:model-field>
 
+        <model:model-field plugin="basic" model="typeOfLoadUnit">
+            <model:hasMany name="trackingOperationProductOutComponents" plugin="productionCounting" model="trackingOperationProductOutComponent" joinField="typeOfLoadUnit"/>
+        </model:model-field>
+
         <model:model-hook model="parameter" plugin="basic">
             <model:onCreate
                     class="com.qcadoo.mes.productionCounting.hooks.ParameterHooksPC"

@@ -25,7 +25,6 @@ package com.qcadoo.mes.deliveries.hooks;
 
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.advancedGenealogy.criteriaModifier.BatchCriteriaModifier;
-import com.qcadoo.mes.basic.constants.PalletNumberFields;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.basic.constants.UnitConversionItemFieldsB;
 import com.qcadoo.mes.deliveries.DeliveriesService;
@@ -41,7 +40,10 @@ import com.qcadoo.model.api.units.UnitConversionService;
 import com.qcadoo.security.api.SecurityService;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
-import com.qcadoo.view.api.components.*;
+import com.qcadoo.view.api.components.CheckBoxComponent;
+import com.qcadoo.view.api.components.FieldComponent;
+import com.qcadoo.view.api.components.FormComponent;
+import com.qcadoo.view.api.components.LookupComponent;
 import com.qcadoo.view.api.components.lookup.FilterValueHolder;
 import com.qcadoo.view.constants.QcadooViewConstants;
 import org.apache.commons.lang3.StringUtils;
@@ -133,26 +135,6 @@ public class DeliveredProductDetailsHooks {
         pricePerUnitCurrencyField.setVisible(hasCurrentUserRole);
         totalPriceCurrencyField.setVisible(hasCurrentUserRole);
         priceBorderLayout.setVisible(hasCurrentUserRole);
-    }
-
-    public void fillPalletTypeField(final ViewDefinitionState view) {
-        FormComponent deliveredProductForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
-        LookupComponent palletNumberLookup = (LookupComponent) view.getComponentByReference(DeliveredProductFields.PALLET_NUMBER);
-        FieldComponent palletTypeField = (FieldComponent) view.getComponentByReference(DeliveredProductFields.PALLET_TYPE);
-
-        Entity deliveredProduct = deliveredProductForm.getEntity();
-        Entity delivery = deliveredProduct.getBelongsToField(DeliveredProductFields.DELIVERY);
-
-        Entity location = delivery.getBelongsToField(DeliveryFields.LOCATION);
-        Entity palletNumber = palletNumberLookup.getEntity();
-        String palletType = null;
-
-        if (Objects.nonNull(palletNumber)) {
-            palletType = materialFlowResourcesService.getTypeOfPalletByPalletNumber(location.getId(), palletNumber.getStringField(PalletNumberFields.NUMBER));
-        }
-
-        palletTypeField.setFieldValue(palletType);
-        palletTypeField.requestComponentUpdateState();
     }
 
     public void fillOrderedQuantities(final ViewDefinitionState view) {

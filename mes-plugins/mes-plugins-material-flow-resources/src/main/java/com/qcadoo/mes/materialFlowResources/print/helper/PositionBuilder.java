@@ -10,7 +10,7 @@ public class PositionBuilder {
 
     private String storageLocation;
 
-    private String typeOfPallet;
+    private String typeOfLoadUnit;
 
     private String palletNumber;
 
@@ -37,8 +37,8 @@ public class PositionBuilder {
         return this;
     }
 
-    public PositionBuilder setTypeOfPallet(final String typeOfPallet) {
-        this.typeOfPallet = typeOfPallet;
+    public PositionBuilder setTypeOfLoadUnit(final String typeOfLoadUnit) {
+        this.typeOfLoadUnit = typeOfLoadUnit;
         return this;
     }
 
@@ -68,7 +68,7 @@ public class PositionBuilder {
     }
 
     public Position createPosition() {
-        return new Position(index, product, storageLocation, typeOfPallet, palletNumber, quantity, productName,
+        return new Position(index, product, storageLocation, typeOfLoadUnit, palletNumber, quantity, productName,
                 unit, batch);
     }
 

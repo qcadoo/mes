@@ -52,9 +52,6 @@ public final class BasicApiController {
     private DataProvider dataProvider;
 
     @Autowired
-    private ProductService productService;
-
-    @Autowired
     private DataDefinitionService dataDefinitionService;
 
     @Autowired
@@ -245,8 +242,8 @@ public final class BasicApiController {
     }
 
     @ResponseBody
-    @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE, value = "/typeOfPallets")
-    public List<Map<String, String>> getTypeOfPallets() {
-        return dataProvider.getTypeOfPallets();
+    @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE, value = "/typeOfLoadUnits")
+    public List<Map<String, String>> getTypeOfLoadUnits() {
+        return dataProvider.getTypeOfLoadUnits();
     }
 }

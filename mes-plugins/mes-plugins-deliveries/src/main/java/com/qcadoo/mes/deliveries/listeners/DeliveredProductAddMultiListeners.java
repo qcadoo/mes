@@ -173,8 +173,8 @@ public class DeliveredProductAddMultiListeners {
     private void setStorageLocationFields(final Entity deliveredProduct, final Entity deliveredProductMulti) {
         deliveredProduct.setField(DeliveredProductFields.PALLET_NUMBER,
                 deliveredProductMulti.getBelongsToField(DeliveredProductMultiFields.PALLET_NUMBER));
-        deliveredProduct.setField(DeliveredProductFields.PALLET_TYPE,
-                deliveredProductMulti.getField(DeliveredProductMultiFields.PALLET_TYPE));
+        deliveredProduct.setField(DeliveredProductFields.TYPE_OF_LOAD_UNIT,
+                deliveredProductMulti.getField(DeliveredProductMultiFields.TYPE_OF_LOAD_UNIT));
         deliveredProduct.setField(DeliveredProductFields.STORAGE_LOCATION,
                 deliveredProductMulti.getBelongsToField(DeliveredProductMultiFields.STORAGE_LOCATION));
     }
@@ -186,7 +186,7 @@ public class DeliveredProductAddMultiListeners {
 
         DataDefinition deliveredProductMultiDD = deliveredProductMulti.getDataDefinition();
 
-        Stream.of(DeliveredProductMultiFields.PALLET_NUMBER, DeliveredProductMultiFields.PALLET_TYPE,
+        Stream.of(DeliveredProductMultiFields.PALLET_NUMBER, DeliveredProductMultiFields.TYPE_OF_LOAD_UNIT,
                 DeliveredProductMultiFields.STORAGE_LOCATION).forEach(fieldName -> {
             if (Objects.isNull(deliveredProductMulti.getField(fieldName))) {
                 deliveredProductMulti.addError(deliveredProductMultiDD.getField(fieldName),
@@ -323,22 +323,22 @@ public class DeliveredProductAddMultiListeners {
         return deliveredProduct;
     }
 
-    public void fillPalletTypeField(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+    public void fillTypeOfLoadUnitField(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         LookupComponent palletNumberLookup = (LookupComponent) view.getComponentByReference(DeliveredProductFields.PALLET_NUMBER);
-        FieldComponent palletTypeField = (FieldComponent) view.getComponentByReference(DeliveredProductFields.PALLET_TYPE);
+        LookupComponent typeOfLoadUnitLookup = (LookupComponent) view.getComponentByReference(DeliveredProductFields.TYPE_OF_LOAD_UNIT);
 
         Entity delivery = extractDeliveryEntityFromView(view);
 
         Entity location = delivery.getBelongsToField(DeliveryFields.LOCATION);
         Entity palletNumber = palletNumberLookup.getEntity();
-        String palletType = (String) palletTypeField.getFieldValue();
+        Long typeOfLoadUnit = (Long) typeOfLoadUnitLookup.getFieldValue();
 
-        if (Objects.nonNull(palletNumber) && StringUtils.isEmpty(palletType)) {
-            palletType = materialFlowResourcesService.getTypeOfPalletByPalletNumber(location.getId(), palletNumber.getStringField(PalletNumberFields.NUMBER));
+        if (Objects.nonNull(palletNumber) && Objects.isNull(typeOfLoadUnit)) {
+            typeOfLoadUnit = materialFlowResourcesService.getTypeOfLoadUnitByPalletNumber(location.getId(), palletNumber.getStringField(PalletNumberFields.NUMBER));
         }
 
-        palletTypeField.setFieldValue(palletType);
-        palletTypeField.requestComponentUpdateState();
+        typeOfLoadUnitLookup.setFieldValue(typeOfLoadUnit);
+        typeOfLoadUnitLookup.requestComponentUpdateState();
     }
 
     public void productChanged(final ViewDefinitionState view, final ComponentState state, final String[] args) {

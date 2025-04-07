@@ -33,7 +33,6 @@ import com.qcadoo.mes.basic.loaders.CountryLoader;
 import com.qcadoo.mes.basic.loaders.CurrencyLoader;
 import com.qcadoo.mes.basic.loaders.DefaultFaultTypesLoader;
 import com.qcadoo.mes.basic.loaders.ReportColumnWidthLoader;
-import com.qcadoo.mes.basic.loaders.TypeOfPalletLoader;
 import com.qcadoo.plugin.api.Module;
 
 @Component
@@ -47,9 +46,6 @@ public class BasicOnStartupService extends Module {
 
     @Autowired
     private ReportColumnWidthLoader reportColumnWidthLoader;
-
-    @Autowired
-    private TypeOfPalletLoader typeOfPalletLoader;
 
     @Autowired
     private DefaultFaultTypesLoader defaultFaultTypesLoader;
@@ -69,7 +65,6 @@ public class BasicOnStartupService extends Module {
         countryLoader.loadCountries();
         currencyLoader.loadCurrencies();
         reportColumnWidthLoader.loadReportColumnWidths();
-        typeOfPalletLoader.loadTypeOfPallets();
         defaultFaultTypesLoader.loadDefaultFaultTypes();
         addressTypeLoader.loadAddressTypes();
         colorLoader.loadColors();

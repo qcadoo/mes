@@ -160,7 +160,7 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
         resource.setField(ResourceFields.PRODUCTION_DATE, position.getField(PositionFields.PRODUCTION_DATE));
         resource.setField(ResourceFields.STORAGE_LOCATION, position.getField(PositionFields.STORAGE_LOCATION));
         resource.setField(ResourceFields.PALLET_NUMBER, position.getField(PositionFields.PALLET_NUMBER));
-        resource.setField(ResourceFields.TYPE_OF_PALLET, position.getField(PositionFields.TYPE_OF_PALLET));
+        resource.setField(ResourceFields.TYPE_OF_LOAD_UNIT, position.getField(PositionFields.TYPE_OF_LOAD_UNIT));
         resource.setField(ResourceFields.WASTE, position.getField(PositionFields.WASTE));
         resource.setField(ResourceFields.DOCUMENT_NUMBER, document.getStringField(DocumentFields.NUMBER));
         resource.setField(ResourceFields.QUALITY_RATING, position.getField(PositionFields.QUALITY_RATING));
@@ -255,7 +255,7 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
             newResource.setField(ResourceFields.PALLET_NUMBER, null);
         }
 
-        newResource.setField(ResourceFields.TYPE_OF_PALLET, null);
+        newResource.setField(ResourceFields.TYPE_OF_LOAD_UNIT, null);
         newResource.setField(ResourceFields.CONVERSION, resource.getField(ResourceFields.CONVERSION));
         newResource.setField(ResourceFields.GIVEN_UNIT, resource.getField(ResourceFields.GIVEN_UNIT));
         newResource.setField(ResourceFields.DELIVERY_NUMBER, resource.getField(ResourceFields.DELIVERY_NUMBER));
@@ -457,7 +457,7 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
         position.setField(PositionFields.CONVERSION, newPosition.getField(PositionFields.CONVERSION));
         position.setField(PositionFields.GIVEN_UNIT, newPosition.getField(PositionFields.GIVEN_UNIT));
         position.setField(PositionFields.PALLET_NUMBER, newPosition.getField(PositionFields.PALLET_NUMBER));
-        position.setField(PositionFields.TYPE_OF_PALLET, newPosition.getField(PositionFields.TYPE_OF_PALLET));
+        position.setField(PositionFields.TYPE_OF_LOAD_UNIT, newPosition.getField(PositionFields.TYPE_OF_LOAD_UNIT));
         position.setField(PositionFields.WASTE, newPosition.getField(PositionFields.WASTE));
         position.setField(PositionFields.QUANTITY, newPosition.getField(PositionFields.QUANTITY));
         position.setField(PositionFields.GIVEN_QUANTITY, newPosition.getField(PositionFields.GIVEN_QUANTITY));
@@ -1088,7 +1088,7 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
         newPosition.setField(PositionFields.STORAGE_LOCATION, resource.getBelongsToField(ResourceFields.STORAGE_LOCATION));
         newPosition.setField(PositionFields.CONVERSION, resource.getField(ResourceFields.CONVERSION));
         newPosition.setField(PositionFields.PALLET_NUMBER, resource.getField(ResourceFields.PALLET_NUMBER));
-        newPosition.setField(PositionFields.TYPE_OF_PALLET, resource.getField(ResourceFields.TYPE_OF_PALLET));
+        newPosition.setField(PositionFields.TYPE_OF_LOAD_UNIT, resource.getField(ResourceFields.TYPE_OF_LOAD_UNIT));
         newPosition.setField(PositionFields.QUALITY_RATING, resource.getField(ResourceFields.QUALITY_RATING));
         newPosition.setField(PositionFields.WASTE, resource.getField(ResourceFields.WASTE));
         newPosition.setField(PositionFields.SELLING_PRICE, position.getField(PositionFields.SELLING_PRICE));

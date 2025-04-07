@@ -59,8 +59,6 @@ public final class DeliveredProductDtoFields {
 
     public static final String PALLET_NUMBER = "palletNumber";
 
-    public static final String PALLET_TYPE = "palletType";
-
     public static final String BATCH_NUMBER = "batchNumber";
 
     public static final String BATCH = "batch";

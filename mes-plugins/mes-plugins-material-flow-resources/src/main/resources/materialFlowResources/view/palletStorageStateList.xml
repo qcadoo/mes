@@ -167,15 +167,15 @@
             </script>
 
             <option type="column" name="palletNumber" fields="palletNumber"/>
-            <option type="column" name="typeOfPallet" fields="typeOfPallet"/>
+            <option type="column" name="typeOfLoadUnit" fields="typeOfLoadUnit"/>
             <option type="column" name="storageLocationNumber" fields="storageLocationNumber"/>
             <option type="column" name="locationNumber" fields="locationNumber"/>
 
             <option type="order" column="palletNumber" direction="asc"/>
             <option type="searchable"
-                    value="palletNumber,typeOfPallet,storageLocationNumber,locationNumber"/>
+                    value="palletNumber,typeOfLoadUnit,storageLocationNumber,locationNumber"/>
             <option type="orderable"
-                    value="palletNumber,typeOfPallet,storageLocationNumber,locationNumber"/>
+                    value="palletNumber,typeOfLoadUnit,storageLocationNumber,locationNumber"/>
 
             <option type="fullscreen" value="true"/>
             <option type="multiselect" value="true"/>

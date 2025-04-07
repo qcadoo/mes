@@ -12,7 +12,7 @@ public class Position {
 
     private String storageLocation;
 
-    private String typeOfPallet;
+    private String typeOfLoadUnit;
 
     private String palletNumber;
 
@@ -24,13 +24,13 @@ public class Position {
 
     private String batch;
 
-    public Position(final String index, final Long product, final String storageLocation, final String typeOfPallet,
+    public Position(final String index, final Long product, final String storageLocation, final String typeOfLoadUnit,
                     final String palletNumber, final BigDecimal quantity, final String productName, final String unit,
                     final String batch) {
         this.index = index;
         this.product = product;
         this.storageLocation = storageLocation;
-        this.typeOfPallet = typeOfPallet;
+        this.typeOfLoadUnit = typeOfLoadUnit;
         this.palletNumber = palletNumber;
         this.quantity = quantity;
         this.productName = productName;
@@ -54,8 +54,8 @@ public class Position {
         return storageLocation;
     }
 
-    public String getTypeOfPallet() {
-        return typeOfPallet;
+    public String getTypeOfLoadUnit() {
+        return typeOfLoadUnit;
     }
 
     public String getPalletNumber() {
@@ -91,13 +91,13 @@ public class Position {
         Position that = (Position) o;
 
         return Objects.equal(product, that.product) && Objects.equal(storageLocation, that.storageLocation)
-                && Objects.equal(typeOfPallet, that.typeOfPallet) && Objects.equal(palletNumber, that.palletNumber)
+                && Objects.equal(typeOfLoadUnit, that.typeOfLoadUnit) && Objects.equal(palletNumber, that.palletNumber)
                 && Objects.equal(batch, that.batch);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(product, storageLocation, typeOfPallet, palletNumber, batch);
+        return Objects.hashCode(product, storageLocation, typeOfLoadUnit, palletNumber, batch);
     }
 
 }

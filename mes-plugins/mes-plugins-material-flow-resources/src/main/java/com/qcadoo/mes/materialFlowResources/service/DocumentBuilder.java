@@ -173,12 +173,12 @@ public class DocumentBuilder {
     public DocumentBuilder addPosition(final Entity product, final BigDecimal quantity, final BigDecimal givenQuantity,
             final String givenUnit, final BigDecimal conversion, final BigDecimal price, final Entity batch,
             final Date productionDate, final Date expirationDate, final Entity resource, final Entity storageLocation,
-            final Entity palletNumber, final String typeOfPallet, final boolean isWaste) {
+            final Entity palletNumber, final Entity typeOfLoadUnit, final boolean isWaste) {
         Preconditions.checkArgument(product != null, "Product argument is required.");
         Preconditions.checkArgument(quantity != null, "Quantity argument is required.");
 
         Entity position = createPosition(product, quantity, givenQuantity, givenUnit, conversion, price, batch, productionDate,
-                expirationDate, resource, storageLocation, palletNumber, typeOfPallet, isWaste);
+                expirationDate, resource, storageLocation, palletNumber, typeOfLoadUnit, isWaste);
 
         positions.add(position);
 
@@ -188,13 +188,13 @@ public class DocumentBuilder {
     public DocumentBuilder addPosition(final Entity product, final BigDecimal quantity, final BigDecimal givenQuantity,
             final String givenUnit, final BigDecimal conversion, final BigDecimal price, final Entity batch,
             final Date productionDate, final Date expirationDate, final Entity resource, final Entity storageLocation,
-            final Entity palletNumber, final String typeOfPallet, final boolean isWaste,
+            final Entity palletNumber, final Entity typeOfLoadUnit, final boolean isWaste,
             final String qualityRating, List<Entity> attributes) {
         Preconditions.checkArgument(product != null, "Product argument is required.");
         Preconditions.checkArgument(quantity != null, "Quantity argument is required.");
 
         Entity position = createPosition(product, quantity, givenQuantity, givenUnit, conversion, price, batch, productionDate,
-                expirationDate, resource, storageLocation, palletNumber, typeOfPallet, isWaste);
+                expirationDate, resource, storageLocation, palletNumber, typeOfLoadUnit, isWaste);
 
         position.setField(PositionFields.POSITION_ATTRIBUTE_VALUES, attributes);
         position.setField(PositionFields.QUALITY_RATING, qualityRating);
@@ -265,13 +265,13 @@ public class DocumentBuilder {
     public Entity createPosition(final Entity product, final BigDecimal quantity, final BigDecimal givenQuantity,
             final String givenUnit, final BigDecimal conversion, final BigDecimal price, final Entity batch,
             final Date productionDate, final Date expirationDate, final Entity resource, final Entity storageLocation,
-            final Entity palletNumber, final String typeOfPallet, final boolean isWaste) {
+            final Entity palletNumber, final Entity typeOfLoadUnit, final boolean isWaste) {
         Entity position = createPosition(product, quantity, givenQuantity, givenUnit, conversion, price, batch, productionDate,
                 expirationDate, resource);
 
         position.setField(PositionFields.STORAGE_LOCATION, storageLocation);
         position.setField(PositionFields.PALLET_NUMBER, palletNumber);
-        position.setField(PositionFields.TYPE_OF_PALLET, typeOfPallet);
+        position.setField(PositionFields.TYPE_OF_LOAD_UNIT, typeOfLoadUnit);
         position.setField(PositionFields.WASTE, isWaste);
 
         return position;
