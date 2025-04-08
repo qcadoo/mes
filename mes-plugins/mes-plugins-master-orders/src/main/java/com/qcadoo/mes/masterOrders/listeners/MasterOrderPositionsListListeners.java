@@ -181,7 +181,7 @@ public class MasterOrderPositionsListListeners {
         for (Map.Entry<Entity, BigDecimal> entry : quantityMap.entrySet()) {
             BigDecimal conversion = salesPlanMaterialRequirementHelper.getConversion(entry.getKey());
             BigDecimal orderedQuantity = getOrderedQuantity(entry.getValue(), currentStockMap.get(entry.getKey()), minimumOrderQuantityMap.get(entry.getKey()));
-            BigDecimal additionalQuantity = orderedQuantity.multiply(conversion, numberService.getMathContext());
+            BigDecimal additionalQuantity = numberService.setScaleWithDefaultMathContext(orderedQuantity.multiply(conversion, numberService.getMathContext()));
 
             Entity orderedProduct = deliveriesService.getOrderedProductDD().create();
 
