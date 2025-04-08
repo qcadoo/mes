@@ -246,7 +246,7 @@
                             </layoutElement>
                             <layoutElement column="1" row="9" width="5">
                                 <component type="lookup" name="oldTypeOfLoadUnit" field="oldTypeOfLoadUnit"
-                                           reference="oldTypeOfLoadUnit" defaultEnabled="false" hasLabel="false">
+                                           reference="oldTypeOfLoadUnit" defaultEnabled="false">
 
                                     <option type="searchable" value="name"/>
                                     <option type="orderable" value="name"/>

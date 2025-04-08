@@ -456,6 +456,7 @@ public class DocumentPositionValidator {
         Long palletNumberId = tryGetPalletNumberIdByNumber(vo.getPalletNumber(), errors);
         Long storageLocationId = tryGetStorageLocationIdByNumber(vo.getStorageLocation(), errors);
         Long resourceId = tryGetResourceIdByNumber(vo.getResource(), errors);
+        Long typeOfLoadUnitId = tryGetTypeOfLoadUnitIdByNumber(vo.getTypeOfLoadUnit(), errors);
 
         params.put("id", vo.getId());
         params.put("product_id", productId);
@@ -465,7 +466,7 @@ public class DocumentPositionValidator {
         params.put("conversion", vo.getUnit().equals(vo.getGivenunit()) ? 1 : vo.getConversion());
         params.put("expirationDate", vo.getExpirationDate());
         params.put("palletnumber_id", palletNumberId);
-        params.put("typeofloadunit", Objects.nonNull(palletNumberId) ? vo.getTypeOfLoadUnit() : null);
+        params.put("typeofloadunit_id", Objects.nonNull(palletNumberId) ? typeOfLoadUnitId : null);
         params.put("storagelocation_id", storageLocationId);
         params.put("document_id", vo.getDocument());
         params.put("productionDate", vo.getProductionDate());
@@ -477,23 +478,6 @@ public class DocumentPositionValidator {
         params.put("sellingPrice", vo.getSellingPrice());
 
         return params;
-    }
-
-    private Object tryGetBatchIdByNumber(final String batch, List<String> errors) {
-        if (Strings.isNullOrEmpty(batch)) {
-            return null;
-        }
-
-        try {
-            return jdbcTemplate.queryForObject(
-                    "SELECT _batch.id FROM advancedgenealogy_batch _batch WHERE _batch.number = :number",
-                    Collections.singletonMap("number", batch), Long.class);
-        } catch (EmptyResultDataAccessException e) {
-            errors.add(translationService.translate("documentGrid.error.position.batchNotFound",
-                    LocaleContextHolder.getLocale(), batch));
-
-            return null;
-        }
     }
 
     private Long tryGetProductIdByNumber(final String productNumber, final List<String> errors) {
@@ -508,6 +492,23 @@ public class DocumentPositionValidator {
         } catch (EmptyResultDataAccessException e) {
             errors.add(translationService.translate("documentGrid.error.position.productNotFound",
                     LocaleContextHolder.getLocale(), productNumber));
+
+            return null;
+        }
+    }
+
+    private Long tryGetTypeOfLoadUnitIdByNumber(final String typeOfLoadUnit, final List<String> errors) {
+        if (Strings.isNullOrEmpty(typeOfLoadUnit)) {
+            return null;
+        }
+
+        try {
+            return jdbcTemplate.queryForObject(
+                    "SELECT typeofloadunit.id FROM basic_typeofloadunit typeofloadunit WHERE typeofloadunit.name = :name",
+                    Collections.singletonMap("name", typeOfLoadUnit), Long.class);
+        } catch (EmptyResultDataAccessException e) {
+            errors.add(translationService.translate("documentGrid.error.position.typeOfLoadUnitNotFound",
+                    LocaleContextHolder.getLocale(), typeOfLoadUnit));
 
             return null;
         }
