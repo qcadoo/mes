@@ -35,22 +35,22 @@
         <decimal name="length">
             <validatesRange from="0" exclusively="true"/>
             <validatesUnscaledValue max="7"/>
-            <validatesScale max="2"/>
+            <validatesScale max="1"/>
         </decimal>
         <decimal name="width">
             <validatesRange from="0" exclusively="true"/>
             <validatesUnscaledValue max="7"/>
-            <validatesScale max="2"/>
+            <validatesScale max="1"/>
         </decimal>
         <decimal name="height">
             <validatesRange from="0" exclusively="true"/>
             <validatesUnscaledValue max="7"/>
-            <validatesScale max="2"/>
+            <validatesScale max="1"/>
         </decimal>
         <decimal name="weight">
             <validatesRange from="0" exclusively="true"/>
             <validatesUnscaledValue max="7"/>
-            <validatesScale max="2"/>
+            <validatesScale max="1"/>
         </decimal>
     </fields>
 
