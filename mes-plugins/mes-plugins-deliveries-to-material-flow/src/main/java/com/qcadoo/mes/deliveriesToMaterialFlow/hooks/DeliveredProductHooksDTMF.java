@@ -24,19 +24,14 @@
 package com.qcadoo.mes.deliveriesToMaterialFlow.hooks;
 
 import com.qcadoo.mes.deliveries.constants.DeliveredProductFields;
-import com.qcadoo.mes.materialFlowResources.PalletValidatorService;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
 
 @Service
 public class DeliveredProductHooksDTMF {
-
-    @Autowired
-    private PalletValidatorService palletValidatorService;
 
     public boolean validate(final DataDefinition deliveredProductDD, final Entity deliveredProduct) {
         Date productionDate = deliveredProduct.getDateField(DeliveredProductFields.PRODUCTION_DATE);
@@ -48,7 +43,7 @@ public class DeliveredProductHooksDTMF {
                 return false;
             }
         }
-        return palletValidatorService.validatePalletForDeliveredProduct(deliveredProduct);
+        return true;
     }
 
 }

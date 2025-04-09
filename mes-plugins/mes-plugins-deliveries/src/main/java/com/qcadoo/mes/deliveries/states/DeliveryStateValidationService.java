@@ -211,7 +211,6 @@ public class DeliveryStateValidationService {
 
         List<Entity> deliveredProducts = delivery.getHasManyField(DeliveryFields.DELIVERED_PRODUCTS);
 
-        Set<String> missingStorageLocations = Sets.newHashSet();
         Set<String> missingPalletNumbers = Sets.newHashSet();
         Set<String> existsMorePallets = Sets.newHashSet();
 
@@ -220,28 +219,21 @@ public class DeliveryStateValidationService {
             Entity storageLocation = deliveredProduct.getBelongsToField(DeliveredProductFields.STORAGE_LOCATION);
             Entity palletNumber = deliveredProduct.getBelongsToField(DeliveredProductFields.PALLET_NUMBER);
 
-            if (Objects.isNull(storageLocation) && Objects.nonNull(palletNumber)) {
-                missingStorageLocations.add(productNumber);
-            } else {
-                if (Objects.nonNull(storageLocation)) {
-                    boolean placeStorageLocation = storageLocation.getBooleanField(StorageLocationFields.PLACE_STORAGE_LOCATION);
+            if (Objects.nonNull(storageLocation)) {
+                boolean placeStorageLocation = storageLocation.getBooleanField(StorageLocationFields.PLACE_STORAGE_LOCATION);
 
-                    if (placeStorageLocation) {
-                        if (Objects.isNull(palletNumber)) {
-                            missingPalletNumbers.add(productNumber);
-                        } else {
-                            if (!palletValidatorService.notTooManyPalletsInStorageLocationAndDeliveredProducts(deliveredProduct.getDataDefinition(), deliveredProduct)) {
-                                existsMorePallets.add(productNumber);
-                            }
+                if (placeStorageLocation) {
+                    if (Objects.isNull(palletNumber)) {
+                        missingPalletNumbers.add(productNumber);
+                    } else {
+                        if (!palletValidatorService.notTooManyPalletsInStorageLocationAndDeliveredProducts(deliveredProduct.getDataDefinition(), deliveredProduct)) {
+                            existsMorePallets.add(productNumber);
                         }
                     }
                 }
             }
         });
 
-        if (!missingStorageLocations.isEmpty()) {
-            stateChangeContext.addValidationError("deliveries.deliveredProducts.error.storageLocationRequired", false, String.join(", ", missingStorageLocations));
-        }
         if (!missingPalletNumbers.isEmpty()) {
             stateChangeContext.addValidationError("deliveries.deliveredProducts.error.palletNumberRequired", false, String.join(", ", missingPalletNumbers));
         }
