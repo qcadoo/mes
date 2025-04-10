@@ -147,9 +147,16 @@ public class PalletValidatorService {
             return false;
         }
 
-        if (existsOtherResourceForPalletNumberOnSameLocation(location.getId(), storageLocationNumber, palletNumberNumber, typeOfLoadUnitName, resourceId)) {
+        if (existsOtherResourceForPalletNumberOnDifferentLocation(location.getId(), storageLocationNumber, palletNumberNumber, resourceId)) {
             entity.addError(entity.getDataDefinition().getField(L_PALLET_NUMBER),
-                    "documentGrid.error.position.existsOtherResourceForPalletAndStorageLocation");
+                    "documentGrid.error.position.existsOtherResourceForPalletAndStorageLocation", palletNumberNumber);
+
+            return false;
+        }
+
+        if (existsOtherResourceForPalletNumberWithDifferentType(location.getId(), palletNumberNumber, typeOfLoadUnitName, resourceId)) {
+            entity.addError(entity.getDataDefinition().getField(L_PALLET_NUMBER),
+                    "documentGrid.error.position.existsOtherResourceForLoadUnitAndTypeOfLoadUnit", palletNumberNumber);
 
             return false;
         }
@@ -215,11 +222,10 @@ public class PalletValidatorService {
         return jdbcTemplate.queryForObject(query.toString(), params, Long.class) > 0;
     }
 
-    public boolean existsOtherResourceForPalletNumberOnSameLocation(final Long locationId,
-                                                                    final String storageLocationNumber,
-                                                                    final String palletNumberNumber,
-                                                                    final String typeOfLoadUnitName,
-                                                                    final Long resourceId) {
+    public boolean existsOtherResourceForPalletNumberOnDifferentLocation(final Long locationId,
+                                                                         final String storageLocationNumber,
+                                                                         final String palletNumberNumber,
+                                                                         final Long resourceId) {
         StringBuilder query = new StringBuilder();
 
         query.append("SELECT count(*) FROM materialflowresources_resource resource ");
@@ -227,16 +233,44 @@ public class PalletValidatorService {
         query.append("ON palletnumber.id = resource.palletnumber_id ");
         query.append("LEFT JOIN materialflowresources_storagelocation storagelocation ");
         query.append("ON storagelocation.id = resource.storagelocation_id ");
+        query.append("WHERE palletnumber.number = :palletNumberNumber ");
+        query.append("AND (storageLocation.number <> :storageLocationNumber) ");
+        query.append("AND resource.location_id = :locationId ");
+
+        if (Objects.nonNull(resourceId)) {
+            query.append("AND resource.id <> :resourceId ");
+        }
+
+        Map<String, Object> params = Maps.newHashMap();
+
+        params.put("locationId", locationId);
+        params.put("storageLocationNumber", storageLocationNumber);
+        params.put("palletNumberNumber", palletNumberNumber);
+
+        if (Objects.nonNull(resourceId)) {
+            params.put("resourceId", resourceId);
+        }
+
+        return jdbcTemplate.queryForObject(query.toString(), params, Long.class) > 0;
+    }
+
+    public boolean existsOtherResourceForPalletNumberWithDifferentType(final Long locationId,
+                                                                       final String palletNumberNumber,
+                                                                       final String typeOfLoadUnitName,
+                                                                       final Long resourceId) {
+        StringBuilder query = new StringBuilder();
+
+        query.append("SELECT count(*) FROM materialflowresources_resource resource ");
+        query.append("JOIN basic_palletnumber palletnumber ");
+        query.append("ON palletnumber.id = resource.palletnumber_id ");
         query.append("LEFT JOIN basic_typeofloadunit typeofloadunit ");
         query.append("ON typeofloadunit.id = resource.typeofloadunit_id ");
         query.append("WHERE palletnumber.number = :palletNumberNumber ");
         query.append("AND (");
-        query.append("storageLocation.number <> :storageLocationNumber ");
-
         if (StringUtils.isNotEmpty(typeOfLoadUnitName)) {
-            query.append("OR typeofloadunit.name <> :typeOfLoadUnitName OR COALESCE(typeofloadunit.name, '') = ''");
+            query.append("typeofloadunit.name <> :typeOfLoadUnitName OR COALESCE(typeofloadunit.name, '') = ''");
         } else {
-            query.append("OR COALESCE(typeofloadunit.name, '') <> ''");
+            query.append("COALESCE(typeofloadunit.name, '') <> ''");
         }
 
         query.append(") ");
@@ -249,7 +283,6 @@ public class PalletValidatorService {
         Map<String, Object> params = Maps.newHashMap();
 
         params.put("locationId", locationId);
-        params.put("storageLocationNumber", storageLocationNumber);
         params.put("palletNumberNumber", palletNumberNumber);
         params.put("typeOfLoadUnitName", typeOfLoadUnitName);
 

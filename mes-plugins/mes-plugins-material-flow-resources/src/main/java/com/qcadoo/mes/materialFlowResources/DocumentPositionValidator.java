@@ -644,11 +644,16 @@ public class DocumentPositionValidator {
                 errors.add(translationService.translate(
                         "documentGrid.error.position.existsOtherResourceForPallet",
                         LocaleContextHolder.getLocale()));
-            } else if (palletValidatorService.existsOtherResourceForPalletNumberOnSameLocation(locationId, storageLocationNumber,
-                    palletNumber, typeOfLoadUnit, null)) {
+            } else if (palletValidatorService.existsOtherResourceForPalletNumberOnDifferentLocation(locationId, storageLocationNumber,
+                    palletNumber, null)) {
                 errors.add(translationService.translate(
                         "documentGrid.error.position.existsOtherResourceForPalletAndStorageLocation",
-                        LocaleContextHolder.getLocale()));
+                        LocaleContextHolder.getLocale(), palletNumber));
+            } else if (palletValidatorService.existsOtherResourceForPalletNumberWithDifferentType(locationId,
+                    palletNumber, typeOfLoadUnit, null)) {
+                errors.add(translationService.translate(
+                        "documentGrid.error.position.existsOtherResourceForLoadUnitAndTypeOfLoadUnit",
+                        LocaleContextHolder.getLocale(), palletNumber));
             } else if (palletValidatorService.existsOtherPositionForPalletNumber(locationId, storageLocationNumber,
                     palletNumber, typeOfLoadUnit, positionId, documentId)) {
                 errors.add(translationService.translate(
