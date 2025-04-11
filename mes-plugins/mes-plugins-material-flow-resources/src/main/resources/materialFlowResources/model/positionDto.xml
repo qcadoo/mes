@@ -58,7 +58,7 @@
         <string name="batch"/>
         <string name="storageLocation"/>
         <boolean name="waste"/>
-        <string name="palletType"/>
+        <string name="typeOfLoadUnit"/>
         <string name="palletNumber"/>
         <integer name="documentId"/>
         <integer name="orderId"/>

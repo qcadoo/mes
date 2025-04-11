@@ -231,6 +231,14 @@
                         required="true" default="01confirmedDeliveries"/>
         </model:model-field>
 
+        <model:model-field plugin="basic" model="typeOfLoadUnit">
+            <model:hasMany name="deliveredProducts" plugin="deliveries" model="deliveredProduct" joinField="typeOfLoadUnit"/>
+        </model:model-field>
+
+        <model:model-field plugin="basic" model="typeOfLoadUnit">
+            <model:hasMany name="deliveredProductsMulti" plugin="deliveries" model="deliveredProductMulti" joinField="typeOfLoadUnit"/>
+        </model:model-field>
+
         <model:model-hook plugin="basic" model="company">
             <model:onDelete class="com.qcadoo.mes.deliveries.hooks.CompanyHooksD"
                             method="onDelete"/>
@@ -315,6 +323,11 @@
             <model:validatesWith
                     class="com.qcadoo.mes.deliveries.hooks.SupplyParameterHooks"
                     method="checkIfNumberPatternIsSelected" />
+        </model:model-hook>
+        <model:model-hook model="parameter" plugin="basic">
+            <model:validatesWith
+                    class="com.qcadoo.mes.deliveries.hooks.SupplyParameterHooks"
+                    method="checkIfIncludeInCalculationDeliveriesIsSelected" />
         </model:model-hook>
         <model:model-hook model="parameter" plugin="basic">
             <model:validatesWith

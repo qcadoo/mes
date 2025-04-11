@@ -38,8 +38,6 @@ import static com.qcadoo.mes.basic.constants.ProductFields.NUMBER;
 @Service
 public class ProductDetailsListenersO {
 
-
-
     private static final String L_FILTERS = "filters";
 
     private static final String L_GRID_OPTIONS = "grid.options";

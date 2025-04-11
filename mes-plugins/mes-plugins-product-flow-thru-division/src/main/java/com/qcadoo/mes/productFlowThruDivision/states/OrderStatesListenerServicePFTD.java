@@ -206,6 +206,7 @@ public class OrderStatesListenerServicePFTD {
         String givenUnit = trackingOperationProductOutComponent.getStringField(TrackingOperationProductOutComponentFields.GIVEN_UNIT);
         Entity storageLocation = trackingOperationProductOutComponent.getBelongsToField(TrackingOperationProductOutComponentFields.STORAGE_LOCATION);
         Entity palletNumber = trackingOperationProductOutComponent.getBelongsToField(TrackingOperationProductOutComponentFields.PALLET_NUMBER);
+        Entity typeOfLoadUnit = trackingOperationProductOutComponent.getBelongsToField(TrackingOperationProductOutComponentFields.TYPE_OF_LOAD_UNIT);
 
         if (Objects.nonNull(usedQuantity) && Objects.nonNull(givenQuantity)) {
             PossibleUnitConversions unitConversions = unitConversionService.getPossibleConversions(unit,
@@ -245,7 +246,9 @@ public class OrderStatesListenerServicePFTD {
         if (Objects.nonNull(palletNumber)) {
             holder.setPalletNumberId(palletNumber.getId());
         }
-        holder.setTypeOfPallet(trackingOperationProductOutComponent.getStringField(TrackingOperationProductOutComponentFields.TYPE_OF_PALLET));
+        if (Objects.nonNull(typeOfLoadUnit)) {
+            holder.setTypeOfLoadUnitId(typeOfLoadUnit.getId());
+        }
         holder.setPositionAttributeValues(productionTrackingDocumentsHelper.getAttributeValues(trackingOperationProductOutComponent));
 
         return holder;
@@ -300,7 +303,7 @@ public class OrderStatesListenerServicePFTD {
         position.setField(PositionFields.EXPIRATION_DATE, outProductRecord.getExpirationDate());
         position.setField(PositionFields.STORAGE_LOCATION, outProductRecord.getStorageLocationId());
         position.setField(PositionFields.PALLET_NUMBER, outProductRecord.getPalletNumberId());
-        position.setField(PositionFields.TYPE_OF_PALLET, outProductRecord.getTypeOfPallet());
+        position.setField(PositionFields.TYPE_OF_LOAD_UNIT, outProductRecord.getTypeOfLoadUnitId());
         position.setField(PositionFields.POSITION_ATTRIBUTE_VALUES, outProductRecord.getPositionAttributeValues());
 
         return position;

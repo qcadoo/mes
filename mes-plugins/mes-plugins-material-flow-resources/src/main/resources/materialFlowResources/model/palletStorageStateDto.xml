@@ -31,7 +31,7 @@
     <fields>
         <string name="palletNumber"/>
         <boolean name="palletNumberActive"/>
-        <string name="typeOfPallet"/>
+        <string name="typeOfLoadUnit"/>
         <string name="storageLocationNumber"/>
         <string name="locationNumber"/>
         <integer name="location_id"/>

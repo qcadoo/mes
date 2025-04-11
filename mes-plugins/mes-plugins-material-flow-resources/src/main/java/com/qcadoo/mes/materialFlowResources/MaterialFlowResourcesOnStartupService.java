@@ -82,7 +82,7 @@ public class MaterialFlowResourcesOnStartupService extends Module {
         items.add(new Object[] { 14, "expirationDate", true });
         items.add(new Object[] { 15, "storageLocation", true });
         items.add(new Object[] { 16, "palletNumber", true });
-        items.add(new Object[] { 17, "typeOfPallet", true });
+        items.add(new Object[] { 17, "typeOfLoadUnit", true });
         items.add(new Object[] { 18, "waste", true });
         items.add(new Object[] { 19, "lastResource", true });
 

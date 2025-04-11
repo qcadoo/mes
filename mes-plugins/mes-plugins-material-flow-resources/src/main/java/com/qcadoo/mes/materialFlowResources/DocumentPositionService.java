@@ -91,7 +91,7 @@ public class DocumentPositionService {
             });
         }
 
-        String query = "SELECT %s FROM ( SELECT p.*, p.document_id AS document, product.number AS product, product.name AS productName, product.unit, "
+        String query = "SELECT %s FROM ( SELECT p.*, p.document_id AS document, product.number AS product, product.name AS productName, product.unit, typeofloadunit.name AS typeOfLoadUnit, "
                 + "palletnumber.number AS palletnumber, location.number AS storagelocation, resource.number AS resource, batch.number as batch, batch.id as batchId, \n"
                 + "(coalesce(r1.resourcesCount,0) < 2 AND p.quantity >= coalesce(resource.quantity,0)) AS lastResource, p.pickingdate AS pickingDate, staff.name || ' ' || staff.surname AS pickingWorker "
                 + attrQueryPart
@@ -102,6 +102,7 @@ public class DocumentPositionService {
                 + "	LEFT JOIN advancedgenealogy_batch batch ON (p.batch_id = batch.id)\n"
                 + "	LEFT JOIN qcadoosecurity_user u ON (p.pickingworker_id = u.id)\n"
                 + "	LEFT JOIN basic_staff staff ON (u.staff_id = staff.id)\n"
+                + " LEFT JOIN basic_typeofloadunit typeofloadunit ON typeofloadunit.id = p.typeofloadunit_id \n"
                 + " LEFT JOIN (SELECT palletnumber_id, count(id) as resourcesCount FROM materialflowresources_resource GROUP BY palletnumber_id) r1 ON r1.palletnumber_id = resource.palletnumber_id \n"
                 + "	LEFT JOIN materialflowresources_storagelocation location ON (p.storagelocation_id = location.id) WHERE p.document_id = :documentId %s) q ";
 
@@ -161,7 +162,7 @@ public class DocumentPositionService {
             documentPositionDTO.setResourceNumber(resultSet.getString("resourceNumber"));
             documentPositionDTO.setPickingDate(resultSet.getDate("pickingDate"));
             documentPositionDTO.setPickingWorker(resultSet.getString("pickingWorker"));
-            documentPositionDTO.setTypeOfPallet(resultSet.getString("typeOfPallet"));
+            documentPositionDTO.setTypeOfLoadUnit(resultSet.getString("typeOfLoadUnit"));
             documentPositionDTO.setStorageLocation(resultSet.getString("storageLocation"));
             documentPositionDTO.setPrice(resultSet.getBigDecimal("price"));
             documentPositionDTO.setSellingPrice(resultSet.getBigDecimal("sellingPrice"));
@@ -664,11 +665,12 @@ public class DocumentPositionService {
     }
 
     public ResourceDTO getResourceByNumber(final String resource) {
-        String query = "SELECT r.*, batch.number as batch, sl.number AS storageLocation, "
+        String query = "SELECT r.*, batch.number as batch, sl.number AS storageLocation, typeofloadunit.name AS typeOfLoadUnit, "
                 + "pn.number AS palletNumber, coalesce(r1.resourcesCount,0) < 2 AS lastResource "
                 + "FROM materialflowresources_resource r \n"
                 + "LEFT JOIN (SELECT palletnumber_id, count(id) AS resourcesCount FROM materialflowresources_resource GROUP BY palletnumber_id) r1 ON r1.palletnumber_id = r.palletnumber_id \n"
                 + "LEFT JOIN materialflowresources_storagelocation sl ON sl.id = storageLocation_id \n"
+                + "LEFT JOIN basic_typeofloadunit typeofloadunit ON typeofloadunit.id = r.typeofloadunit_id \n"
                 + "LEFT JOIN advancedgenealogy_batch batch ON batch.id = r.batch_id \n"
                 + "LEFT JOIN basic_palletnumber pn ON pn.id = r.palletnumber_id "
                 + "WHERE r.number = :resource";
@@ -709,19 +711,21 @@ public class DocumentPositionService {
         }
     }
 
-    public String getTypeOfPalletByPalletNumber(final Long documentId, final String palletNumber) {
-        String query = "SELECT resource.typeofpallet "
+    public String getTypeOfLoadUnitByPalletNumber(final Long documentId, final String loadUnitNumber) {
+        String query = "SELECT typeofloadunit.name "
                 + "FROM materialflowresources_resource resource "
                 + "LEFT JOIN basic_palletnumber palletnumber "
                 + "ON palletnumber.id = resource.palletnumber_id "
-                + "WHERE palletnumber.number = :palletNumber "
+                + "LEFT JOIN basic_typeofloadunit typeofloadunit "
+                + "ON typeofloadunit.id = resource.typeofloadunit_id "
+                + "WHERE palletnumber.number = :loadUnitNumber "
                 + "AND resource.location_id IN (SELECT DISTINCT COALESCE(locationfrom_id, locationto_id) FROM materialflowresources_document WHERE id = :documentId)"
                 + "LIMIT 1";
 
         Map<String, Object> filter = Maps.newHashMap();
 
         filter.put("documentId", documentId);
-        filter.put("palletNumber", palletNumber);
+        filter.put("loadUnitNumber", loadUnitNumber);
 
         try {
             return jdbcTemplate.queryForObject(query, filter, String.class);

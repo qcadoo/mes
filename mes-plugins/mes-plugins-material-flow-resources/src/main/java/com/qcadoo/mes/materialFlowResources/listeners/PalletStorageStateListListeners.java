@@ -39,7 +39,7 @@ public class PalletStorageStateListListeners {
 
         Consumer<String> filterAppender = createFilterAppender(filters, selectedRecord);
         filterAppender.accept(PalletStorageStateDtoFields.PALLET_NUMBER);
-        filterAppender.accept(PalletStorageStateDtoFields.TYPE_OF_PALLET);
+        filterAppender.accept(PalletStorageStateDtoFields.TYPE_OF_LOAD_UNIT);
         filterAppender.accept(PalletStorageStateDtoFields.STORAGE_LOCATION_NUMBER);
         filterAppender.accept(PalletStorageStateDtoFields.LOCATION_NUMBER);
 

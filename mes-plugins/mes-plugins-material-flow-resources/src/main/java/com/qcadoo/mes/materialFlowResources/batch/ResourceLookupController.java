@@ -24,9 +24,6 @@ import java.util.*;
 public class ResourceLookupController extends BasicLookupController<ResourceDTO> {
 
     @Autowired
-    private DocumentPositionService documentPositionService;
-
-    @Autowired
     private WarehouseMethodOfDisposalService warehouseMethodOfDisposalService;
 
     @Autowired
@@ -79,12 +76,13 @@ public class ResourceLookupController extends BasicLookupController<ResourceDTO>
             boolean lastResourceFilterIsWrong) {
         StringBuilder queryBuilder = new StringBuilder();
         queryBuilder
-                .append("select %s from (select r.*, sl.number as storageLocation, batch.id as batchId, batch.number as batch, pn.number as palletNumber, bp.unit as unit, ");
+                .append("select %s from (select r.*, sl.number as storageLocation, batch.id as batchId, batch.number as batch, pn.number as palletNumber, bp.unit as unit, typeofloadunit.name AS typeOfLaodUnit, ");
         queryBuilder.append("coalesce(r1.resourcesCount,0) < 2 AS lastResource ");
         queryBuilder.append("FROM materialflowresources_resource r ");
         queryBuilder
                 .append("LEFT JOIN (SELECT palletnumber_id, count(id) as resourcesCount FROM materialflowresources_resource GROUP BY palletnumber_id) r1 ON r1.palletnumber_id = r.palletnumber_id \n");
         queryBuilder.append("LEFT JOIN materialflowresources_storagelocation sl on sl.id = storageLocation_id ");
+        queryBuilder.append("LEFT JOIN basic_typeofloadunit typeofloadunit ON typeofloadunit.id = r.typeofloadunit_id ");
         queryBuilder.append("LEFT JOIN basic_product bp on bp.number = :product ");
         queryBuilder.append("LEFT JOIN advancedgenealogy_batch batch on batch.id = r.batch_id ");
         queryBuilder.append("LEFT JOIN basic_palletnumber pn on pn.id = r.palletnumber_id WHERE r.product_id = bp.id ");

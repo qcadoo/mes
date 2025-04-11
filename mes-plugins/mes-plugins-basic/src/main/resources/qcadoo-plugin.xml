@@ -369,6 +369,8 @@
         <model:model model="qualityCard" resource="model/qualityCard.xml"/>
         <model:model model="qualityCardStateChange" resource="model/qualityCardStateChange.xml"/>
 
+        <model:model model="typeOfLoadUnit" resource="model/typeOfLoadUnit.xml"/>
+
         <model:dictionary name="sampling"/>
 
         <model:dictionary name="categories"/>
@@ -376,7 +378,6 @@
 
         <model:dictionary name="typeOfSubassembly"/>
 
-        <model:dictionary name="typeOfPallet"/>
         <model:dictionary name="addressType"/>
 
         <model:dictionary name="descriptionTypes"/>
@@ -426,6 +427,9 @@
                         defaultAuthorizationRole="ROLE_PALLET_NUMBERS"/>
         <menu:menu-item name="palletNumberHelpers" category="basic" view="palletNumberHelpersList"
                         defaultAuthorizationRole="ROLE_PALLET_NUMBERS"/>
+
+        <menu:menu-item name="typeOfLoadUnits" category="basic" view="typeOfLoadUnitsList"
+                        defaultAuthorizationRole="ROLE_BASE_FUNCTIONALITY"/>
 
         <menu:menu-item name="faultTypes" category="basic" view="faultTypesList"
                         defaultAuthorizationRole="ROLE_FAULT_TYPES"/>
@@ -528,6 +532,9 @@
 
         <view:view resource="view/palletNumberHelpersList.xml"/>
         <view:view resource="view/palletNumberHelperDetails.xml"/>
+
+        <view:view resource="view/typeOfLoadUnitsList.xml"/>
+        <view:view resource="view/typeOfLoadUnitDetails.xml"/>
 
         <view:view resource="view/faultTypesList.xml"/>
         <view:view resource="view/faultTypeDetails.xml"/>

@@ -3,6 +3,7 @@ package com.qcadoo.mes.materialFlowResources.listeners;
 import com.google.common.collect.Sets;
 import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.basic.constants.PalletNumberFields;
+import com.qcadoo.mes.basic.constants.TypeOfLoadUnitFields;
 import com.qcadoo.mes.materialFlowResources.constants.MaterialFlowResourcesConstants;
 import com.qcadoo.mes.materialFlowResources.constants.PalletStorageStateDtoFields;
 import com.qcadoo.mes.materialFlowResources.constants.ResourceFields;
@@ -51,12 +52,12 @@ public class PalletResourcesTransferHelperListeners {
     @Autowired
     private ResourceCorrectionService resourceCorrectionService;
 
-    private SearchCriterion typeOfPalletCriterion(Entity entity) {
-        String typeOfPallet = entity.getStringField(PalletStorageStateDtoFields.TYPE_OF_PALLET);
-        if (StringUtils.isBlank(typeOfPallet)) {
-            return SearchRestrictions.isNull(ResourceFields.TYPE_OF_PALLET);
+    private SearchCriterion typeOfLoadUnitCriterion(Entity entity) {
+        String typeOfLoadUnit = entity.getStringField(PalletStorageStateDtoFields.TYPE_OF_LOAD_UNIT);
+        if (StringUtils.isBlank(typeOfLoadUnit)) {
+            return SearchRestrictions.isNull(ResourceFields.TYPE_OF_LOAD_UNIT + ".name");
         } else {
-            return eq(ResourceFields.TYPE_OF_PALLET, typeOfPallet);
+            return eq(ResourceFields.TYPE_OF_LOAD_UNIT + ".name", typeOfLoadUnit);
         }
     }
 
@@ -95,24 +96,25 @@ public class PalletResourcesTransferHelperListeners {
                         .createAlias(ResourceFields.PALLET_NUMBER, ResourceFields.PALLET_NUMBER, JoinType.INNER)
                         .createAlias(ResourceFields.LOCATION, ResourceFields.LOCATION, JoinType.INNER)
                         .createAlias(ResourceFields.STORAGE_LOCATION, ResourceFields.STORAGE_LOCATION, JoinType.LEFT)
+                        .createAlias(ResourceFields.TYPE_OF_LOAD_UNIT, ResourceFields.TYPE_OF_LOAD_UNIT, JoinType.LEFT)
                         .add(eq(ResourceFields.PALLET_NUMBER + ".number",
                                 dto.getStringField(PalletStorageStateDtoFields.PALLET_NUMBER)))
                         .add(eq(ResourceFields.LOCATION + ".number",
                                 dto.getStringField(PalletStorageStateDtoFields.LOCATION_NUMBER)))
-                        .add(storageLocationCriterion(dto)).add(typeOfPalletCriterion(dto)).list().getEntities();
+                        .add(storageLocationCriterion(dto)).add(typeOfLoadUnitCriterion(dto)).list().getEntities();
 
                 final Entity palletNumberEntity = findPalletNumberByNumber(selectedPallet
                         .getStringField(PalletStorageStateDtoFields.PALLET_NUMBER));
                 final Entity storageLocationEntity = Optional
                         .ofNullable(selectedPallet.getStringField(PalletStorageStateDtoFields.STORAGE_LOCATION_NUMBER))
                         .map(this::findStorageLocationByNumber).orElse(null);
+                final Entity typeOfLoadUnitEntity = findTypeOfLoadUnitByName(selectedPallet.getStringField(PalletStorageStateDtoFields.TYPE_OF_LOAD_UNIT));
 
                 boolean shouldDispose = true;
                 for (Entity resource : resources) {
                     resource.setField(ResourceFields.PALLET_NUMBER, palletNumberEntity);
                     resource.setField(ResourceFields.STORAGE_LOCATION, storageLocationEntity);
-                    resource.setField(ResourceFields.TYPE_OF_PALLET,
-                            selectedPallet.getStringField(PalletStorageStateDtoFields.TYPE_OF_PALLET));
+                    resource.setField(ResourceFields.TYPE_OF_LOAD_UNIT, typeOfLoadUnitEntity);
                     resource.setField(ResourceFields.VALIDATE_PALLET, false);
                     boolean corrected = resourceCorrectionService.createCorrectionForResource(resource, false).isPresent();
                     if (!corrected) {
@@ -148,6 +150,11 @@ public class PalletResourcesTransferHelperListeners {
                 .uniqueResult());
     }
 
+    private Entity findTypeOfLoadUnitByName(final String typeOfLoadUnit) {
+        return typeOfLoadUnitDataDefinition().find().add(eq(TypeOfLoadUnitFields.NAME, typeOfLoadUnit))
+                .uniqueResult();
+    }
+
     private DataDefinition resourceDataDefinition() {
         return dataDefinitionService.get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER,
                 MaterialFlowResourcesConstants.MODEL_RESOURCE);
@@ -155,6 +162,10 @@ public class PalletResourcesTransferHelperListeners {
 
     private DataDefinition palletNumberDataDefinition() {
         return dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PALLET_NUMBER);
+    }
+
+    private DataDefinition typeOfLoadUnitDataDefinition() {
+        return dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_TYPE_OF_LOAD_UNIT);
     }
 
     private DataDefinition storageLocationDataDefinition() {
@@ -199,7 +210,8 @@ public class PalletResourcesTransferHelperListeners {
         return searchResult.getTotalNumberOfEntities() > 1;
     }
 
-    public void onPalletNumberSelected(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+    public void onPalletNumberSelected(final ViewDefinitionState view, final ComponentState state,
+                                       final String[] args) {
         LookupComponent lookupComponent = (LookupComponent) state;
         Entity entity = lookupComponent.getEntity();
 

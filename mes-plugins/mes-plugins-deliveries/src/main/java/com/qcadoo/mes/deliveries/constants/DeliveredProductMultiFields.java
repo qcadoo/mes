@@ -33,11 +33,9 @@ public final class DeliveredProductMultiFields {
 
     public static final String DELIVERED_PRODUCT_MULTI_POSITIONS = "deliveredProductMultiPositions";
 
-    public static final String DELIVERED_PRODUCT_MULTI = "deliveredProductMulti";
-
     public static final String PALLET_NUMBER = "palletNumber";
 
-    public static final String PALLET_TYPE = "palletType";
+    public static final String TYPE_OF_LOAD_UNIT = "typeOfLoadUnit";
 
     public static final String STORAGE_LOCATION = "storageLocation";
 

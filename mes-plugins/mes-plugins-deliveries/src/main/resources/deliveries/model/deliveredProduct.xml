@@ -46,7 +46,7 @@
         </decimal>
 
         <belongsTo name="palletNumber" model="palletNumber" plugin="basic"/>
-        <dictionary name="palletType" dictionary="typeOfPallet"/>
+        <belongsTo name="typeOfLoadUnit" plugin="basic" model="typeOfLoadUnit" />
         <belongsTo name="storageLocation" model="storageLocation" plugin="materialFlowResources"/>
         <string name="batchNumber"/>
         <belongsTo name="batch" model="batch" plugin="advancedGenealogy"/>
@@ -78,8 +78,6 @@
     </fields>
 
     <hooks>
-        <onCreate class="com.qcadoo.mes.deliveries.hooks.DeliveredProductHooks"
-                  method="onCreate"/>
         <onSave class="com.qcadoo.mes.deliveries.hooks.DeliveredProductHooks"
                 method="onSave"/>
         <onDelete class="com.qcadoo.mes.deliveries.hooks.DeliveredProductHooks"

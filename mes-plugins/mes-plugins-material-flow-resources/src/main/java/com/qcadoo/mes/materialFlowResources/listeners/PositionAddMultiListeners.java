@@ -109,7 +109,7 @@ public class PositionAddMultiListeners {
         newPosition.setField(PositionFields.STORAGE_LOCATION, resource.getField(ResourceFields.STORAGE_LOCATION));
         newPosition.setField(PositionFields.CONVERSION, conversion);
         newPosition.setField(PositionFields.PALLET_NUMBER, resource.getField(ResourceFields.PALLET_NUMBER));
-        newPosition.setField(PositionFields.TYPE_OF_PALLET, resource.getField(ResourceFields.TYPE_OF_PALLET));
+        newPosition.setField(PositionFields.TYPE_OF_LOAD_UNIT, resource.getField(ResourceFields.TYPE_OF_LOAD_UNIT));
         newPosition.setField(PositionFields.WASTE, resource.getField(ResourceFields.WASTE));
 
         if (!validateAvailableQuantity(document, newPosition)) {

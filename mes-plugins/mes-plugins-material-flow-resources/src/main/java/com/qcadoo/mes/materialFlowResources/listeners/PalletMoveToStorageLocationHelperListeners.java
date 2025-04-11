@@ -45,13 +45,13 @@ public class PalletMoveToStorageLocationHelperListeners {
     @Autowired
     private PalletValidatorService palletValidatorService;
 
-    private SearchCriterion typeOfPalletCriterion(final Entity palletStorageStateDto) {
-        String typeOfPallet = palletStorageStateDto.getStringField(PalletStorageStateDtoFields.TYPE_OF_PALLET);
+    private SearchCriterion typeOfLoadUnitCriterion(final Entity palletStorageStateDto) {
+        String typeOfLoadUnit = palletStorageStateDto.getStringField(PalletStorageStateDtoFields.TYPE_OF_LOAD_UNIT);
 
-        if (StringUtils.isBlank(typeOfPallet)) {
-            return SearchRestrictions.isNull(ResourceFields.TYPE_OF_PALLET);
+        if (StringUtils.isBlank(typeOfLoadUnit)) {
+            return SearchRestrictions.isNull(ResourceFields.TYPE_OF_LOAD_UNIT + ".name");
         } else {
-            return SearchRestrictions.eq(ResourceFields.TYPE_OF_PALLET, typeOfPallet);
+            return SearchRestrictions.eq(ResourceFields.TYPE_OF_LOAD_UNIT + ".name", typeOfLoadUnit);
         }
     }
 
@@ -88,10 +88,11 @@ public class PalletMoveToStorageLocationHelperListeners {
                     .createAlias(ResourceFields.PALLET_NUMBER, ResourceFields.PALLET_NUMBER, JoinType.INNER)
                     .createAlias(ResourceFields.LOCATION, ResourceFields.LOCATION, JoinType.INNER)
                     .createAlias(ResourceFields.STORAGE_LOCATION, ResourceFields.STORAGE_LOCATION, JoinType.LEFT)
+                    .createAlias(ResourceFields.TYPE_OF_LOAD_UNIT, ResourceFields.TYPE_OF_LOAD_UNIT, JoinType.LEFT)
                     .add(eq(ResourceFields.PALLET_NUMBER + ".number",
                             palletStorageStateDto.getStringField(PalletStorageStateDtoFields.PALLET_NUMBER)))
                     .add(eq(ResourceFields.LOCATION + ".number", palletStorageStateDto.getStringField(PalletStorageStateDtoFields.LOCATION_NUMBER)))
-                    .add(storageLocationCriterion(palletStorageStateDto)).add(typeOfPalletCriterion(palletStorageStateDto)).list().getEntities();
+                    .add(storageLocationCriterion(palletStorageStateDto)).add(typeOfLoadUnitCriterion(palletStorageStateDto)).list().getEntities();
 
             Entity newStorageLocation = palletStorageStateDto.getBelongsToField(PalletStorageStateDtoFields.NEW_STORAGE_LOCATION);
             String previousLocationNumber = palletStorageStateDto.getStringField(PalletStorageStateDtoFields.STORAGE_LOCATION_NUMBER);
@@ -155,7 +156,8 @@ public class PalletMoveToStorageLocationHelperListeners {
         return isValid;
     }
 
-    private long getNewPalletsCountInStorageLocation(final Entity newStorageLocation, final List<Entity> palletStorageStateDtos) {
+    private long getNewPalletsCountInStorageLocation(final Entity newStorageLocation,
+                                                     final List<Entity> palletStorageStateDtos) {
         return palletStorageStateDtos
                 .stream()
                 .filter(palletStorageStateDto -> Objects.nonNull(palletStorageStateDto.getBelongsToField(PalletStorageStateDtoFields.NEW_STORAGE_LOCATION))

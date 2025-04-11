@@ -61,8 +61,8 @@
         <belongsTo name="oldPalletNumber" model="palletNumber" plugin="basic"/>
         <belongsTo name="newPalletNumber" model="palletNumber" plugin="basic"/>
 
-        <dictionary name="oldTypeOfPallet" dictionary="typeOfPallet"/>
-        <dictionary name="newTypeOfPallet" dictionary="typeOfPallet"/>
+        <belongsTo name="oldTypeOfLoadUnit" plugin="basic" model="typeOfLoadUnit" />
+        <belongsTo name="newTypeOfLoadUnit" plugin="basic" model="typeOfLoadUnit" />
 
         <date name="oldExpirationDate"/>
         <date name="newExpirationDate"/>

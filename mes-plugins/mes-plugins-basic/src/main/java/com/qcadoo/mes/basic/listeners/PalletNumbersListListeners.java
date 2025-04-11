@@ -44,11 +44,11 @@ public class PalletNumbersListListeners {
     private PalletNumbersService palletNumbersService;
 
     public final void printPalletCards(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        view.redirectTo("/basic/resources/KARTA_PALETY.pdf", true, false);
+        view.redirectTo("/basic/resources/KARTA_NOSNIKA.pdf", true, false);
     }
 
     public final void printPalletMix(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        view.redirectTo("/basic/resources/PALETA_MIX.pdf", true, false);
+        view.redirectTo("/basic/resources/NOSNIK_MIX.pdf", true, false);
     }
 
     public void createPalletNumbers(final ViewDefinitionState view, final ComponentState state, final String[] args) {

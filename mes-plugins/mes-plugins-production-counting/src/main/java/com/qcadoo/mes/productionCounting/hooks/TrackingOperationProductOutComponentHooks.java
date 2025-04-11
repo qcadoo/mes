@@ -136,7 +136,7 @@ public class TrackingOperationProductOutComponentHooks {
         BigDecimal usedQuantity = trackingOperationProductOutComponent.getDecimalField(TrackingOperationProductOutComponentFields.USED_QUANTITY);
         Entity storageLocation = trackingOperationProductOutComponent.getBelongsToField(TrackingOperationProductOutComponentFields.STORAGE_LOCATION);
         Entity palletNumber = trackingOperationProductOutComponent.getBelongsToField(TrackingOperationProductOutComponentFields.PALLET_NUMBER);
-        String typeOfPallet = trackingOperationProductOutComponent.getStringField(TrackingOperationProductOutComponentFields.TYPE_OF_PALLET);
+        Entity typeOfLoadUnit = trackingOperationProductOutComponent.getBelongsToField(TrackingOperationProductOutComponentFields.TYPE_OF_LOAD_UNIT);
 
         if (Objects.nonNull(usedQuantity) && BigDecimal.ZERO.compareTo(usedQuantity) < 0) {
             if (Objects.isNull(storageLocation) && Objects.nonNull(palletNumber)) {
@@ -157,7 +157,7 @@ public class TrackingOperationProductOutComponentHooks {
                         } else {
                             String palletNumberNumber = palletNumber.getStringField(PalletNumberFields.NUMBER);
 
-                            if (!palletValidatorService.validatePalletNumberAndTypeOfPallet(location, storageLocation, palletNumber, typeOfPallet, trackingOperationProductOutComponent)) {
+                            if (!palletValidatorService.validatePalletNumberAndTypeOfLoadUnit(location, storageLocation, palletNumber, typeOfLoadUnit, trackingOperationProductOutComponent)) {
                                 return false;
                             }
 
@@ -181,7 +181,7 @@ public class TrackingOperationProductOutComponentHooks {
         fillOrderReportedQuantity(trackingOperationProductOutComponent);
         fillStorageLocation(trackingOperationProductOutComponent);
         clearLacks(trackingOperationProductOutComponent);
-        setTypeOfPallet(trackingOperationProductOutComponent);
+        setTypeOfLoadUnit(trackingOperationProductOutComponent);
     }
 
     private void fillTrackingOperationProductInComponentsQuantities(final Entity trackingOperationProductOutComponent) {
@@ -402,11 +402,11 @@ public class TrackingOperationProductOutComponentHooks {
         }
     }
 
-    private void setTypeOfPallet(final Entity trackingOperationProductOutComponent) {
+    private void setTypeOfLoadUnit(final Entity trackingOperationProductOutComponent) {
         Entity palletNumber = trackingOperationProductOutComponent.getBelongsToField(TrackingOperationProductOutComponentFields.PALLET_NUMBER);
 
         if (Objects.isNull(palletNumber)) {
-            trackingOperationProductOutComponent.setField(TrackingOperationProductOutComponentFields.TYPE_OF_PALLET, null);
+            trackingOperationProductOutComponent.setField(TrackingOperationProductOutComponentFields.TYPE_OF_LOAD_UNIT, null);
         }
     }
 

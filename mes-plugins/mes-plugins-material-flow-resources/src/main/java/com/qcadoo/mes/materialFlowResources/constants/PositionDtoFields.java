@@ -83,8 +83,6 @@ public final class PositionDtoFields {
 
     public static final String WASTE = "waste";
 
-    public static final String PALLET_TYPE = "palletType";
-
     public static final String PALLET_NUMBER = "palletNumber";
 
     public static final String DOCUMENT_ID = "documentId";

@@ -27,10 +27,10 @@ import com.google.common.base.Strings;
 import com.qcadoo.mes.advancedGenealogy.constants.BatchFields;
 import com.qcadoo.mes.basic.constants.PalletNumberFields;
 import com.qcadoo.mes.basic.constants.ProductFields;
+import com.qcadoo.mes.basic.constants.TypeOfLoadUnitFields;
 import com.qcadoo.mes.materialFlowResources.constants.DocumentFields;
 import com.qcadoo.mes.materialFlowResources.constants.PositionFields;
 import com.qcadoo.mes.materialFlowResources.constants.StorageLocationFields;
-import com.qcadoo.model.api.BigDecimalUtils;
 import com.qcadoo.model.api.Entity;
 import org.apache.commons.lang3.StringUtils;
 
@@ -112,10 +112,10 @@ public class PositionDataProvider {
         return palletNumber == null ? "" : palletNumber.getStringField(PalletNumberFields.NUMBER);
     }
 
-    public static String typeOfPallet(final Entity position) {
-        String typeOfallet = position.getStringField(PositionFields.TYPE_OF_PALLET);
+    public static String typeOfLoadUnit(final Entity position) {
+        Entity typeOfLoadUnit = position.getBelongsToField(PositionFields.TYPE_OF_LOAD_UNIT);
 
-        return typeOfallet == null ? "" : typeOfallet;
+        return typeOfLoadUnit == null ? "" : typeOfLoadUnit.getStringField(TypeOfLoadUnitFields.NAME);
     }
 
     public static String productionDate(final Entity position) {

@@ -4,18 +4,18 @@ import java.util.Date;
 
 public class PalletBalanceRowDto {
 
-    private String typeOfPallet;
+    private String typeOfLoadUnit;
 
     private Date day;
 
     private int palletsCount;
 
-    public String getTypeOfPallet() {
-        return typeOfPallet;
+    public String getTypeOfLoadUnit() {
+        return typeOfLoadUnit;
     }
 
-    public void setTypeOfPallet(String typeOfPallet) {
-        this.typeOfPallet = typeOfPallet;
+    public void setTypeOfLoadUnit(String typeOfLoadUnit) {
+        this.typeOfLoadUnit = typeOfLoadUnit;
     }
 
     public Date getDay() {
@@ -38,8 +38,8 @@ public class PalletBalanceRowDto {
         palletsCount = 0;
     }
 
-    public PalletBalanceRowDto(String typeOfPallet, Date day, int palletsCount) {
-        this.typeOfPallet = typeOfPallet;
+    public PalletBalanceRowDto(String typeOfLoadUnit, Date day, int palletsCount) {
+        this.typeOfLoadUnit = typeOfLoadUnit;
         this.day = day;
         this.palletsCount = palletsCount;
     }
@@ -55,14 +55,14 @@ public class PalletBalanceRowDto {
 
         if (palletsCount != that.palletsCount)
             return false;
-        if (!typeOfPallet.equals(that.typeOfPallet))
+        if (!typeOfLoadUnit.equals(that.typeOfLoadUnit))
             return false;
         return day.equals(that.day);
     }
 
     @Override
     public int hashCode() {
-        int result = typeOfPallet.hashCode();
+        int result = typeOfLoadUnit.hashCode();
         result = 31 * result + day.hashCode();
         result = 31 * result + palletsCount;
         return result;

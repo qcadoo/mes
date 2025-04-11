@@ -77,12 +77,19 @@
 
                             <listener event="onSelectedEntityChange"
                                       class="com.qcadoo.mes.deliveries.listeners.DeliveredProductAddMultiListeners"
-                                      method="fillPalletTypeField"/>
+                                      method="fillTypeOfLoadUnitField"/>
                         </component>
                     </layoutElement>
                     <layoutElement column="2" row="1">
-                        <component type="select" name="palletType" field="#{form}.palletType"
-                                   reference="palletType"/>
+                        <component type="lookup" name="typeOfLoadUnit" field="#{form}.typeOfLoadUnit"
+                                   reference="typeOfLoadUnit">
+
+                            <option type="searchable" value="name"/>
+                            <option type="orderable" value="name"/>
+
+                            <option type="expression" value="#name"/>
+                            <option type="fieldCode" value="name"/>
+                        </component>
                     </layoutElement>
                     <layoutElement column="3" row="1">
                         <component type="lookup" name="storageLocation" field="#{form}.storageLocation"

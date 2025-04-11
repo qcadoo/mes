@@ -77,7 +77,7 @@
                 <component type="grid" name="palletStorageStateDetails" reference="grid">
 
                     <option type="column" name="palletNumber" fields="palletNumber" hidden="true"/>
-                    <option type="column" name="typeOfPallet" fields="typeOfPallet" hidden="true"/>
+                    <option type="column" name="typeOfLoadUnit" fields="typeOfLoadUnit" hidden="true"/>
                     <option type="column" name="storageLocationNumber" fields="storageLocationNumber" hidden="true"/>
                     <option type="column" name="locationNumber" fields="locationNumber" hidden="true"/>
 

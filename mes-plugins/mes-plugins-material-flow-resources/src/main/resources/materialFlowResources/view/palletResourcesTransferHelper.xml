@@ -104,12 +104,12 @@
                                         <component type="lookup" name="newPalletNumber" reference="newPalletNumber"
                                                    field="newPalletNumber" hasLabel="false">
 
-                                            <option type="column" name="typeOfPallet" fields="typeOfPallet" expression="#typeOfPallet"/>
+                                            <option type="column" name="typeOfLoadUnit" fields="typeOfLoadUnit" expression="#typeOfLoadUnit"/>
                                             <option type="column" name="storageLocationNumber" fields="storageLocationNumber" expression="#storageLocationNumber"/>
                                             <option type="column" name="locationNumber" fields="locationNumber" expression="#locationNumber"/>
 
-                                            <option type="searchable" value="palletNumber,typeOfPallet,storageLocationNumber,locationNumber"/>
-                                            <option type="orderable" value="palletNumber,typeOfPallet,storageLocationNumber,locationNumber"/>
+                                            <option type="searchable" value="palletNumber,typeOfLoadUnit,storageLocationNumber,locationNumber"/>
+                                            <option type="orderable" value="palletNumber,typeOfLoadUnit,storageLocationNumber,locationNumber"/>
 
                                             <option type="expression"
                                                     value="#palletNumber"/>
@@ -135,8 +135,8 @@
                                 <component type="input" name="locationNumber" reference="locationNumber"
                                            field="locationNumber" defaultVisible="false" defaultEnabled="false"/>
 
-                                <component type="input" name="typeOfPallet" reference="typeOfPallet"
-                                           field="typeOfPallet" defaultVisible="false" defaultEnabled="false"/>
+                                <component type="input" name="typeOfLoadUnit" reference="typeOfLoadUnit"
+                                           field="typeOfLoadUnit" defaultVisible="false" defaultEnabled="false"/>
 
                             </components>
                         </component>

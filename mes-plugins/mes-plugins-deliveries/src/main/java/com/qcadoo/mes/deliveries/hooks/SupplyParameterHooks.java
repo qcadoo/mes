@@ -27,6 +27,7 @@ import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.basic.constants.NumberPatternFields;
 import com.qcadoo.mes.basic.constants.ProductFields;
+import com.qcadoo.mes.deliveries.constants.IncludeInCalculationDeliveries;
 import com.qcadoo.mes.deliveries.constants.ParameterFieldsD;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
@@ -92,7 +93,8 @@ public class SupplyParameterHooks {
         changeFieldEnabledAndRequired(view, ParameterFieldsD.DELIVERY_EMAIL_BODY, sendEmailToSupplierValue);
     }
 
-    private void changeFieldEnabledAndRequired(final ViewDefinitionState view, final String fieldName, final boolean enabled) {
+    private void changeFieldEnabledAndRequired(final ViewDefinitionState view, final String fieldName,
+                                               final boolean enabled) {
         FieldComponent field = (FieldComponent) view.getComponentByReference(fieldName);
         field.setEnabled(enabled);
         field.setRequired(enabled);
@@ -104,7 +106,8 @@ public class SupplyParameterHooks {
         field.requestComponentUpdateState();
     }
 
-    private void changeFieldsState(final ViewDefinitionState view, final String fieldName, final boolean selectForAddress) {
+    private void changeFieldsState(final ViewDefinitionState view, final String fieldName,
+                                   final boolean selectForAddress) {
         FieldComponent field = (FieldComponent) view.getComponentByReference(fieldName);
         field.setVisible(selectForAddress);
         field.setRequired(selectForAddress);
@@ -118,6 +121,7 @@ public class SupplyParameterHooks {
 
     public void onCreate(final DataDefinition dataDefinition, final Entity parameter) {
         parameter.setField(ParameterFieldsD.DELIVERED_BIGGER_THAN_ORDERED, true);
+        parameter.setField(ParameterFieldsD.INCLUDE_IN_CALCULATION_DELIVERIES, IncludeInCalculationDeliveries.CONFIRMED_DELIVERIES.getStringValue());
     }
 
     public final boolean checkIfNumberPatternIsSelected(final DataDefinition parameterDD, final Entity parameter) {
@@ -125,6 +129,17 @@ public class SupplyParameterHooks {
                 && parameter.getBelongsToField(ParameterFieldsD.PRODUCT_DELIVERY_BATCH_NUMBER_PATTERN) == null) {
             parameter.addError(parameterDD.getField(ParameterFieldsD.PRODUCT_DELIVERY_BATCH_NUMBER_PATTERN),
                     "basic.parameter.message.numberPatternIsNotSelected");
+            return false;
+        }
+
+        return true;
+    }
+
+    public final boolean checkIfIncludeInCalculationDeliveriesIsSelected(final DataDefinition parameterDD,
+                                                                         final Entity parameter) {
+        if (parameter.getStringField(ParameterFieldsD.INCLUDE_IN_CALCULATION_DELIVERIES) == null) {
+            parameter.addError(parameterDD.getField(ParameterFieldsD.INCLUDE_IN_CALCULATION_DELIVERIES),
+                    "basic.parameter.message.includeInCalculationDeliveriesIsNotSelected");
             return false;
         }
 

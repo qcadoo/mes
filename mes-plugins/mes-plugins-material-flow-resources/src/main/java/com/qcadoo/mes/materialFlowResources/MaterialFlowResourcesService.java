@@ -59,6 +59,6 @@ public interface MaterialFlowResourcesService {
 
     Optional<Entity> findStorageLocationForProduct(final Entity location, final Entity product);
 
-    String getTypeOfPalletByPalletNumber(final Long locationId, final String palletNumberNumber);
+    Long getTypeOfLoadUnitByPalletNumber(final Long locationId, final String palletNumberNumber);
 
 }

@@ -45,7 +45,7 @@
         <decimal name="totalPrice"/>
         <string name="storageLocationNumber"/>
         <string name="palletNumber"/>
-        <string name="palletType"/>
+        <string name="typeOfLoadUnit"/>
         <string name="batchNumber"/>
         <string name="offerNumber"/>
         <string name="productCatalogNumber"/>

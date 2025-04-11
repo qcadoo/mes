@@ -74,9 +74,6 @@ public class DispositionOrderPdfService extends PdfDocumentService {
     private static final String L_PZ = "materialFlowResources.dispositionOrder.locationPZ";
 
     @Autowired
-    private DataDefinitionService dataDefinitionService;
-
-    @Autowired
     private TranslationService translationService;
 
     @Autowired
@@ -169,7 +166,7 @@ public class DispositionOrderPdfService extends PdfDocumentService {
             positionsTable.addCell(createCell(index.toString(), Element.ALIGN_LEFT));
             positionsTable.addCell(createCell(position.getStorageLocation(), Element.ALIGN_LEFT));
             positionsTable.addCell(createCell(position.getPalletNumber(), Element.ALIGN_LEFT));
-            positionsTable.addCell(createCell(position.getTypeOfPallet(), Element.ALIGN_LEFT));
+            positionsTable.addCell(createCell(position.getTypeOfLoadUnit(), Element.ALIGN_LEFT));
             positionsTable.addCell(createCell(position.getBatch(), Element.ALIGN_LEFT));
             positionsTable.addCell(createCell(position.getProductName(), Element.ALIGN_LEFT));
             positionsTable.addCell(createCell(PositionDataProvider.quantity(position.getQuantity()), Element.ALIGN_LEFT));
@@ -189,7 +186,7 @@ public class DispositionOrderPdfService extends PdfDocumentService {
         headerLabels.put(translationService.translate(L_POSITION_HEADER_PREFIX + "index", locale), HeaderAlignment.LEFT);
         headerLabels.put(translationService.translate(L_POSITION_HEADER_PREFIX + "storageLocation", locale), HeaderAlignment.LEFT);
         headerLabels.put(translationService.translate(L_POSITION_HEADER_PREFIX + "pallet", locale), HeaderAlignment.LEFT);
-        headerLabels.put(translationService.translate(L_POSITION_HEADER_PREFIX + "typeOfPallet", locale), HeaderAlignment.LEFT);
+        headerLabels.put(translationService.translate(L_POSITION_HEADER_PREFIX + "typeOfLoadUnit", locale), HeaderAlignment.LEFT);
         headerLabels.put(translationService.translate(L_POSITION_HEADER_PREFIX + "batch", locale), HeaderAlignment.LEFT);
         headerLabels.put(translationService.translate(L_POSITION_HEADER_PREFIX + "product", locale), HeaderAlignment.LEFT);
         headerLabels.put(translationService.translate(L_POSITION_HEADER_PREFIX + "quantity", locale), HeaderAlignment.LEFT);
@@ -205,7 +202,7 @@ public class DispositionOrderPdfService extends PdfDocumentService {
             builder.setIndex(PositionDataProvider.index(position))
                     .setStorageLocation(getDataForStorageLocation(position))
                     .setPalletNumber(PositionDataProvider.palletNumber(position))
-                    .setTypeOfPallet(PositionDataProvider.typeOfPallet(position))
+                    .setTypeOfLoadUnit(PositionDataProvider.typeOfLoadUnit(position))
                     .setProductName(getDataForProduct(position))
                     .setQuantity(position.getDecimalField(PositionFields.QUANTITY))
                     .setUnit(PositionDataProvider.unit(position))

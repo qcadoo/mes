@@ -47,7 +47,7 @@
         <string name="productCatalogNumber"/>
         <string name="actualVersion"/>
         <datetime name="deliveryDate"/>
-        <enum name="deliveryState" values="01draft,02prepared,03duringCorrection,04declined,05approved,06received"/>
+        <enum name="deliveryState" values="01draft,02prepared,03duringCorrection,04declined,05approved,06received,07accepted"/>
         <string name="deliveryNumber"/>
         <string name="deliveryName"/>
         <string name="deliveryCurrency"/>

@@ -25,13 +25,16 @@ public enum IncludeInCalculationDeliveries {
         List<String> states = new ArrayList<>();
         if (CONFIRMED_DELIVERIES.getStringValue().equals(includeInCalculationDeliveries)) {
             states.add(DeliveryStateStringValues.APPROVED);
+            states.add(DeliveryStateStringValues.ACCEPTED);
         } else if (UNCONFIRMED_DELIVERIES.getStringValue().equals(includeInCalculationDeliveries)) {
             states.add(DeliveryStateStringValues.APPROVED);
+            states.add(DeliveryStateStringValues.ACCEPTED);
             states.add(DeliveryStateStringValues.PREPARED);
             states.add(DeliveryStateStringValues.DURING_CORRECTION);
             states.add(DeliveryStateStringValues.DRAFT);
         } else {
             states.add(DeliveryStateStringValues.APPROVED);
+            states.add(DeliveryStateStringValues.ACCEPTED);
             states.add(DeliveryStateStringValues.PREPARED);
             states.add(DeliveryStateStringValues.DURING_CORRECTION);
         }

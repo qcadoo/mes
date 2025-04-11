@@ -4,10 +4,12 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.basic.constants.SubassemblyFields;
+import com.qcadoo.mes.basic.constants.TypeOfLoadUnitFields;
 import com.qcadoo.mes.basic.constants.WorkstationFields;
 import com.qcadoo.mes.basic.controllers.dataProvider.dto.*;
 import com.qcadoo.mes.basic.controllers.dataProvider.requests.FaultTypeRequest;
 import com.qcadoo.mes.basic.controllers.dataProvider.responses.*;
+import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.DictionaryService;
 import com.qcadoo.model.api.Entity;
@@ -96,12 +98,14 @@ public class DataProvider {
     }
 
     public DataResponse getDataResponse(final String query, final String preparedQuery,
-            final List<? extends AbstractDTO> entities, final Map<String, Object> paramMap) {
+                                        final List<? extends AbstractDTO> entities,
+                                        final Map<String, Object> paramMap) {
         return getDataResponse(query, preparedQuery, entities, paramMap, true);
     }
 
     public DataResponse getDataResponse(final String query, final String preparedQuery,
-            final List<? extends AbstractDTO> entities, Map<String, Object> paramMap, boolean shouldCheckMaxResults) {
+                                        final List<? extends AbstractDTO> entities, Map<String, Object> paramMap,
+                                        boolean shouldCheckMaxResults) {
         int numberOfResults = countQueryResults(preparedQuery, query, paramMap);
 
         if (shouldCheckMaxResults && (numberOfResults > MAX_RESULTS)) {
@@ -246,12 +250,12 @@ public class DataProvider {
         }).collect(Collectors.toList());
     }
 
-    public List<Map<String, String>> getTypeOfPallets() {
-        return dictionaryService.getKeys("typeOfPallet").stream().map(unit -> {
+    public List<Map<String, String>> getTypeOfLoadUnits() {
+        return getTypeOfLoadUnitDD().find().list().getEntities().stream().map(e -> {
             Map<String, String> type = Maps.newHashMap();
 
-            type.put("value", unit);
-            type.put("key", unit);
+            type.put("value", e.getStringField(TypeOfLoadUnitFields.NAME));
+            type.put("key", e.getStringField(TypeOfLoadUnitFields.NAME));
 
             return type;
         }).collect(Collectors.toList());
@@ -352,7 +356,7 @@ public class DataProvider {
                     faultTypeRequest.getSubassemblyId());
             Map<String, Object> parameters = Maps.newHashMap();
 
-            parameters.put("subassemblyId",  w.getId());
+            parameters.put("subassemblyId", w.getId());
             parameters.put("workstationTypeId", w.getBelongsToField(SubassemblyFields.WORKSTATION_TYPE).getId());
 
             StringBuilder query = new StringBuilder();
@@ -405,5 +409,9 @@ public class DataProvider {
             return new FaultTypeResponse(types);
         }
 
+    }
+
+    private DataDefinition getTypeOfLoadUnitDD() {
+        return dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_TYPE_OF_LOAD_UNIT);
     }
 }

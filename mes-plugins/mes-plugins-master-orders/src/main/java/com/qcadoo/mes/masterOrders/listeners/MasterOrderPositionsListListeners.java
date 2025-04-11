@@ -178,14 +178,14 @@ public class MasterOrderPositionsListListeners {
             minimumOrderQuantityMap.putIfAbsent(product, BigDecimalUtils
                     .convertNullToZero(salesPlanMaterialRequirementHelper.getMinimumOrderQuantity(product, companyProducts, companyProductsFamilies)));
         });
-        for (Entity product : quantityMap.keySet()) {
-            BigDecimal conversion = salesPlanMaterialRequirementHelper.getConversion(product);
-            BigDecimal orderedQuantity = getOrderedQuantity(quantityMap.get(product), currentStockMap.get(product), minimumOrderQuantityMap.get(product));
-            BigDecimal additionalQuantity = orderedQuantity.multiply(conversion, numberService.getMathContext());
+        for (Map.Entry<Entity, BigDecimal> entry : quantityMap.entrySet()) {
+            BigDecimal conversion = salesPlanMaterialRequirementHelper.getConversion(entry.getKey());
+            BigDecimal orderedQuantity = getOrderedQuantity(entry.getValue(), currentStockMap.get(entry.getKey()), minimumOrderQuantityMap.get(entry.getKey()));
+            BigDecimal additionalQuantity = numberService.setScaleWithDefaultMathContext(orderedQuantity.multiply(conversion, numberService.getMathContext()));
 
             Entity orderedProduct = deliveriesService.getOrderedProductDD().create();
 
-            orderedProduct.setField(OrderedProductFields.PRODUCT, product);
+            orderedProduct.setField(OrderedProductFields.PRODUCT, entry.getKey());
             orderedProduct.setField(OrderedProductFields.CONVERSION, conversion);
             orderedProduct.setField(OrderedProductFields.ORDERED_QUANTITY, orderedQuantity);
             orderedProduct.setField(OrderedProductFields.ADDITIONAL_QUANTITY, additionalQuantity);

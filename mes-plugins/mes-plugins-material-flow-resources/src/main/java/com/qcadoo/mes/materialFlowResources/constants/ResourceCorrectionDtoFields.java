@@ -29,8 +29,6 @@ public final class ResourceCorrectionDtoFields {
 
     }
 
-    public static final String CORRECTION_NUMBER = "correctionNumber";
-
     public static final String CREATE_DATE = "createDate";
 
     public static final String PRODUCT_NUMBER = "productNumber";
@@ -43,30 +41,5 @@ public final class ResourceCorrectionDtoFields {
 
     public static final String LOCATION_ID = "location_id";
 
-    public static final String QUANTITY_CORRECTED = "quantityCorrected";
-
-    public static final String PRICE_CORRECTED = "priceCorrected";
-
-    public static final String BATCH_CORRECTED = "batchCorrected";
-
-    public static final String EXPIRATION_DATE_CORRECTED = "expirationDateCorrected";
-
-    public static final String STORAGE_LOCATION_CORRECTED = "storageLocationCorrected";
-
-    public static final String PALLET_NUMBER_CORRECTED = "palletNumberCorrected";
-
-    public static final String TYPE_OF_PALLET_CORRECTED = "typeOfPalletCorrected";
-
     public static final String DELIVERY_NUMBER = "deliveryNumber";
-
-    public static final String NEW_PALLET_NUMBER = "newPalletNumber";
-
-    public static final String OLD_PALLET_NUMBER = "oldPalletNumber";
-
-    public static final String NEW_STORAGE_LOCATION_NUMBER = "newStorageLocationNumber";
-
-    public static final String OLD_STORAGE_LOCATION_NUMBER = "oldStorageLocationNumber";
-
-    public static final String ATTRIBUTE_CORRECTION = "attributeCorrection";
-
 }

@@ -245,13 +245,25 @@
                                 </component>
                             </layoutElement>
                             <layoutElement column="1" row="9" width="5">
-                                <component type="input" name="oldTypeOfPallet" field="oldTypeOfPallet"
-                                           reference="oldTypeOfPallet" defaultEnabled="false">
+                                <component type="lookup" name="oldTypeOfLoadUnit" field="oldTypeOfLoadUnit"
+                                           reference="oldTypeOfLoadUnit" defaultEnabled="false">
+
+                                    <option type="searchable" value="name"/>
+                                    <option type="orderable" value="name"/>
+
+                                    <option type="expression" value="#name"/>
+                                    <option type="fieldCode" value="name"/>
                                 </component>
                             </layoutElement>
                             <layoutElement column="6" row="9" width="4">
-                                <component type="input" name="newTypeOfPallet" field="newTypeOfPallet"
-                                           reference="newTypeOfPallet" defaultEnabled="false" hasLabel="false">
+                                <component type="lookup" name="newTypeOfLoadUnit" field="newTypeOfLoadUnit"
+                                           reference="newTypeOfLoadUnit" defaultEnabled="false" hasLabel="false">
+
+                                    <option type="searchable" value="name"/>
+                                    <option type="orderable" value="name"/>
+
+                                    <option type="expression" value="#name"/>
+                                    <option type="fieldCode" value="name"/>
                                 </component>
                             </layoutElement>
                             <layoutElement column="1" row="10" width="5">

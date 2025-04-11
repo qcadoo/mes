@@ -43,10 +43,6 @@ public class DictionaryCellParsers {
         return new DictionaryCellParser(dataDefinitionService, "units");
     }
 
-    public CellParser typeOfPallet() {
-        return new DictionaryCellParser(dataDefinitionService, "typeOfPallet");
-    }
-
     public CellParser typeOfProducts() {
         return new DictionaryCellParser(dataDefinitionService, "typeOfProducts");
     }

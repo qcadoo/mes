@@ -67,11 +67,7 @@ public final class ResourceDtoFields {
 
     public static final String BATCH_NUMBER = "batchNumber";
 
-    public static final String STORAGE_LOCATION_NUMBER = "storageLocationNumber";
-
     public static final String PALLET_NUMBER = "palletNumber";
-
-    public static final String TYPE_OF_PALLET = "typeOfPallet";
 
     public static final String USER_NAME = "userName";
 
