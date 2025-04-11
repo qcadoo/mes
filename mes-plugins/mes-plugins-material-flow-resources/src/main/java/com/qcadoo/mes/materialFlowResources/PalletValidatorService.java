@@ -147,7 +147,7 @@ public class PalletValidatorService {
             return false;
         }
 
-        if (existsOtherResourceForPalletNumberOnDifferentLocation(location.getId(), storageLocationNumber, palletNumberNumber, resourceId)) {
+        if (existsOtherResourceForPalletNumberWithDifferentStorageLocation(location.getId(), storageLocationNumber, palletNumberNumber, resourceId)) {
             entity.addError(entity.getDataDefinition().getField(L_PALLET_NUMBER),
                     "documentGrid.error.position.existsOtherResourceForPalletAndStorageLocation", palletNumberNumber);
 
@@ -222,10 +222,10 @@ public class PalletValidatorService {
         return jdbcTemplate.queryForObject(query.toString(), params, Long.class) > 0;
     }
 
-    public boolean existsOtherResourceForPalletNumberOnDifferentLocation(final Long locationId,
-                                                                         final String storageLocationNumber,
-                                                                         final String palletNumberNumber,
-                                                                         final Long resourceId) {
+    public boolean existsOtherResourceForPalletNumberWithDifferentStorageLocation(final Long locationId,
+                                                                                  final String storageLocationNumber,
+                                                                                  final String palletNumberNumber,
+                                                                                  final Long resourceId) {
         StringBuilder query = new StringBuilder();
 
         query.append("SELECT count(*) FROM materialflowresources_resource resource ");
