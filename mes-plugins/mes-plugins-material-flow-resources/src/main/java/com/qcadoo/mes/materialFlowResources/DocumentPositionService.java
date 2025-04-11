@@ -712,14 +712,23 @@ public class DocumentPositionService {
     }
 
     public String getTypeOfLoadUnitByPalletNumber(final Long documentId, final String loadUnitNumber) {
-        String query = "SELECT typeofloadunit.name "
+        String query = "(SELECT typeofloadunit.name "
                 + "FROM materialflowresources_resource resource "
                 + "LEFT JOIN basic_palletnumber palletnumber "
                 + "ON palletnumber.id = resource.palletnumber_id "
                 + "LEFT JOIN basic_typeofloadunit typeofloadunit "
                 + "ON typeofloadunit.id = resource.typeofloadunit_id "
                 + "WHERE palletnumber.number = :loadUnitNumber "
-                + "AND resource.location_id IN (SELECT DISTINCT COALESCE(locationfrom_id, locationto_id) FROM materialflowresources_document WHERE id = :documentId)"
+                + "AND resource.location_id IN (SELECT DISTINCT COALESCE(locationfrom_id, locationto_id) FROM materialflowresources_document WHERE id = :documentId) "
+                + "UNION "
+                + "SELECT typeofloadunit.name "
+                + "FROM materialflowresources_position p "
+                + "LEFT JOIN basic_palletnumber palletnumber "
+                + "ON palletnumber.id = p.palletnumber_id "
+                + "LEFT JOIN basic_typeofloadunit typeofloadunit "
+                + "ON typeofloadunit.id = p.typeofloadunit_id "
+                + "WHERE palletnumber.number = :loadUnitNumber "
+                + "AND p.document_id = :documentId) "
                 + "LIMIT 1";
 
         Map<String, Object> filter = Maps.newHashMap();

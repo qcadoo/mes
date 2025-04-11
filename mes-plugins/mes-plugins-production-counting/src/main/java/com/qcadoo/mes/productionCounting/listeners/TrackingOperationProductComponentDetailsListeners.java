@@ -33,7 +33,6 @@ import com.qcadoo.mes.basicProductionCounting.BasicProductionCountingService;
 import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityFields;
 import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityRole;
 import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityTypeOfMaterial;
-import com.qcadoo.mes.deliveries.constants.DeliveredProductFields;
 import com.qcadoo.mes.materialFlowResources.MaterialFlowResourcesService;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.productionCounting.constants.ProductionTrackingFields;
@@ -121,11 +120,13 @@ public class TrackingOperationProductComponentDetailsListeners {
         view.getComponentByReference(L_NAME).setFieldValue(productEntity.getField(L_NAME));
     }
 
-    public void givenQuantityChanged(final ViewDefinitionState view, final ComponentState componentState, final String[] args) {
+    public void givenQuantityChanged(final ViewDefinitionState view, final ComponentState componentState,
+                                     final String[] args) {
         calculateQuantity(view, componentState, args);
     }
 
-    public void givenQuantityChangedIn(final ViewDefinitionState view, final ComponentState componentState, final String[] args) {
+    public void givenQuantityChangedIn(final ViewDefinitionState view, final ComponentState componentState,
+                                       final String[] args) {
         calculateQuantity(view, componentState, args);
     }
 
@@ -174,7 +175,8 @@ public class TrackingOperationProductComponentDetailsListeners {
         trackingOperationProductComponentForm.setEntity(trackingOperationProductComponent);
     }
 
-    public void calculateQuantityToGiven(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+    public void calculateQuantityToGiven(final ViewDefinitionState view, final ComponentState state,
+                                         final String[] args) {
         FormComponent trackingOperationProductComponentForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         Entity trackingOperationProductComponent = trackingOperationProductComponentForm.getPersistedEntityWithIncludedFormValues();
 
@@ -252,7 +254,8 @@ public class TrackingOperationProductComponentDetailsListeners {
         trackingOperationProductComponentForm.performEvent(view, "reset");
     }
 
-    public void fillTypeOfLoadUnitField(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+    public void fillTypeOfLoadUnitField(final ViewDefinitionState view, final ComponentState state,
+                                        final String[] args) {
         FormComponent trackingOperationProductOutComponentForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         LookupComponent palletNumberLookup = (LookupComponent) view.getComponentByReference(TrackingOperationProductOutComponentFields.PALLET_NUMBER);
         LookupComponent typeOfLoadUnitLookup = (LookupComponent) view.getComponentByReference(TrackingOperationProductOutComponentFields.TYPE_OF_LOAD_UNIT);
@@ -273,18 +276,33 @@ public class TrackingOperationProductComponentDetailsListeners {
                 Entity productsInputLocation = productionCountingQuantity.getBelongsToField(ProductionCountingQuantityFields.PRODUCTS_INPUT_LOCATION);
 
                 if (Objects.nonNull(productsInputLocation)) {
-                    Entity palletNumber = palletNumberLookup.getEntity();
-                    Long typeOfLoadUnit = null;
-
-                    if (Objects.nonNull(palletNumber)) {
-                        typeOfLoadUnit = materialFlowResourcesService.getTypeOfLoadUnitByPalletNumber(productsInputLocation.getId(), palletNumber.getStringField(PalletNumberFields.NUMBER));
-                    }
+                    Long typeOfLoadUnit = getTypeLoadUnit(productionTracking, productsInputLocation, palletNumberLookup.getEntity());
 
                     typeOfLoadUnitLookup.setFieldValue(typeOfLoadUnit);
                     typeOfLoadUnitLookup.requestComponentUpdateState();
                 }
             }
         }
+    }
+
+    private Long getTypeLoadUnit(Entity productionTracking, Entity productsInputLocation, Entity palletNumber) {
+        Long typeOfLoadUnit = null;
+        if (Objects.nonNull(palletNumber)) {
+            typeOfLoadUnit = materialFlowResourcesService.getTypeOfLoadUnitByPalletNumber(productsInputLocation.getId(), palletNumber.getStringField(PalletNumberFields.NUMBER));
+            if (typeOfLoadUnit == null) {
+                for (Entity topoc : productionTracking.getHasManyField(ProductionTrackingFields.TRACKING_OPERATION_PRODUCT_OUT_COMPONENTS)) {
+                    Entity topocPalletNumber = topoc.getBelongsToField(TrackingOperationProductOutComponentFields.PALLET_NUMBER);
+                    if (topocPalletNumber != null && topocPalletNumber.getId().equals(palletNumber.getId())) {
+                        Entity topocTypeOfLoadUnit = topoc.getBelongsToField(TrackingOperationProductOutComponentFields.TYPE_OF_LOAD_UNIT);
+                        if (topocTypeOfLoadUnit != null) {
+                            typeOfLoadUnit = topocTypeOfLoadUnit.getId();
+                        }
+                        break;
+                    }
+                }
+            }
+        }
+        return typeOfLoadUnit;
     }
 
     private Entity getProductionCountingQuantity(final Entity order, final Entity product) {
