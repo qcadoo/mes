@@ -2,8 +2,8 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 14.2
--- Dumped by pg_dump version 14.2
+-- Dumped from database version 14.6
+-- Dumped by pg_dump version 14.6
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -6046,7 +6046,6 @@ CREATE TABLE public.arch_materialflowresources_position (
     storagelocation_id bigint,
     conversion numeric(12,5) DEFAULT (0)::numeric,
     palletnumber_id bigint,
-    typeofpallet character varying(255),
     waste boolean DEFAULT false,
     resourcereceiptdocument character varying,
     lastresource boolean DEFAULT false,
@@ -6061,6 +6060,7 @@ CREATE TABLE public.arch_materialflowresources_position (
     documentpart_id bigint,
     transferresourcenumber character varying(255),
     deliverynumber character varying,
+    typeofloadunit_id bigint,
     archived boolean DEFAULT false
 );
 
@@ -6222,6 +6222,21 @@ CREATE TABLE public.basic_product (
 
 
 --
+-- Name: basic_typeofloadunit; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.basic_typeofloadunit (
+    id bigint NOT NULL,
+    name character varying(255),
+    length numeric(8,1),
+    width numeric(8,1),
+    height numeric(8,1),
+    weight numeric(8,1),
+    active boolean DEFAULT true
+);
+
+
+--
 -- Name: materialflowresources_storagelocation; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -6280,7 +6295,7 @@ CREATE MATERIALIZED VIEW public.arch_mv_materialflowresources_positiondto AS
     maintenanceevent.number AS maintenanceeventnumber,
     suborder.number AS subordernumber,
     ordersorder.number AS ordernumber,
-    "position".typeofpallet AS pallettype,
+    typeofloadunit.name AS typeofloadunit,
     palletnumber.number AS palletnumber,
     (locationfrom.id)::integer AS locationfrom_id,
     (locationto.id)::integer AS locationto_id,
@@ -6294,7 +6309,7 @@ CREATE MATERIALIZED VIEW public.arch_mv_materialflowresources_positiondto AS
         END AS orderid,
     ("position".price * "position".quantity) AS value,
     "position".resourcenumber
-   FROM ((((((((((((((public.arch_materialflowresources_position "position"
+   FROM (((((((((((((((public.arch_materialflowresources_position "position"
      LEFT JOIN public.arch_materialflowresources_document document ON ((document.id = "position".document_id)))
      LEFT JOIN public.materialflow_location locationfrom ON ((locationfrom.id = document.locationfrom_id)))
      LEFT JOIN public.materialflow_location locationto ON ((locationto.id = document.locationto_id)))
@@ -6308,6 +6323,7 @@ CREATE MATERIALIZED VIEW public.arch_mv_materialflowresources_positiondto AS
      LEFT JOIN public.subcontractorportal_suborder suborder ON ((suborder.id = document.suborder_id)))
      LEFT JOIN public.arch_orders_order ordersorder ON (((ordersorder.id = document.order_id) OR (ordersorder.id = "position".orderid))))
      LEFT JOIN public.basic_palletnumber palletnumber ON ((palletnumber.id = "position".palletnumber_id)))
+     LEFT JOIN public.basic_typeofloadunit typeofloadunit ON ((typeofloadunit.id = "position".typeofloadunit_id)))
      LEFT JOIN public.advancedgenealogy_batch batch ON (("position".batch_id = batch.id)))
   WITH NO DATA;
 
@@ -6342,7 +6358,7 @@ CREATE VIEW public.arch_materialflowresources_positiondto AS
     arch_mv_materialflowresources_positiondto.maintenanceeventnumber,
     arch_mv_materialflowresources_positiondto.subordernumber,
     arch_mv_materialflowresources_positiondto.ordernumber,
-    arch_mv_materialflowresources_positiondto.pallettype,
+    arch_mv_materialflowresources_positiondto.typeofloadunit,
     arch_mv_materialflowresources_positiondto.palletnumber,
     arch_mv_materialflowresources_positiondto.locationfrom_id,
     arch_mv_materialflowresources_positiondto.locationto_id,
@@ -6957,7 +6973,7 @@ CREATE TABLE public.arch_productioncounting_trackingoperationproductoutcomponent
     causeofwastes character varying(255),
     palletnumber_id bigint,
     manyreasonsforlacks boolean DEFAULT false,
-    typeofpallet character varying(255),
+    typeofloadunit_id bigint,
     archived boolean DEFAULT false
 );
 
@@ -8137,7 +8153,7 @@ CREATE TABLE public.arch_ordersgroups_ordersgroupproducedproduct (
     batch_id bigint,
     storagelocation_id bigint,
     palletnumber_id bigint,
-    typeofpallet character varying(255),
+    typeofloadunit_id bigint,
     archived boolean DEFAULT false
 );
 
@@ -12770,6 +12786,25 @@ CREATE SEQUENCE public.basic_timetableexceptionpershiftdto_id_seq
 
 
 --
+-- Name: basic_typeofloadunit_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.basic_typeofloadunit_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: basic_typeofloadunit_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.basic_typeofloadunit_id_seq OWNED BY public.basic_typeofloadunit.id;
+
+
+--
 -- Name: basic_viewedactivity; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -13067,7 +13102,7 @@ CREATE TABLE public.productioncounting_trackingoperationproductoutcomponent (
     causeofwastes character varying(255),
     palletnumber_id bigint,
     manyreasonsforlacks boolean DEFAULT false,
-    typeofpallet character varying(255)
+    typeofloadunit_id bigint
 );
 
 
@@ -15354,7 +15389,6 @@ CREATE TABLE public.deliveries_deliveredproduct (
     expirationdate date,
     entityversion bigint DEFAULT 0,
     palletnumber_id bigint,
-    pallettype character varying(255),
     storagelocation_id bigint,
     additionalquantity numeric(12,5),
     conversion numeric(12,5),
@@ -15363,7 +15397,8 @@ CREATE TABLE public.deliveries_deliveredproduct (
     damaged boolean DEFAULT false,
     batch_id bigint,
     orderedproduct_id bigint,
-    qualityrating character varying(255)
+    qualityrating character varying(255),
+    typeofloadunit_id bigint
 );
 
 
@@ -15487,17 +15522,18 @@ CREATE VIEW public.deliveries_deliveredproductdto AS
     ( SELECT productcatalognumbers_productcatalognumbers.catalognumber
            FROM public.productcatalognumbers_productcatalognumbers
           WHERE ((productcatalognumbers_productcatalognumbers.product_id = product.id) AND (productcatalognumbers_productcatalognumbers.company_id = delivery.supplier_id))) AS productcatalognumber,
-    deliveredproduct.pallettype,
+    typeofloadunit.name AS typeofloadunit,
     deliveredproduct.additionalunit,
     deliveredproduct.damaged,
     deliveredproduct.expirationdate
-   FROM (((((((public.deliveries_deliveredproduct deliveredproduct
+   FROM ((((((((public.deliveries_deliveredproduct deliveredproduct
      LEFT JOIN public.deliveries_delivery delivery ON ((delivery.id = deliveredproduct.delivery_id)))
      LEFT JOIN public.basic_product product ON ((product.id = deliveredproduct.product_id)))
      LEFT JOIN public.supplynegotiations_offer offer ON ((offer.id = deliveredproduct.offer_id)))
      LEFT JOIN public.technologies_operation operation ON ((operation.id = deliveredproduct.operation_id)))
      LEFT JOIN public.materialflowresources_storagelocation storagelocation ON ((storagelocation.id = deliveredproduct.storagelocation_id)))
      LEFT JOIN public.basic_palletnumber palletnumber ON ((palletnumber.id = deliveredproduct.palletnumber_id)))
+     LEFT JOIN public.basic_typeofloadunit typeofloadunit ON ((typeofloadunit.id = deliveredproduct.typeofloadunit_id)))
      LEFT JOIN public.advancedgenealogy_batch batch ON ((batch.id = deliveredproduct.batch_id)));
 
 
@@ -15521,12 +15557,12 @@ CREATE TABLE public.deliveries_deliveredproductmulti (
     id bigint NOT NULL,
     delivery_id bigint,
     palletnumber_id bigint,
-    pallettype character varying(255),
     storagelocation_id bigint,
     createdate timestamp without time zone,
     updatedate timestamp without time zone,
     createuser character varying(255),
-    updateuser character varying(255)
+    updateuser character varying(255),
+    typeofloadunit_id bigint
 );
 
 
@@ -20811,7 +20847,6 @@ CREATE TABLE public.materialflowresources_resource (
     quantityinadditionalunit numeric(14,5),
     conversion numeric(12,5) DEFAULT (0)::numeric,
     palletnumber_id bigint,
-    typeofpallet character varying(255),
     givenunit character varying(255),
     username character varying(255),
     waste boolean DEFAULT false,
@@ -20821,7 +20856,8 @@ CREATE TABLE public.materialflowresources_resource (
     documentnumber character varying,
     batch_id bigint,
     blockedforqualitycontrol boolean DEFAULT false,
-    qualityrating character varying(255)
+    qualityrating character varying(255),
+    typeofloadunit_id bigint
 );
 
 
@@ -20842,16 +20878,17 @@ CREATE VIEW public.materialflowresources_palletstoragestatedetailsdto AS
     resource.expirationdate,
     palletnumber.number AS palletnumber,
     palletnumber.active AS palletnumberactive,
-    resource.typeofpallet,
+    typeofloadunit.name AS typeofloadunit,
     storagelocation.number AS storagelocationnumber,
     location.number AS locationnumber,
     (location.id)::integer AS location_id,
     resource.palletnumber_id AS palletid
-   FROM ((((public.materialflowresources_resource resource
+   FROM (((((public.materialflowresources_resource resource
      LEFT JOIN public.basic_product product ON ((product.id = resource.product_id)))
      LEFT JOIN public.basic_palletnumber palletnumber ON ((palletnumber.id = resource.palletnumber_id)))
      LEFT JOIN public.materialflowresources_storagelocation storagelocation ON ((storagelocation.id = resource.storagelocation_id)))
      LEFT JOIN public.materialflow_location location ON ((location.id = resource.location_id)))
+     LEFT JOIN public.basic_typeofloadunit typeofloadunit ON ((typeofloadunit.id = resource.typeofloadunit_id)))
   WHERE (resource.palletnumber_id IS NOT NULL)
   ORDER BY palletnumber.number;
 
@@ -20877,7 +20914,7 @@ CREATE VIEW public.materialflowresources_palletstoragestatedto AS
     true AS active,
     palletstoragestatedetails.palletnumber,
     palletstoragestatedetails.palletnumberactive,
-    palletstoragestatedetails.typeofpallet,
+    palletstoragestatedetails.typeofloadunit,
     palletstoragestatedetails.storagelocationnumber,
     palletstoragestatedetails.locationnumber,
     (sum(palletstoragestatedetails.quantity))::numeric(14,5) AS totalquantity,
@@ -20886,7 +20923,7 @@ CREATE VIEW public.materialflowresources_palletstoragestatedto AS
     NULL::bigint AS newpalletnumber_id,
     palletstoragestatedetails.location_id
    FROM public.materialflowresources_palletstoragestatedetailsdto palletstoragestatedetails
-  GROUP BY palletstoragestatedetails.palletid, palletstoragestatedetails.palletnumber, palletstoragestatedetails.palletnumberactive, palletstoragestatedetails.typeofpallet, palletstoragestatedetails.storagelocationnumber, palletstoragestatedetails.locationnumber, palletstoragestatedetails.location_id
+  GROUP BY palletstoragestatedetails.palletid, palletstoragestatedetails.palletnumber, palletstoragestatedetails.palletnumberactive, palletstoragestatedetails.typeofloadunit, palletstoragestatedetails.storagelocationnumber, palletstoragestatedetails.locationnumber, palletstoragestatedetails.location_id
   ORDER BY palletstoragestatedetails.palletnumber, palletstoragestatedetails.locationnumber;
 
 
@@ -20922,7 +20959,6 @@ CREATE TABLE public.materialflowresources_position (
     storagelocation_id bigint,
     conversion numeric(12,5) DEFAULT (0)::numeric,
     palletnumber_id bigint,
-    typeofpallet character varying(255),
     waste boolean DEFAULT false,
     resourcereceiptdocument character varying,
     lastresource boolean DEFAULT false,
@@ -20936,7 +20972,8 @@ CREATE TABLE public.materialflowresources_position (
     pickingworker_id bigint,
     documentpart_id bigint,
     transferresourcenumber character varying(255),
-    deliverynumber character varying
+    deliverynumber character varying,
+    typeofloadunit_id bigint
 );
 
 
@@ -21060,7 +21097,7 @@ CREATE VIEW public.materialflowresources_positiondto AS
     maintenanceevent.number AS maintenanceeventnumber,
     suborder.number AS subordernumber,
     ordersorder.number AS ordernumber,
-    "position".typeofpallet AS pallettype,
+    typeofloadunit.name AS typeofloadunit,
     palletnumber.number AS palletnumber,
     (locationfrom.id)::integer AS locationfrom_id,
     (locationto.id)::integer AS locationto_id,
@@ -21082,7 +21119,7 @@ CREATE VIEW public.materialflowresources_positiondto AS
     ("position".pickingdate)::date AS pickingdate,
     (((pw.name)::text || ' '::text) || (pw.surname)::text) AS pickingworker,
     mo.number AS masterordernumber
-   FROM ((((((((((((((((((public.materialflowresources_position "position"
+   FROM (((((((((((((((((((public.materialflowresources_position "position"
      LEFT JOIN public.materialflowresources_document document ON ((document.id = "position".document_id)))
      LEFT JOIN public.materialflow_location locationfrom ON ((locationfrom.id = document.locationfrom_id)))
      LEFT JOIN public.materialflow_location locationto ON ((locationto.id = document.locationto_id)))
@@ -21100,6 +21137,7 @@ CREATE VIEW public.materialflowresources_positiondto AS
      LEFT JOIN public.basic_staff staff ON ((staff.id = document.staff_id)))
      LEFT JOIN public.qcadoosecurity_user u ON (("position".pickingworker_id = u.id)))
      LEFT JOIN public.basic_staff pw ON ((u.staff_id = pw.id)))
+     LEFT JOIN public.basic_typeofloadunit typeofloadunit ON ((typeofloadunit.id = "position".typeofloadunit_id)))
      LEFT JOIN public.masterorders_masterorder mo ON ((mo.id = document.masterorder_id)));
 
 
@@ -21340,8 +21378,6 @@ CREATE TABLE public.materialflowresources_resourcecorrection (
     _newbatch character varying,
     oldpalletnumber_id bigint,
     newpalletnumber_id bigint,
-    oldtypeofpallet character varying,
-    newtypeofpallet character varying,
     oldexpirationdate date,
     newexpirationdate date,
     productiondate date,
@@ -21352,7 +21388,9 @@ CREATE TABLE public.materialflowresources_resourcecorrection (
     oldbatch_id bigint,
     newbatch_id bigint,
     oldqualityrating character varying(255),
-    newqualityrating character varying(255)
+    newqualityrating character varying(255),
+    oldtypeofloadunit_id bigint,
+    newtypeofloadunit_id bigint
 );
 
 
@@ -21392,7 +21430,7 @@ CREATE VIEW public.materialflowresources_resourcecorrectiondto AS
     (COALESCE(resourcecorrection.oldexpirationdate, '1900-01-01'::date) <> COALESCE(resourcecorrection.newexpirationdate, '1900-01-01'::date)) AS expirationdatecorrected,
     (COALESCE(resourcecorrection.oldstoragelocation_id, (0)::bigint) <> COALESCE(resourcecorrection.newstoragelocation_id, (0)::bigint)) AS storagelocationcorrected,
     (COALESCE(resourcecorrection.oldpalletnumber_id, (0)::bigint) <> COALESCE(resourcecorrection.newpalletnumber_id, (0)::bigint)) AS palletnumbercorrected,
-    ((COALESCE(resourcecorrection.oldtypeofpallet, ''::character varying))::text <> (COALESCE(resourcecorrection.newtypeofpallet, ''::character varying))::text) AS typeofpalletcorrected,
+    ((COALESCE((resourcecorrection.oldtypeofloadunit_id)::character varying, ''::character varying))::text <> (COALESCE((resourcecorrection.newtypeofloadunit_id)::character varying, ''::character varying))::text) AS typeofloadunitcorrected,
     resourcecorrection.deliverynumber,
     (resourcecorrection.location_id)::integer AS location_id,
     location.number AS locationnumber,
@@ -21461,7 +21499,7 @@ CREATE VIEW public.materialflowresources_resourcedto AS
     batch.number AS batchnumber,
     storagelocation.number AS storagelocationnumber,
     palletnumber.number AS palletnumber,
-    resource.typeofpallet,
+    typeofloadunit.name AS typeofloadunit,
     resource.username,
     resource.iscorrected,
     resource.waste,
@@ -21487,7 +21525,7 @@ CREATE VIEW public.materialflowresources_resourcedto AS
              LIMIT 1))::double precision * '1 day'::interval)))) THEN 'orange-cell'::character varying(255)
             ELSE NULL::character varying
         END AS expirationdatecellcolor
-   FROM (((((((((public.materialflowresources_resource resource
+   FROM ((((((((((public.materialflowresources_resource resource
      JOIN public.materialflow_location location ON ((location.id = resource.location_id)))
      JOIN public.basic_product product ON ((product.id = resource.product_id)))
      LEFT JOIN public.basic_palletnumber palletnumber ON ((palletnumber.id = resource.palletnumber_id)))
@@ -21496,6 +21534,7 @@ CREATE VIEW public.materialflowresources_resourcedto AS
      LEFT JOIN public.deliveries_delivery delivery ON (((delivery.number)::text = (resource.deliverynumber)::text)))
      LEFT JOIN public.basic_company supplier ON ((delivery.supplier_id = supplier.id)))
      LEFT JOIN public.materialflowresources_document document ON (((document.number)::text = (resource.documentnumber)::text)))
+     LEFT JOIN public.basic_typeofloadunit typeofloadunit ON ((typeofloadunit.id = resource.typeofloadunit_id)))
      LEFT JOIN public.basic_company document_supplier ON ((document.company_id = document_supplier.id)));
 
 
@@ -24951,7 +24990,7 @@ CREATE TABLE public.ordersgroups_ordersgroupproducedproduct (
     batch_id bigint,
     storagelocation_id bigint,
     palletnumber_id bigint,
-    typeofpallet character varying(255)
+    typeofloadunit_id bigint
 );
 
 
@@ -34852,6 +34891,13 @@ ALTER TABLE ONLY public.basic_technologicalprocessrateitem ALTER COLUMN id SET D
 
 
 --
+-- Name: basic_typeofloadunit id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.basic_typeofloadunit ALTER COLUMN id SET DEFAULT nextval('public.basic_typeofloadunit_id_seq'::regclass);
+
+
+--
 -- Name: basic_viewedactivity id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -38134,7 +38180,7 @@ COPY public.arch_materialflowresources_documentstatechange (id, dateandtime, doc
 -- Data for Name: arch_materialflowresources_position; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.arch_materialflowresources_position (id, document_id, product_id, quantity, price, productiondate, expirationdate, number, resource_id, givenunit, givenquantity, entityversion, storagelocation_id, conversion, palletnumber_id, typeofpallet, waste, resourcereceiptdocument, lastresource, resourcenumber, externaldocumentnumber, orderid, sellingprice, batch_id, qualityrating, pickingdate, pickingworker_id, documentpart_id, transferresourcenumber, deliverynumber, archived) FROM stdin;
+COPY public.arch_materialflowresources_position (id, document_id, product_id, quantity, price, productiondate, expirationdate, number, resource_id, givenunit, givenquantity, entityversion, storagelocation_id, conversion, palletnumber_id, waste, resourcereceiptdocument, lastresource, resourcenumber, externaldocumentnumber, orderid, sellingprice, batch_id, qualityrating, pickingdate, pickingworker_id, documentpart_id, transferresourcenumber, deliverynumber, typeofloadunit_id, archived) FROM stdin;
 \.
 
 
@@ -38374,7 +38420,7 @@ COPY public.arch_ordersgroups_ordersgroupmaterialrequirementproduct (id, ordersg
 -- Data for Name: arch_ordersgroups_ordersgroupproducedproduct; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.arch_ordersgroups_ordersgroupproducedproduct (id, ordersgroup_id, product_id, location_id, document_id, quantity, accepted, externaldocumentnumber, batch_id, storagelocation_id, palletnumber_id, typeofpallet, archived) FROM stdin;
+COPY public.arch_ordersgroups_ordersgroupproducedproduct (id, ordersgroup_id, product_id, location_id, document_id, quantity, accepted, externaldocumentnumber, batch_id, storagelocation_id, palletnumber_id, typeofloadunit_id, archived) FROM stdin;
 \.
 
 
@@ -38606,7 +38652,7 @@ COPY public.arch_productioncounting_trackingoperationproductincomponent (id, pro
 -- Data for Name: arch_productioncounting_trackingoperationproductoutcomponent; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.arch_productioncounting_trackingoperationproductoutcomponent (id, productiontracking_id, product_id, usedquantity, balance, batch_id, wastedquantity, givenunit, givenquantity, entityversion, wastesquantity, typeofmaterial, storagelocation_id, causeofwastes, palletnumber_id, manyreasonsforlacks, typeofpallet, archived) FROM stdin;
+COPY public.arch_productioncounting_trackingoperationproductoutcomponent (id, productiontracking_id, product_id, usedquantity, balance, batch_id, wastedquantity, givenunit, givenquantity, entityversion, wastesquantity, typeofmaterial, storagelocation_id, causeofwastes, palletnumber_id, manyreasonsforlacks, typeofloadunit_id, archived) FROM stdin;
 \.
 
 
@@ -39650,6 +39696,16 @@ COPY public.basic_technologicalprocessrateitem (id, technologicalprocessrate_id,
 
 
 --
+-- Data for Name: basic_typeofloadunit; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY public.basic_typeofloadunit (id, name, length, width, height, weight, active) FROM stdin;
+1	EPAL	\N	\N	\N	\N	t
+2	CHEP EUR	\N	\N	\N	\N	t
+\.
+
+
+--
 -- Data for Name: basic_viewedactivity; Type: TABLE DATA; Schema: public; Owner: -
 --
 
@@ -40123,7 +40179,7 @@ COPY public.deliveries_deliveredpackage (id, delivery_id, product_id, deliveredq
 -- Data for Name: deliveries_deliveredproduct; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.deliveries_deliveredproduct (id, delivery_id, product_id, deliveredquantity, damagedquantity, priceperunit, totalprice, succession, operation_id, offer_id, batchnumber, productiondate, expirationdate, entityversion, palletnumber_id, pallettype, storagelocation_id, additionalquantity, conversion, iswaste, additionalunit, damaged, batch_id, orderedproduct_id, qualityrating) FROM stdin;
+COPY public.deliveries_deliveredproduct (id, delivery_id, product_id, deliveredquantity, damagedquantity, priceperunit, totalprice, succession, operation_id, offer_id, batchnumber, productiondate, expirationdate, entityversion, palletnumber_id, storagelocation_id, additionalquantity, conversion, iswaste, additionalunit, damaged, batch_id, orderedproduct_id, qualityrating, typeofloadunit_id) FROM stdin;
 \.
 
 
@@ -40139,7 +40195,7 @@ COPY public.deliveries_deliveredproductattributeval (id, deliveredproduct_id, at
 -- Data for Name: deliveries_deliveredproductmulti; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.deliveries_deliveredproductmulti (id, delivery_id, palletnumber_id, pallettype, storagelocation_id, createdate, updatedate, createuser, updateuser) FROM stdin;
+COPY public.deliveries_deliveredproductmulti (id, delivery_id, palletnumber_id, storagelocation_id, createdate, updatedate, createuser, updateuser, typeofloadunit_id) FROM stdin;
 \.
 
 
@@ -42742,13 +42798,13 @@ COPY public.materialflowresources_documentpositionparametersitem (id, checked, e
 15	t	t	1	expirationDate	15	f	\N
 16	t	t	1	storageLocation	16	f	\N
 17	t	t	1	palletNumber	17	f	\N
-18	t	t	1	typeOfPallet	18	f	\N
 21	t	t	1	resourceNumber	21	f	\N
 22	f	t	1	sellingPrice	22	f	\N
 19	f	t	1	waste	19	f	\N
 23	f	t	1	pickingDate	23	f	\N
 24	f	t	1	pickingWorker	24	f	\N
 20	f	t	1	lastResource	22	f	\N
+18	t	t	1	typeOfLoadUnit	18	f	\N
 \.
 
 
@@ -42788,7 +42844,7 @@ COPY public.materialflowresources_palletmovehelper (id) FROM stdin;
 -- Data for Name: materialflowresources_position; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.materialflowresources_position (id, document_id, product_id, quantity, price, productiondate, expirationdate, number, resource_id, givenunit, givenquantity, entityversion, storagelocation_id, conversion, palletnumber_id, typeofpallet, waste, resourcereceiptdocument, lastresource, resourcenumber, externaldocumentnumber, orderid, sellingprice, batch_id, qualityrating, pickingdate, pickingworker_id, documentpart_id, transferresourcenumber, deliverynumber) FROM stdin;
+COPY public.materialflowresources_position (id, document_id, product_id, quantity, price, productiondate, expirationdate, number, resource_id, givenunit, givenquantity, entityversion, storagelocation_id, conversion, palletnumber_id, waste, resourcereceiptdocument, lastresource, resourcenumber, externaldocumentnumber, orderid, sellingprice, batch_id, qualityrating, pickingdate, pickingworker_id, documentpart_id, transferresourcenumber, deliverynumber, typeofloadunit_id) FROM stdin;
 \.
 
 
@@ -42820,7 +42876,7 @@ COPY public.materialflowresources_reservation (id, location_id, product_id, quan
 -- Data for Name: materialflowresources_resource; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.materialflowresources_resource (id, location_id, product_id, quantity, price, _batch, "time", productiondate, expirationdate, iscorrected, entityversion, storagelocation_id, number, quantityinadditionalunit, conversion, palletnumber_id, typeofpallet, givenunit, username, waste, availablequantity, reservedquantity, deliverynumber, documentnumber, batch_id, blockedforqualitycontrol, qualityrating) FROM stdin;
+COPY public.materialflowresources_resource (id, location_id, product_id, quantity, price, _batch, "time", productiondate, expirationdate, iscorrected, entityversion, storagelocation_id, number, quantityinadditionalunit, conversion, palletnumber_id, givenunit, username, waste, availablequantity, reservedquantity, deliverynumber, documentnumber, batch_id, blockedforqualitycontrol, qualityrating, typeofloadunit_id) FROM stdin;
 \.
 
 
@@ -42852,7 +42908,7 @@ COPY public.materialflowresources_resourceattributevaluebeforecorrection (id, re
 -- Data for Name: materialflowresources_resourcecorrection; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.materialflowresources_resourcecorrection (id, number, product_id, newquantity, oldquantity, location_id, "time", createdate, updatedate, createuser, updateuser, _oldbatch, resource_id, entityversion, oldstoragelocation_id, newstoragelocation_id, oldprice, newprice, _newbatch, oldpalletnumber_id, newpalletnumber_id, oldtypeofpallet, newtypeofpallet, oldexpirationdate, newexpirationdate, productiondate, oldconversion, newconversion, resourcenumber, deliverynumber, oldbatch_id, newbatch_id, oldqualityrating, newqualityrating) FROM stdin;
+COPY public.materialflowresources_resourcecorrection (id, number, product_id, newquantity, oldquantity, location_id, "time", createdate, updatedate, createuser, updateuser, _oldbatch, resource_id, entityversion, oldstoragelocation_id, newstoragelocation_id, oldprice, newprice, _newbatch, oldpalletnumber_id, newpalletnumber_id, oldexpirationdate, newexpirationdate, productiondate, oldconversion, newconversion, resourcenumber, deliverynumber, oldbatch_id, newbatch_id, oldqualityrating, newqualityrating, oldtypeofloadunit_id, newtypeofloadunit_id) FROM stdin;
 \.
 
 
@@ -43341,7 +43397,7 @@ COPY public.ordersgroups_ordersgroupmaterialrequirementproduct (id, ordersgroupm
 -- Data for Name: ordersgroups_ordersgroupproducedproduct; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.ordersgroups_ordersgroupproducedproduct (id, ordersgroup_id, product_id, location_id, document_id, quantity, accepted, externaldocumentnumber, batch_id, storagelocation_id, palletnumber_id, typeofpallet) FROM stdin;
+COPY public.ordersgroups_ordersgroupproducedproduct (id, ordersgroup_id, product_id, location_id, document_id, quantity, accepted, externaldocumentnumber, batch_id, storagelocation_id, palletnumber_id, typeofloadunit_id) FROM stdin;
 \.
 
 
@@ -43709,7 +43765,7 @@ COPY public.productioncounting_trackingoperationproductincomponent (id, producti
 -- Data for Name: productioncounting_trackingoperationproductoutcomponent; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.productioncounting_trackingoperationproductoutcomponent (id, productiontracking_id, product_id, usedquantity, balance, batch_id, wastedquantity, givenunit, givenquantity, entityversion, wastesquantity, typeofmaterial, storagelocation_id, causeofwastes, palletnumber_id, manyreasonsforlacks, typeofpallet) FROM stdin;
+COPY public.productioncounting_trackingoperationproductoutcomponent (id, productiontracking_id, product_id, usedquantity, balance, batch_id, wastedquantity, givenunit, givenquantity, entityversion, wastesquantity, typeofmaterial, storagelocation_id, causeofwastes, palletnumber_id, manyreasonsforlacks, typeofloadunit_id) FROM stdin;
 \.
 
 
@@ -43883,7 +43939,6 @@ COPY public.qcadoomodel_dictionary (id, name, pluginidentifier, active, entityve
 2	color	basic	t	0
 3	descriptionTypes	basic	t	0
 4	addressType	basic	t	0
-5	typeOfPallet	basic	t	0
 6	typeOfSubassembly	basic	t	0
 7	reasonTypeOfChangingOrderState	basic	t	0
 9	categories	basic	t	0
@@ -43909,7 +43964,6 @@ COPY public.qcadoomodel_dictionary (id, name, pluginidentifier, active, entityve
 --
 
 COPY public.qcadoomodel_dictionaryitem (id, name, externalnumber, description, technicalcode, dictionary_id, active, entityversion, isinteger, priority) FROM stdin;
-1	EPAL	\N	\N	01epal	5	t	0	f	2
 3	główny	\N	\N	01main	4	t	0	f	1
 4	biały	\N	#ffffff	01white	2	t	0	f	1
 5	szary	\N	#bfbfbf	02grey	2	t	0	f	5
@@ -43946,7 +44000,6 @@ COPY public.qcadoomodel_dictionaryitem (id, name, externalnumber, description, t
 39	drukarka do stickerów	\N	\N	05stickerPrinter	\N	t	0	f	3
 40	nowa	\N	\N	01new	15	t	0	f	1
 41	zlecona	\N	\N	02ordered	15	t	0	f	2
-2	CHEP EUR	\N	\N	02chepEur	5	t	0	f	1
 11	Praca na linii	\N	\N	01workOnLine	17	f	0	f	3
 12	L4	\N	\N	\N	17	f	0	f	2
 13	Inne zadanie	\N	\N	02otherCase	17	f	0	f	1
@@ -44517,6 +44570,7 @@ COPY public.qcadooview_item (id, pluginidentifier, name, active, category_id, vi
 276	masterOrders	masterOrdersMaterialRequirementsList	f	9	277	8	ROLE_REQUIREMENTS	0
 277	masterOrders	salesPlanMaterialRequirementsList	f	9	278	9	ROLE_REQUIREMENTS	0
 278	masterOrders	salesPlansList	f	28	279	2	ROLE_SALE	0
+282	basic	typeOfLoadUnitsList	t	4	283	25	ROLE_BASE_FUNCTIONALITY	0
 \.
 
 
@@ -44661,6 +44715,7 @@ COPY public.qcadooview_view (id, pluginidentifier, name, view, url, entityversio
 280	masterOrders	masterOrderPositionsList	masterOrderPositionsList	\N	0
 281	masterOrders	masterOrdersList	masterOrdersList	\N	0
 282	masterOrders	salesParameters	\N	/salesParameters.html	0
+283	basic	typeOfLoadUnitsList	typeOfLoadUnitsList	\N	0
 \.
 
 
@@ -47017,6 +47072,13 @@ SELECT pg_catalog.setval('public.basic_timetableexceptiondto_id_seq', 1, false);
 --
 
 SELECT pg_catalog.setval('public.basic_timetableexceptionpershiftdto_id_seq', 1, false);
+
+
+--
+-- Name: basic_typeofloadunit_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('public.basic_typeofloadunit_id_seq', 2, true);
 
 
 --
@@ -49998,7 +50060,7 @@ SELECT pg_catalog.setval('public.qcadooview_category_id_seq', 28, true);
 -- Name: qcadooview_item_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('public.qcadooview_item_id_seq', 281, true);
+SELECT pg_catalog.setval('public.qcadooview_item_id_seq', 282, true);
 
 
 --
@@ -50012,7 +50074,7 @@ SELECT pg_catalog.setval('public.qcadooview_systeminfo_id_seq', 1, false);
 -- Name: qcadooview_view_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('public.qcadooview_view_id_seq', 282, true);
+SELECT pg_catalog.setval('public.qcadooview_view_id_seq', 283, true);
 
 
 --
@@ -52690,6 +52752,14 @@ ALTER TABLE ONLY public.basic_technologicalprocessrate
 
 ALTER TABLE ONLY public.basic_technologicalprocessrateitem
     ADD CONSTRAINT basic_technologicalprocessrateitem_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: basic_typeofloadunit basic_typeofloadunit_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.basic_typeofloadunit
+    ADD CONSTRAINT basic_typeofloadunit_pkey PRIMARY KEY (id);
 
 
 --
@@ -60296,6 +60366,14 @@ ALTER TABLE ONLY public.deliveries_deliveredproduct
 
 
 --
+-- Name: deliveries_deliveredproduct deliveredproduct_typeofloadunit_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.deliveries_deliveredproduct
+    ADD CONSTRAINT deliveredproduct_typeofloadunit_fkey FOREIGN KEY (typeofloadunit_id) REFERENCES public.basic_typeofloadunit(id) DEFERRABLE;
+
+
+--
 -- Name: deliveries_deliveredproductattributeval deliveredproductattributeval_attribute_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -60357,6 +60435,14 @@ ALTER TABLE ONLY public.deliveries_deliveredproductmulti
 
 ALTER TABLE ONLY public.deliveries_deliveredproductmulti
     ADD CONSTRAINT deliveredproductmulti_storagelocation_fkey FOREIGN KEY (storagelocation_id) REFERENCES public.materialflowresources_storagelocation(id) DEFERRABLE;
+
+
+--
+-- Name: deliveries_deliveredproductmulti deliveredproductmulti_typeofloadunit_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.deliveries_deliveredproductmulti
+    ADD CONSTRAINT deliveredproductmulti_typeofloadunit_fkey FOREIGN KEY (typeofloadunit_id) REFERENCES public.basic_typeofloadunit(id) DEFERRABLE;
 
 
 --
@@ -63480,6 +63566,14 @@ ALTER TABLE ONLY public.ordersgroups_ordersgroupproducedproduct
 
 
 --
+-- Name: ordersgroups_ordersgroupproducedproduct ordersgroupproducedproduct_typeofloadunit_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.ordersgroups_ordersgroupproducedproduct
+    ADD CONSTRAINT ordersgroupproducedproduct_typeofloadunit_fkey FOREIGN KEY (typeofloadunit_id) REFERENCES public.basic_typeofloadunit(id) DEFERRABLE;
+
+
+--
 -- Name: orders_orderstatechange orderstatechange_order_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -64485,6 +64579,14 @@ ALTER TABLE ONLY public.materialflowresources_position
 
 ALTER TABLE ONLY public.materialflowresources_position
     ADD CONSTRAINT position_storagelocation_fkey FOREIGN KEY (storagelocation_id) REFERENCES public.materialflowresources_storagelocation(id) DEFERRABLE;
+
+
+--
+-- Name: materialflowresources_position position_typeofloadunit_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.materialflowresources_position
+    ADD CONSTRAINT position_typeofloadunit_fkey FOREIGN KEY (typeofloadunit_id) REFERENCES public.basic_typeofloadunit(id) DEFERRABLE;
 
 
 --
@@ -66536,6 +66638,14 @@ ALTER TABLE ONLY public.materialflowresources_resource
 
 
 --
+-- Name: materialflowresources_resource resource_typeofloadunit_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.materialflowresources_resource
+    ADD CONSTRAINT resource_typeofloadunit_fkey FOREIGN KEY (typeofloadunit_id) REFERENCES public.basic_typeofloadunit(id) DEFERRABLE;
+
+
+--
 -- Name: materialflowresources_resourceattributevalue resourceattributevalue_attribute_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -66624,6 +66734,14 @@ ALTER TABLE ONLY public.materialflowresources_resourcecorrection
 
 
 --
+-- Name: materialflowresources_resourcecorrection resourcecorrection_newtypeofloadunit_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.materialflowresources_resourcecorrection
+    ADD CONSTRAINT resourcecorrection_newtypeofloadunit_fkey FOREIGN KEY (newtypeofloadunit_id) REFERENCES public.basic_typeofloadunit(id) DEFERRABLE;
+
+
+--
 -- Name: materialflowresources_resourcecorrection resourcecorrection_oldbatch_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -66645,6 +66763,14 @@ ALTER TABLE ONLY public.materialflowresources_resourcecorrection
 
 ALTER TABLE ONLY public.materialflowresources_resourcecorrection
     ADD CONSTRAINT resourcecorrection_oldstoragelocation_fkey FOREIGN KEY (oldstoragelocation_id) REFERENCES public.materialflowresources_storagelocation(id) DEFERRABLE;
+
+
+--
+-- Name: materialflowresources_resourcecorrection resourcecorrection_oldtypeofloadunit_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.materialflowresources_resourcecorrection
+    ADD CONSTRAINT resourcecorrection_oldtypeofloadunit_fkey FOREIGN KEY (oldtypeofloadunit_id) REFERENCES public.basic_typeofloadunit(id) DEFERRABLE;
 
 
 --
@@ -67941,6 +68067,14 @@ ALTER TABLE ONLY public.productioncounting_trackingoperationproductoutcomponent
 
 ALTER TABLE ONLY public.productioncounting_trackingoperationproductoutcomponent
     ADD CONSTRAINT trackingoperationproductoutcomponent_storagelocation_fkey FOREIGN KEY (storagelocation_id) REFERENCES public.materialflowresources_storagelocation(id) DEFERRABLE;
+
+
+--
+-- Name: productioncounting_trackingoperationproductoutcomponent trackingoperationproductoutcomponent_typeofloadunit_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.productioncounting_trackingoperationproductoutcomponent
+    ADD CONSTRAINT trackingoperationproductoutcomponent_typeofloadunit_fkey FOREIGN KEY (typeofloadunit_id) REFERENCES public.basic_typeofloadunit(id) DEFERRABLE;
 
 
 --
