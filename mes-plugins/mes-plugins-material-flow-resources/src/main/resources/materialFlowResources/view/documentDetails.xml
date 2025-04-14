@@ -55,7 +55,7 @@
                     </script>
                 </bigButton>
             </group>
-            <group name="state">
+            <group name="state" defaultAuthorizationRole="ROLE_DOCUMENTS_STATES_ACCEPT">
                 <smallButton name="accept" icon="startIcon16.png" state="enabled">
                     <script>
                         <![CDATA[

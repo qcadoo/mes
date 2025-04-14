@@ -35,7 +35,7 @@
     <component type="window" name="window" reference="window">
         <ribbon>
             <template name="standardGridTemplate" excludeItems="actions.copy"/>
-            <group name="state">
+            <group name="state" defaultAuthorizationRole="ROLE_DOCUMENTS_STATES_ACCEPT">
                 <smallButton name="accept" icon="startIcon16.png" state="enabled">
                     <script>
                         <![CDATA[
