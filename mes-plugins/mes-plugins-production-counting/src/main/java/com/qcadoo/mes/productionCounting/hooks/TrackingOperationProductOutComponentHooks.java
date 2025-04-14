@@ -157,7 +157,7 @@ public class TrackingOperationProductOutComponentHooks {
                         } else {
                             String palletNumberNumber = palletNumber.getStringField(PalletNumberFields.NUMBER);
 
-                            if (!palletValidatorService.validatePalletNumberAndTypeOfLoadUnit(location, storageLocation, palletNumber, typeOfLoadUnit, trackingOperationProductOutComponent)) {
+                            if (!palletValidatorService.validateResources(location, storageLocation, palletNumber, typeOfLoadUnit, trackingOperationProductOutComponent)) {
                                 return false;
                             }
 
