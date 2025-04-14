@@ -32,9 +32,7 @@ import com.qcadoo.mes.basic.constants.UnitConversionItemFieldsB;
 import com.qcadoo.mes.basicProductionCounting.BasicProductionCountingService;
 import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityFields;
 import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityRole;
-import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityTypeOfMaterial;
 import com.qcadoo.mes.materialFlowResources.MaterialFlowResourcesService;
-import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.productionCounting.constants.ProductionTrackingFields;
 import com.qcadoo.mes.productionCounting.constants.TrackingOperationProductInComponentFields;
 import com.qcadoo.mes.productionCounting.constants.TrackingOperationProductOutComponentFields;
@@ -266,42 +264,40 @@ public class TrackingOperationProductComponentDetailsListeners {
                 .getBelongsToField(TrackingOperationProductOutComponentFields.PRODUCTION_TRACKING);
 
         Entity order = productionTracking.getBelongsToField(ProductionTrackingFields.ORDER);
-        Entity orderProduct = order.getBelongsToField(OrderFields.PRODUCT);
         Entity product = trackingOperationProductOutComponent.getBelongsToField(TrackingOperationProductOutComponentFields.PRODUCT);
 
-        if (orderProduct.getId().equals(product.getId())) {
-            Entity productionCountingQuantity = getProductionCountingQuantity(order, product);
+        Entity productionCountingQuantity = getProductionCountingQuantity(order, product);
 
-            if (Objects.nonNull(productionCountingQuantity)) {
-                Entity productsInputLocation = productionCountingQuantity.getBelongsToField(ProductionCountingQuantityFields.PRODUCTS_INPUT_LOCATION);
+        if (Objects.nonNull(productionCountingQuantity)) {
+            Entity productsInputLocation = productionCountingQuantity.getBelongsToField(ProductionCountingQuantityFields.PRODUCTS_INPUT_LOCATION);
 
-                if (Objects.nonNull(productsInputLocation)) {
-                    Long typeOfLoadUnit = getTypeLoadUnit(productionTracking, productsInputLocation, palletNumberLookup.getEntity());
-
-                    typeOfLoadUnitLookup.setFieldValue(typeOfLoadUnit);
-                    typeOfLoadUnitLookup.requestComponentUpdateState();
+            if (Objects.nonNull(productsInputLocation)) {
+                Long typeOfLoadUnit = null;
+                Entity palletNumber = palletNumberLookup.getEntity();
+                if (Objects.nonNull(palletNumber)) {
+                    typeOfLoadUnit = getTypeLoadUnit(productionTracking, productsInputLocation, palletNumber);
                 }
+                typeOfLoadUnitLookup.setFieldValue(typeOfLoadUnit);
+                typeOfLoadUnitLookup.requestComponentUpdateState();
             }
         }
     }
 
     private Long getTypeLoadUnit(Entity productionTracking, Entity productsInputLocation, Entity palletNumber) {
-        Long typeOfLoadUnit = null;
-        if (Objects.nonNull(palletNumber)) {
-            typeOfLoadUnit = materialFlowResourcesService.getTypeOfLoadUnitByPalletNumber(productsInputLocation.getId(), palletNumber.getStringField(PalletNumberFields.NUMBER));
-            if (typeOfLoadUnit == null) {
-                for (Entity topoc : productionTracking.getHasManyField(ProductionTrackingFields.TRACKING_OPERATION_PRODUCT_OUT_COMPONENTS)) {
-                    Entity topocPalletNumber = topoc.getBelongsToField(TrackingOperationProductOutComponentFields.PALLET_NUMBER);
-                    if (topocPalletNumber != null && topocPalletNumber.getId().equals(palletNumber.getId())) {
-                        Entity topocTypeOfLoadUnit = topoc.getBelongsToField(TrackingOperationProductOutComponentFields.TYPE_OF_LOAD_UNIT);
-                        if (topocTypeOfLoadUnit != null) {
-                            typeOfLoadUnit = topocTypeOfLoadUnit.getId();
-                        }
-                        break;
+        Long typeOfLoadUnit = materialFlowResourcesService.getTypeOfLoadUnitByPalletNumber(productsInputLocation.getId(), palletNumber.getStringField(PalletNumberFields.NUMBER));
+        if (typeOfLoadUnit == null) {
+            for (Entity topoc : productionTracking.getHasManyField(ProductionTrackingFields.TRACKING_OPERATION_PRODUCT_OUT_COMPONENTS)) {
+                Entity topocPalletNumber = topoc.getBelongsToField(TrackingOperationProductOutComponentFields.PALLET_NUMBER);
+                if (topocPalletNumber != null && topocPalletNumber.getId().equals(palletNumber.getId())) {
+                    Entity topocTypeOfLoadUnit = topoc.getBelongsToField(TrackingOperationProductOutComponentFields.TYPE_OF_LOAD_UNIT);
+                    if (topocTypeOfLoadUnit != null) {
+                        typeOfLoadUnit = topocTypeOfLoadUnit.getId();
                     }
+                    break;
                 }
             }
         }
+
         return typeOfLoadUnit;
     }
 
@@ -310,8 +306,6 @@ public class TrackingOperationProductComponentDetailsListeners {
                 .add(SearchRestrictions.eq(ProductionCountingQuantityFields.ORDER + L_ID, order.getId()))
                 .add(SearchRestrictions.eq(ProductionCountingQuantityFields.ROLE,
                         ProductionCountingQuantityRole.PRODUCED.getStringValue()))
-                .add(SearchRestrictions.eq(ProductionCountingQuantityFields.TYPE_OF_MATERIAL,
-                        ProductionCountingQuantityTypeOfMaterial.FINAL_PRODUCT.getStringValue()))
                 .add(SearchRestrictions.eq(ProductionCountingQuantityFields.PRODUCT + L_ID, product.getId()))
                 .setMaxResults(1).uniqueResult();
     }
