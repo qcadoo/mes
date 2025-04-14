@@ -44,12 +44,13 @@
                         <component type="lookup" name="worker" field="worker"
                                    reference="worker">
 
+                            <option type="column" name="name" fields="name"/>
                             <option type="column" name="surname" fields="surname"/>
-                            <option type="searchable" value="name, surame"/>
-                            <option type="orderable" value="name, surame"/>
+                            <option type="searchable" value="number,name,surname"/>
+                            <option type="orderable" value="number,name,surname"/>
                             <option type="expression"
                                     value="'&lt;b&gt;' + #name + '&lt;/b&gt; ' + #surname"/>
-                            <option type="fieldCode" value="name"/>
+                            <option type="fieldCode" value="number"/>
                         </component>
                     </layoutElement>
                     <layoutElement column="1" row="2">
