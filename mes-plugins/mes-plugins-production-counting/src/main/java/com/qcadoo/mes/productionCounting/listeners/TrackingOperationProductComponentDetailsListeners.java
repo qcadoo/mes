@@ -32,6 +32,7 @@ import com.qcadoo.mes.basic.constants.UnitConversionItemFieldsB;
 import com.qcadoo.mes.basicProductionCounting.BasicProductionCountingService;
 import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityFields;
 import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityRole;
+import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityTypeOfMaterial;
 import com.qcadoo.mes.materialFlowResources.MaterialFlowResourcesService;
 import com.qcadoo.mes.productionCounting.constants.ProductionTrackingFields;
 import com.qcadoo.mes.productionCounting.constants.TrackingOperationProductInComponentFields;
@@ -55,6 +56,8 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.util.Objects;
 import java.util.Set;
+
+import static com.qcadoo.mes.productionCounting.utils.ProductionTrackingDocumentsHelper.L_WAREHOUSE;
 
 @Service
 public class TrackingOperationProductComponentDetailsListeners {
@@ -269,13 +272,13 @@ public class TrackingOperationProductComponentDetailsListeners {
         Entity productionCountingQuantity = getProductionCountingQuantity(order, product);
 
         if (Objects.nonNull(productionCountingQuantity)) {
-            Entity productsInputLocation = productionCountingQuantity.getBelongsToField(ProductionCountingQuantityFields.PRODUCTS_INPUT_LOCATION);
+            Entity warehouse = getWarehouse(productionCountingQuantity);
 
-            if (Objects.nonNull(productsInputLocation)) {
+            if (Objects.nonNull(warehouse)) {
                 Long typeOfLoadUnit = null;
                 Entity palletNumber = palletNumberLookup.getEntity();
                 if (Objects.nonNull(palletNumber)) {
-                    typeOfLoadUnit = getTypeLoadUnit(productionTracking, productsInputLocation, palletNumber);
+                    typeOfLoadUnit = getTypeLoadUnit(productionTracking, warehouse, palletNumber);
                 }
                 typeOfLoadUnitLookup.setFieldValue(typeOfLoadUnit);
                 typeOfLoadUnitLookup.requestComponentUpdateState();
@@ -283,8 +286,28 @@ public class TrackingOperationProductComponentDetailsListeners {
         }
     }
 
-    private Long getTypeLoadUnit(Entity productionTracking, Entity productsInputLocation, Entity palletNumber) {
-        Long typeOfLoadUnit = materialFlowResourcesService.getTypeOfLoadUnitByPalletNumber(productsInputLocation.getId(), palletNumber.getStringField(PalletNumberFields.NUMBER));
+    private Entity getWarehouse(Entity productionCountingQuantity) {
+        if (ProductionCountingQuantityTypeOfMaterial.WASTE.getStringValue()
+                .equals(productionCountingQuantity.getStringField(ProductionCountingQuantityFields.TYPE_OF_MATERIAL))) {
+            return productionCountingQuantity
+                    .getBelongsToField(ProductionCountingQuantityFields.WASTE_RECEPTION_WAREHOUSE);
+        } else if (ProductionCountingQuantityTypeOfMaterial.FINAL_PRODUCT.getStringValue()
+                .equals(productionCountingQuantity.getStringField(ProductionCountingQuantityFields.TYPE_OF_MATERIAL))
+                || ProductionCountingQuantityTypeOfMaterial.ADDITIONAL_FINAL_PRODUCT.getStringValue()
+                .equals(productionCountingQuantity.getStringField(ProductionCountingQuantityFields.TYPE_OF_MATERIAL))) {
+            return productionCountingQuantity
+                    .getBelongsToField(ProductionCountingQuantityFields.PRODUCTS_INPUT_LOCATION);
+        } else if (ProductionCountingQuantityTypeOfMaterial.INTERMEDIATE.getStringValue()
+                .equals(productionCountingQuantity.getStringField(ProductionCountingQuantityFields.TYPE_OF_MATERIAL))
+                && L_WAREHOUSE
+                .equals(productionCountingQuantity.getStringField(ProductionCountingQuantityFields.PRODUCTION_FLOW))) {
+            return productionCountingQuantity.getBelongsToField(ProductionCountingQuantityFields.PRODUCTS_FLOW_LOCATION);
+        }
+        return null;
+    }
+
+    private Long getTypeLoadUnit(Entity productionTracking, Entity warehouse, Entity palletNumber) {
+        Long typeOfLoadUnit = materialFlowResourcesService.getTypeOfLoadUnitByPalletNumber(warehouse.getId(), palletNumber.getStringField(PalletNumberFields.NUMBER));
         if (typeOfLoadUnit == null) {
             for (Entity topoc : productionTracking.getHasManyField(ProductionTrackingFields.TRACKING_OPERATION_PRODUCT_OUT_COMPONENTS)) {
                 Entity topocPalletNumber = topoc.getBelongsToField(TrackingOperationProductOutComponentFields.PALLET_NUMBER);

@@ -36,7 +36,7 @@ import java.util.stream.Collectors;
 @Service
 public class ProductionTrackingDocumentsHelper {
 
-    private static final String L_WAREHOUSE = "01warehouse";
+    public static final String L_WAREHOUSE = "01warehouse";
 
     private static final String L_WITHIN_THE_PROCESS = "02withinTheProcess";
 
