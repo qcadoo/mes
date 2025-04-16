@@ -88,6 +88,7 @@
         <boolean name="blockedForQualityControl" default="false"/>
         <hasMany name="resourceAttributeValues" joinField="resource"
                        model="resourceAttributeValue" cascade="delete"/>
+        <hasMany name="repackingPositions" joinField="resource" model="repackingPosition" cascade="nullify"/>
     </fields>
 
     <hooks>        

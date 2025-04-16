@@ -1,8 +1,7 @@
 package com.qcadoo.mes.materialFlowResources.hooks;
 
 import com.qcadoo.mes.materialFlowResources.constants.LocationFieldsMFR;
-import com.qcadoo.mes.materialFlowResources.constants.ResourceFields;
-import com.qcadoo.mes.materialFlowResources.criteriaModifiers.StorageLocationCriteriaModifiers;
+import com.qcadoo.mes.materialFlowResources.constants.StorageLocationFields;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
@@ -25,7 +24,7 @@ public class LocationDetailsHooks {
         Entity location = form.getPersistedEntityWithIncludedFormValues();
 
         if (Objects.nonNull(location.getId())) {
-            filter.put(StorageLocationCriteriaModifiers.L_LOCATION, location.getId());
+            filter.put(StorageLocationFields.LOCATION, location.getId());
         }
 
         transferStorageLocationLookup.setFilterValue(filter);

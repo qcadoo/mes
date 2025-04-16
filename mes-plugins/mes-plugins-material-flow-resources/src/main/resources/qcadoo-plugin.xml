@@ -84,6 +84,9 @@
         <model:model model="positionDto" resource="model/positionDto.xml"/>
         <model:model model="resourceCorrection" resource="model/resourceCorrection.xml"/>
         <model:model model="resourceCorrectionDto" resource="model/resourceCorrectionDto.xml"/>
+        <model:model model="repacking" resource="model/repacking.xml"/>
+        <model:model model="repackingPosition" resource="model/repackingPosition.xml"/>
+        <model:model model="repackingStateChange" resource="model/repackingStateChange.xml"/>
 
         <model:model model="costNormsGenerator" resource="model/costNormsGenerator.xml"/>
         <model:model model="costNormsLocation" resource="model/costNormsLocation.xml"/>
@@ -146,8 +149,18 @@
                            plugin="materialFlowResources" joinField="batch" cascade="nullify"/>
         </model:model-field>
 
+        <model:model-field plugin="advancedGenealogy" model="batch">
+            <model:hasMany name="repackingPositions" model="repackingPosition"
+                           plugin="materialFlowResources" joinField="batch" cascade="nullify"/>
+        </model:model-field>
+
         <model:model-field plugin="basic" model="product">
             <model:hasMany name="resources" model="resource"
+                           plugin="materialFlowResources" joinField="product" cascade="nullify"/>
+        </model:model-field>
+
+        <model:model-field plugin="basic" model="product">
+            <model:hasMany name="repackingPositions" model="repackingPosition"
                            plugin="materialFlowResources" joinField="product" cascade="nullify"/>
         </model:model-field>
 
@@ -180,6 +193,10 @@
             <model:hasMany name="documents" plugin="materialFlowResources" model="document" joinField="staff"/>
         </model:model-field>
 
+        <model:model-field plugin="basic" model="staff">
+            <model:hasMany name="repacking" plugin="materialFlowResources" model="repacking" joinField="staff"/>
+        </model:model-field>
+
         <model:model-field plugin="basic" model="attribute">
             <model:hasMany name="resourceAttributeValues" plugin="materialFlowResources" joinField="attribute"
                            model="resourceAttributeValue"/>
@@ -202,6 +219,16 @@
 
         <model:model-field plugin="basic" model="palletNumber">
             <model:hasMany name="resources" model="resource"
+                           plugin="materialFlowResources" joinField="palletNumber"/>
+        </model:model-field>
+
+        <model:model-field plugin="basic" model="palletNumber">
+            <model:hasMany name="repackingPositions" model="repackingPosition"
+                           plugin="materialFlowResources" joinField="palletNumber"/>
+        </model:model-field>
+
+        <model:model-field plugin="basic" model="palletNumber">
+            <model:hasMany name="repacking" model="repacking"
                            plugin="materialFlowResources" joinField="palletNumber"/>
         </model:model-field>
 
@@ -242,6 +269,11 @@
 
         <model:model-field plugin="materialFlow" model="location">
             <model:hasMany name="resourceStocks" model="resourceStock"
+                           plugin="materialFlowResources" joinField="location"/>
+        </model:model-field>
+
+        <model:model-field plugin="materialFlow" model="location">
+            <model:hasMany name="repacking" model="repacking"
                            plugin="materialFlowResources" joinField="location"/>
         </model:model-field>
 
@@ -290,6 +322,24 @@
         </model:model-field>
 
         <model:model-field plugin="basic" model="typeOfLoadUnit">
+            <model:hasMany name="repackingPositions" plugin="materialFlowResources" model="repackingPosition" joinField="typeOfLoadUnit"/>
+        </model:model-field>
+
+        <model:model-field plugin="basic" model="typeOfLoadUnit">
+            <model:hasMany name="repacking" plugin="materialFlowResources" model="repacking" joinField="typeOfLoadUnit"/>
+        </model:model-field>
+
+        <model:model-field plugin="states" model="message">
+            <model:belongsTo name="repackingStateChange" plugin="materialFlowResources"
+                             model="repackingStateChange"/>
+        </model:model-field>
+
+        <model:model-field plugin="basic" model="shift">
+            <model:hasMany name="repackingStateChanges" plugin="materialFlowResources"
+                           model="repackingStateChange" joinField="shift"/>
+        </model:model-field>
+
+        <model:model-field plugin="basic" model="typeOfLoadUnit">
             <model:hasMany name="resources" plugin="materialFlowResources" model="resource" joinField="typeOfLoadUnit"/>
         </model:model-field>
 
@@ -332,11 +382,17 @@
 
         <menu:menu-item name="resources" category="materialFlow"
                         view="resourcesList" defaultAuthorizationRole="ROLE_RESOURCES"/>
+
         <menu:menu-item name="resourceCorrections" category="materialFlow"
                         view="resourceCorrectionsList"
                         defaultAuthorizationRole="ROLE_DOCUMENTS_CORRECTIONS_MIN_STATES"/>
+
         <menu:menu-item name="documents" category="materialFlow"
                         view="documentsList" defaultAuthorizationRole="ROLE_DOCUMENTS_CORRECTIONS_MIN_STATES"/>
+
+        <menu:menu-item name="repackingList" category="materialFlow"
+                        view="repackingList" defaultAuthorizationRole="ROLE_MATERIAL_FLOW"/>
+
         <menu:menu-item name="warehouseStock" category="materialFlow"
                         view="warehouseStocksList" defaultAuthorizationRole="ROLE_WAREHOUSE_STATES"/>
 
@@ -386,6 +442,9 @@
         <view:view resource="view/costNormsGenerator.xml"/>
         <view:view resource="view/resourcesAttributes.xml"/>
         <view:view resource="view/documentPositionsAttributes.xml"/>
+        <view:view resource="view/repackingPositionDetails.xml"/>
+        <view:view resource="view/repackingDetails.xml"/>
+        <view:view resource="view/repackingList.xml"/>
 
         <view:view resource="view/storageLocationsMultiAdd.xml"/>
         <view:view resource="view/storageLocationsDetails.xml"/>

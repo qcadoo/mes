@@ -1,0 +1,18 @@
+package com.qcadoo.mes.materialFlowResources.constants;
+
+public final class RepackingFields {
+
+    private RepackingFields() {
+
+    }
+
+    public static final String NUMBER = "number";
+
+    public static final String LOCATION = "location";
+
+    public static final String STORAGE_LOCATION = "storageLocation";
+
+    public static final String PALLET_NUMBER = "palletNumber";
+
+    public static final String TYPE_OF_LOAD_UNIT = "typeOfLoadUnit";
+}

@@ -104,7 +104,7 @@
             <option type="column" name="staff" fields="staff" width="150"/>
             <option type="column" name="invoiceNumber" fields="invoiceNumber"/>
 
-            <option type="order" column="time" direction="desc" width="200"/>
+            <option type="order" column="time" direction="desc"/>
 
             <option type="searchable"
                     value="number,name,type,time,state,locationFromNumber,locationToNumber,description,companyName,userName,staff,address,invoiceNumber"/>

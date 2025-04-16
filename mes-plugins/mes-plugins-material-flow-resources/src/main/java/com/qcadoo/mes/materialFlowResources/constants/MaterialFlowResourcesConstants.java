@@ -25,7 +25,6 @@ package com.qcadoo.mes.materialFlowResources.constants;
 
 public final class MaterialFlowResourcesConstants {
 
-
     private MaterialFlowResourcesConstants() {
 
     }
@@ -34,6 +33,10 @@ public final class MaterialFlowResourcesConstants {
 
     // MODEL
     public static final String MODEL_STOCKTAKING = "stocktaking";
+
+    public static final String MODEL_REPACKING = "repacking";
+
+    public static final String MODEL_REPACKING_STATE_CHANGE = "repackingStateChange";
 
     public static final String MODEL_WAREHOUSE_STOCK_REPORT = "warehouseStockReport";
 

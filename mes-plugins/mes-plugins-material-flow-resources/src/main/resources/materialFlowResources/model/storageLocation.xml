@@ -42,6 +42,8 @@
         </decimal>
 
         <hasMany name="positions" model="position" joinField="storageLocation"/>
+        <hasMany name="repackingPositions" joinField="storageLocation" model="repackingPosition"/>
+        <hasMany name="repacking" joinField="storageLocation" model="repacking"/>
         <hasMany name="resources" model="resource" joinField="storageLocation"/>
         <hasMany name="oldResourceCorrections" model="resourceCorrection" joinField="oldStorageLocation"/>
         <hasMany name="newResourceCorrections" model="resourceCorrection" joinField="newStorageLocation"/>
