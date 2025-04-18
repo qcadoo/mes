@@ -592,6 +592,15 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
         return Either.left(quantity);
     }
 
+    @Override
+    @Transactional
+    public void repackageResources(Entity repacking) {
+        Entity location = repacking.getBelongsToField(RepackingFields.LOCATION);
+        Object date = repacking.getField(RepackingFields.TIME);
+        WarehouseAlgorithm warehouseAlgorithm = WarehouseAlgorithm
+                .parseString(location.getStringField(LocationFieldsMFR.ALGORITHM));
+    }
+
     private void moveResourcesForTransferDocument(final Entity document) {
         Entity warehouseFrom = document.getBelongsToField(DocumentFields.LOCATION_FROM);
         Entity warehouseTo = document.getBelongsToField(DocumentFields.LOCATION_TO);

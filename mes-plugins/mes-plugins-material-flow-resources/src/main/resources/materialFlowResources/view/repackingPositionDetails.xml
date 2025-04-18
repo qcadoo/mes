@@ -41,17 +41,42 @@
                     <layoutElement column="1" row="1" width="6">
                         <component type="lookup" name="resource" field="resource"
                                    reference="resource">
-                            <option type="searchable" value="number"/>
-                            <option type="orderable" value="number"/>
+
+                            <option type="column" name="productNumber" fields="product" expression="#product?.get('number')" link="true"
+                                    width="100"/>
+                            <option type="column" name="productName" fields="product" expression="#product?.get('name')" link="true"
+                                    width="100"/>
+                            <option type="column" name="storageLocation" fields="storageLocation" expression="#storageLocation?.get('number')" link="true"
+                                    width="100"/>
+                            <option type="column" name="palletNumber" fields="palletNumber" expression="#palletNumber?.get('number')" link="true"
+                                    width="100"/>
+                            <option type="column" name="batch" fields="batch" link="true" expression="#batch?.get('number')"
+                                    width="50"/>
+
+                            <option type="searchable" value="number,productNumber,productName,storageLocation,palletNumber,batch"/>
+                            <option type="orderable" value="number,productNumber,productName,storageLocation,palletNumber,batch"/>
 
                             <option type="expression" value="#number"/>
                             <option type="fieldCode" value="number"/>
+
+                            <listener event="onSelectedEntityChange"
+                                      class="com.qcadoo.mes.materialFlowResources.listeners.RepackingPositionDetailsListeners"
+                                      method="fillFieldsFromResource"/>
+
+                            <criteriaModifier
+                                    class="com.qcadoo.mes.materialFlowResources.criteriaModifiers.ResourceCriteriaModifiers"
+                                    method="restrictToLocation"/>
                         </component>
                     </layoutElement>
                     <layoutElement column="1" row="2" width="5">
                         <component type="input" name="quantity" field="quantity"
                                    reference="quantity">
                             <option type="alignment" value="right"/>
+                            <option type="labelWidth" value="36"/>
+
+                            <listener event="onInputChange"
+                                      class="com.qcadoo.mes.materialFlowResources.listeners.RepackingPositionDetailsListeners"
+                                      method="quantityChange"/>
                         </component>
                     </layoutElement>
                     <layoutElement column="6" row="2" width="1">
@@ -64,6 +89,11 @@
                         <component type="input" name="additionalQuantity" field="additionalQuantity"
                                    reference="additionalQuantity">
                             <option type="alignment" value="right"/>
+                            <option type="labelWidth" value="36"/>
+
+                            <listener event="onInputChange"
+                                      class="com.qcadoo.mes.materialFlowResources.listeners.RepackingPositionDetailsListeners"
+                                      method="additionalQuantityChange"/>
                         </component>
                     </layoutElement>
                     <layoutElement column="6" row="3" width="1">
@@ -75,6 +105,7 @@
                     <layoutElement column="1" row="4" width="6">
                         <component type="input" name="conversion" field="conversion"
                                    reference="conversion" defaultEnabled="false">
+                            <option type="alignment" value="right"/>
                         </component>
                     </layoutElement>
                     <layoutElement column="7" row="1" width="6">
@@ -149,11 +180,14 @@
                     </layoutElement>
                 </component>
 
-                <option type="header" value="false"/>
+                <option type="header" value="true"/>
+                <option type="expression" value="#resourceNumber"/>
             </component>
         </windowTab>
     </component>
 
     <hooks>
+        <beforeRender class="com.qcadoo.mes.materialFlowResources.hooks.RepackingPositionDetailsHooks"
+                      method="onBeforeRender"/>
     </hooks>
 </view>

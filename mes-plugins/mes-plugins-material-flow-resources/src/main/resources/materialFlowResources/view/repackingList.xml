@@ -41,6 +41,22 @@
                         <![CDATA[
 							this.addOnChangeListener({
 								onClick: function() {
+								    if (window.confirm("#{translate(materialFlowResources.repackingDetails.window.ribbon.status.acceptRepacking.confirm)}")) {
+                                        #{grid}.performEvent('changeState', ["02accepted"]);
+                                    }
+								}
+							});
+						]]>
+                    </script>
+                </smallButton>
+                <smallButton name="reject" icon="deleteIcon16.png" state="enabled">
+                    <script>
+                        <![CDATA[
+							this.addOnChangeListener({
+								onClick: function() {
+								    if (window.confirm("#{translate(materialFlowResources.repackingDetails.window.ribbon.status.rejectRepacking.confirm)}")) {
+                                        #{grid}.performEvent('changeState', ["03rejected"]);
+                                    }
 								}
 							});
 						]]>
@@ -50,6 +66,53 @@
         </ribbon>
 
         <component type="grid" name="grid" reference="grid">
+            <script>
+                <![CDATA[
+						var deleteBtn = #{window}.getRibbonItem("actions.delete");
+						var acceptBtn = #{window}.getRibbonItem("state.accept");
+						var rejectBtn = #{window}.getRibbonItem("state.reject");
+
+						var listener = {
+							onChange: function(selectedEntitiesArray) {
+								if (!selectedEntitiesArray || selectedEntitiesArray.length == 0) {
+									deleteBtn.disable();
+									acceptBtn.disable();
+									rejectBtn.disable();
+								} else {
+									var noDifferentStates = true;
+
+	 								if(selectedEntitiesArray.length > 1){
+										for (var i = selectedEntitiesArray.length-1 ; i > 0 ; i--) {
+											if (selectedEntitiesArray[i-1].fields.state != selectedEntitiesArray[i].fields.state) {
+												noDifferentStates = false;
+												break;
+											}
+										}
+									}
+									if (selectedEntitiesArray.length == 1 || noDifferentStates) {
+										var state = selectedEntitiesArray[0].fields.state;
+
+										if (state == "01draft") {
+											deleteBtn.enable();
+											acceptBtn.enable();
+											rejectBtn.enable();
+										} else if (state == "02accepted" || state == "03rejected") {
+											deleteBtn.disable();
+											acceptBtn.disable();
+											rejectBtn.disable();
+										}
+									} else {
+                                        deleteBtn.disable();
+                                        acceptBtn.disable();
+                                        rejectBtn.disable();
+									}
+								}
+							}
+						}
+
+						this.addOnChangeListener(listener);
+					]]>
+            </script>
             <option type="column" name="number" fields="number" link="true" width="70"/>
             <option type="column" name="location" fields="location" expression="#location['number']" link="true"/>
             <option type="column" name="storageLocation" fields="storageLocation" expression="#storageLocation['number']" link="true"/>
@@ -70,6 +133,8 @@
 
             <option type="correspondingView" value="materialFlowResources/repackingDetails"/>
             <option type="correspondingComponent" value="form"/>
+
+            <listener event="changeState" class="com.qcadoo.mes.materialFlowResources.listeners.RepackingListListeners" method="changeState"/>
 
             <option type="fullscreen" value="true"/>
             <option type="multiselect" value="true"/>

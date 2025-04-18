@@ -26,6 +26,8 @@ package com.qcadoo.mes.materialFlowResources.listeners;
 import com.qcadoo.mes.basic.constants.PalletNumberFields;
 import com.qcadoo.mes.materialFlowResources.MaterialFlowResourcesService;
 import com.qcadoo.mes.materialFlowResources.constants.RepackingFields;
+import com.qcadoo.mes.materialFlowResources.states.RepackingServiceMarker;
+import com.qcadoo.mes.newstates.StateExecutorService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
@@ -38,10 +40,15 @@ import java.util.Objects;
 @Service
 public class RepackingDetailsListeners {
 
-
     @Autowired
     private MaterialFlowResourcesService materialFlowResourcesService;
 
+    @Autowired
+    private StateExecutorService stateExecutorService;
+
+    public void changeState(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        stateExecutorService.changeState(RepackingServiceMarker.class, view, args);
+    }
 
     public void fillTypeOfLoadUnitField(final ViewDefinitionState view, final ComponentState state,
                                         final String[] args) {
@@ -60,6 +67,5 @@ public class RepackingDetailsListeners {
         typeOfLoadUnitLookup.setFieldValue(typeOfLoadUnit);
         typeOfLoadUnitLookup.requestComponentUpdateState();
     }
-
 
 }

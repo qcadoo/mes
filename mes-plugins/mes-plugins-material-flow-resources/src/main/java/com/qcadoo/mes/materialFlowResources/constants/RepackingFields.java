@@ -2,9 +2,14 @@ package com.qcadoo.mes.materialFlowResources.constants;
 
 public final class RepackingFields {
 
+
     private RepackingFields() {
 
     }
+
+    public static final String POSITIONS = "positions";
+
+    public static final String STATE = "state";
 
     public static final String NUMBER = "number";
 
@@ -15,4 +20,8 @@ public final class RepackingFields {
     public static final String PALLET_NUMBER = "palletNumber";
 
     public static final String TYPE_OF_LOAD_UNIT = "typeOfLoadUnit";
+
+    public static final String STAFF = "staff";
+
+    public static final String TIME = "time";
 }

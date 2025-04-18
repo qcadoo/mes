@@ -17,10 +17,9 @@
             <validatesUnscaledValue max="9"/>
             <validatesScale max="5"/>
         </decimal>
-        <decimal name="conversion" default="0"/>
+        <decimal name="conversion" default="1"/>
         <string name="resourceNumber"/>
-        <belongsTo name="product" model="product" plugin="basic"
-                   required="true"/>
+        <belongsTo name="product" model="product" plugin="basic"/>
         <belongsTo name="storageLocation" model="storageLocation"/>
         <belongsTo name="palletNumber" model="palletNumber" plugin="basic"/>
         <belongsTo name="typeOfLoadUnit" plugin="basic" model="typeOfLoadUnit" />
@@ -29,5 +28,8 @@
     </fields>
 
     <hooks>
+        <validatesWith
+                class="com.qcadoo.mes.materialFlowResources.validators.RepackingPositionValidators"
+                method="validatesWith"/>
     </hooks>
 </model>

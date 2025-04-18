@@ -34,17 +34,35 @@
         <ribbon>
             <template name="standardFormTemplate" excludeItems="actions.copy"/>
             <group name="state">
-                <smallButton name="accept" icon="startIcon16.png" state="enabled">
+                <smallButton name="accept" icon="acceptIcon16.png" state="enabled">
                     <script>
                         <![CDATA[
 							this.addOnChangeListener({
+								onClick: function() {
+								    if (window.confirm("#{translate(materialFlowResources.repackingDetails.window.ribbon.status.acceptRepacking.confirm)}")) {
+                                        #{form}.performEvent('changeState', ["02accepted"]);
+                                    }
+								}
+							});
+						]]>
+                    </script>
+                </smallButton>
+                <smallButton name="reject" icon="deleteIcon16.png" state="enabled">
+                    <script>
+                        <![CDATA[
+							this.addOnChangeListener({
+								onClick: function() {
+								    if (window.confirm("#{translate(materialFlowResources.repackingDetails.window.ribbon.status.rejectRepacking.confirm)}")) {
+                                        #{form}.performEvent('changeState', ["03rejected"]);
+                                    }
+								}
 							});
 						]]>
                     </script>
                 </smallButton>
             </group>
         </ribbon>
-        <windowTab name="generalTab" reference="generalTab">
+        <windowTab name="mainTab" reference="mainTab">
             <component type="form" name="form" reference="form">
                 <component type="gridLayout" name="gridLayout" columns="3"
                            rows="7">
@@ -137,6 +155,9 @@
                         </component>
                     </layoutElement>
                 </component>
+
+                <listener event="changeState" class="com.qcadoo.mes.materialFlowResources.listeners.RepackingDetailsListeners"
+                          method="changeState"/>
 
                 <option type="header" value="true"/>
                 <option type="expression"

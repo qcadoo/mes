@@ -38,9 +38,10 @@ public class ResourceCriteriaModifiers {
 
     private static final String L_PRODUCT = "product";
 
-    private static final String L_LOCATION_FROM = "locationFrom";
+    public static final String L_LOCATION_FROM = "locationFrom";
 
-    public void showResourcesForProductInWarehouse(final SearchCriteriaBuilder scb, final FilterValueHolder filterValue) {
+    public void showResourcesForProductInWarehouse(final SearchCriteriaBuilder scb,
+                                                   final FilterValueHolder filterValue) {
 
         if (!filterValue.has(L_PRODUCT) || !filterValue.has(L_LOCATION_FROM)) {
             return;
@@ -54,15 +55,27 @@ public class ResourceCriteriaModifiers {
                 .add(SearchRestrictions.eq(L_LOCATION_FROM + ".id", locationId));
     }
 
-    public void restrictToLocation(final SearchCriteriaBuilder scb, final FilterValueHolder filterValue) {
+    public void restrictDtoToLocation(final SearchCriteriaBuilder scb, final FilterValueHolder filterValue) {
         scb.add(SearchRestrictions.eq(ResourceDtoFields.BLOCKED_FOR_QUALITY_CONTROL, false));
         if (!filterValue.has(L_LOCATION_FROM)) {
             return;
         }
 
         Long locationId = filterValue.getLong(L_LOCATION_FROM);
-        scb.add(SearchRestrictions.eq("location_id", locationId.intValue())).add(
-                SearchRestrictions.gt("availableQuantity", BigDecimal.ZERO));
+        scb.add(SearchRestrictions.eq(ResourceDtoFields.LOCATION_ID, locationId.intValue())).add(
+                SearchRestrictions.gt(ResourceDtoFields.AVAILABLE_QUANTITY, BigDecimal.ZERO));
+    }
+
+    public void restrictToLocation(final SearchCriteriaBuilder scb, final FilterValueHolder filterValue) {
+        scb.add(SearchRestrictions.eq(ResourceFields.BLOCKED_FOR_QUALITY_CONTROL, false));
+        if (!filterValue.has(L_LOCATION_FROM)) {
+            return;
+        }
+
+        Long locationId = filterValue.getLong(L_LOCATION_FROM);
+        scb.createAlias(ResourceFields.LOCATION, ResourceFields.LOCATION, JoinType.INNER)
+                .add(SearchRestrictions.eq(ResourceFields.LOCATION + ".id", locationId)).
+                add(SearchRestrictions.gt(ResourceDtoFields.AVAILABLE_QUANTITY, BigDecimal.ZERO));
     }
 
 }

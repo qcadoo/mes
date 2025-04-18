@@ -17,7 +17,7 @@ public enum RepackingState implements StateEnum {
 
         @Override
         public boolean canChangeTo(final StateEnum targetState) {
-           return REJECTED.equals(targetState);
+            return false;
         }
     },
 
