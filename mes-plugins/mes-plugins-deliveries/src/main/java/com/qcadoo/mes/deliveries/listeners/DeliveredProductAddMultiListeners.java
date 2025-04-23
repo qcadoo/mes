@@ -157,9 +157,9 @@ public class DeliveredProductAddMultiListeners {
             if (!deliveredProduct.isValid()) {
                 for (Map.Entry<String, ErrorMessage> entry : deliveredProduct.getErrors().entrySet()) {
                     if (Objects.nonNull(position.getDataDefinition().getField(entry.getKey()))) {
-                        position.addError(position.getDataDefinition().getField(entry.getKey()), entry.getValue().getMessage());
+                        position.addError(position.getDataDefinition().getField(entry.getKey()), entry.getValue().getMessage(), entry.getValue().getVars());
                     } else {
-                        position.addGlobalError(entry.getValue().getMessage(), false);
+                        position.addGlobalError(entry.getValue().getMessage(), false, entry.getValue().getVars());
                     }
                 }
 
