@@ -96,8 +96,12 @@
 											deleteBtn.enable();
 											acceptBtn.enable();
 											rejectBtn.enable();
-										} else if (state == "02accepted" || state == "03rejected") {
+										} else if (state == "02accepted") {
 											deleteBtn.disable();
+											acceptBtn.disable();
+											rejectBtn.disable();
+										} else if (state == "03rejected") {
+											deleteBtn.enable();
 											acceptBtn.disable();
 											rejectBtn.disable();
 										}

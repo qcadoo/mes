@@ -42,6 +42,7 @@ public class RepackingDetailsHooks {
             }
         }
         setStorageLocationLookupFilterValue(view, repacking);
+        setPalletNumberLookupFilterValue(view, repacking);
     }
 
     private void toggleButtons(ViewDefinitionState view) {
@@ -60,7 +61,7 @@ public class RepackingDetailsHooks {
         String state = stateField.getFieldValue().toString();
         boolean enabled = !RepackingState.REJECTED.getStringValue().equals(state) && !RepackingState.ACCEPTED.getStringValue().equals(state);
 
-        deleteRibbonActionItem.setEnabled(enabled && !Objects.isNull(form.getEntityId()));
+        deleteRibbonActionItem.setEnabled(!RepackingState.ACCEPTED.getStringValue().equals(state) && !Objects.isNull(form.getEntityId()));
         deleteRibbonActionItem.requestUpdate(true);
         acceptRibbonActionItem.setEnabled(enabled && !Objects.isNull(form.getEntityId()));
         acceptRibbonActionItem.requestUpdate(true);
@@ -107,6 +108,20 @@ public class RepackingDetailsHooks {
         }
 
         storageLocationLookup.setFilterValue(filter);
+    }
+
+    private void setPalletNumberLookupFilterValue(final ViewDefinitionState view, final Entity repacking) {
+        LookupComponent palletNumberLookup = (LookupComponent) view.getComponentByReference(RepackingFields.PALLET_NUMBER);
+
+        FilterValueHolder filter = palletNumberLookup.getFilterValue();
+
+        Entity warehouse = repacking.getBelongsToField(RepackingFields.LOCATION);
+
+        if (Objects.nonNull(warehouse)) {
+            filter.put(RepackingFields.LOCATION, warehouse.getId());
+        }
+
+        palletNumberLookup.setFilterValue(filter);
     }
 
 }

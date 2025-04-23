@@ -29,6 +29,7 @@ public class RepackingPositionDetailsHooks {
             additionalUnitField.setFieldValue(Optional.ofNullable(product.getStringField(ProductFields.ADDITIONAL_UNIT)).orElse(product.getStringField(ProductFields.UNIT)));
         }
         LookupComponent resourceLookup = (LookupComponent) view.getComponentByReference(RepackingPositionFields.RESOURCE);
+        resourceLookup.setRequired(true);
         FilterValueHolder filter = resourceLookup.getFilterValue();
         filter.put(ResourceCriteriaModifiers.L_LOCATION_FROM, repackingPosition.getBelongsToField(RepackingPositionFields.REPACKING)
                 .getBelongsToField(RepackingFields.LOCATION).getId());

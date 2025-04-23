@@ -81,9 +81,12 @@
                             <option type="expression" value="#number + ' - ' + #name"/>
                             <option type="fieldCode" value="number"/>
 
+                            <listener event="onSelectedEntityChange"
+                                      class="com.qcadoo.view.api.listeners.RerenderListener"
+                                      method="onChangeRerender"/>
                             <criteriaModifier
-                                    class="com.qcadoo.mes.materialFlowResources.criteriaModifiers.LocationCriteriaModifiersMFR"
-                                    method="showWarehousesOnly"/>
+                                    class="com.qcadoo.mes.materialFlow.criteriaModifiers.LocationCriteriaModifiers"
+                                    method="restrictToUserLocations"/>
                         </component>
                     </layoutElement>
                     <layoutElement column="1" row="3">
@@ -116,6 +119,9 @@
                             <listener event="onSelectedEntityChange"
                                       class="com.qcadoo.mes.materialFlowResources.listeners.RepackingDetailsListeners"
                                       method="fillTypeOfLoadUnitField"/>
+                            <criteriaModifier
+                                    class="com.qcadoo.mes.materialFlowResources.criteriaModifiers.PalletNumberCriteriaModifiers"
+                                    method="showPalletNumbersForLocation"/>
                         </component>
                     </layoutElement>
                     <layoutElement column="1" row="5">
@@ -168,7 +174,7 @@
         <windowTab name="positionsTab" reference="positionsTab">
             <component type="grid" name="positions" source="#{form}.positions"
                        reference="positions">
-                <option type="column" name="resource" fields="resource" expression="#resource['number']" link="true"/>
+                <option type="column" name="resourceNumber" fields="resourceNumber" link="true"/>
                 <option type="column" name="productNumber" fields="product" expression="#product['number']" link="true"/>
                 <option type="column" name="productName" fields="product" expression="#product['name']" link="true"/>
                 <option type="column" name="storageLocation" fields="storageLocation" expression="#storageLocation['number']"/>
@@ -182,12 +188,12 @@
                 <option type="column" name="additionalUnit" fields="product" expression="#product['additionalUnit']" width="30"/>
                 <option type="column" name="createdResourceNumber" fields="createdResourceNumber" width="80"/>
 
-                <option type="order" column="resource" direction="asc"/>
+                <option type="order" column="resourceNumber" direction="asc"/>
 
                 <option type="searchable"
-                        value="resource,productNumber,productName,storageLocation,palletNumber,typeOfLoadUnit,batch,quantity,unit,additionalQuantity,additionalUnit,createdResourceNumber"/>
+                        value="resourceNumber,productNumber,productName,storageLocation,palletNumber,typeOfLoadUnit,batch,quantity,unit,additionalQuantity,additionalUnit,createdResourceNumber"/>
                 <option type="orderable"
-                        value="resource,productNumber,productName,storageLocation,palletNumber,typeOfLoadUnit,batch,quantity,unit,additionalQuantity,additionalUnit,createdResourceNumber"/>
+                        value="resourceNumber,productNumber,productName,storageLocation,palletNumber,typeOfLoadUnit,batch,quantity,unit,additionalQuantity,additionalUnit,createdResourceNumber"/>
 
                 <option type="correspondingView" value="materialFlowResources/repackingPositionDetails"/>
                 <option type="correspondingComponent" value="form"/>

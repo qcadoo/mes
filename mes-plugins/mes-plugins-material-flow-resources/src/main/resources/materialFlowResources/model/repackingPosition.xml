@@ -5,7 +5,7 @@
        xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
     <fields>
         <belongsTo name="repacking" model="repacking" required="true"/>
-        <belongsTo name="resource" model="resource" required="true"/>
+        <belongsTo name="resource" model="resource"/>
 
         <decimal name="quantity" required="true">
             <validatesRange from="0" exclusively="true"/>

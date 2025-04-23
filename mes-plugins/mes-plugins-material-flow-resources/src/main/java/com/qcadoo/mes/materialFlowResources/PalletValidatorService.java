@@ -139,7 +139,7 @@ public class PalletValidatorService {
     private boolean validateResources(final Entity location, final String storageLocationNumber,
                                       final String palletNumberNumber, final String typeOfLoadUnitName,
                                       final Entity entity, final Long resourceId) {
-        if (existsOtherResourceForPalletNumberOnOtherLocations(location.getId(), storageLocationNumber, resourceId)) {
+        if (existsOtherResourceForPalletNumberOnOtherLocations(location.getId(), palletNumberNumber, resourceId)) {
             entity.addError(entity.getDataDefinition().getField(L_PALLET_NUMBER),
                     "documentGrid.error.position.existsOtherResourceForPallet");
 

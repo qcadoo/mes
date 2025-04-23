@@ -94,7 +94,19 @@ public class RepackingPositionDetailsListeners {
                 batchLookup.setFieldValue(batch.getId());
                 batchLookup.requestComponentUpdateState();
             }
-
+            quantityChange(view, state, args);
+        } else {
+            resourceNumberField.setFieldValue(null);
+            productLookup.setFieldValue(null);
+            productLookup.requestComponentUpdateState();
+            storageLocationLookup.setFieldValue(null);
+            storageLocationLookup.requestComponentUpdateState();
+            palletNumberLookup.setFieldValue(null);
+            palletNumberLookup.requestComponentUpdateState();
+            typeOfLoadUnitLookup.setFieldValue(null);
+            typeOfLoadUnitLookup.requestComponentUpdateState();
+            batchLookup.setFieldValue(null);
+            batchLookup.requestComponentUpdateState();
         }
     }
 

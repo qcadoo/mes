@@ -16,6 +16,8 @@ public final class RepackingPositionFields {
 
     public static final String RESOURCE_NUMBER = "resourceNumber";
 
+    public static final String CREATED_RESOURCE_NUMBER = "createdResourceNumber";
+
     public static final String STORAGE_LOCATION = "storageLocation";
 
     public static final String PALLET_NUMBER = "palletNumber";

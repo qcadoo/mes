@@ -24,6 +24,7 @@
 package com.qcadoo.mes.materialFlowResources.validators;
 
 import com.qcadoo.mes.materialFlowResources.constants.PositionFields;
+import com.qcadoo.mes.materialFlowResources.constants.RepackingFields;
 import com.qcadoo.mes.materialFlowResources.constants.RepackingPositionFields;
 import com.qcadoo.mes.materialFlowResources.constants.ResourceFields;
 import com.qcadoo.model.api.DataDefinition;
@@ -36,12 +37,31 @@ public class RepackingPositionValidators {
     public boolean validatesWith(final DataDefinition dataDefinition, final Entity repackingPosition) {
         Entity resource = repackingPosition.getBelongsToField(PositionFields.RESOURCE);
 
+        if (resource == null && repackingPosition.getStringField(RepackingPositionFields.RESOURCE_NUMBER) == null) {
+            repackingPosition.addError(dataDefinition.getField(RepackingPositionFields.RESOURCE),
+                    "qcadooView.validate.field.error.missing");
 
-        if (repackingPosition.getDecimalField(RepackingPositionFields.QUANTITY).compareTo(resource.getDecimalField(ResourceFields.AVAILABLE_QUANTITY)) > 0) {
+            return false;
+        }
+
+
+        if (resource != null && repackingPosition.getDecimalField(RepackingPositionFields.QUANTITY)
+                .compareTo(resource.getDecimalField(ResourceFields.AVAILABLE_QUANTITY)) > 0) {
             repackingPosition.addError(dataDefinition.getField(RepackingPositionFields.QUANTITY),
                     "materialFlowResources.error.repackingPosition.quantity.greaterThenResourceAvailableQuantity");
 
             return false;
+        }
+
+        for (Entity position : repackingPosition.getBelongsToField(RepackingPositionFields.REPACKING).getHasManyField(RepackingFields.POSITIONS)) {
+            Entity positionResource = position.getBelongsToField(RepackingPositionFields.RESOURCE);
+            if (resource != null && positionResource != null && positionResource.getId().equals(resource.getId())
+                    && (repackingPosition.getId() == null || !repackingPosition.getId().equals(position.getId()))) {
+                repackingPosition.addError(dataDefinition.getField(RepackingPositionFields.RESOURCE),
+                        "materialFlowResources.error.repackingPosition.resource.alreadyInOtherPosition");
+
+                return false;
+            }
         }
 
         return true;
