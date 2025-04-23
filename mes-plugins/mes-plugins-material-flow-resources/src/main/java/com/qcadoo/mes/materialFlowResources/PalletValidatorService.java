@@ -127,10 +127,9 @@ public class PalletValidatorService {
         String palletNumberNumber = Objects.nonNull(palletNumber) ? palletNumber.getStringField(PalletNumberFields.NUMBER) : null;
         String storageLocationNumber = Objects.nonNull(storageLocation) ? storageLocation.getStringField(StorageLocationFields.NUMBER) : null;
         String typeOfLoadUnitName = Objects.nonNull(typeOfLoadUnit) ? typeOfLoadUnit.getStringField(TypeOfLoadUnitFields.NAME) : null;
-        Long deliveredProductId = getEntityId(deliveredProduct, L_DELIVERED_PRODUCT);
 
         if (validateResources(location, storageLocationNumber, palletNumberNumber, typeOfLoadUnitName, deliveredProduct, null)) {
-            return validateDeliveredProducts(location, storageLocationNumber, palletNumberNumber, typeOfLoadUnitName, deliveredProduct, deliveredProductId);
+            return validateDeliveredProducts(location, storageLocationNumber, palletNumberNumber, typeOfLoadUnitName, deliveredProduct);
         }
 
         return false;
@@ -165,10 +164,11 @@ public class PalletValidatorService {
 
     private boolean validateDeliveredProducts(final Entity location, final String storageLocationNumber,
                                               final String palletNumberNumber,
-                                              final String typeOfLoadUnitName, final Entity entity,
-                                              final Long deliveredProductId) {
-        if (existsOtherDeliveredProductForPalletNumber(location.getId(), storageLocationNumber, palletNumberNumber, typeOfLoadUnitName, deliveredProductId)) {
-            entity.addError(entity.getDataDefinition().getField(L_PALLET_NUMBER),
+                                              final String typeOfLoadUnitName, final Entity deliveredProduct) {
+        Long deliveredProductId = getEntityId(deliveredProduct, L_DELIVERED_PRODUCT);
+        Long deliveryId = getEntityId(deliveredProduct.getBelongsToField(L_DELIVERY), L_DELIVERY);
+        if (existsOtherDeliveredProductForPalletNumber(location.getId(), storageLocationNumber, palletNumberNumber, typeOfLoadUnitName, deliveredProductId, deliveryId)) {
+            deliveredProduct.addError(deliveredProduct.getDataDefinition().getField(L_PALLET_NUMBER),
                     "documentGrid.error.position.existsOtherDeliveredProductForPalletAndStorageLocation");
 
             return false;
@@ -333,10 +333,11 @@ public class PalletValidatorService {
         return jdbcTemplate.queryForObject(query.toString(), params, Long.class) > 0;
     }
 
-    public boolean existsOtherDeliveredProductForPalletNumber(final Long locationId, final String storageLocationNumber,
+    private boolean existsOtherDeliveredProductForPalletNumber(final Long locationId, final String storageLocationNumber,
                                                               final String palletNumberNumber,
                                                               final String typeOfLoadUnitName,
-                                                              final Long deliveredProductId) {
+                                                              final Long deliveredProductId,
+                                                              final Long deliveryId) {
         StringBuilder query = new StringBuilder();
 
         query.append("SELECT count(deliveredproduct) FROM deliveries_deliveredproduct deliveredproduct ");
@@ -360,6 +361,7 @@ public class PalletValidatorService {
 
         query.append(") ");
         query.append("AND delivery.location_id = :locationId ");
+        query.append("AND delivery.id = :deliveryId ");
         query.append("AND delivery.state NOT IN ('04declined', '06received') ");
 
         if (Objects.nonNull(deliveredProductId)) {
@@ -372,6 +374,7 @@ public class PalletValidatorService {
         params.put("storageLocationNumber", storageLocationNumber);
         params.put("palletNumberNumber", palletNumberNumber);
         params.put("typeOfLoadUnitName", typeOfLoadUnitName);
+        params.put("deliveryId", deliveryId);
 
         if (Objects.nonNull(deliveredProductId)) {
             params.put("deliveredProductId", deliveredProductId);
