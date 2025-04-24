@@ -109,7 +109,7 @@ public class DeliveredProductDetailsListeners {
         typeOfLoadUnitLookup.requestComponentUpdateState();
     }
 
-    private Long getTypeLoadUnit(Entity delivery, Entity palletNumber) {
+    public Long getTypeLoadUnit(Entity delivery, Entity palletNumber) {
         Entity location = delivery.getBelongsToField(DeliveryFields.LOCATION);
         Long typeOfLoadUnit = materialFlowResourcesService.getTypeOfLoadUnitByPalletNumber(location.getId(), palletNumber.getStringField(PalletNumberFields.NUMBER));
         if (typeOfLoadUnit == null) {
