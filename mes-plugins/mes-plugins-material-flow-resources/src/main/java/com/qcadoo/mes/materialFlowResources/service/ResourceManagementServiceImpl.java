@@ -789,13 +789,7 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
             position.setField(RepackingPositionFields.RESOURCE, null);
             position.setField(RepackingPositionFields.CREATED_RESOURCE_NUMBER, newResource.getStringField(ResourceFields.NUMBER));
 
-            if (palletValidatorService.checkMaximumNumberOfPallets(newResource.getBelongsToField(ResourceFields.STORAGE_LOCATION), newResource)) {
-                newResource.addError(resourceDD.getField(ResourceFields.STORAGE_LOCATION), "materialFlowResources.storageLocation.maximumNumberOfPallets.toManyPallets");
-            }
-
-            if (!newResource.isValid()) {
-                copyResourceErrorsToPosition(position, newResource);
-            }
+            checkAndCopyResourceErrors(position, newResource, resourceDD);
 
             return Optional.empty();
         } else if (quantity.compareTo(resourceAvailableQuantity) < 0) {
@@ -820,18 +814,22 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
             position.setField(RepackingPositionFields.RESOURCE, null);
             position.setField(RepackingPositionFields.CREATED_RESOURCE_NUMBER, newResource.getStringField(ResourceFields.NUMBER));
 
-            if (palletValidatorService.checkMaximumNumberOfPallets(newResource.getBelongsToField(ResourceFields.STORAGE_LOCATION), newResource)) {
-                newResource.addError(resourceDD.getField(ResourceFields.STORAGE_LOCATION), "materialFlowResources.storageLocation.maximumNumberOfPallets.toManyPallets");
-            }
-
-            if (!newResource.isValid()) {
-                copyResourceErrorsToPosition(position, newResource);
-            }
+            checkAndCopyResourceErrors(position, newResource, resourceDD);
 
             return Optional.empty();
         }
 
         return Optional.of(quantity);
+    }
+
+    private void checkAndCopyResourceErrors(Entity position, Entity newResource, DataDefinition resourceDD) {
+        if (palletValidatorService.checkMaximumNumberOfPallets(newResource.getBelongsToField(ResourceFields.STORAGE_LOCATION), newResource)) {
+            newResource.addError(resourceDD.getField(ResourceFields.STORAGE_LOCATION), "materialFlowResources.storageLocation.maximumNumberOfPallets.toManyPallets");
+        }
+
+        if (!newResource.isValid()) {
+            copyResourceErrorsToPosition(position, newResource);
+        }
     }
 
     private Either<BigDecimal, List<Entity>> moveResources(final Entity warehouseFrom, final Entity warehouseTo,
