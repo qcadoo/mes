@@ -64,8 +64,8 @@ public class PalletValidatorService {
 
     public boolean validateResources(final Entity location, final Entity storageLocation, final Entity palletNumber,
                                      final Entity typeOfLoadUnit, final Entity entity) {
-        String palletNumberNumber = Objects.nonNull(palletNumber) ? palletNumber.getStringField(PalletNumberFields.NUMBER) : null;
         String storageLocationNumber = Objects.nonNull(storageLocation) ? storageLocation.getStringField(StorageLocationFields.NUMBER) : null;
+        String palletNumberNumber = Objects.nonNull(palletNumber) ? palletNumber.getStringField(PalletNumberFields.NUMBER) : null;
         String typeOfLoadUnitName = Objects.nonNull(typeOfLoadUnit) ? typeOfLoadUnit.getStringField(TypeOfLoadUnitFields.NAME) : null;
         Long resourceId = getEntityId(entity, MaterialFlowResourcesConstants.MODEL_RESOURCE);
 
