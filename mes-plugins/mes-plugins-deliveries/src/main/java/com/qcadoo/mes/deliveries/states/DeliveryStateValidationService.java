@@ -35,6 +35,7 @@ import com.qcadoo.mes.materialFlowResources.constants.StorageLocationFields;
 import com.qcadoo.mes.states.StateChangeContext;
 import com.qcadoo.model.api.BigDecimalUtils;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.validators.ErrorMessage;
 import com.qcadoo.plugin.api.PluginManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -213,6 +214,7 @@ public class DeliveryStateValidationService {
 
         Set<String> missingPalletNumbers = Sets.newHashSet();
         Set<String> existsMorePallets = Sets.newHashSet();
+        List<ErrorMessage> palletErrors = Lists.newArrayList();
 
         deliveredProducts.forEach(deliveredProduct -> {
             String productNumber = deliveredProduct.getBelongsToField(DeliveredProductFields.PRODUCT).getStringField(ProductFields.NUMBER);
@@ -226,6 +228,12 @@ public class DeliveryStateValidationService {
                     if (Objects.isNull(palletNumber)) {
                         missingPalletNumbers.add(productNumber);
                     } else {
+                        Entity location = deliveredProduct.getBelongsToField(DeliveredProductFields.DELIVERY).getBelongsToField(DeliveryFields.LOCATION);
+                        Entity typeOfLoadUnit = deliveredProduct.getBelongsToField(DeliveredProductFields.TYPE_OF_LOAD_UNIT);
+                        if (!palletValidatorService.validateResources(location, storageLocation, palletNumber, typeOfLoadUnit, deliveredProduct)) {
+                            palletErrors.addAll(deliveredProduct.getErrors().values());
+
+                        }
                         if (!palletValidatorService.notTooManyPalletsInStorageLocationAndDeliveredProducts(deliveredProduct.getDataDefinition(), deliveredProduct)) {
                             existsMorePallets.add(storageLocation.getStringField(StorageLocationFields.NUMBER));
                         }
@@ -239,6 +247,9 @@ public class DeliveryStateValidationService {
         }
         if (!existsMorePallets.isEmpty()) {
             stateChangeContext.addValidationError("deliveries.deliveredProducts.error.morePalletsExists", false, String.join(", ", existsMorePallets));
+        }
+        if (!palletErrors.isEmpty()) {
+            palletErrors.forEach(errorMessage -> stateChangeContext.addValidationError(errorMessage.getMessage(), false, errorMessage.getVars()));
         }
     }
 
