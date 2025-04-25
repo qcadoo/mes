@@ -157,7 +157,7 @@
                     </layoutElement>
                     <layoutElement column="2" row="5">
                         <component type="select" name="state" field="state"
-                                   reference="state" defaultEnabled="false">
+                                   reference="state" defaultEnabled="never">
                         </component>
                     </layoutElement>
                 </component>
