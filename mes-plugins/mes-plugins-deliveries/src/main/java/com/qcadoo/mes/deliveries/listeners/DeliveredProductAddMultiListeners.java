@@ -25,7 +25,6 @@ package com.qcadoo.mes.deliveries.listeners;
 
 import com.qcadoo.mes.advancedGenealogy.constants.BatchFields;
 import com.qcadoo.mes.basic.CalculationQuantityService;
-import com.qcadoo.mes.basic.constants.PalletNumberFields;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.deliveries.DeliveredProductMultiPositionService;
 import com.qcadoo.mes.deliveries.DeliveriesService;
@@ -33,7 +32,6 @@ import com.qcadoo.mes.deliveries.constants.*;
 import com.qcadoo.mes.deliveries.helpers.DeliveredMultiProduct;
 import com.qcadoo.mes.deliveries.helpers.DeliveredMultiProductContainer;
 import com.qcadoo.mes.deliveries.hooks.DeliveredProductAddMultiHooks;
-import com.qcadoo.mes.materialFlowResources.MaterialFlowResourcesService;
 import com.qcadoo.mes.materialFlowResources.constants.LocationFieldsMFR;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
@@ -46,7 +44,6 @@ import com.qcadoo.view.api.ComponentState.MessageType;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.*;
 import com.qcadoo.view.constants.QcadooViewConstants;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
@@ -93,10 +90,10 @@ public class DeliveredProductAddMultiListeners {
     private DeliveredProductMultiPositionService deliveredProductMultiPositionService;
 
     @Autowired
-    private MaterialFlowResourcesService materialFlowResourcesService;
+    private CalculationQuantityService calculationQuantityService;
 
     @Autowired
-    private CalculationQuantityService calculationQuantityService;
+    private DeliveredProductDetailsListeners deliveredProductDetailsListeners;
 
     public void createDeliveredProducts(final ViewDefinitionState view, final ComponentState state,
                                         final String[] args) {
@@ -157,9 +154,9 @@ public class DeliveredProductAddMultiListeners {
             if (!deliveredProduct.isValid()) {
                 for (Map.Entry<String, ErrorMessage> entry : deliveredProduct.getErrors().entrySet()) {
                     if (Objects.nonNull(position.getDataDefinition().getField(entry.getKey()))) {
-                        position.addError(position.getDataDefinition().getField(entry.getKey()), entry.getValue().getMessage());
+                        position.addError(position.getDataDefinition().getField(entry.getKey()), entry.getValue().getMessage(), entry.getValue().getVars());
                     } else {
-                        position.addGlobalError(entry.getValue().getMessage(), false);
+                        position.addGlobalError(entry.getValue().getMessage(), false, entry.getValue().getVars());
                     }
                 }
 
@@ -323,18 +320,18 @@ public class DeliveredProductAddMultiListeners {
         return deliveredProduct;
     }
 
-    public void fillTypeOfLoadUnitField(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+    public void fillTypeOfLoadUnitField(final ViewDefinitionState view, final ComponentState state,
+                                        final String[] args) {
         LookupComponent palletNumberLookup = (LookupComponent) view.getComponentByReference(DeliveredProductFields.PALLET_NUMBER);
         LookupComponent typeOfLoadUnitLookup = (LookupComponent) view.getComponentByReference(DeliveredProductFields.TYPE_OF_LOAD_UNIT);
 
         Entity delivery = extractDeliveryEntityFromView(view);
 
-        Entity location = delivery.getBelongsToField(DeliveryFields.LOCATION);
         Entity palletNumber = palletNumberLookup.getEntity();
         Long typeOfLoadUnit = (Long) typeOfLoadUnitLookup.getFieldValue();
 
         if (Objects.nonNull(palletNumber) && Objects.isNull(typeOfLoadUnit)) {
-            typeOfLoadUnit = materialFlowResourcesService.getTypeOfLoadUnitByPalletNumber(location.getId(), palletNumber.getStringField(PalletNumberFields.NUMBER));
+            typeOfLoadUnit = deliveredProductDetailsListeners.getTypeLoadUnit(delivery, palletNumber);
         }
 
         typeOfLoadUnitLookup.setFieldValue(typeOfLoadUnit);

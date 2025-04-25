@@ -31,8 +31,10 @@ import com.qcadoo.mes.basic.CalculationQuantityService;
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.basic.constants.ProductAttributeValueFields;
 import com.qcadoo.mes.basic.constants.ProductFields;
+import com.qcadoo.mes.basic.constants.StaffFields;
 import com.qcadoo.mes.basic.constants.UnitConversionItemFieldsB;
 import com.qcadoo.mes.materialFlowResources.DocumentPositionService;
+import com.qcadoo.mes.materialFlowResources.PalletValidatorService;
 import com.qcadoo.mes.materialFlowResources.constants.*;
 import com.qcadoo.mes.materialFlowResources.exceptions.InvalidResourceException;
 import com.qcadoo.mes.materialFlowResources.helpers.NotEnoughResourcesErrorMessageCopyToEntityHelper;
@@ -98,6 +100,9 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
 
     @Autowired
     private UnitConversionService unitConversionService;
+
+    @Autowired
+    private PalletValidatorService palletValidatorService;
 
     @Override
     @Transactional
@@ -220,6 +225,58 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
         });
     }
 
+    private Entity createResourceForRepacking(final Entity repacking, final Entity resource,
+                                              final BigDecimal quantity, DataDefinition resourceDD) {
+        Entity newResource = resourceDD.create();
+
+        Entity staff = repacking.getBelongsToField(RepackingFields.STAFF);
+        if (staff != null) {
+            newResource.setField(ResourceFields.USER_NAME,
+                    staff.getStringField(StaffFields.NAME) + " " + staff.getStringField(StaffFields.SURNAME));
+        }
+        newResource.setField(ResourceFields.TIME, repacking.getField(RepackingFields.TIME));
+        newResource.setField(ResourceFields.LOCATION, repacking.getBelongsToField(RepackingFields.LOCATION));
+        newResource.setField(ResourceFields.PRODUCT, resource.getBelongsToField(ResourceFields.PRODUCT));
+        newResource.setField(ResourceFields.QUANTITY, quantity);
+        newResource.setField(ResourceFields.AVAILABLE_QUANTITY, quantity);
+        newResource.setField(ResourceFields.RESERVED_QUANTITY, BigDecimal.ZERO);
+        newResource.setField(ResourceFields.PRICE, resource.getField(ResourceFields.PRICE));
+        newResource.setField(ResourceFields.BATCH, resource.getField(ResourceFields.BATCH));
+        newResource.setField(ResourceFields.EXPIRATION_DATE, resource.getField(ResourceFields.EXPIRATION_DATE));
+        newResource.setField(ResourceFields.PRODUCTION_DATE, resource.getField(ResourceFields.PRODUCTION_DATE));
+        newResource.setField(ResourceFields.STORAGE_LOCATION, repacking.getBelongsToField(RepackingFields.STORAGE_LOCATION));
+        newResource.setField(ResourceFields.PALLET_NUMBER, repacking.getBelongsToField(RepackingFields.PALLET_NUMBER));
+        newResource.setField(ResourceFields.TYPE_OF_LOAD_UNIT, repacking.getBelongsToField(RepackingFields.TYPE_OF_LOAD_UNIT));
+        newResource.setField(ResourceFields.CONVERSION, resource.getField(ResourceFields.CONVERSION));
+        newResource.setField(ResourceFields.GIVEN_UNIT, resource.getField(ResourceFields.GIVEN_UNIT));
+        newResource.setField(ResourceFields.DELIVERY_NUMBER, resource.getField(ResourceFields.DELIVERY_NUMBER));
+        newResource.setField(ResourceFields.QUALITY_RATING, resource.getField(ResourceFields.QUALITY_RATING));
+
+        BigDecimal quantityInAdditionalUnit = calculationQuantityService.calculateAdditionalQuantity(quantity,
+                resource.getDecimalField(ResourceFields.CONVERSION), resource.getStringField(ResourceFields.GIVEN_UNIT));
+
+        newResource.setField(ResourceFields.QUANTITY_IN_ADDITIONAL_UNIT, quantityInAdditionalUnit);
+
+        List<Entity> attributeValues = Lists.newArrayList();
+
+        resource.getHasManyField(ResourceFields.RESOURCE_ATTRIBUTE_VALUES).forEach(resourceAttributeValue -> {
+            Entity newResourceAttributeValue = resourceAttributeValue.getDataDefinition().create();
+
+            newResourceAttributeValue.setField(ResourceAttributeValueFields.VALUE, resourceAttributeValue.getStringField(ResourceAttributeValueFields.VALUE));
+            newResourceAttributeValue.setField(ResourceAttributeValueFields.ATTRIBUTE, resourceAttributeValue.getBelongsToField(ResourceAttributeValueFields.ATTRIBUTE));
+            newResourceAttributeValue.setField(ResourceAttributeValueFields.ATTRIBUTE_VALUE,
+                    resourceAttributeValue.getBelongsToField(ResourceAttributeValueFields.ATTRIBUTE_VALUE));
+
+            attributeValues.add(newResourceAttributeValue);
+        });
+
+        newResource.setField(ResourceFields.RESOURCE_ATTRIBUTE_VALUES, attributeValues);
+
+        resourceStockService.createResourceStock(newResource);
+
+        return resourceDD.save(newResource);
+    }
+
     private Entity createResource(final Entity position, final Entity warehouse, final Entity resource,
                                   final BigDecimal quantity,
                                   final Object date, boolean transferPalletToReceivingWarehouse) {
@@ -334,23 +391,6 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
         }
 
         return result;
-    }
-
-    private Multimap<Entity, Entity> getProductsAndPositionsFromDocument(final Entity document) {
-        Multimap<Entity, Entity> map = ArrayListMultimap.create();
-
-        List<Entity> positions = document.getHasManyField(DocumentFields.POSITIONS);
-
-        positions.forEach(position -> map.put(position.getBelongsToField(PositionFields.PRODUCT), position));
-
-        return map;
-    }
-
-    private BigDecimal getQuantityOfProductFromMultimap(final Multimap<Long, BigDecimal> quantitiesForWarehouse,
-                                                        final Entity product) {
-        List<BigDecimal> quantities = Lists.newArrayList(quantitiesForWarehouse.get(product.getId()));
-
-        return quantities.stream().reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
     private boolean buildConnectedDocument(final Entity document) {
@@ -592,6 +632,45 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
         return Either.left(quantity);
     }
 
+    @Override
+    @Transactional
+    public void repackageResources(Entity repacking) {
+        boolean enoughResources = true;
+        NotEnoughResourcesErrorMessageHolder errorMessageHolder = notEnoughResourcesErrorMessageHolderFactory.create();
+
+        for (Entity position : repacking.getHasManyField(RepackingFields.POSITIONS)) {
+            Entity product = position.getBelongsToField(RepackingPositionFields.PRODUCT);
+
+            Optional<BigDecimal> optionalMissingResourceAmount = repackResources(repacking, position);
+
+            if (!position.isValid()) {
+                if (optionalMissingResourceAmount.isPresent()) {
+                    enoughResources = false;
+                    BigDecimal missingResourceAmount = optionalMissingResourceAmount.get();
+                    errorMessageHolder.addErrorEntry(product, position.getBelongsToField(RepackingPositionFields.BATCH),
+                            missingResourceAmount);
+                } else {
+                    addRepackingPositionErrors(repacking, position);
+                }
+            } else {
+                position = position.getDataDefinition().save(position);
+
+                if (!position.isValid()) {
+                    addRepackingPositionErrors(repacking, position);
+                }
+            }
+        }
+
+        if (!enoughResources) {
+            NotEnoughResourcesErrorMessageCopyToEntityHelper.addError(repacking, repacking.getBelongsToField(RepackingFields.LOCATION), errorMessageHolder);
+        }
+    }
+
+    private void addRepackingPositionErrors(Entity repacking, Entity position) {
+        position.getGlobalErrors().forEach(e -> repacking.addGlobalError(e.getMessage(), e.getAutoClose(), e.getVars()));
+        position.getErrors().values().forEach(e -> repacking.addGlobalError(e.getMessage(), e.getAutoClose(), e.getVars()));
+    }
+
     private void moveResourcesForTransferDocument(final Entity document) {
         Entity warehouseFrom = document.getBelongsToField(DocumentFields.LOCATION_FROM);
         Entity warehouseTo = document.getBelongsToField(DocumentFields.LOCATION_TO);
@@ -653,6 +732,103 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
     private void copyPositionErrors(final Entity position, final Entity newPosition) {
         for (Map.Entry<String, ErrorMessage> error : newPosition.getErrors().entrySet()) {
             position.addError(position.getDataDefinition().getField(error.getKey()), error.getValue().getMessage());
+        }
+    }
+
+    private Optional<BigDecimal> repackResources(final Entity repacking,
+                                                 final Entity position) {
+        Entity product = position.getBelongsToField(RepackingPositionFields.PRODUCT);
+
+        BigDecimal quantity = position.getDecimalField(RepackingPositionFields.QUANTITY);
+        BigDecimal conversion = BigDecimalUtils.convertNullToOne(position.getDecimalField(RepackingPositionFields.CONVERSION));
+        String givenUnit = position.getStringField(RepackingPositionFields.ADDITIONAL_UNIT);
+
+        Entity resource = position.getBelongsToField(RepackingPositionFields.RESOURCE);
+
+        quantity = recalculateQuantity(quantity, conversion, givenUnit, resource.getDecimalField(ResourceFields.CONVERSION),
+                product.getStringField(ProductFields.UNIT));
+
+        conversion = resource.getDecimalField(ResourceFields.CONVERSION);
+        givenUnit = resource.getStringField(ResourceFields.GIVEN_UNIT);
+
+        BigDecimal resourceQuantity = resource.getDecimalField(ResourceFields.QUANTITY);
+        BigDecimal resourceAvailableQuantity = resource.getDecimalField(ResourceFields.AVAILABLE_QUANTITY);
+        BigDecimal givenQuantity = calculationQuantityService.calculateAdditionalQuantity(quantity, conversion, givenUnit);
+        BigDecimal givenResourceAvailableQuantity = calculationQuantityService
+                .calculateAdditionalQuantity(resourceAvailableQuantity, conversion, givenUnit);
+
+        DataDefinition resourceDD = dataDefinitionService.get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER,
+                MaterialFlowResourcesConstants.MODEL_RESOURCE);
+
+        if (quantity.compareTo(resourceAvailableQuantity) == 0
+                || givenQuantity.compareTo(givenResourceAvailableQuantity) == 0) {
+            if (resourceQuantity.compareTo(resourceAvailableQuantity) <= 0) {
+                Entity palletNumberToDispose = resource.getBelongsToField(ResourceFields.PALLET_NUMBER);
+
+                resourceDD.delete(resource.getId());
+
+                palletNumberDisposalService.tryToDispose(palletNumberToDispose);
+            } else {
+                BigDecimal newResourceQuantity = resourceQuantity.subtract(resourceAvailableQuantity);
+                BigDecimal quantityInAdditionalUnit = calculationQuantityService
+                        .calculateAdditionalQuantity(newResourceQuantity, conversion, givenUnit);
+
+                resource.setField(ResourceFields.AVAILABLE_QUANTITY, BigDecimal.ZERO);
+                resource.setField(ResourceFields.QUANTITY, newResourceQuantity);
+                resource.setField(ResourceFields.QUANTITY_IN_ADDITIONAL_UNIT, quantityInAdditionalUnit);
+
+                Entity savedResource = resourceDD.save(resource);
+
+                if (!savedResource.isValid()) {
+                    throw new InvalidResourceException(savedResource);
+                }
+            }
+
+            Entity newResource = createResourceForRepacking(repacking, resource, resourceAvailableQuantity, resourceDD);
+
+            position.setField(RepackingPositionFields.RESOURCE, null);
+            position.setField(RepackingPositionFields.CREATED_RESOURCE_NUMBER, newResource.getStringField(ResourceFields.NUMBER));
+
+            checkAndCopyResourceErrors(position, newResource, resourceDD);
+
+            return Optional.empty();
+        } else if (quantity.compareTo(resourceAvailableQuantity) < 0) {
+            resourceQuantity = resourceQuantity.subtract(quantity, numberService.getMathContext());
+            resourceAvailableQuantity = resourceAvailableQuantity.subtract(quantity, numberService.getMathContext());
+
+            BigDecimal quantityInAdditionalUnit = calculationQuantityService.calculateAdditionalQuantity(resourceQuantity,
+                    conversion, givenUnit);
+
+            resource.setField(ResourceFields.QUANTITY, numberService.setScaleWithDefaultMathContext(resourceQuantity));
+            resource.setField(ResourceFields.QUANTITY_IN_ADDITIONAL_UNIT, quantityInAdditionalUnit);
+            resource.setField(ResourceFields.AVAILABLE_QUANTITY, resourceAvailableQuantity);
+
+            Entity savedResource = resourceDD.save(resource);
+
+            if (!savedResource.isValid()) {
+                throw new InvalidResourceException(savedResource);
+            }
+
+            Entity newResource = createResourceForRepacking(repacking, resource, quantity, resourceDD);
+
+            position.setField(RepackingPositionFields.RESOURCE, null);
+            position.setField(RepackingPositionFields.CREATED_RESOURCE_NUMBER, newResource.getStringField(ResourceFields.NUMBER));
+
+            checkAndCopyResourceErrors(position, newResource, resourceDD);
+
+            return Optional.empty();
+        }
+
+        return Optional.of(quantity);
+    }
+
+    private void checkAndCopyResourceErrors(Entity position, Entity newResource, DataDefinition resourceDD) {
+        if (palletValidatorService.checkMaximumNumberOfPallets(newResource.getBelongsToField(ResourceFields.STORAGE_LOCATION), newResource)) {
+            newResource.addError(resourceDD.getField(ResourceFields.STORAGE_LOCATION), "materialFlowResources.storageLocation.maximumNumberOfPallets.toManyPallets");
+        }
+
+        if (!newResource.isValid()) {
+            copyResourceErrorsToPosition(position, newResource);
         }
     }
 

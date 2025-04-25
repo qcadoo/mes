@@ -24,32 +24,14 @@
 package com.qcadoo.mes.materialFlowResources.validators;
 
 import com.qcadoo.mes.materialFlowResources.constants.*;
-import com.qcadoo.mes.materialFlowResources.service.ReservationsService;
-import com.qcadoo.mes.materialFlowResources.service.ResourceStockService;
-import com.qcadoo.model.api.BigDecimalUtils;
 import com.qcadoo.model.api.DataDefinition;
-import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
-
-import java.math.BigDecimal;
-import java.util.Date;
-import java.util.Objects;
-
-import com.qcadoo.model.api.search.SearchRestrictions;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.Date;
 
 @Service
 public class PositionValidators {
-
-    @Autowired
-    private ReservationsService reservationsService;
-
-    @Autowired
-    private DataDefinitionService dataDefinitionService;
-
-    @Autowired
-    private ResourceStockService resourceStockService;
 
     public boolean checkAttributesRequirement(final DataDefinition dataDefinition, final Entity position) {
         Entity document = position.getBelongsToField(PositionFields.DOCUMENT);
@@ -74,7 +56,8 @@ public class PositionValidators {
     }
 
     public boolean validatePositionAttributes(DataDefinition dataDefinition, Entity position, boolean requirePrice,
-                                              boolean requireBatch, boolean requireProductionDate, boolean requireExpirationDate) {
+                                              boolean requireBatch, boolean requireProductionDate,
+                                              boolean requireExpirationDate) {
         boolean result = true;
 
         if (requirePrice && position.getField(PositionFields.PRICE) == null) {

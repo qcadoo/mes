@@ -25,7 +25,9 @@ package com.qcadoo.mes.materialFlowResources.imports.position;
 
 import com.qcadoo.mes.basic.constants.PalletNumberFields;
 import com.qcadoo.mes.basic.constants.ProductFields;
+import com.qcadoo.mes.basic.constants.TypeOfLoadUnitFields;
 import com.qcadoo.mes.basic.imports.services.XlsxImportService;
+import com.qcadoo.mes.materialFlowResources.PalletValidatorService;
 import com.qcadoo.mes.materialFlowResources.constants.DocumentFields;
 import com.qcadoo.mes.materialFlowResources.constants.LocationFieldsMFR;
 import com.qcadoo.mes.materialFlowResources.constants.PositionFields;
@@ -49,6 +51,9 @@ public class PositionXlsxImportService extends XlsxImportService {
 
     @Autowired
     private NumberService numberService;
+
+    @Autowired
+    private PalletValidatorService palletValidatorService;
 
     @Override
     public void validateEntity(final Entity position, final DataDefinition positionDD) {
@@ -100,7 +105,8 @@ public class PositionXlsxImportService extends XlsxImportService {
         }
     }
 
-    private void validateRequiredFields(final Entity position, final DataDefinition positionDD, final Entity locationTo) {
+    private void validateRequiredFields(final Entity position, final DataDefinition positionDD,
+                                        final Entity locationTo) {
         BigDecimal price = position.getDecimalField(PositionFields.PRICE);
         Entity batch = position.getBelongsToField(PositionFields.BATCH);
         Date productionDate = position.getDateField(PositionFields.PRODUCTION_DATE);
@@ -129,7 +135,8 @@ public class PositionXlsxImportService extends XlsxImportService {
         }
     }
 
-    private void validateStorageLocation(final Entity position, final DataDefinition positionDD, final Entity locationTo) {
+    private void validateStorageLocation(final Entity position, final DataDefinition positionDD,
+                                         final Entity locationTo) {
         Entity storageLocation = position.getBelongsToField(PositionFields.STORAGE_LOCATION);
         Entity product = position.getBelongsToField(PositionFields.PRODUCT);
 
@@ -151,6 +158,22 @@ public class PositionXlsxImportService extends XlsxImportService {
 
             if (!palletNumber.isActive() || Objects.nonNull(issueDateTime)) {
                 position.addError(positionDD.getField(PositionFields.PALLET_NUMBER), L_QCADOO_VIEW_VALIDATE_FIELD_ERROR_CUSTOM);
+            }
+        }
+        Entity document = position.getBelongsToField(PositionFields.DOCUMENT);
+        Entity locationTo = document.getBelongsToField(DocumentFields.LOCATION_TO);
+        Entity storageLocation = position.getBelongsToField(PositionFields.STORAGE_LOCATION);
+        if (Objects.nonNull(locationTo) && Objects.nonNull(storageLocation) && Objects.nonNull(palletNumber)) {
+            Long documentId = document.getId();
+            Long positionId = position.getId();
+            Long locationId = locationTo.getId();
+            Entity typeOfLoadUnit = position.getBelongsToField(PositionFields.TYPE_OF_LOAD_UNIT);
+            String storageLocationNumber = storageLocation.getStringField(StorageLocationFields.NUMBER);
+            String palletNumberNumber = palletNumber.getStringField(PalletNumberFields.NUMBER);
+            String typeOfLoadUnitName = Objects.nonNull(typeOfLoadUnit) ? typeOfLoadUnit.getStringField(TypeOfLoadUnitFields.NAME) : null;
+            if (palletValidatorService.existsOtherPositionForPalletNumber(locationId, storageLocationNumber,
+                    palletNumberNumber, typeOfLoadUnitName, positionId, documentId)) {
+                position.addError(positionDD.getField(PositionFields.PALLET_NUMBER), "documentGrid.error.position.existsOtherPositionForPalletAndStorageLocation");
             }
         }
     }

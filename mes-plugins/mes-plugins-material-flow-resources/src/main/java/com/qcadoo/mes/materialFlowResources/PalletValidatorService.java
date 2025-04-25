@@ -48,7 +48,9 @@ public class PalletValidatorService {
         return validatePalletForResource(location, storageLocation, palletNumber, typeOfLoadUnit, resource);
     }
 
-    private boolean validatePalletForResource(final Entity location, final Entity storageLocation, final Entity palletNumber, final Entity typeOfLoadUnit, final Entity entity) {
+    private boolean validatePalletForResource(final Entity location, final Entity storageLocation,
+                                              final Entity palletNumber, final Entity typeOfLoadUnit,
+                                              final Entity entity) {
         if (Objects.isNull(entity.getField(L_VALIDATE_PALLET)) || entity.getBooleanField(L_VALIDATE_PALLET)) {
             boolean isValid = validateRequiredFields(storageLocation, palletNumber, entity);
 
@@ -60,9 +62,10 @@ public class PalletValidatorService {
         return true;
     }
 
-    private boolean validateResources(final Entity location, final Entity storageLocation, final Entity palletNumber, final Entity typeOfLoadUnit, final Entity entity) {
-        String palletNumberNumber = Objects.nonNull(palletNumber) ? palletNumber.getStringField(PalletNumberFields.NUMBER) : null;
+    public boolean validateResources(final Entity location, final Entity storageLocation, final Entity palletNumber,
+                                     final Entity typeOfLoadUnit, final Entity entity) {
         String storageLocationNumber = Objects.nonNull(storageLocation) ? storageLocation.getStringField(StorageLocationFields.NUMBER) : null;
+        String palletNumberNumber = Objects.nonNull(palletNumber) ? palletNumber.getStringField(PalletNumberFields.NUMBER) : null;
         String typeOfLoadUnitName = Objects.nonNull(typeOfLoadUnit) ? typeOfLoadUnit.getStringField(TypeOfLoadUnitFields.NAME) : null;
         Long resourceId = getEntityId(entity, MaterialFlowResourcesConstants.MODEL_RESOURCE);
 
@@ -83,11 +86,13 @@ public class PalletValidatorService {
                 notTooManyPalletsInStorageLocationAndDeliveredProducts(deliveredProduct.getDataDefinition(), deliveredProduct);
     }
 
-    private boolean validatePalletForDeliveredProduct(final Entity location, final Entity storageLocation, final Entity palletNumber, final Entity typeOfLoadUnit, final Entity entity) {
-        if (Objects.isNull(entity.getField(L_VALIDATE_PALLET)) || entity.getBooleanField(L_VALIDATE_PALLET)) {
-            boolean isValid = validateRequiredFields(storageLocation, palletNumber, entity);
+    private boolean validatePalletForDeliveredProduct(final Entity location, final Entity storageLocation,
+                                                      final Entity palletNumber, final Entity typeOfLoadUnit,
+                                                      final Entity deliveredProduct) {
+        if (Objects.isNull(deliveredProduct.getField(L_VALIDATE_PALLET)) || deliveredProduct.getBooleanField(L_VALIDATE_PALLET)) {
+            boolean isValid = validateRequiredFields(storageLocation, palletNumber, deliveredProduct);
 
-            isValid = isValid && validatePalletNumberAndTypeOfLoadUnit(location, storageLocation, palletNumber, typeOfLoadUnit, entity);
+            isValid = isValid && validatePalletNumberAndTypeOfLoadUnit(location, storageLocation, palletNumber, typeOfLoadUnit, deliveredProduct);
 
             return isValid;
         }
@@ -95,21 +100,20 @@ public class PalletValidatorService {
         return true;
     }
 
-    private boolean validateRequiredFields(final Entity storageLocation, final Entity palletNumber, final Entity entity) {
+    private boolean validateRequiredFields(final Entity storageLocation, final Entity palletNumber,
+                                           final Entity entity) {
         if (Objects.isNull(storageLocation) && Objects.nonNull(palletNumber)) {
             entity.addError(entity.getDataDefinition().getField(L_STORAGE_LOCATION), "qcadooView.validate.field.error.missing");
 
             return false;
-        } else {
-            if (Objects.nonNull(storageLocation)) {
-                boolean placeStorageLocation = storageLocation.getBooleanField(StorageLocationFields.PLACE_STORAGE_LOCATION);
+        } else if (Objects.nonNull(storageLocation)) {
+            boolean placeStorageLocation = storageLocation.getBooleanField(StorageLocationFields.PLACE_STORAGE_LOCATION);
 
-                if (placeStorageLocation) {
-                    if (Objects.isNull(palletNumber)) {
-                        entity.addError(entity.getDataDefinition().getField(L_PALLET_NUMBER), "qcadooView.validate.field.error.missing");
+            if (placeStorageLocation) {
+                if (Objects.isNull(palletNumber)) {
+                    entity.addError(entity.getDataDefinition().getField(L_PALLET_NUMBER), "qcadooView.validate.field.error.missing");
 
-                        return false;
-                    }
+                    return false;
                 }
             }
         }
@@ -117,31 +121,40 @@ public class PalletValidatorService {
         return true;
     }
 
-    public boolean validatePalletNumberAndTypeOfLoadUnit(final Entity location, final Entity storageLocation, final Entity palletNumber, final Entity typeOfLoadUnit, final Entity entity) {
+    private boolean validatePalletNumberAndTypeOfLoadUnit(final Entity location, final Entity storageLocation,
+                                                          final Entity palletNumber, final Entity typeOfLoadUnit,
+                                                          final Entity deliveredProduct) {
         String palletNumberNumber = Objects.nonNull(palletNumber) ? palletNumber.getStringField(PalletNumberFields.NUMBER) : null;
         String storageLocationNumber = Objects.nonNull(storageLocation) ? storageLocation.getStringField(StorageLocationFields.NUMBER) : null;
         String typeOfLoadUnitName = Objects.nonNull(typeOfLoadUnit) ? typeOfLoadUnit.getStringField(TypeOfLoadUnitFields.NAME) : null;
-        Long resourceId = getEntityId(entity, MaterialFlowResourcesConstants.MODEL_RESOURCE);
-        Long deliveredProductId = getEntityId(entity, L_DELIVERED_PRODUCT);
 
-        if (validateResources(location, storageLocationNumber, palletNumberNumber, typeOfLoadUnitName, entity, resourceId)) {
-            return validatePositionsAndDeliveredProducts(location, storageLocationNumber, palletNumberNumber, typeOfLoadUnitName, entity, deliveredProductId);
+        if (validateResources(location, storageLocationNumber, palletNumberNumber, typeOfLoadUnitName, deliveredProduct, null)) {
+            return validateDeliveredProducts(location, storageLocationNumber, palletNumberNumber, typeOfLoadUnitName, deliveredProduct);
         }
 
         return false;
     }
 
-    private boolean validateResources(final Entity location, final String storageLocationNumber, final String palletNumberNumber, final String typeOfLoadUnitName, final Entity entity, final Long resourceId) {
-        if (existsOtherResourceForPalletNumberOnOtherLocations(location.getId(), storageLocationNumber, resourceId)) {
+    private boolean validateResources(final Entity location, final String storageLocationNumber,
+                                      final String palletNumberNumber, final String typeOfLoadUnitName,
+                                      final Entity entity, final Long resourceId) {
+        if (existsOtherResourceForPalletNumberOnOtherLocations(location.getId(), palletNumberNumber, resourceId)) {
             entity.addError(entity.getDataDefinition().getField(L_PALLET_NUMBER),
                     "documentGrid.error.position.existsOtherResourceForPallet");
 
             return false;
         }
 
-        if (existsOtherResourceForPalletNumberOnSameLocation(location.getId(), storageLocationNumber, palletNumberNumber, typeOfLoadUnitName, resourceId)) {
+        if (existsOtherResourceForPalletNumberWithDifferentStorageLocation(location.getId(), storageLocationNumber, palletNumberNumber, resourceId)) {
             entity.addError(entity.getDataDefinition().getField(L_PALLET_NUMBER),
-                    "documentGrid.error.position.existsOtherResourceForPalletAndStorageLocation");
+                    "documentGrid.error.position.existsOtherResourceForPalletAndStorageLocation", palletNumberNumber);
+
+            return false;
+        }
+
+        if (existsOtherResourceForPalletNumberWithDifferentType(location.getId(), palletNumberNumber, typeOfLoadUnitName, resourceId)) {
+            entity.addError(entity.getDataDefinition().getField(L_PALLET_NUMBER),
+                    "documentGrid.error.position.existsOtherResourceForLoadUnitAndTypeOfLoadUnit", palletNumberNumber);
 
             return false;
         }
@@ -149,16 +162,13 @@ public class PalletValidatorService {
         return true;
     }
 
-    private boolean validatePositionsAndDeliveredProducts(final Entity location, final String storageLocationNumber, final String palletNumberNumber, final String typeOfLoadUnitName, final Entity entity, final Long deliveredProductId) {
-        if (existsOtherPositionForPalletNumber(location.getId(), storageLocationNumber, palletNumberNumber, typeOfLoadUnitName, null, null)) {
-            entity.addError(entity.getDataDefinition().getField(L_PALLET_NUMBER),
-                    "documentGrid.error.position.existsOtherPositionForPalletAndStorageLocation");
-
-            return false;
-        }
-
-        if (existsOtherDeliveredProductForPalletNumber(location.getId(), storageLocationNumber, palletNumberNumber, typeOfLoadUnitName, deliveredProductId)) {
-            entity.addError(entity.getDataDefinition().getField(L_PALLET_NUMBER),
+    private boolean validateDeliveredProducts(final Entity location, final String storageLocationNumber,
+                                              final String palletNumberNumber,
+                                              final String typeOfLoadUnitName, final Entity deliveredProduct) {
+        Long deliveredProductId = getEntityId(deliveredProduct, L_DELIVERED_PRODUCT);
+        Long deliveryId = getEntityId(deliveredProduct.getBelongsToField(L_DELIVERY), L_DELIVERY);
+        if (existsOtherDeliveredProductForPalletNumber(location.getId(), storageLocationNumber, palletNumberNumber, typeOfLoadUnitName, deliveredProductId, deliveryId)) {
+            deliveredProduct.addError(deliveredProduct.getDataDefinition().getField(L_PALLET_NUMBER),
                     "documentGrid.error.position.existsOtherDeliveredProductForPalletAndStorageLocation");
 
             return false;
@@ -204,9 +214,10 @@ public class PalletValidatorService {
         return jdbcTemplate.queryForObject(query.toString(), params, Long.class) > 0;
     }
 
-    public boolean existsOtherResourceForPalletNumberOnSameLocation(final Long locationId, final String storageLocationNumber,
-                                                                    final String palletNumberNumber, final String typeOfLoadUnitName,
-                                                                    final Long resourceId) {
+    public boolean existsOtherResourceForPalletNumberWithDifferentStorageLocation(final Long locationId,
+                                                                                  final String storageLocationNumber,
+                                                                                  final String palletNumberNumber,
+                                                                                  final Long resourceId) {
         StringBuilder query = new StringBuilder();
 
         query.append("SELECT count(*) FROM materialflowresources_resource resource ");
@@ -214,16 +225,44 @@ public class PalletValidatorService {
         query.append("ON palletnumber.id = resource.palletnumber_id ");
         query.append("LEFT JOIN materialflowresources_storagelocation storagelocation ");
         query.append("ON storagelocation.id = resource.storagelocation_id ");
+        query.append("WHERE palletnumber.number = :palletNumberNumber ");
+        query.append("AND (storageLocation.number <> :storageLocationNumber) ");
+        query.append("AND resource.location_id = :locationId ");
+
+        if (Objects.nonNull(resourceId)) {
+            query.append("AND resource.id <> :resourceId ");
+        }
+
+        Map<String, Object> params = Maps.newHashMap();
+
+        params.put("locationId", locationId);
+        params.put("storageLocationNumber", storageLocationNumber);
+        params.put("palletNumberNumber", palletNumberNumber);
+
+        if (Objects.nonNull(resourceId)) {
+            params.put("resourceId", resourceId);
+        }
+
+        return jdbcTemplate.queryForObject(query.toString(), params, Long.class) > 0;
+    }
+
+    public boolean existsOtherResourceForPalletNumberWithDifferentType(final Long locationId,
+                                                                       final String palletNumberNumber,
+                                                                       final String typeOfLoadUnitName,
+                                                                       final Long resourceId) {
+        StringBuilder query = new StringBuilder();
+
+        query.append("SELECT count(*) FROM materialflowresources_resource resource ");
+        query.append("JOIN basic_palletnumber palletnumber ");
+        query.append("ON palletnumber.id = resource.palletnumber_id ");
         query.append("LEFT JOIN basic_typeofloadunit typeofloadunit ");
         query.append("ON typeofloadunit.id = resource.typeofloadunit_id ");
         query.append("WHERE palletnumber.number = :palletNumberNumber ");
         query.append("AND (");
-        query.append("storageLocation.number <> :storageLocationNumber ");
-
         if (StringUtils.isNotEmpty(typeOfLoadUnitName)) {
-            query.append("OR typeofloadunit.name <> :typeOfLoadUnitName OR COALESCE(typeofloadunit.name, '') = ''");
+            query.append("typeofloadunit.name <> :typeOfLoadUnitName OR COALESCE(typeofloadunit.name, '') = ''");
         } else {
-            query.append("OR COALESCE(typeofloadunit.name, '') <> ''");
+            query.append("COALESCE(typeofloadunit.name, '') <> ''");
         }
 
         query.append(") ");
@@ -236,7 +275,6 @@ public class PalletValidatorService {
         Map<String, Object> params = Maps.newHashMap();
 
         params.put("locationId", locationId);
-        params.put("storageLocationNumber", storageLocationNumber);
         params.put("palletNumberNumber", palletNumberNumber);
         params.put("typeOfLoadUnitName", typeOfLoadUnitName);
 
@@ -274,10 +312,7 @@ public class PalletValidatorService {
         query.append(") ");
         query.append("AND document.state = '01draft' ");
         query.append("AND document.locationTo_id = :locationId ");
-
-        if (Objects.nonNull(documentId)) {
-            query.append("AND document.id = :documentId ");
-        }
+        query.append("AND document.id = :documentId ");
 
         if (Objects.nonNull(positionId)) {
             query.append("AND position.id <> :positionId ");
@@ -289,10 +324,7 @@ public class PalletValidatorService {
         params.put("storageLocationNumber", storageLocationNumber);
         params.put("palletNumberNumber", palletNumberNumber);
         params.put("typeOfLoadUnitName", typeOfLoadUnitName);
-
-        if (Objects.nonNull(documentId)) {
-            params.put("documentId", documentId);
-        }
+        params.put("documentId", documentId);
 
         if (Objects.nonNull(positionId)) {
             params.put("positionId", positionId);
@@ -301,9 +333,11 @@ public class PalletValidatorService {
         return jdbcTemplate.queryForObject(query.toString(), params, Long.class) > 0;
     }
 
-    public boolean existsOtherDeliveredProductForPalletNumber(final Long locationId, final String storageLocationNumber,
-                                                              final String palletNumberNumber, final String typeOfLoadUnitName,
-                                                              final Long deliveredProductId) {
+    private boolean existsOtherDeliveredProductForPalletNumber(final Long locationId, final String storageLocationNumber,
+                                                              final String palletNumberNumber,
+                                                              final String typeOfLoadUnitName,
+                                                              final Long deliveredProductId,
+                                                              final Long deliveryId) {
         StringBuilder query = new StringBuilder();
 
         query.append("SELECT count(deliveredproduct) FROM deliveries_deliveredproduct deliveredproduct ");
@@ -327,6 +361,7 @@ public class PalletValidatorService {
 
         query.append(") ");
         query.append("AND delivery.location_id = :locationId ");
+        query.append("AND delivery.id = :deliveryId ");
         query.append("AND delivery.state NOT IN ('04declined', '06received') ");
 
         if (Objects.nonNull(deliveredProductId)) {
@@ -339,6 +374,7 @@ public class PalletValidatorService {
         params.put("storageLocationNumber", storageLocationNumber);
         params.put("palletNumberNumber", palletNumberNumber);
         params.put("typeOfLoadUnitName", typeOfLoadUnitName);
+        params.put("deliveryId", deliveryId);
 
         if (Objects.nonNull(deliveredProductId)) {
             params.put("deliveredProductId", deliveredProductId);
@@ -375,7 +411,8 @@ public class PalletValidatorService {
         return jdbcTemplate.queryForObject(query.toString(), params, Boolean.class);
     }
 
-    public boolean tooManyPalletsInStorageLocationAndPositions(final String storageLocationNumber, final String palletNumberNumber,
+    public boolean tooManyPalletsInStorageLocationAndPositions(final String storageLocationNumber,
+                                                               final String palletNumberNumber,
                                                                final Long positionId, Long documentId) {
         if (Objects.nonNull(storageLocationNumber) && isPlaceStorageLocation(storageLocationNumber)) {
             if (Objects.nonNull(palletNumberNumber)) {
@@ -421,7 +458,8 @@ public class PalletValidatorService {
         return false;
     }
 
-    public boolean notTooManyPalletsInStorageLocationAndDeliveredProducts(final DataDefinition deliveredProductDD, final Entity deliveredProduct) {
+    public boolean notTooManyPalletsInStorageLocationAndDeliveredProducts(final DataDefinition deliveredProductDD,
+                                                                          final Entity deliveredProduct) {
         Entity storageLocation = deliveredProduct.getBelongsToField("storageLocation");
 
         if (Objects.nonNull(storageLocation) && storageLocation.getBooleanField(StorageLocationFields.PLACE_STORAGE_LOCATION)) {
@@ -444,7 +482,7 @@ public class PalletValidatorService {
                 query.append("FROM deliveries_delivery delivery ");
                 query.append("JOIN deliveries_deliveredproduct deliveredproduct ");
                 query.append("ON deliveredproduct.delivery_id = delivery.id ");
-                query.append("WHERE delivery.state NOT IN ('06received','04declined') ");
+                query.append("WHERE delivery.id = :deliveryId ");
                 query.append("AND deliveredproduct.id <> :deliveredProductId ");
                 query.append(") palletsInStorageLocation ");
                 query.append("WHERE palletsInStorageLocation.storagelocation_id = :storageLocationId ");
@@ -457,6 +495,7 @@ public class PalletValidatorService {
                 params.put("storageLocationId", storageLocation.getId());
                 params.put("palletNumberId", palletNumber.getId());
                 params.put("deliveredProductId", deliveredProductId);
+                params.put("deliveryId", deliveredProduct.getBelongsToField(L_DELIVERY).getId());
 
                 Long palletsInStorageLocation = jdbcTemplate.queryForObject(query.toString(), params, Long.class);
 
@@ -482,7 +521,8 @@ public class PalletValidatorService {
         return checkMaximumNumberOfPallets(storageLocation, null, palletsCount);
     }
 
-    private boolean checkMaximumNumberOfPallets(final Entity storageLocation, final Entity resource, final long palletsCount) {
+    private boolean checkMaximumNumberOfPallets(final Entity storageLocation, final Entity resource,
+                                                final long palletsCount) {
         if (Objects.nonNull(storageLocation) && storageLocation.getBooleanField(StorageLocationFields.PLACE_STORAGE_LOCATION)) {
             BigDecimal maximumNumberOfPallets = storageLocation.getDecimalField(StorageLocationFields.MAXIMUM_NUMBER_OF_PALLETS);
 

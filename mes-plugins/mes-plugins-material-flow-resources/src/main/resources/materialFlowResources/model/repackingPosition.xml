@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<model name="repackingPosition"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
+       xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
+    <fields>
+        <belongsTo name="repacking" model="repacking" required="true"/>
+        <belongsTo name="resource" model="resource"/>
+
+        <decimal name="quantity" required="true">
+            <validatesRange from="0" exclusively="true"/>
+            <validatesUnscaledValue max="9"/>
+            <validatesScale max="5"/>
+        </decimal>
+        <decimal name="additionalQuantity" required="true">
+            <validatesRange from="0" exclusively="true"/>
+            <validatesUnscaledValue max="9"/>
+            <validatesScale max="5"/>
+        </decimal>
+        <decimal name="conversion" default="1"/>
+        <string name="resourceNumber"/>
+        <belongsTo name="product" model="product" plugin="basic"/>
+        <belongsTo name="storageLocation" model="storageLocation"/>
+        <belongsTo name="palletNumber" model="palletNumber" plugin="basic"/>
+        <belongsTo name="typeOfLoadUnit" plugin="basic" model="typeOfLoadUnit" />
+        <belongsTo name="batch" model="batch" plugin="advancedGenealogy"/>
+        <string name="createdResourceNumber"/>
+    </fields>
+
+    <hooks>
+        <validatesWith
+                class="com.qcadoo.mes.materialFlowResources.validators.RepackingPositionValidators"
+                method="validatesWith"/>
+    </hooks>
+</model>

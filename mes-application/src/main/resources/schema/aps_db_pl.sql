@@ -1942,6 +1942,37 @@ $$;
 
 
 --
+-- Name: generate_repacking_number(); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION public.generate_repacking_number() RETURNS text
+    LANGUAGE plpgsql
+    AS $$
+DECLARE
+    _pattern text;
+    _sequence_value numeric;
+    _seq text;
+    _number text;
+BEGIN
+    _pattern := '#seq';
+
+    select nextval('materialflowresources_repacking_number_seq') into _sequence_value;
+
+    _seq := to_char(_sequence_value, 'fm000000');
+
+    if _seq like '%#%' then
+        _seq := _sequence_value;
+    end if;
+
+    _number := _pattern;
+    _number := replace(_number, '#seq', _seq);
+
+    RETURN _number;
+END;
+$$;
+
+
+--
 -- Name: generate_repairorder_number(); Type: FUNCTION; Schema: public; Owner: -
 --
 
@@ -9923,6 +9954,7 @@ CREATE TABLE public.arch_states_message (
     entityversion bigint DEFAULT 0,
     plannedeventstatechange_id bigint,
     recurringeventstatechange_id bigint,
+    repackingstatechange_id bigint,
     archived boolean DEFAULT false
 );
 
@@ -21154,6 +21186,131 @@ CREATE SEQUENCE public.materialflowresources_positiondto_id_seq
 
 
 --
+-- Name: materialflowresources_repacking; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.materialflowresources_repacking (
+    id bigint NOT NULL,
+    number character varying(255),
+    state character varying(255) DEFAULT '01draft'::character varying,
+    description character varying(2048),
+    "time" timestamp without time zone,
+    location_id bigint,
+    storagelocation_id bigint,
+    palletnumber_id bigint,
+    typeofloadunit_id bigint,
+    staff_id bigint
+);
+
+
+--
+-- Name: materialflowresources_repacking_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.materialflowresources_repacking_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: materialflowresources_repacking_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.materialflowresources_repacking_id_seq OWNED BY public.materialflowresources_repacking.id;
+
+
+--
+-- Name: materialflowresources_repacking_number_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.materialflowresources_repacking_number_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: materialflowresources_repackingposition; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.materialflowresources_repackingposition (
+    id bigint NOT NULL,
+    repacking_id bigint,
+    resource_id bigint,
+    storagelocation_id bigint,
+    palletnumber_id bigint,
+    typeofloadunit_id bigint,
+    batch_id bigint,
+    product_id bigint,
+    resourcenumber character varying(255),
+    createdresourcenumber character varying(255),
+    quantity numeric(14,5),
+    additionalquantity numeric(14,5),
+    conversion numeric(12,5) DEFAULT (1)::numeric
+);
+
+
+--
+-- Name: materialflowresources_repackingposition_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.materialflowresources_repackingposition_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: materialflowresources_repackingposition_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.materialflowresources_repackingposition_id_seq OWNED BY public.materialflowresources_repackingposition.id;
+
+
+--
+-- Name: materialflowresources_repackingstatechange; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.materialflowresources_repackingstatechange (
+    id bigint NOT NULL,
+    dateandtime timestamp without time zone,
+    sourcestate character varying(255),
+    targetstate character varying(255),
+    status character varying(255),
+    phase integer,
+    worker character varying(255),
+    repacking_id bigint,
+    shift_id bigint
+);
+
+
+--
+-- Name: materialflowresources_repackingstatechange_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.materialflowresources_repackingstatechange_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: materialflowresources_repackingstatechange_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.materialflowresources_repackingstatechange_id_seq OWNED BY public.materialflowresources_repackingstatechange.id;
+
+
+--
 -- Name: materialflowresources_reservation; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -30142,7 +30299,8 @@ CREATE TABLE public.states_message (
     maintenanceeventstatechange_id bigint,
     entityversion bigint DEFAULT 0,
     plannedeventstatechange_id bigint,
-    recurringeventstatechange_id bigint
+    recurringeventstatechange_id bigint,
+    repackingstatechange_id bigint
 );
 
 
@@ -35941,6 +36099,27 @@ ALTER TABLE ONLY public.materialflowresources_positionattributevalue ALTER COLUM
 
 
 --
+-- Name: materialflowresources_repacking id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.materialflowresources_repacking ALTER COLUMN id SET DEFAULT nextval('public.materialflowresources_repacking_id_seq'::regclass);
+
+
+--
+-- Name: materialflowresources_repackingposition id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.materialflowresources_repackingposition ALTER COLUMN id SET DEFAULT nextval('public.materialflowresources_repackingposition_id_seq'::regclass);
+
+
+--
+-- Name: materialflowresources_repackingstatechange id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.materialflowresources_repackingstatechange ALTER COLUMN id SET DEFAULT nextval('public.materialflowresources_repackingstatechange_id_seq'::regclass);
+
+
+--
 -- Name: materialflowresources_reservation id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -38796,7 +38975,7 @@ COPY public.arch_repairs_repairorderworktime (id, repairorder_id, staff_id, labo
 -- Data for Name: arch_states_message; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.arch_states_message (id, type, translationkey, translationargs, correspondfieldname, autoclose, productiontrackingstatechange_id, deliverystatechange_id, assignmenttoshiftstatechange_id, technologystatechange_id, orderstatechange_id, extrusionprotocolstatechange_id, confectionprotocolstatechange_id, palletstatechange_id, batchstatechange_id, trackingrecordstatechange_id, requestforquotationstatechange_id, offerstatechange_id, negotiationstatechange_id, warehouseissuestatechange_id, palletlabelstatechange_id, maintenanceeventstatechange_id, entityversion, plannedeventstatechange_id, recurringeventstatechange_id, archived) FROM stdin;
+COPY public.arch_states_message (id, type, translationkey, translationargs, correspondfieldname, autoclose, productiontrackingstatechange_id, deliverystatechange_id, assignmenttoshiftstatechange_id, technologystatechange_id, orderstatechange_id, extrusionprotocolstatechange_id, confectionprotocolstatechange_id, palletstatechange_id, batchstatechange_id, trackingrecordstatechange_id, requestforquotationstatechange_id, offerstatechange_id, negotiationstatechange_id, warehouseissuestatechange_id, palletlabelstatechange_id, maintenanceeventstatechange_id, entityversion, plannedeventstatechange_id, recurringeventstatechange_id, repackingstatechange_id, archived) FROM stdin;
 \.
 
 
@@ -42200,6 +42379,18 @@ COPY public.jointable_group_role (group_id, role_id) FROM stdin;
 33	177
 43	177
 44	177
+2	179
+3	179
+4	179
+29	179
+30	179
+32	179
+33	179
+34	179
+35	179
+43	179
+48	179
+49	179
 \.
 
 
@@ -42872,6 +43063,30 @@ COPY public.materialflowresources_positionaddmultihelper (id) FROM stdin;
 --
 
 COPY public.materialflowresources_positionattributevalue (id, position_id, attribute_id, attributevalue_id, value) FROM stdin;
+\.
+
+
+--
+-- Data for Name: materialflowresources_repacking; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY public.materialflowresources_repacking (id, number, state, description, "time", location_id, storagelocation_id, palletnumber_id, typeofloadunit_id, staff_id) FROM stdin;
+\.
+
+
+--
+-- Data for Name: materialflowresources_repackingposition; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY public.materialflowresources_repackingposition (id, repacking_id, resource_id, storagelocation_id, palletnumber_id, typeofloadunit_id, batch_id, product_id, resourcenumber, createdresourcenumber, quantity, additionalquantity, conversion) FROM stdin;
+\.
+
+
+--
+-- Data for Name: materialflowresources_repackingstatechange; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY public.materialflowresources_repackingstatechange (id, dateandtime, sourcestate, targetstate, status, phase, worker, repacking_id, shift_id) FROM stdin;
 \.
 
 
@@ -44401,6 +44616,7 @@ COPY public.qcadoosecurity_role (id, identifier, description, entityversion) FRO
 176	ROLE_EMAIL_PARAMETERS	\N	0
 177	ROLE_USERS_VIEW	\N	0
 178	ROLE_MASTER_ORDERS_CREATE_RELEASE	\N	0
+179	ROLE_DOCUMENTS_STATES_ACCEPT	\N	0
 \.
 
 
@@ -44630,6 +44846,7 @@ COPY public.qcadooview_item (id, pluginidentifier, name, active, category_id, vi
 195	integrationBarTender	printedPalletLabelsList	f	8	194	11	ROLE_ADMIN	0
 7	qcadooUsers	users	t	1	7	7	ROLE_USERS_VIEW	0
 223	basic	typeOfLoadUnitsList	t	4	222	29	ROLE_BASE_FUNCTIONALITY	0
+224	materialFlowResources	repackingList	t	6	223	18	ROLE_MATERIAL_FLOW	0
 \.
 
 
@@ -44821,6 +45038,7 @@ COPY public.qcadooview_view (id, pluginidentifier, name, view, url, entityversio
 220	masterOrders	salesParameters	\N	/salesParameters.html	0
 221	masterOrders	pricesListsList	pricesListsList	\N	0
 222	basic	typeOfLoadUnitsList	typeOfLoadUnitsList	\N	0
+223	materialFlowResources	repackingList	repackingList	\N	0
 \.
 
 
@@ -44972,7 +45190,7 @@ COPY public.repairs_repairorderworktime (id, repairorder_id, staff_id, labortime
 -- Data for Name: states_message; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.states_message (id, type, translationkey, translationargs, correspondfieldname, autoclose, productiontrackingstatechange_id, deliverystatechange_id, assignmenttoshiftstatechange_id, technologystatechange_id, orderstatechange_id, extrusionprotocolstatechange_id, confectionprotocolstatechange_id, palletstatechange_id, batchstatechange_id, trackingrecordstatechange_id, requestforquotationstatechange_id, offerstatechange_id, negotiationstatechange_id, warehouseissuestatechange_id, palletlabelstatechange_id, maintenanceeventstatechange_id, entityversion, plannedeventstatechange_id, recurringeventstatechange_id) FROM stdin;
+COPY public.states_message (id, type, translationkey, translationargs, correspondfieldname, autoclose, productiontrackingstatechange_id, deliverystatechange_id, assignmenttoshiftstatechange_id, technologystatechange_id, orderstatechange_id, extrusionprotocolstatechange_id, confectionprotocolstatechange_id, palletstatechange_id, batchstatechange_id, trackingrecordstatechange_id, requestforquotationstatechange_id, offerstatechange_id, negotiationstatechange_id, warehouseissuestatechange_id, palletlabelstatechange_id, maintenanceeventstatechange_id, entityversion, plannedeventstatechange_id, recurringeventstatechange_id, repackingstatechange_id) FROM stdin;
 \.
 
 
@@ -48657,6 +48875,34 @@ SELECT pg_catalog.setval('public.materialflowresources_positiondto_id_seq', 1, f
 
 
 --
+-- Name: materialflowresources_repacking_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('public.materialflowresources_repacking_id_seq', 1, false);
+
+
+--
+-- Name: materialflowresources_repacking_number_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('public.materialflowresources_repacking_number_seq', 1, false);
+
+
+--
+-- Name: materialflowresources_repackingposition_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('public.materialflowresources_repackingposition_id_seq', 1, false);
+
+
+--
+-- Name: materialflowresources_repackingstatechange_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('public.materialflowresources_repackingstatechange_id_seq', 1, false);
+
+
+--
 -- Name: materialflowresources_reservation_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
@@ -50137,7 +50383,7 @@ SELECT pg_catalog.setval('public.qcadoosecurity_persistenttoken_id_seq', 1, fals
 -- Name: qcadoosecurity_role_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('public.qcadoosecurity_role_id_seq', 178, true);
+SELECT pg_catalog.setval('public.qcadoosecurity_role_id_seq', 179, true);
 
 
 --
@@ -50165,7 +50411,7 @@ SELECT pg_catalog.setval('public.qcadooview_category_id_seq', 23, true);
 -- Name: qcadooview_item_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('public.qcadooview_item_id_seq', 223, true);
+SELECT pg_catalog.setval('public.qcadooview_item_id_seq', 224, true);
 
 
 --
@@ -50179,7 +50425,7 @@ SELECT pg_catalog.setval('public.qcadooview_systeminfo_id_seq', 1, false);
 -- Name: qcadooview_view_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('public.qcadooview_view_id_seq', 222, true);
+SELECT pg_catalog.setval('public.qcadooview_view_id_seq', 223, true);
 
 
 --
@@ -54548,6 +54794,22 @@ ALTER TABLE ONLY public.materialflowresources_positionattributevalue
 
 
 --
+-- Name: materialflowresources_repacking materialflowresources_repacking_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.materialflowresources_repacking
+    ADD CONSTRAINT materialflowresources_repacking_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: materialflowresources_repackingposition materialflowresources_repackingposition_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.materialflowresources_repackingposition
+    ADD CONSTRAINT materialflowresources_repackingposition_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: materialflowresources_reservation materialflowresources_reservation_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -55801,6 +56063,14 @@ ALTER TABLE ONLY public.qcadooview_view
 
 ALTER TABLE ONLY public.qcadooview_viewedalert
     ADD CONSTRAINT qcadooview_viewedalert_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: materialflowresources_repackingstatechange qmaterialflowresources_repackingstatechange_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.materialflowresources_repackingstatechange
+    ADD CONSTRAINT qmaterialflowresources_repackingstatechange_pkey PRIMARY KEY (id);
 
 
 --
@@ -62295,6 +62565,14 @@ ALTER TABLE ONLY public.states_message
 
 
 --
+-- Name: states_message message_repackingstatechange_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.states_message
+    ADD CONSTRAINT message_repackingstatechange_fkey FOREIGN KEY (repackingstatechange_id) REFERENCES public.materialflowresources_repackingstatechange(id) DEFERRABLE;
+
+
+--
 -- Name: states_message message_requestforquotationstatechange_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -66356,6 +66634,118 @@ ALTER TABLE ONLY public.cmmsscheduler_recurringeventstatechange
 
 ALTER TABLE ONLY public.cmmsscheduler_recurringeventstatechange
     ADD CONSTRAINT recurringeventstatechange_shift_fkey FOREIGN KEY (shift_id) REFERENCES public.basic_shift(id) DEFERRABLE;
+
+
+--
+-- Name: materialflowresources_repacking repacking_location_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.materialflowresources_repacking
+    ADD CONSTRAINT repacking_location_fkey FOREIGN KEY (location_id) REFERENCES public.materialflow_location(id) DEFERRABLE;
+
+
+--
+-- Name: materialflowresources_repacking repacking_palletnumber_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.materialflowresources_repacking
+    ADD CONSTRAINT repacking_palletnumber_fkey FOREIGN KEY (palletnumber_id) REFERENCES public.basic_palletnumber(id) DEFERRABLE;
+
+
+--
+-- Name: materialflowresources_repacking repacking_staff_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.materialflowresources_repacking
+    ADD CONSTRAINT repacking_staff_fkey FOREIGN KEY (staff_id) REFERENCES public.basic_staff(id) DEFERRABLE;
+
+
+--
+-- Name: materialflowresources_repacking repacking_storagelocation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.materialflowresources_repacking
+    ADD CONSTRAINT repacking_storagelocation_fkey FOREIGN KEY (storagelocation_id) REFERENCES public.materialflowresources_storagelocation(id) DEFERRABLE;
+
+
+--
+-- Name: materialflowresources_repacking repacking_typeofloadunit_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.materialflowresources_repacking
+    ADD CONSTRAINT repacking_typeofloadunit_fkey FOREIGN KEY (typeofloadunit_id) REFERENCES public.basic_typeofloadunit(id) DEFERRABLE;
+
+
+--
+-- Name: materialflowresources_repackingposition repackingposition_batch_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.materialflowresources_repackingposition
+    ADD CONSTRAINT repackingposition_batch_fkey FOREIGN KEY (batch_id) REFERENCES public.advancedgenealogy_batch(id) DEFERRABLE;
+
+
+--
+-- Name: materialflowresources_repackingposition repackingposition_palletnumber_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.materialflowresources_repackingposition
+    ADD CONSTRAINT repackingposition_palletnumber_fkey FOREIGN KEY (palletnumber_id) REFERENCES public.basic_palletnumber(id) DEFERRABLE;
+
+
+--
+-- Name: materialflowresources_repackingposition repackingposition_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.materialflowresources_repackingposition
+    ADD CONSTRAINT repackingposition_product_fkey FOREIGN KEY (product_id) REFERENCES public.basic_product(id) DEFERRABLE;
+
+
+--
+-- Name: materialflowresources_repackingposition repackingposition_repacking_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.materialflowresources_repackingposition
+    ADD CONSTRAINT repackingposition_repacking_fkey FOREIGN KEY (repacking_id) REFERENCES public.materialflowresources_repacking(id) DEFERRABLE;
+
+
+--
+-- Name: materialflowresources_repackingposition repackingposition_resource_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.materialflowresources_repackingposition
+    ADD CONSTRAINT repackingposition_resource_fkey FOREIGN KEY (resource_id) REFERENCES public.materialflowresources_resource(id) DEFERRABLE;
+
+
+--
+-- Name: materialflowresources_repackingposition repackingposition_storagelocation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.materialflowresources_repackingposition
+    ADD CONSTRAINT repackingposition_storagelocation_fkey FOREIGN KEY (storagelocation_id) REFERENCES public.materialflowresources_storagelocation(id) DEFERRABLE;
+
+
+--
+-- Name: materialflowresources_repackingposition repackingposition_typeofloadunit_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.materialflowresources_repackingposition
+    ADD CONSTRAINT repackingposition_typeofloadunit_fkey FOREIGN KEY (typeofloadunit_id) REFERENCES public.basic_typeofloadunit(id) DEFERRABLE;
+
+
+--
+-- Name: materialflowresources_repackingstatechange repackingstatechange_repacking_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.materialflowresources_repackingstatechange
+    ADD CONSTRAINT repackingstatechange_repacking_fkey FOREIGN KEY (repacking_id) REFERENCES public.materialflowresources_repacking(id) DEFERRABLE;
+
+
+--
+-- Name: materialflowresources_repackingstatechange repackingstatechange_shift_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.materialflowresources_repackingstatechange
+    ADD CONSTRAINT repackingstatechange_shift_fkey FOREIGN KEY (shift_id) REFERENCES public.basic_shift(id) DEFERRABLE;
 
 
 --

@@ -640,24 +640,24 @@ public class DocumentPositionValidator {
                         LocaleContextHolder.getLocale()));
             }
 
-            if (palletValidatorService.existsOtherResourceForPalletNumberOnOtherLocations(locationId, storageLocationNumber, null)) {
+            if (palletValidatorService.existsOtherResourceForPalletNumberOnOtherLocations(locationId, palletNumber, null)) {
                 errors.add(translationService.translate(
                         "documentGrid.error.position.existsOtherResourceForPallet",
                         LocaleContextHolder.getLocale()));
-            } else if (palletValidatorService.existsOtherResourceForPalletNumberOnSameLocation(locationId, storageLocationNumber,
-                    palletNumber, typeOfLoadUnit, null)) {
+            } else if (palletValidatorService.existsOtherResourceForPalletNumberWithDifferentStorageLocation(locationId, storageLocationNumber,
+                    palletNumber, null)) {
                 errors.add(translationService.translate(
                         "documentGrid.error.position.existsOtherResourceForPalletAndStorageLocation",
-                        LocaleContextHolder.getLocale()));
+                        LocaleContextHolder.getLocale(), palletNumber));
+            } else if (palletValidatorService.existsOtherResourceForPalletNumberWithDifferentType(locationId,
+                    palletNumber, typeOfLoadUnit, null)) {
+                errors.add(translationService.translate(
+                        "documentGrid.error.position.existsOtherResourceForLoadUnitAndTypeOfLoadUnit",
+                        LocaleContextHolder.getLocale(), palletNumber));
             } else if (palletValidatorService.existsOtherPositionForPalletNumber(locationId, storageLocationNumber,
                     palletNumber, typeOfLoadUnit, positionId, documentId)) {
                 errors.add(translationService.translate(
                         "documentGrid.error.position.existsOtherPositionForPalletAndStorageLocation",
-                        LocaleContextHolder.getLocale()));
-            } else if (palletValidatorService.existsOtherDeliveredProductForPalletNumber(locationId, storageLocationNumber,
-                    palletNumber, typeOfLoadUnit, null)) {
-                errors.add(translationService.translate(
-                        "documentGrid.error.position.existsOtherDeliveredProductForPalletAndStorageLocation",
                         LocaleContextHolder.getLocale()));
             } else if (palletValidatorService.tooManyPalletsInStorageLocationAndPositions(storageLocationNumber,
                     palletNumber, positionId, documentId)) {

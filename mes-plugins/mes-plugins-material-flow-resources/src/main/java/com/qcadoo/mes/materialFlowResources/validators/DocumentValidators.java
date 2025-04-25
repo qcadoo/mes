@@ -200,7 +200,10 @@ public class DocumentValidators {
                         } else {
                             if (ire.getErrors().values().stream().anyMatch(e -> e.getMessage().equals("documentGrid.error.position.existsOtherResourceForPalletAndStorageLocation"))) {
                                 documentForm.addMessage("documentGrid.error.position.existsOtherResourceForPalletAndStorageLocation",
-                                        ComponentState.MessageType.FAILURE, false);
+                                        ComponentState.MessageType.FAILURE, false, ire.getEntity().getBelongsToField(ResourceFields.PALLET_NUMBER).getStringField(PalletNumberFields.NUMBER));
+                            } else if (ire.getErrors().values().stream().anyMatch(e -> e.getMessage().equals("documentGrid.error.position.existsOtherResourceForLoadUnitAndTypeOfLoadUnit"))) {
+                                documentForm.addMessage("documentGrid.error.position.existsOtherResourceForLoadUnitAndTypeOfLoadUnit",
+                                        ComponentState.MessageType.FAILURE, false, ire.getEntity().getBelongsToField(ResourceFields.PALLET_NUMBER).getStringField(PalletNumberFields.NUMBER));
                             } else {
                                 documentForm.addMessage("materialFlow.document.validate.global.error.invalidResource",
                                         ComponentState.MessageType.FAILURE, false, resourceNumber, productNumber);
@@ -262,7 +265,7 @@ public class DocumentValidators {
                                 String palletNumberNumber = palletNumber.getStringField(PalletNumberFields.NUMBER);
 
                                 if (palletValidatorService.tooManyPalletsInStorageLocationAndPositions(storageLocationNumber, palletNumberNumber, position.getId(), document.getId())) {
-                                    existsMorePallets.add(positionNumber.toString());
+                                    existsMorePallets.add(storageLocation.getStringField(StorageLocationFields.NUMBER));
                                 }
                             }
                         }

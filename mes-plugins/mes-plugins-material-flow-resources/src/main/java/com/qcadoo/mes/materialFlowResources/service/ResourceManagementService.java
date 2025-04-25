@@ -33,4 +33,6 @@ public interface ResourceManagementService {
     void createResourcesForReceiptDocuments(final Entity document);
 
     void fillResourcesInDocument(final ViewDefinitionState view, final Entity document);
+
+    void repackageResources(final Entity repacking);
 }

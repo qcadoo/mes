@@ -98,16 +98,34 @@ public class DeliveredProductDetailsListeners {
         Entity deliveredProduct = deliveredProductForm.getEntity();
         Entity delivery = deliveredProduct.getBelongsToField(DeliveredProductFields.DELIVERY);
 
-        Entity location = delivery.getBelongsToField(DeliveryFields.LOCATION);
         Entity palletNumber = palletNumberLookup.getEntity();
         Long typeOfLoadUnit = null;
 
         if (Objects.nonNull(palletNumber)) {
-            typeOfLoadUnit = materialFlowResourcesService.getTypeOfLoadUnitByPalletNumber(location.getId(), palletNumber.getStringField(PalletNumberFields.NUMBER));
+            typeOfLoadUnit = getTypeLoadUnit(delivery, palletNumber);
         }
 
         typeOfLoadUnitLookup.setFieldValue(typeOfLoadUnit);
         typeOfLoadUnitLookup.requestComponentUpdateState();
+    }
+
+    public Long getTypeLoadUnit(Entity delivery, Entity palletNumber) {
+        Entity location = delivery.getBelongsToField(DeliveryFields.LOCATION);
+        Long typeOfLoadUnit = materialFlowResourcesService.getTypeOfLoadUnitByPalletNumber(location.getId(), palletNumber.getStringField(PalletNumberFields.NUMBER));
+        if (typeOfLoadUnit == null) {
+            for (Entity dp : delivery.getHasManyField(DeliveryFields.DELIVERED_PRODUCTS)) {
+                Entity dpPalletNumber = dp.getBelongsToField(DeliveredProductFields.PALLET_NUMBER);
+                if (dpPalletNumber != null && dpPalletNumber.getId().equals(palletNumber.getId())) {
+                    Entity dpTypeOfLoadUnit = dp.getBelongsToField(DeliveredProductFields.TYPE_OF_LOAD_UNIT);
+                    if (dpTypeOfLoadUnit != null) {
+                        typeOfLoadUnit = dpTypeOfLoadUnit.getId();
+                    }
+                    break;
+                }
+            }
+        }
+
+        return typeOfLoadUnit;
     }
 
     public void fillOrderedQuantities(final ViewDefinitionState view, final ComponentState state, final String[] args) {

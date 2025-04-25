@@ -35,7 +35,7 @@
     <component type="window" name="window" reference="window">
         <ribbon>
             <template name="standardGridTemplate" excludeItems="actions.copy"/>
-            <group name="state">
+            <group name="state" defaultAuthorizationRole="ROLE_DOCUMENTS_STATES_ACCEPT">
                 <smallButton name="accept" icon="startIcon16.png" state="enabled">
                     <script>
                         <![CDATA[
@@ -104,7 +104,7 @@
             <option type="column" name="staff" fields="staff" width="150"/>
             <option type="column" name="invoiceNumber" fields="invoiceNumber"/>
 
-            <option type="order" column="time" direction="desc" width="200"/>
+            <option type="order" column="time" direction="desc"/>
 
             <option type="searchable"
                     value="number,name,type,time,state,locationFromNumber,locationToNumber,description,companyName,userName,staff,address,invoiceNumber"/>

@@ -98,7 +98,7 @@
 
                             <criteriaModifier
                                     class="com.qcadoo.mes.materialFlowResources.criteriaModifiers.ResourceCriteriaModifiers"
-                                    method="restrictToLocation"/>
+                                    method="restrictDtoToLocation"/>
                         </component>
                     </layoutElement>
 

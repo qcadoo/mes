@@ -219,6 +219,7 @@
         <security:role identifier="ROLE_REPAIR_ORDERS"/>
 
         <security:role identifier="ROLE_DOCUMENTS_CORRECTIONS_MIN_STATES"/>
+        <security:role identifier="ROLE_DOCUMENTS_STATES_ACCEPT"/>
 
         <security:role identifier="ROLE_SUBCONTRACTOR"/>
         <security:role identifier="ROLE_LOGS"/>
