@@ -46,7 +46,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.util.*;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -63,24 +66,31 @@ public class MaterialAvailabilityListHooks {
     public void fillInReplacementsAvailableQuantity(final ViewDefinitionState state) throws JSONException {
         FormComponent formComponent = (FormComponent) state.getComponentByReference("product");
         GridComponent grid = (GridComponent) state.getComponentByReference(QcadooViewConstants.L_GRID);
+
         JSONObject context = state.getJsonContext();
 
         Entity product = formComponent.getEntity().getDataDefinition().get(formComponent.getEntityId());
+
         List<Entity> replacements = product.getDataDefinition().get(product.getId())
                 .getHasManyField(ProductFields.SUBSTITUTE_COMPONENTS).stream()
                 .map(sc -> sc.getBelongsToField(SubstituteComponentFields.PRODUCT)).collect(Collectors.toList());
+
         List<Entity> warehouses;
+
         if (context.has(L_WINDOW_MAIN_TAB_AVAILABILITY_COMPONENT_FORM_GRID_LAYOUT_LOCATIONS_IDS)) {
             List<Long> ids = Lists.newArrayList();
+
             for (int i = 0; i < context.getJSONArray(L_WINDOW_MAIN_TAB_AVAILABILITY_COMPONENT_FORM_GRID_LAYOUT_LOCATIONS_IDS)
                     .length(); i++) {
                 ids.add(context.getJSONArray(L_WINDOW_MAIN_TAB_AVAILABILITY_COMPONENT_FORM_GRID_LAYOUT_LOCATIONS_IDS).getLong(i));
             }
+
             warehouses = dataDefinitionService.get(MaterialFlowConstants.PLUGIN_IDENTIFIER, MaterialFlowConstants.MODEL_LOCATION)
                     .find().add(SearchRestrictions.in("id", ids)).list().getEntities();
         } else {
             warehouses = materialFlowResourcesService.getWarehouseLocationsFromDB();
         }
+
         List<Entity> materialAvailabilityList = Lists.newArrayList();
 
         DataDefinition orderMaterialAvailabilityDD = dataDefinitionService.get(ProductFlowThruDivisionConstants.PLUGIN_IDENTIFIER,
@@ -88,18 +98,21 @@ public class MaterialAvailabilityListHooks {
 
         for (Entity warehouse : warehouses) {
             Map<Long, BigDecimal> availableQuantities = materialFlowResourcesService
-                    .getQuantitiesForProductsAndLocation(replacements, warehouse);
-            for (Entity replacement : replacements) {
+                    .getQuantitiesForProductsAndLocation(replacements, warehouse, true);
 
-                    Entity materialAvailability = orderMaterialAvailabilityDD.create();
-                    materialAvailability.setField(MaterialAvailabilityFields.PRODUCT, replacement);
-                    materialAvailability.setField(MaterialAvailabilityFields.UNIT, replacement.getField(ProductFields.UNIT));
-                    materialAvailability.setField(MaterialAvailabilityFields.AVAILABLE_QUANTITY,
-                            BigDecimalUtils.convertNullToZero(availableQuantities.get(replacement.getId())));
-                    materialAvailability.setField(MaterialAvailabilityFields.LOCATION, warehouse);
-                    materialAvailabilityList.add(materialAvailability);
+            for (Entity replacement : replacements) {
+                Entity materialAvailability = orderMaterialAvailabilityDD.create();
+
+                materialAvailability.setField(MaterialAvailabilityFields.PRODUCT, replacement);
+                materialAvailability.setField(MaterialAvailabilityFields.UNIT, replacement.getField(ProductFields.UNIT));
+                materialAvailability.setField(MaterialAvailabilityFields.AVAILABLE_QUANTITY,
+                        BigDecimalUtils.convertNullToZero(availableQuantities.get(replacement.getId())));
+                materialAvailability.setField(MaterialAvailabilityFields.LOCATION, warehouse);
+
+                materialAvailabilityList.add(materialAvailability);
             }
         }
+
         grid.setEntities(materialAvailabilityList.stream()
                 .sorted(Comparator.comparing(
                         e -> e.getBelongsToField(MaterialAvailabilityFields.PRODUCT).getStringField(LocationFields.NUMBER)))
@@ -120,18 +133,22 @@ public class MaterialAvailabilityListHooks {
 
         for (Entity warehouse : warehouses) {
             Map<Long, BigDecimal> availableQuantities = materialFlowResourcesService
-                    .getQuantitiesForProductsAndLocation(Collections.singletonList(product), warehouse);
-                Entity materialAvailability = orderMaterialAvailabilityDD.create();
+                    .getQuantitiesForProductsAndLocation(Collections.singletonList(product), warehouse, true);
 
-                materialAvailability.setField(MaterialAvailabilityFields.UNIT, product.getField(ProductFields.UNIT));
-                materialAvailability.setField(MaterialAvailabilityFields.AVAILABLE_QUANTITY,
-                        BigDecimalUtils.convertNullToZero(availableQuantities.get(product.getId())));
-                materialAvailability.setField(MaterialAvailabilityFields.LOCATION, warehouse);
-                materialAvailabilityList.add(materialAvailability);
+            Entity materialAvailability = orderMaterialAvailabilityDD.create();
+
+            materialAvailability.setField(MaterialAvailabilityFields.UNIT, product.getField(ProductFields.UNIT));
+            materialAvailability.setField(MaterialAvailabilityFields.AVAILABLE_QUANTITY,
+                    BigDecimalUtils.convertNullToZero(availableQuantities.get(product.getId())));
+            materialAvailability.setField(MaterialAvailabilityFields.LOCATION, warehouse);
+
+            materialAvailabilityList.add(materialAvailability);
         }
+
         grid.setEntities(materialAvailabilityList.stream()
                 .sorted(Comparator.comparing(
                         e -> e.getBelongsToField(MaterialAvailabilityFields.LOCATION).getStringField(LocationFields.NAME)))
                 .collect(Collectors.toList()));
     }
+    
 }

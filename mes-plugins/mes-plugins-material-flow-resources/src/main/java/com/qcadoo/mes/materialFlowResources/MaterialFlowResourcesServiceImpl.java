@@ -99,15 +99,29 @@ public class MaterialFlowResourcesServiceImpl implements MaterialFlowResourcesSe
     }
 
     @Override
-    public Map<Long, BigDecimal> getQuantitiesForProductsAndLocation(final List<Entity> products,
-                                                                     final Entity location) {
+    public Map<Long, BigDecimal> getQuantitiesForProductsAndLocation(final List<Entity> products, final Entity location) {
         return getQuantitiesForProductsAndLocation(products, location, false, ResourceStockDtoFields.AVAILABLE_QUANTITY);
+    }
+
+    @Override
+    public Map<Long, BigDecimal> getQuantitiesForProductsAndLocation(final List<Entity> products, final Entity location,
+                                                                     final boolean includeReservedQuantities) {
+        return getQuantitiesForProductsAndLocation(products, location, false, ResourceStockDtoFields.AVAILABLE_QUANTITY,
+                includeReservedQuantities);
     }
 
     @Override
     public Map<Long, BigDecimal> getQuantitiesForProductsAndLocation(final List<Entity> products, final Entity location,
                                                                      final boolean withoutBlockedForQualityControl,
                                                                      final String fieldName) {
+        return getQuantitiesForProductsAndLocation(products, location, withoutBlockedForQualityControl, fieldName, false);
+    }
+
+    @Override
+    public Map<Long, BigDecimal> getQuantitiesForProductsAndLocation(final List<Entity> products, Entity location,
+                                                                      final boolean withoutBlockedForQualityControl,
+                                                                      final String fieldName,
+                                                                      final boolean includeReservedQuantities) {
         Map<Long, BigDecimal> quantities = Maps.newHashMap();
 
         if (!products.isEmpty()) {
@@ -156,8 +170,15 @@ public class MaterialFlowResourcesServiceImpl implements MaterialFlowResourcesSe
         return quantities;
     }
 
+    @Override
     public BigDecimal getBatchesQuantity(final Collection<Entity> batches, final Entity product,
                                          final Entity location) {
+        return getBatchesQuantity(batches, product, location, false);
+    }
+
+    @Override
+    public BigDecimal getBatchesQuantity(final Collection<Entity> batches, final Entity product, final Entity location,
+                                         final boolean includeReservedQuantities) {
         BigDecimal batchesQuantity = BigDecimal.ZERO;
 
         if (!batches.isEmpty()) {
