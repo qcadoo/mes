@@ -217,14 +217,14 @@ public class DeliveryStateValidationService {
         List<ErrorMessage> palletErrors = Lists.newArrayList();
 
         deliveredProducts.forEach(deliveredProduct -> {
-            String productNumber = deliveredProduct.getBelongsToField(DeliveredProductFields.PRODUCT).getStringField(ProductFields.NUMBER);
             Entity storageLocation = deliveredProduct.getBelongsToField(DeliveredProductFields.STORAGE_LOCATION);
-            Entity palletNumber = deliveredProduct.getBelongsToField(DeliveredProductFields.PALLET_NUMBER);
 
             if (Objects.nonNull(storageLocation)) {
                 boolean placeStorageLocation = storageLocation.getBooleanField(StorageLocationFields.PLACE_STORAGE_LOCATION);
 
                 if (placeStorageLocation) {
+                    Entity palletNumber = deliveredProduct.getBelongsToField(DeliveredProductFields.PALLET_NUMBER);
+                    String productNumber = deliveredProduct.getBelongsToField(DeliveredProductFields.PRODUCT).getStringField(ProductFields.NUMBER);
                     if (Objects.isNull(palletNumber)) {
                         missingPalletNumbers.add(productNumber);
                     } else {
