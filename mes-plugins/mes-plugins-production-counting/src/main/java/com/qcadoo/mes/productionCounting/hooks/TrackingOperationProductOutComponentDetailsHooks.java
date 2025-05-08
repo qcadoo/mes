@@ -170,8 +170,6 @@ public class TrackingOperationProductOutComponentDetailsHooks {
                         storageLocationLookup.setFieldValue(mayBeStorageLocation.get().getId());
                         storageLocationLookup.requestComponentUpdateState();
                     }
-
-                    storageLocationLookup.setEnabled(false);
                 }
             } else if (storageLocationFilterValueHolder.has(L_LOCATION_ID)) {
                 storageLocationFilterValueHolder.remove(L_LOCATION_ID);
