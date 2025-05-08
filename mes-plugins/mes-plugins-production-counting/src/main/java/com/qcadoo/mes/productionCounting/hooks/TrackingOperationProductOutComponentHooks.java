@@ -32,7 +32,6 @@ import com.qcadoo.mes.basicProductionCounting.BasicProductionCountingService;
 import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityFields;
 import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityRole;
 import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityTypeOfMaterial;
-import com.qcadoo.mes.materialFlowResources.MaterialFlowResourcesService;
 import com.qcadoo.mes.materialFlowResources.PalletValidatorService;
 import com.qcadoo.mes.materialFlowResources.constants.StorageLocationFields;
 import com.qcadoo.mes.orders.constants.OrderFields;
@@ -71,9 +70,6 @@ public class TrackingOperationProductOutComponentHooks {
 
     @Autowired
     private BasicProductionCountingService basicProductionCountingService;
-
-    @Autowired
-    private MaterialFlowResourcesService materialFlowResourcesService;
 
     @Autowired
     private PalletValidatorService palletValidatorService;
@@ -190,7 +186,6 @@ public class TrackingOperationProductOutComponentHooks {
                        final Entity trackingOperationProductOutComponent) {
         fillTrackingOperationProductInComponentsQuantities(trackingOperationProductOutComponent);
         fillOrderReportedQuantity(trackingOperationProductOutComponent);
-        fillStorageLocation(trackingOperationProductOutComponent);
         clearLacks(trackingOperationProductOutComponent);
         setTypeOfLoadUnit(trackingOperationProductOutComponent);
     }
@@ -375,35 +370,6 @@ public class TrackingOperationProductOutComponentHooks {
             orderDb.setField(OrderFields.REPORTED_PRODUCTION_QUANTITY, trackedQuantity);
 
             orderDb.getDataDefinition().fastSave(orderDb);
-        }
-    }
-
-    private void fillStorageLocation(final Entity trackingOperationProductOutComponent) {
-        if (Objects.isNull(trackingOperationProductOutComponent.getId())) {
-            Entity productionTracking = trackingOperationProductOutComponent
-                    .getBelongsToField(TrackingOperationProductOutComponentFields.PRODUCTION_TRACKING);
-
-            Entity order = productionTracking.getBelongsToField(ProductionTrackingFields.ORDER);
-            Entity orderProduct = order.getBelongsToField(OrderFields.PRODUCT);
-            Entity product = trackingOperationProductOutComponent.getBelongsToField(TrackingOperationProductOutComponentFields.PRODUCT);
-
-            if (orderProduct.getId().equals(product.getId())) {
-                Entity productionCountingQuantity = getProductionCountingQuantity(order, product);
-
-                if (Objects.nonNull(productionCountingQuantity)) {
-                    Entity productsInputLocation = productionCountingQuantity.getBelongsToField(ProductionCountingQuantityFields.PRODUCTS_INPUT_LOCATION);
-
-                    if (Objects.nonNull(productsInputLocation)) {
-                        Optional<Entity> mayBeStorageLocation = materialFlowResourcesService.findStorageLocationForProduct(productsInputLocation, product);
-
-                        if (mayBeStorageLocation.isPresent()) {
-                            Entity storageLocation = mayBeStorageLocation.get();
-
-                            trackingOperationProductOutComponent.setField(TrackingOperationProductOutComponentFields.STORAGE_LOCATION, storageLocation);
-                        }
-                    }
-                }
-            }
         }
     }
 
