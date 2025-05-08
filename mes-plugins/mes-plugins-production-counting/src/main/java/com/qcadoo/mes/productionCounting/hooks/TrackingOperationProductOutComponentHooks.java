@@ -28,9 +28,6 @@ import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.basic.constants.PalletNumberFields;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.basic.constants.TypeOfLoadUnitFields;
-import com.qcadoo.mes.basicProductionCounting.BasicProductionCountingService;
-import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityFields;
-import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityRole;
 import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityTypeOfMaterial;
 import com.qcadoo.mes.materialFlowResources.PalletValidatorService;
 import com.qcadoo.mes.materialFlowResources.constants.StorageLocationFields;
@@ -39,7 +36,6 @@ import com.qcadoo.mes.productionCounting.ProductionTrackingService;
 import com.qcadoo.mes.productionCounting.constants.*;
 import com.qcadoo.mes.productionCounting.states.constants.ProductionTrackingStateStringValues;
 import com.qcadoo.model.api.*;
-import com.qcadoo.model.api.search.SearchRestrictions;
 import org.apache.commons.lang3.BooleanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -54,8 +50,6 @@ public class TrackingOperationProductOutComponentHooks {
 
     private static final int L_ONE_BATCH = 1;
 
-    private static final String L_ID = ".id";
-
     @Autowired
     private NumberService numberService;
 
@@ -67,9 +61,6 @@ public class TrackingOperationProductOutComponentHooks {
 
     @Autowired
     private ProductionTrackingService productionTrackingService;
-
-    @Autowired
-    private BasicProductionCountingService basicProductionCountingService;
 
     @Autowired
     private PalletValidatorService palletValidatorService;
@@ -385,17 +376,6 @@ public class TrackingOperationProductOutComponentHooks {
         if (Objects.isNull(palletNumber)) {
             trackingOperationProductOutComponent.setField(TrackingOperationProductOutComponentFields.TYPE_OF_LOAD_UNIT, null);
         }
-    }
-
-    private Entity getProductionCountingQuantity(final Entity order, final Entity product) {
-        return basicProductionCountingService.getProductionCountingQuantityDD().find()
-                .add(SearchRestrictions.eq(ProductionCountingQuantityFields.ORDER + L_ID, order.getId()))
-                .add(SearchRestrictions.eq(ProductionCountingQuantityFields.ROLE,
-                        ProductionCountingQuantityRole.PRODUCED.getStringValue()))
-                .add(SearchRestrictions.eq(ProductionCountingQuantityFields.TYPE_OF_MATERIAL,
-                        ProductionCountingQuantityTypeOfMaterial.FINAL_PRODUCT.getStringValue()))
-                .add(SearchRestrictions.eq(ProductionCountingQuantityFields.PRODUCT + L_ID, product.getId()))
-                .setMaxResults(1).uniqueResult();
     }
 
     private DataDefinition getTrackingOperationProductOutComponentDto() {

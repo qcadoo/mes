@@ -255,7 +255,7 @@ public class DeliveredProductDetailsListeners {
             filterValueHolder.put(DeliveredProductFields.PRODUCT, product.getId());
 
             if (Objects.nonNull(location)) {
-                Optional<Entity> mayBeStorageLocation = materialFlowResourcesService.findStorageLocationForProduct(location, product);
+                Optional<Entity> mayBeStorageLocation = materialFlowResourcesService.findStorageLocationForProduct(location, product.getId());
 
                 if (mayBeStorageLocation.isPresent()) {
                     Entity storageLocation = mayBeStorageLocation.get();

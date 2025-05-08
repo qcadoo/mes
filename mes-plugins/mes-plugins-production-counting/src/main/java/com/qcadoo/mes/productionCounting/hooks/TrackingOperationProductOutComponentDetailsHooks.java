@@ -162,11 +162,11 @@ public class TrackingOperationProductOutComponentDetailsHooks {
             if (Objects.nonNull(warehouse)) {
                 storageLocationFilterValueHolder.put(L_LOCATION_ID, warehouse.getId());
 
-                Optional<Entity> mayBeStorageLocation = materialFlowResourcesService.findStorageLocationForProduct(warehouse,
-                        product);
+                if (Objects.isNull(storageLocationLookup.getEntity())) {
+                    Optional<Entity> mayBeStorageLocation = materialFlowResourcesService.findStorageLocationForProduct(warehouse,
+                            product.getId());
 
-                if (mayBeStorageLocation.isPresent()) {
-                    if (Objects.isNull(storageLocationLookup.getEntity())) {
+                    if (mayBeStorageLocation.isPresent()) {
                         storageLocationLookup.setFieldValue(mayBeStorageLocation.get().getId());
                         storageLocationLookup.requestComponentUpdateState();
                     }

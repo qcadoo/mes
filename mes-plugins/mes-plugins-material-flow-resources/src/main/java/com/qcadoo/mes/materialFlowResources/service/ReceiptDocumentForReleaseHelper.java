@@ -109,7 +109,7 @@ public class ReceiptDocumentForReleaseHelper {
             copiedPosition.setField(PositionFields.POSITION_ATTRIBUTE_VALUES, null);
 
             Optional<Entity> maybeStorageLocation = materialFlowResourcesService.findStorageLocationForProduct(location,
-                    position.getBelongsToField(PositionFields.PRODUCT));
+                    position.getBelongsToField(PositionFields.PRODUCT).getId());
 
             if (maybeStorageLocation.isPresent()) {
                 copiedPosition.setField(PositionFields.STORAGE_LOCATION, maybeStorageLocation.get());
