@@ -941,10 +941,10 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
     private void copyResourceErrorsToPosition(final Entity position, final Entity newResource) {
         for (Map.Entry<String, ErrorMessage> error : newResource.getErrors().entrySet()) {
             if (!error.getKey().equals(ResourceFields.QUANTITY_IN_ADDITIONAL_UNIT)) {
-                position.addError(position.getDataDefinition().getField(error.getKey()), error.getValue().getMessage());
+                position.addError(position.getDataDefinition().getField(error.getKey()), error.getValue().getMessage(), error.getValue().getVars());
             } else {
                 position.addError(position.getDataDefinition().getField(PositionFields.GIVEN_UNIT),
-                        error.getValue().getMessage());
+                        error.getValue().getMessage(), error.getValue().getVars());
             }
         }
     }
