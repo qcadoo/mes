@@ -223,6 +223,10 @@
                         <option type="searchable" value="dateAndTime,targetState,worker"/>
                         <option type="orderable" value="dateAndTime,targetState,worker"/>
 
+                        <criteriaModifier
+                                class="com.qcadoo.mes.states.criteriaModifier.CommonCriteriaModifiers"
+                                method="filterHistory" />
+
                         <option type="fullscreen" value="true"/>
                         <option type="multiselect" value="true"/>
                     </component>
