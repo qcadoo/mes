@@ -82,8 +82,8 @@
                             <option type="fieldCode" value="number"/>
 
                             <listener event="onSelectedEntityChange"
-                                      class="com.qcadoo.view.api.listeners.RerenderListener"
-                                      method="onChangeRerender"/>
+                                      class="com.qcadoo.mes.materialFlowResources.listeners.RepackingDetailsListeners"
+                                      method="clearStorageLocationAndPalletNumber"/>
                             <criteriaModifier
                                     class="com.qcadoo.mes.materialFlow.criteriaModifiers.LocationCriteriaModifiers"
                                     method="restrictToUserLocations"/>

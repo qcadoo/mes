@@ -105,6 +105,8 @@ public class RepackingDetailsHooks {
 
         if (Objects.nonNull(warehouse)) {
             filter.put(RepackingFields.LOCATION, warehouse.getId());
+        } else {
+            filter.remove(RepackingFields.LOCATION);
         }
 
         storageLocationLookup.setFilterValue(filter);
@@ -119,6 +121,8 @@ public class RepackingDetailsHooks {
 
         if (Objects.nonNull(warehouse)) {
             filter.put(RepackingFields.LOCATION, warehouse.getId());
+        } else {
+            filter.remove(RepackingFields.LOCATION);
         }
 
         palletNumberLookup.setFilterValue(filter);

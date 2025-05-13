@@ -60,12 +60,23 @@ public class RepackingDetailsListeners {
         Entity palletNumber = palletNumberLookup.getEntity();
         Long typeOfLoadUnit = null;
 
-        if (Objects.nonNull(palletNumber)) {
+        if (Objects.nonNull(location) && Objects.nonNull(palletNumber)) {
             typeOfLoadUnit = materialFlowResourcesService.getTypeOfLoadUnitByPalletNumber(location.getId(), palletNumber.getStringField(PalletNumberFields.NUMBER));
         }
 
         typeOfLoadUnitLookup.setFieldValue(typeOfLoadUnit);
         typeOfLoadUnitLookup.requestComponentUpdateState();
+    }
+
+    public void clearStorageLocationAndPalletNumber(final ViewDefinitionState view, final ComponentState state,
+                                        final String[] args) {
+        LookupComponent storageLocationLookup = (LookupComponent) view.getComponentByReference(RepackingFields.STORAGE_LOCATION);
+        LookupComponent palletNumberLookup = (LookupComponent) view.getComponentByReference(RepackingFields.PALLET_NUMBER);
+        storageLocationLookup.setFieldValue(null);
+        storageLocationLookup.requestComponentUpdateState();
+        palletNumberLookup.setFieldValue(null);
+        palletNumberLookup.requestComponentUpdateState();
+
     }
 
 }
