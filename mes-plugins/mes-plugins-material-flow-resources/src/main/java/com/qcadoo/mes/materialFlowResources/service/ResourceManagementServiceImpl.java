@@ -799,7 +799,8 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
             return Optional.empty();
         }
 
-        return Optional.of(quantity);
+        position.setNotValid();
+        return Optional.of(quantity.subtract(resourceAvailableQuantity, numberService.getMathContext()));
     }
 
     private void checkAndCopyResourceErrors(Entity position, Entity newResource, DataDefinition resourceDD) {
