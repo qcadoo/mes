@@ -330,7 +330,7 @@ public class DeliveredProductAddMultiListeners {
         Entity palletNumber = palletNumberLookup.getEntity();
         Long typeOfLoadUnit = (Long) typeOfLoadUnitLookup.getFieldValue();
 
-        if (Objects.nonNull(palletNumber) && Objects.isNull(typeOfLoadUnit)) {
+        if (Objects.nonNull(palletNumber)) {
             typeOfLoadUnit = deliveredProductDetailsListeners.getTypeLoadUnit(delivery, palletNumber);
         }
 
