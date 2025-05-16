@@ -30,6 +30,7 @@ public class RepackingDetailsHooks {
         FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         FieldComponent timeField = (FieldComponent) view.getComponentByReference(RepackingFields.TIME);
         LookupComponent staffLookup = (LookupComponent) view.getComponentByReference(RepackingFields.STAFF);
+        LookupComponent locationLookup = (LookupComponent) view.getComponentByReference(RepackingFields.LOCATION);
         Entity repacking = form.getPersistedEntityWithIncludedFormValues();
         if (Objects.isNull(timeField.getFieldValue())) {
             timeField.setFieldValue(DateUtils.toDateTimeString(new Date()));
@@ -43,6 +44,10 @@ public class RepackingDetailsHooks {
         }
         setStorageLocationLookupFilterValue(view, repacking);
         setPalletNumberLookupFilterValue(view, repacking);
+        if (!repacking.getHasManyField(RepackingFields.POSITIONS).isEmpty()) {
+            locationLookup.setEnabled(false);
+            locationLookup.requestComponentUpdateState();
+        }
     }
 
     private void toggleButtons(ViewDefinitionState view) {
