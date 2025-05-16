@@ -27,6 +27,7 @@ import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 import com.qcadoo.commons.functional.Either;
+import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.basic.CalculationQuantityService;
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.basic.constants.ProductAttributeValueFields;
@@ -54,6 +55,7 @@ import org.hibernate.exception.LockAcquisitionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
@@ -103,6 +105,9 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
 
     @Autowired
     private PalletValidatorService palletValidatorService;
+
+    @Autowired
+    private TranslationService translationService;
 
     @Override
     @Transactional
@@ -648,7 +653,15 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
 
     private void addRepackingPositionErrors(Entity repacking, Entity position) {
         position.getGlobalErrors().forEach(e -> repacking.addGlobalError(e.getMessage(), e.getAutoClose(), e.getVars()));
-        position.getErrors().values().forEach(e -> repacking.addGlobalError(e.getMessage(), e.getAutoClose(), e.getVars()));
+        position.getErrors().forEach((key, value) -> {
+            FieldDefinition field = position.getDataDefinition().getField(key);
+            if (Objects.nonNull(field)) {
+                repacking.addGlobalError("materialFlowResources.error.repackingResources.fieldError", translationService.translate("materialFlowResources.repackingPosition." + field.getName() + ".label", LocaleContextHolder.getLocale()),
+                        translationService.translate(value.getMessage(), LocaleContextHolder.getLocale(), value.getVars()));
+            } else {
+                repacking.addGlobalError(value.getMessage(), value.getAutoClose(), value.getVars());
+            }
+        });
     }
 
     private void moveResourcesForTransferDocument(final Entity document) {
