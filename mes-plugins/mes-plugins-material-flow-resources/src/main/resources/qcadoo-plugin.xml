@@ -393,6 +393,9 @@
         <menu:menu-item name="repackingList" category="materialFlow"
                         view="repackingList" defaultAuthorizationRole="ROLE_MATERIAL_FLOW"/>
 
+        <menu:menu-item name="repackingPositionsList" category="materialFlow"
+                        view="repackingPositionsList" defaultAuthorizationRole="ROLE_MATERIAL_FLOW"/>
+
         <menu:menu-item name="warehouseStock" category="materialFlow"
                         view="warehouseStocksList" defaultAuthorizationRole="ROLE_WAREHOUSE_STATES"/>
 
@@ -445,6 +448,7 @@
         <view:view resource="view/repackingPositionDetails.xml"/>
         <view:view resource="view/repackingDetails.xml"/>
         <view:view resource="view/repackingList.xml"/>
+        <view:view resource="view/repackingPositionsList.xml"/>
 
         <view:view resource="view/storageLocationsMultiAdd.xml"/>
         <view:view resource="view/storageLocationsDetails.xml"/>

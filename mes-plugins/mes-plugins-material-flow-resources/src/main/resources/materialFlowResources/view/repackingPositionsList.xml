@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    ***************************************************************************
+    Copyright (c) 2010 Qcadoo Limited
+    Project: Qcadoo MES
+    Version: 1.4
+
+    This file is part of Qcadoo.
+
+    Qcadoo is free software; you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as published
+    by the Free Software Foundation; either version 3 of the License,
+    or (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty
+    of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+    See the GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+    ***************************************************************************
+
+-->
+<view defaultAuthorizationRole="ROLE_MATERIAL_FLOW"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns="http://schema.qcadoo.org/view"
+      xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
+      name="repackingPositionsList"
+      modelName="repackingPosition"
+      menuAccessible="true">
+
+    <component type="window" name="window" reference="window">
+        <ribbon>
+            <template name="standardGridTemplate" excludeItems="actions.copy,actions.delete,actions.new"/>
+            <group name="documentPositions">
+                <bigButton name="filterRepackingPositionsByFromResource" icon="genealogyIcon24.png"
+                           action="#{grid}.fireEvent(filterRepackingPositionsByFromResource)"/>
+                <bigButton name="showDocumentPositionsWithFromResource" icon="genealogyIcon24.png"
+                           action="#{grid}.fireEvent(showDocumentPositionsWithFromResource)"/>
+                <bigButton name="showDocumentPositionsWithToResource" icon="genealogyIcon24.png"
+                           action="#{grid}.fireEvent(showDocumentPositionsWithToResource)"/>
+            </group>
+        </ribbon>
+
+        <component type="grid" name="grid" reference="grid">
+            <option type="column" name="repackingNumber" fields="repacking" expression="#repacking['number']" link="true"
+                    correspondingView="materialFlowResources/repackingDetails"
+                    correspondingField="repackingId" width="100"/>
+            <option type="column" name="repackingId" fields="repacking" expression="#repacking.get('id')"
+                    hidden="true"/>
+            <option type="column" name="repackingTime" fields="repacking" expression="#repacking['time']" width="100"/>
+            <option type="column" name="repackingStaff" fields="repacking"
+                    expression="#repacking['staff']?.get('name') + ' ' + #repacking['staff']?.get('surname')" width="50"/>
+            <option type="column" name="repackingDescription" fields="repacking" expression="#repacking['description']" width="100"/>
+            <option type="column" name="repackingLocation" fields="repacking" expression="#repacking['location'].get('number')" width="40"/>
+            <option type="column" name="repackingStorageLocation" fields="repacking" expression="#repacking['storageLocation']?.get('number')" width="60"/>
+            <option type="column" name="repackingPalletNumber" fields="repacking" expression="#repacking['palletNumber']?.get('number')" width="40"/>
+            <option type="column" name="repackingTypeOfLoadUnit" fields="repacking" expression="#repacking['typeOfLoadUnit']?.get('name')" width="40"/>
+            <option type="column" name="repackingState" fields="repacking" expression="#repacking['state']" width="30"/>
+            <option type="column" name="productNumber" fields="product" expression="#product['number']" width="40"/>
+            <option type="column" name="productName" fields="product" expression="#product['name']" width="60"/>
+            <option type="column" name="quantity" fields="quantity" width="50"/>
+            <option type="column" name="productUnit" fields="product" expression="#product['unit']" width="30"/>
+            <option type="column" name="additionalQuantity" fields="additionalQuantity" width="50"/>
+            <option type="column" name="productAdditionalUnit" fields="product" expression="#product['additionalUnit']" width="30"/>
+            <option type="column" name="conversion" fields="conversion" width="40"/>
+            <option type="column" name="resourceNumber" fields="resourceNumber" width="50"/>
+            <option type="column" name="createdResourceNumber" fields="createdResourceNumber" width="50"/>
+            <option type="column" name="batch" fields="batch" expression="#batch['number']" width="50"/>
+            <option type="column" name="storageLocation" fields="storageLocation" expression="#storageLocation['number']" width="60"/>
+            <option type="column" name="palletNumber" fields="palletNumber" expression="#palletNumber['number']" width="40"/>
+            <option type="column" name="typeOfLoadUnit" fields="typeOfLoadUnit" expression="#typeOfLoadUnit['name']" width="40"/>
+
+            <option type="order" column="repackingTime" direction="desc"/>
+
+            <option type="searchable"
+                    value="repackingNumber,repackingTime,repackingDescription,repackingLocation,repackingStorageLocation,repackingPalletNumber,repackingTypeOfLoadUnit,repackingState,
+                            productNumber,productName,quantity,productUnit,additionalQuantity,productAdditionalUnit,conversion,resourceNumber,createdResourceNumber,batch,storageLocation,palletNumber,typeOfLoadUnit"/>
+            <option type="orderable"
+                    value="repackingNumber,repackingTime,repackingDescription,repackingLocation,repackingStorageLocation,repackingPalletNumber,repackingTypeOfLoadUnit,repackingState,
+                            productNumber,productName,quantity,productUnit,additionalQuantity,productAdditionalUnit,conversion,resourceNumber,createdResourceNumber,batch,storageLocation,palletNumber,typeOfLoadUnit"/>
+
+            <option type="creatable" value="false"/>
+            <option type="deletable" value="false"/>
+            <option type="prioritizable" value="false"/>
+            <option type="fullscreen" value="true"/>
+            <option type="multiselect" value="true"/>
+
+            <listener event="filterRepackingPositionsByFromResource"
+                      class="com.qcadoo.mes.materialFlowResources.listeners.RepackingPositionsListListeners"
+                      method="filterRepackingPositionsByFromResource"/>
+            <listener event="showDocumentPositionsWithFromResource"
+                      class="com.qcadoo.mes.materialFlowResources.listeners.RepackingPositionsListListeners"
+                      method="showDocumentPositionsWithFromResource"/>
+            <listener event="showDocumentPositionsWithToResource"
+                      class="com.qcadoo.mes.materialFlowResources.listeners.RepackingPositionsListListeners"
+                      method="showDocumentPositionsWithToResource"/>
+        </component>
+
+        <option type="fixedHeight" value="true"/>
+        <option type="header" value="false"/>
+    </component>
+
+    <hooks>
+        <beforeRender
+                class="com.qcadoo.mes.materialFlowResources.hooks.RepackingPositionsListHooks"
+                method="toggleButtons"/>
+    </hooks>
+</view>
