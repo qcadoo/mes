@@ -15,7 +15,6 @@ import java.util.Map;
 @Service
 public class RepackingPositionsListListeners {
 
-
     private static final String L_WINDOW_ACTIVE_MENU = "window.activeMenu";
 
     private static final String L_GRID_OPTIONS = "grid.options";
@@ -28,10 +27,9 @@ public class RepackingPositionsListListeners {
         Entity repackingPosition = grid.getSelectedEntities().get(0);
         String resourceNumber = repackingPosition.getStringField(RepackingPositionFields.RESOURCE_NUMBER);
         Map<String, String> filters = Maps.newHashMap();
-        filters.put(RepackingPositionFields.RESOURCE_NUMBER, applyInOperator(resourceNumber));
+        filters.put(RepackingPositionFields.CREATED_RESOURCE_NUMBER, applyInOperator(resourceNumber));
         grid.setFilters(filters);
     }
-
 
     public void showDocumentPositionsWithFromResource(final ViewDefinitionState view, final ComponentState state,
                                                       final String[] args) {
