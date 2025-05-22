@@ -133,6 +133,7 @@ public class TrackingOperationProductOutComponentHooks {
                 if (Objects.nonNull(storageLocation)) {
                     Entity location = storageLocation.getBelongsToField(StorageLocationFields.LOCATION);
                     String storageLocationNumber = storageLocation.getStringField(StorageLocationFields.NUMBER);
+                    Entity typeOfLoadUnit = trackingOperationProductOutComponent.getBelongsToField(TrackingOperationProductOutComponentFields.TYPE_OF_LOAD_UNIT);
                     boolean placeStorageLocation = storageLocation.getBooleanField(StorageLocationFields.PLACE_STORAGE_LOCATION);
 
                     if (placeStorageLocation) {
@@ -142,7 +143,6 @@ public class TrackingOperationProductOutComponentHooks {
                             return false;
                         } else {
                             String palletNumberNumber = palletNumber.getStringField(PalletNumberFields.NUMBER);
-                            Entity typeOfLoadUnit = trackingOperationProductOutComponent.getBelongsToField(TrackingOperationProductOutComponentFields.TYPE_OF_LOAD_UNIT);
 
                             if (!palletValidatorService.validateResources(location, storageLocation, palletNumber, typeOfLoadUnit, trackingOperationProductOutComponent)) {
                                 return false;
@@ -167,6 +167,8 @@ public class TrackingOperationProductOutComponentHooks {
                                 return false;
                             }
                         }
+                    } else {
+                        return Objects.isNull(palletNumber) || palletValidatorService.validateResources(location, storageLocation, palletNumber, typeOfLoadUnit, trackingOperationProductOutComponent);
                     }
                 }
             }

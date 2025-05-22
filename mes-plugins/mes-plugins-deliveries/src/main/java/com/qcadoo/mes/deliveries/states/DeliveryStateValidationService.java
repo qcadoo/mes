@@ -238,11 +238,8 @@ public class DeliveryStateValidationService {
                             existsMorePallets.add(storageLocation.getStringField(StorageLocationFields.NUMBER));
                         }
                     }
-                } else if (!Objects.isNull(palletNumber)) {
-                    if (!palletValidatorService.validateResources(location, storageLocation, palletNumber, typeOfLoadUnit, deliveredProduct)) {
-                        palletErrors.addAll(deliveredProduct.getErrors().values());
-
-                    }
+                } else if (!Objects.isNull(palletNumber) && !palletValidatorService.validateResources(location, storageLocation, palletNumber, typeOfLoadUnit, deliveredProduct)) {
+                    palletErrors.addAll(deliveredProduct.getErrors().values());
                 }
             }
         });
