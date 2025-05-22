@@ -77,23 +77,31 @@ public class RepackingPositionDetailsListeners {
             Entity storageLocation = resource.getBelongsToField(ResourceFields.STORAGE_LOCATION);
             if (storageLocation != null) {
                 storageLocationLookup.setFieldValue(storageLocation.getId());
-                storageLocationLookup.requestComponentUpdateState();
+            } else {
+                storageLocationLookup.setFieldValue(null);
             }
+            storageLocationLookup.requestComponentUpdateState();
             Entity palletNumber = resource.getBelongsToField(ResourceFields.PALLET_NUMBER);
             if (palletNumber != null) {
                 palletNumberLookup.setFieldValue(palletNumber.getId());
-                palletNumberLookup.requestComponentUpdateState();
+            } else {
+                palletNumberLookup.setFieldValue(null);
             }
+            palletNumberLookup.requestComponentUpdateState();
             Entity typeOfLoadUnit = resource.getBelongsToField(ResourceFields.TYPE_OF_LOAD_UNIT);
             if (typeOfLoadUnit != null) {
                 typeOfLoadUnitLookup.setFieldValue(typeOfLoadUnit.getId());
-                typeOfLoadUnitLookup.requestComponentUpdateState();
+            } else {
+                typeOfLoadUnitLookup.setFieldValue(null);
             }
+            typeOfLoadUnitLookup.requestComponentUpdateState();
             Entity batch = resource.getBelongsToField(ResourceFields.BATCH);
             if (batch != null) {
                 batchLookup.setFieldValue(batch.getId());
-                batchLookup.requestComponentUpdateState();
+            } else {
+                batchLookup.setFieldValue(null);
             }
+            batchLookup.requestComponentUpdateState();
             quantityChange(view, state, args);
         } else {
             resourceNumberField.setFieldValue(null);

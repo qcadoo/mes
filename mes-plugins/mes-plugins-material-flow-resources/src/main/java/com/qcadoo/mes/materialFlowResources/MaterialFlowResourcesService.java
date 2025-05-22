@@ -67,7 +67,7 @@ public interface MaterialFlowResourcesService {
 
     void fillCurrencyFieldValues(final ViewDefinitionState view);
 
-    Optional<Entity> findStorageLocationForProduct(final Entity location, final Entity product);
+    Optional<Entity> findStorageLocationForProduct(final Entity location, final Long productId);
 
     Long getTypeOfLoadUnitByPalletNumber(final Long locationId, final String palletNumberNumber);
 

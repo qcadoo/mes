@@ -82,8 +82,8 @@
                             <option type="fieldCode" value="number"/>
 
                             <listener event="onSelectedEntityChange"
-                                      class="com.qcadoo.view.api.listeners.RerenderListener"
-                                      method="onChangeRerender"/>
+                                      class="com.qcadoo.mes.materialFlowResources.listeners.RepackingDetailsListeners"
+                                      method="clearStorageLocationAndPalletNumber"/>
                             <criteriaModifier
                                     class="com.qcadoo.mes.materialFlow.criteriaModifiers.LocationCriteriaModifiers"
                                     method="restrictToUserLocations"/>
@@ -143,12 +143,14 @@
                     </layoutElement>
                     <layoutElement column="2" row="2">
                         <component type="lookup" name="staff" reference="staff" field="staff">
-                            <option type="column" name="name" fields="name"/>
+                            <option type="column" name="name" fields="name" link="true"/>
+                            <option type="column" name="number" fields="number" link="true"/>
 
-                            <option type="searchable" value="name,surname"/>
-                            <option type="orderable" value="name,surname"/>
+                            <option type="searchable" value="name,number"/>
+                            <option type="orderable" value="name,number"/>
 
-                            <option type="expression" value="#name + ' ' + #surname"/>
+                            <option type="expression"
+                                    value="#number + ' - ' + #name + ' ' + #surname"/>
                             <option type="fieldCode" value="surname"/>
                         </component>
                     </layoutElement>
@@ -220,6 +222,10 @@
 
                         <option type="searchable" value="dateAndTime,targetState,worker"/>
                         <option type="orderable" value="dateAndTime,targetState,worker"/>
+
+                        <criteriaModifier
+                                class="com.qcadoo.mes.states.criteriaModifier.CommonCriteriaModifiers"
+                                method="filterHistory" />
 
                         <option type="fullscreen" value="true"/>
                         <option type="multiselect" value="true"/>

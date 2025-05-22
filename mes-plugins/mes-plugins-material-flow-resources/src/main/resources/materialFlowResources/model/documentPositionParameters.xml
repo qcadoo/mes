@@ -46,7 +46,6 @@
             <validatesRange from="0" exclusively="true"/>
         </integer>
         <boolean name="fillResourceIrrespectiveOfConversion" default="false"/>
-        <boolean name="transferPalletToReceivingWarehouse" default="false"/>
         <boolean name="colorResourcesAfterDeadline" default="false"/>
         <integer name="shortExpiryDate" default="14">
             <validatesRange from="0"/>

@@ -49,6 +49,7 @@
         <decimal name="plannedQuantity"/>
         <decimal name="usedQuantity"/>
         <decimal name="producedQuantity"/>
+        <string name="warehouseNumber"/>
     </fields>
 
     <masterModel plugin="basicProductionCounting" model="productionCountingQuantity"/>

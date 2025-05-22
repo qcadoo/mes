@@ -99,7 +99,8 @@ public class MaterialFlowResourcesServiceImpl implements MaterialFlowResourcesSe
     }
 
     @Override
-    public Map<Long, BigDecimal> getQuantitiesForProductsAndLocation(final List<Entity> products, final Entity location) {
+    public Map<Long, BigDecimal> getQuantitiesForProductsAndLocation(final List<Entity> products,
+                                                                     final Entity location) {
         return getQuantitiesForProductsAndLocation(products, location, false, ResourceStockDtoFields.AVAILABLE_QUANTITY);
     }
 
@@ -119,9 +120,9 @@ public class MaterialFlowResourcesServiceImpl implements MaterialFlowResourcesSe
 
     @Override
     public Map<Long, BigDecimal> getQuantitiesForProductsAndLocation(final List<Entity> products, Entity location,
-                                                                      final boolean withoutBlockedForQualityControl,
-                                                                      final String fieldName,
-                                                                      final boolean includeReservedQuantities) {
+                                                                     final boolean withoutBlockedForQualityControl,
+                                                                     final String fieldName,
+                                                                     final boolean includeReservedQuantities) {
         Map<Long, BigDecimal> quantities = Maps.newHashMap();
 
         if (!products.isEmpty()) {
@@ -226,11 +227,11 @@ public class MaterialFlowResourcesServiceImpl implements MaterialFlowResourcesSe
         currencyField.requestComponentUpdateState();
     }
 
-    public Optional<Entity> findStorageLocationForProduct(final Entity location, final Entity product) {
+    public Optional<Entity> findStorageLocationForProduct(final Entity location, final Long productId) {
         SearchQueryBuilder scb = getStorageLocationDD().find("SELECT sl FROM #materialFlowResources_storageLocation AS sl JOIN sl.products p WHERE sl.location = :locationId AND p.id = :productId");
 
         scb.setLong("locationId", location.getId());
-        scb.setLong("productId", product.getId());
+        scb.setLong("productId", productId);
 
         return Optional.ofNullable(scb.setMaxResults(1).uniqueResult());
     }

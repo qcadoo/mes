@@ -285,7 +285,7 @@ public class DispositionOrderPdfService extends PdfDocumentService {
         Entity locationFrom = position.getBelongsToField(PositionFields.DOCUMENT).getBelongsToField(DocumentFields.LOCATION_FROM);
 
         if (Objects.isNull(storageLocation) && Objects.nonNull(locationFrom)) {
-            storageLocation = materialFlowResourcesService.findStorageLocationForProduct(locationFrom, position.getBelongsToField(PositionFields.PRODUCT)).orElse(null);
+            storageLocation = materialFlowResourcesService.findStorageLocationForProduct(locationFrom, position.getBelongsToField(PositionFields.PRODUCT).getId()).orElse(null);
         }
 
         return Objects.nonNull(storageLocation) ? storageLocation.getStringField(StorageLocationFields.NUMBER) : StringUtils.EMPTY;

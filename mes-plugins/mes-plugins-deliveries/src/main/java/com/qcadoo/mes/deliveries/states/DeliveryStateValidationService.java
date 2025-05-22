@@ -217,19 +217,19 @@ public class DeliveryStateValidationService {
         List<ErrorMessage> palletErrors = Lists.newArrayList();
 
         deliveredProducts.forEach(deliveredProduct -> {
-            String productNumber = deliveredProduct.getBelongsToField(DeliveredProductFields.PRODUCT).getStringField(ProductFields.NUMBER);
             Entity storageLocation = deliveredProduct.getBelongsToField(DeliveredProductFields.STORAGE_LOCATION);
-            Entity palletNumber = deliveredProduct.getBelongsToField(DeliveredProductFields.PALLET_NUMBER);
 
             if (Objects.nonNull(storageLocation)) {
                 boolean placeStorageLocation = storageLocation.getBooleanField(StorageLocationFields.PLACE_STORAGE_LOCATION);
 
+                Entity location = deliveredProduct.getBelongsToField(DeliveredProductFields.DELIVERY).getBelongsToField(DeliveryFields.LOCATION);
+                Entity palletNumber = deliveredProduct.getBelongsToField(DeliveredProductFields.PALLET_NUMBER);
+                Entity typeOfLoadUnit = deliveredProduct.getBelongsToField(DeliveredProductFields.TYPE_OF_LOAD_UNIT);
                 if (placeStorageLocation) {
+                    String productNumber = deliveredProduct.getBelongsToField(DeliveredProductFields.PRODUCT).getStringField(ProductFields.NUMBER);
                     if (Objects.isNull(palletNumber)) {
                         missingPalletNumbers.add(productNumber);
                     } else {
-                        Entity location = deliveredProduct.getBelongsToField(DeliveredProductFields.DELIVERY).getBelongsToField(DeliveryFields.LOCATION);
-                        Entity typeOfLoadUnit = deliveredProduct.getBelongsToField(DeliveredProductFields.TYPE_OF_LOAD_UNIT);
                         if (!palletValidatorService.validateResources(location, storageLocation, palletNumber, typeOfLoadUnit, deliveredProduct)) {
                             palletErrors.addAll(deliveredProduct.getErrors().values());
 
@@ -237,6 +237,11 @@ public class DeliveryStateValidationService {
                         if (!palletValidatorService.notTooManyPalletsInStorageLocationAndDeliveredProducts(deliveredProduct.getDataDefinition(), deliveredProduct)) {
                             existsMorePallets.add(storageLocation.getStringField(StorageLocationFields.NUMBER));
                         }
+                    }
+                } else if (!Objects.isNull(palletNumber)) {
+                    if (!palletValidatorService.validateResources(location, storageLocation, palletNumber, typeOfLoadUnit, deliveredProduct)) {
+                        palletErrors.addAll(deliveredProduct.getErrors().values());
+
                     }
                 }
             }

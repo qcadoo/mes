@@ -131,9 +131,9 @@
             <option type="order" column="time" direction="desc"/>
 
             <option type="searchable"
-                    value="number,location,storageLocation,palletNumber,typeOfLoadUnit,time,staff,state,description"/>
+                    value="number,location,storageLocation,palletNumber,typeOfLoadUnit,time,state,description"/>
             <option type="orderable"
-                    value="number,location,storageLocation,palletNumber,typeOfLoadUnit,time,staff,state,description"/>
+                    value="number,location,storageLocation,palletNumber,typeOfLoadUnit,time,state,description"/>
 
             <option type="correspondingView" value="materialFlowResources/repackingDetails"/>
             <option type="correspondingComponent" value="form"/>

@@ -30,11 +30,12 @@ public class RepackingDetailsHooks {
         FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         FieldComponent timeField = (FieldComponent) view.getComponentByReference(RepackingFields.TIME);
         LookupComponent staffLookup = (LookupComponent) view.getComponentByReference(RepackingFields.STAFF);
+        LookupComponent locationLookup = (LookupComponent) view.getComponentByReference(RepackingFields.LOCATION);
         Entity repacking = form.getPersistedEntityWithIncludedFormValues();
         if (Objects.isNull(timeField.getFieldValue())) {
             timeField.setFieldValue(DateUtils.toDateTimeString(new Date()));
         }
-        if (Objects.isNull(staffLookup.getFieldValue())) {
+        if (view.isViewAfterRedirect() && Objects.isNull(staffLookup.getFieldValue())) {
             Entity worker = userService.getCurrentUserEntity().getBelongsToField(UserFieldsB.STAFF);
             if (Objects.nonNull(worker)) {
                 staffLookup.setFieldValue(worker.getId());
@@ -43,6 +44,10 @@ public class RepackingDetailsHooks {
         }
         setStorageLocationLookupFilterValue(view, repacking);
         setPalletNumberLookupFilterValue(view, repacking);
+        if (!repacking.getHasManyField(RepackingFields.POSITIONS).isEmpty()) {
+            locationLookup.setEnabled(false);
+            locationLookup.requestComponentUpdateState();
+        }
     }
 
     private void toggleButtons(ViewDefinitionState view) {
@@ -105,6 +110,8 @@ public class RepackingDetailsHooks {
 
         if (Objects.nonNull(warehouse)) {
             filter.put(RepackingFields.LOCATION, warehouse.getId());
+        } else {
+            filter.remove(RepackingFields.LOCATION);
         }
 
         storageLocationLookup.setFilterValue(filter);
@@ -119,6 +126,8 @@ public class RepackingDetailsHooks {
 
         if (Objects.nonNull(warehouse)) {
             filter.put(RepackingFields.LOCATION, warehouse.getId());
+        } else {
+            filter.remove(RepackingFields.LOCATION);
         }
 
         palletNumberLookup.setFilterValue(filter);

@@ -28,6 +28,7 @@ import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.basic.constants.PalletNumberFields;
 import com.qcadoo.mes.basic.constants.ProductFields;
+import com.qcadoo.mes.basic.constants.TypeOfLoadUnitFields;
 import com.qcadoo.mes.basicProductionCounting.BasicProductionCountingService;
 import com.qcadoo.mes.basicProductionCounting.constants.*;
 import com.qcadoo.mes.materialFlowResources.PalletValidatorService;
@@ -176,37 +177,45 @@ public final class ProductionTrackingListenerService {
                 .getHasManyField(ProductionTrackingFields.TRACKING_OPERATION_PRODUCT_OUT_COMPONENTS);
 
         trackingOperationProductOutComponents.forEach(trackingOperationProductOutComponent -> {
-            Entity product = trackingOperationProductOutComponent.getBelongsToField(TrackingOperationProductOutComponentFields.PRODUCT);
-            BigDecimal usedQuantity = trackingOperationProductOutComponent.getDecimalField(TrackingOperationProductOutComponentFields.USED_QUANTITY);
             Entity storageLocation = trackingOperationProductOutComponent.getBelongsToField(TrackingOperationProductOutComponentFields.STORAGE_LOCATION);
-            Entity palletNumber = trackingOperationProductOutComponent.getBelongsToField(TrackingOperationProductOutComponentFields.PALLET_NUMBER);
 
-            if (Objects.nonNull(usedQuantity) && BigDecimal.ZERO.compareTo(usedQuantity) < 0) {
-                if (Objects.isNull(storageLocation) && Objects.nonNull(palletNumber)) {
-                    productionTracking.addGlobalError("productionCounting.productionTracking.error.trackingOperationOutComponent.storageLocationRequired",
-                            product.getStringField(ProductFields.NUMBER));
-                } else {
-                    if (Objects.nonNull(storageLocation)) {
+            if (Objects.nonNull(storageLocation)) {
+                boolean placeStorageLocation = storageLocation.getBooleanField(StorageLocationFields.PLACE_STORAGE_LOCATION);
+
+                if (placeStorageLocation) {
+                    Entity palletNumber = trackingOperationProductOutComponent.getBelongsToField(TrackingOperationProductOutComponentFields.PALLET_NUMBER);
+                    Entity product = trackingOperationProductOutComponent.getBelongsToField(TrackingOperationProductOutComponentFields.PRODUCT);
+                    if (Objects.isNull(palletNumber)) {
+                        productionTracking.addGlobalError("productionCounting.productionTracking.error.trackingOperationOutComponent.palletNumberRequired",
+                                product.getStringField(ProductFields.NUMBER));
+                    } else {
                         Entity location = storageLocation.getBelongsToField(StorageLocationFields.LOCATION);
                         String storageLocationNumber = storageLocation.getStringField(StorageLocationFields.NUMBER);
-                        boolean placeStorageLocation = storageLocation.getBooleanField(StorageLocationFields.PLACE_STORAGE_LOCATION);
+                        String palletNumberNumber = palletNumber.getStringField(PalletNumberFields.NUMBER);
+                        Entity typeOfLoadUnit = trackingOperationProductOutComponent.getBelongsToField(TrackingOperationProductOutComponentFields.TYPE_OF_LOAD_UNIT);
+                        String typeOfLoadUnitName = Objects.nonNull(typeOfLoadUnit) ? typeOfLoadUnit.getStringField(TypeOfLoadUnitFields.NAME) : null;
 
-                        if (placeStorageLocation) {
-                            if (Objects.isNull(palletNumber)) {
-                                productionTracking.addGlobalError("productionCounting.productionTracking.error.trackingOperationOutComponent.palletNumberRequired",
-                                        product.getStringField(ProductFields.NUMBER));
-                            } else {
-                                String palletNumberNumber = palletNumber.getStringField(PalletNumberFields.NUMBER);
+                        if (palletValidatorService.existsOtherResourceForPalletNumberOnOtherLocations(location.getId(), palletNumberNumber, null)) {
+                            productionTracking.addGlobalError("productionCounting.productionTracking.error.trackingOperationOutComponent.existsOtherResourceForPallet",
+                                    product.getStringField(ProductFields.NUMBER));
+                        } else if (palletValidatorService.existsOtherResourceForPalletNumberWithDifferentStorageLocation(location.getId(), storageLocationNumber,
+                                palletNumberNumber, null)) {
+                            productionTracking.addGlobalError("productionCounting.productionTracking.error.trackingOperationOutComponent.existsOtherResourceForPalletAndStorageLocation",
+                                    palletNumberNumber, product.getStringField(ProductFields.NUMBER));
+                        } else if (palletValidatorService.existsOtherResourceForPalletNumberWithDifferentType(location.getId(),
+                                palletNumberNumber, typeOfLoadUnitName, null)) {
+                            productionTracking.addGlobalError("productionCounting.productionTracking.error.trackingOperationOutComponent.existsOtherResourceForLoadUnitAndTypeOfLoadUnit",
+                                    palletNumberNumber, product.getStringField(ProductFields.NUMBER));
+                        }
 
-                                if (palletValidatorService.checkIfExistsMorePalletsForStorageLocation(location.getId(), storageLocationNumber, palletNumberNumber)) {
-                                    productionTracking.addGlobalError("productionCounting.productionTracking.error.trackingOperationOutComponent.morePalletsExists",
-                                            product.getStringField(ProductFields.NUMBER));
-                                }
-                            }
+                        if (palletValidatorService.checkIfExistsMorePalletsForStorageLocation(location.getId(), storageLocationNumber, palletNumberNumber)) {
+                            productionTracking.addGlobalError("productionCounting.productionTracking.error.trackingOperationOutComponent.morePalletsExists",
+                                    product.getStringField(ProductFields.NUMBER));
                         }
                     }
                 }
             }
+
         });
     }
 

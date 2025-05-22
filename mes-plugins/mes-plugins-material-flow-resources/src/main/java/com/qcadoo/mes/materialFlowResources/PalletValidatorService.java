@@ -333,6 +333,61 @@ public class PalletValidatorService {
         return jdbcTemplate.queryForObject(query.toString(), params, Long.class) > 0;
     }
 
+    public boolean existsOtherTrackingOperationProductOutComponentForPalletNumber(final String storageLocationNumber,
+                                                                                  final String palletNumberNumber, final String typeOfLoadUnitName,
+                                                                                  final Long trackingOperationProductOutComponentId, final Long orderId,
+                                                                                  Long productionTrackingId, String receiptOfProducts) {
+        StringBuilder query = new StringBuilder();
+
+        query.append("SELECT count(pto) FROM productioncounting_trackingoperationproductoutcomponent pto ");
+        query.append("JOIN productioncounting_productiontracking pt ");
+        query.append("ON pt.id = pto.productiontracking_id ");
+        query.append("JOIN orders_order o ");
+        query.append("ON o.id = pt.order_id ");
+        query.append("LEFT JOIN materialflowresources_storagelocation storagelocation ");
+        query.append("ON storagelocation.id = pto.storagelocation_id ");
+        query.append("JOIN basic_palletnumber palletnumber ");
+        query.append("ON palletnumber.id = pto.palletnumber_id ");
+        query.append("LEFT JOIN basic_typeofloadunit typeofloadunit ");
+        query.append("ON typeofloadunit.id = pto.typeofloadunit_id ");
+        query.append("WHERE palletnumber.number = :palletNumberNumber ");
+        query.append("AND (");
+        query.append("storageLocation.number <> :storageLocationNumber ");
+
+        if (StringUtils.isNotEmpty(typeOfLoadUnitName)) {
+            query.append("OR typeofloadunit.name <> :typeOfLoadUnitName OR COALESCE(typeofloadunit.name, '') = ''");
+        } else {
+            query.append("OR COALESCE(typeofloadunit.name, '') <> ''");
+        }
+
+        query.append(") ");
+        if("02endOfTheOrder".equals(receiptOfProducts)) {
+            query.append("AND ((pt.state = '01draft' OR pt.state = '02accepted') AND pto.typeofmaterial <> '02intermediate' ");
+            query.append("OR pt.state = '01draft' AND pto.typeofmaterial = '02intermediate') ");
+            query.append("AND o.id = :orderId ");
+        } else {
+            query.append("AND pt.id = :productionTrackingId ");
+        }
+
+        if (Objects.nonNull(trackingOperationProductOutComponentId)) {
+            query.append("AND pto.id <> :trackingOperationProductOutComponentId ");
+        }
+
+        Map<String, Object> params = Maps.newHashMap();
+
+        params.put("storageLocationNumber", storageLocationNumber);
+        params.put("palletNumberNumber", palletNumberNumber);
+        params.put("typeOfLoadUnitName", typeOfLoadUnitName);
+        params.put("orderId", orderId);
+        params.put("productionTrackingId", productionTrackingId);
+
+        if (Objects.nonNull(trackingOperationProductOutComponentId)) {
+            params.put("trackingOperationProductOutComponentId", trackingOperationProductOutComponentId);
+        }
+
+        return jdbcTemplate.queryForObject(query.toString(), params, Long.class) > 0;
+    }
+
     private boolean existsOtherDeliveredProductForPalletNumber(final Long locationId, final String storageLocationNumber,
                                                               final String palletNumberNumber,
                                                               final String typeOfLoadUnitName,

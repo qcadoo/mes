@@ -64,6 +64,7 @@
         <boolean name="blockedForQualityControl"/>
         <decimal name="colorResourcesAfterDeadline"/>
         <string name="expirationDateCellColor"/>
+        <string name="repackingNumber"/>
     </fields>
 
     <masterModel plugin="materialFlowResources" model="resource"/>

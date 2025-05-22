@@ -183,6 +183,8 @@
                     <option type="column" name="role" fields="role" link="true" width="40"/>
                     <option type="column" name="typeOfMaterial" fields="typeOfMaterial"
                             link="true" width="60"/>
+                    <option type="column" name="warehouseNumber" fields="warehouseNumber"
+                            link="true" width="60"/>
                     <option type="column" name="plannedQuantity" fields="plannedQuantity" width="30"/>
                     <option type="column" name="usedQuantity" fields="usedQuantity" width="30"/>
                     <option type="column" name="producedQuantity" fields="producedQuantity" width="30"/>
@@ -193,9 +195,9 @@
                     <option type="order" column="productNumber" direction="asc"/>
 
                     <option type="searchable" value="replacement,productNumber,productName,technologyInputProductTypeName,replacementTo,nodeNumber,operationNumber,operationName,role,
-					    typeOfMaterial,plannedQuantity,usedQuantity,producedQuantity,productUnit"/>
+					    typeOfMaterial,warehouseNumber,plannedQuantity,usedQuantity,producedQuantity,productUnit"/>
                     <option type="orderable" value="replacement,productNumber,productName,technologyInputProductTypeName,replacementTo,nodeNumber,operationNumber,operationName,role,
-					    typeOfMaterial,plannedQuantity,usedQuantity,producedQuantity,productUnit"/>
+					    typeOfMaterial,warehouseNumber,plannedQuantity,usedQuantity,producedQuantity,productUnit"/>
 
                     <option type="correspondingView"
                             value="basicProductionCounting/productionCountingQuantityAdvancedDetails"/>

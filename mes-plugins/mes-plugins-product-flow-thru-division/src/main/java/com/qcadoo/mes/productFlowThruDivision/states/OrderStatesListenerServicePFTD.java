@@ -28,7 +28,9 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 import com.qcadoo.commons.functional.Either;
 import com.qcadoo.mes.basic.ParameterService;
+import com.qcadoo.mes.basic.constants.PalletNumberFields;
 import com.qcadoo.mes.basic.constants.ProductFields;
+import com.qcadoo.mes.basic.constants.TypeOfLoadUnitFields;
 import com.qcadoo.mes.basic.constants.UnitConversionItemFieldsB;
 import com.qcadoo.mes.basicProductionCounting.BasicProductionCountingService;
 import com.qcadoo.mes.basicProductionCounting.constants.BasicProductionCountingConstants;
@@ -36,8 +38,10 @@ import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuanti
 import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityRole;
 import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityTypeOfMaterial;
 import com.qcadoo.mes.materialFlow.constants.MaterialFlowConstants;
+import com.qcadoo.mes.materialFlowResources.PalletValidatorService;
 import com.qcadoo.mes.materialFlowResources.constants.MaterialFlowResourcesConstants;
 import com.qcadoo.mes.materialFlowResources.constants.PositionFields;
+import com.qcadoo.mes.materialFlowResources.constants.StorageLocationFields;
 import com.qcadoo.mes.materialFlowResources.service.DocumentBuilder;
 import com.qcadoo.mes.materialFlowResources.service.DocumentManagementService;
 import com.qcadoo.mes.materialFlowResources.service.DocumentStateChangeService;
@@ -117,6 +121,9 @@ public class OrderStatesListenerServicePFTD {
     @Autowired
     private SecurityService securityService;
 
+    @Autowired
+    private PalletValidatorService palletValidatorService;
+
     public void clearReservations(final StateChangeContext stateChangeContext) {
         orderReservationsService.clearReservationsForOrder(stateChangeContext.getOwner());
     }
@@ -129,7 +136,10 @@ public class OrderStatesListenerServicePFTD {
             Either<String, Void> result = tryAcceptInboundDocumentsFor(order);
 
             if (result.isLeft()) {
-                stateChangeContext.addMessage(result.getLeft(), StateMessageType.FAILURE);
+                for (ErrorMessage error : order.getGlobalErrors()) {
+                    stateChangeContext.addMessage(error.getMessage(), StateMessageType.FAILURE, error.getVars());
+                }
+
             }
         }
     }
@@ -155,7 +165,18 @@ public class OrderStatesListenerServicePFTD {
             List<InboundPositionHolder> entries = mapToHolderFromOutProduct(order, groupedRecordOutProducts.get(locationId),
                     isNominalProductCost);
             Entity locationTo = getLocationDD().get(locationId);
-            Entity document = createInternalInboundDocument(locationTo, order, entries);
+            List<Entity> positions = Lists.newArrayList();
+            Optional<ErrorMessage> validationError = createPositions(locationTo, positions, entries);
+            if (validationError.isPresent()) {
+                ErrorMessage errorMessage = validationError.get();
+                order.addGlobalError(errorMessage.getMessage(), errorMessage.getVars());
+
+                order.addGlobalError(L_ACCEPT_INBOUND_DOCUMENT_ERROR);
+
+                return Either.left(L_ACCEPT_INBOUND_DOCUMENT_ERROR);
+            }
+
+            Entity document = createInternalInboundDocument(locationTo, order, positions);
 
             if (!document.isValid()) {
                 documentStateChangeService.buildFailureStateChange(document.getId());
@@ -177,6 +198,51 @@ public class OrderStatesListenerServicePFTD {
         }
 
         return documentsForNotUsedMaterials;
+    }
+
+    private Optional<ErrorMessage> createPositions(Entity locationTo, List<Entity> positions,
+                                                   List<InboundPositionHolder> outProductsRecords) {
+
+        DataDefinition positionDD = getPositionDD();
+        for (InboundPositionHolder outProductRecord : outProductsRecords) {
+            Entity position = preparePositionForOutProduct(positionDD, outProductRecord);
+            Entity storageLocation = position.getBelongsToField(PositionFields.STORAGE_LOCATION);
+            if (Objects.nonNull(storageLocation)) {
+                boolean placeStorageLocation = storageLocation.getBooleanField(StorageLocationFields.PLACE_STORAGE_LOCATION);
+                if (placeStorageLocation) {
+                    Entity palletNumber = position.getBelongsToField(PositionFields.PALLET_NUMBER);
+                    Entity product = position.getBelongsToField(PositionFields.PRODUCT);
+                    if (Objects.isNull(palletNumber)) {
+                        return Optional.of(new ErrorMessage("productionCounting.productionTracking.error.trackingOperationOutComponent.palletNumberRequired", product.getStringField(ProductFields.NUMBER)));
+                    } else {
+                        Entity typeOfLoadUnit = position.getBelongsToField(PositionFields.TYPE_OF_LOAD_UNIT);
+                        String storageLocationNumber = storageLocation.getStringField(StorageLocationFields.NUMBER);
+                        String palletNumberNumber = palletNumber.getStringField(PalletNumberFields.NUMBER);
+                        String typeOfLoadUnitName = Objects.nonNull(typeOfLoadUnit) ? typeOfLoadUnit.getStringField(TypeOfLoadUnitFields.NAME) : null;
+
+                        if (palletValidatorService.existsOtherResourceForPalletNumberOnOtherLocations(locationTo.getId(), palletNumberNumber, null)) {
+                            return Optional.of(new ErrorMessage("productionCounting.productionTracking.error.trackingOperationOutComponent.existsOtherResourceForPallet",
+                                    product.getStringField(ProductFields.NUMBER)));
+                        } else if (palletValidatorService.existsOtherResourceForPalletNumberWithDifferentStorageLocation(locationTo.getId(), storageLocationNumber,
+                                palletNumberNumber, null)) {
+                            return Optional.of(new ErrorMessage("productionCounting.productionTracking.error.trackingOperationOutComponent.existsOtherResourceForPalletAndStorageLocation",
+                                    palletNumberNumber, product.getStringField(ProductFields.NUMBER)));
+                        } else if (palletValidatorService.existsOtherResourceForPalletNumberWithDifferentType(locationTo.getId(),
+                                palletNumberNumber, typeOfLoadUnitName, null)) {
+                            return Optional.of(new ErrorMessage("productionCounting.productionTracking.error.trackingOperationOutComponent.existsOtherResourceForLoadUnitAndTypeOfLoadUnit",
+                                    palletNumberNumber, product.getStringField(ProductFields.NUMBER)));
+                        }
+
+                        if (palletValidatorService.checkIfExistsMorePalletsForStorageLocation(locationTo.getId(), storageLocationNumber, palletNumberNumber)) {
+                            return Optional.of(new ErrorMessage("productionCounting.productionTracking.error.trackingOperationOutComponent.morePalletsExists",
+                                    product.getStringField(ProductFields.NUMBER)));
+                        }
+                    }
+                }
+            }
+            positions.add(position);
+        }
+        return Optional.empty();
     }
 
     private List<InboundPositionHolder> mapToHolderFromOutProduct(
@@ -269,16 +335,13 @@ public class OrderStatesListenerServicePFTD {
     }
 
     private Entity createInternalInboundDocument(final Entity locationTo, final Entity order,
-                                                 List<InboundPositionHolder> outProductsRecords) {
+                                                 List<Entity> positions) {
         Entity user = getUserDD().get(securityService.getCurrentUserId());
         DocumentBuilder internalInboundBuilder = documentManagementService.getDocumentBuilder(user);
 
         internalInboundBuilder.internalInbound(locationTo);
 
-        DataDefinition positionDD = getPositionDD();
-        for (InboundPositionHolder outProductRecord : outProductsRecords) {
-            Entity position = preparePositionForOutProduct(positionDD, outProductRecord);
-
+        for (Entity position : positions) {
             internalInboundBuilder.addPosition(position);
         }
 

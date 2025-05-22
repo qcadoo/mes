@@ -33,6 +33,7 @@ import com.qcadoo.mes.productionCounting.constants.ProductionTrackingFields;
 import com.qcadoo.mes.productionCounting.constants.TrackingOperationProductOutComponentDtoFields;
 import com.qcadoo.mes.productionCounting.constants.TrackingOperationProductOutComponentFields;
 import com.qcadoo.mes.productionCounting.listeners.TrackingOperationProductComponentDetailsListeners;
+import com.qcadoo.mes.productionCounting.states.constants.ProductionTrackingStateStringValues;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -162,16 +163,15 @@ public class TrackingOperationProductOutComponentDetailsHooks {
             if (Objects.nonNull(warehouse)) {
                 storageLocationFilterValueHolder.put(L_LOCATION_ID, warehouse.getId());
 
-                Optional<Entity> mayBeStorageLocation = materialFlowResourcesService.findStorageLocationForProduct(warehouse,
-                        product);
+                if (Objects.isNull(storageLocationLookup.getEntity())
+                        && productionTracking.getStringField(ProductionTrackingFields.STATE).equals(ProductionTrackingStateStringValues.DRAFT)) {
+                    Optional<Entity> mayBeStorageLocation = materialFlowResourcesService.findStorageLocationForProduct(warehouse,
+                            product.getId());
 
-                if (mayBeStorageLocation.isPresent()) {
-                    if (Objects.isNull(storageLocationLookup.getEntity())) {
+                    if (mayBeStorageLocation.isPresent()) {
                         storageLocationLookup.setFieldValue(mayBeStorageLocation.get().getId());
                         storageLocationLookup.requestComponentUpdateState();
                     }
-
-                    storageLocationLookup.setEnabled(false);
                 }
             } else if (storageLocationFilterValueHolder.has(L_LOCATION_ID)) {
                 storageLocationFilterValueHolder.remove(L_LOCATION_ID);
