@@ -161,7 +161,7 @@ public class TrackingOperationProductOutComponentHooks {
                                 return false;
                             }
 
-                            if (palletValidatorService.checkIfExistsMorePalletsForStorageLocation(location.getId(), storageLocationNumber, palletNumberNumber)) {
+                            if (!palletValidatorService.notTooManyPalletsInStorageLocationAndProductionTracking(trackingOperationProductOutComponent, storageLocation, palletNumber)) {
                                 trackingOperationProductOutComponent.addError(trackingOperationProductOutComponentDD.getField(TrackingOperationProductOutComponentFields.STORAGE_LOCATION), "productionCounting.trackingOperationProductOutComponent.error.existsOtherPalletsAtStorageLocation");
 
                                 return false;

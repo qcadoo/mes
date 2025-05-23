@@ -568,6 +568,49 @@ public class PalletValidatorService {
         return true;
     }
 
+    public boolean notTooManyPalletsInStorageLocationAndProductionTracking(final Entity trackingOperationProductOutComponent, Entity storageLocation, Entity palletNumber) {
+        if (Objects.nonNull(storageLocation) && storageLocation.getBooleanField(StorageLocationFields.PLACE_STORAGE_LOCATION) && Objects.nonNull(palletNumber)) {
+            StringBuilder query = new StringBuilder();
+
+            query.append("SELECT ");
+            query.append("COUNT(DISTINCT palletsInStorageLocation.palletnumber_id) AS palletsCount ");
+            query.append("FROM (");
+            query.append("SELECT ");
+            query.append("resource.palletnumber_id, ");
+            query.append("resource.storagelocation_id ");
+            query.append("FROM materialflowresources_resource resource ");
+            query.append("UNION ALL ");
+            query.append("SELECT ");
+            query.append("topoc.palletnumber_id, ");
+            query.append("topoc.storagelocation_id ");
+            query.append("FROM productioncounting_productiontracking pt ");
+            query.append("JOIN productioncounting_trackingoperationproductoutcomponent topoc ");
+            query.append("ON topoc.productiontracking_id = pt.id ");
+            query.append("WHERE pt.id = :productionTrackingId ");
+            query.append("AND topoc.id <> :topocId ");
+            query.append(") palletsInStorageLocation ");
+            query.append("WHERE palletsInStorageLocation.storagelocation_id = :storageLocationId ");
+            query.append("AND palletsInStorageLocation.palletnumber_id <> :palletNumberId");
+
+            Long topocId = Optional.ofNullable(trackingOperationProductOutComponent.getId()).orElse(-1L);
+
+            Map<String, Object> params = Maps.newHashMap();
+
+            params.put("storageLocationId", storageLocation.getId());
+            params.put("palletNumberId", palletNumber.getId());
+            params.put("topocId", topocId);
+            params.put("productionTrackingId", trackingOperationProductOutComponent.getBelongsToField("productionTracking").getId());
+
+            Long palletsInStorageLocation = jdbcTemplate.queryForObject(query.toString(), params, Long.class);
+
+            BigDecimal maximumNumberOfPallets = storageLocation.getDecimalField(StorageLocationFields.MAXIMUM_NUMBER_OF_PALLETS);
+
+            return Objects.isNull(maximumNumberOfPallets) || (BigDecimal.valueOf(palletsInStorageLocation + 1).compareTo(maximumNumberOfPallets) <= 0);
+        }
+
+        return true;
+    }
+
     public boolean checkMaximumNumberOfPallets(final Entity storageLocation, final Entity resource) {
         return checkMaximumNumberOfPallets(storageLocation, resource, 1);
     }

@@ -196,7 +196,7 @@ public final class ProductionTrackingListenerService {
                     } else {
                         validateResources(productionTracking, location, palletNumberNumber, product, storageLocationNumber, typeOfLoadUnitName);
 
-                        if (palletValidatorService.checkIfExistsMorePalletsForStorageLocation(location.getId(), storageLocationNumber, palletNumberNumber)) {
+                        if (!palletValidatorService.notTooManyPalletsInStorageLocationAndProductionTracking(trackingOperationProductOutComponent, storageLocation, palletNumber)) {
                             productionTracking.addGlobalError("productionCounting.productionTracking.error.trackingOperationOutComponent.morePalletsExists",
                                     product.getStringField(ProductFields.NUMBER));
                         }
