@@ -176,6 +176,11 @@ public final class ProductionTrackingListenerService {
         List<Entity> trackingOperationProductOutComponents = productionTracking
                 .getHasManyField(ProductionTrackingFields.TRACKING_OPERATION_PRODUCT_OUT_COMPONENTS);
 
+        Entity parameter = parameterService.getParameter();
+
+        String receiptOfProducts = parameter.getStringField(ParameterFieldsPC.RECEIPT_OF_PRODUCTS);
+        Entity order = productionTracking.getBelongsToField(ProductionTrackingFields.ORDER);
+
         trackingOperationProductOutComponents.forEach(trackingOperationProductOutComponent -> {
             Entity storageLocation = trackingOperationProductOutComponent.getBelongsToField(TrackingOperationProductOutComponentFields.STORAGE_LOCATION);
 
@@ -195,6 +200,11 @@ public final class ProductionTrackingListenerService {
                                 product.getStringField(ProductFields.NUMBER));
                     } else {
                         validateResources(productionTracking, location, palletNumberNumber, product, storageLocationNumber, typeOfLoadUnitName);
+
+                        if (palletValidatorService.existsOtherTrackingOperationProductOutComponentForPalletNumber(storageLocationNumber, palletNumberNumber, typeOfLoadUnitName, trackingOperationProductOutComponent.getId(), order.getId(), productionTracking.getId(), receiptOfProducts)) {
+                            productionTracking.addGlobalError("productionCounting.productionTracking.error.existsOtherTrackingOperationProductOutComponentForPalletAndStorageLocation",
+                                    product.getStringField(ProductFields.NUMBER));
+                        }
 
                         if (!palletValidatorService.notTooManyPalletsInStorageLocationAndProductionTracking(trackingOperationProductOutComponent, storageLocation, palletNumber)) {
                             productionTracking.addGlobalError("productionCounting.productionTracking.error.trackingOperationOutComponent.morePalletsExists",
