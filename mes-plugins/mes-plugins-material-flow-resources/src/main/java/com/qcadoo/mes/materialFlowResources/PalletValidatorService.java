@@ -342,8 +342,7 @@ public class PalletValidatorService {
         query.append("SELECT count(pto) FROM productioncounting_trackingoperationproductoutcomponent pto ");
         query.append("JOIN productioncounting_productiontracking pt ");
         query.append("ON pt.id = pto.productiontracking_id ");
-        query.append("JOIN orders_order o ");
-        query.append("ON o.id = pt.order_id ");
+        query.append("JOIN orders_order o ON o.id = pt.order_id ");
         query.append("LEFT JOIN materialflowresources_storagelocation storagelocation ");
         query.append("ON storagelocation.id = pto.storagelocation_id ");
         query.append("JOIN basic_palletnumber palletnumber ");
@@ -568,7 +567,7 @@ public class PalletValidatorService {
         return true;
     }
 
-    public boolean notTooManyPalletsInStorageLocationAndProductionTracking(final Entity trackingOperationProductOutComponent, Entity storageLocation, Entity palletNumber) {
+    public boolean notTooManyPalletsInStorageLocationAndProductionTracking(final Entity trackingOperationProductOutComponent, Entity storageLocation, Entity palletNumber, final Long orderId, String receiptOfProducts) {
         if (Objects.nonNull(storageLocation) && storageLocation.getBooleanField(StorageLocationFields.PLACE_STORAGE_LOCATION) && Objects.nonNull(palletNumber)) {
             StringBuilder query = new StringBuilder();
 
@@ -584,10 +583,19 @@ public class PalletValidatorService {
             query.append("topoc.palletnumber_id, ");
             query.append("topoc.storagelocation_id ");
             query.append("FROM productioncounting_productiontracking pt ");
+            query.append("JOIN orders_order o ON o.id = pt.order_id ");
             query.append("JOIN productioncounting_trackingoperationproductoutcomponent topoc ");
             query.append("ON topoc.productiontracking_id = pt.id ");
-            query.append("WHERE pt.id = :productionTrackingId ");
-            query.append("AND topoc.id <> :topocId ");
+            query.append("WHERE topoc.id <> :topocId ");
+
+            if("02endOfTheOrder".equals(receiptOfProducts)) {
+                query.append("AND ((pt.state = '01draft' OR pt.state = '02accepted') AND topoc.typeofmaterial <> '02intermediate' ");
+                query.append("OR pt.state = '01draft' AND topoc.typeofmaterial = '02intermediate') ");
+                query.append("AND o.id = :orderId ");
+            } else {
+                query.append("AND pt.id = :productionTrackingId ");
+            }
+
             query.append(") palletsInStorageLocation ");
             query.append("WHERE palletsInStorageLocation.storagelocation_id = :storageLocationId ");
             query.append("AND palletsInStorageLocation.palletnumber_id <> :palletNumberId");
@@ -599,6 +607,7 @@ public class PalletValidatorService {
             params.put("storageLocationId", storageLocation.getId());
             params.put("palletNumberId", palletNumber.getId());
             params.put("topocId", topocId);
+            params.put("orderId", orderId);
             params.put("productionTrackingId", trackingOperationProductOutComponent.getBelongsToField("productionTracking").getId());
 
             Long palletsInStorageLocation = jdbcTemplate.queryForObject(query.toString(), params, Long.class);
