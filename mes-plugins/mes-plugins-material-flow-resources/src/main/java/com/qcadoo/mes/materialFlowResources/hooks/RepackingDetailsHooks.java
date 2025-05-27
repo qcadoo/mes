@@ -34,8 +34,6 @@ public class RepackingDetailsHooks {
         Entity repacking = form.getPersistedEntityWithIncludedFormValues();
         if (Objects.isNull(timeField.getFieldValue())) {
             timeField.setFieldValue(DateUtils.toDateTimeString(new Date()));
-        }
-        if (view.isViewAfterRedirect() && Objects.isNull(staffLookup.getFieldValue())) {
             Entity worker = userService.getCurrentUserEntity().getBelongsToField(UserFieldsB.STAFF);
             if (Objects.nonNull(worker)) {
                 staffLookup.setFieldValue(worker.getId());
