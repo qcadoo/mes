@@ -23,6 +23,7 @@
  */
 package com.qcadoo.mes.materialFlowResources.hooks;
 
+import com.qcadoo.mes.materialFlowResources.constants.RepackingPositionFields;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.GridComponent;
 import com.qcadoo.view.api.components.WindowComponent;
@@ -46,12 +47,11 @@ public class RepackingPositionsListHooks {
         if (grid.getSelectedEntitiesIds().size() != 1) {
             filterRepackingPositionsByFromResource.setEnabled(false);
             showDocumentPositionsWithFromResource.setEnabled(false);
-            showDocumentPositionsWithToResource.setEnabled(false);
         } else {
             filterRepackingPositionsByFromResource.setEnabled(true);
             showDocumentPositionsWithFromResource.setEnabled(true);
-            showDocumentPositionsWithToResource.setEnabled(true);
         }
+        showDocumentPositionsWithToResource.setEnabled(grid.getSelectedEntitiesIds().size() == 1 && grid.getSelectedEntities().get(0).getStringField(RepackingPositionFields.CREATED_RESOURCE_NUMBER) != null);
         filterRepackingPositionsByFromResource.requestUpdate(true);
         showDocumentPositionsWithFromResource.requestUpdate(true);
         showDocumentPositionsWithToResource.requestUpdate(true);

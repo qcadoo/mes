@@ -65,7 +65,7 @@
             <option type="column" name="quantity" fields="quantity" width="50"/>
             <option type="column" name="productUnit" fields="product" expression="#product['unit']" width="30"/>
             <option type="column" name="additionalQuantity" fields="additionalQuantity" width="50"/>
-            <option type="column" name="productAdditionalUnit" fields="product" expression="#product['additionalUnit']" width="30"/>
+            <option type="column" name="productAdditionalUnit" fields="product" expression="#product['additionalUnit'] != null ? #product['additionalUnit'] : #product['unit']" width="30"/>
             <option type="column" name="conversion" fields="conversion" width="40"/>
             <option type="column" name="resourceNumber" fields="resourceNumber" width="50"/>
             <option type="column" name="createdResourceNumber" fields="createdResourceNumber" width="50"/>
@@ -78,10 +78,10 @@
 
             <option type="searchable"
                     value="repackingNumber,repackingTime,repackingDescription,repackingLocation,repackingStorageLocation,repackingPalletNumber,repackingTypeOfLoadUnit,repackingState,
-                            productNumber,productName,quantity,productUnit,additionalQuantity,productAdditionalUnit,conversion,resourceNumber,createdResourceNumber,batch,storageLocation,palletNumber,typeOfLoadUnit"/>
+                            productNumber,productName,quantity,productUnit,additionalQuantity,conversion,resourceNumber,createdResourceNumber,batch,storageLocation,palletNumber,typeOfLoadUnit"/>
             <option type="orderable"
                     value="repackingNumber,repackingTime,repackingDescription,repackingLocation,repackingStorageLocation,repackingPalletNumber,repackingTypeOfLoadUnit,repackingState,
-                            productNumber,productName,quantity,productUnit,additionalQuantity,productAdditionalUnit,conversion,resourceNumber,createdResourceNumber,batch,storageLocation,palletNumber,typeOfLoadUnit"/>
+                            productNumber,productName,quantity,productUnit,additionalQuantity,conversion,resourceNumber,createdResourceNumber,batch,storageLocation,palletNumber,typeOfLoadUnit"/>
 
             <option type="creatable" value="false"/>
             <option type="deletable" value="false"/>
