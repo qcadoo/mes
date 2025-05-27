@@ -53,7 +53,7 @@
                     hidden="true"/>
             <option type="column" name="repackingTime" fields="repacking" expression="#repacking['time']" width="100"/>
             <option type="column" name="repackingStaff" fields="repacking"
-                    expression="#repacking['staff']?.get('name') + ' ' + #repacking['staff']?.get('surname')" width="50"/>
+                    expression="#repacking['staff'] != null ? #repacking['staff'].get('name') + ' ' + #repacking['staff'].get('surname') : ''" width="50"/>
             <option type="column" name="repackingDescription" fields="repacking" expression="#repacking['description']" width="100"/>
             <option type="column" name="repackingLocation" fields="repacking" expression="#repacking['location'].get('number')" width="40"/>
             <option type="column" name="repackingStorageLocation" fields="repacking" expression="#repacking['storageLocation']?.get('number')" width="60"/>
