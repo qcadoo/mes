@@ -74,6 +74,8 @@ import org.apache.commons.collections.MultiMap;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 import java.math.BigDecimal;
@@ -128,18 +130,23 @@ public class OrderStatesListenerServicePFTD {
         orderReservationsService.clearReservationsForOrder(stateChangeContext.getOwner());
     }
 
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void acceptInboundDocumentsForOrder(final StateChangeContext stateChangeContext) {
+        String releaseOfMaterials = parameterService.getParameter().getStringField(ParameterFieldsPC.RELEASE_OF_MATERIALS);
+        if (ReleaseOfMaterials.END_OF_THE_ORDER.getStringValue().equals(releaseOfMaterials)) {
+            Entity order = stateChangeContext.getOwner();
+
+            productionCountingDocumentService.createCumulatedInternalOutboundDocument(order);
+        }
         if (ReceiptOfProducts.END_OF_THE_ORDER.getStringValue()
                 .equals(parameterService.getParameter().getStringField(ParameterFieldsPC.RECEIPT_OF_PRODUCTS))) {
             Entity order = stateChangeContext.getOwner();
+            if (order.isValid()) {
+                Either<String, Void> result = tryAcceptInboundDocumentsFor(order);
 
-            Either<String, Void> result = tryAcceptInboundDocumentsFor(order);
-
-            if (result.isLeft()) {
-                for (ErrorMessage error : order.getGlobalErrors()) {
-                    stateChangeContext.addMessage(error.getMessage(), StateMessageType.FAILURE, error.getVars());
+                if (result.isLeft()) {
+                    TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
                 }
-
             }
         }
     }
@@ -191,13 +198,7 @@ public class OrderStatesListenerServicePFTD {
             }
         }
 
-        Either<String, Void> documentsForNotUsedMaterials = createDocumentsForNotUsedMaterials(order);
-
-        if (documentsForNotUsedMaterials.isLeft()) {
-            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-        }
-
-        return documentsForNotUsedMaterials;
+        return createDocumentsForNotUsedMaterials(order);
     }
 
     private Optional<ErrorMessage> createPositions(Entity locationTo, List<Entity> positions,
@@ -619,12 +620,6 @@ public class OrderStatesListenerServicePFTD {
                 return;
             }
         }
-    }
-
-    public void createCumulatedInternalOutboundDocument(final StateChangeContext stateChangeContext) {
-        Entity order = stateChangeContext.getOwner();
-
-        productionCountingDocumentService.createCumulatedInternalOutboundDocument(order);
     }
 
     private DataDefinition getProductionTrackingDD() {

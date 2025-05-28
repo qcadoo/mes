@@ -138,7 +138,6 @@ public class ProductionCountingDocumentService {
         }
     }
 
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void createInternalOutboundDocumentPT(final Entity order,
                                                  final List<Entity> trackingOperationProductInComponents) {
         Multimap<Long, Entity> groupedRecordInProducts = productionTrackingDocumentsHelper.groupAndFilterInProducts(order,
