@@ -70,6 +70,10 @@
 		<string name="producedBatchNumber"/>
 
 		<enum name="typeOfRecord" values="01in,02out"/>
+		<string name="warehouseNumber"/>
+		<string name="storageLocationNumber"/>
+		<string name="loadUnitNumber"/>
+		<string name="typeOfLoadUnit"/>
 	</fields>
 
 	<masterModel plugin="productionCounting" model="productionTracking"/>

@@ -106,15 +106,25 @@
 					width="100"/>
 			<option type="column" name="typeOfRecord" fields="typeOfRecord"
 					width="60"/>
+			<option type="column" name="warehouseNumber" fields="warehouseNumber"
+					width="60"/>
+			<option type="column" name="storageLocationNumber" fields="storageLocationNumber"
+					width="100"/>
+			<option type="column" name="loadUnitNumber" fields="loadUnitNumber"
+					width="60"/>
+			<option type="column" name="typeOfLoadUnit" fields="typeOfLoadUnit"
+					width="80"/>
 			<option type="column" name="orderState" fields="orderState" hidden="true"/>
 			<option type="column" name="productiontracking_id" fields="productiontracking_id" hidden="true"/>
 
 			<option type="order" column="number" direction="asc"/>
 
 			<option type="searchable"
-					value="number,orderNumber,producedBatchNumber,technologyOperationComponentNumber,shiftName,staffName,divisionNumber,productNumber,plannedQuantity,usedQuantity,productUnit,state,createDate,lastTracking,timeRangeFrom,timeRangeTo,batchNumber,typeOfRecord"/>
+					value="number,orderNumber,producedBatchNumber,technologyOperationComponentNumber,shiftName,staffName,divisionNumber,
+					productNumber,plannedQuantity,usedQuantity,productUnit,state,createDate,lastTracking,timeRangeFrom,timeRangeTo,batchNumber,typeOfRecord,warehouseNumber,storageLocationNumber,loadUnitNumber,typeOfLoadUnit"/>
 			<option type="orderable"
-					value="number,orderNumber,producedBatchNumber,technologyOperationComponentNumber,shiftName,staffName,divisionNumber,productNumber,plannedQuantity,usedQuantity,productUnit,state,createDate,lastTracking,timeRangeFrom,timeRangeTo,batchNumber,typeOfRecord"/>
+					value="number,orderNumber,producedBatchNumber,technologyOperationComponentNumber,shiftName,staffName,divisionNumber,
+					productNumber,plannedQuantity,usedQuantity,productUnit,state,createDate,lastTracking,timeRangeFrom,timeRangeTo,batchNumber,typeOfRecord,warehouseNumber,storageLocationNumber,loadUnitNumber,typeOfLoadUnit"/>
 
 			<option type="footerRow" value="true"/>
 			<option type="columnsToSummary"
