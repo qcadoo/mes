@@ -355,8 +355,8 @@ public class OrderStatesListenerServicePFTD {
     private Entity preparePositionForOutProduct(DataDefinition positionDD, InboundPositionHolder outProductRecord) {
         Entity position = positionDD.create();
 
-        position.setField(PositionFields.PRODUCT, outProductRecord.getProductId());
-        position.setField(PositionFields.BATCH, outProductRecord.getBatchId());
+        position.setField(PositionFields.PRODUCT, outProductRecord.getProduct());
+        position.setField(PositionFields.BATCH, outProductRecord.getBatch());
         position.setField(PositionFields.QUANTITY, outProductRecord.getUsedQuantity());
         position.setField(PositionFields.CONVERSION, outProductRecord.getConversion());
         position.setField(PositionFields.GIVEN_QUANTITY, outProductRecord.getGivenQuantity());
