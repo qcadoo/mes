@@ -198,7 +198,10 @@ public class DocumentValidators {
                             documentForm.addMessage("materialFlow.document.validate.global.error.invalidResource.batchRequired",
                                     ComponentState.MessageType.FAILURE, false, productNumber);
                         } else {
-                            if (ire.getErrors().values().stream().anyMatch(e -> e.getMessage().equals("documentGrid.error.position.existsOtherResourceForPalletAndStorageLocation"))) {
+                            if (ire.getErrors().values().stream().anyMatch(e -> e.getMessage().equals("documentGrid.error.position.existsOtherResourceForPallet"))) {
+                                documentForm.addMessage("documentGrid.error.position.existsOtherResourceForPallet",
+                                        ComponentState.MessageType.FAILURE, false, ire.getEntity().getBelongsToField(ResourceFields.PALLET_NUMBER).getStringField(PalletNumberFields.NUMBER));
+                            } else if (ire.getErrors().values().stream().anyMatch(e -> e.getMessage().equals("documentGrid.error.position.existsOtherResourceForPalletAndStorageLocation"))) {
                                 documentForm.addMessage("documentGrid.error.position.existsOtherResourceForPalletAndStorageLocation",
                                         ComponentState.MessageType.FAILURE, false, ire.getEntity().getBelongsToField(ResourceFields.PALLET_NUMBER).getStringField(PalletNumberFields.NUMBER));
                             } else if (ire.getErrors().values().stream().anyMatch(e -> e.getMessage().equals("documentGrid.error.position.existsOtherResourceForLoadUnitAndTypeOfLoadUnit"))) {
