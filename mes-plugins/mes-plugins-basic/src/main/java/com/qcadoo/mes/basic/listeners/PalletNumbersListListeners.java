@@ -24,8 +24,6 @@
 package com.qcadoo.mes.basic.listeners;
 
 import com.qcadoo.mes.basic.PalletNumbersService;
-import com.qcadoo.mes.basic.constants.PalletNumberFields;
-import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
@@ -65,11 +63,6 @@ public class PalletNumbersListListeners {
         List<Entity> palletNumbers = palletNumbersService.getPalletNumbers(palletNumberIds);
 
         if (!palletNumbers.isEmpty()) {
-            DataDefinition palletNumberDD = palletNumbersService.getPalletNumberDD();
-            for (Entity palletNumber : palletNumbers) {
-                palletNumber.setField(PalletNumberFields.PRINTED, true);
-                palletNumberDD.save(palletNumber);
-            }
             Entity palletNumbersHelper = palletNumbersService.createPalletNumberHelper(palletNumbers.size(), true, palletNumbers);
 
             if (palletNumbersHelper != null) {
