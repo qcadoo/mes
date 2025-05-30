@@ -53,7 +53,7 @@ public class GeneratorViewHooks {
 
     public void onBeforeRender(final ViewDefinitionState view) {
         GeneratorView generatorView = GeneratorView.from(view);
-        generateProductNumber(view);
+        generateGeneratorNumber(view);
         showRibbonButtons(generatorView, view);
         GridComponent grid = (GridComponent) view.getComponentByReference("generatorTechnologiesForProducts");
         FilterValueHolder gridHolder = grid.getFilterValue();
@@ -62,7 +62,7 @@ public class GeneratorViewHooks {
 
     }
 
-    public void generateProductNumber(final ViewDefinitionState view) {
+    public void generateGeneratorNumber(final ViewDefinitionState view) {
         numberGeneratorService.generateAndInsertNumber(view, TechnologiesGeneratorConstants.PLUGIN_IDENTIFIER, TechnologiesGeneratorConstants.MODEL_GENERATOR_CONTEXT,
                 QcadooViewConstants.L_FORM, GeneratorContextFields.NAME);
     }
