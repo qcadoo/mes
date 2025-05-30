@@ -59,6 +59,7 @@ public class PalletNumbersServiceImpl implements PalletNumbersService {
         Entity palletNumber = getPalletNumberDD().create();
 
         palletNumber.setField(PalletNumberFields.NUMBER, number);
+        palletNumber.setField(PalletNumberFields.PRINTED, false);
 
         palletNumber = palletNumber.getDataDefinition().save(palletNumber);
 

@@ -33,6 +33,8 @@ public final class PalletNumberFields {
 
     public static final String NUMBER = "number";
 
+    public static final String PRINTED = "printed";
+
     public static final String PALLET_NUMBER_HELPERS = "palletNumberHelpers";
 
 }

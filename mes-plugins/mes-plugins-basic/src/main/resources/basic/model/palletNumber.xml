@@ -40,6 +40,7 @@
 
         <manyToMany name="palletNumberHelpers" model="palletNumberHelper" joinField="palletNumbers"
                     cascade="nullify" plugin="basic"/>
+        <boolean name="printed" default="false"/>
     </fields>
 
     <hooks>
