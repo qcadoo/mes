@@ -154,7 +154,8 @@ public class OrderStatesListenerServicePFTD {
     private Either<String, Void> tryAcceptInboundDocumentsFor(final Entity order) {
         List<Entity> productionTrackings = getProductionTrackingDD().find()
                 .add(SearchRestrictions.belongsTo(ProductionTrackingFields.ORDER, order))
-                .add(SearchRestrictions.eq(ProductionTrackingFields.STATE, ProductionTrackingStateStringValues.ACCEPTED))
+                .add(SearchRestrictions.in(ProductionTrackingFields.STATE,
+                        Lists.newArrayList(ProductionTrackingStateStringValues.DRAFT, ProductionTrackingStateStringValues.ACCEPTED)))
                 .list().getEntities();
 
         List<Entity> trackingOperationProductOutComponents = Lists.newArrayList();
