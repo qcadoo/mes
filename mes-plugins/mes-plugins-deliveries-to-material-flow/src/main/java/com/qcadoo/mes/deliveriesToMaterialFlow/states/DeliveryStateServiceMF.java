@@ -170,9 +170,9 @@ public class DeliveryStateServiceMF {
         if (Objects.isNull(systemCurrency) || deliveryCurrency.getId().equals(systemCurrency.getId())) {
             pricePerUnit = price;
         } else if (deliveryCurrency.getId().equals(plnCurrency.getId()) && !deliveryCurrency.getId().equals(systemCurrency.getId())) {
-            pricePerUnit = currencyService.getConvertedValue(price, systemCurrency);
+            pricePerUnit = currencyService.getRevertedValue(price, systemCurrency);
         } else if (systemCurrency.getId().equals(plnCurrency.getId()) && !deliveryCurrency.getId().equals(systemCurrency.getId())) {
-            pricePerUnit = currencyService.getRevertedValue(price, deliveryCurrency);
+            pricePerUnit = currencyService.getConvertedValue(price, deliveryCurrency);
         }
 
         return pricePerUnit;
