@@ -164,6 +164,27 @@ public class OrderStatesListenerServicePFTD {
             trackingOperationProductOutComponents.addAll(Lists.newArrayList(productionTracking.getHasManyField(ProductionTrackingFields.TRACKING_OPERATION_PRODUCT_OUT_COMPONENTS)));
         }
 
+        for (Entity trackingOperationProductOutComponent : trackingOperationProductOutComponents) {
+            Entity storageLocation = trackingOperationProductOutComponent.getBelongsToField(TrackingOperationProductOutComponentFields.STORAGE_LOCATION);
+            if (Objects.nonNull(storageLocation)) {
+                String storageLocationNumber = storageLocation.getStringField(StorageLocationFields.NUMBER);
+                Entity palletNumber = trackingOperationProductOutComponent.getBelongsToField(TrackingOperationProductOutComponentFields.PALLET_NUMBER);
+                String palletNumberNumber = Objects.nonNull(palletNumber) ? palletNumber.getStringField(PalletNumberFields.NUMBER) : null;
+                Entity typeOfLoadUnit = trackingOperationProductOutComponent.getBelongsToField(TrackingOperationProductOutComponentFields.TYPE_OF_LOAD_UNIT);
+                String typeOfLoadUnitName = Objects.nonNull(typeOfLoadUnit) ? typeOfLoadUnit.getStringField(TypeOfLoadUnitFields.NAME) : null;
+                Entity product = trackingOperationProductOutComponent.getBelongsToField(TrackingOperationProductOutComponentFields.PRODUCT);
+                Entity productionTracking = trackingOperationProductOutComponent
+                        .getBelongsToField(TrackingOperationProductOutComponentFields.PRODUCTION_TRACKING);
+                if (palletValidatorService.existsOtherTrackingOperationProductOutComponentForPalletNumber(storageLocationNumber, palletNumberNumber, typeOfLoadUnitName, trackingOperationProductOutComponent.getId(), order.getId(), productionTracking.getId(), "02endOfTheOrder")) {
+                    order.addGlobalError("productionCounting.productionTracking.error.existsOtherTrackingOperationProductOutComponentForPalletAndStorageLocation", product.getStringField(ProductFields.NUMBER));
+
+                    order.addGlobalError(L_ACCEPT_INBOUND_DOCUMENT_ERROR);
+
+                    return Either.left(L_ACCEPT_INBOUND_DOCUMENT_ERROR);
+                }
+            }
+        }
+
         Multimap<Long, Entity> groupedRecordOutProducts = productionTrackingDocumentsHelper
                 .groupAndFilterOutProducts(order, trackingOperationProductOutComponents);
 
