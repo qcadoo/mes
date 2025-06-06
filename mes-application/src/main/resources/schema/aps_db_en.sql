@@ -6160,7 +6160,8 @@ CREATE TABLE public.basic_palletnumber (
     updatedate timestamp without time zone,
     createuser character varying(255),
     updateuser character varying(255),
-    issuedatetime timestamp without time zone
+    issuedatetime timestamp without time zone,
+    printed boolean DEFAULT false
 );
 
 
@@ -21654,6 +21655,16 @@ CREATE SEQUENCE public.materialflowresources_resourcecorrectiondto_id_seq
 --
 
 CREATE VIEW public.materialflowresources_resourcedto AS
+ WITH last_outbound_documents AS (
+         SELECT DISTINCT r.id,
+            first_value(d."time") OVER (PARTITION BY r.id ORDER BY d."time" DESC) AS documenttime,
+            first_value(d.number) OVER (PARTITION BY r.id ORDER BY d."time" DESC) AS documentnumber
+           FROM ((public.materialflowresources_resource r
+             LEFT JOIN public.materialflowresources_position p ON (((p.resourcenumber)::text = (r.number)::text)))
+             LEFT JOIN public.materialflowresources_document d ON ((d.id = p.document_id)))
+          WHERE ((d.type)::text = ANY ((ARRAY['03internalOutbound'::character varying, '04release'::character varying, '05transfer'::character varying])::text[]))
+          ORDER BY r.id
+        )
  SELECT resource.id,
     resource.number,
     resource.quantity,
@@ -21688,6 +21699,8 @@ CREATE VIEW public.materialflowresources_resourcedto AS
     resource.blockedforqualitycontrol,
     COALESCE(supplier.number, document_supplier.number) AS suppliernumber,
     repacking.number AS repackingnumber,
+    lod.documentnumber AS lastoutbounddocumentnumber,
+    lod.documenttime AS lastreleasedate,
         CASE
             WHEN ( SELECT materialflowresources_documentpositionparameters.colorresourcesafterdeadline
                FROM public.materialflowresources_documentpositionparameters
@@ -21703,7 +21716,7 @@ CREATE VIEW public.materialflowresources_resourcedto AS
              LIMIT 1))::double precision * '1 day'::interval)))) THEN 'orange-cell'::character varying(255)
             ELSE NULL::character varying
         END AS expirationdatecellcolor
-   FROM ((((((((((((public.materialflowresources_resource resource
+   FROM (((((((((((((public.materialflowresources_resource resource
      JOIN public.materialflow_location location ON ((location.id = resource.location_id)))
      JOIN public.basic_product product ON ((product.id = resource.product_id)))
      LEFT JOIN public.basic_palletnumber palletnumber ON ((palletnumber.id = resource.palletnumber_id)))
@@ -21715,7 +21728,8 @@ CREATE VIEW public.materialflowresources_resourcedto AS
      LEFT JOIN public.basic_typeofloadunit typeofloadunit ON ((typeofloadunit.id = resource.typeofloadunit_id)))
      LEFT JOIN public.basic_company document_supplier ON ((document.company_id = document_supplier.id)))
      LEFT JOIN public.materialflowresources_repackingposition repackingposition ON (((repackingposition.createdresourcenumber)::text = (resource.number)::text)))
-     LEFT JOIN public.materialflowresources_repacking repacking ON ((repackingposition.repacking_id = repacking.id)));
+     LEFT JOIN public.materialflowresources_repacking repacking ON ((repackingposition.repacking_id = repacking.id)))
+     LEFT JOIN last_outbound_documents lod ON ((lod.id = resource.id)));
 
 
 --
@@ -28033,7 +28047,11 @@ SELECT
     NULL::numeric AS plannedquantity,
     NULL::numeric(14,5) AS usedquantity,
     NULL::character varying(255) AS batchnumber,
-    NULL::character varying(255) AS producedbatchnumber;
+    NULL::character varying(255) AS producedbatchnumber,
+    NULL::character varying(255) AS warehousenumber,
+    NULL::character varying(48) AS storagelocationnumber,
+    NULL::character varying(6) AS loadunitnumber,
+    NULL::character varying(255) AS typeofloadunit;
 
 
 --
@@ -28051,7 +28069,11 @@ CREATE VIEW public.productioncounting_trackingoperationproductcomponentdto AS
     trackingoperationproductcomponentdto.usedquantity,
     trackingoperationproductcomponentdto.batchnumber,
     trackingoperationproductcomponentdto.typeofrecord,
-    trackingoperationproductcomponentdto.producedbatchnumber
+    trackingoperationproductcomponentdto.producedbatchnumber,
+    trackingoperationproductcomponentdto.warehousenumber,
+    trackingoperationproductcomponentdto.storagelocationnumber,
+    trackingoperationproductcomponentdto.loadunitnumber,
+    trackingoperationproductcomponentdto.typeofloadunit
    FROM ( SELECT trackingoperationproductincomponentdto.productiontracking_id,
             trackingoperationproductincomponentdto.product_id,
             trackingoperationproductincomponentdto.productnumber,
@@ -28060,6 +28082,10 @@ CREATE VIEW public.productioncounting_trackingoperationproductcomponentdto AS
             trackingoperationproductincomponentdto.plannedquantity,
             trackingoperationproductincomponentdto.usedquantity,
             trackingoperationproductincomponentdto.batchnumber,
+            NULL::character varying AS warehousenumber,
+            NULL::character varying AS storagelocationnumber,
+            NULL::character varying AS loadunitnumber,
+            NULL::character varying AS typeofloadunit,
             '01in'::text AS typeofrecord,
             COALESCE(outtracking.producedbatchnumber, outtracking.batchnumber) AS producedbatchnumber
            FROM (public.productioncounting_trackingoperationproductincomponenthelper trackingoperationproductincomponentdto
@@ -28073,6 +28099,10 @@ CREATE VIEW public.productioncounting_trackingoperationproductcomponentdto AS
             trackingoperationproductoutcomponentdto.plannedquantity,
             trackingoperationproductoutcomponentdto.usedquantity,
             ''::text AS batchnumber,
+            trackingoperationproductoutcomponentdto.warehousenumber,
+            trackingoperationproductoutcomponentdto.storagelocationnumber,
+            trackingoperationproductoutcomponentdto.loadunitnumber,
+            trackingoperationproductoutcomponentdto.typeofloadunit,
             '02out'::text AS typeofrecord,
             COALESCE(trackingoperationproductoutcomponentdto.producedbatchnumber, trackingoperationproductoutcomponentdto.batchnumber) AS producedbatchnumber
            FROM public.productioncounting_trackingoperationproductoutcomponenthelper trackingoperationproductoutcomponentdto) trackingoperationproductcomponentdto;
@@ -28115,7 +28145,11 @@ CREATE VIEW public.productioncounting_productiontrackingforproductdto AS
     (productiontrackingdto.id)::integer AS productiontracking_id,
     trackingoperationproductcomponentdto.batchnumber,
     trackingoperationproductcomponentdto.typeofrecord,
-    trackingoperationproductcomponentdto.producedbatchnumber
+    trackingoperationproductcomponentdto.producedbatchnumber,
+    trackingoperationproductcomponentdto.warehousenumber,
+    trackingoperationproductcomponentdto.storagelocationnumber,
+    trackingoperationproductcomponentdto.loadunitnumber,
+    trackingoperationproductcomponentdto.typeofloadunit
    FROM (public.productioncounting_trackingoperationproductcomponentdto trackingoperationproductcomponentdto
      LEFT JOIN public.productioncounting_productiontrackingdto productiontrackingdto ON ((productiontrackingdto.id = trackingoperationproductcomponentdto.productiontracking_id)));
 
@@ -39703,7 +39737,7 @@ COPY public.basic_numberpatternelement (id, numberpattern_id, element, value, su
 -- Data for Name: basic_palletnumber; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.basic_palletnumber (id, number, active, createdate, updatedate, createuser, updateuser, issuedatetime) FROM stdin;
+COPY public.basic_palletnumber (id, number, active, createdate, updatedate, createuser, updateuser, issuedatetime, printed) FROM stdin;
 \.
 
 
@@ -59095,16 +59129,24 @@ CREATE OR REPLACE VIEW public.productioncounting_trackingoperationproductoutcomp
         END AS plannedquantity,
     trackingoperationproductoutcomponent.usedquantity,
     batch.number AS batchnumber,
-    producedbatch.number AS producedbatchnumber
-   FROM ((((((public.productioncounting_trackingoperationproductoutcomponent trackingoperationproductoutcomponent
+    producedbatch.number AS producedbatchnumber,
+    loc.number AS warehousenumber,
+    storagelocation.number AS storagelocationnumber,
+    palletnumber.number AS loadunitnumber,
+    tolu.name AS typeofloadunit
+   FROM ((((((((((public.productioncounting_trackingoperationproductoutcomponent trackingoperationproductoutcomponent
      LEFT JOIN public.productioncounting_productiontracking productiontracking ON ((productiontracking.id = trackingoperationproductoutcomponent.productiontracking_id)))
      LEFT JOIN public.advancedgenealogy_batch producedbatch ON ((producedbatch.id = productiontracking.batch_id)))
      LEFT JOIN public.basic_product product ON ((product.id = trackingoperationproductoutcomponent.product_id)))
      LEFT JOIN public.advancedgenealogy_batch batch ON ((batch.id = trackingoperationproductoutcomponent.batch_id)))
      LEFT JOIN public.basicproductioncounting_productioncountingquantity productioncountingquantity_1 ON (((productioncountingquantity_1.order_id = productiontracking.order_id) AND (productioncountingquantity_1.product_id = trackingoperationproductoutcomponent.product_id) AND ((productioncountingquantity_1.role)::text = '02produced'::text))))
      LEFT JOIN public.basicproductioncounting_productioncountingquantity productioncountingquantity_2 ON (((productioncountingquantity_2.order_id = productiontracking.order_id) AND (productioncountingquantity_2.technologyoperationcomponent_id = productiontracking.technologyoperationcomponent_id) AND (productioncountingquantity_2.product_id = trackingoperationproductoutcomponent.product_id) AND ((productioncountingquantity_2.role)::text = '02produced'::text))))
+     LEFT JOIN public.materialflowresources_storagelocation storagelocation ON ((storagelocation.id = trackingoperationproductoutcomponent.storagelocation_id)))
+     LEFT JOIN public.materialflow_location loc ON ((loc.id = storagelocation.location_id)))
+     LEFT JOIN public.basic_palletnumber palletnumber ON ((palletnumber.id = trackingoperationproductoutcomponent.palletnumber_id)))
+     LEFT JOIN public.basic_typeofloadunit tolu ON ((tolu.id = trackingoperationproductoutcomponent.typeofloadunit_id)))
   WHERE ((productiontracking.state)::text <> ALL (ARRAY[(('03declined'::text)::character varying)::text, (('04corrected'::text)::character varying)::text]))
-  GROUP BY trackingoperationproductoutcomponent.id, productiontracking.id, product.id, product.number, product.unit, producedbatch.number, trackingoperationproductoutcomponent.usedquantity, productiontracking.technologyoperationcomponent_id, batch.number;
+  GROUP BY trackingoperationproductoutcomponent.id, productiontracking.id, product.id, product.number, product.unit, producedbatch.number, trackingoperationproductoutcomponent.usedquantity, productiontracking.technologyoperationcomponent_id, batch.number, loc.number, storagelocation.number, palletnumber.number, tolu.name;
 
 
 --
