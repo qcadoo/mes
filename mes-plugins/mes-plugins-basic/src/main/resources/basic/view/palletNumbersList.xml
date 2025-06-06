@@ -54,11 +54,12 @@
 			<option type="column" name="createUser" fields="createUser" link="true"/>
 			<option type="column" name="createDate" fields="createDate" link="true"/>
 
-			<option type="column" name="issueDateTime" fields="issueDateTime" link="false"/>
+			<option type="column" name="issueDateTime" fields="issueDateTime"/>
+			<option type="column" name="printed" fields="printed"/>
 			<option type="order" column="number" direction="asc"/>
 
-			<option type="searchable" value="number,createUser,createDate,issueDateTime"/>
-			<option type="orderable" value="number,createUser,createDate,issueDateTime"/>
+			<option type="searchable" value="number,createUser,createDate,issueDateTime,printed"/>
+			<option type="orderable" value="number,createUser,createDate,issueDateTime,printed"/>
 
 			<option type="correspondingView" value="basic/palletNumberDetails"/>
 			<option type="correspondingComponent" value="form"/>

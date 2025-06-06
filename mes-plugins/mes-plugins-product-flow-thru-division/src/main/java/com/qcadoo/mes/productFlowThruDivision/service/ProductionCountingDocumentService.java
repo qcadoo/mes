@@ -29,7 +29,7 @@ import com.qcadoo.mes.productFlowThruDivision.realProductionCost.RealProductionC
 import com.qcadoo.mes.productFlowThruDivision.reservation.OrderReservationsService;
 import com.qcadoo.mes.productionCounting.ProductionTrackingService;
 import com.qcadoo.mes.productionCounting.constants.*;
-import com.qcadoo.mes.productionCounting.states.constants.ProductionTrackingState;
+import com.qcadoo.mes.productionCounting.states.constants.ProductionTrackingStateStringValues;
 import com.qcadoo.mes.productionCounting.utils.ProductionTrackingDocumentsHelper;
 import com.qcadoo.model.api.*;
 import com.qcadoo.model.api.search.SearchQueryBuilder;
@@ -100,7 +100,8 @@ public class ProductionCountingDocumentService {
     public void createCumulatedInternalOutboundDocument(final Entity order) {
         List<Entity> productionTrackings = getProductionTrackingDD().find()
                 .add(SearchRestrictions.belongsTo(ProductionTrackingFields.ORDER, order))
-                .add(SearchRestrictions.eq(ProductionTrackingFields.STATE, ProductionTrackingState.ACCEPTED.getStringValue()))
+                .add(SearchRestrictions.in(ProductionTrackingFields.STATE,
+                        Lists.newArrayList(ProductionTrackingStateStringValues.DRAFT, ProductionTrackingStateStringValues.ACCEPTED)))
                 .list().getEntities();
 
         List<Entity> trackingOperationProductInComponents = Lists.newArrayList();
@@ -138,7 +139,6 @@ public class ProductionCountingDocumentService {
         }
     }
 
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void createInternalOutboundDocumentPT(final Entity order,
                                                  final List<Entity> trackingOperationProductInComponents) {
         Multimap<Long, Entity> groupedRecordInProducts = productionTrackingDocumentsHelper.groupAndFilterInProducts(order,

@@ -418,7 +418,7 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
                 BigDecimal missingResourceAmount = eitherPositions.getLeft();
 
                 errorMessageHolder.addErrorEntry(product, position.getBelongsToField(PositionFields.BATCH),
-                        missingResourceAmount);
+                        missingResourceAmount, null);
             } else {
                 List<Entity> generatedPositions = eitherPositions.getRight();
 
@@ -633,7 +633,7 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
                     enoughResources = false;
                     BigDecimal missingResourceAmount = optionalMissingResourceAmount.get();
                     errorMessageHolder.addErrorEntry(product, position.getBelongsToField(RepackingPositionFields.BATCH),
-                            missingResourceAmount);
+                            missingResourceAmount, position.getStringField(RepackingPositionFields.RESOURCE_NUMBER));
                 } else {
                     addRepackingPositionErrors(repacking, position);
                 }
@@ -690,7 +690,7 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
                 BigDecimal missingResourceAmount = eitherPositions.getLeft();
 
                 errorMessageHolder.addErrorEntry(product, position.getBelongsToField(PositionFields.BATCH),
-                        missingResourceAmount);
+                        missingResourceAmount, null);
             } else {
                 List<Entity> generatedPositions = eitherPositions.getRight();
 

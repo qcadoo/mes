@@ -3,34 +3,25 @@
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
  * Version: 1.4
- *
+ * <p>
  * This file is part of Qcadoo.
- *
+ * <p>
  * Qcadoo is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation; either version 3 of the License,
  * or (at your option) any later version.
- *
+ * <p>
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty
  * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU Affero General Public License for more details.
- *
+ * <p>
  * You should have received a copy of the GNU Affero General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
 package com.qcadoo.mes.basic;
-
-import java.util.Comparator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.basic.constants.BasicConstants;
@@ -41,8 +32,14 @@ import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.plugin.api.RunIfEnabled;
-import com.qcadoo.tenant.api.MultiTenantCallback;
 import com.qcadoo.tenant.api.MultiTenantService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.Comparator;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @RunIfEnabled(BasicConstants.PLUGIN_IDENTIFIER)
@@ -59,6 +56,7 @@ public class PalletNumbersServiceImpl implements PalletNumbersService {
         Entity palletNumber = getPalletNumberDD().create();
 
         palletNumber.setField(PalletNumberFields.NUMBER, number);
+        palletNumber.setField(PalletNumberFields.PRINTED, false);
 
         palletNumber = palletNumber.getDataDefinition().save(palletNumber);
 
@@ -99,17 +97,13 @@ public class PalletNumbersServiceImpl implements PalletNumbersService {
 
     @Override
     public List<Entity> getPalletNumbers(final Set<Long> palletNumberIds) {
-        return palletNumberIds.stream().map(palletNumberId -> getPalletNumber(palletNumberId)).collect(Collectors.toList());
+        return palletNumberIds.stream().map(this::getPalletNumber).collect(Collectors.toList());
     }
 
     @Override
     public List<String> getNumbers(final List<Entity> palletNumbers) {
-        List<String> numbers = palletNumbers.stream().map(palletNumber -> palletNumber.getStringField(PalletNumberFields.NUMBER))
-                .collect(Collectors.toList());
 
-        numbers.sort(Comparator.<String>naturalOrder());
-
-        return numbers;
+        return palletNumbers.stream().map(palletNumber -> palletNumber.getStringField(PalletNumberFields.NUMBER)).sorted(Comparator.naturalOrder()).collect(Collectors.toList());
     }
 
     @Override
@@ -129,14 +123,16 @@ public class PalletNumbersServiceImpl implements PalletNumbersService {
 
     @Override
     public void deleteTemporaryPalletNumberHelpersTrigger() {
-        multiTenantService.doInMultiTenantContext(new MultiTenantCallback() {
+        multiTenantService.doInMultiTenantContext(this::deleteTemporaryPalletNumberHelpers);
+    }
 
-            @Override
-            public void invoke() {
-                deleteTemporaryPalletNumberHelpers();
-            }
-
-        });
+    @Override
+    public void setPalletNumbersPrinted(List<Entity> palletNumbers) {
+        DataDefinition palletNumberDD = getPalletNumberDD();
+        for (Entity palletNumber : palletNumbers) {
+            palletNumber.setField(PalletNumberFields.PRINTED, true);
+            palletNumberDD.save(palletNumber);
+        }
     }
 
     private void deleteTemporaryPalletNumberHelpers() {

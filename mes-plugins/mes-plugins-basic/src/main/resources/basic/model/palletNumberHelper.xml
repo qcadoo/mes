@@ -35,8 +35,7 @@
 
         <boolean name="temporary" required="true" default="false"/>
 
-        <manyToMany name="palletNumbers" model="palletNumber" joinField="palletNumberHelpers"
-                    cascade="nullify" plugin="basic" />
+        <manyToMany name="palletNumbers" model="palletNumber" joinField="palletNumberHelpers"/>
     </fields>
 
     <hooks>

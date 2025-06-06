@@ -133,7 +133,16 @@ public class TrackingOperationProductOutComponentHooks {
                 if (Objects.nonNull(storageLocation)) {
                     Entity location = storageLocation.getBelongsToField(StorageLocationFields.LOCATION);
                     String storageLocationNumber = storageLocation.getStringField(StorageLocationFields.NUMBER);
+                    String palletNumberNumber = Objects.nonNull(palletNumber) ? palletNumber.getStringField(PalletNumberFields.NUMBER) : null;
+                    Entity typeOfLoadUnit = trackingOperationProductOutComponent.getBelongsToField(TrackingOperationProductOutComponentFields.TYPE_OF_LOAD_UNIT);
+                    String typeOfLoadUnitName = Objects.nonNull(typeOfLoadUnit) ? typeOfLoadUnit.getStringField(TypeOfLoadUnitFields.NAME) : null;
                     boolean placeStorageLocation = storageLocation.getBooleanField(StorageLocationFields.PLACE_STORAGE_LOCATION);
+                    Entity parameter = parameterService.getParameter();
+
+                    String receiptOfProducts = parameter.getStringField(ParameterFieldsPC.RECEIPT_OF_PRODUCTS);
+                    Entity productionTracking = trackingOperationProductOutComponent
+                            .getBelongsToField(TrackingOperationProductOutComponentFields.PRODUCTION_TRACKING);
+                    Entity order = productionTracking.getBelongsToField(ProductionTrackingFields.ORDER);
 
                     if (placeStorageLocation) {
                         if (Objects.isNull(palletNumber)) {
@@ -141,31 +150,31 @@ public class TrackingOperationProductOutComponentHooks {
 
                             return false;
                         } else {
-                            String palletNumberNumber = palletNumber.getStringField(PalletNumberFields.NUMBER);
-                            Entity typeOfLoadUnit = trackingOperationProductOutComponent.getBelongsToField(TrackingOperationProductOutComponentFields.TYPE_OF_LOAD_UNIT);
-
                             if (!palletValidatorService.validateResources(location, storageLocation, palletNumber, typeOfLoadUnit, trackingOperationProductOutComponent)) {
                                 return false;
                             }
 
-                            Entity parameter = parameterService.getParameter();
-
-                            String receiptOfProducts = parameter.getStringField(ParameterFieldsPC.RECEIPT_OF_PRODUCTS);
-                            String typeOfLoadUnitName = Objects.nonNull(typeOfLoadUnit) ? typeOfLoadUnit.getStringField(TypeOfLoadUnitFields.NAME) : null;
-                            Entity productionTracking = trackingOperationProductOutComponent
-                                    .getBelongsToField(TrackingOperationProductOutComponentFields.PRODUCTION_TRACKING);
-                            Entity order = productionTracking.getBelongsToField(ProductionTrackingFields.ORDER);
                             if (palletValidatorService.existsOtherTrackingOperationProductOutComponentForPalletNumber(storageLocationNumber, palletNumberNumber, typeOfLoadUnitName, trackingOperationProductOutComponent.getId(), order.getId(), productionTracking.getId(), receiptOfProducts)) {
                                 trackingOperationProductOutComponent.addError(trackingOperationProductOutComponent.getDataDefinition().getField(TrackingOperationProductOutComponentFields.PALLET_NUMBER),
                                         "productionCounting.trackingOperationProductOutComponent.error.existsOtherTrackingOperationProductOutComponentForPalletAndStorageLocation");
                                 return false;
                             }
 
-                            if (palletValidatorService.checkIfExistsMorePalletsForStorageLocation(location.getId(), storageLocationNumber, palletNumberNumber)) {
+                            if (!palletValidatorService.notTooManyPalletsInStorageLocationAndProductionTracking(trackingOperationProductOutComponent, storageLocation, palletNumber, order.getId(), receiptOfProducts)) {
                                 trackingOperationProductOutComponent.addError(trackingOperationProductOutComponentDD.getField(TrackingOperationProductOutComponentFields.STORAGE_LOCATION), "productionCounting.trackingOperationProductOutComponent.error.existsOtherPalletsAtStorageLocation");
 
                                 return false;
                             }
+                        }
+                    } else if (!Objects.isNull(palletNumber)) {
+                        if (!palletValidatorService.validateResources(location, storageLocation, palletNumber, typeOfLoadUnit, trackingOperationProductOutComponent)) {
+                            return false;
+                        }
+
+                        if (palletValidatorService.existsOtherTrackingOperationProductOutComponentForPalletNumber(storageLocationNumber, palletNumberNumber, typeOfLoadUnitName, trackingOperationProductOutComponent.getId(), order.getId(), productionTracking.getId(), receiptOfProducts)) {
+                            trackingOperationProductOutComponent.addError(trackingOperationProductOutComponent.getDataDefinition().getField(TrackingOperationProductOutComponentFields.PALLET_NUMBER),
+                                    "productionCounting.trackingOperationProductOutComponent.error.existsOtherTrackingOperationProductOutComponentForPalletAndStorageLocation");
+                            return false;
                         }
                     }
                 }

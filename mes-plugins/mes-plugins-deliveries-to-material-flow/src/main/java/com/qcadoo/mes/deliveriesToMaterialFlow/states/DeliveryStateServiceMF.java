@@ -3,19 +3,19 @@
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
  * Version: 1.4
- *
+ * <p>
  * This file is part of Qcadoo.
- *
+ * <p>
  * Qcadoo is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation; either version 3 of the License,
  * or (at your option) any later version.
- *
+ * <p>
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty
  * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU Affero General Public License for more details.
- *
+ * <p>
  * You should have received a copy of the GNU Affero General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
@@ -109,6 +109,8 @@ public class DeliveryStateServiceMF {
         }
 
         Entity currency = getCurrency(delivery);
+        Entity plnCurrency = currencyService.getCurrencyByAlphabeticCode(CurrencyService.PLN);
+        Entity systemCurrency = currencyFromParameter();
 
         List<Entity> deliveredProducts = delivery.getHasManyField(DeliveryFields.DELIVERED_PRODUCTS);
 
@@ -141,8 +143,8 @@ public class DeliveryStateServiceMF {
 
                 documentBuilder.addPosition(product, positionQuantity,
                         numberService.setScaleWithDefaultMathContext(givenQuantity), additionalUnit, conversion,
-                        currencyService.getConvertedValue(deliveredProduct.getDecimalField(DeliveredProductFields.PRICE_PER_UNIT),
-                                currency),
+                        getPricePerUnit(currency, plnCurrency, systemCurrency,
+                                deliveredProduct.getDecimalField(DeliveredProductFields.PRICE_PER_UNIT)),
                         getBatch(deliveredProduct), getProductionDate(deliveredProduct), getExpirationDate(deliveredProduct),
                         null, getStorageLocation(deliveredProduct), getPalletNumber(deliveredProduct),
                         getTypeOfLoadUnit(deliveredProduct), isWaste(deliveredProduct),
@@ -159,6 +161,21 @@ public class DeliveryStateServiceMF {
                 delivery.addGlobalError(error.getMessage(), error.getAutoClose());
             }
         }
+    }
+
+    private BigDecimal getPricePerUnit(final Entity deliveryCurrency, final Entity plnCurrency,
+                                       final Entity systemCurrency, final BigDecimal price) {
+        BigDecimal pricePerUnit = null;
+
+        if (Objects.isNull(systemCurrency) || deliveryCurrency.getId().equals(systemCurrency.getId())) {
+            pricePerUnit = price;
+        } else if (deliveryCurrency.getId().equals(plnCurrency.getId()) && !deliveryCurrency.getId().equals(systemCurrency.getId())) {
+            pricePerUnit = currencyService.getRevertedValue(price, systemCurrency);
+        } else if (systemCurrency.getId().equals(plnCurrency.getId()) && !deliveryCurrency.getId().equals(systemCurrency.getId())) {
+            pricePerUnit = currencyService.getConvertedValue(price, deliveryCurrency);
+        }
+
+        return pricePerUnit;
     }
 
     private List<Entity> prepareAttributes(final Entity deliveredProduct) {

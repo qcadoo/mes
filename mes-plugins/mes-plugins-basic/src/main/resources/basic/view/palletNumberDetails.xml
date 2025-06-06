@@ -55,7 +55,7 @@
 
 		<component type="form" name="palletNumber" reference="form">
 			<component type="gridLayout" name="gridLayout" columns="3"
-					   rows="4" hasBorders="false">
+					   rows="5" hasBorders="false">
 				<layoutElement column="1" row="1">
 					<component type="input" name="number" field="number"
 							   reference="number">
@@ -76,6 +76,11 @@
 					<component type="calendar" name="issueDateTime" field="issueDateTime"
 							   reference="issueDateTime">
 						<option type="withTimePicker" value="true"/>
+					</component>
+				</layoutElement>
+				<layoutElement column="1" row="5">
+					<component type="checkbox" name="printed" field="printed"
+							   reference="printed" defaultEnabled="never">
 					</component>
 				</layoutElement>
 			</component>

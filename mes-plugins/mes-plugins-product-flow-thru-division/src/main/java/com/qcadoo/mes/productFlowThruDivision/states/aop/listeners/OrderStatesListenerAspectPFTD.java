@@ -23,13 +23,10 @@
  */
 package com.qcadoo.mes.productFlowThruDivision.states.aop.listeners;
 
-import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.orders.states.aop.OrderStateChangeAspect;
 import com.qcadoo.mes.orders.states.constants.OrderStateChangePhase;
 import com.qcadoo.mes.productFlowThruDivision.constants.ProductFlowThruDivisionConstants;
 import com.qcadoo.mes.productFlowThruDivision.states.OrderStatesListenerServicePFTD;
-import com.qcadoo.mes.productionCounting.constants.ParameterFieldsPC;
-import com.qcadoo.mes.productionCounting.constants.ReleaseOfMaterials;
 import com.qcadoo.mes.states.StateChangeContext;
 import com.qcadoo.mes.states.annotation.RunForStateTransition;
 import com.qcadoo.mes.states.annotation.RunInPhase;
@@ -51,9 +48,6 @@ import static com.qcadoo.mes.states.aop.RunForStateTransitionAspect.WILDCARD_STA
 public class OrderStatesListenerAspectPFTD extends AbstractStateListenerAspect {
 
     @Autowired
-    private ParameterService parameterService;
-
-    @Autowired
     private OrderStatesListenerServicePFTD listenerService;
 
     @Pointcut(OrderStateChangeAspect.SELECTOR_POINTCUT)
@@ -64,9 +58,9 @@ public class OrderStatesListenerAspectPFTD extends AbstractStateListenerAspect {
     @RunForStateTransition(sourceState = WILDCARD_STATE, targetState = COMPLETED)
     @Before(PHASE_EXECUTION_POINTCUT)
     public void onCompletedLast(final StateChangeContext stateChangeContext, final int phase) {
+        listenerService.acceptInboundDocumentsForOrder(stateChangeContext);
         Entity owner = stateChangeContext.getOwner();
         if (owner.isValid()) {
-            listenerService.acceptInboundDocumentsForOrder(stateChangeContext);
             listenerService.clearReservations(stateChangeContext);
         }
     }
@@ -84,17 +78,6 @@ public class OrderStatesListenerAspectPFTD extends AbstractStateListenerAspect {
     @Before(PHASE_EXECUTION_POINTCUT)
     public void onDeclinedLast(final StateChangeContext stateChangeContext, final int phase) {
         listenerService.clearReservations(stateChangeContext);
-    }
-
-
-    @RunInPhase(OrderStateChangePhase.EXT_SYNC)
-    @RunForStateTransition(sourceState = WILDCARD_STATE, targetState = COMPLETED)
-    @Before(PHASE_EXECUTION_POINTCUT)
-    public void onCompleted(final StateChangeContext stateChangeContext, final int phase) {
-        String releaseOfMaterials = parameterService.getParameter().getStringField(ParameterFieldsPC.RELEASE_OF_MATERIALS);
-        if (ReleaseOfMaterials.END_OF_THE_ORDER.getStringValue().equals(releaseOfMaterials)) {
-            listenerService.createCumulatedInternalOutboundDocument(stateChangeContext);
-        }
     }
 
     @RunInPhase(OrderStateChangePhase.DEFAULT)

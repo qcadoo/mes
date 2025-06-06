@@ -219,6 +219,7 @@ public class ProductionTrackingServiceImpl implements ProductionTrackingService 
                 copiedProdOutResourceAttrVals.add(resourceAttributeEntity);
             });
             operationProductOutComponent.setField(TrackingOperationProductOutComponentFields.PROD_OUT_RESOURCE_ATTR_VALS, copiedProdOutResourceAttrVals);
+            operationProductOutComponent.setCopied(true);
             copiedTrackingOperationProductOutComponents.add(operationProductOutComponent);
         });
         correctingProductionTracking.setField(ProductionTrackingFields.TRACKING_OPERATION_PRODUCT_OUT_COMPONENTS,

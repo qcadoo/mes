@@ -10,6 +10,8 @@ import com.qcadoo.view.api.components.GridComponent;
 import com.qcadoo.view.constants.QcadooViewConstants;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Map;
 
 @Service
@@ -28,6 +30,7 @@ public class RepackingPositionsListListeners {
         String resourceNumber = repackingPosition.getStringField(RepackingPositionFields.RESOURCE_NUMBER);
         Map<String, String> filters = Maps.newHashMap();
         filters.put(RepackingPositionFields.CREATED_RESOURCE_NUMBER, applyInOperator(resourceNumber));
+        grid.setSelectedEntitiesIds(new HashSet<>());
         grid.setFilters(filters);
     }
 

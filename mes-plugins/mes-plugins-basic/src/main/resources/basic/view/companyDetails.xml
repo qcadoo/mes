@@ -278,8 +278,6 @@
         <beforeRender class="com.qcadoo.mes.basic.hooks.CompanyDetailsHooks"
                       method="updateRibbonState"/>
         <beforeRender class="com.qcadoo.mes.basic.hooks.CompanyDetailsHooks"
-                      method="generateCompanyNumber"/>
-        <beforeRender class="com.qcadoo.mes.basic.hooks.CompanyDetailsHooks"
                       method="fillDefaultCountry"/>
         <beforeRender class="com.qcadoo.mes.basic.hooks.CompanyDetailsHooks"
                       method="disabledFieldsForExternalCompany"/>

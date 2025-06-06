@@ -74,6 +74,8 @@ import org.apache.commons.collections.MultiMap;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 import java.math.BigDecimal;
@@ -128,18 +130,23 @@ public class OrderStatesListenerServicePFTD {
         orderReservationsService.clearReservationsForOrder(stateChangeContext.getOwner());
     }
 
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void acceptInboundDocumentsForOrder(final StateChangeContext stateChangeContext) {
+        String releaseOfMaterials = parameterService.getParameter().getStringField(ParameterFieldsPC.RELEASE_OF_MATERIALS);
+        if (ReleaseOfMaterials.END_OF_THE_ORDER.getStringValue().equals(releaseOfMaterials)) {
+            Entity order = stateChangeContext.getOwner();
+
+            productionCountingDocumentService.createCumulatedInternalOutboundDocument(order);
+        }
         if (ReceiptOfProducts.END_OF_THE_ORDER.getStringValue()
                 .equals(parameterService.getParameter().getStringField(ParameterFieldsPC.RECEIPT_OF_PRODUCTS))) {
             Entity order = stateChangeContext.getOwner();
+            if (order.isValid()) {
+                Either<String, Void> result = tryAcceptInboundDocumentsFor(order);
 
-            Either<String, Void> result = tryAcceptInboundDocumentsFor(order);
-
-            if (result.isLeft()) {
-                for (ErrorMessage error : order.getGlobalErrors()) {
-                    stateChangeContext.addMessage(error.getMessage(), StateMessageType.FAILURE, error.getVars());
+                if (result.isLeft()) {
+                    TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
                 }
-
             }
         }
     }
@@ -147,13 +154,35 @@ public class OrderStatesListenerServicePFTD {
     private Either<String, Void> tryAcceptInboundDocumentsFor(final Entity order) {
         List<Entity> productionTrackings = getProductionTrackingDD().find()
                 .add(SearchRestrictions.belongsTo(ProductionTrackingFields.ORDER, order))
-                .add(SearchRestrictions.eq(ProductionTrackingFields.STATE, ProductionTrackingStateStringValues.ACCEPTED))
+                .add(SearchRestrictions.in(ProductionTrackingFields.STATE,
+                        Lists.newArrayList(ProductionTrackingStateStringValues.DRAFT, ProductionTrackingStateStringValues.ACCEPTED)))
                 .list().getEntities();
 
         List<Entity> trackingOperationProductOutComponents = Lists.newArrayList();
 
         for (Entity productionTracking : productionTrackings) {
             trackingOperationProductOutComponents.addAll(Lists.newArrayList(productionTracking.getHasManyField(ProductionTrackingFields.TRACKING_OPERATION_PRODUCT_OUT_COMPONENTS)));
+        }
+
+        for (Entity trackingOperationProductOutComponent : trackingOperationProductOutComponents) {
+            Entity storageLocation = trackingOperationProductOutComponent.getBelongsToField(TrackingOperationProductOutComponentFields.STORAGE_LOCATION);
+            if (Objects.nonNull(storageLocation)) {
+                String storageLocationNumber = storageLocation.getStringField(StorageLocationFields.NUMBER);
+                Entity palletNumber = trackingOperationProductOutComponent.getBelongsToField(TrackingOperationProductOutComponentFields.PALLET_NUMBER);
+                String palletNumberNumber = Objects.nonNull(palletNumber) ? palletNumber.getStringField(PalletNumberFields.NUMBER) : null;
+                Entity typeOfLoadUnit = trackingOperationProductOutComponent.getBelongsToField(TrackingOperationProductOutComponentFields.TYPE_OF_LOAD_UNIT);
+                String typeOfLoadUnitName = Objects.nonNull(typeOfLoadUnit) ? typeOfLoadUnit.getStringField(TypeOfLoadUnitFields.NAME) : null;
+                Entity product = trackingOperationProductOutComponent.getBelongsToField(TrackingOperationProductOutComponentFields.PRODUCT);
+                Entity productionTracking = trackingOperationProductOutComponent
+                        .getBelongsToField(TrackingOperationProductOutComponentFields.PRODUCTION_TRACKING);
+                if (palletValidatorService.existsOtherTrackingOperationProductOutComponentForPalletNumber(storageLocationNumber, palletNumberNumber, typeOfLoadUnitName, trackingOperationProductOutComponent.getId(), order.getId(), productionTracking.getId(), "02endOfTheOrder")) {
+                    order.addGlobalError("productionCounting.productionTracking.error.existsOtherTrackingOperationProductOutComponentForPalletAndStorageLocation", product.getStringField(ProductFields.NUMBER));
+
+                    order.addGlobalError(L_ACCEPT_INBOUND_DOCUMENT_ERROR);
+
+                    return Either.left(L_ACCEPT_INBOUND_DOCUMENT_ERROR);
+                }
+            }
         }
 
         Multimap<Long, Entity> groupedRecordOutProducts = productionTrackingDocumentsHelper
@@ -191,13 +220,7 @@ public class OrderStatesListenerServicePFTD {
             }
         }
 
-        Either<String, Void> documentsForNotUsedMaterials = createDocumentsForNotUsedMaterials(order);
-
-        if (documentsForNotUsedMaterials.isLeft()) {
-            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-        }
-
-        return documentsForNotUsedMaterials;
+        return createDocumentsForNotUsedMaterials(order);
     }
 
     private Optional<ErrorMessage> createPositions(Entity locationTo, List<Entity> positions,
@@ -354,8 +377,8 @@ public class OrderStatesListenerServicePFTD {
     private Entity preparePositionForOutProduct(DataDefinition positionDD, InboundPositionHolder outProductRecord) {
         Entity position = positionDD.create();
 
-        position.setField(PositionFields.PRODUCT, outProductRecord.getProductId());
-        position.setField(PositionFields.BATCH, outProductRecord.getBatchId());
+        position.setField(PositionFields.PRODUCT, outProductRecord.getProduct());
+        position.setField(PositionFields.BATCH, outProductRecord.getBatch());
         position.setField(PositionFields.QUANTITY, outProductRecord.getUsedQuantity());
         position.setField(PositionFields.CONVERSION, outProductRecord.getConversion());
         position.setField(PositionFields.GIVEN_QUANTITY, outProductRecord.getGivenQuantity());
@@ -619,12 +642,6 @@ public class OrderStatesListenerServicePFTD {
                 return;
             }
         }
-    }
-
-    public void createCumulatedInternalOutboundDocument(final StateChangeContext stateChangeContext) {
-        Entity order = stateChangeContext.getOwner();
-
-        productionCountingDocumentService.createCumulatedInternalOutboundDocument(order);
     }
 
     private DataDefinition getProductionTrackingDD() {

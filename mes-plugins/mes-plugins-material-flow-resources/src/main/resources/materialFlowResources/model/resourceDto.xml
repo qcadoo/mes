@@ -65,6 +65,8 @@
         <decimal name="colorResourcesAfterDeadline"/>
         <string name="expirationDateCellColor"/>
         <string name="repackingNumber"/>
+        <string name="lastOutboundDocumentNumber"/>
+        <datetime name="lastReleaseDate"/>
     </fields>
 
     <masterModel plugin="materialFlowResources" model="resource"/>
