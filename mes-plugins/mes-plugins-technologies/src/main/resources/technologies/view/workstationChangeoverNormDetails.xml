@@ -151,6 +151,10 @@
                     <layoutElement column="1" row="10">
                         <component type="time" name="duration" field="duration" reference="duration"/>
                     </layoutElement>
+                    <layoutElement column="1" row="11">
+                        <component type="checkbox" name="isParallel" field="isParallel" reference="isParallel"
+                                   hasDescription="true"/>
+                    </layoutElement>
                 </component>
 
                 <option type="header" value="true"/>
