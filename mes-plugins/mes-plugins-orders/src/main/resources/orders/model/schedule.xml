@@ -38,12 +38,10 @@
         <hasMany name="stateChanges" model="scheduleStateChange" joinField="schedule" cascade="delete"/>
         <enum name="sortOrder"
               values="01desc,02asc"
-              default="01desc"
-              required="true"/>
+              default="01desc"/>
         <enum name="workstationAssignCriterion"
               values="01shortestTime,02leastWorkstations"
-              default="01shortestTime"
-              required="true"/>
+              default="01shortestTime"/>
         <enum name="workerAssignCriterion"
               values="01workstationLastOperatorLatestFinished,02workstationLastOperatorEarliestFinished,03workstationDefaultOperator"
               default="01workstationLastOperatorLatestFinished"

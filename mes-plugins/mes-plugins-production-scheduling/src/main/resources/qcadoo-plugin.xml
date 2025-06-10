@@ -170,23 +170,6 @@
 			component="form" event="redirectToOperationDurationDetailsInOrder"
 			class="com.qcadoo.mes.productionScheduling.listeners.OrderDetailsListenersPS"
 			method="redirectToOperationDurationDetailsInOrder" />
-
-		<view:view-listener plugin="orders" view="scheduleDetails"
-			component="form" event="getOperations"
-			class="com.qcadoo.mes.productionScheduling.listeners.ScheduleDetailsListenersPS"
-			method="getOperations" />
-		<view:view-listener plugin="orders" view="scheduleDetails"
-            component="form" event="assignOperationsToWorkstations"
-            class="com.qcadoo.mes.productionScheduling.listeners.ScheduleDetailsListenersPS"
-            method="assignOperationsToWorkstations"/>
-		<view:view-listener plugin="orders" view="scheduleDetails"
-			component="form" event="assignWorkersToOperations"
-			class="com.qcadoo.mes.productionScheduling.listeners.ScheduleDetailsListenersPS"
-			method="assignWorkersToOperations"/>
-		<view:view-listener plugin="orders" view="scheduleDetails"
-			component="form" event="generatePlan"
-			class="com.qcadoo.mes.productionScheduling.listeners.ScheduleDetailsListenersPS"
-			method="generatePlan" />
 		<view:view-listener plugin="orders" view="scheduleDetails"
 			component="form" event="changeState"
 			class="com.qcadoo.mes.productionScheduling.listeners.ScheduleDetailsListenersPS"
