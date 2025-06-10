@@ -437,34 +437,6 @@ public class PalletValidatorService {
         return jdbcTemplate.queryForObject(query.toString(), params, Long.class) > 0;
     }
 
-    public boolean checkIfExistsMorePalletsForStorageLocation(final Long locationId, final String storageLocationNumber,
-                                                              final String palletNumberNumber) {
-        StringBuilder query = new StringBuilder();
-
-        query.append("SELECT ");
-        query.append("CASE ");
-        query.append("WHEN COALESCE(MAX(storagelocation.maximumNumberOfPallets), 0) = 0 THEN FALSE ");
-        query.append("ELSE COUNT(DISTINCT(resource.palletnumber_id)) >= COALESCE(MAX(storagelocation.maximumNumberOfPallets), 0) ");
-        query.append("END AS exists ");
-        query.append("FROM materialflowresources_resource resource ");
-        query.append("JOIN basic_palletnumber palletnumber ");
-        query.append("ON palletnumber.id = resource.palletnumber_id ");
-        query.append("RIGHT JOIN materialflowresources_storagelocation storagelocation ");
-        query.append("ON storagelocation.id = resource.storagelocation_id ");
-        query.append("WHERE palletnumber.number <> :palletNumberNumber ");
-        query.append("AND storagelocation.number = :storageLocationNumber ");
-        query.append("AND storagelocation.placestoragelocation = true ");
-        query.append("AND resource.location_id = :locationId");
-
-        Map<String, Object> params = Maps.newHashMap();
-
-        params.put("locationId", locationId);
-        params.put("storageLocationNumber", storageLocationNumber);
-        params.put("palletNumberNumber", palletNumberNumber);
-
-        return jdbcTemplate.queryForObject(query.toString(), params, Boolean.class);
-    }
-
     public boolean tooManyPalletsInStorageLocationAndPositions(final String storageLocationNumber,
                                                                final String palletNumberNumber,
                                                                final Long positionId, Long documentId) {
