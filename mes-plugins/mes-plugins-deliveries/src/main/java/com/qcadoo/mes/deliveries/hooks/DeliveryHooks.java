@@ -24,6 +24,8 @@
 package com.qcadoo.mes.deliveries.hooks;
 
 import com.qcadoo.mes.basic.ParameterService;
+import com.qcadoo.mes.basic.constants.ParameterFields;
+import com.qcadoo.mes.basic.util.CurrencyService;
 import com.qcadoo.mes.deliveries.DeliveriesService;
 import com.qcadoo.mes.deliveries.constants.DeliveredProductFields;
 import com.qcadoo.mes.deliveries.constants.DeliveryFields;
@@ -61,6 +63,9 @@ public class DeliveryHooks {
 
     @Autowired
     private ParameterService parameterService;
+
+    @Autowired
+    private CurrencyService currencyService;
 
     public void onCreate(final DataDefinition deliveryDD, final Entity delivery) {
         setInitialState(delivery);
@@ -100,6 +105,13 @@ public class DeliveryHooks {
             if (Objects.nonNull(currencyFromDB) && !currencyFromDB.getId().equals(currency.getId()) && !orderedProducts.isEmpty()) {
                 delivery.addGlobalMessage("deliveries.delivery.currencyChange.orderedProductsPriceVerificationRequired", false, false);
             }
+        }
+
+        Entity systemCurrency = parameterService.getParameter().getBelongsToField(ParameterFields.CURRENCY);
+        Entity plnCurrency = currencyService.getCurrencyByAlphabeticCode(CurrencyService.PLN);
+        if (Objects.nonNull(currency) && !systemCurrency.getId().equals(plnCurrency.getId())
+                && !currency.getId().equals(plnCurrency.getId()) && !currency.getId().equals(systemCurrency.getId())) {
+            delivery.addGlobalMessage("deliveries.delivery.currency.currencyDifferentFromSystemCurrency", false, false);
         }
     }
 
