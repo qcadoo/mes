@@ -84,16 +84,13 @@
                                    reference="currency" hasDescription="true">
                             <option type="column" name="currency" fields="currency"
                                     link="true"/>
-
-                            <option type="required" value="true"/>
+                            <option type="column" name="exchangeRate" fields="exchangeRate"/>
 
                             <option type="searchable" value="currency,alphabeticCode"/>
                             <option type="orderable" value="currency,alphabeticCode"/>
 
                             <option type="expression" value="#alphabeticCode + ' - ' + #currency"/>
                             <option type="fieldCode" value="alphabeticCode"/>
-                            <option type="column" name="exchangeRate" fields="exchangeRate"/>
-
                         </component>
                     </layoutElement>
                     <layoutElement column="1" row="5">

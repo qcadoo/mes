@@ -270,7 +270,7 @@ public class DeliveryStateServiceMF {
     private void addErrorMessage(final StateChangeContext stateChangeContext, final List<String> message,
                                  final String locationName, final String translationKey) {
         if (message.size() != 0) {
-            if (message.toString().length() < 255) {
+            if ((locationName.length() + message.toString().length()) < 255) {
                 stateChangeContext.addValidationError(translationKey, false, locationName, message.toString());
             } else {
                 stateChangeContext.addValidationError(translationKey + "Short", false, locationName);

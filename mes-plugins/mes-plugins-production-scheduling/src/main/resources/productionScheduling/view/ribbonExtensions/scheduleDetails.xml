@@ -62,18 +62,4 @@
 			</script>
 		</smallButton>
 	</group>
-	<group name="setAPlan" defaultAuthorizationRole="ROLE_SCHEDULES">
-		<bigButton name="getOperations" icon="generateIcon24.png"
-				   action="#{form}.fireEvent(getOperations);" state="disabled">
-		</bigButton>
-		<bigButton name="assignOperationsToWorkstations" icon="generateIcon24.png"
-				   action="#{form}.fireEvent(assignOperationsToWorkstations);" state="disabled">
-		</bigButton>
-		<bigButton name="assignWorkersToOperations" icon="generateIcon24.png"
-				   action="#{form}.fireEvent(assignWorkersToOperations);" state="disabled">
-		</bigButton>
-		<bigButton name="generatePlan" icon="generateIcon24.png"
-				   action="#{form}.fireEvent(generatePlan);" state="disabled">
-		</bigButton>
-	</group>
 </ribbonExtension>

@@ -47,16 +47,12 @@
 								var isSaved = (#{form}.getValue().content && #{form}.getValue().content.entityId);
 								var state = #{state}.getValue().content.value;
 								var token = #{token}.getValue().content.value;
-								var tabItemNames = ["setAPlan.getOperations", "setAPlan.assignOperationsToWorkstations", "setAPlan.assignWorkersToOperations"];
-								var generatePlan = #{window}.getRibbonItem("setAPlan.generatePlan");
 								var saveActions = ["actions.save","actions.saveNew","actions.saveBack"];
 
                                 if (isSaved && state == "01draft" && !token) {
                                     approveSchedule.enable();
-                                    generatePlan.enable("#{translate(orders.scheduleDetails.window.ribbon.setAPlan.generatePlan.message)}");
                                 } else {
                                     approveSchedule.disable();
-                                    generatePlan.disable("#{translate(orders.scheduleDetails.window.ribbon.setAPlan.generatePlan.message)}");
                                 }
 
                                 if (isSaved && state != "03rejected" && !token) {
@@ -64,16 +60,6 @@
                                 } else {
                                     rejectSchedule.disable();
                                 }
-
-                                for (var elementKey in tabItemNames) {
-									var ribbonItem = #{window}.getRibbonItem(tabItemNames[elementKey]);
-
-									if (isSaved && state == "01draft" && !token) {
-										ribbonItem.enable();
-									} else {
-										ribbonItem.disable();
-									}
-								}
 
    								for(var elementKey in saveActions){
    									var ribbonItem = #{window}.getRibbonItem(saveActions[elementKey]);
@@ -103,7 +89,7 @@
 					]]>
                 </script>
                 <component type="gridLayout" name="gridLayout" columns="3"
-                           rows="10">
+                           rows="8">
                     <layoutElement column="1" row="1">
                         <component type="input" name="name" field="name"
                                    reference="name"/>
@@ -127,42 +113,32 @@
                         </component>
                     </layoutElement>
                     <layoutElement column="1" row="4">
-                        <component type="select" name="sortOrder" field="sortOrder"
-                                   reference="sortOrder">
-                        </component>
-                    </layoutElement>
-                    <layoutElement column="1" row="5">
-                        <component type="select" name="workstationAssignCriterion" field="workstationAssignCriterion"
-                                   reference="workstationAssignCriterion">
-                        </component>
-                    </layoutElement>
-                    <layoutElement column="1" row="6">
                         <component type="select" name="workerAssignCriterion" field="workerAssignCriterion"
                                    reference="workerAssignCriterion">
                         </component>
                     </layoutElement>
-                    <layoutElement column="1" row="7">
+                    <layoutElement column="1" row="5">
                         <component type="checkbox" name="onlyWorkstationsOfLineFromOrder"
                                    reference="onlyWorkstationsOfLineFromOrder"
                                    field="onlyWorkstationsOfLineFromOrder"
                                    hasDescription="true">
                         </component>
                     </layoutElement>
-                    <layoutElement column="1" row="8">
+                    <layoutElement column="1" row="6">
                         <component type="checkbox" name="includeTpz"
                                    reference="includeTpz"
                                    field="includeTpz"
                                    hasDescription="true">
                         </component>
                     </layoutElement>
-                    <layoutElement column="1" row="9">
+                    <layoutElement column="1" row="7">
                         <component type="checkbox" name="additionalTimeExtendsOperation"
                                    reference="additionalTimeExtendsOperation"
                                    field="additionalTimeExtendsOperation"
                                    hasDescription="true">
                         </component>
                     </layoutElement>
-                    <layoutElement column="1" row="10">
+                    <layoutElement column="1" row="8">
                         <component type="calendar" name="approveTime" reference="approveTime"
                                    field="approveTime" defaultEnabled="never">
                             <option type="withTimePicker" value="true"/>

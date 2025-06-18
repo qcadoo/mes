@@ -182,6 +182,14 @@ public class OrderStatesListenerServicePFTD {
 
                     return Either.left(L_ACCEPT_INBOUND_DOCUMENT_ERROR);
                 }
+
+                if (!palletValidatorService.notTooManyPalletsInStorageLocationAndProductionTracking(trackingOperationProductOutComponent, storageLocation, palletNumber, order.getId(), "02endOfTheOrder")) {
+                    order.addGlobalError("productionCounting.productionTracking.error.trackingOperationOutComponent.morePalletsExists", product.getStringField(ProductFields.NUMBER));
+
+                    order.addGlobalError(L_ACCEPT_INBOUND_DOCUMENT_ERROR);
+
+                    return Either.left(L_ACCEPT_INBOUND_DOCUMENT_ERROR);
+                }
             }
         }
 
@@ -254,11 +262,6 @@ public class OrderStatesListenerServicePFTD {
                                 palletNumberNumber, typeOfLoadUnitName, null)) {
                             return Optional.of(new ErrorMessage("productionCounting.productionTracking.error.trackingOperationOutComponent.existsOtherResourceForLoadUnitAndTypeOfLoadUnit",
                                     palletNumberNumber, product.getStringField(ProductFields.NUMBER)));
-                        }
-
-                        if (palletValidatorService.checkIfExistsMorePalletsForStorageLocation(locationTo.getId(), storageLocationNumber, palletNumberNumber)) {
-                            return Optional.of(new ErrorMessage("productionCounting.productionTracking.error.trackingOperationOutComponent.morePalletsExists",
-                                    product.getStringField(ProductFields.NUMBER)));
                         }
                     }
                 }

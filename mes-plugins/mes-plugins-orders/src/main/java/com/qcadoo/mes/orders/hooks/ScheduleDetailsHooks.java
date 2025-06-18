@@ -49,9 +49,6 @@ public class ScheduleDetailsHooks {
                 return;
             }
             Entity parameter = parameterService.getParameter();
-            fillWithProperty(ScheduleFields.SORT_ORDER, parameter.getStringField(ParameterFieldsO.SCHEDULE_SORT_ORDER), view);
-            fillWithProperty(ScheduleFields.WORKSTATION_ASSIGN_CRITERION,
-                    parameter.getStringField(ScheduleFields.WORKSTATION_ASSIGN_CRITERION), view);
             fillWithProperty(ScheduleFields.WORKER_ASSIGN_CRITERION,
                     parameter.getStringField(ScheduleFields.WORKER_ASSIGN_CRITERION), view);
             fillCheckboxWithProperty(ScheduleFields.ADDITIONAL_TIME_EXTENDS_OPERATION,

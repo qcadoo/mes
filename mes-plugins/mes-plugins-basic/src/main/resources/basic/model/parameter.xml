@@ -30,7 +30,7 @@
 
     <fields>
         <belongsTo name="country" plugin="basic" model="country"/>
-        <belongsTo name="currency" plugin="basic" model="currency"/>
+        <belongsTo name="currency" plugin="basic" model="currency" required="true"/>
         <dictionary name="unit" dictionary="units"/>
         <string name="additionalTextInFooter">
             <validatesLength max="128"/>

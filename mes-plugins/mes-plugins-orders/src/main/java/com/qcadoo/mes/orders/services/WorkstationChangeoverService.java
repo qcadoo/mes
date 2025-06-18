@@ -40,93 +40,10 @@ public class WorkstationChangeoverService {
     @Autowired
     private WorkstationChangeoverNormService workstationChangeoverNormService;
 
-    public List<Entity> findWorkstationChangeoversForSchedulePosition(final Date startDate, final Entity workstation,
-                                                                      final Entity schedulePosition,
-                                                                      final Entity previousSchedulePosition) {
-        List<Entity> workstationChangeovers = Lists.newArrayList();
-
-        if (workstationChangeoverNormService.hasWorkstationChangeoverNorms(workstation)) {
-            Entity previousOperationalTask = null;
-            Entity previousProduct = null;
-            if (previousSchedulePosition != null) {
-                previousProduct = previousSchedulePosition.getBelongsToField(SchedulePositionFields.ORDER).getBelongsToField(OrderFields.PRODUCT);
-            } else {
-                previousOperationalTask = getPreviousOperationalTask(workstation, startDate);
-                if (previousOperationalTask != null) {
-                    previousProduct = previousOperationalTask.getBelongsToField(OperationalTaskFields.ORDER).getBelongsToField(OrderFields.PRODUCT);
-                }
-            }
-            if (previousProduct != null) {
-                Entity currentProduct = schedulePosition.getBelongsToField(SchedulePositionFields.ORDER).getBelongsToField(OrderFields.PRODUCT);
-
-                List<Entity> currentProductAttributeValues = getProductAttributeValuesWithDataTypeCalculated(currentProduct);
-                List<Entity> previousProductAttributeValues = getProductAttributeValuesWithDataTypeCalculated(previousProduct);
-
-                for (Entity currentProductAttributeValue : currentProductAttributeValues) {
-                    createChangeoversForAttribute(workstation, schedulePosition, previousSchedulePosition, workstationChangeovers,
-                            previousOperationalTask, previousProductAttributeValues, currentProductAttributeValue);
-                }
-            }
-
-            updateWorkstationChangeoversForSchedulePositionDates(workstationChangeovers, startDate);
-        }
-
-        return workstationChangeovers;
-    }
-
-    private void createChangeoversForAttribute(Entity workstation, Entity schedulePosition,
-                                               Entity previousSchedulePosition,
-                                               List<Entity> workstationChangeovers, Entity previousOperationalTask,
-                                               List<Entity> previousProductAttributeValues,
-                                               Entity currentProductAttributeValue) {
-        Entity attribute = currentProductAttributeValue.getBelongsToField(ProductAttributeValueFields.ATTRIBUTE);
-        Entity attributeValue = currentProductAttributeValue.getBelongsToField(ProductAttributeValueFields.ATTRIBUTE_VALUE);
-
-        List<Entity> filteredProductAttributeValues = previousProductAttributeValues.stream().filter(previousProductAttributeValue ->
-                filterProductAttributeValuesWithAttribute(previousProductAttributeValue, attribute)).collect(Collectors.toList());
-        if (!filteredProductAttributeValues.isEmpty()) {
-            List<Entity> workstationChangeoverNorms = workstationChangeoverNormService.findWorkstationChangeoverNorms(workstation, attribute);
-
-            for (Entity workstationChangeoverNorm : workstationChangeoverNorms) {
-                String changeoverType = workstationChangeoverNorm.getStringField(WorkstationChangeoverNormFields.CHANGEOVER_TYPE);
-
-                if (WorkstationChangeoverNormChangeoverType.BETWEEN_VALUES.getStringValue().equals(changeoverType)) {
-                    Entity fromAttributeValue = workstationChangeoverNorm.getBelongsToField(WorkstationChangeoverNormFields.FROM_ATTRIBUTE_VALUE);
-                    Entity toAttributeValue = workstationChangeoverNorm.getBelongsToField(WorkstationChangeoverNormFields.TO_ATTRIBUTE_VALUE);
-
-                    if (attributeValue.getId().equals(toAttributeValue.getId()) && filteredProductAttributeValues.stream().anyMatch(previousProductAttributeValue ->
-                            filterProductAttributeValuesWithAttributeValue(previousProductAttributeValue, fromAttributeValue))) {
-                        Entity workstationChangeover = createWorkstationChangeoverForSchedulePosition(schedulePosition, previousSchedulePosition, workstationChangeoverNorm, previousOperationalTask);
-
-                        workstationChangeovers.add(workstationChangeover);
-                    }
-                } else {
-                    Entity workstationChangeover = createWorkstationChangeoverForSchedulePosition(schedulePosition, previousSchedulePosition, workstationChangeoverNorm, previousOperationalTask);
-
-                    workstationChangeovers.add(workstationChangeover);
-                }
-            }
-        }
-    }
-
     public Optional<Date> getWorkstationChangeoversMaxFinishDate(final List<Entity> workstationChangeovers) {
         return workstationChangeovers.stream().map(workstationChangeover ->
                         workstationChangeover.getDateField(WorkstationChangeoverForOperationalTaskFields.FINISH_DATE))
                 .max(Date::compareTo);
-    }
-
-    private Entity createWorkstationChangeoverForSchedulePosition(final Entity currentSchedulePosition,
-                                                                  final Entity previousSchedulePosition,
-                                                                  final Entity workstationChangeoverNorm,
-                                                                  final Entity previousOperationalTask) {
-        Entity workstationChangeoverForSchedulePosition = getWorkstationChangeoverForSchedulePositionDD().create();
-
-        workstationChangeoverForSchedulePosition.setField(WorkstationChangeoverForSchedulePositionFields.WORKSTATION_CHANGEOVER_NORM, workstationChangeoverNorm);
-        workstationChangeoverForSchedulePosition.setField(WorkstationChangeoverForSchedulePositionFields.CURRENT_SCHEDULE_POSITION, currentSchedulePosition);
-        workstationChangeoverForSchedulePosition.setField(WorkstationChangeoverForSchedulePositionFields.PREVIOUS_SCHEDULE_POSITION, previousSchedulePosition);
-        workstationChangeoverForSchedulePosition.setField(WorkstationChangeoverForSchedulePositionFields.PREVIOUS_OPERATIONAL_TASK, previousOperationalTask);
-
-        return workstationChangeoverForSchedulePosition;
     }
 
     public List<Entity> findWorkstationChangeoverForOperationalTasks(final Entity operationalTask) {
@@ -251,29 +168,6 @@ public class WorkstationChangeoverService {
             lastStartDate = finishDate;
         }
 
-    }
-
-    private void updateWorkstationChangeoversForSchedulePositionDates(final List<Entity> workstationChangeovers,
-                                                                      final Date startDate) {
-        Date lastStartDate = startDate;
-
-        for (Entity workstationChangeover : workstationChangeovers.stream().filter(e -> !e.getBelongsToField(WorkstationChangeoverForSchedulePositionFields.WORKSTATION_CHANGEOVER_NORM).getBooleanField(WorkstationChangeoverForOperationalTaskFields.IS_PARALLEL)).collect(Collectors.toList())) {
-            Integer duration = workstationChangeover.getBelongsToField(WorkstationChangeoverForSchedulePositionFields.WORKSTATION_CHANGEOVER_NORM).getIntegerField(WorkstationChangeoverNormFields.DURATION);
-            Date finishDate = new DateTime(lastStartDate).plusSeconds(duration).toDate();
-
-            workstationChangeover.setField(WorkstationChangeoverForSchedulePositionFields.START_DATE, lastStartDate);
-            workstationChangeover.setField(WorkstationChangeoverForSchedulePositionFields.FINISH_DATE, finishDate);
-
-            lastStartDate = finishDate;
-        }
-
-        for (Entity workstationChangeover : workstationChangeovers.stream().filter(e -> e.getBelongsToField(WorkstationChangeoverForSchedulePositionFields.WORKSTATION_CHANGEOVER_NORM).getBooleanField(WorkstationChangeoverForOperationalTaskFields.IS_PARALLEL)).collect(Collectors.toList())) {
-            Integer duration = workstationChangeover.getBelongsToField(WorkstationChangeoverForSchedulePositionFields.WORKSTATION_CHANGEOVER_NORM).getIntegerField(WorkstationChangeoverNormFields.DURATION);
-            Date finishDate = new DateTime(startDate).plusSeconds(duration).toDate();
-
-            workstationChangeover.setField(WorkstationChangeoverForSchedulePositionFields.START_DATE, startDate);
-            workstationChangeover.setField(WorkstationChangeoverForSchedulePositionFields.FINISH_DATE, finishDate);
-        }
     }
 
     private boolean isParallel(final Entity workstationChangeoverForOperationalTask) {
@@ -426,10 +320,6 @@ public class WorkstationChangeoverService {
 
     public DataDefinition getWorkstationChangeoverForOperationalTaskDD() {
         return dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_WORKSTATION_CHANGEOVER_FOR_OPERATIONAL_TASK);
-    }
-
-    private DataDefinition getWorkstationChangeoverForSchedulePositionDD() {
-        return dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_WORKSTATION_CHANGEOVER_FOR_SCHEDULE_POSITION);
     }
 
     public Entity getPreviousSchedulePosition(Entity schedule, Entity workstation, Entity toc, Date startDate) {
