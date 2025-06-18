@@ -19160,6 +19160,99 @@ ALTER SEQUENCE public.masterorders_masterorderdefinition_id_seq OWNED BY public.
 
 
 --
+-- Name: masterorders_salesplan; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.masterorders_salesplan (
+    id bigint NOT NULL,
+    number character varying(255),
+    name character varying(255),
+    description character varying(2048),
+    state character varying(255),
+    datefrom date,
+    dateto date
+);
+
+
+--
+-- Name: masterorders_masterorderdto; Type: VIEW; Schema: public; Owner: -
+--
+
+CREATE VIEW public.masterorders_masterorderdto AS
+ WITH orderedpositions AS (
+         SELECT masterorders_masterorderproduct.masterorder_id AS masterorderid,
+            count(*) AS cnt
+           FROM public.masterorders_masterorderproduct
+          GROUP BY masterorders_masterorderproduct.masterorder_id
+        ), manyproducts AS (
+         SELECT masterorderproduct.id,
+            masterorderproduct.product_id,
+            (masterorderproduct.masterorder_id)::integer AS masterorderid,
+            COALESCE(( SELECT sum(orders.plannedquantity) AS sum), (0)::numeric) AS cumulatedmasterorderquantity
+           FROM (public.masterorders_masterorderproduct masterorderproduct
+             LEFT JOIN public.orders_order orders ON (((orders.masterorder_id = masterorderproduct.masterorder_id) AND (orders.product_id = masterorderproduct.product_id) AND (orders.vendorinfo IS NULL))))
+          WHERE (masterorderproduct.vendorinfo IS NULL)
+          GROUP BY masterorderproduct.product_id, masterorderproduct.id, masterorderproduct.masterorder_id
+        UNION ALL
+         SELECT masterorderproduct.id,
+            masterorderproduct.product_id,
+            (masterorderproduct.masterorder_id)::integer AS masterorderid,
+            COALESCE(( SELECT sum(orders.plannedquantity) AS sum), (0)::numeric) AS cumulatedmasterorderquantity
+           FROM (public.masterorders_masterorderproduct masterorderproduct
+             LEFT JOIN public.orders_order orders ON (((orders.masterorder_id = masterorderproduct.masterorder_id) AND (orders.product_id = masterorderproduct.product_id) AND ((orders.vendorinfo)::text = (masterorderproduct.vendorinfo)::text))))
+          WHERE (masterorderproduct.vendorinfo IS NOT NULL)
+          GROUP BY masterorderproduct.product_id, masterorderproduct.id, masterorderproduct.masterorder_id
+        ), cumulatedpositions AS (
+         SELECT manyproducts.masterorderid,
+            count(*) AS cnt
+           FROM manyproducts
+          WHERE (manyproducts.cumulatedmasterorderquantity > (0)::numeric)
+          GROUP BY manyproducts.masterorderid
+        )
+ SELECT masterorder.id,
+    masterorderdefinition.number AS masterorderdefinitionnumber,
+    masterorder.number,
+    masterorder.name,
+    masterorder.deadline,
+    company.number AS company,
+    companypayer.number AS companypayer,
+    COALESCE((orderedpositions.cnt)::integer, 0) AS orderedpositionquantity,
+    COALESCE((cumulatedpositions.cnt)::integer, 0) AS commissionedpositionquantity,
+    (COALESCE((orderedpositions.cnt)::integer, 0) - COALESCE((cumulatedpositions.cnt)::integer, 0)) AS quantityforcommission,
+    masterorder.masterorderstate,
+    masterorder.active,
+    masterorder.pipedriveupdate,
+    masterorder.state,
+    masterorder.externalnumber,
+    masterorder.externalsynchronized,
+    masterorder.asanataskid,
+    masterorder.description,
+    salesplan.number AS salesplannumber,
+    salesplan.name AS salesplanname,
+    company.contractorcategory AS companycategory,
+    masterorder.warehouseorder
+   FROM ((((((public.masterorders_masterorder masterorder
+     LEFT JOIN public.masterorders_salesplan salesplan ON ((salesplan.id = masterorder.salesplan_id)))
+     LEFT JOIN public.masterorders_masterorderdefinition masterorderdefinition ON ((masterorderdefinition.id = masterorder.masterorderdefinition_id)))
+     LEFT JOIN public.basic_company company ON ((company.id = masterorder.company_id)))
+     LEFT JOIN public.basic_company companypayer ON ((companypayer.id = masterorder.companypayer_id)))
+     LEFT JOIN orderedpositions ON ((orderedpositions.masterorderid = masterorder.id)))
+     LEFT JOIN cumulatedpositions ON ((cumulatedpositions.masterorderid = masterorder.id)));
+
+
+--
+-- Name: masterorders_masterorderdto_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.masterorders_masterorderdto_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
 -- Name: masterorders_masterorderposition_manyproducts; Type: VIEW; Schema: public; Owner: -
 --
 
@@ -19209,6 +19302,30 @@ SELECT
 
 
 --
+-- Name: masterorders_masterorderposition_manyproducts_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.masterorders_masterorderposition_manyproducts_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: masterorders_masterorderposition_oneproduct_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.masterorders_masterorderposition_oneproduct_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
 -- Name: masterorders_masterorderpositiondto; Type: VIEW; Schema: public; Owner: -
 --
 
@@ -19255,100 +19372,6 @@ CREATE VIEW public.masterorders_masterorderpositiondto AS
     masterorders_masterorderposition_manyproducts.releasequantity,
     masterorders_masterorderposition_manyproducts.quantitytorelease
    FROM public.masterorders_masterorderposition_manyproducts;
-
-
---
--- Name: masterorders_salesplan; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.masterorders_salesplan (
-    id bigint NOT NULL,
-    number character varying(255),
-    name character varying(255),
-    description character varying(2048),
-    state character varying(255),
-    datefrom date,
-    dateto date
-);
-
-
---
--- Name: masterorders_masterorderdto; Type: VIEW; Schema: public; Owner: -
---
-
-CREATE VIEW public.masterorders_masterorderdto AS
- SELECT masterorder.id,
-    masterorderdefinition.number AS masterorderdefinitionnumber,
-    masterorder.number,
-    masterorder.name,
-    masterorder.deadline,
-    company.number AS company,
-    companypayer.number AS companypayer,
-    COALESCE((orderedpositions.count)::integer, 0) AS orderedpositionquantity,
-    COALESCE((cumulatedpositions.count)::integer, 0) AS commissionedpositionquantity,
-    (COALESCE((orderedpositions.count)::integer, 0) - COALESCE((cumulatedpositions.count)::integer, 0)) AS quantityforcommission,
-    masterorder.masterorderstate,
-    masterorder.active,
-    masterorder.pipedriveupdate,
-    masterorder.state,
-    masterorder.externalnumber,
-    masterorder.externalsynchronized,
-    masterorder.asanataskid,
-    masterorder.description,
-    salesplan.number AS salesplannumber,
-    salesplan.name AS salesplanname,
-    company.contractorcategory AS companycategory,
-    masterorder.warehouseorder
-   FROM ((((((public.masterorders_masterorder masterorder
-     LEFT JOIN public.masterorders_salesplan salesplan ON ((salesplan.id = masterorder.salesplan_id)))
-     LEFT JOIN public.masterorders_masterorderdefinition masterorderdefinition ON ((masterorderdefinition.id = masterorder.masterorderdefinition_id)))
-     LEFT JOIN public.basic_company company ON ((company.id = masterorder.company_id)))
-     LEFT JOIN public.basic_company companypayer ON ((companypayer.id = masterorder.companypayer_id)))
-     LEFT JOIN ( SELECT masterorders_masterorderpositiondto.masterorderid,
-            count(*) AS count
-           FROM public.masterorders_masterorderpositiondto
-          GROUP BY masterorders_masterorderpositiondto.masterorderid) orderedpositions ON ((orderedpositions.masterorderid = masterorder.id)))
-     LEFT JOIN ( SELECT masterorders_masterorderpositiondto.masterorderid,
-            count(*) AS count
-           FROM public.masterorders_masterorderpositiondto
-          WHERE (masterorders_masterorderpositiondto.cumulatedmasterorderquantity > (0)::numeric)
-          GROUP BY masterorders_masterorderpositiondto.masterorderid) cumulatedpositions ON ((cumulatedpositions.masterorderid = masterorder.id)));
-
-
---
--- Name: masterorders_masterorderdto_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE public.masterorders_masterorderdto_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: masterorders_masterorderposition_manyproducts_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE public.masterorders_masterorderposition_manyproducts_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: masterorders_masterorderposition_oneproduct_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE public.masterorders_masterorderposition_oneproduct_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
 
 
 --
@@ -21662,7 +21685,7 @@ CREATE VIEW public.materialflowresources_resourcedto AS
            FROM ((public.materialflowresources_resource r
              LEFT JOIN public.materialflowresources_position p ON (((p.resourcenumber)::text = (r.number)::text)))
              LEFT JOIN public.materialflowresources_document d ON ((d.id = p.document_id)))
-          WHERE ((d.type)::text = ANY ((ARRAY['03internalOutbound'::character varying, '04release'::character varying, '05transfer'::character varying])::text[]))
+          WHERE ((d.type)::text = ANY (ARRAY[('03internalOutbound'::character varying)::text, ('04release'::character varying)::text, ('05transfer'::character varying)::text]))
           ORDER BY r.id
         )
  SELECT resource.id,
