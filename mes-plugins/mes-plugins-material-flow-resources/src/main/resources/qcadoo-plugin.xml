@@ -317,6 +317,11 @@
                            plugin="materialFlowResources"/>
         </model:model-field>
 
+        <model:model-field plugin="qcadooSecurity" model="user">
+            <model:hasMany name="repackings" model="repacking" joinField="user"
+                           plugin="materialFlowResources"/>
+        </model:model-field>
+
         <model:model-field plugin="basic" model="typeOfLoadUnit">
             <model:hasMany name="positions" plugin="materialFlowResources" model="position" joinField="typeOfLoadUnit"/>
         </model:model-field>
