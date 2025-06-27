@@ -21243,7 +21243,11 @@ CREATE TABLE public.materialflowresources_repacking (
     storagelocation_id bigint,
     palletnumber_id bigint,
     typeofloadunit_id bigint,
-    staff_id bigint
+    staff_id bigint,
+    wms boolean DEFAULT false,
+    stateinwms character varying(255),
+    user_id bigint,
+    dateconfirmationofcompletion timestamp without time zone
 );
 
 
@@ -43159,7 +43163,7 @@ COPY public.materialflowresources_positionattributevalue (id, position_id, attri
 -- Data for Name: materialflowresources_repacking; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.materialflowresources_repacking (id, number, state, description, "time", location_id, storagelocation_id, palletnumber_id, typeofloadunit_id, staff_id) FROM stdin;
+COPY public.materialflowresources_repacking (id, number, state, description, "time", location_id, storagelocation_id, palletnumber_id, typeofloadunit_id, staff_id, wms, stateinwms, user_id, dateconfirmationofcompletion) FROM stdin;
 \.
 
 
@@ -66895,6 +66899,14 @@ ALTER TABLE ONLY public.materialflowresources_repacking
 
 ALTER TABLE ONLY public.materialflowresources_repacking
     ADD CONSTRAINT repacking_typeofloadunit_fkey FOREIGN KEY (typeofloadunit_id) REFERENCES public.basic_typeofloadunit(id) DEFERRABLE;
+
+
+--
+-- Name: materialflowresources_repacking repacking_user_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.materialflowresources_repacking
+    ADD CONSTRAINT repacking_user_fkey FOREIGN KEY (user_id) REFERENCES public.qcadoosecurity_user(id) DEFERRABLE;
 
 
 --
