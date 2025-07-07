@@ -1,0 +1,49 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.qcadoo.mes</groupId>
+        <artifactId>mes-springboot-application</artifactId>
+        <version>1.0-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>mes-plugins-column-extension-springboot</artifactId> <!-- Added -springboot to differentiate -->
+    <packaging>jar</packaging>
+
+    <name>Qcadoo MES :: Plugins :: Column Extension (Spring Boot)</name>
+
+    <dependencies>
+        <!-- Basic Spring Boot starter -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter</artifactId>
+        </dependency>
+
+        <!-- Spring Boot Test starter for unit/integration tests -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <!--
+            No Qcadoo specific dependencies are included here initially.
+            The aim is to refactor the functionality using Spring Boot principles.
+            If any core non-framework Qcadoo utilities are identified as essential
+            and hard to replicate, they might be added later as standard library dependencies.
+            The original mes-plugins-column-extension/pom.xml had no explicit dependencies,
+            relying on the qcadoo-plugin packaging and parent POMs.
+        -->
+    </dependencies>
+
+    <build>
+        <plugins>
+            <!-- This module will be a JAR, built as part of the larger application.
+                 No need for the spring-boot-maven-plugin here if it's not an executable JAR itself.
+                 The executable JAR will be assembled at the mes-app-core or a dedicated assembly module level.
+            -->
+        </plugins>
+    </build>
+</project>

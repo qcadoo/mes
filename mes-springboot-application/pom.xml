@@ -1,0 +1,49 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.qcadoo.mes</groupId>
+    <artifactId>mes-springboot-application</artifactId>
+    <version>1.0-SNAPSHOT</version>
+    <packaging>pom</packaging> <!-- Changed to pom as this will be a multi-module parent -->
+
+    <name>Qcadoo MES Spring Boot Application</name>
+
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>3.2.0</version>
+        <relativePath/> <!-- lookup parent from repository -->
+    </parent>
+
+    <properties>
+        <java.version>17</java.version>
+        <maven.compiler.source>${java.version}</maven.compiler.source>
+        <maven.compiler.target>${java.version}</maven.compiler.target>
+    </properties>
+
+    <modules>
+        <!-- Modules will be added here later, e.g., the main application module and plugin modules -->
+        <module>mes-app-core</module> <!-- Adding a core module for the Spring Boot app itself -->
+        <module>mes-plugins-column-extension</module>
+    </modules>
+
+    <dependencyManagement>
+        <dependencies>
+            <!-- Dependencies common to all modules can be managed here -->
+        </dependencies>
+    </dependencyManagement>
+
+    <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-maven-plugin</artifactId>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+    </build>
+
+</project>

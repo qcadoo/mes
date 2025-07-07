@@ -1,0 +1,42 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.qcadoo.mes</groupId>
+        <artifactId>mes-springboot-application</artifactId>
+        <version>1.0-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>mes-app-core</artifactId>
+    <packaging>jar</packaging> <!-- Core application will be a JAR -->
+
+    <name>Qcadoo MES Spring Boot Core</name>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <!-- This configuration ensures that 'mvn package' creates an executable JAR
+                     only for this module if it were run as the main application.
+                     However, for a multi-module project, typically the assembly is done
+                     at the parent level or a dedicated application packaging module.
+                     For now, this is fine for the core app module. -->
+            </plugin>
+        </plugins>
+    </build>
+</project>

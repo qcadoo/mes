@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+
+    <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
+
+    <springProperty scope="context" name="springAppName" source="spring.application.name" defaultValue="mes-springboot-app"/>
+
+    <!-- Example console appender -->
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>${CONSOLE_LOG_PATTERN}</pattern>
+            <charset>utf8</charset>
+        </encoder>
+    </appender>
+
+    <!-- Example file appender -->
+    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>logs/${springAppName}.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <!-- daily rollover -->
+            <fileNamePattern>logs/${springAppName}-%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <!-- each file should be at most 100MB, keep 30 days worth of history, but at most 3GB -->
+            <maxFileSize>100MB</maxFileSize>
+            <maxHistory>30</maxHistory>
+            <totalSizeCap>3GB</totalSizeCap>
+        </rollingPolicy>
+        <encoder>
+            <pattern>${FILE_LOG_PATTERN}</pattern>
+            <charset>utf8</charset>
+        </encoder>
+    </appender>
+
+    <!--
+        The original log4j.xml had many specific appenders for different packages/categories:
+        - root-log, model-log, plugin-log, view-log, localization-log, security-log,
+        - security-events-log, report-log, connector-log, activity-log, warn-log,
+        - translation-log, performance-log, sql-log, cache-log, cfg-log, tool-log.
+
+        These can be translated to Logback loggers. For example:
+    -->
+
+    <logger name="com.qcadoo.mes.springboot" level="DEBUG"/>
+    <logger name="com.qcadoo.model" level="INFO" additivity="false">
+        <!-- <appender-ref ref="MODEL_FILE_APPENDER"/> --> <!-- Define MODEL_FILE_APPENDER similarly to FILE -->
+        <appender-ref ref="CONSOLE"/>
+        <appender-ref ref="FILE"/> <!-- Or a specific model log file -->
+    </logger>
+    <logger name="org.hibernate.SQL" level="INFO" additivity="false">
+        <!-- <appender-ref ref="SQL_FILE_APPENDER"/> --> <!-- Define SQL_FILE_APPENDER -->
+         <appender-ref ref="CONSOLE"/>
+         <appender-ref ref="FILE"/> <!-- Or a specific SQL log file -->
+    </logger>
+    <logger name="org.springframework.security" level="INFO"/>
+
+    <!-- Default root logger -->
+    <root level="INFO">
+        <appender-ref ref="CONSOLE"/>
+        <appender-ref ref="FILE"/>
+    </root>
+
+    <!--
+        Note on QCADOO_LOG environment variable:
+        The original log4j.xml used ${QCADOO_LOG}/filename.log.
+        In this Logback configuration, paths are relative to the application startup
+        or can be made absolute. If an external log directory is needed,
+        you can define a property (e.g., from an environment variable or system property)
+        and use it in the file paths, e.g., <file>${LOG_DIR}/${springAppName}.log</file>.
+        Spring Boot's logging.file.path or logging.file.name in application.properties
+        can also control the main log file location.
+    -->
+
+</configuration>
