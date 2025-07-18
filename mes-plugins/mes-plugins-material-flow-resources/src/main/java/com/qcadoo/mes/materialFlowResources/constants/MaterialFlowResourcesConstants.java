@@ -35,6 +35,7 @@ public final class MaterialFlowResourcesConstants {
     public static final String MODEL_STOCKTAKING = "stocktaking";
 
     public static final String MODEL_REPACKING = "repacking";
+    public static final String MODEL_REPACKING_POSITION = "repackingPosition";
 
     public static final String MODEL_REPACKING_STATE_CHANGE = "repackingStateChange";
 
