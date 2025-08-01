@@ -360,7 +360,7 @@ public class PalletValidatorService {
         }
 
         query.append(") ");
-        if("02endOfTheOrder".equals(receiptOfProducts)) {
+        if ("02endOfTheOrder".equals(receiptOfProducts)) {
             query.append("AND ((pt.state = '01draft' OR pt.state = '02accepted') AND pto.typeofmaterial <> '02intermediate' ");
             query.append("OR pt.state = '01draft' AND pto.typeofmaterial = '02intermediate') ");
             query.append("AND o.id = :orderId ");
@@ -388,10 +388,10 @@ public class PalletValidatorService {
     }
 
     private boolean existsOtherDeliveredProductForPalletNumber(final Long locationId, final String storageLocationNumber,
-                                                              final String palletNumberNumber,
-                                                              final String typeOfLoadUnitName,
-                                                              final Long deliveredProductId,
-                                                              final Long deliveryId) {
+                                                               final String palletNumberNumber,
+                                                               final String typeOfLoadUnitName,
+                                                               final Long deliveredProductId,
+                                                               final Long deliveryId) {
         StringBuilder query = new StringBuilder();
 
         query.append("SELECT count(deliveredproduct) FROM deliveries_deliveredproduct deliveredproduct ");
@@ -484,6 +484,46 @@ public class PalletValidatorService {
         return false;
     }
 
+    public boolean tooManyPalletsInStorageLocationAndOrderGroup(final String storageLocationNumber,
+                                                                final Long orderGroupId) {
+        if (Objects.nonNull(storageLocationNumber) && isPlaceStorageLocation(storageLocationNumber)) {
+            StringBuilder query = new StringBuilder();
+
+            query.append("SELECT ");
+            query.append("COUNT(DISTINCT palletsInStorageLocation.palletnumber_id) AS palletsCount ");
+            query.append("FROM (");
+            query.append("SELECT ");
+            query.append("resource.palletnumber_id, ");
+            query.append("resource.storagelocation_id ");
+            query.append("FROM materialflowresources_resource resource ");
+            query.append("UNION ALL ");
+            query.append("SELECT ");
+            query.append("producedproduct.palletnumber_id, ");
+            query.append("producedproduct.storagelocation_id ");
+            query.append("FROM ordersgroups_ordersgroupproducedproduct producedproduct ");
+            query.append("WHERE producedproduct.ordersgroup_id = :orderGroupId ");
+            query.append("AND producedproduct.accepted = false ");
+            query.append(") palletsInStorageLocation ");
+            query.append("JOIN materialflowresources_storagelocation storagelocation ");
+            query.append("ON storagelocation.id = palletsInStorageLocation.storagelocation_id ");
+            query.append("WHERE storagelocation.number = :storageLocationNumber ");
+
+            Map<String, Object> params = Maps.newHashMap();
+
+            params.put("storageLocationNumber", storageLocationNumber);
+            params.put("orderGroupId", orderGroupId);
+
+            Long palletsInStorageLocation = jdbcTemplate.queryForObject(query.toString(), params, Long.class);
+
+            BigDecimal maximumNumberOfPallets = getMaximumNumberOfPallets(storageLocationNumber);
+
+            return Objects.nonNull(maximumNumberOfPallets) && (BigDecimal.valueOf(palletsInStorageLocation).compareTo(maximumNumberOfPallets) > 0);
+        }
+
+        return false;
+    }
+
+
     public boolean notTooManyPalletsInStorageLocationAndDeliveredProducts(final DataDefinition deliveredProductDD,
                                                                           final Entity deliveredProduct) {
         Entity storageLocation = deliveredProduct.getBelongsToField("storageLocation");
@@ -560,7 +600,7 @@ public class PalletValidatorService {
             query.append("ON topoc.productiontracking_id = pt.id ");
             query.append("WHERE topoc.id <> :topocId ");
 
-            if("02endOfTheOrder".equals(receiptOfProducts)) {
+            if ("02endOfTheOrder".equals(receiptOfProducts)) {
                 query.append("AND ((pt.state = '01draft' OR pt.state = '02accepted') AND topoc.typeofmaterial <> '02intermediate' ");
                 query.append("OR pt.state = '01draft' AND topoc.typeofmaterial = '02intermediate') ");
                 query.append("AND o.id = :orderId ");

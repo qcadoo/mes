@@ -734,15 +734,14 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
 
         BigDecimal quantity = position.getDecimalField(RepackingPositionFields.QUANTITY);
         BigDecimal conversion = BigDecimalUtils.convertNullToOne(position.getDecimalField(RepackingPositionFields.CONVERSION));
-        String givenUnit = position.getStringField(RepackingPositionFields.ADDITIONAL_UNIT);
 
         Entity resource = position.getBelongsToField(RepackingPositionFields.RESOURCE);
+        String givenUnit = resource.getStringField(ResourceFields.GIVEN_UNIT);
 
         quantity = recalculateQuantity(quantity, conversion, givenUnit, resource.getDecimalField(ResourceFields.CONVERSION),
                 product.getStringField(ProductFields.UNIT));
 
         conversion = resource.getDecimalField(ResourceFields.CONVERSION);
-        givenUnit = resource.getStringField(ResourceFields.GIVEN_UNIT);
 
         BigDecimal resourceQuantity = resource.getDecimalField(ResourceFields.QUANTITY);
         BigDecimal resourceAvailableQuantity = resource.getDecimalField(ResourceFields.AVAILABLE_QUANTITY);
