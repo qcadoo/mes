@@ -67,6 +67,7 @@
                 <component type="gridLayout" name="gridLayout" columns="3"
                            rows="7">
                     <layoutElement column="1" row="1">
+                        <component type="hidden" name="wms" field="wms" reference="wms"/>
                         <component type="input" name="number" reference="number" field="number"
                                    defaultEnabled="false"/>
                     </layoutElement>
