@@ -25,6 +25,9 @@
     </fields>
 
     <hooks>
+        <validatesWith
+                class="com.qcadoo.mes.materialFlowResources.validators.RepackingValidators"
+                method="validatesWith"/>
         <onCreate class="com.qcadoo.mes.materialFlowResources.hooks.RepackingHooks" method="onCreate"/>
         <onSave class="com.qcadoo.mes.materialFlowResources.hooks.RepackingHooks" method="onSave"/>
     </hooks>
