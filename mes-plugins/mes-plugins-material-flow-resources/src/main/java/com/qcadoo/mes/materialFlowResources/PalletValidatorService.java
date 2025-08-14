@@ -437,6 +437,43 @@ public class PalletValidatorService {
         return jdbcTemplate.queryForObject(query.toString(), params, Long.class) > 0;
     }
 
+    public boolean tooManyPalletsInStorageLocationAndRepacking(final String storageLocationNumber,
+                                                              final String palletNumberNumber) {
+        if (Objects.nonNull(storageLocationNumber) && isPlaceStorageLocation(storageLocationNumber)) {
+            if (Objects.nonNull(palletNumberNumber)) {
+                StringBuilder query = new StringBuilder();
+
+                query.append("SELECT ");
+                query.append("COUNT(DISTINCT palletsInStorageLocation.palletnumber_id) AS palletsCount ");
+                query.append("FROM (");
+                query.append("SELECT ");
+                query.append("resource.palletnumber_id, ");
+                query.append("resource.storagelocation_id ");
+                query.append("FROM materialflowresources_resource resource ");
+                query.append(") palletsInStorageLocation ");
+                query.append("JOIN materialflowresources_storagelocation storagelocation ");
+                query.append("ON storagelocation.id = palletsInStorageLocation.storagelocation_id ");
+                query.append("JOIN basic_palletnumber palletnumber ");
+                query.append("ON palletnumber.id = palletsInStorageLocation.palletnumber_id ");
+                query.append("WHERE storagelocation.number = :storageLocationNumber ");
+                query.append("AND palletnumber.number <> :palletNumberNumber");
+
+                Map<String, Object> params = Maps.newHashMap();
+
+                params.put("storageLocationNumber", storageLocationNumber);
+                params.put("palletNumberNumber", palletNumberNumber);
+
+                Long palletsInStorageLocation = jdbcTemplate.queryForObject(query.toString(), params, Long.class);
+
+                BigDecimal maximumNumberOfPallets = getMaximumNumberOfPallets(storageLocationNumber);
+
+                return Objects.nonNull(maximumNumberOfPallets) && (BigDecimal.valueOf(palletsInStorageLocation + 1).compareTo(maximumNumberOfPallets) > 0);
+            }
+        }
+
+        return false;
+    }
+
     public boolean tooManyPalletsInStorageLocationAndPositions(final String storageLocationNumber,
                                                                final String palletNumberNumber,
                                                                final Long positionId, Long documentId) {
