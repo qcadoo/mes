@@ -2,6 +2,7 @@ package com.qcadoo.mes.materialFlowResources.states;
 
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.basic.constants.ProductFields;
+import com.qcadoo.mes.materialFlowResources.constants.RepackingFields;
 import com.qcadoo.mes.materialFlowResources.constants.ResourceFields;
 import com.qcadoo.mes.materialFlowResources.exceptions.InvalidResourceException;
 import com.qcadoo.mes.materialFlowResources.service.ResourceManagementService;
@@ -34,6 +35,20 @@ public class RepackingStateService extends BasicStateService implements Repackin
     @Override
     public StateChangeEntityDescriber getChangeEntityDescriber() {
         return repackingStateChangeDescriber;
+    }
+
+    @Override
+    public Entity onValidate(Entity entity, String sourceState, String targetState, Entity stateChangeEntity, StateChangeEntityDescriber describer) {
+        switch (targetState) {
+            case RepackingStateStringValues.ACCEPTED:
+                if (entity.getHasManyField(RepackingFields.POSITIONS).isEmpty()) {
+                    entity.addGlobalError("materialFlowResources.repacking.validate.global.error.emptyPositions");
+                }
+
+                break;
+        }
+
+        return entity;
     }
 
     @Override
