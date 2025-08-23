@@ -231,7 +231,7 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
     }
 
     private Entity createResourceForRepacking(final Entity repacking, final Entity resource,
-                                              final BigDecimal quantity, DataDefinition resourceDD) {
+                                              final BigDecimal quantity, DataDefinition resourceDD, BigDecimal conversion) {
         Entity newResource = resourceDD.create();
 
         Entity staff = repacking.getBelongsToField(RepackingFields.STAFF);
@@ -252,13 +252,13 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
         newResource.setField(ResourceFields.STORAGE_LOCATION, repacking.getBelongsToField(RepackingFields.STORAGE_LOCATION));
         newResource.setField(ResourceFields.PALLET_NUMBER, repacking.getBelongsToField(RepackingFields.PALLET_NUMBER));
         newResource.setField(ResourceFields.TYPE_OF_LOAD_UNIT, repacking.getBelongsToField(RepackingFields.TYPE_OF_LOAD_UNIT));
-        newResource.setField(ResourceFields.CONVERSION, resource.getField(ResourceFields.CONVERSION));
+        newResource.setField(ResourceFields.CONVERSION, conversion);
         newResource.setField(ResourceFields.GIVEN_UNIT, resource.getField(ResourceFields.GIVEN_UNIT));
         newResource.setField(ResourceFields.DELIVERY_NUMBER, resource.getField(ResourceFields.DELIVERY_NUMBER));
         newResource.setField(ResourceFields.QUALITY_RATING, resource.getField(ResourceFields.QUALITY_RATING));
 
         BigDecimal quantityInAdditionalUnit = calculationQuantityService.calculateAdditionalQuantity(quantity,
-                resource.getDecimalField(ResourceFields.CONVERSION), resource.getStringField(ResourceFields.GIVEN_UNIT));
+                conversion, resource.getStringField(ResourceFields.GIVEN_UNIT));
 
         newResource.setField(ResourceFields.QUANTITY_IN_ADDITIONAL_UNIT, quantityInAdditionalUnit);
 
@@ -738,16 +738,15 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
         Entity resource = position.getBelongsToField(RepackingPositionFields.RESOURCE);
         String givenUnit = resource.getStringField(ResourceFields.GIVEN_UNIT);
 
-        quantity = recalculateQuantity(quantity, conversion, givenUnit, resource.getDecimalField(ResourceFields.CONVERSION),
+        BigDecimal resourceConversion = resource.getDecimalField(ResourceFields.CONVERSION);
+        quantity = recalculateQuantity(quantity, conversion, givenUnit, resourceConversion,
                 product.getStringField(ProductFields.UNIT));
-
-        conversion = resource.getDecimalField(ResourceFields.CONVERSION);
 
         BigDecimal resourceQuantity = resource.getDecimalField(ResourceFields.QUANTITY);
         BigDecimal resourceAvailableQuantity = resource.getDecimalField(ResourceFields.AVAILABLE_QUANTITY);
-        BigDecimal givenQuantity = calculationQuantityService.calculateAdditionalQuantity(quantity, conversion, givenUnit);
+        BigDecimal givenQuantity = calculationQuantityService.calculateAdditionalQuantity(quantity, resourceConversion, givenUnit);
         BigDecimal givenResourceAvailableQuantity = calculationQuantityService
-                .calculateAdditionalQuantity(resourceAvailableQuantity, conversion, givenUnit);
+                .calculateAdditionalQuantity(resourceAvailableQuantity, resourceConversion, givenUnit);
 
         DataDefinition resourceDD = dataDefinitionService.get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER,
                 MaterialFlowResourcesConstants.MODEL_RESOURCE);
@@ -763,7 +762,7 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
             } else {
                 BigDecimal newResourceQuantity = resourceQuantity.subtract(resourceAvailableQuantity);
                 BigDecimal quantityInAdditionalUnit = calculationQuantityService
-                        .calculateAdditionalQuantity(newResourceQuantity, conversion, givenUnit);
+                        .calculateAdditionalQuantity(newResourceQuantity, resourceConversion, givenUnit);
 
                 resource.setField(ResourceFields.AVAILABLE_QUANTITY, BigDecimal.ZERO);
                 resource.setField(ResourceFields.QUANTITY, newResourceQuantity);
@@ -776,7 +775,7 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
                 }
             }
 
-            Entity newResource = createResourceForRepacking(repacking, resource, resourceAvailableQuantity, resourceDD);
+            Entity newResource = createResourceForRepacking(repacking, resource, resourceAvailableQuantity, resourceDD, conversion);
 
             position.setField(RepackingPositionFields.RESOURCE, null);
             position.setField(RepackingPositionFields.CREATED_RESOURCE_NUMBER, newResource.getStringField(ResourceFields.NUMBER));
@@ -789,7 +788,7 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
             resourceAvailableQuantity = resourceAvailableQuantity.subtract(quantity, numberService.getMathContext());
 
             BigDecimal quantityInAdditionalUnit = calculationQuantityService.calculateAdditionalQuantity(resourceQuantity,
-                    conversion, givenUnit);
+                    resourceConversion, givenUnit);
 
             resource.setField(ResourceFields.QUANTITY, numberService.setScaleWithDefaultMathContext(resourceQuantity));
             resource.setField(ResourceFields.QUANTITY_IN_ADDITIONAL_UNIT, quantityInAdditionalUnit);
@@ -801,7 +800,7 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
                 throw new InvalidResourceException(savedResource);
             }
 
-            Entity newResource = createResourceForRepacking(repacking, resource, quantity, resourceDD);
+            Entity newResource = createResourceForRepacking(repacking, resource, quantity, resourceDD, conversion);
 
             position.setField(RepackingPositionFields.RESOURCE, null);
             position.setField(RepackingPositionFields.CREATED_RESOURCE_NUMBER, newResource.getStringField(ResourceFields.NUMBER));
