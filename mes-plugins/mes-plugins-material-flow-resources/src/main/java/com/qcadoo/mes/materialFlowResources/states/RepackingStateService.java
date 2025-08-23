@@ -2,7 +2,9 @@ package com.qcadoo.mes.materialFlowResources.states;
 
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.basic.constants.ProductFields;
+import com.qcadoo.mes.materialFlowResources.constants.MaterialFlowResourcesConstants;
 import com.qcadoo.mes.materialFlowResources.constants.RepackingFields;
+import com.qcadoo.mes.materialFlowResources.constants.RepackingPositionFields;
 import com.qcadoo.mes.materialFlowResources.constants.ResourceFields;
 import com.qcadoo.mes.materialFlowResources.exceptions.InvalidResourceException;
 import com.qcadoo.mes.materialFlowResources.service.ResourceManagementService;
@@ -61,15 +63,23 @@ public class RepackingStateService extends BasicStateService implements Repackin
                 } catch (InvalidResourceException ire) {
                     entity.setNotValid();
 
-                    String productNumber = ire.getEntity().getBelongsToField(ResourceFields.PRODUCT)
+                    Entity ireEntity = ire.getEntity();
+                    if (MaterialFlowResourcesConstants.MODEL_REPACKING_POSITION.equals(ireEntity.getDataDefinition().getName())) {
+                        LOG.error(translationService.translate(
+                                "materialFlow.document.validate.global.error.invalidResource.notExists",
+                                LocaleContextHolder.getLocale(), ireEntity.getStringField(RepackingPositionFields.RESOURCE_NUMBER)));
+                        return entity;
+                    }
+
+                    String productNumber = ireEntity.getBelongsToField(ResourceFields.PRODUCT)
                             .getStringField(ProductFields.NUMBER);
                     if ("materialFlow.error.position.batch.required"
-                            .equals(ire.getEntity().getError(ResourceFields.BATCH).getMessage())) {
+                            .equals(ireEntity.getError(ResourceFields.BATCH).getMessage())) {
                         LOG.error(translationService.translate(
                                 "materialFlow.document.validate.global.error.invalidResource.batchRequired",
                                 LocaleContextHolder.getLocale(), productNumber));
                     } else {
-                        String resourceNumber = ire.getEntity().getStringField(ResourceFields.NUMBER);
+                        String resourceNumber = ireEntity.getStringField(ResourceFields.NUMBER);
 
                         LOG.error(translationService.translate("materialFlow.document.validate.global.error.invalidResource",
                                 LocaleContextHolder.getLocale(), resourceNumber, productNumber));

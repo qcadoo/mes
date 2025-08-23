@@ -736,6 +736,11 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
         BigDecimal conversion = BigDecimalUtils.convertNullToOne(position.getDecimalField(RepackingPositionFields.CONVERSION));
 
         Entity resource = position.getBelongsToField(RepackingPositionFields.RESOURCE);
+
+        if (resource == null) {
+            throw new InvalidResourceException(position);
+        }
+
         String givenUnit = resource.getStringField(ResourceFields.GIVEN_UNIT);
 
         BigDecimal resourceConversion = resource.getDecimalField(ResourceFields.CONVERSION);
