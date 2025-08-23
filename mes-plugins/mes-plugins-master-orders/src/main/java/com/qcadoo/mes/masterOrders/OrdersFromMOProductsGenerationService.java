@@ -608,12 +608,12 @@ public class OrdersFromMOProductsGenerationService {
 
         StringBuilder descriptionBuilder = new StringBuilder();
 
-        if (copyDescription && StringUtils.isNoneBlank(masterOrder.getStringField(MasterOrderFields.DESCRIPTION))) {
+        if (copyDescription && masterOrder != null && StringUtils.isNoneBlank(masterOrder.getStringField(MasterOrderFields.DESCRIPTION))) {
             descriptionBuilder.append(masterOrder.getStringField(MasterOrderFields.DESCRIPTION));
         }
 
         if (copyNotesFromMasterOrderPosition
-                && StringUtils.isNoneBlank(masterOrderProduct.getStringField(MasterOrderProductFields.COMMENTS))) {
+                && masterOrderProduct != null && StringUtils.isNoneBlank(masterOrderProduct.getStringField(MasterOrderProductFields.COMMENTS))) {
             if (StringUtils.isNoneBlank(descriptionBuilder.toString())) {
                 descriptionBuilder.append("\n");
             }
