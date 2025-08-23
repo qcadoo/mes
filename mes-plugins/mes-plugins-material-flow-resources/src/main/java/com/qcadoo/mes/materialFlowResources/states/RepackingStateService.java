@@ -65,6 +65,7 @@ public class RepackingStateService extends BasicStateService implements Repackin
 
                     Entity ireEntity = ire.getEntity();
                     if (MaterialFlowResourcesConstants.MODEL_REPACKING_POSITION.equals(ireEntity.getDataDefinition().getName())) {
+                        entity.addGlobalError("materialFlow.document.validate.global.error.invalidResource.notExists", ireEntity.getStringField(RepackingPositionFields.RESOURCE_NUMBER));
                         LOG.error(translationService.translate(
                                 "materialFlow.document.validate.global.error.invalidResource.notExists",
                                 LocaleContextHolder.getLocale(), ireEntity.getStringField(RepackingPositionFields.RESOURCE_NUMBER)));
