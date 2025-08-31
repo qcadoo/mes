@@ -145,6 +145,8 @@ public class StateExecutorService {
         } catch (EntityRuntimeException entityException) {
             copyMessages(entityException.getEntity(), entity);
 
+            entity = entityException.getEntity();
+
             entity = rollbackStateChange(entity, sourceState);
 
             saveStateChangeEntity(stateChangeEntity, StateChangeStatus.FAILURE);
