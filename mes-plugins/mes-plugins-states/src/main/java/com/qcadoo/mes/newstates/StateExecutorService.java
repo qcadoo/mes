@@ -143,7 +143,7 @@ public class StateExecutorService {
                         stateChangeEntity.getStringField(describer.getTargetStateFieldName())));
             }
         } catch (EntityRuntimeException entityException) {
-            copyMessages(entityException.getEntity(), entity);
+//            copyMessages(entityException.getEntity(), entity);
 
             entity = entityException.getEntity();
 
