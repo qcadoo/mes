@@ -143,8 +143,6 @@ public class StateExecutorService {
                         stateChangeEntity.getStringField(describer.getTargetStateFieldName())));
             }
         } catch (EntityRuntimeException entityException) {
-//            copyMessages(entityException.getEntity(), entity);
-
             entity = entityException.getEntity();
 
             entity = rollbackStateChange(entity, sourceState);
@@ -227,7 +225,6 @@ public class StateExecutorService {
                 stateChangeEntity.getStringField(describer.getTargetStateFieldName()), stateChangeEntity, describer);
 
         if (!entity.isValid()) {
-            // copyErrorMessages(entity);
             return entity;
         }
 
@@ -383,12 +380,7 @@ public class StateExecutorService {
         return true;
     }
 
-    private void copyMessages(final Entity entity, final Entity mainEntity) {
-        if (Objects.nonNull(mainEntity) && mainEntity.equals(entity)
-                && entity.getGlobalErrors().size() == mainEntity.getGlobalErrors().size()) {
-            return;
-        }
-
+    private void copyMessages(final Entity entity) {
         if (Objects.isNull(componentMessagesHolder)) {
             return;
         }
@@ -403,10 +395,6 @@ public class StateExecutorService {
         for (GlobalMessage globalMessage : entity.getGlobalMessages()) {
             componentMessagesHolder.addMessage(globalMessage);
         }
-    }
-
-    private void copyMessages(final Entity entity) {
-        copyMessages(entity, null);
     }
 
     private Entity saveAndValidate(final Entity entity) {
