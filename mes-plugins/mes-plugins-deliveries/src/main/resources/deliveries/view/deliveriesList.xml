@@ -417,11 +417,13 @@
                 <option type="column" name="dateOfSendingEmail" fields="dateOfSendingEmail" width="100"/>
                 <option type="column" name="releasedForPayment" fields="releasedForPayment" width="30"/>
                 <option type="column" name="paymentID" fields="paymentID" width="50"/>
+                <option type="column" name="relatedDelivery" fields="relatedDelivery"
+                        expression="#relatedDelivery['number']" width="50"/>
 
                 <option type="order" column="number" direction="desc"/>
 
-                <option type="searchable" value="name,number,supplierName,deliveryDate,contractorCategory,state,createDate,location,dateOfSendingEmail,releasedForPayment,paymentID"/>
-                <option type="orderable" value="name,number,supplierName,deliveryDate,contractorCategory,state,createDate,location,dateOfSendingEmail,releasedForPayment,paymentID"/>
+                <option type="searchable" value="name,number,supplierName,deliveryDate,contractorCategory,state,createDate,location,dateOfSendingEmail,releasedForPayment,paymentID,relatedDelivery"/>
+                <option type="orderable" value="name,number,supplierName,deliveryDate,contractorCategory,state,createDate,location,dateOfSendingEmail,releasedForPayment,paymentID,relatedDelivery"/>
 
                 <option type="correspondingView" value="deliveries/deliveryDetails"/>
                 <option type="correspondingComponent" value="form"/>
