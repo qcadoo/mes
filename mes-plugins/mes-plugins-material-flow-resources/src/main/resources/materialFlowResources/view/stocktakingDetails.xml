@@ -122,6 +122,7 @@
                 <component type="gridLayout" name="stocktakingGridLayout"
                            hasBorders="false" columns="2" rows="10">
                     <layoutElement row="1" column="1">
+                        <component type="hidden" name="wms" field="wms" reference="wms"/>
                         <component type="checkbox" name="generated" field="generated"
                                    reference="generated" defaultEnabled="false" defaultVisible="false"/>
                         <component type="input" name="number" reference="number" field="#{form}.number"

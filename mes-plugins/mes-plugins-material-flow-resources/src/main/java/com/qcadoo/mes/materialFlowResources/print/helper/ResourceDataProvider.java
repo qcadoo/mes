@@ -76,7 +76,8 @@ public class ResourceDataProvider {
         query.append("palletnumber.id AS palletnumberid, ");
         query.append("palletnumber.number AS palletnumbernumber, ");
         query.append("batch.number AS batch, ");
-        query.append("batch.id AS batchid ");
+        query.append("batch.id AS batchid, ");
+        query.append("resource.typeofloadunit_id AS typeOfLoadUnitId ");
         query.append("FROM materialflowresources_resource resource ");
         query.append("LEFT JOIN materialflowresources_storagelocation storagelocation ON storagelocation.id = resource.storagelocation_id ");
         query.append("LEFT JOIN basic_product product ON product.id = resource.product_id ");
