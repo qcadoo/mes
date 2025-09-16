@@ -106,6 +106,8 @@
         <model:model model="reservation" resource="model/reservation.xml"/>
 
         <model:model model="stocktaking" resource="model/stocktaking.xml"/>
+        <model:model model="stocktakingPosition" resource="model/stocktakingPosition.xml"/>
+        <model:model model="stocktakingStateChange" resource="model/stocktakingStateChange.xml"/>
         <model:model model="warehouseStockReport" resource="model/warehouseStockReport.xml"/>
 
         <model:model model="importStorageLocation" resource="model/importStorageLocation.xml"/>
@@ -265,6 +267,11 @@
         <model:model-field plugin="materialFlow" model="location">
             <model:hasMany name="stocktakings" model="stocktaking"
                            plugin="materialFlowResources" joinField="location"/>
+        </model:model-field>
+
+        <model:model-field plugin="qcadooSecurity" model="user">
+            <model:hasMany name="stocktakingPositions" model="stocktakingPosition" joinField="pickingWorker"
+                           plugin="materialFlowResources"/>
         </model:model-field>
 
         <model:model-field plugin="materialFlow" model="location">
@@ -469,6 +476,7 @@
         <view:view resource="view/palletBalanceDetails.xml"/>
         <view:view resource="view/palletBalancesList.xml"/>
 
+        <view:view resource="view/stocktakingPositionDetails.xml"/>
         <view:view resource="view/stocktakingDetails.xml"/>
         <view:view resource="view/stocktakingsList.xml"/>
 

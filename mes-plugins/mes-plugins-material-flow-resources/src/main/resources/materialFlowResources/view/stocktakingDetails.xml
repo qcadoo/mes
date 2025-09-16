@@ -134,9 +134,6 @@
                     <layoutElement row="3" column="1">
                         <component type="select" name="category" reference="category" field="#{form}.category"/>
                     </layoutElement>
-                    <layoutElement row="4" column="1">
-                        <component type="select" name="wasteMode" reference="wasteMode" field="#{form}.wasteMode"/>
-                    </layoutElement>
                     <layoutElement column="2" row="1">
                         <component type="lookup" name="location" field="location"
                                    reference="location">
@@ -160,6 +157,9 @@
                                       class="com.qcadoo.mes.materialFlowResources.hooks.StocktakingDetailsHooks"
                                       method="changeStorageLocationsGridEnabled"/>
                         </component>
+                    </layoutElement>
+                    <layoutElement column="2" row="3" height="2">
+                        <component type="textarea" name="description" field="description"/>
                     </layoutElement>
                     <layoutElement column="1" row="5" height="6" width="2">
                         <component type="lookup" name="storageLocationLookup" reference="storageLocationLookup"
@@ -208,6 +208,39 @@
             </component>
         </windowTab>
 
+        <windowTab name="positionsTab" reference="positionsTab">
+            <component type="grid" name="positions" source="#{form}.positions"
+                       reference="positions">
+                <option type="column" name="storageLocation" fields="storageLocation" expression="#storageLocation['number']"/>
+                <option type="column" name="palletNumber" fields="palletNumber" expression="#palletNumber['number']" width="30"/>
+                <option type="column" name="typeOfLoadUnit" fields="typeOfLoadUnit" expression="#typeOfLoadUnit['name']"
+                        width="50"/>
+                <option type="column" name="productNumber" fields="product" expression="#product['number']" link="true"/>
+                <option type="column" name="productName" fields="product" expression="#product['name']" link="true"/>
+                <option type="column" name="batch" fields="batch" expression="#batch['number']" width="30"/>
+                <option type="column" name="expirationDate" fields="expirationDate"/>
+                <option type="column" name="unit" fields="product" expression="#product['unit']" width="30"/>
+                <option type="column" name="stock" fields="stock" width="80"/>
+                <option type="column" name="quantity" fields="quantity" width="80"/>
+
+                <option type="order" column="storageLocation" direction="asc"/>
+
+                <option type="searchable"
+                        value="storageLocation,palletNumber,typeOfLoadUnit,productNumber,productName,batch,expirationDate,unit,stock,quantity"/>
+                <option type="orderable"
+                        value="storageLocation,palletNumber,typeOfLoadUnit,productNumber,productName,batch,expirationDate,unit,stock,quantity"/>
+
+                <option type="correspondingView" value="materialFlowResources/stocktakingPositionDetails"/>
+                <option type="correspondingComponent" value="form"/>
+                <option type="correspondingViewInModal" value="true"/>
+
+                <option type="creatable" value="true"/>
+                <option type="deletable" value="true"/>
+                <option type="fullscreen" value="true"/>
+                <option type="multiselect" value="true"/>
+                <option type="fixedHeight" value="true"/>
+            </component>
+        </windowTab>
     </component>
 
     <hooks>

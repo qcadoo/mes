@@ -33,12 +33,10 @@
         <datetime name="generationDate" copyable="false"/>
         <dictionary name="category" dictionary="categories"/>
 
-        <enum name="wasteMode" values="01all,02yes,03no" default="01all" required="true"/>
         <enum name="storageLocationMode" values="01all,02selected" default="01all" required="true"/>
         <belongsTo name="location" model="location" plugin="materialFlow" required="true"/>
 
-        <manyToMany name="storageLocations" model="storageLocation" joinField="warehouseStockReports" copyable="true"
-                    cascade="nullify"/>
+        <manyToMany name="storageLocations" model="storageLocation" joinField="warehouseStockReports" copyable="true"/>
 
         <boolean name="generated" default="false" copyable="false"/>
         <string name="fileName" copyable="false"/>

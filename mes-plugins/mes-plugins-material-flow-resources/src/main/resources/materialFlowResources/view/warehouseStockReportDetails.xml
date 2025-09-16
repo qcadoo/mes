@@ -120,7 +120,7 @@
                 </script>
 
                 <component type="gridLayout" name="stocktakingGridLayout"
-                           hasBorders="false" columns="2" rows="9">
+                           hasBorders="false" columns="2" rows="8">
                     <layoutElement row="1" column="1">
                         <component type="checkbox" name="generated" field="generated"
                                    reference="generated" defaultEnabled="false" defaultVisible="false"/>
@@ -129,9 +129,6 @@
                     </layoutElement>
                     <layoutElement row="2" column="1">
                         <component type="select" name="category" reference="category" field="#{form}.category"/>
-                    </layoutElement>
-                    <layoutElement row="3" column="1">
-                        <component type="select" name="wasteMode" reference="wasteMode" field="#{form}.wasteMode"/>
                     </layoutElement>
                     <layoutElement column="2" row="1">
                         <component type="lookup" name="location" field="location"
@@ -157,7 +154,7 @@
                                       method="changeStorageLocationsGridEnabled"/>
                         </component>
                     </layoutElement>
-                    <layoutElement column="1" row="4" height="6" width="2">
+                    <layoutElement column="1" row="3" height="6" width="2">
                         <component type="lookup" name="storageLocationLookup" reference="storageLocationLookup"
                                    field="#{form}.storageLocations"
                                    defaultVisible="false" persistent="false" hasLabel="false">
