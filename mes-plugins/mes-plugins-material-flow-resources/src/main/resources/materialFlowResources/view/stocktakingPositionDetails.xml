@@ -49,6 +49,10 @@
 
                             <option type="expression" value="#number"/>
                             <option type="fieldCode" value="number"/>
+
+                            <criteriaModifier
+                                    class="com.qcadoo.mes.materialFlowResources.criteriaModifiers.StorageLocationCriteriaModifiers"
+                                    method="showStorageLocationsForLocation"/>
                         </component>
                     </layoutElement>
                     <layoutElement column="1" row="2" width="6">
@@ -60,6 +64,10 @@
 
                             <option type="expression" value="#number"/>
                             <option type="fieldCode" value="number"/>
+
+                            <listener event="onSelectedEntityChange"
+                                      class="com.qcadoo.mes.materialFlowResources.listeners.StocktakingPositionDetailsListeners"
+                                      method="fillTypeOfLoadUnitField"/>
                         </component>
                     </layoutElement>
                     <layoutElement column="1" row="3" width="6">
@@ -83,6 +91,57 @@
 
                             <option type="expression" value="#number + ' - ' + #name"/>
                             <option type="fieldCode" value="number"/>
+
+                            <listener event="onSelectedEntityChange"
+                                      class="com.qcadoo.view.api.listeners.RerenderListener"
+                                      method="onChangeRerender"/>
+                        </component>
+                    </layoutElement>
+                    <layoutElement column="1" row="5" width="6">
+                        <component type="lookup" name="batch" field="batch"
+                                   reference="batch">
+                            <option type="column" name="supplierName" fields="supplier"
+                                    expression="#supplier?.get('name')"/>
+
+                            <option type="searchable" value="number,supplierName"/>
+                            <option type="orderable" value="number,supplierName"/>
+
+                            <option type="expression" value="#number"/>
+                            <option type="fieldCode" value="number"/>
+
+                            <criteriaModifier
+                                    class="com.qcadoo.mes.advancedGenealogy.criteriaModifier.BatchCriteriaModifier"
+                                    method="filterByProduct"/>
+                        </component>
+                    </layoutElement>
+                    <layoutElement column="1" row="6" width="6">
+                        <component type="calendar" name="expirationDate" field="expirationDate"
+                                   reference="expirationDate">
+                            <option type="withTimePicker" value="false"/>
+                        </component>
+                    </layoutElement>
+                    <layoutElement column="1" row="7" width="6">
+                        <component type="input" name="quantity" field="quantity"
+                                   reference="quantity">
+                            <option type="alignment" value="right"/>
+                        </component>
+                    </layoutElement>
+                    <layoutElement column="7" row="7" width="1">
+                        <component type="input" name="quantityUNIT" reference="quantityUNIT"
+                                   defaultEnabled="false" hasLabel="false">
+                            <option type="textRepresentationOnDisabled" value="true"/>
+                        </component>
+                    </layoutElement>
+                    <layoutElement column="1" row="8" width="6">
+                        <component type="input" name="stock" field="stock"
+                                   reference="stock" defaultEnabled="never">
+                            <option type="alignment" value="right"/>
+                        </component>
+                    </layoutElement>
+                    <layoutElement column="7" row="8" width="1">
+                        <component type="input" name="stockUNIT" reference="stockUNIT"
+                                   defaultEnabled="false" hasLabel="false">
+                            <option type="textRepresentationOnDisabled" value="true"/>
                         </component>
                     </layoutElement>
                 </component>
@@ -93,5 +152,8 @@
         </windowTab>
     </component>
 
-    <hooks/>
+    <hooks>
+        <beforeRender class="com.qcadoo.mes.materialFlowResources.hooks.StocktakingPositionDetailsHooks"
+                      method="onBeforeRender"/>
+    </hooks>
 </view>

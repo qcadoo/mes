@@ -18,6 +18,7 @@ public final class StocktakingPositionFields {
 
     public static final String BATCH = "batch";
     public static final String STOCK = "stock";
+    public static final String STOCKTAKING = "stocktaking";
 
 
 }

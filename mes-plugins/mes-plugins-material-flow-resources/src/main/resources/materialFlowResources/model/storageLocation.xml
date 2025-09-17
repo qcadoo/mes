@@ -48,6 +48,7 @@
         <hasMany name="oldResourceCorrections" model="resourceCorrection" joinField="oldStorageLocation"/>
         <hasMany name="newResourceCorrections" model="resourceCorrection" joinField="newStorageLocation"/>
         <hasMany name="transferLocations" plugin="materialFlow" model="location" joinField="transferStorageLocation"/>
+        <hasMany name="stocktakingPositions" model="stocktakingPosition" joinField="storageLocation"/>
 
         <boolean name="highStorageLocation" default="false"/>
 

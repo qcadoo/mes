@@ -1,6 +1,5 @@
 package com.qcadoo.mes.materialFlowResources.listeners;
 
-import com.google.common.collect.Lists;
 import com.qcadoo.mes.materialFlowResources.constants.MaterialFlowResourcesConstants;
 import com.qcadoo.mes.materialFlowResources.constants.StocktakingFields;
 import com.qcadoo.mes.materialFlowResources.constants.StocktakingPositionFields;
@@ -81,5 +80,4 @@ public class StocktakingDetailsListeners {
     public void print(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         reportService.printReport(view, state);
     }
-
 }

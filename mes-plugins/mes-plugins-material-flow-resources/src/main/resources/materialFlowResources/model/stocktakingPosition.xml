@@ -8,7 +8,7 @@
         <belongsTo name="storageLocation" model="storageLocation"/>
         <belongsTo name="palletNumber" model="palletNumber" plugin="basic"/>
         <belongsTo name="typeOfLoadUnit" plugin="basic" model="typeOfLoadUnit" />
-        <belongsTo name="product" model="product" plugin="basic"/>
+        <belongsTo name="product" model="product" plugin="basic" required="true"/>
         <belongsTo name="batch" model="batch" plugin="advancedGenealogy"/>
         <date name="expirationDate"/>
         <decimal name="stock">

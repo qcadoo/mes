@@ -167,6 +167,11 @@
         </model:model-field>
 
         <model:model-field plugin="basic" model="product">
+            <model:hasMany name="stocktakingPositions" model="stocktakingPosition"
+                           plugin="materialFlowResources" joinField="product"/>
+        </model:model-field>
+
+        <model:model-field plugin="basic" model="product">
             <model:hasMany name="resourceStocks" model="resourceStock"
                            plugin="materialFlowResources" joinField="product" cascade="nullify"/>
         </model:model-field>
@@ -231,6 +236,11 @@
 
         <model:model-field plugin="basic" model="palletNumber">
             <model:hasMany name="repacking" model="repacking"
+                           plugin="materialFlowResources" joinField="palletNumber"/>
+        </model:model-field>
+
+        <model:model-field plugin="basic" model="palletNumber">
+            <model:hasMany name="stocktakingPositions" model="stocktakingPosition"
                            plugin="materialFlowResources" joinField="palletNumber"/>
         </model:model-field>
 
@@ -310,6 +320,11 @@
         </model:model-field>
 
         <model:model-field plugin="advancedGenealogy" model="batch">
+            <model:hasMany name="stocktakingPositions" model="stocktakingPosition"
+                           plugin="materialFlowResources" joinField="batch"/>
+        </model:model-field>
+
+        <model:model-field plugin="advancedGenealogy" model="batch">
             <model:hasMany name="oldResourceCorrections" model="resourceCorrection"
                            plugin="materialFlowResources" joinField="oldBatch"/>
         </model:model-field>
@@ -341,6 +356,10 @@
             <model:hasMany name="repacking" plugin="materialFlowResources" model="repacking" joinField="typeOfLoadUnit"/>
         </model:model-field>
 
+        <model:model-field plugin="basic" model="typeOfLoadUnit">
+            <model:hasMany name="stocktakingPositions" plugin="materialFlowResources" model="stocktakingPosition" joinField="typeOfLoadUnit"/>
+        </model:model-field>
+
         <model:model-field plugin="states" model="message">
             <model:belongsTo name="repackingStateChange" plugin="materialFlowResources"
                              model="repackingStateChange"/>
@@ -349,6 +368,16 @@
         <model:model-field plugin="basic" model="shift">
             <model:hasMany name="repackingStateChanges" plugin="materialFlowResources"
                            model="repackingStateChange" joinField="shift"/>
+        </model:model-field>
+
+        <model:model-field plugin="states" model="message">
+            <model:belongsTo name="stocktakingStateChange" plugin="materialFlowResources"
+                             model="stocktakingStateChange"/>
+        </model:model-field>
+
+        <model:model-field plugin="basic" model="shift">
+            <model:hasMany name="stocktakingStateChanges" plugin="materialFlowResources"
+                           model="stocktakingStateChange" joinField="shift"/>
         </model:model-field>
 
         <model:model-field plugin="basic" model="typeOfLoadUnit">
