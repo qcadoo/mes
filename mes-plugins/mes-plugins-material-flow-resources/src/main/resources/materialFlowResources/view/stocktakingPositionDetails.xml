@@ -52,7 +52,7 @@
 
                             <criteriaModifier
                                     class="com.qcadoo.mes.materialFlowResources.criteriaModifiers.StorageLocationCriteriaModifiers"
-                                    method="showStorageLocationsForLocation"/>
+                                    method="showStorageLocationsWithGivenIdsForLocation"/>
                         </component>
                     </layoutElement>
                     <layoutElement column="1" row="2" width="6">

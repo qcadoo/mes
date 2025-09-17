@@ -7,8 +7,12 @@ import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.view.api.components.lookup.FilterValueHolder;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class StorageLocationCriteriaModifiers {
+
+    public static final String IDS = "ids";
 
     public void showStorageLocationsForLocation(final SearchCriteriaBuilder scb, final FilterValueHolder filterValue) {
         if (filterValue.has(StorageLocationFields.LOCATION)) {
@@ -23,6 +27,14 @@ public class StorageLocationCriteriaModifiers {
                                                                final FilterValueHolder filterValue) {
         showStorageLocationsForLocation(scb, filterValue);
         scb.add(SearchRestrictions.isEmpty(StorageLocationFields.PRODUCTS));
+    }
+
+    public void showStorageLocationsWithGivenIdsForLocation(final SearchCriteriaBuilder scb, final FilterValueHolder filterValue) {
+        showStorageLocationsForLocation(scb, filterValue);
+        if (filterValue.has(IDS)) {
+            List<Long> ids = filterValue.getListOfLongs(IDS);
+            scb.add(SearchRestrictions.in("id", ids));
+        }
     }
 
 }

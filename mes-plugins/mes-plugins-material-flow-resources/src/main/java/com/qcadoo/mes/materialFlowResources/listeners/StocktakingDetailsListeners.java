@@ -77,6 +77,15 @@ public class StocktakingDetailsListeners {
 
     }
 
+    public void copyFromStock(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
+        Entity entity = form.getPersistedEntityWithIncludedFormValues();
+        for (Entity position : entity.getHasManyField(StocktakingFields.POSITIONS)) {
+            position.setField(StocktakingPositionFields.QUANTITY, position.getDecimalField(StocktakingPositionFields.STOCK));
+            position.getDataDefinition().save(position);
+        }
+    }
+
     public void print(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         reportService.printReport(view, state);
     }

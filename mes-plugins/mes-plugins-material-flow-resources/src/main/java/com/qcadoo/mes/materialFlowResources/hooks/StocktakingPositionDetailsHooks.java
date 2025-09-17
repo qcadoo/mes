@@ -5,6 +5,8 @@ import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.materialFlowResources.MaterialFlowResourcesService;
 import com.qcadoo.mes.materialFlowResources.constants.StocktakingFields;
 import com.qcadoo.mes.materialFlowResources.constants.StocktakingPositionFields;
+import com.qcadoo.mes.materialFlowResources.constants.StorageLocationMode;
+import com.qcadoo.mes.materialFlowResources.criteriaModifiers.StorageLocationCriteriaModifiers;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -17,7 +19,9 @@ import com.qcadoo.view.constants.QcadooViewConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import static com.qcadoo.mes.basic.constants.ProductFields.UNIT;
 
@@ -55,6 +59,18 @@ public class StocktakingPositionDetailsHooks {
         Entity warehouse = stocktaking.getBelongsToField(StocktakingFields.LOCATION);
 
         filter.put(StocktakingFields.LOCATION, warehouse.getId());
+
+        if (StorageLocationMode.SELECTED.getStringValue().equals(
+                stocktaking.getStringField(StocktakingFields.STORAGE_LOCATION_MODE))) {
+            List<Entity> storageLocations = stocktaking.getHasManyField(StocktakingFields.STORAGE_LOCATIONS);
+            if (storageLocations.size() == 1) {
+                storageLocationLookup.setFieldValue(storageLocations.get(0).getId());
+                storageLocationLookup.requestComponentUpdateState();
+            }
+            if (!storageLocations.isEmpty()) {
+                filter.put(StorageLocationCriteriaModifiers.IDS, storageLocations.stream().map(Entity::getId).collect(Collectors.toList()));
+            }
+        }
 
         storageLocationLookup.setFilterValue(filter);
     }

@@ -75,7 +75,7 @@ public class StaffCriteriaModifier {
                 .get(AssignmentToShiftConstants.PLUGIN_IDENTIFIER, AssignmentToShiftConstants.MODEL_STAFF_ASSIGNMENT_TO_SHIFT)
                 .find(hql).list().getEntities();
         if (!workersIds.isEmpty()) {
-            filter.put("workersIds", workersIds.stream().map(id -> id.getLongField("workerId")).collect(Collectors.toList()));
+            filter.put(WORKERS_IDS, workersIds.stream().map(id -> id.getLongField("workerId")).collect(Collectors.toList()));
             staffLookup.setFilterValue(filter);
         }
     }

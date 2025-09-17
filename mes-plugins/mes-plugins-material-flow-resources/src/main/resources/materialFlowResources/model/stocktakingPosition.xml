@@ -17,12 +17,16 @@
             <validatesScale max="5"/>
         </decimal>
         <decimal name="quantity">
-            <validatesRange from="0" exclusively="true"/>
+            <validatesRange from="0"/>
             <validatesUnscaledValue max="9"/>
             <validatesScale max="5"/>
         </decimal>
         <belongsTo name="pickingWorker" model="user" plugin="qcadooSecurity" copyable="false"/>
     </fields>
 
-    <hooks/>
+    <hooks>
+        <onSave
+                class="com.qcadoo.mes.materialFlowResources.hooks.StocktakingPositionHooks"
+                method="onSave"/>
+    </hooks>
 </model>

@@ -52,6 +52,25 @@
 						]]>
                     </script>
                 </bigButton>
+                <bigButton name="copyFromStock" icon="copyIcon24.png"
+                           action="#{form}.fireEvent(copyFromStock);" state="enabled">
+                    <script>
+                        <![CDATA[
+							#{form}.addOnChangeListener({
+								onSetValue: function(value) {
+									if (!value || !value.content) {
+										return;
+									}
+									if (!value.content.entityId) {
+										this.disable();
+									} else {
+										this.enable();
+									}
+								}
+							});
+						]]>
+                    </script>
+                </bigButton>
             </group>
             <group name="print">
                 <bigButton name="print" icon="pdfIcon24.png"
@@ -203,6 +222,9 @@
                 <listener event="generate"
                           class="com.qcadoo.mes.materialFlowResources.listeners.StocktakingDetailsListeners"
                           method="generate"/>
+                <listener event="copyFromStock"
+                          class="com.qcadoo.mes.materialFlowResources.listeners.StocktakingDetailsListeners"
+                          method="copyFromStock"/>
                 <listener event="print"
                           class="com.qcadoo.mes.materialFlowResources.listeners.StocktakingDetailsListeners"
                           method="print"/>
