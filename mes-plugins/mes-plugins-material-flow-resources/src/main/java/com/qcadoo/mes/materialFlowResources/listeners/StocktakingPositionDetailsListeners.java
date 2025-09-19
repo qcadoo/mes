@@ -38,4 +38,10 @@ public class StocktakingPositionDetailsListeners {
         typeOfLoadUnitLookup.requestComponentUpdateState();
     }
 
+    public void onProductChange(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        LookupComponent batchLookup = (LookupComponent) view.getComponentByReference(StocktakingPositionFields.BATCH);
+        batchLookup.setFieldValue(null);
+        batchLookup.requestComponentUpdateState();
+    }
+
 }

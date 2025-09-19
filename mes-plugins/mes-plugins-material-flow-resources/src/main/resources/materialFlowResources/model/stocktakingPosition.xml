@@ -25,6 +25,9 @@
     </fields>
 
     <hooks>
+        <validatesWith
+                class="com.qcadoo.mes.materialFlowResources.validators.StocktakingPositionValidators"
+                method="validatesWith"/>
         <onSave
                 class="com.qcadoo.mes.materialFlowResources.hooks.StocktakingPositionHooks"
                 method="onSave"/>

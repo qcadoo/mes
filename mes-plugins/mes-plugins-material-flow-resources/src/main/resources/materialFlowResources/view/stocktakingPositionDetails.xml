@@ -93,8 +93,8 @@
                             <option type="fieldCode" value="number"/>
 
                             <listener event="onSelectedEntityChange"
-                                      class="com.qcadoo.view.api.listeners.RerenderListener"
-                                      method="onChangeRerender"/>
+                                      class="com.qcadoo.mes.materialFlowResources.listeners.StocktakingPositionDetailsListeners"
+                                      method="onProductChange"/>
                         </component>
                     </layoutElement>
                     <layoutElement column="1" row="5" width="6">

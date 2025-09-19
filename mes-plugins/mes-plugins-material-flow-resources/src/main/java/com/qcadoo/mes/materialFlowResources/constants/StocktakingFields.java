@@ -20,4 +20,8 @@ public final class StocktakingFields {
 
     public static final String POSITIONS = "positions";
 
+    public static final String WMS = "wms";
+
+    public static final String STATE = "state";
+
 }
