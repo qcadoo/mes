@@ -126,6 +126,21 @@
                 <bigButton name="openOrdersImportPage" state="enabled" icon="xlsIcon24.png"
                            action="#{window}.fireEvent(openOrdersImportPage);"/>
             </group>
+            <group name="export">
+                <bigButton name="generateListOfProductionOrders" icon="pdfIcon16.png">
+                    <script>
+                        <![CDATA[
+                            this.addOnChangeListener({
+                                onClick: function() {
+                                    #{grid}.performEvent({
+                                        name : 'generateListOfProductionOrders',
+                                        args : ['pdf']
+                                    });
+                                }
+                            });]]>
+                    </script>
+                </bigButton>
+            </group>
         </ribbon>
 
         <component type="grid" name="orders" reference="grid">
@@ -368,6 +383,8 @@
             <listener event="splitOrders"
                       class="com.qcadoo.mes.orders.listeners.OrdersPlanningListListeners"
                       method="splitOrders"/>
+            <listener event="generateListOfProductionOrders" method="generateListOfProductionOrders"
+                      class="com.qcadoo.mes.orders.listeners.OrdersPlanningListListeners"/>
         </component>
 
         <option type="fixedHeight" value="true"/>

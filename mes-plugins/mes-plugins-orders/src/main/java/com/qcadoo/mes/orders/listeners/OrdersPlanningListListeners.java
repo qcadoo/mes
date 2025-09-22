@@ -119,4 +119,19 @@ public class OrdersPlanningListListeners {
         view.openModal(url.toString());
     }
 
+    public void generateListOfProductionOrders(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        GridComponent grid = (GridComponent) view.getComponentByReference(QcadooViewConstants.L_GRID);
+
+        Set<Long> ids = grid.getSelectedEntitiesIds();
+
+        if (ids.isEmpty()) {
+            view.addMessage("orders.ordersPlanningList.notSelected", ComponentState.MessageType.INFO);
+        } else {
+            if (!state.isHasError()) {
+                view.redirectTo("/orders/listOfProductionOrdersReport." + args[0] + "?ids="
+                        + ids.stream().map(String::valueOf).collect(Collectors.joining(",")), true, false);
+            }
+        }
+    }
+
 }
