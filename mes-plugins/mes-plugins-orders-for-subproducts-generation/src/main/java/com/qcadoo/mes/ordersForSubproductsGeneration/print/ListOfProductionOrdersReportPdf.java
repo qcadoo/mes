@@ -1,4 +1,4 @@
-package com.qcadoo.mes.orders.print;
+package com.qcadoo.mes.ordersForSubproductsGeneration.print;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
@@ -9,8 +9,11 @@ import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.basic.constants.CompanyFields;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.basic.constants.SizeFields;
+import com.qcadoo.mes.masterOrders.constants.MasterOrderFields;
+import com.qcadoo.mes.masterOrders.constants.OrderFieldsMO;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
+import com.qcadoo.mes.ordersForSubproductsGeneration.constants.OrderFieldsOFSPG;
 import com.qcadoo.mes.productionLines.constants.ProductionLineFields;
 import com.qcadoo.mes.technologies.BarcodeOperationComponentService;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
@@ -39,11 +42,9 @@ import java.util.stream.Collectors;
 @Component(value = "listOfProductionOrdersReportPdf")
 public class ListOfProductionOrdersReportPdf extends ReportPdfView {
 
-    private static final String L_TRANSLATION_PATH = "orders.listOfProductionOrders.report.%s.label";
+    private static final String L_TRANSLATION_PATH = "ordersForSubproductsGeneration.listOfProductionOrders.report.%s.label";
 
     private static final int ITEMS_IN_ORDERS_TABLE_LIMIT = 7;
-
-    private static final int ORDERS_TABLE_LIMIT = 5;
 
     @Autowired
     private TranslationService translationService;
@@ -73,7 +74,7 @@ public class ListOfProductionOrdersReportPdf extends ReportPdfView {
                                 final PdfWriter writer) throws DocumentException {
 
         pdfHelper.addDocumentHeaderThin(document, "", translationService.translate(
-                "orders.listOfProductionOrders.report.header", locale), "", new Date());
+                "ordersForSubproductsGeneration.listOfProductionOrders.report.header", locale), "", new Date());
 
         List<Long> ids = Arrays.stream(model.get("id").toString().split(",")).map(Long::valueOf).collect(Collectors.toList());
 
@@ -108,74 +109,64 @@ public class ListOfProductionOrdersReportPdf extends ReportPdfView {
             columnWidths.add(9);
         }
 
-        int i = 0;
-
         BigDecimal quantitySum = BigDecimal.ZERO;
 
-        while (i < orders.size()) {
-            PdfPTable table = pdfHelper.createTableWithHeader(headerValues.size(), header, false, headerValues);
+        PdfPTable table = pdfHelper.createTableWithHeader(headerValues.size(), header, false, headerValues);
 
-            table.setHeaderRows(1);
-            table.setWidths(ArrayUtils.toPrimitive(columnWidths.toArray(new Integer[0])));
-            table.getDefaultCell().setVerticalAlignment(Element.ALIGN_MIDDLE);
-            table.getDefaultCell().setBorderColor(ColorUtils.getLineDarkColor());
-            table.getDefaultCell().setBorder(1);
+        table.setHeaderRows(1);
+        table.setWidths(ArrayUtils.toPrimitive(columnWidths.toArray(new Integer[0])));
+        table.getDefaultCell().setVerticalAlignment(Element.ALIGN_MIDDLE);
+        table.getDefaultCell().setBorderColor(ColorUtils.getLineDarkColor());
+        table.getDefaultCell().setBorder(1);
 
-            for (int j = i; j < i + ORDERS_TABLE_LIMIT; j++) {
-                if (j >= orders.size()) {
-                    break;
-                }
+        for (Entity order : orders) {
+            Entity rootOrder = order.getBelongsToField(OrderFieldsOFSPG.ROOT);
+            String rootProductNumber = getRootOrderProductNumber(order, rootOrder);
 
-                Entity order = orders.get(j);
-                Entity rootOrder = null; //order.getBelongsToField(OrderFieldsOFSPG.ROOT);
-                String rootProductNumber = getRootOrderProductNumber(order, rootOrder);
+            Entity masterOrder = order.getBelongsToField(OrderFieldsMO.MASTER_ORDER);
+            Entity productionLine = order.getBelongsToField(OrderFields.PRODUCTION_LINE);
+            Entity company = order.getBelongsToField(OrderFields.COMPANY);
+            Entity product = order.getBelongsToField(OrderFields.PRODUCT);
 
-                Entity product = order.getBelongsToField(OrderFields.PRODUCT);
-                Entity productionLine = order.getBelongsToField(OrderFields.PRODUCTION_LINE);
-                Entity company = order.getBelongsToField(OrderFields.COMPANY);
+            PdfPCell cell = createCell(masterOrder != null ? masterOrder.getStringField(MasterOrderFields.NUMBER) : "", Element.ALIGN_LEFT, false);
+            cell.setPaddingRight(3.5F);
+            table.addCell(cell);
 
-                PdfPCell cell = createCell("", Element.ALIGN_LEFT, false);
-                cell.setPaddingRight(3.5F);
-                table.addCell(cell);
+            cell = createCell(productionLine != null ? productionLine.getStringField(ProductionLineFields.NUMBER) : "", Element.ALIGN_LEFT, false);
+            cell.setPaddingRight(3.5F);
+            table.addCell(cell);
 
-                cell = createCell(productionLine != null ? productionLine.getStringField(ProductionLineFields.NUMBER) : "", Element.ALIGN_LEFT, false);
-                cell.setPaddingRight(3.5F);
-                table.addCell(cell);
+            cell = createCell(company != null ? company.getStringField(CompanyFields.NUMBER) : "", Element.ALIGN_LEFT, false);
+            cell.setPaddingRight(3.5F);
+            table.addCell(cell);
 
-                cell = createCell(company != null ? company.getStringField(CompanyFields.NUMBER) : "", Element.ALIGN_LEFT, false);
-                cell.setPaddingRight(3.5F);
-                table.addCell(cell);
+            cell = createCell(Strings.nullToEmpty(getSizeNumber(product)), Element.ALIGN_RIGHT, true);
+            cell.setPaddingRight(3.5F);
+            table.addCell(cell);
 
-                cell = createCell(Strings.nullToEmpty(getSizeNumber(product)), Element.ALIGN_RIGHT, true);
-                cell.setPaddingRight(3.5F);
-                table.addCell(cell);
+            BigDecimal quantity = order.getDecimalField(OrderFields.PLANNED_QUANTITY);
+            quantitySum = quantitySum.add(quantity, numberService.getMathContext());
 
-                BigDecimal quantity = order.getDecimalField(OrderFields.PLANNED_QUANTITY);
-                quantitySum = quantitySum.add(quantity, numberService.getMathContext());
+            cell = createCell(getQuantity(order), Element.ALIGN_RIGHT, true);
+            cell.setPaddingRight(1.0F);
+            cell.setPaddingLeft(0F);
+            cell.setPaddingRight(3.5F);
 
-                cell = createCell(getQuantity(order), Element.ALIGN_RIGHT, true);
-                cell.setPaddingRight(1.0F);
-                cell.setPaddingLeft(0F);
-                cell.setPaddingRight(3.5F);
+            table.addCell(cell);
 
-                table.addCell(cell);
+            cell = createCell(rootProductNumber, Element.ALIGN_LEFT, false);
+            cell.disableBorderSide(PdfPCell.RIGHT);
+            table.addCell(cell);
 
-                cell = createCell(rootProductNumber, Element.ALIGN_LEFT, false);
-                cell.disableBorderSide(PdfPCell.RIGHT);
-                table.addCell(cell);
-
-                printOperationBarcode(table, writer, order);
-                printItemsInOrdersTable(table);
-            }
-
-            document.add(table);
-
-            i += ORDERS_TABLE_LIMIT;
-
-            addSummary(document, quantitySum, locale, i >= orders.size());
+            printOperationBarcode(table, writer, order);
+            printItemsInOrdersTable(table);
         }
 
-        return translationService.translate("orders.listOfProductionOrders.report.fileName", locale);
+        document.add(table);
+
+        addSummary(document, quantitySum, locale);
+
+        return translationService.translate("ordersForSubproductsGeneration.listOfProductionOrders.report.fileName", locale);
     }
 
     private String getSizeNumber(final Entity product) {
@@ -342,23 +333,21 @@ public class ListOfProductionOrdersReportPdf extends ReportPdfView {
         }
     }
 
-    private void addSummary(final Document document, final BigDecimal quantitySum, final Locale locale, final boolean isLast)
+    private void addSummary(final Document document, final BigDecimal quantitySum, final Locale locale)
             throws DocumentException {
-        if (isLast) {
-            String sumString = numberService.formatWithMinimumFractionDigits(quantitySum, 0);
+        String sumString = numberService.formatWithMinimumFractionDigits(quantitySum, 0);
 
-            Paragraph sumLabel = new Paragraph(new Phrase(translationService.translate(String.format(L_TRANSLATION_PATH, "sum"),
-                    locale, sumString), FontUtils.getDejavuBold11Dark()));
+        Paragraph sumLabel = new Paragraph(new Phrase(translationService.translate(String.format(L_TRANSLATION_PATH, "sum"),
+                locale, sumString), FontUtils.getDejavuBold11Dark()));
 
-            PdfPTable sumTable = pdfHelper.createPanelTable(1);
+        PdfPTable sumTable = pdfHelper.createPanelTable(1);
 
-            sumTable.setTableEvent(null);
-            sumTable.getDefaultCell().setBorder(Rectangle.NO_BORDER);
-            sumTable.getDefaultCell().disableBorderSide(Rectangle.BOX);
-            sumTable.addCell(sumLabel);
+        sumTable.setTableEvent(null);
+        sumTable.getDefaultCell().setBorder(Rectangle.NO_BORDER);
+        sumTable.getDefaultCell().disableBorderSide(Rectangle.BOX);
+        sumTable.addCell(sumLabel);
 
-            document.add(sumLabel);
-        }
+        document.add(sumLabel);
     }
 
     private String getRootOrderProductNumber(final Entity order, final Entity rootOrder) {
@@ -378,12 +367,14 @@ public class ListOfProductionOrdersReportPdf extends ReportPdfView {
 
         return orderDD.find().add(SearchRestrictions.in("id", ids))
                 .createAlias(OrderFields.PRODUCT, OrderFields.PRODUCT, JoinType.INNER)
+                .createAlias(OrderFieldsMO.MASTER_ORDER, OrderFieldsMO.MASTER_ORDER, JoinType.LEFT)
+                .addOrder(SearchOrders.asc(OrderFieldsMO.MASTER_ORDER + "." + MasterOrderFields.NUMBER))
                 .addOrder(SearchOrders.asc(OrderFields.PRODUCT + "." + ProductFields.NUMBER)).list().getEntities();
     }
 
     @Override
     protected void addTitle(final Document document, final Locale locale) {
-        document.addTitle(translationService.translate("orders.listOfProductionOrders.report.header", locale));
+        document.addTitle(translationService.translate("ordersForSubproductsGeneration.listOfProductionOrders.report.header", locale));
     }
 
 }

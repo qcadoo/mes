@@ -58,16 +58,6 @@ public class OrdersOrderController {
         return mav;
     }
 
-    @RequestMapping(value = OrdersConstants.PLUGIN_IDENTIFIER + "/listOfProductionOrdersReport.pdf", method = RequestMethod.GET)
-    public final ModelAndView listOfProductionOrdersReport(@RequestParam("ids") final String id) {
-        ModelAndView mav = new ModelAndView();
-
-        mav.setViewName("listOfProductionOrdersReportPdf");
-        mav.addObject("id", id);
-
-        return mav;
-    }
-
     @RequestMapping(value = OrdersConstants.PLUGIN_IDENTIFIER + "/ordersLabelReport.pdf" , method = RequestMethod.GET)
     public final ModelAndView ordersLabelReport(@RequestParam("id") final String id) {
         ModelAndView mav = new ModelAndView();
