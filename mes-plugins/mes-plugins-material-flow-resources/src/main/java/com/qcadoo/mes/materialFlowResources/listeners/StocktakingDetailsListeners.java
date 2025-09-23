@@ -51,7 +51,7 @@ public class StocktakingDetailsListeners {
                 .getStringField(StocktakingFields.CATEGORY), true);
         List<Entity> positions = new ArrayList<>();
         DataDefinition positionDD = dataDefinitionService.get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER,
-                MaterialFlowResourcesConstants.MODEL_RESOURCE_STOCK_DTO);
+                MaterialFlowResourcesConstants.MODEL_STOCKTAKING_POSITION);
         for (Resource resource : resources) {
             Entity position = positionDD.create();
             position.setField(StocktakingPositionFields.STORAGE_LOCATION, resource.getStorageLocationId());
