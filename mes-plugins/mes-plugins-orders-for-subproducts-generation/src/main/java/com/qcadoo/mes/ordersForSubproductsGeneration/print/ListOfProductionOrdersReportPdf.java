@@ -121,13 +121,13 @@ public class ListOfProductionOrdersReportPdf extends ReportPdfView {
         table.getDefaultCell().setBorder(1);
 
         for (Entity order : orders) {
-            String rootProductNumber = getRootOrderField(order, OrderFields.PRODUCT, ProductFields.NUMBER);
+            String productNumber = getRootOrderField(order, OrderFields.PRODUCT, ProductFields.NUMBER);
+            String masterOrderNumber = getRootOrderField(order, OrderFieldsMO.MASTER_ORDER, MasterOrderFields.NUMBER);
 
-            Entity masterOrder = order.getBelongsToField(OrderFieldsMO.MASTER_ORDER);
             Entity company = order.getBelongsToField(OrderFields.COMPANY);
             Entity product = order.getBelongsToField(OrderFields.PRODUCT);
 
-            PdfPCell cell = createCell(masterOrder != null ? masterOrder.getStringField(MasterOrderFields.NUMBER) : "", Element.ALIGN_LEFT, false);
+            PdfPCell cell = createCell(masterOrderNumber, Element.ALIGN_LEFT, false);
             cell.setPaddingRight(3.5F);
             table.addCell(cell);
 
@@ -153,7 +153,7 @@ public class ListOfProductionOrdersReportPdf extends ReportPdfView {
 
             table.addCell(cell);
 
-            cell = createCell(rootProductNumber, Element.ALIGN_LEFT, false);
+            cell = createCell(productNumber, Element.ALIGN_LEFT, false);
             cell.disableBorderSide(PdfPCell.RIGHT);
             table.addCell(cell);
 
@@ -370,11 +370,17 @@ public class ListOfProductionOrdersReportPdf extends ReportPdfView {
     private String getRootOrderField(final Entity order, final String belongsToField, final String field) {
         Entity rootOrder = order.getBelongsToField(OrderFieldsOFSPG.ROOT);
 
+        Entity belongsTo;
         if (Objects.nonNull(rootOrder)) {
-            return rootOrder.getBelongsToField(belongsToField).getStringField(field);
+            belongsTo = rootOrder.getBelongsToField(belongsToField);
         } else {
-            return order.getBelongsToField(belongsToField).getStringField(field);
+            belongsTo = order.getBelongsToField(belongsToField);
         }
+
+        if (belongsTo != null) {
+            return belongsTo.getStringField(field);
+        }
+        return "";
     }
 
     private List<Entity> getOrders(final List<Long> ids) {
