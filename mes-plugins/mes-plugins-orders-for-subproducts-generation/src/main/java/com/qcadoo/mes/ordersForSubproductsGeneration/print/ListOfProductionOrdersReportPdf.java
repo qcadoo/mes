@@ -17,6 +17,7 @@ import com.qcadoo.mes.ordersForSubproductsGeneration.constants.OrderFieldsOFSPG;
 import com.qcadoo.mes.productionLines.constants.ProductionLineFields;
 import com.qcadoo.mes.technologies.BarcodeOperationComponentService;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
+import com.qcadoo.mes.technologies.constants.TechnologyGroupFields;
 import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
@@ -120,11 +121,9 @@ public class ListOfProductionOrdersReportPdf extends ReportPdfView {
         table.getDefaultCell().setBorder(1);
 
         for (Entity order : orders) {
-            Entity rootOrder = order.getBelongsToField(OrderFieldsOFSPG.ROOT);
-            String rootProductNumber = getRootOrderProductNumber(order, rootOrder);
+            String rootProductNumber = getRootOrderField(order, OrderFields.PRODUCT, ProductFields.NUMBER);
 
             Entity masterOrder = order.getBelongsToField(OrderFieldsMO.MASTER_ORDER);
-            Entity productionLine = order.getBelongsToField(OrderFields.PRODUCTION_LINE);
             Entity company = order.getBelongsToField(OrderFields.COMPANY);
             Entity product = order.getBelongsToField(OrderFields.PRODUCT);
 
@@ -132,7 +131,7 @@ public class ListOfProductionOrdersReportPdf extends ReportPdfView {
             cell.setPaddingRight(3.5F);
             table.addCell(cell);
 
-            cell = createCell(productionLine != null ? productionLine.getStringField(ProductionLineFields.NUMBER) : "", Element.ALIGN_LEFT, false);
+            cell = createCell(getProductionLine(order), Element.ALIGN_LEFT, false);
             cell.setPaddingRight(3.5F);
             table.addCell(cell);
 
@@ -167,6 +166,24 @@ public class ListOfProductionOrdersReportPdf extends ReportPdfView {
         addSummary(document, quantitySum, locale);
 
         return translationService.translate("ordersForSubproductsGeneration.listOfProductionOrders.report.fileName", locale);
+    }
+
+    private String getProductionLine(Entity order) {
+        Entity productionLineEntity = order.getBelongsToField(OrderFields.PRODUCTION_LINE);
+        String productionLine = "";
+        if (Objects.nonNull(productionLineEntity)) {
+            productionLine = productionLineEntity.getStringField(ProductionLineFields.NUMBER);
+        }
+        Entity technologyGroupEntity = order.getBelongsToField(OrderFields.TECHNOLOGY).getBelongsToField(
+                TechnologiesConstants.MODEL_TECHNOLOGY_GROUP);
+        String technologyGroup = "";
+        if (Objects.nonNull(technologyGroupEntity)) {
+            technologyGroup = technologyGroupEntity.getStringField(TechnologyGroupFields.NUMBER);
+        }
+        if (!productionLine.isEmpty() && !technologyGroup.isEmpty()) {
+            return productionLine + "/" + technologyGroup;
+        }
+        return productionLine + technologyGroup;
     }
 
     private String getSizeNumber(final Entity product) {
@@ -350,16 +367,14 @@ public class ListOfProductionOrdersReportPdf extends ReportPdfView {
         document.add(sumLabel);
     }
 
-    private String getRootOrderProductNumber(final Entity order, final Entity rootOrder) {
-        String rootProductNumber;
+    private String getRootOrderField(final Entity order, final String belongsToField, final String field) {
+        Entity rootOrder = order.getBelongsToField(OrderFieldsOFSPG.ROOT);
 
         if (Objects.nonNull(rootOrder)) {
-            rootProductNumber = rootOrder.getBelongsToField(OrderFields.PRODUCT).getStringField(ProductFields.NUMBER);
+            return rootOrder.getBelongsToField(belongsToField).getStringField(field);
         } else {
-            rootProductNumber = order.getBelongsToField(OrderFields.PRODUCT).getStringField(ProductFields.NUMBER);
+            return order.getBelongsToField(belongsToField).getStringField(field);
         }
-
-        return rootProductNumber;
     }
 
     private List<Entity> getOrders(final List<Long> ids) {
