@@ -86,6 +86,14 @@ public class StocktakingDetailsListeners {
         }
     }
 
+    public void settle(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
+        Entity entity = form.getPersistedEntityWithIncludedFormValues();
+        for (Entity position : entity.getHasManyField(StocktakingFields.POSITIONS)) {
+
+        }
+    }
+
     public void print(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         reportService.printReport(view, state);
     }
