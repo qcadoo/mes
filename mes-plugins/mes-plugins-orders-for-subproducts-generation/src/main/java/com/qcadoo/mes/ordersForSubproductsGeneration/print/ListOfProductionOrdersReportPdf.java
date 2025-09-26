@@ -23,8 +23,6 @@ import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
-import com.qcadoo.model.api.search.JoinType;
-import com.qcadoo.model.api.search.SearchOrders;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.report.api.ColorUtils;
 import com.qcadoo.report.api.FontUtils;
@@ -39,6 +37,9 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.*;
 import java.util.stream.Collectors;
+
+import static java.util.Comparator.naturalOrder;
+import static java.util.Comparator.nullsLast;
 
 @Component(value = "listOfProductionOrdersReportPdf")
 public class ListOfProductionOrdersReportPdf extends ReportPdfView {
@@ -120,7 +121,7 @@ public class ListOfProductionOrdersReportPdf extends ReportPdfView {
         table.getDefaultCell().setBorderColor(ColorUtils.getLineDarkColor());
         table.getDefaultCell().setBorder(1);
 
-        for (Entity order : orders) {
+        for (Entity order : sortOrders(orders)) {
             String productNumber = getRootOrderField(order, OrderFields.PRODUCT, ProductFields.NUMBER);
             String masterOrderNumber = getRootOrderField(order, OrderFieldsMO.MASTER_ORDER, MasterOrderFields.NUMBER);
 
@@ -164,6 +165,11 @@ public class ListOfProductionOrdersReportPdf extends ReportPdfView {
         addSummary(document, quantitySum, locale);
 
         return translationService.translate("ordersForSubproductsGeneration.listOfProductionOrders.report.fileName", locale);
+    }
+
+    private List<Entity> sortOrders(List<Entity> orders) {
+        return orders.stream().sorted(Comparator.comparing((Entity order) -> getRootOrderField(order, OrderFieldsMO.MASTER_ORDER, MasterOrderFields.NUMBER), nullsLast(naturalOrder()))
+                .thenComparing((Entity order) -> getRootOrderField(order, OrderFields.PRODUCT, ProductFields.NUMBER))).collect(Collectors.toList());
     }
 
     private PdfPTable getProductionLineTable(Entity order) {
@@ -385,17 +391,13 @@ public class ListOfProductionOrdersReportPdf extends ReportPdfView {
         if (belongsTo != null) {
             return belongsTo.getStringField(field);
         }
-        return "";
+        return null;
     }
 
     private List<Entity> getOrders(final List<Long> ids) {
         DataDefinition orderDD = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER);
 
-        return orderDD.find().add(SearchRestrictions.in("id", ids))
-                .createAlias(OrderFields.PRODUCT, OrderFields.PRODUCT, JoinType.INNER)
-                .createAlias(OrderFieldsMO.MASTER_ORDER, OrderFieldsMO.MASTER_ORDER, JoinType.LEFT)
-                .addOrder(SearchOrders.asc(OrderFieldsMO.MASTER_ORDER + "." + MasterOrderFields.NUMBER))
-                .addOrder(SearchOrders.asc(OrderFields.PRODUCT + "." + ProductFields.NUMBER)).list().getEntities();
+        return orderDD.find().add(SearchRestrictions.in("id", ids)).list().getEntities();
     }
 
     @Override
