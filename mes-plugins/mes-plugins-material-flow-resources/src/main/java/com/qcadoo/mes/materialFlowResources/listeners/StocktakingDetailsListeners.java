@@ -1,7 +1,13 @@
 package com.qcadoo.mes.materialFlowResources.listeners;
 
+import com.qcadoo.mes.materialFlowResources.constants.MaterialFlowResourcesConstants;
 import com.qcadoo.mes.materialFlowResources.constants.StocktakingFields;
+import com.qcadoo.mes.materialFlowResources.constants.StocktakingPositionFields;
 import com.qcadoo.mes.materialFlowResources.print.StocktakingReportService;
+import com.qcadoo.mes.materialFlowResources.print.helper.Resource;
+import com.qcadoo.mes.materialFlowResources.print.helper.ResourceDataProvider;
+import com.qcadoo.model.api.DataDefinition;
+import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
@@ -12,7 +18,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class StocktakingDetailsListeners {
@@ -21,6 +30,12 @@ public class StocktakingDetailsListeners {
 
     @Autowired
     private StocktakingReportService reportService;
+
+    @Autowired
+    private ResourceDataProvider resourceDataProvider;
+
+    @Autowired
+    private DataDefinitionService dataDefinitionService;
 
     public void generate(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         state.performEvent(view, "save");
@@ -31,8 +46,26 @@ public class StocktakingDetailsListeners {
         FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         Entity report = form.getEntity();
         Entity reportDb = report.getDataDefinition().get(report.getId());
+        List<Resource> resources = resourceDataProvider.findResourcesAndGroup(reportDb
+                .getBelongsToField(StocktakingFields.LOCATION).getId(), reportDb.getHasManyField(StocktakingFields.STORAGE_LOCATIONS).stream().map(Entity::getId).collect(Collectors.toList()), reportDb
+                .getStringField(StocktakingFields.CATEGORY), true);
+        List<Entity> positions = new ArrayList<>();
+        DataDefinition positionDD = dataDefinitionService.get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER,
+                MaterialFlowResourcesConstants.MODEL_STOCKTAKING_POSITION);
+        for (Resource resource : resources) {
+            Entity position = positionDD.create();
+            position.setField(StocktakingPositionFields.STORAGE_LOCATION, resource.getStorageLocationId());
+            position.setField(StocktakingPositionFields.PALLET_NUMBER, resource.getPalletNumberId());
+            position.setField(StocktakingPositionFields.TYPE_OF_LOAD_UNIT, resource.getTypeOfLoadUnitId());
+            position.setField(StocktakingPositionFields.PRODUCT, resource.getProductId());
+            position.setField(StocktakingPositionFields.BATCH, resource.getBatchId());
+            position.setField(StocktakingPositionFields.EXPIRATION_DATE, resource.getExpirationDate());
+            position.setField(StocktakingPositionFields.STOCK, resource.getQuantity());
+            positions.add(position);
+        }
+        reportDb.setField(StocktakingFields.POSITIONS, positions);
         reportDb.setField(StocktakingFields.GENERATED, Boolean.TRUE);
-        reportDb.setField("generationDate", new Date());
+        reportDb.setField(StocktakingFields.GENERATION_DATE, new Date());
         reportDb = reportDb.getDataDefinition().save(reportDb);
         try {
             reportService.generateReport(state, reportDb);
@@ -44,8 +77,24 @@ public class StocktakingDetailsListeners {
 
     }
 
+    public void copyFromStock(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
+        Entity entity = form.getPersistedEntityWithIncludedFormValues();
+        for (Entity position : entity.getHasManyField(StocktakingFields.POSITIONS)) {
+            position.setField(StocktakingPositionFields.QUANTITY, position.getDecimalField(StocktakingPositionFields.STOCK));
+            position.getDataDefinition().save(position);
+        }
+    }
+
+    public void settle(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
+        Entity entity = form.getPersistedEntityWithIncludedFormValues();
+        for (Entity position : entity.getHasManyField(StocktakingFields.POSITIONS)) {
+
+        }
+    }
+
     public void print(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         reportService.printReport(view, state);
     }
-
 }

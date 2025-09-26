@@ -2,20 +2,13 @@ package com.qcadoo.mes.masterOrders.hooks;
 
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.basic.ParameterService;
-import com.qcadoo.mes.masterOrders.constants.MasterOrderFields;
-import com.qcadoo.mes.masterOrders.constants.MasterOrderPositionDtoFields;
-import com.qcadoo.mes.masterOrders.constants.MasterOrderProductFields;
-import com.qcadoo.mes.masterOrders.constants.MasterOrderState;
-import com.qcadoo.mes.masterOrders.constants.MasterOrdersConstants;
-import com.qcadoo.mes.masterOrders.constants.OrderFieldsMO;
-import com.qcadoo.mes.orders.constants.OperationalTaskFields;
+import com.qcadoo.mes.masterOrders.constants.*;
 import com.qcadoo.mes.orders.constants.OrderFields;
-import com.qcadoo.model.api.BigDecimalUtils;
-import com.qcadoo.model.api.DataDefinition;
-import com.qcadoo.model.api.DataDefinitionService;
-import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.NumberService;
+import com.qcadoo.model.api.*;
+import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.Date;
@@ -23,9 +16,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 @Service
 public class OrderHooksMO {
@@ -158,18 +148,33 @@ public class OrderHooksMO {
 
         if (Objects.nonNull(masterOrder)) {
             BigDecimal plannedQuantity = BigDecimalUtils.convertNullToZero(order.getDecimalField(OrderFields.PLANNED_QUANTITY));
-            Entity masterOrderProduct = getMasterOrderProduct(masterOrder, order.getBelongsToField(OrderFields.PRODUCT));
+            Entity product = order.getBelongsToField(OrderFields.PRODUCT);
+            String vendorInfo = order.getStringField(OrderFields.VENDOR_INFO);
+            Entity masterOrderProduct = getMasterOrderProduct(masterOrder, product, vendorInfo);
             if (Objects.nonNull(masterOrderProduct)
                     && !MasterOrderPositionStatus.ORDERED.getStringValue().equals(
                     masterOrderProduct.getStringField(MasterOrderProductFields.MASTER_ORDER_POSITION_STATUS))) {
                 BigDecimal masterOrderQuantity = BigDecimalUtils.convertNullToZero(masterOrderProduct
                         .getDecimalField(MasterOrderProductFields.MASTER_ORDER_QUANTITY));
-                BigDecimal planned = masterOrder
-                        .getHasManyField(MasterOrderFields.ORDERS)
-                        .stream()
-                        .filter(o -> o.getBelongsToField(OrderFields.PRODUCT).getId()
-                                .equals(order.getBelongsToField(OrderFields.PRODUCT).getId()))
-                        .map(o -> o.getDecimalField(OrderFields.PLANNED_QUANTITY)).reduce(BigDecimal.ZERO, BigDecimal::add);
+                BigDecimal planned;
+                if (vendorInfo != null) {
+                    planned = masterOrder
+                            .getHasManyField(MasterOrderFields.ORDERS)
+                            .stream()
+                            .filter(o -> o.getBelongsToField(OrderFields.PRODUCT).getId()
+                                    .equals(product.getId()))
+                            .filter(o -> o.getStringField(OrderFields.VENDOR_INFO)
+                                    .equals(vendorInfo))
+                            .map(o -> o.getDecimalField(OrderFields.PLANNED_QUANTITY)).reduce(BigDecimal.ZERO, BigDecimal::add);
+                } else {
+                    planned = masterOrder
+                            .getHasManyField(MasterOrderFields.ORDERS)
+                            .stream()
+                            .filter(o -> o.getBelongsToField(OrderFields.PRODUCT).getId()
+                                    .equals(product.getId()))
+                            .filter(o -> o.getStringField(OrderFields.VENDOR_INFO) == null)
+                            .map(o -> o.getDecimalField(OrderFields.PLANNED_QUANTITY)).reduce(BigDecimal.ZERO, BigDecimal::add);
+                }
                 planned = planned.add(plannedQuantity, numberService.getMathContext());
                 if (planned.compareTo(masterOrderQuantity) >= 0) {
                     masterOrderProduct.setField(MasterOrderProductFields.MASTER_ORDER_POSITION_STATUS,
@@ -245,11 +250,17 @@ public class OrderHooksMO {
                 .getEntities();
     }
 
-    private Entity getMasterOrderProduct(final Entity masterOrder, final Entity product) {
-        return dataDefinitionService
+    private Entity getMasterOrderProduct(final Entity masterOrder, final Entity product, String vendorInfo) {
+        SearchCriteriaBuilder searchCriteriaBuilder = dataDefinitionService
                 .get(MasterOrdersConstants.PLUGIN_IDENTIFIER, MasterOrdersConstants.MODEL_MASTER_ORDER_PRODUCT).find()
                 .add(SearchRestrictions.belongsTo(MasterOrderProductFields.MASTER_ORDER, masterOrder))
-                .add(SearchRestrictions.belongsTo(MasterOrderProductFields.PRODUCT, product)).setMaxResults(1).uniqueResult();
+                .add(SearchRestrictions.belongsTo(MasterOrderProductFields.PRODUCT, product));
+        if (vendorInfo != null) {
+            searchCriteriaBuilder.add(SearchRestrictions.eq(MasterOrderProductFields.VENDOR_INFO, vendorInfo));
+        } else {
+            searchCriteriaBuilder.add(SearchRestrictions.isNull(MasterOrderProductFields.VENDOR_INFO));
+        }
+        return searchCriteriaBuilder.setMaxResults(1).uniqueResult();
     }
 
     private void changeToNew(final Entity order) {

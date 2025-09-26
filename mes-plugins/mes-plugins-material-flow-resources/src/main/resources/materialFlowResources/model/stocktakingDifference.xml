@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<model name="stocktakingDifference"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
+       xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
+    <fields>
+        <belongsTo name="stocktaking" model="stocktaking" required="true"/>
+        <belongsTo name="storageLocation" model="storageLocation"/>
+        <belongsTo name="palletNumber" model="palletNumber" plugin="basic"/>
+        <belongsTo name="typeOfLoadUnit" plugin="basic" model="typeOfLoadUnit" />
+        <belongsTo name="product" model="product" plugin="basic" required="true"/>
+        <belongsTo name="batch" model="batch" plugin="advancedGenealogy"/>
+        <date name="expirationDate"/>
+        <enum name="type" values="01shortage,02surplus" required="true"/>
+        <decimal name="quantity" required="true">
+            <validatesRange from="0" exclusively="true"/>
+            <validatesUnscaledValue max="9"/>
+            <validatesScale max="5"/>
+        </decimal>
+    </fields>
+
+    <hooks/>
+</model>

@@ -106,6 +106,9 @@
         <model:model model="reservation" resource="model/reservation.xml"/>
 
         <model:model model="stocktaking" resource="model/stocktaking.xml"/>
+        <model:model model="stocktakingPosition" resource="model/stocktakingPosition.xml"/>
+        <model:model model="stocktakingDifference" resource="model/stocktakingDifference.xml"/>
+        <model:model model="stocktakingStateChange" resource="model/stocktakingStateChange.xml"/>
         <model:model model="warehouseStockReport" resource="model/warehouseStockReport.xml"/>
 
         <model:model model="importStorageLocation" resource="model/importStorageLocation.xml"/>
@@ -162,6 +165,16 @@
         <model:model-field plugin="basic" model="product">
             <model:hasMany name="repackingPositions" model="repackingPosition"
                            plugin="materialFlowResources" joinField="product" cascade="nullify"/>
+        </model:model-field>
+
+        <model:model-field plugin="basic" model="product">
+            <model:hasMany name="stocktakingPositions" model="stocktakingPosition"
+                           plugin="materialFlowResources" joinField="product"/>
+        </model:model-field>
+
+        <model:model-field plugin="basic" model="product">
+            <model:hasMany name="stocktakingDifferences" model="stocktakingDifference"
+                           plugin="materialFlowResources" joinField="product"/>
         </model:model-field>
 
         <model:model-field plugin="basic" model="product">
@@ -232,6 +245,16 @@
                            plugin="materialFlowResources" joinField="palletNumber"/>
         </model:model-field>
 
+        <model:model-field plugin="basic" model="palletNumber">
+            <model:hasMany name="stocktakingPositions" model="stocktakingPosition"
+                           plugin="materialFlowResources" joinField="palletNumber"/>
+        </model:model-field>
+
+        <model:model-field plugin="basic" model="palletNumber">
+            <model:hasMany name="stocktakingDifferences" model="stocktakingDifference"
+                           plugin="materialFlowResources" joinField="palletNumber"/>
+        </model:model-field>
+
         <model:model-field plugin="basic" model="address">
             <model:hasMany name="documents" model="document"
                            plugin="materialFlowResources" joinField="address"/>
@@ -265,6 +288,11 @@
         <model:model-field plugin="materialFlow" model="location">
             <model:hasMany name="stocktakings" model="stocktaking"
                            plugin="materialFlowResources" joinField="location"/>
+        </model:model-field>
+
+        <model:model-field plugin="qcadooSecurity" model="user">
+            <model:hasMany name="stocktakingPositions" model="stocktakingPosition" joinField="pickingWorker"
+                           plugin="materialFlowResources"/>
         </model:model-field>
 
         <model:model-field plugin="materialFlow" model="location">
@@ -303,6 +331,16 @@
         </model:model-field>
 
         <model:model-field plugin="advancedGenealogy" model="batch">
+            <model:hasMany name="stocktakingPositions" model="stocktakingPosition"
+                           plugin="materialFlowResources" joinField="batch"/>
+        </model:model-field>
+
+        <model:model-field plugin="advancedGenealogy" model="batch">
+            <model:hasMany name="stocktakingDifferences" model="stocktakingDifference"
+                           plugin="materialFlowResources" joinField="batch"/>
+        </model:model-field>
+
+        <model:model-field plugin="advancedGenealogy" model="batch">
             <model:hasMany name="oldResourceCorrections" model="resourceCorrection"
                            plugin="materialFlowResources" joinField="oldBatch"/>
         </model:model-field>
@@ -334,6 +372,14 @@
             <model:hasMany name="repacking" plugin="materialFlowResources" model="repacking" joinField="typeOfLoadUnit"/>
         </model:model-field>
 
+        <model:model-field plugin="basic" model="typeOfLoadUnit">
+            <model:hasMany name="stocktakingPositions" plugin="materialFlowResources" model="stocktakingPosition" joinField="typeOfLoadUnit"/>
+        </model:model-field>
+
+        <model:model-field plugin="basic" model="typeOfLoadUnit">
+            <model:hasMany name="stocktakingDifferences" plugin="materialFlowResources" model="stocktakingDifference" joinField="typeOfLoadUnit"/>
+        </model:model-field>
+
         <model:model-field plugin="states" model="message">
             <model:belongsTo name="repackingStateChange" plugin="materialFlowResources"
                              model="repackingStateChange"/>
@@ -342,6 +388,16 @@
         <model:model-field plugin="basic" model="shift">
             <model:hasMany name="repackingStateChanges" plugin="materialFlowResources"
                            model="repackingStateChange" joinField="shift"/>
+        </model:model-field>
+
+        <model:model-field plugin="states" model="message">
+            <model:belongsTo name="stocktakingStateChange" plugin="materialFlowResources"
+                             model="stocktakingStateChange"/>
+        </model:model-field>
+
+        <model:model-field plugin="basic" model="shift">
+            <model:hasMany name="stocktakingStateChanges" plugin="materialFlowResources"
+                           model="stocktakingStateChange" joinField="shift"/>
         </model:model-field>
 
         <model:model-field plugin="basic" model="typeOfLoadUnit">
@@ -469,6 +525,7 @@
         <view:view resource="view/palletBalanceDetails.xml"/>
         <view:view resource="view/palletBalancesList.xml"/>
 
+        <view:view resource="view/stocktakingPositionDetails.xml"/>
         <view:view resource="view/stocktakingDetails.xml"/>
         <view:view resource="view/stocktakingsList.xml"/>
 

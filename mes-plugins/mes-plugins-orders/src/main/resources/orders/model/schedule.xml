@@ -61,7 +61,7 @@
                  persistent="false"/>
         <boolean name="isSetFieldsFromParameter"
                  persistent="false"/>
-        <string name="token" unique="true">
+        <string name="token" unique="true" copyable="false">
             <validatesLength max="36" />
         </string>
     </fields>

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<model name="stocktakingPosition"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
+       xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
+    <fields>
+        <belongsTo name="stocktaking" model="stocktaking" required="true"/>
+        <belongsTo name="storageLocation" model="storageLocation"/>
+        <belongsTo name="palletNumber" model="palletNumber" plugin="basic"/>
+        <belongsTo name="typeOfLoadUnit" plugin="basic" model="typeOfLoadUnit" />
+        <belongsTo name="product" model="product" plugin="basic" required="true"/>
+        <belongsTo name="batch" model="batch" plugin="advancedGenealogy"/>
+        <date name="expirationDate"/>
+        <decimal name="stock">
+            <validatesRange from="0"/>
+            <validatesUnscaledValue max="9"/>
+            <validatesScale max="5"/>
+        </decimal>
+        <decimal name="quantity">
+            <validatesRange from="0"/>
+            <validatesUnscaledValue max="9"/>
+            <validatesScale max="5"/>
+        </decimal>
+        <belongsTo name="pickingWorker" model="user" plugin="qcadooSecurity" copyable="false"/>
+    </fields>
+
+    <hooks>
+        <validatesWith
+                class="com.qcadoo.mes.materialFlowResources.validators.StocktakingPositionValidators"
+                method="validatesWith"/>
+        <onSave
+                class="com.qcadoo.mes.materialFlowResources.hooks.StocktakingPositionHooks"
+                method="onSave"/>
+    </hooks>
+</model>

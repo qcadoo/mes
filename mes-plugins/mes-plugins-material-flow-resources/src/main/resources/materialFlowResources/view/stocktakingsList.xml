@@ -45,15 +45,16 @@
                     expression="#location['number']"/>
             <option type="column" name="storageLocationMode" fields="storageLocationMode"/>
             <option type="column" name="category" fields="category"/>
-            <option type="column" name="wasteMode" fields="wasteMode"/>
+            <option type="column" name="description" fields="description"/>
             <option type="column" name="generationDate" fields="generationDate"/>
+            <option type="column" name="state" fields="state"/>
 
             <option type="order" column="number" direction="desc"/>
 
             <option type="searchable"
-                    value="number,stocktakingDate,locationNumber,storageLocationMode,category,wasteMode,generationDate"/>
+                    value="number,stocktakingDate,locationNumber,storageLocationMode,category,description,generationDate,state"/>
             <option type="orderable"
-                    value="number,stocktakingDate,locationNumber,storageLocationMode,category,wasteMode,generationDate"/>
+                    value="number,stocktakingDate,locationNumber,storageLocationMode,category,description,generationDate,state"/>
 
             <option type="correspondingView" value="materialFlowResources/stocktakingDetails"/>
             <option type="correspondingComponent" value="form"/>

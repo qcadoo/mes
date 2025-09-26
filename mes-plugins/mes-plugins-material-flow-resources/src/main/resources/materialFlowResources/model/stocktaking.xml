@@ -33,16 +33,26 @@
         <date name="stocktakingDate" required="true"/>
         <datetime name="generationDate" copyable="false"/>
         <dictionary name="category" dictionary="categories"/>
+        <string name="description">
+            <validatesLength max="2048"/>
+        </string>
+        <enum name="state" values="01draft,02inProgress,03finalized,04finished,05rejected" default="01draft" required="true"/>
 
-        <enum name="wasteMode" values="01all,02yes,03no" default="01all" required="true"/>
         <enum name="storageLocationMode" values="01all,02selected" default="01all" required="true"/>
         <belongsTo name="location" model="location" plugin="materialFlow" required="true"/>
 
         <boolean name="generated" default="false" copyable="false"/>
         <string name="fileName" copyable="false"/>
-        <manyToMany name="storageLocations" model="storageLocation" joinField="stocktakings" copyable="true" cascade="nullify"/>
+        <manyToMany name="storageLocations" model="storageLocation" joinField="stocktakings" copyable="true"/>
+        <hasMany name="positions" model="stocktakingPosition" joinField="stocktaking" cascade="delete"/>
+        <hasMany name="differences" model="stocktakingDifference" joinField="stocktaking" cascade="delete"/>
+        <boolean name="wms" copyable="false" default="false"/>
+        <enum name="stateInWMS" values="01waiting,02inProgress,03delayed,04partiallyRealized,05realized" copyable="false"/>
+        <hasMany name="stateChanges" joinField="stocktaking" model="stocktakingStateChange"
+                 cascade="delete"/>
     </fields>
     <hooks>
+        <onCreate class="com.qcadoo.mes.materialFlowResources.hooks.StocktakingModelHooks" method="onCreate"/>
         <onSave
                 class="com.qcadoo.mes.materialFlowResources.hooks.StocktakingModelHooks"
                 method="onSave"/>

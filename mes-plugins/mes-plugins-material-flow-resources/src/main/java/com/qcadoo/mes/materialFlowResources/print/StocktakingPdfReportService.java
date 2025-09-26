@@ -48,15 +48,10 @@ public class StocktakingPdfReportService extends PdfDocumentService {
                                     final Locale locale) throws DocumentException {
         PdfPTable dataTable = prepareDataTable(locale);
         dataTable.setHeaderRows(1);
-        List<Long> storageLocationIdsToQuery = Lists.newArrayList();
-        List<Entity> storageLocations = entity.getHasManyField(StocktakingFields.STORAGE_LOCATIONS);
-        if (!storageLocations.isEmpty()) {
-            storageLocationIdsToQuery = storageLocations.stream().map(Entity::getId).collect(Collectors.toList());
-        }
         String currentStorageLocation = StringUtils.EMPTY;
         List<Resource> resources = resourceDataProvider.findResourcesAndGroup(entity
-                .getBelongsToField(StocktakingFields.LOCATION).getId(), storageLocationIdsToQuery, entity
-                .getStringField("category"), entity.getStringField("wasteMode"), true);
+                .getBelongsToField(StocktakingFields.LOCATION).getId(), entity.getHasManyField(StocktakingFields.STORAGE_LOCATIONS).stream().map(Entity::getId).collect(Collectors.toList()), entity
+                .getStringField(StocktakingFields.CATEGORY), true);
         int counter = 1;
         for (Resource resource : resources) {
 
@@ -197,11 +192,9 @@ public class StocktakingPdfReportService extends PdfDocumentService {
                 translationService.translate(
                         "materialFlowResources.warehouseStockReport.storageLocationMode.value."
                                 + entity.getStringField(StocktakingFields.STORAGE_LOCATION_MODE), locale));
-        secondColumn.put("materialFlowResources.stocktaking.report.wasteMode", translationService.translate(
-                "materialFlowResources.warehouseStockReport.wasteMode.value." + entity.getStringField("wasteMode"), locale));
 
-        int maxSize = pdfHelper.getMaxSizeOfColumnsRows(Lists.newArrayList(Integer.valueOf(firstColumn.values().size()),
-                Integer.valueOf(secondColumn.values().size())));
+        int maxSize = pdfHelper.getMaxSizeOfColumnsRows(Lists.newArrayList(firstColumn.values().size(),
+                secondColumn.values().size()));
 
         for (int i = 0; i < maxSize; i++) {
             firstColumnHeaderTable = pdfHelper.addDynamicHeaderTableCellOneRow(firstColumnHeaderTable, firstColumn, locale);

@@ -14,4 +14,14 @@ public final class StocktakingFields {
 
     public static final String GENERATED = "generated";
 
+    public static final String GENERATION_DATE = "generationDate";
+
+    public static final String CATEGORY = "category";
+
+    public static final String POSITIONS = "positions";
+
+    public static final String WMS = "wms";
+
+    public static final String STATE = "state";
+
 }

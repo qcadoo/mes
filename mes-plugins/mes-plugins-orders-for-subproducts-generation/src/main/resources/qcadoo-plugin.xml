@@ -182,6 +182,7 @@
 
         <view:view-ribbon-group resource="view/ribbonExtensions/operationDurationDetailsInOrder.xml"/>
         <view:view-ribbon-group resource="view/ribbonExtensions/orderDetails.xml"/>
+        <view:view-ribbon-group resource="view/ribbonExtensions/ordersPlanningList.xml"/>
 
         <view:view-hook plugin="productionScheduling" view="operationDurationDetailsInOrder"
                         type="beforeRender"
@@ -201,6 +202,11 @@
                             component="form" event="redirectToOrdersForSubproducts"
                             class="com.qcadoo.mes.ordersForSubproductsGeneration.listeners.OrderDetailsListenersOFSPG"
                             method="redirectToOrdersForSubproducts"/>
+
+        <view:view-listener plugin="orders" view="ordersPlanningList"
+                            component="grid" event="generateListOfProductionOrders"
+                            class="com.qcadoo.mes.ordersForSubproductsGeneration.listeners.OrdersPlanningListListenersOFSPG"
+                            method="generateListOfProductionOrders"/>
 
         <view:view-ribbon-group resource="view/ribbonExtensions/costCalculationDetails.xml"/>
 

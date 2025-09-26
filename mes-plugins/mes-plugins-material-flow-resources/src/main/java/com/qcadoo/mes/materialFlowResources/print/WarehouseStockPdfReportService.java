@@ -10,6 +10,7 @@ import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.localization.api.utils.DateUtils;
 import com.qcadoo.mes.materialFlow.constants.LocationFields;
 import com.qcadoo.mes.materialFlowResources.constants.StocktakingFields;
+import com.qcadoo.mes.materialFlowResources.constants.WarehouseStockReportFields;
 import com.qcadoo.mes.materialFlowResources.print.helper.Resource;
 import com.qcadoo.mes.materialFlowResources.print.helper.ResourceDataProvider;
 import com.qcadoo.model.api.Entity;
@@ -54,15 +55,10 @@ public class WarehouseStockPdfReportService extends PdfDocumentService {
                                     final Locale locale) throws DocumentException {
         PdfPTable dataTable = prepareDataTable(locale);
         dataTable.setHeaderRows(1);
-        List<Long> storageLocationIdsToQuery = Lists.newArrayList();
-        List<Entity> storageLocations = entity.getHasManyField(StocktakingFields.STORAGE_LOCATIONS);
-        if (!storageLocations.isEmpty()) {
-            storageLocationIdsToQuery = storageLocations.stream().map(Entity::getId).collect(Collectors.toList());
-        }
         String currentStorageLocation = StringUtils.EMPTY;
         List<Resource> resources = resourceDataProvider.findResourcesAndGroup(entity
-                .getBelongsToField(StocktakingFields.LOCATION).getId(), storageLocationIdsToQuery, entity
-                .getStringField("category"), entity.getStringField("wasteMode"), true);
+                .getBelongsToField(WarehouseStockReportFields.LOCATION).getId(), entity.getHasManyField(WarehouseStockReportFields.STORAGE_LOCATIONS).stream().map(Entity::getId).collect(Collectors.toList()), entity
+                .getStringField(WarehouseStockReportFields.CATEGORY), true);
         int counter = 1;
         for (Resource resource : resources) {
             dataTable.getDefaultCell().setHorizontalAlignment(Element.ALIGN_RIGHT);
@@ -208,11 +204,9 @@ public class WarehouseStockPdfReportService extends PdfDocumentService {
                 translationService.translate(
                         "materialFlowResources.warehouseStockReport.storageLocationMode.value."
                                 + entity.getStringField("storageLocationMode"), locale));
-        secondColumn.put("materialFlowResources.warehouseStockReport.report.wasteMode", translationService.translate(
-                "materialFlowResources.warehouseStockReport.wasteMode.value." + entity.getStringField("wasteMode"), locale));
 
-        int maxSize = pdfHelper.getMaxSizeOfColumnsRows(Lists.newArrayList(Integer.valueOf(firstColumn.values().size()),
-                Integer.valueOf(secondColumn.values().size())));
+        int maxSize = pdfHelper.getMaxSizeOfColumnsRows(Lists.newArrayList(firstColumn.values().size(),
+                secondColumn.values().size()));
 
         for (int i = 0; i < maxSize; i++) {
             firstColumnHeaderTable = pdfHelper.addDynamicHeaderTableCellOneRow(firstColumnHeaderTable, firstColumn, locale);
