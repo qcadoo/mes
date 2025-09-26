@@ -131,9 +131,7 @@ public class ListOfProductionOrdersReportPdf extends ReportPdfView {
             cell.setPaddingRight(3.5F);
             table.addCell(cell);
 
-            cell = createCell(getProductionLine(order), Element.ALIGN_LEFT, false);
-            cell.setPaddingRight(3.5F);
-            table.addCell(cell);
+            table.addCell(getProductionLineTable(order));
 
             cell = createCell(company != null ? company.getStringField(CompanyFields.NUMBER) : "", Element.ALIGN_LEFT, false);
             cell.setPaddingRight(3.5F);
@@ -168,22 +166,29 @@ public class ListOfProductionOrdersReportPdf extends ReportPdfView {
         return translationService.translate("ordersForSubproductsGeneration.listOfProductionOrders.report.fileName", locale);
     }
 
-    private String getProductionLine(Entity order) {
+    private PdfPTable getProductionLineTable(Entity order) {
+        PdfPTable productionLineTable = new PdfPTable(1);
+
         Entity productionLineEntity = order.getBelongsToField(OrderFields.PRODUCTION_LINE);
         String productionLine = "";
         if (Objects.nonNull(productionLineEntity)) {
             productionLine = productionLineEntity.getStringField(ProductionLineFields.NUMBER);
         }
+        PdfPCell cell = new PdfPCell();
+        cell.setBorder(Rectangle.NO_BORDER);
+        cell.setPhrase(new Phrase(productionLine, FontUtils.getDejavuRegular7Dark()));
+        productionLineTable.addCell(cell);
         Entity technologyGroupEntity = order.getBelongsToField(OrderFields.TECHNOLOGY).getBelongsToField(
                 TechnologiesConstants.MODEL_TECHNOLOGY_GROUP);
         String technologyGroup = "";
         if (Objects.nonNull(technologyGroupEntity)) {
             technologyGroup = technologyGroupEntity.getStringField(TechnologyGroupFields.NUMBER);
         }
-        if (!productionLine.isEmpty() && !technologyGroup.isEmpty()) {
-            return productionLine + "/" + technologyGroup;
-        }
-        return productionLine + technologyGroup;
+        cell = new PdfPCell();
+        cell.setBorder(Rectangle.NO_BORDER);
+        cell.setPhrase(new Phrase(technologyGroup, FontUtils.getDejavuRegular7Dark()));
+        productionLineTable.addCell(cell);
+        return productionLineTable;
     }
 
     private String getSizeNumber(final Entity product) {
