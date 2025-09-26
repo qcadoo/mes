@@ -9956,6 +9956,7 @@ CREATE TABLE public.arch_states_message (
     plannedeventstatechange_id bigint,
     recurringeventstatechange_id bigint,
     repackingstatechange_id bigint,
+    stocktakingstatechange_id bigint,
     archived boolean DEFAULT false
 );
 
@@ -21925,12 +21926,18 @@ CREATE TABLE public.materialflowresources_stocktaking (
     stocktakingdate date,
     generationdate timestamp without time zone,
     category character varying(255),
-    wastemode character varying(255) DEFAULT '01ALL'::character varying,
     storagelocationmode character varying(255) DEFAULT '01ALL'::character varying,
     location_id bigint,
     generated boolean DEFAULT false,
     filename character varying(255),
-    active boolean DEFAULT true
+    active boolean DEFAULT true,
+    state character varying(255) DEFAULT '01draft'::character varying,
+    description character varying(2048),
+    wms boolean DEFAULT false,
+    stateinwms character varying(255),
+    dateconfirmationofcompletion timestamp without time zone,
+    datesendtowms timestamp without time zone,
+    pickingworker character varying(255)
 );
 
 
@@ -21951,6 +21958,117 @@ CREATE SEQUENCE public.materialflowresources_stocktaking_id_seq
 --
 
 ALTER SEQUENCE public.materialflowresources_stocktaking_id_seq OWNED BY public.materialflowresources_stocktaking.id;
+
+
+--
+-- Name: materialflowresources_stocktakingdifference; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.materialflowresources_stocktakingdifference (
+    id bigint NOT NULL,
+    stocktaking_id bigint,
+    storagelocation_id bigint,
+    palletnumber_id bigint,
+    typeofloadunit_id bigint,
+    product_id bigint,
+    batch_id bigint,
+    expirationdate date,
+    type character varying(255) NOT NULL,
+    quantity numeric(14,5)
+);
+
+
+--
+-- Name: materialflowresources_stocktakingdifference_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.materialflowresources_stocktakingdifference_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: materialflowresources_stocktakingdifference_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.materialflowresources_stocktakingdifference_id_seq OWNED BY public.materialflowresources_stocktakingdifference.id;
+
+
+--
+-- Name: materialflowresources_stocktakingposition; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.materialflowresources_stocktakingposition (
+    id bigint NOT NULL,
+    stocktaking_id bigint,
+    storagelocation_id bigint,
+    palletnumber_id bigint,
+    typeofloadunit_id bigint,
+    product_id bigint,
+    batch_id bigint,
+    expirationdate date,
+    stock numeric(14,5),
+    quantity numeric(14,5),
+    pickingworker_id bigint
+);
+
+
+--
+-- Name: materialflowresources_stocktakingposition_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.materialflowresources_stocktakingposition_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: materialflowresources_stocktakingposition_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.materialflowresources_stocktakingposition_id_seq OWNED BY public.materialflowresources_stocktakingposition.id;
+
+
+--
+-- Name: materialflowresources_stocktakingstatechange; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.materialflowresources_stocktakingstatechange (
+    id bigint NOT NULL,
+    dateandtime timestamp without time zone,
+    sourcestate character varying(255),
+    targetstate character varying(255),
+    status character varying(255),
+    phase integer,
+    worker character varying(255),
+    stocktaking_id bigint,
+    shift_id bigint
+);
+
+
+--
+-- Name: materialflowresources_stocktakingstatechange_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.materialflowresources_stocktakingstatechange_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: materialflowresources_stocktakingstatechange_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.materialflowresources_stocktakingstatechange_id_seq OWNED BY public.materialflowresources_stocktakingstatechange.id;
 
 
 --
@@ -22132,7 +22250,6 @@ CREATE TABLE public.materialflowresources_warehousestockreport (
     warehousestockdate date,
     generationdate timestamp without time zone,
     category character varying(255),
-    wastemode character varying(255) DEFAULT '01ALL'::character varying,
     storagelocationmode character varying(255) DEFAULT '01ALL'::character varying,
     location_id bigint,
     generated boolean DEFAULT false,
@@ -30385,7 +30502,8 @@ CREATE TABLE public.states_message (
     entityversion bigint DEFAULT 0,
     plannedeventstatechange_id bigint,
     recurringeventstatechange_id bigint,
-    repackingstatechange_id bigint
+    repackingstatechange_id bigint,
+    stocktakingstatechange_id bigint
 );
 
 
@@ -36261,6 +36379,27 @@ ALTER TABLE ONLY public.materialflowresources_stocktaking ALTER COLUMN id SET DE
 
 
 --
+-- Name: materialflowresources_stocktakingdifference id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.materialflowresources_stocktakingdifference ALTER COLUMN id SET DEFAULT nextval('public.materialflowresources_stocktakingdifference_id_seq'::regclass);
+
+
+--
+-- Name: materialflowresources_stocktakingposition id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.materialflowresources_stocktakingposition ALTER COLUMN id SET DEFAULT nextval('public.materialflowresources_stocktakingposition_id_seq'::regclass);
+
+
+--
+-- Name: materialflowresources_stocktakingstatechange id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.materialflowresources_stocktakingstatechange ALTER COLUMN id SET DEFAULT nextval('public.materialflowresources_stocktakingstatechange_id_seq'::regclass);
+
+
+--
 -- Name: materialflowresources_storagelocation id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -39060,7 +39199,7 @@ COPY public.arch_repairs_repairorderworktime (id, repairorder_id, staff_id, labo
 -- Data for Name: arch_states_message; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.arch_states_message (id, type, translationkey, translationargs, correspondfieldname, autoclose, productiontrackingstatechange_id, deliverystatechange_id, assignmenttoshiftstatechange_id, technologystatechange_id, orderstatechange_id, extrusionprotocolstatechange_id, confectionprotocolstatechange_id, palletstatechange_id, batchstatechange_id, trackingrecordstatechange_id, requestforquotationstatechange_id, offerstatechange_id, negotiationstatechange_id, warehouseissuestatechange_id, palletlabelstatechange_id, maintenanceeventstatechange_id, entityversion, plannedeventstatechange_id, recurringeventstatechange_id, repackingstatechange_id, archived) FROM stdin;
+COPY public.arch_states_message (id, type, translationkey, translationargs, correspondfieldname, autoclose, productiontrackingstatechange_id, deliverystatechange_id, assignmenttoshiftstatechange_id, technologystatechange_id, orderstatechange_id, extrusionprotocolstatechange_id, confectionprotocolstatechange_id, palletstatechange_id, batchstatechange_id, trackingrecordstatechange_id, requestforquotationstatechange_id, offerstatechange_id, negotiationstatechange_id, warehouseissuestatechange_id, palletlabelstatechange_id, maintenanceeventstatechange_id, entityversion, plannedeventstatechange_id, recurringeventstatechange_id, repackingstatechange_id, stocktakingstatechange_id, archived) FROM stdin;
 \.
 
 
@@ -43224,7 +43363,31 @@ COPY public.materialflowresources_resourcestock (id, location_id, product_id) FR
 -- Data for Name: materialflowresources_stocktaking; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.materialflowresources_stocktaking (id, number, stocktakingdate, generationdate, category, wastemode, storagelocationmode, location_id, generated, filename, active) FROM stdin;
+COPY public.materialflowresources_stocktaking (id, number, stocktakingdate, generationdate, category, storagelocationmode, location_id, generated, filename, active, state, description, wms, stateinwms, dateconfirmationofcompletion, datesendtowms, pickingworker) FROM stdin;
+\.
+
+
+--
+-- Data for Name: materialflowresources_stocktakingdifference; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY public.materialflowresources_stocktakingdifference (id, stocktaking_id, storagelocation_id, palletnumber_id, typeofloadunit_id, product_id, batch_id, expirationdate, type, quantity) FROM stdin;
+\.
+
+
+--
+-- Data for Name: materialflowresources_stocktakingposition; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY public.materialflowresources_stocktakingposition (id, stocktaking_id, storagelocation_id, palletnumber_id, typeofloadunit_id, product_id, batch_id, expirationdate, stock, quantity, pickingworker_id) FROM stdin;
+\.
+
+
+--
+-- Data for Name: materialflowresources_stocktakingstatechange; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY public.materialflowresources_stocktakingstatechange (id, dateandtime, sourcestate, targetstate, status, phase, worker, stocktaking_id, shift_id) FROM stdin;
 \.
 
 
@@ -43256,7 +43419,7 @@ COPY public.materialflowresources_storagelocationnumberhelper (id) FROM stdin;
 -- Data for Name: materialflowresources_warehousestockreport; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.materialflowresources_warehousestockreport (id, warehousestockdate, generationdate, category, wastemode, storagelocationmode, location_id, generated, filename, active) FROM stdin;
+COPY public.materialflowresources_warehousestockreport (id, warehousestockdate, generationdate, category, storagelocationmode, location_id, generated, filename, active) FROM stdin;
 \.
 
 
@@ -45172,7 +45335,7 @@ COPY public.repairs_repairorderworktime (id, repairorder_id, staff_id, labortime
 -- Data for Name: states_message; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.states_message (id, type, translationkey, translationargs, correspondfieldname, autoclose, productiontrackingstatechange_id, deliverystatechange_id, assignmenttoshiftstatechange_id, technologystatechange_id, orderstatechange_id, extrusionprotocolstatechange_id, confectionprotocolstatechange_id, palletstatechange_id, batchstatechange_id, trackingrecordstatechange_id, requestforquotationstatechange_id, offerstatechange_id, negotiationstatechange_id, warehouseissuestatechange_id, palletlabelstatechange_id, maintenanceeventstatechange_id, entityversion, plannedeventstatechange_id, recurringeventstatechange_id, repackingstatechange_id) FROM stdin;
+COPY public.states_message (id, type, translationkey, translationargs, correspondfieldname, autoclose, productiontrackingstatechange_id, deliverystatechange_id, assignmenttoshiftstatechange_id, technologystatechange_id, orderstatechange_id, extrusionprotocolstatechange_id, confectionprotocolstatechange_id, palletstatechange_id, batchstatechange_id, trackingrecordstatechange_id, requestforquotationstatechange_id, offerstatechange_id, negotiationstatechange_id, warehouseissuestatechange_id, palletlabelstatechange_id, maintenanceeventstatechange_id, entityversion, plannedeventstatechange_id, recurringeventstatechange_id, repackingstatechange_id, stocktakingstatechange_id) FROM stdin;
 \.
 
 
@@ -48994,6 +49157,27 @@ SELECT pg_catalog.setval('public.materialflowresources_resourcestockdto_internal
 --
 
 SELECT pg_catalog.setval('public.materialflowresources_stocktaking_id_seq', 1, false);
+
+
+--
+-- Name: materialflowresources_stocktakingdifference_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('public.materialflowresources_stocktakingdifference_id_seq', 1, false);
+
+
+--
+-- Name: materialflowresources_stocktakingposition_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('public.materialflowresources_stocktakingposition_id_seq', 1, false);
+
+
+--
+-- Name: materialflowresources_stocktakingstatechange_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('public.materialflowresources_stocktakingstatechange_id_seq', 1, false);
 
 
 --
@@ -54853,6 +55037,30 @@ ALTER TABLE ONLY public.materialflowresources_resourcestock
 
 ALTER TABLE ONLY public.materialflowresources_stocktaking
     ADD CONSTRAINT materialflowresources_stocktaking_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: materialflowresources_stocktakingdifference materialflowresources_stocktakingdifference_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.materialflowresources_stocktakingdifference
+    ADD CONSTRAINT materialflowresources_stocktakingdifference_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: materialflowresources_stocktakingposition materialflowresources_stocktakingposition_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.materialflowresources_stocktakingposition
+    ADD CONSTRAINT materialflowresources_stocktakingposition_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: materialflowresources_stocktakingstatechange materialflowresources_stocktakingstatechange_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.materialflowresources_stocktakingstatechange
+    ADD CONSTRAINT materialflowresources_stocktakingstatechange_pkey PRIMARY KEY (id);
 
 
 --
@@ -62627,6 +62835,14 @@ ALTER TABLE ONLY public.subcontractorportal_subordermessage
 
 
 --
+-- Name: states_message message_stocktakingstatechange_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.states_message
+    ADD CONSTRAINT message_stocktakingstatechange_fkey FOREIGN KEY (stocktakingstatechange_id) REFERENCES public.materialflowresources_stocktakingstatechange(id) DEFERRABLE;
+
+
+--
 -- Name: subcontractorportal_subordermessage message_suborder_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -67792,6 +68008,126 @@ ALTER TABLE ONLY public.jointable_stocktaking_storagelocation
 
 ALTER TABLE ONLY public.jointable_stocktaking_storagelocation
     ADD CONSTRAINT stocktaking_storagelocation_storagelocation_fkey FOREIGN KEY (storagelocation_id) REFERENCES public.materialflowresources_storagelocation(id) DEFERRABLE;
+
+
+--
+-- Name: materialflowresources_stocktakingdifference stocktakingdifference_batch_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.materialflowresources_stocktakingdifference
+    ADD CONSTRAINT stocktakingdifference_batch_fkey FOREIGN KEY (batch_id) REFERENCES public.advancedgenealogy_batch(id) DEFERRABLE;
+
+
+--
+-- Name: materialflowresources_stocktakingdifference stocktakingdifference_palletnumber_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.materialflowresources_stocktakingdifference
+    ADD CONSTRAINT stocktakingdifference_palletnumber_fkey FOREIGN KEY (palletnumber_id) REFERENCES public.basic_palletnumber(id) DEFERRABLE;
+
+
+--
+-- Name: materialflowresources_stocktakingdifference stocktakingdifference_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.materialflowresources_stocktakingdifference
+    ADD CONSTRAINT stocktakingdifference_product_fkey FOREIGN KEY (product_id) REFERENCES public.basic_product(id) DEFERRABLE;
+
+
+--
+-- Name: materialflowresources_stocktakingdifference stocktakingdifference_stocktaking_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.materialflowresources_stocktakingdifference
+    ADD CONSTRAINT stocktakingdifference_stocktaking_fkey FOREIGN KEY (stocktaking_id) REFERENCES public.materialflowresources_stocktaking(id) DEFERRABLE;
+
+
+--
+-- Name: materialflowresources_stocktakingdifference stocktakingdifference_storagelocation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.materialflowresources_stocktakingdifference
+    ADD CONSTRAINT stocktakingdifference_storagelocation_fkey FOREIGN KEY (storagelocation_id) REFERENCES public.materialflowresources_storagelocation(id) DEFERRABLE;
+
+
+--
+-- Name: materialflowresources_stocktakingdifference stocktakingdifference_typeofloadunit_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.materialflowresources_stocktakingdifference
+    ADD CONSTRAINT stocktakingdifference_typeofloadunit_fkey FOREIGN KEY (typeofloadunit_id) REFERENCES public.basic_typeofloadunit(id) DEFERRABLE;
+
+
+--
+-- Name: materialflowresources_stocktakingposition stocktakingposition_batch_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.materialflowresources_stocktakingposition
+    ADD CONSTRAINT stocktakingposition_batch_fkey FOREIGN KEY (batch_id) REFERENCES public.advancedgenealogy_batch(id) DEFERRABLE;
+
+
+--
+-- Name: materialflowresources_stocktakingposition stocktakingposition_palletnumber_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.materialflowresources_stocktakingposition
+    ADD CONSTRAINT stocktakingposition_palletnumber_fkey FOREIGN KEY (palletnumber_id) REFERENCES public.basic_palletnumber(id) DEFERRABLE;
+
+
+--
+-- Name: materialflowresources_stocktakingposition stocktakingposition_pickingworker_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.materialflowresources_stocktakingposition
+    ADD CONSTRAINT stocktakingposition_pickingworker_fkey FOREIGN KEY (pickingworker_id) REFERENCES public.qcadoosecurity_user(id) DEFERRABLE;
+
+
+--
+-- Name: materialflowresources_stocktakingposition stocktakingposition_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.materialflowresources_stocktakingposition
+    ADD CONSTRAINT stocktakingposition_product_fkey FOREIGN KEY (product_id) REFERENCES public.basic_product(id) DEFERRABLE;
+
+
+--
+-- Name: materialflowresources_stocktakingposition stocktakingposition_stocktaking_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.materialflowresources_stocktakingposition
+    ADD CONSTRAINT stocktakingposition_stocktaking_fkey FOREIGN KEY (stocktaking_id) REFERENCES public.materialflowresources_stocktaking(id) DEFERRABLE;
+
+
+--
+-- Name: materialflowresources_stocktakingposition stocktakingposition_storagelocation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.materialflowresources_stocktakingposition
+    ADD CONSTRAINT stocktakingposition_storagelocation_fkey FOREIGN KEY (storagelocation_id) REFERENCES public.materialflowresources_storagelocation(id) DEFERRABLE;
+
+
+--
+-- Name: materialflowresources_stocktakingposition stocktakingposition_typeofloadunit_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.materialflowresources_stocktakingposition
+    ADD CONSTRAINT stocktakingposition_typeofloadunit_fkey FOREIGN KEY (typeofloadunit_id) REFERENCES public.basic_typeofloadunit(id) DEFERRABLE;
+
+
+--
+-- Name: materialflowresources_stocktakingstatechange stocktakingstatechange_shift_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.materialflowresources_stocktakingstatechange
+    ADD CONSTRAINT stocktakingstatechange_shift_fkey FOREIGN KEY (shift_id) REFERENCES public.basic_shift(id) DEFERRABLE;
+
+
+--
+-- Name: materialflowresources_stocktakingstatechange stocktakingstatechange_stocktaking_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.materialflowresources_stocktakingstatechange
+    ADD CONSTRAINT stocktakingstatechange_stocktaking_fkey FOREIGN KEY (stocktaking_id) REFERENCES public.materialflowresources_stocktaking(id) DEFERRABLE;
 
 
 --
