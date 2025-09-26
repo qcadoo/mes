@@ -13,7 +13,6 @@
         <date name="expirationDate"/>
         <enum name="type" values="01shortage,02surplus" required="true"/>
         <decimal name="quantity" required="true">
-            <validatesRange from="0" exclusively="true"/>
             <validatesUnscaledValue max="9"/>
             <validatesScale max="5"/>
         </decimal>

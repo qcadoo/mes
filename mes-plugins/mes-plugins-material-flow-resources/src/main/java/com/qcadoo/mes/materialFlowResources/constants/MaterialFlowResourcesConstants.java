@@ -34,6 +34,7 @@ public final class MaterialFlowResourcesConstants {
     // MODEL
     public static final String MODEL_STOCKTAKING = "stocktaking";
     public static final String MODEL_STOCKTAKING_POSITION = "stocktakingPosition";
+    public static final String MODEL_STOCKTAKING_DIFFERENCE = "stocktakingDifference";
 
     public static final String MODEL_STOCKTAKING_STATE_CHANGE = "stocktakingStateChange";
 

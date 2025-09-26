@@ -102,6 +102,7 @@
                 <script>
                     <![CDATA[
                         var generatedRibbonItem =  #{window}.getRibbonItem("generate.generate");
+                        var settleRibbonItem =  #{window}.getRibbonItem("generate.settle");
                         var printRibbonItem = #{window}.getRibbonItem("print.print");
                         var saveRibbonItem = #{window}.getRibbonItem("actions.save");
                         var saveBackRibbonItem = #{window}.getRibbonItem("actions.saveBack");
@@ -131,6 +132,7 @@
                         });
 
                         function updateRibbon() {
+                            settleRibbonItem.enable("#{translate(materialFlowResources.stocktakingDetails.ribbon.message.settle)}");
                             if (entityExists) {
                                 var isGeneratedCheckboxValue = #{generated}.getValue();
                                 generatedRibbonItem.enable();
@@ -294,8 +296,8 @@
                 <option type="column" name="palletNumber" fields="palletNumber" expression="#palletNumber['number']" width="30"/>
                 <option type="column" name="typeOfLoadUnit" fields="typeOfLoadUnit" expression="#typeOfLoadUnit['name']"
                         width="50"/>
-                <option type="column" name="productNumber" fields="product" expression="#product['number']" link="true"/>
-                <option type="column" name="productName" fields="product" expression="#product['name']" link="true"/>
+                <option type="column" name="productNumber" fields="product" expression="#product['number']"/>
+                <option type="column" name="productName" fields="product" expression="#product['name']"/>
                 <option type="column" name="batch" fields="batch" expression="#batch['number']" width="30"/>
                 <option type="column" name="expirationDate" fields="expirationDate"/>
                 <option type="column" name="type" fields="type"/>
