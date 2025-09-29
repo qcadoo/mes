@@ -4,6 +4,8 @@ import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.lowagie.text.*;
+import com.lowagie.text.Image;
+import com.lowagie.text.Rectangle;
 import com.lowagie.text.pdf.*;
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.basic.constants.CompanyFields;
@@ -33,6 +35,7 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.awt.*;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.*;
@@ -132,7 +135,9 @@ public class ListOfProductionOrdersReportPdf extends ReportPdfView {
             cell.setPaddingRight(3.5F);
             table.addCell(cell);
 
-            table.addCell(getProductionLineTable(order));
+            cell = createCell("", Element.ALIGN_LEFT, false);
+            cell.addElement(getProductionLineTable(order));
+            table.addCell(cell);
 
             cell = createCell(company != null ? company.getStringField(CompanyFields.NUMBER) : "", Element.ALIGN_LEFT, false);
             cell.setPaddingRight(3.5F);
