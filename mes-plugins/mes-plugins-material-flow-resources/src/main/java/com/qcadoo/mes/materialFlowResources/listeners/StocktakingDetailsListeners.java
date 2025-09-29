@@ -91,7 +91,10 @@ public class StocktakingDetailsListeners {
         List<Entity> differences = new ArrayList<>();
         DataDefinition differenceDD = dataDefinitionService.get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER,
                 MaterialFlowResourcesConstants.MODEL_STOCKTAKING_DIFFERENCE);
+        DataDefinition positionDD = dataDefinitionService.get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER,
+                MaterialFlowResourcesConstants.MODEL_STOCKTAKING_POSITION);
         for (Entity position : entity.getHasManyField(StocktakingFields.POSITIONS)) {
+            position = positionDD.save(position);
             BigDecimal positionQuantity = position.getDecimalField(StocktakingPositionFields.QUANTITY);
             BigDecimal positionStock = position.getDecimalField(StocktakingPositionFields.STOCK);
             if (positionQuantity != null && positionStock.compareTo(positionQuantity) != 0) {
