@@ -92,7 +92,12 @@ public class WarehouseStockPdfReportService extends PdfDocumentService {
             batch.addCell(new Phrase(extractExpirationDate(resource), FontUtils.getDejavuRegular7Dark()));
             dataTable.addCell(batch);
             dataTable.getDefaultCell().setHorizontalAlignment(Element.ALIGN_LEFT);
-            dataTable.addCell(new Phrase(extractUnit(resource), FontUtils.getDejavuRegular7Dark()));
+            PdfPTable unit = new PdfPTable(1);
+            unit.getDefaultCell().setBorderWidth(0);
+            unit.getDefaultCell().setFixedHeight(10f);
+            unit.addCell(new Phrase(extractUnit(resource), FontUtils.getDejavuRegular7Dark()));
+            unit.addCell(new Phrase(extractGivenUnitConversion(resource), FontUtils.getDejavuRegular7Dark()));
+            dataTable.addCell(unit);
             dataTable.getDefaultCell().setHorizontalAlignment(Element.ALIGN_RIGHT);
             dataTable.addCell(new Phrase(extractQuantity(resource), FontUtils.getDejavuRegular10Dark()));
             counter++;
@@ -123,6 +128,15 @@ public class WarehouseStockPdfReportService extends PdfDocumentService {
 
     private String extractUnit(Resource resource) {
         return resource.getProductUnit();
+    }
+
+    private String extractGivenUnitConversion(Resource resource) {
+        if (!resource.getProductUnit().equals(resource.getGivenUnit())) {
+            return resource.getGivenUnit() + "\\" + numberService.formatWithMinimumFractionDigits(
+                    resource.getConversion(), 1);
+        } else {
+            return "";
+        }
     }
 
     private String extractProductName(Resource resource) {
@@ -163,15 +177,16 @@ public class WarehouseStockPdfReportService extends PdfDocumentService {
         header.add(batch);
         alignments.put(batch, HeaderAlignment.LEFT);
 
-        header.add(translationService.translate("materialFlowResources.warehouseStockReport.report.data.unit", locale));
-        alignments.put(translationService.translate("materialFlowResources.warehouseStockReport.report.data.unit", locale),
-                HeaderAlignment.LEFT);
+        String unit = translationService.translate("materialFlowResources.warehouseStockReport.report.data.unit", locale) + "\n"
+                + translationService.translate("materialFlowResources.warehouseStockReport.report.data.conversion", locale);
+        header.add(unit);
+        alignments.put(unit, HeaderAlignment.LEFT);
 
         header.add(translationService.translate("materialFlowResources.warehouseStockReport.report.data.quantity", locale));
         alignments.put(translationService.translate("materialFlowResources.warehouseStockReport.report.data.quantity", locale),
                 HeaderAlignment.RIGHT);
 
-        int[] columnWidths = {90, 70, 230, 130, 60, 80};
+        int[] columnWidths = {90, 70, 230, 130, 65, 80};
 
         return pdfHelper.createTableWithHeader(6, header, false, columnWidths, alignments);
     }

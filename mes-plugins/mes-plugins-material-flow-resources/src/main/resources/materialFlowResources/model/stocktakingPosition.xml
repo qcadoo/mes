@@ -21,6 +21,7 @@
             <validatesUnscaledValue max="9"/>
             <validatesScale max="5"/>
         </decimal>
+        <decimal name="conversion" default="1"/>
         <belongsTo name="pickingWorker" model="user" plugin="qcadooSecurity" copyable="false"/>
     </fields>
 

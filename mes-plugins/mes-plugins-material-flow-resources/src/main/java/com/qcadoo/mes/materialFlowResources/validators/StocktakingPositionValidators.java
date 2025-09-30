@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -32,15 +33,18 @@ public class StocktakingPositionValidators {
         Entity batch = stocktakingPosition.getBelongsToField(StocktakingPositionFields.BATCH);
         Entity stocktaking = stocktakingPosition.getBelongsToField(StocktakingPositionFields.STOCKTAKING);
         Date expirationDate = stocktakingPosition.getDateField(StocktakingPositionFields.EXPIRATION_DATE);
+        BigDecimal conversion = stocktakingPosition.getDecimalField(StocktakingPositionFields.CONVERSION);
         Map<String, Object> queryParameters = new HashMap<>();
         queryParameters.put("product", product.getId());
         queryParameters.put("stocktaking", stocktaking.getId());
+        queryParameters.put("conversion", conversion);
 
         StringBuilder query = new StringBuilder();
         query.append("SELECT COUNT(*) ");
         query.append("FROM materialflowresources_stocktakingposition sp ");
         query.append("WHERE sp.product_id = :product ");
         query.append("AND sp.stocktaking_id = :stocktaking ");
+        query.append("AND sp.conversion = :conversion ");
 
         if (storageLocation != null) {
             queryParameters.put("storageLocation", storageLocation.getId());

@@ -60,6 +60,7 @@ public class StocktakingDetailsListeners {
             position.setField(StocktakingPositionFields.BATCH, resource.getBatchId());
             position.setField(StocktakingPositionFields.EXPIRATION_DATE, resource.getExpirationDate());
             position.setField(StocktakingPositionFields.STOCK, resource.getQuantity());
+            position.setField(StocktakingPositionFields.CONVERSION, resource.getConversion());
             positions.add(position);
         }
         reportDb.setField(StocktakingFields.POSITIONS, positions);
@@ -72,8 +73,7 @@ public class StocktakingDetailsListeners {
             LOG.error("Error when generate stocktaking report", e);
             throw new IllegalStateException(e.getMessage(), e);
         }
-        state.performEvent(view, "reset", new String[0]);
-
+        state.performEvent(view, "reset");
     }
 
     public void copyFromStock(final ViewDefinitionState view, final ComponentState state, final String[] args) {
@@ -105,6 +105,7 @@ public class StocktakingDetailsListeners {
                 differenceEntity.setField(StocktakingDifferenceFields.PRODUCT, position.getBelongsToField(StocktakingPositionFields.PRODUCT));
                 differenceEntity.setField(StocktakingDifferenceFields.BATCH, position.getBelongsToField(StocktakingPositionFields.BATCH));
                 differenceEntity.setField(StocktakingDifferenceFields.EXPIRATION_DATE, position.getDateField(StocktakingPositionFields.EXPIRATION_DATE));
+                differenceEntity.setField(StocktakingDifferenceFields.CONVERSION, position.getDecimalField(StocktakingPositionFields.CONVERSION));
                 BigDecimal difference = positionQuantity.subtract(positionStock);
                 differenceEntity.setField(StocktakingDifferenceFields.QUANTITY, difference);
                 if (difference.compareTo(BigDecimal.ZERO) > 0) {
