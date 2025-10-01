@@ -81,7 +81,7 @@ public class StocktakingDetailsListeners {
         Entity entity = form.getPersistedEntityWithIncludedFormValues();
         for (Entity position : entity.getHasManyField(StocktakingFields.POSITIONS)) {
             position.setField(StocktakingPositionFields.QUANTITY, position.getDecimalField(StocktakingPositionFields.STOCK));
-            position.getDataDefinition().save(position);
+            position.getDataDefinition().fastSave(position);
         }
     }
 

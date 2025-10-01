@@ -1,5 +1,6 @@
 package com.qcadoo.mes.materialFlowResources.hooks;
 
+import com.qcadoo.mes.materialFlowResources.constants.StocktakingFields;
 import com.qcadoo.mes.materialFlowResources.constants.StocktakingPositionFields;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
@@ -24,6 +25,7 @@ public class StocktakingPositionHooks {
     }
 
     public BigDecimal findQuantity(Entity stocktakingPosition) {
+        Entity location = stocktakingPosition.getBelongsToField(StocktakingPositionFields.STOCKTAKING).getBelongsToField(StocktakingFields.LOCATION);
         Entity storageLocation = stocktakingPosition.getBelongsToField(StocktakingPositionFields.STORAGE_LOCATION);
         Entity palletNumber = stocktakingPosition.getBelongsToField(StocktakingPositionFields.PALLET_NUMBER);
         Entity product = stocktakingPosition.getBelongsToField(StocktakingPositionFields.PRODUCT);
@@ -31,11 +33,13 @@ public class StocktakingPositionHooks {
         Date expirationDate = stocktakingPosition.getDateField(StocktakingPositionFields.EXPIRATION_DATE);
         Map<String, Object> queryParameters = new HashMap<>();
         queryParameters.put("product", product.getId());
+        queryParameters.put("location", location.getId());
 
         StringBuilder query = new StringBuilder();
         query.append("SELECT SUM(resource.quantity) AS quantity ");
         query.append("FROM materialflowresources_resource resource ");
-        query.append("WHERE resource.product_id = :product ");
+        query.append("WHERE resource.location_id = :location ");
+        query.append("AND resource.product_id = :product ");
 
         if (storageLocation != null) {
             queryParameters.put("storageLocation", storageLocation.getId());
