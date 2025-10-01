@@ -4,6 +4,7 @@ import com.qcadoo.localization.api.utils.DateUtils;
 import com.qcadoo.mes.materialFlowResources.constants.MaterialFlowResourcesConstants;
 import com.qcadoo.mes.materialFlowResources.constants.StocktakingFields;
 import com.qcadoo.mes.materialFlowResources.constants.StorageLocationMode;
+import com.qcadoo.mes.materialFlowResources.states.constants.StocktakingStateStringValues;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
@@ -51,13 +52,20 @@ public class StocktakingDetailsHooks {
 
     private void disableForm(final ViewDefinitionState view, final FormComponent stocktakingForm, final Entity stocktaking) {
         GridComponent storageLocationsGrid = (GridComponent) view.getComponentByReference(StocktakingFields.STORAGE_LOCATIONS);
+        GridComponent positionsGrid = (GridComponent) view.getComponentByReference(StocktakingFields.POSITIONS);
 
-        if (stocktaking.getBooleanField(StocktakingFields.GENERATED)) {
-            stocktakingForm.setFormEnabled(false);
-            storageLocationsGrid.setEnabled(false);
-        } else {
-            stocktakingForm.setFormEnabled(true);
-            changeStorageLocationsGridEnabled(view);
+        if (stocktaking.getId() != null) {
+            String state = stocktaking.getStringField(StocktakingFields.STATE);
+
+            if (StocktakingStateStringValues.DRAFT.equals(state)) {
+                stocktakingForm.setFormEnabled(true);
+                changeStorageLocationsGridEnabled(view);
+            } else {
+                stocktakingForm.setFormEnabled(false);
+                storageLocationsGrid.setEnabled(false);
+            }
+
+            positionsGrid.setEnabled(StocktakingStateStringValues.IN_PROGRESS.equals(state) || StocktakingStateStringValues.FINALIZED.equals(state));
         }
     }
 

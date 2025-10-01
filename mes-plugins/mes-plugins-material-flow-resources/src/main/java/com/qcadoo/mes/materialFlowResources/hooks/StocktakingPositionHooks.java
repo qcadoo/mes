@@ -31,15 +31,18 @@ public class StocktakingPositionHooks {
         Entity product = stocktakingPosition.getBelongsToField(StocktakingPositionFields.PRODUCT);
         Entity batch = stocktakingPosition.getBelongsToField(StocktakingPositionFields.BATCH);
         Date expirationDate = stocktakingPosition.getDateField(StocktakingPositionFields.EXPIRATION_DATE);
+        BigDecimal conversion = stocktakingPosition.getDecimalField(StocktakingPositionFields.CONVERSION);
         Map<String, Object> queryParameters = new HashMap<>();
         queryParameters.put("product", product.getId());
         queryParameters.put("location", location.getId());
+        queryParameters.put("conversion", conversion);
 
         StringBuilder query = new StringBuilder();
         query.append("SELECT SUM(resource.quantity) AS quantity ");
         query.append("FROM materialflowresources_resource resource ");
         query.append("WHERE resource.location_id = :location ");
         query.append("AND resource.product_id = :product ");
+        query.append("AND resource.conversion = :conversion ");
 
         if (storageLocation != null) {
             queryParameters.put("storageLocation", storageLocation.getId());

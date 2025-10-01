@@ -41,7 +41,6 @@
         <enum name="storageLocationMode" values="01all,02selected" default="01all" required="true"/>
         <belongsTo name="location" model="location" plugin="materialFlow" required="true"/>
 
-        <boolean name="generated" default="false" copyable="false"/>
         <string name="fileName" copyable="false"/>
         <manyToMany name="storageLocations" model="storageLocation" joinField="stocktakings" copyable="true"/>
         <hasMany name="positions" model="stocktakingPosition" joinField="stocktaking" cascade="delete"/>

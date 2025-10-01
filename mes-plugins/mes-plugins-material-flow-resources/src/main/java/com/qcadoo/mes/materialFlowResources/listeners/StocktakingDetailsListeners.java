@@ -4,6 +4,9 @@ import com.qcadoo.mes.materialFlowResources.constants.*;
 import com.qcadoo.mes.materialFlowResources.print.StocktakingReportService;
 import com.qcadoo.mes.materialFlowResources.print.helper.Resource;
 import com.qcadoo.mes.materialFlowResources.print.helper.ResourceDataProvider;
+import com.qcadoo.mes.materialFlowResources.states.StocktakingServiceMarker;
+import com.qcadoo.mes.materialFlowResources.states.constants.StocktakingStateStringValues;
+import com.qcadoo.mes.newstates.StateExecutorService;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -36,6 +39,13 @@ public class StocktakingDetailsListeners {
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
+    @Autowired
+    private StateExecutorService stateExecutorService;
+
+    public void changeState(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        stateExecutorService.changeState(StocktakingServiceMarker.class, view, args);
+    }
+
     public void generate(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         state.performEvent(view, "save");
 
@@ -64,7 +74,6 @@ public class StocktakingDetailsListeners {
             positions.add(position);
         }
         reportDb.setField(StocktakingFields.POSITIONS, positions);
-        reportDb.setField(StocktakingFields.GENERATED, Boolean.TRUE);
         reportDb.setField(StocktakingFields.GENERATION_DATE, new Date());
         reportDb = reportDb.getDataDefinition().save(reportDb);
         try {
@@ -73,6 +82,7 @@ public class StocktakingDetailsListeners {
             LOG.error("Error when generate stocktaking report", e);
             throw new IllegalStateException(e.getMessage(), e);
         }
+        stateExecutorService.changeState(StocktakingServiceMarker.class, view, args);
         state.performEvent(view, "reset");
     }
 
@@ -118,6 +128,9 @@ public class StocktakingDetailsListeners {
         }
         entity.setField(StocktakingFields.DIFFERENCES, differences);
         entity.getDataDefinition().save(entity);
+        if (entity.getStringField(StocktakingFields.STATE).equals(StocktakingStateStringValues.IN_PROGRESS)) {
+            stateExecutorService.changeState(StocktakingServiceMarker.class, view, args);
+        }
     }
 
     public void print(final ViewDefinitionState view, final ComponentState state, final String[] args) {
