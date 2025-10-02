@@ -52,8 +52,7 @@
     </fields>
     <hooks>
         <onCreate class="com.qcadoo.mes.materialFlowResources.hooks.StocktakingModelHooks" method="onCreate"/>
-        <onSave
-                class="com.qcadoo.mes.materialFlowResources.hooks.StocktakingModelHooks"
-                method="onSave"/>
+        <onSave class="com.qcadoo.mes.materialFlowResources.hooks.StocktakingModelHooks" method="onSave"/>
+        <onCopy class="com.qcadoo.mes.materialFlowResources.hooks.StocktakingModelHooks" method="onCopy"/>
     </hooks>
 </model>

@@ -31,14 +31,50 @@
       modelName="stocktaking"
       menuAccessible="true">
 
-    <component type="window" name="window">
+    <component type="window" name="window" reference="window">
         <ribbon>
             <template name="standardGridTemplate"/>
 
         </ribbon>
 
         <component type="grid" name="grid" reference="grid">
+            <script>
+                <![CDATA[
+						var deleteBtn = #{window}.getRibbonItem("actions.delete");
 
+						var listener = {
+							onChange: function(selectedEntitiesArray) {
+								if (!selectedEntitiesArray || selectedEntitiesArray.length == 0) {
+									deleteBtn.disable();
+								} else {
+									var noDifferentStates = true;
+
+	 								if(selectedEntitiesArray.length > 1){
+										for (var i = selectedEntitiesArray.length-1 ; i > 0 ; i--) {
+											if (selectedEntitiesArray[i-1].fields.state != selectedEntitiesArray[i].fields.state) {
+												noDifferentStates = false;
+												break;
+											}
+										}
+									}
+									if (selectedEntitiesArray.length == 1 || noDifferentStates) {
+										var state = selectedEntitiesArray[0].fields.state;
+
+										if (state == "01draft") {
+											deleteBtn.enable();
+										} else {
+											deleteBtn.disable();
+										}
+									} else {
+                                        deleteBtn.disable();
+									}
+								}
+							}
+						}
+
+						this.addOnChangeListener(listener);
+					]]>
+            </script>
             <option type="column" name="number" fields="number" link="true"/>
             <option type="column" name="stocktakingDate" fields="stocktakingDate" link="true"/>
             <option type="column" name="locationNumber" fields="location"

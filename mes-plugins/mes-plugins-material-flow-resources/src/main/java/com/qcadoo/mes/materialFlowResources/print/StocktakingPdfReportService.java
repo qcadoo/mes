@@ -123,8 +123,8 @@ public class StocktakingPdfReportService extends PdfDocumentService {
 
     private String extractGivenUnitConversion(Resource resource) {
         if (!resource.getProductUnit().equals(resource.getGivenUnit())) {
-            return resource.getGivenUnit() + "\\" + numberService.formatWithMinimumFractionDigits(
-                    resource.getConversion(), 1);
+            return resource.getGivenUnit() + " / " + numberService.formatWithMinimumFractionDigits(
+                    resource.getConversion(), 0);
         } else {
             return "";
         }
@@ -168,7 +168,7 @@ public class StocktakingPdfReportService extends PdfDocumentService {
         alignments.put(batch, HeaderAlignment.LEFT);
 
         String unit = translationService.translate("materialFlowResources.stocktaking.report.data.unit", locale) + "\n"
-                + translationService.translate("materialFlowResources.stocktaking.report.data.conversion", locale);
+                + translationService.translate("materialFlowResources.stocktaking.report.data.givenUnitConversion", locale);
         header.add(unit);
         alignments.put(unit, HeaderAlignment.LEFT);
 
@@ -176,7 +176,7 @@ public class StocktakingPdfReportService extends PdfDocumentService {
         alignments.put(translationService.translate("materialFlowResources.stocktaking.report.data.quantity", locale),
                 HeaderAlignment.LEFT);
 
-        int[] columnWidths = {90, 70, 230, 130, 65, 80};
+        int[] columnWidths = {90, 70, 230, 130, 85, 80};
 
         return pdfHelper.createTableWithHeader(6, header, false, columnWidths, alignments);
     }

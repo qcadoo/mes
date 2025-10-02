@@ -41,4 +41,8 @@ public class StocktakingModelHooks {
             }
         }
     }
+
+    public void onCopy(final DataDefinition stocktakingDD, final Entity stocktaking) {
+        setInitialState(stocktaking);
+    }
 }
