@@ -46,6 +46,7 @@ public class StocktakingPositionDetailsHooks {
         fillUnitField(view);
 
         setStorageLocationLookupFilterValue(view, stocktakingPosition);
+        setProductLookupCategoryFilterValue(view, stocktakingPosition);
         setBatchLookupProductFilterValue(view, stocktakingPosition);
     }
 
@@ -73,6 +74,21 @@ public class StocktakingPositionDetailsHooks {
         }
 
         storageLocationLookup.setFilterValue(filter);
+    }
+
+    private void setProductLookupCategoryFilterValue(ViewDefinitionState view, Entity stocktakingPosition) {
+        LookupComponent productLookup = (LookupComponent) view.getComponentByReference(StocktakingPositionFields.PRODUCT);
+
+        FilterValueHolder filter = productLookup.getFilterValue();
+
+        Entity stocktaking = stocktakingPosition.getBelongsToField(StocktakingPositionFields.STOCKTAKING);
+
+        String category = stocktaking.getStringField(StocktakingFields.CATEGORY);
+
+        if (Objects.nonNull(category)) {
+            filter.put(StocktakingFields.CATEGORY, category);
+            productLookup.setFilterValue(filter);
+        }
     }
 
     private void setBatchLookupProductFilterValue(ViewDefinitionState view, Entity stocktakingPosition) {

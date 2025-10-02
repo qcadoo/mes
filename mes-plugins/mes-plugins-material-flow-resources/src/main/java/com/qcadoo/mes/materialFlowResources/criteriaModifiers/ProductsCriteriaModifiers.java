@@ -3,19 +3,19 @@
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
  * Version: 1.4
- *
+ * <p>
  * This file is part of Qcadoo.
- *
+ * <p>
  * Qcadoo is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation; either version 3 of the License,
  * or (at your option) any later version.
- *
+ * <p>
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty
  * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU Affero General Public License for more details.
- *
+ * <p>
  * You should have received a copy of the GNU Affero General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
@@ -23,7 +23,9 @@
  */
 package com.qcadoo.mes.materialFlowResources.criteriaModifiers;
 
+import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.materialFlowResources.constants.MaterialFlowResourcesConstants;
+import com.qcadoo.mes.materialFlowResources.constants.StocktakingFields;
 import com.qcadoo.mes.materialFlowResources.constants.StorageLocationFields;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
@@ -50,6 +52,12 @@ public class ProductsCriteriaModifiers {
     }
 
     public void filterProductsInPosition(final SearchCriteriaBuilder searchCriteriaBuilder) {
+    }
+
+    public void showProductWithCategory(final SearchCriteriaBuilder scb, final FilterValueHolder filterValue) {
+        if (filterValue.has(StocktakingFields.CATEGORY)) {
+            scb.add(SearchRestrictions.eq(ProductFields.CATEGORY, filterValue.getString(StocktakingFields.CATEGORY)));
+        }
     }
 
     public void showNotAssignedProducts(final SearchCriteriaBuilder searchCriteriaBuilder, final FilterValueHolder filterValue) {
