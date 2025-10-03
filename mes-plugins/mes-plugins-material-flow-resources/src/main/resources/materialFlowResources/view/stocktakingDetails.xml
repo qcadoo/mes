@@ -107,6 +107,12 @@
                                     saveNewRibbonItem.disable();
                                     cancelRibbonItem.disable();
                                     deleteRibbonItem.disable();
+                                } else {
+                                    saveRibbonItem.enable();
+                                    saveBackRibbonItem.enable();
+                                    saveNewRibbonItem.enable();
+                                    cancelRibbonItem.enable();
+                                    deleteRibbonItem.enable();
                                 }
 
                                 if (state == "01draft") {
