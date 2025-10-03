@@ -1,6 +1,8 @@
 package com.qcadoo.mes.materialFlowResources.validators;
 
+import com.qcadoo.mes.materialFlowResources.constants.StocktakingFields;
 import com.qcadoo.mes.materialFlowResources.constants.StocktakingPositionFields;
+import com.qcadoo.mes.materialFlowResources.constants.StorageLocationMode;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +23,13 @@ public class StocktakingPositionValidators {
     public boolean validatesWith(final DataDefinition stocktakingPositionDD, final Entity stocktakingPosition) {
         if (positionExists(stocktakingPosition)) {
             stocktakingPosition.addGlobalError("materialFlowResources.error.stocktakingPosition.notUnique");
+            return false;
+        }
+        Entity stocktaking = stocktakingPosition.getBelongsToField(StocktakingPositionFields.STOCKTAKING);
+        if (StorageLocationMode.SELECTED.getStringValue().equals(
+                stocktaking.getStringField(StocktakingFields.STORAGE_LOCATION_MODE)) &&
+                stocktakingPosition.getBelongsToField(StocktakingPositionFields.STORAGE_LOCATION) == null) {
+            stocktakingPosition.addError(stocktakingPositionDD.getField(StocktakingPositionFields.STORAGE_LOCATION), "qcadooView.validate.field.error.missing");
             return false;
         }
         return true;

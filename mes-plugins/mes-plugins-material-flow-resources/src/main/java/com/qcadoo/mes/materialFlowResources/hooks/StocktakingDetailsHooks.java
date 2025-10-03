@@ -66,6 +66,8 @@ public class StocktakingDetailsHooks {
             }
 
             positionsGrid.setEnabled(StocktakingStateStringValues.IN_PROGRESS.equals(state) || StocktakingStateStringValues.FINALIZED.equals(state));
+        } else {
+            changeStorageLocationsGridEnabled(view);
         }
     }
 

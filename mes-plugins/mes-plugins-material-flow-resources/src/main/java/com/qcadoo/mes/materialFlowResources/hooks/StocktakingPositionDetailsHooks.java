@@ -66,6 +66,7 @@ public class StocktakingPositionDetailsHooks {
             List<Entity> storageLocations = stocktaking.getHasManyField(StocktakingFields.STORAGE_LOCATIONS);
             if (storageLocations.size() == 1) {
                 storageLocationLookup.setFieldValue(storageLocations.get(0).getId());
+                storageLocationLookup.setEnabled(false);
                 storageLocationLookup.requestComponentUpdateState();
             }
             if (!storageLocations.isEmpty()) {

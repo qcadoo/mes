@@ -24,4 +24,6 @@ public final class StocktakingFields {
 
     public static final String STATE = "state";
 
+    public static final String STATE_IN_WMS = "stateInWMS";
+
 }
