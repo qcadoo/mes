@@ -1,11 +1,12 @@
 package com.qcadoo.mes.materialFlowResources.states;
 
-import com.qcadoo.mes.materialFlowResources.constants.MaterialFlowResourcesConstants;
-import com.qcadoo.mes.materialFlowResources.constants.StocktakingFields;
-import com.qcadoo.mes.materialFlowResources.constants.StocktakingPositionFields;
+import com.qcadoo.localization.api.TranslationService;
+import com.qcadoo.mes.materialFlowResources.constants.*;
 import com.qcadoo.mes.materialFlowResources.print.StocktakingReportService;
 import com.qcadoo.mes.materialFlowResources.print.helper.Resource;
 import com.qcadoo.mes.materialFlowResources.print.helper.ResourceDataProvider;
+import com.qcadoo.mes.materialFlowResources.service.DocumentBuilder;
+import com.qcadoo.mes.materialFlowResources.service.DocumentManagementService;
 import com.qcadoo.mes.materialFlowResources.states.constants.StocktakingStateChangeDescriber;
 import com.qcadoo.mes.materialFlowResources.states.constants.StocktakingStateStringValues;
 import com.qcadoo.mes.newstates.BasicStateService;
@@ -13,9 +14,12 @@ import com.qcadoo.mes.states.StateChangeEntityDescriber;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.security.api.SecurityService;
+import com.qcadoo.security.constants.QcadooSecurityConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -39,6 +43,15 @@ public class StocktakingStateService extends BasicStateService implements Stockt
 
     @Autowired
     private ResourceDataProvider resourceDataProvider;
+
+    @Autowired
+    private SecurityService securityService;
+
+    @Autowired
+    private DocumentManagementService documentManagementService;
+
+    @Autowired
+    private TranslationService translationService;
 
     @Override
     public StateChangeEntityDescriber getChangeEntityDescriber() {
@@ -92,8 +105,70 @@ public class StocktakingStateService extends BasicStateService implements Stockt
                     throw new IllegalStateException(e.getMessage(), e);
                 }
                 break;
+
+            case StocktakingStateStringValues.FINISHED:
+                acceptInboundDocumentsForStocktaking(entity);
+
+                break;
         }
 
         return entity;
+    }
+
+    private void acceptInboundDocumentsForStocktaking(Entity entity) {
+        Entity user = getUserDD().get(securityService.getCurrentUserId());
+        Entity location = entity.getBelongsToField(StocktakingFields.LOCATION);
+
+        DocumentBuilder internalOutboundBuilder = documentManagementService.getDocumentBuilder(user);
+
+        internalOutboundBuilder.internalOutbound(location);
+
+        for (Entity difference : entity.getHasManyField(StocktakingFields.DIFFERENCES).stream()
+                .filter(e -> StocktakingDifferenceType.SHORTAGE.getStringValue().equals(e.getStringField(StocktakingDifferenceFields.TYPE)))
+                .collect(Collectors.toList())) {
+            internalOutboundBuilder.addPosition(difference.getBelongsToField(StocktakingDifferenceFields.PRODUCT),
+                    difference.getDecimalField(StocktakingDifferenceFields.QUANTITY).abs(), null, null,
+                    difference.getDecimalField(StocktakingDifferenceFields.CONVERSION), null,
+                    difference.getBelongsToField(StocktakingDifferenceFields.BATCH), null,
+                    difference.getDateField(StocktakingDifferenceFields.EXPIRATION_DATE), null,
+                    difference.getBelongsToField(StocktakingDifferenceFields.STORAGE_LOCATION),
+                    difference.getBelongsToField(StocktakingDifferenceFields.PALLET_NUMBER),
+                    difference.getBelongsToField(StocktakingDifferenceFields.TYPE_OF_LOAD_UNIT), false);
+        }
+
+        internalOutboundBuilder.setField(DocumentFields.STOCKTAKING, entity);
+        internalOutboundBuilder.setField(DocumentFields.DESCRIPTION, translationService.translate(
+                "materialFlowResources.document.description.stocktakingInternalOutbound",
+                LocaleContextHolder.getLocale()));
+
+        internalOutboundBuilder.setAccepted().buildWithEntityRuntimeException();
+
+        DocumentBuilder internalInboundBuilder = documentManagementService.getDocumentBuilder(user);
+
+        internalInboundBuilder.internalInbound(location);
+
+        for (Entity difference : entity.getHasManyField(StocktakingFields.DIFFERENCES).stream()
+                .filter(e -> StocktakingDifferenceType.SURPLUS.getStringValue().equals(e.getStringField(StocktakingDifferenceFields.TYPE)))
+                .collect(Collectors.toList())) {
+            internalInboundBuilder.addPosition(difference.getBelongsToField(StocktakingDifferenceFields.PRODUCT),
+                    difference.getDecimalField(StocktakingDifferenceFields.QUANTITY), null, null,
+                    difference.getDecimalField(StocktakingDifferenceFields.CONVERSION), null,
+                    difference.getBelongsToField(StocktakingDifferenceFields.BATCH), null,
+                    difference.getDateField(StocktakingDifferenceFields.EXPIRATION_DATE), null,
+                    difference.getBelongsToField(StocktakingDifferenceFields.STORAGE_LOCATION),
+                    difference.getBelongsToField(StocktakingDifferenceFields.PALLET_NUMBER),
+                    difference.getBelongsToField(StocktakingDifferenceFields.TYPE_OF_LOAD_UNIT), false);
+        }
+
+        internalInboundBuilder.setField(DocumentFields.STOCKTAKING, entity);
+        internalInboundBuilder.setField(DocumentFields.DESCRIPTION, translationService.translate(
+                "materialFlowResources.document.description.stocktakingInternalInbound",
+                LocaleContextHolder.getLocale()));
+
+        internalInboundBuilder.setAccepted().buildWithEntityRuntimeException();
+    }
+
+    private DataDefinition getUserDD() {
+        return dataDefinitionService.get(QcadooSecurityConstants.PLUGIN_IDENTIFIER, QcadooSecurityConstants.MODEL_USER);
     }
 }

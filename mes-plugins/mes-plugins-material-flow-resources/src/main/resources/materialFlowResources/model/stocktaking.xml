@@ -49,6 +49,8 @@
         <enum name="stateInWMS" values="01waiting,02inProgress,03delayed,04partiallyRealized,05realized" copyable="false"/>
         <hasMany name="stateChanges" joinField="stocktaking" model="stocktakingStateChange"
                  cascade="delete"/>
+        <hasMany name="internalInbounds" joinField="stocktaking" model="document"/>
+        <hasMany name="internalOutbounds" joinField="stocktaking" model="document"/>
     </fields>
     <hooks>
         <onCreate class="com.qcadoo.mes.materialFlowResources.hooks.StocktakingModelHooks" method="onCreate"/>
