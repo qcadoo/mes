@@ -66,8 +66,6 @@ public class StocktakingDetailsHooks {
             }
 
             positionsGrid.setEnabled(StocktakingStateStringValues.IN_PROGRESS.equals(state) || StocktakingStateStringValues.FINALIZED.equals(state));
-        } else {
-            changeStorageLocationsGridEnabled(view);
         }
     }
 
@@ -81,11 +79,6 @@ public class StocktakingDetailsHooks {
                 stocktaking.getStringField(StocktakingFields.STORAGE_LOCATION_MODE));
 
         storageLocationsGrid.setEnabled(enabled);
-    }
-
-    public void changeStorageLocationsGridEnabled(final ViewDefinitionState view, final ComponentState componentState,
-                                                  final String[] args) {
-        changeStorageLocationsGridEnabled(view);
     }
 
     private void setCriteriaModifierParameters(final ViewDefinitionState view, final Entity stocktaking) {

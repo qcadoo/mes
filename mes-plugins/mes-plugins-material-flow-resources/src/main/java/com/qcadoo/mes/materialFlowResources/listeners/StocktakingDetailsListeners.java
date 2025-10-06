@@ -2,8 +2,6 @@ package com.qcadoo.mes.materialFlowResources.listeners;
 
 import com.qcadoo.mes.materialFlowResources.constants.*;
 import com.qcadoo.mes.materialFlowResources.print.StocktakingReportService;
-import com.qcadoo.mes.materialFlowResources.print.helper.Resource;
-import com.qcadoo.mes.materialFlowResources.print.helper.ResourceDataProvider;
 import com.qcadoo.mes.materialFlowResources.states.StocktakingServiceMarker;
 import com.qcadoo.mes.materialFlowResources.states.constants.StocktakingStateStringValues;
 import com.qcadoo.mes.newstates.StateExecutorService;
@@ -14,27 +12,18 @@ import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.constants.QcadooViewConstants;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class StocktakingDetailsListeners {
 
-    private static final Logger LOG = LoggerFactory.getLogger(StocktakingDetailsListeners.class);
-
     @Autowired
     private StocktakingReportService reportService;
-
-    @Autowired
-    private ResourceDataProvider resourceDataProvider;
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
@@ -44,46 +33,6 @@ public class StocktakingDetailsListeners {
 
     public void changeState(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         stateExecutorService.changeState(StocktakingServiceMarker.class, view, args);
-    }
-
-    public void generate(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        state.performEvent(view, "save");
-
-        if (state.isHasError()) {
-            return;
-        }
-        FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
-        Entity report = form.getEntity();
-        Entity reportDb = report.getDataDefinition().get(report.getId());
-        List<Resource> resources = resourceDataProvider.findResourcesAndGroup(reportDb
-                .getBelongsToField(StocktakingFields.LOCATION).getId(), reportDb.getHasManyField(StocktakingFields.STORAGE_LOCATIONS).stream().map(Entity::getId).collect(Collectors.toList()), reportDb
-                .getStringField(StocktakingFields.CATEGORY), true);
-        List<Entity> positions = new ArrayList<>();
-        DataDefinition positionDD = dataDefinitionService.get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER,
-                MaterialFlowResourcesConstants.MODEL_STOCKTAKING_POSITION);
-        for (Resource resource : resources) {
-            Entity position = positionDD.create();
-            position.setField(StocktakingPositionFields.STORAGE_LOCATION, resource.getStorageLocationId());
-            position.setField(StocktakingPositionFields.PALLET_NUMBER, resource.getPalletNumberId());
-            position.setField(StocktakingPositionFields.TYPE_OF_LOAD_UNIT, resource.getTypeOfLoadUnitId());
-            position.setField(StocktakingPositionFields.PRODUCT, resource.getProductId());
-            position.setField(StocktakingPositionFields.BATCH, resource.getBatchId());
-            position.setField(StocktakingPositionFields.EXPIRATION_DATE, resource.getExpirationDate());
-            position.setField(StocktakingPositionFields.STOCK, resource.getQuantity());
-            position.setField(StocktakingPositionFields.CONVERSION, resource.getConversion());
-            positions.add(position);
-        }
-        reportDb.setField(StocktakingFields.POSITIONS, positions);
-        reportDb.setField(StocktakingFields.GENERATION_DATE, new Date());
-        reportDb = reportDb.getDataDefinition().save(reportDb);
-        try {
-            reportService.generateReport(state, reportDb);
-        } catch (Exception e) {
-            LOG.error("Error when generate stocktaking report", e);
-            throw new IllegalStateException(e.getMessage(), e);
-        }
-        stateExecutorService.changeState(StocktakingServiceMarker.class, view, args);
-        state.performEvent(view, "reset");
     }
 
     public void copyFromStock(final ViewDefinitionState view, final ComponentState state, final String[] args) {

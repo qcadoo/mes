@@ -149,9 +149,6 @@
                     <layoutElement row="2" column="2">
                         <component type="select" name="storageLocationMode" reference="storageLocationMode"
                                    field="#{form}.storageLocationMode">
-                            <listener event="onSelectedEntityChange"
-                                      class="com.qcadoo.mes.materialFlowResources.hooks.WarehouseStockReportDetailsHooks"
-                                      method="changeStorageLocationsGridEnabled"/>
                         </component>
                     </layoutElement>
                     <layoutElement column="1" row="3" height="6" width="2">

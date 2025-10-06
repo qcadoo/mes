@@ -32,8 +32,6 @@ public class StocktakingModelHooks {
     public void onSave(final DataDefinition stocktakingDD, final Entity stocktaking) {
         if (StorageLocationMode.ALL.getStringValue().equals(stocktaking.getStringField(StocktakingFields.STORAGE_LOCATION_MODE))) {
             stocktaking.setField(StocktakingFields.STORAGE_LOCATIONS, null);
-//        } else if (stocktaking.getHasManyField(StocktakingFields.STORAGE_LOCATIONS).isEmpty()) {
-//            stocktaking.addGlobalError("materialFlowResources.error.stocktaking.storageLocationsRequired");
         }
         if (Objects.nonNull(stocktaking.getId())) {
             Entity stocktakingDb = stocktakingDD.get(stocktaking.getId());
