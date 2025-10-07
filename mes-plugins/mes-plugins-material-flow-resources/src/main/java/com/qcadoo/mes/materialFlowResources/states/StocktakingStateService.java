@@ -62,7 +62,8 @@ public class StocktakingStateService extends BasicStateService implements Stockt
     public Entity onValidate(Entity entity, String sourceState, String targetState, Entity stateChangeEntity, StateChangeEntityDescriber describer) {
         switch (targetState) {
             case StocktakingStateStringValues.IN_PROGRESS:
-                if (entity.getHasManyField(StocktakingFields.STORAGE_LOCATIONS).isEmpty()) {
+                if (StorageLocationMode.SELECTED.getStringValue().equals(entity.getStringField(StocktakingFields.STORAGE_LOCATION_MODE))
+                        && entity.getHasManyField(StocktakingFields.STORAGE_LOCATIONS).isEmpty()) {
                     entity.addGlobalError("materialFlowResources.error.stocktaking.storageLocationsRequired");
                 }
 
