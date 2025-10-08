@@ -93,6 +93,8 @@
                         this.addOnChangeListener({
                             onSetValue: function(value) {
                                 if (!value || !value.content || !value.content.entityId) {
+                                    generateRibbonItem.disable();
+                                    rejectRibbonItem.disable();
                                     return;
                                 }
 
