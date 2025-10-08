@@ -53,10 +53,14 @@ public class StocktakingDetailsListeners {
         DataDefinition positionDD = dataDefinitionService.get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER,
                 MaterialFlowResourcesConstants.MODEL_STOCKTAKING_POSITION);
         for (Entity position : entity.getHasManyField(StocktakingFields.POSITIONS)) {
-            position = positionDD.save(position);
             BigDecimal positionQuantity = position.getDecimalField(StocktakingPositionFields.QUANTITY);
+            if (positionQuantity == null) {
+                positionQuantity = BigDecimal.ZERO;
+                position.setField(StocktakingPositionFields.QUANTITY, positionQuantity);
+            }
+            position = positionDD.save(position);
             BigDecimal positionStock = position.getDecimalField(StocktakingPositionFields.STOCK);
-            if (positionQuantity != null && positionStock.compareTo(positionQuantity) != 0) {
+            if (positionStock.compareTo(positionQuantity) != 0) {
                 Entity differenceEntity = differenceDD.create();
                 differenceEntity.setField(StocktakingDifferenceFields.STORAGE_LOCATION, position.getBelongsToField(StocktakingPositionFields.STORAGE_LOCATION));
                 differenceEntity.setField(StocktakingDifferenceFields.PALLET_NUMBER, position.getBelongsToField(StocktakingPositionFields.PALLET_NUMBER));
