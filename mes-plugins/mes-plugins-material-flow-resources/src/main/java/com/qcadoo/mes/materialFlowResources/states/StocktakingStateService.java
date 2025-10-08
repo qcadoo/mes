@@ -82,29 +82,39 @@ public class StocktakingStateService extends BasicStateService implements Stockt
                 List<Resource> resources = resourceDataProvider.findResourcesAndGroup(entity
                         .getBelongsToField(StocktakingFields.LOCATION).getId(), entity.getHasManyField(StocktakingFields.STORAGE_LOCATIONS).stream().map(Entity::getId).collect(Collectors.toList()), entity
                         .getStringField(StocktakingFields.CATEGORY), true);
-                List<Entity> positions = new ArrayList<>();
-                DataDefinition positionDD = dataDefinitionService.get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER,
-                        MaterialFlowResourcesConstants.MODEL_STOCKTAKING_POSITION);
+                boolean positionStockTooBig = false;
                 for (Resource resource : resources) {
-                    Entity position = positionDD.create();
-                    position.setField(StocktakingPositionFields.STORAGE_LOCATION, resource.getStorageLocationId());
-                    position.setField(StocktakingPositionFields.PALLET_NUMBER, resource.getPalletNumberId());
-                    position.setField(StocktakingPositionFields.TYPE_OF_LOAD_UNIT, resource.getTypeOfLoadUnitId());
-                    position.setField(StocktakingPositionFields.PRODUCT, resource.getProductId());
-                    position.setField(StocktakingPositionFields.BATCH, resource.getBatchId());
-                    position.setField(StocktakingPositionFields.EXPIRATION_DATE, resource.getExpirationDate());
-                    position.setField(StocktakingPositionFields.STOCK, resource.getQuantity());
-                    position.setField(StocktakingPositionFields.CONVERSION, resource.getConversion());
-                    positions.add(position);
+                    if (resource.getQuantity().precision() > 9) {
+                        entity.addGlobalError("materialFlowResources.error.stocktakingPosition.stock.invalidPrecision", resource.getProductNumber());
+                        positionStockTooBig = true;
+                        break;
+                    }
                 }
-                entity.setField(StocktakingFields.POSITIONS, positions);
-                entity.setField(StocktakingFields.GENERATION_DATE, new Date());
-                entity = entity.getDataDefinition().save(entity);
-                try {
-                    reportService.generateReport(entity);
-                } catch (Exception e) {
-                    LOG.error("Error when generate stocktaking report", e);
-                    throw new IllegalStateException(e.getMessage(), e);
+                if (!positionStockTooBig) {
+                    List<Entity> positions = new ArrayList<>();
+                    DataDefinition positionDD = dataDefinitionService.get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER,
+                            MaterialFlowResourcesConstants.MODEL_STOCKTAKING_POSITION);
+                    for (Resource resource : resources) {
+                        Entity position = positionDD.create();
+                        position.setField(StocktakingPositionFields.STORAGE_LOCATION, resource.getStorageLocationId());
+                        position.setField(StocktakingPositionFields.PALLET_NUMBER, resource.getPalletNumberId());
+                        position.setField(StocktakingPositionFields.TYPE_OF_LOAD_UNIT, resource.getTypeOfLoadUnitId());
+                        position.setField(StocktakingPositionFields.PRODUCT, resource.getProductId());
+                        position.setField(StocktakingPositionFields.BATCH, resource.getBatchId());
+                        position.setField(StocktakingPositionFields.EXPIRATION_DATE, resource.getExpirationDate());
+                        position.setField(StocktakingPositionFields.STOCK, resource.getQuantity());
+                        position.setField(StocktakingPositionFields.CONVERSION, resource.getConversion());
+                        positions.add(position);
+                    }
+                    entity.setField(StocktakingFields.POSITIONS, positions);
+                    entity.setField(StocktakingFields.GENERATION_DATE, new Date());
+                    entity = entity.getDataDefinition().save(entity);
+                    try {
+                        reportService.generateReport(entity);
+                    } catch (Exception e) {
+                        LOG.error("Error when generate stocktaking report", e);
+                        throw new IllegalStateException(e.getMessage(), e);
+                    }
                 }
                 break;
 

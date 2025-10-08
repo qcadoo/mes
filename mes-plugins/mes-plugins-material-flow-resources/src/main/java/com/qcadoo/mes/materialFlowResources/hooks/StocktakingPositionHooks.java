@@ -1,5 +1,6 @@
 package com.qcadoo.mes.materialFlowResources.hooks;
 
+import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.materialFlowResources.constants.StocktakingFields;
 import com.qcadoo.mes.materialFlowResources.constants.StocktakingPositionFields;
 import com.qcadoo.model.api.DataDefinition;
@@ -21,10 +22,14 @@ public class StocktakingPositionHooks {
     private NamedParameterJdbcTemplate jdbcTemplate;
 
     public void onSave(final DataDefinition stocktakingPositionDD, final Entity stocktakingPosition) {
-        stocktakingPosition.setField(StocktakingPositionFields.STOCK, findQuantity(stocktakingPosition));
+        BigDecimal stock = findStock(stocktakingPosition);
+        stocktakingPosition.setField(StocktakingPositionFields.STOCK, stock);
+        if (stock.precision() > 9) {
+            stocktakingPosition.addGlobalError("materialFlowResources.error.stocktakingPosition.stock.invalidPrecision", stocktakingPosition.getBelongsToField(StocktakingPositionFields.PRODUCT).getStringField(ProductFields.NUMBER));
+        }
     }
 
-    public BigDecimal findQuantity(Entity stocktakingPosition) {
+    private BigDecimal findStock(Entity stocktakingPosition) {
         Entity location = stocktakingPosition.getBelongsToField(StocktakingPositionFields.STOCKTAKING).getBelongsToField(StocktakingFields.LOCATION);
         Entity storageLocation = stocktakingPosition.getBelongsToField(StocktakingPositionFields.STORAGE_LOCATION);
         Entity palletNumber = stocktakingPosition.getBelongsToField(StocktakingPositionFields.PALLET_NUMBER);

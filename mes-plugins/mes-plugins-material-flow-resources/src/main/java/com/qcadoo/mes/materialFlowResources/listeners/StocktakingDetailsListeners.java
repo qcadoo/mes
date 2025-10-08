@@ -8,6 +8,7 @@ import com.qcadoo.mes.newstates.StateExecutorService;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.validators.ErrorMessage;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
@@ -59,6 +60,10 @@ public class StocktakingDetailsListeners {
                 position.setField(StocktakingPositionFields.QUANTITY, positionQuantity);
             }
             position = positionDD.save(position);
+            if (!position.isValid()) {
+                position.getGlobalErrors().forEach(view::addMessage);
+                return;
+            }
             BigDecimal positionStock = position.getDecimalField(StocktakingPositionFields.STOCK);
             if (positionStock.compareTo(positionQuantity) != 0) {
                 Entity differenceEntity = differenceDD.create();
