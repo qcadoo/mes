@@ -17,6 +17,7 @@ import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.LookupComponent;
 import com.qcadoo.view.api.components.lookup.FilterValueHolder;
 import com.qcadoo.view.constants.QcadooViewConstants;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -45,9 +46,6 @@ public class StocktakingPositionDetailsHooks {
 
         materialFlowResourcesService.fillUnitFieldValues(view);
         fillUnitField(view);
-
-        FieldComponent conversion = (FieldComponent) view.getComponentByReference(StocktakingPositionFields.CONVERSION);
-        conversion.setEnabled(stocktakingForm.getEntityId() == null);
 
         setStorageLocationLookupFilterValue(view, stocktakingPosition);
         setProductLookupCategoryFilterValue(view, stocktakingPosition);
@@ -119,6 +117,11 @@ public class StocktakingPositionDetailsHooks {
         Entity product = getProductDD().get(productId);
         String unit = product.getStringField(UNIT);
         String additionalUnit = product.getStringField(ProductFields.ADDITIONAL_UNIT);
+        FieldComponent conversion = (FieldComponent) view.getComponentByReference(StocktakingPositionFields.CONVERSION);
+        if (StringUtils.isEmpty(additionalUnit)) {
+            conversion.setEnabled(false);
+            conversion.requestComponentUpdateState();
+        }
         if (Objects.isNull(additionalUnit)) {
             additionalUnit = product.getStringField(ProductFields.UNIT);
         }

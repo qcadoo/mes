@@ -14,6 +14,7 @@ import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.LookupComponent;
 import com.qcadoo.view.constants.QcadooViewConstants;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -51,6 +52,26 @@ public class StocktakingPositionDetailsListeners {
     }
 
     public void onProductChange(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        LookupComponent productLookup = (LookupComponent) view.getComponentByReference(StocktakingPositionFields.PRODUCT);
+        Entity product = productLookup.getEntity();
+
+        if (Objects.nonNull(product)) {
+            String unit = product.getStringField(ProductFields.UNIT);
+            String additionalUnit = product.getStringField(ProductFields.ADDITIONAL_UNIT);
+
+            FieldComponent conversionField = (FieldComponent) view.getComponentByReference(StocktakingPositionFields.CONVERSION);
+
+            if (!StringUtils.isEmpty(additionalUnit)) {
+                String conversion = numberService
+                        .formatWithMinimumFractionDigits(materialFlowResourcesService.getConversion(product, unit, additionalUnit, null), 0);
+
+                conversionField.setFieldValue(conversion);
+                conversionField.setEnabled(true);
+                conversionField.requestComponentUpdateState();
+            }
+
+            quantityChange(view, null, null);
+        }
         LookupComponent batchLookup = (LookupComponent) view.getComponentByReference(StocktakingPositionFields.BATCH);
         batchLookup.setFieldValue(null);
         batchLookup.requestComponentUpdateState();
