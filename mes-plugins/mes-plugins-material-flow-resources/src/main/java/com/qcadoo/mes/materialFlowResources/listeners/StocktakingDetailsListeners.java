@@ -1,5 +1,8 @@
 package com.qcadoo.mes.materialFlowResources.listeners;
 
+import com.qcadoo.mes.basic.CalculationQuantityService;
+import com.qcadoo.mes.basic.constants.ProductFields;
+import com.qcadoo.mes.materialFlowResources.MaterialFlowResourcesService;
 import com.qcadoo.mes.materialFlowResources.constants.*;
 import com.qcadoo.mes.materialFlowResources.print.StocktakingReportService;
 import com.qcadoo.mes.materialFlowResources.states.StocktakingServiceMarker;
@@ -8,7 +11,6 @@ import com.qcadoo.mes.newstates.StateExecutorService;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.validators.ErrorMessage;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
@@ -19,6 +21,7 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class StocktakingDetailsListeners {
@@ -31,6 +34,12 @@ public class StocktakingDetailsListeners {
 
     @Autowired
     private StateExecutorService stateExecutorService;
+
+    @Autowired
+    private CalculationQuantityService calculationQuantityService;
+
+    @Autowired
+    private MaterialFlowResourcesService materialFlowResourcesService;
 
     public void changeState(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         stateExecutorService.changeState(StocktakingServiceMarker.class, view, args);
@@ -58,6 +67,7 @@ public class StocktakingDetailsListeners {
             if (positionQuantity == null) {
                 positionQuantity = BigDecimal.ZERO;
                 position.setField(StocktakingPositionFields.QUANTITY, positionQuantity);
+                position.setField(StocktakingPositionFields.QUANTITY_IN_ADDITIONAL_UNIT, positionQuantity);
             }
             position = positionDD.save(position);
             if (!position.isValid()) {
@@ -66,16 +76,29 @@ public class StocktakingDetailsListeners {
             }
             BigDecimal positionStock = position.getDecimalField(StocktakingPositionFields.STOCK);
             if (positionStock.compareTo(positionQuantity) != 0) {
+                Entity product = position.getBelongsToField(StocktakingPositionFields.PRODUCT);
+                BigDecimal positionConversion = position.getDecimalField(StocktakingPositionFields.CONVERSION);
                 Entity differenceEntity = differenceDD.create();
                 differenceEntity.setField(StocktakingDifferenceFields.STORAGE_LOCATION, position.getBelongsToField(StocktakingPositionFields.STORAGE_LOCATION));
                 differenceEntity.setField(StocktakingDifferenceFields.PALLET_NUMBER, position.getBelongsToField(StocktakingPositionFields.PALLET_NUMBER));
                 differenceEntity.setField(StocktakingDifferenceFields.TYPE_OF_LOAD_UNIT, position.getBelongsToField(StocktakingPositionFields.TYPE_OF_LOAD_UNIT));
-                differenceEntity.setField(StocktakingDifferenceFields.PRODUCT, position.getBelongsToField(StocktakingPositionFields.PRODUCT));
+                differenceEntity.setField(StocktakingDifferenceFields.PRODUCT, product);
                 differenceEntity.setField(StocktakingDifferenceFields.BATCH, position.getBelongsToField(StocktakingPositionFields.BATCH));
                 differenceEntity.setField(StocktakingDifferenceFields.EXPIRATION_DATE, position.getDateField(StocktakingPositionFields.EXPIRATION_DATE));
-                differenceEntity.setField(StocktakingDifferenceFields.CONVERSION, position.getDecimalField(StocktakingPositionFields.CONVERSION));
+                differenceEntity.setField(StocktakingDifferenceFields.CONVERSION, positionConversion);
                 BigDecimal difference = positionQuantity.subtract(positionStock);
                 differenceEntity.setField(StocktakingDifferenceFields.QUANTITY, difference);
+                String unit = product.getStringField(ProductFields.UNIT);
+                String additionalUnit = Optional.ofNullable(product.getStringField(ProductFields.ADDITIONAL_UNIT)).orElse(
+                        unit);
+                if(!unit.equals(additionalUnit)){
+                    BigDecimal conversion = materialFlowResourcesService.getConversion(product, unit, additionalUnit, positionConversion);
+                    BigDecimal differenceInAdditionalQuantity = calculationQuantityService.calculateAdditionalQuantity(difference,
+                            conversion, additionalUnit);
+                    differenceEntity.setField(StocktakingDifferenceFields.QUANTITY_IN_ADDITIONAL_UNIT, differenceInAdditionalQuantity);
+                } else {
+                    differenceEntity.setField(StocktakingDifferenceFields.QUANTITY_IN_ADDITIONAL_UNIT, difference);
+                }
                 if (difference.compareTo(BigDecimal.ZERO) > 0) {
                     differenceEntity.setField(StocktakingDifferenceFields.TYPE, StocktakingDifferenceType.SURPLUS.getStringValue());
                 } else {

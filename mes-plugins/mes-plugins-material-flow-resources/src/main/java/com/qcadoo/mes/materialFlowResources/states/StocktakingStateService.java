@@ -1,6 +1,7 @@
 package com.qcadoo.mes.materialFlowResources.states;
 
 import com.qcadoo.localization.api.TranslationService;
+import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.materialFlowResources.constants.*;
 import com.qcadoo.mes.materialFlowResources.print.StocktakingReportService;
 import com.qcadoo.mes.materialFlowResources.print.helper.Resource;
@@ -26,6 +27,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -139,8 +141,11 @@ public class StocktakingStateService extends BasicStateService implements Stockt
             for (Entity difference : entity.getHasManyField(StocktakingFields.DIFFERENCES).stream()
                     .filter(e -> StocktakingDifferenceType.SHORTAGE.getStringValue().equals(e.getStringField(StocktakingDifferenceFields.TYPE)))
                     .collect(Collectors.toList())) {
-                internalOutboundBuilder.addPosition(difference.getBelongsToField(StocktakingDifferenceFields.PRODUCT),
-                        difference.getDecimalField(StocktakingDifferenceFields.QUANTITY).abs(), null, null,
+                Entity product = difference.getBelongsToField(StocktakingDifferenceFields.PRODUCT);
+                internalOutboundBuilder.addPosition(product,
+                        difference.getDecimalField(StocktakingDifferenceFields.QUANTITY).abs(),
+                        difference.getDecimalField(StocktakingDifferenceFields.QUANTITY_IN_ADDITIONAL_UNIT),
+                        Optional.ofNullable(product.getStringField(ProductFields.ADDITIONAL_UNIT)).orElse(product.getStringField(ProductFields.UNIT)),
                         difference.getDecimalField(StocktakingDifferenceFields.CONVERSION), null,
                         difference.getBelongsToField(StocktakingDifferenceFields.BATCH), null,
                         difference.getDateField(StocktakingDifferenceFields.EXPIRATION_DATE), null,
@@ -163,8 +168,11 @@ public class StocktakingStateService extends BasicStateService implements Stockt
             for (Entity difference : entity.getHasManyField(StocktakingFields.DIFFERENCES).stream()
                     .filter(e -> StocktakingDifferenceType.SURPLUS.getStringValue().equals(e.getStringField(StocktakingDifferenceFields.TYPE)))
                     .collect(Collectors.toList())) {
-                internalInboundBuilder.addPosition(difference.getBelongsToField(StocktakingDifferenceFields.PRODUCT),
-                        difference.getDecimalField(StocktakingDifferenceFields.QUANTITY), null, null,
+                Entity product = difference.getBelongsToField(StocktakingDifferenceFields.PRODUCT);
+                internalInboundBuilder.addPosition(product,
+                        difference.getDecimalField(StocktakingDifferenceFields.QUANTITY),
+                        difference.getDecimalField(StocktakingDifferenceFields.QUANTITY_IN_ADDITIONAL_UNIT),
+                        Optional.ofNullable(product.getStringField(ProductFields.ADDITIONAL_UNIT)).orElse(product.getStringField(ProductFields.UNIT)),
                         difference.getDecimalField(StocktakingDifferenceFields.CONVERSION), null,
                         difference.getBelongsToField(StocktakingDifferenceFields.BATCH), null,
                         difference.getDateField(StocktakingDifferenceFields.EXPIRATION_DATE), null,

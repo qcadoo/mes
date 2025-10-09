@@ -25,6 +25,7 @@ package com.qcadoo.mes.materialFlowResources;
 
 import com.google.common.collect.Maps;
 import com.qcadoo.mes.basic.constants.BasicConstants;
+import com.qcadoo.mes.basic.constants.UnitConversionItemFieldsB;
 import com.qcadoo.mes.basic.util.CurrencyService;
 import com.qcadoo.mes.materialFlow.constants.MaterialFlowConstants;
 import com.qcadoo.mes.materialFlowResources.constants.MaterialFlowResourcesConstants;
@@ -35,6 +36,8 @@ import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
 import com.qcadoo.model.api.search.*;
+import com.qcadoo.model.api.units.PossibleUnitConversions;
+import com.qcadoo.model.api.units.UnitConversionService;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -67,6 +70,9 @@ public class MaterialFlowResourcesServiceImpl implements MaterialFlowResourcesSe
     private CurrencyService currencyService;
     @Autowired
     private NamedParameterJdbcTemplate jdbcTemplate;
+
+    @Autowired
+    private UnitConversionService unitConversionService;
 
     @Override
     public List<Entity> getWarehouseLocationsFromDB() {
@@ -257,6 +263,25 @@ public class MaterialFlowResourcesServiceImpl implements MaterialFlowResourcesSe
         } catch (EmptyResultDataAccessException e) {
             return null;
         }
+    }
+
+    public BigDecimal getConversion(final Entity product, String unit, String additionalUnit, BigDecimal dbConversion) {
+        BigDecimal conversion = BigDecimal.ONE;
+        if (!unit.equals(additionalUnit)) {
+            PossibleUnitConversions unitConversions = unitConversionService.getPossibleConversions(unit,
+                    searchCriteriaBuilder -> searchCriteriaBuilder
+                            .add(SearchRestrictions.belongsTo(UnitConversionItemFieldsB.PRODUCT, product)));
+
+            if (unitConversions.isDefinedFor(additionalUnit)) {
+                conversion = unitConversions.asUnitToConversionMap().get(additionalUnit);
+            } else {
+                conversion = BigDecimal.ZERO;
+            }
+            if (Objects.nonNull(dbConversion) && dbConversion.compareTo(numberService.setScaleWithDefaultMathContext(conversion)) != 0) {
+                conversion = dbConversion;
+            }
+        }
+        return conversion;
     }
 
     private DataDefinition getProductDD() {

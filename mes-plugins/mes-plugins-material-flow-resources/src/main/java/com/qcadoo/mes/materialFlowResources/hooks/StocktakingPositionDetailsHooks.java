@@ -2,6 +2,7 @@ package com.qcadoo.mes.materialFlowResources.hooks;
 
 import com.qcadoo.mes.advancedGenealogy.criteriaModifier.BatchCriteriaModifier;
 import com.qcadoo.mes.basic.constants.BasicConstants;
+import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.materialFlowResources.MaterialFlowResourcesService;
 import com.qcadoo.mes.materialFlowResources.constants.StocktakingFields;
 import com.qcadoo.mes.materialFlowResources.constants.StocktakingPositionFields;
@@ -44,6 +45,9 @@ public class StocktakingPositionDetailsHooks {
 
         materialFlowResourcesService.fillUnitFieldValues(view);
         fillUnitField(view);
+
+        FieldComponent conversion = (FieldComponent) view.getComponentByReference(StocktakingPositionFields.CONVERSION);
+        conversion.setEnabled(stocktakingForm.getEntityId() == null);
 
         setStorageLocationLookupFilterValue(view, stocktakingPosition);
         setProductLookupCategoryFilterValue(view, stocktakingPosition);
@@ -104,6 +108,7 @@ public class StocktakingPositionDetailsHooks {
 
     private void fillUnitField(final ViewDefinitionState view) {
         FieldComponent stockUnitField = (FieldComponent) view.getComponentByReference("stockUNIT");
+        FieldComponent additionalUnitField = (FieldComponent) view.getComponentByReference(ProductFields.ADDITIONAL_UNIT);
 
         Long productId = (Long) view.getComponentByReference(StocktakingPositionFields.PRODUCT).getFieldValue();
 
@@ -113,7 +118,12 @@ public class StocktakingPositionDetailsHooks {
 
         Entity product = getProductDD().get(productId);
         String unit = product.getStringField(UNIT);
-
+        String additionalUnit = product.getStringField(ProductFields.ADDITIONAL_UNIT);
+        if (Objects.isNull(additionalUnit)) {
+            additionalUnit = product.getStringField(ProductFields.UNIT);
+        }
+        additionalUnitField.setFieldValue(additionalUnit);
+        additionalUnitField.requestComponentUpdateState();
         stockUnitField.setFieldValue(unit);
         stockUnitField.requestComponentUpdateState();
     }

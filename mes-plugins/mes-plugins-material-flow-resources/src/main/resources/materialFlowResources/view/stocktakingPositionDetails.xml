@@ -37,7 +37,7 @@
         <windowTab name="mainTab" reference="mainTab">
             <component type="form" name="form" reference="form">
                 <component type="gridLayout" name="stocktakingGridLayout"
-                           hasBorders="false" columns="7" rows="9">
+                           hasBorders="false" columns="7" rows="10">
                     <layoutElement column="1" row="1" width="6">
                         <component type="lookup" name="storageLocation" field="storageLocation"
                                    reference="storageLocation">
@@ -128,6 +128,10 @@
                         <component type="input" name="quantity" field="quantity"
                                    reference="quantity">
                             <option type="alignment" value="right"/>
+
+                            <listener event="onInputChange"
+                                      class="com.qcadoo.mes.materialFlowResources.listeners.StocktakingPositionDetailsListeners"
+                                      method="quantityChange"/>
                         </component>
                     </layoutElement>
                     <layoutElement column="7" row="7" width="1">
@@ -137,18 +141,38 @@
                         </component>
                     </layoutElement>
                     <layoutElement column="1" row="8" width="6">
-                        <component type="input" name="conversion" field="conversion"
-                                   reference="conversion">
+                        <component type="input" name="quantityInAdditionalUnit" field="quantityInAdditionalUnit"
+                                   reference="quantityInAdditionalUnit">
                             <option type="alignment" value="right"/>
+
+                            <listener event="onInputChange"
+                                      class="com.qcadoo.mes.materialFlowResources.listeners.StocktakingPositionDetailsListeners"
+                                      method="additionalQuantityChange"/>
+                        </component>
+                    </layoutElement>
+                    <layoutElement column="7" row="8" width="1">
+                        <component type="input" name="additionalUnit" reference="additionalUnit"
+                                   defaultEnabled="false" hasLabel="false">
+                            <option type="textRepresentationOnDisabled" value="true"/>
                         </component>
                     </layoutElement>
                     <layoutElement column="1" row="9" width="6">
+                        <component type="input" name="conversion" field="conversion"
+                                   reference="conversion">
+                            <option type="alignment" value="right"/>
+
+                            <listener event="onInputChange"
+                                      class="com.qcadoo.mes.materialFlowResources.listeners.StocktakingPositionDetailsListeners"
+                                      method="quantityChange"/>
+                        </component>
+                    </layoutElement>
+                    <layoutElement column="1" row="10" width="6">
                         <component type="input" name="stock" field="stock"
                                    reference="stock" defaultEnabled="never">
                             <option type="alignment" value="right"/>
                         </component>
                     </layoutElement>
-                    <layoutElement column="7" row="9" width="1">
+                    <layoutElement column="7" row="10" width="1">
                         <component type="input" name="stockUNIT" reference="stockUNIT"
                                    defaultEnabled="false" hasLabel="false">
                             <option type="textRepresentationOnDisabled" value="true"/>

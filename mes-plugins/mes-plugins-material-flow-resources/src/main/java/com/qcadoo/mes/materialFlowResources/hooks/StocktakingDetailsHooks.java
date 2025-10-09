@@ -6,7 +6,6 @@ import com.qcadoo.mes.materialFlowResources.constants.StocktakingFields;
 import com.qcadoo.mes.materialFlowResources.constants.StorageLocationMode;
 import com.qcadoo.mes.materialFlowResources.states.constants.StocktakingStateStringValues;
 import com.qcadoo.model.api.Entity;
-import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;

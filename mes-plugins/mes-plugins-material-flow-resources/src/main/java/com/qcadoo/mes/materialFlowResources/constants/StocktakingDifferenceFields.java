@@ -20,6 +20,8 @@ public final class StocktakingDifferenceFields {
 
     public static final String QUANTITY = "quantity";
 
+    public static final String QUANTITY_IN_ADDITIONAL_UNIT = "quantityInAdditionalUnit";
+
     public static final String TYPE = "type";
 
     public static final String CONVERSION = "conversion";

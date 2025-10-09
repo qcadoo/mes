@@ -16,6 +16,10 @@
             <validatesUnscaledValue max="9"/>
             <validatesScale max="5"/>
         </decimal>
+        <decimal name="quantityInAdditionalUnit" required="true">
+            <validatesUnscaledValue max="9"/>
+            <validatesScale max="5"/>
+        </decimal>
         <decimal name="conversion" default="1"/>
     </fields>
 
