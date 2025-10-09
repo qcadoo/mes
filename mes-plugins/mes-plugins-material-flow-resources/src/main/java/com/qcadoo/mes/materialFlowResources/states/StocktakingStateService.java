@@ -86,7 +86,7 @@ public class StocktakingStateService extends BasicStateService implements Stockt
                         .getStringField(StocktakingFields.CATEGORY), true);
                 boolean positionStockTooBig = false;
                 for (Resource resource : resources) {
-                    if (resource.getQuantity().precision() > 9) {
+                    if (resource.getQuantity().precision() > 14) {
                         entity.addGlobalError("materialFlowResources.error.stocktakingPosition.stock.invalidPrecision", resource.getProductNumber());
                         positionStockTooBig = true;
                         break;

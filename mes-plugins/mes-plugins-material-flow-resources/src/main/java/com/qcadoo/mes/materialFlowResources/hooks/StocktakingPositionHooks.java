@@ -24,7 +24,7 @@ public class StocktakingPositionHooks {
     public void onSave(final DataDefinition stocktakingPositionDD, final Entity stocktakingPosition) {
         BigDecimal stock = findStock(stocktakingPosition);
         stocktakingPosition.setField(StocktakingPositionFields.STOCK, stock);
-        if (stock.precision() > 9) {
+        if (stock.precision() > 14) {
             stocktakingPosition.addGlobalError("materialFlowResources.error.stocktakingPosition.stock.invalidPrecision", stocktakingPosition.getBelongsToField(StocktakingPositionFields.PRODUCT).getStringField(ProductFields.NUMBER));
         }
     }
