@@ -21,6 +21,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -45,7 +46,7 @@ public class StocktakingPositionDetailsHooks {
         Entity stocktakingPosition = stocktakingForm.getPersistedEntityWithIncludedFormValues();
 
         materialFlowResourcesService.fillUnitFieldValues(view);
-        fillUnitField(view);
+        fillUnitField(view, stocktakingForm);
 
         setStorageLocationLookupFilterValue(view, stocktakingPosition);
         setProductLookupCategoryFilterValue(view, stocktakingPosition);
@@ -104,7 +105,7 @@ public class StocktakingPositionDetailsHooks {
         }
     }
 
-    private void fillUnitField(final ViewDefinitionState view) {
+    private void fillUnitField(final ViewDefinitionState view, FormComponent stocktakingForm) {
         FieldComponent stockUnitField = (FieldComponent) view.getComponentByReference("stockUNIT");
         FieldComponent additionalUnitField = (FieldComponent) view.getComponentByReference(ProductFields.ADDITIONAL_UNIT);
 
@@ -119,6 +120,9 @@ public class StocktakingPositionDetailsHooks {
         String additionalUnit = product.getStringField(ProductFields.ADDITIONAL_UNIT);
         FieldComponent conversion = (FieldComponent) view.getComponentByReference(StocktakingPositionFields.CONVERSION);
         if (StringUtils.isEmpty(additionalUnit)) {
+            conversion.setFieldValue(BigDecimal.ONE);
+        }
+        if (StringUtils.isEmpty(additionalUnit) || stocktakingForm.getEntityId() != null) {
             conversion.setEnabled(false);
             conversion.requestComponentUpdateState();
         }

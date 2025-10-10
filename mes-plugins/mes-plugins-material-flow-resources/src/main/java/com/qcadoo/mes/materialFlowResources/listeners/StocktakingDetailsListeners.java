@@ -49,7 +49,21 @@ public class StocktakingDetailsListeners {
         FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         Entity entity = form.getPersistedEntityWithIncludedFormValues();
         for (Entity position : entity.getHasManyField(StocktakingFields.POSITIONS)) {
-            position.setField(StocktakingPositionFields.QUANTITY, position.getDecimalField(StocktakingPositionFields.STOCK));
+            BigDecimal stock = position.getDecimalField(StocktakingPositionFields.STOCK);
+            position.setField(StocktakingPositionFields.QUANTITY, stock);
+            Entity product = position.getBelongsToField(StocktakingPositionFields.PRODUCT);
+            BigDecimal positionConversion = position.getDecimalField(StocktakingPositionFields.CONVERSION);
+            String unit = product.getStringField(ProductFields.UNIT);
+            String additionalUnit = Optional.ofNullable(product.getStringField(ProductFields.ADDITIONAL_UNIT)).orElse(
+                    unit);
+            if (!unit.equals(additionalUnit)) {
+                BigDecimal conversion = materialFlowResourcesService.getConversion(product, unit, additionalUnit, positionConversion);
+                BigDecimal stockInAdditionalQuantity = calculationQuantityService.calculateAdditionalQuantity(stock,
+                        conversion, additionalUnit);
+                position.setField(StocktakingPositionFields.QUANTITY_IN_ADDITIONAL_UNIT, stockInAdditionalQuantity);
+            } else {
+                position.setField(StocktakingPositionFields.QUANTITY_IN_ADDITIONAL_UNIT, stock);
+            }
             position.getDataDefinition().fastSave(position);
         }
     }
@@ -91,7 +105,7 @@ public class StocktakingDetailsListeners {
                 String unit = product.getStringField(ProductFields.UNIT);
                 String additionalUnit = Optional.ofNullable(product.getStringField(ProductFields.ADDITIONAL_UNIT)).orElse(
                         unit);
-                if(!unit.equals(additionalUnit)){
+                if (!unit.equals(additionalUnit)) {
                     BigDecimal conversion = materialFlowResourcesService.getConversion(product, unit, additionalUnit, positionConversion);
                     BigDecimal differenceInAdditionalQuantity = calculationQuantityService.calculateAdditionalQuantity(difference,
                             conversion, additionalUnit);
