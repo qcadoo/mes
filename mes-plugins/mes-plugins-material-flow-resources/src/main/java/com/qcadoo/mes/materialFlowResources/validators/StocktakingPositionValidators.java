@@ -2,6 +2,7 @@ package com.qcadoo.mes.materialFlowResources.validators;
 
 import com.qcadoo.mes.materialFlowResources.constants.StocktakingFields;
 import com.qcadoo.mes.materialFlowResources.constants.StocktakingPositionFields;
+import com.qcadoo.mes.materialFlowResources.constants.StorageLocationFields;
 import com.qcadoo.mes.materialFlowResources.constants.StorageLocationMode;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
@@ -13,6 +14,7 @@ import java.math.BigDecimal;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 @Service
 public class StocktakingPositionValidators {
@@ -31,6 +33,20 @@ public class StocktakingPositionValidators {
                 stocktakingPosition.getBelongsToField(StocktakingPositionFields.STORAGE_LOCATION) == null) {
             stocktakingPosition.addError(stocktakingPositionDD.getField(StocktakingPositionFields.STORAGE_LOCATION), "qcadooView.validate.field.error.missing");
             return false;
+        }
+
+        Entity storageLocation = stocktakingPosition.getBelongsToField(StocktakingPositionFields.STORAGE_LOCATION);
+        Entity palletNumber = stocktakingPosition.getBelongsToField(StocktakingPositionFields.PALLET_NUMBER);
+
+        if (Objects.isNull(storageLocation) && Objects.nonNull(palletNumber)) {
+            stocktakingPosition.addError(stocktakingPositionDD.getField(StocktakingPositionFields.STORAGE_LOCATION), "qcadooView.validate.field.error.missing");
+            return false;
+        } else if (Objects.nonNull(storageLocation)) {
+            boolean placeStorageLocation = storageLocation.getBooleanField(StorageLocationFields.PLACE_STORAGE_LOCATION);
+            if (placeStorageLocation && Objects.isNull(palletNumber)) {
+                stocktakingPosition.addError(stocktakingPositionDD.getField(StocktakingPositionFields.PALLET_NUMBER), "qcadooView.validate.field.error.missing");
+                return false;
+            }
         }
         return true;
     }
