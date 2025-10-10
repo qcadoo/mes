@@ -8,6 +8,7 @@ import com.qcadoo.report.api.ReportService;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -26,13 +27,13 @@ public class StocktakingReportService {
     @Autowired
     private ReportService reportService;
 
-    public void generateReport(final ComponentState state, final Entity stocktakingReport) throws IOException, DocumentException {
+    public void generateReport(final Entity stocktakingReport) throws IOException, DocumentException {
         stocktakingPdfReportService.generateDocument(fileService.updateReportFileName(stocktakingReport,
-                GENERATION_DATE, "materialFlowResources.stocktaking.report.fileName"), state.getLocale());
+                GENERATION_DATE, "materialFlowResources.stocktaking.report.fileName"), LocaleContextHolder.getLocale());
     }
 
     public void printReport(final ViewDefinitionState view, final ComponentState state) {
-        reportService.printGeneratedReport(view, state, new String[] { "pdf", MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER,
-                MaterialFlowResourcesConstants.MODEL_STOCKTAKING });
+        reportService.printGeneratedReport(view, state, new String[]{"pdf", MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER,
+                MaterialFlowResourcesConstants.MODEL_STOCKTAKING});
     }
 }

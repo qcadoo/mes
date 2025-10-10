@@ -34,66 +34,43 @@
             <template name="standardFormTemplate"/>
             <group name="generate">
                 <bigButton name="generate" icon="generateIcon24.png"
-                           action="#{form}.fireEvent(generate);" state="disabled">
-                    <script>
-                        <![CDATA[
-							#{form}.addOnChangeListener({
-								onSetValue: function(value) {
-									if (! value || ! value.content) {
-										return;
-									}
-									if (! value.content.entityId) {
-										this.disable();
-									} else {
-										this.enable();
-									}
-								}
-							});
-						]]>
-                    </script>
-                </bigButton>
+                           action="#{form}.fireEvent(changeState,02inProgress);" state="disabled"/>
                 <bigButton name="copyFromStock" icon="copyIcon24.png"
-                           action="#{form}.fireEvent(copyFromStock);" state="enabled">
-                    <script>
-                        <![CDATA[
-							#{form}.addOnChangeListener({
-								onSetValue: function(value) {
-									if (!value || !value.content) {
-										return;
-									}
-									if (!value.content.entityId) {
-										this.disable();
-									} else {
-										this.enable();
-									}
-								}
-							});
-						]]>
-                    </script>
-                </bigButton>
+                           action="#{form}.fireEvent(copyFromStock);" state="disabled"/>
                 <bigButton name="settle" icon="iconProducts24.png"
-                           action="#{form}.fireEvent(settle);" state="enabled">
-                    <script>
-                        <![CDATA[
-							#{form}.addOnChangeListener({
-								onSetValue: function(value) {
-									if (!value || !value.content) {
-										return;
-									}
-									if (!value.content.entityId) {
-										this.disable();
-									} else {
-										this.enable();
-									}
-								}
-							});
-						]]>
-                    </script>
-                </bigButton>
+                           action="#{form}.fireEvent(settle,03finalized);" state="disabled"/>
             </group>
             <group name="print">
                 <bigButton name="print" icon="pdfIcon24.png"
                            action="#{form}.fireEvent(print);" state="disabled"/>
+            </group>
+            <group name="state">
+                <smallButton name="reject" icon="deleteIcon16.png" state="disabled">
+                    <script>
+                        <![CDATA[
+							this.addOnChangeListener({
+								onClick: function() {
+								    if (window.confirm("#{translate(materialFlowResources.stocktakingDetails.window.ribbon.state.rejectStocktaking.confirm)}")) {
+                                        #{form}.performEvent('changeState', ["05rejected"]);
+                                    }
+								}
+							});
+						]]>
+                    </script>
+                </smallButton>
+                <smallButton name="finish" icon="acceptIcon16.png" state="disabled">
+                    <script>
+                        <![CDATA[
+							this.addOnChangeListener({
+								onClick: function() {
+								    if (window.confirm("#{translate(materialFlowResources.stocktakingDetails.window.ribbon.state.finishStocktaking.confirm)}")) {
+                                        #{form}.performEvent('changeState', ["04finished"]);
+                                    }
+								}
+							});
+						]]>
+                    </script>
+                </smallButton>
             </group>
         </ribbon>
 
@@ -101,59 +78,83 @@
             <component type="form" name="form" reference="form">
                 <script>
                     <![CDATA[
-                        var generatedRibbonItem =  #{window}.getRibbonItem("generate.generate");
+                        var generateRibbonItem =  #{window}.getRibbonItem("generate.generate");
+                        var copyFromStockRibbonItem =  #{window}.getRibbonItem("generate.copyFromStock");
+                        var settleRibbonItem =  #{window}.getRibbonItem("generate.settle");
                         var printRibbonItem = #{window}.getRibbonItem("print.print");
+                        var rejectRibbonItem = #{window}.getRibbonItem("state.reject");
+                        var finishRibbonItem = #{window}.getRibbonItem("state.finish");
                         var saveRibbonItem = #{window}.getRibbonItem("actions.save");
                         var saveBackRibbonItem = #{window}.getRibbonItem("actions.saveBack");
                         var saveNewRibbonItem = #{window}.getRibbonItem("actions.saveNew");
-                        var copyRibbonItem = #{window}.getRibbonItem("actions.copy");
                         var cancelRibbonItem = #{window}.getRibbonItem("actions.cancel");
-
-                        var entityExists = false;
+                        var deleteRibbonItem = #{window}.getRibbonItem("actions.delete");
 
                         this.addOnChangeListener({
                             onSetValue: function(value) {
-                                if (!value || !value.content) {
+                                if (!value || !value.content || !value.content.entityId) {
+                                    generateRibbonItem.disable();
+                                    rejectRibbonItem.disable();
                                     return;
                                 }
-                                if (value.content.entityId) {
-                                    entityExists = true;
-                                } else {
-                                    entityExists = false;
-                                }
-                                updateRibbon();
-                            }
-                        });
-                        #{form}.addOnChangeListener({
-                            onSetValue: function(value) {
-                                updateRibbon();
-                            }
-                        });
 
-                        function updateRibbon() {
-                            if (entityExists) {
-                                var isGeneratedCheckboxValue = #{generated}.getValue();
-                                generatedRibbonItem.enable();
-                                saveRibbonItem.disable();
-                                if (isGeneratedCheckboxValue && isGeneratedCheckboxValue.content.value == "1") {
-                                    printRibbonItem.enable();
-                                    generatedRibbonItem.disable();
-                                    saveRibbonItem.disable("#{translate(materialFlowResources.stocktakingDetails.ribbon.message.alreadyGenerated)}");
-                                    saveBackRibbonItem.disable("#{translate(materialFlowResources.stocktakingDetails.ribbon.message.alreadyGenerated)}");
-                                    saveNewRibbonItem.disable("#{translate(materialFlowResources.stocktakingDetails.ribbon.message.alreadyGenerated)}");
-                                    cancelRibbonItem.disable("#{translate(materialFlowResources.stocktakingDetails.ribbon.message.alreadyGenerated)}");
-                                } else {
-                                    printRibbonItem.disable("#{translate(materialFlowResources.stocktakingDetails.ribbon.message.notGenerated)}");
-                                    saveRibbonItem.enable();
-                                    cancelRibbonItem.enable()
+                                var state = #{state}.getValue().content.value;
+                                if (!state) {
+                                    return;
                                 }
-                            } else {
-                                copyRibbonItem.disable("#{translate(materialFlowResources.stocktakingDetails.ribbon.message.notGenerated)}");
-                                printRibbonItem.disable("#{translate(materialFlowResources.stocktakingDetails.ribbon.message.notGenerated)}");
-                                saveRibbonItem.enable();
-                                cancelRibbonItem.enable()
+
+                                if (state != "01draft") {
+                                    saveRibbonItem.disable();
+                                    saveBackRibbonItem.disable();
+                                    saveNewRibbonItem.disable();
+                                    cancelRibbonItem.disable();
+                                    deleteRibbonItem.disable();
+                                } else {
+                                    saveRibbonItem.enable();
+                                    saveBackRibbonItem.enable();
+                                    saveNewRibbonItem.enable();
+                                    cancelRibbonItem.enable();
+                                    deleteRibbonItem.enable();
+                                }
+
+                                if (state == "01draft") {
+                                    generateRibbonItem.enable();
+                                    copyFromStockRibbonItem.disable();
+                                    settleRibbonItem.disable("#{translate(materialFlowResources.stocktakingDetails.ribbon.message.settle)}");
+                                    printRibbonItem.disable();
+                                    rejectRibbonItem.enable();
+                                    finishRibbonItem.disable("#{translate(materialFlowResources.stocktakingDetails.ribbon.message.finish)}");
+                                } else if (state == "02inProgress") {
+                                    generateRibbonItem.disable();
+                                    copyFromStockRibbonItem.enable();
+                                    settleRibbonItem.enable("#{translate(materialFlowResources.stocktakingDetails.ribbon.message.settle)}");
+                                    printRibbonItem.enable();
+                                    rejectRibbonItem.enable();
+                                    finishRibbonItem.disable("#{translate(materialFlowResources.stocktakingDetails.ribbon.message.finish)}");
+                                } else if (state == "03finalized") {
+                                    generateRibbonItem.disable();
+                                    copyFromStockRibbonItem.disable();
+                                    settleRibbonItem.enable("#{translate(materialFlowResources.stocktakingDetails.ribbon.message.settle)}");
+                                    printRibbonItem.enable();
+                                    rejectRibbonItem.enable();
+                                    finishRibbonItem.enable("#{translate(materialFlowResources.stocktakingDetails.ribbon.message.finish)}");
+                                } else if (state == "04finished") {
+                                    generateRibbonItem.disable();
+                                    copyFromStockRibbonItem.disable();
+                                    settleRibbonItem.disable("#{translate(materialFlowResources.stocktakingDetails.ribbon.message.settle)}");
+                                    printRibbonItem.enable();
+                                    rejectRibbonItem.disable();
+                                    finishRibbonItem.disable("#{translate(materialFlowResources.stocktakingDetails.ribbon.message.finish)}");
+                                } else {
+                                    generateRibbonItem.disable();
+                                    copyFromStockRibbonItem.disable();
+                                    settleRibbonItem.disable("#{translate(materialFlowResources.stocktakingDetails.ribbon.message.settle)}");
+                                    printRibbonItem.enable();
+                                    rejectRibbonItem.disable();
+                                    finishRibbonItem.disable("#{translate(materialFlowResources.stocktakingDetails.ribbon.message.finish)}");
+                                }
                             }
-                        }
+                        });
 					]]>
                 </script>
 
@@ -161,8 +162,6 @@
                            hasBorders="false" columns="2" rows="10">
                     <layoutElement row="1" column="1">
                         <component type="hidden" name="wms" field="wms" reference="wms"/>
-                        <component type="checkbox" name="generated" field="generated"
-                                   reference="generated" defaultEnabled="false" defaultVisible="false"/>
                         <component type="input" name="number" reference="number" field="#{form}.number"
                                    defaultEnabled="never"/>
                     </layoutElement>
@@ -172,6 +171,9 @@
                     </layoutElement>
                     <layoutElement row="3" column="1">
                         <component type="select" name="category" reference="category" field="#{form}.category"/>
+                    </layoutElement>
+                    <layoutElement row="4" column="1">
+                        <component type="select" name="state" field="#{form}.state" reference="state" defaultEnabled="never"/>
                     </layoutElement>
                     <layoutElement column="2" row="1">
                         <component type="lookup" name="location" field="location"
@@ -192,9 +194,6 @@
                     <layoutElement row="2" column="2">
                         <component type="select" name="storageLocationMode" reference="storageLocationMode"
                                    field="#{form}.storageLocationMode">
-                            <listener event="onSelectedEntityChange"
-                                      class="com.qcadoo.mes.materialFlowResources.hooks.StocktakingDetailsHooks"
-                                      method="changeStorageLocationsGridEnabled"/>
                         </component>
                     </layoutElement>
                     <layoutElement column="2" row="3" height="2">
@@ -238,9 +237,6 @@
                 <option type="header" value="true"/>
                 <option type="expression" value="#number"/>
 
-                <listener event="generate"
-                          class="com.qcadoo.mes.materialFlowResources.listeners.StocktakingDetailsListeners"
-                          method="generate"/>
                 <listener event="copyFromStock"
                           class="com.qcadoo.mes.materialFlowResources.listeners.StocktakingDetailsListeners"
                           method="copyFromStock"/>
@@ -250,6 +246,9 @@
                 <listener event="print"
                           class="com.qcadoo.mes.materialFlowResources.listeners.StocktakingDetailsListeners"
                           method="print"/>
+                <listener event="changeState"
+                          class="com.qcadoo.mes.materialFlowResources.listeners.StocktakingDetailsListeners"
+                          method="changeState"/>
             </component>
         </windowTab>
 
@@ -265,15 +264,18 @@
                 <option type="column" name="batch" fields="batch" expression="#batch['number']" width="30"/>
                 <option type="column" name="expirationDate" fields="expirationDate"/>
                 <option type="column" name="unit" fields="product" expression="#product['unit']" width="30"/>
+                <option type="column" name="additionalUnit" fields="product" expression="#product['additionalUnit']" width="30"/>
+                <option type="column" name="conversion" fields="conversion" width="80"/>
                 <option type="column" name="stock" fields="stock" width="80"/>
                 <option type="column" name="quantity" fields="quantity" width="80"/>
+                <option type="column" name="quantityInAdditionalUnit" fields="quantityInAdditionalUnit" width="80"/>
 
                 <option type="order" column="storageLocation" direction="asc"/>
 
                 <option type="searchable"
-                        value="storageLocation,palletNumber,typeOfLoadUnit,productNumber,productName,batch,expirationDate,unit,stock,quantity"/>
+                        value="storageLocation,palletNumber,typeOfLoadUnit,productNumber,productName,batch,expirationDate,unit,additionalUnit,stock,quantity,quantityInAdditionalUnit,conversion"/>
                 <option type="orderable"
-                        value="storageLocation,palletNumber,typeOfLoadUnit,productNumber,productName,batch,expirationDate,unit,stock,quantity"/>
+                        value="storageLocation,palletNumber,typeOfLoadUnit,productNumber,productName,batch,expirationDate,unit,additionalUnit,stock,quantity,quantityInAdditionalUnit,conversion"/>
 
                 <option type="correspondingView" value="materialFlowResources/stocktakingPositionDetails"/>
                 <option type="correspondingComponent" value="form"/>
@@ -294,20 +296,23 @@
                 <option type="column" name="palletNumber" fields="palletNumber" expression="#palletNumber['number']" width="30"/>
                 <option type="column" name="typeOfLoadUnit" fields="typeOfLoadUnit" expression="#typeOfLoadUnit['name']"
                         width="50"/>
-                <option type="column" name="productNumber" fields="product" expression="#product['number']" link="true"/>
-                <option type="column" name="productName" fields="product" expression="#product['name']" link="true"/>
+                <option type="column" name="productNumber" fields="product" expression="#product['number']"/>
+                <option type="column" name="productName" fields="product" expression="#product['name']"/>
                 <option type="column" name="batch" fields="batch" expression="#batch['number']" width="30"/>
                 <option type="column" name="expirationDate" fields="expirationDate"/>
                 <option type="column" name="type" fields="type"/>
                 <option type="column" name="quantity" fields="quantity" width="80"/>
+                <option type="column" name="quantityInAdditionalUnit" fields="quantityInAdditionalUnit" width="80"/>
                 <option type="column" name="unit" fields="product" expression="#product['unit']" width="30"/>
+                <option type="column" name="additionalUnit" fields="product" expression="#product['additionalUnit']" width="30"/>
+                <option type="column" name="conversion" fields="conversion" width="80"/>
 
                 <option type="order" column="storageLocation" direction="asc"/>
 
                 <option type="searchable"
-                        value="storageLocation,palletNumber,typeOfLoadUnit,productNumber,productName,batch,expirationDate,type,quantity,unit"/>
+                        value="storageLocation,palletNumber,typeOfLoadUnit,productNumber,productName,batch,expirationDate,type,quantity,quantityInAdditionalUnit,conversion,unit,additionalUnit"/>
                 <option type="orderable"
-                        value="storageLocation,palletNumber,typeOfLoadUnit,productNumber,productName,batch,expirationDate,type,quantity,unit"/>
+                        value="storageLocation,palletNumber,typeOfLoadUnit,productNumber,productName,batch,expirationDate,type,quantity,quantityInAdditionalUnit,conversion,unit,additionalUnit"/>
 
                 <option type="fullscreen" value="true"/>
                 <option type="fixedHeight" value="true"/>

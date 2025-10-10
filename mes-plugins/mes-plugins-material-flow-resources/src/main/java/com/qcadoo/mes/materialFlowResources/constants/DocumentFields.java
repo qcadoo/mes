@@ -73,6 +73,8 @@ public final class DocumentFields {
 
     public static final String STATE_CHANGES = "stateChanges";
 
+    public static final String STOCKTAKING = "stocktaking";
+
     public static final String INVOICE_NUMBER = "invoiceNumber";
 
 }

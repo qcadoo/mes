@@ -4,7 +4,6 @@ import com.qcadoo.localization.api.utils.DateUtils;
 import com.qcadoo.mes.materialFlowResources.constants.StorageLocationMode;
 import com.qcadoo.mes.materialFlowResources.constants.WarehouseStockReportFields;
 import com.qcadoo.model.api.Entity;
-import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
@@ -62,11 +61,6 @@ public class WarehouseStockReportDetailsHooks {
                 warehouseStockReport.getStringField(WarehouseStockReportFields.STORAGE_LOCATION_MODE));
 
         storageLocationsGrid.setEnabled(enabled);
-    }
-
-    public void changeStorageLocationsGridEnabled(final ViewDefinitionState view, final ComponentState componentState,
-                                                  final String[] args) {
-        changeStorageLocationsGridEnabled(view);
     }
 
     private void setCriteriaModifierParameters(final ViewDefinitionState view, final Entity warehouseStockReport) {

@@ -60,6 +60,7 @@
         <string name="invoiceNumber">
             <validatesLength max="2048"/>
         </string>
+        <belongsTo name="stocktaking" model="stocktaking"/>
     </fields>
 
     <hooks>

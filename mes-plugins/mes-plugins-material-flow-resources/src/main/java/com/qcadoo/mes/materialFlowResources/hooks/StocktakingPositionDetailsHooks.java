@@ -2,6 +2,7 @@ package com.qcadoo.mes.materialFlowResources.hooks;
 
 import com.qcadoo.mes.advancedGenealogy.criteriaModifier.BatchCriteriaModifier;
 import com.qcadoo.mes.basic.constants.BasicConstants;
+import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.materialFlowResources.MaterialFlowResourcesService;
 import com.qcadoo.mes.materialFlowResources.constants.StocktakingFields;
 import com.qcadoo.mes.materialFlowResources.constants.StocktakingPositionFields;
@@ -16,9 +17,11 @@ import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.LookupComponent;
 import com.qcadoo.view.api.components.lookup.FilterValueHolder;
 import com.qcadoo.view.constants.QcadooViewConstants;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -43,9 +46,10 @@ public class StocktakingPositionDetailsHooks {
         Entity stocktakingPosition = stocktakingForm.getPersistedEntityWithIncludedFormValues();
 
         materialFlowResourcesService.fillUnitFieldValues(view);
-        fillUnitField(view);
+        fillUnitField(view, stocktakingForm);
 
         setStorageLocationLookupFilterValue(view, stocktakingPosition);
+        setProductLookupCategoryFilterValue(view, stocktakingPosition);
         setBatchLookupProductFilterValue(view, stocktakingPosition);
     }
 
@@ -65,6 +69,7 @@ public class StocktakingPositionDetailsHooks {
             List<Entity> storageLocations = stocktaking.getHasManyField(StocktakingFields.STORAGE_LOCATIONS);
             if (storageLocations.size() == 1) {
                 storageLocationLookup.setFieldValue(storageLocations.get(0).getId());
+                storageLocationLookup.setEnabled(false);
                 storageLocationLookup.requestComponentUpdateState();
             }
             if (!storageLocations.isEmpty()) {
@@ -73,6 +78,21 @@ public class StocktakingPositionDetailsHooks {
         }
 
         storageLocationLookup.setFilterValue(filter);
+    }
+
+    private void setProductLookupCategoryFilterValue(ViewDefinitionState view, Entity stocktakingPosition) {
+        LookupComponent productLookup = (LookupComponent) view.getComponentByReference(StocktakingPositionFields.PRODUCT);
+
+        FilterValueHolder filter = productLookup.getFilterValue();
+
+        Entity stocktaking = stocktakingPosition.getBelongsToField(StocktakingPositionFields.STOCKTAKING);
+
+        String category = stocktaking.getStringField(StocktakingFields.CATEGORY);
+
+        if (Objects.nonNull(category)) {
+            filter.put(StocktakingFields.CATEGORY, category);
+            productLookup.setFilterValue(filter);
+        }
     }
 
     private void setBatchLookupProductFilterValue(ViewDefinitionState view, Entity stocktakingPosition) {
@@ -85,8 +105,9 @@ public class StocktakingPositionDetailsHooks {
         }
     }
 
-    private void fillUnitField(final ViewDefinitionState view) {
+    private void fillUnitField(final ViewDefinitionState view, FormComponent stocktakingForm) {
         FieldComponent stockUnitField = (FieldComponent) view.getComponentByReference("stockUNIT");
+        FieldComponent additionalUnitField = (FieldComponent) view.getComponentByReference(ProductFields.ADDITIONAL_UNIT);
 
         Long productId = (Long) view.getComponentByReference(StocktakingPositionFields.PRODUCT).getFieldValue();
 
@@ -96,7 +117,20 @@ public class StocktakingPositionDetailsHooks {
 
         Entity product = getProductDD().get(productId);
         String unit = product.getStringField(UNIT);
-
+        String additionalUnit = product.getStringField(ProductFields.ADDITIONAL_UNIT);
+        FieldComponent conversion = (FieldComponent) view.getComponentByReference(StocktakingPositionFields.CONVERSION);
+        if (StringUtils.isEmpty(additionalUnit)) {
+            conversion.setFieldValue(BigDecimal.ONE);
+        }
+        if (StringUtils.isEmpty(additionalUnit) || stocktakingForm.getEntityId() != null) {
+            conversion.setEnabled(false);
+            conversion.requestComponentUpdateState();
+        }
+        if (Objects.isNull(additionalUnit)) {
+            additionalUnit = product.getStringField(ProductFields.UNIT);
+        }
+        additionalUnitField.setFieldValue(additionalUnit);
+        additionalUnitField.requestComponentUpdateState();
         stockUnitField.setFieldValue(unit);
         stockUnitField.requestComponentUpdateState();
     }

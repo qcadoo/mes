@@ -21,6 +21,14 @@
             <validatesUnscaledValue max="9"/>
             <validatesScale max="5"/>
         </decimal>
+        <decimal name="quantityInAdditionalUnit">
+            <validatesRange from="0"/>
+            <validatesUnscaledValue max="9"/>
+            <validatesScale max="5"/>
+        </decimal>
+        <decimal name="conversion" default="1" required="true">
+            <validatesRange from="0" exclusively="true" />
+        </decimal>
         <belongsTo name="pickingWorker" model="user" plugin="qcadooSecurity" copyable="false"/>
     </fields>
 

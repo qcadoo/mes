@@ -1,8 +1,8 @@
 package com.qcadoo.mes.materialFlowResources.constants;
 
-public final class StocktakingPositionFields {
+public final class StocktakingDifferenceFields {
 
-    private StocktakingPositionFields() {
+    private StocktakingDifferenceFields() {
 
     }
 
@@ -17,13 +17,12 @@ public final class StocktakingPositionFields {
     public static final String EXPIRATION_DATE = "expirationDate";
 
     public static final String BATCH = "batch";
-    public static final String STOCK = "stock";
 
     public static final String QUANTITY = "quantity";
 
     public static final String QUANTITY_IN_ADDITIONAL_UNIT = "quantityInAdditionalUnit";
 
-    public static final String STOCKTAKING = "stocktaking";
+    public static final String TYPE = "type";
 
     public static final String CONVERSION = "conversion";
 

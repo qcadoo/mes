@@ -13,6 +13,7 @@ import com.qcadoo.mes.materialFlowResources.constants.StocktakingFields;
 import com.qcadoo.mes.materialFlowResources.print.helper.Resource;
 import com.qcadoo.mes.materialFlowResources.print.helper.ResourceDataProvider;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.NumberService;
 import com.qcadoo.report.api.FontUtils;
 import com.qcadoo.report.api.pdf.HeaderAlignment;
 import com.qcadoo.report.api.pdf.PdfDocumentService;
@@ -36,6 +37,9 @@ public class StocktakingPdfReportService extends PdfDocumentService {
 
     @Autowired
     private ResourceDataProvider resourceDataProvider;
+
+    @Autowired
+    private NumberService numberService;
 
     @Override
     protected void buildPdfContent(Document document, Entity entity, Locale locale) throws DocumentException {
@@ -87,7 +91,12 @@ public class StocktakingPdfReportService extends PdfDocumentService {
             batch.addCell(new Phrase(extractExpirationDate(resource), FontUtils.getDejavuRegular7Dark()));
             dataTable.addCell(batch);
             dataTable.getDefaultCell().setHorizontalAlignment(Element.ALIGN_LEFT);
-            dataTable.addCell(new Phrase(extractUnit(resource), FontUtils.getDejavuRegular7Dark()));
+            PdfPTable unit = new PdfPTable(1);
+            unit.getDefaultCell().setBorderWidth(0);
+            unit.getDefaultCell().setFixedHeight(10f);
+            unit.addCell(new Phrase(extractUnit(resource), FontUtils.getDejavuRegular7Dark()));
+            unit.addCell(new Phrase(extractGivenUnitConversion(resource), FontUtils.getDejavuRegular7Dark()));
+            dataTable.addCell(unit);
             dataTable.getDefaultCell().enableBorderSide(Rectangle.LEFT);
             dataTable.getDefaultCell().enableBorderSide(Rectangle.RIGHT);
             dataTable.addCell(new Phrase("", FontUtils.getDejavuRegular10Dark()));
@@ -110,6 +119,15 @@ public class StocktakingPdfReportService extends PdfDocumentService {
 
     private String extractUnit(Resource resource) {
         return resource.getProductUnit();
+    }
+
+    private String extractGivenUnitConversion(Resource resource) {
+        if (!resource.getProductUnit().equals(resource.getGivenUnit())) {
+            return resource.getGivenUnit() + " / " + numberService.formatWithMinimumFractionDigits(
+                    resource.getConversion(), 0);
+        } else {
+            return "";
+        }
     }
 
     private String extractProductName(Resource resource) {
@@ -149,15 +167,16 @@ public class StocktakingPdfReportService extends PdfDocumentService {
         header.add(batch);
         alignments.put(batch, HeaderAlignment.LEFT);
 
-        header.add(translationService.translate("materialFlowResources.stocktaking.report.data.unit", locale));
-        alignments.put(translationService.translate("materialFlowResources.stocktaking.report.data.unit", locale),
-                HeaderAlignment.LEFT);
+        String unit = translationService.translate("materialFlowResources.stocktaking.report.data.unit", locale) + "\n"
+                + translationService.translate("materialFlowResources.stocktaking.report.data.givenUnitConversion", locale);
+        header.add(unit);
+        alignments.put(unit, HeaderAlignment.LEFT);
 
         header.add(translationService.translate("materialFlowResources.stocktaking.report.data.quantity", locale));
         alignments.put(translationService.translate("materialFlowResources.stocktaking.report.data.quantity", locale),
                 HeaderAlignment.LEFT);
 
-        int[] columnWidths = {90, 70, 230, 130, 60, 80};
+        int[] columnWidths = {90, 70, 230, 130, 85, 80};
 
         return pdfHelper.createTableWithHeader(6, header, false, columnWidths, alignments);
     }

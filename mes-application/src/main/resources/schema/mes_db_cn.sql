@@ -5587,6 +5587,7 @@ CREATE TABLE public.arch_materialflowresources_document (
     ordersgroup_id bigint,
     invoicenumber character varying(2048),
     masterorder_id bigint,
+    stocktaking_id bigint,
     archived boolean DEFAULT false
 );
 
@@ -20543,7 +20544,8 @@ CREATE TABLE public.materialflowresources_document (
     staff_id bigint,
     ordersgroup_id bigint,
     invoicenumber character varying(2048),
-    masterorder_id bigint
+    masterorder_id bigint,
+    stocktaking_id bigint
 );
 
 
@@ -21928,7 +21930,6 @@ CREATE TABLE public.materialflowresources_stocktaking (
     category character varying(255),
     storagelocationmode character varying(255) DEFAULT '01ALL'::character varying,
     location_id bigint,
-    generated boolean DEFAULT false,
     filename character varying(255),
     active boolean DEFAULT true,
     state character varying(255) DEFAULT '01draft'::character varying,
@@ -21974,7 +21975,9 @@ CREATE TABLE public.materialflowresources_stocktakingdifference (
     batch_id bigint,
     expirationdate date,
     type character varying(255) NOT NULL,
-    quantity numeric(14,5)
+    quantity numeric(14,5),
+    conversion numeric(12,5) DEFAULT 1,
+    quantityinadditionalunit numeric(14,5)
 );
 
 
@@ -22012,7 +22015,9 @@ CREATE TABLE public.materialflowresources_stocktakingposition (
     expirationdate date,
     stock numeric(14,5),
     quantity numeric(14,5),
-    pickingworker_id bigint
+    pickingworker_id bigint,
+    conversion numeric(12,5) DEFAULT 1,
+    quantityinadditionalunit numeric(14,5)
 );
 
 
@@ -38567,7 +38572,7 @@ COPY public.arch_masterorders_productsbysizehelper (id, product_id, totalquantit
 -- Data for Name: arch_materialflowresources_document; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.arch_materialflowresources_document (id, number, type, "time", state, locationfrom_id, locationto_id, user_id, delivery_id, active, createdate, updatedate, createuser, updateuser, order_id, description, suborder_id, company_id, maintenanceevent_id, entityversion, plannedevent_id, name, createlinkeddocument, linkeddocumentlocation_id, address_id, dispositionshift_id, positionsfile, printed, generationdate, filename, acceptationinprogress, externalnumber, issend, wms, datesendtowms, stateinwms, pickingworker, dateconfirmationofcompletion, locationchanged, staff_id, ordersgroup_id, invoicenumber, masterorder_id, archived) FROM stdin;
+COPY public.arch_materialflowresources_document (id, number, type, "time", state, locationfrom_id, locationto_id, user_id, delivery_id, active, createdate, updatedate, createuser, updateuser, order_id, description, suborder_id, company_id, maintenanceevent_id, entityversion, plannedevent_id, name, createlinkeddocument, linkeddocumentlocation_id, address_id, dispositionshift_id, positionsfile, printed, generationdate, filename, acceptationinprogress, externalnumber, issend, wms, datesendtowms, stateinwms, pickingworker, dateconfirmationofcompletion, locationchanged, staff_id, ordersgroup_id, invoicenumber, masterorder_id, stocktaking_id, archived) FROM stdin;
 \.
 
 
@@ -43199,7 +43204,7 @@ COPY public.materialflowresources_costnormslocation (id, costnormsgenerator_id, 
 -- Data for Name: materialflowresources_document; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.materialflowresources_document (id, number, type, "time", state, locationfrom_id, locationto_id, user_id, delivery_id, active, createdate, updatedate, createuser, updateuser, order_id, description, suborder_id, company_id, maintenanceevent_id, entityversion, plannedevent_id, name, createlinkeddocument, linkeddocumentlocation_id, address_id, generationdate, filename, acceptationinprogress, externalnumber, issend, wms, datesendtowms, stateinwms, pickingworker, dateconfirmationofcompletion, staff_id, ordersgroup_id, invoicenumber, masterorder_id) FROM stdin;
+COPY public.materialflowresources_document (id, number, type, "time", state, locationfrom_id, locationto_id, user_id, delivery_id, active, createdate, updatedate, createuser, updateuser, order_id, description, suborder_id, company_id, maintenanceevent_id, entityversion, plannedevent_id, name, createlinkeddocument, linkeddocumentlocation_id, address_id, generationdate, filename, acceptationinprogress, externalnumber, issend, wms, datesendtowms, stateinwms, pickingworker, dateconfirmationofcompletion, staff_id, ordersgroup_id, invoicenumber, masterorder_id, stocktaking_id) FROM stdin;
 \.
 
 
@@ -43383,7 +43388,7 @@ COPY public.materialflowresources_resourcestock (id, location_id, product_id) FR
 -- Data for Name: materialflowresources_stocktaking; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.materialflowresources_stocktaking (id, number, stocktakingdate, generationdate, category, storagelocationmode, location_id, generated, filename, active, state, description, wms, stateinwms, dateconfirmationofcompletion, datesendtowms, pickingworker) FROM stdin;
+COPY public.materialflowresources_stocktaking (id, number, stocktakingdate, generationdate, category, storagelocationmode, location_id, filename, active, state, description, wms, stateinwms, dateconfirmationofcompletion, datesendtowms, pickingworker) FROM stdin;
 \.
 
 
@@ -43391,7 +43396,7 @@ COPY public.materialflowresources_stocktaking (id, number, stocktakingdate, gene
 -- Data for Name: materialflowresources_stocktakingdifference; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.materialflowresources_stocktakingdifference (id, stocktaking_id, storagelocation_id, palletnumber_id, typeofloadunit_id, product_id, batch_id, expirationdate, type, quantity) FROM stdin;
+COPY public.materialflowresources_stocktakingdifference (id, stocktaking_id, storagelocation_id, palletnumber_id, typeofloadunit_id, product_id, batch_id, expirationdate, type, quantity, conversion, quantityinadditionalunit) FROM stdin;
 \.
 
 
@@ -43399,7 +43404,7 @@ COPY public.materialflowresources_stocktakingdifference (id, stocktaking_id, sto
 -- Data for Name: materialflowresources_stocktakingposition; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.materialflowresources_stocktakingposition (id, stocktaking_id, storagelocation_id, palletnumber_id, typeofloadunit_id, product_id, batch_id, expirationdate, stock, quantity, pickingworker_id) FROM stdin;
+COPY public.materialflowresources_stocktakingposition (id, stocktaking_id, storagelocation_id, palletnumber_id, typeofloadunit_id, product_id, batch_id, expirationdate, stock, quantity, pickingworker_id, conversion, quantityinadditionalunit) FROM stdin;
 \.
 
 
@@ -61524,6 +61529,14 @@ ALTER TABLE ONLY public.materialflowresources_document
 
 ALTER TABLE ONLY public.materialflowresources_document
     ADD CONSTRAINT document_staff_fkey FOREIGN KEY (staff_id) REFERENCES public.basic_staff(id) DEFERRABLE;
+
+
+--
+-- Name: materialflowresources_document document_stocktaking_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.materialflowresources_document
+    ADD CONSTRAINT document_stocktaking_fkey FOREIGN KEY (stocktaking_id) REFERENCES public.materialflowresources_stocktaking(id) DEFERRABLE;
 
 
 --
