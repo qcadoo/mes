@@ -134,59 +134,66 @@ public class StocktakingStateService extends BasicStateService implements Stockt
         Entity location = entity.getBelongsToField(StocktakingFields.LOCATION);
 
         try {
-            DocumentBuilder internalOutboundBuilder = documentManagementService.getDocumentBuilder(user);
-
-            internalOutboundBuilder.internalOutbound(location);
-
-            for (Entity difference : entity.getHasManyField(StocktakingFields.DIFFERENCES).stream()
+            List<Entity> shortages = entity.getHasManyField(StocktakingFields.DIFFERENCES).stream()
                     .filter(e -> StocktakingDifferenceType.SHORTAGE.getStringValue().equals(e.getStringField(StocktakingDifferenceFields.TYPE)))
-                    .collect(Collectors.toList())) {
-                Entity product = difference.getBelongsToField(StocktakingDifferenceFields.PRODUCT);
-                internalOutboundBuilder.addPosition(product,
-                        difference.getDecimalField(StocktakingDifferenceFields.QUANTITY).abs(),
-                        difference.getDecimalField(StocktakingDifferenceFields.QUANTITY_IN_ADDITIONAL_UNIT),
-                        Optional.ofNullable(product.getStringField(ProductFields.ADDITIONAL_UNIT)).orElse(product.getStringField(ProductFields.UNIT)),
-                        difference.getDecimalField(StocktakingDifferenceFields.CONVERSION), null,
-                        difference.getBelongsToField(StocktakingDifferenceFields.BATCH), null,
-                        difference.getDateField(StocktakingDifferenceFields.EXPIRATION_DATE), null,
-                        difference.getBelongsToField(StocktakingDifferenceFields.STORAGE_LOCATION),
-                        difference.getBelongsToField(StocktakingDifferenceFields.PALLET_NUMBER),
-                        difference.getBelongsToField(StocktakingDifferenceFields.TYPE_OF_LOAD_UNIT), false);
+                    .collect(Collectors.toList());
+            if (!shortages.isEmpty()) {
+                DocumentBuilder internalOutboundBuilder = documentManagementService.getDocumentBuilder(user);
+
+                internalOutboundBuilder.internalOutbound(location);
+
+                for (Entity difference : shortages) {
+                    Entity product = difference.getBelongsToField(StocktakingDifferenceFields.PRODUCT);
+                    internalOutboundBuilder.addPosition(product,
+                            difference.getDecimalField(StocktakingDifferenceFields.QUANTITY).abs(),
+                            difference.getDecimalField(StocktakingDifferenceFields.QUANTITY_IN_ADDITIONAL_UNIT),
+                            Optional.ofNullable(product.getStringField(ProductFields.ADDITIONAL_UNIT)).orElse(product.getStringField(ProductFields.UNIT)),
+                            difference.getDecimalField(StocktakingDifferenceFields.CONVERSION), null,
+                            difference.getBelongsToField(StocktakingDifferenceFields.BATCH), null,
+                            difference.getDateField(StocktakingDifferenceFields.EXPIRATION_DATE), null,
+                            difference.getBelongsToField(StocktakingDifferenceFields.STORAGE_LOCATION),
+                            difference.getBelongsToField(StocktakingDifferenceFields.PALLET_NUMBER),
+                            difference.getBelongsToField(StocktakingDifferenceFields.TYPE_OF_LOAD_UNIT), false);
+                }
+
+                internalOutboundBuilder.setField(DocumentFields.STOCKTAKING, entity);
+                internalOutboundBuilder.setField(DocumentFields.DESCRIPTION, translationService.translate(
+                        "materialFlowResources.document.description.stocktakingInternalOutbound",
+                        LocaleContextHolder.getLocale()));
+
+                internalOutboundBuilder.setAccepted().buildWithEntityRuntimeException();
             }
 
-            internalOutboundBuilder.setField(DocumentFields.STOCKTAKING, entity);
-            internalOutboundBuilder.setField(DocumentFields.DESCRIPTION, translationService.translate(
-                    "materialFlowResources.document.description.stocktakingInternalOutbound",
-                    LocaleContextHolder.getLocale()));
-
-            internalOutboundBuilder.setAccepted().buildWithEntityRuntimeException();
-
-            DocumentBuilder internalInboundBuilder = documentManagementService.getDocumentBuilder(user);
-
-            internalInboundBuilder.internalInbound(location);
-
-            for (Entity difference : entity.getHasManyField(StocktakingFields.DIFFERENCES).stream()
+            List<Entity> surpluses = entity.getHasManyField(StocktakingFields.DIFFERENCES).stream()
                     .filter(e -> StocktakingDifferenceType.SURPLUS.getStringValue().equals(e.getStringField(StocktakingDifferenceFields.TYPE)))
-                    .collect(Collectors.toList())) {
-                Entity product = difference.getBelongsToField(StocktakingDifferenceFields.PRODUCT);
-                internalInboundBuilder.addPosition(product,
-                        difference.getDecimalField(StocktakingDifferenceFields.QUANTITY),
-                        difference.getDecimalField(StocktakingDifferenceFields.QUANTITY_IN_ADDITIONAL_UNIT),
-                        Optional.ofNullable(product.getStringField(ProductFields.ADDITIONAL_UNIT)).orElse(product.getStringField(ProductFields.UNIT)),
-                        difference.getDecimalField(StocktakingDifferenceFields.CONVERSION), null,
-                        difference.getBelongsToField(StocktakingDifferenceFields.BATCH), null,
-                        difference.getDateField(StocktakingDifferenceFields.EXPIRATION_DATE), null,
-                        difference.getBelongsToField(StocktakingDifferenceFields.STORAGE_LOCATION),
-                        difference.getBelongsToField(StocktakingDifferenceFields.PALLET_NUMBER),
-                        difference.getBelongsToField(StocktakingDifferenceFields.TYPE_OF_LOAD_UNIT), false);
+                    .collect(Collectors.toList());
+
+            if (!surpluses.isEmpty()) {
+                DocumentBuilder internalInboundBuilder = documentManagementService.getDocumentBuilder(user);
+
+                internalInboundBuilder.internalInbound(location);
+
+                for (Entity difference : surpluses) {
+                    Entity product = difference.getBelongsToField(StocktakingDifferenceFields.PRODUCT);
+                    internalInboundBuilder.addPosition(product,
+                            difference.getDecimalField(StocktakingDifferenceFields.QUANTITY),
+                            difference.getDecimalField(StocktakingDifferenceFields.QUANTITY_IN_ADDITIONAL_UNIT),
+                            Optional.ofNullable(product.getStringField(ProductFields.ADDITIONAL_UNIT)).orElse(product.getStringField(ProductFields.UNIT)),
+                            difference.getDecimalField(StocktakingDifferenceFields.CONVERSION), null,
+                            difference.getBelongsToField(StocktakingDifferenceFields.BATCH), null,
+                            difference.getDateField(StocktakingDifferenceFields.EXPIRATION_DATE), null,
+                            difference.getBelongsToField(StocktakingDifferenceFields.STORAGE_LOCATION),
+                            difference.getBelongsToField(StocktakingDifferenceFields.PALLET_NUMBER),
+                            difference.getBelongsToField(StocktakingDifferenceFields.TYPE_OF_LOAD_UNIT), false);
+                }
+
+                internalInboundBuilder.setField(DocumentFields.STOCKTAKING, entity);
+                internalInboundBuilder.setField(DocumentFields.DESCRIPTION, translationService.translate(
+                        "materialFlowResources.document.description.stocktakingInternalInbound",
+                        LocaleContextHolder.getLocale()));
+
+                internalInboundBuilder.setAccepted().buildWithEntityRuntimeException();
             }
-
-            internalInboundBuilder.setField(DocumentFields.STOCKTAKING, entity);
-            internalInboundBuilder.setField(DocumentFields.DESCRIPTION, translationService.translate(
-                    "materialFlowResources.document.description.stocktakingInternalInbound",
-                    LocaleContextHolder.getLocale()));
-
-            internalInboundBuilder.setAccepted().buildWithEntityRuntimeException();
         } catch (EntityRuntimeException ex) {
             ex.getGlobalErrors().forEach(e -> entity.addGlobalError(e.getMessage(), e.getVars()));
         }
