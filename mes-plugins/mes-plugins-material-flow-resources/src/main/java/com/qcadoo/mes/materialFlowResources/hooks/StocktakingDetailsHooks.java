@@ -20,6 +20,8 @@ import org.springframework.stereotype.Service;
 import java.util.Date;
 import java.util.Objects;
 
+import static com.qcadoo.mes.materialFlowResources.listeners.DocumentsListListeners.REALIZED;
+
 @Service
 public class StocktakingDetailsHooks {
 
@@ -64,7 +66,8 @@ public class StocktakingDetailsHooks {
                 storageLocationsGrid.setEnabled(false);
             }
 
-            positionsGrid.setEnabled(StocktakingStateStringValues.IN_PROGRESS.equals(state) || StocktakingStateStringValues.FINALIZED.equals(state));
+            positionsGrid.setEnabled(StocktakingStateStringValues.IN_PROGRESS.equals(state) && (!stocktaking.getBooleanField(StocktakingFields.WMS)
+                    || REALIZED.equals(stocktaking.getStringField(StocktakingFields.STATE_IN_WMS))) || StocktakingStateStringValues.FINALIZED.equals(state));
         }
     }
 

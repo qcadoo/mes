@@ -117,6 +117,12 @@
                                     deleteRibbonItem.enable();
                                 }
 
+                                var wms = false;
+
+								if (#{wms}.getValue().content.value == "1") {
+									wms = #{stateInWMS}.getValue().content.value != '05realized';
+								}
+
                                 if (state == "01draft") {
                                     generateRibbonItem.enable();
                                     copyFromStockRibbonItem.disable();
@@ -126,11 +132,17 @@
                                     finishRibbonItem.disable("#{translate(materialFlowResources.stocktakingDetails.ribbon.message.finish)}");
                                 } else if (state == "02inProgress") {
                                     generateRibbonItem.disable();
-                                    copyFromStockRibbonItem.enable();
-                                    settleRibbonItem.enable("#{translate(materialFlowResources.stocktakingDetails.ribbon.message.settle)}");
                                     printRibbonItem.enable();
-                                    rejectRibbonItem.enable();
                                     finishRibbonItem.disable("#{translate(materialFlowResources.stocktakingDetails.ribbon.message.finish)}");
+                                    if (wms) {
+                                        copyFromStockRibbonItem.disable();
+                                        settleRibbonItem.disable("#{translate(materialFlowResources.stocktakingDetails.ribbon.message.settle)}");
+                                        rejectRibbonItem.disable();
+                                    } else {
+                                        copyFromStockRibbonItem.enable();
+                                        settleRibbonItem.enable("#{translate(materialFlowResources.stocktakingDetails.ribbon.message.settle)}");
+                                        rejectRibbonItem.enable();
+                                    }
                                 } else if (state == "03finalized") {
                                     generateRibbonItem.disable();
                                     copyFromStockRibbonItem.disable();
