@@ -12,10 +12,12 @@ import com.qcadoo.mes.materialFlowResources.states.constants.StocktakingStateCha
 import com.qcadoo.mes.materialFlowResources.states.constants.StocktakingStateStringValues;
 import com.qcadoo.mes.newstates.BasicStateService;
 import com.qcadoo.mes.states.StateChangeEntityDescriber;
+import com.qcadoo.model.api.BigDecimalUtils;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.exception.EntityRuntimeException;
+import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.security.api.SecurityService;
 import com.qcadoo.security.constants.QcadooSecurityConstants;
 import org.slf4j.Logger;
@@ -24,10 +26,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.math.BigDecimal;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -138,6 +138,16 @@ public class StocktakingStateService extends BasicStateService implements Stockt
                     .filter(e -> StocktakingDifferenceType.SHORTAGE.getStringValue().equals(e.getStringField(StocktakingDifferenceFields.TYPE)))
                     .collect(Collectors.toList());
             if (!shortages.isEmpty()) {
+                for (Entity shortage : shortages) {
+                    Entity product = shortage.getBelongsToField(StocktakingDifferenceFields.PRODUCT);
+                    BigDecimal quantity = shortage.getDecimalField(StocktakingDifferenceFields.QUANTITY);
+                    BigDecimal availableQuantity = getAvailableQuantityForProductAndLocation(product, location);
+                    if (quantity.compareTo(availableQuantity) > 0) {
+                        entity.addGlobalError("materialFlowResources.stocktaking.document.quantity.notEnoughResources",
+                                product.getStringField(ProductFields.NUMBER));
+                        return;
+                    }
+                }
                 DocumentBuilder internalOutboundBuilder = documentManagementService.getDocumentBuilder(user);
 
                 internalOutboundBuilder.internalOutbound(location);
@@ -197,6 +207,18 @@ public class StocktakingStateService extends BasicStateService implements Stockt
         } catch (EntityRuntimeException ex) {
             ex.getGlobalErrors().forEach(e -> entity.addGlobalError(e.getMessage(), e.getVars()));
         }
+    }
+
+    private BigDecimal getAvailableQuantityForProductAndLocation(Entity product, Entity location) {
+        Entity resourceStockDto = dataDefinitionService
+                .get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER, MaterialFlowResourcesConstants.MODEL_RESOURCE_STOCK_DTO)
+                .find().add(SearchRestrictions.eq(ResourceStockDtoFields.PRODUCT_ID, product.getId().intValue()))
+                .add(SearchRestrictions.eq(ResourceStockDtoFields.LOCATION_ID, location.getId().intValue())).setMaxResults(1)
+                .uniqueResult();
+        if (Objects.isNull(resourceStockDto)) {
+            return BigDecimal.ZERO;
+        }
+        return BigDecimalUtils.convertNullToZero(resourceStockDto.getDecimalField(ResourceStockDtoFields.AVAILABLE_QUANTITY));
     }
 
     private DataDefinition getUserDD() {
