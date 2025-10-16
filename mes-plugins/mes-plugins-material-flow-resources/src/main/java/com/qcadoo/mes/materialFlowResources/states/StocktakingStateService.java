@@ -206,6 +206,7 @@ public class StocktakingStateService extends BasicStateService implements Stockt
             }
         } catch (EntityRuntimeException ex) {
             ex.getGlobalErrors().forEach(e -> entity.addGlobalError(e.getMessage(), e.getVars()));
+            ex.getErrors().values().forEach(e -> entity.addGlobalError(e.getMessage(), e.getVars()));
         }
     }
 
