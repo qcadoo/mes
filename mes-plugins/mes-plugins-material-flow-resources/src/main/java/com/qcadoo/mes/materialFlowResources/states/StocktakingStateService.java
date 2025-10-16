@@ -140,7 +140,7 @@ public class StocktakingStateService extends BasicStateService implements Stockt
             if (!shortages.isEmpty()) {
                 for (Entity shortage : shortages) {
                     Entity product = shortage.getBelongsToField(StocktakingDifferenceFields.PRODUCT);
-                    BigDecimal quantity = shortage.getDecimalField(StocktakingDifferenceFields.QUANTITY);
+                    BigDecimal quantity = shortage.getDecimalField(StocktakingDifferenceFields.QUANTITY).abs();
                     BigDecimal availableQuantity = getAvailableQuantityForProductAndLocation(product, location);
                     if (quantity.compareTo(availableQuantity) > 0) {
                         entity.addGlobalError("materialFlowResources.stocktaking.document.quantity.notEnoughResources",
@@ -156,7 +156,7 @@ public class StocktakingStateService extends BasicStateService implements Stockt
                     Entity product = difference.getBelongsToField(StocktakingDifferenceFields.PRODUCT);
                     internalOutboundBuilder.addPosition(product,
                             difference.getDecimalField(StocktakingDifferenceFields.QUANTITY).abs(),
-                            difference.getDecimalField(StocktakingDifferenceFields.QUANTITY_IN_ADDITIONAL_UNIT),
+                            difference.getDecimalField(StocktakingDifferenceFields.QUANTITY_IN_ADDITIONAL_UNIT).abs(),
                             Optional.ofNullable(product.getStringField(ProductFields.ADDITIONAL_UNIT)).orElse(product.getStringField(ProductFields.UNIT)),
                             difference.getDecimalField(StocktakingDifferenceFields.CONVERSION), null,
                             difference.getBelongsToField(StocktakingDifferenceFields.BATCH), null,
