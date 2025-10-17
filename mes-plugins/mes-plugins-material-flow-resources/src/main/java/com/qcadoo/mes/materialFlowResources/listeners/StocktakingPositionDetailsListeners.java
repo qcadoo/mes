@@ -89,6 +89,8 @@ public class StocktakingPositionDetailsListeners {
 
         BigDecimal quantity = position.getDecimalField(StocktakingPositionFields.QUANTITY);
 
+        FieldComponent additionalQuantityField = (FieldComponent) view
+                .getComponentByReference(StocktakingPositionFields.QUANTITY_IN_ADDITIONAL_UNIT);
         if (Objects.nonNull(quantity)) {
             String unit = product.getStringField(ProductFields.UNIT);
             String additionalUnit = Optional.ofNullable(product.getStringField(ProductFields.ADDITIONAL_UNIT)).orElse(
@@ -98,10 +100,10 @@ public class StocktakingPositionDetailsListeners {
             BigDecimal newAdditionalQuantity = calculationQuantityService.calculateAdditionalQuantity(quantity,
                     conversion, additionalUnit);
 
-            FieldComponent additionalQuantityField = (FieldComponent) view
-                    .getComponentByReference(StocktakingPositionFields.QUANTITY_IN_ADDITIONAL_UNIT);
-
             additionalQuantityField.setFieldValue(numberService.formatWithMinimumFractionDigits(newAdditionalQuantity, 0));
+            additionalQuantityField.requestComponentUpdateState();
+        } else {
+            additionalQuantityField.setFieldValue(null);
             additionalQuantityField.requestComponentUpdateState();
         }
     }
@@ -143,6 +145,9 @@ public class StocktakingPositionDetailsListeners {
 
         BigDecimal additionalQuantity = position.getDecimalField(StocktakingPositionFields.QUANTITY_IN_ADDITIONAL_UNIT);
 
+        FieldComponent quantityField = (FieldComponent) view
+                .getComponentByReference(StocktakingPositionFields.QUANTITY);
+
         if (Objects.nonNull(additionalQuantity)) {
             String unit = product.getStringField(ProductFields.UNIT);
             String additionalUnit = Optional.ofNullable(product.getStringField(ProductFields.ADDITIONAL_UNIT)).orElse(
@@ -152,10 +157,10 @@ public class StocktakingPositionDetailsListeners {
             BigDecimal newQuantity = calculationQuantityService.calculateQuantity(additionalQuantity,
                     conversion, unit);
 
-            FieldComponent quantityField = (FieldComponent) view
-                    .getComponentByReference(StocktakingPositionFields.QUANTITY);
-
             quantityField.setFieldValue(numberService.formatWithMinimumFractionDigits(newQuantity, 0));
+            quantityField.requestComponentUpdateState();
+        } else {
+            quantityField.setFieldValue(null);
             quantityField.requestComponentUpdateState();
         }
     }

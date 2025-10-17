@@ -92,14 +92,14 @@
 
                         this.addOnChangeListener({
                             onSetValue: function(value) {
-                                if (!value || !value.content || !value.content.entityId) {
-                                    generateRibbonItem.disable();
-                                    rejectRibbonItem.disable();
+                                var state = #{state}.getValue().content.value;
+                                if (!state || !value || !value.content) {
                                     return;
                                 }
 
-                                var state = #{state}.getValue().content.value;
-                                if (!state) {
+                                if (!value.content.entityId) {
+                                    generateRibbonItem.disable();
+                                    rejectRibbonItem.disable();
                                     return;
                                 }
 
