@@ -18,6 +18,7 @@ import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.exception.EntityRuntimeException;
 import com.qcadoo.model.api.search.SearchRestrictions;
+import com.qcadoo.model.api.validators.ErrorMessage;
 import com.qcadoo.security.api.SecurityService;
 import com.qcadoo.security.constants.QcadooSecurityConstants;
 import org.slf4j.Logger;
@@ -206,7 +207,14 @@ public class StocktakingStateService extends BasicStateService implements Stockt
             }
         } catch (EntityRuntimeException ex) {
             ex.getGlobalErrors().forEach(e -> entity.addGlobalError(e.getMessage(), e.getVars()));
-            ex.getErrors().values().forEach(e -> entity.addGlobalError(e.getMessage(), e.getVars()));
+            for (Map.Entry<String, ErrorMessage> error : ex.getErrors().entrySet()) {
+                ErrorMessage message = error.getValue();
+                if (ResourceFields.PALLET_NUMBER.equals(error.getKey()) && "qcadooView.validate.field.error.missing".equals(message.getMessage())) {
+                    entity.addGlobalError("materialFlowResources.stocktaking.document.palletNumberRequired", ex.getEntity().getBelongsToField(ResourceFields.STORAGE_LOCATION).getStringField(StorageLocationFields.NUMBER));
+                } else {
+                    entity.addGlobalError(message.getMessage(), message.getVars());
+                }
+            }
         }
     }
 
