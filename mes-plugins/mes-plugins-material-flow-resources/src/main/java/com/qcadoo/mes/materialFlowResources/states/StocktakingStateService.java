@@ -1,6 +1,7 @@
 package com.qcadoo.mes.materialFlowResources.states;
 
 import com.qcadoo.localization.api.TranslationService;
+import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.materialFlowResources.PalletValidatorService;
 import com.qcadoo.mes.materialFlowResources.constants.*;
@@ -13,10 +14,7 @@ import com.qcadoo.mes.materialFlowResources.states.constants.StocktakingStateCha
 import com.qcadoo.mes.materialFlowResources.states.constants.StocktakingStateStringValues;
 import com.qcadoo.mes.newstates.BasicStateService;
 import com.qcadoo.mes.states.StateChangeEntityDescriber;
-import com.qcadoo.model.api.BigDecimalUtils;
-import com.qcadoo.model.api.DataDefinition;
-import com.qcadoo.model.api.DataDefinitionService;
-import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.*;
 import com.qcadoo.model.api.exception.EntityRuntimeException;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.model.api.validators.ErrorMessage;
@@ -28,6 +26,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Service;
 
+import javax.persistence.Basic;
 import java.math.BigDecimal;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -60,6 +59,9 @@ public class StocktakingStateService extends BasicStateService implements Stockt
 
     @Autowired
     private PalletValidatorService palletValidatorService;
+
+    @Autowired
+    private NumberService numberService;
 
     @Override
     public StateChangeEntityDescriber getChangeEntityDescriber() {
@@ -143,11 +145,16 @@ public class StocktakingStateService extends BasicStateService implements Stockt
                     .filter(e -> StocktakingDifferenceType.SHORTAGE.getStringValue().equals(e.getStringField(StocktakingDifferenceFields.TYPE)))
                     .collect(Collectors.toList());
             if (!shortages.isEmpty()) {
+                Map<Long, BigDecimal> productQuantities = new HashMap<>();
                 for (Entity shortage : shortages) {
-                    Entity product = shortage.getBelongsToField(StocktakingDifferenceFields.PRODUCT);
-                    BigDecimal quantity = shortage.getDecimalField(StocktakingDifferenceFields.QUANTITY).abs();
+                    productQuantities.compute(shortage.getBelongsToField(StocktakingDifferenceFields.PRODUCT).getId(),
+                            (k, v) -> (v == null) ? shortage.getDecimalField(StocktakingDifferenceFields.QUANTITY).abs()
+                                    : v.add(shortage.getDecimalField(StocktakingDifferenceFields.QUANTITY).abs(), numberService.getMathContext()));
+                }
+                for (Map.Entry<Long, BigDecimal> productQuantity : productQuantities.entrySet()) {
+                    Entity product = getProductDD().get(productQuantity.getKey());
                     BigDecimal availableQuantity = getAvailableQuantityForProductAndLocation(product, location);
-                    if (quantity.compareTo(availableQuantity) > 0) {
+                    if (productQuantity.getValue().compareTo(availableQuantity) > 0) {
                         entity.addGlobalError("materialFlowResources.stocktaking.document.quantity.notEnoughResources",
                                 product.getStringField(ProductFields.NUMBER));
                         return;
@@ -244,5 +251,9 @@ public class StocktakingStateService extends BasicStateService implements Stockt
 
     private DataDefinition getUserDD() {
         return dataDefinitionService.get(QcadooSecurityConstants.PLUGIN_IDENTIFIER, QcadooSecurityConstants.MODEL_USER);
+    }
+
+    private DataDefinition getProductDD() {
+        return dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PRODUCT);
     }
 }
