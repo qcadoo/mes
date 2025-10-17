@@ -474,6 +474,44 @@ public class PalletValidatorService {
         return false;
     }
 
+    public boolean tooManyPalletsInStorageLocationAndStocktaking(final String storageLocationNumber,
+                                                               final Long stocktakingId) {
+        if (Objects.nonNull(storageLocationNumber) && isPlaceStorageLocation(storageLocationNumber)) {
+            StringBuilder query = new StringBuilder();
+
+            query.append("SELECT ");
+            query.append("COUNT(DISTINCT palletsInStorageLocation.palletnumber_id) AS palletsCount ");
+            query.append("FROM (");
+            query.append("SELECT ");
+            query.append("resource.palletnumber_id, ");
+            query.append("resource.storagelocation_id ");
+            query.append("FROM materialflowresources_resource resource ");
+            query.append("UNION ALL ");
+            query.append("SELECT ");
+            query.append("difference.palletnumber_id, ");
+            query.append("difference.storagelocation_id ");
+            query.append("FROM materialflowresources_stocktakingdifference difference ");
+            query.append("WHERE difference.stocktaking_id = :stocktakingId ");
+            query.append(") palletsInStorageLocation ");
+            query.append("JOIN materialflowresources_storagelocation storagelocation ");
+            query.append("ON storagelocation.id = palletsInStorageLocation.storagelocation_id ");
+            query.append("WHERE storagelocation.number = :storageLocationNumber ");
+
+            Map<String, Object> params = Maps.newHashMap();
+
+            params.put("storageLocationNumber", storageLocationNumber);
+            params.put("stocktakingId", stocktakingId);
+
+            Long palletsInStorageLocation = jdbcTemplate.queryForObject(query.toString(), params, Long.class);
+
+            BigDecimal maximumNumberOfPallets = getMaximumNumberOfPallets(storageLocationNumber);
+
+            return Objects.nonNull(maximumNumberOfPallets) && (BigDecimal.valueOf(palletsInStorageLocation).compareTo(maximumNumberOfPallets) > 0);
+        }
+
+        return false;
+    }
+
     public boolean tooManyPalletsInStorageLocationAndPositions(final String storageLocationNumber,
                                                                final String palletNumberNumber,
                                                                final Long positionId, Long documentId) {

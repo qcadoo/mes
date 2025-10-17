@@ -2,6 +2,7 @@ package com.qcadoo.mes.materialFlowResources.states;
 
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.basic.constants.ProductFields;
+import com.qcadoo.mes.materialFlowResources.PalletValidatorService;
 import com.qcadoo.mes.materialFlowResources.constants.*;
 import com.qcadoo.mes.materialFlowResources.print.StocktakingReportService;
 import com.qcadoo.mes.materialFlowResources.print.helper.Resource;
@@ -56,6 +57,9 @@ public class StocktakingStateService extends BasicStateService implements Stockt
 
     @Autowired
     private TranslationService translationService;
+
+    @Autowired
+    private PalletValidatorService palletValidatorService;
 
     @Override
     public StateChangeEntityDescriber getChangeEntityDescriber() {
@@ -185,6 +189,14 @@ public class StocktakingStateService extends BasicStateService implements Stockt
                 internalInboundBuilder.internalInbound(location);
 
                 for (Entity difference : surpluses) {
+                    Entity storageLocation = difference.getBelongsToField(StocktakingDifferenceFields.STORAGE_LOCATION);
+                    if (storageLocation != null) {
+                        if (palletValidatorService.tooManyPalletsInStorageLocationAndStocktaking(storageLocation.getStringField(StorageLocationFields.NUMBER), entity.getId())) {
+                            entity.addGlobalError("materialFlowResources.stocktaking.document.storageLocation.morePalletsExists",
+                                    storageLocation.getStringField(StorageLocationFields.NUMBER));
+                            return;
+                        }
+                    }
                     Entity product = difference.getBelongsToField(StocktakingDifferenceFields.PRODUCT);
                     internalInboundBuilder.addPosition(product,
                             difference.getDecimalField(StocktakingDifferenceFields.QUANTITY),
