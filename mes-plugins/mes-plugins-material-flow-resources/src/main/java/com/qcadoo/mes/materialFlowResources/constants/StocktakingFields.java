@@ -8,6 +8,8 @@ public final class StocktakingFields {
 
     public static final String STORAGE_LOCATION_MODE = "storageLocationMode";
 
+    public static final String DESCRIPTION = "description";
+
     public static final String STORAGE_LOCATIONS = "storageLocations";
 
     public static final String LOCATION = "location";
