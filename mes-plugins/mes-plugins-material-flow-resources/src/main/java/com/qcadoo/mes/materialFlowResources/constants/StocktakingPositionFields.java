@@ -27,4 +27,6 @@ public final class StocktakingPositionFields {
 
     public static final String CONVERSION = "conversion";
 
+    public static final String PICKING_WORKER = "pickingWorker";
+
 }

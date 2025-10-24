@@ -38,7 +38,7 @@
             <component type="form" name="form" reference="form">
                 <component type="gridLayout" name="stocktakingGridLayout"
                            hasBorders="false" columns="7" rows="10">
-                    <layoutElement column="1" row="1" width="6">
+                    <layoutElement column="1" row="1" width="3">
                         <component type="lookup" name="storageLocation" field="storageLocation"
                                    reference="storageLocation">
                             <option type="column" fields="location" name="location" link="true"
@@ -55,7 +55,7 @@
                                     method="showStorageLocationsWithGivenIdsForLocation"/>
                         </component>
                     </layoutElement>
-                    <layoutElement column="1" row="2" width="6">
+                    <layoutElement column="1" row="2" width="3">
                         <component type="lookup" name="palletNumber" field="palletNumber"
                                    reference="palletNumber">
 
@@ -70,7 +70,7 @@
                                       method="fillTypeOfLoadUnitField"/>
                         </component>
                     </layoutElement>
-                    <layoutElement column="1" row="3" width="6">
+                    <layoutElement column="1" row="3" width="3">
                         <component type="lookup" name="typeOfLoadUnit" field="typeOfLoadUnit"
                                    reference="typeOfLoadUnit">
 
@@ -81,7 +81,7 @@
                             <option type="fieldCode" value="name"/>
                         </component>
                     </layoutElement>
-                    <layoutElement column="1" row="4" width="6">
+                    <layoutElement column="1" row="4" width="3">
                         <component type="lookup" name="product" field="product"
                                    reference="product">
                             <option type="column" fields="name" name="name" link="true"/>
@@ -101,7 +101,7 @@
                                       method="onProductChange"/>
                         </component>
                     </layoutElement>
-                    <layoutElement column="1" row="5" width="6">
+                    <layoutElement column="1" row="5" width="3">
                         <component type="lookup" name="batch" field="batch"
                                    reference="batch">
                             <option type="column" name="supplierName" fields="supplier"
@@ -118,13 +118,13 @@
                                     method="filterByProduct"/>
                         </component>
                     </layoutElement>
-                    <layoutElement column="1" row="6" width="6">
+                    <layoutElement column="1" row="6" width="3">
                         <component type="calendar" name="expirationDate" field="expirationDate"
                                    reference="expirationDate">
                             <option type="withTimePicker" value="false"/>
                         </component>
                     </layoutElement>
-                    <layoutElement column="1" row="7" width="6">
+                    <layoutElement column="1" row="7" width="3">
                         <component type="input" name="quantity" field="quantity"
                                    reference="quantity">
                             <option type="alignment" value="right"/>
@@ -134,13 +134,13 @@
                                       method="quantityChange"/>
                         </component>
                     </layoutElement>
-                    <layoutElement column="7" row="7" width="1">
+                    <layoutElement column="4" row="7" width="1">
                         <component type="input" name="quantityUNIT" reference="quantityUNIT"
                                    defaultEnabled="false" hasLabel="false">
                             <option type="textRepresentationOnDisabled" value="true"/>
                         </component>
                     </layoutElement>
-                    <layoutElement column="1" row="8" width="6">
+                    <layoutElement column="1" row="8" width="3">
                         <component type="input" name="quantityInAdditionalUnit" field="quantityInAdditionalUnit"
                                    reference="quantityInAdditionalUnit">
                             <option type="alignment" value="right"/>
@@ -150,13 +150,13 @@
                                       method="additionalQuantityChange"/>
                         </component>
                     </layoutElement>
-                    <layoutElement column="7" row="8" width="1">
+                    <layoutElement column="4" row="8" width="1">
                         <component type="input" name="additionalUnit" reference="additionalUnit"
                                    defaultEnabled="false" hasLabel="false">
                             <option type="textRepresentationOnDisabled" value="true"/>
                         </component>
                     </layoutElement>
-                    <layoutElement column="1" row="9" width="6">
+                    <layoutElement column="1" row="9" width="3">
                         <component type="input" name="conversion" field="conversion"
                                    reference="conversion">
                             <option type="alignment" value="right"/>
@@ -166,13 +166,13 @@
                                       method="quantityChange"/>
                         </component>
                     </layoutElement>
-                    <layoutElement column="1" row="10" width="6">
+                    <layoutElement column="1" row="10" width="3">
                         <component type="input" name="stock" field="stock"
                                    reference="stock" defaultEnabled="never">
                             <option type="alignment" value="right"/>
                         </component>
                     </layoutElement>
-                    <layoutElement column="7" row="10" width="1">
+                    <layoutElement column="4" row="10" width="1">
                         <component type="input" name="stockUNIT" reference="stockUNIT"
                                    defaultEnabled="false" hasLabel="false">
                             <option type="textRepresentationOnDisabled" value="true"/>

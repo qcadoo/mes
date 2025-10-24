@@ -112,6 +112,13 @@ public class StocktakingPositionDetailsHooks {
         Long productId = (Long) view.getComponentByReference(StocktakingPositionFields.PRODUCT).getFieldValue();
 
         if (Objects.isNull(productId)) {
+            FieldComponent unitField = (FieldComponent) view.getComponentByReference("quantityUNIT");
+            unitField.setFieldValue(null);
+            unitField.requestComponentUpdateState();
+            additionalUnitField.setFieldValue(null);
+            additionalUnitField.requestComponentUpdateState();
+            stockUnitField.setFieldValue(null);
+            stockUnitField.requestComponentUpdateState();
             return;
         }
 

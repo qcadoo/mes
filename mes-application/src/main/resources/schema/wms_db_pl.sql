@@ -22017,7 +22017,8 @@ CREATE TABLE public.materialflowresources_stocktakingposition (
     quantity numeric(14,5),
     pickingworker_id bigint,
     conversion numeric(12,5) DEFAULT 1,
-    quantityinadditionalunit numeric(14,5)
+    quantityinadditionalunit numeric(14,5),
+    stocktakingpart_id bigint
 );
 
 
@@ -22515,6 +22516,43 @@ CREATE SEQUENCE public.materialrequirements_materialrequirementproduct_id_seq
 --
 
 ALTER SEQUENCE public.materialrequirements_materialrequirementproduct_id_seq OWNED BY public.materialrequirements_materialrequirementproduct.id;
+
+
+--
+-- Name: mobilewms_stocktakingpart; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.mobilewms_stocktakingpart (
+    id bigint NOT NULL,
+    number character varying(255),
+    part integer,
+    parts integer,
+    stateinwms character varying(255),
+    pickingworker character varying(255),
+    stocktaking_id bigint,
+    stocktakingdate date,
+    storagelocationmode character varying(255) DEFAULT '01ALL'::character varying,
+    description character varying(2048)
+);
+
+
+--
+-- Name: mobilewms_stocktakingpart_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.mobilewms_stocktakingpart_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: mobilewms_stocktakingpart_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.mobilewms_stocktakingpart_id_seq OWNED BY public.mobilewms_stocktakingpart.id;
 
 
 --
@@ -36482,6 +36520,13 @@ ALTER TABLE ONLY public.materialrequirements_materialrequirementproduct ALTER CO
 
 
 --
+-- Name: mobilewms_stocktakingpart id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.mobilewms_stocktakingpart ALTER COLUMN id SET DEFAULT nextval('public.mobilewms_stocktakingpart_id_seq'::regclass);
+
+
+--
 -- Name: mobilewms_wmsdocumentpart id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -43384,7 +43429,7 @@ COPY public.materialflowresources_stocktakingdifference (id, stocktaking_id, sto
 -- Data for Name: materialflowresources_stocktakingposition; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.materialflowresources_stocktakingposition (id, stocktaking_id, storagelocation_id, palletnumber_id, typeofloadunit_id, product_id, batch_id, expirationdate, stock, quantity, pickingworker_id, conversion, quantityinadditionalunit) FROM stdin;
+COPY public.materialflowresources_stocktakingposition (id, stocktaking_id, storagelocation_id, palletnumber_id, typeofloadunit_id, product_id, batch_id, expirationdate, stock, quantity, pickingworker_id, conversion, quantityinadditionalunit, stocktakingpart_id) FROM stdin;
 \.
 
 
@@ -43481,6 +43526,14 @@ COPY public.materialrequirements_materialrequirement (id, name, number, date, wo
 --
 
 COPY public.materialrequirements_materialrequirementproduct (id, materialrequirement_id, product_id, location_id, quantity, currentstock, orderstartdate, batch_id, batchstock, replacementexists) FROM stdin;
+\.
+
+
+--
+-- Data for Name: mobilewms_stocktakingpart; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY public.mobilewms_stocktakingpart (id, number, part, parts, stateinwms, pickingworker, stocktaking_id, stocktakingdate, storagelocationmode, description) FROM stdin;
 \.
 
 
@@ -49288,6 +49341,13 @@ SELECT pg_catalog.setval('public.materialrequirements_materialrequirement_id_seq
 --
 
 SELECT pg_catalog.setval('public.materialrequirements_materialrequirementproduct_id_seq', 1, false);
+
+
+--
+-- Name: mobilewms_stocktakingpart_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('public.mobilewms_stocktakingpart_id_seq', 1, false);
 
 
 --
@@ -55154,6 +55214,14 @@ ALTER TABLE ONLY public.materialrequirements_materialrequirement
 
 ALTER TABLE ONLY public.materialrequirements_materialrequirementproduct
     ADD CONSTRAINT materialrequirements_materialrequirementproduct_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: mobilewms_stocktakingpart mobilewms_stocktakingpart_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.mobilewms_stocktakingpart
+    ADD CONSTRAINT mobilewms_stocktakingpart_pkey PRIMARY KEY (id);
 
 
 --
@@ -68000,6 +68068,14 @@ ALTER TABLE ONLY public.integrationbaselinker_statusesformasterorder
 
 
 --
+-- Name: materialflowresources_stocktakingposition stockatkingposition_stocktakingpart_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.materialflowresources_stocktakingposition
+    ADD CONSTRAINT stockatkingposition_stocktakingpart_fkey FOREIGN KEY (stocktakingpart_id) REFERENCES public.mobilewms_stocktakingpart(id) DEFERRABLE;
+
+
+--
 -- Name: materialflowresources_stocktaking stocktaking_location_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -68069,6 +68145,14 @@ ALTER TABLE ONLY public.materialflowresources_stocktakingdifference
 
 ALTER TABLE ONLY public.materialflowresources_stocktakingdifference
     ADD CONSTRAINT stocktakingdifference_typeofloadunit_fkey FOREIGN KEY (typeofloadunit_id) REFERENCES public.basic_typeofloadunit(id) DEFERRABLE;
+
+
+--
+-- Name: mobilewms_stocktakingpart stocktakingpart_stocktaking_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.mobilewms_stocktakingpart
+    ADD CONSTRAINT stocktakingpart_stocktaking_fkey FOREIGN KEY (stocktaking_id) REFERENCES public.materialflowresources_stocktaking(id) DEFERRABLE;
 
 
 --

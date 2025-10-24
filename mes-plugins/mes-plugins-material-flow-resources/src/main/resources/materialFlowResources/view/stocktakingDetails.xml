@@ -92,14 +92,14 @@
 
                         this.addOnChangeListener({
                             onSetValue: function(value) {
-                                if (!value || !value.content || !value.content.entityId) {
-                                    generateRibbonItem.disable();
-                                    rejectRibbonItem.disable();
+                                var state = #{state}.getValue().content.value;
+                                if (!state || !value || !value.content) {
                                     return;
                                 }
 
-                                var state = #{state}.getValue().content.value;
-                                if (!state) {
+                                if (!value.content.entityId) {
+                                    generateRibbonItem.disable();
+                                    rejectRibbonItem.disable();
                                     return;
                                 }
 
@@ -126,11 +126,11 @@
                                     finishRibbonItem.disable("#{translate(materialFlowResources.stocktakingDetails.ribbon.message.finish)}");
                                 } else if (state == "02inProgress") {
                                     generateRibbonItem.disable();
+                                    printRibbonItem.enable();
+                                    finishRibbonItem.disable("#{translate(materialFlowResources.stocktakingDetails.ribbon.message.finish)}");
                                     copyFromStockRibbonItem.enable();
                                     settleRibbonItem.enable("#{translate(materialFlowResources.stocktakingDetails.ribbon.message.settle)}");
-                                    printRibbonItem.enable();
                                     rejectRibbonItem.enable();
-                                    finishRibbonItem.disable("#{translate(materialFlowResources.stocktakingDetails.ribbon.message.finish)}");
                                 } else if (state == "03finalized") {
                                     generateRibbonItem.disable();
                                     copyFromStockRibbonItem.disable();
@@ -264,7 +264,7 @@
                 <option type="column" name="batch" fields="batch" expression="#batch['number']" width="30"/>
                 <option type="column" name="expirationDate" fields="expirationDate"/>
                 <option type="column" name="unit" fields="product" expression="#product['unit']" width="30"/>
-                <option type="column" name="additionalUnit" fields="product" expression="#product['additionalUnit']" width="30"/>
+                <option type="column" name="additionalUnit" fields="product" expression="#product['additionalUnit'] != null ? #product['additionalUnit'] : #product['unit']" width="30"/>
                 <option type="column" name="conversion" fields="conversion" width="80"/>
                 <option type="column" name="stock" fields="stock" width="80"/>
                 <option type="column" name="quantity" fields="quantity" width="80"/>
@@ -273,13 +273,12 @@
                 <option type="order" column="storageLocation" direction="asc"/>
 
                 <option type="searchable"
-                        value="storageLocation,palletNumber,typeOfLoadUnit,productNumber,productName,batch,expirationDate,unit,additionalUnit,stock,quantity,quantityInAdditionalUnit,conversion"/>
+                        value="storageLocation,palletNumber,typeOfLoadUnit,productNumber,productName,batch,expirationDate,unit,stock,quantity,quantityInAdditionalUnit,conversion"/>
                 <option type="orderable"
-                        value="storageLocation,palletNumber,typeOfLoadUnit,productNumber,productName,batch,expirationDate,unit,additionalUnit,stock,quantity,quantityInAdditionalUnit,conversion"/>
+                        value="storageLocation,palletNumber,typeOfLoadUnit,productNumber,productName,batch,expirationDate,unit,stock,quantity,quantityInAdditionalUnit,conversion"/>
 
                 <option type="correspondingView" value="materialFlowResources/stocktakingPositionDetails"/>
                 <option type="correspondingComponent" value="form"/>
-                <option type="correspondingViewInModal" value="true"/>
 
                 <option type="creatable" value="true"/>
                 <option type="deletable" value="true"/>
@@ -304,15 +303,15 @@
                 <option type="column" name="quantity" fields="quantity" width="80"/>
                 <option type="column" name="quantityInAdditionalUnit" fields="quantityInAdditionalUnit" width="80"/>
                 <option type="column" name="unit" fields="product" expression="#product['unit']" width="30"/>
-                <option type="column" name="additionalUnit" fields="product" expression="#product['additionalUnit']" width="30"/>
+                <option type="column" name="additionalUnit" fields="product" expression="#product['additionalUnit'] != null ? #product['additionalUnit'] : #product['unit']" width="30"/>
                 <option type="column" name="conversion" fields="conversion" width="80"/>
 
                 <option type="order" column="storageLocation" direction="asc"/>
 
                 <option type="searchable"
-                        value="storageLocation,palletNumber,typeOfLoadUnit,productNumber,productName,batch,expirationDate,type,quantity,quantityInAdditionalUnit,conversion,unit,additionalUnit"/>
+                        value="storageLocation,palletNumber,typeOfLoadUnit,productNumber,productName,batch,expirationDate,type,quantity,quantityInAdditionalUnit,conversion,unit"/>
                 <option type="orderable"
-                        value="storageLocation,palletNumber,typeOfLoadUnit,productNumber,productName,batch,expirationDate,type,quantity,quantityInAdditionalUnit,conversion,unit,additionalUnit"/>
+                        value="storageLocation,palletNumber,typeOfLoadUnit,productNumber,productName,batch,expirationDate,type,quantity,quantityInAdditionalUnit,conversion,unit"/>
 
                 <option type="fullscreen" value="true"/>
                 <option type="fixedHeight" value="true"/>
