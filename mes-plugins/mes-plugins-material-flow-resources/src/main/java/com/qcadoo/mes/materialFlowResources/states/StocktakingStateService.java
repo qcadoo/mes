@@ -10,6 +10,7 @@ import com.qcadoo.mes.materialFlowResources.print.helper.Resource;
 import com.qcadoo.mes.materialFlowResources.print.helper.ResourceDataProvider;
 import com.qcadoo.mes.materialFlowResources.service.DocumentBuilder;
 import com.qcadoo.mes.materialFlowResources.service.DocumentManagementService;
+import com.qcadoo.mes.materialFlowResources.service.ResourceManagementService;
 import com.qcadoo.mes.materialFlowResources.states.constants.StocktakingStateChangeDescriber;
 import com.qcadoo.mes.materialFlowResources.states.constants.StocktakingStateStringValues;
 import com.qcadoo.mes.newstates.BasicStateService;
@@ -26,7 +27,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Service;
 
-import javax.persistence.Basic;
 import java.math.BigDecimal;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -62,6 +62,9 @@ public class StocktakingStateService extends BasicStateService implements Stockt
 
     @Autowired
     private NumberService numberService;
+
+    @Autowired
+    private ResourceManagementService resourceManagementService;
 
     @Override
     public StateChangeEntityDescriber getChangeEntityDescriber() {
@@ -164,20 +167,26 @@ public class StocktakingStateService extends BasicStateService implements Stockt
 
                 internalOutboundBuilder.internalOutbound(location);
 
+                List<Entity> positions = new ArrayList<>();
                 for (Entity difference : shortages) {
                     Entity product = difference.getBelongsToField(StocktakingDifferenceFields.PRODUCT);
-                    internalOutboundBuilder.addPosition(product,
+                    positions.add(internalOutboundBuilder.createPosition(product,
                             difference.getDecimalField(StocktakingDifferenceFields.QUANTITY).abs(),
-                            difference.getDecimalField(StocktakingDifferenceFields.QUANTITY_IN_ADDITIONAL_UNIT).abs(),
-                            Optional.ofNullable(product.getStringField(ProductFields.ADDITIONAL_UNIT)).orElse(product.getStringField(ProductFields.UNIT)),
+                            null,
+                            null,
                             difference.getDecimalField(StocktakingDifferenceFields.CONVERSION), null,
                             difference.getBelongsToField(StocktakingDifferenceFields.BATCH), null,
                             difference.getDateField(StocktakingDifferenceFields.EXPIRATION_DATE), null,
                             difference.getBelongsToField(StocktakingDifferenceFields.STORAGE_LOCATION),
                             difference.getBelongsToField(StocktakingDifferenceFields.PALLET_NUMBER),
-                            difference.getBelongsToField(StocktakingDifferenceFields.TYPE_OF_LOAD_UNIT), false);
+                            difference.getBelongsToField(StocktakingDifferenceFields.TYPE_OF_LOAD_UNIT), false));
                 }
 
+                List<Entity> positionsWithResources = resourceManagementService.fillResourcesInStocktaking(entity, positions);
+
+                for (Entity positionWithResource : positionsWithResources) {
+                    internalOutboundBuilder.addPosition(positionWithResource);
+                }
                 internalOutboundBuilder.setField(DocumentFields.STOCKTAKING, entity);
                 internalOutboundBuilder.setField(DocumentFields.DESCRIPTION, translationService.translate(
                         "materialFlowResources.document.description.stocktakingInternalOutbound",
@@ -234,6 +243,8 @@ public class StocktakingStateService extends BasicStateService implements Stockt
                     entity.addGlobalError(message.getMessage(), message.getVars());
                 }
             }
+        } catch (IllegalStateException ex) {
+            entity.addGlobalError("materialFlow.document.fillResources.global.error.documentNotValid", false);
         }
     }
 

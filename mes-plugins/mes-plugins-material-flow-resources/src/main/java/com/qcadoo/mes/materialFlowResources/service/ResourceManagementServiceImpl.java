@@ -42,7 +42,10 @@ import com.qcadoo.mes.materialFlowResources.helpers.NotEnoughResourcesErrorMessa
 import com.qcadoo.mes.materialFlowResources.helpers.NotEnoughResourcesErrorMessageHolder;
 import com.qcadoo.mes.materialFlowResources.helpers.NotEnoughResourcesErrorMessageHolderFactory;
 import com.qcadoo.model.api.*;
-import com.qcadoo.model.api.search.*;
+import com.qcadoo.model.api.search.SearchCriteriaBuilder;
+import com.qcadoo.model.api.search.SearchOrder;
+import com.qcadoo.model.api.search.SearchOrders;
+import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.model.api.units.PossibleUnitConversions;
 import com.qcadoo.model.api.units.UnitConversionService;
 import com.qcadoo.model.api.validators.ErrorMessage;
@@ -991,13 +994,17 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
 
             resources.add(resource);
         } else if (WarehouseAlgorithm.FIFO.equals(warehouseAlgorithm)) {
-            resources = getResourcesForLocationAndProductFIFO(warehouse, product, position);
+            resources = getResourcesForLocationCommonCode(warehouse, product, position,
+                    SearchOrders.asc(ResourceFields.TIME));
         } else if (WarehouseAlgorithm.LIFO.equals(warehouseAlgorithm)) {
-            resources = getResourcesForLocationAndProductLIFO(warehouse, product, position);
+            resources = getResourcesForLocationCommonCode(warehouse, product, position,
+                    SearchOrders.desc(ResourceFields.TIME));
         } else if (WarehouseAlgorithm.FEFO.equals(warehouseAlgorithm)) {
-            resources = getResourcesForLocationAndProductFEFO(warehouse, product, position);
+            resources = getResourcesForLocationCommonCode(warehouse, product, position,
+                    SearchOrders.asc(ResourceFields.EXPIRATION_DATE), SearchOrders.asc(ResourceFields.AVAILABLE_QUANTITY));
         } else if (WarehouseAlgorithm.LEFO.equals(warehouseAlgorithm)) {
-            resources = getResourcesForLocationAndProductLEFO(warehouse, product, position);
+            resources = getResourcesForLocationCommonCode(warehouse, product, position,
+                    SearchOrders.desc(ResourceFields.EXPIRATION_DATE), SearchOrders.asc(ResourceFields.AVAILABLE_QUANTITY));
         }
 
         return resources;
@@ -1011,10 +1018,6 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
         class SearchCriteriaHelper {
 
             private List<Entity> getAll() {
-                return getAllThatSatisfies(null);
-            }
-
-            private List<Entity> getAllThatSatisfies(SearchCriterion searchCriterion) {
                 SearchCriteriaBuilder scb = getSearchCriteriaForResourceForProductAndWarehouse(product, warehouse);
 
                 if (resourceIrrespectiveOfConversion) {
@@ -1039,21 +1042,16 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
 
                 scb.add(SearchRestrictions.eq(ResourceFields.BLOCKED_FOR_QUALITY_CONTROL, false));
 
-                Optional.ofNullable(searchCriterion).ifPresent(scb::add);
-
                 for (SearchOrder searchOrder : searchOrders) {
                     scb.addOrder(searchOrder);
                 }
 
                 return scb.list().getEntities();
             }
+
         }
 
-        List<Entity> resources;
-
-        resources = new SearchCriteriaHelper().getAll();
-
-        return resources;
+        return new SearchCriteriaHelper().getAll();
     }
 
     private List<Entity> getResourcesForLocationCommonCode(final Entity warehouse, final Entity product,
@@ -1075,28 +1073,168 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
         return resources;
     }
 
-    private List<Entity> getResourcesForLocationAndProductFIFO(final Entity warehouse, final Entity product,
-                                                               final Entity position) {
-        return getResourcesForLocationCommonCode(warehouse, product, position,
-                SearchOrders.asc(ResourceFields.TIME));
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
+    public List<Entity> fillResourcesInStocktaking(final Entity stocktaking, List<Entity> positions) throws LockAcquisitionException {
+        LOGGER.info("FILL RESOURCES STARTED IN STOCKTAKING: id = " + stocktaking.getId() + " number = "
+                + stocktaking.getStringField(StocktakingFields.NUMBER));
+        LOGGER.info("USER STARTED IN STOCKTAKING: id = " + stocktaking.getId() + ": "
+                + userService.getCurrentUserEntity().getStringField(UserFields.USER_NAME));
+
+        LOGGER.info("INITIAL POSITIONS IN STOCKTAKING: id = " + stocktaking.getId() + ": size = " + positions.size());
+        LOGGER.info(positions.toString());
+
+        Entity warehouse = stocktaking.getBelongsToField(StocktakingFields.LOCATION);
+        WarehouseAlgorithm warehouseAlgorithm = WarehouseAlgorithm
+                .parseString(warehouse.getStringField(LocationFieldsMFR.ALGORITHM));
+
+        List<Entity> positionsWithResources = new ArrayList<>();
+
+        for (Entity position : positions) {
+            List<Entity> newPositions = matchResourcesToPositionForStocktaking(stocktaking, position, warehouse, warehouseAlgorithm);
+
+            if (!newPositions.isEmpty()) {
+                LOGGER.info("GENERATED POSITIONS IN STOCKTAKING: id = " + stocktaking.getId() + ", size = " + newPositions.size());
+                LOGGER.info(newPositions.toString());
+
+                positionsWithResources.addAll(newPositions);
+            } else {
+                LOGGER.warn("FILL RESOURCES ENDED WITH ERRORS FOR STOCKTAKING: id = " + stocktaking.getId() + " number = "
+                        + stocktaking.getStringField(StocktakingFields.NUMBER));
+
+                throw new IllegalStateException("Unable to fill resources in stocktaking.");
+            }
+        }
+
+        return positionsWithResources;
     }
 
-    private List<Entity> getResourcesForLocationAndProductLIFO(final Entity warehouse, final Entity product,
-                                                               final Entity position) {
-        return getResourcesForLocationCommonCode(warehouse, product, position,
-                SearchOrders.desc(ResourceFields.TIME));
+    private List<Entity> matchResourcesToPositionForStocktaking(final Entity stocktaking, final Entity position, final Entity warehouse,
+                                                                final WarehouseAlgorithm warehouseAlgorithm) {
+        List<Entity> newPositions = Lists.newArrayList();
+
+        Entity product = position.getBelongsToField(PositionFields.PRODUCT);
+
+        List<Entity> resources = getResourcesForStocktaking(warehouse, product, position, warehouseAlgorithm);
+
+        BigDecimal quantity = position.getDecimalField(PositionFields.QUANTITY);
+
+        for (Entity resource : resources) {
+            if (resource.getBooleanField(ResourceFields.WASTE)) {
+                continue;
+            }
+
+            LOGGER.info("STOCKTAKING: " + stocktaking.getId() + " POSITION: " + position);
+            LOGGER.info("RESOURCE USED: " + resource);
+
+            Entity newPosition = createNewPosition(position, product, resource);
+
+            newPosition.setField(PositionFields.RESOURCE, resource);
+
+            BigDecimal resourceAvailableQuantity = resource.getDecimalField(ResourceFields.AVAILABLE_QUANTITY);
+
+            if (quantity.compareTo(resourceAvailableQuantity) > 0) {
+                quantity = quantity.subtract(resourceAvailableQuantity, numberService.getMathContext());
+
+                setPositionQuantityAndGivenQuantity(resourceAvailableQuantity, newPosition);
+                newPositions.add(newPosition);
+            } else {
+                setPositionQuantityAndGivenQuantity(quantity, newPosition);
+                newPositions.add(newPosition);
+
+                return newPositions;
+            }
+        }
+
+        LOGGER.warn("FILL RESOURCES ENDED WITH ERRORS FOR STOCKTAKING: id = " + stocktaking.getId() + " number = "
+                + stocktaking.getStringField(StocktakingFields.NUMBER));
+
+        throw new IllegalStateException("Unable to fill resources in stocktaking.");
     }
 
-    private List<Entity> getResourcesForLocationAndProductFEFO(final Entity warehouse, final Entity product,
-                                                               final Entity position) {
-        return getResourcesForLocationCommonCode(warehouse, product, position,
-                SearchOrders.asc(ResourceFields.EXPIRATION_DATE), SearchOrders.asc(ResourceFields.AVAILABLE_QUANTITY));
+    private List<Entity> getResourcesForStocktaking(final Entity warehouse, final Entity product,
+                                                    final Entity position,
+                                                    final WarehouseAlgorithm warehouseAlgorithm) {
+        List<Entity> resources = Lists.newArrayList();
+
+        if (WarehouseAlgorithm.FIFO.equals(warehouseAlgorithm)) {
+            resources = getResourcesForLocationConversionForStocktaking(warehouse, product, position,
+                    SearchOrders.asc(ResourceFields.TIME));
+        } else if (WarehouseAlgorithm.LIFO.equals(warehouseAlgorithm)) {
+            resources = getResourcesForLocationConversionForStocktaking(warehouse, product, position,
+                    SearchOrders.desc(ResourceFields.TIME));
+        } else if (WarehouseAlgorithm.FEFO.equals(warehouseAlgorithm)) {
+            resources = getResourcesForLocationConversionForStocktaking(warehouse, product, position,
+                    SearchOrders.asc(ResourceFields.EXPIRATION_DATE), SearchOrders.asc(ResourceFields.AVAILABLE_QUANTITY));
+        } else if (WarehouseAlgorithm.LEFO.equals(warehouseAlgorithm)) {
+            resources = getResourcesForLocationConversionForStocktaking(warehouse, product, position,
+                    SearchOrders.desc(ResourceFields.EXPIRATION_DATE), SearchOrders.asc(ResourceFields.AVAILABLE_QUANTITY));
+        }
+
+        return resources;
     }
 
-    private List<Entity> getResourcesForLocationAndProductLEFO(final Entity warehouse, final Entity product,
-                                                               final Entity position) {
-        return getResourcesForLocationCommonCode(warehouse, product, position,
-                SearchOrders.desc(ResourceFields.EXPIRATION_DATE), SearchOrders.asc(ResourceFields.AVAILABLE_QUANTITY));
+    private List<Entity> getResourcesForLocationConversionForStocktaking(final Entity warehouse, final Entity product,
+                                                                         final Entity position,
+                                                                         final SearchOrder... searchOrders) {
+
+        class SearchCriteriaHelperForStocktaking {
+
+            private List<Entity> getAll() {
+                SearchCriteriaBuilder scb = dataDefinitionService
+                        .get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER, MaterialFlowResourcesConstants.MODEL_RESOURCE).find()
+                        .add(SearchRestrictions.belongsTo(ResourceFields.LOCATION, warehouse))
+                        .add(SearchRestrictions.belongsTo(ResourceFields.PRODUCT, product))
+                        .add(SearchRestrictions.gt(ResourceFields.AVAILABLE_QUANTITY, BigDecimal.ZERO));
+
+                if (StringUtils.isNotEmpty(product.getStringField(ProductFields.ADDITIONAL_UNIT))) {
+                    scb.add(SearchRestrictions.eq(ResourceFields.CONVERSION,
+                            position.getDecimalField(PositionFields.CONVERSION)));
+                } else {
+                    scb.add(SearchRestrictions.eq(ResourceFields.CONVERSION, BigDecimal.ONE));
+                }
+
+                if (Objects.nonNull(position.getBelongsToField(PositionFields.BATCH))) {
+                    scb.add(SearchRestrictions.belongsTo(ResourceFields.BATCH, position.getBelongsToField(PositionFields.BATCH)));
+                } else {
+                    scb.add(SearchRestrictions.isNull(ResourceFields.BATCH));
+                }
+
+                if (Objects.nonNull(position.getBelongsToField(PositionFields.STORAGE_LOCATION))) {
+                    scb.add(SearchRestrictions.belongsTo(ResourceFields.STORAGE_LOCATION, position.getBelongsToField(PositionFields.STORAGE_LOCATION)));
+                } else {
+                    scb.add(SearchRestrictions.isNull(ResourceFields.STORAGE_LOCATION));
+                }
+
+                if (Objects.nonNull(position.getBelongsToField(PositionFields.PALLET_NUMBER))) {
+                    scb.add(SearchRestrictions.belongsTo(ResourceFields.PALLET_NUMBER, position.getBelongsToField(PositionFields.PALLET_NUMBER)));
+                } else {
+                    scb.add(SearchRestrictions.isNull(ResourceFields.PALLET_NUMBER));
+                }
+
+                if (Objects.nonNull(position.getBelongsToField(PositionFields.TYPE_OF_LOAD_UNIT))) {
+                    scb.add(SearchRestrictions.belongsTo(ResourceFields.TYPE_OF_LOAD_UNIT, position.getBelongsToField(PositionFields.TYPE_OF_LOAD_UNIT)));
+                } else {
+                    scb.add(SearchRestrictions.isNull(ResourceFields.TYPE_OF_LOAD_UNIT));
+                }
+
+                if (Objects.nonNull(position.getBelongsToField(PositionFields.EXPIRATION_DATE))) {
+                    scb.add(SearchRestrictions.eq(ResourceFields.EXPIRATION_DATE, position.getBelongsToField(PositionFields.EXPIRATION_DATE)));
+                } else {
+                    scb.add(SearchRestrictions.isNull(ResourceFields.EXPIRATION_DATE));
+                }
+
+                scb.add(SearchRestrictions.eq(ResourceFields.BLOCKED_FOR_QUALITY_CONTROL, false));
+
+                for (SearchOrder searchOrder : searchOrders) {
+                    scb.addOrder(searchOrder);
+                }
+
+                return scb.list().getEntities();
+            }
+
+        }
+
+        return new SearchCriteriaHelperForStocktaking().getAll();
     }
 
     @Transactional(isolation = Isolation.REPEATABLE_READ)
