@@ -167,10 +167,9 @@ public class StocktakingStateService extends BasicStateService implements Stockt
 
                 internalOutboundBuilder.internalOutbound(location);
 
-                List<Entity> positions = new ArrayList<>();
                 for (Entity difference : shortages) {
                     Entity product = difference.getBelongsToField(StocktakingDifferenceFields.PRODUCT);
-                    positions.add(internalOutboundBuilder.createPosition(product,
+                    internalOutboundBuilder.addPosition(product,
                             difference.getDecimalField(StocktakingDifferenceFields.QUANTITY).abs(),
                             null,
                             null,
@@ -179,20 +178,21 @@ public class StocktakingStateService extends BasicStateService implements Stockt
                             difference.getDateField(StocktakingDifferenceFields.EXPIRATION_DATE), null,
                             difference.getBelongsToField(StocktakingDifferenceFields.STORAGE_LOCATION),
                             difference.getBelongsToField(StocktakingDifferenceFields.PALLET_NUMBER),
-                            difference.getBelongsToField(StocktakingDifferenceFields.TYPE_OF_LOAD_UNIT), false));
+                            difference.getBelongsToField(StocktakingDifferenceFields.TYPE_OF_LOAD_UNIT), false);
                 }
 
-                List<Entity> positionsWithResources = resourceManagementService.fillResourcesInStocktaking(entity, positions);
-
-                for (Entity positionWithResource : positionsWithResources) {
-                    internalOutboundBuilder.addPosition(positionWithResource);
-                }
                 internalOutboundBuilder.setField(DocumentFields.STOCKTAKING, entity);
                 internalOutboundBuilder.setField(DocumentFields.DESCRIPTION, translationService.translate(
                         "materialFlowResources.document.description.stocktakingInternalOutbound",
                         LocaleContextHolder.getLocale()));
 
-                internalOutboundBuilder.setAccepted().buildWithEntityRuntimeException();
+                Entity document = internalOutboundBuilder.buildWithEntityRuntimeException();
+                document = document.getDataDefinition().get(document.getId());
+                resourceManagementService.fillResourcesInStocktaking(document);
+                document.setField(DocumentFields.STATE, DocumentState.ACCEPTED.getStringValue());
+                document = document.getDataDefinition().save(document);
+                document = document.getDataDefinition().get(document.getId());
+                resourceManagementService.createResources(document);
             }
 
             List<Entity> surpluses = entity.getHasManyField(StocktakingFields.DIFFERENCES).stream()

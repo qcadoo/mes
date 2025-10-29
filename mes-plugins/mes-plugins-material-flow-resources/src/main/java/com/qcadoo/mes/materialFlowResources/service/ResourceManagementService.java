@@ -26,15 +26,13 @@ package com.qcadoo.mes.materialFlowResources.service;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ViewDefinitionState;
 
-import java.util.List;
-
 public interface ResourceManagementService {
 
     void createResources(final Entity document);
 
     void createResourcesForReceiptDocuments(final Entity document);
 
-    List<Entity> fillResourcesInStocktaking(final Entity stocktaking, final List<Entity> positions);
+    void fillResourcesInStocktaking(final Entity document);
 
     void fillResourcesInDocument(final ViewDefinitionState view, final Entity document);
 

@@ -1074,41 +1074,67 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
     }
 
     @Transactional(isolation = Isolation.REPEATABLE_READ)
-    public List<Entity> fillResourcesInStocktaking(final Entity stocktaking, List<Entity> positions) throws LockAcquisitionException {
-        LOGGER.info("FILL RESOURCES STARTED IN STOCKTAKING: id = " + stocktaking.getId() + " number = "
-                + stocktaking.getStringField(StocktakingFields.NUMBER));
-        LOGGER.info("USER STARTED IN STOCKTAKING: id = " + stocktaking.getId() + ": "
+    public void fillResourcesInStocktaking(final Entity document) throws LockAcquisitionException {
+        LOGGER.info("FILL RESOURCES STARTED IN DOCUMENT: id = " + document.getId() + " number = "
+                + document.getStringField(DocumentFields.NUMBER));
+        LOGGER.info("USER STARTED IN DOCUMENT: id = " + document.getId() + ": "
                 + userService.getCurrentUserEntity().getStringField(UserFields.USER_NAME));
 
-        LOGGER.info("INITIAL POSITIONS IN STOCKTAKING: id = " + stocktaking.getId() + ": size = " + positions.size());
+        List<Entity> positions = document.getHasManyField(DocumentFields.POSITIONS);
+
+        LOGGER.info("INITIAL POSITIONS IN DOCUMENT: id = " + document.getId() + ": size = " + positions.size());
         LOGGER.info(positions.toString());
 
-        Entity warehouse = stocktaking.getBelongsToField(StocktakingFields.LOCATION);
+        Entity warehouse = document.getBelongsToField(DocumentFields.LOCATION_FROM);
         WarehouseAlgorithm warehouseAlgorithm = WarehouseAlgorithm
                 .parseString(warehouse.getStringField(LocationFieldsMFR.ALGORITHM));
-
-        List<Entity> positionsWithResources = new ArrayList<>();
+        boolean valid = true;
+        boolean updatePositionsNumbers = false;
 
         for (Entity position : positions) {
-            List<Entity> newPositions = matchResourcesToPositionForStocktaking(stocktaking, position, warehouse, warehouseAlgorithm);
+            List<Entity> newPositions = matchResourcesToPositionForStocktaking(document, position, warehouse, warehouseAlgorithm);
 
-            if (!newPositions.isEmpty()) {
-                LOGGER.info("GENERATED POSITIONS IN STOCKTAKING: id = " + stocktaking.getId() + ", size = " + newPositions.size());
-                LOGGER.info(newPositions.toString());
+            LOGGER.info("GENERATED POSITIONS IN DOCUMENT: id = " + document.getId() + ", size = " + newPositions.size());
+            LOGGER.info(newPositions.toString());
 
-                positionsWithResources.addAll(newPositions);
+            if (newPositions.size() > 1) {
+                position.getDataDefinition().delete(position.getId());
+
+                for (Entity newPosition : newPositions) {
+                    newPosition.setField(PositionFields.DOCUMENT, document);
+
+                    Entity saved = newPosition.getDataDefinition().save(newPosition);
+
+                    valid = valid && saved.isValid();
+                }
+
+                updatePositionsNumbers = true;
             } else {
-                LOGGER.warn("FILL RESOURCES ENDED WITH ERRORS FOR STOCKTAKING: id = " + stocktaking.getId() + " number = "
-                        + stocktaking.getStringField(StocktakingFields.NUMBER));
+                copyPositionValues(position, newPositions.get(0));
 
-                throw new IllegalStateException("Unable to fill resources in stocktaking.");
+                Entity saved = position.getDataDefinition().save(position);
+
+                valid = valid && saved.isValid();
             }
         }
 
-        return positionsWithResources;
+        if (updatePositionsNumbers) {
+            documentPositionService.updateDocumentPositionsNumbers(document.getId());
+        }
+
+        if (valid) {
+            LOGGER.info("FILL RESOURCES ENDED SUCCESSFULLY FOR DOCUMENT: id = " + document.getId() + " number = "
+                    + document.getStringField(DocumentFields.NUMBER));
+            return;
+        }
+
+        LOGGER.warn("FILL RESOURCES ENDED WITH ERRORS FOR DOCUMENT: id = " + document.getId() + " number = "
+                + document.getStringField(DocumentFields.NUMBER));
+
+        throw new IllegalStateException("Unable to fill resources in document.");
     }
 
-    private List<Entity> matchResourcesToPositionForStocktaking(final Entity stocktaking, final Entity position, final Entity warehouse,
+    private List<Entity> matchResourcesToPositionForStocktaking(final Entity document, final Entity position, final Entity warehouse,
                                                                 final WarehouseAlgorithm warehouseAlgorithm) {
         List<Entity> newPositions = Lists.newArrayList();
 
@@ -1123,7 +1149,7 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
                 continue;
             }
 
-            LOGGER.info("STOCKTAKING: " + stocktaking.getId() + " POSITION: " + position);
+            LOGGER.info("DOCUMENT: " + document.getId() + " POSITION: " + position);
             LOGGER.info("RESOURCE USED: " + resource);
 
             Entity newPosition = createNewPosition(position, product, resource);
@@ -1145,10 +1171,10 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
             }
         }
 
-        LOGGER.warn("FILL RESOURCES ENDED WITH ERRORS FOR STOCKTAKING: id = " + stocktaking.getId() + " number = "
-                + stocktaking.getStringField(StocktakingFields.NUMBER));
+        LOGGER.warn("FILL RESOURCES ENDED WITH ERRORS FOR DOCUMENT: id = " + document.getId() + " number = "
+                + document.getStringField(DocumentFields.NUMBER));
 
-        throw new IllegalStateException("Unable to fill resources in stocktaking.");
+        throw new IllegalStateException("Unable to fill resources in document.");
     }
 
     private List<Entity> getResourcesForStocktaking(final Entity warehouse, final Entity product,
