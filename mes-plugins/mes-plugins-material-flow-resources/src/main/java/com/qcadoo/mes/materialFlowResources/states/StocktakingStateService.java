@@ -1,5 +1,6 @@
 package com.qcadoo.mes.materialFlowResources.states;
 
+import com.google.common.collect.Maps;
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.basic.constants.ProductFields;
@@ -25,7 +26,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 import java.math.BigDecimal;
 import java.util.*;
@@ -65,6 +68,9 @@ public class StocktakingStateService extends BasicStateService implements Stockt
 
     @Autowired
     private ResourceManagementService resourceManagementService;
+
+    @Autowired
+    private NamedParameterJdbcTemplate jdbcTemplate;
 
     @Override
     public StateChangeEntityDescriber getChangeEntityDescriber() {
@@ -189,9 +195,12 @@ public class StocktakingStateService extends BasicStateService implements Stockt
                 Entity document = internalOutboundBuilder.buildWithEntityRuntimeException();
                 document = document.getDataDefinition().get(document.getId());
                 resourceManagementService.fillResourcesInStocktaking(document);
-                document.setField(DocumentFields.STATE, DocumentState.ACCEPTED.getStringValue());
-                document = document.getDataDefinition().save(document);
                 document = document.getDataDefinition().get(document.getId());
+                document.setField(DocumentFields.STATE, DocumentState.ACCEPTED.getStringValue());
+                String documentNumber = getDocumentNumber(document.getId());
+                document.setField(DocumentFields.NUMBER, documentNumber);
+                document.setField(DocumentFields.NAME, documentNumber);
+                document = document.getDataDefinition().save(document);
                 resourceManagementService.createResources(document);
             }
 
@@ -246,6 +255,15 @@ public class StocktakingStateService extends BasicStateService implements Stockt
         } catch (IllegalStateException ex) {
             entity.addGlobalError("materialFlow.document.fillResources.global.error.documentNotValid", false);
         }
+    }
+
+    public String getDocumentNumber(final Long documentId) {
+        String sql = "SELECT number FROM materialflowresources_document WHERE id = :id;";
+        Map<String, Object> parameters = Maps.newHashMap();
+
+        parameters.put("id", documentId);
+
+        return jdbcTemplate.queryForObject(sql, parameters, String.class);
     }
 
     private BigDecimal getAvailableQuantityForProductAndLocation(Entity product, Entity location) {
