@@ -103,13 +103,14 @@
             <option type="column" name="userName" fields="userName" width="150"/>
             <option type="column" name="staff" fields="staff" width="150"/>
             <option type="column" name="invoiceNumber" fields="invoiceNumber"/>
+            <option type="column" name="stocktakingNumber" fields="stocktakingNumber"/>
 
             <option type="order" column="time" direction="desc"/>
 
             <option type="searchable"
-                    value="number,name,type,time,state,locationFromNumber,locationToNumber,description,companyName,userName,staff,address,invoiceNumber"/>
+                    value="number,name,type,time,state,locationFromNumber,locationToNumber,description,companyName,userName,staff,address,invoiceNumber,stocktakingNumber"/>
             <option type="orderable"
-                    value="number,name,type,time,state,locationFromNumber,locationToNumber,description,companyName,userName,staff,address,invoiceNumber"/>
+                    value="number,name,type,time,state,locationFromNumber,locationToNumber,description,companyName,userName,staff,address,invoiceNumber,stocktakingNumber"/>
 
             <option type="correspondingView" value="materialFlowResources/documentDetails"/>
             <option type="correspondingComponent" value="form"/>
