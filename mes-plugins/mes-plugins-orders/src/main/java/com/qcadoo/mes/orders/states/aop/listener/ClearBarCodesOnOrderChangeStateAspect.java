@@ -1,5 +1,8 @@
 package com.qcadoo.mes.orders.states.aop.listener;
 
+import com.qcadoo.mes.orders.constants.OrderFields;
+import com.qcadoo.mes.technologies.BarcodeOperationComponentService;
+import com.qcadoo.mes.technologies.constants.TechnologyFields;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.annotation.Pointcut;
@@ -19,6 +22,8 @@ import com.qcadoo.mes.states.aop.AbstractStateListenerAspect;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.plugin.api.RunIfEnabled;
 
+import java.util.List;
+
 @Aspect
 @Configurable
 @RunIfEnabled(OrdersConstants.PLUGIN_IDENTIFIER)
@@ -27,9 +32,29 @@ public class ClearBarCodesOnOrderChangeStateAspect extends AbstractStateListener
     @Autowired
     private NamedParameterJdbcTemplate jdbcTemplate;
 
+    @Autowired
+    private BarcodeOperationComponentService barcodeOperationComponentService;
+
     @Pointcut(OrderStateChangeAspect.SELECTOR_POINTCUT)
     protected void targetServicePointcut() {
         // empty by design
+    }
+
+    @RunInPhase(OrderStateChangePhase.LAST)
+    @RunForStateTransition(targetState = OrderStateStringValues.ACCEPTED)
+    @Before(PHASE_EXECUTION_POINTCUT)
+    public void afterAccepting(final StateChangeContext stateChangeContext, final int phase) {
+        final Entity order = stateChangeContext.getOwner();
+        Entity technology = order.getBelongsToField(OrderFields.TECHNOLOGY);
+
+        if (technology != null) {
+            List<Entity> tocs = technology
+                    .getHasManyField(TechnologyFields.OPERATION_COMPONENTS);
+
+            for (Entity toc : tocs) {
+                barcodeOperationComponentService.createBarcodeOperationComponent(order, toc);
+            }
+        }
     }
 
     @RunInPhase(OrderStateChangePhase.LAST)

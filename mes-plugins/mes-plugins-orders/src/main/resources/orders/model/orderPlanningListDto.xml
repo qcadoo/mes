@@ -46,6 +46,11 @@
         <string name="productNumber"/>
         <string name="productName"/>
         <string name="additionalFinalProducts"/>
+        <string name="assortmentName"/>
+        <string name="productSize"/>
+        <string name="technologyGroupNumber"/>
+        <string name="finalProductNumber"/>
+        <string name="orderCode"/>
 
         <string name="unit"/>
         <string name="unitForAdditionalUnit"/>
