@@ -34,6 +34,7 @@ import com.qcadoo.mes.basic.constants.ProductAttributeValueFields;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.basic.constants.StaffFields;
 import com.qcadoo.mes.basic.constants.UnitConversionItemFieldsB;
+import com.qcadoo.mes.materialFlow.constants.LocationFields;
 import com.qcadoo.mes.materialFlowResources.DocumentPositionService;
 import com.qcadoo.mes.materialFlowResources.PalletValidatorService;
 import com.qcadoo.mes.materialFlowResources.constants.*;
@@ -42,6 +43,7 @@ import com.qcadoo.mes.materialFlowResources.helpers.NotEnoughResourcesErrorMessa
 import com.qcadoo.mes.materialFlowResources.helpers.NotEnoughResourcesErrorMessageHolder;
 import com.qcadoo.mes.materialFlowResources.helpers.NotEnoughResourcesErrorMessageHolderFactory;
 import com.qcadoo.model.api.*;
+import com.qcadoo.model.api.exception.EntityRuntimeException;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchOrder;
 import com.qcadoo.model.api.search.SearchOrders;
@@ -1174,7 +1176,10 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
         LOGGER.warn("FILL RESOURCES ENDED WITH ERRORS FOR DOCUMENT: id = " + document.getId() + " number = "
                 + document.getStringField(DocumentFields.NUMBER));
 
-        throw new IllegalStateException("Unable to fill resources in document.");
+        position.addGlobalError("materialFlow.error.position.quantity.notEnoughResources",
+                product.getStringField(ProductFields.NUMBER), warehouse.getStringField(LocationFields.NUMBER));
+
+        throw new EntityRuntimeException(position);
     }
 
     private List<Entity> getResourcesForStocktaking(final Entity warehouse, final Entity product,
@@ -1243,8 +1248,8 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
                     scb.add(SearchRestrictions.isNull(ResourceFields.TYPE_OF_LOAD_UNIT));
                 }
 
-                if (Objects.nonNull(position.getBelongsToField(PositionFields.EXPIRATION_DATE))) {
-                    scb.add(SearchRestrictions.eq(ResourceFields.EXPIRATION_DATE, position.getBelongsToField(PositionFields.EXPIRATION_DATE)));
+                if (Objects.nonNull(position.getDateField(PositionFields.EXPIRATION_DATE))) {
+                    scb.add(SearchRestrictions.eq(ResourceFields.EXPIRATION_DATE, position.getDateField(PositionFields.EXPIRATION_DATE)));
                 } else {
                     scb.add(SearchRestrictions.isNull(ResourceFields.EXPIRATION_DATE));
                 }

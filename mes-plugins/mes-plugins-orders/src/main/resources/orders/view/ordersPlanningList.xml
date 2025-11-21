@@ -283,6 +283,11 @@
             <option type="column" name="orderCategory" fields="orderCategory" width="40"/>
             <option type="column" name="company" fields="company"
                     width="40"/>
+            <option type="column" name="orderCode" fields="orderCode"/>
+            <option type="column" name="finalProductNumber" fields="finalProductNumber"/>
+            <option type="column" name="technologyGroupNumber" fields="technologyGroupNumber"/>
+            <option type="column" name="productSize" fields="productSize"/>
+            <option type="column" name="assortmentName" fields="assortmentName"/>
 
             <option type="column" name="salesPlanNumber" fields="salesPlanNumber" width="50"/>
 
@@ -295,11 +300,11 @@
             <option type="order" column="dateFrom" direction="desc"/>
 
             <option type="searchable"
-                    value="additionalFinalProducts,doneInPercentage,name,number,description,state,productNumber,salesPlanNumber,dateFrom,dateTo,deadline,daysToDeadline,plannedQuantity,plannedQuantityForAdditionalUnit,unit,unitForAdditionalUnit,productionLineNumber,productionLinePlace,productionLine,orderCategory,amountOfProductProduced,wastesQuantity,remainingAmountOfProductToProduce,company,hasPacks,priority,dateChange"/>
+                    value="additionalFinalProducts,doneInPercentage,name,number,description,state,productNumber,salesPlanNumber,dateFrom,dateTo,deadline,daysToDeadline,plannedQuantity,plannedQuantityForAdditionalUnit,unit,unitForAdditionalUnit,productionLineNumber,productionLinePlace,productionLine,orderCategory,amountOfProductProduced,wastesQuantity,remainingAmountOfProductToProduce,company,hasPacks,priority,dateChange,assortmentName,productSize,technologyGroupNumber,finalProductNumber,orderCode"/>
             <option type="multiSearch"
-                    value="additionalFinalProducts,doneInPercentage,name,number,description,state,productNumber,salesPlanNumber,dateFrom,dateTo,deadline,daysToDeadline,plannedQuantity,plannedQuantityForAdditionalUnit,unit,unitForAdditionalUnit,productionLineNumber,productionLinePlace,productionLine,orderCategory,amountOfProductProduced,wastesQuantity,remainingAmountOfProductToProduce,company,hasPacks,priority,dateChange"/>
+                    value="additionalFinalProducts,doneInPercentage,name,number,description,state,productNumber,salesPlanNumber,dateFrom,dateTo,deadline,daysToDeadline,plannedQuantity,plannedQuantityForAdditionalUnit,unit,unitForAdditionalUnit,productionLineNumber,productionLinePlace,productionLine,orderCategory,amountOfProductProduced,wastesQuantity,remainingAmountOfProductToProduce,company,hasPacks,priority,dateChange,assortmentName,productSize,technologyGroupNumber,finalProductNumber,orderCode"/>
             <option type="orderable"
-                    value="additionalFinalProducts,doneInPercentage,name,number,description,state,productNumber,salesPlanNumber,dateFrom,dateTo,deadline,daysToDeadline,plannedQuantity,plannedQuantityForAdditionalUnit,unit,unitForAdditionalUnit,productionLineNumber,productionLinePlace,productionLine,orderCategory,amountOfProductProduced,wastesQuantity,remainingAmountOfProductToProduce,company,hasPacks,priority,dateChange"/>
+                    value="additionalFinalProducts,doneInPercentage,name,number,description,state,productNumber,salesPlanNumber,dateFrom,dateTo,deadline,daysToDeadline,plannedQuantity,plannedQuantityForAdditionalUnit,unit,unitForAdditionalUnit,productionLineNumber,productionLinePlace,productionLine,orderCategory,amountOfProductProduced,wastesQuantity,remainingAmountOfProductToProduce,company,hasPacks,priority,dateChange,assortmentName,productSize,technologyGroupNumber,finalProductNumber,orderCode"/>
 
             <option type="correspondingView" value="orders/orderDetails"/>
             <option type="correspondingComponent" value="form"/>
