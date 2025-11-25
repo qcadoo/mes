@@ -419,11 +419,12 @@
                 <option type="column" name="paymentID" fields="paymentID" width="50"/>
                 <option type="column" name="relatedDelivery" fields="relatedDelivery"
                         expression="#relatedDelivery['number']" width="50"/>
+                <option type="column" name="createUser" fields="createUser"/>
 
                 <option type="order" column="number" direction="desc"/>
 
-                <option type="searchable" value="name,number,supplierName,deliveryDate,contractorCategory,state,createDate,location,dateOfSendingEmail,releasedForPayment,paymentID,relatedDelivery"/>
-                <option type="orderable" value="name,number,supplierName,deliveryDate,contractorCategory,state,createDate,location,dateOfSendingEmail,releasedForPayment,paymentID,relatedDelivery"/>
+                <option type="searchable" value="name,number,supplierName,deliveryDate,contractorCategory,state,createDate,location,dateOfSendingEmail,releasedForPayment,paymentID,relatedDelivery,createUser"/>
+                <option type="orderable" value="name,number,supplierName,deliveryDate,contractorCategory,state,createDate,location,dateOfSendingEmail,releasedForPayment,paymentID,relatedDelivery,createUser"/>
 
                 <option type="correspondingView" value="deliveries/deliveryDetails"/>
                 <option type="correspondingComponent" value="form"/>
