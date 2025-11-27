@@ -1027,16 +1027,27 @@
         </windowTab>
         <windowTab name="paymentTab" reference="paymentTab">
             <component type="gridLayout" name="gridLayout" columns="3"
-                       rows="2">
+                       rows="5">
                 <layoutElement column="1" row="1">
                     <component type="checkbox" name="releasedForPayment"
                                reference="releasedForPayment" field="#{form}.releasedForPayment">
                         <listener event="onChange"
-                                  class="com.qcadoo.view.api.listeners.RerenderListener"
-                                  method="onChangeRerender"/>
+                                  class="com.qcadoo.mes.deliveries.listeners.DeliveryDetailsListeners"
+                                  method="onReleasedForPaymentChange"/>
                     </component>
                 </layoutElement>
                 <layoutElement column="1" row="2">
+                    <component type="calendar" name="dateOfReleasedForPayment" field="#{form}.dateOfReleasedForPayment" reference="dateOfReleasedForPayment" defaultEnabled="never"/>
+                </layoutElement>
+                <layoutElement column="1" row="3">
+                    <component type="checkbox" name="paid"
+                               reference="paid" field="#{form}.paid">
+                    </component>
+                </layoutElement>
+                <layoutElement column="1" row="4">
+                    <component type="calendar" name="paymentDate" field="#{form}.paymentDate" reference="paymentDate"/>
+                </layoutElement>
+                <layoutElement column="1" row="5">
                     <component type="input" name="paymentID" field="#{form}.paymentID"
                                reference="paymentID">
                     </component>

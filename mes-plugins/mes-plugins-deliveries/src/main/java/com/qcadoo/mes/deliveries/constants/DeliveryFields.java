@@ -87,7 +87,10 @@ public final class DeliveryFields {
 
     public static final String DATE_OF_SENDING_EMAIL = "dateOfSendingEmail";
     public static final String RELEASED_FOR_PAYMENT = "releasedForPayment";
+    public static final String DATE_OF_RELEASED_FOR_PAYMENT = "dateOfReleasedForPayment";
 
     public static final String PAYMENT_ID = "paymentID";
+    public static final String PAYMENT_DATE = "paymentDate";
+    public static final String PAID = "paid";
 
 }

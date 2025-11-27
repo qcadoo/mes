@@ -137,12 +137,19 @@ public class DeliveryDetailsHooks {
             paymentTab.setVisible(true);
             CheckBoxComponent releasedForPayment = (CheckBoxComponent) view
                     .getComponentByReference(DeliveryFields.RELEASED_FOR_PAYMENT);
+            CheckBoxComponent paid = (CheckBoxComponent) view
+                    .getComponentByReference(DeliveryFields.PAID);
+            FieldComponent paymentDate = (FieldComponent) view.getComponentByReference(DeliveryFields.PAYMENT_DATE);
             FieldComponent paymentID = (FieldComponent) view.getComponentByReference(DeliveryFields.PAYMENT_ID);
             if (releasedForPayment.isChecked()) {
                 paymentID.setEnabled(true);
+                paid.setEnabled(true);
+                paymentDate.setEnabled(true);
             } else {
                 paymentID.setFieldValue(null);
                 paymentID.setEnabled(false);
+                paid.setEnabled(false);
+                paymentDate.setEnabled(false);
             }
             FieldComponent stateField = (FieldComponent) view.getComponentByReference(DeliveryFields.STATE);
 

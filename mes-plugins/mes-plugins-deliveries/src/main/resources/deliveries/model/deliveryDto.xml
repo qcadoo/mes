@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    ***************************************************************************
+    Copyright (c) 2010 Qcadoo Limited
+    Project: Qcadoo MES
+    Version: 1.4
+
+    This file is part of Qcadoo.
+
+    Qcadoo is free software; you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as published
+    by the Free Software Foundation; either version 3 of the License,
+    or (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty
+    of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+    See the GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+    ***************************************************************************
+
+-->
+<model name="deliveryDto" activable="false" auditable="false" deletable="false" insertable="false"
+       updatable="false"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
+       xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
+
+    <fields>
+        <string name="number"/>
+        <string name="name"/>
+        <string name="supplierName"/>
+        <string name="contractorCategory"/>
+        <datetime name="deliveryDate"/>
+        <enum name="state"
+              values="01draft,02prepared,03duringCorrection,04declined,05approved,06received,07accepted"/>
+        <datetime name="createDate"/>
+        <string name="locationNumber"/>
+        <datetime name="dateOfSendingEmail"/>
+        <boolean name="releasedForPayment"/>
+        <string name="paymentID"/>
+        <boolean name="paid"/>
+        <date name="paymentDate"/>
+        <integer name="repaymentTime"/>
+        <string name="relatedDeliveryNumber"/>
+        <string name="createUser"/>
+        <string name="paidCellColor"/>
+        <boolean name="wms"/>
+        <enum name="stateInWMS" values="01waiting,02inProgress,03delayed,04realized"/>
+    </fields>
+
+    <masterModel plugin="deliveries" model="delivery"/>
+</model>

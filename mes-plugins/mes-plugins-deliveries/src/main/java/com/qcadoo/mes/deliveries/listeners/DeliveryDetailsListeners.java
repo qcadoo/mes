@@ -3,19 +3,19 @@
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
  * Version: 1.4
- *
+ * <p>
  * This file is part of Qcadoo.
- *
+ * <p>
  * Qcadoo is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation; either version 3 of the License,
  * or (at your option) any later version.
- *
+ * <p>
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty
  * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU Affero General Public License for more details.
- *
+ * <p>
  * You should have received a copy of the GNU Affero General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
@@ -25,6 +25,7 @@ package com.qcadoo.mes.deliveries.listeners;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.qcadoo.localization.api.utils.DateUtils;
 import com.qcadoo.mes.basic.CalculationQuantityService;
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.basic.constants.*;
@@ -45,10 +46,7 @@ import com.qcadoo.report.api.pdf.PdfHelper;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ComponentState.MessageType;
 import com.qcadoo.view.api.ViewDefinitionState;
-import com.qcadoo.view.api.components.FieldComponent;
-import com.qcadoo.view.api.components.FormComponent;
-import com.qcadoo.view.api.components.GridComponent;
-import com.qcadoo.view.api.components.LookupComponent;
+import com.qcadoo.view.api.components.*;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
 import com.qcadoo.view.constants.QcadooViewConstants;
 import org.apache.commons.lang3.StringUtils;
@@ -920,6 +918,17 @@ public class DeliveryDetailsListeners {
         }
 
         view.redirectTo(fileService.getUrl(zipFile.getAbsolutePath()) + "?clean", true, false);
+    }
+
+    public void onReleasedForPaymentChange(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        CheckBoxComponent releasedForPayment = (CheckBoxComponent) view
+                .getComponentByReference(DeliveryFields.RELEASED_FOR_PAYMENT);
+        FieldComponent dateOfReleasedForPaymentField = (FieldComponent) view.getComponentByReference(DeliveryFields.DATE_OF_RELEASED_FOR_PAYMENT);
+        if (releasedForPayment.isChecked()) {
+            dateOfReleasedForPaymentField.setFieldValue(DateUtils.toDateString(new Date()));
+        } else {
+            dateOfReleasedForPaymentField.setFieldValue(null);
+        }
     }
 
     private DataDefinition getDeliveredProductMultiPositionDD() {

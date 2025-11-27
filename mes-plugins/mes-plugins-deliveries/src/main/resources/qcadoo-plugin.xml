@@ -73,6 +73,7 @@
         <model:model model="columnForDeliveries" resource="model/columnForDeliveries.xml"/>
         <model:model model="columnForOrders" resource="model/columnForOrders.xml"/>
         <model:model model="delivery" resource="model/delivery.xml"/>
+        <model:model model="deliveryDto" resource="model/deliveryDto.xml"/>
         <model:model model="deliveredProduct" resource="model/deliveredProduct.xml"/>
         <model:model model="deliveredProductDto" resource="model/deliveredProductDto.xml"/>
         <model:model model="deliveredProductMulti" resource="model/deliveredProductMulti.xml"/>
