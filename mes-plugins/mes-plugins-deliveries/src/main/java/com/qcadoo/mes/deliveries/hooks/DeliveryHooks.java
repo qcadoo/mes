@@ -78,6 +78,7 @@ public class DeliveryHooks {
         setInitialState(delivery);
         clearFieldsOnCopy(delivery);
         delivery.setField(DeliveryFields.RELEASED_FOR_PAYMENT, false);
+        delivery.setField(DeliveryFields.PAID, false);
     }
 
     public void onView(final DataDefinition deliveryDD, final Entity delivery) {
