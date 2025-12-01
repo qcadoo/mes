@@ -291,12 +291,12 @@
         <windowTab name="differencesTab" reference="differencesTab">
             <component type="grid" name="differences" source="#{form}.differences"
                        reference="differences">
-                <option type="column" name="storageLocation" fields="storageLocation" expression="#storageLocation['number']"/>
-                <option type="column" name="palletNumber" fields="palletNumber" expression="#palletNumber['number']" width="30"/>
-                <option type="column" name="typeOfLoadUnit" fields="typeOfLoadUnit" expression="#typeOfLoadUnit['name']"
+                <option type="column" name="storageLocation" fields="storageLocation" expression="#storageLocation['number']" link="true"/>
+                <option type="column" name="palletNumber" fields="palletNumber" expression="#palletNumber['number']" link="true" width="30"/>
+                <option type="column" name="typeOfLoadUnit" fields="typeOfLoadUnit" expression="#typeOfLoadUnit['name']" link="true"
                         width="50"/>
-                <option type="column" name="productNumber" fields="product" expression="#product['number']"/>
-                <option type="column" name="productName" fields="product" expression="#product['name']"/>
+                <option type="column" name="productNumber" fields="product" expression="#product['number']" link="true"/>
+                <option type="column" name="productName" fields="product" expression="#product['name']" link="true"/>
                 <option type="column" name="batch" fields="batch" expression="#batch['number']" width="30"/>
                 <option type="column" name="expirationDate" fields="expirationDate"/>
                 <option type="column" name="type" fields="type"/>
@@ -305,13 +305,18 @@
                 <option type="column" name="unit" fields="product" expression="#product['unit']" width="30"/>
                 <option type="column" name="additionalUnit" fields="product" expression="#product['additionalUnit'] != null ? #product['additionalUnit'] : #product['unit']" width="30"/>
                 <option type="column" name="conversion" fields="conversion" width="80"/>
+                <option type="column" name="price" fields="price"/>
+                <option type="column" name="description" fields="description"/>
 
                 <option type="order" column="storageLocation" direction="asc"/>
 
                 <option type="searchable"
-                        value="storageLocation,palletNumber,typeOfLoadUnit,productNumber,productName,batch,expirationDate,type,quantity,quantityInAdditionalUnit,conversion,unit"/>
+                        value="storageLocation,palletNumber,typeOfLoadUnit,productNumber,productName,batch,expirationDate,type,quantity,quantityInAdditionalUnit,conversion,unit,price,description"/>
                 <option type="orderable"
-                        value="storageLocation,palletNumber,typeOfLoadUnit,productNumber,productName,batch,expirationDate,type,quantity,quantityInAdditionalUnit,conversion,unit"/>
+                        value="storageLocation,palletNumber,typeOfLoadUnit,productNumber,productName,batch,expirationDate,type,quantity,quantityInAdditionalUnit,conversion,unit,price,description"/>
+
+                <option type="correspondingView" value="materialFlowResources/stocktakingDifferenceDetails"/>
+                <option type="correspondingComponent" value="form"/>
 
                 <option type="fullscreen" value="true"/>
                 <option type="fixedHeight" value="true"/>

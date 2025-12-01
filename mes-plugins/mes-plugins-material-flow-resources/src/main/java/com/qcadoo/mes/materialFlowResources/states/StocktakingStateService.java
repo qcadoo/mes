@@ -226,7 +226,7 @@ public class StocktakingStateService extends BasicStateService implements Stockt
                             difference.getDecimalField(StocktakingDifferenceFields.QUANTITY),
                             difference.getDecimalField(StocktakingDifferenceFields.QUANTITY_IN_ADDITIONAL_UNIT),
                             Optional.ofNullable(product.getStringField(ProductFields.ADDITIONAL_UNIT)).orElse(product.getStringField(ProductFields.UNIT)),
-                            difference.getDecimalField(StocktakingDifferenceFields.CONVERSION), null,
+                            difference.getDecimalField(StocktakingDifferenceFields.CONVERSION), difference.getDecimalField(StocktakingDifferenceFields.PRICE),
                             difference.getBelongsToField(StocktakingDifferenceFields.BATCH), null,
                             difference.getDateField(StocktakingDifferenceFields.EXPIRATION_DATE), null,
                             difference.getBelongsToField(StocktakingDifferenceFields.STORAGE_LOCATION),
