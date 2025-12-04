@@ -22,7 +22,7 @@
         </decimal>
         <decimal name="conversion" default="1"/>
         <decimal name="price">
-            <validatesRange from="0" exclusively="true"/>
+            <validatesRange from="0"/>
         </decimal>
         <string name="description">
             <validatesLength max="2048"/>

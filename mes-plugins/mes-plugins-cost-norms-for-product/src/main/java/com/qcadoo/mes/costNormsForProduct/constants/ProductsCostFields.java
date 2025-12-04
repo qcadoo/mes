@@ -21,7 +21,7 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.costNormsForMaterials.constants;
+package com.qcadoo.mes.costNormsForProduct.constants;
 
 import org.apache.commons.lang3.StringUtils;
 

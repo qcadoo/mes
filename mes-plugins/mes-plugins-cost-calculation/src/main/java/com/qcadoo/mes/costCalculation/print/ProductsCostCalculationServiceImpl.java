@@ -26,7 +26,7 @@ package com.qcadoo.mes.costCalculation.print;
 import com.qcadoo.mes.basic.constants.CurrencyFields;
 import com.qcadoo.mes.basic.util.CurrencyService;
 import com.qcadoo.mes.costCalculation.constants.CostCalculationFields;
-import com.qcadoo.mes.costNormsForMaterials.constants.ProductsCostFields;
+import com.qcadoo.mes.costNormsForProduct.constants.ProductsCostFields;
 import com.qcadoo.mes.costNormsForProduct.constants.ProductFieldsCNFP;
 import com.qcadoo.mes.supplyNegotiations.SupplyNegotiationsService;
 import com.qcadoo.mes.technologies.constants.OperationProductInComponentFields;

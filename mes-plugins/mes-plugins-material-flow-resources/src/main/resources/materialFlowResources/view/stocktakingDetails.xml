@@ -72,6 +72,21 @@
                     </script>
                 </smallButton>
             </group>
+            <group name="prices">
+                <bigButton name="fillPrices" icon="genealogyIcon24.png" state="disabled">
+                    <script>
+                        <![CDATA[
+                            this.addOnChangeListener({
+                                onClick: function() {
+                                    if(window.canClose()) {
+                                        #{form}.performEvent('fillPrices', []);
+                                    }
+                                }
+                            });
+                        ]]>
+                    </script>
+                </bigButton>
+            </group>
         </ribbon>
 
         <windowTab name="mainTab" reference="mainTab">
@@ -249,6 +264,9 @@
                 <listener event="changeState"
                           class="com.qcadoo.mes.materialFlowResources.listeners.StocktakingDetailsListeners"
                           method="changeState"/>
+                <listener event="fillPrices"
+                          class="com.qcadoo.mes.materialFlowResources.listeners.StocktakingDetailsListeners"
+                          method="fillPrices"/>
             </component>
         </windowTab>
 
@@ -291,6 +309,29 @@
         <windowTab name="differencesTab" reference="differencesTab">
             <component type="grid" name="differences" source="#{form}.differences"
                        reference="differences">
+                <script>
+                    <![CDATA[
+                            var fillPrices = #{window}.getRibbonItem("prices.fillPrices");
+
+                            var listener = {
+                                onChange: function(selectedEntitiesArray) {
+                                    var enabled = selectedEntitiesArray.length > 0;
+                                    for (var i in selectedEntitiesArray) {
+                                        if (selectedEntitiesArray[i].fields.type == '01shortage') {
+                                            enabled = false;
+                                            break;
+                                        }
+                                    }
+                                    if(enabled) {
+                                        fillPrices.enable("#{translate(materialFlowResources.stocktakingDetails.window.ribbon.prices.fillPrices.description)}");
+                                    } else {
+                                        fillPrices.disable("#{translate(materialFlowResources.stocktakingDetails.window.ribbon.prices.fillPrices.description)}");
+                                    }
+                                }
+                            }
+                            this.addOnChangeListener(listener);
+                        ]]>
+                </script>
                 <option type="column" name="storageLocation" fields="storageLocation" expression="#storageLocation['number']" link="true"/>
                 <option type="column" name="palletNumber" fields="palletNumber" expression="#palletNumber['number']" link="true" width="30"/>
                 <option type="column" name="typeOfLoadUnit" fields="typeOfLoadUnit" expression="#typeOfLoadUnit['name']" link="true"
@@ -319,6 +360,7 @@
                 <option type="correspondingComponent" value="form"/>
 
                 <option type="fullscreen" value="true"/>
+                <option type="multiselect" value="true"/>
                 <option type="fixedHeight" value="true"/>
             </component>
         </windowTab>
