@@ -34,6 +34,7 @@ import com.qcadoo.mes.states.constants.StateChangeStatus;
 import com.qcadoo.mes.states.messages.constants.StateMessageType;
 import com.qcadoo.mes.technologies.TechnologyService;
 import com.qcadoo.mes.technologies.constants.*;
+import com.qcadoo.mes.technologies.states.constants.TechnologyStateStringValues;
 import com.qcadoo.mes.technologies.tree.ProductStructureTreeService;
 import com.qcadoo.mes.technologies.tree.TechnologyTreeValidationService;
 import com.qcadoo.model.api.*;
@@ -703,7 +704,7 @@ public class TechnologyValidationService {
         return true;
     }
 
-    public boolean checkTechnologyCycles(final StateChangeContext stateChangeContext) {
+    public boolean checkTechnologyCycles(final StateChangeContext stateChangeContext, String targetState) {
         Entity technology = stateChangeContext.getOwner();
 
         Set<Long> usedTechnologies = Sets.newHashSet();
@@ -713,14 +714,18 @@ public class TechnologyValidationService {
         Entity product = technology.getBelongsToField(TechnologyFields.PRODUCT);
         Entity operation = productStructureTreeService.findOperationForProductAndTechnology(product, technology);
 
-        return checkCycleForSubProducts(stateChangeContext, operation, usedTechnologies);
+        return checkCycleForSubProducts(stateChangeContext, operation, usedTechnologies, targetState);
     }
 
     private boolean checkCycleForSubProducts(final StateChangeContext stateChangeContext, final Entity operation,
-                                             final Set<Long> usedTechnologies) {
+                                             final Set<Long> usedTechnologies, String targetState) {
         if (Objects.isNull(operation)) {
             return true;
         }
+
+        Entity parameter = parameterService.getParameter();
+
+        boolean checkDuplicateCyclesThroughoutProductStructure = parameter.getBooleanField(ParameterFieldsT.CHECK_DUPLICATE_CYCLES_THROUGHOUT_PRODUCT_STRUCTURE);
 
         EntityList productInComponents = operation
                 .getHasManyField(TechnologyOperationComponentFields.OPERATION_PRODUCT_IN_COMPONENTS);
@@ -742,7 +747,7 @@ public class TechnologyValidationService {
                             product.getStringField(ProductFields.NUMBER) + " " + product.getStringField(ProductFields.NAME));
 
                     return false;
-                } else {
+                } else if (checkDuplicateCyclesThroughoutProductStructure || TechnologyStateStringValues.ACCEPTED.equals(targetState)) {
                     if (Objects.isNull(subOperation)) {
                         Entity operationForTechnology = productStructureTreeService.findOperationForProductAndTechnology(product,
                                 subTechnology);
@@ -750,13 +755,13 @@ public class TechnologyValidationService {
                         copyUsedTechnologies.add(subTechnology.getId());
 
                         boolean hasNotCycle = checkCycleForSubProducts(stateChangeContext, operationForTechnology,
-                                copyUsedTechnologies);
+                                copyUsedTechnologies, targetState);
 
                         if (!hasNotCycle) {
                             return false;
                         }
                     } else {
-                        boolean hasNotCycle = checkCycleForSubProducts(stateChangeContext, subOperation, copyUsedTechnologies);
+                        boolean hasNotCycle = checkCycleForSubProducts(stateChangeContext, subOperation, copyUsedTechnologies, targetState);
 
                         if (!hasNotCycle) {
                             return false;
@@ -764,7 +769,7 @@ public class TechnologyValidationService {
                     }
                 }
             } else if (Objects.nonNull(subOperation)) {
-                boolean hasNotCycle = checkCycleForSubProducts(stateChangeContext, subOperation, copyUsedTechnologies);
+                boolean hasNotCycle = checkCycleForSubProducts(stateChangeContext, subOperation, copyUsedTechnologies, targetState);
 
                 if (!hasNotCycle) {
                     return false;

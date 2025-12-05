@@ -111,7 +111,7 @@
                         </component>
                     </layoutElement>
                     <layoutElement column="2" row="1">
-                        <component type="gridLayout" name="rightGridLayout" columns="1" rows="2">
+                        <component type="gridLayout" name="rightGridLayout" columns="1" rows="3">
                             <layoutElement column="1" row="1">
                                 <component type="checkbox" name="updateTechnologiesOnPendingOrders"
                                            field="#{form}.updateTechnologiesOnPendingOrders"
@@ -120,6 +120,13 @@
                                 </component>
                             </layoutElement>
                             <layoutElement column="1" row="2">
+                                <component type="checkbox" name="checkDuplicateCyclesThroughoutProductStructure"
+                                           field="#{form}.checkDuplicateCyclesThroughoutProductStructure"
+                                           reference="checkDuplicateCyclesThroughoutProductStructure" hasDescription="true">
+                                    <option type="labelWidth" value="60"/>
+                                </component>
+                            </layoutElement>
+                            <layoutElement column="1" row="3">
                                 <component type="borderLayout" name="dimensionControlBorderLayout">
                                     <component type="gridLayout" name="dimensionControlGridLayout"
                                                columns="1" rows="2">
