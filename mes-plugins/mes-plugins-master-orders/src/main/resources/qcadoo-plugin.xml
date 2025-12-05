@@ -248,6 +248,14 @@
             <model:belongsTo name="salesPlan" model="salesPlan" plugin="masterOrders" copyable="false"/>
         </model:model-field>
 
+        <model:model-field plugin="deliveries" model="deliveryDto">
+            <model:string name="salesPlanNumber"/>
+        </model:model-field>
+
+        <model:model-field plugin="deliveries" model="deliveryDto">
+            <model:string name="salesPlanName"/>
+        </model:model-field>
+
         <model:model-field plugin="basic" model="attribute">
             <model:hasMany name="masterOrderProductAttrValues" plugin="masterOrders" joinField="attribute"
                            model="masterOrderProductAttrValue"/>
@@ -462,12 +470,12 @@
 
         <view:view-grid-column plugin="deliveries"
                                view="deliveriesList" component="grid">
-            <view:column name="salesPlanNumber" fields="salesPlan" expression="#salesPlan?.get('number')" orderable="true" multiSearch="true" searchable="true"
+            <view:column name="salesPlanNumber" fields="salesPlanNumber" orderable="true" multiSearch="true" searchable="true"
                          width="50"/>
         </view:view-grid-column>
         <view:view-grid-column plugin="deliveries"
                                view="deliveriesList" component="grid">
-            <view:column name="salesPlanName" fields="salesPlan" expression="#salesPlan?.get('name')" orderable="true" multiSearch="true" searchable="true"
+            <view:column name="salesPlanName" fields="salesPlanName" orderable="true" multiSearch="true" searchable="true"
                          width="50"/>
         </view:view-grid-column>
 

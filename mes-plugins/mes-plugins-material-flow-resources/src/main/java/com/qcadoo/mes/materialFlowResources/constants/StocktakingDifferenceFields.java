@@ -26,4 +26,8 @@ public final class StocktakingDifferenceFields {
 
     public static final String CONVERSION = "conversion";
 
+    public static final String PRICE = "price";
+
+    public static final String STOCKTAKING = "stocktaking";
+
 }

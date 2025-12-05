@@ -5,9 +5,12 @@ import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.basic.constants.CompanyFields;
 import com.qcadoo.mes.basic.constants.ParameterFields;
+import com.qcadoo.mes.deliveries.constants.DeliveriesConstants;
 import com.qcadoo.mes.deliveries.constants.DeliveryFields;
 import com.qcadoo.mes.deliveries.constants.ParameterFieldsD;
 import com.qcadoo.mes.deliveries.print.OrderReportPdf;
+import com.qcadoo.model.api.DataDefinition;
+import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.file.FileService;
 import com.qcadoo.report.api.ReportService;
@@ -51,6 +54,9 @@ public class DeliveriesListListeners {
 
     @Autowired
     private FileService fileService;
+
+    @Autowired
+    private DataDefinitionService dataDefinitionService;
 
     public JavaMailSender getMailSender(Entity parameter) {
         JavaMailSenderImpl ms = new JavaMailSenderImpl();
@@ -206,9 +212,14 @@ public class DeliveriesListListeners {
                                   final String[] args) {
         GridComponent gridComponent = (GridComponent) view.getComponentByReference(QcadooViewConstants.L_GRID);
 
-        for (Entity delivery : gridComponent.getSelectedEntities()) {
+        DataDefinition deliveryDD = dataDefinitionService.get(DeliveriesConstants.PLUGIN_IDENTIFIER,
+                DeliveriesConstants.MODEL_DELIVERY);
+        Date date = new Date();
+        for (Entity deliveryDto : gridComponent.getSelectedEntities()) {
+            Entity delivery = deliveryDD.get(deliveryDto.getId());
             delivery.setField(DeliveryFields.RELEASED_FOR_PAYMENT, true);
-            delivery.getDataDefinition().save(delivery);
+            delivery.setField(DeliveryFields.DATE_OF_RELEASED_FOR_PAYMENT, date);
+            deliveryDD.save(delivery);
         }
 
         state.addMessage(

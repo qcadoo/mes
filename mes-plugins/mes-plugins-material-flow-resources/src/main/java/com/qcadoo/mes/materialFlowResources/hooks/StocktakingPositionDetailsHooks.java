@@ -41,12 +41,12 @@ public class StocktakingPositionDetailsHooks {
     private BatchCriteriaModifier batchCriteriaModifier;
 
     public void onBeforeRender(final ViewDefinitionState view) {
-        FormComponent stocktakingForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
+        FormComponent stocktakingPositionForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
-        Entity stocktakingPosition = stocktakingForm.getPersistedEntityWithIncludedFormValues();
+        Entity stocktakingPosition = stocktakingPositionForm.getPersistedEntityWithIncludedFormValues();
 
         materialFlowResourcesService.fillUnitFieldValues(view);
-        fillUnitField(view, stocktakingForm);
+        fillUnitField(view, stocktakingPositionForm);
 
         setStorageLocationLookupFilterValue(view, stocktakingPosition);
         setProductLookupCategoryFilterValue(view, stocktakingPosition);

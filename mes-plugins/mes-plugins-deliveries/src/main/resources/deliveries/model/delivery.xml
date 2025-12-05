@@ -96,6 +96,9 @@
         <string name="paymentID" copyable="false">
             <validatesLength max="255"/>
         </string>
+        <date name="dateOfReleasedForPayment" copyable="false"/>
+        <boolean name="paid" default="false" copyable="false"/>
+        <date name="paymentDate" copyable="false"/>
     </fields>
 
     <hooks>

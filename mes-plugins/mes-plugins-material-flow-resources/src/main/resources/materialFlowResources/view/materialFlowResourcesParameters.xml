@@ -163,6 +163,29 @@
                 </component>
             </component>
         </windowTab>
+        <windowTab name="stocktaking">
+            <component type="form" name="stocktakingForm"
+                       reference="stocktakingForm">
+                <component type="gridLayout" name="stocktakingGridLayout"
+                           reference="stocktakingGridLayout"
+                           columns="3" rows="2">
+                    <layoutElement column="1" row="1">
+                        <component type="select" name="stocktakingMaterialCostsUsed"
+                                   field="#{form}.stocktakingMaterialCostsUsed"
+                                   reference="stocktakingMaterialCostsUsed">
+                            <option type="labelWidth" value="40"/>
+                        </component>
+                    </layoutElement>
+                    <layoutElement column="1" row="2">
+                        <component type="checkbox" name="stocktakingUseNominalCostPriceNotSpecified"
+                                   field="#{form}.stocktakingUseNominalCostPriceNotSpecified"
+                                   reference="stocktakingUseNominalCostPriceNotSpecified" hasDescription="true">
+                            <option type="labelWidth" value="40"/>
+                        </component>
+                    </layoutElement>
+                </component>
+            </component>
+        </windowTab>
     </component>
 
     <hooks>

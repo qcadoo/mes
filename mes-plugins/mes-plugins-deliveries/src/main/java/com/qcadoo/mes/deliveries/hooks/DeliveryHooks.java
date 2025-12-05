@@ -72,12 +72,15 @@ public class DeliveryHooks {
         setDeliveryAddressDefaultValue(delivery);
         setDescriptionDefaultValue(delivery);
         setLocationDefaultValue(deliveryDD, delivery);
+        delivery.setField(DeliveryFields.RELEASED_FOR_PAYMENT, false);
+        delivery.setField(DeliveryFields.PAID, false);
     }
 
     public void onCopy(final DataDefinition deliveryDD, final Entity delivery) {
         setInitialState(delivery);
         clearFieldsOnCopy(delivery);
         delivery.setField(DeliveryFields.RELEASED_FOR_PAYMENT, false);
+        delivery.setField(DeliveryFields.PAID, false);
     }
 
     public void onView(final DataDefinition deliveryDD, final Entity delivery) {

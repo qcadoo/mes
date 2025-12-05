@@ -520,7 +520,7 @@ public class DeliveriesServiceImpl implements DeliveriesService {
         return pricePerUnit;
     }
 
-    private BigDecimal calculateTotalPrice(final BigDecimal quantity, final BigDecimal pricePerUnit) {
+    public BigDecimal calculateTotalPrice(final BigDecimal quantity, final BigDecimal pricePerUnit) {
         BigDecimal totalPrice;
 
         if (Objects.isNull(quantity) || (BigDecimal.ZERO.compareTo(quantity) == 0)) {

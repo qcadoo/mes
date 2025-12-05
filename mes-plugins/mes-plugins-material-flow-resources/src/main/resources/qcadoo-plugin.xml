@@ -526,6 +526,7 @@
         <view:view resource="view/palletBalancesList.xml"/>
 
         <view:view resource="view/stocktakingPositionDetails.xml"/>
+        <view:view resource="view/stocktakingDifferenceDetails.xml"/>
         <view:view resource="view/stocktakingDetails.xml"/>
         <view:view resource="view/stocktakingsList.xml"/>
 

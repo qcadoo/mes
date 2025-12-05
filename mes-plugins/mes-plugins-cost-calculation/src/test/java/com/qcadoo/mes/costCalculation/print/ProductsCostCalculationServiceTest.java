@@ -24,7 +24,7 @@
 package com.qcadoo.mes.costCalculation.print;
 
 import com.qcadoo.mes.basic.util.CurrencyService;
-import com.qcadoo.mes.costNormsForMaterials.constants.ProductsCostFields;
+import com.qcadoo.mes.costNormsForProduct.constants.ProductsCostFields;
 import com.qcadoo.mes.costNormsForProduct.constants.ProductFieldsCNFP;
 import com.qcadoo.model.api.BigDecimalUtils;
 import com.qcadoo.model.api.Entity;

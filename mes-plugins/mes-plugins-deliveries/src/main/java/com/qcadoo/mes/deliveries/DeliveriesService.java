@@ -317,4 +317,5 @@ public interface DeliveriesService {
 
     BigDecimal getConversion(final Entity product, String unit, String additionalUnit, BigDecimal dbConversion);
 
+    BigDecimal calculateTotalPrice(final BigDecimal quantity, final BigDecimal pricePerUnit);
 }

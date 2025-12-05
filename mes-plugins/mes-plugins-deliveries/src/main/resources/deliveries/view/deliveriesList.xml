@@ -24,7 +24,7 @@
     ***************************************************************************
 
 -->
-<view defaultAuthorizationRole="ROLE_DELIVERIES" name="deliveriesList" modelName="delivery" menuAccessible="true"
+<view defaultAuthorizationRole="ROLE_DELIVERIES" name="deliveriesList" modelName="deliveryDto" menuAccessible="true"
       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
       xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd">
 
@@ -405,25 +405,28 @@
 
                 <option type="column" name="number" fields="number" link="true" width="50"/>
                 <option type="column" name="name" fields="name" link="true" width="100"/>
-                <option type="column" name="supplierName" fields="supplier"
-                        expression="#supplier['name']"/>
-                <option type="column" name="contractorCategory" fields="supplier"
-                        expression="#supplier['contractorCategory']" width="70"/>
+                <option type="column" name="supplierName" fields="supplierName"/>
+                <option type="column" name="contractorCategory" fields="contractorCategory" width="70"/>
                 <option type="column" name="deliveryDate" fields="deliveryDate" width="100"/>
                 <option type="column" name="state" fields="state"/>
                 <option type="column" name="createDate" fields="createDate" width="100"/>
-                <option type="column" name="location" fields="location"
-                        expression="#location['number']"/>
+                <option type="column" name="locationNumber" fields="locationNumber"/>
                 <option type="column" name="dateOfSendingEmail" fields="dateOfSendingEmail" width="100"/>
                 <option type="column" name="releasedForPayment" fields="releasedForPayment" width="30"/>
                 <option type="column" name="paymentID" fields="paymentID" width="50"/>
-                <option type="column" name="relatedDelivery" fields="relatedDelivery"
-                        expression="#relatedDelivery['number']" width="50"/>
+                <option type="column" name="paid" fields="paid"
+                        classesCondition="rowObject['releasedForPayment'] == true"
+                        classesNames="rowObject['paidCellColor']"/>
+                <option type="column" name="paidCellColor" fields="paidCellColor" hidden="true"/>
+                <option type="column" name="paymentDate" fields="paymentDate"/>
+                <option type="column" name="repaymentTime" fields="repaymentTime"/>
+                <option type="column" name="relatedDeliveryNumber" fields="relatedDeliveryNumber" width="50"/>
+                <option type="column" name="createUser" fields="createUser"/>
 
                 <option type="order" column="number" direction="desc"/>
 
-                <option type="searchable" value="name,number,supplierName,deliveryDate,contractorCategory,state,createDate,location,dateOfSendingEmail,releasedForPayment,paymentID,relatedDelivery"/>
-                <option type="orderable" value="name,number,supplierName,deliveryDate,contractorCategory,state,createDate,location,dateOfSendingEmail,releasedForPayment,paymentID,relatedDelivery"/>
+                <option type="searchable" value="name,number,supplierName,deliveryDate,contractorCategory,state,createDate,locationNumber,dateOfSendingEmail,releasedForPayment,paymentID,relatedDeliveryNumber,createUser,paid,paymentDate,repaymentTime"/>
+                <option type="orderable" value="name,number,supplierName,deliveryDate,contractorCategory,state,createDate,locationNumber,dateOfSendingEmail,releasedForPayment,paymentID,relatedDeliveryNumber,createUser,paid,paymentDate,repaymentTime"/>
 
                 <option type="correspondingView" value="deliveries/deliveryDetails"/>
                 <option type="correspondingComponent" value="form"/>
