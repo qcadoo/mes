@@ -155,7 +155,6 @@ public class PalletNumberHelperReportPdf extends ReportPdfView {
         code128.setBarHeight(50F);
         code128.setX(3F);
         code128.setSize(16F);
-        code128.setFont(null);
 
         PdfContentByte cb = writer.getDirectContent();
 
