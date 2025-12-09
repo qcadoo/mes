@@ -50,6 +50,21 @@
 							]]>
 					</script>
 				</bigButton>
+				<bigButton name="printSmallPalletNumberHelperReport" icon="pdfIcon24.png"
+						   state="enabled">
+					<script>
+						<![CDATA[
+								this.addOnChangeListener({
+									onClick: function() {
+										#{form}.performEvent({
+											name : 'printSmallPalletNumberHelperReport',
+											args : ['pdf']
+										});
+									}
+								});
+							]]>
+					</script>
+				</bigButton>
 			</group>
 		</ribbon>
 
@@ -73,6 +88,10 @@
 			<listener event="printPalletNumberHelperReport"
 					  class="com.qcadoo.mes.basic.listeners.PalletNumberHelperDetailsListeners"
 					  method="printPalletNumberHelperReport"/>
+
+			<listener event="printSmallPalletNumberHelperReport"
+					  class="com.qcadoo.mes.basic.listeners.PalletNumberHelperDetailsListeners"
+					  method="printSmallPalletNumberHelperReport"/>
 		</component>
 
 	</component>

@@ -24,17 +24,13 @@
 package com.qcadoo.mes.basic.print;
 
 import com.lowagie.text.*;
-import com.lowagie.text.pdf.Barcode128;
-import com.lowagie.text.pdf.PdfContentByte;
-import com.lowagie.text.pdf.PdfWriter;
-import com.lowagie.text.pdf.draw.LineSeparator;
+import com.lowagie.text.pdf.*;
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.basic.PalletNumbersService;
 import com.qcadoo.mes.basic.constants.PalletNumberHelperFields;
 import com.qcadoo.model.api.Entity;
-import com.qcadoo.report.api.ColorUtils;
-import com.qcadoo.report.api.FontUtils;
 import com.qcadoo.report.api.Footer;
+import com.qcadoo.report.api.pdf.PdfHelper;
 import com.qcadoo.report.api.pdf.PdfPageNumbering;
 import com.qcadoo.report.api.pdf.ReportPdfView;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,14 +44,17 @@ import java.util.Objects;
 
 import static com.google.common.base.Preconditions.checkState;
 
-@Component(value = "palletNumberHelperReportPdf")
-public class PalletNumberHelperReportPdf extends ReportPdfView {
+@Component(value = "smallPalletNumberHelperReportPdf")
+public class SmallPalletNumberHelperReportPdf extends ReportPdfView {
 
     @Autowired
     private TranslationService translationService;
 
     @Autowired
     private PalletNumbersService palletNumbersService;
+
+    @Autowired
+    private PdfHelper pdfHelper;
 
     @Override
     protected final void addTitle(final Document document, final Locale locale) {
@@ -70,7 +69,7 @@ public class PalletNumberHelperReportPdf extends ReportPdfView {
     @Override
     protected String addContent(final Document document, final Map<String, Object> model, final Locale locale,
                                 final PdfWriter writer) throws DocumentException, IOException {
-        checkState(Objects.nonNull(model.get("id")), "Unable to generate report for unsaved offer! (missing id)");
+        checkState(Objects.nonNull(model.get("id")), "Unable to generate report for unsaved pallet number! (missing id)");
 
         Long palletNumberHelperId = Long.valueOf(model.get("id").toString());
 
@@ -87,74 +86,67 @@ public class PalletNumberHelperReportPdf extends ReportPdfView {
     }
 
     private void addPalletNumbers(final Document document, final PdfWriter writer, final List<String> numbers) throws DocumentException {
-        int i = 0;
+        PdfPTable table = pdfHelper.createPanelTable(2);
+
+        table.setTableEvent(null);
+
+        int index = 0;
 
         for (String number : numbers) {
-            if (i % 2 == 0) {
-                if (i == 0) {
-                    Paragraph newLineParagraph = createNewLineParagraph(0F, 150F);
+            PdfPCell cell = new PdfPCell();
 
-                    document.add(newLineParagraph);
+            cell.setFixedHeight(165F);
+
+            cell.addElement(createBarcodeTable(writer, number));
+
+            table.addCell(cell);
+
+            index++;
+
+            if (index % 8 == 0) {
+                document.add(table);
+
+                if (index < numbers.size()) {
+                    document.add(Chunk.NEXTPAGE);
+
+                    table = pdfHelper.createPanelTable(2);
+
+                    table.setTableEvent(null);
                 }
+            } else if (index == numbers.size()) {
+                table.completeRow();
 
-                Paragraph firstNumberParagraph = createNumberParagraph(number, 0F, 40F);
-                Image numberImage = createNumberImage(writer, number);
-                Paragraph spacingParagraph = createNewLineParagraph(0F, 85F);
-                LineSeparator lineSeparator = createLineSeparator();
-
-                document.add(firstNumberParagraph);
-                document.add(numberImage);
-                document.add(spacingParagraph);
-                document.add(lineSeparator);
+                document.add(table);
             }
-
-            if (i % 2 != 0) {
-                Paragraph secondNumberParagraph = createNumberParagraph(number, 180F, 40F);
-                Image numberImage = createNumberImage(writer, number);
-
-                document.add(secondNumberParagraph);
-                document.add(numberImage);
-
-                if (i < numbers.size() - 1) {
-                    document.newPage();
-
-                    Paragraph newLineParagraph = createNewLineParagraph(0F, 150F);
-
-                    document.add(newLineParagraph);
-                }
-            }
-
-            i++;
         }
     }
 
-    private static Paragraph createNewLineParagraph(final float spacingBefore, final float spacingAfter) {
-        Paragraph newLineParagraph = new Paragraph(new Phrase("\n"));
+    private PdfPTable createBarcodeTable(final PdfWriter writer, final String number) {
+        PdfPTable barcodeTable = new PdfPTable(1);
 
-        newLineParagraph.setSpacingBefore(spacingBefore);
-        newLineParagraph.setSpacingAfter(spacingAfter);
+        barcodeTable.getDefaultCell().setHorizontalAlignment(Element.ALIGN_CENTER);
+        barcodeTable.getDefaultCell().setVerticalAlignment(Element.ALIGN_MIDDLE);
+        barcodeTable.getDefaultCell().setBorder(Rectangle.NO_BORDER);
 
-        return newLineParagraph;
-    }
+        barcodeTable.getDefaultCell().setPaddingTop(10F);
+        barcodeTable.getDefaultCell().setPaddingBottom(10F);
 
-    private static Paragraph createNumberParagraph(final String number, final float spacingBefore, final float spacingAfter) {
-        Paragraph numberParagraph = new Paragraph(new Phrase(number, FontUtils.getDejavuBold140Dark()));
+        barcodeTable.addCell(number);
 
-        numberParagraph.setAlignment(Element.ALIGN_CENTER);
-        numberParagraph.setSpacingBefore(spacingBefore);
-        numberParagraph.setSpacingAfter(spacingAfter);
-        numberParagraph.setLeading(0, 0);
+        barcodeTable.getDefaultCell().setPaddingTop(0F);
+        barcodeTable.getDefaultCell().setPaddingLeft(30F);
+        barcodeTable.getDefaultCell().setPaddingRight(30F);
+        barcodeTable.getDefaultCell().setPaddingBottom(0F);
 
-        return numberParagraph;
+        barcodeTable.addCell(createNumberImage(writer, number));
+
+        return barcodeTable;
     }
 
     private Image createNumberImage(final PdfWriter writer, final String code) {
         Barcode128 code128 = new Barcode128();
 
         code128.setCode(code);
-        code128.setBarHeight(50F);
-        code128.setX(3F);
-        code128.setSize(16F);
         code128.setFont(null);
 
         PdfContentByte cb = writer.getDirectContent();
@@ -164,10 +156,6 @@ public class PalletNumberHelperReportPdf extends ReportPdfView {
         numberImage.setAlignment(Element.ALIGN_CENTER);
 
         return numberImage;
-    }
-
-    private static LineSeparator createLineSeparator() {
-        return new LineSeparator(1, 100F, ColorUtils.getLineDarkColor(), Element.ALIGN_LEFT, 0);
     }
 
 }
