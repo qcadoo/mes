@@ -24,4 +24,14 @@ public class StaffLabelsController {
         return mav;
     }
 
+    @RequestMapping(value = "productLabelsReport.pdf")
+    public final ModelAndView productLabelsReportPdf(@RequestParam("ids") final List<Long> ids) {
+        ModelAndView mav = new ModelAndView();
+
+        mav.setViewName("productLabelsReportPdf");
+        mav.addObject("ids", ids);
+
+        return mav;
+    }
+
 }

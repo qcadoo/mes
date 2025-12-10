@@ -55,6 +55,10 @@
                 <bigButton name="openEansImportPage" state="enabled" icon="xlsIcon24.png"
                            action="#{window}.fireEvent(openEansImportPage);"/>
             </group>
+            <group name="print">
+                <bigButton name="printProductLabels" icon="pdfIcon24.png"
+                           state="enabled" action="#{grid}.fireEvent(printProductLabels);"/>
+            </group>
         </ribbon>
 
         <component type="grid" name="products" reference="grid">
@@ -63,12 +67,14 @@
 					var deleteButton = #{window}.getRibbonItem("actions.delete");
 					var conversionsButton = #{window}.getRibbonItem("conversions.getDefaultConversions");
 					var generateOrders = #{window}.getRibbonItemOrNull("orders.generateOrders");
+					var printProductLabelsButton = #{window}.getRibbonItem("print.printProductLabels");
 
 					var listener = {
 						onChange: function(selectedEntitiesArray) {
 							if (!selectedEntitiesArray || selectedEntitiesArray.length == 0) {
 								deleteButton.disable();
 								conversionsButton.disable();
+								printProductLabelsButton.disable();
 								if (generateOrders) generateOrders.disable("#{translate(basic.products.ribbon.message.generateOrders)}");
 							} else {
 								var hasExternal = false;
@@ -84,6 +90,7 @@
 									deleteButton.enable();
 								}
 								conversionsButton.enable();
+								printProductLabelsButton.enable();
 								if (generateOrders) generateOrders.enable("#{translate(basic.products.ribbon.message.generateOrders)}");
 
 							}
@@ -133,6 +140,8 @@
 
             <listener event="getDefaultConversionsForGrid" class="com.qcadoo.mes.basic.ProductService"
                       method="getDefaultConversionsForGrid"/>
+            <listener event="printProductLabels" class="com.qcadoo.mes.basic.listeners.ProductsListListeners"
+                      method="printProductLabels"/>
         </component>
 
         <listener event="openProductsImportPage"
