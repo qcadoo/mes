@@ -25,6 +25,7 @@ package com.qcadoo.mes.deliveries.listeners;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.lowagie.text.pdf.Barcode128;
 import com.qcadoo.localization.api.utils.DateUtils;
 import com.qcadoo.mes.basic.CalculationQuantityService;
 import com.qcadoo.mes.basic.ParameterService;
@@ -299,6 +300,51 @@ public class DeliveryDetailsListeners {
 
         totalPriceComponent.setFieldValue(numberService.formatWithMinimumFractionDigits(totalPrice, 0));
         totalPriceComponent.requestComponentUpdateState();
+    }
+
+    public void printDeliveredProductLabels(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        GridComponent deliveredProductsGrid = (GridComponent) view.getComponentByReference(DeliveryFields.DELIVERED_PRODUCTS);
+
+        Set<Long> ids = deliveredProductsGrid.getSelectedEntitiesIds();
+
+        if (ids.isEmpty()) {
+            view.addMessage("basic.productsList.error.notSelected", ComponentState.MessageType.INFO);
+        } else {
+            List<String> invalidNumbers = Lists.newArrayList();
+            List<String> invalidLengthNumbers = Lists.newArrayList();
+
+            List<Entity> deliveredProducts = deliveriesService.getDeliveredProductDD().find().add(SearchRestrictions.in("id", ids)).list().getEntities();
+
+            deliveredProducts.forEach(deliveredProduct -> {
+                Entity product = deliveredProduct.getBelongsToField(DeliveredProductFields.PRODUCT);
+                String ean = product.getStringField(ProductFields.EAN);
+                if (ean == null) {
+                    String number = product.getStringField(ProductFields.NUMBER);
+                    if (number.length() > 29) {
+                        invalidLengthNumbers.add(number);
+                    }
+
+                    try {
+                        Barcode128.getRawText(number, false);
+                    } catch (RuntimeException exception) {
+                        invalidNumbers.add(number);
+                    }
+                }
+            });
+
+            if (invalidNumbers.isEmpty() && invalidLengthNumbers.isEmpty()) {
+                String redirectUrl = "/" + DeliveriesConstants.PLUGIN_IDENTIFIER + "/deliveredProductLabelsReport.pdf?" +
+                        ids.stream().map(id -> "ids=" + id.toString()).collect(Collectors.joining("&"));
+
+                view.redirectTo(redirectUrl, true, false);
+            } else {
+                if (invalidNumbers.isEmpty()) {
+                    view.addMessage("basic.product.productLabelsReport.number.invalidLength", ComponentState.MessageType.FAILURE, String.join(", ", invalidLengthNumbers));
+                } else {
+                    view.addMessage("basic.product.productLabelsReport.number.invalidCharacters", ComponentState.MessageType.FAILURE, String.join(", ", invalidNumbers));
+                }
+            }
+        }
     }
 
     public void fillCompanyFieldsForSupplier(final ViewDefinitionState view, final ComponentState state,

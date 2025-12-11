@@ -23,7 +23,8 @@
  */
 package com.qcadoo.mes.basic.listeners;
 
-import com.beust.jcommander.internal.Lists;
+
+import com.google.common.collect.Lists;
 import com.lowagie.text.pdf.Barcode128;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.view.api.ComponentState;
@@ -80,7 +81,7 @@ public class ProductsListListeners {
 
             if (invalidNumbers.isEmpty() && invalidLengthNumbers.isEmpty()) {
                 String redirectUrl = new StringBuilder("/basic/productLabelsReport.pdf?")
-                        .append(ids.stream().map(staffId -> "ids=" + staffId.toString()).collect(Collectors.joining("&")))
+                        .append(ids.stream().map(id -> "ids=" + id.toString()).collect(Collectors.joining("&")))
                         .toString();
 
                 view.redirectTo(redirectUrl, true, false);

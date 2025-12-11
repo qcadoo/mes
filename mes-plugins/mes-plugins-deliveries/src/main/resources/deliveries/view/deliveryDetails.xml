@@ -269,6 +269,10 @@
                     </script>
                 </bigButton>
             </group>
+            <group name="print">
+                <bigButton name="printDeliveredProductLabels" icon="pdfIcon24.png"
+                           state="enabled" action="#{form}.fireEvent(printDeliveredProductLabels);"/>
+            </group>
 
             <group name="deliveryPositions">
                 <bigButton name="assignStorageLocations"
@@ -359,7 +363,7 @@
 						
 						this.addOnChangeListener({
 							onSetValue: function(value) {
-								if (! value || ! value.content) {
+								if (!value || ! value.content) {
 									return;
 								}
 								
@@ -367,7 +371,7 @@
 								saveBackBtn.enable();
 								saveNewBtn.enable();
 								
-								if (! value.content.entityId) {
+								if (!value.content.entityId) {
 									cancelBtn.disable();
 									deleteBtn.disable();
 									acceptBtn.disable();
@@ -703,6 +707,9 @@
                 <listener event="fillPrices"
                           class="com.qcadoo.mes.deliveries.listeners.DeliveryDetailsListeners"
                           method="fillPrices"/>
+                <listener event="printDeliveredProductLabels"
+                          class="com.qcadoo.mes.deliveries.listeners.DeliveryDetailsListeners"
+                          method="printDeliveredProductLabels"/>
             </component>
         </windowTab>
 
@@ -850,7 +857,22 @@
                     <component type="grid" name="deliveredProducts" useDto="true"
                                reference="deliveredProducts" source="#{form}.deliveredProductDtos"
                                defaultEnabled="false">
+                        <script>
+                            <![CDATA[
+                                var printDeliveredProductLabels = #{window}.getRibbonItem("print.printDeliveredProductLabels");
 
+                                var listener = {
+                                    onChange: function(selectedEntitiesArray) {
+                                        if(selectedEntitiesArray.length > 0) {
+                                            printDeliveredProductLabels.enable("#{translate(deliveries.deliveryDetails.window.ribbon.print.printDeliveredProductLabels.description)}");
+                                        } else {
+                                            printDeliveredProductLabels.disable("#{translate(deliveries.deliveryDetails.window.ribbon.print.printDeliveredProductLabels.description)}");
+                                        }
+                                    }
+                                }
+                                this.addOnChangeListener(listener);
+                            ]]>
+                        </script>
                         <option type="column" name="succession" fields="succession"
                                 width="30"/>
                         <option type="column" name="productNumber" fields="productNumber" link="true" width="80"/>
