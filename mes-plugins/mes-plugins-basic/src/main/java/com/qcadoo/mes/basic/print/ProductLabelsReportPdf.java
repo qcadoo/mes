@@ -10,6 +10,7 @@ import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchRestrictions;
+import com.qcadoo.report.api.FontUtils;
 import com.qcadoo.report.api.Footer;
 import com.qcadoo.report.api.pdf.PdfHelper;
 import com.qcadoo.report.api.pdf.PdfPageNumbering;
@@ -101,9 +102,9 @@ public class ProductLabelsReportPdf extends ReportPdfView {
 
         String number = product.getStringField(ProductFields.NUMBER);
         String name = product.getStringField(ProductFields.NAME);
-        barcodeTable.addCell(number.substring(0, Math.min(29, number.length())));
+        barcodeTable.addCell(new Phrase(number.substring(0, Math.min(29, number.length())), FontUtils.getDejavuBold11Light()));
         barcodeTable.getDefaultCell().setPaddingTop(0F);
-        barcodeTable.addCell(name.substring(0, Math.min(58, name.length())));
+        barcodeTable.addCell(new Phrase(name.substring(0, Math.min(58, name.length())), FontUtils.getDejavuBold11Light()));
 
         barcodeTable.getDefaultCell().setPaddingTop(10F);
         barcodeTable.getDefaultCell().setPaddingLeft(30F);

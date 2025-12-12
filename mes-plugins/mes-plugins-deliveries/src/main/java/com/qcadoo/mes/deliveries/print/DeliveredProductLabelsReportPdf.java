@@ -7,6 +7,7 @@ import com.qcadoo.localization.api.utils.DateUtils;
 import com.qcadoo.mes.advancedGenealogy.constants.BatchFields;
 import com.qcadoo.mes.basic.constants.CompanyFields;
 import com.qcadoo.mes.basic.constants.ProductFields;
+import com.qcadoo.mes.basic.loaders.ReportColumnWidthLoader;
 import com.qcadoo.mes.deliveries.constants.DeliveredProductFields;
 import com.qcadoo.mes.deliveries.constants.DeliveriesConstants;
 import com.qcadoo.mes.deliveries.constants.DeliveryFields;
@@ -19,6 +20,8 @@ import com.qcadoo.report.api.Footer;
 import com.qcadoo.report.api.pdf.PdfHelper;
 import com.qcadoo.report.api.pdf.PdfPageNumbering;
 import com.qcadoo.report.api.pdf.ReportPdfView;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Component;
@@ -34,6 +37,8 @@ import static com.google.common.base.Preconditions.checkState;
 
 @Component(value = "deliveredProductLabelsReportPdf")
 public class DeliveredProductLabelsReportPdf extends ReportPdfView {
+
+    private static final Logger LOG = LoggerFactory.getLogger(DeliveredProductLabelsReportPdf.class);
 
     private static final String L_ID = "id";
 
@@ -113,9 +118,9 @@ public class DeliveredProductLabelsReportPdf extends ReportPdfView {
 
         String number = product.getStringField(ProductFields.NUMBER);
         String name = product.getStringField(ProductFields.NAME);
-        barcodeTable.addCell(number.substring(0, Math.min(29, number.length())));
+        barcodeTable.addCell(new Phrase(number.substring(0, Math.min(29, number.length())), FontUtils.getDejavuBold11Light()));
         barcodeTable.getDefaultCell().setPaddingTop(0F);
-        barcodeTable.addCell(name.substring(0, Math.min(58, name.length())));
+        barcodeTable.addCell(new Phrase(name.substring(0, Math.min(58, name.length())), FontUtils.getDejavuBold11Light()));
 
         barcodeTable.getDefaultCell().setPaddingTop(10F);
         barcodeTable.getDefaultCell().setPaddingLeft(25F);
@@ -134,17 +139,17 @@ public class DeliveredProductLabelsReportPdf extends ReportPdfView {
         }
         Entity delivery = deliveredProduct.getBelongsToField(DeliveredProductFields.DELIVERY);
 
-        barcodeTable.addCell(translationService.translate("deliveries.deliveredProductLabelsReport.report.delivery.label", locale) + " " + delivery.getStringField(DeliveryFields.NUMBER));
+        barcodeTable.addCell(new Phrase(translationService.translate("deliveries.deliveredProductLabelsReport.report.delivery.label", locale) + " " + delivery.getStringField(DeliveryFields.NUMBER), FontUtils.getDejavuBold11Light()));
 
         Entity supplier = delivery.getBelongsToField(DeliveryFields.SUPPLIER);
 
         if (supplier != null) {
-            barcodeTable.addCell(translationService.translate("deliveries.deliveredProductLabelsReport.report.supplier.label", locale) + " " + supplier.getStringField(CompanyFields.NUMBER));
+            barcodeTable.addCell(new Phrase(translationService.translate("deliveries.deliveredProductLabelsReport.report.supplier.label", locale) + " " + supplier.getStringField(CompanyFields.NUMBER), FontUtils.getDejavuBold11Light()));
         }
 
         Entity batch = deliveredProduct.getBelongsToField(DeliveredProductFields.BATCH);
         if (batch != null) {
-            barcodeTable.addCell(translationService.translate("deliveries.deliveredProductLabelsReport.report.batch.label", locale) + " " + batch.getStringField(BatchFields.NUMBER));
+            barcodeTable.addCell(new Phrase(translationService.translate("deliveries.deliveredProductLabelsReport.report.batch.label", locale) + " " + batch.getStringField(BatchFields.NUMBER), FontUtils.getDejavuBold11Light()));
             createBarcode(writer, barcodeTable, batch.getStringField(BatchFields.NUMBER), false);
         }
 
@@ -162,9 +167,13 @@ public class DeliveredProductLabelsReportPdf extends ReportPdfView {
 
         PdfContentByte cb = writer.getDirectContent();
 
-        Image barcodeImage = code128.createImageWithBarcode(cb, null, null);
+        try {
+            Image barcodeImage = code128.createImageWithBarcode(cb, null, null);
 
-        barcodeTable.addCell(barcodeImage);
+            barcodeTable.addCell(barcodeImage);
+        } catch (ExceptionConverter e) {
+            LOG.warn("Problem with generating barcode for batch: " + code);
+        }
     }
 
     private List<Entity> getDeliveredProductsFromIds(final List<Long> ids) {
