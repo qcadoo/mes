@@ -925,6 +925,7 @@
                         <option type="fullscreen" value="true"/>
                         <option type="multiselect" value="true"/>
                         <option type="fixedHeight" value="true"/>
+                        <option type="selectableWhenDisabled" value="true"/>
 
                         <listener event="select" method="disableShowProductButton"
                                   class="com.qcadoo.mes.deliveries.listeners.DeliveryDetailsListeners"/>
