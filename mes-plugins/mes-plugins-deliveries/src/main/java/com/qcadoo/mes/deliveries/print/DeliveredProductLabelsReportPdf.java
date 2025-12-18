@@ -158,7 +158,7 @@ public class DeliveredProductLabelsReportPdf extends ReportPdfView {
 
     private void createBarcode(final PdfWriter writer, final PdfPTable barcodeTable, final String code, boolean font) {
         Barcode128 code128 = new Barcode128();
-        code128.setBarHeight(50F);
+        code128.setBarHeight(32F);
         if (!font) {
             code128.setFont(null);
         }
