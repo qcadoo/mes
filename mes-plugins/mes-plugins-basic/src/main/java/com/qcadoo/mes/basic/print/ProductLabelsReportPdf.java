@@ -104,7 +104,7 @@ public class ProductLabelsReportPdf extends ReportPdfView {
         String name = product.getStringField(ProductFields.NAME);
         barcodeTable.addCell(new Phrase(number.substring(0, Math.min(29, number.length())), FontUtils.getDejavuBold11Light()));
         barcodeTable.getDefaultCell().setPaddingTop(0F);
-        barcodeTable.addCell(new Phrase(name.substring(0, Math.min(58, name.length())), FontUtils.getDejavuBold11Light()));
+        barcodeTable.addCell(new Phrase(name.substring(0, Math.min(56, name.length())), FontUtils.getDejavuBold11Light()));
 
         barcodeTable.getDefaultCell().setPaddingTop(10F);
         barcodeTable.getDefaultCell().setPaddingLeft(30F);
