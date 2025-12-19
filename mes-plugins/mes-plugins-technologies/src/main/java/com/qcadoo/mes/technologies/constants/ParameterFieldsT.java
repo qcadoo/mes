@@ -31,5 +31,6 @@ public final class ParameterFieldsT {
     public static final String DIMENSION_CONTROL_ATTRIBUTES = "dimensionControlAttributes";
 
     public static final String DASHBOARD_OPERATION = "dashboardOperation";
+    public static final String CHECK_DUPLICATE_CYCLES_THROUGHOUT_PRODUCT_STRUCTURE = "checkDuplicateCyclesThroughoutProductStructure";
 
 }

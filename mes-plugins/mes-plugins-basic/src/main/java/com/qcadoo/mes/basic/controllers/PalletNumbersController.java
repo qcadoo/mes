@@ -45,11 +45,31 @@ public class PalletNumbersController {
         return mav;
     }
 
+    @RequestMapping(value = "smallPalletNumberReport.pdf")
+    public final ModelAndView smallPalletNumberReportPdf(@RequestParam("id") final String id) {
+        ModelAndView mav = new ModelAndView();
+
+        mav.setViewName("smallPalletNumberReportPdf");
+        mav.addObject("id", id);
+
+        return mav;
+    }
+
     @RequestMapping(value = "palletNumberHelperReport.pdf")
     public final ModelAndView palletNumberHelperReportPdf(@RequestParam("id") final String id) {
         ModelAndView mav = new ModelAndView();
 
         mav.setViewName("palletNumberHelperReportPdf");
+        mav.addObject("id", id);
+
+        return mav;
+    }
+
+    @RequestMapping(value = "smallPalletNumberHelperReport.pdf")
+    public final ModelAndView smallPalletNumberHelperReportPdf(@RequestParam("id") final String id) {
+        ModelAndView mav = new ModelAndView();
+
+        mav.setViewName("smallPalletNumberHelperReportPdf");
         mav.addObject("id", id);
 
         return mav;

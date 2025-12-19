@@ -143,6 +143,10 @@
                            model="dimensionControlAttribute" joinField="parameter" cascade="delete"/>
         </model:model-field>
 
+        <model:model-field plugin="basic" model="parameter">
+            <model:boolean name="checkDuplicateCyclesThroughoutProductStructure" default="true"/>
+        </model:model-field>
+
         <model:model-field plugin="basic" model="attribute">
             <model:hasMany name="dimensionControlAttributes" plugin="technologies"
                            model="dimensionControlAttribute" joinField="attribute" cascade="delete"/>

@@ -69,6 +69,8 @@
         <string name="invoiceNumber"/>
         <date name="pickingDate"/>
         <string name="pickingWorker"/>
+        <string name="documentDescription"/>
+        <string name="stocktakingNumber"/>
     </fields>
 
     <masterModel plugin="materialFlowResources" model="position"/>

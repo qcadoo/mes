@@ -45,4 +45,17 @@ public class PalletNumberHelperDetailsListeners {
         }
     }
 
+    public final void printSmallPalletNumberHelperReport(final ViewDefinitionState view, final ComponentState state,
+                                                    final String[] args) {
+        if (state instanceof FormComponent) {
+            state.performEvent(view, "save", args);
+
+            if (!state.isHasError()) {
+                view.redirectTo("/basic/smallPalletNumberHelperReport." + args[0] + "?id=" + state.getFieldValue(), true, false);
+            }
+        } else {
+            state.addMessage("basic.palletNumberHelper.report.componentFormError", ComponentState.MessageType.FAILURE);
+        }
+    }
+
 }

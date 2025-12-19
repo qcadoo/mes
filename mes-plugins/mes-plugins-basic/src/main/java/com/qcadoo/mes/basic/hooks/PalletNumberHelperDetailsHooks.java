@@ -3,19 +3,19 @@
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
  * Version: 1.4
- *
+ * <p>
  * This file is part of Qcadoo.
- *
+ * <p>
  * Qcadoo is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation; either version 3 of the License,
  * or (at your option) any later version.
- *
+ * <p>
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty
  * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU Affero General Public License for more details.
- *
+ * <p>
  * You should have received a copy of the GNU Affero General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
@@ -42,9 +42,6 @@ import java.util.List;
 @Service
 public class PalletNumberHelperDetailsHooks {
 
-
-
-
     public static final String L_ACTIONS = "actions";
 
     public static final String L_PRINT = "print";
@@ -52,6 +49,7 @@ public class PalletNumberHelperDetailsHooks {
     public static final String L_SAVE = "save";
 
     public static final String L_PRINT_PALLET_NUMBER_HELPER_REPORT = "printPalletNumberHelperReport";
+    public static final String L_PRINT_SMALL_PALLET_NUMBER_HELPER_REPORT = "printSmallPalletNumberHelperReport";
 
     @Autowired
     private PalletNumbersService palletNumbersService;
@@ -128,6 +126,9 @@ public class PalletNumberHelperDetailsHooks {
         RibbonActionItem printPalletNumberReportHelperRibbonActionItem = printRibbonGroup
                 .getItemByName(L_PRINT_PALLET_NUMBER_HELPER_REPORT);
 
+        RibbonActionItem printSmallPalletNumberReportHelperRibbonActionItem = printRibbonGroup
+                .getItemByName(L_PRINT_SMALL_PALLET_NUMBER_HELPER_REPORT);
+
         Long palletNumberHelperId = palletNumberHelperForm.getEntityId();
 
         boolean isEnabled = (palletNumberHelperId != null);
@@ -142,6 +143,12 @@ public class PalletNumberHelperDetailsHooks {
             printPalletNumberReportHelperRibbonActionItem.setEnabled(isEnabled);
 
             printPalletNumberReportHelperRibbonActionItem.requestUpdate(true);
+        }
+
+        if (printSmallPalletNumberReportHelperRibbonActionItem != null) {
+            printSmallPalletNumberReportHelperRibbonActionItem.setEnabled(isEnabled);
+
+            printSmallPalletNumberReportHelperRibbonActionItem.requestUpdate(true);
         }
     }
 

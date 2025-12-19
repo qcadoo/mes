@@ -73,4 +73,22 @@ public class PalletNumbersListListeners {
         }
     }
 
+    public void printSmallPalletNumbersReport(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        GridComponent palletNumbersGrid = (GridComponent) view.getComponentByReference(QcadooViewConstants.L_GRID);
+
+        Set<Long> palletNumberIds = palletNumbersGrid.getSelectedEntitiesIds();
+
+        List<Entity> palletNumbers = palletNumbersService.getPalletNumbers(palletNumberIds);
+
+        if (!palletNumbers.isEmpty()) {
+            Entity palletNumbersHelper = palletNumbersService.createPalletNumberHelper(palletNumbers.size(), true, palletNumbers);
+
+            if (palletNumbersHelper != null) {
+                Long labelsHelperId = palletNumbersHelper.getId();
+
+                view.redirectTo("/basic/smallPalletNumberHelperReport.pdf?id=" + labelsHelperId, true, false);
+            }
+        }
+    }
+
 }

@@ -21,16 +21,14 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.materialFlowResources.print;
+package com.qcadoo.mes.basic.print;
 
+import com.google.common.collect.Lists;
 import com.lowagie.text.*;
 import com.lowagie.text.pdf.*;
 import com.qcadoo.localization.api.TranslationService;
-import com.qcadoo.mes.materialFlowResources.constants.MaterialFlowResourcesConstants;
-import com.qcadoo.mes.materialFlowResources.constants.StorageLocationFields;
-import com.qcadoo.mes.materialFlowResources.constants.StorageLocationNumberHelperFields;
-import com.qcadoo.model.api.DataDefinition;
-import com.qcadoo.model.api.DataDefinitionService;
+import com.qcadoo.mes.basic.PalletNumbersService;
+import com.qcadoo.mes.basic.constants.PalletNumberFields;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.report.api.Footer;
 import com.qcadoo.report.api.pdf.PdfHelper;
@@ -40,18 +38,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 
 import static com.google.common.base.Preconditions.checkState;
 
-@Component(value = "storageLocationNumberHelperReportPdf")
-public class StorageLocationNumberHelperReportPdf extends ReportPdfView {
-
-    @Autowired
-    private DataDefinitionService dataDefinitionService;
+@Component(value = "smallPalletNumberReportPdf")
+public class SmallPalletNumberReportPdf extends ReportPdfView {
 
     @Autowired
     private TranslationService translationService;
@@ -59,9 +53,12 @@ public class StorageLocationNumberHelperReportPdf extends ReportPdfView {
     @Autowired
     private PdfHelper pdfHelper;
 
+    @Autowired
+    private PalletNumbersService palletNumbersService;
+
     @Override
     protected final void addTitle(final Document document, final Locale locale) {
-        document.addTitle(translationService.translate("materialFlowResources.storageLocation.report.title", locale));
+        document.addTitle(translationService.translate("basic.palletNumber.report.title", locale));
     }
 
     @Override
@@ -74,55 +71,36 @@ public class StorageLocationNumberHelperReportPdf extends ReportPdfView {
                                 final PdfWriter writer) throws DocumentException, IOException {
         checkState(Objects.nonNull(model.get("id")), "Unable to generate report for unsaved offer! (missing id)");
 
-        Long storageLocationNumberHelperId = Long.valueOf(model.get("id").toString());
+        Long palletNumberId = Long.valueOf(model.get("id").toString());
 
-        Entity storageLocationNumberHelper = getStorageLocationNumberHelper(storageLocationNumberHelperId);
+        Entity palletNumber = palletNumbersService.getPalletNumber(palletNumberId);
 
-        if (Objects.nonNull(storageLocationNumberHelper)) {
-            List<Entity> storageLocations = storageLocationNumberHelper.getManyToManyField(StorageLocationNumberHelperFields.STORAGE_LOCATIONS);
+        if (Objects.nonNull(palletNumber)) {
+            palletNumbersService.setPalletNumbersPrinted(Lists.newArrayList(palletNumber));
+            String number = palletNumber.getStringField(PalletNumberFields.NUMBER);
 
-            addStorageLocationNumbers(document, writer, storageLocations);
+            addPalletNumber(document, writer, number);
         }
 
-        return translationService.translate("materialFlowResources.storageLocation.report.fileName", locale, storageLocationNumberHelperId.toString());
+        return translationService.translate("basic.palletNumber.report.fileName", locale, palletNumberId.toString());
     }
 
-    private void addStorageLocationNumbers(final Document document, final PdfWriter writer, final List<Entity> storageLocations) throws DocumentException {
-
+    private void addPalletNumber(final Document document, final PdfWriter writer, final String number) throws DocumentException {
         PdfPTable table = pdfHelper.createPanelTable(2);
 
         table.setTableEvent(null);
 
-        int index = 0;
+        PdfPCell cell = new PdfPCell();
 
-        for (Entity storageLocation : storageLocations) {
-            PdfPCell cell = new PdfPCell();
+        cell.setFixedHeight(165F);
 
-            cell.setFixedHeight(165F);
+        cell.addElement(createBarcodeTable(writer, number));
 
-            String number = storageLocation.getStringField(StorageLocationFields.NUMBER);
-            cell.addElement(createBarcodeTable(writer, number));
+        table.addCell(cell);
 
-            table.addCell(cell);
+        table.completeRow();
 
-            index++;
-
-            if (index % 8 == 0) {
-                document.add(table);
-
-                if (index < storageLocations.size()) {
-                    document.add(Chunk.NEXTPAGE);
-
-                    table = pdfHelper.createPanelTable(2);
-
-                    table.setTableEvent(null);
-                }
-            } else if (index == storageLocations.size()) {
-                table.completeRow();
-
-                document.add(table);
-            }
-        }
+        document.add(table);
     }
 
     private PdfPTable createBarcodeTable(final PdfWriter writer, final String number) {
@@ -132,7 +110,12 @@ public class StorageLocationNumberHelperReportPdf extends ReportPdfView {
         barcodeTable.getDefaultCell().setVerticalAlignment(Element.ALIGN_MIDDLE);
         barcodeTable.getDefaultCell().setBorder(Rectangle.NO_BORDER);
 
-        barcodeTable.getDefaultCell().setPaddingTop(40F);
+        barcodeTable.getDefaultCell().setPaddingTop(10F);
+        barcodeTable.getDefaultCell().setPaddingBottom(10F);
+
+        barcodeTable.addCell(number);
+
+        barcodeTable.getDefaultCell().setPaddingTop(0F);
         barcodeTable.getDefaultCell().setPaddingLeft(30F);
         barcodeTable.getDefaultCell().setPaddingRight(30F);
         barcodeTable.getDefaultCell().setPaddingBottom(0F);
@@ -146,6 +129,7 @@ public class StorageLocationNumberHelperReportPdf extends ReportPdfView {
         Barcode128 code128 = new Barcode128();
 
         code128.setCode(code);
+        code128.setFont(null);
 
         PdfContentByte cb = writer.getDirectContent();
 
@@ -154,14 +138,6 @@ public class StorageLocationNumberHelperReportPdf extends ReportPdfView {
         numberImage.setAlignment(Element.ALIGN_CENTER);
 
         return numberImage;
-    }
-
-    public Entity getStorageLocationNumberHelper(final Long storageLocationNumberHelperId) {
-        return getStorageLocationNumberHelperDD().get(storageLocationNumberHelperId);
-    }
-
-    private DataDefinition getStorageLocationNumberHelperDD() {
-        return dataDefinitionService.get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER, MaterialFlowResourcesConstants.MODEL_STORAGE_LOCATION_NUMBER_HELPER);
     }
 
 }

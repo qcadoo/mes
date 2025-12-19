@@ -36,13 +36,10 @@ import com.qcadoo.view.constants.QcadooViewConstants;
 @Service
 public class PalletNumbersListHooks {
 
-
-
-
-
     public static final String L_PRINT = "print";
 
     public static final String L_PRINT_PALLET_NUMBERS_REPORT = "printPalletNumbersReport";
+    public static final String L_PRINT_SMALL_PALLET_NUMBERS_REPORT = "printSmallPalletNumbersReport";
 
     public void onBeforeRender(final ViewDefinitionState view) {
         disableButtonsWhenNotSelected(view);
@@ -57,6 +54,7 @@ public class PalletNumbersListHooks {
         RibbonGroup printRibbonGroup = ribbon.getGroupByName(L_PRINT);
 
         RibbonActionItem printPalletNumbersReportRibbonActionItem = printRibbonGroup.getItemByName(L_PRINT_PALLET_NUMBERS_REPORT);
+        RibbonActionItem printSmallPalletNumbersReportRibbonActionItem = printRibbonGroup.getItemByName(L_PRINT_SMALL_PALLET_NUMBERS_REPORT);
 
         boolean palletNumbersAreSelected = !palletNumbersGrid.getSelectedEntities().isEmpty();
 
@@ -64,6 +62,12 @@ public class PalletNumbersListHooks {
             printPalletNumbersReportRibbonActionItem.setEnabled(palletNumbersAreSelected);
 
             printPalletNumbersReportRibbonActionItem.requestUpdate(true);
+        }
+
+        if (printSmallPalletNumbersReportRibbonActionItem != null) {
+            printSmallPalletNumbersReportRibbonActionItem.setEnabled(palletNumbersAreSelected);
+
+            printSmallPalletNumbersReportRibbonActionItem.requestUpdate(true);
         }
     }
 

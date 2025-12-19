@@ -42,6 +42,8 @@
 			<group name="print">
 				<bigButton name="printPalletNumbersReport" icon="pdfIcon24.png"
 						   state="enabled" action="#{grid}.fireEvent(printPalletNumbersReport);"/>
+				<bigButton name="printSmallPalletNumbersReport" icon="pdfIcon24.png"
+						   state="enabled" action="#{grid}.fireEvent(printSmallPalletNumbersReport);"/>
 			</group>
 			<group name="prints">
 				<bigButton name="printPalletCards" icon="pdfIcon24.png" action="#{grid}.fireEvent(printPalletCards);" state="enabled"/>
@@ -72,6 +74,8 @@
 
 			<listener event="printPalletNumbersReport" class="com.qcadoo.mes.basic.listeners.PalletNumbersListListeners"
 					  method="printPalletNumbersReport"/>
+			<listener event="printSmallPalletNumbersReport" class="com.qcadoo.mes.basic.listeners.PalletNumbersListListeners"
+					  method="printSmallPalletNumbersReport"/>
 			<listener event="printPalletCards"
 					  class="com.qcadoo.mes.basic.listeners.PalletNumbersListListeners"
 					  method="printPalletCards" />
