@@ -106,24 +106,27 @@ public class ProductLabelsReportPdf extends ReportPdfView {
         barcodeTable.getDefaultCell().setPaddingTop(0F);
         barcodeTable.addCell(new Phrase(name.substring(0, Math.min(56, name.length())), FontUtils.getDejavuBold11Light()));
 
-        barcodeTable.getDefaultCell().setPaddingTop(10F);
-        barcodeTable.getDefaultCell().setPaddingLeft(30F);
-        barcodeTable.getDefaultCell().setPaddingRight(30F);
-        barcodeTable.getDefaultCell().setPaddingBottom(0F);
+        barcodeTable.getDefaultCell().setPaddingLeft(10F);
+        barcodeTable.getDefaultCell().setPaddingRight(10F);
+        barcodeTable.getDefaultCell().setPaddingBottom(10F);
 
-        createBarcode(writer, barcodeTable, product);
-
-        return barcodeTable;
-    }
-
-    private void createBarcode(final PdfWriter writer, final PdfPTable barcodeTable, final Entity product) {
         String code = product.getStringField(ProductFields.EAN);
         if (code == null) {
             code = product.getStringField(ProductFields.NUMBER);
         }
 
+        createBarcode(writer, barcodeTable, code);
+
+        barcodeTable.addCell(new Phrase(code, FontUtils.getDejavuBold11Light()));
+
+        return barcodeTable;
+    }
+
+    private void createBarcode(final PdfWriter writer, final PdfPTable barcodeTable, final String code) {
         Barcode128 code128 = new Barcode128();
-        code128.setBarHeight(50F);
+        code128.setBarHeight(35F);
+        code128.setX(1.8f);
+        code128.setFont(null);
 
         code128.setCode(code);
 
