@@ -98,33 +98,44 @@ public class ProductLabelsReportPdf extends ReportPdfView {
         barcodeTable.getDefaultCell().setBorder(Rectangle.NO_BORDER);
 
         barcodeTable.getDefaultCell().setPaddingTop(10F);
-        barcodeTable.getDefaultCell().setPaddingBottom(10F);
 
         String number = product.getStringField(ProductFields.NUMBER);
-        String name = product.getStringField(ProductFields.NAME);
-        barcodeTable.addCell(new Phrase(number.substring(0, Math.min(29, number.length())), FontUtils.getDejavuBold11Light()));
-        barcodeTable.getDefaultCell().setPaddingTop(0F);
-        barcodeTable.addCell(new Phrase(name.substring(0, Math.min(56, name.length())), FontUtils.getDejavuBold11Light()));
-
-        barcodeTable.getDefaultCell().setPaddingLeft(10F);
-        barcodeTable.getDefaultCell().setPaddingRight(10F);
-        barcodeTable.getDefaultCell().setPaddingBottom(10F);
+        PdfPCell numberCell = new PdfPCell(new Phrase(number, FontUtils.getDejavuBold11Light()));
+        numberCell.setFixedHeight(15f);
+        numberCell.setPaddingTop(10F);
+        numberCell.setHorizontalAlignment(Element.ALIGN_CENTER);
+        numberCell.setVerticalAlignment(Element.ALIGN_MIDDLE);
+        numberCell.setBorder(Rectangle.NO_BORDER);
+        barcodeTable.addCell(numberCell);
+        PdfPCell nameCell = new PdfPCell(new Phrase(product.getStringField(ProductFields.NAME), FontUtils.getDejavuBold11Light()));
+        nameCell.setFixedHeight(30f);
+        nameCell.setPaddingTop(10F);
+        nameCell.setHorizontalAlignment(Element.ALIGN_CENTER);
+        nameCell.setVerticalAlignment(Element.ALIGN_MIDDLE);
+        nameCell.setBorder(Rectangle.NO_BORDER);
+        barcodeTable.addCell(nameCell);
 
         String code = product.getStringField(ProductFields.EAN);
         if (code == null) {
-            code = product.getStringField(ProductFields.NUMBER);
+            code = number;
         }
 
         createBarcode(writer, barcodeTable, code);
 
-        barcodeTable.addCell(new Phrase(code, FontUtils.getDejavuBold11Light()));
+        PdfPCell codeCell = new PdfPCell(new Phrase(code, FontUtils.getDejavuBold11Light()));
+        codeCell.setFixedHeight(15f);
+        codeCell.setPaddingTop(10F);
+        codeCell.setHorizontalAlignment(Element.ALIGN_CENTER);
+        codeCell.setVerticalAlignment(Element.ALIGN_MIDDLE);
+        codeCell.setBorder(Rectangle.NO_BORDER);
+        barcodeTable.addCell(codeCell);
 
         return barcodeTable;
     }
 
     private void createBarcode(final PdfWriter writer, final PdfPTable barcodeTable, final String code) {
         Barcode128 code128 = new Barcode128();
-        code128.setBarHeight(35F);
+        code128.setBarHeight(50F);
         code128.setX(1.8f);
         code128.setFont(null);
 
