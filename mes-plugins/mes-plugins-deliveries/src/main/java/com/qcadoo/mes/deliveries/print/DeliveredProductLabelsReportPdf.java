@@ -7,7 +7,6 @@ import com.qcadoo.localization.api.utils.DateUtils;
 import com.qcadoo.mes.advancedGenealogy.constants.BatchFields;
 import com.qcadoo.mes.basic.constants.CompanyFields;
 import com.qcadoo.mes.basic.constants.ProductFields;
-import com.qcadoo.mes.basic.loaders.ReportColumnWidthLoader;
 import com.qcadoo.mes.deliveries.constants.DeliveredProductFields;
 import com.qcadoo.mes.deliveries.constants.DeliveriesConstants;
 import com.qcadoo.mes.deliveries.constants.DeliveryFields;
@@ -112,26 +111,38 @@ public class DeliveredProductLabelsReportPdf extends ReportPdfView {
         barcodeTable.getDefaultCell().setBorder(Rectangle.NO_BORDER);
 
         barcodeTable.getDefaultCell().setPaddingTop(10F);
-        barcodeTable.getDefaultCell().setPaddingBottom(10F);
 
         Entity product = deliveredProduct.getBelongsToField(DeliveredProductFields.PRODUCT);
 
         String number = product.getStringField(ProductFields.NUMBER);
-        String name = product.getStringField(ProductFields.NAME);
-        barcodeTable.addCell(new Phrase(number.substring(0, Math.min(29, number.length())), FontUtils.getDejavuBold11Light()));
-        barcodeTable.getDefaultCell().setPaddingTop(0F);
-        barcodeTable.addCell(new Phrase(name.substring(0, Math.min(56, name.length())), FontUtils.getDejavuBold11Light()));
-
-        barcodeTable.getDefaultCell().setPaddingTop(10F);
-        barcodeTable.getDefaultCell().setPaddingLeft(25F);
-        barcodeTable.getDefaultCell().setPaddingRight(25F);
-        barcodeTable.getDefaultCell().setPaddingBottom(0F);
+        PdfPCell numberCell = new PdfPCell(new Phrase(number, FontUtils.getDejavuBold11Light()));
+        numberCell.setFixedHeight(15f);
+        numberCell.setPaddingTop(10F);
+        numberCell.setHorizontalAlignment(Element.ALIGN_CENTER);
+        numberCell.setVerticalAlignment(Element.ALIGN_MIDDLE);
+        numberCell.setBorder(Rectangle.NO_BORDER);
+        barcodeTable.addCell(numberCell);
+        PdfPCell nameCell = new PdfPCell(new Phrase(product.getStringField(ProductFields.NAME), FontUtils.getDejavuBold11Light()));
+        nameCell.setFixedHeight(30f);
+        nameCell.setPaddingTop(10F);
+        nameCell.setHorizontalAlignment(Element.ALIGN_CENTER);
+        nameCell.setVerticalAlignment(Element.ALIGN_MIDDLE);
+        nameCell.setBorder(Rectangle.NO_BORDER);
+        barcodeTable.addCell(nameCell);
 
         String code = product.getStringField(ProductFields.EAN);
         if (code == null) {
-            code = product.getStringField(ProductFields.NUMBER);
+            code = number;
         }
-        createBarcode(writer, barcodeTable, code, true);
+        createBarcode(writer, barcodeTable, code);
+
+        PdfPCell codeCell = new PdfPCell(new Phrase(code, FontUtils.getDejavuBold11Light()));
+        codeCell.setFixedHeight(15f);
+        codeCell.setPaddingTop(10F);
+        codeCell.setHorizontalAlignment(Element.ALIGN_CENTER);
+        codeCell.setVerticalAlignment(Element.ALIGN_MIDDLE);
+        codeCell.setBorder(Rectangle.NO_BORDER);
+        barcodeTable.addCell(codeCell);
 
         Date expirationDate = deliveredProduct.getDateField(DeliveredProductFields.EXPIRATION_DATE);
         if (expirationDate != null) {
@@ -139,30 +150,47 @@ public class DeliveredProductLabelsReportPdf extends ReportPdfView {
         }
         Entity delivery = deliveredProduct.getBelongsToField(DeliveredProductFields.DELIVERY);
 
-        barcodeTable.addCell(new Phrase(translationService.translate("deliveries.deliveredProductLabelsReport.report.delivery.label", locale) + " " + delivery.getStringField(DeliveryFields.NUMBER), FontUtils.getDejavuBold11Light()));
+        PdfPCell deliveryCell = new PdfPCell(new Phrase(translationService.translate("deliveries.deliveredProductLabelsReport.report.delivery.label", locale) + " " + delivery.getStringField(DeliveryFields.NUMBER), FontUtils.getDejavuBold11Light()));
+        deliveryCell.setFixedHeight(15f);
+        deliveryCell.setPaddingTop(10F);
+        deliveryCell.setHorizontalAlignment(Element.ALIGN_CENTER);
+        deliveryCell.setVerticalAlignment(Element.ALIGN_MIDDLE);
+        deliveryCell.setBorder(Rectangle.NO_BORDER);
+        barcodeTable.addCell(deliveryCell);
 
         Entity supplier = delivery.getBelongsToField(DeliveryFields.SUPPLIER);
 
         if (supplier != null) {
-            barcodeTable.addCell(new Phrase(translationService.translate("deliveries.deliveredProductLabelsReport.report.supplier.label", locale) + " " + supplier.getStringField(CompanyFields.NUMBER), FontUtils.getDejavuBold11Light()));
+            PdfPCell supplierCell = new PdfPCell(new Phrase(translationService.translate("deliveries.deliveredProductLabelsReport.report.supplier.label", locale) + " " + supplier.getStringField(CompanyFields.NUMBER), FontUtils.getDejavuBold11Light()));
+            supplierCell.setFixedHeight(30f);
+            supplierCell.setPaddingTop(10F);
+            supplierCell.setHorizontalAlignment(Element.ALIGN_CENTER);
+            supplierCell.setVerticalAlignment(Element.ALIGN_MIDDLE);
+            supplierCell.setBorder(Rectangle.NO_BORDER);
+            barcodeTable.addCell(supplierCell);
         }
 
         Entity batch = deliveredProduct.getBelongsToField(DeliveredProductFields.BATCH);
         if (batch != null) {
-            barcodeTable.addCell(new Phrase(translationService.translate("deliveries.deliveredProductLabelsReport.report.batch.label", locale) + " " + batch.getStringField(BatchFields.NUMBER), FontUtils.getDejavuBold11Light()));
-            createBarcode(writer, barcodeTable, batch.getStringField(BatchFields.NUMBER), false);
+            PdfPCell batchCell = new PdfPCell(new Phrase(translationService.translate("deliveries.deliveredProductLabelsReport.report.batch.label", locale) + " " + batch.getStringField(BatchFields.NUMBER), FontUtils.getDejavuBold11Light()));
+            batchCell.setFixedHeight(15f);
+            batchCell.setPaddingTop(10F);
+            batchCell.setHorizontalAlignment(Element.ALIGN_CENTER);
+            batchCell.setVerticalAlignment(Element.ALIGN_MIDDLE);
+            batchCell.setBorder(Rectangle.NO_BORDER);
+            barcodeTable.addCell(batchCell);
+
+            createBarcode(writer, barcodeTable, batch.getStringField(BatchFields.NUMBER));
         }
 
         return barcodeTable;
     }
 
-    private void createBarcode(final PdfWriter writer, final PdfPTable barcodeTable, final String code, boolean font) {
+    private void createBarcode(final PdfWriter writer, final PdfPTable barcodeTable, final String code) {
         Barcode128 code128 = new Barcode128();
         code128.setBarHeight(32F);
         code128.setX(1.8f);
-        if (!font) {
-            code128.setFont(null);
-        }
+        code128.setFont(null);
 
         code128.setCode(code);
 
