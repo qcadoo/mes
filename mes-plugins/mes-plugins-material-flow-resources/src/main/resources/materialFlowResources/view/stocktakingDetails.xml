@@ -315,6 +315,7 @@
 
                             var listener = {
                                 onChange: function(selectedEntitiesArray) {
+                                    var state = #{state}.getValue().content.value;
                                     var enabled = selectedEntitiesArray.length > 0;
                                     for (var i in selectedEntitiesArray) {
                                         if (selectedEntitiesArray[i].fields.type == '01shortage') {
@@ -322,7 +323,7 @@
                                             break;
                                         }
                                     }
-                                    if(enabled) {
+                                    if(state != "04finished" && state != "05rejected" && enabled) {
                                         fillPrices.enable("#{translate(materialFlowResources.stocktakingDetails.window.ribbon.prices.fillPrices.description)}");
                                     } else {
                                         fillPrices.disable("#{translate(materialFlowResources.stocktakingDetails.window.ribbon.prices.fillPrices.description)}");
