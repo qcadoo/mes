@@ -311,38 +311,30 @@ public class DeliveryDetailsListeners {
             view.addMessage("basic.productsList.error.notSelected", ComponentState.MessageType.INFO);
         } else {
             List<String> invalidNumbers = Lists.newArrayList();
-            List<String> invalidLengthNumbers = Lists.newArrayList();
 
             List<Entity> deliveredProducts = deliveriesService.getDeliveredProductDD().find().add(SearchRestrictions.in("id", ids)).list().getEntities();
 
             deliveredProducts.forEach(deliveredProduct -> {
                 Entity product = deliveredProduct.getBelongsToField(DeliveredProductFields.PRODUCT);
-                String ean = product.getStringField(ProductFields.EAN);
-                if (ean == null) {
-                    String number = product.getStringField(ProductFields.NUMBER);
-                    if (number.length() > 29) {
-                        invalidLengthNumbers.add(number);
-                    }
+                String code = product.getStringField(ProductFields.EAN);
+                if (code == null) {
+                    code = product.getStringField(ProductFields.NUMBER);
+                }
 
-                    try {
-                        Barcode128.getRawText(number, false);
-                    } catch (RuntimeException exception) {
-                        invalidNumbers.add(number);
-                    }
+                try {
+                    Barcode128.getRawText(code, false);
+                } catch (RuntimeException exception) {
+                    invalidNumbers.add(code);
                 }
             });
 
-            if (invalidNumbers.isEmpty() && invalidLengthNumbers.isEmpty()) {
+            if (invalidNumbers.isEmpty()) {
                 String redirectUrl = "/" + DeliveriesConstants.PLUGIN_IDENTIFIER + "/deliveredProductLabelsReport.pdf?" +
                         ids.stream().map(id -> "ids=" + id.toString()).collect(Collectors.joining("&"));
 
                 view.redirectTo(redirectUrl, true, false);
             } else {
-                if (invalidNumbers.isEmpty()) {
-                    view.addMessage("basic.product.productLabelsReport.number.invalidLength", ComponentState.MessageType.FAILURE, String.join(", ", invalidLengthNumbers));
-                } else {
-                    view.addMessage("basic.product.productLabelsReport.number.invalidCharacters", ComponentState.MessageType.FAILURE, String.join(", ", invalidNumbers));
-                }
+                view.addMessage("basic.product.productLabelsReport.number.invalidCharacters", ComponentState.MessageType.FAILURE, String.join(", ", invalidNumbers));
             }
         }
     }

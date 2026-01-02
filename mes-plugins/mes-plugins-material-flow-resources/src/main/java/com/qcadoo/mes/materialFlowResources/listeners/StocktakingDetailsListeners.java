@@ -27,6 +27,7 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class StocktakingDetailsListeners {
@@ -157,17 +158,23 @@ public class StocktakingDetailsListeners {
         DataDefinition differenceDD = dataDefinitionService.get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER,
                 MaterialFlowResourcesConstants.MODEL_STOCKTAKING_DIFFERENCE);
         List<Entity> differences = getSelectedStocktakingDifferences(grid, differenceDD);
+        List<Entity> productsToMessage = Lists.newArrayList();
         differences.forEach(difference -> {
             Entity product = difference.getBelongsToField(StocktakingDifferenceFields.PRODUCT);
-            BigDecimal pricePerUnit = calculateProductCostPerUnit(product, stocktakingMaterialCostsUsed, stocktakingUseNominalCostPriceNotSpecified);
+            BigDecimal pricePerUnit = calculateProductCostPerUnit(product, stocktakingMaterialCostsUsed, stocktakingUseNominalCostPriceNotSpecified, productsToMessage);
             difference.setField(StocktakingDifferenceFields.PRICE, pricePerUnit);
 
             differenceDD.save(difference);
         });
+
+        if (!productsToMessage.isEmpty()) {
+            view.addMessage("materialFlowResources.stocktakingDifferences.differentCurrencies", ComponentState.MessageType.INFO, false, productsToMessage.stream()
+                    .map(productToMessage -> productToMessage.getStringField(ProductFields.NUMBER)).collect(Collectors.joining(", ")));
+        }
         grid.reloadEntities();
     }
 
-    public List<Entity> getSelectedStocktakingDifferences(final GridComponent stocktakingDifferencesGrid, DataDefinition differenceDD) {
+    private List<Entity> getSelectedStocktakingDifferences(final GridComponent stocktakingDifferencesGrid, DataDefinition differenceDD) {
         List<Entity> result = Lists.newArrayList();
 
         Set<Long> ids = stocktakingDifferencesGrid.getSelectedEntitiesIds();
@@ -184,8 +191,8 @@ public class StocktakingDetailsListeners {
         return result;
     }
 
-    public BigDecimal calculateProductCostPerUnit(final Entity product, final String materialCostsUsed,
-                                                  final boolean useNominalCostPriceNotSpecified) {
+    private BigDecimal calculateProductCostPerUnit(final Entity product, final String materialCostsUsed,
+                                                   final boolean useNominalCostPriceNotSpecified, List<Entity> productsToMessage) {
         Entity materialCurrency = null;
         BigDecimal cost = BigDecimalUtils
                 .convertNullToZero(product.getField(ProductsCostFields.forMode(materialCostsUsed).getStrValue()));
@@ -208,6 +215,7 @@ public class StocktakingDetailsListeners {
             } else if (CurrencyService.PLN.equals(materialCurrency.getStringField(CurrencyFields.ALPHABETIC_CODE))) {
                 cost = currencyService.getRevertedValue(cost, currencyService.getCurrentCurrency());
             } else {
+                productsToMessage.add(product);
                 cost = BigDecimal.ZERO;
             }
         }
