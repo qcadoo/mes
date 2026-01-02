@@ -105,7 +105,7 @@ public class AdvancedGenealogyService {
         return getBatch(number, product, null);
     }
 
-    private Entity getBatch(final String number, final Entity product, final Entity supplier) {
+    public Entity getBatch(final String number, final Entity product, final Entity supplier) {
         SearchCriteriaBuilder searchCriteriaBuilder = getBatchDD().find().add(SearchRestrictions.eq(BatchFields.NUMBER, number));
 
         if (Objects.nonNull(product)) {
