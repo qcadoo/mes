@@ -297,14 +297,16 @@
 
             <option type="column" name="dateChange" fields="dateChange" width="30"/>
 
+            <option type="column" name="createDate" fields="createDate"/>
+
             <option type="order" column="dateFrom" direction="desc"/>
 
             <option type="searchable"
-                    value="additionalFinalProducts,doneInPercentage,name,number,description,state,productNumber,salesPlanNumber,dateFrom,dateTo,deadline,daysToDeadline,plannedQuantity,plannedQuantityForAdditionalUnit,unit,unitForAdditionalUnit,productionLineNumber,productionLinePlace,productionLine,orderCategory,amountOfProductProduced,wastesQuantity,remainingAmountOfProductToProduce,company,hasPacks,priority,dateChange,assortmentName,productSize,technologyGroupNumber,finalProductNumber,orderCode"/>
+                    value="additionalFinalProducts,doneInPercentage,name,number,description,state,productNumber,salesPlanNumber,dateFrom,dateTo,deadline,daysToDeadline,plannedQuantity,plannedQuantityForAdditionalUnit,unit,unitForAdditionalUnit,productionLineNumber,productionLinePlace,productionLine,orderCategory,amountOfProductProduced,wastesQuantity,remainingAmountOfProductToProduce,company,hasPacks,priority,dateChange,assortmentName,productSize,technologyGroupNumber,finalProductNumber,orderCode,createDate"/>
             <option type="multiSearch"
-                    value="additionalFinalProducts,doneInPercentage,name,number,description,state,productNumber,salesPlanNumber,dateFrom,dateTo,deadline,daysToDeadline,plannedQuantity,plannedQuantityForAdditionalUnit,unit,unitForAdditionalUnit,productionLineNumber,productionLinePlace,productionLine,orderCategory,amountOfProductProduced,wastesQuantity,remainingAmountOfProductToProduce,company,hasPacks,priority,dateChange,assortmentName,productSize,technologyGroupNumber,finalProductNumber,orderCode"/>
+                    value="additionalFinalProducts,doneInPercentage,name,number,description,state,productNumber,salesPlanNumber,dateFrom,dateTo,deadline,daysToDeadline,plannedQuantity,plannedQuantityForAdditionalUnit,unit,unitForAdditionalUnit,productionLineNumber,productionLinePlace,productionLine,orderCategory,amountOfProductProduced,wastesQuantity,remainingAmountOfProductToProduce,company,hasPacks,priority,dateChange,assortmentName,productSize,technologyGroupNumber,finalProductNumber,orderCode,createDate"/>
             <option type="orderable"
-                    value="additionalFinalProducts,doneInPercentage,name,number,description,state,productNumber,salesPlanNumber,dateFrom,dateTo,deadline,daysToDeadline,plannedQuantity,plannedQuantityForAdditionalUnit,unit,unitForAdditionalUnit,productionLineNumber,productionLinePlace,productionLine,orderCategory,amountOfProductProduced,wastesQuantity,remainingAmountOfProductToProduce,company,hasPacks,priority,dateChange,assortmentName,productSize,technologyGroupNumber,finalProductNumber,orderCode"/>
+                    value="additionalFinalProducts,doneInPercentage,name,number,description,state,productNumber,salesPlanNumber,dateFrom,dateTo,deadline,daysToDeadline,plannedQuantity,plannedQuantityForAdditionalUnit,unit,unitForAdditionalUnit,productionLineNumber,productionLinePlace,productionLine,orderCategory,amountOfProductProduced,wastesQuantity,remainingAmountOfProductToProduce,company,hasPacks,priority,dateChange,assortmentName,productSize,technologyGroupNumber,finalProductNumber,orderCode,createDate"/>
 
             <option type="correspondingView" value="orders/orderDetails"/>
             <option type="correspondingComponent" value="form"/>

@@ -71,6 +71,7 @@
         <string name="salesPlanNumber"/>
         <integer name="priority"/>
         <boolean name="dateChange"/>
+        <datetime name="createDate"/>
 
     </fields>
     <hooks>
