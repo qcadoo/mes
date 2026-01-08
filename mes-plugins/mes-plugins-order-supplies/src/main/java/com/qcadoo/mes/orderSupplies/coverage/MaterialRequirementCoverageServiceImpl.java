@@ -30,6 +30,7 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Ordering;
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.basic.constants.ProductFields;
+import com.qcadoo.mes.costCalculation.constants.CostCalculationFields;
 import com.qcadoo.mes.costCalculation.constants.MaterialCostsUsed;
 import com.qcadoo.mes.deliveries.DeliveriesService;
 import com.qcadoo.mes.deliveries.constants.DeliveriesConstants;
@@ -40,7 +41,6 @@ import com.qcadoo.mes.materialFlowResources.constants.MaterialFlowResourcesConst
 import com.qcadoo.mes.orderSupplies.OrderSuppliesService;
 import com.qcadoo.mes.orderSupplies.constants.*;
 import com.qcadoo.mes.orders.constants.OrderFields;
-import com.qcadoo.mes.productionCounting.constants.ParameterFieldsPC;
 import com.qcadoo.model.api.*;
 import com.qcadoo.model.api.search.JoinType;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
@@ -377,7 +377,7 @@ public class MaterialRequirementCoverageServiceImpl implements MaterialRequireme
 
         List<Entity> regs = queryBuilder.list().getEntities();
         Entity parameter = parameterService.getParameter();
-        MaterialCostsUsed currentCost = MaterialCostsUsed.parseString(parameter.getStringField(ParameterFieldsPC.MATERIAL_COSTS_USED_PB));
+        MaterialCostsUsed currentCost = MaterialCostsUsed.parseString(parameter.getStringField(CostCalculationFields.MATERIAL_COSTS_USED));
         String priceField = "";
         switch (currentCost) {
             case NOMINAL:

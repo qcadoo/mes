@@ -3,19 +3,19 @@
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo Framework
  * Version: 1.4
- *
+ * <p>
  * This file is part of Qcadoo.
- *
+ * <p>
  * Qcadoo is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation; either version 3 of the License,
  * or (at your option) any later version.
- *
+ * <p>
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty
  * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU Affero General Public License for more details.
- *
+ * <p>
  * You should have received a copy of the GNU Affero General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
@@ -24,23 +24,13 @@
 package com.qcadoo.mes.materialRequirementCoverageForOrder.aspects;
 
 import com.google.common.collect.Lists;
-import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.basic.constants.ProductFields;
-import com.qcadoo.mes.costCalculation.constants.MaterialCostsUsed;
 import com.qcadoo.mes.materialRequirementCoverageForOrder.constans.MaterialRequirementCoverageForOrderConstans;
 import com.qcadoo.mes.orderSupplies.constants.CoverageProductFields;
 import com.qcadoo.mes.orderSupplies.constants.OrderSuppliesConstants;
-import com.qcadoo.mes.productionCounting.constants.ParameterFieldsPC;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.plugin.api.RunIfEnabled;
-
-import java.math.BigDecimal;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
@@ -51,6 +41,11 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.stereotype.Service;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Aspect
 @Configurable
@@ -64,9 +59,6 @@ public class MRCServiceOverideAspect {
     @Autowired
     private NamedParameterJdbcTemplate jdbcTemplate;
 
-    @Autowired
-    private ParameterService parameterService;
-
     private static final String L_PRODUCT_TYPE = "productType";
 
     private static final String L_PLANNED_QUANTITY = "planedQuantity";
@@ -74,12 +66,12 @@ public class MRCServiceOverideAspect {
     @Pointcut("execution(public void com.qcadoo.mes.orderSupplies.coverage.MaterialRequirementCoverageServiceImpl.additionalProcessProductCoverage(..)) "
             + "&& args(materialRequirementCoverage, productAndCoverageProducts)")
     public void additionalProcessProductCoverageA(final Entity materialRequirementCoverage,
-            final Map<Long, Entity> productAndCoverageProducts) {
+                                                  final Map<Long, Entity> productAndCoverageProducts) {
     }
 
     @Around("additionalProcessProductCoverageA(materialRequirementCoverage, productAndCoverageProducts)")
     public void aroundAdditionalProcessProductCoverage(final ProceedingJoinPoint pjp, final Entity materialRequirementCoverage,
-            final Map<Long, Entity> productAndCoverageProducts) throws Throwable {
+                                                       final Map<Long, Entity> productAndCoverageProducts) throws Throwable {
 
         Entity order = materialRequirementCoverage.getBelongsToField("order");
         if (order == null) {
