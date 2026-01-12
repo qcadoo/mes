@@ -377,27 +377,25 @@ public class MaterialRequirementCoverageServiceImpl implements MaterialRequireme
 
         List<Entity> regs = queryBuilder.list().getEntities();
         Entity parameter = parameterService.getParameter();
-        MaterialCostsUsed currentCost = MaterialCostsUsed.parseString(parameter.getStringField(CostCalculationFields.MATERIAL_COSTS_USED));
-        String priceField = "";
-        switch (currentCost) {
-            case NOMINAL:
-                priceField = "nominalCost";
-                break;
-            case AVERAGE:
-                priceField = "averageCost";
-                break;
-            case LAST_PURCHASE:
-                priceField = "lastPurchaseCost";
-                break;
-            case AVERAGE_OFFER_COST:
-                priceField = "averageOfferCost";
-                break;
-            case LAST_OFFER_COST:
-                priceField = "lastOfferCost";
-                break;
-            case OFFER_COST_OR_LAST_PURCHASE:
-                priceField = "offerCostOrLastPurchase";
-                break;
+        String priceField = "nominalCost";
+        if (!Strings.isNullOrEmpty(parameter.getStringField(CostCalculationFields.MATERIAL_COSTS_USED))) {
+            MaterialCostsUsed currentCost = MaterialCostsUsed.parseString(parameter.getStringField(CostCalculationFields.MATERIAL_COSTS_USED));
+            switch (currentCost) {
+                case AVERAGE:
+                    priceField = "averageCost";
+                    break;
+                case LAST_PURCHASE:
+                    priceField = "lastPurchaseCost";
+                    break;
+                case AVERAGE_OFFER_COST:
+                    priceField = "averageOfferCost";
+                    break;
+                case LAST_OFFER_COST:
+                    priceField = "lastOfferCost";
+                    break;
+                case OFFER_COST_OR_LAST_PURCHASE:
+                    priceField = "offerCostOrLastPurchase";
+            }
         }
 
         for (Entity reg : regs) {
