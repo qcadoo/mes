@@ -39,6 +39,7 @@
               values="01draft,02prepared,03duringCorrection,04declined,05approved,06received,07accepted"/>
         <datetime name="createDate"/>
         <string name="locationNumber"/>
+        <integer name="locationId"/>
         <datetime name="dateOfSendingEmail"/>
         <boolean name="releasedForPayment"/>
         <string name="paymentID"/>

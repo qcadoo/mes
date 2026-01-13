@@ -434,7 +434,7 @@
                 <option type="fullscreen" value="true"/>
                 <option type="multiselect" value="true"/>
 
-                <criteriaModifier class="com.qcadoo.mes.deliveries.criteriaModifiers.DeliveriesCriteriaModifier"
+                <criteriaModifier class="com.qcadoo.mes.deliveries.criteriaModifiers.DeliveryCriteriaModifiers"
                                   method="restrictToUserLocations"/>
 
                 <option type="hasPredefinedFilters" value="true"/>
