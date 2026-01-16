@@ -30,6 +30,7 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Ordering;
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.basic.constants.ProductFields;
+import com.qcadoo.mes.costCalculation.constants.CostCalculationFields;
 import com.qcadoo.mes.costCalculation.constants.MaterialCostsUsed;
 import com.qcadoo.mes.deliveries.DeliveriesService;
 import com.qcadoo.mes.deliveries.constants.DeliveriesConstants;
@@ -40,7 +41,6 @@ import com.qcadoo.mes.materialFlowResources.constants.MaterialFlowResourcesConst
 import com.qcadoo.mes.orderSupplies.OrderSuppliesService;
 import com.qcadoo.mes.orderSupplies.constants.*;
 import com.qcadoo.mes.orders.constants.OrderFields;
-import com.qcadoo.mes.productionCounting.constants.ParameterFieldsPC;
 import com.qcadoo.model.api.*;
 import com.qcadoo.model.api.search.JoinType;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
@@ -377,27 +377,25 @@ public class MaterialRequirementCoverageServiceImpl implements MaterialRequireme
 
         List<Entity> regs = queryBuilder.list().getEntities();
         Entity parameter = parameterService.getParameter();
-        MaterialCostsUsed currentCost = MaterialCostsUsed.parseString(parameter.getStringField(ParameterFieldsPC.MATERIAL_COSTS_USED_PB));
-        String priceField = "";
-        switch (currentCost) {
-            case NOMINAL:
-                priceField = "nominalCost";
-                break;
-            case AVERAGE:
-                priceField = "averageCost";
-                break;
-            case LAST_PURCHASE:
-                priceField = "lastPurchaseCost";
-                break;
-            case AVERAGE_OFFER_COST:
-                priceField = "averageOfferCost";
-                break;
-            case LAST_OFFER_COST:
-                priceField = "lastOfferCost";
-                break;
-            case OFFER_COST_OR_LAST_PURCHASE:
-                priceField = "offerCostOrLastPurchase";
-                break;
+        String priceField = "nominalCost";
+        if (!Strings.isNullOrEmpty(parameter.getStringField(CostCalculationFields.MATERIAL_COSTS_USED))) {
+            MaterialCostsUsed currentCost = MaterialCostsUsed.parseString(parameter.getStringField(CostCalculationFields.MATERIAL_COSTS_USED));
+            switch (currentCost) {
+                case AVERAGE:
+                    priceField = "averageCost";
+                    break;
+                case LAST_PURCHASE:
+                    priceField = "lastPurchaseCost";
+                    break;
+                case AVERAGE_OFFER_COST:
+                    priceField = "averageOfferCost";
+                    break;
+                case LAST_OFFER_COST:
+                    priceField = "lastOfferCost";
+                    break;
+                case OFFER_COST_OR_LAST_PURCHASE:
+                    priceField = "offerCostOrLastPurchase";
+            }
         }
 
         for (Entity reg : regs) {

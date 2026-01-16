@@ -150,7 +150,7 @@ public class DeliveredProductLabelsReportPdf extends ReportPdfView {
         }
         Entity delivery = deliveredProduct.getBelongsToField(DeliveredProductFields.DELIVERY);
 
-        PdfPCell deliveryCell = new PdfPCell(new Phrase(translationService.translate("deliveries.deliveredProductLabelsReport.report.delivery.label", locale) + " " + delivery.getStringField(DeliveryFields.NUMBER), FontUtils.getDejavuBold11Light()));
+        PdfPCell deliveryCell = new PdfPCell(new Phrase(translationService.translate("deliveries.deliveredProductLabelsReport.report.delivery.label", locale) + delivery.getStringField(DeliveryFields.NUMBER), FontUtils.getDejavuBold11Light()));
         deliveryCell.setFixedHeight(15f);
         deliveryCell.setPaddingTop(10F);
         deliveryCell.setHorizontalAlignment(Element.ALIGN_CENTER);

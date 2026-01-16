@@ -94,6 +94,7 @@
             <option type="column" name="availableQuantity" fields="availableQuantity"/>
             <option type="column" name="price" fields="price" width="60" authorizationRole="ROLE_RESOURCE_PRICE" />
             <option type="column" name="value" fields="value" width="60" authorizationRole="ROLE_RESOURCE_PRICE" />
+            <option type="column" name="createDate" fields="createDate"/>
             <option type="column" name="time" fields="time"/>
             <option type="column" name="productionDate" fields="productionDate"/>
             <option type="column" name="expirationDate" fields="expirationDate"
@@ -120,9 +121,9 @@
             <option type="order" column="productNumber" direction="asc"/>
 
             <option type="searchable"
-                    value="productCategory,locationNumber,locationName,productNumber,productName,productGlobalTypeOfMaterial,quantity,productUnit,reservedQuantity,availableQuantity,price,time,productionDate,expirationDate,batch,isCorrected,storageLocation,number,quantityInAdditionalUnit,givenUnit,conversion,palletNumber,typeOfLoadUnit,userName,waste,deliveryNumber,supplierNumber,value,qualityRating,blockedForQualityControl,repackingNumber,lastOutboundDocumentNumber,lastReleaseDate"/>
+                    value="productCategory,locationNumber,locationName,productNumber,productName,productGlobalTypeOfMaterial,quantity,productUnit,reservedQuantity,availableQuantity,price,time,productionDate,expirationDate,batch,isCorrected,storageLocation,number,quantityInAdditionalUnit,givenUnit,conversion,palletNumber,typeOfLoadUnit,userName,waste,deliveryNumber,supplierNumber,value,qualityRating,blockedForQualityControl,repackingNumber,lastOutboundDocumentNumber,lastReleaseDate,createDate"/>
             <option type="orderable"
-                    value="productCategory,locationNumber,locationName,productNumber,productName,productGlobalTypeOfMaterial,quantity,productUnit,reservedQuantity,availableQuantity,price,time,productionDate,expirationDate,batch,isCorrected,storageLocation,number,quantityInAdditionalUnit,givenUnit,conversion,palletNumber,typeOfLoadUnit,userName,waste,deliveryNumber,supplierNumber,value,qualityRating,blockedForQualityControl,repackingNumber,lastOutboundDocumentNumber,lastReleaseDate"/>
+                    value="productCategory,locationNumber,locationName,productNumber,productName,productGlobalTypeOfMaterial,quantity,productUnit,reservedQuantity,availableQuantity,price,time,productionDate,expirationDate,batch,isCorrected,storageLocation,number,quantityInAdditionalUnit,givenUnit,conversion,palletNumber,typeOfLoadUnit,userName,waste,deliveryNumber,supplierNumber,value,qualityRating,blockedForQualityControl,repackingNumber,lastOutboundDocumentNumber,lastReleaseDate,createDate"/>
 
             <option type="defaultVisibleColumns" value="locationNumber,locationName,productNumber,productName,productGlobalTypeOfMaterial,quantity,productUnit,reservedQuantity,availableQuantity,
                             price,time,productionDate,expirationDate,batch,isCorrected,storageLocation,number,quantityInAdditionalUnit,givenUnit,conversion,palletNumber,typeOfLoadUnit,userName,waste,deliveryNumber,supplierNumber,value,qualityRating,blockedForQualityControl"/>

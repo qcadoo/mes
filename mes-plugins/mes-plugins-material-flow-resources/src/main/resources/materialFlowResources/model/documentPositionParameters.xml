@@ -51,7 +51,7 @@
             <validatesRange from="0"/>
         </integer>
         <enum name="stocktakingMaterialCostsUsed"
-                    values="01nominal,02average,03lastPurchase,04averageOfferCost,05lastOfferCost,07offerCostOrLastPurchase"
+                    values="01nominal,02average,03lastPurchase,04averageOfferCost,05lastOfferCost"
                     required="true" default="01nominal"/>
 
         <boolean name="stocktakingUseNominalCostPriceNotSpecified" default="false"/>

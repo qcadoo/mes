@@ -109,7 +109,10 @@ public class DeliveriesListListeners {
         Date date = new Date();
         Set<String> suppliersWithoutEmail = new HashSet<>();
         Set<String> suppliersWithInvalidEmail = new HashSet<>();
-        for (Entity delivery : gridComponent.getSelectedEntities()) {
+        DataDefinition deliveryDD = dataDefinitionService.get(DeliveriesConstants.PLUGIN_IDENTIFIER,
+                DeliveriesConstants.MODEL_DELIVERY);
+        for (Entity deliveryDto : gridComponent.getSelectedEntities()) {
+            Entity delivery = deliveryDD.get(deliveryDto.getId());
             String supplierEmail = delivery.getBelongsToField(DeliveryFields.SUPPLIER).getStringField(CompanyFields.EMAIL);
             if (!Strings.isNullOrEmpty(supplierEmail)) {
                 try {
@@ -131,7 +134,7 @@ public class DeliveriesListListeners {
                     return;
                 }
                 delivery.setField(DeliveryFields.DATE_OF_SENDING_EMAIL, date);
-                delivery.getDataDefinition().save(delivery);
+                deliveryDD.save(delivery);
             } else {
                 suppliersWithoutEmail.add(delivery.getBelongsToField(DeliveryFields.SUPPLIER).getStringField(CompanyFields.NUMBER));
             }

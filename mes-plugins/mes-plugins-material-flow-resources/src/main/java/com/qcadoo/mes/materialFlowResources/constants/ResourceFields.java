@@ -49,6 +49,8 @@ public final class ResourceFields {
 
     public static final String TIME = "time";
 
+    public static final String CREATE_DATE = "createDate";
+
     public static final String EXPIRATION_DATE = "expirationDate";
 
     public static final String PRODUCTION_DATE = "productionDate";

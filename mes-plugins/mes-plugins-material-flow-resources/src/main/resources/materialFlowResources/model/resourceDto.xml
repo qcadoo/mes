@@ -47,6 +47,7 @@
         <decimal name="price"/>
         <decimal name="value"/>
         <datetime name="time"/>
+        <datetime name="createDate"/>
         <date name="productionDate"/>
         <date name="expirationDate"/>
         <string name="batchNumber"/>

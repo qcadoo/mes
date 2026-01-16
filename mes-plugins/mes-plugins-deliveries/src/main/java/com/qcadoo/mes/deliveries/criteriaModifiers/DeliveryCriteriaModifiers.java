@@ -3,19 +3,19 @@
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
  * Version: 1.4
- *
+ * <p>
  * This file is part of Qcadoo.
- *
+ * <p>
  * Qcadoo is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation; either version 3 of the License,
  * or (at your option) any later version.
- *
+ * <p>
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty
  * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU Affero General Public License for more details.
- *
+ * <p>
  * You should have received a copy of the GNU Affero General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
@@ -23,14 +23,6 @@
  */
 package com.qcadoo.mes.deliveries.criteriaModifiers;
 
-import java.util.Objects;
-import java.util.Set;
-import java.util.stream.Collectors;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import com.qcadoo.mes.deliveries.DeliveriesService;
 import com.qcadoo.mes.materialFlow.constants.UserFieldsMF;
 import com.qcadoo.mes.materialFlow.constants.UserLocationFields;
 import com.qcadoo.model.api.DataDefinition;
@@ -40,14 +32,15 @@ import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.security.api.SecurityService;
 import com.qcadoo.security.constants.QcadooSecurityConstants;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class DeliveryCriteriaModifiers {
-
-    public static final String LOCATION_ID = "location_id";
-
-    @Autowired
-    private DeliveriesService deliveriesService;
 
     @Autowired
     private SecurityService securityService;
@@ -56,18 +49,22 @@ public class DeliveryCriteriaModifiers {
     private DataDefinitionService dataDefinitionService;
 
     public void showActiveSupplyItems(final SearchCriteriaBuilder scb) {
-        restrictToUserLocations(scb);
+        restrictToUserLocations(scb, "location_id");
         scb.add(SearchRestrictions.eq("deliveryActive", true));
     }
 
-    private void restrictToUserLocations(SearchCriteriaBuilder scb) {
+    public void restrictToUserLocations(SearchCriteriaBuilder scb) {
+        restrictToUserLocations(scb, "locationId");
+    }
+
+    private void restrictToUserLocations(SearchCriteriaBuilder scb, String field) {
         Long currentUserId = securityService.getCurrentUserId();
         if (Objects.nonNull(currentUserId)) {
             EntityList userLocations = userDataDefinition().get(currentUserId).getHasManyField(UserFieldsMF.USER_LOCATIONS);
             if (!userLocations.isEmpty()) {
                 Set<Integer> locationIds = userLocations.stream().map(ul -> ul.getBelongsToField(UserLocationFields.LOCATION))
                         .mapToInt(e -> e.getId().intValue()).boxed().collect(Collectors.toSet());
-                scb.add(SearchRestrictions.in(LOCATION_ID, locationIds));
+                scb.add(SearchRestrictions.in(field, locationIds));
             }
         }
     }
