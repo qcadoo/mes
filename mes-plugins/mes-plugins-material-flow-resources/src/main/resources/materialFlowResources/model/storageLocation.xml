@@ -66,5 +66,6 @@
                        method="validatesWith"/>
         <onSave class="com.qcadoo.mes.materialFlowResources.hooks.StorageLocationHooks"
                 method="onSave"/>
+        <onDelete class="com.qcadoo.mes.materialFlowResources.hooks.StorageLocationHooks" method="onDelete"/>
     </hooks>
 </model>
