@@ -145,17 +145,18 @@
                 <listener event="printProductionBalance"
                           class="com.qcadoo.mes.productionCounting.listeners.ProductionBalanceDetailsListeners"
                           method="printProductionBalance"/>
-                <listener event="addAllRelatedOrders"
+                <listener event="addAllOrdersWithCriteria"
                           class="com.qcadoo.mes.productionCounting.listeners.ProductionBalanceDetailsListeners"
-                          method="addAllRelatedOrders"/>
+                          method="addAllOrdersWithCriteria"/>
             </component>
         </windowTab>
 
         <windowTab name="ordersTab" reference="ordersTab">
             <ribbon>
-                <group name="ordersTab">
-                    <bigButton name="addAllRelatedOrders" icon="newIcon24.png"
-                               state="disabled" action="#{form}.fireEvent(addAllRelatedOrders);"/>
+                <group name="orders">
+                    <bigButton name="addAllOrdersWithCriteria" icon="newIcon24.png"
+                               action="#{form}.fireEvent(addAllOrdersWithCriteria);"
+                               message="productionCounting.productionBalanceDetails.window.ordersTab.ribbon.ordersTab.addAllOrdersWithCriteria.message"/>
                 </group>
             </ribbon>
             <component type="gridLayout" name="ordersGridLayout" columns="1"
@@ -164,6 +165,7 @@
                     <component type="lookup" name="ordersLookup" reference="ordersLookup"
                                model="orderPlanningListDto" plugin="orders" defaultVisible="false" persistent="false"
                                hasLabel="false">
+                        <option type="column" name="number" fields="number" hidden="true"/>
                         <option type="column" name="product" fields="productNumber" link="true"/>
                         <option type="column" name="state" fields="state"/>
                         <option type="column" name="productName" fields="productName"/>
@@ -188,6 +190,7 @@
                     </component>
                     <component type="grid" name="orders" reference="orders"
                                source="#{form}.orders">
+
                         <option type="column" name="number" fields="number"/>
                         <option type="column" name="product" fields="product" expression="#product['number']"/>
                         <option type="column" name="productName" fields="product" expression="#product['name']"/>
@@ -208,10 +211,8 @@
                         <option type="deletable" value="true"/>
                         <option type="fixedHeight" value="true"/>
 
-
                         <option type="weakRelation" value="true"/>
                         <option type="correspondingLookup" value="ordersLookup"/>
-
                     </component>
                 </layoutElement>
             </component>

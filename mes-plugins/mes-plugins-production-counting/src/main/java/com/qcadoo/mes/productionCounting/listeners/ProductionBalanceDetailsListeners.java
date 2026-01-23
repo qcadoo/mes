@@ -132,7 +132,7 @@ public class ProductionBalanceDetailsListeners {
                 ProductionCountingConstants.MODEL_PRODUCTION_BALANCE });
     }
 
-    public final void addAllRelatedOrders(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+    public final void addAllOrdersWithCriteria(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         GridComponent ordersGrid = (GridComponent) view.getComponentByReference(ProductionBalanceFields.ORDERS);
         FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         Entity balance = form.getPersistedEntityWithIncludedFormValues();
