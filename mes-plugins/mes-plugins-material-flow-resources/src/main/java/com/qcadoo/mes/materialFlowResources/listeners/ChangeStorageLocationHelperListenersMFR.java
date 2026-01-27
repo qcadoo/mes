@@ -52,6 +52,7 @@ public class ChangeStorageLocationHelperListenersMFR {
         }
         List<String> changedResources = Lists.newArrayList();
         List<String> failedResources = Lists.newArrayList();
+        List<String> omittedResources = Lists.newArrayList();
         Set<Long> palletNumbers = Sets.newHashSet();
         Set<Entity> resources = Sets.newHashSet();
         for (String id : splitIds) {
@@ -69,6 +70,8 @@ public class ChangeStorageLocationHelperListenersMFR {
                 }
 
                 resources.add(resource);
+            } else {
+                omittedResources.add(resource.getStringField(ResourceFields.NUMBER));
             }
             if (storageLocation.getBooleanField(StorageLocationFields.PLACE_STORAGE_LOCATION) && Objects.isNull(resource.getBelongsToField(ResourceFields.PALLET_NUMBER))) {
                 view.addMessage("materialFlowResources.changeStorageLocationHelper.palletNumberRequired", ComponentState.MessageType.FAILURE, false, resource.getStringField(ResourceFields.NUMBER));
@@ -106,6 +109,10 @@ public class ChangeStorageLocationHelperListenersMFR {
         if (!failedResources.isEmpty()) {
             view.addMessage("materialFlowResources.changeStorageLocationHelper.error", ComponentState.MessageType.FAILURE, false,
                     String.join(", ", failedResources));
+        }
+        if (!omittedResources.isEmpty()) {
+            view.addMessage("materialFlowResources.changeStorageLocationHelper.info", ComponentState.MessageType.INFO, false,
+                    String.join(", ", omittedResources));
         }
     }
 
