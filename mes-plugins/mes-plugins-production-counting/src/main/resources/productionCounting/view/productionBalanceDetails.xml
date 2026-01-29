@@ -145,52 +145,27 @@
                 <listener event="printProductionBalance"
                           class="com.qcadoo.mes.productionCounting.listeners.ProductionBalanceDetailsListeners"
                           method="printProductionBalance"/>
-                <listener event="addAllOrdersWithCriteria"
-                          class="com.qcadoo.mes.productionCounting.listeners.ProductionBalanceDetailsListeners"
-                          method="addAllOrdersWithCriteria"/>
             </component>
         </windowTab>
 
         <windowTab name="ordersTab" reference="ordersTab">
-            <ribbon>
-                <group name="orders">
-                    <bigButton name="addAllOrdersWithCriteria" icon="newIcon24.png"
-                               action="#{form}.fireEvent(addAllOrdersWithCriteria);"
-                               message="productionCounting.productionBalanceDetails.window.ordersTab.ribbon.ordersTab.addAllOrdersWithCriteria.message"/>
-                </group>
-            </ribbon>
             <component type="gridLayout" name="ordersGridLayout" columns="1"
                        rows="1">
                 <layoutElement column="1" row="1">
-                    <component type="lookup" name="ordersLookup" reference="ordersLookup"
-                               model="orderPlanningListDto" plugin="orders" defaultVisible="false" persistent="false"
-                               hasLabel="false">
-                        <option type="column" name="number" fields="number" hidden="true"/>
-                        <option type="column" name="product" fields="productNumber" link="true"/>
-                        <option type="column" name="state" fields="state"/>
-                        <option type="column" name="productName" fields="productName"/>
-                        <option type="column" name="startDate" fields="startDate"/>
-                        <option type="column" name="finishDate" fields="finishDate"/>
-                        <option type="column" name="productionLineNumber" fields="productionLineNumber"/>
-                        <option type="column" name="divisionNumber" fields="divisionNumber"/>
-                        <option type="searchable"
-                                value="number,product,state,productName,startDate,finishDate,divisionNumber,productionLineNumber"/>
-                        <option type="multiSearch"
-                                value="number,product,state,productName,startDate,finishDate,divisionNumber,productionLineNumber"/>
-                        <option type="orderable"
-                                value="number,product,state,productName,dateFrom,finishDate,divisionNumber,productionLineNumber"/>
-                        <option type="multiselect" value="true"/>
-                        <option type="expression"
-                                value="#number"/>
-                        <option type="fieldCode" value="number"/>
-
-                        <criteriaModifier
-                                class="com.qcadoo.mes.productionCounting.criteriaModifiers.OrderCriteriaModifiersPC"
-                                method="showOrdersForProductionBalance"/>
-                    </component>
                     <component type="grid" name="orders" reference="orders"
                                source="#{form}.orders">
+                        <script>
+                            <![CDATA[
+                                var that = this;
+                                this.onDeleteButtonClicked = function () {
+                                    var selectedEntities = #{orders}.getValue().content.selectedEntities;
 
+                                    if (window.confirm("#{translate(qcadooView.grid.confirmDeleteMessage)}" + "?")) {
+                                        #{orders}.fireEvent(null,'removeSelectedEntities',[selectedEntities]);
+                                    }
+                                };
+                            ]]>
+                        </script>
                         <option type="column" name="number" fields="number"/>
                         <option type="column" name="product" fields="product" expression="#product['number']"/>
                         <option type="column" name="productName" fields="product" expression="#product['name']"/>
@@ -205,14 +180,19 @@
 
                         <option type="order" column="number" direction="desc"/>
 
+                        <option type="correspondingView" value="productionCounting/productionBalanceOrderDetails"/>
+                        <option type="correspondingComponent" value="form"/>
+                        <option type="correspondingViewInModal" value="true"/>
+
                         <option type="fullscreen" value="true"/>
                         <option type="multiselect" value="true"/>
                         <option type="creatable" value="true"/>
                         <option type="deletable" value="true"/>
                         <option type="fixedHeight" value="true"/>
 
-                        <option type="weakRelation" value="true"/>
-                        <option type="correspondingLookup" value="ordersLookup"/>
+                        <listener event="removeSelectedEntities"
+                                  method="onRemoveSelectedEntity"
+                                  class="com.qcadoo.mes.productionCounting.listeners.ProductionBalanceDetailsListeners"/>
                     </component>
                 </layoutElement>
             </component>

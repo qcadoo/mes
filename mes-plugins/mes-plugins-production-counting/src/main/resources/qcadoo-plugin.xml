@@ -578,6 +578,7 @@
         <view:view resource="view/productionBalanceAnalysis.xml"/>
         <view:view resource="view/linesProducedQuantitiesChart.xml"/>
         <view:view resource="view/lackDetails.xml"/>
+        <view:view resource="view/productionBalanceOrderDetails.xml"/>
 
         <view:view-tab resource="view/tabExtensions/orderDetails.xml"/>
         <view:view-tab resource="view/tabExtensions/technologyDetails.xml"/>
