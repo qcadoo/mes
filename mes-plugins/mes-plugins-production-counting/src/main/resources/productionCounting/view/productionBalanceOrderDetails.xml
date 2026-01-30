@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    ***************************************************************************
+    Copyright (c) 2010 Qcadoo Limited
+    Project: Qcadoo MES
+    Version: 1.4
+
+    This file is part of Qcadoo.
+
+    Qcadoo is free software; you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as published
+    by the Free Software Foundation; either version 3 of the License,
+    or (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty
+    of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+    See the GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+    ***************************************************************************
+
+-->
+<view defaultAuthorizationRole="ROLE_PRODUCTION_COUNTING" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
+	xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
+	name="productionBalanceOrderDetails" modelName="order" modelPlugin="orders">
+
+	<component name="window" type="window" reference="window">
+		<ribbon>
+			<group name="navigation">
+				<bigButton name="select" icon="acceptIcon24.png" state="disabled" action="#{form}.fireEvent(createOrders);#{window}.performBackWithoutConfirm">
+					<script>
+						<![CDATA[
+							#{grid}.addOnChangeListener({
+								onChange: function(selectedArray) {
+									if (!selectedArray || selectedArray.length == 0) {
+										this.disable('#{translate(noRecordSelected)}');
+									} else {
+										this.enable();
+									}
+								}
+							});
+						]]>
+					</script>
+				</bigButton>
+				<bigButton name="addAllOrdersWithCriteria" icon="newIcon24.png"
+						   action="#{form}.fireEvent(addAllOrdersWithCriteria);#{window}.performBackWithoutConfirm"
+						   message="productionCounting.productionBalanceOrderDetails.window.ribbon.navigation.addAllOrdersWithCriteria.message"/>
+				<bigButton name="cancel" icon="cancelIcon24.png" state="enabled" action="#{window}.performBackWithoutConfirm"/>
+			</group>
+		</ribbon>
+
+		<windowTab name="mainTab" reference="mainTab">
+			<component type="form" name="form" reference="form">
+				<component type="gridLayout" name="orderGridLayout"
+					columns="1" rows="1" hasBorders="false">
+					<layoutElement column="1" row="1">
+						<component type="grid" name="orders" reference="grid"
+								   model="orderPlanningListDto" plugin="orders">
+							<option type="column" name="number" fields="number"/>
+							<option type="column" name="product" fields="productNumber"/>
+							<option type="column" name="state" fields="state"/>
+							<option type="column" name="productName" fields="productName"/>
+							<option type="column" name="startDate" fields="startDate"/>
+							<option type="column" name="finishDate" fields="finishDate"/>
+							<option type="column" name="productionLineNumber" fields="productionLineNumber"/>
+							<option type="column" name="divisionNumber" fields="divisionNumber"/>
+							<option type="searchable"
+									value="number,product,state,productName,startDate,finishDate,divisionNumber,productionLineNumber"/>
+							<option type="multiSearch"
+									value="number,product,state,productName,startDate,finishDate,divisionNumber,productionLineNumber"/>
+							<option type="orderable"
+									value="number,product,state,productName,dateFrom,finishDate,divisionNumber,productionLineNumber"/>
+
+							<option type="order" column="number" direction="desc"/>
+							<option type="multiselect" value="true"/>
+							<option type="fullscreen" value="true"/>
+							<option type="fixedHeight" value="true"/>
+
+							<criteriaModifier
+									class="com.qcadoo.mes.productionCounting.criteriaModifiers.OrderCriteriaModifiersPC"
+									method="showOrdersForProductionBalance"/>
+						</component>
+					</layoutElement>
+				</component>
+
+				<listener event="createOrders"
+						  class="com.qcadoo.mes.productionCounting.listeners.ProductionBalanceOrderDetailsListeners"
+						  method="createOrders"/>
+				<listener event="addAllOrdersWithCriteria"
+						  class="com.qcadoo.mes.productionCounting.listeners.ProductionBalanceOrderDetailsListeners"
+						  method="addAllOrdersWithCriteria"/>
+			</component>
+		</windowTab>
+
+	</component>
+
+	<hooks>
+		<beforeRender class="com.qcadoo.mes.productionCounting.hooks.ProductionBalanceOrderDetailsHooks"
+					  method="onBeforeRender"/>
+	</hooks>
+</view>

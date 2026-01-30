@@ -75,6 +75,12 @@
                     </script>
                 </bigButton>
             </group>
+            <group name="storageLocations">
+                <bigButton name="changeStorageLocations"
+                           icon="copyIcon24.png"
+                           action="#{grid}.fireEvent(changeStorageLocations);"
+                           message="materialFlowResources.resourcesList.window.ribbon.storageLocations.changeStorageLocations.description" enabled="false"/>
+            </group>
         </ribbon>
 
         <component type="grid" name="resourceGrid" reference="grid">
@@ -147,6 +153,9 @@
             <listener event="showResourcesWithShortExpiryDate"
                       class="com.qcadoo.mes.materialFlowResources.listeners.ResourcesListListeners"
                       method="showResourcesWithShortExpiryDate"/>
+            <listener event="changeStorageLocations"
+                      class="com.qcadoo.mes.materialFlowResources.listeners.ResourcesListListeners"
+                      method="changeStorageLocations"/>
 
             <criteriaModifier class="com.qcadoo.mes.materialFlowResources.criteriaModifiers.ResourcesCriteriaModifier"
                               method="restrictToUserLocations"/>
@@ -161,6 +170,6 @@
     <hooks>
         <beforeRender
                 class="com.qcadoo.mes.materialFlowResources.hooks.ResourcesListHooks"
-                method="applyFilters"/>
+                method="onBeforeRender"/>
     </hooks>
 </view>

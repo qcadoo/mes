@@ -28,6 +28,7 @@ import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.basic.constants.QualityCardFields;
 import com.qcadoo.mes.deliveries.DeliveriesService;
+import com.qcadoo.mes.deliveries.constants.DeliveredProductFields;
 import com.qcadoo.mes.deliveries.constants.OrderedProductFields;
 import com.qcadoo.mes.deliveries.hooks.OrderedProductDetailsHooks;
 import com.qcadoo.model.api.DataDefinitionService;
@@ -74,7 +75,16 @@ public class OrderedProductDetailsListeners {
         fillCurrencyFields(view, state, args);
         setBatchLookupProductFilterValue(view, state, args);
         fillQualityCard(view);
+        setBatchLookup(view);
     }
+
+    private void setBatchLookup(ViewDefinitionState view) {
+        LookupComponent batchLookup = (LookupComponent) view
+                .getComponentByReference(OrderedProductFields.BATCH);
+        batchLookup.setFieldValue(null);
+        batchLookup.requestComponentUpdateState();
+    }
+
 
     public void fillUnitFields(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         orderedProductDetailsHooks.fillUnitFields(view);

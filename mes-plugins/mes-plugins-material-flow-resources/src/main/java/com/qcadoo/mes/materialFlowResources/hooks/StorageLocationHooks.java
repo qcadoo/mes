@@ -86,4 +86,15 @@ public class StorageLocationHooks {
         }
     }
 
+    public boolean onDelete(final DataDefinition dataDefinition, final Entity entity) {
+        if (!entity.getHasManyField(StorageLocationFields.POSITIONS).isEmpty()) {
+            entity.addGlobalError("qcadooView.errorPage.error.dataIntegrityViolationException.objectInUse.explanation");
+            return false;
+        }
+        if (!entity.getHasManyField(StorageLocationFields.RESOURCES).isEmpty()) {
+            entity.addGlobalError("qcadooView.errorPage.error.dataIntegrityViolationException.objectInUse.explanation");
+            return false;
+        }
+        return true;
+    }
 }

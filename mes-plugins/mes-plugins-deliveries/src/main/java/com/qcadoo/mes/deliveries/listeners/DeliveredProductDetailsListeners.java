@@ -75,6 +75,14 @@ public class DeliveredProductDetailsListeners {
         fillCurrencyFields(view, state, args);
         setBatchLookupProductFilterValue(view, state, args);
         setStorageLocationLookup(view);
+        setBatchLookup(view);
+    }
+
+    private void setBatchLookup(ViewDefinitionState view) {
+        LookupComponent batchLookup = (LookupComponent) view
+                .getComponentByReference(DeliveredProductFields.BATCH);
+        batchLookup.setFieldValue(null);
+        batchLookup.requestComponentUpdateState();
     }
 
     public void fillConversion(final ViewDefinitionState view, final ComponentState state, final String[] args) {
