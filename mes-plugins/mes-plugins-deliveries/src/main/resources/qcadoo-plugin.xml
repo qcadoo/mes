@@ -240,6 +240,16 @@
             <model:hasMany name="deliveredProductsMulti" plugin="deliveries" model="deliveredProductMulti" joinField="typeOfLoadUnit"/>
         </model:model-field>
 
+        <model:model-field model="storageLocation" plugin="materialFlowResources">
+            <model:hasMany name="deliveredProducts" model="deliveredProduct"
+                           joinField="storageLocation" plugin="deliveries"/>
+        </model:model-field>
+
+        <model:model-hook model="storageLocation" plugin="materialFlowResources">
+            <model:onDelete class="com.qcadoo.mes.deliveries.hooks.StorageLocationHooksD"
+                            method="onDelete"/>
+        </model:model-hook>
+
         <model:model-hook plugin="basic" model="company">
             <model:onDelete class="com.qcadoo.mes.deliveries.hooks.CompanyHooksD"
                             method="onDelete"/>

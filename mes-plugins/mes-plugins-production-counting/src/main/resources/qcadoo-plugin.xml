@@ -444,6 +444,11 @@
                             method="onDelete"/>
         </model:model-hook>
 
+        <model:model-hook model="storageLocation" plugin="materialFlowResources">
+            <model:onDelete class="com.qcadoo.mes.productionCounting.hooks.StorageLocationHooksPC"
+                            method="onDelete"/>
+        </model:model-hook>
+
         <model:model-hook model="technology" plugin="technologies">
             <model:validatesWith class="com.qcadoo.mes.productionCounting.hooks.TechnologyHookPC"
                                  method="validatesWith"/>

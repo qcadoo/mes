@@ -31,6 +31,11 @@ public final class StorageLocationFields {
     public static final String PRODUCT_TO_HISTORY = "productToHistory";
 
     public static final String STOCKTAKINGS = "stocktakings";
+    public static final String STOCKTAKING_POSITIONS = "stocktakingPositions";
+    public static final String STOCKTAKING_DIFFERENCES = "stocktakingDifferences";
+
+    public static final String REPACKING = "repacking";
+    public static final String REPACKING_POSITIONS = "repackingPositions";
 
     public static final String WAREHOUSE_STOCK_REPORTS = "warehouseStockReports";
 
