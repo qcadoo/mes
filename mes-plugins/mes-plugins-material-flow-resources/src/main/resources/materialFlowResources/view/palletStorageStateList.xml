@@ -139,6 +139,19 @@
 						]]>
                     </script>
                 </bigButton>
+                <bigButton name="changeTypeOfLoadUnit" icon="updateIcon24.png" state="disabled">
+                    <script>
+                        <![CDATA[
+							this.addOnChangeListener({
+								onClick: function() {
+									if(window.canClose()) {
+										#{grid}.performEvent('changeTypeOfLoadUnit', []);
+									}
+								}
+							});
+						]]>
+                    </script>
+                </bigButton>
             </group>
         </ribbon>
 
@@ -147,16 +160,19 @@
                 <![CDATA[
 					var moveToStorageLocationButton = #{window}.getRibbonItem("movePallets.moveToStorageLocation");
 					var transferResourcesButton = #{window}.getRibbonItem("movePallets.transferResources");
+					var changeTypeOfLoadUnitButton = #{window}.getRibbonItem("movePallets.changeTypeOfLoadUnit");
 					var showDetailsButton = #{window}.getRibbonItem("details.showDetails");
 					this.addOnChangeListener({
                         onChange: function(selectedEntitiesArray) {
                             moveToStorageLocationButton.disable();
                             transferResourcesButton.disable();
+                            changeTypeOfLoadUnitButton.disable();
                             showDetailsButton.disable("#{translate(materialFlowResources.palletStorageStateList.ribbon.message.selectOneRecord)}");
 
                             if (selectedEntitiesArray && selectedEntitiesArray.length > 0) {
                                 if (selectedEntitiesArray.length === 1) {
                                     showDetailsButton.enable();
+                                    changeTypeOfLoadUnitButton.enable();
                                 }
                                 moveToStorageLocationButton.enable();
                                 transferResourcesButton.enable();
@@ -202,7 +218,9 @@
             <listener event="transferResources"
                       class="com.qcadoo.mes.materialFlowResources.listeners.PalletStorageStateListListeners"
                       method="transferResources"/>
-
+            <listener event="changeTypeOfLoadUnit"
+                      class="com.qcadoo.mes.materialFlowResources.listeners.PalletStorageStateListListeners"
+                      method="changeTypeOfLoadUnit"/>
         </component>
         <component type="checkbox" name="isShiftFilter" reference="isShiftFilter" defaultVisible="false" defaultEnabled="false"/>
         <component type="checkbox" name="isFreeFilter" reference="isFreeFilter" defaultVisible="false" defaultEnabled="false"/>

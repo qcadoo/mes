@@ -3,6 +3,7 @@ package com.qcadoo.mes.materialFlowResources.listeners;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Maps;
 import com.qcadoo.mes.materialFlowResources.constants.PalletStorageStateDtoFields;
+import com.qcadoo.mes.materialFlowResources.constants.ResourceDtoFields;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.view.api.ComponentState;
@@ -19,6 +20,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 @Service
 public class PalletStorageStateListListeners {
@@ -117,6 +119,19 @@ public class PalletStorageStateListListeners {
         url.append(context.toString());
 
         view.openModal(url.toString());
+    }
+
+    public final void changeTypeOfLoadUnit(final ViewDefinitionState view, final ComponentState state,
+                                             final String[] args) {
+        GridComponent gridComponent = (GridComponent) view.getComponentByReference(QcadooViewConstants.L_GRID);
+
+        Map<String, Object> parameters = Maps.newHashMap();
+
+        String url = "../page/materialFlowResources/changeTypeOfLoadUnitHelper.html";
+
+        parameters.put("form.id", gridComponent.getSelectedEntities().stream().findFirst().get().getId());
+
+        view.openModal(url, parameters);
     }
 
 }

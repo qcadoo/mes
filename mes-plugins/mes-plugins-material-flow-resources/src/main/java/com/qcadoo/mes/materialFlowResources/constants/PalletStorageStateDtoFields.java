@@ -34,6 +34,7 @@ public final class PalletStorageStateDtoFields {
     public static final String PALLET_NUMBER_ACTIVE = "palletNumberActive";
 
     public static final String TYPE_OF_LOAD_UNIT = "typeOfLoadUnit";
+    public static final String NEW_TYPE_OF_LOAD_UNIT = "newTypeOfLoadUnit";
 
     public static final String STORAGE_LOCATION_NUMBER = "storageLocationNumber";
 

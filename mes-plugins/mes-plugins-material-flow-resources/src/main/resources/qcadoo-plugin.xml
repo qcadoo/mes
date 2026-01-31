@@ -521,6 +521,7 @@
         <view:view resource="view/palletStorageStateDetails.xml"/>
         <view:view resource="view/palletMoveToStorageLocationHelper.xml"/>
         <view:view resource="view/palletResourcesTransferHelper.xml"/>
+        <view:view resource="view/changeTypeOfLoadUnitHelper.xml"/>
 
         <view:view resource="view/palletBalanceDetails.xml"/>
         <view:view resource="view/palletBalancesList.xml"/>
