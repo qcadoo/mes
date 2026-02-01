@@ -36,11 +36,11 @@
                             message="basic.palletNumber.number.error.shouldContainOnlyNumbers"/>
         </string>
 
-        <datetime name="issueDateTime" copyable="false" />
+        <datetime name="issueDateTime" copyable="false"/>
 
         <manyToMany name="palletNumberHelpers" model="palletNumberHelper" joinField="palletNumbers"
-                    cascade="nullify" plugin="basic"/>
-        <boolean name="printed" default="false"/>
+                    plugin="basic"/>
+        <boolean name="printed" default="false" copyable="false"/>
     </fields>
 
     <hooks>
