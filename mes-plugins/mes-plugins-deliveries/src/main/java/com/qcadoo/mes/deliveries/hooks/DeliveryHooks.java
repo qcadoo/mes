@@ -105,7 +105,7 @@ public class DeliveryHooks {
             Entity deliveryFromDB = deliveriesService.getDelivery(deliveryId);
             Entity currencyFromDB = deliveryFromDB.getBelongsToField(DeliveryFields.CURRENCY);
 
-            if (Objects.nonNull(currencyFromDB) && !currencyFromDB.getId().equals(currency.getId()) && !orderedProducts.isEmpty()) {
+            if (Objects.nonNull(currencyFromDB) && (currency == null || !currencyFromDB.getId().equals(currency.getId())) && !orderedProducts.isEmpty()) {
                 delivery.addGlobalMessage("deliveries.delivery.currencyChange.orderedProductsPriceVerificationRequired", false, false);
             }
         }

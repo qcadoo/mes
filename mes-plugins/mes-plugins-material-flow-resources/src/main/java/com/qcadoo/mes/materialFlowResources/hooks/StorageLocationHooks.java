@@ -87,11 +87,13 @@ public class StorageLocationHooks {
     }
 
     public boolean onDelete(final DataDefinition dataDefinition, final Entity entity) {
-        if (!entity.getHasManyField(StorageLocationFields.POSITIONS).isEmpty()) {
-            entity.addGlobalError("qcadooView.errorPage.error.dataIntegrityViolationException.objectInUse.explanation");
-            return false;
-        }
-        if (!entity.getHasManyField(StorageLocationFields.RESOURCES).isEmpty()) {
+        if (!entity.getHasManyField(StorageLocationFields.POSITIONS).isEmpty()
+                || !entity.getHasManyField(StorageLocationFields.RESOURCES).isEmpty()
+                || !entity.getHasManyField(StorageLocationFields.REPACKING).isEmpty()
+                || !entity.getHasManyField(StorageLocationFields.REPACKING_POSITIONS).isEmpty()
+                || !entity.getManyToManyField(StorageLocationFields.STOCKTAKINGS).isEmpty()
+                || !entity.getHasManyField(StorageLocationFields.STOCKTAKING_POSITIONS).isEmpty()
+                || !entity.getHasManyField(StorageLocationFields.STOCKTAKING_DIFFERENCES).isEmpty()) {
             entity.addGlobalError("qcadooView.errorPage.error.dataIntegrityViolationException.objectInUse.explanation");
             return false;
         }
