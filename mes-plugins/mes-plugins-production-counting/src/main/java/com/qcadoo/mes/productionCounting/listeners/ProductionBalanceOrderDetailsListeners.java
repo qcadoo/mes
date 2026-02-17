@@ -57,21 +57,21 @@ public class ProductionBalanceOrderDetailsListeners {
         Entity productionBalance = productionBalanceDD.get(productionBalanceId);
         List<Entity> orders = Lists.newArrayList(productionBalance.getHasManyField(ProductionBalanceFields.ORDERS));
         GridComponent grid = (GridComponent) view.getComponentByReference(QcadooViewConstants.L_GRID);
-        String query = "SELECT id FROM orders_order ";
+        String query = "SELECT id FROM orders_orderplanninglistdto ";
 
         Map<String, String> filter = grid.getFilters();
         GridComponentMultiSearchFilter multiSearchFilter = grid.getMultiSearchFilter();
         String filterQ;
         try {
             filterQ = GridComponentFilterSQLUtils.addFilters(filter, grid.getColumns(),
-                    "orders_order",
+                    "orders_orderplanninglistdto",
                     dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER,
-                            OrdersConstants.MODEL_ORDER));
+                            OrdersConstants.MODEL_ORDER_PLANNING_LIST_DTO));
             filterQ += " AND ";
             filterQ += GridComponentFilterSQLUtils.addMultiSearchFilter(multiSearchFilter, grid.getColumns(),
-                    "orders_order",
+                    "orders_orderplanninglistdto",
                     dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER,
-                            OrdersConstants.MODEL_ORDER));
+                            OrdersConstants.MODEL_ORDER_PLANNING_LIST_DTO));
         } catch (Exception e) {
             filterQ = "";
         }
