@@ -77,6 +77,10 @@
               values="01orderDate,02taskDate,03taskStartDate"
               default="01orderDate"/>
 
+        <enum name="showOnProductionGuide" required="true"
+              values="01orderNumber,02orderNumberAndName"
+              default="01orderNumber"/>
+
         <string name="emailHost">
             <validatesLength max="255"/>
         </string>

@@ -86,4 +86,5 @@ public final class ParameterFields {
     public static final String EMAIL_PASSWORD = "emailPassword";
 
     public static final String EMAIL_FOR_CONFIRMATION = "emailForConfirmation";
+    public static final String SHOW_ON_PRODUCTION_GUIDE = "showOnProductionGuide";
 }
