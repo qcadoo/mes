@@ -88,7 +88,9 @@ QCD.employeeWorkingTimeSettlement = (function() {
 
     function updateAllTotals(grid, dataView) {
         let workTimeInSecondsSum = CalculateTotalByAggregator(new Slick.Data.Aggregators.Sum("workTimeInSeconds"), dataView);
+        let stoppageTimeInSecondsSum = CalculateTotalByAggregator(new Slick.Data.Aggregators.Sum("stoppageTimeInSeconds"), dataView);
         updateTotalRowValue(grid, "workTime", formatTime(workTimeInSecondsSum));
+        updateTotalRowValue(grid, "stoppageTime", formatTime(stoppageTimeInSecondsSum));
     }
 
     function formatTime(seconds) {
