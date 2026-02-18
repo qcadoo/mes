@@ -17,6 +17,7 @@ import com.qcadoo.model.api.search.JoinType;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
+import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.constants.QcadooViewConstants;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -83,7 +84,10 @@ public class ChangeTypeOfLoadUnitHelperListeners {
             view.addMessage("materialFlowResources.changeTypeOfLoadUnitHelper.error", ComponentState.MessageType.FAILURE, false,
                     String.join(", ", failedResources));
         }
-        form.performEvent(view, "reset");
+        FieldComponent typeOfLoadUnitField = (FieldComponent) view.getComponentByReference(PalletStorageStateDtoFields.TYPE_OF_LOAD_UNIT);
+        FieldComponent newTypeOfLoadUnitField = (FieldComponent) view.getComponentByReference(PalletStorageStateDtoFields.NEW_TYPE_OF_LOAD_UNIT);
+        typeOfLoadUnitField.setFieldValue(newTypeOfLoadUnitName);
+        newTypeOfLoadUnitField.setFieldValue(null);
     }
 
 }
