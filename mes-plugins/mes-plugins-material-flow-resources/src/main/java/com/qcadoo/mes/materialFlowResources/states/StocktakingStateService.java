@@ -248,8 +248,10 @@ public class StocktakingStateService extends BasicStateService implements Stockt
                 if (ResourceFields.PALLET_NUMBER.equals(error.getKey()) && "qcadooView.validate.field.error.missing".equals(message.getMessage())) {
                     entity.addGlobalError("materialFlowResources.stocktaking.document.palletNumberRequired", ex.getEntity().getBelongsToField(ResourceFields.STORAGE_LOCATION).getStringField(StorageLocationFields.NUMBER));
                 } else if (ResourceFields.PALLET_NUMBER.equals(error.getKey()) && "documentGrid.error.position.existsOtherResourceForLoadUnitAndTypeOfLoadUnit".equals(message.getMessage())) {
-                    entity.addGlobalError("materialFlowResources.stocktaking.document.existsOtherResourceForLoadUnitAndTypeOfLoadUnit", ex.getEntity().getBelongsToField(ResourceFields.STORAGE_LOCATION).getStringField(StorageLocationFields.NUMBER));
-                } else {
+                    entity.addGlobalError("materialFlowResources.stocktaking.document.existsOtherResourceForLoadUnitAndTypeOfLoadUnit", ex.getEntity().getBelongsToField(ResourceFields.PALLET_NUMBER).getStringField(StorageLocationFields.NUMBER));
+                } else if(ResourceFields.PALLET_NUMBER.equals(error.getKey()) && "documentGrid.error.position.existsOtherResourceForPalletAndStorageLocation".equals(message.getMessage())) {
+                    entity.addGlobalError("materialFlowResources.stocktaking.document.existsOtherResourceForPalletAndStorageLocation", ex.getEntity().getBelongsToField(ResourceFields.PALLET_NUMBER).getStringField(StorageLocationFields.NUMBER));
+                }else {
                     entity.addGlobalError(message.getMessage(), message.getVars());
                 }
             }
