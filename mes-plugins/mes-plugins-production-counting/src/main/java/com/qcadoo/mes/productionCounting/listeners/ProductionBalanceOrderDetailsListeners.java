@@ -1,17 +1,13 @@
 package com.qcadoo.mes.productionCounting.listeners;
 
 import com.google.common.collect.Lists;
-import com.qcadoo.mes.materialFlowResources.constants.StorageLocationFields;
-import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
-import com.qcadoo.mes.orders.states.constants.OrderState;
 import com.qcadoo.mes.productionCounting.constants.ProductionBalanceFields;
 import com.qcadoo.mes.productionCounting.constants.ProductionCountingConstants;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchRestrictions;
-import com.qcadoo.model.api.validators.ErrorMessage;
 import com.qcadoo.model.api.validators.GlobalMessage;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
@@ -76,20 +72,18 @@ public class ProductionBalanceOrderDetailsListeners {
             filterQ = "";
         }
 
+        query = query + " WHERE state in ('03inProgress','04completed','06interrupted','07abandoned') AND active = true ";
         if (StringUtils.isNoneBlank(filterQ)) {
-            query = query + " WHERE " + filterQ;
+            query = query + " AND " + filterQ;
         }
 
         List<Long> ids = jdbcTemplate.queryForList(query, Collections.emptyMap(), Long.class);
-        if(ids.isEmpty()){
+        if (ids.isEmpty()) {
             view.addMessage(new GlobalMessage("productionCounting.productionBalance.error.noOrders"));
             return;
         }
         orders.addAll(dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).find()
-                .add(SearchRestrictions.in("id", ids))
-                .add(SearchRestrictions.in(OrderFields.STATE, Lists.newArrayList(OrderState.IN_PROGRESS.getStringValue(),
-                        OrderState.COMPLETED.getStringValue(), OrderState.INTERRUPTED.getStringValue(),
-                        OrderState.ABANDONED.getStringValue()))).list().getEntities());
+                .add(SearchRestrictions.in("id", ids)).list().getEntities());
         productionBalance.setField(ProductionBalanceFields.ORDERS, orders);
         productionBalanceDD.save(productionBalance);
     }
