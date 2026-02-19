@@ -57,6 +57,9 @@
         <hasMany name="materialRequirementProducts" model="materialRequirementProduct"
                  plugin="materialRequirements"
                  joinField="materialRequirement" cascade="delete"/>
+
+        <boolean name="wms" copyable="false" default="false"/>
+        <enum name="stateInWMS" values="01waiting,02inProgress,04partiallyRealized,05realized" copyable="false"/>
     </fields>
 
     <hooks>
