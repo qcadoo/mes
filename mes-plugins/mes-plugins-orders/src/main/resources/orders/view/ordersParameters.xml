@@ -142,6 +142,11 @@
                                    reference="orderStartDateBasedOn" hasDescription="true">
                         </component>
                     </layoutElement>
+                    <layoutElement column="2" row="5">
+                        <component type="select" name="showOnProductionGuide" field="#{form}.showOnProductionGuide"
+                                   reference="showOnProductionGuide">
+                        </component>
+                    </layoutElement>
                     <layoutElement column="3" row="1">
                         <component type="borderLayout" name="dimensionControlBorderLayout">
                             <component type="gridLayout" name="dimensionControlGridLayout"

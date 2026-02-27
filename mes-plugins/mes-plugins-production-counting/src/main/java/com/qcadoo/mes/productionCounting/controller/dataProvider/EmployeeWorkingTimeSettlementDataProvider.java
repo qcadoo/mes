@@ -30,6 +30,7 @@ public class EmployeeWorkingTimeSettlementDataProvider implements AnalysisDataPr
     private static final String L_FINISH_DATE = "finishDate";
 
     private static final String L_WORK_TIME = "workTime";
+    private static final String L_STOPPAGE_TIME = "stoppageTime";
 
     private static final String L_SHIFT_NUMBER = "shiftNumber";
 
@@ -68,6 +69,10 @@ public class EmployeeWorkingTimeSettlementDataProvider implements AnalysisDataPr
         columns.add(new ColumnDTO(L_WORK_TIME,
                 translationService.translate(
                         "productionCounting.employeeWorkingTimeSettlement.window.mainTab.grid.column.workTime", locale),
+                NUMERIC_DATA_TYPE));
+        columns.add(new ColumnDTO(L_STOPPAGE_TIME,
+                translationService.translate(
+                        "productionCounting.employeeWorkingTimeSettlement.window.mainTab.grid.column.stoppageTime", locale),
                 NUMERIC_DATA_TYPE));
         columns.add(new ColumnDTO(L_SHIFT_NUMBER, translationService
                 .translate("productionCounting.employeeWorkingTimeSettlement.window.mainTab.grid.column.shiftNumber", locale)));
@@ -129,6 +134,10 @@ public class EmployeeWorkingTimeSettlementDataProvider implements AnalysisDataPr
     }
 
     private void appendBaseQuery(StringBuilder query) {
+        query.append("WITH stoppages (duration, productiontracking_id) AS (SELECT ");
+        query.append("SUM(stp.duration) AS duration, stp.productiontracking_id ");
+        query.append("FROM stoppage_stoppage stp ");
+        query.append("GROUP BY stp.productiontracking_id) ");
         query.append("SELECT ");
         query.append("swt.id as id, ");
         query.append("(((stf.surname)::text || ' '::text) || (stf.name)::text) AS worker, ");
@@ -136,6 +145,8 @@ public class EmployeeWorkingTimeSettlementDataProvider implements AnalysisDataPr
         query.append("to_char(swt.effectiveexecutiontimeend, 'YYYY-MM-DD HH24:MI:SS') as \"finishDate\", ");
         query.append("TO_CHAR((swt.labortime || ' second')::interval, 'HH24:MI:SS') as \"workTime\", ");
         query.append("swt.labortime as \"workTimeInSeconds\", ");
+        query.append("TO_CHAR((COALESCE(st.duration, 0) || ' second')::interval, 'HH24:MI:SS') as \"stoppageTime\", ");
+        query.append("COALESCE(st.duration, 0) as \"stoppageTimeInSeconds\", ");
         query.append("s.name as \"shiftNumber\", ");
         query.append("to_char(pt.shiftstartday, 'YYYY-MM-DD') AS \"shiftStartDate\", ");
         query.append("o.number AS \"orderNumber\", ");
@@ -156,6 +167,7 @@ public class EmployeeWorkingTimeSettlementDataProvider implements AnalysisDataPr
         query.append("LEFT JOIN basic_workstation w ON pt.workstation_id = w.id ");
         query.append("LEFT JOIN basic_shift s ON pt.shift_id = s.id ");
         query.append("LEFT JOIN basic_division d ON pt.division_id = d.id ");
+        query.append("LEFT JOIN stoppages st ON st.productiontracking_id = pt.id ");
     }
 
     private void appendFilters(JSONObject filters, StringBuilder query) throws JSONException {
@@ -180,6 +192,10 @@ public class EmployeeWorkingTimeSettlementDataProvider implements AnalysisDataPr
                         break;
                     case L_WORK_TIME:
                         query.append("AND TO_CHAR((swt.labortime || ' second')::interval, 'HH24:MI:SS') LIKE '%").append(value)
+                                .append("%' ");
+                        break;
+                    case L_STOPPAGE_TIME:
+                        query.append("AND TO_CHAR((st.duration || ' second')::interval, 'HH24:MI:SS') LIKE '%").append(value)
                                 .append("%' ");
                         break;
                     case L_SHIFT_NUMBER:

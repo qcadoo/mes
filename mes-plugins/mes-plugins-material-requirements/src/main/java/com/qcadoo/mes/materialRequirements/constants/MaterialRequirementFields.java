@@ -58,4 +58,8 @@ public final class MaterialRequirementFields {
 
     public static final String SHOW_REPLACEMENTS = "showReplacements";
 
+    public static final String WMS = "wms";
+
+    public static final String STATE_IN_WMS = "stateInWMS";
+
 }

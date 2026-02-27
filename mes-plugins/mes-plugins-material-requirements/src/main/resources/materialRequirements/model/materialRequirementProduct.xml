@@ -51,6 +51,9 @@
         <date name="orderStartDate"/>
         <boolean name="replacementExists" default="false"/>
 
+        <datetime name="pickingDate" copyable="false"/>
+        <belongsTo name="pickingWorker" model="user" plugin="qcadooSecurity" copyable="false"/>
+
     </fields>
 
     <hooks />

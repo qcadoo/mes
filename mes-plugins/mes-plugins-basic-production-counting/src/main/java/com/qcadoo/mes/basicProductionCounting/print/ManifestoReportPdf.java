@@ -3,19 +3,19 @@
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
  * Version: 1.4
- *
+ * <p>
  * This file is part of Qcadoo.
- *
+ * <p>
  * Qcadoo is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation; either version 3 of the License,
  * or (at your option) any later version.
- *
+ * <p>
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty
  * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU Affero General Public License for more details.
- *
+ * <p>
  * You should have received a copy of the GNU Affero General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
@@ -31,9 +31,8 @@ import com.lowagie.text.pdf.PdfContentByte;
 import com.lowagie.text.pdf.PdfPTable;
 import com.lowagie.text.pdf.PdfWriter;
 import com.qcadoo.localization.api.TranslationService;
-import com.qcadoo.mes.basic.constants.BasicConstants;
-import com.qcadoo.mes.basic.constants.CompanyFields;
-import com.qcadoo.mes.basic.constants.ProductFields;
+import com.qcadoo.mes.basic.ParameterService;
+import com.qcadoo.mes.basic.constants.*;
 import com.qcadoo.mes.basicProductionCounting.BasicProductionCountingService;
 import com.qcadoo.mes.orders.OrderService;
 import com.qcadoo.mes.orders.constants.OrderFields;
@@ -113,6 +112,9 @@ public class ManifestoReportPdf extends ReportPdfView {
 
     @Autowired
     private BarcodeOperationComponentService barcodeOperationComponentService;
+
+    @Autowired
+    private ParameterService parameterService;
 
     private Entity order;
 
@@ -252,7 +254,11 @@ public class ManifestoReportPdf extends ReportPdfView {
 
                 Optional<String> mayBeBarcode = barcodeOperationComponentService.findBarcode(order, operationComponent);
 
-                operationsTable.addCell(new Phrase(operation.getStringField(OperationFields.NUMBER), FontUtils.getDejavuRegular7Dark()));
+                String firstColumn = operation.getStringField(OperationFields.NUMBER);
+                if (parameterService.getParameter().getStringField(ParameterFields.SHOW_ON_PRODUCTION_GUIDE).equals(ShowOnProductionGuide.ORDER_NUMBER_AND_NAME.getStringValue())) {
+                    firstColumn = operation.getStringField(OperationFields.NUMBER) + ", " + operation.getStringField(OperationFields.NAME);
+                }
+                operationsTable.addCell(new Phrase(firstColumn, FontUtils.getDejavuRegular7Dark()));
                 operationsTable.addCell(createBarcode(writer, mayBeBarcode.orElse(StringUtils.EMPTY)));
             }
         }

@@ -3,51 +3,47 @@
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
  * Version: 1.4
- *
+ * <p>
  * This file is part of Qcadoo.
- *
+ * <p>
  * Qcadoo is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation; either version 3 of the License,
  * or (at your option) any later version.
- *
+ * <p>
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty
  * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU Affero General Public License for more details.
- *
+ * <p>
  * You should have received a copy of the GNU Affero General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.materialRequirements.constants;
+package com.qcadoo.mes.basic.constants;
 
-public final class MaterialRequirementProductFields {
+public enum ShowOnProductionGuide {
+    ORDER_NUMBER("01orderNumber"), ORDER_NUMBER_AND_NAME("02orderNumberAndName");
 
-    private MaterialRequirementProductFields() {
+    private final String showOnProductionGuide;
 
+    ShowOnProductionGuide(final String showOnProductionGuide) {
+        this.showOnProductionGuide = showOnProductionGuide;
     }
 
-    public static final String MATERIAL_REQUIREMENT = "materialRequirement";
+    public String getStringValue() {
+        return showOnProductionGuide;
+    }
 
-    public static final String PRODUCT = "product";
+    public static ShowOnProductionGuide parseString(final String showOnProductionGuide) {
+        if ("01orderNumber".equals(showOnProductionGuide)) {
+            return ORDER_NUMBER;
+        } else if ("02orderNumberAndName".equals(showOnProductionGuide)) {
+            return ORDER_NUMBER_AND_NAME;
+        }
 
-    public static final String LOCATION = "location";
-
-    public static final String BATCH = "batch";
-
-    public static final String QUANTITY = "quantity";
-
-    public static final String CURRENT_STOCK = "currentStock";
-
-    public static final String BATCH_STOCK = "batchStock";
-
-    public static final String ORDER_START_DATE = "orderStartDate";
-    public static final String REPLACEMENT_EXISTS = "replacementExists";
-
-    public static final String PICKING_DATE = "pickingDate";
-
-    public static final String PICKING_WORKER = "pickingWorker";
+        throw new IllegalStateException("Unsupported ShowOnProductionGuide: " + showOnProductionGuide);
+    }
 
 }
