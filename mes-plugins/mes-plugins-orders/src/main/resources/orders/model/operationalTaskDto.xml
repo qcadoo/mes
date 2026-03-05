@@ -44,6 +44,7 @@
         <integer name="workstationId"/>
         <integer name="orderId"/>
         <string name="orderNumber"/>
+        <string name="orderProductNumber"/>
         <integer name="tocId"/>
         <integer name="operationId"/>
         <string name="technologyOperationComponentNodeNumber"/>
