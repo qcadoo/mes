@@ -2,8 +2,8 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 14.6
--- Dumped by pg_dump version 14.6
+-- Dumped from database version 14.2
+-- Dumped by pg_dump version 14.2
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -23402,18 +23402,20 @@ CREATE VIEW public.orders_operationaltaskdto AS
     (product.number)::text AS productnumber,
     (product.name)::text AS productname,
     (product.unit)::text AS productunit,
+    (orderproduct.number)::text AS orderproductnumber,
     NULL::numeric AS plannedquantity,
     NULL::numeric AS usedquantity,
     NULL::numeric AS remainingquantity,
     NULL::numeric AS doneinpercentage,
     NULL::integer AS suborderid
-   FROM (((((((public.orders_operationaltask operationaltask
+   FROM ((((((((public.orders_operationaltask operationaltask
      LEFT JOIN public.basic_staff staff ON ((staff.id = operationaltask.staff_id)))
      LEFT JOIN public.basic_division division ON ((operationaltask.division_id = division.id)))
      LEFT JOIN public.basic_workstation workstation ON ((workstation.id = operationaltask.workstation_id)))
      LEFT JOIN public.orders_order ordersorder ON ((ordersorder.id = operationaltask.order_id)))
      LEFT JOIN public.technologies_technologyoperationcomponent technologyoperationcomponent ON ((technologyoperationcomponent.id = operationaltask.technologyoperationcomponent_id)))
      LEFT JOIN public.basic_product product ON ((product.id = operationaltask.product_id)))
+     LEFT JOIN public.basic_product orderproduct ON ((orderproduct.id = ordersorder.product_id)))
      LEFT JOIN public.productionlines_productionline productionline ON ((productionline.id = workstation.productionline_id)))
   WHERE ((operationaltask.type)::text = '01otherCase'::text)
 UNION ALL
@@ -23440,18 +23442,20 @@ UNION ALL
     (product.number)::text AS productnumber,
     (product.name)::text AS productname,
     (product.unit)::text AS productunit,
+    (orderproduct.number)::text AS orderproductnumber,
     productioncountingquantitydto.plannedquantity,
     GREATEST(productioncountingquantitydto.producedquantity, (0)::numeric) AS usedquantity,
     GREATEST((COALESCE(productioncountingquantitydto.plannedquantity, (0)::numeric) - COALESCE(productioncountingquantitydto.producedquantity, (0)::numeric)), (0)::numeric) AS remainingquantity,
     ceil(((COALESCE(productioncountingquantitydto.producedquantity, (0)::numeric) * (100)::numeric) / productioncountingquantitydto.plannedquantity)) AS doneinpercentage,
     (operationaltask.suborder_id)::integer AS suborderid
-   FROM ((((((((public.orders_operationaltask operationaltask
+   FROM (((((((((public.orders_operationaltask operationaltask
      LEFT JOIN public.basic_staff staff ON ((staff.id = operationaltask.staff_id)))
      LEFT JOIN public.basic_division division ON ((operationaltask.division_id = division.id)))
      LEFT JOIN public.basic_workstation workstation ON ((workstation.id = operationaltask.workstation_id)))
      LEFT JOIN public.orders_order ordersorder ON ((ordersorder.id = operationaltask.order_id)))
      LEFT JOIN public.technologies_technologyoperationcomponent technologyoperationcomponent ON ((technologyoperationcomponent.id = operationaltask.technologyoperationcomponent_id)))
      LEFT JOIN public.basic_product product ON ((product.id = operationaltask.product_id)))
+     LEFT JOIN public.basic_product orderproduct ON ((orderproduct.id = ordersorder.product_id)))
      LEFT JOIN public.productionlines_productionline productionline ON ((productionline.id = workstation.productionline_id)))
      LEFT JOIN public.basicproductioncounting_productioncountingquantitydto productioncountingquantitydto ON (((productioncountingquantitydto.orderid = ordersorder.id) AND (productioncountingquantitydto.tocid = technologyoperationcomponent.id) AND ((productioncountingquantitydto.role)::text = '02produced'::text) AND (((productioncountingquantitydto.typeofmaterial)::text = '02intermediate'::text) OR ((productioncountingquantitydto.typeofmaterial)::text = '03finalProduct'::text)))))
   WHERE ((operationaltask.type)::text = '02executionOperationInOrder'::text);
@@ -44760,7 +44764,6 @@ COPY public.qcadooplugin_plugin (id, identifier, version, state, issystem, entit
 127	productionScheduling	1.5.0	DISABLED	f	0	planning	AGPL
 63	avgLaborCostCalcForOrder	1.5.0	DISABLED	f	0	planning	AGPL
 138	cmmsScheduler	1.5.0	DISABLED	f	0	other	Commercial
-116	materialRequirements	1.5.0	DISABLED	f	0	calculations	AGPL
 60	assignmentToShift	1.5.0	DISABLED	f	0	planning	AGPL
 126	lineChangeoverNormsForOrders	1.5.0	DISABLED	f	0	planning	AGPL
 55	urcOrders	1.5.0	DISABLED	f	0	planning	Commercial
@@ -44768,7 +44771,6 @@ COPY public.qcadooplugin_plugin (id, identifier, version, state, issystem, entit
 54	cmmsMachineParts	1.5.0	DISABLED	f	0	other	AGPL
 122	costNormsForMaterials	1.5.0	DISABLED	f	0	basic	AGPL
 48	stoppage	1.5.0	DISABLED	f	0	other	AGPL
-52	basicProductionCounting	1.5.0	DISABLED	f	0	tracking	AGPL
 45	costNormsForOperationInOrder	1.5.0	DISABLED	f	0	planning	AGPL
 118	operationTimeCalculations	1.5.0	DISABLED	f	0	calculations	AGPL
 40	costNormsForOperation	1.5.0	DISABLED	f	0	technologies	AGPL
@@ -44786,6 +44788,7 @@ COPY public.qcadooplugin_plugin (id, identifier, version, state, issystem, entit
 44	lineChangeoverNorms	1.5.0	ENABLED	f	0	technologies	AGPL
 51	masterOrders	1.5.0	ENABLED	f	0	planning	AGPL
 149	integrationBaseLinker	1.5.0	DISABLED	f	0	other	Commercial
+116	materialRequirements	1.5.0	ENABLED	f	0	calculations	AGPL
 152	integrationPipedrive	1.5.0	DISABLED	f	0	\N	\N
 153	arch	1.5.0	DISABLED	f	0	\N	Commercial
 150	integrationAsana	1.5.0	DISABLED	f	0	\N	Commercial
@@ -44815,6 +44818,7 @@ COPY public.qcadooplugin_plugin (id, identifier, version, state, issystem, entit
 53	warehouseMinimalState	1.5.0	ENABLED	f	0	other	AGPL
 154	scheduleGantt	1.5.0	DISABLED	f	0	other	Commercial
 36	productionLines	1.5.0	ENABLED	f	0	basic	AGPL
+52	basicProductionCounting	1.5.0	ENABLED	f	0	tracking	AGPL
 \.
 
 
@@ -45068,7 +45072,7 @@ COPY public.qcadoosecurity_role (id, identifier, description, entityversion) FRO
 COPY public.qcadoosecurity_user (id, username, email, firstname, lastname, enabled, description, password, lastactivity, staff_id, group_id, entityversion, factory_id, ipaddress, showonlymyregistrationrecords, productionline_id, groupchangedate, pswdlastchanged, afterfirstpswdchange, isblocked, showonlymyoperationaltasksandorders) FROM stdin;
 3	qcadoo_bot	\N	qcadoo_bot	qcadoo_bot	t	\N	\N	\N	\N	1	0	\N	\N	f	\N	2022-05-26 00:00:00	\N	f	f	f
 2	admin	admin@qcadoo.com	generated admin	generated admin	t	\N	$2a$11$fK09LNi7Y4ZHKWAg0PCLxeOP/oTENa6AKO4CcuxYRbtrOeStRZYVm	\N	\N	4	0	\N	\N	f	\N	2022-05-26 00:00:00	\N	t	f	f
-1	superadmin	superadmin@qcadoo.com	generated superadmin	generated superadmin	t	\N	$2a$11$tzoAWwNksWYQPgkvvczy6eQaJHMAFBlUlq5OzAz.GeNNMqTEt1FE2	2025-03-28 12:30:18.512	\N	2	0	\N	0:0:0:0:0:0:0:1	f	\N	2022-05-26 00:00:00	\N	t	f	f
+1	superadmin	superadmin@qcadoo.com	generated superadmin	generated superadmin	t	\N	$2a$11$tzoAWwNksWYQPgkvvczy6eQaJHMAFBlUlq5OzAz.GeNNMqTEt1FE2	2026-03-09 09:45:41.458	\N	2	0	\N	0:0:0:0:0:0:0:1	f	\N	2022-05-26 00:00:00	\N	t	f	f
 \.
 
 
@@ -45241,6 +45245,8 @@ COPY public.qcadooview_item (id, pluginidentifier, name, active, category_id, vi
 282	basic	typeOfLoadUnitsList	t	4	283	25	ROLE_BASE_FUNCTIONALITY	0
 283	materialFlowResources	repackingList	t	6	284	17	ROLE_MATERIAL_FLOW	0
 284	materialFlowResources	repackingPositionsList	t	6	285	18	ROLE_MATERIAL_FLOW	0
+285	basicProductionCounting	productionCountingQuantityList	f	9	286	10	ROLE_PRODUCTION_COUNTING_QUANTITY	0
+286	materialRequirements	materialRequirements	f	9	287	11	ROLE_REQUIREMENTS	0
 \.
 
 
@@ -45388,6 +45394,8 @@ COPY public.qcadooview_view (id, pluginidentifier, name, view, url, entityversio
 283	basic	typeOfLoadUnitsList	typeOfLoadUnitsList	\N	0
 284	materialFlowResources	repackingList	repackingList	\N	0
 285	materialFlowResources	repackingPositionsList	repackingPositionsList	\N	0
+286	basicProductionCounting	productionCountingQuantityList	productionCountingQuantityList	\N	0
+287	materialRequirements	materialRequirementsList	materialRequirementsList	\N	0
 \.
 
 
@@ -50802,7 +50810,7 @@ SELECT pg_catalog.setval('public.qcadooview_category_id_seq', 28, true);
 -- Name: qcadooview_item_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('public.qcadooview_item_id_seq', 284, true);
+SELECT pg_catalog.setval('public.qcadooview_item_id_seq', 286, true);
 
 
 --
@@ -50816,7 +50824,7 @@ SELECT pg_catalog.setval('public.qcadooview_systeminfo_id_seq', 1, false);
 -- Name: qcadooview_view_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('public.qcadooview_view_id_seq', 285, true);
+SELECT pg_catalog.setval('public.qcadooview_view_id_seq', 287, true);
 
 
 --
