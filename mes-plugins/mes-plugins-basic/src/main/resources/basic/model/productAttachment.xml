@@ -33,6 +33,7 @@
         <string name="name" required="true"/>
         <decimal name="size" required="true"/>
         <string name="ext" required="true"/>
+        <boolean name="main" default="false"/>
     </fields>
     <hooks>
 

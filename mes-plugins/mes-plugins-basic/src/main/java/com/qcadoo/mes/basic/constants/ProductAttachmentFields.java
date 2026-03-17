@@ -38,5 +38,6 @@ public final class ProductAttachmentFields {
     public static final String SIZE = "size";
 
     public static final String EXT = "ext";
+    public static final String MAIN = "main";
 
 }
