@@ -71,7 +71,8 @@ public class AttachmentsListeners {
         Entity selectedAttachment = grid.getSelectedEntities().get(0);
 
         DataDefinition productAttachmentDD = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PRODUCT_ATTACHMENT);
-        Entity mainAttachment = productAttachmentDD.find().add(SearchRestrictions.eq(ProductAttachmentFields.MAIN, true)).uniqueResult();
+        Entity mainAttachment = productAttachmentDD.find().add(SearchRestrictions.belongsTo(ProductAttachmentFields.PRODUCT,
+                selectedAttachment.getBelongsToField(ProductAttachmentFields.PRODUCT))).add(SearchRestrictions.eq(ProductAttachmentFields.MAIN, true)).uniqueResult();
         if (mainAttachment == null || !selectedAttachment.getId().equals(mainAttachment.getId())) {
             if (mainAttachment != null) {
                 mainAttachment.setField(ProductAttachmentFields.MAIN, false);
