@@ -87,4 +87,13 @@ public final class ParameterFields {
 
     public static final String EMAIL_FOR_CONFIRMATION = "emailForConfirmation";
     public static final String SHOW_ON_PRODUCTION_GUIDE = "showOnProductionGuide";
+
+    public static final String MRP_ALGORITHM = "mrpAlgorithm";
+    public static final String MR_INCLUDE_WAREHOUSE = "mrIncludeWarehouse";
+
+    public static final String MR_SHOW_CURRENT_STOCK_LEVEL = "mrShowCurrentStockLevel";
+
+    public static final String MR_INCLUDE_START_DATE_ORDER = "mrIncludeStartDateOrder";
+
+    public static final String MR_SHOW_REPLACEMENTS = "mrShowReplacements";
 }

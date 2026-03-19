@@ -113,6 +113,10 @@
                                 model="materialRequirement" enum="mrpAlgorithm"
                                 value="03componentsAndSubcontractorsProducts"/>
 
+        <model:model-enum-value plugin="basic"
+                                model="parameter" enum="mrpAlgorithm"
+                                value="03componentsAndSubcontractorsProducts"/>
+
         <model:model-field model="product" plugin="basic">
             <model:hasMany name="orderExternalServiceCosts" plugin="techSubcontracting" model="orderExternalServiceCost"
                            joinField="product" cascade="delete"/>

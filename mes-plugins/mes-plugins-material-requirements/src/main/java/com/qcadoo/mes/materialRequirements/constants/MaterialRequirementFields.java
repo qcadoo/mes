@@ -62,4 +62,6 @@ public final class MaterialRequirementFields {
 
     public static final String STATE_IN_WMS = "stateInWMS";
 
+    public static final String IS_SET_FIELDS_FROM_PARAMETER = "isSetFieldsFromParameter";
+
 }

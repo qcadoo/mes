@@ -23,8 +23,11 @@
  */
 package com.qcadoo.mes.materialRequirements.hooks;
 
+import com.qcadoo.mes.basic.ParameterService;
+import com.qcadoo.mes.basic.constants.ParameterFields;
 import com.qcadoo.mes.materialRequirements.constants.MaterialRequirementFields;
 import com.qcadoo.mes.materialRequirements.constants.MaterialRequirementsConstants;
+import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.*;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
@@ -38,11 +41,44 @@ import java.util.Objects;
 public class MaterialRequirementDetailsHooks {
 
     @Autowired
+    private ParameterService parameterService;
+
+    @Autowired
     private NumberGeneratorService numberGeneratorService;
 
     public void onBeforeRender(final ViewDefinitionState view) {
+        fillFromParameters(view);
         generateMaterialRequirementNumber(view);
         disableFormForExistingMaterialRequirement(view);
+    }
+
+    private void fillFromParameters(ViewDefinitionState view) {
+        FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
+        if (form.getEntityId() == null) {
+            CheckBoxComponent isSetFieldsFromParameter = (CheckBoxComponent) view
+                    .getComponentByReference(MaterialRequirementFields.IS_SET_FIELDS_FROM_PARAMETER);
+            if (isSetFieldsFromParameter.isChecked()) {
+                return;
+            }
+            Entity parameter = parameterService.getParameter();
+            String mrpAlgorithm = parameter.getStringField(ParameterFields.MRP_ALGORITHM);
+            FieldComponent mrpAlgorithmField = (FieldComponent) view.getComponentByReference(MaterialRequirementFields.MRP_ALGORITHM);
+            mrpAlgorithmField.setFieldValue(mrpAlgorithm);
+            boolean includeWarehouse = parameter.getBooleanField(ParameterFields.MR_INCLUDE_WAREHOUSE);
+            CheckBoxComponent includeWarehouseCheckbox = (CheckBoxComponent) view.getComponentByReference(MaterialRequirementFields.INCLUDE_WAREHOUSE);
+            includeWarehouseCheckbox.setChecked(includeWarehouse);
+            boolean showCurrentStockLevel = parameter.getBooleanField(ParameterFields.MR_SHOW_CURRENT_STOCK_LEVEL);
+            CheckBoxComponent showCurrentStockLevelCheckbox = (CheckBoxComponent) view.getComponentByReference(MaterialRequirementFields.SHOW_CURRENT_STOCK_LEVEL);
+            showCurrentStockLevelCheckbox.setChecked(showCurrentStockLevel);
+            boolean includeStartDateOrder = parameter.getBooleanField(ParameterFields.MR_INCLUDE_START_DATE_ORDER);
+            CheckBoxComponent includeStartDateOrderCheckbox = (CheckBoxComponent) view.getComponentByReference(MaterialRequirementFields.INCLUDE_START_DATE_ORDER);
+            includeStartDateOrderCheckbox.setChecked(includeStartDateOrder);
+            boolean showReplacements = parameter.getBooleanField(ParameterFields.MR_SHOW_REPLACEMENTS);
+            CheckBoxComponent showReplacementsCheckbox = (CheckBoxComponent) view.getComponentByReference(MaterialRequirementFields.SHOW_REPLACEMENTS);
+            showReplacementsCheckbox.setChecked(showReplacements);
+            isSetFieldsFromParameter.setFieldValue(true);
+            isSetFieldsFromParameter.requestComponentUpdateState();
+        }
     }
 
     private void generateMaterialRequirementNumber(final ViewDefinitionState view) {
