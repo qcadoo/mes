@@ -108,6 +108,7 @@
         <boolean name="mrIncludeWarehouse" default="false"/>
         <boolean name="mrShowCurrentStockLevel" default="false"/>
         <boolean name="mrIncludeStartDateOrder" default="false"/>
+        <boolean name="showProductionTrackingStaff" default="false"/>
     </fields>
 
     <hooks>

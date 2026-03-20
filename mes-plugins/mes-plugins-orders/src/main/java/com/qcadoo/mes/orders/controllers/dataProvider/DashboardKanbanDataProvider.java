@@ -71,7 +71,7 @@ public class DashboardKanbanDataProvider {
 
         Entity staff = setStaffParameters(parameters, user);
         Entity productionLine = setProductionLineParameters(parameters, user);
-        
+
         parameters.put(L_STATES, Sets.newHashSet(OrderStateStringValues.IN_PROGRESS));
 
         return jdbcTemplate.query(getOrdersQuery(staff, productionLine), parameters, new BeanPropertyRowMapper(OrderHolder.class));
@@ -99,15 +99,20 @@ public class DashboardKanbanDataProvider {
     }
 
     private String getOrderQueryProjections() {
-        return "SELECT orderlistdto.id, orderlistdto.number, orderlistdto.name,  orderlistdto.reportedProductionQuantity,  "
+        return "WITH pt_staff AS (SELECT stf.order_id, string_agg(stf.staff, ', '::text) AS staff " +
+                "FROM (SELECT DISTINCT pt.order_id, bs.number || ' ' || bs.name || ' ' || bs.surname AS staff " +
+                "FROM productioncounting_productiontracking pt JOIN basic_staff bs ON bs.id = pt.staff_id " +
+                "WHERE pt.state IN ('01draft','02accepted') ORDER BY staff) AS stf GROUP BY stf.order_id ) " +
+                "SELECT orderlistdto.id, orderlistdto.number, orderlistdto.name,  orderlistdto.reportedProductionQuantity,  "
                 + "orderlistdto.state, orderlistdto.typeofproductionrecording, to_char(orderlistdto.deadline, 'YYYY-MM-DD') AS deadline, "
-                + "orderlistdto.plannedquantity, orderlistdto.donequantity, mop.masterorderquantity, "
+                + "orderlistdto.plannedquantity, orderlistdto.donequantity, mop.masterorderquantity, pts.staff AS productionTrackingStaff, "
                 + "orderlistdto.masterordernumber AS masterOrderNumber, orderlistdto.ordercategory AS orderCategory, "
                 + "orderlistdto.productionlinenumber AS productionLineNumber, orderlistdto.productnumber AS productNumber, "
                 + "orderlistdto.unit AS productunit, orderlistdto.companyname AS companyName, orderlistdto.addressNumber AS addressNumber, "
                 + "orderlistdto.description, orderlistdto.productname AS productName, p.dashboardshowdescription, p.dashboardshowforproduct "
                 + "FROM orders_orderlistdto orderlistdto "
                 + "CROSS JOIN basic_parameter p "
+                + "LEFT JOIN pt_staff pts ON pts.order_id = orderlistdto.id "
                 + "LEFT JOIN masterorders_masterorderproduct mop ON mop.product_id = orderlistdto.productid "
                 + "AND mop.masterorder_id = orderlistdto.masterorderid ";
     }
@@ -182,7 +187,9 @@ public class DashboardKanbanDataProvider {
 
         parameters.put(L_STATES, Sets.newHashSet(OperationalTaskStateStringValues.PENDING, OperationalTaskStateStringValues.STARTED));
 
-        String additionalRestrictions = "AND coalesce(operationaltaskdto.usedquantity, 0) = 0 ";
+        String additionalRestrictions = "AND (SELECT COUNT(*) FROM productioncounting_productiontracking pt WHERE pt.order_id = operationaltaskdto.orderid AND pt.technologyoperationcomponent_id = operationaltaskdto.tocid " +
+                "AND pt.state IN ('01draft','02accepted')) = 0 ";
+
 
         return jdbcTemplate.query(getOperationalTasksQuery(staff, additionalRestrictions, true), parameters,
                 new BeanPropertyRowMapper(OperationalTaskHolder.class));
@@ -197,7 +204,9 @@ public class DashboardKanbanDataProvider {
 
         parameters.put(L_STATES, Sets.newHashSet(OperationalTaskStateStringValues.STARTED));
 
-        String additionalRestrictions = "AND (operationaltaskdto.plannedquantity > 0 AND operationaltaskdto.usedquantity * 100 / operationaltaskdto.plannedquantity > 0 AND operationaltaskdto.usedquantity * 100 / operationaltaskdto.plannedquantity < 100) ";
+        String additionalRestrictions = "AND (operationaltaskdto.plannedquantity > 0 AND operationaltaskdto.usedquantity * 100 / operationaltaskdto.plannedquantity < 100 " +
+                "AND (SELECT COUNT(*) FROM productioncounting_productiontracking pt WHERE pt.order_id = operationaltaskdto.orderid AND pt.technologyoperationcomponent_id = operationaltaskdto.tocid " +
+                "AND pt.state IN ('01draft','02accepted')) > 0 ) ";
 
         return jdbcTemplate.query(getOperationalTasksQuery(staff, additionalRestrictions, true), parameters,
                 new BeanPropertyRowMapper(OperationalTaskHolder.class));
@@ -220,16 +229,21 @@ public class DashboardKanbanDataProvider {
     }
 
     private String getOperationalTaskQueryProjections() {
-        return "SELECT operationaltaskdto.id, operationaltaskdto.number, operationaltaskdto.name, "
+        return "WITH pt_staff AS (SELECT stf.order_id, stf.technologyoperationcomponent_id, string_agg(stf.staff, ', '::text) AS staff " +
+                "FROM (SELECT DISTINCT pt.order_id, pt.technologyoperationcomponent_id, bs.number || ' ' || bs.name || ' ' || bs.surname AS staff " +
+                "FROM productioncounting_productiontracking pt JOIN basic_staff bs ON bs.id = pt.staff_id " +
+                "WHERE pt.state IN ('01draft','02accepted') ORDER BY staff) stf GROUP BY stf.order_id, stf.technologyoperationcomponent_id) " +
+                "SELECT operationaltaskdto.id, operationaltaskdto.number, operationaltaskdto.name, "
                 + "operationaltaskdto.plannedquantity, operationaltaskdto.usedquantity, "
                 + "operationaltaskdto.state, operationaltaskdto.type, operationaltaskdto.ordernumber AS orderNumber, "
                 + "operationaltaskdto.workstationnumber AS workstationNumber, operationaltaskdto.productname AS productName, "
                 + "operationaltaskdto.productnumber AS productNumber, operationaltaskdto.productUnit AS productUnit, "
                 + "operationaltaskdto.staffname AS staffName, operationaltaskdto.orderid AS orderId, "
                 + "product.number AS orderProductNumber, product.name AS orderProductName, operationaltaskdto.description, "
-                + "p.dashboardshowdescription, p.dashboardshowforproduct "
+                + "p.dashboardshowdescription, p.dashboardshowforproduct, pts.staff AS productionTrackingStaff "
                 + "FROM orders_operationaltaskdto operationaltaskdto "
                 + "CROSS JOIN basic_parameter p "
+                + "LEFT JOIN pt_staff pts ON pts.order_id = operationaltaskdto.orderid AND pts.technologyoperationcomponent_id = operationaltaskdto.tocid "
                 + "LEFT JOIN orders_order ordersorder ON ordersorder.id = operationaltaskdto.orderid "
                 + "LEFT JOIN basic_product product ON product.id = ordersorder.product_id ";
     }
@@ -283,7 +297,7 @@ public class DashboardKanbanDataProvider {
         if (Objects.nonNull(productionLine)) {
             parameters.put(L_PRODUCTION_LINE_ID, productionLine.getId());
         }
-        
+
         return productionLine;
     }
 

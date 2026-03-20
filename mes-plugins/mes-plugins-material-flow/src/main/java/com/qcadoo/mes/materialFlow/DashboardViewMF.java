@@ -107,6 +107,7 @@ public class DashboardViewMF implements DashboardView {
         mav.addObject("enablePrintLabelOnDashboard", securityService.hasCurrentUserRole("ROLE_DASHBOARD_KANBAN_PRINT_LABEL"));
         mav.addObject("enableRegistrationTerminalOnDashboard", securityService.hasCurrentUserRole("ROLE_PRODUCTION_REGISTRATION_TERMINAL"));
         mav.addObject("whatToShowOnDashboard", whatToShowOnDashboard);
+        mav.addObject("showProductionTrackingStaff", parameter.getBooleanField(ParameterFieldsMF.SHOW_PRODUCTION_TRACKING_STAFF));
         mav.addObject("quantityMadeOnTheBasisOfDashboard", parameter.getStringField("quantityMadeOnTheBasisOfDashboard"));
         mav.addObject("dashboardButtons", filterDashboardButtons(getDashboardButtons(parameter), currentUser));
 
