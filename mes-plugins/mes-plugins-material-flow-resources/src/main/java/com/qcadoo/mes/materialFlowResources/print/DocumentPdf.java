@@ -76,7 +76,34 @@ public class DocumentPdf extends ReportPdfView {
         pdfHelper.addDocumentHeader(document, "", documentHeader, "", new Date());
         documentPdfHelper.addHeaderTable(document, documentEntity, locale);
         addPositionsTable(document, documentEntity, locale);
+        addSignatures(document, locale);
         return documentPdfHelper.getFileName(documentEntity, locale);
+    }
+
+    private void addSignatures(Document document, Locale locale) throws DocumentException {
+        PdfPTable signaturesTable = new PdfPTable(3);
+        signaturesTable.setSpacingBefore(100);
+        signaturesTable.getDefaultCell().disableBorderSide(PdfPCell.RIGHT);
+        signaturesTable.getDefaultCell().disableBorderSide(PdfPCell.LEFT);
+        signaturesTable.getDefaultCell().disableBorderSide(PdfPCell.BOTTOM);
+        signaturesTable.getDefaultCell().setHorizontalAlignment(Element.ALIGN_CENTER);
+        signaturesTable.getDefaultCell().setPaddingBottom(50);
+        signaturesTable.addCell(new Phrase(translationService.translate("materialFlowResources.report.signatureOfIssuer.label", locale), FontUtils.getDejavuBold7Dark()));
+        signaturesTable.getDefaultCell().disableBorderSide(PdfPCell.TOP);
+        signaturesTable.addCell("");
+        signaturesTable.getDefaultCell().enableBorderSide(PdfPCell.TOP);
+        signaturesTable.addCell(new Phrase(translationService.translate("materialFlowResources.report.recipientsSignature.label", locale), FontUtils.getDejavuBold7Dark()));
+        signaturesTable.getDefaultCell().disableBorderSide(PdfPCell.TOP);
+        signaturesTable.addCell("");
+        signaturesTable.addCell("");
+        PdfPCell cell = new PdfPCell();
+        cell.disableBorderSide(PdfPCell.RIGHT);
+        cell.disableBorderSide(PdfPCell.LEFT);
+        cell.disableBorderSide(PdfPCell.BOTTOM);
+        cell.setHorizontalAlignment(Element.ALIGN_CENTER);
+        cell.setPhrase(new Phrase(translationService.translate("materialFlowResources.report.signatureOfPersonTransporting.label", locale), FontUtils.getDejavuBold7Dark()));
+        signaturesTable.addCell(cell);
+        document.add(signaturesTable);
     }
 
     @Override
