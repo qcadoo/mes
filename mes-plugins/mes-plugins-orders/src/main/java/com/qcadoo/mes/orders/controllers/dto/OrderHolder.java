@@ -71,6 +71,7 @@ public class OrderHolder {
     private boolean dashboardShowDescription;
 
     private String deadline;
+    private String productionTrackingStaff;
 
     public Long getId() {
         return id;
@@ -270,5 +271,13 @@ public class OrderHolder {
 
     public void setDeadline(String deadline) {
         this.deadline = deadline;
+    }
+
+    public String getProductionTrackingStaff() {
+        return productionTrackingStaff;
+    }
+
+    public void setProductionTrackingStaff(String productionTrackingStaff) {
+        this.productionTrackingStaff = productionTrackingStaff;
     }
 }

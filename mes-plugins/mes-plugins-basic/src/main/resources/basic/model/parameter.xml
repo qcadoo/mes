@@ -100,6 +100,15 @@
         <string name="emailForConfirmation">
             <validatesLength max="255"/>
         </string>
+
+        <enum name="mrpAlgorithm" values="00onlyMaterials,01onlyComponents,02allProductsIn"
+              default="01onlyComponents" required="true"/>
+
+        <boolean name="mrShowReplacements" default="false"/>
+        <boolean name="mrIncludeWarehouse" default="false"/>
+        <boolean name="mrShowCurrentStockLevel" default="false"/>
+        <boolean name="mrIncludeStartDateOrder" default="false"/>
+        <boolean name="showProductionTrackingStaff" default="false"/>
     </fields>
 
     <hooks>

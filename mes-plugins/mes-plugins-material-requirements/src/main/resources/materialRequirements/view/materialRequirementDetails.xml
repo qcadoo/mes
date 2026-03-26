@@ -141,6 +141,10 @@
                 <component type="gridLayout" name="gridLayout" columns="3"
                            rows="8">
                     <layoutElement column="1" row="1">
+                        <component type="checkbox" name="isSetFieldsFromParameter"
+                                   defaultVisible="false" field="isSetFieldsFromParameter"
+                                   reference="isSetFieldsFromParameter">
+                        </component>
                         <component type="checkbox" name="generated" reference="generated"
                                    field="generated" defaultEnabled="false">
                             <option type="textRepresentationOnDisabled" value="false"/>

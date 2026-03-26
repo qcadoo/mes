@@ -61,6 +61,7 @@
         <integer name="masterOrderId"/>
         <integer name="productId"/>
         <integer name="productionLineId"/>
+        <string name="orderCode"/>
         <boolean name="dateChange"/>
     </fields>
 
