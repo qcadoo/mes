@@ -492,6 +492,7 @@ public class PalletValidatorService {
             query.append("difference.storagelocation_id ");
             query.append("FROM materialflowresources_stocktakingdifference difference ");
             query.append("WHERE difference.stocktaking_id = :stocktakingId ");
+            query.append("AND difference.type = '02surplus' ");
             query.append(") palletsInStorageLocation ");
             query.append("JOIN materialflowresources_storagelocation storagelocation ");
             query.append("ON storagelocation.id = palletsInStorageLocation.storagelocation_id ");
