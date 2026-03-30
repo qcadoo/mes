@@ -504,7 +504,7 @@
                         <script>
                             <![CDATA[
                                 var setPictureAsMain = #{window}.getRibbonItem("attachments.setPictureAsMain");
-                                const pictureExtensions = new Set(["PNG", "JPG", "JPEG", "TIFF", "GIF", "RAW", "PSD"]);
+                                const pictureExtensions = new Set(["PNG", "JPG", "JPEG", "GIF", "RAW", "PSD"]);
 
                                 var listener = {
                                     onChange: function(selectedEntitiesArray) {
