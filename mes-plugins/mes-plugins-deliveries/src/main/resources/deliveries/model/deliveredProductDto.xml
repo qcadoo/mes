@@ -53,6 +53,8 @@
         <boolean name="isWaste"/>
         <boolean name="damaged"/>
         <date name="expirationDate"/>
+        <date name="pickingDate"/>
+        <string name="pickingWorker"/>
     </fields>
 
     <masterModel plugin="deliveries" model="deliveredProduct"/>

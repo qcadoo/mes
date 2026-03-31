@@ -74,6 +74,8 @@
         <date name="expirationDate"/>
 
         <boolean name="addBatch" default="false" persistent="false"/>
+        <datetime name="pickingDate" copyable="false"/>
+        <belongsTo name="pickingWorker" model="user" plugin="qcadooSecurity" copyable="false"/>
 
     </fields>
 
