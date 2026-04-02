@@ -45262,6 +45262,7 @@ COPY public.qcadooview_item (id, pluginidentifier, name, active, category_id, vi
 261	materialFlowResources	repackingPositionsList	t	6	261	18	ROLE_MATERIAL_FLOW	0
 262	basicProductionCounting	productionCountingQuantityList	f	9	262	10	ROLE_PRODUCTION_COUNTING_QUANTITY	0
 263	materialRequirements	materialRequirements	f	9	263	11	ROLE_REQUIREMENTS	0
+264	warehouseMinimalState	warehouseMinimumStateList	t	6	264	19	ROLE_DOCUMENTS_CORRECTIONS_MIN_STATES	0
 \.
 
 
@@ -45411,6 +45412,7 @@ COPY public.qcadooview_view (id, pluginidentifier, name, view, url, entityversio
 261	materialFlowResources	repackingPositionsList	repackingPositionsList	\N	0
 262	basicProductionCounting	productionCountingQuantityList	productionCountingQuantityList	\N	0
 263	materialRequirements	materialRequirementsList	materialRequirementsList	\N	0
+264	warehouseMinimalState	warehouseMinimumStateList	warehouseMinimumStateList	\N	0
 \.
 
 
@@ -50825,7 +50827,7 @@ SELECT pg_catalog.setval('public.qcadooview_category_id_seq', 27, true);
 -- Name: qcadooview_item_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('public.qcadooview_item_id_seq', 263, true);
+SELECT pg_catalog.setval('public.qcadooview_item_id_seq', 264, true);
 
 
 --
@@ -50839,7 +50841,7 @@ SELECT pg_catalog.setval('public.qcadooview_systeminfo_id_seq', 1, false);
 -- Name: qcadooview_view_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('public.qcadooview_view_id_seq', 263, true);
+SELECT pg_catalog.setval('public.qcadooview_view_id_seq', 264, true);
 
 
 --
