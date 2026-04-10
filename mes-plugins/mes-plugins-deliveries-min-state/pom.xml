@@ -7,7 +7,7 @@
     <parent>
         <groupId>com.qcadoo.mes</groupId>
         <artifactId>mes-plugins</artifactId>
-        <version>1.5-SNAPSHOT</version>
+        <version>1.5-SNAPSHOT-DEV</version>
     </parent>
 
     <artifactId>mes-plugins-deliveries-min-state</artifactId>
@@ -19,25 +19,25 @@
         <dependency>
             <groupId>com.qcadoo.mes</groupId>
             <artifactId>mes-plugins-deliveries</artifactId>
-            <version>1.5-SNAPSHOT</version>
+            <version>1.5-SNAPSHOT-DEV</version>
         </dependency>
 
         <dependency>
             <groupId>com.qcadoo.mes</groupId>
             <artifactId>mes-plugins-warehouse-minimal-state</artifactId>
-            <version>1.5-SNAPSHOT</version>
+            <version>1.5-SNAPSHOT-DEV</version>
         </dependency>
 
         <dependency>
             <groupId>com.qcadoo.mes</groupId>
             <artifactId>mes-plugins-cost-norms-for-product</artifactId>
-            <version>1.5-SNAPSHOT</version>
+            <version>1.5-SNAPSHOT-DEV</version>
         </dependency>
 
         <dependency>
             <groupId>com.qcadoo.mes</groupId>
             <artifactId>mes-plugins-email-notifications</artifactId>
-            <version>1.5-SNAPSHOT</version>
+            <version>1.5-SNAPSHOT-DEV</version>
         </dependency>
     </dependencies>
 
