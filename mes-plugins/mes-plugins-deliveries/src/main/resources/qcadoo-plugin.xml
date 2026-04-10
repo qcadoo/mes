@@ -245,6 +245,11 @@
                            joinField="storageLocation" plugin="deliveries"/>
         </model:model-field>
 
+        <model:model-field plugin="qcadooSecurity" model="user">
+            <model:hasMany name="deliveredProducts" model="deliveredProduct" joinField="pickingWorker"
+                           plugin="deliveries"/>
+        </model:model-field>
+
         <model:model-hook model="storageLocation" plugin="materialFlowResources">
             <model:onDelete class="com.qcadoo.mes.deliveries.hooks.StorageLocationHooksD"
                             method="onDelete"/>

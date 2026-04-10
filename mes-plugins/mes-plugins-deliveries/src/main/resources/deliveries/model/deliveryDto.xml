@@ -51,6 +51,7 @@
         <string name="paidCellColor"/>
         <boolean name="wms"/>
         <enum name="stateInWMS" values="01waiting,02inProgress,03delayed,04realized"/>
+        <string name="description"/>
     </fields>
 
     <masterModel plugin="deliveries" model="delivery"/>

@@ -151,6 +151,10 @@
 			class="com.qcadoo.mes.materialRequirements.hooks.OrderDetailsHooksMR"
 			method="setInputProductsRequiredForTypeFromParameters" />
 
+		<view:view-hook plugin="deliveries" view="supplyParameters"
+						type="beforeRender" class="com.qcadoo.mes.materialRequirements.hooks.ParameterHooksMR"
+						method="onBeforeRenderSupplyParameters"/>
+
 	</modules>
 	
 	<features>

@@ -128,6 +128,16 @@ public class DeliveryDetailsHooks {
         processRoles(view);
         setDeliveryIdForMultiUploadField(view);
         togglePaymentTab(view);
+        enableDescriptionForReceived(view);
+    }
+
+    private void enableDescriptionForReceived(ViewDefinitionState view) {
+        FieldComponent stateField = (FieldComponent) view.getComponentByReference(DeliveryFields.STATE);
+        String state = stateField.getFieldValue().toString();
+        if (DeliveryState.RECEIVED.getStringValue().equals(state)) {
+            FieldComponent description = (FieldComponent) view.getComponentByReference(DeliveryFields.DESCRIPTION);
+            description.setEnabled(true);
+        }
     }
 
     private void togglePaymentTab(ViewDefinitionState view) {
