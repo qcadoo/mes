@@ -141,6 +141,7 @@
                 <component type="gridLayout" name="gridLayout" columns="3"
                            rows="8">
                     <layoutElement column="1" row="1">
+                        <component type="hidden" name="wms" field="wms" reference="wms"/>
                         <component type="checkbox" name="isSetFieldsFromParameter"
                                    defaultVisible="false" field="isSetFieldsFromParameter"
                                    reference="isSetFieldsFromParameter">
