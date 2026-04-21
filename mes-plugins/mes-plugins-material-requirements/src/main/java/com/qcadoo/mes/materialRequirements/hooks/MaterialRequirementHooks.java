@@ -23,6 +23,7 @@
  */
 package com.qcadoo.mes.materialRequirements.hooks;
 
+import com.qcadoo.mes.materialFlowResources.constants.StocktakingFields;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.materialRequirements.constants.MaterialRequirementFields;
@@ -34,6 +35,7 @@ public class MaterialRequirementHooks {
 
     public void onCopy(final DataDefinition materialRequirementDD, final Entity materialRequirement) {
         clearGeneratedOnCopy(materialRequirementDD, materialRequirement);
+        materialRequirement.setField(StocktakingFields.WMS, false);
     }
 
     public void clearGeneratedOnCopy(final DataDefinition materialRequirementDD, final Entity materialRequirement) {
