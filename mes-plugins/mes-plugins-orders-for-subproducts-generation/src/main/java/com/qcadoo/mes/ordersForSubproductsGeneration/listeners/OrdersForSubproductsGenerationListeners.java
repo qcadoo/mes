@@ -3,19 +3,19 @@
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo Framework
  * Version: 1.4
- *
+ * <p>
  * This file is part of Qcadoo.
- *
+ * <p>
  * Qcadoo is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation; either version 3 of the License,
  * or (at your option) any later version.
- *
+ * <p>
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty
  * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU Affero General Public License for more details.
- *
+ * <p>
  * You should have received a copy of the GNU Affero General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
@@ -137,6 +137,13 @@ public class OrdersForSubproductsGenerationListeners {
 
             generatedOrders = generateSimpleOrders(registryEntries, order, generatedOrders);
 
+            for (Entity registryEntry : registryEntries) {
+                if (!registryEntry.isValid()) {
+                    state.addMessage(registryEntry.getGlobalErrors().get(0).getMessage(),
+                            ComponentState.MessageType.FAILURE, false, registryEntry.getGlobalErrors().get(0).getVars());
+                    return;
+                }
+            }
             if (!registryEntries.isEmpty()) {
                 subOrders.setField(SubOrdersFields.GENERATED_ORDERS, true);
 
@@ -242,6 +249,10 @@ public class OrdersForSubproductsGenerationListeners {
         for (Entity registryEntry : registryEntries) {
             ordersForSubproductsGenerationService.generateSimpleOrderForSubProduct(registryEntry, order,
                     LocaleContextHolder.getLocale(), index);
+
+            if (!registryEntry.isValid()) {
+                return generatedOrders;
+            }
 
             ++index;
             ++generatedOrders;
@@ -367,6 +378,14 @@ public class OrdersForSubproductsGenerationListeners {
 
                 generatedOrders = generateOrders(products, order, generatedOrders);
 
+                for (Entity product : products) {
+                    if (!product.isValid()) {
+                        state.addMessage(product.getGlobalErrors().get(0).getMessage(),
+                                ComponentState.MessageType.FAILURE, false, product.getGlobalErrors().get(0).getVars());
+                        return;
+                    }
+                }
+
                 int index;
 
                 if (!products.isEmpty()) {
@@ -431,6 +450,10 @@ public class OrdersForSubproductsGenerationListeners {
         for (Entity product : products) {
             ordersForSubproductsGenerationService.generateOrderForSubProduct(product, order, LocaleContextHolder.getLocale(),
                     index);
+
+            if (!product.isValid()) {
+                return generatedOrders;
+            }
 
             ++index;
             ++generatedOrders;

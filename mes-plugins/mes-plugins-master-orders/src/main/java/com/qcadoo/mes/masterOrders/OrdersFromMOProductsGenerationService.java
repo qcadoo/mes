@@ -23,6 +23,7 @@ import com.qcadoo.model.api.search.SearchQueryBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.model.constants.DictionaryItemFields;
 import com.qcadoo.plugin.api.PluginUtils;
+import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
@@ -213,7 +214,6 @@ public class OrdersFromMOProductsGenerationService {
         }
 
         BigDecimal stockQuantity = BigDecimal.ZERO;
-
 
         BigDecimal quantityRemainingToOrder = masterOrderProduct.getQuantityRemainingToOrder();
 

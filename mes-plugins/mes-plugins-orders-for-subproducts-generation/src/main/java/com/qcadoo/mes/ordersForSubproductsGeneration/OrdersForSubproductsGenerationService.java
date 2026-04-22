@@ -23,21 +23,6 @@
  */
 package com.qcadoo.mes.ordersForSubproductsGeneration;
 
-import java.math.BigDecimal;
-import java.util.List;
-import java.util.Locale;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.stream.Collectors;
-
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.basic.constants.BasicConstants;
@@ -63,24 +48,29 @@ import com.qcadoo.mes.productFlowThruDivision.constants.OrderFieldsPFTD;
 import com.qcadoo.mes.productionCounting.constants.OrderFieldsPC;
 import com.qcadoo.mes.productionLines.constants.ProductionLineFields;
 import com.qcadoo.mes.technologies.TechnologyService;
-import com.qcadoo.mes.technologies.constants.OperationProductInComponentFields;
-import com.qcadoo.mes.technologies.constants.ProductStructureTreeNodeFields;
-import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
-import com.qcadoo.mes.technologies.constants.TechnologyFields;
-import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
+import com.qcadoo.mes.technologies.constants.*;
 import com.qcadoo.mes.technologies.states.constants.TechnologyState;
 import com.qcadoo.mes.technologies.tree.ProductStructureTreeService;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.EntityTree;
 import com.qcadoo.model.api.NumberService;
-import com.qcadoo.model.api.search.JoinType;
-import com.qcadoo.model.api.search.SearchCriteriaBuilder;
-import com.qcadoo.model.api.search.SearchDisjunction;
-import com.qcadoo.model.api.search.SearchOrders;
-import com.qcadoo.model.api.search.SearchProjections;
-import com.qcadoo.model.api.search.SearchRestrictions;
+import com.qcadoo.model.api.search.*;
 import com.qcadoo.view.api.ViewDefinitionState;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.Locale;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class OrdersForSubproductsGenerationService {
@@ -199,6 +189,10 @@ public class OrdersForSubproductsGenerationService {
         order.setField(OrderFields.PLANNED_QUANTITY, entry.getDecimalField("plannedQuantity"));
 
         Entity technology = technologyServiceO.getDefaultTechnology(product);
+        if (technology == null) {
+            entry.addGlobalError("ordersForSubproductsGeneration.generationSubOrdersAction.noDefaultTechnologyForProduct", product.getStringField(ProductFields.NUMBER));
+            return;
+        }
         order.setField(OrderFieldsOFSPG.PARENT, parentOrder);
         order.setField(OrderFields.PRIORITY, parentOrder.getIntegerField(OrderFields.PRIORITY));
 
@@ -269,6 +263,10 @@ public class OrdersForSubproductsGenerationService {
         }
 
         Entity technology = technologyServiceO.getDefaultTechnology(product);
+        if (technology == null) {
+            coverageProduct.addGlobalError("ordersForSubproductsGeneration.generationSubOrdersAction.noDefaultTechnologyForProduct", product.getStringField(ProductFields.NUMBER));
+            return;
+        }
         order.setField(OrderFieldsOFSPG.PARENT, parentOrder);
         order.setField(OrderFields.PRIORITY, parentOrder.getIntegerField(OrderFields.PRIORITY));
 
@@ -285,7 +283,7 @@ public class OrdersForSubproductsGenerationService {
         order.setField(OrderFields.PRODUCT, product);
 
         order.setField(OrderFields.TECHNOLOGY, technology);
-        getProductionLine( order, technology);
+        getProductionLine(order, technology);
         getDivision(parentOrder, order, technology);
         order.setField(OrderFields.EXTERNAL_SYNCHRONIZED, true);
         order.setField(OrderFieldsPC.TYPE_OF_PRODUCTION_RECORDING,
