@@ -487,7 +487,7 @@ public class OrdersForSubproductsGenerationService {
     }
 
     @Transactional
-    public void generateOrdersByCoverage(final Entity order) {
+    public Optional<String> generateOrdersByCoverage(final Entity order) {
         Optional<Entity> coverage = materialRequirementCoverageForOrderService.createMRCFO(order);
 
         if (coverage.isPresent()) {
@@ -513,6 +513,9 @@ public class OrdersForSubproductsGenerationService {
                     int index = 1;
                     for (Entity coverageProduct : products) {
                         generateOrderForSubProduct(coverageProduct, orderEntity, LocaleContextHolder.getLocale(), index);
+                        if (!coverageProduct.isValid()) {
+                            return Optional.of(coverageProduct.getGlobalErrors().get(0).getVars()[0]);
+                        }
 
                         ++index;
                     }
@@ -546,6 +549,9 @@ public class OrdersForSubproductsGenerationService {
                                 int in = 1;
                                 for (Entity coverageProduct : coverageProducts) {
                                     generateOrderForSubProduct(coverageProduct, subOrder, LocaleContextHolder.getLocale(), in);
+                                    if (!coverageProduct.isValid()) {
+                                        return Optional.of(coverageProduct.getGlobalErrors().get(0).getVars()[0]);
+                                    }
 
                                     ++in;
                                 }
@@ -561,13 +567,14 @@ public class OrdersForSubproductsGenerationService {
 
             LOG.info(String.format("Finish generation orders for components. Material requirement coverage : %d",
                     materialRequirementCoverageId));
+            return Optional.empty();
         } else {
             throw new IllegalStateException("Coverage generation error");
         }
     }
 
     @Transactional
-    public void generateOrders(final Entity order) {
+    public Optional<String> generateOrders(final Entity order) {
         LOG.info("Start generation orders for components");
 
         List<Entity> orders = Lists.newArrayList(order);
@@ -578,6 +585,9 @@ public class OrdersForSubproductsGenerationService {
             int index = 1;
             for (Entity registryEntry : registryEntries) {
                 generateSimpleOrderForSubProduct(registryEntry, orderEntity, LocaleContextHolder.getLocale(), index);
+                if (!registryEntry.isValid()) {
+                    return Optional.of(registryEntry.getGlobalErrors().get(0).getVars()[0]);
+                }
 
                 ++index;
             }
@@ -600,6 +610,9 @@ public class OrdersForSubproductsGenerationService {
                     int in = 1;
                     for (Entity _entry : entries) {
                         generateSimpleOrderForSubProduct(_entry, subOrder, LocaleContextHolder.getLocale(), in);
+                        if (!_entry.isValid()) {
+                            return Optional.of(_entry.getGlobalErrors().get(0).getVars()[0]);
+                        }
 
                         ++in;
                     }
@@ -610,6 +623,7 @@ public class OrdersForSubproductsGenerationService {
         }
 
         LOG.info("Finish generation orders for components.");
+        return Optional.empty();
     }
 
 }
