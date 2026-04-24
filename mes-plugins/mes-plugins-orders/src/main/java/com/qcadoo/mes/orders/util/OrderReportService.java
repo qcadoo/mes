@@ -112,6 +112,7 @@ public class OrderReportService {
 
         entity.setField("name", generateOrderPrintName(orders, locale));
         entity.setField("generated", true);
+        entity.setField("wms", false);
         entity.setField("worker", pdfHelper.getDocumentAuthor());
         entity.setField("date", new Date());
         if (data.getField("orders") != null) {

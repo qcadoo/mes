@@ -12,15 +12,15 @@ import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.plugin.api.RunIfEnabled;
-
-import java.util.List;
-
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
+
+import java.util.List;
+import java.util.Optional;
 
 @Aspect
 @Configurable
@@ -56,11 +56,13 @@ public class OrdersGenerationServiceOverrideAspect {
             if (parameter.getBooleanField(PARAMETER_AUTOMATICALLY_GENERATE_ORDERS_FOR_COMPONENTS)) {
 
                 addProductsWithCheckedTechnologiesInfo(result, order);
+                Optional<String> productNumber;
                 if (parameter.getBooleanField(PARAMETER_ORDERS_GENERATED_BY_COVERAGE)) {
-                    ordersForSubproductsGenerationService.generateOrdersByCoverage(order);
+                    productNumber = ordersForSubproductsGenerationService.generateOrdersByCoverage(order);
                 } else {
-                    ordersForSubproductsGenerationService.generateOrders(order);
+                    productNumber = ordersForSubproductsGenerationService.generateOrders(order);
                 }
+                productNumber.ifPresent(p -> result.addOrderWithoutGeneratedSubOrders(new SubOrderErrorHolder(order.getStringField(OrderFields.NUMBER), "ordersForSubproductsGeneration.generationSubOrdersAction.noDefaultTechnologyForProduct", p)));
             }
             List<Entity> orders = geSubOrders(order.getId());
             if (orders.isEmpty()) {

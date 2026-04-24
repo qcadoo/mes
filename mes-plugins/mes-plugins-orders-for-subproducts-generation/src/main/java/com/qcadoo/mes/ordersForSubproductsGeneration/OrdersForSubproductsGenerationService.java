@@ -23,21 +23,6 @@
  */
 package com.qcadoo.mes.ordersForSubproductsGeneration;
 
-import java.math.BigDecimal;
-import java.util.List;
-import java.util.Locale;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.stream.Collectors;
-
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.basic.constants.BasicConstants;
@@ -63,24 +48,29 @@ import com.qcadoo.mes.productFlowThruDivision.constants.OrderFieldsPFTD;
 import com.qcadoo.mes.productionCounting.constants.OrderFieldsPC;
 import com.qcadoo.mes.productionLines.constants.ProductionLineFields;
 import com.qcadoo.mes.technologies.TechnologyService;
-import com.qcadoo.mes.technologies.constants.OperationProductInComponentFields;
-import com.qcadoo.mes.technologies.constants.ProductStructureTreeNodeFields;
-import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
-import com.qcadoo.mes.technologies.constants.TechnologyFields;
-import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
+import com.qcadoo.mes.technologies.constants.*;
 import com.qcadoo.mes.technologies.states.constants.TechnologyState;
 import com.qcadoo.mes.technologies.tree.ProductStructureTreeService;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.EntityTree;
 import com.qcadoo.model.api.NumberService;
-import com.qcadoo.model.api.search.JoinType;
-import com.qcadoo.model.api.search.SearchCriteriaBuilder;
-import com.qcadoo.model.api.search.SearchDisjunction;
-import com.qcadoo.model.api.search.SearchOrders;
-import com.qcadoo.model.api.search.SearchProjections;
-import com.qcadoo.model.api.search.SearchRestrictions;
+import com.qcadoo.model.api.search.*;
 import com.qcadoo.view.api.ViewDefinitionState;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.Locale;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class OrdersForSubproductsGenerationService {
@@ -199,6 +189,10 @@ public class OrdersForSubproductsGenerationService {
         order.setField(OrderFields.PLANNED_QUANTITY, entry.getDecimalField("plannedQuantity"));
 
         Entity technology = technologyServiceO.getDefaultTechnology(product);
+        if (technology == null) {
+            entry.addGlobalError("ordersForSubproductsGeneration.generationSubOrdersAction.noDefaultTechnologyForProduct", product.getStringField(ProductFields.NUMBER));
+            return;
+        }
         order.setField(OrderFieldsOFSPG.PARENT, parentOrder);
         order.setField(OrderFields.PRIORITY, parentOrder.getIntegerField(OrderFields.PRIORITY));
 
@@ -269,6 +263,10 @@ public class OrdersForSubproductsGenerationService {
         }
 
         Entity technology = technologyServiceO.getDefaultTechnology(product);
+        if (technology == null) {
+            coverageProduct.addGlobalError("ordersForSubproductsGeneration.generationSubOrdersAction.noDefaultTechnologyForProduct", product.getStringField(ProductFields.NUMBER));
+            return;
+        }
         order.setField(OrderFieldsOFSPG.PARENT, parentOrder);
         order.setField(OrderFields.PRIORITY, parentOrder.getIntegerField(OrderFields.PRIORITY));
 
@@ -285,7 +283,7 @@ public class OrdersForSubproductsGenerationService {
         order.setField(OrderFields.PRODUCT, product);
 
         order.setField(OrderFields.TECHNOLOGY, technology);
-        getProductionLine( order, technology);
+        getProductionLine(order, technology);
         getDivision(parentOrder, order, technology);
         order.setField(OrderFields.EXTERNAL_SYNCHRONIZED, true);
         order.setField(OrderFieldsPC.TYPE_OF_PRODUCTION_RECORDING,
@@ -489,7 +487,7 @@ public class OrdersForSubproductsGenerationService {
     }
 
     @Transactional
-    public void generateOrdersByCoverage(final Entity order) {
+    public Optional<String> generateOrdersByCoverage(final Entity order) {
         Optional<Entity> coverage = materialRequirementCoverageForOrderService.createMRCFO(order);
 
         if (coverage.isPresent()) {
@@ -515,6 +513,9 @@ public class OrdersForSubproductsGenerationService {
                     int index = 1;
                     for (Entity coverageProduct : products) {
                         generateOrderForSubProduct(coverageProduct, orderEntity, LocaleContextHolder.getLocale(), index);
+                        if (!coverageProduct.isValid()) {
+                            return Optional.of(coverageProduct.getGlobalErrors().get(0).getVars()[0]);
+                        }
 
                         ++index;
                     }
@@ -548,6 +549,9 @@ public class OrdersForSubproductsGenerationService {
                                 int in = 1;
                                 for (Entity coverageProduct : coverageProducts) {
                                     generateOrderForSubProduct(coverageProduct, subOrder, LocaleContextHolder.getLocale(), in);
+                                    if (!coverageProduct.isValid()) {
+                                        return Optional.of(coverageProduct.getGlobalErrors().get(0).getVars()[0]);
+                                    }
 
                                     ++in;
                                 }
@@ -563,13 +567,14 @@ public class OrdersForSubproductsGenerationService {
 
             LOG.info(String.format("Finish generation orders for components. Material requirement coverage : %d",
                     materialRequirementCoverageId));
+            return Optional.empty();
         } else {
             throw new IllegalStateException("Coverage generation error");
         }
     }
 
     @Transactional
-    public void generateOrders(final Entity order) {
+    public Optional<String> generateOrders(final Entity order) {
         LOG.info("Start generation orders for components");
 
         List<Entity> orders = Lists.newArrayList(order);
@@ -580,6 +585,9 @@ public class OrdersForSubproductsGenerationService {
             int index = 1;
             for (Entity registryEntry : registryEntries) {
                 generateSimpleOrderForSubProduct(registryEntry, orderEntity, LocaleContextHolder.getLocale(), index);
+                if (!registryEntry.isValid()) {
+                    return Optional.of(registryEntry.getGlobalErrors().get(0).getVars()[0]);
+                }
 
                 ++index;
             }
@@ -602,6 +610,9 @@ public class OrdersForSubproductsGenerationService {
                     int in = 1;
                     for (Entity _entry : entries) {
                         generateSimpleOrderForSubProduct(_entry, subOrder, LocaleContextHolder.getLocale(), in);
+                        if (!_entry.isValid()) {
+                            return Optional.of(_entry.getGlobalErrors().get(0).getVars()[0]);
+                        }
 
                         ++in;
                     }
@@ -612,6 +623,7 @@ public class OrdersForSubproductsGenerationService {
         }
 
         LOG.info("Finish generation orders for components.");
+        return Optional.empty();
     }
 
 }
