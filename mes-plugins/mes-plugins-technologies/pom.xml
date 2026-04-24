@@ -6,7 +6,7 @@
 	<parent>
 		<groupId>com.qcadoo.mes</groupId>
 		<artifactId>mes-plugins</artifactId>
-		<version>1.5-SNAPSHOT</version>
+		<version>1.5-SNAPSHOT-DEV</version>
 	</parent>
 
 	<artifactId>mes-plugins-technologies</artifactId>
@@ -18,12 +18,12 @@
 		<dependency>
 			<groupId>com.qcadoo.mes</groupId>
 			<artifactId>mes-plugins-states</artifactId>
-			<version>1.5-SNAPSHOT</version>
+			<version>1.5-SNAPSHOT-DEV</version>
 		</dependency>
 		<dependency>
 			<groupId>com.qcadoo.mes</groupId>
 			<artifactId>mes-plugins-production-lines</artifactId>
-			<version>1.5-SNAPSHOT</version>
+			<version>1.5-SNAPSHOT-DEV</version>
 		</dependency>
 		<dependency>
 			<groupId>net.objecthunter</groupId>
