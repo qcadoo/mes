@@ -306,17 +306,24 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
 
         newResource.setField(ResourceFields.TIME, date);
         newResource.setField(ResourceFields.LOCATION, warehouse);
-        newResource.setField(ResourceFields.PRODUCT, resource.getBelongsToField(PositionFields.PRODUCT));
+        newResource.setField(ResourceFields.PRODUCT, resource.getBelongsToField(ResourceFields.PRODUCT));
         newResource.setField(ResourceFields.QUANTITY, quantity);
         newResource.setField(ResourceFields.AVAILABLE_QUANTITY, quantity);
         newResource.setField(ResourceFields.RESERVED_QUANTITY, BigDecimal.ZERO);
-        newResource.setField(ResourceFields.PRICE, resource.getField(PositionFields.PRICE));
-        newResource.setField(ResourceFields.BATCH, resource.getField(PositionFields.BATCH));
-        newResource.setField(ResourceFields.EXPIRATION_DATE, resource.getField(PositionFields.EXPIRATION_DATE));
-        newResource.setField(ResourceFields.PRODUCTION_DATE, resource.getField(PositionFields.PRODUCTION_DATE));
-        newResource.setField(ResourceFields.STORAGE_LOCATION, warehouse.getBelongsToField(LocationFieldsMFR.TRANSFER_STORAGE_LOCATION));
-        newResource.setField(ResourceFields.PALLET_NUMBER, null);
-        newResource.setField(ResourceFields.TYPE_OF_LOAD_UNIT, null);
+        newResource.setField(ResourceFields.PRICE, resource.getField(ResourceFields.PRICE));
+        newResource.setField(ResourceFields.BATCH, resource.getField(ResourceFields.BATCH));
+        newResource.setField(ResourceFields.EXPIRATION_DATE, resource.getField(ResourceFields.EXPIRATION_DATE));
+        newResource.setField(ResourceFields.PRODUCTION_DATE, resource.getField(ResourceFields.PRODUCTION_DATE));
+        Entity storageLocation = warehouse.getBelongsToField(LocationFieldsMFR.TRANSFER_STORAGE_LOCATION);
+        newResource.setField(ResourceFields.STORAGE_LOCATION, storageLocation);
+        if (storageLocation != null && storageLocation.getBooleanField(StorageLocationFields.PLACE_STORAGE_LOCATION)) {
+            newResource.setField(ResourceFields.PALLET_NUMBER, resource.getField(ResourceFields.PALLET_NUMBER));
+            newResource.setField(ResourceFields.TYPE_OF_LOAD_UNIT, resource.getField(ResourceFields.TYPE_OF_LOAD_UNIT));
+        } else {
+            newResource.setField(ResourceFields.PALLET_NUMBER, null);
+            newResource.setField(ResourceFields.TYPE_OF_LOAD_UNIT, null);
+        }
+        newResource.setField(ResourceFields.VALIDATE_PALLET, false);
         newResource.setField(ResourceFields.CONVERSION, resource.getField(ResourceFields.CONVERSION));
         newResource.setField(ResourceFields.GIVEN_UNIT, resource.getField(ResourceFields.GIVEN_UNIT));
         newResource.setField(ResourceFields.DELIVERY_NUMBER, resource.getField(ResourceFields.DELIVERY_NUMBER));

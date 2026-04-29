@@ -3,19 +3,19 @@
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
  * Version: 1.4
- *
+ * <p>
  * This file is part of Qcadoo.
- *
+ * <p>
  * Qcadoo is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation; either version 3 of the License,
  * or (at your option) any later version.
- *
+ * <p>
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty
  * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU Affero General Public License for more details.
- *
+ * <p>
  * You should have received a copy of the GNU Affero General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
@@ -290,6 +290,56 @@ public class DocumentValidators {
                 document.addGlobalError("materialFlow.document.validate.global.error.position.morePalletsExists", number, String.join(", ", existsMorePallets));
 
                 isValid = false;
+            }
+        }
+
+        if (DocumentType.TRANSFER.getStringValue().equals(type)) {
+            Entity storageLocation = document.getBelongsToField(DocumentFields.LOCATION_TO).getBelongsToField(LocationFieldsMFR.TRANSFER_STORAGE_LOCATION);
+            if (Objects.nonNull(storageLocation)) {
+                String number = document.getStringField(DocumentFields.NUMBER);
+                List<Entity> positions = document.getHasManyField(DocumentFields.POSITIONS);
+                Set<String> missingPalletNumbers = Sets.newHashSet();
+                Set<String> existsMorePallets = Sets.newHashSet();
+                Set<String> existPalletsWithReservations = Sets.newHashSet();
+                positions.forEach(position -> {
+                    Integer positionNumber = position.getIntegerField(PositionFields.NUMBER);
+                    Entity palletNumber = position.getBelongsToField(PositionFields.PALLET_NUMBER);
+
+                    String storageLocationNumber = storageLocation.getStringField(StorageLocationFields.NUMBER);
+                    boolean placeStorageLocation = storageLocation.getBooleanField(StorageLocationFields.PLACE_STORAGE_LOCATION);
+
+                    if (placeStorageLocation) {
+                        if (Objects.isNull(palletNumber)) {
+                            missingPalletNumbers.add(positionNumber.toString());
+                        } else {
+                            String palletNumberNumber = palletNumber.getStringField(PalletNumberFields.NUMBER);
+
+                            if (palletValidatorService.tooManyPalletsInStorageLocationAndPositions(storageLocationNumber, palletNumberNumber, position.getId(), document.getId())) {
+                                existsMorePallets.add(storageLocation.getStringField(StorageLocationFields.NUMBER));
+                            }
+                            Entity resource = position.getBelongsToField(PositionFields.RESOURCE);
+                            if (resource != null && resource.getHasManyField(ResourceFields.RESERVATIONS).size() > 1) {
+                                existPalletsWithReservations.add(resource.getStringField(ResourceFields.NUMBER));
+                            }
+                        }
+                    }
+                });
+
+                if (!missingPalletNumbers.isEmpty()) {
+                    document.addGlobalError("materialFlow.document.validate.global.error.position.palletNumberRequired", number, String.join(", ", missingPalletNumbers));
+
+                    isValid = false;
+                }
+                if (!existsMorePallets.isEmpty()) {
+                    document.addGlobalError("materialFlow.document.validate.global.error.position.morePalletsExists", number, String.join(", ", existsMorePallets));
+
+                    isValid = false;
+                }
+                if (!existPalletsWithReservations.isEmpty()) {
+                    document.addGlobalError("materialFlow.document.validate.global.error.position.palletsWithReservationsExists", number, String.join(", ", existPalletsWithReservations));
+
+                    isValid = false;
+                }
             }
         }
 
