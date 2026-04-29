@@ -858,7 +858,17 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
         BigDecimal conversion = BigDecimalUtils.convertNullToOne(position.getDecimalField(PositionFields.CONVERSION));
         String givenUnit = position.getStringField(PositionFields.GIVEN_UNIT);
 
+        Entity transferStorageLocation = warehouseTo.getBelongsToField(LocationFieldsMFR.TRANSFER_STORAGE_LOCATION);
+
         for (Entity resource : resources) {
+            if (Objects.nonNull(transferStorageLocation)) {
+                boolean placeStorageLocation = transferStorageLocation.getBooleanField(StorageLocationFields.PLACE_STORAGE_LOCATION);
+
+                if (placeStorageLocation && resource.getHasManyField(ResourceFields.RESERVATIONS).size() > 0) {
+                    resource.addGlobalError("materialFlow.document.validate.global.error.position.palletsWithReservationsExists", resource.getStringField(ResourceFields.NUMBER));
+                    throw new InvalidResourceException(resource);
+                }
+            }
             Entity newPosition = createNewPosition(position, product, resource);
 
             if (!isFromOrder) {

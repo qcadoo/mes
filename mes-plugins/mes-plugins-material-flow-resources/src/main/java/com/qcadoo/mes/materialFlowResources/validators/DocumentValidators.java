@@ -207,6 +207,9 @@ public class DocumentValidators {
                             } else if (ire.getErrors().values().stream().anyMatch(e -> e.getMessage().equals("documentGrid.error.position.existsOtherResourceForLoadUnitAndTypeOfLoadUnit"))) {
                                 documentForm.addMessage("documentGrid.error.position.existsOtherResourceForLoadUnitAndTypeOfLoadUnit",
                                         ComponentState.MessageType.FAILURE, false, ire.getEntity().getBelongsToField(ResourceFields.PALLET_NUMBER).getStringField(PalletNumberFields.NUMBER));
+                            } else if (ire.getGlobalErrors().stream().anyMatch(e -> e.getMessage().equals("materialFlow.document.validate.global.error.position.palletsWithReservationsExists"))) {
+                                documentForm.addMessage("materialFlow.document.validate.global.error.position.palletsWithReservationsExists",
+                                        ComponentState.MessageType.FAILURE, false, resourceNumber);
                             } else {
                                 documentForm.addMessage("materialFlow.document.validate.global.error.invalidResource",
                                         ComponentState.MessageType.FAILURE, false, resourceNumber, productNumber);
@@ -291,16 +294,13 @@ public class DocumentValidators {
 
                 isValid = false;
             }
-        }
-
-        if (DocumentType.TRANSFER.getStringValue().equals(type)) {
+        } else if (DocumentType.TRANSFER.getStringValue().equals(type)) {
             Entity storageLocation = document.getBelongsToField(DocumentFields.LOCATION_TO).getBelongsToField(LocationFieldsMFR.TRANSFER_STORAGE_LOCATION);
             if (Objects.nonNull(storageLocation)) {
                 String number = document.getStringField(DocumentFields.NUMBER);
                 List<Entity> positions = document.getHasManyField(DocumentFields.POSITIONS);
                 Set<String> missingPalletNumbers = Sets.newHashSet();
                 Set<String> existsMorePallets = Sets.newHashSet();
-                Set<String> existPalletsWithReservations = Sets.newHashSet();
                 positions.forEach(position -> {
                     Integer positionNumber = position.getIntegerField(PositionFields.NUMBER);
                     Entity palletNumber = position.getBelongsToField(PositionFields.PALLET_NUMBER);
@@ -317,10 +317,6 @@ public class DocumentValidators {
                             if (palletValidatorService.tooManyPalletsInStorageLocationAndPositions(storageLocationNumber, palletNumberNumber, position.getId(), document.getId())) {
                                 existsMorePallets.add(storageLocation.getStringField(StorageLocationFields.NUMBER));
                             }
-                            Entity resource = position.getBelongsToField(PositionFields.RESOURCE);
-                            if (resource != null && resource.getHasManyField(ResourceFields.RESERVATIONS).size() > 1) {
-                                existPalletsWithReservations.add(resource.getStringField(ResourceFields.NUMBER));
-                            }
                         }
                     }
                 });
@@ -332,11 +328,6 @@ public class DocumentValidators {
                 }
                 if (!existsMorePallets.isEmpty()) {
                     document.addGlobalError("materialFlow.document.validate.global.error.position.morePalletsExists", number, String.join(", ", existsMorePallets));
-
-                    isValid = false;
-                }
-                if (!existPalletsWithReservations.isEmpty()) {
-                    document.addGlobalError("materialFlow.document.validate.global.error.position.palletsWithReservationsExists", number, String.join(", ", existPalletsWithReservations));
 
                     isValid = false;
                 }
