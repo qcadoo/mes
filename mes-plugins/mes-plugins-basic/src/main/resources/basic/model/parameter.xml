@@ -104,6 +104,9 @@
         <enum name="mrpAlgorithm" values="00onlyMaterials,01onlyComponents,02allProductsIn"
               default="01onlyComponents" required="true"/>
 
+        <enum name="producedQuantityBasedOn" values="01acceptedRecords,02reportedRecords"
+              default="01acceptedRecords" required="true"/>
+
         <boolean name="mrShowReplacements" default="false"/>
         <boolean name="mrIncludeWarehouse" default="false"/>
         <boolean name="mrShowCurrentStockLevel" default="false"/>
