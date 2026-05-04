@@ -41,4 +41,7 @@
 								expression="org.springframework.stereotype.Controller"/>
 	</context:component-scan>
 
+	<mvc:resources mapping="/productionCounting/resources/**"
+				   location="classpath:productionCounting/public/resources/"/>
+
 </beans>

@@ -155,6 +155,10 @@
                     </script>
                 </smallButton>
             </group>
+            <group name="import">
+                <bigButton name="openTrackingsImportPage" state="enabled" icon="xlsIcon24.png"
+                           action="#{grid}.fireEvent(openTrackingsImportPage);"/>
+            </group>
         </ribbon>
 
         <component type="grid" name="productionTrackingsList"
@@ -315,6 +319,10 @@
             <listener event="copyProductionTrackings"
                       class="com.qcadoo.mes.productionCounting.listeners.ProductionTrackingDetailsListeners"
                       method="copyProductionTrackings"/>
+
+            <listener event="openTrackingsImportPage"
+                      class="com.qcadoo.mes.productionCounting.listeners.ProductionTrackingDetailsListeners"
+                      method="openTrackingsImportPage"/>
 
             <criteriaModifier
                     class="com.qcadoo.mes.productionCounting.criteriaModifiers.ProductionTrackingCriteriaModifiers"

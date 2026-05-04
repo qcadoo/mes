@@ -538,4 +538,10 @@ public class ProductionTrackingDetailsListeners {
         }
     }
 
+    public void openTrackingsImportPage(final ViewDefinitionState view, final ComponentState state,
+                                     final String[] args) {
+
+        view.openModal("../page/productionCounting/trackingsImport.html");
+    }
+
 }

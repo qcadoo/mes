@@ -422,6 +422,8 @@
             <model:hasMany name="trackingOperationProductOutComponents" plugin="productionCounting" model="trackingOperationProductOutComponent" joinField="typeOfLoadUnit"/>
         </model:model-field>
 
+        <model:model-enum-value plugin="basic" model="log" enum="logType" value="productionTrackingImport"/>
+
         <model:model-hook model="parameter" plugin="basic">
             <model:onCreate
                     class="com.qcadoo.mes.productionCounting.hooks.ParameterHooksPC"
@@ -538,6 +540,7 @@
                             url="/linesProducedQuantitiesChart.html" defaultAuthorizationRole="ROLE_ANALYSIS_VIEWER"/>
 
         <view:view resource="view/productionTrackingsList.xml"/>
+        <view:view resource="view/trackingsImport.xml"/>
         <view:view resource="view/productionTrackingDetails.xml"/>
         <view:view resource="view/productionBalancesList.xml"/>
         <view:view resource="view/productionBalanceDetails.xml"/>
