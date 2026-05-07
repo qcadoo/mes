@@ -89,21 +89,23 @@ public class ProductionTrackingXlsxImportService extends XlsxImportService {
         validateStaff(productionTracking, productionTrackingDD);
         validateDates(productionTracking, productionTrackingDD);
         validateQuantities(productionTracking, productionTrackingDD);
-        productionTrackingHooks.copyProducts(productionTracking);
         validateProducts(productionTracking);
     }
 
     private void validateProducts(Entity productionTracking) {
-        List<Entity> trackingOperationProductOutComponents = productionTracking
-                .getHasManyField(ProductionTrackingFields.TRACKING_OPERATION_PRODUCT_OUT_COMPONENTS);
         Entity order = productionTracking.getBelongsToField(ProductionTrackingFields.ORDER);
-        Optional<Entity> mainOutProduct = trackingOperationProductOutComponents.stream().filter(e -> e.getBelongsToField(TrackingOperationProductOutComponentFields.PRODUCT).getId().equals(order.getBelongsToField(OrderFields.PRODUCT).getId())).findFirst();
-        if (mainOutProduct.isPresent()) {
-            Entity outProduct = mainOutProduct.get();
-            outProduct.setField(TrackingOperationProductOutComponentFields.USED_QUANTITY, productionTracking.getDecimalField(TrackingOperationProductOutComponentFields.USED_QUANTITY));
-            outProduct.setField(TrackingOperationProductOutComponentFields.WASTES_QUANTITY, productionTracking.getDecimalField(TrackingOperationProductOutComponentFields.WASTES_QUANTITY));
-            outProduct.setField(TrackingOperationProductOutComponentFields.CAUSE_OF_WASTES, productionTracking.getStringField(TrackingOperationProductOutComponentFields.CAUSE_OF_WASTES));
-            fillTrackingOperationProductInComponentsQuantities(outProduct, productionTracking);
+        if (order != null) {
+            productionTrackingHooks.copyProducts(productionTracking);
+            List<Entity> trackingOperationProductOutComponents = productionTracking
+                    .getHasManyField(ProductionTrackingFields.TRACKING_OPERATION_PRODUCT_OUT_COMPONENTS);
+            Optional<Entity> mainOutProduct = trackingOperationProductOutComponents.stream().filter(e -> e.getBelongsToField(TrackingOperationProductOutComponentFields.PRODUCT).getId().equals(order.getBelongsToField(OrderFields.PRODUCT).getId())).findFirst();
+            if (mainOutProduct.isPresent()) {
+                Entity outProduct = mainOutProduct.get();
+                outProduct.setField(TrackingOperationProductOutComponentFields.USED_QUANTITY, productionTracking.getDecimalField(TrackingOperationProductOutComponentFields.USED_QUANTITY));
+                outProduct.setField(TrackingOperationProductOutComponentFields.WASTES_QUANTITY, productionTracking.getDecimalField(TrackingOperationProductOutComponentFields.WASTES_QUANTITY));
+                outProduct.setField(TrackingOperationProductOutComponentFields.CAUSE_OF_WASTES, productionTracking.getStringField(TrackingOperationProductOutComponentFields.CAUSE_OF_WASTES));
+                fillTrackingOperationProductInComponentsQuantities(outProduct, productionTracking);
+            }
         }
     }
 
@@ -176,10 +178,10 @@ public class ProductionTrackingXlsxImportService extends XlsxImportService {
 
     private void validateOrder(final Entity productionTracking, final DataDefinition productionTrackingDD) {
         Entity order = productionTracking.getBelongsToField(ProductionTrackingFields.ORDER);
-        if (!OrderStateStringValues.IN_PROGRESS.equals(order.getStringField(OrderFields.STATE))) {
+        if (order == null || !OrderStateStringValues.IN_PROGRESS.equals(order.getStringField(OrderFields.STATE))) {
             productionTracking.addError(productionTrackingDD.getField(ProductionTrackingFields.ORDER), "productionCounting.productionTrackingsList.window.mainTab.productionTrackingsList.grid.error.copy");
         }
-        if (TypeOfProductionRecording.FOR_EACH.getStringValue().equals(order.getStringField(OrderFieldsPC.TYPE_OF_PRODUCTION_RECORDING))) {
+        if (order != null && TypeOfProductionRecording.FOR_EACH.getStringValue().equals(order.getStringField(OrderFieldsPC.TYPE_OF_PRODUCTION_RECORDING))) {
             Entity technology = order.getBelongsToField(OrderFields.TECHNOLOGY);
             Entity toc = dataDefinitionService
                     .get(TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_TECHNOLOGY_OPERATION_COMPONENT).find()
@@ -190,8 +192,10 @@ public class ProductionTrackingXlsxImportService extends XlsxImportService {
     }
 
     private void validateStaff(final Entity productionTracking, final DataDefinition productionTrackingDD) {
-        Entity division = productionTracking.getBelongsToField(ProductionTrackingFields.STAFF).getBelongsToField(StaffFields.DIVISION);
-        productionTracking.setField(ProductionTrackingFields.DIVISION, division);
+        Entity staff = productionTracking.getBelongsToField(ProductionTrackingFields.STAFF);
+        if (staff != null) {
+            productionTracking.setField(ProductionTrackingFields.DIVISION, staff.getBelongsToField(StaffFields.DIVISION));
+        }
     }
 
 

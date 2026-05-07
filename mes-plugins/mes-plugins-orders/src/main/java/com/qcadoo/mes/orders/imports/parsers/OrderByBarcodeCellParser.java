@@ -34,8 +34,12 @@ public class OrderByBarcodeCellParser implements CellParser {
     }
 
     private Entity getOrderByBarcode(final String code) {
-        return getDD().find().add(SearchRestrictions.eq(BarcodeOperationComponentFields.CODE, code)).setMaxResults(1)
-                .uniqueResult().getBelongsToField(BarcodeOperationComponentFields.ORDER);
+        Entity barcodeOperationComponent = getDD().find().add(SearchRestrictions.eq(BarcodeOperationComponentFields.CODE, code)).setMaxResults(1)
+                .uniqueResult();
+        if (barcodeOperationComponent == null) {
+            return null;
+        }
+        return barcodeOperationComponent.getBelongsToField(BarcodeOperationComponentFields.ORDER);
     }
 
     private DataDefinition getDD() {
