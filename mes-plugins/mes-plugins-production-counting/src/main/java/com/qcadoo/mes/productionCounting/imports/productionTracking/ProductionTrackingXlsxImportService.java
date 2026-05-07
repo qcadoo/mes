@@ -24,7 +24,6 @@
 package com.qcadoo.mes.productionCounting.imports.productionTracking;
 
 import com.qcadoo.mes.basic.ParameterService;
-import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.basic.constants.StaffFields;
 import com.qcadoo.mes.basic.constants.UnitConversionItemFieldsB;
@@ -97,7 +96,6 @@ public class ProductionTrackingXlsxImportService extends XlsxImportService {
         validateOrder(productionTracking, productionTrackingDD);
         validateStaff(productionTracking, productionTrackingDD);
         validateDates(productionTracking, productionTrackingDD);
-        validateQuantities(productionTracking, productionTrackingDD);
         validateProducts(productionTracking);
     }
 
@@ -111,6 +109,11 @@ public class ProductionTrackingXlsxImportService extends XlsxImportService {
             if (mainOutProduct.isPresent()) {
                 Entity outProduct = mainOutProduct.get();
                 BigDecimal quantity = numberService.setScaleWithDefaultMathContext(productionTracking.getDecimalField(TrackingOperationProductOutComponentFields.USED_QUANTITY));
+
+                if (quantity != null && quantity.compareTo(BigDecimal.ZERO) == 0) {
+                    outProduct.addError(outProduct.getDataDefinition().getField(TrackingOperationProductOutComponentFields.USED_QUANTITY), L_QCADOO_VIEW_VALIDATE_FIELD_ERROR_CUSTOM);
+                }
+
                 outProduct.setField(TrackingOperationProductOutComponentFields.USED_QUANTITY, quantity);
                 outProduct.setField(TrackingOperationProductOutComponentFields.WASTES_QUANTITY, productionTracking.getDecimalField(TrackingOperationProductOutComponentFields.WASTES_QUANTITY));
                 outProduct.setField(TrackingOperationProductOutComponentFields.CAUSE_OF_WASTES, productionTracking.getStringField(TrackingOperationProductOutComponentFields.CAUSE_OF_WASTES));
@@ -121,26 +124,28 @@ public class ProductionTrackingXlsxImportService extends XlsxImportService {
     }
 
     private void fillGivenQuantityAndUnit(Entity outProduct, BigDecimal quantity) {
-        Entity product = outProduct.getBelongsToField(TrackingOperationProductOutComponentFields.PRODUCT);
-        String unit = product.getStringField(ProductFields.UNIT);
-        String givenUnit = product.getStringField(ProductFields.ADDITIONAL_UNIT);
-        BigDecimal givenQuantity = quantity;
+        if (quantity != null) {
+            Entity product = outProduct.getBelongsToField(TrackingOperationProductOutComponentFields.PRODUCT);
+            String unit = product.getStringField(ProductFields.UNIT);
+            String givenUnit = product.getStringField(ProductFields.ADDITIONAL_UNIT);
+            BigDecimal givenQuantity = quantity;
 
-        if (Objects.nonNull(givenUnit) && !givenUnit.equals(unit)) {
-            PossibleUnitConversions unitConversions = unitConversionService.getPossibleConversions(unit,
-                    searchCriteriaBuilder -> searchCriteriaBuilder.add(SearchRestrictions.belongsTo(UnitConversionItemFieldsB.PRODUCT, product)));
+            if (Objects.nonNull(givenUnit) && !givenUnit.equals(unit)) {
+                PossibleUnitConversions unitConversions = unitConversionService.getPossibleConversions(unit,
+                        searchCriteriaBuilder -> searchCriteriaBuilder.add(SearchRestrictions.belongsTo(UnitConversionItemFieldsB.PRODUCT, product)));
 
-            if (unitConversions.isDefinedFor(givenUnit)) {
-                givenQuantity = unitConversions.convertTo(quantity, givenUnit, BigDecimal.ROUND_FLOOR);
+                if (unitConversions.isDefinedFor(givenUnit)) {
+                    givenQuantity = unitConversions.convertTo(quantity, givenUnit, BigDecimal.ROUND_FLOOR);
+                } else {
+                    givenUnit = unit;
+                }
             } else {
                 givenUnit = unit;
             }
-        } else {
-            givenUnit = unit;
+            outProduct.setField(TrackingOperationProductOutComponentFields.GIVEN_QUANTITY, givenQuantity);
+            outProduct.setField(TrackingOperationProductOutComponentFields.GIVEN_UNIT,
+                    givenUnit);
         }
-        outProduct.setField(TrackingOperationProductOutComponentFields.GIVEN_QUANTITY, givenQuantity);
-        outProduct.setField(TrackingOperationProductOutComponentFields.GIVEN_UNIT,
-                givenUnit);
     }
 
     private void fillTrackingOperationProductInComponentsQuantities(final Entity trackingOperationProductOutComponent, Entity productionTracking) {
@@ -237,21 +242,12 @@ public class ProductionTrackingXlsxImportService extends XlsxImportService {
         Date timeRangeFrom = productionTracking.getDateField(ProductionTrackingFields.TIME_RANGE_FROM);
         Date timeRangeTo = productionTracking.getDateField(ProductionTrackingFields.TIME_RANGE_TO);
 
-        if (timeRangeFrom.after(timeRangeTo) || timeRangeFrom.equals(timeRangeTo)) {
+        if (timeRangeFrom != null && timeRangeTo != null && (timeRangeFrom.after(timeRangeTo) || timeRangeFrom.equals(timeRangeTo))) {
             productionTracking.addError(productionTrackingDD.getField(ProductionTrackingFields.TIME_RANGE_TO), L_QCADOO_VIEW_VALIDATE_FIELD_ERROR_CUSTOM);
         }
 
-        productionTracking.setField(ProductionTrackingFields.SHIFT_START_DAY, new DateTime(timeRangeFrom).withTimeAtStartOfDay().toDate());
-    }
-
-    private void validateQuantities(Entity productionTracking, DataDefinition productionTrackingDD) {
-        if (productionTracking.getDecimalField(TrackingOperationProductOutComponentFields.USED_QUANTITY).compareTo(BigDecimal.ZERO) <= 0) {
-            productionTracking.addError(productionTrackingDD.getField(TrackingOperationProductOutComponentFields.USED_QUANTITY), L_QCADOO_VIEW_VALIDATE_FIELD_ERROR_CUSTOM);
-        }
-
-        BigDecimal wastesQuantity = productionTracking.getDecimalField(TrackingOperationProductOutComponentFields.WASTES_QUANTITY);
-        if (wastesQuantity != null && wastesQuantity.compareTo(BigDecimal.ZERO) < 0) {
-            productionTracking.addError(productionTrackingDD.getField(TrackingOperationProductOutComponentFields.WASTES_QUANTITY), L_QCADOO_VIEW_VALIDATE_FIELD_ERROR_CUSTOM);
+        if (timeRangeFrom != null) {
+            productionTracking.setField(ProductionTrackingFields.SHIFT_START_DAY, new DateTime(timeRangeFrom).withTimeAtStartOfDay().toDate());
         }
     }
 
