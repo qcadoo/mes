@@ -24,7 +24,10 @@
 package com.qcadoo.mes.productionCounting.imports.productionTracking;
 
 import com.qcadoo.mes.basic.ParameterService;
+import com.qcadoo.mes.basic.constants.BasicConstants;
+import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.basic.constants.StaffFields;
+import com.qcadoo.mes.basic.constants.UnitConversionItemFieldsB;
 import com.qcadoo.mes.basic.imports.services.XlsxImportService;
 import com.qcadoo.mes.basicProductionCounting.constants.BasicProductionCountingConstants;
 import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityFields;
@@ -40,6 +43,8 @@ import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
 import com.qcadoo.model.api.*;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
+import com.qcadoo.model.api.units.PossibleUnitConversions;
+import com.qcadoo.model.api.units.UnitConversionService;
 import org.apache.commons.lang3.BooleanUtils;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,6 +53,7 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -70,6 +76,9 @@ public class ProductionTrackingXlsxImportService extends XlsxImportService {
 
     @Autowired
     private ProductionTrackingService productionTrackingService;
+
+    @Autowired
+    private UnitConversionService unitConversionService;
 
     @Override
     public Entity createEntity(final String pluginIdentifier, final String modelName) {
@@ -101,12 +110,37 @@ public class ProductionTrackingXlsxImportService extends XlsxImportService {
             Optional<Entity> mainOutProduct = trackingOperationProductOutComponents.stream().filter(e -> e.getBelongsToField(TrackingOperationProductOutComponentFields.PRODUCT).getId().equals(order.getBelongsToField(OrderFields.PRODUCT).getId())).findFirst();
             if (mainOutProduct.isPresent()) {
                 Entity outProduct = mainOutProduct.get();
-                outProduct.setField(TrackingOperationProductOutComponentFields.USED_QUANTITY, productionTracking.getDecimalField(TrackingOperationProductOutComponentFields.USED_QUANTITY));
+                BigDecimal quantity = numberService.setScaleWithDefaultMathContext(productionTracking.getDecimalField(TrackingOperationProductOutComponentFields.USED_QUANTITY));
+                outProduct.setField(TrackingOperationProductOutComponentFields.USED_QUANTITY, quantity);
                 outProduct.setField(TrackingOperationProductOutComponentFields.WASTES_QUANTITY, productionTracking.getDecimalField(TrackingOperationProductOutComponentFields.WASTES_QUANTITY));
                 outProduct.setField(TrackingOperationProductOutComponentFields.CAUSE_OF_WASTES, productionTracking.getStringField(TrackingOperationProductOutComponentFields.CAUSE_OF_WASTES));
                 fillTrackingOperationProductInComponentsQuantities(outProduct, productionTracking);
+                fillGivenQuantityAndUnit(outProduct, quantity);
             }
         }
+    }
+
+    private void fillGivenQuantityAndUnit(Entity outProduct, BigDecimal quantity) {
+        Entity product = outProduct.getBelongsToField(TrackingOperationProductOutComponentFields.PRODUCT);
+        String unit = product.getStringField(ProductFields.UNIT);
+        String givenUnit = product.getStringField(ProductFields.ADDITIONAL_UNIT);
+        BigDecimal givenQuantity = quantity;
+
+        if (Objects.nonNull(givenUnit) && !givenUnit.equals(unit)) {
+            PossibleUnitConversions unitConversions = unitConversionService.getPossibleConversions(unit,
+                    searchCriteriaBuilder -> searchCriteriaBuilder.add(SearchRestrictions.belongsTo(UnitConversionItemFieldsB.PRODUCT, product)));
+
+            if (unitConversions.isDefinedFor(givenUnit)) {
+                givenQuantity = unitConversions.convertTo(quantity, givenUnit, BigDecimal.ROUND_FLOOR);
+            } else {
+                givenUnit = unit;
+            }
+        } else {
+            givenUnit = unit;
+        }
+        outProduct.setField(TrackingOperationProductOutComponentFields.GIVEN_QUANTITY, givenQuantity);
+        outProduct.setField(TrackingOperationProductOutComponentFields.GIVEN_UNIT,
+                givenUnit);
     }
 
     private void fillTrackingOperationProductInComponentsQuantities(final Entity trackingOperationProductOutComponent, Entity productionTracking) {
