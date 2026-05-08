@@ -15,7 +15,7 @@ import java.util.Objects;
 import java.util.function.Consumer;
 
 @Component
-public class OrderByBarcodeCellParser implements CellParser {
+public class BarcodeOperationComponentCellParser implements CellParser {
 
     private static final String L_QCADOO_VIEW_VALIDATE_FIELD_ERROR_LOOKUP_CODE_NOT_FOUND = "qcadooView.validate.field.error.lookupCodeNotFound";
 
@@ -24,22 +24,18 @@ public class OrderByBarcodeCellParser implements CellParser {
 
     @Override
     public void parse(final String cellValue, final String dependentCellValue, final CellErrorsAccessor errorsAccessor, final Consumer<Object> valueConsumer) {
-        Entity order = getOrderByBarcode(cellValue);
+        Entity entity = getBarcodeOperationComponent(cellValue);
 
-        if (Objects.isNull(order)) {
+        if (Objects.isNull(entity)) {
             errorsAccessor.addError(L_QCADOO_VIEW_VALIDATE_FIELD_ERROR_LOOKUP_CODE_NOT_FOUND);
         } else {
-            valueConsumer.accept(order);
+            valueConsumer.accept(entity);
         }
     }
 
-    private Entity getOrderByBarcode(final String code) {
-        Entity barcodeOperationComponent = getDD().find().add(SearchRestrictions.eq(BarcodeOperationComponentFields.CODE, code)).setMaxResults(1)
+    private Entity getBarcodeOperationComponent(final String code) {
+        return getDD().find().add(SearchRestrictions.eq(BarcodeOperationComponentFields.CODE, code)).setMaxResults(1)
                 .uniqueResult();
-        if (barcodeOperationComponent == null) {
-            return null;
-        }
-        return barcodeOperationComponent.getBelongsToField(BarcodeOperationComponentFields.ORDER);
     }
 
     private DataDefinition getDD() {

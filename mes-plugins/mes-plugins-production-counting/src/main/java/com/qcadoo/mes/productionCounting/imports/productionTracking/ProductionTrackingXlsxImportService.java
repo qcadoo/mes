@@ -37,8 +37,7 @@ import com.qcadoo.mes.orders.states.constants.OrderStateStringValues;
 import com.qcadoo.mes.productionCounting.ProductionTrackingService;
 import com.qcadoo.mes.productionCounting.constants.*;
 import com.qcadoo.mes.productionCounting.hooks.ProductionTrackingHooks;
-import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
-import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
+import com.qcadoo.mes.technologies.constants.BarcodeOperationComponentFields;
 import com.qcadoo.model.api.*;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
@@ -105,7 +104,9 @@ public class ProductionTrackingXlsxImportService extends XlsxImportService {
             productionTrackingHooks.copyProducts(productionTracking);
             List<Entity> trackingOperationProductOutComponents = productionTracking
                     .getHasManyField(ProductionTrackingFields.TRACKING_OPERATION_PRODUCT_OUT_COMPONENTS);
-            Optional<Entity> mainOutProduct = trackingOperationProductOutComponents.stream().filter(e -> e.getBelongsToField(TrackingOperationProductOutComponentFields.PRODUCT).getId().equals(order.getBelongsToField(OrderFields.PRODUCT).getId())).findFirst();
+            Optional<Entity> mainOutProduct = trackingOperationProductOutComponents.stream().
+                    filter(e -> (e.getStringField(TrackingOperationProductOutComponentFields.TYPE_OF_MATERIAL).equals(ProductionCountingQuantityTypeOfMaterial.FINAL_PRODUCT.getStringValue())
+                            || e.getStringField(TrackingOperationProductOutComponentFields.TYPE_OF_MATERIAL).equals(ProductionCountingQuantityTypeOfMaterial.INTERMEDIATE.getStringValue()))).findFirst();
             if (mainOutProduct.isPresent()) {
                 Entity outProduct = mainOutProduct.get();
                 BigDecimal quantity = numberService.setScaleWithDefaultMathContext(productionTracking.getDecimalField(TrackingOperationProductOutComponentFields.USED_QUANTITY));
@@ -216,17 +217,17 @@ public class ProductionTrackingXlsxImportService extends XlsxImportService {
     }
 
     private void validateOrder(final Entity productionTracking, final DataDefinition productionTrackingDD) {
-        Entity order = productionTracking.getBelongsToField(ProductionTrackingFields.ORDER);
+        Entity barcodeOperationComponent = productionTracking.getBelongsToField(ProductionTrackingFields.ORDER);
+        Entity order = null;
+        if (barcodeOperationComponent != null) {
+            order = barcodeOperationComponent.getBelongsToField(BarcodeOperationComponentFields.ORDER);
+            productionTracking.setField(ProductionTrackingFields.ORDER, order);
+            if (TypeOfProductionRecording.FOR_EACH.getStringValue().equals(order.getStringField(OrderFieldsPC.TYPE_OF_PRODUCTION_RECORDING))) {
+                productionTracking.setField(ProductionTrackingFields.TECHNOLOGY_OPERATION_COMPONENT, barcodeOperationComponent.getBelongsToField(BarcodeOperationComponentFields.OPERATION_COMPONENT));
+            }
+        }
         if (order == null || !OrderStateStringValues.IN_PROGRESS.equals(order.getStringField(OrderFields.STATE))) {
             productionTracking.addError(productionTrackingDD.getField(ProductionTrackingFields.ORDER), "productionCounting.productionTrackingsList.window.mainTab.productionTrackingsList.grid.error.copy");
-        }
-        if (order != null && TypeOfProductionRecording.FOR_EACH.getStringValue().equals(order.getStringField(OrderFieldsPC.TYPE_OF_PRODUCTION_RECORDING))) {
-            Entity technology = order.getBelongsToField(OrderFields.TECHNOLOGY);
-            Entity toc = dataDefinitionService
-                    .get(TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_TECHNOLOGY_OPERATION_COMPONENT).find()
-                    .add(SearchRestrictions.belongsTo(TechnologyOperationComponentFields.TECHNOLOGY, technology))
-                    .add(SearchRestrictions.isNull(TechnologyOperationComponentFields.PARENT)).setMaxResults(1).uniqueResult();
-            productionTracking.setField(ProductionTrackingFields.TECHNOLOGY_OPERATION_COMPONENT, toc);
         }
     }
 

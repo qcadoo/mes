@@ -42,7 +42,7 @@ public class ProductionTrackingCellBinderRegistry {
     private CellBinderRegistry cellBinderRegistry = new CellBinderRegistry();
 
     @Autowired
-    private CellParser orderByBarcodeCellParser;
+    private CellParser barcodeOperationComponentCellParser;
 
     @Autowired
     private CellParser staffCellParser;
@@ -61,7 +61,7 @@ public class ProductionTrackingCellBinderRegistry {
 
     @PostConstruct
     private void init() {
-        cellBinderRegistry.setCellBinder(required(ProductionTrackingFields.ORDER, orderByBarcodeCellParser));
+        cellBinderRegistry.setCellBinder(required(ProductionTrackingFields.ORDER, barcodeOperationComponentCellParser));
         cellBinderRegistry.setCellBinder(required(ProductionTrackingFields.STAFF, staffCellParser));
         cellBinderRegistry.setCellBinder(required(ProductionTrackingFields.SHIFT, shiftCellParser));
         cellBinderRegistry.setCellBinder(required(ProductionTrackingFields.TIME_RANGE_FROM, dateTimeCellParser));
