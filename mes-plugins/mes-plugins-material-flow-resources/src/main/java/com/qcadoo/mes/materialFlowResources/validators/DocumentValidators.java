@@ -3,19 +3,19 @@
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
  * Version: 1.4
- *
+ * <p>
  * This file is part of Qcadoo.
- *
+ * <p>
  * Qcadoo is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation; either version 3 of the License,
  * or (at your option) any later version.
- *
+ * <p>
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty
  * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU Affero General Public License for more details.
- *
+ * <p>
  * You should have received a copy of the GNU Affero General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
@@ -207,6 +207,9 @@ public class DocumentValidators {
                             } else if (ire.getErrors().values().stream().anyMatch(e -> e.getMessage().equals("documentGrid.error.position.existsOtherResourceForLoadUnitAndTypeOfLoadUnit"))) {
                                 documentForm.addMessage("documentGrid.error.position.existsOtherResourceForLoadUnitAndTypeOfLoadUnit",
                                         ComponentState.MessageType.FAILURE, false, ire.getEntity().getBelongsToField(ResourceFields.PALLET_NUMBER).getStringField(PalletNumberFields.NUMBER));
+                            } else if (ire.getGlobalErrors().stream().anyMatch(e -> e.getMessage().equals("materialFlow.document.validate.global.error.position.palletsWithReservationsExists"))) {
+                                documentForm.addMessage("materialFlow.document.validate.global.error.position.palletsWithReservationsExists",
+                                        ComponentState.MessageType.FAILURE, false, resourceNumber);
                             } else {
                                 documentForm.addMessage("materialFlow.document.validate.global.error.invalidResource",
                                         ComponentState.MessageType.FAILURE, false, resourceNumber, productNumber);
@@ -290,6 +293,44 @@ public class DocumentValidators {
                 document.addGlobalError("materialFlow.document.validate.global.error.position.morePalletsExists", number, String.join(", ", existsMorePallets));
 
                 isValid = false;
+            }
+        } else if (DocumentType.TRANSFER.getStringValue().equals(type)) {
+            Entity storageLocation = document.getBelongsToField(DocumentFields.LOCATION_TO).getBelongsToField(LocationFieldsMFR.TRANSFER_STORAGE_LOCATION);
+            if (Objects.nonNull(storageLocation)) {
+                String number = document.getStringField(DocumentFields.NUMBER);
+                List<Entity> positions = document.getHasManyField(DocumentFields.POSITIONS);
+                Set<String> missingPalletNumbers = Sets.newHashSet();
+                Set<String> existsMorePallets = Sets.newHashSet();
+                positions.forEach(position -> {
+                    Integer positionNumber = position.getIntegerField(PositionFields.NUMBER);
+                    Entity palletNumber = position.getBelongsToField(PositionFields.PALLET_NUMBER);
+
+                    String storageLocationNumber = storageLocation.getStringField(StorageLocationFields.NUMBER);
+                    boolean placeStorageLocation = storageLocation.getBooleanField(StorageLocationFields.PLACE_STORAGE_LOCATION);
+
+                    if (placeStorageLocation) {
+                        if (Objects.isNull(palletNumber)) {
+                            missingPalletNumbers.add(positionNumber.toString());
+                        } else {
+                            String palletNumberNumber = palletNumber.getStringField(PalletNumberFields.NUMBER);
+
+                            if (palletValidatorService.tooManyPalletsInStorageLocationAndPositions(storageLocationNumber, palletNumberNumber, position.getId(), document.getId())) {
+                                existsMorePallets.add(storageLocation.getStringField(StorageLocationFields.NUMBER));
+                            }
+                        }
+                    }
+                });
+
+                if (!missingPalletNumbers.isEmpty()) {
+                    document.addGlobalError("materialFlow.document.validate.global.error.position.palletNumberRequired", number, String.join(", ", missingPalletNumbers));
+
+                    isValid = false;
+                }
+                if (!existsMorePallets.isEmpty()) {
+                    document.addGlobalError("materialFlow.document.validate.global.error.position.morePalletsExists", number, String.join(", ", existsMorePallets));
+
+                    isValid = false;
+                }
             }
         }
 

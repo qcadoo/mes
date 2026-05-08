@@ -139,6 +139,19 @@
 						]]>
                     </script>
                 </bigButton>
+                <bigButton name="transferLoadUnits" icon="startIcon24.png" state="disabled">
+                    <script>
+                        <![CDATA[
+							this.addOnChangeListener({
+								onClick: function() {
+									if(window.canClose()) {
+										#{grid}.performEvent('transferLoadUnits', []);
+									}
+								}
+							});
+						]]>
+                    </script>
+                </bigButton>
                 <bigButton name="changeTypeOfLoadUnit" icon="updateIcon24.png" state="disabled">
                     <script>
                         <![CDATA[
@@ -160,12 +173,14 @@
                 <![CDATA[
 					var moveToStorageLocationButton = #{window}.getRibbonItem("movePallets.moveToStorageLocation");
 					var transferResourcesButton = #{window}.getRibbonItem("movePallets.transferResources");
+					var transferLoadUnitsButton = #{window}.getRibbonItem("movePallets.transferLoadUnits");
 					var changeTypeOfLoadUnitButton = #{window}.getRibbonItem("movePallets.changeTypeOfLoadUnit");
 					var showDetailsButton = #{window}.getRibbonItem("details.showDetails");
 					this.addOnChangeListener({
                         onChange: function(selectedEntitiesArray) {
                             moveToStorageLocationButton.disable();
                             transferResourcesButton.disable();
+                            transferLoadUnitsButton.disable();
                             changeTypeOfLoadUnitButton.disable();
                             showDetailsButton.disable("#{translate(materialFlowResources.palletStorageStateList.ribbon.message.selectOneRecord)}");
 
@@ -176,6 +191,18 @@
                                 }
                                 moveToStorageLocationButton.enable();
                                 transferResourcesButton.enable();
+                                var differentLocations = false;
+                                if (selectedEntitiesArray.length > 1) {
+                                    for (var i = 1; i < selectedEntitiesArray.length; i++) {
+                                        if (selectedEntitiesArray[i-1].fields.locationNumber != selectedEntitiesArray[i].fields.locationNumber) {
+                                            differentLocations = true;
+                                            break;
+                                        }
+                                    }
+                                }
+                                if (!differentLocations) {
+                                    transferLoadUnitsButton.enable();
+                                }
                             }
                         }
                     });
@@ -218,6 +245,11 @@
             <listener event="transferResources"
                       class="com.qcadoo.mes.materialFlowResources.listeners.PalletStorageStateListListeners"
                       method="transferResources"/>
+
+            <listener event="transferLoadUnits"
+                      class="com.qcadoo.mes.materialFlowResources.listeners.PalletStorageStateListListeners"
+                      method="transferLoadUnits"/>
+
             <listener event="changeTypeOfLoadUnit"
                       class="com.qcadoo.mes.materialFlowResources.listeners.PalletStorageStateListListeners"
                       method="changeTypeOfLoadUnit"/>

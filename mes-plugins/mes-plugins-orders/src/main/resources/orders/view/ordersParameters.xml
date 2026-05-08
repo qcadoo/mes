@@ -147,6 +147,11 @@
                                    reference="showOnProductionGuide">
                         </component>
                     </layoutElement>
+                    <layoutElement column="2" row="6">
+                        <component type="select" name="producedQuantityBasedOn" field="#{form}.producedQuantityBasedOn"
+                                   reference="producedQuantityBasedOn" hasDescription="true">
+                        </component>
+                    </layoutElement>
                     <layoutElement column="3" row="1">
                         <component type="borderLayout" name="dimensionControlBorderLayout">
                             <component type="gridLayout" name="dimensionControlGridLayout"
