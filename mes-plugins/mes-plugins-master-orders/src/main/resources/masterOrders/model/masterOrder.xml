@@ -57,6 +57,8 @@
 
         <boolean name="addMasterPrefixToNumber"/>
 
+        <string name="deliveryMethod"/>
+
         <dictionary name="masterOrderState" dictionary="masterOrderState"/>
 
         <belongsTo name="company" plugin="basic" model="company">
