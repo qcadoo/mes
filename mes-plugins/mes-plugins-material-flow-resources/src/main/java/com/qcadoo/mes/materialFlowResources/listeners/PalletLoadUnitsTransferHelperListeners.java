@@ -77,13 +77,12 @@ public class PalletLoadUnitsTransferHelperListeners {
         DocumentBuilder documentBuilder = documentManagementService.getDocumentBuilder(user);
         documentBuilder.transfer(locationTo, locationFrom);
 
-
-
         try {
             Entity document = documentBuilder.buildWithEntityRuntimeException();
-            tryCreatePositions(document, view, resources);
-            document = document.getDataDefinition().get(document.getId());
-            redirectToCreatedDocument(document, view);
+            boolean hasErrors = tryCreatePositions(document, view, resources);
+            if (!hasErrors) {
+                redirectToCreatedDocument(document, view);
+            }
         } catch (DocumentBuildException exc) {
             exc.getGlobalErrors().forEach(errorMessage -> {
                 if (!errorMessage.getMessage().equals("qcadooView.validate.global.error.custom")) {
@@ -93,7 +92,7 @@ public class PalletLoadUnitsTransferHelperListeners {
         }
     }
 
-    private void tryCreatePositions(Entity document, ViewDefinitionState view, List<Entity> resources) {
+    private boolean tryCreatePositions(Entity document, ViewDefinitionState view, List<Entity> resources) {
         List<String> errorNumbers = Lists.newArrayList();
 
         for (Entity resource : resources) {
@@ -108,14 +107,17 @@ public class PalletLoadUnitsTransferHelperListeners {
                         ComponentState.MessageType.FAILURE,
                         pos.getBelongsToField(PositionFields.PRODUCT).getStringField(ProductFields.NUMBER),
                         pos.getBelongsToField(PositionFields.RESOURCE).getStringField(ResourceFields.NUMBER));
+                return true;
             }
-
         }
 
         if (!errorNumbers.isEmpty()) {
             view.addMessage("materialFlowResources.positionAddMulti.errorForResource", ComponentState.MessageType.INFO,
                     String.join(", ", errorNumbers));
+            return true;
         }
+
+        return false;
     }
 
     private Entity createPosition(final Entity document, final Entity resource) {
