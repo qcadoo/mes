@@ -41,6 +41,7 @@
             <validatesLength max="2048"/>
         </string>
         <string name="externalNumber" unique="true"/>
+        <string name="baseOrderId"/>
         <boolean name="externalSynchronized" default="true"/>
         <string name="externalProductionOrderID" unique="true"/>
         <boolean name="synchronize" default="false" copyable="false"/>

@@ -73,6 +73,7 @@
         <boolean name="warehouseOrder"/>
         <decimal name="price"/>
         <string name="supplier"/>
+        <string name="baseOrderId"/>
     </fields>
 
     <masterModel plugin="masterOrders" model="masterOrderProduct"/>
