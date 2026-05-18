@@ -314,7 +314,7 @@ public class DocumentValidators {
                         } else {
                             String palletNumberNumber = palletNumber.getStringField(PalletNumberFields.NUMBER);
 
-                            if (palletValidatorService.tooManyPalletsInStorageLocationAndPositions(storageLocationNumber, palletNumberNumber, position.getId(), document.getId())) {
+                            if (palletValidatorService.tooManyPalletsInStorageLocationAndPositionsForTransfer(storageLocationNumber, palletNumberNumber, position.getId(), document.getId())) {
                                 existsMorePallets.add(storageLocation.getStringField(StorageLocationFields.NUMBER));
                             }
                         }
