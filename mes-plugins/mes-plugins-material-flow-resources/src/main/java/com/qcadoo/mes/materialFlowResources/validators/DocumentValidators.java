@@ -301,12 +301,21 @@ public class DocumentValidators {
                 List<Entity> positions = document.getHasManyField(DocumentFields.POSITIONS);
                 Set<String> missingPalletNumbers = Sets.newHashSet();
                 Set<String> existsMorePallets = Sets.newHashSet();
+                boolean placeStorageLocation = storageLocation.getBooleanField(StorageLocationFields.PLACE_STORAGE_LOCATION);
+                if(placeStorageLocation){
+                    if(document.getBooleanField(DocumentFields.LOAD_UNITS_TRANSFER)){
+
+                    } else {
+                        document.addGlobalError("materialFlow.document.validate.global.error.placeStorageLocation.notLoadUnitsTransfer", number, String.join(", ", existsMorePallets));
+
+                        isValid = false;
+                    }
+                }
                 positions.forEach(position -> {
                     Integer positionNumber = position.getIntegerField(PositionFields.NUMBER);
                     Entity palletNumber = position.getBelongsToField(PositionFields.PALLET_NUMBER);
 
                     String storageLocationNumber = storageLocation.getStringField(StorageLocationFields.NUMBER);
-                    boolean placeStorageLocation = storageLocation.getBooleanField(StorageLocationFields.PLACE_STORAGE_LOCATION);
 
                     if (placeStorageLocation) {
                         if (Objects.isNull(palletNumber)) {
@@ -315,7 +324,7 @@ public class DocumentValidators {
                             String palletNumberNumber = palletNumber.getStringField(PalletNumberFields.NUMBER);
 
                             if (palletValidatorService.tooManyPalletsInStorageLocationAndPositionsForTransfer(storageLocationNumber, palletNumberNumber, position.getId(), document.getId())) {
-                                existsMorePallets.add(storageLocation.getStringField(StorageLocationFields.NUMBER));
+                                existsMorePallets.add(storageLocationNumber);
                             }
                         }
                     }
