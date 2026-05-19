@@ -29,6 +29,9 @@ import java.math.BigDecimal;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static com.qcadoo.model.api.search.SearchOrders.asc;
+import static com.qcadoo.model.api.search.SearchProjections.*;
+
 @Service
 public class PalletLoadUnitsTransferHelperListeners {
 
@@ -190,10 +193,22 @@ public class PalletLoadUnitsTransferHelperListeners {
                 .find().add(SearchRestrictions.eq(ResourceStockDtoFields.PRODUCT_ID, product.getId().intValue()))
                 .add(SearchRestrictions.eq(ResourceStockDtoFields.LOCATION_ID, location.getId().intValue())).setMaxResults(1)
                 .uniqueResult();
-        if (Objects.isNull(resourceStockDto)) {
-            return BigDecimal.ZERO;
+        BigDecimal quantity = BigDecimal.ZERO;
+        if (!Objects.isNull(resourceStockDto)) {
+            quantity = BigDecimalUtils.convertNullToZero(resourceStockDto.getDecimalField(ResourceStockDtoFields.QUANTITY));
         }
-        return BigDecimalUtils.convertNullToZero(resourceStockDto.getDecimalField(ResourceStockDtoFields.AVAILABLE_QUANTITY));
+
+        Entity reservationsQuantity = dataDefinitionService
+                .get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER, MaterialFlowResourcesConstants.MODEL_RESERVATION)
+                .find().add(SearchRestrictions.belongsTo(ReservationFields.PRODUCT, product))
+                .add(SearchRestrictions.belongsTo(ReservationFields.LOCATION, location))
+                .setProjection(list().add(alias(sum(ReservationFields.QUANTITY), "sum")).add(rowCount()))
+                .addOrder(asc("sum")).setMaxResults(1).uniqueResult();
+
+        if (Objects.nonNull(reservationsQuantity)) {
+            quantity = quantity.subtract(reservationsQuantity.getDecimalField("sum"));
+        }
+        return quantity;
     }
 
     private void redirectToCreatedDocument(Entity document, ViewDefinitionState view) {
