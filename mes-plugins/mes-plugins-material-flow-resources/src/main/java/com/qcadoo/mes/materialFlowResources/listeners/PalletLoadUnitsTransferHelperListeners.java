@@ -48,18 +48,14 @@ public class PalletLoadUnitsTransferHelperListeners {
     public void transferLoadUnits(final ViewDefinitionState view, final ComponentState state, final String[] args) throws JSONException {
         FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         Entity entity = form.getPersistedEntityWithIncludedFormValues();
-        DataDefinition resourceDD = resourceDataDefinition();
+        Entity locationTo = entity.getBelongsToField(DocumentFields.LOCATION_TO);
+
         JSONObject context = view.getJsonContext();
         Set<Long> palletIds = Arrays.stream(
                         context.getString("window.mainTab.form.gridLayout.selectedEntities").replaceAll("[\\[\\]]", "").split(","))
                 .map(Long::valueOf).collect(Collectors.toSet());
-        List<Entity> resources = resourceDD
-                .find()
-                .createAlias(ResourceFields.PALLET_NUMBER, ResourceFields.PALLET_NUMBER, JoinType.INNER)
-                .add(SearchRestrictions.in(ResourceFields.PALLET_NUMBER + ".id",
-                        palletIds)).list().getEntities();
+        List<Entity> resources = getResourcesForLoadUnits(palletIds);
         Entity locationFrom = resources.get(0).getBelongsToField(ResourceFields.LOCATION);
-        Entity locationTo = entity.getBelongsToField(DocumentFields.LOCATION_TO);
 
         FieldComponent locationToField = (FieldComponent) view.getComponentByReference(DocumentFields.LOCATION_TO);
         if (locationTo == null) {
@@ -92,6 +88,15 @@ public class PalletLoadUnitsTransferHelperListeners {
                 }
             });
         }
+    }
+
+    private List<Entity> getResourcesForLoadUnits(Set<Long> palletIds) {
+        DataDefinition resourceDD = resourceDataDefinition();
+        return resourceDD
+                .find()
+                .createAlias(ResourceFields.PALLET_NUMBER, ResourceFields.PALLET_NUMBER, JoinType.INNER)
+                .add(SearchRestrictions.in(ResourceFields.PALLET_NUMBER + ".id",
+                        palletIds)).list().getEntities();
     }
 
     private boolean tryCreatePositions(Entity document, ViewDefinitionState view, List<Entity> resources) {

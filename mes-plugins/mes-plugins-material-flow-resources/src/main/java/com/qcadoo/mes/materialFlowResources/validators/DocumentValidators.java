@@ -32,7 +32,10 @@ import com.qcadoo.mes.materialFlowResources.exceptions.InvalidResourceException;
 import com.qcadoo.mes.materialFlowResources.service.DocumentService;
 import com.qcadoo.mes.materialFlowResources.service.ResourceManagementService;
 import com.qcadoo.model.api.DataDefinition;
+import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.search.JoinType;
+import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.model.api.validators.ErrorMessage;
 import com.qcadoo.view.api.ComponentState;
 import org.apache.commons.lang3.StringUtils;
@@ -54,6 +57,9 @@ public class DocumentValidators {
 
     @Autowired
     private PalletValidatorService palletValidatorService;
+
+    @Autowired
+    private DataDefinitionService dataDefinitionService;
 
     public boolean validate(final DataDefinition documentDD, final Entity document) {
         Long documentId = document.getId();
@@ -301,15 +307,12 @@ public class DocumentValidators {
                 List<Entity> positions = document.getHasManyField(DocumentFields.POSITIONS);
                 Set<String> missingPalletNumbers = Sets.newHashSet();
                 Set<String> existsMorePallets = Sets.newHashSet();
+                Set<String> resourcesNotInDocument = Sets.newHashSet();
                 boolean placeStorageLocation = storageLocation.getBooleanField(StorageLocationFields.PLACE_STORAGE_LOCATION);
-                if(placeStorageLocation){
-                    if(document.getBooleanField(DocumentFields.LOAD_UNITS_TRANSFER)){
+                if (placeStorageLocation && !document.getBooleanField(DocumentFields.LOAD_UNITS_TRANSFER)) {
+                    document.addGlobalError("materialFlow.document.validate.global.error.placeStorageLocation.notLoadUnitsTransfer", number);
 
-                    } else {
-                        document.addGlobalError("materialFlow.document.validate.global.error.placeStorageLocation.notLoadUnitsTransfer", number, String.join(", ", existsMorePallets));
-
-                        isValid = false;
-                    }
+                    isValid = false;
                 }
                 positions.forEach(position -> {
                     Integer positionNumber = position.getIntegerField(PositionFields.NUMBER);
@@ -323,6 +326,9 @@ public class DocumentValidators {
                         } else {
                             String palletNumberNumber = palletNumber.getStringField(PalletNumberFields.NUMBER);
 
+                            if (document.getBooleanField(DocumentFields.LOAD_UNITS_TRANSFER)) {
+                                resourcesExistInDocument(document, resourcesNotInDocument, palletNumberNumber);
+                            }
                             if (palletValidatorService.tooManyPalletsInStorageLocationAndPositionsForTransfer(storageLocationNumber, palletNumberNumber, position.getId(), document.getId())) {
                                 existsMorePallets.add(storageLocationNumber);
                             }
@@ -340,10 +346,46 @@ public class DocumentValidators {
 
                     isValid = false;
                 }
+                if (!resourcesNotInDocument.isEmpty()) {
+                    document.addGlobalError("materialFlow.document.validate.global.error.placeStorageLocation.resourcesNotInDocument", number, String.join(", ", resourcesNotInDocument));
+
+                    isValid = false;
+                }
             }
         }
 
         return isValid;
     }
 
+    private void resourcesExistInDocument(Entity document, Set<String> resourcesNotInDocument, String palletNumberNumber) {
+        List<Entity> resources = getResourcesForLoadUnit(palletNumberNumber);
+        for (Entity resource : resources) {
+            boolean hasPositionInDocument = false;
+            for (Entity resourcePosition : resource.getHasManyField(ResourceFields.POSITIONS)) {
+                if (resourcePosition.getBelongsToField(PositionFields.DOCUMENT).getId().equals(document.getId())) {
+                    hasPositionInDocument = true;
+                    break;
+                }
+            }
+            if (!hasPositionInDocument) {
+                resourcesNotInDocument.add(resource.getStringField(ResourceFields.NUMBER));
+
+                break;
+            }
+        }
+    }
+
+    private List<Entity> getResourcesForLoadUnit(String loadUnitNumber) {
+        DataDefinition resourceDD = resourceDataDefinition();
+        return resourceDD
+                .find()
+                .createAlias(ResourceFields.PALLET_NUMBER, ResourceFields.PALLET_NUMBER, JoinType.INNER)
+                .add(SearchRestrictions.eq(ResourceFields.PALLET_NUMBER + "." + PalletNumberFields.NUMBER,
+                        loadUnitNumber)).list().getEntities();
+    }
+
+    private DataDefinition resourceDataDefinition() {
+        return dataDefinitionService.get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER,
+                MaterialFlowResourcesConstants.MODEL_RESOURCE);
+    }
 }
