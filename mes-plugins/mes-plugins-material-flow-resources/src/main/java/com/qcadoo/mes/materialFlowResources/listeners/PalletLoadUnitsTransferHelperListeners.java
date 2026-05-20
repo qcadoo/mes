@@ -75,11 +75,10 @@ public class PalletLoadUnitsTransferHelperListeners {
 
         DocumentBuilder documentBuilder = documentManagementService.getDocumentBuilder(user);
         documentBuilder.transfer(locationTo, locationFrom);
+        documentBuilder.setField(DocumentFields.LOAD_UNITS_TRANSFER, true);
 
         try {
             Entity document = documentBuilder.buildWithEntityRuntimeException();
-            document.setField(DocumentFields.LOAD_UNITS_TRANSFER, true);
-            document = document.getDataDefinition().save(document);
             boolean hasErrors = tryCreatePositions(document, view, resources);
             if (!hasErrors) {
                 redirectToCreatedDocument(document, view);
