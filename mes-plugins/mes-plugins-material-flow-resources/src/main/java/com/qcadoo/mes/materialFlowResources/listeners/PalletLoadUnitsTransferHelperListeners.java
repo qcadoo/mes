@@ -194,7 +194,7 @@ public class PalletLoadUnitsTransferHelperListeners {
                 .add(SearchRestrictions.eq(ResourceStockDtoFields.LOCATION_ID, location.getId().intValue())).setMaxResults(1)
                 .uniqueResult();
         BigDecimal quantity = BigDecimal.ZERO;
-        if (!Objects.isNull(resourceStockDto)) {
+        if (Objects.nonNull(resourceStockDto)) {
             quantity = BigDecimalUtils.convertNullToZero(resourceStockDto.getDecimalField(ResourceStockDtoFields.QUANTITY));
         }
 
@@ -206,7 +206,7 @@ public class PalletLoadUnitsTransferHelperListeners {
                 .addOrder(asc("sum")).setMaxResults(1).uniqueResult();
 
         if (Objects.nonNull(reservationsQuantity)) {
-            quantity = quantity.subtract(reservationsQuantity.getDecimalField("sum"));
+            quantity = quantity.subtract(BigDecimalUtils.convertNullToZero(reservationsQuantity.getDecimalField("sum")));
         }
         return quantity;
     }
