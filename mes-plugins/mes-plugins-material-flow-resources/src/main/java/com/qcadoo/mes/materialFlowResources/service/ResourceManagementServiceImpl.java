@@ -864,7 +864,7 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
             if (Objects.nonNull(transferStorageLocation)) {
                 boolean placeStorageLocation = transferStorageLocation.getBooleanField(StorageLocationFields.PLACE_STORAGE_LOCATION);
 
-                if (placeStorageLocation && resource.getHasManyField(ResourceFields.RESERVATIONS).size() > 0) {
+                if (placeStorageLocation && resource.getHasManyField(ResourceFields.RESERVATIONS).stream().anyMatch(e -> e.getDecimalField(ReservationFields.QUANTITY).compareTo(BigDecimal.ZERO) > 0)) {
                     resource.addGlobalError("materialFlow.document.validate.global.error.position.palletsWithReservationsExists", resource.getStringField(ResourceFields.NUMBER));
                     throw new InvalidResourceException(resource);
                 }
