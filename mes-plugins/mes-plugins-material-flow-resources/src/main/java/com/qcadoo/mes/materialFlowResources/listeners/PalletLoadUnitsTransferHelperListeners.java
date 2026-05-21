@@ -7,6 +7,7 @@ import com.qcadoo.mes.materialFlowResources.constants.*;
 import com.qcadoo.mes.materialFlowResources.exceptions.DocumentBuildException;
 import com.qcadoo.mes.materialFlowResources.service.DocumentBuilder;
 import com.qcadoo.mes.materialFlowResources.service.DocumentManagementService;
+import com.qcadoo.mes.materialFlowResources.states.StocktakingStateService;
 import com.qcadoo.model.api.*;
 import com.qcadoo.model.api.exception.EntityRuntimeException;
 import com.qcadoo.model.api.search.JoinType;
@@ -47,6 +48,9 @@ public class PalletLoadUnitsTransferHelperListeners {
     @Autowired
     private NumberService numberService;
 
+    @Autowired
+    private StocktakingStateService stocktakingStateService;
+
     @Transactional
     public void transferLoadUnits(final ViewDefinitionState view, final ComponentState state, final String[] args) throws JSONException {
         FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
@@ -80,7 +84,10 @@ public class PalletLoadUnitsTransferHelperListeners {
         try {
             Entity document = documentBuilder.buildWithEntityRuntimeException();
             boolean hasErrors = tryCreatePositions(document, view, resources);
-            if (!hasErrors) {
+            if (hasErrors) {
+                String documentNumber = stocktakingStateService.getDocumentNumber(document.getId());
+                view.addMessage("materialFlow.success.document.created", ComponentState.MessageType.SUCCESS, documentNumber);
+            } else {
                 redirectToCreatedDocument(document, view);
             }
         } catch (DocumentBuildException exc) {
