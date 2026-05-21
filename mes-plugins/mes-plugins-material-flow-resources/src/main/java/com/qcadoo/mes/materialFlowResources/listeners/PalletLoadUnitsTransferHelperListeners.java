@@ -80,6 +80,7 @@ public class PalletLoadUnitsTransferHelperListeners {
         DocumentBuilder documentBuilder = documentManagementService.getDocumentBuilder(user);
         documentBuilder.transfer(locationTo, locationFrom);
         documentBuilder.setField(DocumentFields.LOAD_UNITS_TRANSFER, true);
+        documentBuilder.setField(DocumentFields.WMS, false);
 
         try {
             Entity document = documentBuilder.buildWithEntityRuntimeException();
