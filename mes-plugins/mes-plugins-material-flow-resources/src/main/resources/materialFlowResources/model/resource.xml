@@ -49,8 +49,8 @@
         <datetime name="createDate"/>
         <date name="productionDate"/>
         <date name="expirationDate"/>
-        <hasMany name="positions" joinField="resource" model="position" cascade="nullify"/>
-        <hasMany name="resourceCorrections" joinField="resource" model="resourceCorrection" cascade="nullify"/>
+        <hasMany name="positions" joinField="resource" model="position"/>
+        <hasMany name="resourceCorrections" joinField="resource" model="resourceCorrection"/>
         <boolean name="isCorrected" default="false"/>
 
         <belongsTo name="storageLocation" model="storageLocation"/>
@@ -70,12 +70,12 @@
         <hasMany name="reservations" model="reservation" joinField="resource" cascade="delete"/>
 
         <decimal name="reservedQuantity">
-            <validatesRange from="0" exclusively="false"/>
+            <validatesRange from="0"/>
             <validatesUnscaledValue max="9"/>
             <validatesScale max="5"/>
         </decimal>
         <decimal name="availableQuantity">
-            <validatesRange from="0" exclusively="false"/>
+            <validatesRange from="0"/>
             <validatesUnscaledValue max="9"/>
             <validatesScale max="5"/>
         </decimal>

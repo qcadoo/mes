@@ -74,6 +74,7 @@ public class DocumentModelHooks {
         document.setField(DocumentFields.NUMBER, translatedType);
         document.setField(DocumentFields.NAME, null);
         document.setField(DocumentFields.TIME, new Date());
+        document.setField(DocumentFields.WMS, false);
     }
 
     public void onSave(final DataDefinition documentDD, final Entity document) {

@@ -101,4 +101,7 @@ public final class MasterOrderFields {
 
     public static final String PRICE = "price";
 
+    public static final String DELIVERY_METHOD = "deliveryMethod";
+    public static final String BASE_ORDER_ID = "baseOrderId";
+
 }

@@ -7,6 +7,7 @@ import com.qcadoo.mes.materialFlowResources.constants.*;
 import com.qcadoo.mes.materialFlowResources.exceptions.DocumentBuildException;
 import com.qcadoo.mes.materialFlowResources.service.DocumentBuilder;
 import com.qcadoo.mes.materialFlowResources.service.DocumentManagementService;
+import com.qcadoo.mes.materialFlowResources.states.StocktakingStateService;
 import com.qcadoo.model.api.*;
 import com.qcadoo.model.api.exception.EntityRuntimeException;
 import com.qcadoo.model.api.search.JoinType;
@@ -29,6 +30,9 @@ import java.math.BigDecimal;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static com.qcadoo.model.api.search.SearchOrders.asc;
+import static com.qcadoo.model.api.search.SearchProjections.*;
+
 @Service
 public class PalletLoadUnitsTransferHelperListeners {
 
@@ -44,22 +48,21 @@ public class PalletLoadUnitsTransferHelperListeners {
     @Autowired
     private NumberService numberService;
 
+    @Autowired
+    private StocktakingStateService stocktakingStateService;
+
     @Transactional
     public void transferLoadUnits(final ViewDefinitionState view, final ComponentState state, final String[] args) throws JSONException {
         FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         Entity entity = form.getPersistedEntityWithIncludedFormValues();
-        DataDefinition resourceDD = resourceDataDefinition();
+        Entity locationTo = entity.getBelongsToField(DocumentFields.LOCATION_TO);
+
         JSONObject context = view.getJsonContext();
         Set<Long> palletIds = Arrays.stream(
                         context.getString("window.mainTab.form.gridLayout.selectedEntities").replaceAll("[\\[\\]]", "").split(","))
                 .map(Long::valueOf).collect(Collectors.toSet());
-        List<Entity> resources = resourceDD
-                .find()
-                .createAlias(ResourceFields.PALLET_NUMBER, ResourceFields.PALLET_NUMBER, JoinType.INNER)
-                .add(SearchRestrictions.in(ResourceFields.PALLET_NUMBER + ".id",
-                        palletIds)).list().getEntities();
+        List<Entity> resources = getResourcesForLoadUnits(palletIds);
         Entity locationFrom = resources.get(0).getBelongsToField(ResourceFields.LOCATION);
-        Entity locationTo = entity.getBelongsToField(DocumentFields.LOCATION_TO);
 
         FieldComponent locationToField = (FieldComponent) view.getComponentByReference(DocumentFields.LOCATION_TO);
         if (locationTo == null) {
@@ -76,14 +79,18 @@ public class PalletLoadUnitsTransferHelperListeners {
 
         DocumentBuilder documentBuilder = documentManagementService.getDocumentBuilder(user);
         documentBuilder.transfer(locationTo, locationFrom);
-
-
+        documentBuilder.setField(DocumentFields.LOAD_UNITS_TRANSFER, true);
+        documentBuilder.setField(DocumentFields.WMS, false);
 
         try {
             Entity document = documentBuilder.buildWithEntityRuntimeException();
-            tryCreatePositions(document, view, resources);
-            document = document.getDataDefinition().get(document.getId());
-            redirectToCreatedDocument(document, view);
+            boolean hasErrors = tryCreatePositions(document, view, resources);
+            if (hasErrors) {
+                String documentNumber = stocktakingStateService.getDocumentNumber(document.getId());
+                view.addMessage("materialFlow.success.document.created", ComponentState.MessageType.SUCCESS, documentNumber);
+            } else {
+                redirectToCreatedDocument(document, view);
+            }
         } catch (DocumentBuildException exc) {
             exc.getGlobalErrors().forEach(errorMessage -> {
                 if (!errorMessage.getMessage().equals("qcadooView.validate.global.error.custom")) {
@@ -93,7 +100,16 @@ public class PalletLoadUnitsTransferHelperListeners {
         }
     }
 
-    private void tryCreatePositions(Entity document, ViewDefinitionState view, List<Entity> resources) {
+    private List<Entity> getResourcesForLoadUnits(Set<Long> palletIds) {
+        DataDefinition resourceDD = resourceDataDefinition();
+        return resourceDD
+                .find()
+                .createAlias(ResourceFields.PALLET_NUMBER, ResourceFields.PALLET_NUMBER, JoinType.INNER)
+                .add(SearchRestrictions.in(ResourceFields.PALLET_NUMBER + ".id",
+                        palletIds)).list().getEntities();
+    }
+
+    private boolean tryCreatePositions(Entity document, ViewDefinitionState view, List<Entity> resources) {
         List<String> errorNumbers = Lists.newArrayList();
 
         for (Entity resource : resources) {
@@ -108,14 +124,17 @@ public class PalletLoadUnitsTransferHelperListeners {
                         ComponentState.MessageType.FAILURE,
                         pos.getBelongsToField(PositionFields.PRODUCT).getStringField(ProductFields.NUMBER),
                         pos.getBelongsToField(PositionFields.RESOURCE).getStringField(ResourceFields.NUMBER));
+                return true;
             }
-
         }
 
         if (!errorNumbers.isEmpty()) {
             view.addMessage("materialFlowResources.positionAddMulti.errorForResource", ComponentState.MessageType.INFO,
                     String.join(", ", errorNumbers));
+            return true;
         }
+
+        return false;
     }
 
     private Entity createPosition(final Entity document, final Entity resource) {
@@ -181,10 +200,22 @@ public class PalletLoadUnitsTransferHelperListeners {
                 .find().add(SearchRestrictions.eq(ResourceStockDtoFields.PRODUCT_ID, product.getId().intValue()))
                 .add(SearchRestrictions.eq(ResourceStockDtoFields.LOCATION_ID, location.getId().intValue())).setMaxResults(1)
                 .uniqueResult();
-        if (Objects.isNull(resourceStockDto)) {
-            return BigDecimal.ZERO;
+        BigDecimal quantity = BigDecimal.ZERO;
+        if (Objects.nonNull(resourceStockDto)) {
+            quantity = BigDecimalUtils.convertNullToZero(resourceStockDto.getDecimalField(ResourceStockDtoFields.QUANTITY));
         }
-        return BigDecimalUtils.convertNullToZero(resourceStockDto.getDecimalField(ResourceStockDtoFields.AVAILABLE_QUANTITY));
+
+        Entity reservationsQuantity = dataDefinitionService
+                .get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER, MaterialFlowResourcesConstants.MODEL_RESERVATION)
+                .find().add(SearchRestrictions.belongsTo(ReservationFields.PRODUCT, product))
+                .add(SearchRestrictions.belongsTo(ReservationFields.LOCATION, location))
+                .setProjection(list().add(alias(sum(ReservationFields.QUANTITY), "sum")).add(rowCount()))
+                .addOrder(asc("sum")).setMaxResults(1).uniqueResult();
+
+        if (Objects.nonNull(reservationsQuantity)) {
+            quantity = quantity.subtract(BigDecimalUtils.convertNullToZero(reservationsQuantity.getDecimalField("sum")));
+        }
+        return quantity;
     }
 
     private void redirectToCreatedDocument(Entity document, ViewDefinitionState view) {

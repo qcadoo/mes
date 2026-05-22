@@ -76,5 +76,6 @@ public final class DocumentFields {
     public static final String STOCKTAKING = "stocktaking";
 
     public static final String INVOICE_NUMBER = "invoiceNumber";
+    public static final String LOAD_UNITS_TRANSFER = "loadUnitsTransfer";
 
 }
