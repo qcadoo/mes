@@ -148,7 +148,9 @@ public class DeliveryStateServiceMF {
                         getBatch(deliveredProduct), getProductionDate(deliveredProduct), getExpirationDate(deliveredProduct),
                         null, getStorageLocation(deliveredProduct), getPalletNumber(deliveredProduct),
                         getTypeOfLoadUnit(deliveredProduct), isWaste(deliveredProduct),
-                        deliveredProduct.getStringField(L_QUALITY_RATING), attributes);
+                        deliveredProduct.getStringField(L_QUALITY_RATING), attributes,
+                        deliveredProduct.getDateField(DeliveredProductFields.PICKING_DATE),
+                        deliveredProduct.getBelongsToField(DeliveredProductFields.PICKING_WORKER));
             }
         }
 

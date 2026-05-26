@@ -3,19 +3,19 @@
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
  * Version: 1.4
- *
+ * <p>
  * This file is part of Qcadoo.
- *
+ * <p>
  * Qcadoo is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Affero General Public License as published by the Free
  * Software Foundation; either version 3 of the License, or (at your option) any
  * later version.
- *
+ * <p>
  * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more
  * details.
- *
+ * <p>
  * You should have received a copy of the GNU Affero General Public License
  * along with this program; if not, write to the Free Software Foundation, Inc.,
  * 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
@@ -55,8 +55,8 @@ public class DocumentBuilder {
     private final List<Entity> positions = Lists.newArrayList();
 
     DocumentBuilder(final DataDefinitionService dataDefinitionService, final ResourceManagementService resourceManagementService,
-            final ReceiptDocumentForReleaseHelper receiptDocumentForReleaseHelper,
-            final DocumentStateChangeService documentStateChangeService, final Entity user) {
+                    final ReceiptDocumentForReleaseHelper receiptDocumentForReleaseHelper,
+                    final DocumentStateChangeService documentStateChangeService, final Entity user) {
         this.dataDefinitionService = dataDefinitionService;
         this.resourceManagementService = resourceManagementService;
         this.receiptDocumentForReleaseHelper = receiptDocumentForReleaseHelper;
@@ -140,12 +140,12 @@ public class DocumentBuilder {
      * @return DocumentBuilder.this
      */
     public DocumentBuilder addPosition(final Entity product, final BigDecimal quantity, final BigDecimal price,
-            final Entity batch, final Date productionDate, final Date expirationDate) {
+                                       final Entity batch, final Date productionDate, final Date expirationDate) {
         return addPosition(product, quantity, price, batch, productionDate, expirationDate, null);
     }
 
     public DocumentBuilder addPosition(final Entity product, final BigDecimal quantity, final BigDecimal price,
-            final Entity batch, final Date productionDate, final Date expirationDate, final Entity resource) {
+                                       final Entity batch, final Date productionDate, final Date expirationDate, final Entity resource) {
         Preconditions.checkArgument(product != null, "Product argument is required.");
         Preconditions.checkArgument(quantity != null, "Quantity argument is required.");
 
@@ -157,8 +157,8 @@ public class DocumentBuilder {
     }
 
     public DocumentBuilder addPosition(final Entity product, final BigDecimal quantity, final BigDecimal givenQuantity,
-            final String givenUnit, final BigDecimal conversion, final BigDecimal price, final Entity batch,
-            final Date productionDate, final Date expirationDate, final Entity resource) {
+                                       final String givenUnit, final BigDecimal conversion, final BigDecimal price, final Entity batch,
+                                       final Date productionDate, final Date expirationDate, final Entity resource) {
         Preconditions.checkArgument(product != null, "Product argument is required.");
         Preconditions.checkArgument(quantity != null, "Quantity argument is required.");
 
@@ -171,9 +171,9 @@ public class DocumentBuilder {
     }
 
     public DocumentBuilder addPosition(final Entity product, final BigDecimal quantity, final BigDecimal givenQuantity,
-            final String givenUnit, final BigDecimal conversion, final BigDecimal price, final Entity batch,
-            final Date productionDate, final Date expirationDate, final Entity resource, final Entity storageLocation,
-            final Entity palletNumber, final Entity typeOfLoadUnit, final boolean isWaste) {
+                                       final String givenUnit, final BigDecimal conversion, final BigDecimal price, final Entity batch,
+                                       final Date productionDate, final Date expirationDate, final Entity resource, final Entity storageLocation,
+                                       final Entity palletNumber, final Entity typeOfLoadUnit, final boolean isWaste) {
         Preconditions.checkArgument(product != null, "Product argument is required.");
         Preconditions.checkArgument(quantity != null, "Quantity argument is required.");
 
@@ -186,10 +186,10 @@ public class DocumentBuilder {
     }
 
     public DocumentBuilder addPosition(final Entity product, final BigDecimal quantity, final BigDecimal givenQuantity,
-            final String givenUnit, final BigDecimal conversion, final BigDecimal price, final Entity batch,
-            final Date productionDate, final Date expirationDate, final Entity resource, final Entity storageLocation,
-            final Entity palletNumber, final Entity typeOfLoadUnit, final boolean isWaste,
-            final String qualityRating, List<Entity> attributes) {
+                                       final String givenUnit, final BigDecimal conversion, final BigDecimal price, final Entity batch,
+                                       final Date productionDate, final Date expirationDate, final Entity resource, final Entity storageLocation,
+                                       final Entity palletNumber, final Entity typeOfLoadUnit, final boolean isWaste,
+                                       final String qualityRating, List<Entity> attributes, Date pickingDate, Entity pickingWorker) {
         Preconditions.checkArgument(product != null, "Product argument is required.");
         Preconditions.checkArgument(quantity != null, "Quantity argument is required.");
 
@@ -198,6 +198,8 @@ public class DocumentBuilder {
 
         position.setField(PositionFields.POSITION_ATTRIBUTE_VALUES, attributes);
         position.setField(PositionFields.QUALITY_RATING, qualityRating);
+        position.setField(PositionFields.PICKING_DATE, pickingDate);
+        position.setField(PositionFields.PICKING_WORKER, pickingWorker);
 
         positions.add(position);
 
@@ -217,7 +219,7 @@ public class DocumentBuilder {
      * @return Created position entity
      */
     public Entity createPosition(final Entity product, final BigDecimal quantity, final BigDecimal price, final Entity batch,
-            final Date productionDate, final Date expirationDate, final Entity resource) {
+                                 final Date productionDate, final Date expirationDate, final Entity resource) {
         DataDefinition positionDD = dataDefinitionService.get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER,
                 MaterialFlowResourcesConstants.MODEL_POSITION);
 
@@ -251,8 +253,8 @@ public class DocumentBuilder {
      * @return Created position entity
      */
     public Entity createPosition(final Entity product, final BigDecimal quantity, final BigDecimal givenQuantity,
-            final String givenUnit, final BigDecimal conversion, final BigDecimal price, final Entity batch,
-            final Date productionDate, final Date expirationDate, final Entity resource) {
+                                 final String givenUnit, final BigDecimal conversion, final BigDecimal price, final Entity batch,
+                                 final Date productionDate, final Date expirationDate, final Entity resource) {
         Entity position = createPosition(product, quantity, price, batch, productionDate, expirationDate, resource);
 
         position.setField(PositionFields.CONVERSION, conversion);
@@ -263,9 +265,9 @@ public class DocumentBuilder {
     }
 
     public Entity createPosition(final Entity product, final BigDecimal quantity, final BigDecimal givenQuantity,
-            final String givenUnit, final BigDecimal conversion, final BigDecimal price, final Entity batch,
-            final Date productionDate, final Date expirationDate, final Entity resource, final Entity storageLocation,
-            final Entity palletNumber, final Entity typeOfLoadUnit, final boolean isWaste) {
+                                 final String givenUnit, final BigDecimal conversion, final BigDecimal price, final Entity batch,
+                                 final Date productionDate, final Date expirationDate, final Entity resource, final Entity storageLocation,
+                                 final Entity palletNumber, final Entity typeOfLoadUnit, final boolean isWaste) {
         Entity position = createPosition(product, quantity, givenQuantity, givenUnit, conversion, price, batch, productionDate,
                 expirationDate, resource);
 
