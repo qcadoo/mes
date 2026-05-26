@@ -96,4 +96,5 @@ public final class ParameterFields {
     public static final String MR_INCLUDE_START_DATE_ORDER = "mrIncludeStartDateOrder";
 
     public static final String MR_SHOW_REPLACEMENTS = "mrShowReplacements";
+    public static final String GENERATE_ADDITIONAL_CODE_IN_EACH_PRODUCT = "generateAdditionalCodeInEachProduct";
 }

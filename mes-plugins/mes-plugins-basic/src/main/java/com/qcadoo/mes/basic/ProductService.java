@@ -3,19 +3,19 @@
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
  * Version: 1.4
- *
+ * <p>
  * This file is part of Qcadoo.
- *
+ * <p>
  * Qcadoo is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation; either version 3 of the License,
  * or (at your option) any later version.
- *
+ * <p>
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty
  * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU Affero General Public License for more details.
- *
+ * <p>
  * You should have received a copy of the GNU Affero General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
@@ -23,15 +23,7 @@
  */
 package com.qcadoo.mes.basic;
 
-import java.math.BigDecimal;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
+import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
 import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.basic.constants.ProductFields;
@@ -41,13 +33,7 @@ import com.qcadoo.mes.basic.util.UnitService;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.search.CustomRestriction;
-import com.qcadoo.model.api.search.SearchCriteriaBuilder;
-import com.qcadoo.model.api.search.SearchCriterion;
-import com.qcadoo.model.api.search.SearchOrder;
-import com.qcadoo.model.api.search.SearchProjection;
-import com.qcadoo.model.api.search.SearchRestrictions;
-import com.qcadoo.model.api.search.SearchResult;
+import com.qcadoo.model.api.search.*;
 import com.qcadoo.model.api.units.PossibleUnitConversions;
 import com.qcadoo.model.api.units.UnitConversionService;
 import com.qcadoo.view.api.ComponentState;
@@ -56,6 +42,15 @@ import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.GridComponent;
 import com.qcadoo.view.constants.QcadooViewConstants;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 @Service
 public class ProductService {
@@ -69,6 +64,9 @@ public class ProductService {
     @Autowired
     private UnitConversionService unitConversionService;
 
+    @Autowired
+    private NamedParameterJdbcTemplate jdbcTemplate;
+
     public Entity find(final SearchProjection projection, final SearchCriterion criteria, final SearchOrder order) {
         return prepareCriteriaBuilder(projection, criteria, order).setMaxResults(1).uniqueResult();
     }
@@ -78,7 +76,7 @@ public class ProductService {
     }
 
     private SearchCriteriaBuilder prepareCriteriaBuilder(final SearchProjection projection, final SearchCriterion criteria,
-            final SearchOrder order) {
+                                                         final SearchOrder order) {
         SearchCriteriaBuilder scb = getProductDD().find();
 
         if (Objects.nonNull(projection)) {
@@ -193,6 +191,27 @@ public class ProductService {
         view.redirectTo(url, false, true, parameters);
     }
 
+    public void generateAdditionalCode(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        FormComponent productForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
+
+        Long productId = productForm.getEntityId();
+
+        if (Objects.isNull(productId)) {
+            return;
+        }
+
+        Entity product = productForm.getEntity();
+        if (Strings.isNullOrEmpty(product.getStringField(ProductFields.ADDITIONAL_CODE))) {
+            product.setField(ProductFields.ADDITIONAL_CODE, getAdditionalCodeFromSequence());
+            product = product.getDataDefinition().save(product);
+            productForm.setEntity(product);
+        }
+    }
+
+    public String getAdditionalCodeFromSequence() {
+        return jdbcTemplate.queryForObject("select generate_product_additional_code()", Maps.newHashMap(), String.class);
+    }
+
     public void getDefaultConversions(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         FormComponent productForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
@@ -233,7 +252,7 @@ public class ProductService {
     }
 
     public boolean checkSubstituteComponentUniqueness(final DataDefinition substituteComponentDD,
-            final Entity substituteComponent) {
+                                                      final Entity substituteComponent) {
         Entity product = substituteComponent.getBelongsToField(SubstituteComponentFields.PRODUCT);
         Entity baseProduct = substituteComponent.getBelongsToField(SubstituteComponentFields.BASE_PRODUCT);
 
