@@ -93,6 +93,7 @@
 
         <model:model model="storageLocation" resource="model/storageLocation.xml"/>
         <model:model model="storageLocationDto" resource="model/storageLocationDto.xml"/>
+        <model:model model="productDefaultStorageLocation" resource="model/productDefaultStorageLocation.xml"/>
         <model:model model="storageLocationHelper" resource="model/storageLocationHelper.xml"/>
         <model:model model="storageLocationNumberHelper" resource="model/storageLocationNumberHelper.xml"/>
         <model:model model="palletStorageStateDto" resource="model/palletStorageStateDto.xml"/>
@@ -472,6 +473,9 @@
         <menu:menu-item name="storageLocationsState" category="materialFlow"
                         view="storageLocationsStateList" defaultAuthorizationRole="ROLE_MATERIAL_FLOW"/>
 
+        <menu:menu-item name="productDefaultStorageLocations" category="materialFlow"
+                        view="productDefaultStorageLocationList" defaultAuthorizationRole="ROLE_MATERIAL_FLOW"/>
+
         <menu:menu-item name="palletStorageState" category="materialFlow"
                         view="palletStorageStateList" defaultAuthorizationRole="ROLE_MATERIAL_FLOW"/>
 
@@ -517,6 +521,7 @@
         <view:view resource="view/storageLocationsImport.xml"/>
         <view:view resource="view/reservationsList.xml"/>
         <view:view resource="view/storageLocationsStateList.xml"/>
+        <view:view resource="view/productDefaultStorageLocationList.xml"/>
         <view:view resource="view/palletStorageStateList.xml"/>
         <view:view resource="view/palletStorageStateDetails.xml"/>
         <view:view resource="view/palletMoveToStorageLocationHelper.xml"/>
