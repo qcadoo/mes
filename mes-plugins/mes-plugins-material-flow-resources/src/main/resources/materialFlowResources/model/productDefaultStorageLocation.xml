@@ -32,7 +32,7 @@
     <fields>
         <string name="locationNumber"/>
         <string name="storageLocationNumber"/>
-        <string name="storageLocationId"/>
+        <integer name="storageLocationId"/>
         <string name="productNumber"/>
         <string name="productName"/>
         <string name="productUnit"/>
