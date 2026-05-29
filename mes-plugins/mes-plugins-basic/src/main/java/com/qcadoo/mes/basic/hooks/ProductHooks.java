@@ -145,6 +145,11 @@ public class ProductHooks {
     public void onCopy(final DataDefinition productDD, final Entity product) {
         clearExternalIdOnCopy(productDD, product);
         clearFieldsOnCopy(product);
+        if (parameterService.getParameter().getBooleanField(ParameterFields.GENERATE_ADDITIONAL_CODE_IN_EACH_PRODUCT)) {
+            product.setField(ProductFields.ADDITIONAL_CODE, productService.getAdditionalCodeFromSequence());
+        } else {
+            product.setField(ProductFields.ADDITIONAL_CODE, null);
+        }
     }
 
     public void clearExternalIdOnCopy(final DataDefinition productDD, final Entity product) {
