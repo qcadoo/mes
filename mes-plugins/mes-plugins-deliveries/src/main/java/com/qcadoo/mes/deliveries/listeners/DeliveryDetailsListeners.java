@@ -318,7 +318,10 @@ public class DeliveryDetailsListeners {
                 Entity product = deliveredProduct.getBelongsToField(DeliveredProductFields.PRODUCT);
                 String code = product.getStringField(ProductFields.EAN);
                 if (code == null) {
-                    code = product.getStringField(ProductFields.NUMBER);
+                    code = product.getStringField(ProductFields.ADDITIONAL_CODE);
+                    if (code == null) {
+                        code = product.getStringField(ProductFields.NUMBER);
+                    }
                 }
 
                 try {

@@ -24,34 +24,19 @@
     ***************************************************************************
 
 -->
-<model name="productDto" activable="true" auditable="false" deletable="false" insertable="false"
-       updatable="false"
+<model name="productDefaultStorageLocation"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
-       xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
+       xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd"
+       activable="false" auditable="false" deletable="false" insertable="false" updatable="false">
 
     <fields>
-        <string name="number"/>
-        <string name="name"/>
-        <enum name="globalTypeOfMaterial" values="01component,02intermediate,03finalProduct,04waste,05package"/>
-        <dictionary name="category" dictionary="categories"/>
-        <string name="parentName"/>
-        <string name="ean"/>
-        <string name="externalNumber"/>
-        <string name="assortmentName"/>
-        <string name="modelName"/>
-        <string name="norm"/>
-        <string name="supplier"/>
-        <string name="sizeNumber"/>
-        <boolean name="hasAttachments"/>
-        <string name="unit"/>
-        <string name="additionalUnit"/>
-        <enum name="entityType" values="01particularProduct,02productsFamily"/>
-        <string name="batchNumberPattern"/>
-        <string name="description"/>
-        <string name="additionalCode"/>
+        <string name="locationNumber"/>
+        <string name="storageLocationNumber"/>
+        <integer name="storageLocationId"/>
+        <string name="productNumber"/>
+        <string name="productName"/>
+        <string name="productUnit"/>
     </fields>
 
-    <identifier expression="#number + ' - ' + #name"/>
-
-    <masterModel plugin="basic" model="product"/>
+    <hooks/>
 </model>

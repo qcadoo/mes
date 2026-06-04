@@ -117,7 +117,10 @@ public class ProductLabelsReportPdf extends ReportPdfView {
 
         String code = product.getStringField(ProductFields.EAN);
         if (code == null) {
-            code = number;
+            code = product.getStringField(ProductFields.ADDITIONAL_CODE);
+            if (code == null) {
+                code = number;
+            }
         }
 
         createBarcode(writer, barcodeTable, code);

@@ -72,6 +72,8 @@
         <integer name="priority"/>
         <boolean name="dateChange"/>
         <datetime name="createDate"/>
+        <date name="clientDate"/>
+        <decimal name="performanceNorm"/>
 
     </fields>
     <hooks>

@@ -96,6 +96,20 @@
                     </script>
                 </bigButton>
             </group>
+            <group name="additionalCode">
+                <bigButton name="generateAdditionalCode" icon="generateIcon24.png"
+                           state="enabled">
+                    <script>
+                        <![CDATA[
+							this.addOnChangeListener({
+								onClick: function() {
+									#{form}.performEvent('generateAdditionalCode', []);
+								}
+							});
+						]]>
+                    </script>
+                </bigButton>
+            </group>
             <group name="productFamily">
                 <bigButton name="productFamilySizes" icon="genealogyIcon24.png"
                            message="basic.productDetails.window.ribbon.productFamily.productFamilySizes.description"
@@ -164,7 +178,7 @@
 					]]>
                 </script>
                 <component type="gridLayout" name="gridLayout" columns="3"
-                           rows="8">
+                           rows="9">
                     <layoutElement column="1" row="1">
                         <component type="input" name="number" field="number"
                                    reference="number">
@@ -192,13 +206,18 @@
                         <component type="input" name="ean" field="ean"/>
                     </layoutElement>
                     <layoutElement column="2" row="2">
+                        <component type="input" name="additionalCode" field="additionalCode" defaultEnabled="never">
+                            <option type="alignment" value="right"/>
+                        </component>
+                    </layoutElement>
+                    <layoutElement column="2" row="3">
                         <component type="select" name="category" field="category"
                                    reference="category" hasDescription="true"/>
                     </layoutElement>
-                    <layoutElement column="2" row="3" height="2">
+                    <layoutElement column="2" row="4" height="2">
                         <component type="textarea" name="description" field="description"/>
                     </layoutElement>
-                    <layoutElement column="2" row="5">
+                    <layoutElement column="2" row="6">
                         <component type="lookup" name="producer" field="#{form}.producer"
                                    reference="producer" hasDescription="true">
                             <option type="column" name="name" fields="name" link="true"/>
@@ -212,7 +231,7 @@
 
                         </component>
                     </layoutElement>
-                    <layoutElement column="2" row="6">
+                    <layoutElement column="2" row="7">
                         <component type="lookup" name="supplier" field="#{form}.supplier"
                                    reference="supplier" hasDescription="true">
                             <option type="column" name="name" fields="name" link="true"/>
@@ -226,7 +245,7 @@
 
                         </component>
                     </layoutElement>
-                    <layoutElement column="2" row="7">
+                    <layoutElement column="2" row="8">
                         <component type="lookup" name="assortment" field="#{form}.assortment"
                                    reference="assortment" hasDescription="true">
 
@@ -242,7 +261,7 @@
                                       method="onChangeRerender"/>
                         </component>
                     </layoutElement>
-                    <layoutElement column="2" row="8">
+                    <layoutElement column="2" row="9">
                         <component type="lookup" name="model" field="#{form}.model"
                                    reference="model" hasDescription="true">
 
@@ -270,6 +289,8 @@
                           method="cleanExternalNumber"/>
                 <listener event="productFamilySizes" class="com.qcadoo.mes.basic.ProductService"
                           method="productFamilySizes"/>
+                <listener event="generateAdditionalCode" class="com.qcadoo.mes.basic.ProductService"
+                          method="generateAdditionalCode"/>
                 <listener event="downloadAttachment" method="downloadAttachment"
                           class="com.qcadoo.mes.basic.listeners.AttachmentsListeners"/>
                 <listener event="setPictureAsMain" method="setPictureAsMain"

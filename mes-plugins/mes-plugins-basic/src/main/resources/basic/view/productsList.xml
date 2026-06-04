@@ -109,6 +109,7 @@
             <option type="column" name="parent" fields="parentName" width="200"/>
             <option type="column" name="entityType" fields="entityType"/>
             <option type="column" name="ean" fields="ean" width="85"/>
+            <option type="column" name="additionalCode" fields="additionalCode"/>
             <option type="column" name="externalNumber" fields="externalNumber"
                     hidden="true"/>
 
@@ -124,13 +125,13 @@
 
             <option type="searchable"
                     value="number,name,globalTypeOfMaterial,category,ean,parent,assortment,model,externalNumber,
-                    hasAttachments,unit,additionalUnit,size,entityType,supplier,description"/>
+                    hasAttachments,unit,additionalUnit,size,entityType,supplier,description,additionalCode"/>
             <option type="multiSearch"
                     value="number,name,globalTypeOfMaterial,category,ean,parent,assortment,model,externalNumber,
-                    hasAttachments,unit,additionalUnit,size,entityType,supplier,description"/>
+                    hasAttachments,unit,additionalUnit,size,entityType,supplier,description,additionalCode"/>
             <option type="orderable"
                     value="number,name,globalTypeOfMaterial,category,ean,parent,assortment,model,externalNumber,
-                    hasAttachments,unit,additionalUnit,size,entityType,supplier,description"/>
+                    hasAttachments,unit,additionalUnit,size,entityType,supplier,description,additionalCode"/>
 
             <option type="correspondingView" value="basic/productDetails"/>
             <option type="correspondingComponent" value="form"/>

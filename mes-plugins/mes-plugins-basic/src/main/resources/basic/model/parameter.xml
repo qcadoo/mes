@@ -112,6 +112,7 @@
         <boolean name="mrShowCurrentStockLevel" default="false"/>
         <boolean name="mrIncludeStartDateOrder" default="false"/>
         <boolean name="showProductionTrackingStaff" default="false"/>
+        <boolean name="generateAdditionalCodeInEachProduct" default="false"/>
     </fields>
 
     <hooks>

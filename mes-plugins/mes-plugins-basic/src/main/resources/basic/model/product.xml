@@ -34,6 +34,9 @@
         <string name="name" required="true">
             <validatesLength max="1024"/>
         </string>
+        <string name="additionalCode" unique="true">
+            <validatesLength max="255"/>
+        </string>
         <enum name="globalTypeOfMaterial" values="01component,02intermediate,03finalProduct,04waste,05package"/>
         <string name="ean">
             <validatesWith class="com.qcadoo.mes.basic.validators.ProductValidators"
