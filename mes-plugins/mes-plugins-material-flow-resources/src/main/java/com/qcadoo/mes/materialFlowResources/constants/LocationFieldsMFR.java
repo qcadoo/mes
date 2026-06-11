@@ -31,19 +31,9 @@ public final class LocationFieldsMFR {
 
 	public static final String ALGORITHM = "algorithm";
 
-	public static final String REQUIRE_PRICE = "requirePrice";
-
-	public static final String REQUIRE_BATCH = "requireBatch";
-
-	public static final String REQUIRE_PRODUCTION_DATE = "requireProductionDate";
-
-	public static final String REQUIRE_EXPIRATION_DATE = "requireExpirationDate";
-
 	public static final String DRAFT_MAKES_RESERVATION = "draftMakesReservation";
 
 	public static final String RESOURCE_CORRECTIONS = "resourceCorrections";
-
-	public static final String STOCK_TAKINGS = "stocktakings";
 
 	public static final String RESOURCE_STOCKS = "resourceStocks";
 

@@ -3,19 +3,19 @@
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
  * Version: 1.4
- *
+ * <p>
  * This file is part of Qcadoo.
- *
+ * <p>
  * Qcadoo is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation; either version 3 of the License,
  * or (at your option) any later version.
- *
+ * <p>
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty
  * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU Affero General Public License for more details.
- *
+ * <p>
  * You should have received a copy of the GNU Affero General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
@@ -32,7 +32,6 @@ import com.qcadoo.mes.deliveries.constants.*;
 import com.qcadoo.mes.deliveries.helpers.DeliveredMultiProduct;
 import com.qcadoo.mes.deliveries.helpers.DeliveredMultiProductContainer;
 import com.qcadoo.mes.deliveries.hooks.DeliveredProductAddMultiHooks;
-import com.qcadoo.mes.materialFlowResources.constants.LocationFieldsMFR;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -201,9 +200,9 @@ public class DeliveredProductAddMultiListeners {
         DeliveredMultiProductContainer multiProductContainer = new DeliveredMultiProductContainer();
 
         for (Entity position : deliveredProductMultiPositions) {
-            checkExpirationDate(deliveredProductMulti, position, DeliveredProductMultiPositionFields.EXPIRATION_DATE,
-                    deliveredProductMultiPositionDD);
-            checkMissing(position, DeliveredProductMultiPositionFields.PRODUCT, deliveredProductMultiPositionDD);
+            checkBatch(position, deliveredProductMultiPositionDD);
+            checkExpirationDate(position, deliveredProductMultiPositionDD);
+            checkMissing(position, deliveredProductMultiPositionDD);
             checkMissingOrZero(position, DeliveredProductMultiPositionFields.QUANTITY, deliveredProductMultiPositionDD);
             checkMissingOrZero(position, DeliveredProductMultiPositionFields.ADDITIONAL_QUANTITY,
                     deliveredProductMultiPositionDD);
@@ -251,10 +250,9 @@ public class DeliveredProductAddMultiListeners {
         return entity.getId();
     }
 
-    private void checkMissing(final Entity position, final String fieldName,
-                              final DataDefinition positionDataDefinition) {
-        if (Objects.isNull(position.getField(fieldName))) {
-            position.addError(positionDataDefinition.getField(fieldName), L_QCADOO_VIEW_VALIDATE_FIELD_ERROR_MISSING);
+    private void checkMissing(final Entity position, final DataDefinition positionDataDefinition) {
+        if (Objects.isNull(position.getField(DeliveredProductMultiPositionFields.PRODUCT))) {
+            position.addError(positionDataDefinition.getField(DeliveredProductMultiPositionFields.PRODUCT), L_QCADOO_VIEW_VALIDATE_FIELD_ERROR_MISSING);
         }
     }
 
@@ -268,18 +266,32 @@ public class DeliveredProductAddMultiListeners {
         }
     }
 
-    private void checkExpirationDate(final Entity deliveredProductMulti, final Entity position, final String fieldname,
+    private void checkExpirationDate(final Entity position,
                                      final DataDefinition positionDataDefinition) {
-        Entity delivery = deliveredProductMulti.getBelongsToField(DeliveredProductMultiFields.DELIVERY);
-        Entity location = delivery.getBelongsToField(DeliveryFields.LOCATION);
+        Entity product = position.getBelongsToField(DeliveredProductMultiPositionFields.PRODUCT);
 
-        if (Objects.nonNull(location)) {
+        if (Objects.nonNull(product)) {
             Date expirationDate = position.getDateField(DeliveredProductMultiPositionFields.EXPIRATION_DATE);
 
-            boolean requireExpirationDate = location.getBooleanField(LocationFieldsMFR.REQUIRE_EXPIRATION_DATE);
+            boolean expirationDateEvidence = product.getBooleanField(ProductFields.EXPIRATION_DATE_EVIDENCE);
 
-            if (requireExpirationDate && Objects.isNull(expirationDate)) {
-                position.addError(positionDataDefinition.getField(fieldname), L_QCADOO_VIEW_VALIDATE_FIELD_ERROR_MISSING);
+            if (expirationDateEvidence && Objects.isNull(expirationDate)) {
+                position.addError(positionDataDefinition.getField(DeliveredProductMultiPositionFields.EXPIRATION_DATE), L_QCADOO_VIEW_VALIDATE_FIELD_ERROR_MISSING);
+            }
+        }
+    }
+
+    private void checkBatch(final Entity position,
+                            final DataDefinition positionDataDefinition) {
+        Entity product = position.getBelongsToField(DeliveredProductMultiPositionFields.PRODUCT);
+
+        if (Objects.nonNull(product)) {
+            Entity batch = position.getBelongsToField(DeliveredProductMultiPositionFields.BATCH);
+
+            boolean batchEvidence = product.getBooleanField(ProductFields.BATCH_EVIDENCE);
+
+            if (batchEvidence && Objects.isNull(batch)) {
+                position.addError(positionDataDefinition.getField(DeliveredProductMultiPositionFields.BATCH), L_QCADOO_VIEW_VALIDATE_FIELD_ERROR_MISSING);
             }
         }
     }

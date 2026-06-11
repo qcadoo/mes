@@ -266,18 +266,6 @@
         </model:model-field>
 
         <model:model-field plugin="materialFlow" model="location">
-            <model:boolean name="requirePrice"/>
-        </model:model-field>
-        <model:model-field plugin="materialFlow" model="location">
-            <model:boolean name="requireBatch"/>
-        </model:model-field>
-        <model:model-field plugin="materialFlow" model="location">
-            <model:boolean name="requireProductionDate"/>
-        </model:model-field>
-        <model:model-field plugin="materialFlow" model="location">
-            <model:boolean name="requireExpirationDate"/>
-        </model:model-field>
-        <model:model-field plugin="materialFlow" model="location">
             <model:boolean name="draftMakesReservation" default="false"/>
         </model:model-field>
 

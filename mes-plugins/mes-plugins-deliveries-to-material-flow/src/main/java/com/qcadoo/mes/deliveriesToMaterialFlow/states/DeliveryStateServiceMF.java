@@ -32,9 +32,7 @@ import com.qcadoo.mes.basic.constants.UnitConversionItemFieldsB;
 import com.qcadoo.mes.basic.util.CurrencyService;
 import com.qcadoo.mes.deliveries.constants.*;
 import com.qcadoo.mes.deliveriesToMaterialFlow.constants.DocumentFieldsDTMF;
-import com.qcadoo.mes.materialFlow.constants.LocationFields;
 import com.qcadoo.mes.materialFlowResources.constants.DocumentFields;
-import com.qcadoo.mes.materialFlowResources.constants.LocationFieldsMFR;
 import com.qcadoo.mes.materialFlowResources.constants.PositionAttributeValueFields;
 import com.qcadoo.mes.materialFlowResources.service.DocumentBuilder;
 import com.qcadoo.mes.materialFlowResources.service.DocumentManagementService;
@@ -204,57 +202,6 @@ public class DeliveryStateServiceMF {
         return attributes;
     }
 
-    public void validateRequiredParameters(final StateChangeContext stateChangeContext) {
-        final Entity delivery = stateChangeContext.getOwner();
-
-        Entity location = getLocation(delivery);
-
-        if (Objects.isNull(location)) {
-            return;
-        }
-
-        boolean isBatchRequired = isRequired(location, LocationFieldsMFR.REQUIRE_BATCH);
-        boolean isProductionDateRequired = isRequired(location, LocationFieldsMFR.REQUIRE_PRODUCTION_DATE);
-        boolean isExpirationDateRequired = isRequired(location, LocationFieldsMFR.REQUIRE_EXPIRATION_DATE);
-        boolean isPriceRequired = isRequired(location, LocationFieldsMFR.REQUIRE_PRICE);
-
-        if (isBatchRequired || isExpirationDateRequired || isPriceRequired || isProductionDateRequired) {
-            List<Entity> deliveredProducts = delivery.getHasManyField(DeliveryFields.DELIVERED_PRODUCTS);
-            List<String> missingBatch = Lists.newArrayList();
-            List<String> missingProductionDate = Lists.newArrayList();
-            List<String> missingExpirationDate = Lists.newArrayList();
-            List<String> missingPrice = Lists.newArrayList();
-
-            for (Entity deliveredProduct : deliveredProducts) {
-                String productName = getProductName(deliveredProduct);
-
-                if (isBatchRequired && Objects.isNull(getBatch(deliveredProduct))) {
-                    missingBatch.add(productName);
-                }
-                if (isProductionDateRequired && Objects.isNull(getProductionDate(deliveredProduct))) {
-                    missingProductionDate.add(productName);
-                }
-                if (isExpirationDateRequired && Objects.isNull(getExpirationDate(deliveredProduct))) {
-                    missingExpirationDate.add(productName);
-                }
-                if (isPriceRequired && Objects.isNull(currencyService.getConvertedValue(
-                        deliveredProduct.getDecimalField(DeliveredProductFields.PRICE_PER_UNIT), getCurrency(delivery)))) {
-                    missingPrice.add(productName);
-                }
-            }
-
-            String locationName = getLocationName(location);
-            addErrorMessage(stateChangeContext, missingBatch, locationName,
-                    "deliveriesToMaterialFlow.deliveryStateValidator.missing.batch");
-            addErrorMessage(stateChangeContext, missingProductionDate, locationName,
-                    "deliveriesToMaterialFlow.deliveryStateValidator.missing.productionDate");
-            addErrorMessage(stateChangeContext, missingExpirationDate, locationName,
-                    "deliveriesToMaterialFlow.deliveryStateValidator.missing.expirationDate");
-            addErrorMessage(stateChangeContext, missingPrice, locationName,
-                    "deliveriesToMaterialFlow.deliveryStateValidator.missing.price");
-        }
-    }
-
     public void validateReceivedPackages(final StateChangeContext stateChangeContext) {
         final Entity delivery = stateChangeContext.getOwner();
 
@@ -265,17 +212,6 @@ public class DeliveryStateServiceMF {
         if (!deliveredPackages.isEmpty()) {
             if (Objects.isNull(packagingLocation)) {
                 stateChangeContext.addValidationError("deliveriesToMaterialFlow.deliveryStateValidator.error.packagingLocationNotSet");
-            }
-        }
-    }
-
-    private void addErrorMessage(final StateChangeContext stateChangeContext, final List<String> message,
-                                 final String locationName, final String translationKey) {
-        if (message.size() != 0) {
-            if ((locationName.length() + message.toString().length()) < 255) {
-                stateChangeContext.addValidationError(translationKey, false, locationName, message.toString());
-            } else {
-                stateChangeContext.addValidationError(translationKey + "Short", false, locationName);
             }
         }
     }
@@ -396,18 +332,6 @@ public class DeliveryStateServiceMF {
 
     private Date getProductionDate(final Entity deliveredProduct) {
         return deliveredProduct.getDateField(DeliveredProductFields.PRODUCTION_DATE);
-    }
-
-    private boolean isRequired(final Entity location, final String fieldName) {
-        return location.getBooleanField(fieldName);
-    }
-
-    private String getProductName(final Entity deliveredProduct) {
-        return getProduct(deliveredProduct).getStringField(ProductFields.NAME);
-    }
-
-    private String getLocationName(final Entity location) {
-        return location.getStringField(LocationFields.NAME);
     }
 
     private DataDefinition getDeliveredProductAttributeValDD() {

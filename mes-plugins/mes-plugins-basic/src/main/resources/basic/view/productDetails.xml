@@ -454,7 +454,7 @@
 
         <windowTab name="characteristicsTab" reference="characteristicsTab">
             <component type="gridLayout" name="gridLayout" columns="9"
-                       rows="4" hasBorders="false">
+                       rows="5" hasBorders="false">
                 <layoutElement column="1" row="1" width="3">
                     <component type="lookup" name="size" field="#{form}.size"
                                reference="size">
@@ -467,16 +467,21 @@
                     </component>
                 </layoutElement>
                 <layoutElement column="1" row="2" width="3">
+                    <component type="checkbox" name="expirationDateEvidence" hasDescription="true"
+                               field="#{form}.expirationDateEvidence" reference="expirationDateEvidence">
+                    </component>
+                </layoutElement>
+                <layoutElement column="1" row="3" width="3">
                     <component type="input" name="expiryDateValidity" field="#{form}.expiryDateValidity"
                                reference="expiryDateValidity" hasDescription="true">
                         <option type="alignment" value="right"/>
                     </component>
                 </layoutElement>
-                <layoutElement column="4" row="2">
+                <layoutElement column="4" row="3">
                     <component type="select" name="expiryDateValidityUnit" field="#{form}.expiryDateValidityUnit"
                                reference="expiryDateValidityUnit" hasLabel="false"/>
                 </layoutElement>
-                <layoutElement column="1" row="3" width="3">
+                <layoutElement column="1" row="4" width="3">
                     <component type="lookup" name="productForm" field="#{form}.productForm"
                                reference="productForm" hasDescription="true">
                         <option type="column" name="name" fields="name"/>
@@ -495,7 +500,7 @@
                         <option type="fieldCode" value="number"/>
                     </component>
                 </layoutElement>
-                <layoutElement column="1" row="4" width="3">
+                <layoutElement column="1" row="5" width="3">
                     <component type="checkbox" name="showInProductData" field="#{form}.showInProductData"
                                reference="showInProductData" defaultVisible="false" hasDescription="true">
                     </component>
