@@ -421,11 +421,6 @@
                                  method="hasAlgorithm"/>
         </model:model-hook>
 
-        <model:model-hook plugin="materialFlow" model="location">
-            <model:validatesWith class="com.qcadoo.mes.materialFlowResources.validators.LocationValidators"
-                                 method="isFieldVisible"/>
-        </model:model-hook>
-
         <model:model-enum-value plugin="basic" model="log" enum="logType" value="document"/>
         <model:model-enum-value plugin="basic" model="log" enum="logType" value="positionImport"/>
         <model:model-enum-value plugin="basic" model="log" enum="logType" value="costNorms"/>

@@ -93,8 +93,8 @@ public class ParametersHooksMFR {
 		displayNameField.setFieldValue(displayName);
 
 		boolean editable = item.getBooleanField("editable");
-		((FieldComponent) view.getComponentByReference("checked")).setEnabled(editable);
-		((FieldComponent) view.getComponentByReference("editable")).setEnabled(false);
+		view.getComponentByReference("checked").setEnabled(editable);
+		view.getComponentByReference("editable").setEnabled(false);
 	}
 
 }

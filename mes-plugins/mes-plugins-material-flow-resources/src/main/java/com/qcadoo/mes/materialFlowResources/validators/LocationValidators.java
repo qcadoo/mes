@@ -60,33 +60,6 @@ public class LocationValidators {
         return true;
     }
 
-    public boolean isFieldVisible(final DataDefinition locatoinDD, final Entity location) {
-        DataDefinition documentPositionParametersItemDD = dataDefinitionService.get(
-                MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER,
-                MaterialFlowResourcesConstants.MODEL_DOCUMENT_POSITION_PARAMETERS_ITEM);
-        Map<String, Entity> items = documentPositionParametersItemDD.find().list().getEntities().stream()
-                .collect(Collectors.toMap(item -> item.getStringField("name"), item -> item));
-
-        List<String> requiredFields = Arrays.asList(DocumentPositionParametersItemValues.PRICE,
-                DocumentPositionParametersItemValues.BATCH, DocumentPositionParametersItemValues.EXPIRATION_DATE,
-                DocumentPositionParametersItemValues.PRODUCTION_DATE);
-
-        for (String name : requiredFields) {
-            String camelCaseName = "require" + name.substring(0, 1).toUpperCase() + name.substring(1);
-            if (location.getBooleanField(camelCaseName) && !items.get(name).getBooleanField("checked")) {
-                String fieldTranslatedName = translationService.translate(
-                        "materialFlowResources.materialFlowResourcesParameters.documentPositionParameters." + name,
-                        LocaleContextHolder.getLocale());
-                String errorMessage = translationService.translate(
-                        "materialFlowResources.error.documentLocationPositionItemIsHidden", LocaleContextHolder.getLocale());
-                errorMessage = String.format(errorMessage, fieldTranslatedName);
-                location.addError(locatoinDD.getField(camelCaseName), errorMessage);
-            }
-        }
-
-        return true;
-    }
-
     public boolean validatesWith(final DataDefinition dataDefinition, final Entity entity) {
         if (draftMakesReservationChanged(dataDefinition, entity) && !noDraftDocumentExists(entity)) {
             entity.addError(dataDefinition.getField(DRAFT_MAKES_RESERVATION),
