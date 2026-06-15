@@ -41,10 +41,8 @@ public class PositionValidators {
 
         if (document != null) {
             DocumentType documentType = DocumentType.of(document);
-            DocumentState documentState = DocumentState.of(document);
 
-            if (documentState == DocumentState.ACCEPTED
-                    && (documentType == DocumentType.RECEIPT || documentType == DocumentType.INTERNAL_INBOUND)) {
+            if (documentType == DocumentType.RECEIPT || documentType == DocumentType.INTERNAL_INBOUND) {
 
                 Entity product = position.getBelongsToField(PositionFields.PRODUCT);
                 boolean batchEvidence = product.getBooleanField(ProductFields.BATCH_EVIDENCE);
