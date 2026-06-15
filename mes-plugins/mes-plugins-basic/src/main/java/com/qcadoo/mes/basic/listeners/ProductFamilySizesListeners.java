@@ -73,6 +73,8 @@ public class ProductFamilySizesListeners {
                         productFamily.getStringField(ProductFields.GLOBAL_TYPE_OF_MATERIAL));
                 product.setField(ProductFields.UNIT, productFamily.getStringField(ProductFields.UNIT));
                 product.setField(ProductFields.NAME, productFamily.getStringField(ProductFields.NAME));
+                product.setField(ProductFields.BATCH_EVIDENCE, productFamily.getBooleanField(ProductFields.BATCH_EVIDENCE));
+                product.setField(ProductFields.EXPIRATION_DATE_EVIDENCE, productFamily.getBooleanField(ProductFields.EXPIRATION_DATE_EVIDENCE));
                 product.setField(ProductFields.NUMBER,
                         productFamily.getStringField(ProductFields.NUMBER) + "-" + size.getStringField(SizeFields.NUMBER));
 
