@@ -62,7 +62,7 @@ public class ProductValidatorsMFR {
 
     public boolean resourceWithoutValueExists(Entity entity, String field) {
         if (entity.getId() == null) {
-            return true;
+            return false;
         }
 
         SearchCriteriaBuilder scb = dataDefinitionService

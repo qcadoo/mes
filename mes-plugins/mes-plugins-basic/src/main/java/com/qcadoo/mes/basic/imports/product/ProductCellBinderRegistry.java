@@ -94,6 +94,7 @@ public class ProductCellBinderRegistry {
         cellBinderRegistry.setCellBinder(optional(ProductFields.SIZE, sizeCellParser));
         cellBinderRegistry.setCellBinder(optional(ProductFields.EXPIRY_DATE_VALIDITY, integerCellParser));
         cellBinderRegistry.setCellBinder(optional(ProductFields.BATCH_EVIDENCE, booleanCellParser));
+        cellBinderRegistry.setCellBinder(optional(ProductFields.EXPIRATION_DATE_EVIDENCE, booleanCellParser));
     }
 
     public CellBinderRegistry getCellBinderRegistry() {
