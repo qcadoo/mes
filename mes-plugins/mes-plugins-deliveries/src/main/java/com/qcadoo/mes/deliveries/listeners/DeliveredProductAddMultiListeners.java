@@ -200,8 +200,6 @@ public class DeliveredProductAddMultiListeners {
         DeliveredMultiProductContainer multiProductContainer = new DeliveredMultiProductContainer();
 
         for (Entity position : deliveredProductMultiPositions) {
-            checkBatch(position, deliveredProductMultiPositionDD);
-            checkExpirationDate(position, deliveredProductMultiPositionDD);
             checkMissing(position, deliveredProductMultiPositionDD);
             checkMissingOrZero(position, DeliveredProductMultiPositionFields.QUANTITY, deliveredProductMultiPositionDD);
             checkMissingOrZero(position, DeliveredProductMultiPositionFields.ADDITIONAL_QUANTITY,
@@ -263,36 +261,6 @@ public class DeliveredProductAddMultiListeners {
         } else if (BigDecimal.ZERO.compareTo(position.getDecimalField(fieldName)) >= 0) {
             position.addError(positionDataDefinition.getField(fieldName),
                     L_QCADOO_VIEW_VALIDATE_FIELD_ERROR_OUT_OF_RANGE_TO_SMALL);
-        }
-    }
-
-    private void checkExpirationDate(final Entity position,
-                                     final DataDefinition positionDataDefinition) {
-        Entity product = position.getBelongsToField(DeliveredProductMultiPositionFields.PRODUCT);
-
-        if (Objects.nonNull(product)) {
-            Date expirationDate = position.getDateField(DeliveredProductMultiPositionFields.EXPIRATION_DATE);
-
-            boolean expirationDateEvidence = product.getBooleanField(ProductFields.EXPIRATION_DATE_EVIDENCE);
-
-            if (expirationDateEvidence && Objects.isNull(expirationDate)) {
-                position.addError(positionDataDefinition.getField(DeliveredProductMultiPositionFields.EXPIRATION_DATE), L_QCADOO_VIEW_VALIDATE_FIELD_ERROR_MISSING);
-            }
-        }
-    }
-
-    private void checkBatch(final Entity position,
-                            final DataDefinition positionDataDefinition) {
-        Entity product = position.getBelongsToField(DeliveredProductMultiPositionFields.PRODUCT);
-
-        if (Objects.nonNull(product)) {
-            Entity batch = position.getBelongsToField(DeliveredProductMultiPositionFields.BATCH);
-
-            boolean batchEvidence = product.getBooleanField(ProductFields.BATCH_EVIDENCE);
-
-            if (batchEvidence && Objects.isNull(batch)) {
-                position.addError(positionDataDefinition.getField(DeliveredProductMultiPositionFields.BATCH), L_QCADOO_VIEW_VALIDATE_FIELD_ERROR_MISSING);
-            }
         }
     }
 

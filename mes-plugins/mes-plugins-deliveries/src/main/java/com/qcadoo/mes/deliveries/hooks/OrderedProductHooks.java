@@ -79,8 +79,7 @@ public class OrderedProductHooks {
 
         if (orderedProduct.getBooleanField(OrderedProductFields.ADD_BATCH)
                 && (StringUtils.isNoneEmpty(orderedProduct.getStringField(OrderedProductFields.BATCH_NUMBER))
-                || parameterService.getParameter().getBooleanField(
-                ParameterFieldsD.PRODUCT_DELIVERY_BATCH_EVIDENCE))) {
+                || parameterService.getParameter().getBooleanField(ParameterFieldsD.PRODUCT_DELIVERY_BATCH_EVIDENCE))) {
             String batchNumber = orderedProduct.getStringField(OrderedProductFields.BATCH_NUMBER);
             Entity product = orderedProduct.getBelongsToField(OrderedProductFields.PRODUCT);
             Entity delivery = orderedProduct.getBelongsToField(OrderedProductFields.DELIVERY);

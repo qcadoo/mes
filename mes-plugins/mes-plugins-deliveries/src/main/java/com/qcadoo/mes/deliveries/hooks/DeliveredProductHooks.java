@@ -27,23 +27,25 @@ import com.qcadoo.mes.advancedGenealogy.AdvancedGenealogyService;
 import com.qcadoo.mes.advancedGenealogy.constants.BatchNumberUniqueness;
 import com.qcadoo.mes.advancedGenealogy.hooks.BatchModelValidators;
 import com.qcadoo.mes.basic.ParameterService;
+import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.deliveries.DeliveriesService;
 import com.qcadoo.mes.deliveries.constants.DeliveredProductFields;
 import com.qcadoo.mes.deliveries.constants.DeliveryFields;
 import com.qcadoo.mes.deliveries.constants.OrderedProductFields;
 import com.qcadoo.mes.deliveries.constants.ParameterFieldsD;
-import com.qcadoo.mes.materialFlowResources.MaterialFlowResourcesService;
 import com.qcadoo.mes.materialFlowResources.PalletValidatorService;
-
-import com.qcadoo.model.api.*;
+import com.qcadoo.model.api.BigDecimalUtils;
+import com.qcadoo.model.api.DataDefinition;
+import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.NumberService;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -52,6 +54,8 @@ import java.util.Optional;
 public class DeliveredProductHooks {
 
     private static final String L_OFFER = "offer";
+
+    private static final String L_QCADOO_VIEW_VALIDATE_FIELD_ERROR_MISSING = "qcadooView.validate.field.error.missing";
 
     @Autowired
     private NumberService numberService;
@@ -199,8 +203,7 @@ public class DeliveredProductHooks {
     private void createBatch(final Entity deliveredProduct) {
         if (deliveredProduct.getBooleanField(DeliveredProductFields.ADD_BATCH)
                 && (StringUtils.isNoneEmpty(deliveredProduct.getStringField(DeliveredProductFields.BATCH_NUMBER))
-                || parameterService.getParameter().getBooleanField(
-                ParameterFieldsD.PRODUCT_DELIVERY_BATCH_EVIDENCE))) {
+                || parameterService.getParameter().getBooleanField(ParameterFieldsD.PRODUCT_DELIVERY_BATCH_EVIDENCE))) {
             String batchNumber = deliveredProduct.getStringField(DeliveredProductFields.BATCH_NUMBER);
             Entity product = deliveredProduct.getBelongsToField(DeliveredProductFields.PRODUCT);
             Entity delivery = deliveredProduct.getBelongsToField(DeliveredProductFields.DELIVERY);
@@ -246,9 +249,47 @@ public class DeliveredProductHooks {
         isValid = isValid && checkIfDeliveredQuantityIsLessThanDamagedQuantity(deliveredProductDD, deliveredProduct);
         isValid = isValid && checkIfDeliveredQuantityIsLessThanOrderedQuantity(deliveredProductDD, deliveredProduct);
         isValid = isValid && palletValidatorService.validatePalletForDeliveredProduct(deliveredProduct);
+        isValid = isValid && checkExpirationDate(deliveredProduct, deliveredProductDD);
+        isValid = isValid && checkBatch(deliveredProduct, deliveredProductDD);
 
         return isValid;
     }
+
+    private boolean checkExpirationDate(final Entity deliveredProduct,
+                                        final DataDefinition deliveredProductDD) {
+        Entity product = deliveredProduct.getBelongsToField(DeliveredProductFields.PRODUCT);
+
+        if (Objects.nonNull(product)) {
+            Date expirationDate = deliveredProduct.getDateField(DeliveredProductFields.EXPIRATION_DATE);
+
+            boolean expirationDateEvidence = product.getBooleanField(ProductFields.EXPIRATION_DATE_EVIDENCE);
+
+            if (expirationDateEvidence && Objects.isNull(expirationDate)) {
+                deliveredProduct.addError(deliveredProductDD.getField(DeliveredProductFields.EXPIRATION_DATE), L_QCADOO_VIEW_VALIDATE_FIELD_ERROR_MISSING);
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private boolean checkBatch(final Entity deliveredProduct,
+                               final DataDefinition deliveredProductDD) {
+        Entity product = deliveredProduct.getBelongsToField(DeliveredProductFields.PRODUCT);
+
+        if (Objects.nonNull(product)) {
+            Entity batch = deliveredProduct.getBelongsToField(DeliveredProductFields.BATCH);
+            boolean addBatch = deliveredProduct.getBooleanField(DeliveredProductFields.ADD_BATCH);
+
+            boolean batchEvidence = product.getBooleanField(ProductFields.BATCH_EVIDENCE);
+
+            if (batchEvidence && !addBatch && Objects.isNull(batch)) {
+                deliveredProduct.addError(deliveredProductDD.getField(DeliveredProductFields.BATCH), L_QCADOO_VIEW_VALIDATE_FIELD_ERROR_MISSING);
+                return false;
+            }
+        }
+        return true;
+    }
+
 
     public boolean checkIfDeliveredProductAlreadyExists(final DataDefinition deliveredProductDD, final Entity deliveredProduct) {
         SearchCriteriaBuilder searchCriteriaBuilder = deliveriesService
