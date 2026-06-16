@@ -79,6 +79,11 @@ public class RepackingStateService extends BasicStateService implements Repackin
                         LOG.error(translationService.translate(
                                 "materialFlow.document.validate.global.error.invalidResource.batchRequired",
                                 LocaleContextHolder.getLocale(), productNumber));
+                    } else if ("materialFlow.error.position.expirationDate.required"
+                            .equals(ire.getEntity().getError(ResourceFields.EXPIRATION_DATE).getMessage())) {
+                        LOG.error(translationService.translate(
+                                "materialFlow.document.validate.global.error.invalidResource.expirationDateRequired",
+                                LocaleContextHolder.getLocale(), productNumber));
                     } else {
                         String resourceNumber = ireEntity.getStringField(ResourceFields.NUMBER);
 
