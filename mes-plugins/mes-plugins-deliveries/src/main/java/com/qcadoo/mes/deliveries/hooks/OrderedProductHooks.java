@@ -23,11 +23,20 @@
  */
 package com.qcadoo.mes.deliveries.hooks;
 
-import java.util.Map;
-import java.util.Objects;
-
+import com.google.common.collect.Maps;
+import com.qcadoo.mes.advancedGenealogy.AdvancedGenealogyService;
+import com.qcadoo.mes.advancedGenealogy.constants.BatchNumberUniqueness;
+import com.qcadoo.mes.advancedGenealogy.hooks.BatchModelValidators;
 import com.qcadoo.mes.basic.ParameterService;
+import com.qcadoo.mes.deliveries.DeliveriesService;
+import com.qcadoo.mes.deliveries.constants.DeliveryFields;
+import com.qcadoo.mes.deliveries.constants.OrderedProductFields;
 import com.qcadoo.mes.deliveries.constants.ParameterFieldsD;
+import com.qcadoo.model.api.DataDefinition;
+import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.NumberService;
+import com.qcadoo.model.api.search.SearchCriteriaBuilder;
+import com.qcadoo.model.api.search.SearchRestrictions;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -35,21 +44,13 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.stereotype.Service;
 
-import com.google.common.collect.Maps;
-import com.qcadoo.mes.advancedGenealogy.AdvancedGenealogyService;
-import com.qcadoo.mes.advancedGenealogy.constants.BatchNumberUniqueness;
-import com.qcadoo.mes.advancedGenealogy.hooks.BatchModelValidators;
-import com.qcadoo.mes.deliveries.DeliveriesService;
-import com.qcadoo.mes.deliveries.constants.DeliveryFields;
-import com.qcadoo.mes.deliveries.constants.OrderedProductFields;
-import com.qcadoo.model.api.DataDefinition;
-import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.NumberService;
-import com.qcadoo.model.api.search.SearchCriteriaBuilder;
-import com.qcadoo.model.api.search.SearchRestrictions;
+import java.util.Map;
+import java.util.Objects;
 
 @Service
 public class OrderedProductHooks {
+
+    private static final String L_QCADOO_VIEW_VALIDATE_FIELD_ERROR_MISSING = "qcadooView.validate.field.error.missing";
 
     @Autowired
     private NamedParameterJdbcTemplate jdbcTemplate;
@@ -72,11 +73,10 @@ public class OrderedProductHooks {
     public void onSave(final DataDefinition orderedProductDD, final Entity orderedProduct) {
         deliveriesService.calculatePricePerUnit(orderedProduct, OrderedProductFields.ORDERED_QUANTITY);
 
-        createBatch(orderedProduct);
+        createBatch(orderedProductDD, orderedProduct);
     }
 
-    private void createBatch(final Entity orderedProduct) {
-
+    private void createBatch(DataDefinition orderedProductDD, final Entity orderedProduct) {
         if (orderedProduct.getBooleanField(OrderedProductFields.ADD_BATCH)
                 && (StringUtils.isNoneEmpty(orderedProduct.getStringField(OrderedProductFields.BATCH_NUMBER))
                 || parameterService.getParameter().getBooleanField(ParameterFieldsD.PRODUCT_DELIVERY_BATCH_EVIDENCE))) {
@@ -97,7 +97,10 @@ public class OrderedProductHooks {
 
                 orderedProduct.addGlobalError(errorMessage);
             }
-
+        } else if (orderedProduct.getBooleanField(OrderedProductFields.ADD_BATCH)
+                && StringUtils.isEmpty(orderedProduct.getStringField(OrderedProductFields.BATCH_NUMBER))
+                && !parameterService.getParameter().getBooleanField(ParameterFieldsD.PRODUCT_DELIVERY_BATCH_EVIDENCE)) {
+            orderedProduct.addError(orderedProductDD.getField(OrderedProductFields.BATCH_NUMBER), L_QCADOO_VIEW_VALIDATE_FIELD_ERROR_MISSING);
         }
     }
 

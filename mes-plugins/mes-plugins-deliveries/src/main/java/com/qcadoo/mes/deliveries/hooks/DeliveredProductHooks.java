@@ -80,7 +80,7 @@ public class DeliveredProductHooks {
 
         updateDeliveredAndAdditionalQuantityInOrderedProduct(deliveredProductDD, deliveredProduct);
 
-        createBatch(deliveredProduct);
+        createBatch(deliveredProductDD, deliveredProduct);
         setTypeOfLoadUnit(deliveredProduct);
     }
 
@@ -200,7 +200,7 @@ public class DeliveredProductHooks {
         return searchCriteriaBuilder.list().getEntities();
     }
 
-    private void createBatch(final Entity deliveredProduct) {
+    private void createBatch(DataDefinition deliveredProductDD, final Entity deliveredProduct) {
         if (deliveredProduct.getBooleanField(DeliveredProductFields.ADD_BATCH)
                 && (StringUtils.isNoneEmpty(deliveredProduct.getStringField(DeliveredProductFields.BATCH_NUMBER))
                 || parameterService.getParameter().getBooleanField(ParameterFieldsD.PRODUCT_DELIVERY_BATCH_EVIDENCE))) {
@@ -222,6 +222,10 @@ public class DeliveredProductHooks {
 
                 deliveredProduct.addGlobalError(errorMessage);
             }
+        } else if (deliveredProduct.getBooleanField(DeliveredProductFields.ADD_BATCH)
+                && StringUtils.isEmpty(deliveredProduct.getStringField(DeliveredProductFields.BATCH_NUMBER))
+                && !parameterService.getParameter().getBooleanField(ParameterFieldsD.PRODUCT_DELIVERY_BATCH_EVIDENCE)) {
+            deliveredProduct.addError(deliveredProductDD.getField(DeliveredProductFields.BATCH_NUMBER), L_QCADOO_VIEW_VALIDATE_FIELD_ERROR_MISSING);
         }
     }
 
