@@ -591,16 +591,24 @@ public class DeliveryDetailsListeners {
 
         Entity delivery = deliveriesService.getDelivery(deliveryId);
 
-        deliveryForm.setEntity(copyOrderedProductToDelivered(delivery, copyQuantityAndPrice));
+        deliveryForm.setEntity(copyOrderedProductToDelivered(view, delivery, copyQuantityAndPrice));
     }
 
-    private Entity copyOrderedProductToDelivered(final Entity delivery, final boolean copyQuantityAndPrice) {
+    private Entity copyOrderedProductToDelivered(final ViewDefinitionState view, final Entity delivery, final boolean copyQuantityAndPrice) {
         delivery.setField(DeliveryFields.DELIVERED_PRODUCTS, Lists.newArrayList());
 
         delivery.getDataDefinition().save(delivery);
 
-        delivery.setField(DeliveryFields.DELIVERED_PRODUCTS, createDeliveredProducts(delivery,
-                delivery.getHasManyField(DeliveryFields.ORDERED_PRODUCTS), copyQuantityAndPrice));
+        List<Entity> deliveredProducts = createDeliveredProducts(delivery,
+                delivery.getHasManyField(DeliveryFields.ORDERED_PRODUCTS), copyQuantityAndPrice);
+
+        delivery.setField(DeliveryFields.DELIVERED_PRODUCTS, deliveredProducts);
+
+        if (deliveredProducts.stream().allMatch(Entity::isValid)) {
+            view.addMessage("qcadooView.notification.success", MessageType.SUCCESS);
+        } else {
+            view.addMessage("deliveries.delivery.copyOrderedProductToDelivered.someProductsHaveErrors", MessageType.INFO);
+        }
 
         return delivery;
     }
