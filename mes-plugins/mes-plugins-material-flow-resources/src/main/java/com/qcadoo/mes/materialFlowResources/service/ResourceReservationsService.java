@@ -45,7 +45,7 @@ public class ResourceReservationsService {
                 BigDecimal quantity = resource.getDecimalField(ResourceFields.QUANTITY);
                 resource.setField(ResourceFields.AVAILABLE_QUANTITY, quantity.subtract(reservedQuantity));
                 resource.setField(ResourceFields.RESERVED_QUANTITY, reservedQuantity);
-                resource.getDataDefinition().save(resource);
+                resource.getDataDefinition().fastSave(resource);
             }
         }
     }

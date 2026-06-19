@@ -266,18 +266,6 @@
         </model:model-field>
 
         <model:model-field plugin="materialFlow" model="location">
-            <model:boolean name="requirePrice"/>
-        </model:model-field>
-        <model:model-field plugin="materialFlow" model="location">
-            <model:boolean name="requireBatch"/>
-        </model:model-field>
-        <model:model-field plugin="materialFlow" model="location">
-            <model:boolean name="requireProductionDate"/>
-        </model:model-field>
-        <model:model-field plugin="materialFlow" model="location">
-            <model:boolean name="requireExpirationDate"/>
-        </model:model-field>
-        <model:model-field plugin="materialFlow" model="location">
             <model:boolean name="draftMakesReservation" default="false"/>
         </model:model-field>
 
@@ -433,9 +421,9 @@
                                  method="hasAlgorithm"/>
         </model:model-hook>
 
-        <model:model-hook plugin="materialFlow" model="location">
-            <model:validatesWith class="com.qcadoo.mes.materialFlowResources.validators.LocationValidators"
-                                 method="isFieldVisible"/>
+        <model:model-hook plugin="basic" model="product">
+            <model:validatesWith class="com.qcadoo.mes.materialFlowResources.validators.ProductValidatorsMFR"
+                                 method="validatesWith"/>
         </model:model-hook>
 
         <model:model-enum-value plugin="basic" model="log" enum="logType" value="document"/>

@@ -127,6 +127,7 @@ public final class ProductionTrackingListenerService {
         checkIfExistsFinalRecord(productionTracking);
         checkIfTimesIsSet(productionTracking);
         checkIfBatchEvidenceSet(productionTracking);
+        checkIfExpirationDateEvidenceSet(productionTracking);
         checkIfStorageLocationsAndPalletNumbersAreSet(productionTracking, sourceState);
     }
 
@@ -170,6 +171,17 @@ public final class ProductionTrackingListenerService {
                         trackingOperationProductInComponentProduct.getStringField(ProductFields.NUMBER));
             }
         });
+    }
+
+    private void checkIfExpirationDateEvidenceSet(final Entity productionTracking) {
+        Entity order = productionTracking.getBelongsToField(ProductionTrackingFields.ORDER);
+        Entity product = order.getBelongsToField(OrderFields.PRODUCT);
+
+        if (product.getBooleanField(ProductFields.EXPIRATION_DATE_EVIDENCE)
+                && Objects.isNull(productionTracking.getDateField(ProductionTrackingFields.EXPIRATION_DATE))) {
+            productionTracking.addGlobalError("productionCounting.productionTracking.error.expirationDateEvidenceRequiredForFinalProduct",
+                    product.getStringField(ProductFields.NUMBER));
+        }
     }
 
     private void checkIfStorageLocationsAndPalletNumbersAreSet(final Entity productionTracking, String sourceState) {

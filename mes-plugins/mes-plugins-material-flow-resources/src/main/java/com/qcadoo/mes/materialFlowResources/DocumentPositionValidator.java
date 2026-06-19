@@ -114,10 +114,8 @@ public class DocumentPositionValidator {
         DocumentType documentType = DocumentType.parseString(document.getType());
 
         if (documentType == DocumentType.RECEIPT || documentType == DocumentType.INTERNAL_INBOUND) {
-            LocationDTO warehouseTo = getWarehouseById(document.getLocationTo_id());
 
-            return validatePositionAttributes(position, warehouseTo.isRequirePrice(), warehouseTo.isRequirebatch(),
-                    warehouseTo.isRequirEproductionDate(), warehouseTo.isRequirEexpirationDate());
+            return validatePositionAttributes(position);
         }
 
         return Lists.newArrayList();
@@ -274,24 +272,16 @@ public class DocumentPositionValidator {
         return availableQuantity;
     }
 
-    private List<String> validatePositionAttributes(final DocumentPositionDTO position, final boolean requirePrice,
-                                                    final boolean requireBatch, boolean requireProductionDate,
-                                                    boolean requireExpirationDate) {
+    private List<String> validatePositionAttributes(final DocumentPositionDTO position) {
         List<String> errors = Lists.newArrayList();
 
-        if (requirePrice && (Objects.isNull(position.getPrice()) || BigDecimal.ZERO.compareTo(position.getPrice()) == 0)) {
-            errors.add("documentGrid.error.position.price.required");
-        }
+        Map<String, Object> product = getProductByNumber(position.getProduct());
 
-        if (requireBatch && (Objects.isNull(position.getBatch()) || position.getBatch().trim().isEmpty())) {
+        if (product.get("batchevidence") != null && (boolean) product.get("batchevidence") && (Objects.isNull(position.getBatch()) || position.getBatch().trim().isEmpty())) {
             errors.add("documentGrid.error.position.batch.required");
         }
 
-        if (requireProductionDate && Objects.isNull(position.getProductionDate())) {
-            errors.add("documentGrid.error.position.productionDate.required");
-        }
-
-        if (requireExpirationDate && Objects.isNull(position.getExpirationDate())) {
+        if (product.get("expirationdateevidence") != null && (boolean) product.get("expirationdateevidence") && Objects.isNull(position.getExpirationDate())) {
             errors.add("documentGrid.error.position.expirationDate.required");
         }
 
@@ -342,13 +332,18 @@ public class DocumentPositionValidator {
         return Lists.newArrayList();
     }
 
-    private LocationDTO getWarehouseById(final Long id) {
-        BeanPropertyRowMapper<LocationDTO> beanPropertyRowMapper = new BeanPropertyRowMapper<>(LocationDTO.class);
+    private Map<String, Object> getProductByNumber(final String productNumber) {
+        if (Strings.isNullOrEmpty(productNumber)) {
+            return new HashMap<>();
+        }
 
-        beanPropertyRowMapper.setPrimitivesDefaultedForNullValue(true);
-
-        return jdbcTemplate.queryForObject("SELECT * FROM materialflow_location WHERE id = :id",
-                Collections.singletonMap("id", id), beanPropertyRowMapper);
+        try {
+            return jdbcTemplate.queryForMap(
+                    "SELECT product.expirationdateevidence, product.batchevidence FROM basic_product product WHERE product.number = :number",
+                    Collections.singletonMap("number", productNumber));
+        } catch (EmptyResultDataAccessException e) {
+            return new HashMap<>();
+        }
     }
 
     private Collection<? extends String> validateQuantity(final DocumentPositionDTO position) {

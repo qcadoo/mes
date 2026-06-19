@@ -199,9 +199,13 @@ public class DocumentValidators {
                         String resourceNumber = ire.getEntity().getStringField(ResourceFields.NUMBER);
 
                         ErrorMessage batchError = ire.getEntity().getError(ResourceFields.BATCH);
+                        ErrorMessage expirationDateError = ire.getEntity().getError(ResourceFields.EXPIRATION_DATE);
 
                         if (Objects.nonNull(batchError) && "materialFlow.error.position.batch.required".equals(batchError.getMessage())) {
                             documentForm.addMessage("materialFlow.document.validate.global.error.invalidResource.batchRequired",
+                                    ComponentState.MessageType.FAILURE, false, productNumber);
+                        } else if (Objects.nonNull(expirationDateError) && "materialFlow.error.position.expirationDate.required".equals(expirationDateError.getMessage())) {
+                            documentForm.addMessage("materialFlow.document.validate.global.error.invalidResource.expirationDateRequired",
                                     ComponentState.MessageType.FAILURE, false, productNumber);
                         } else {
                             if (ire.getErrors().values().stream().anyMatch(e -> e.getMessage().equals("documentGrid.error.position.existsOtherResourceForPallet"))) {

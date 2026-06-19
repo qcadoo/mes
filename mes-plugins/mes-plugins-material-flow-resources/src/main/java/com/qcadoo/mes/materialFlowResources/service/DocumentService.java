@@ -1,11 +1,14 @@
 package com.qcadoo.mes.materialFlowResources.service;
 
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import com.qcadoo.localization.api.TranslationService;
+import com.qcadoo.mes.basic.constants.ProductFields;
+import com.qcadoo.mes.materialFlowResources.constants.*;
+import com.qcadoo.mes.materialFlowResources.exceptions.InvalidResourceException;
+import com.qcadoo.model.api.*;
+import com.qcadoo.model.api.search.SearchRestrictions;
+import com.qcadoo.plugin.api.PluginManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,25 +21,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import com.qcadoo.localization.api.TranslationService;
-import com.qcadoo.mes.basic.constants.ProductFields;
-import com.qcadoo.mes.materialFlowResources.constants.DocumentFields;
-import com.qcadoo.mes.materialFlowResources.constants.DocumentState;
-import com.qcadoo.mes.materialFlowResources.constants.DocumentType;
-import com.qcadoo.mes.materialFlowResources.constants.OrdersGroupIssuedMaterialFields;
-import com.qcadoo.mes.materialFlowResources.constants.OrdersGroupIssuedMaterialPositionFields;
-import com.qcadoo.mes.materialFlowResources.constants.PositionFields;
-import com.qcadoo.mes.materialFlowResources.constants.ResourceFields;
-import com.qcadoo.mes.materialFlowResources.exceptions.InvalidResourceException;
-import com.qcadoo.model.api.BigDecimalUtils;
-import com.qcadoo.model.api.DataDefinition;
-import com.qcadoo.model.api.DataDefinitionService;
-import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.NumberService;
-import com.qcadoo.model.api.search.SearchRestrictions;
-import com.qcadoo.plugin.api.PluginManager;
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 public class DocumentService {
@@ -187,6 +176,11 @@ public class DocumentService {
                         LOG.error(translationService.translate(
                                 "materialFlow.document.validate.global.error.invalidResource.batchRequired",
                                 LocaleContextHolder.getLocale(), productNumber));
+                    } else if ("materialFlow.error.position.expirationDate.required"
+                            .equals(ire.getEntity().getError(ResourceFields.EXPIRATION_DATE).getMessage())) {
+                        LOG.error(translationService.translate(
+                                "materialFlow.document.validate.global.error.invalidResource.expirationDateRequired",
+                                LocaleContextHolder.getLocale(), productNumber));
                     } else {
                         String resourceNumber = ire.getEntity().getStringField(ResourceFields.NUMBER);
 
@@ -262,8 +256,8 @@ public class DocumentService {
     }
 
     private void createOrdersGroupIssueMaterialPositions(Entity ordersGroup, DataDefinition ordersGroupIssuedMaterialPositionDD,
-            Map<Long, BigDecimal> productQuantities, Map<Long, BigDecimal> productValues,
-            Map<Long, List<Entity>> productPositions, Long skipDocumentId) {
+                                                         Map<Long, BigDecimal> productQuantities, Map<Long, BigDecimal> productValues,
+                                                         Map<Long, List<Entity>> productPositions, Long skipDocumentId) {
         for (Entity document : ordersGroup.getHasManyField(DOCUMENTS)) {
             if (document.getId().equals(skipDocumentId) || DocumentType.INTERNAL_INBOUND.equals(DocumentType.of(document))) {
                 continue;
@@ -289,8 +283,8 @@ public class DocumentService {
     }
 
     private List<Entity> createOrdersGroupIssueMaterials(DataDefinition ordersGroupIssuedMaterialDD,
-            Map<Long, BigDecimal> productQuantities, Map<Long, BigDecimal> productValues,
-            Map<Long, List<Entity>> productPositions) {
+                                                         Map<Long, BigDecimal> productQuantities, Map<Long, BigDecimal> productValues,
+                                                         Map<Long, List<Entity>> productPositions) {
         List<Entity> ordersGroupIssuedMaterials = Lists.newArrayList();
         for (Map.Entry<Long, BigDecimal> entry : productQuantities.entrySet()) {
             Entity ordersGroupIssuedMaterial = ordersGroupIssuedMaterialDD.create();

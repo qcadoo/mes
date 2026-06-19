@@ -82,6 +82,8 @@ public final class ProductFields {
 
     public static final String BATCH_EVIDENCE = "batchEvidence";
 
+    public static final String EXPIRATION_DATE_EVIDENCE = "expirationDateEvidence";
+
     public static final String MODEL = "model";
 
     public static final String MODEL_ASSORTMENT = "modelAssortment";

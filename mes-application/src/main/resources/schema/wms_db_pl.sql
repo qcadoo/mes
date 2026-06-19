@@ -5902,10 +5902,6 @@ CREATE TABLE public.materialflow_location (
     name character varying(255),
     externalnumber character varying(255),
     algorithm character varying(255) DEFAULT '01fifo'::character varying,
-    requireprice boolean,
-    requirebatch boolean,
-    requireproductiondate boolean,
-    requireexpirationdate boolean,
     entityversion bigint DEFAULT 0,
     warehousenumberinoptima character varying(255),
     draftmakesreservation boolean DEFAULT false,
@@ -6288,7 +6284,8 @@ CREATE TABLE public.basic_product (
     expirydatevalidityunit character varying(255) DEFAULT '01months'::character varying,
     orderedproductconfigurator_id bigint,
     batchnumberpattern_id bigint,
-    additionalcode character varying(255)
+    additionalcode character varying(255),
+    expirationdateevidence boolean DEFAULT false
 );
 
 
@@ -20831,7 +20828,8 @@ CREATE TABLE public.materialflowresources_documentpositionparameters (
     hidestocktakingstock boolean DEFAULT false,
     hidestocktakingpositions boolean DEFAULT false,
     acceptdocumentrealizedinmobile boolean DEFAULT false,
-    allowquantitychangeinmobile boolean DEFAULT false
+    allowquantitychangeinmobile boolean DEFAULT false,
+    removenotcompletedpositionsinmobile boolean DEFAULT false
 );
 
 
@@ -40237,7 +40235,7 @@ COPY public.basic_piecerateitem (id, piecerate_id, actualrate, datefrom, dateto)
 -- Data for Name: basic_product; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.basic_product (id, number, name, globaltypeofmaterial, ean, category, unit, externalnumber, description, parent_id, entitytype, durabilityinmonths, averageoffercost, costfornumber, lastpurchasecost, lastoffercost, isglutenproduct, symbol, averagecost, goodsgroup, nominalcost, bio, isdoublepallet, technologygroup_id, active, createdate, updatedate, createuser, updateuser, quantityofextrusioningredient, norm, actualversion, hasnutritionelements, quantityfornutritions, quantityfornutritionsunit, showinproductdata, doublequantityfordoublepallet, usedquantitycontrol, automaticusedquantity, nominalweight, countusedquantityforfullpallets, quantityinpackage, synchronize, capacitynormfortwodimensionalmachines, downform_id, upform_id, downshelve_id, upshelve_id, costnormsgenerator_id, producer_id, machinepart, drawingnumber, catalognumber, isproductiondate, entityversion, ispallet, additionalunit, fromgenerator, generatorcontext_id, dateformatinqcp5code, assortment_id, isoil, isaroma, capacitynormforthreedimensionalmachines, recommendednumofheadsfortwodimensionalmachines, recommendednumofheadsforthreedimensionalmachines, iscartonlabel, isactivecartonlabelquantity, batchevidence, expirydatevalidity, productform_id, size_id, model_id, supplier_id, nominalcostcurrency_id, averagecostcurrency_id, lastpurchasecostcurrency_id, expirydatevalidityunit, orderedproductconfigurator_id, batchnumberpattern_id, additionalcode) FROM stdin;
+COPY public.basic_product (id, number, name, globaltypeofmaterial, ean, category, unit, externalnumber, description, parent_id, entitytype, durabilityinmonths, averageoffercost, costfornumber, lastpurchasecost, lastoffercost, isglutenproduct, symbol, averagecost, goodsgroup, nominalcost, bio, isdoublepallet, technologygroup_id, active, createdate, updatedate, createuser, updateuser, quantityofextrusioningredient, norm, actualversion, hasnutritionelements, quantityfornutritions, quantityfornutritionsunit, showinproductdata, doublequantityfordoublepallet, usedquantitycontrol, automaticusedquantity, nominalweight, countusedquantityforfullpallets, quantityinpackage, synchronize, capacitynormfortwodimensionalmachines, downform_id, upform_id, downshelve_id, upshelve_id, costnormsgenerator_id, producer_id, machinepart, drawingnumber, catalognumber, isproductiondate, entityversion, ispallet, additionalunit, fromgenerator, generatorcontext_id, dateformatinqcp5code, assortment_id, isoil, isaroma, capacitynormforthreedimensionalmachines, recommendednumofheadsfortwodimensionalmachines, recommendednumofheadsforthreedimensionalmachines, iscartonlabel, isactivecartonlabelquantity, batchevidence, expirydatevalidity, productform_id, size_id, model_id, supplier_id, nominalcostcurrency_id, averagecostcurrency_id, lastpurchasecostcurrency_id, expirydatevalidityunit, orderedproductconfigurator_id, batchnumberpattern_id, additionalcode, expirationdateevidence) FROM stdin;
 \.
 
 
@@ -43591,7 +43589,7 @@ COPY public.masterorders_salesvolumemulti (id, dailysalesvolume, optimalstock, c
 -- Data for Name: materialflow_location; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.materialflow_location (id, number, name, externalnumber, algorithm, requireprice, requirebatch, requireproductiondate, requireexpirationdate, entityversion, warehousenumberinoptima, draftmakesreservation, realizationlocation_id, active, transferstoragelocation_id) FROM stdin;
+COPY public.materialflow_location (id, number, name, externalnumber, algorithm, entityversion, warehousenumberinoptima, draftmakesreservation, realizationlocation_id, active, transferstoragelocation_id) FROM stdin;
 \.
 
 
@@ -43631,8 +43629,8 @@ COPY public.materialflowresources_document (id, number, type, "time", state, loc
 -- Data for Name: materialflowresources_documentpositionparameters; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.materialflowresources_documentpositionparameters (id, suggestresource, acceptanceofdocumentbeforeprinting, notshowprices, presenttotalamountandrest, pallettoshift, palletwithfreeplace, fillresourceirrespectiveofconversion, numberofmonthsforpositionsdata, colorresourcesafterdeadline, shortexpirydate, runningoutofstockdays, stocktakingmaterialcostsused, stocktakingusenominalcostpricenotspecified, hidestocktakingstock, hidestocktakingpositions, acceptdocumentrealizedinmobile, allowquantitychangeinmobile) FROM stdin;
-1	f	t	f	f	\N	\N	f	1	f	14	0	01nominal	f	f	f	f	f
+COPY public.materialflowresources_documentpositionparameters (id, suggestresource, acceptanceofdocumentbeforeprinting, notshowprices, presenttotalamountandrest, pallettoshift, palletwithfreeplace, fillresourceirrespectiveofconversion, numberofmonthsforpositionsdata, colorresourcesafterdeadline, shortexpirydate, runningoutofstockdays, stocktakingmaterialcostsused, stocktakingusenominalcostpricenotspecified, hidestocktakingstock, hidestocktakingpositions, acceptdocumentrealizedinmobile, allowquantitychangeinmobile, removenotcompletedpositionsinmobile) FROM stdin;
+1	f	t	f	f	\N	\N	f	1	f	14	0	01nominal	f	f	f	f	f	f
 \.
 
 

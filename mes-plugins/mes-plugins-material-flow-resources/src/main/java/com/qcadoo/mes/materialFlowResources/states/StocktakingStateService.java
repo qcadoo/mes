@@ -249,9 +249,13 @@ public class StocktakingStateService extends BasicStateService implements Stockt
                     entity.addGlobalError("materialFlowResources.stocktaking.document.palletNumberRequired", ex.getEntity().getBelongsToField(ResourceFields.STORAGE_LOCATION).getStringField(StorageLocationFields.NUMBER));
                 } else if (ResourceFields.PALLET_NUMBER.equals(error.getKey()) && "documentGrid.error.position.existsOtherResourceForLoadUnitAndTypeOfLoadUnit".equals(message.getMessage())) {
                     entity.addGlobalError("materialFlowResources.stocktaking.document.existsOtherResourceForLoadUnitAndTypeOfLoadUnit", ex.getEntity().getBelongsToField(ResourceFields.PALLET_NUMBER).getStringField(StorageLocationFields.NUMBER));
-                } else if(ResourceFields.PALLET_NUMBER.equals(error.getKey()) && "documentGrid.error.position.existsOtherResourceForPalletAndStorageLocation".equals(message.getMessage())) {
+                } else if (ResourceFields.PALLET_NUMBER.equals(error.getKey()) && "documentGrid.error.position.existsOtherResourceForPalletAndStorageLocation".equals(message.getMessage())) {
                     entity.addGlobalError("materialFlowResources.stocktaking.document.existsOtherResourceForPalletAndStorageLocation", ex.getEntity().getBelongsToField(ResourceFields.PALLET_NUMBER).getStringField(StorageLocationFields.NUMBER));
-                }else {
+                } else if (ResourceFields.BATCH.equals(error.getKey()) && "materialFlow.error.position.batch.required".equals(message.getMessage())) {
+                    entity.addGlobalError("materialFlow.document.validate.global.error.invalidResource.batchRequired", ex.getEntity().getBelongsToField(ResourceFields.PRODUCT).getStringField(ProductFields.NUMBER));
+                } else if (ResourceFields.EXPIRATION_DATE.equals(error.getKey()) && "materialFlow.error.position.expirationDate.required".equals(message.getMessage())) {
+                    entity.addGlobalError("materialFlow.document.validate.global.error.invalidResource.expirationDateRequired", ex.getEntity().getBelongsToField(ResourceFields.PRODUCT).getStringField(ProductFields.NUMBER));
+                } else {
                     entity.addGlobalError(message.getMessage(), message.getVars());
                 }
             }

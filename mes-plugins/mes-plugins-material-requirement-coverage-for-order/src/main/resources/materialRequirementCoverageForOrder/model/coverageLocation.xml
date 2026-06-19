@@ -31,9 +31,5 @@
 		<belongsTo name="location" model="location" plugin="materialFlow" />
 		<belongsTo name="parameter" model="parameter" plugin="basic" />
 	</fields>
-	<hooks>
-	<!--  <validatesWith
-			class="com.qcadoo.mes.orderSupplies.validators.CoverageLocationValidators"
-			method="validatesWith" />-->	
-	</hooks>
+	<hooks/>
 </model>
