@@ -151,7 +151,6 @@
                               joinField="coverageOrders" plugin="orderSupplies" cascade="nullify"/>
         </model:model-field>
 
-
         <model:model-field plugin="orders" model="order">
             <model:boolean name="registerFilled"/>
         </model:model-field>
@@ -170,25 +169,30 @@
         <view:view resource="view/requestForQuotationDetails.xml"/>
         <view:view resource="view/supplierModalRequestForQuotation.xml"/>
         <view:view resource="view/supplierModalDelivery.xml"/>
+        <view:view resource="view/supplyParametersForMinimalStates.xml"/>
+        <view:view resource="view/supplyParametersForCoverages.xml"/>
 
-        <view:view-tab resource="view/tabExtensions/supplyParametersForCoverages.xml"/>
-        <view:view-tab resource="view/tabExtensions/supplyParametersForMinimalStates.xml"/>
+
+        <view:view-ribbon-group resource="view/ribbonExtensions/supplyParameters.xml" />
 
         <model:model-field plugin="orders" model="order">
             <model:hasMany name="coverageAnalysisForOrders"
                            model="coverageAnalysisForOrder" plugin="orderSupplies" joinField="order"
-                           cascade="delete" copyable="false"/>
+                           cascade="delete"/>
         </model:model-field>
 
         <model:model-field plugin="orders" model="order">
             <model:hasMany name="coverageProductLoggings"
                            model="coverageProductLogging" plugin="orderSupplies" joinField="order"
-                           cascade="delete" copyable="false"/>
+                           cascade="delete"/>
         </model:model-field>
 
-        <view:view-hook plugin="deliveries" view="supplyParameters"
-                        type="beforeRender" class="com.qcadoo.mes.orderSupplies.hooks.SupplyParametersHooksOS"
-                        method="onBeforeRender"/>
+        <view:view-listener plugin="deliveries" view="supplyParameters"
+                            component="form" event="redirectToSupplyParametersForMinimalStates"
+                            class="com.qcadoo.mes.orderSupplies.listeners.ParametersListenersOS" method="redirectToSupplyParametersForMinimalStates" />
+        <view:view-listener plugin="deliveries" view="supplyParameters"
+                            component="form" event="redirectToSupplyParametersForCoverages"
+                            class="com.qcadoo.mes.orderSupplies.listeners.ParametersListenersOS" method="redirectToSupplyParametersForCoverages" />
         <custom:custom
                 class="com.qcadoo.mes.orderSupplies.OrderSuppliesOnStartupService"/>
     </modules>

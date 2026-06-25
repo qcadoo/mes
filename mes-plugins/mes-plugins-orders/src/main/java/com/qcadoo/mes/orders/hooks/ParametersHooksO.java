@@ -78,7 +78,7 @@ public class ParametersHooksO {
 
         if (parameter.getBooleanField(ParameterFieldsO.REALIZATION_FROM_STOCK)
                 && parameter.getHasManyField(ParameterFieldsO.REALIZATION_LOCATIONS).isEmpty()) {
-            parameter.addGlobalError("orders.ordersParameters.window.mainTab.ordersParameters.realizationLocations.error.empty",
+            parameter.addGlobalError("orders.ordersParameters.window.ordersFromMasterOrdersTab.realizationLocations.error.empty",
                     Boolean.FALSE);
 
             isValid = false;
