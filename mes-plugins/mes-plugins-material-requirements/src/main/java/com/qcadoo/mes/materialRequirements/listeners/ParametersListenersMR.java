@@ -21,22 +21,23 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.orderSupplies.listeners;
+package com.qcadoo.mes.materialRequirements.listeners;
 
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import org.springframework.stereotype.Service;
 
 @Service
-public class ParametersListenersOS {
+public class ParametersListenersMR {
 
-    public void redirectToSupplyParametersForMinimalStates(final ViewDefinitionState view, final ComponentState componentState,
-                                                           final String[] args) {
+    public void redirectToSupplyParametersForMaterialRequirements(final ViewDefinitionState view, final ComponentState componentState,
+                                           final String[] args) {
         Long parameterId = (Long) componentState.getFieldValue();
 
         if (parameterId != null) {
-            String url = "../page/orderSupplies/supplyParametersForMinimalStates.html?context={\"form.id\":\"" + parameterId + "\"}";
+            String url = "../page/materialRequirements/supplyParametersForMaterialRequirements.html?context={\"form.id\":\"" + parameterId + "\"}";
             view.redirectTo(url, false, true);
         }
     }
+
 }
